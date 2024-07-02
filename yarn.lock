@@ -4689,7 +4689,7 @@ __metadata:
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/plugin-permission-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@graphiql/react": ^0.20.0
+    "@graphiql/react": ^0.22.0
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
@@ -9535,7 +9535,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphiql/react@npm:^0.20.0, @graphiql/react@npm:^0.20.3":
+"@graphiql/react@npm:^0.20.3":
   version: 0.20.3
   resolution: "@graphiql/react@npm:0.20.3"
   dependencies:
@@ -9559,6 +9559,33 @@ __metadata:
     react: ^16.8.0 || ^17 || ^18
     react-dom: ^16.8.0 || ^17 || ^18
   checksum: e8b362bd67ff5499c8db64097f9a4050782be53420e27b4c84ad1eba99c9615984257b7a19d0fd9c6f72ce92366321014b04762b400403ee52f53248dd7a8785
+  languageName: node
+  linkType: hard
+
+"@graphiql/react@npm:^0.22.0":
+  version: 0.22.3
+  resolution: "@graphiql/react@npm:0.22.3"
+  dependencies:
+    "@graphiql/toolkit": ^0.9.1
+    "@headlessui/react": ^1.7.15
+    "@radix-ui/react-dialog": ^1.0.4
+    "@radix-ui/react-dropdown-menu": ^2.0.5
+    "@radix-ui/react-tooltip": ^1.0.6
+    "@radix-ui/react-visually-hidden": ^1.0.3
+    "@types/codemirror": ^5.60.8
+    clsx: ^1.2.1
+    codemirror: ^5.65.3
+    codemirror-graphql: ^2.0.12
+    copy-to-clipboard: ^3.2.0
+    framer-motion: ^6.5.1
+    graphql-language-service: ^5.2.1
+    markdown-it: ^14.1.0
+    set-value: ^4.1.0
+  peerDependencies:
+    graphql: ^15.5.0 || ^16.0.0
+    react: ^16.8.0 || ^17 || ^18
+    react-dom: ^16.8.0 || ^17 || ^18
+  checksum: b0330d0c192d2066c708256bad0bfdbc5f302e27bbac5c7bd0ef0c06b9417a65a7c5038a730c30ecfa3e4f6e80e14d38c2ee41dd29b33840a0b122fabfbe86c2
   languageName: node
   linkType: hard
 
@@ -22931,17 +22958,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"codemirror-graphql@npm:^2.0.10":
-  version: 2.0.11
-  resolution: "codemirror-graphql@npm:2.0.11"
+"codemirror-graphql@npm:^2.0.10, codemirror-graphql@npm:^2.0.12":
+  version: 2.0.12
+  resolution: "codemirror-graphql@npm:2.0.12"
   dependencies:
     "@types/codemirror": ^0.0.90
-    graphql-language-service: 5.2.0
+    graphql-language-service: 5.2.1
   peerDependencies:
     "@codemirror/language": 6.0.0
     codemirror: ^5.65.3
     graphql: ^15.5.0 || ^16.0.0
-  checksum: cdbeb713af63a069c5526f864edf4f71dd811437e44dba7967164ea2d380c52dfe51d3ea3fde06c94ffeb596b93af737767923d6fc434c628fa4241621684950
+  checksum: 1824d0fb64f4d2547fcb9c3c5e53541dc73deccdc69f2cb987409121c0ce79158268b57a4accac1d4108b340facb12763622b44d75e12c4e2185d09c359fb030
   languageName: node
   linkType: hard
 
@@ -28526,9 +28553,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-language-service@npm:5.2.0, graphql-language-service@npm:^5.2.0":
-  version: 5.2.0
-  resolution: "graphql-language-service@npm:5.2.0"
+"graphql-language-service@npm:5.2.1, graphql-language-service@npm:^5.2.0, graphql-language-service@npm:^5.2.1":
+  version: 5.2.1
+  resolution: "graphql-language-service@npm:5.2.1"
   dependencies:
     nullthrows: ^1.0.0
     vscode-languageserver-types: ^3.17.1
@@ -28536,7 +28563,7 @@ __metadata:
     graphql: ^15.5.0 || ^16.0.0
   bin:
     graphql: dist/temp-bin.js
-  checksum: b053c6b7158d0ee7a3e55391bfd8be956fc5380211ca586b3a252007845e119540fb40efcc438975eaebc5ef25f46973f7ff4d9543c66e14ebd992957e0299b7
+  checksum: e29034aceeae9f05895cf2932ea71a454ae787f82c1585bd2d6e197d93d32a444b87f44cb50d045cce908da66d39b6177f39deef6f318ca077386b845a644195
   languageName: node
   linkType: hard
 
@@ -32282,6 +32309,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"linkify-it@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "linkify-it@npm:5.0.0"
+  dependencies:
+    uc.micro: ^2.0.0
+  checksum: b0b86cadaf816b64c947a83994ceaad1c15f9fe7e079776ab88699fb71afd7b8fc3fd3d0ae5ebec8c92c1d347be9ba257b8aef338c0ebf81b0d27dcf429a765a
+  languageName: node
+  linkType: hard
+
 "linkify-react@npm:4.1.3":
   version: 4.1.3
   resolution: "linkify-react@npm:4.1.3"
@@ -33037,6 +33073,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"markdown-it@npm:^14.1.0":
+  version: 14.1.0
+  resolution: "markdown-it@npm:14.1.0"
+  dependencies:
+    argparse: ^2.0.1
+    entities: ^4.4.0
+    linkify-it: ^5.0.0
+    mdurl: ^2.0.0
+    punycode.js: ^2.3.1
+    uc.micro: ^2.1.0
+  bin:
+    markdown-it: bin/markdown-it.mjs
+  checksum: 07296b45ebd0b13a55611a24d1b1ad002c6729ec54f558f597846994b0b7b1de79d13cd99ff3e7b6e9e027f36b63125cdcf69174da294ecabdd4e6b9fff39e5d
+  languageName: node
+  linkType: hard
+
 "markdown-table@npm:^3.0.0":
   version: 3.0.1
   resolution: "markdown-table@npm:3.0.1"
@@ -33278,6 +33330,13 @@ __metadata:
   version: 1.0.1
   resolution: "mdurl@npm:1.0.1"
   checksum: 71731ecba943926bfbf9f9b51e28b5945f9411c4eda80894221b47cc105afa43ba2da820732b436f0798fd3edbbffcd1fc1415843c41a87fea08a41cc1e3d02b
+  languageName: node
+  linkType: hard
+
+"mdurl@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "mdurl@npm:2.0.0"
+  checksum: 880bc289ef668df0bb34c5b2b5aaa7b6ea755052108cdaf4a5e5968ad01cf27e74927334acc9ebcc50a8628b65272ae6b1fd51fae1330c130e261c0466e1a3b2
   languageName: node
   linkType: hard
 
@@ -37641,6 +37700,13 @@ __metadata:
     end-of-stream: ^1.1.0
     once: ^1.3.1
   checksum: e42e9229fba14732593a718b04cb5e1cfef8254544870997e0ecd9732b189a48e1256e4e5478148ecb47c8511dca2b09eae56b4d0aad8009e6fac8072923cfc9
+  languageName: node
+  linkType: hard
+
+"punycode.js@npm:^2.3.1":
+  version: 2.3.1
+  resolution: "punycode.js@npm:2.3.1"
+  checksum: 13466d7ed5e8dacdab8c4cc03837e7dd14218a59a40eb14a837f1f53ca396e18ef2c4ee6d7766b8ed2fc391d6a3ac489eebf2de83b3596f5a54e86df4a251b72
   languageName: node
   linkType: hard
 
@@ -42885,6 +42951,13 @@ __metadata:
   version: 1.0.6
   resolution: "uc.micro@npm:1.0.6"
   checksum: 6898bb556319a38e9cf175e3628689347bd26fec15fc6b29fa38e0045af63075ff3fea4cf1fdba9db46c9f0cbf07f2348cd8844889dd31ebd288c29fe0d27e7a
+  languageName: node
+  linkType: hard
+
+"uc.micro@npm:^2.0.0, uc.micro@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "uc.micro@npm:2.1.0"
+  checksum: 37197358242eb9afe367502d4638ac8c5838b78792ab218eafe48287b0ed28aaca268ec0392cc5729f6c90266744de32c06ae938549aee041fc93b0f9672d6b2
   languageName: node
   linkType: hard
 
