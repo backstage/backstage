@@ -17,6 +17,10 @@ The following is a full example entry in `app-config.yaml`:
 
 ```yaml
 kubernetes:
+  frontend:
+    podDelete:
+      enabled: true
+      restartButtonText: true
   serviceLocatorMethod:
     type: 'multiTenant'
   clusterLocatorMethods:
@@ -47,6 +51,45 @@ kubernetes:
       skipMetricsLookup: true
       exposeDashboard: true
 ```
+
+### `frontend` (optional)
+
+This is an array used to configure some frontend features.
+
+Valid values are:
+
+- `podDelete`
+
+#### `podDelete` (optional)
+
+This configures the behavior of the delete pod button in the container panel.
+
+Valid configurations are:
+
+- `enabled`
+- `restartButtonText`
+
+##### `enabled`
+
+This configuration controls the visibility of this feature.
+
+Valid values are:
+
+- `true`
+- `false`
+
+The default value is `false`.
+
+##### `restartButtonText`
+
+This configuration allows you to switch the button text from **Delete Pod**, which might be intimidating for audiences with minimal knowledge, to **Restart pod**.
+
+Valid values are:
+
+- `true`
+- `false`
+
+The default value is `false`.
 
 ### `serviceLocatorMethod`
 
