@@ -61,6 +61,8 @@ import { version as pluginCatalogBackend } from '../../../../plugins/catalog-bac
 import { version as pluginCatalogBackendModuleScaffolderEntityModel } from '../../../../plugins/catalog-backend-module-scaffolder-entity-model/package.json';
 import { version as pluginCatalogGraph } from '../../../../plugins/catalog-graph/package.json';
 import { version as pluginCatalogImport } from '../../../../plugins/catalog-import/package.json';
+import { version as pluginKubernetes } from '../../../../plugins/kubernetes/package.json';
+import { version as pluginKubernetesBackend } from '../../../../plugins/kubernetes-backend/package.json';
 import { version as pluginOrg } from '../../../../plugins/org/package.json';
 import { version as pluginPermissionBackend } from '../../../../plugins/permission-backend/package.json';
 import { version as pluginPermissionBackendModulePolicyAllowAll } from '../../../../plugins/permission-backend-module-policy-allow-all/package.json';
@@ -115,6 +117,8 @@ export const packageVersions = {
     pluginCatalogBackendModuleScaffolderEntityModel,
   '@backstage/plugin-catalog-graph': pluginCatalogGraph,
   '@backstage/plugin-catalog-import': pluginCatalogImport,
+  '@backstage/plugin-kubernetes': pluginKubernetes,
+  '@backstage/plugin-kubernetes-backend': pluginKubernetesBackend,
   '@backstage/plugin-org': pluginOrg,
   '@backstage/plugin-permission-backend': pluginPermissionBackend,
   '@backstage/plugin-permission-backend-module-allow-all-policy':
