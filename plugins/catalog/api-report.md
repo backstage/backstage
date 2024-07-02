@@ -338,6 +338,20 @@ export interface DependsOnResourcesCardProps {
 export const EntityAboutCard: (props: AboutCardProps) => JSX.Element;
 
 // @public (undocumented)
+export function EntityContextMenu(props: {
+  UNSTABLE_extraContextMenuItems?: Array<{
+    title: string;
+    Icon: IconComponent;
+    onClick: () => void;
+  }>;
+  UNSTABLE_contextMenuOptions?: {
+    disableUnregister: boolean | 'visible' | 'hidden' | 'disable';
+  };
+  onUnregisterEntity: () => void;
+  onInspectEntity: () => void;
+}): React_2.JSX.Element;
+
+// @public (undocumented)
 export type EntityContextMenuClassKey = 'button';
 
 // @public (undocumented)

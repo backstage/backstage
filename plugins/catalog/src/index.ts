@@ -30,6 +30,7 @@ export type {
 export { AboutContent, AboutField } from './components/AboutCard';
 export * from './components/CatalogKindHeader';
 export * from './components/CatalogTable';
+export * from './components/EntityContextMenu';
 export * from './components/EntityLayout';
 export * from './components/EntityOrphanWarning';
 export * from './components/EntityRelationWarning';
