@@ -78,3 +78,15 @@ duplicate definitions:
 # Add --fix to attempt automatic resolution in yarn.lock
 yarn backstage-cli versions:check
 ```
+
+## Proxy
+
+The Backstage CLI uses [global-agent](https://www.npmjs.com/package/global-agent) to configure HTTP/HTTPS proxy settings using environment variables. This allows you to route the CLI’s network traffic through a proxy server, which can be useful in environments with restricted internet access.
+
+### Example Configuration
+
+```bash
+export GLOBAL_AGENT_HTTP_PROXY=http://proxy.company.com:8080
+export GLOBAL_AGENT_HTTPS_PROXY=https://secure-proxy.company.com:8080
+export GLOBAL_AGENT_NO_PROXY=localhost,internal.company.com
+```
