@@ -1,5 +1,47 @@
 # example-backend-legacy
 
+## 0.2.100-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-backend@1.10.9-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.4.4-next.1
+  - @backstage/plugin-catalog-backend@1.24.0-next.1
+  - @backstage/backend-common@0.23.3-next.1
+  - @backstage/plugin-search-backend-module-techdocs@0.1.27-next.1
+  - example-app@0.2.99-next.1
+  - @backstage/backend-tasks@0.5.27-next.1
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/integration@1.13.0-next.0
+  - @backstage/plugin-app-backend@0.3.71-next.1
+  - @backstage/plugin-auth-backend@0.22.9-next.1
+  - @backstage/plugin-auth-node@0.4.17-next.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.20-next.1
+  - @backstage/plugin-catalog-backend-module-unprocessed@0.4.9-next.1
+  - @backstage/plugin-catalog-node@1.12.4-next.1
+  - @backstage/plugin-devtools-backend@0.3.8-next.1
+  - @backstage/plugin-events-backend@0.3.9-next.1
+  - @backstage/plugin-events-node@0.3.8-next.1
+  - @backstage/plugin-kubernetes-backend@0.18.3-next.1
+  - @backstage/plugin-permission-backend@0.5.46-next.1
+  - @backstage/plugin-permission-common@0.7.14
+  - @backstage/plugin-permission-node@0.7.33-next.1
+  - @backstage/plugin-proxy-backend@0.5.3-next.1
+  - @backstage/plugin-scaffolder-backend@1.23.0-next.1
+  - @backstage/plugin-scaffolder-backend-module-confluence-to-markdown@0.2.23-next.1
+  - @backstage/plugin-scaffolder-backend-module-rails@0.4.39-next.1
+  - @backstage/plugin-search-backend@1.5.14-next.1
+  - @backstage/plugin-search-backend-module-catalog@0.1.28-next.1
+  - @backstage/plugin-search-backend-module-elasticsearch@1.5.3-next.1
+  - @backstage/plugin-search-backend-module-explore@0.1.28-next.1
+  - @backstage/plugin-search-backend-module-pg@0.5.32-next.1
+  - @backstage/plugin-search-backend-node@1.2.27-next.1
+  - @backstage/plugin-signals-backend@0.1.8-next.1
+  - @backstage/plugin-signals-node@0.1.8-next.1
+
 ## 0.2.100-next.0
 
 ### Patch Changes
