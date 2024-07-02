@@ -5890,6 +5890,7 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@react-hookz/web": ^24.0.0
+    "@tanstack/react-query": ^5.28.0
     "@testing-library/dom": ^10.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^15.0.0
@@ -16836,6 +16837,24 @@ __metadata:
   dependencies:
     defer-to-connect: ^2.0.0
   checksum: 27b713859bc7d370f81631eea99879a9d496e1def5d33752fccd6c80dba32cde2094f378c8d07d56f236b08afb4b3621fbf6254faaca52b1a8146ece1eba8428
+  languageName: node
+  linkType: hard
+
+"@tanstack/query-core@npm:5.28.4":
+  version: 5.28.4
+  resolution: "@tanstack/query-core@npm:5.28.4"
+  checksum: d6dfbd2f14a6c7a3100e54c20b7ac42d7ea74b9d86772ae9b79f18885ebf0256f42f085abe87b8cab336e736d721ef4d68e81875b3bde8bb5145cfa362cd913f
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-query@npm:^5.28.0":
+  version: 5.28.4
+  resolution: "@tanstack/react-query@npm:5.28.4"
+  dependencies:
+    "@tanstack/query-core": 5.28.4
+  peerDependencies:
+    react: ^18.0.0
+  checksum: 1d7a4cf7ffd8b141fcb75e6c31cd8c7e0b8ecc6ff0d974ebe6226fe50df7da890bdae3349cdef89dac86b1c3506924640743dd58739f9cebfdf018ca6b609f68
   languageName: node
   linkType: hard
 

@@ -48,6 +48,145 @@ export type TypedResponse<T> = Omit<Response, 'json'> & {
 };
 
 /**
+ * @public
+ */
+export interface AnalyzeLocation {
+  body: AnalyzeLocationRequest;
+}
+/**
+ * @public
+ */
+export interface CreateLocation {
+  body: CreateLocationRequest;
+  query: {
+    dryRun?: string;
+  };
+}
+/**
+ * @public
+ */
+export interface DeleteEntityByUid {
+  path: {
+    uid: string;
+  };
+}
+/**
+ * @public
+ */
+export interface DeleteLocation {
+  path: {
+    id: string;
+  };
+}
+/**
+ * @public
+ */
+export interface GetEntities {
+  query: {
+    fields?: Array<string>;
+    limit?: number;
+    filter?: Array<string>;
+    offset?: number;
+    after?: string;
+    order?: Array<string>;
+  };
+}
+/**
+ * @public
+ */
+export interface GetEntitiesByQuery {
+  query: {
+    fields?: Array<string>;
+    limit?: number;
+    orderField?: Array<string>;
+    cursor?: string;
+    filter?: Array<string>;
+    fullTextFilterTerm?: string;
+    fullTextFilterFields?: Array<string>;
+  };
+}
+/**
+ * @public
+ */
+export interface GetEntitiesByRefs {
+  body: GetEntitiesByRefsRequest;
+  query: {
+    filter?: Array<string>;
+  };
+}
+/**
+ * @public
+ */
+export interface GetEntityAncestryByName {
+  path: {
+    kind: string;
+    namespace: string;
+    name: string;
+  };
+}
+/**
+ * @public
+ */
+export interface GetEntityByName {
+  path: {
+    kind: string;
+    namespace: string;
+    name: string;
+  };
+}
+/**
+ * @public
+ */
+export interface GetEntityByUid {
+  path: {
+    uid: string;
+  };
+}
+/**
+ * @public
+ */
+export interface GetEntityFacets {
+  query: {
+    facet: Array<string>;
+    filter?: Array<string>;
+  };
+}
+/**
+ * @public
+ */
+export interface GetLocation {
+  path: {
+    id: string;
+  };
+}
+/**
+ * @public
+ */
+export interface GetLocationByEntity {
+  path: {
+    kind: string;
+    namespace: string;
+    name: string;
+  };
+}
+/**
+ * @public
+ */
+export interface GetLocations {}
+/**
+ * @public
+ */
+export interface RefreshEntity {
+  body: RefreshEntityRequest;
+}
+/**
+ * @public
+ */
+export interface ValidateEntity {
+  body: ValidateEntityRequest;
+}
+
+/**
  * Options you can pass into a request for additional information.
  *
  * @public
@@ -58,8 +197,9 @@ export interface RequestOptions {
 
 /**
  * no description
+ * @public
  */
-export class DefaultApiClient {
+export class CatalogClient {
   private readonly discoveryApi: DiscoveryApi;
   private readonly fetchApi: FetchApi;
 
@@ -73,13 +213,11 @@ export class DefaultApiClient {
 
   /**
    * Validate a given location.
-   * @param analyzeLocationRequest
+   * @param analyzeLocationRequest -
    */
   public async analyzeLocation(
     // @ts-ignore
-    request: {
-      body: AnalyzeLocationRequest;
-    },
+    request: AnalyzeLocation,
     options?: RequestOptions,
   ): Promise<TypedResponse<AnalyzeLocationResponse>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
@@ -100,17 +238,12 @@ export class DefaultApiClient {
 
   /**
    * Create a location for a given target.
-   * @param createLocationRequest
-   * @param dryRun
+   * @param createLocationRequest -
+   * @param dryRun -
    */
   public async createLocation(
     // @ts-ignore
-    request: {
-      body: CreateLocationRequest;
-      query: {
-        dryRun?: string;
-      };
-    },
+    request: CreateLocation,
     options?: RequestOptions,
   ): Promise<TypedResponse<CreateLocation201Response>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
@@ -133,15 +266,11 @@ export class DefaultApiClient {
 
   /**
    * Delete a single entity by UID.
-   * @param uid
+   * @param uid -
    */
   public async deleteEntityByUid(
     // @ts-ignore
-    request: {
-      path: {
-        uid: string;
-      };
-    },
+    request: DeleteEntityByUid,
     options?: RequestOptions,
   ): Promise<TypedResponse<void>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
@@ -163,15 +292,11 @@ export class DefaultApiClient {
 
   /**
    * Delete a location by id.
-   * @param id
+   * @param id -
    */
   public async deleteLocation(
     // @ts-ignore
-    request: {
-      path: {
-        id: string;
-      };
-    },
+    request: DeleteLocation,
     options?: RequestOptions,
   ): Promise<TypedResponse<void>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
@@ -193,25 +318,16 @@ export class DefaultApiClient {
 
   /**
    * Get all entities matching a given filter.
-   * @param fields Restrict to just these fields in the response.
-   * @param limit Number of records to return in the response.
-   * @param filter Filter for just the entities defined by this filter.
-   * @param offset Number of records to skip in the query page.
-   * @param after Pointer to the previous page of results.
-   * @param order
+   * @param fields - Restrict to just these fields in the response.
+   * @param limit - Number of records to return in the response.
+   * @param filter - Filter for just the entities defined by this filter.
+   * @param offset - Number of records to skip in the query page.
+   * @param after - Pointer to the previous page of results.
+   * @param order -
    */
   public async getEntities(
     // @ts-ignore
-    request: {
-      query: {
-        fields?: Array<string>;
-        limit?: number;
-        filter?: Array<string>;
-        offset?: number;
-        after?: string;
-        order?: Array<string>;
-      };
-    },
+    request: GetEntities,
     options?: RequestOptions,
   ): Promise<TypedResponse<Array<Entity>>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
@@ -233,27 +349,17 @@ export class DefaultApiClient {
 
   /**
    * Search for entities by a given query.
-   * @param fields Restrict to just these fields in the response.
-   * @param limit Number of records to return in the response.
-   * @param orderField The fields to sort returned results by.
-   * @param cursor Cursor to a set page of results.
-   * @param filter Filter for just the entities defined by this filter.
-   * @param fullTextFilterTerm Text search term.
-   * @param fullTextFilterFields A comma separated list of fields to sort returned results by.
+   * @param fields - Restrict to just these fields in the response.
+   * @param limit - Number of records to return in the response.
+   * @param orderField - The fields to sort returned results by.
+   * @param cursor - Cursor to a set page of results.
+   * @param filter - Filter for just the entities defined by this filter.
+   * @param fullTextFilterTerm - Text search term.
+   * @param fullTextFilterFields - A comma separated list of fields to sort returned results by.
    */
   public async getEntitiesByQuery(
     // @ts-ignore
-    request: {
-      query: {
-        fields?: Array<string>;
-        limit?: number;
-        orderField?: Array<string>;
-        cursor?: string;
-        filter?: Array<string>;
-        fullTextFilterTerm?: string;
-        fullTextFilterFields?: Array<string>;
-      };
-    },
+    request: GetEntitiesByQuery,
     options?: RequestOptions,
   ): Promise<TypedResponse<EntitiesQueryResponse>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
@@ -275,23 +381,21 @@ export class DefaultApiClient {
 
   /**
    * Get a batch set of entities given an array of entityRefs.
-   * @param getEntitiesByRefsRequest
+   * @param filter - Filter for just the entities defined by this filter.
+   * @param getEntitiesByRefsRequest -
    */
   public async getEntitiesByRefs(
     // @ts-ignore
-    request: {
-      body: GetEntitiesByRefsRequest;
-      query?: {
-        filter?: Array<string>;
-      };
-    },
+    request: GetEntitiesByRefs,
     options?: RequestOptions,
   ): Promise<TypedResponse<EntitiesBatchResponse>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
-    const uriTemplate = `/entities/by-refs/{?filter*}`;
+    const uriTemplate = `/entities/by-refs{?filter*}`;
 
-    const uri = parser.parse(uriTemplate).expand({ ...request.query });
+    const uri = parser.parse(uriTemplate).expand({
+      ...request.query,
+    });
 
     return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
       headers: {
@@ -305,19 +409,13 @@ export class DefaultApiClient {
 
   /**
    * Get an entity's ancestry by entity ref.
-   * @param kind
-   * @param namespace
-   * @param name
+   * @param kind -
+   * @param namespace -
+   * @param name -
    */
   public async getEntityAncestryByName(
     // @ts-ignore
-    request: {
-      path: {
-        kind: string;
-        namespace: string;
-        name: string;
-      };
-    },
+    request: GetEntityAncestryByName,
     options?: RequestOptions,
   ): Promise<TypedResponse<EntityAncestryResponse>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
@@ -341,19 +439,13 @@ export class DefaultApiClient {
 
   /**
    * Get an entity by an entity ref.
-   * @param kind
-   * @param namespace
-   * @param name
+   * @param kind -
+   * @param namespace -
+   * @param name -
    */
   public async getEntityByName(
     // @ts-ignore
-    request: {
-      path: {
-        kind: string;
-        namespace: string;
-        name: string;
-      };
-    },
+    request: GetEntityByName,
     options?: RequestOptions,
   ): Promise<TypedResponse<Entity>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
@@ -377,15 +469,11 @@ export class DefaultApiClient {
 
   /**
    * Get a single entity by the UID.
-   * @param uid
+   * @param uid -
    */
   public async getEntityByUid(
     // @ts-ignore
-    request: {
-      path: {
-        uid: string;
-      };
-    },
+    request: GetEntityByUid,
     options?: RequestOptions,
   ): Promise<TypedResponse<Entity>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
@@ -407,17 +495,12 @@ export class DefaultApiClient {
 
   /**
    * Get all entity facets that match the given filters.
-   * @param facet
-   * @param filter Filter for just the entities defined by this filter.
+   * @param facet -
+   * @param filter - Filter for just the entities defined by this filter.
    */
   public async getEntityFacets(
     // @ts-ignore
-    request: {
-      query: {
-        facet: Array<string>;
-        filter?: Array<string>;
-      };
-    },
+    request: GetEntityFacets,
     options?: RequestOptions,
   ): Promise<TypedResponse<EntityFacetsResponse>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
@@ -439,15 +522,11 @@ export class DefaultApiClient {
 
   /**
    * Get a location by id.
-   * @param id
+   * @param id -
    */
   public async getLocation(
     // @ts-ignore
-    request: {
-      path: {
-        id: string;
-      };
-    },
+    request: GetLocation,
     options?: RequestOptions,
   ): Promise<TypedResponse<Location>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
@@ -469,19 +548,13 @@ export class DefaultApiClient {
 
   /**
    * Get a location for entity.
-   * @param kind
-   * @param namespace
-   * @param name
+   * @param kind -
+   * @param namespace -
+   * @param name -
    */
   public async getLocationByEntity(
     // @ts-ignore
-    request: {
-      path: {
-        kind: string;
-        namespace: string;
-        name: string;
-      };
-    },
+    request: GetLocationByEntity,
     options?: RequestOptions,
   ): Promise<TypedResponse<Location>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
@@ -508,7 +581,7 @@ export class DefaultApiClient {
    */
   public async getLocations(
     // @ts-ignore
-    request: {},
+    request: GetLocations,
     options?: RequestOptions,
   ): Promise<TypedResponse<Array<GetLocations200ResponseInner>>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
@@ -528,13 +601,11 @@ export class DefaultApiClient {
 
   /**
    * Refresh the entity related to entityRef.
-   * @param refreshEntityRequest
+   * @param refreshEntityRequest -
    */
   public async refreshEntity(
     // @ts-ignore
-    request: {
-      body: RefreshEntityRequest;
-    },
+    request: RefreshEntity,
     options?: RequestOptions,
   ): Promise<TypedResponse<void>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
@@ -555,13 +626,11 @@ export class DefaultApiClient {
 
   /**
    * Validate that a passed in entity has no errors in schema.
-   * @param validateEntityRequest
+   * @param validateEntityRequest -
    */
   public async validateEntity(
     // @ts-ignore
-    request: {
-      body: ValidateEntityRequest;
-    },
+    request: ValidateEntity,
     options?: RequestOptions,
   ): Promise<TypedResponse<void>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);

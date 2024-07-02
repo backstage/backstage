@@ -19,6 +19,42 @@ export type TypedResponse<T> = Omit<Response, 'json'> & {
 };
 
 {{#operations}}
+{{#operation}}
+/**
+ * @public
+ */
+export interface {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}} {
+    {{#hasPathParams}}
+    path: {
+        {{#pathParams}}
+            {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
+        {{/pathParams}}
+    },
+    {{/hasPathParams}}
+    {{#hasBodyParam}}
+        {{#bodyParam}}
+        body: {{{dataType}}},
+        {{/bodyParam}}
+    {{/hasBodyParam}}
+    {{#hasQueryParams}}
+    query: {
+        {{#queryParams}}
+        {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
+        {{/queryParams}}
+    },
+    {{/hasQueryParams}}
+    {{#hasHeaderParams}}
+    header: {
+        {{#headerParams}}
+        {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
+        {{/headerParams}}
+    },
+    {{/hasHeaderParams}}
+}
+{{/operation}}
+{{/operations}}
+
+{{#operations}}
 
 /**
  * Options you can pass into a request for additional information.
@@ -31,8 +67,9 @@ export interface RequestOptions {
 
 /**
  * {{{description}}}{{^description}}no description{{/description}}
+ * @public
  */
-export class {{classname}}Client {
+export class {{#lambda.pascalcase}}{{appName}}{{/lambda.pascalcase}}Client {
     private readonly discoveryApi: DiscoveryApi;
     private readonly fetchApi: FetchApi;
 
@@ -53,39 +90,12 @@ export class {{classname}}Client {
      * {{&summary}}
      {{/summary}}
      {{#allParams}}
-     * @param {{paramName}} {{description}}
+     * @param {{paramName}} - {{description}}
      {{/allParams}}
      */
     public async {{nickname}}(
         // @ts-ignore
-        request: {
-            {{#hasPathParams}}
-            path: {
-                {{#pathParams}}
-                    {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
-                {{/pathParams}}
-            },
-            {{/hasPathParams}}
-            {{#hasBodyParam}}
-                {{#bodyParam}}
-                body: {{{dataType}}},
-                {{/bodyParam}}
-            {{/hasBodyParam}}
-            {{#hasQueryParams}}
-            query: {
-                {{#queryParams}}
-                {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
-                {{/queryParams}}
-            },
-            {{/hasQueryParams}}
-            {{#hasHeaderParams}}
-            header: {
-                {{#headerParams}}
-                {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
-                {{/headerParams}}
-            },
-            {{/hasHeaderParams}}
-        },
+        request: {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}},
         options?: RequestOptions
     ): Promise<TypedResponse<{{{returnType}}} {{^returnType}}void{{/returnType}}>> {
         const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);

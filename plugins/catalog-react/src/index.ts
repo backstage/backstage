@@ -33,3 +33,4 @@ export * from './types';
 export * from './overridableComponents';
 export { getEntityRelations, getEntitySourceLocation } from './utils';
 export type { EntitySourceLocation } from './utils';
+export * from './generated';

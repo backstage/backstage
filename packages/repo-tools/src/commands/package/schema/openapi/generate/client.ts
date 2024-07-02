@@ -21,33 +21,45 @@ import {
   OUTPUT_PATH,
 } from '../../../../../lib/openapi/constants';
 import { paths as cliPaths } from '../../../../../lib/paths';
-import { mkdirpSync } from 'fs-extra';
 import fs from 'fs-extra';
 import { exec } from '../../../../../lib/exec';
 import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import { getPathToCurrentOpenApiSpec } from '../../../../../lib/openapi/helpers';
 
-async function generate(
-  outputDirectory: string,
-  clientAdditionalProperties?: string,
-) {
+async function runOpenApiGeneratorCommand({
+  outputPath,
+  templateName,
+  additionalProperties,
+}: {
+  outputPath: string;
+  templateName: string;
+  additionalProperties?: Record<string, string | undefined>;
+}) {
   const resolvedOpenapiPath = await getPathToCurrentOpenApiSpec();
-  const resolvedOutputDirectory = cliPaths.resolveTargetRoot(
-    outputDirectory,
+  const resolvedOutputPath = cliPaths.resolveTargetRoot(
+    outputPath,
     OUTPUT_PATH,
   );
-  const additionalProperties = clientAdditionalProperties
-    ? `--additional-properties=${clientAdditionalProperties}`
-    : '';
-  mkdirpSync(resolvedOutputDirectory);
-
-  await fs.mkdirp(resolvedOutputDirectory);
+  await fs.mkdirp(resolvedOutputPath);
 
   await fs.writeFile(
-    resolve(resolvedOutputDirectory, '.openapi-generator-ignore'),
+    resolve(resolvedOutputPath, '.openapi-generator-ignore'),
     OPENAPI_IGNORE_FILES.join('\n'),
   );
 
+  const additionalPropertiesList = additionalProperties
+    ? Object.entries(additionalProperties)
+        .filter(([, value]) => value)
+        .map(([key, value]) => `${key}=${value}`)
+        .join(',')
+    : undefined;
+
+  const additionalOptions = [];
+  if (additionalPropertiesList) {
+    additionalOptions.push(
+      `--additional-properties=${additionalPropertiesList}`,
+    );
+  }
   await exec(
     'node',
     [
@@ -56,17 +68,17 @@ async function generate(
       '-i',
       resolvedOpenapiPath,
       '-o',
-      resolvedOutputDirectory,
+      resolvedOutputPath,
       '-g',
       'typescript',
       '-c',
       resolvePackagePath(
         '@backstage/repo-tools',
-        'templates/typescript-backstage.yaml',
+        `templates/${templateName}.yaml`,
       ),
       '--generator-key',
       'v3.0',
-      additionalProperties,
+      ...additionalOptions,
     ],
     {
       maxBuffer: Number.MAX_VALUE,
@@ -77,32 +89,114 @@ async function generate(
     },
   );
 
-  await exec(
-    `yarn backstage-cli package lint --fix ${resolvedOutputDirectory}`,
-  );
+  await exec(`yarn backstage-cli package lint --fix ${resolvedOutputPath}`);
 
   const prettier = cliPaths.resolveTargetRoot('node_modules/.bin/prettier');
   if (prettier) {
-    await exec(`${prettier} --write ${resolvedOutputDirectory}`);
+    await exec(`${prettier} --write ${resolvedOutputPath}`);
   }
 
-  fs.removeSync(resolve(resolvedOutputDirectory, '.openapi-generator-ignore'));
+  fs.removeSync(resolve(resolvedOutputPath, '.openapi-generator-ignore'));
 
-  fs.rmSync(resolve(resolvedOutputDirectory, '.openapi-generator'), {
+  fs.rmSync(resolve(resolvedOutputPath, '.openapi-generator'), {
     recursive: true,
     force: true,
   });
 }
 
-export async function command(
-  outputPackage: string,
-  clientAdditionalProperties?: string,
-): Promise<void> {
+async function generateReactQueryClient({
+  client: { outputPackage },
+  reactQuery,
+}: {
+  client: { outputPackage: string };
+  reactQuery: {
+    outputPackage: string;
+    apiRefNamespace: string | undefined;
+    apiRefName: string | undefined;
+    apiRefImport: string | undefined;
+    clientImport: string | undefined;
+  };
+}) {
+  await runOpenApiGeneratorCommand({
+    outputPath: reactQuery.outputPackage,
+    templateName: 'typescript-backstage-react-query',
+    additionalProperties: {
+      clientImport:
+        outputPackage === reactQuery.outputPackage
+          ? '.'
+          : reactQuery.clientImport,
+      apiRefNamespace: reactQuery.apiRefNamespace || 'core',
+      apiRefName: reactQuery.apiRefName,
+      apiRefImport: reactQuery.apiRefImport,
+    },
+  });
+}
+
+async function generate(outputDirectory: string, additionalProperties: string) {
+  await runOpenApiGeneratorCommand({
+    outputPath: outputDirectory,
+    templateName: 'typescript-backstage',
+    additionalProperties: additionalProperties
+      .split(',')
+      .reduce((acc: object, prop) => {
+        const [key, value] = prop.split('=');
+        return { ...acc, [key]: value };
+      }, {}),
+  });
+}
+
+export async function command({
+  client: { outputPackage, additionalProperties },
+  reactQuery: {
+    enabled: enableReactQuery,
+    outputPackage: queryOutputPackage,
+    apiRefNamespace,
+    apiRefName,
+    apiRefImport,
+    clientImport,
+  },
+}: {
+  client: { outputPackage: string; additionalProperties: string };
+  reactQuery: {
+    outputPackage?: string;
+    enabled: boolean;
+    clientImport?: string;
+    apiRefNamespace?: string;
+    apiRefName?: string;
+    apiRefImport?: string;
+  };
+}): Promise<void> {
+  if (apiRefNamespace && apiRefName) {
+    throw new Error('You can only specify one of apiRefNamespace or apiRef');
+  }
+
   try {
-    await generate(outputPackage, clientAdditionalProperties);
+    await generate(outputPackage, additionalProperties);
+
     console.log(
       chalk.green(`Generated client in ${outputPackage}/${OUTPUT_PATH}`),
     );
+    if (enableReactQuery) {
+      await generateReactQueryClient({
+        client: {
+          outputPackage,
+        },
+        reactQuery: {
+          outputPackage: queryOutputPackage || outputPackage,
+          apiRefNamespace,
+          apiRefName,
+          apiRefImport,
+          clientImport,
+        },
+      });
+      console.log(
+        chalk.green(
+          `Generated react query client in ${
+            queryOutputPackage || outputPackage
+          }/${OUTPUT_PATH}`,
+        ),
+      );
+    }
   } catch (err) {
     console.log();
     console.log(chalk.red(`Client generation failed:`));

@@ -18,6 +18,7 @@ export enum {{classname}}{{enumName}} {
 {{/stringEnums}}
 {{^stringEnums}}
     export type {{enumName}} = {{#allowableValues}}{{#enumVars}}{{{value}}}{{^-last}} | {{/-last}}{{/enumVars}}{{/allowableValues}};
+    
     export const {{enumName}} = {
     {{#allowableValues}}
     {{#enumVars}}

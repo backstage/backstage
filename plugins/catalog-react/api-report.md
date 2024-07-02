@@ -5,22 +5,50 @@
 ```ts
 /// <reference types="react" />
 
+import type { AnalyzeLocation } from '@backstage/catalog-client/alpha';
+import type { AnalyzeLocationResponse } from '@backstage/catalog-client/alpha';
+import { ApiFactory } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/core-plugin-api';
 import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import { CatalogApi } from '@backstage/catalog-client';
+import { CatalogClient } from '@backstage/catalog-client/alpha';
 import { ComponentEntity } from '@backstage/catalog-model';
 import { ComponentProps } from 'react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
+import type { CreateLocation } from '@backstage/catalog-client/alpha';
+import type { CreateLocation201Response } from '@backstage/catalog-client/alpha';
+import type { DeleteEntityByUid } from '@backstage/catalog-client/alpha';
+import type { DeleteLocation } from '@backstage/catalog-client/alpha';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
+import type { EntitiesBatchResponse } from '@backstage/catalog-client/alpha';
+import type { EntitiesQueryResponse } from '@backstage/catalog-client/alpha';
 import { Entity } from '@backstage/catalog-model';
+import type { Entity as Entity_2 } from '@backstage/catalog-client/alpha';
+import type { EntityAncestryResponse } from '@backstage/catalog-client/alpha';
+import type { EntityFacetsResponse } from '@backstage/catalog-client/alpha';
+import { FetchApi } from '@backstage/core-plugin-api';
+import type { GetEntities } from '@backstage/catalog-client/alpha';
+import type { GetEntitiesByQuery } from '@backstage/catalog-client/alpha';
+import type { GetEntitiesByRefs } from '@backstage/catalog-client/alpha';
+import type { GetEntityAncestryByName } from '@backstage/catalog-client/alpha';
+import type { GetEntityByName } from '@backstage/catalog-client/alpha';
+import type { GetEntityByUid } from '@backstage/catalog-client/alpha';
+import type { GetEntityFacets } from '@backstage/catalog-client/alpha';
+import type { GetLocation } from '@backstage/catalog-client/alpha';
+import type { GetLocationByEntity } from '@backstage/catalog-client/alpha';
+import type { GetLocations } from '@backstage/catalog-client/alpha';
+import type { GetLocations200ResponseInner } from '@backstage/catalog-client/alpha';
 import IconButton from '@material-ui/core/IconButton';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
 import { LinkProps } from '@backstage/core-components';
+import type { Location as Location_2 } from '@backstage/catalog-client/alpha';
 import { Observable } from '@backstage/types';
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
+import type { RefreshEntity } from '@backstage/catalog-client/alpha';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
@@ -28,6 +56,11 @@ import { SystemEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core-components';
 import { TableOptions } from '@backstage/core-components';
 import { TextFieldProps } from '@material-ui/core/TextField';
+import { UseMutationOptions } from '@tanstack/react-query';
+import { UseMutationResult } from '@tanstack/react-query/build/legacy/types';
+import { UseQueryOptions } from '@tanstack/react-query';
+import { UseQueryResult } from '@tanstack/react-query/build/legacy/types';
+import type { ValidateEntity } from '@backstage/catalog-client/alpha';
 
 // @public (undocumented)
 export type AllowedEntityFilters<T extends DefaultEntityFilters> = {
@@ -148,6 +181,16 @@ export const columnFactories: Readonly<{
   createSpecLifecycleColumn<T_6 extends Entity>(): TableColumn<T_6>;
   createSpecTypeColumn<T_7 extends Entity>(): TableColumn<T_7>;
 }>;
+
+// @public (undocumented)
+export const defaultCatalogApi: ApiFactory<
+  CatalogClient,
+  CatalogClient,
+  {
+    discoveryApi: DiscoveryApi;
+    fetchApi: FetchApi;
+  }
+>;
 
 // @public (undocumented)
 export type DefaultEntityFilters = {
@@ -692,6 +735,127 @@ export class MockStarredEntitiesApi implements StarredEntitiesApi {
   toggleStarred(entityRef: string): Promise<void>;
 }
 
+// @public (undocumented)
+export const queryKeys: {
+  all: readonly [
+    {
+      readonly scope: 'catalog';
+    },
+  ];
+  analyzeLocation: (request: AnalyzeLocation) => readonly [
+    {
+      readonly request: AnalyzeLocation;
+      readonly reqName: 'analyzeLocation';
+      readonly scope: 'catalog';
+    },
+  ];
+  createLocation: (request: CreateLocation) => readonly [
+    {
+      readonly request: CreateLocation;
+      readonly reqName: 'createLocation';
+      readonly scope: 'catalog';
+    },
+  ];
+  deleteEntityByUid: (request: DeleteEntityByUid) => readonly [
+    {
+      readonly request: DeleteEntityByUid;
+      readonly reqName: 'deleteEntityByUid';
+      readonly scope: 'catalog';
+    },
+  ];
+  deleteLocation: (request: DeleteLocation) => readonly [
+    {
+      readonly request: DeleteLocation;
+      readonly reqName: 'deleteLocation';
+      readonly scope: 'catalog';
+    },
+  ];
+  getEntities: (request: GetEntities) => readonly [
+    {
+      readonly request: GetEntities;
+      readonly reqName: 'getEntities';
+      readonly scope: 'catalog';
+    },
+  ];
+  getEntitiesByQuery: (request: GetEntitiesByQuery) => readonly [
+    {
+      readonly request: GetEntitiesByQuery;
+      readonly reqName: 'getEntitiesByQuery';
+      readonly scope: 'catalog';
+    },
+  ];
+  getEntitiesByRefs: (request: GetEntitiesByRefs) => readonly [
+    {
+      readonly request: GetEntitiesByRefs;
+      readonly reqName: 'getEntitiesByRefs';
+      readonly scope: 'catalog';
+    },
+  ];
+  getEntityAncestryByName: (request: GetEntityAncestryByName) => readonly [
+    {
+      readonly request: GetEntityAncestryByName;
+      readonly reqName: 'getEntityAncestryByName';
+      readonly scope: 'catalog';
+    },
+  ];
+  getEntityByName: (request: GetEntityByName) => readonly [
+    {
+      readonly request: GetEntityByName;
+      readonly reqName: 'getEntityByName';
+      readonly scope: 'catalog';
+    },
+  ];
+  getEntityByUid: (request: GetEntityByUid) => readonly [
+    {
+      readonly request: GetEntityByUid;
+      readonly reqName: 'getEntityByUid';
+      readonly scope: 'catalog';
+    },
+  ];
+  getEntityFacets: (request: GetEntityFacets) => readonly [
+    {
+      readonly request: GetEntityFacets;
+      readonly reqName: 'getEntityFacets';
+      readonly scope: 'catalog';
+    },
+  ];
+  getLocation: (request: GetLocation) => readonly [
+    {
+      readonly request: GetLocation;
+      readonly reqName: 'getLocation';
+      readonly scope: 'catalog';
+    },
+  ];
+  getLocationByEntity: (request: GetLocationByEntity) => readonly [
+    {
+      readonly request: GetLocationByEntity;
+      readonly reqName: 'getLocationByEntity';
+      readonly scope: 'catalog';
+    },
+  ];
+  getLocations: (request: GetLocations) => readonly [
+    {
+      readonly request: GetLocations;
+      readonly reqName: 'getLocations';
+      readonly scope: 'catalog';
+    },
+  ];
+  refreshEntity: (request: RefreshEntity) => readonly [
+    {
+      readonly request: RefreshEntity;
+      readonly reqName: 'refreshEntity';
+      readonly scope: 'catalog';
+    },
+  ];
+  validateEntity: (request: ValidateEntity) => readonly [
+    {
+      readonly request: ValidateEntity;
+      readonly reqName: 'validateEntity';
+      readonly scope: 'catalog';
+    },
+  ];
+};
+
 // @public
 export interface StarredEntitiesApi {
   starredEntitie$(): Observable<Set<string>>;
@@ -752,6 +916,358 @@ export function useEntityTypeFilter(): {
   selectedTypes: string[];
   setSelectedTypes: (types: string[]) => void;
 };
+
+// @public (undocumented)
+export function useMutation_AnalyzeLocation(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof CatalogClient.prototype.analyzeLocation>>,
+    unknown,
+    AnalyzeLocation
+  >,
+): UseMutationResult<
+  Omit<Response, 'json'> & {
+    json: () => Promise<AnalyzeLocationResponse>;
+  },
+  unknown,
+  AnalyzeLocation,
+  unknown
+>;
+
+// @public (undocumented)
+export function useMutation_CreateLocation(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof CatalogClient.prototype.createLocation>>,
+    unknown,
+    CreateLocation
+  >,
+): UseMutationResult<
+  Omit<Response, 'json'> & {
+    json: () => Promise<CreateLocation201Response>;
+  },
+  unknown,
+  CreateLocation,
+  unknown
+>;
+
+// @public (undocumented)
+export function useMutation_DeleteEntityByUid(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof CatalogClient.prototype.deleteEntityByUid>>,
+    unknown,
+    DeleteEntityByUid
+  >,
+): UseMutationResult<
+  Omit<Response, 'json'> & {
+    json: () => Promise<void>;
+  },
+  unknown,
+  DeleteEntityByUid,
+  unknown
+>;
+
+// @public (undocumented)
+export function useMutation_DeleteLocation(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof CatalogClient.prototype.deleteLocation>>,
+    unknown,
+    DeleteLocation
+  >,
+): UseMutationResult<
+  Omit<Response, 'json'> & {
+    json: () => Promise<void>;
+  },
+  unknown,
+  DeleteLocation,
+  unknown
+>;
+
+// @public (undocumented)
+export function useMutation_GetEntities(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof CatalogClient.prototype.getEntities>>,
+    unknown,
+    GetEntities
+  >,
+): UseMutationResult<
+  Omit<Response, 'json'> & {
+    json: () => Promise<Entity_2[]>;
+  },
+  unknown,
+  GetEntities,
+  unknown
+>;
+
+// @public (undocumented)
+export function useMutation_GetEntitiesByQuery(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof CatalogClient.prototype.getEntitiesByQuery>>,
+    unknown,
+    GetEntitiesByQuery
+  >,
+): UseMutationResult<
+  Omit<Response, 'json'> & {
+    json: () => Promise<EntitiesQueryResponse>;
+  },
+  unknown,
+  GetEntitiesByQuery,
+  unknown
+>;
+
+// @public (undocumented)
+export function useMutation_GetEntitiesByRefs(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof CatalogClient.prototype.getEntitiesByRefs>>,
+    unknown,
+    GetEntitiesByRefs
+  >,
+): UseMutationResult<
+  Omit<Response, 'json'> & {
+    json: () => Promise<EntitiesBatchResponse>;
+  },
+  unknown,
+  GetEntitiesByRefs,
+  unknown
+>;
+
+// @public (undocumented)
+export function useMutation_GetEntityAncestryByName(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof CatalogClient.prototype.getEntityAncestryByName>>,
+    unknown,
+    GetEntityAncestryByName
+  >,
+): UseMutationResult<
+  Omit<Response, 'json'> & {
+    json: () => Promise<EntityAncestryResponse>;
+  },
+  unknown,
+  GetEntityAncestryByName,
+  unknown
+>;
+
+// @public (undocumented)
+export function useMutation_GetEntityByName(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof CatalogClient.prototype.getEntityByName>>,
+    unknown,
+    GetEntityByName
+  >,
+): UseMutationResult<
+  Omit<Response, 'json'> & {
+    json: () => Promise<Entity_2>;
+  },
+  unknown,
+  GetEntityByName,
+  unknown
+>;
+
+// @public (undocumented)
+export function useMutation_GetEntityByUid(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof CatalogClient.prototype.getEntityByUid>>,
+    unknown,
+    GetEntityByUid
+  >,
+): UseMutationResult<
+  Omit<Response, 'json'> & {
+    json: () => Promise<Entity_2>;
+  },
+  unknown,
+  GetEntityByUid,
+  unknown
+>;
+
+// @public (undocumented)
+export function useMutation_GetEntityFacets(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof CatalogClient.prototype.getEntityFacets>>,
+    unknown,
+    GetEntityFacets
+  >,
+): UseMutationResult<
+  Omit<Response, 'json'> & {
+    json: () => Promise<EntityFacetsResponse>;
+  },
+  unknown,
+  GetEntityFacets,
+  unknown
+>;
+
+// @public (undocumented)
+export function useMutation_GetLocation(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof CatalogClient.prototype.getLocation>>,
+    unknown,
+    GetLocation
+  >,
+): UseMutationResult<
+  Omit<Response, 'json'> & {
+    json: () => Promise<Location_2>;
+  },
+  unknown,
+  GetLocation,
+  unknown
+>;
+
+// @public (undocumented)
+export function useMutation_GetLocationByEntity(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof CatalogClient.prototype.getLocationByEntity>>,
+    unknown,
+    GetLocationByEntity
+  >,
+): UseMutationResult<
+  Omit<Response, 'json'> & {
+    json: () => Promise<Location_2>;
+  },
+  unknown,
+  GetLocationByEntity,
+  unknown
+>;
+
+// @public (undocumented)
+export function useMutation_GetLocations(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof CatalogClient.prototype.getLocations>>,
+    unknown,
+    GetLocations
+  >,
+): UseMutationResult<
+  Omit<Response, 'json'> & {
+    json: () => Promise<GetLocations200ResponseInner[]>;
+  },
+  unknown,
+  GetLocations,
+  unknown
+>;
+
+// @public (undocumented)
+export function useMutation_RefreshEntity(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof CatalogClient.prototype.refreshEntity>>,
+    unknown,
+    RefreshEntity
+  >,
+): UseMutationResult<
+  Omit<Response, 'json'> & {
+    json: () => Promise<void>;
+  },
+  unknown,
+  RefreshEntity,
+  unknown
+>;
+
+// @public (undocumented)
+export function useMutation_ValidateEntity(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof CatalogClient.prototype.validateEntity>>,
+    unknown,
+    ValidateEntity
+  >,
+): UseMutationResult<
+  Omit<Response, 'json'> & {
+    json: () => Promise<void>;
+  },
+  unknown,
+  ValidateEntity,
+  unknown
+>;
+
+// @public (undocumented)
+export function useQuery_AnalyzeLocation(
+  request: AnalyzeLocation,
+  options?: UseQueryOptions<AnalyzeLocationResponse, unknown>,
+): UseQueryResult<AnalyzeLocationResponse, unknown>;
+
+// @public (undocumented)
+export function useQuery_CreateLocation(
+  request: CreateLocation,
+  options?: UseQueryOptions<CreateLocation201Response, unknown>,
+): UseQueryResult<CreateLocation201Response, unknown>;
+
+// @public (undocumented)
+export function useQuery_DeleteEntityByUid(
+  request: DeleteEntityByUid,
+  options?: UseQueryOptions<void, unknown>,
+): UseQueryResult<void, unknown>;
+
+// @public (undocumented)
+export function useQuery_DeleteLocation(
+  request: DeleteLocation,
+  options?: UseQueryOptions<void, unknown>,
+): UseQueryResult<void, unknown>;
+
+// @public (undocumented)
+export function useQuery_GetEntities(
+  request: GetEntities,
+  options?: UseQueryOptions<Array<Entity_2>, unknown>,
+): UseQueryResult<Entity_2[], unknown>;
+
+// @public (undocumented)
+export function useQuery_GetEntitiesByQuery(
+  request: GetEntitiesByQuery,
+  options?: UseQueryOptions<EntitiesQueryResponse, unknown>,
+): UseQueryResult<EntitiesQueryResponse, unknown>;
+
+// @public (undocumented)
+export function useQuery_GetEntitiesByRefs(
+  request: GetEntitiesByRefs,
+  options?: UseQueryOptions<EntitiesBatchResponse, unknown>,
+): UseQueryResult<EntitiesBatchResponse, unknown>;
+
+// @public (undocumented)
+export function useQuery_GetEntityAncestryByName(
+  request: GetEntityAncestryByName,
+  options?: UseQueryOptions<EntityAncestryResponse, unknown>,
+): UseQueryResult<EntityAncestryResponse, unknown>;
+
+// @public (undocumented)
+export function useQuery_GetEntityByName(
+  request: GetEntityByName,
+  options?: UseQueryOptions<Entity_2, unknown>,
+): UseQueryResult<Entity_2, unknown>;
+
+// @public (undocumented)
+export function useQuery_GetEntityByUid(
+  request: GetEntityByUid,
+  options?: UseQueryOptions<Entity_2, unknown>,
+): UseQueryResult<Entity_2, unknown>;
+
+// @public (undocumented)
+export function useQuery_GetEntityFacets(
+  request: GetEntityFacets,
+  options?: UseQueryOptions<EntityFacetsResponse, unknown>,
+): UseQueryResult<EntityFacetsResponse, unknown>;
+
+// @public (undocumented)
+export function useQuery_GetLocation(
+  request: GetLocation,
+  options?: UseQueryOptions<Location_2, unknown>,
+): UseQueryResult<Location_2, unknown>;
+
+// @public (undocumented)
+export function useQuery_GetLocationByEntity(
+  request: GetLocationByEntity,
+  options?: UseQueryOptions<Location_2, unknown>,
+): UseQueryResult<Location_2, unknown>;
+
+// @public (undocumented)
+export function useQuery_GetLocations(
+  request: GetLocations,
+  options?: UseQueryOptions<Array<GetLocations200ResponseInner>, unknown>,
+): UseQueryResult<GetLocations200ResponseInner[], unknown>;
+
+// @public (undocumented)
+export function useQuery_RefreshEntity(
+  request: RefreshEntity,
+  options?: UseQueryOptions<void, unknown>,
+): UseQueryResult<void, unknown>;
+
+// @public (undocumented)
+export function useQuery_ValidateEntity(
+  request: ValidateEntity,
+  options?: UseQueryOptions<void, unknown>,
+): UseQueryResult<void, unknown>;
 
 // @public
 export function useRelatedEntities(
