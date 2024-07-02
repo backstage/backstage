@@ -23,11 +23,10 @@ import { decodeCursor } from '../util';
 import { parseEntityFilterParams } from './parseEntityFilterParams';
 import { parseEntityOrderFieldParams } from './parseEntityOrderFieldParams';
 import { parseEntityTransformParams } from './parseEntityTransformParams';
-import { spec } from '../../schema/openapi.generated';
-import { internal } from '@backstage/backend-openapi-utils';
+import { GetEntitiesByQuery } from '@backstage/plugin-catalog-common/client';
 
 export function parseQueryEntitiesParams(
-  params: internal.QuerySchema<typeof spec, '/entities/by-query', 'get'>,
+  params: GetEntitiesByQuery['query'],
 ): Omit<QueryEntitiesRequest, 'credentials' | 'limit'> {
   const fields = parseEntityTransformParams(params);
 

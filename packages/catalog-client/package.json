@@ -6,10 +6,7 @@
     "role": "common-library"
   },
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.cjs.js",
-    "module": "dist/index.esm.js",
-    "types": "dist/index.d.ts"
+    "access": "public"
   },
   "keywords": [
     "backstage"
@@ -22,10 +19,22 @@
   },
   "license": "Apache-2.0",
   "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
   "main": "src/index.ts",
   "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
   "files": [
-    "dist"
+    "dist",
+    "alpha"
   ],
   "scripts": {
     "build": "backstage-cli package build",
@@ -38,8 +47,8 @@
   "dependencies": {
     "@backstage/catalog-model": "workspace:^",
     "@backstage/errors": "workspace:^",
-    "cross-fetch": "^4.0.0",
-    "uri-template": "^2.0.0"
+    "@backstage/plugin-catalog-common": "workspace:^",
+    "cross-fetch": "^4.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

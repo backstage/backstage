@@ -43,7 +43,10 @@ import {
   ValidateEntityResponse,
 } from './types/api';
 import { isQueryEntitiesInitialRequest } from './utils';
-import { DefaultApiClient, TypedResponse } from './generated';
+import {
+  DefaultApiClient,
+  TypedResponse,
+} from '@backstage/plugin-catalog-common/client';
 
 /**
  * A frontend and backend compatible client for communicating with the Backstage
