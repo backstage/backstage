@@ -1,5 +1,11 @@
 # @backstage/plugin-techdocs
 
+## 1.10.7-next.2
+
+### Patch Changes
+
+- 6fa652c: Improve default sorting of docs table
+
 ## 1.10.7-next.1
 
 ### Patch Changes
