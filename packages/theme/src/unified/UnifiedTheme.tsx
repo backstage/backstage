@@ -65,6 +65,7 @@ export interface UnifiedThemeOptions {
   htmlFontSize?: number;
   components?: ThemeOptionsV5['components'];
   typography?: BackstageTypography;
+  spacing?: number | number[];
 }
 
 /**

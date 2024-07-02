@@ -21,6 +21,7 @@ const DEFAULT_HTML_FONT_SIZE = 16;
 const DEFAULT_FONT_FAMILY =
   '"Helvetica Neue", Helvetica, Roboto, Arial, sans-serif';
 const DEFAULT_PAGE_THEME = 'home';
+const DEFAULT_SPACING = 8;
 
 /**
  * Default Typography settings.
@@ -74,6 +75,7 @@ export interface BaseThemeOptionsInput<PaletteOptions> {
   fontFamily?: string;
   htmlFontSize?: number;
   typography?: BackstageTypography;
+  spacing?: number | number[];
 }
 
 /**
@@ -91,6 +93,7 @@ export function createBaseThemeOptions<PaletteOptions>(
     defaultPageTheme = DEFAULT_PAGE_THEME,
     pageTheme = defaultPageThemes,
     typography,
+    spacing,
   } = options;
 
   if (!pageTheme[defaultPageTheme]) {
@@ -103,6 +106,7 @@ export function createBaseThemeOptions<PaletteOptions>(
   return {
     palette,
     typography: typography ?? defaultTypography,
+    spacing: spacing ?? DEFAULT_SPACING,
     page: pageTheme[defaultPageTheme],
     getPageTheme: ({ themeId }: PageThemeSelector) =>
       pageTheme[themeId] ?? pageTheme[defaultPageTheme],
