@@ -841,3 +841,23 @@ metadata:
   annotations:
     backstage.io/techdocs-entity: system:default/example
 ```
+
+## Create download links for static assets
+
+You may want to make files available for download by your users such as PDF
+documents, images, or code templates. Download links for files included in your
+docs directory can be made by adding `{: download }` after a markdown link.
+
+```md
+[Link text](./img/foo.jpg){: download }
+```
+
+The user's browser will download the file as `download.jpg` when the link is
+clicked.
+
+To control the name the file will be given when it is downloaded, specify a
+file name:
+
+```md
+[Link text](./img/foo.jpg){: download="foo.jpg" }
+```
