@@ -202,4 +202,177 @@ describe('ReviewState', () => {
 
     expect(queryByRole('row', { name: 'Name type4' })).toBeInTheDocument();
   });
+
+  it('should display exploded object in separate rows', async () => {
+    const formState = {
+      name: {
+        foo: 'type3',
+        bar: 'type4',
+      },
+    };
+
+    const schemas: ParsedTemplateSchema[] = [
+      {
+        mergedSchema: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'object',
+              'ui:backstage': {
+                review: {
+                  explode: true,
+                },
+              },
+              properties: {
+                foo: {
+                  type: 'string',
+                  default: 'type1',
+                },
+                bar: {
+                  type: 'string',
+                  default: 'type2',
+                },
+              },
+            },
+          },
+        },
+        schema: {},
+        title: 'test',
+        uiSchema: {},
+        description: 'asd',
+      },
+    ];
+
+    const { queryByRole } = render(
+      <ReviewState formState={formState} schemas={schemas} />,
+    );
+
+    expect(queryByRole('row', { name: 'Foo type3' })).toBeInTheDocument();
+    expect(queryByRole('row', { name: 'Bar type4' })).toBeInTheDocument();
+  });
+
+  it('should display exploded nested objects', async () => {
+    const formState = {
+      name: {
+        foo: 'type3',
+        bar: 'type4',
+        example: {
+          test: 'type6',
+        },
+      },
+    };
+
+    const schemas: ParsedTemplateSchema[] = [
+      {
+        mergedSchema: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'object',
+              'ui:backstage': {
+                review: {
+                  explode: true,
+                },
+              },
+              properties: {
+                foo: {
+                  type: 'string',
+                  default: 'type1',
+                },
+                bar: {
+                  type: 'string',
+                  default: 'type2',
+                },
+                example: {
+                  type: 'object',
+                  'ui:backstage': {
+                    review: {
+                      explode: true,
+                    },
+                  },
+                  properties: {
+                    test: {
+                      type: 'string',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        schema: {},
+        title: 'test',
+        uiSchema: {},
+        description: 'asd',
+      },
+    ];
+
+    const { queryByRole } = render(
+      <ReviewState formState={formState} schemas={schemas} />,
+    );
+
+    expect(queryByRole('row', { name: 'Foo type3' })).toBeInTheDocument();
+    expect(queryByRole('row', { name: 'Bar type4' })).toBeInTheDocument();
+    expect(queryByRole('row', { name: 'Test type6' })).toBeInTheDocument();
+  });
+
+  it('should display partially exploded nested objects', async () => {
+    const formState = {
+      name: {
+        foo: 'type3',
+        bar: 'type4',
+        example: {
+          test: 'type6',
+        },
+      },
+    };
+
+    const schemas: ParsedTemplateSchema[] = [
+      {
+        mergedSchema: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'object',
+              'ui:backstage': {
+                review: {
+                  explode: true,
+                },
+              },
+              properties: {
+                foo: {
+                  type: 'string',
+                  default: 'type1',
+                },
+                bar: {
+                  type: 'string',
+                  default: 'type2',
+                },
+                example: {
+                  type: 'object',
+                  properties: {
+                    test: {
+                      type: 'string',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        schema: {},
+        title: 'test',
+        uiSchema: {},
+        description: 'asd',
+      },
+    ];
+
+    const { queryByRole } = render(
+      <ReviewState formState={formState} schemas={schemas} />,
+    );
+
+    expect(queryByRole('row', { name: 'Foo type3' })).toBeInTheDocument();
+    expect(queryByRole('row', { name: 'Bar type4' })).toBeInTheDocument();
+    expect(queryByRole('row', { name: 'Test type6' })).not.toBeInTheDocument();
+  });
 });
