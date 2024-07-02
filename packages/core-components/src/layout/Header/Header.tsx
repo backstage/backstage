@@ -24,7 +24,7 @@ import React, { CSSProperties, PropsWithChildren, ReactNode } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from '../../components/Link';
 import { Breadcrumbs } from '../Breadcrumbs';
-import { useContent } from '../Sidebar';
+import { useContent, usePageContext } from '../Sidebar';
 
 /** @public */
 export type HeaderClassKey =
@@ -218,12 +218,18 @@ export function Header(props: PropsWithChildren<Props>) {
     typeLink,
   } = props;
   const classes = useStyles();
+  const pageContext = usePageContext();
   const configApi = useApi(configApiRef);
+
+  const notificationsCount =
+    pageContext?.notificationsCount !== undefined
+      ? `(${pageContext.notificationsCount}) `
+      : '';
   const appTitle = configApi.getOptionalString('app.title') || 'Backstage';
   const documentTitle = pageTitleOverride || title;
   const pageTitle = title || pageTitleOverride;
-  const titleTemplate = `${documentTitle} | %s | ${appTitle}`;
-  const defaultTitle = `${documentTitle} | ${appTitle}`;
+  const titleTemplate = `${notificationsCount}${notificationsCount}${documentTitle} | %s | ${appTitle}`;
+  const defaultTitle = `${notificationsCount}${documentTitle} | ${appTitle}`;
 
   return (
     <>

@@ -27,7 +27,7 @@ export type {
   SidebarSubmenuItemDropdownItem,
 } from './SidebarSubmenuItem';
 export type { SidebarClassKey, SidebarProps } from './Bar';
-export { SidebarPage, useContent } from './Page';
+export { SidebarPage, useContent, usePageContext } from './Page';
 export type { SidebarPageClassKey, SidebarPageProps } from './Page';
 export {
   SidebarDivider,

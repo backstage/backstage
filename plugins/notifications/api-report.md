@@ -177,11 +177,6 @@ export function useNotificationsApi<T>(
     };
 
 // @public (undocumented)
-export function useTitleCounter(): {
-  setNotificationCount: (newCount: number) => void;
-};
-
-// @public (undocumented)
 export function useWebNotifications(enabled: boolean): {
   sendWebNotification: (options: {
     id: string;

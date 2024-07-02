@@ -15,7 +15,7 @@
  */
 import React, { useCallback, useEffect } from 'react';
 import { useNotificationsApi } from '../../hooks';
-import { Link, SidebarItem } from '@backstage/core-components';
+import { Link, SidebarItem, usePageContext } from '@backstage/core-components';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import {
   alertApiRef,
@@ -30,7 +30,6 @@ import {
   NotificationSignal,
 } from '@backstage/plugin-notifications-common';
 import { useWebNotifications } from '../../hooks/useWebNotifications';
-import { useTitleCounter } from '../../hooks/useTitleCounter';
 import { notificationsApiRef } from '../../api';
 import {
   closeSnackbar,
@@ -116,7 +115,7 @@ export const NotificationsSidebarItem = (props?: {
   const { lastSignal } = useSignal<NotificationSignal>('notifications');
   const { sendWebNotification } = useWebNotifications(webNotificationsEnabled);
   const [refresh, setRefresh] = React.useState(false);
-  const { setNotificationCount } = useTitleCounter();
+  const { setNotificationsCount } = usePageContext();
 
   const getSnackbarProperties = useCallback(
     (notification: Notification) => {
@@ -234,9 +233,9 @@ export const NotificationsSidebarItem = (props?: {
 
   useEffect(() => {
     if (titleCounterEnabled) {
-      setNotificationCount(unreadCount);
+      setNotificationsCount(unreadCount);
     }
-  }, [titleCounterEnabled, unreadCount, setNotificationCount]);
+  }, [titleCounterEnabled, unreadCount, setNotificationsCount]);
 
   // TODO: Figure out if the count can be added to hasNotifications
   return (

@@ -15,4 +15,3 @@
  */
 export * from './useNotificationsApi';
 export * from './useWebNotifications';
-export * from './useTitleCounter';
