@@ -19,6 +19,9 @@ import { TechDocsDocument } from '@backstage/plugin-techdocs-node';
 import { TokenManager } from '@backstage/backend-common';
 
 // @public (undocumented)
+export const defaultTechDocsCollatorDocumentTransformer: TechDocsCollatorDocumentTransformer;
+
+// @public (undocumented)
 export const defaultTechDocsCollatorEntityTransformer: TechDocsCollatorEntityTransformer;
 
 // @public @deprecated
@@ -37,6 +40,32 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
 }
 
 // @public (undocumented)
+export interface MkSearchIndexDoc {
+  // (undocumented)
+  location: string;
+  // (undocumented)
+  tags?: string[];
+  // (undocumented)
+  text: string;
+  // (undocumented)
+  title: string;
+}
+
+// @public (undocumented)
+export type TechDocsCollatorDocumentTransformer = (
+  doc: MkSearchIndexDoc,
+) => Omit<
+  TechDocsDocument,
+  | 'location'
+  | 'authorization'
+  | 'kind'
+  | 'namespace'
+  | 'name'
+  | 'lifecycle'
+  | 'owner'
+>;
+
+// @public (undocumented)
 export type TechDocsCollatorEntityTransformer = (
   entity: Entity,
 ) => Omit<TechDocsDocument, 'location' | 'authorization'>;
@@ -53,5 +82,6 @@ export type TechDocsCollatorFactoryOptions = {
   parallelismLimit?: number;
   legacyPathCasing?: boolean;
   entityTransformer?: TechDocsCollatorEntityTransformer;
+  documentTransformer?: TechDocsCollatorDocumentTransformer;
 };
 ```
