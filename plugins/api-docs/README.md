@@ -222,10 +222,6 @@ security:
     - [read_pets, write_pets]
 ```
 
-## Links
-
-- [The Backstage homepage](https://backstage.io)
-
 ### Adding `requestInterceptor` to Swagger UI
 
 To configure a [`requestInterceptor` for Swagger UI](https://github.com/swagger-api/swagger-ui/tree/master/flavors/swagger-ui-react#requestinterceptor-proptypesfunc) you'll need to add the following to your `api.tsx`:
@@ -319,3 +315,62 @@ export const apis: AnyApiFactory[] = [
 
 N.B. if you wish to disable the `Try It Out` feature for your API, you can provide an empty list to
 the `supportedSubmitMethods` parameter.
+
+### Custom Resolvers for AsyncApi
+
+You can override the default http/https resolvers, for example to add authentication to requests to internal schema registries by providing the `resolvers` prop to the `AsyncApiDefinitionWidget`. This is an example:
+
+```tsx
+...
+import {
+  AsyncApiDefinitionWidget,
+  apiDocsConfigRef,
+  defaultDefinitionWidgets,
+} from '@backstage/plugin-api-docs';
+import { ApiEntity } from '@backstage/catalog-model';
+
+export const apis: AnyApiFactory[] = [
+...
+  createApiFactory({
+    api: apiDocsConfigRef,
+    deps: {},
+    factory: () => {
+      const myCustomResolver = {
+        schema: 'https',
+        order: 1,
+        canRead: true,
+        async read(uri: any) {
+          const response = await fetch(request, {
+            headers: {
+              X-Custom: 'Custom',
+            },
+          });
+          return response.text();
+        },
+      };
+
+      const definitionWidgets = defaultDefinitionWidgets().map(obj => {
+        if (obj.type === 'asyncapi') {
+          return {
+            ...obj,
+            component: (definition) => (
+              <AsyncApiDefinitionWidget definition={definition} resolvers={[myCustomResolver]} />
+            ),
+          };
+        }
+        return obj;
+      });
+
+      return {
+        getApiDefinitionWidget: (apiEntity: ApiEntity) => {
+          return definitionWidgets.find(d => d.type === apiEntity.spec.type);
+        },
+      };
+    }
+  })
+]
+```
+
+## Links
+
+- [The Backstage homepage](https://backstage.io)
