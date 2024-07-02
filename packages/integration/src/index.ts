@@ -42,3 +42,4 @@ export type {
   RateLimitInfo,
 } from './types';
 export type { ScmIntegrationRegistry } from './registry';
+export * from './FetchService';

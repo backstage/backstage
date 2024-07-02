@@ -5,6 +5,10 @@
 ```ts
 import { Config } from '@backstage/config';
 import { ConsumedResponse } from '@backstage/errors';
+import { HumanDuration } from '@backstage/types';
+import { RequestInfo as RequestInfo_2 } from 'node-fetch';
+import { RequestInit as RequestInit_2 } from 'node-fetch';
+import { Response as Response_2 } from 'node-fetch';
 import { RestEndpointMethodTypes } from '@octokit/rest';
 
 // @public
@@ -187,6 +191,7 @@ export type BitbucketCloudIntegrationConfig = {
   username?: string;
   appPassword?: string;
   token?: string;
+  throttling?: ThrottlingConfig;
 };
 
 // @public @deprecated
@@ -247,6 +252,7 @@ export type BitbucketServerIntegrationConfig = {
   token?: string;
   username?: string;
   password?: string;
+  throttling?: ThrottlingConfig;
 };
 
 // @public
@@ -300,6 +306,12 @@ export function defaultScmResolveUrl(options: {
   base: string;
   lineNumber?: number;
 }): string;
+
+// @public
+export type FetchFunction = (
+  url: RequestInfo_2,
+  init?: RequestInit_2,
+) => Promise<Response_2>;
 
 // @public
 export class GerritIntegration implements ScmIntegration {
@@ -893,6 +905,9 @@ export function readGoogleGcsIntegrationConfig(
 export function readHarnessConfig(config: Config): HarnessIntegrationConfig;
 
 // @public
+export function readThrottlingConfig(config: Config): ThrottlingConfig;
+
+// @public
 export function replaceGithubUrlType(
   url: string,
   type: 'blob' | 'tree' | 'edit',
@@ -1012,4 +1027,10 @@ export class SingleInstanceGithubCredentialsProvider
   static create: (config: GithubIntegrationConfig) => GithubCredentialsProvider;
   getCredentials(opts: { url: string }): Promise<GithubCredentials>;
 }
+
+// @public
+export type ThrottlingConfig = {
+  count: number;
+  interval: HumanDuration;
+};
 ```
