@@ -310,7 +310,7 @@ export const catalogModuleFrobsProvider = createBackendModule({
         scheduler: coreServices.scheduler,
         /* highlight-add-end */
       },
-      async init({ catalog, reader, scheduler, config }) {
+      async init({ catalog, reader, scheduler }) {
         const taskRunner = scheduler.createScheduledTaskRunner({
           frequency: { minutes: 30 },
           timeout: { minutes: 10 },
