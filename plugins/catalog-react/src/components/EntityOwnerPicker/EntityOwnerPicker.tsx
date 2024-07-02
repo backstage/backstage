@@ -40,6 +40,8 @@ import { humanizeEntity, humanizeEntityRef } from '../EntityRefLink/humanize';
 import { useFetchEntities } from './useFetchEntities';
 import { withStyles } from '@material-ui/core/styles';
 import { useEntityPresentation } from '../../apis';
+import { catalogReactTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export type CatalogReactEntityOwnerPickerClassKey = 'input';
@@ -130,6 +132,7 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
   } = useEntityList();
 
   const [text, setText] = useState('');
+  const { t } = useTranslationRef(catalogReactTranslationRef);
 
   const queryParamOwners = useMemo(
     () => [ownersParameter].flat().filter(Boolean) as string[],
@@ -176,7 +179,7 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
   return (
     <Box className={classes.root} pb={1} pt={1}>
       <Typography className={classes.label} variant="button" component="label">
-        Owner
+        {t('entityOwnerPicker.title')}
         <Autocomplete
           PopperComponent={popperProps => (
             <div {...popperProps}>{popperProps.children as ReactNode}</div>

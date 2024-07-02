@@ -17,7 +17,7 @@
 import { resolve } from 'path';
 import { OptionValues } from 'commander';
 import { createLogger } from '../../lib/utility';
-import { HostDiscovery } from '@backstage/backend-common';
+import { HostDiscovery } from '@backstage/backend-defaults/discovery';
 import { Publisher } from '@backstage/plugin-techdocs-node';
 import { Entity } from '@backstage/catalog-model';
 import { PublisherConfig } from '../../lib/PublisherConfig';

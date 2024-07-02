@@ -173,12 +173,14 @@ export const NotificationsTable = ({
     }
   }, [notifications, selectedNotifications]);
 
-  const compactColumns = React.useMemo(
-    (): TableColumn<Notification>[] => [
+  const compactColumns = React.useMemo((): TableColumn<Notification>[] => {
+    const showToolbar = notifications.length > 0;
+
+    return [
       {
         /* selection column */
         width: '1rem',
-        title: (
+        title: showToolbar ? (
           <SelectAll
             count={selectedNotifications.size}
             totalCount={notifications.length}
@@ -189,7 +191,7 @@ export const NotificationsTable = ({
               )
             }
           />
-        ),
+        ) : undefined,
         render: (notification: Notification) => (
           <CheckBox
             color="primary"
@@ -254,7 +256,7 @@ export const NotificationsTable = ({
       {
         /* actions column */
         width: '1rem',
-        title: (
+        title: showToolbar ? (
           <BulkActions
             notifications={notifications}
             selectedNotifications={selectedNotifications}
@@ -263,7 +265,7 @@ export const NotificationsTable = ({
             onSwitchSavedStatus={onSwitchSavedStatus}
             onMarkAllRead={onMarkAllRead}
           />
-        ),
+        ) : undefined,
         render: (notification: Notification) => (
           <BulkActions
             notifications={[notification]}
@@ -274,20 +276,19 @@ export const NotificationsTable = ({
           />
         ),
       },
-    ],
-    [
-      markAsReadOnLinkOpen,
-      selectedNotifications,
-      notifications,
-      isUnread,
-      onSwitchReadStatus,
-      onSwitchSavedStatus,
-      onMarkAllRead,
-      onNotificationsSelectChange,
-      classes.severityItem,
-      classes.description,
-    ],
-  );
+    ];
+  }, [
+    markAsReadOnLinkOpen,
+    selectedNotifications,
+    notifications,
+    isUnread,
+    onSwitchReadStatus,
+    onSwitchSavedStatus,
+    onMarkAllRead,
+    onNotificationsSelectChange,
+    classes.severityItem,
+    classes.description,
+  ]);
 
   return (
     <Table<Notification>

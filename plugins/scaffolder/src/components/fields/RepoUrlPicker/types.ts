@@ -20,4 +20,5 @@ export interface RepoUrlPickerState {
   organization?: string;
   workspace?: string;
   project?: string;
+  availableRepos?: string[];
 }

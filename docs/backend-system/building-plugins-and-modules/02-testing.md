@@ -138,8 +138,10 @@ describe('MyDatabaseClass', () => {
         await knex<FooTableRow>('foo').insert({ value: 2 });
         // drive your system under test as usual
         await expect(subject.foos()).resolves.toEqual([{ value: 2 }]);
-      });
+      },
+    );
   });
+});
 ```
 
 If you want to pass the test database instance into backend plugins or services,

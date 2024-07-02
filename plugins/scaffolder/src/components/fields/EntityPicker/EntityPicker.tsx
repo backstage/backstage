@@ -43,6 +43,7 @@ import {
   EntityPickerUiOptions,
   EntityPickerFilterQuery,
 } from './schema';
+import { VirtualizedListbox } from '../VirtualizedListbox';
 
 export { EntityPickerSchema } from './schema';
 
@@ -205,6 +206,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
             entities?.entityRefToPresentation.get(stringifyEntityRef(option))
               ?.primaryTitle!,
         })}
+        ListboxComponent={VirtualizedListbox}
       />
     </FormControl>
   );

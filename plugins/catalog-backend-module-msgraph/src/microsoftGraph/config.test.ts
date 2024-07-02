@@ -15,7 +15,6 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { Duration } from 'luxon';
 import { readMicrosoftGraphConfig, readProviderConfigs } from './config';
 
 describe('readMicrosoftGraphConfig', () => {
@@ -204,7 +203,7 @@ describe('readProviderConfigs', () => {
         groupSelect: ['id', 'displayName', 'description'],
         groupFilter: 'securityEnabled eq false',
         schedule: {
-          frequency: Duration.fromISO('PT30M'),
+          frequency: { minutes: 30 },
           timeout: {
             minutes: 3,
           },

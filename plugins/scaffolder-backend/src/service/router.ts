@@ -94,6 +94,10 @@ import {
 } from '@backstage/plugin-auth-node';
 import { InternalTaskSecrets } from '../scaffolder/tasks/types';
 import { checkPermission } from '../util/checkPermissions';
+import {
+  AutocompleteHandler,
+  WorkspaceProvider,
+} from '@backstage/plugin-scaffolder-node/alpha';
 
 /**
  *
@@ -158,6 +162,7 @@ export interface RouterOptions {
   taskBroker?: TaskBroker;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+  additionalWorkspaceProviders?: Record<string, WorkspaceProvider>;
   permissions?: PermissionsService;
   permissionRules?: Array<
     TemplatePermissionRuleInput | ActionPermissionRuleInput
@@ -166,6 +171,8 @@ export interface RouterOptions {
   httpAuth?: HttpAuthService;
   identity?: IdentityApi;
   discovery?: DiscoveryService;
+
+  autocompleteHandlers?: Record<string, AutocompleteHandler>;
 }
 
 function isSupportedTemplate(entity: TemplateEntityV1beta3) {
@@ -269,10 +276,12 @@ export async function createRouter(
     scheduler,
     additionalTemplateFilters,
     additionalTemplateGlobals,
+    additionalWorkspaceProviders,
     permissions,
     permissionRules,
     discovery = HostDiscovery.fromConfig(config),
     identity = buildDefaultIdentityClient(options),
+    autocompleteHandlers = {},
   } = options;
 
   const { auth, httpAuth } = createLegacyAuthAdapters({
@@ -293,7 +302,13 @@ export async function createRouter(
   let taskBroker: TaskBroker;
   if (!options.taskBroker) {
     const databaseTaskStore = await DatabaseTaskStore.create({ database });
-    taskBroker = new StorageTaskBroker(databaseTaskStore, logger, config, auth);
+    taskBroker = new StorageTaskBroker(
+      databaseTaskStore,
+      logger,
+      config,
+      auth,
+      additionalWorkspaceProviders,
+    );
 
     if (scheduler && databaseTaskStore.listStaleTasks) {
       await scheduler.scheduleTask({
@@ -730,6 +745,14 @@ export async function createRouter(
         targetPluginId: 'catalog',
       });
 
+      const userEntityRef = auth.isPrincipal(credentials, 'user')
+        ? credentials.principal.userEntityRef
+        : undefined;
+
+      const userEntity = userEntityRef
+        ? await catalogClient.getEntityByRef(userEntityRef, { token })
+        : undefined;
+
       for (const parameters of [template.spec.parameters ?? []].flat()) {
         const result = validate(body.values, parameters);
         if (!result.valid) {
@@ -750,6 +773,10 @@ export async function createRouter(
           steps,
           output: template.spec.output ?? {},
           parameters: body.values as JsonObject,
+          user: {
+            entity: userEntity as UserEntity,
+            ref: userEntityRef,
+          },
         },
         directoryContents: (body.directoryContents ?? []).map(file => ({
           path: file.path,
@@ -771,6 +798,24 @@ export async function createRouter(
           base64Content: file.content.toString('base64'),
         })),
       });
+    })
+    .post('/v2/autocomplete/:provider/:resource', async (req, res) => {
+      const { token, context } = req.body;
+      const { provider, resource } = req.params;
+
+      if (!token) throw new InputError('Missing token query parameter');
+
+      if (!autocompleteHandlers[provider]) {
+        throw new InputError(`Unsupported provider: ${provider}`);
+      }
+
+      const { results } = await autocompleteHandlers[provider]({
+        resource,
+        token,
+        context,
+      });
+
+      res.status(200).json({ results });
     });
 
   const app = express();

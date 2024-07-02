@@ -25,6 +25,8 @@ import {
 import { EntityLabelsEmptyState } from './EntityLabelsEmptyState';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
+import { catalogTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export interface EntityLabelsCardProps {
@@ -42,6 +44,7 @@ export const EntityLabelsCard = (props: EntityLabelsCardProps) => {
   const { variant, title } = props;
   const { entity } = useEntity();
   const classes = useStyles();
+  const { t } = useTranslationRef(catalogTranslationRef);
 
   const columns: TableColumn<{ key: string; value: string }>[] = [
     {
@@ -61,7 +64,7 @@ export const EntityLabelsCard = (props: EntityLabelsCardProps) => {
   const labels = entity?.metadata?.labels;
 
   return (
-    <InfoCard title={title || 'Labels'} variant={variant}>
+    <InfoCard title={title || t('entityLabelsCard.title')} variant={variant}>
       {!labels || Object.keys(labels).length === 0 ? (
         <EntityLabelsEmptyState />
       ) : (

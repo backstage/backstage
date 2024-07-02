@@ -27,7 +27,6 @@ import {
   encodeOAuthState,
   decodeOAuthState,
   OAuthStateTransform,
-  OAuthState,
 } from './state';
 import { sendWebMessageResponse } from '../flow';
 import { prepareBackstageIdentityResponse } from '../identity';
@@ -42,6 +41,7 @@ import {
 } from '../types';
 import { OAuthAuthenticator, OAuthAuthenticatorResult } from './types';
 import { Config } from '@backstage/config';
+import { CookieScopeManager } from './CookieScopeManager';
 
 /** @public */
 export interface OAuthRouteHandlersOptions<TProfile> {
@@ -52,6 +52,7 @@ export interface OAuthRouteHandlersOptions<TProfile> {
   providerId: string;
   config: Config;
   resolverContext: AuthResolverContext;
+  additionalScopes?: string[];
   stateTransform?: OAuthStateTransform;
   profileTransform?: ProfileTransform<OAuthAuthenticatorResult<TProfile>>;
   cookieConfigurer?: CookieConfigurer;
@@ -111,14 +112,19 @@ export function createOAuthRouteHandlers<TProfile>(
     cookieConfigurer,
   });
 
+  const scopeManager = CookieScopeManager.create({
+    config,
+    authenticator,
+    cookieManager,
+    additionalScopes: options.additionalScopes,
+  });
+
   return {
     async start(
       this: never,
       req: express.Request,
       res: express.Response,
     ): Promise<void> {
-      // retrieve scopes from request
-      const scope = req.query.scope?.toString() ?? '';
       const env = req.query.env?.toString();
       const origin = req.query.origin?.toString();
       const redirectUrl = req.query.redirectUrl?.toString();
@@ -132,19 +138,17 @@ export function createOAuthRouteHandlers<TProfile>(
       // set a nonce cookie before redirecting to oauth provider
       cookieManager.setNonce(res, nonce, origin);
 
-      const state: OAuthState = { nonce, env, origin, redirectUrl, flow };
+      const { scope, scopeState } = await scopeManager.start(req);
 
-      // If scopes are persisted then we pass them through the state so that we
-      // can set the cookie on successful auth
-      if (authenticator.shouldPersistScopes && scope) {
-        state.scope = scope;
-      }
-
+      const state = { nonce, env, origin, redirectUrl, flow, ...scopeState };
       const { state: transformedState } = await stateTransform(state, { req });
-      const encodedState = encodeOAuthState(transformedState);
 
       const { url, status } = await options.authenticator.start(
-        { req, scope, state: encodedState },
+        {
+          req,
+          scope,
+          state: encodeOAuthState(transformedState),
+        },
         authenticatorCtx,
       );
 
@@ -159,19 +163,19 @@ export function createOAuthRouteHandlers<TProfile>(
       req: express.Request,
       res: express.Response,
     ): Promise<void> {
-      let appOrigin = defaultAppOrigin;
+      let origin = defaultAppOrigin;
 
       try {
         const state = decodeOAuthState(req.query.state?.toString() ?? '');
 
         if (state.origin) {
           try {
-            appOrigin = new URL(state.origin).origin;
+            origin = new URL(state.origin).origin;
           } catch {
             throw new NotAllowedError('App origin is invalid, failed to parse');
           }
-          if (!isOriginAllowed(appOrigin)) {
-            throw new NotAllowedError(`Origin '${appOrigin}' is not allowed`);
+          if (!isOriginAllowed(origin)) {
+            throw new NotAllowedError(`Origin '${origin}' is not allowed`);
           }
         }
 
@@ -191,38 +195,35 @@ export function createOAuthRouteHandlers<TProfile>(
         );
         const { profile } = await profileTransform(result, resolverContext);
 
+        const signInResult =
+          signInResolver &&
+          (await signInResolver({ profile, result }, resolverContext));
+
+        const grantedScopes = await scopeManager.handleCallback(req, {
+          result,
+          state,
+          origin,
+        });
+
         const response: ClientOAuthResponse = {
           profile,
           providerInfo: {
             idToken: result.session.idToken,
             accessToken: result.session.accessToken,
-            scope: result.session.scope,
+            scope: grantedScopes,
             expiresInSeconds: result.session.expiresInSeconds,
           },
+          ...(signInResult && {
+            backstageIdentity: prepareBackstageIdentityResponse(signInResult),
+          }),
         };
-
-        if (signInResolver) {
-          const identity = await signInResolver(
-            { profile, result },
-            resolverContext,
-          );
-          response.backstageIdentity =
-            prepareBackstageIdentityResponse(identity);
-        }
-
-        // Store the scope that we have been granted for this session. This is useful if
-        // the provider does not return granted scopes on refresh or if they are normalized.
-        if (authenticator.shouldPersistScopes && state.scope) {
-          cookieManager.setGrantedScopes(res, state.scope, appOrigin);
-          response.providerInfo.scope = state.scope;
-        }
 
         if (result.session.refreshToken) {
           // set new refresh token
           cookieManager.setRefreshToken(
             res,
             result.session.refreshToken,
-            appOrigin,
+            origin,
           );
         }
 
@@ -239,7 +240,7 @@ export function createOAuthRouteHandlers<TProfile>(
         }
 
         // post message back to popup if successful
-        sendWebMessageResponse(res, appOrigin, {
+        sendWebMessageResponse(res, origin, {
           type: 'authorization_response',
           response,
         });
@@ -248,7 +249,7 @@ export function createOAuthRouteHandlers<TProfile>(
           ? error
           : new Error('Encountered invalid error'); // Being a bit safe and not forwarding the bad value
         // post error message back to popup if failure
-        sendWebMessageResponse(res, appOrigin, {
+        sendWebMessageResponse(res, origin, {
           type: 'authorization_response',
           error: { name, message },
         });
@@ -273,6 +274,9 @@ export function createOAuthRouteHandlers<TProfile>(
       // remove refresh token cookie if it is set
       cookieManager.removeRefreshToken(res, req.get('origin'));
 
+      // remove persisted scopes
+      await scopeManager.clear(req);
+
       res.status(200).end();
     },
 
@@ -294,15 +298,14 @@ export function createOAuthRouteHandlers<TProfile>(
           throw new InputError('Missing session cookie');
         }
 
-        let scope = req.query.scope?.toString() ?? '';
-        if (authenticator.shouldPersistScopes) {
-          scope = cookieManager.getGrantedScopes(req);
-        }
+        const scopeRefresh = await scopeManager.refresh(req);
 
         const result = await authenticator.refresh(
-          { req, scope, refreshToken },
+          { req, scope: scopeRefresh.scope, refreshToken },
           authenticatorCtx,
         );
+
+        const grantedScope = await scopeRefresh.commit(result);
 
         const { profile } = await profileTransform(result, resolverContext);
 
@@ -320,9 +323,7 @@ export function createOAuthRouteHandlers<TProfile>(
           providerInfo: {
             idToken: result.session.idToken,
             accessToken: result.session.accessToken,
-            scope: authenticator.shouldPersistScopes
-              ? scope
-              : result.session.scope,
+            scope: grantedScope,
             expiresInSeconds: result.session.expiresInSeconds,
           },
         };

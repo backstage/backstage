@@ -55,6 +55,25 @@ describe('<Select />', () => {
     expect(input.textContent).toBe('test 1');
   });
 
+  it('display nothing when placeholder is empty string and items updated to none', () => {
+    const initialValue = 'initial';
+    const initialItems = [{ label: initialValue, value: initialValue }];
+    const { getByTestId, rerender } = render(
+      <Select
+        {...minProps}
+        items={initialItems}
+        selected={initialValue}
+        placeholder=""
+      />,
+    );
+
+    expect(getByTestId('select').textContent).toBe(initialValue);
+
+    rerender(<Select {...minProps} items={[]} selected="" placeholder="" />);
+
+    expect(getByTestId('select').textContent).toBe('');
+  });
+
   it('display the placeholder value when selected props updated to undefined', async () => {
     const { getByTestId, rerender } = render(
       <Select {...minProps} selected="test_1" />,

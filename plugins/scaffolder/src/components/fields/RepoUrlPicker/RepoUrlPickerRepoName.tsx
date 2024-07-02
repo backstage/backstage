@@ -17,16 +17,17 @@ import React, { useEffect } from 'react';
 import { Select, SelectItem } from '@backstage/core-components';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import TextField from '@material-ui/core/TextField';
 
 export const RepoUrlPickerRepoName = (props: {
   repoName?: string;
   allowedRepos?: string[];
   onChange: (host: string) => void;
   rawErrors: string[];
+  availableRepos?: string[];
 }) => {
-  const { repoName, allowedRepos, onChange, rawErrors } = props;
+  const { repoName, allowedRepos, onChange, rawErrors, availableRepos } = props;
 
   useEffect(() => {
     // If there is no repoName chosen currently
@@ -61,14 +62,18 @@ export const RepoUrlPickerRepoName = (props: {
             items={repoItems}
           />
         ) : (
-          <>
-            <InputLabel htmlFor="repoNameInput">Repository</InputLabel>
-            <Input
-              id="repoNameInput"
-              onChange={e => onChange(String(e.target.value))}
-              value={repoName}
-            />
-          </>
+          <Autocomplete
+            value={repoName}
+            onChange={(_, newValue) => {
+              onChange(newValue || '');
+            }}
+            options={availableRepos || []}
+            renderInput={params => (
+              <TextField {...params} label="Repository" required />
+            )}
+            freeSolo
+            autoSelect
+          />
         )}
         <FormHelperText>The name of the repository</FormHelperText>
       </FormControl>

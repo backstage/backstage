@@ -142,7 +142,6 @@ export default async function createPlugin(
   // Generators are used for generating documentation sites.
   const generators = await Generators.fromConfig(env.config, {
     logger: env.logger,
-    containerRunner,
   });
 
   // Publisher is used for

@@ -19,6 +19,8 @@ import {
   all_groups_response,
   all_projects_response,
   all_saas_users_response,
+  all_self_hosted_group1_members,
+  subgroup_saas_users_response,
   all_users_response,
   apiBaseUrl,
   apiBaseUrlSaas,
@@ -63,10 +65,20 @@ const httpHandlers = [
   rest.get(`${apiBaseUrl}/groups/42`, (_, res, ctx) => {
     return res(ctx.status(500), ctx.json({ error: 'Internal Server Error' }));
   }),
+  rest.get(`${apiBaseUrl}/groups/group1/members/all`, (_req, res, ctx) => {
+    return res(ctx.json(all_self_hosted_group1_members));
+  }),
 
   rest.get(`${apiBaseUrlSaas}/groups/group1/members/all`, (_req, res, ctx) => {
     return res(ctx.json(all_saas_users_response));
   }),
+
+  rest.get(
+    `${apiBaseUrlSaas}/groups/subgroup1/members/all`,
+    (_req, res, ctx) => {
+      return res(ctx.json(subgroup_saas_users_response)); // To-DO change
+    },
+  ),
 
   /**
    * Users REST endpoint mocks
@@ -186,7 +198,34 @@ const graphqlHandlers = [
     .link(graphQlBaseUrl)
     .query('getGroupMembers', async (req, res, ctx) => {
       const { group, relations } = req.variables;
-
+      // group is actually full_path
+      if (group === 'group1/subgroup1' && relations.includes('DIRECT')) {
+        return res(
+          ctx.data({
+            group: {
+              groupMembers: {
+                nodes: [
+                  {
+                    user: {
+                      id: 'gid://gitlab/User/1',
+                      username: 'user1',
+                      publicEmail: 'user1@example.com',
+                      name: 'user1',
+                      state: 'active',
+                      webUrl: 'user1.com',
+                      avatarUrl: 'user1',
+                    },
+                  },
+                ],
+                pageInfo: {
+                  endCursor: 'end',
+                  hasNextPage: false,
+                },
+              },
+            },
+          }),
+        );
+      }
       if (group === 'group1' && relations.includes('DIRECT')) {
         return res(
           ctx.data({
@@ -367,7 +406,31 @@ const graphqlHandlers = [
           ]),
         );
       }
-
+      if (group === 'group1') {
+        return res(
+          ctx.data({
+            group: {
+              descendantGroups: {
+                nodes: [
+                  {
+                    id: 'gid://gitlab/Group/6',
+                    name: 'subgroup1',
+                    description: 'description1',
+                    fullPath: 'group1/subgroup1',
+                    parent: {
+                      id: '123',
+                    },
+                  },
+                ],
+                pageInfo: {
+                  endCursor: 'end',
+                  hasNextPage: false,
+                },
+              },
+            },
+          }),
+        );
+      }
       if (group === 'group-with-parent') {
         return res(
           ctx.data({

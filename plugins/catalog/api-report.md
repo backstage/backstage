@@ -334,7 +334,7 @@ export interface DependsOnResourcesCardProps {
   variant?: InfoCardVariants;
 }
 
-// @public (undocumented)
+// @public
 export const EntityAboutCard: (props: AboutCardProps) => JSX.Element;
 
 // @public (undocumented)

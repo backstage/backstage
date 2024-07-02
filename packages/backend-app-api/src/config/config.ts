@@ -14,56 +14,27 @@
  * limitations under the License.
  */
 
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { createConfigSecretEnumerator as _createConfigSecretEnumerator } from '../../../backend-defaults/src/entrypoints/rootConfig/createConfigSecretEnumerator';
+
 import { resolve as resolvePath } from 'path';
 import parseArgs from 'minimist';
-import { LoggerService } from '@backstage/backend-plugin-api';
 import { findPaths } from '@backstage/cli-common';
 import {
-  loadConfigSchema,
   loadConfig,
   ConfigTarget,
   LoadConfigOptionsRemote,
-  ConfigSchema,
 } from '@backstage/config-loader';
 import { ConfigReader } from '@backstage/config';
 import type { Config, AppConfig } from '@backstage/config';
-import { getPackages } from '@manypkg/get-packages';
 import { ObservableConfigProxy } from './ObservableConfigProxy';
 import { isValidUrl } from '../lib/urls';
 
-/** @public */
-export async function createConfigSecretEnumerator(options: {
-  logger: LoggerService;
-  dir?: string;
-  schema?: ConfigSchema;
-}): Promise<(config: Config) => Iterable<string>> {
-  const { logger, dir = process.cwd() } = options;
-  const { packages } = await getPackages(dir);
-  const schema =
-    options.schema ??
-    (await loadConfigSchema({
-      dependencies: packages.map(p => p.packageJson.name),
-    }));
-
-  return (config: Config) => {
-    const [secretsData] = schema.process(
-      [{ data: config.getOptional() ?? {}, context: 'schema-enumerator' }],
-      {
-        visibility: ['secret'],
-        ignoreSchemaErrors: true,
-      },
-    );
-    const secrets = new Set<string>();
-    JSON.parse(
-      JSON.stringify(secretsData.data),
-      (_, v) => typeof v === 'string' && secrets.add(v),
-    );
-    logger.info(
-      `Found ${secrets.size} new secrets in config that will be redacted`,
-    );
-    return secrets;
-  };
-}
+/**
+ * @public
+ * @deprecated Please import from `@backstage/backend-defaults/rootConfig` instead.
+ */
+export const createConfigSecretEnumerator = _createConfigSecretEnumerator;
 
 /**
  * Load configuration for a Backend.
@@ -71,6 +42,7 @@ export async function createConfigSecretEnumerator(options: {
  * This function should only be called once, during the initialization of the backend.
  *
  * @public
+ * @deprecated Please migrate to the new backend system and use `coreServices.rootConfig` instead, or the {@link @backstage/config-loader#ConfigSources} facilities if required.
  */
 export async function loadBackendConfig(options: {
   remote?: LoadConfigOptionsRemote;

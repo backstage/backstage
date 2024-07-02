@@ -38,6 +38,7 @@ type BranchProtectionOptions = {
   };
   requireBranchesToBeUpToDate?: boolean;
   requiredConversationResolution?: boolean;
+  requireLastPushApproval: boolean;
   defaultBranch?: string;
   enforceAdmins?: boolean;
   dismissStaleReviews?: boolean;
@@ -56,6 +57,7 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
   requiredStatusCheckContexts = [],
   requireBranchesToBeUpToDate = true,
   requiredConversationResolution = false,
+  requireLastPushApproval = false,
   defaultBranch = 'master',
   enforceAdmins = true,
   dismissStaleReviews = false,
@@ -88,6 +90,7 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
           require_code_owner_reviews: requireCodeOwnerReviews,
           bypass_pull_request_allowances: bypassPullRequestAllowances,
           dismiss_stale_reviews: dismissStaleReviews,
+          require_last_push_approval: requireLastPushApproval,
         },
         required_conversation_resolution: requiredConversationResolution,
       });

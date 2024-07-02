@@ -32,6 +32,7 @@ import { Expand } from '../../../packages/frontend-plugin-api/src/types';
 
 export { useEntityPermission } from './hooks/useEntityPermission';
 export { isOwnerOf } from './utils';
+export * from './translation';
 
 /** @alpha */
 export const catalogExtensionData = {

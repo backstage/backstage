@@ -30,7 +30,7 @@ const clientWrapper = ElasticSearchClientWrapper.fromClientOptions({
 describe('ElasticSearchSearchEngineIndexer', () => {
   let indexer: ElasticSearchSearchEngineIndexer;
   let bulkSpy: jest.Mock;
-  let catSpy: jest.Mock;
+  let getSpy: jest.Mock;
   let createSpy: jest.Mock;
   let aliasesSpy: jest.Mock;
   let deleteSpy: jest.Mock;
@@ -68,30 +68,24 @@ describe('ElasticSearchSearchEngineIndexer', () => {
       refreshSpy,
     );
 
-    catSpy = jest.fn().mockReturnValue([
-      {
-        alias: 'some-type-index__search',
-        index: 'some-type-index__123tobedeleted',
-        filter: '-',
-        'routing.index': '-',
-        'routing.search': '-',
-        is_write_index: '-',
+    getSpy = jest.fn().mockReturnValue({
+      'some-type-index__123tobedeleted': {
+        aliases: {},
+        mappings: {},
+        settings: {},
       },
-      {
-        alias: 'some-type-index__search_removable',
-        index: 'some-type-index__456tobedeleted',
-        filter: '-',
-        'routing.index': '-',
-        'routing.search': '-',
-        is_write_index: '-',
+      'some-type-index__456tobedeleted': {
+        aliases: {},
+        mappings: {},
+        settings: {},
       },
-    ]);
+    });
     mock.add(
       {
         method: 'GET',
-        path: '/_cat/aliases/some-type-index__search%2Csome-type-index__search_removable',
+        path: '/some-type-index__*',
       },
-      catSpy,
+      getSpy,
     );
 
     createSpy = jest.fn().mockReturnValue({
@@ -120,7 +114,7 @@ describe('ElasticSearchSearchEngineIndexer', () => {
     mock.add(
       {
         method: 'DELETE',
-        path: '/some-type-index__123tobedeleted%2Csome-type-index__456tobedeleted',
+        path: '/*',
       },
       deleteSpy,
     );
@@ -143,7 +137,7 @@ describe('ElasticSearchSearchEngineIndexer', () => {
     await TestPipeline.fromIndexer(indexer).withDocuments(documents).execute();
 
     // Older indices should have been queried for.
-    expect(catSpy).toHaveBeenCalled();
+    expect(getSpy).toHaveBeenCalled();
 
     // A new index should have been created.
     const createdIndex = createSpy.mock.calls[0][0].path.slice(1);
@@ -163,27 +157,22 @@ describe('ElasticSearchSearchEngineIndexer', () => {
       remove: { index: 'some-type-index__*', alias: 'some-type-index__search' },
     });
     expect(aliasActions[1]).toStrictEqual({
-      add: {
-        indices: [
-          'some-type-index__123tobedeleted',
-          'some-type-index__456tobedeleted',
-        ],
-        alias: 'some-type-index__search_removable',
-      },
-    });
-    expect(aliasActions[2]).toStrictEqual({
       add: { index: createdIndex, alias: 'some-type-index__search' },
     });
 
     // Old index should be cleaned up.
-    expect(deleteSpy).toHaveBeenCalled();
+    expect(deleteSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        path: '/some-type-index__123tobedeleted%2Csome-type-index__456tobedeleted',
+      }),
+    );
   });
 
   it('handles when no documents are received', async () => {
     await TestPipeline.fromIndexer(indexer).withDocuments([]).execute();
 
     // Older indices should have been queried for.
-    expect(catSpy).toHaveBeenCalled();
+    expect(getSpy).toHaveBeenCalled();
 
     // A new index should have been created.
     expect(createSpy).toHaveBeenNthCalledWith(
@@ -200,7 +189,11 @@ describe('ElasticSearchSearchEngineIndexer', () => {
     expect(aliasesSpy).not.toHaveBeenCalled();
 
     // Old index should not be cleaned up.
-    expect(deleteSpy).not.toHaveBeenCalled();
+    expect(deleteSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        path: expect.not.stringContaining('tobedeleted'),
+      }),
+    );
   });
 
   it('handles bulk and batching during indexing', async () => {
@@ -236,23 +229,64 @@ describe('ElasticSearchSearchEngineIndexer', () => {
     ];
 
     // Update initial alias cat to return nothing.
-    catSpy = jest.fn().mockReturnValue([]);
+    getSpy = jest.fn().mockReturnValue({});
     mock.clear({
       method: 'GET',
-      path: '/_cat/aliases/some-type-index__search%2Csome-type-index__search_removable',
+      path: '/some-type-index__*',
     });
     mock.add(
       {
         method: 'GET',
-        path: '/_cat/aliases/some-type-index__search%2Csome-type-index__search_removable',
+        path: '/some-type-index__*',
       },
-      catSpy,
+      getSpy,
     );
 
     await TestPipeline.fromIndexer(indexer).withDocuments(documents).execute();
 
     // Final deletion shouldn't be called.
     expect(deleteSpy).not.toHaveBeenCalled();
+  });
+
+  it('split index deletion in chunks', async () => {
+    // Generate 200 existing indices
+    const currentIndices = Array.from(
+      new Array(200),
+      (_, i) => `some-type-index__old${i}`,
+    );
+
+    const indicesResponse = currentIndices.reduce((acc, curr) => {
+      return {
+        ...acc,
+        [curr]: { mappings: {}, aliases: {} },
+      };
+    }, {});
+
+    getSpy = jest.fn().mockReturnValue(indicesResponse);
+    mock.clear({
+      method: 'GET',
+      path: '/some-type-index__*',
+    });
+    mock.add(
+      {
+        method: 'GET',
+        path: '/some-type-index__*',
+      },
+      getSpy,
+    );
+
+    await TestPipeline.fromIndexer(indexer)
+      .withDocuments([
+        {
+          title: 'testTerm',
+          text: 'testText',
+          location: 'test/location',
+        },
+      ])
+      .execute();
+
+    // Delete endpoint should have been called for 4 chunks of 50 (200 indices)
+    expect(deleteSpy).toHaveBeenCalledTimes(4);
   });
 
   it('handles bulk client rejection', async () => {

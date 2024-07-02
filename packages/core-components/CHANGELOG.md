@@ -1,5 +1,48 @@
 # @backstage/core-components
 
+## 0.14.9-next.0
+
+### Patch Changes
+
+- d4ffdbb: Fixed bug where `<Select>` component with empty string as placeholder gave an error
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/theme@0.5.6
+  - @backstage/version-bridge@1.0.8
+
+## 0.14.8
+
+### Patch Changes
+
+- a0b46f6: Having tooltip inherit font size for consistency in catalog table columns
+- 59cee81: Use `inherit` variant on OverflowTooltip underlying Typography component.
+- eae0e4d: Fixed an issue causing `SidebarSubmenu` text to not follow the theme color
+- e4811ec: Make number of decimal digits in Gauge configurable via the `decimalDigits` property
+- 83c4251: Adds icons to status component
+- 3e175c8: Removed max width from `Select` component.
+- 57d7582: Fixed a bug in `SupportButton` where the title was rendered with the characteristics of a button.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/theme@0.5.6
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/version-bridge@1.0.8
+
+## 0.14.8-next.2
+
+### Patch Changes
+
+- 59cee81: Use `inherit` variant on OverflowTooltip underlying Typography component.
+- 83c4251: Adds icons to status component
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/core-plugin-api@1.9.3-next.0
+  - @backstage/errors@1.2.4
+  - @backstage/theme@0.5.6-next.0
+  - @backstage/version-bridge@1.0.8
+
 ## 0.14.8-next.1
 
 ### Patch Changes

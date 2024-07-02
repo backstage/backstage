@@ -86,6 +86,14 @@ catalog:
 These config blocks have a lot of options in them, so we will describe each
 "root" key within the block separately.
 
+> NOTE:
+>
+> If you want to import users and groups from different LDAP servers, you can define multiple providers with different names.
+> If they should come from the same server, you can define multiple users and groups blocks within the same provider using an array of users / groups.
+> Entries coming from the same block will be able to detect group memberships based on the `memberOf` attribute.
+>
+> If you want only to import users or groups, you can omit the groups or users block.
+
 ### target
 
 This is the URL of the targeted server, typically on the form
@@ -301,11 +309,11 @@ map:
 In case you want to customize the ingested entities, the provider allows to pass
 transformers for users and groups.
 
-Transformers can be configured by extending `ldapOrgEntityProviderTransformExtensionPoint`. Here is an example:
+Transformers can be configured by extending `ldapOrgEntityProviderTransformsExtensionPoint`. Here is an example:
 
 ```ts title="packages/backend/src/index.ts"
 import { createBackendModule } from '@backstage/backend-plugin-api';
-import { ldapOrgEntityProviderTransformExtensionPoint } from '@backstage/plugin-catalog-backend-module-ldap';
+import { ldapOrgEntityProviderTransformsExtensionPoint } from '@backstage/plugin-catalog-backend-module-ldap';
 import { myUserTransformer, myGroupTransformer } from './transformers';
 
 backend.add(
@@ -316,7 +324,7 @@ backend.add(
       env.registerInit({
         deps: {
           /* highlight-add-start */
-          ldapTransformers: ldapOrgEntityProviderTransformExtensionPoint,
+          ldapTransformers: ldapOrgEntityProviderTransformsExtensionPoint,
           /* highlight-add-end */
         },
         async init({ ldapTransformers }) {

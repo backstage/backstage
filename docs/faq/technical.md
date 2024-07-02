@@ -116,7 +116,7 @@ This makes it easier to create, find, and update documentation.
 [TechDocs is now open source.](https://backstage.io/docs/features/techdocs/)
 (See also:
 "[Will Spotify's internal plugins be open sourced, too?](https://backstage.io/docs/faq/product#will-spotifys-internal-plugins-be-open-sourced-too)"
-above)
+above).
 
 ### Are you planning to have plugins baked into the repo? Or should they be developed in separate repos?
 

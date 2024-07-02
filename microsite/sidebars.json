@@ -1,6 +1,7 @@
 {
   "releases": {
     "Release Notes": [
+      "releases/v1.28.0",
       "releases/v1.27.0",
       "releases/v1.26.0",
       "releases/v1.25.0",
@@ -302,6 +303,7 @@
         "items": [
           "auth/auth0/provider",
           "auth/atlassian/provider",
+          "auth/aws-alb/provider",
           "auth/microsoft/provider",
           "auth/microsoft/easy-auth",
           "auth/bitbucket/provider",
@@ -362,7 +364,8 @@
           "tooling/local-dev/linking-local-packages",
           "tooling/local-dev/debugging"
         ]
-      }
+      },
+      "tooling/package-metadata"
     ],
     "Deployment": [
       "deployment/index",

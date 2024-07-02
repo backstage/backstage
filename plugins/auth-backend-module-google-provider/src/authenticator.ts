@@ -27,6 +27,13 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 export const googleAuthenticator = createOAuthAuthenticator({
   defaultProfileTransform:
     PassportOAuthAuthenticatorHelper.defaultProfileTransform,
+  scopes: {
+    required: [
+      'openid',
+      `https://www.googleapis.com/auth/userinfo.email`,
+      `https://www.googleapis.com/auth/userinfo.profile`,
+    ],
+  },
   initialize({ callbackUrl, config }) {
     const clientId = config.getString('clientId');
     const clientSecret = config.getString('clientSecret');

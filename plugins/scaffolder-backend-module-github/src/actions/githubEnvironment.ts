@@ -44,6 +44,7 @@ export function createGithubEnvironmentAction(options: {
       custom_branch_policies: boolean;
     };
     customBranchPolicyNames?: string[];
+    customTagPolicyNames?: string[];
     environmentVariables?: { [key: string]: string };
     secrets?: { [key: string]: string };
     token?: string;
@@ -94,6 +95,16 @@ export function createGithubEnvironmentAction(options: {
               type: 'string',
             },
           },
+          customTagPolicyNames: {
+            title: 'Custom Tag Policy Name',
+            description: `The name pattern that tags must match in order to deploy to the environment.
+
+            Wildcard characters will not match /. For example, to match tags that begin with release/ and contain an additional single slash, use release/*/*. For more information about pattern matching syntax, see the Ruby File.fnmatch documentation.`,
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+          },
           environmentVariables: {
             title: 'Environment Variables',
             description: `Environment variables attached to the deployment environment`,
@@ -118,6 +129,7 @@ export function createGithubEnvironmentAction(options: {
         name,
         deploymentBranchPolicy,
         customBranchPolicyNames,
+        customTagPolicyNames,
         environmentVariables,
         secrets,
         token: providedToken,
@@ -153,6 +165,19 @@ export function createGithubEnvironmentAction(options: {
           await client.rest.repos.createDeploymentBranchPolicy({
             owner: owner,
             repo: repo,
+            type: 'branch',
+            environment_name: name,
+            name: item,
+          });
+        }
+      }
+
+      if (customTagPolicyNames) {
+        for (const item of customTagPolicyNames) {
+          await client.rest.repos.createDeploymentBranchPolicy({
+            owner: owner,
+            repo: repo,
+            type: 'tag',
             environment_name: name,
             name: item,
           });
@@ -162,6 +187,8 @@ export function createGithubEnvironmentAction(options: {
       for (const [key, value] of Object.entries(environmentVariables ?? {})) {
         await client.rest.actions.createEnvironmentVariable({
           repository_id: repository.data.id,
+          owner: owner,
+          repo: repo,
           environment_name: name,
           name: key,
           value,
@@ -193,6 +220,8 @@ export function createGithubEnvironmentAction(options: {
 
           await client.rest.actions.createOrUpdateEnvironmentSecret({
             repository_id: repository.data.id,
+            owner: owner,
+            repo: repo,
             environment_name: name,
             secret_name: key,
             encrypted_value: encryptedBase64Secret,

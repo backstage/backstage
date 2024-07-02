@@ -102,7 +102,7 @@ See [TechDocs Architecture](architecture.md) to get an overview of where the bel
 
 ## Get involved
 
-Reach out to us in the **#docs-like-code** channel of our
+Reach out to us in the **#techdocs** channel of our
 [Discord chatroom](https://github.com/backstage/backstage#community).
 
 ## Done

@@ -33,6 +33,7 @@ export const examples: TemplateExample[] = [
               'This is the text that will appear in the pipeline token',
             token: 'glpt-xxxxxxxxxxxx',
             branch: 'main',
+            variables: { var_one: 'one', var_two: 'two' },
           },
         },
       ],

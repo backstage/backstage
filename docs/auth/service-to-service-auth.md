@@ -76,6 +76,61 @@ and when your deployment is behind a secure ingress like a VPN.
 External callers cannot leverage this flow; it's only used internally by backend
 plugins calling other backend plugins.
 
+### Static Keys for Plugin-to-Plugin Auth
+
+In some special circumstances, such as when running worker nodes on readonly
+database replicas, you may wish to opt out of the standard database based
+public-key scheme. As an alternative, you can put static keys in your config
+that are used for token signing and validation.
+
+You can make keys using the `openssl` command line utility.
+
+- First generate a private key using the ES256 algorithm:
+
+  ```sh
+  openssl ecparam -name prime256v1 -genkey -out private.ec.key
+  ```
+
+- Convert it to PKCS#8 format:
+
+  ```sh
+  openssl pkcs8 -topk8 -inform PEM -outform PEM -nocrypt -in private.ec.key -out private.key
+  ```
+
+- Extract the public key:
+
+  ```sh
+  openssl ec -inform PEM -outform PEM -pubout -in private.key -out public.key
+  ```
+
+After this you have the files `private.key` and `public.key`. Put them in a
+place where you know their absolute paths, and then set up your app-config
+accordingly:
+
+```yaml
+backend:
+  auth:
+    # This is the new section for configuring plugin-to-plugin key storage
+    pluginKeyStore:
+      type: static
+      static:
+        keys:
+          - publicKeyFile: /absolute/path/to/public.key
+            privateKeyFile: /absolute/path/to/private.key
+            keyId: some-custom-id
+```
+
+As long as all your nodes have this same config with the same set of keys, they
+will now be able to successfully communicate with each other without touching the
+database.
+
+You'll note that the `keys` value is an array, which is useful for key rotation.
+The first entry will always be used for signing, but any of the subsequent
+entries will also be used for token validation. This lets you have a period of
+time where tokens signed by the previous top entry are still accepted by
+receivers, by just inserting your new key pair as the top entry and leaving the
+old ones intact. You can remove old private keys however; those won't be used.
+
 ## Static Tokens
 
 This access method consists of random static tokens that can be handed out to

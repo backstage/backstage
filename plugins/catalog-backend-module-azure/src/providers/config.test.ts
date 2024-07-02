@@ -15,7 +15,6 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { Duration } from 'luxon';
 import { readAzureDevOpsConfigs } from './config';
 
 describe('readAzureDevOpsConfigs', () => {
@@ -95,7 +94,7 @@ describe('readAzureDevOpsConfigs', () => {
       id: 'provider4',
       schedule: {
         ...provider4.schedule,
-        frequency: Duration.fromISO(provider4.schedule.frequency),
+        frequency: { minutes: 30 },
       },
     });
     expect(actual[4]).toEqual({

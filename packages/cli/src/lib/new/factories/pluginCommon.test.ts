@@ -67,7 +67,7 @@ describe('pluginCommon factory', () => {
     expect(modified).toBe(true);
 
     expectLogsToMatch(output, [
-      'Creating backend plugin backstage-plugin-test-common',
+      'Creating common plugin package backstage-plugin-test-common',
       'Checking Prerequisites:',
       `availability  plugins${sep}test-common`,
       'creating      temp dir',

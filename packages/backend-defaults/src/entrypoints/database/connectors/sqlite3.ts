@@ -192,7 +192,7 @@ export class Sqlite3Connector implements Connector {
     const pluginDivisionMode = this.getPluginDivisionModeConfig();
     if (pluginDivisionMode !== 'database') {
       throw new Error(
-        `The SQLite driver does not suppoert plugin division mode '${pluginDivisionMode}'`,
+        `The SQLite driver does not support plugin division mode '${pluginDivisionMode}'`,
       );
     }
 

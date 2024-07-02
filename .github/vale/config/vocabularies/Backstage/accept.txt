@@ -161,6 +161,7 @@ hoc
 horizontalpodautoscalers
 Hostname
 hotspots
+howto
 http
 https
 Iain
@@ -291,6 +292,7 @@ Periskop
 permissioned
 permissioning
 pipx
+plaintext
 plantuml
 Platformize
 Podman

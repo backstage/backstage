@@ -6,7 +6,7 @@
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 
-// @public (undocumented)
+// @public
 export const permissionsServiceFactory: () => ServiceFactory<
   PermissionsService,
   'plugin'

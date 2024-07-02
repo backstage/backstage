@@ -75,6 +75,7 @@ export function createGithubRepoPushAction(options: {
     sourcePath?: string;
     token?: string;
     requiredCommitSigning?: boolean;
+    requireLastPushApproval?: boolean;
   }>({
     id: 'github:repo:push',
     description:
@@ -95,6 +96,7 @@ export function createGithubRepoPushAction(options: {
           requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
           requiredConversationResolution:
             inputProps.requiredConversationResolution,
+          requireLastPushApproval: inputProps.requireLastPushApproval,
           defaultBranch: inputProps.defaultBranch,
           protectDefaultBranch: inputProps.protectDefaultBranch,
           protectEnforceAdmins: inputProps.protectEnforceAdmins,
@@ -132,6 +134,7 @@ export function createGithubRepoPushAction(options: {
         requiredStatusCheckContexts = [],
         requireBranchesToBeUpToDate = true,
         requiredConversationResolution = false,
+        requireLastPushApproval = false,
         token: providedToken,
         requiredCommitSigning = false,
       } = ctx.input;
@@ -174,6 +177,7 @@ export function createGithubRepoPushAction(options: {
         requiredStatusCheckContexts,
         requireBranchesToBeUpToDate,
         requiredConversationResolution,
+        requireLastPushApproval,
         config,
         ctx.logger,
         gitCommitMessage,

@@ -85,6 +85,10 @@ export const parseRepoUrl = (
       checkRequiredParams(parsed, 'project', 'repo');
       break;
     }
+    case 'azure': {
+      checkRequiredParams(parsed, 'project', 'repo');
+      break;
+    }
     case 'gitlab': {
       // project is the projectID, and if defined, owner and repo won't be needed.
       if (!project) {

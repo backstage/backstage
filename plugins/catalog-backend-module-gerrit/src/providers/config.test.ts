@@ -15,7 +15,6 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { Duration } from 'luxon';
 import { readGerritConfigs } from './config';
 
 describe('readGerritConfigs', () => {
@@ -63,7 +62,7 @@ describe('readGerritConfigs', () => {
       id: 'active-g3',
       schedule: {
         ...provider3.schedule,
-        frequency: Duration.fromISO(provider3.schedule.frequency),
+        frequency: { minutes: 30 },
       },
     });
   });

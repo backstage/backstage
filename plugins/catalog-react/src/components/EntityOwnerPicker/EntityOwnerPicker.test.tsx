@@ -23,7 +23,7 @@ import { EntityOwnerPicker } from './EntityOwnerPicker';
 import { ApiProvider } from '@backstage/core-app-api';
 import {
   MockErrorApi,
-  renderWithEffects,
+  renderInTestApp,
   TestApiRegistry,
 } from '@backstage/test-utils';
 import { catalogApiRef, CatalogApi } from '../..';
@@ -155,7 +155,7 @@ describe('<EntityOwnerPicker mode="all" />', () => {
   });
 
   it('renders all users and groups', async () => {
-    await renderWithEffects(
+    await renderInTestApp(
       <ApiProvider apis={mockApis}>
         <MockEntityListContextProvider value={{}}>
           <EntityOwnerPicker mode="all" />
@@ -201,7 +201,7 @@ describe('<EntityOwnerPicker mode="all" />', () => {
   it('respects the query parameter filter value', async () => {
     const updateFilters = jest.fn();
     const queryParameters = { owners: ['another-owner'] };
-    await renderWithEffects(
+    await renderInTestApp(
       <ApiProvider apis={mockApis}>
         <MockEntityListContextProvider
           value={{
@@ -239,7 +239,7 @@ describe('<EntityOwnerPicker mode="all" />', () => {
         },
       ],
     });
-    await renderWithEffects(
+    await renderInTestApp(
       <ApiProvider apis={mockApis}>
         <MockEntityListContextProvider
           value={{
@@ -281,7 +281,7 @@ describe('<EntityOwnerPicker mode="all" />', () => {
 
   it('adds owners to filters', async () => {
     const updateFilters = jest.fn();
-    await renderWithEffects(
+    await renderInTestApp(
       <ApiProvider apis={mockApis}>
         <MockEntityListContextProvider
           value={{
@@ -308,7 +308,7 @@ describe('<EntityOwnerPicker mode="all" />', () => {
 
   it('removes owners from filters', async () => {
     const updateFilters = jest.fn();
-    await renderWithEffects(
+    await renderInTestApp(
       <ApiProvider apis={mockApis}>
         <MockEntityListContextProvider
           value={{
@@ -340,7 +340,7 @@ describe('<EntityOwnerPicker mode="all" />', () => {
 
   it('responds to external queryParameters changes', async () => {
     const updateFilters = jest.fn();
-    const rendered = await renderWithEffects(
+    const rendered = await renderInTestApp(
       <ApiProvider apis={mockApis}>
         <MockEntityListContextProvider
           value={{
@@ -395,10 +395,14 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
         ],
       },
     });
+
+    mockedGetEntitiesByRef.mockResolvedValue({
+      items: [...ownerEntitiesBatch1, ...ownerEntitiesBatch2],
+    });
   });
 
   it('renders all users and groups', async () => {
-    await renderWithEffects(
+    await renderInTestApp(
       <ApiProvider apis={mockApis}>
         <MockEntityListContextProvider value={{}}>
           <EntityOwnerPicker mode="owners-only" />
@@ -410,14 +414,16 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
     fireEvent.click(screen.getByTestId('owner-picker-expand'));
 
     await waitFor(() =>
-      expect(screen.getByText('another-owner')).toBeInTheDocument(),
+      expect(screen.getByText('Another Owner')).toBeInTheDocument(),
     );
 
-    ['some-owner', 'some-owner-2', 'test-namespace/another-owner-2'].forEach(
-      owner => {
-        expect(screen.getByText(owner)).toBeInTheDocument();
-      },
-    );
+    [
+      'some-owner',
+      'Some Owner 2',
+      'Another Owner in Another Namespace',
+    ].forEach(owner => {
+      expect(screen.getByText(owner)).toBeInTheDocument();
+    });
 
     expect(mockedGetEntityFacets).toHaveBeenCalledTimes(1);
 
@@ -429,8 +435,8 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
 
     [
       'some-owner-batch-2',
-      'some-owner-2-batch-2',
-      'test-namespace/another-owner-2-batch-2',
+      'Some Owner Batch 2',
+      'Another Owner in Another Namespace Batch 2',
     ].forEach(owner => {
       expect(screen.getByText(owner)).toBeInTheDocument();
     });
@@ -439,7 +445,7 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
   it('respects the query parameter filter value', async () => {
     const updateFilters = jest.fn();
     const queryParameters = { owners: ['another-owner'] };
-    await renderWithEffects(
+    await renderInTestApp(
       <ApiProvider apis={mockApis}>
         <MockEntityListContextProvider
           value={{
@@ -459,7 +465,7 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
 
   it('adds owners to filters', async () => {
     const updateFilters = jest.fn();
-    await renderWithEffects(
+    await renderInTestApp(
       <ApiProvider apis={mockApis}>
         <MockEntityListContextProvider
           value={{
@@ -470,7 +476,11 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
-    expect(mockedGetEntitiesByRef).not.toHaveBeenCalled();
+    expect(mockedGetEntitiesByRef).toHaveBeenCalledWith({
+      entityRefs: [...ownerEntitiesBatch1, ...ownerEntitiesBatch2].map(entity =>
+        stringifyEntityRef(entity),
+      ),
+    });
     expect(updateFilters).toHaveBeenLastCalledWith({
       owners: undefined,
     });
@@ -486,7 +496,7 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
 
   it('removes owners from filters', async () => {
     const updateFilters = jest.fn();
-    await renderWithEffects(
+    await renderInTestApp(
       <ApiProvider apis={mockApis}>
         <MockEntityListContextProvider
           value={{
@@ -515,7 +525,7 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
 
   it('responds to external queryParameters changes', async () => {
     const updateFilters = jest.fn();
-    const rendered = await renderWithEffects(
+    const rendered = await renderInTestApp(
       <ApiProvider apis={mockApis}>
         <MockEntityListContextProvider
           value={{

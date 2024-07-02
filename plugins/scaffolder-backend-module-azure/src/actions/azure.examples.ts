@@ -29,7 +29,7 @@ export const examples: TemplateExample[] = [
           name: 'Publish to Azure',
           input: {
             repoUrl:
-              'dev.azure.com?organization=organization&owner=project&repo=repo',
+              'dev.azure.com?organization=organization&project=project&repo=repo',
           },
         },
       ],
@@ -45,7 +45,7 @@ export const examples: TemplateExample[] = [
           name: 'Publish to Azure',
           input: {
             repoUrl:
-              'dev.azure.com?organization=organization&owner=project&repo=repo',
+              'dev.azure.com?organization=organization&project=project&repo=repo',
             description: 'Initialize a git repository',
           },
         },
@@ -63,7 +63,7 @@ export const examples: TemplateExample[] = [
           name: 'Publish to Azure',
           input: {
             repoUrl:
-              'dev.azure.com?organization=organization&owner=project&repo=repo',
+              'dev.azure.com?organization=organization&project=project&repo=repo',
             defaultBranch: 'main',
           },
         },

@@ -38,7 +38,7 @@ describe('catalogServiceRef', () => {
     });
 
     await startTestBackend({
-      features: [testModule()],
+      features: [testModule],
     });
   });
 });

@@ -1,0 +1,10 @@
+---
+title: Relations
+author: dweber019
+authorUrl: https://github.com/dweber019
+category: Catalog
+description: This plugin enables you to configure additional relations between entities, which aren't supported out of box.
+documentation: https://github.com/dweber019/backstage-plugins/tree/main/plugins/relations
+iconUrl: https://raw.githubusercontent.com/dweber019/backstage-plugins/main/plugins/relations-backend/docs/pluginIcon.png
+npmPackageName: '@dweber019/backstage-plugin-relations'
+addedDate: '2024-05-15'

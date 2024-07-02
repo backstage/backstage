@@ -31,5 +31,3 @@ export type {
   GithubCredentialType,
 } from './types';
 export { GithubIntegration, replaceGithubUrlType } from './GithubIntegration';
-
-export * from './deprecated';

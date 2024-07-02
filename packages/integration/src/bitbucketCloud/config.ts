@@ -46,6 +46,11 @@ export type BitbucketCloudIntegrationConfig = {
    * See https://support.atlassian.com/bitbucket-cloud/docs/app-passwords/
    */
   appPassword?: string;
+
+  /**
+   * The access token to use for requests to Bitbucket Cloud (bitbucket.org).
+   */
+  token?: string;
 };
 
 /**

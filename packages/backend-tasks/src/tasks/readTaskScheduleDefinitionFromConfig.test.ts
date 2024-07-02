@@ -16,7 +16,6 @@
 
 import { ConfigReader } from '@backstage/config';
 import { HumanDuration } from '@backstage/types';
-import { Duration } from 'luxon';
 import { readTaskScheduleDefinitionFromConfig } from './readTaskScheduleDefinitionFromConfig';
 
 describe('readTaskScheduleDefinitionFromConfig', () => {
@@ -35,7 +34,7 @@ describe('readTaskScheduleDefinitionFromConfig', () => {
     const result = readTaskScheduleDefinitionFromConfig(config);
 
     expect((result.frequency as { cron: string }).cron).toBe('0 30 * * * *');
-    expect(result.timeout).toEqual(Duration.fromISO('PT3M'));
+    expect(result.timeout).toEqual({ minutes: 3 });
     expect((result.initialDelay as HumanDuration).minutes).toEqual(20);
     expect(result.scope).toBe('global');
   });
@@ -51,7 +50,7 @@ describe('readTaskScheduleDefinitionFromConfig', () => {
     const result = readTaskScheduleDefinitionFromConfig(config);
 
     expect((result.frequency as { cron: string }).cron).toBe('0 30 * * * *');
-    expect(result.timeout).toEqual(Duration.fromISO('PT3M'));
+    expect(result.timeout).toEqual({ minutes: 3 });
     expect(result.initialDelay).toBeUndefined();
     expect(result.scope).toBeUndefined();
   });

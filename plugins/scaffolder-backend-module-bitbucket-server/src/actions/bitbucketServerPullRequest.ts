@@ -204,6 +204,39 @@ const createBranch = async (opts: {
 
   return await response.json();
 };
+const getDefaultBranch = async (opts: {
+  project: string;
+  repo: string;
+  authorization: string;
+  apiBaseUrl: string;
+}) => {
+  const { project, repo, authorization, apiBaseUrl } = opts;
+  let response: Response;
+
+  const options: RequestInit = {
+    method: 'GET',
+    headers: {
+      Authorization: authorization,
+      'Content-Type': 'application/json',
+    },
+  };
+
+  try {
+    response = await fetch(
+      `${apiBaseUrl}/projects/${project}/repos/${repo}/default-branch`,
+      options,
+    );
+  } catch (error) {
+    throw error;
+  }
+
+  const { displayId } = await response.json();
+  const defaultBranch = displayId;
+  if (!defaultBranch) {
+    throw new Error(`Could not fetch default branch for ${project}/${repo}`);
+  }
+  return defaultBranch;
+};
 /**
  * Creates a BitbucketServer Pull Request action.
  * @public
@@ -288,7 +321,7 @@ export function createPublishBitbucketServerPullRequestAction(options: {
         repoUrl,
         title,
         description,
-        targetBranch = 'master',
+        targetBranch,
         sourceBranch,
         gitAuthorName,
         gitAuthorEmail,
@@ -326,10 +359,20 @@ export function createPublishBitbucketServerPullRequestAction(options: {
 
       const apiBaseUrl = integrationConfig.config.apiBaseUrl;
 
+      let finalTargetBranch = targetBranch;
+      if (!finalTargetBranch) {
+        finalTargetBranch = await getDefaultBranch({
+          project,
+          repo,
+          authorization,
+          apiBaseUrl,
+        });
+      }
+
       const toRef = await findBranches({
         project,
         repo,
-        branchName: targetBranch,
+        branchName: finalTargetBranch!,
         authorization,
         apiBaseUrl,
       });

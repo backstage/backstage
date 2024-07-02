@@ -197,12 +197,14 @@ cannot be parsed successfully, etc.
 
 There are two main ways that these errors are surfaced.
 
-First, the catalog backend will produce detailed logs that should contain
-sufficient information for a reader to find the causes for errors. Since these
-logs are typically not easily found by end users, this can mainly be a useful
+First, the catalog backend will emit events using the [events backend plugin](https://github.com/backstage/backstage/tree/master/plugins/events-node). You can subscribe to the events. The events should contain
+sufficient information for a reader to find the causes for errors. See the [configuration documentation](./configuration.md#subscribing-to-catalog-errors) for how to subscribe and log these error events.
+Since these events are typically not easily found by end users, this can mainly be a useful
 tool for Backstage operators who want to debug problems either with statically
 registered entities that are under their control, or to help end users find
 problems.
+
+> Prior to Backstage version v1.26.0 and `@backstage/plugin-catalog-backend` v1.21.9 catalog errors were logged by default.
 
 Second, for most classes of errors, the entity itself will contain a status
 field that describes the problem. The contents of this field is shown at the top

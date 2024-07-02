@@ -55,7 +55,7 @@ describe('catalogModulePuppetDbEntityProvider', () => {
     await startTestBackend({
       extensionPoints: [[catalogProcessingExtensionPoint, extensionPoint]],
       features: [
-        catalogModulePuppetDbEntityProvider(),
+        catalogModulePuppetDbEntityProvider,
         mockServices.rootConfig.factory({ data: config }),
         scheduler.factory,
       ],

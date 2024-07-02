@@ -1,5 +1,8 @@
 [![headline](docs/assets/headline.png)](https://backstage.io/)
 
+> [!NOTE]
+> 🏖 From July 1st through 16th, due to maintainers being on summer vacations, expect the project to move a little slower than normal, and support to be limited. Normal service will resume after that! 🏝
+
 # [Backstage](https://backstage.io)
 
 English \| [한국어](README-ko_kr.md) \| [中文版](README-zh_Hans.md)
@@ -55,7 +58,7 @@ To engage with our community, you can use the following resources:
 - [Discord chatroom](https://discord.gg/backstage-687207715902193673) - Get support or discuss the project
 - [Contributing to Backstage](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md) - Start here if you want to contribute
 - [RFCs](https://github.com/backstage/backstage/labels/rfc) - Help shape the technical direction
-- [FAQ](https://backstage.io/docs/FAQ) - Frequently Asked Questions
+- [FAQ](https://backstage.io/docs/faq) - Frequently Asked Questions
 - [Code of Conduct](CODE_OF_CONDUCT.md) - This is how we roll
 - [Adopters](ADOPTERS.md) - Companies already using Backstage
 - [Blog](https://backstage.io/blog/) - Announcements and updates

@@ -20,7 +20,7 @@ import camelCase from 'lodash/camelCase';
 import { paths } from '../../paths';
 import { addCodeownersEntry, getCodeownersFilePath } from '../../codeowners';
 import { CreateContext, createFactory } from '../types';
-import { addPackageDependency, Task } from '../../tasks';
+import { addPackageDependency, addToBackend, Task } from '../../tasks';
 import {
   moduleIdIdPrompt,
   ownerPrompt,
@@ -90,6 +90,10 @@ export const backendModule = createFactory<Options>({
         );
       });
     }
+
+    await addToBackend(name, {
+      type: 'module',
+    });
 
     if (options.owner) {
       await addCodeownersEntry(`/plugins/${dirName}`, options.owner);

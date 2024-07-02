@@ -173,6 +173,7 @@ export function createOAuthAuthenticator<TContext, TProfile>(
 // @public (undocumented)
 export function createOAuthProviderFactory<TProfile>(options: {
   authenticator: OAuthAuthenticator<unknown, TProfile>;
+  additionalScopes?: string[];
   stateTransform?: OAuthStateTransform;
   profileTransform?: ProfileTransform<OAuthAuthenticatorResult<TProfile>>;
   signInResolver?: SignInResolver<OAuthAuthenticatorResult<TProfile>>;
@@ -291,6 +292,8 @@ export interface OAuthAuthenticator<TContext, TProfile> {
     ctx: TContext,
   ): Promise<OAuthAuthenticatorResult<TProfile>>;
   // (undocumented)
+  scopes?: OAuthAuthenticatorScopeOptions;
+  // @deprecated (undocumented)
   shouldPersistScopes?: boolean;
   // (undocumented)
   start(
@@ -337,6 +340,21 @@ export interface OAuthAuthenticatorResult<TProfile> {
 }
 
 // @public (undocumented)
+export interface OAuthAuthenticatorScopeOptions {
+  // (undocumented)
+  persist?: boolean;
+  // (undocumented)
+  required?: string[];
+  // (undocumented)
+  transform?: (options: {
+    requested: Iterable<string>;
+    granted: Iterable<string>;
+    required: Iterable<string>;
+    additional: Iterable<string>;
+  }) => Iterable<string>;
+}
+
+// @public (undocumented)
 export interface OAuthAuthenticatorStartInput {
   // (undocumented)
   req: Request_2;
@@ -366,6 +384,8 @@ export class OAuthEnvironmentHandler implements AuthProviderRouteHandlers {
 
 // @public (undocumented)
 export interface OAuthRouteHandlersOptions<TProfile> {
+  // (undocumented)
+  additionalScopes?: string[];
   // (undocumented)
   appUrl: string;
   // (undocumented)

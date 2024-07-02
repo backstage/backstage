@@ -20,6 +20,8 @@ import { useEntityTypeFilter } from '../../hooks/useEntityTypeFilter';
 
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { Select } from '@backstage/core-components';
+import { catalogReactTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /**
  * Props for {@link EntityTypePicker}.
@@ -37,23 +39,24 @@ export const EntityTypePicker = (props: EntityTypePickerProps) => {
   const alertApi = useApi(alertApiRef);
   const { error, availableTypes, selectedTypes, setSelectedTypes } =
     useEntityTypeFilter();
+  const { t } = useTranslationRef(catalogReactTranslationRef);
 
   useEffect(() => {
     if (error) {
       alertApi.post({
-        message: `Failed to load entity types`,
+        message: t('entityTypePicker.errorMessage'),
         severity: 'error',
       });
     }
     if (initialFilter) {
       setSelectedTypes([initialFilter]);
     }
-  }, [error, alertApi, initialFilter, setSelectedTypes]);
+  }, [error, alertApi, initialFilter, setSelectedTypes, t]);
 
   if (availableTypes.length === 0 || error) return null;
 
   const items = [
-    { value: 'all', label: 'all' },
+    { value: 'all', label: t('entityTypePicker.optionAllTitle') },
     ...availableTypes.map((type: string) => ({
       value: type,
       label: type,
@@ -63,7 +66,7 @@ export const EntityTypePicker = (props: EntityTypePickerProps) => {
   return hidden ? null : (
     <Box pb={1} pt={1}>
       <Select
-        label="Type"
+        label={t('entityTypePicker.title')}
         items={items}
         selected={(items.length > 1 ? selectedTypes[0] : undefined) ?? 'all'}
         onChange={value =>

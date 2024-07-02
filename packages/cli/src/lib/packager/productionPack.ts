@@ -180,7 +180,9 @@ async function prepareExportsEntryPoints(
         await fs.writeJson(
           resolvePath(entryPointDir, PKG_PATH),
           {
-            name: pkg.name,
+            // Need a temporary name, as sharing the same name causes some typescript issues with caching of packages names
+            // And their defined `types` field.
+            name: `${pkg.name}__${entryPoint.name.toLocaleLowerCase('en-US')}`,
             version: pkg.version,
             ...(exp.default ? { main: posixPath.join('..', exp.default) } : {}),
             ...(exp.import ? { module: posixPath.join('..', exp.import) } : {}),

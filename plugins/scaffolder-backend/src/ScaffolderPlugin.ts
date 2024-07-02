@@ -28,9 +28,13 @@ import {
   TemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
 import {
+  AutocompleteHandler,
   scaffolderActionsExtensionPoint,
+  scaffolderAutocompleteExtensionPoint,
   scaffolderTaskBrokerExtensionPoint,
   scaffolderTemplatingExtensionPoint,
+  scaffolderWorkspaceProviderExtensionPoint,
+  WorkspaceProvider,
 } from '@backstage/plugin-scaffolder-node/alpha';
 import {
   createCatalogRegisterAction,
@@ -79,6 +83,20 @@ export const scaffolderPlugin = createBackendPlugin({
       },
       addTemplateGlobals(newGlobals) {
         Object.assign(additionalTemplateGlobals, newGlobals);
+      },
+    });
+
+    const autocompleteHandlers: Record<string, AutocompleteHandler> = {};
+    env.registerExtensionPoint(scaffolderAutocompleteExtensionPoint, {
+      addAutocompleteProvider(provider) {
+        autocompleteHandlers[provider.id] = provider.handler;
+      },
+    });
+
+    const additionalWorkspaceProviders: Record<string, WorkspaceProvider> = {};
+    env.registerExtensionPoint(scaffolderWorkspaceProviderExtensionPoint, {
+      addProviders(provider) {
+        Object.assign(additionalWorkspaceProviders, provider);
       },
     });
 
@@ -162,6 +180,8 @@ export const scaffolderPlugin = createBackendPlugin({
           httpAuth,
           discovery,
           permissions,
+          autocompleteHandlers,
+          additionalWorkspaceProviders,
         });
         httpRouter.use(router);
       },

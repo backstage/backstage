@@ -55,7 +55,9 @@ describe('publish:azure', () => {
   const action = createPublishAzureAction({ integrations, config });
 
   const mockContext = createMockActionContext({
-    input: { repoUrl: 'dev.azure.com?repo=repo&owner=owner&organization=org' },
+    input: {
+      repoUrl: 'dev.azure.com?repo=repo&project=project&organization=org',
+    },
   });
 
   const mockGitClient = {
@@ -77,19 +79,19 @@ describe('publish:azure', () => {
         ...mockContext,
         input: { repoUrl: 'dev.azure.com?repo=bob' },
       }),
-    ).rejects.toThrow(/missing owner/);
+    ).rejects.toThrow(/missing project/);
 
     await expect(
       action.handler({
         ...mockContext,
-        input: { repoUrl: 'dev.azure.com?owner=owner' },
+        input: { repoUrl: 'dev.azure.com?project=project' },
       }),
     ).rejects.toThrow(/missing repo/);
 
     await expect(
       action.handler({
         ...mockContext,
-        input: { repoUrl: 'dev.azure.com?owner=owner&repo=repo' },
+        input: { repoUrl: 'dev.azure.com?project=project&repo=repo' },
       }),
     ).rejects.toThrow(/missing organization/);
   });
@@ -98,7 +100,9 @@ describe('publish:azure', () => {
     await expect(
       action.handler({
         ...mockContext,
-        input: { repoUrl: 'azure.com?repo=bob&owner=owner&organization=org' },
+        input: {
+          repoUrl: 'azure.com?repo=bob&project=project&organization=org',
+        },
       }),
     ).rejects.toThrow(/No matching integration configuration/);
   });
@@ -109,7 +113,7 @@ describe('publish:azure', () => {
         ...mockContext,
         input: {
           repoUrl:
-            'myazurehostnotoken.com?repo=bob&owner=owner&organization=org',
+            'myazurehostnotoken.com?repo=bob&project=project&organization=org',
         },
       }),
     ).rejects.toThrow(
@@ -122,7 +126,7 @@ describe('publish:azure', () => {
       action.handler({
         ...mockContext,
         input: {
-          repoUrl: 'dev.azure.com?repo=bob&owner=owner&organization=org',
+          repoUrl: 'dev.azure.com?repo=bob&project=project&organization=org',
         },
       }),
     ).rejects.toThrow(/Unable to create the repository/);
@@ -131,13 +135,15 @@ describe('publish:azure', () => {
   it('should not throw if there is a token provided through ctx.input', async () => {
     mockGitClient.createRepository.mockImplementation(() => ({
       remoteUrl: 'http://google.com',
+      webUrl: 'http://google.com',
       id: '709e891c-dee7-4f91-b963-534713c0737f',
     }));
 
     await action.handler({
       ...mockContext,
       input: {
-        repoUrl: 'myazurehostnotoken.com?repo=bob&owner=owner&organization=org',
+        repoUrl:
+          'myazurehostnotoken.com?repo=bob&project=project&organization=org',
         token: 'lols',
       },
     });
@@ -151,20 +157,21 @@ describe('publish:azure', () => {
       {
         name: 'bob',
       },
-      'owner',
+      'project',
     );
   });
 
   it('should throw if there is no remoteUrl returned', async () => {
     mockGitClient.createRepository.mockImplementation(() => ({
       remoteUrl: null,
+      webUrl: 'http://google.com',
       id: '709e891c-dee7-4f91-b963-534713c0737f',
     }));
     await expect(
       action.handler({
         ...mockContext,
         input: {
-          repoUrl: 'dev.azure.com?repo=bob&owner=owner&organization=org',
+          repoUrl: 'dev.azure.com?repo=bob&project=project&organization=org',
         },
       }),
     ).rejects.toThrow(/No remote URL returned/);
@@ -173,28 +180,46 @@ describe('publish:azure', () => {
   it('should throw if there is no repositoryId returned', async () => {
     mockGitClient.createRepository.mockImplementation(() => ({
       remoteUrl: 'http://google.com',
+      webUrl: 'http://google.com',
       id: null,
     }));
     await expect(
       action.handler({
         ...mockContext,
         input: {
-          repoUrl: 'dev.azure.com?repo=bob&owner=owner&organization=org',
+          repoUrl: 'dev.azure.com?repo=bob&project=project&organization=org',
         },
       }),
     ).rejects.toThrow(/No Id returned/);
   });
 
+  it('should throw if there is no repoContentsUrl returned', async () => {
+    mockGitClient.createRepository.mockImplementation(() => ({
+      remoteUrl: 'http://google.com',
+      webUrl: null,
+      id: '709e891c-dee7-4f91-b963-534713c0737f',
+    }));
+    await expect(
+      action.handler({
+        ...mockContext,
+        input: {
+          repoUrl: 'dev.azure.com?repo=bob&project=project&organization=org',
+        },
+      }),
+    ).rejects.toThrow(/No web URL returned/);
+  });
+
   it('should call the azureApis with the correct values', async () => {
     mockGitClient.createRepository.mockImplementation(() => ({
       remoteUrl: 'http://google.com',
+      webUrl: 'http://google.com',
       id: '709e891c-dee7-4f91-b963-534713c0737f',
     }));
 
     await action.handler({
       ...mockContext,
       input: {
-        repoUrl: 'dev.azure.com?repo=bob&owner=owner&organization=org',
+        repoUrl: 'dev.azure.com?repo=bob&project=project&organization=org',
       },
     });
 
@@ -207,13 +232,14 @@ describe('publish:azure', () => {
       {
         name: 'bob',
       },
-      'owner',
+      'project',
     );
   });
 
   it('should call initRepoAndPush with the correct values', async () => {
     mockGitClient.createRepository.mockImplementation(() => ({
       remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+      webUrl: 'https://dev.azure.com/organization/project/_git/repo',
       id: '709e891c-dee7-4f91-b963-534713c0737f',
     }));
 
@@ -233,6 +259,7 @@ describe('publish:azure', () => {
   it('should call initRepoAndPush with the correct default branch', async () => {
     mockGitClient.createRepository.mockImplementation(() => ({
       remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+      webUrl: 'https://dev.azure.com/organization/project/_git/repo',
       id: '709e891c-dee7-4f91-b963-534713c0737f',
     }));
 
@@ -283,6 +310,7 @@ describe('publish:azure', () => {
 
     mockGitClient.createRepository.mockImplementation(() => ({
       remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+      webUrl: 'https://dev.azure.com/organization/project/_git/repo',
       id: '709e891c-dee7-4f91-b963-534713c0737f',
     }));
 
@@ -324,6 +352,7 @@ describe('publish:azure', () => {
 
     mockGitClient.createRepository.mockImplementation(() => ({
       remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+      webUrl: 'https://dev.azure.com/organization/project/_git/repo',
       id: '709e891c-dee7-4f91-b963-534713c0737f',
     }));
 
@@ -343,6 +372,7 @@ describe('publish:azure', () => {
   it('should call output with the remoteUrl the repoContentsUrl and the repositoryId', async () => {
     mockGitClient.createRepository.mockImplementation(() => ({
       remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+      webUrl: 'https://dev.azure.com/organization/project/_git/repo',
       id: '709e891c-dee7-4f91-b963-534713c0737f',
     }));
 

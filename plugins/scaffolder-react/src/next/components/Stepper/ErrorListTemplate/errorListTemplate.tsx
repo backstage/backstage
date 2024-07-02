@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { ErrorListProps } from '@rjsf/utils';
+import { ErrorListProps, RJSFValidationError } from '@rjsf/utils';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -22,6 +22,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Paper from '@material-ui/core/Paper';
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 import ErrorIcon from '@material-ui/icons/Error';
+import startCase from 'lodash/startCase';
 
 const useStyles = makeStyles((_theme: Theme) =>
   createStyles({
@@ -39,8 +40,27 @@ const useStyles = makeStyles((_theme: Theme) =>
  *
  * @public
  */
-export const ErrorListTemplate = ({ errors }: ErrorListProps) => {
+export const ErrorListTemplate = ({ errors, schema }: ErrorListProps) => {
   const classes = useStyles();
+
+  function formatErrorMessage(error: RJSFValidationError) {
+    if (error.property && error.message) {
+      const propertyName = error.property.startsWith('.')
+        ? error.property.substring(1)
+        : error.property;
+      if (schema.properties && propertyName in schema.properties) {
+        const property = schema.properties[propertyName];
+
+        if (typeof property === 'object' && 'title' in property) {
+          return `'${property.title}' ${error.message}`;
+        }
+      }
+      // fall back to property name
+      return `'${startCase(propertyName)}' ${error.message}`;
+    }
+    // fall back if property does not exist
+    return error.stack;
+  }
 
   return (
     <Paper>
@@ -52,7 +72,7 @@ export const ErrorListTemplate = ({ errors }: ErrorListProps) => {
             </ListItemIcon>
             <ListItemText
               classes={{ primary: classes.text }}
-              primary={error.stack}
+              primary={formatErrorMessage(error)}
             />
           </ListItem>
         ))}

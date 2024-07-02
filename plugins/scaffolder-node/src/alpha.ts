@@ -22,6 +22,8 @@ import {
   TaskBroker,
 } from '@backstage/plugin-scaffolder-node';
 
+export * from './tasks/alpha';
+
 /**
  * Extension point for managing scaffolder actions.
  *
@@ -67,6 +69,7 @@ export const scaffolderTaskBrokerExtensionPoint =
  */
 export interface ScaffolderTemplatingExtensionPoint {
   addTemplateFilters(filters: Record<string, TemplateFilter>): void;
+
   addTemplateGlobals(filters: Record<string, TemplateGlobal>): void;
 }
 
@@ -78,4 +81,83 @@ export interface ScaffolderTemplatingExtensionPoint {
 export const scaffolderTemplatingExtensionPoint =
   createExtensionPoint<ScaffolderTemplatingExtensionPoint>({
     id: 'scaffolder.templating',
+  });
+
+/**
+ * Autocomplete handler for the scaffolder.
+ * @alpha
+ */
+export type AutocompleteHandler = ({
+  resource,
+  token,
+  context,
+}: {
+  resource: string;
+  token: string;
+  context: Record<string, string>;
+}) => Promise<{ results: { title: string }[] }>;
+
+/**
+ * Extension point for adding autocomplete handler providers
+ * @alpha
+ */
+export interface ScaffolderAutocompleteExtensionPoint {
+  addAutocompleteProvider({
+    id,
+    handler,
+  }: {
+    id: string;
+    handler: AutocompleteHandler;
+  }): void;
+}
+
+/**
+ * Extension point for adding autocomplete handlers.
+ *
+ * @alpha
+ */
+export const scaffolderAutocompleteExtensionPoint =
+  createExtensionPoint<ScaffolderAutocompleteExtensionPoint>({
+    id: 'scaffolder.autocomplete',
+  });
+
+/**
+ * This provider has to be implemented to make it possible to serialize/deserialize scaffolder workspace.
+ *
+ * @alpha
+ */
+export interface WorkspaceProvider {
+  serializeWorkspace({
+    path,
+    taskId,
+  }: {
+    path: string;
+    taskId: string;
+  }): Promise<void>;
+
+  cleanWorkspace(options: { taskId: string }): Promise<void>;
+
+  rehydrateWorkspace(options: {
+    taskId: string;
+    targetPath: string;
+  }): Promise<void>;
+}
+
+/**
+ * Extension point for adding workspace providers.
+ *
+ * @alpha
+ */
+export interface ScaffolderWorkspaceProviderExtensionPoint {
+  addProviders(providers: Record<string, WorkspaceProvider>): void;
+}
+
+/**
+ * Extension point for adding workspace providers.
+ *
+ * @alpha
+ */
+export const scaffolderWorkspaceProviderExtensionPoint =
+  createExtensionPoint<ScaffolderWorkspaceProviderExtensionPoint>({
+    id: 'scaffolder.workspace.provider',
   });

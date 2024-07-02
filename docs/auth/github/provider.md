@@ -71,7 +71,7 @@ This provider includes several resolvers out of the box that you can use:
 - `emailLocalPartMatchingUserEntityName`: Matches the [local part](https://en.wikipedia.org/wiki/Email_address#Local-part) of the email address from the auth provider with the User entity that has a matching `name`. If no match is found it will throw a `NotFoundError`.
 - `usernameMatchingUserEntityName`: Matches the username from the auth provider with the User entity that has a matching `name`. If no match is found it will throw a `NotFoundError`.
 
-:::note
+:::note Note
 
 The resolvers will be tried in order, but will only be skipped if they throw a `NotFoundError`.
 

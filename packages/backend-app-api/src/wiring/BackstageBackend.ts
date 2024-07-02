@@ -65,9 +65,11 @@ function unwrapFeature(
   if (typeof feature === 'function') {
     return feature();
   }
+
   if ('$$type' in feature) {
     return feature;
   }
+
   // This is a workaround where default exports get transpiled to `exports['default'] = ...`
   // in CommonJS modules, which in turn results in a double `{ default: { default: ... } }` nesting
   // when importing using a dynamic import.
@@ -78,5 +80,6 @@ function unwrapFeature(
       ? defaultFeature()
       : defaultFeature;
   }
+
   return feature;
 }

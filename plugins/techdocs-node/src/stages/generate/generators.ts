@@ -42,7 +42,7 @@ export class Generators implements GeneratorBuilder {
     config: Config,
     options: {
       logger: Logger;
-      containerRunner: ContainerRunner;
+      containerRunner?: ContainerRunner;
       customGenerator?: TechdocsGenerator;
     },
   ): Promise<GeneratorBuilder> {
