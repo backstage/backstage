@@ -22,6 +22,7 @@ import {
   ConfigSources,
   RemoteConfigSourceOptions,
 } from '@backstage/config-loader';
+import { createDefaultBackstageLogger } from '../rootLogger/rootLoggerServiceFactory';
 
 /**
  * Access to static configuration.
@@ -58,7 +59,15 @@ export const rootConfigServiceFactory = createServiceFactory(
         remote: options?.remote,
         watch: options?.watch,
       });
-      console.log(`Loading config from ${source}`);
+
+      /**
+       * rootConfig is a dependency of rootLogger. As such rootLogger can not be used as a dependency of this service
+       * factory. This factory function creates a similar logger to the default rootLogger with default
+       * environmental controls (process.env.LOG_LEVEL, process.env.NODE_ENV, etc.)
+       */
+      const logger = createDefaultBackstageLogger();
+      logger.info(`Loading config from ${source}`);
+
       return await ConfigSources.toConfig(source);
     },
   }),
