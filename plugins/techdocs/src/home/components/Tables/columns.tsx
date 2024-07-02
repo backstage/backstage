@@ -30,11 +30,29 @@ function customTitle(entity: Entity): string {
  * @public
  */
 export const columnFactories = {
+  createTitleColumn(options?: { hidden?: boolean }): TableColumn<DocsTableRow> {
+    return {
+      title: 'Document',
+      field: 'entity.metadata.title',
+      hidden: options?.hidden,
+      highlight: true,
+      searchable: true,
+      render: (row: DocsTableRow) => (
+        <SubvalueCell
+          value={
+            <Link to={row.resolved.docsUrl}>{customTitle(row.entity)}</Link>
+          }
+          subvalue={row.entity.metadata.description}
+        />
+      ),
+    };
+  },
   createNameColumn(): TableColumn<DocsTableRow> {
     return {
       title: 'Document',
       field: 'entity.metadata.name',
       highlight: true,
+      searchable: true,
       render: (row: DocsTableRow) => (
         <SubvalueCell
           value={
