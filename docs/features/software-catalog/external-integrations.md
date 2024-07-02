@@ -336,7 +336,7 @@ backend.start();
 
 If you want to go a step further and increase the configurability of your new `FrobsProvider`, you can define the schedule that the task runs at in `app-config.yaml` instead of requiring code changes to adjust.
 
-```yaml
+```yaml title="app-config.yaml"
 catalog:
   providers:
     frobs-provider:
@@ -350,7 +350,7 @@ This approach will also allow you to customize the schedule per environment
 
 #### New Backend
 
-```ts
+```ts title="packages/backend/src/index.ts"
 import {
   SchedulerServiceTaskScheduleDefinition,
   /* highlight-add-start */
@@ -390,6 +390,38 @@ export const catalogModuleFrobsProvider = createBackendModule({
     });
   },
 });
+```
+
+#### Old Backend
+
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { FrobsProvider } from '../path/to/class';
+import {
+  /* highlight-add-start */
+  readSchedulerServiceTaskScheduleDefinitionFromConfig,
+  /* highlight-add-end */
+} from '@backstage/backend-plugin-api';
+
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  /* highlight-add-start */
+  const config = env.config.getConfig('catalog.providers.frobs-provider'); // Generally, catalog config goes under catalog.providers.pluginId
+  // Add a default schedule if you don't define one in config.
+  const schedule = config.has('schedule')
+    ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
+        config.getConfig('schedule'),
+      )
+    : {
+        frequency: { minutes: 30 },
+        timeout: { minutes: 10 },
+      };
+  const taskRunner = env.scheduler.createScheduledTaskRunner(schedule);
+  /* highlight-add-end */
+
+  // ..
+}
 ```
 
 ### Example User Entity Provider
