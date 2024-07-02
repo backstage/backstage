@@ -41,7 +41,7 @@ Docs are published to [backstage.io/docs](https://backstage.io/docs). If you
 contribute to the documentation, you might want to preview your changes before
 submitting them. You'll find the website sources under [/microsite](https://github.com/backstage/backstage/tree/master/microsite)
 with instructions for building and locally serving the website in the
-[README](/microsite#readme).
+[README](https://github.com/backstage/backstage/blob/master/microsite/README.md).
 
 ### Contribute to Storybook
 

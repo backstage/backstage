@@ -20,17 +20,27 @@ Testing the web site locally is a great way to see what final website will look 
 
 ## Installation
 
+From the `/microsite` folder:
+
 ```bash
 $ yarn install
 ```
 
 ## Local Development
 
+From the `/microsite` folder:
+
 ```bash
 $ yarn start
 ```
 
 This command starts a local development server and opens up a browser window. Most content changes made to the `docs/` root folder are reflected live without having to restart the server.
+
+To verify all documentation changes in Markdown files:
+
+```bash
+$ yarn lint:docs
+```
 
 ## Build
 
