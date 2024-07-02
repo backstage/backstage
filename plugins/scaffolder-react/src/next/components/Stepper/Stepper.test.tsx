@@ -169,6 +169,108 @@ describe('Stepper', () => {
     );
   });
 
+  it('should omit properties that are no longer pertinent to the current step', async () => {
+    const manifest: TemplateParameterSchema = {
+      title: 'something',
+      steps: [
+        {
+          title: 'Fill in some steps',
+          schema: {
+            properties: {
+              name: {
+                title: 'Name',
+                type: 'string',
+                description: 'Unique name of the service, snake_case',
+                pattern: '^[a-z_]+$',
+                'ui:help': 'Example: my_service',
+                'ui:autofocus': true,
+              },
+              owner: {
+                title: 'Owner',
+                type: 'string',
+                description: 'Team owning the service',
+                'ui:field': 'OwnerPicker',
+                'ui:options': {
+                  allowArbitraryValues: false,
+                  catalogFilter: {
+                    kind: ['Group'],
+                    'spec.type': ['team'],
+                  },
+                },
+              },
+              moreInfo: {
+                title: 'Provide description?',
+                type: 'boolean',
+                default: false,
+              },
+            },
+            allOf: [
+              {
+                if: {
+                  properties: {
+                    moreInfo: {
+                      const: true,
+                    },
+                  },
+                },
+                then: {
+                  properties: {
+                    description: {
+                      title: 'Description',
+                      type: 'string',
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        },
+      ],
+    };
+
+    const onCreate = jest.fn(async (values: Record<string, JsonValue>) => {
+      expect(values).toEqual({
+        name: 'myservice',
+      });
+    });
+
+    const { getByRole } = await renderInTestApp(
+      <SecretsContextProvider>
+        <Stepper manifest={manifest} onCreate={onCreate} extensions={[]} />
+      </SecretsContextProvider>,
+    );
+
+    await fireEvent.change(getByRole('textbox', { name: 'Name' }), {
+      target: { value: 'myservice' },
+    });
+
+    await act(async () => {
+      await fireEvent.click(
+        getByRole('checkbox', { name: 'Provide description?' }),
+      );
+    });
+
+    await act(async () => {
+      await fireEvent.change(getByRole('textbox', { name: 'Description' }), {
+        target: { value: 'My Test Description' },
+      });
+    });
+
+    await act(async () => {
+      await fireEvent.click(
+        getByRole('checkbox', { name: 'Provide description?' }),
+      );
+    });
+
+    await act(async () => {
+      await fireEvent.click(getByRole('button', { name: 'Review' }));
+    });
+
+    await act(async () => {
+      await fireEvent.click(getByRole('button', { name: 'Create' }));
+    });
+  });
+
   it('should merge nested formData correctly in multiple steps', async () => {
     const Repo = ({
       onChange,

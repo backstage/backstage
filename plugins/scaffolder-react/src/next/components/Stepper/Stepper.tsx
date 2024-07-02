@@ -230,6 +230,7 @@ export const Stepper = (stepperProps: StepperProps) => {
             uiSchema={currentStep.uiSchema}
             onSubmit={handleNext}
             fields={fields}
+            omitExtraData
             showErrorList="top"
             templates={{ ErrorListTemplate }}
             onChange={handleChange}
