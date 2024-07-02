@@ -20,6 +20,8 @@ import {
   NotificationStatus,
 } from '@backstage/plugin-notifications-common';
 
+import { JsonObject } from '@backstage/types';
+
 /** @internal */
 export type EntityOrder = {
   field: string;
@@ -40,6 +42,7 @@ export type NotificationGetOptions = {
   saved?: boolean;
   createdAfter?: Date;
   minimumSeverity?: NotificationSeverity;
+  metadata?: JsonObject;
 };
 
 /** @internal */
@@ -50,6 +53,7 @@ export type NotificationModifyOptions = {
 /** @internal */
 export interface NotificationsStore {
   getNotifications(options: NotificationGetOptions): Promise<Notification[]>;
+
   getNotificationsCount(options: NotificationGetOptions): Promise<number>;
 
   saveNotification(notification: Notification): Promise<void>;
