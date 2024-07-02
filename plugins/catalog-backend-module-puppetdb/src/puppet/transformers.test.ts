@@ -28,11 +28,9 @@ describe('defaultResourceTransformer', () => {
     };
     const node: PuppetNode = {
       certname: 'node1',
-      timestamp: 'time1',
-      hash: 'hash1',
-      producer_timestamp: 'producer_time1',
-      producer: 'producer1',
-      environment: 'environment1',
+      latest_report_hash: 'hash1',
+      facts_timestamp: 'facts_time1',
+      facts_environment: 'environment1',
       latest_report_status: 'unchanged',
       facts: {
         href: 'facts1',
