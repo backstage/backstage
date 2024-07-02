@@ -1,5 +1,21 @@
 # @backstage/plugin-techdocs-node
 
+## 1.12.8-next.1
+
+### Patch Changes
+
+- 9ecf5fd: Adds extension point for publishers to the techdocs backend
+- 4c4d077: Bumps default version of techdocs docker image to latest
+- Updated dependencies
+  - @backstage/backend-common@0.23.3-next.1
+  - @backstage/backend-plugin-api@0.6.22-next.1
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.13.0-next.0
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/plugin-search-common@1.2.12
+
 ## 1.12.7-next.0
 
 ### Patch Changes

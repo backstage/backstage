@@ -1,5 +1,13 @@
 # @backstage/plugin-auth-backend-module-gitlab-provider
 
+## 0.1.19-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.22-next.1
+  - @backstage/plugin-auth-node@0.4.17-next.1
+
 ## 0.1.18-next.0
 
 ### Patch Changes

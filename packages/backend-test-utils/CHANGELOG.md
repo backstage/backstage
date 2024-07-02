@@ -1,5 +1,20 @@
 # @backstage/backend-test-utils
 
+## 0.4.4-next.1
+
+### Patch Changes
+
+- b9ed1bb: bumped better-sqlite3 from ^9.0.0 to ^11.0.0
+- Updated dependencies
+  - @backstage/backend-defaults@0.3.4-next.1
+  - @backstage/backend-app-api@0.7.10-next.1
+  - @backstage/backend-plugin-api@0.6.22-next.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.17-next.1
+  - @backstage/plugin-events-node@0.3.8-next.1
+
 ## 0.4.3-next.0
 
 ### Patch Changes
