@@ -43,11 +43,10 @@ export function createOAuthProviderFactory<TProfile>(options: {
   return ctx => {
     return OAuthEnvironmentHandler.mapConfig(ctx.config, envConfig => {
       const signInResolver =
-        options.signInResolver ??
         readDeclarativeSignInResolver({
           config: envConfig,
           signInResolverFactories: options.signInResolverFactories ?? {},
-        });
+        }) ?? options.signInResolver;
 
       return createOAuthRouteHandlers<TProfile>({
         authenticator: options.authenticator,
