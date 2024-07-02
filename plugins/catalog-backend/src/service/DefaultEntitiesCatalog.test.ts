@@ -433,6 +433,79 @@ describe('DefaultEntitiesCatalog', () => {
     );
 
     it.each(databases.eachSupportedId())(
+      'should return correct entities for filter w/ pattern matching, %p',
+      async databaseId => {
+        await createDatabase(databaseId);
+        const entity1: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'one', org: 'a', desc: 'another/test/world' },
+          spec: {},
+        };
+        const entity2: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'two', org: 'b', desc: 'another/HELLO/world' },
+          spec: {},
+        };
+        const entity3: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'three', org: 'b', color: 'blue' },
+          spec: {},
+        };
+        const entity4: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'five', org: 'b', color: 'green' },
+          spec: {},
+        };
+        const entity5: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'four', org: 'b', color: 'red' },
+          spec: {},
+        };
+        await addEntityToSearch(entity1);
+        await addEntityToSearch(entity2);
+        await addEntityToSearch(entity3);
+        await addEntityToSearch(entity4);
+        await addEntityToSearch(entity5);
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: mockServices.logger.mock(),
+          stitcher,
+        });
+
+        // only patterns defined
+        const testFilter1 = {
+          key: 'metadata.desc',
+          patterns: ['%hello_world%', '%test%'],
+        };
+
+        // values and patterns defined
+        const testFilter2 = {
+          key: 'metadata.color',
+          values: ['blue'],
+          patterns: ['%een'],
+        };
+
+        const { entities } = await catalog.entities({
+          filter: {
+            anyOf: [testFilter1, testFilter2],
+          },
+          credentials: mockCredentials.none(),
+        });
+
+        expect(entities.length).toBe(4);
+        expect(entities).toContainEqual(entity1);
+        expect(entities).toContainEqual(entity2);
+        expect(entities).toContainEqual(entity3);
+        expect(entities).toContainEqual(entity4);
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
       'should return correct entities for complex negation filter, %p',
       async databaseId => {
         await createDatabase(databaseId);
