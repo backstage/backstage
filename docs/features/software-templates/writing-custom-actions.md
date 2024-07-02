@@ -146,7 +146,7 @@ argument. It looks like the following:
 
 - `ctx.baseUrl` - a string where the template is located
 - `ctx.checkpoint` - _Experimental_ allows to implement idempotency of the actions by not re-running the same function again if it was
-  executed successfully on the previous run.
+  executed successfully on the previous run. More information [here](https://github.com/backstage/backstage/tree/master/beps/0004-scaffolder-task-idempotency#checkpoints)
 - `ctx.logger` - a Winston logger for additional logging inside your action
 - `ctx.logStream` - a stream version of the logger if needed
 - `ctx.workspacePath` - a string of the working directory of the template run
@@ -225,7 +225,7 @@ Idempotent action could be achieved via the usage of checkpoints.
 
 Example:
 
-```ts
+```ts title="plugins/my-company-scaffolder-actions-plugin/src/vendor/my-custom-action.ts"
 const res = await ctx.checkpoint?.('create.projects', async () => {
   const projectStgId = createStagingProjectId();
   const projectProId = createProductionProjectId();
