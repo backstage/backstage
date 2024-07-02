@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-notifications-backend-module-teams
+  title: '@backstage/plugin-notifications-backend-module-teams'
+  description: >-
+    The teams-notification-processor backend module for the notifications
+    plugin.
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: maintainers
