@@ -35,6 +35,12 @@ export const columnFactories = {
       title: 'Document',
       field: 'entity.metadata.name',
       highlight: true,
+      defaultSort: 'asc',
+      customSort: (row1, row2) => {
+        const title1 = customTitle(row1.entity).toLocaleLowerCase();
+        const title2 = customTitle(row2.entity).toLocaleLowerCase();
+        return title1.localeCompare(title2);
+      },
       render: (row: DocsTableRow) => (
         <SubvalueCell
           value={

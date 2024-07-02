@@ -51,6 +51,13 @@ export type DocsTableProps = {
   options?: TableOptions<DocsTableRow>;
 };
 
+const defaultColumns: TableColumn<DocsTableRow>[] = [
+  columnFactories.createNameColumn(),
+  columnFactories.createOwnerColumn(),
+  columnFactories.createKindColumn(),
+  columnFactories.createTypeColumn(),
+];
+
 /**
  * Component which renders a table documents
  *
@@ -83,13 +90,6 @@ export const DocsTable = (props: DocsTableProps) => {
       },
     };
   });
-
-  const defaultColumns: TableColumn<DocsTableRow>[] = [
-    columnFactories.createNameColumn(),
-    columnFactories.createOwnerColumn(),
-    columnFactories.createKindColumn(),
-    columnFactories.createTypeColumn(),
-  ];
 
   const defaultActions: TableProps<DocsTableRow>['actions'] = [
     actionFactories.createCopyDocsUrlAction(copyToClipboard),
