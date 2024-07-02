@@ -31,7 +31,7 @@ jobs:
 
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
       - name: Monitor and Synchronize Snyk Policies
-        uses: snyk/actions/node@d406fd286b663eb8c6f8adcced4f7bcd199c0a3f # master
+        uses: snyk/actions/node@a1346e4eaf761d462da22c34c681dc06849b6851 # master
         with:
           command: monitor
           args: >
@@ -46,7 +46,7 @@ jobs:
       # Above we run the `monitor` command, this runs the `test` command which is
       # the one that generates the SARIF report that we can upload to GitHub.
       - name: Create Snyk report
-        uses: snyk/actions/node@d406fd286b663eb8c6f8adcced4f7bcd199c0a3f # master
+        uses: snyk/actions/node@a1346e4eaf761d462da22c34c681dc06849b6851 # master
         continue-on-error: true # To make sure that SARIF upload gets called
         with:
           args: >
