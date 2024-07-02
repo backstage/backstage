@@ -172,7 +172,9 @@ catalog:
         host: gitlab.com
         orgEnabled: true
         group: org/teams # Required for gitlab.com when `orgEnabled: true`. Optional for self managed. Must not end with slash. Accepts only groups under the provided path (which will be stripped)
-        allowInherited: true # Allow groups to be ingested even if there are no direct members.
+        allowInherited: true # Optional. Members of any ancestor groups will also be considered members of the current group.
+        allowDescendants: true # Optional. Members of any descendant groups will also be considered members of the current group.
+        allowSharedFromGroups: true # Optional. Members of any invited groups will also be considered members of the current group.
         groupPattern: '[\s\S]*' # Optional. Filters found groups based on provided pattern. Defaults to `[\s\S]*`, which means to not filter anything
         schedule: # Same options as in TaskScheduleDefinition. Optional for the Legacy Backend System.
           # supports cron, ISO duration, "human duration" as used in code
@@ -193,6 +195,19 @@ order to limit the ingestion to a group within your organisation. `Group`
 entities will only be ingested for the configured group, or its descendant groups,
 but not any ancestor groups higher than the configured group path. Only groups
 which contain members will be ingested.
+
+### Subgroup Membership
+
+GitLab groups and subgroups provide a hierarchical structure to organize projects and users. Membership in a parent group automatically extends to its subgroups, ensuring consistent permissions across all levels. Additionally, membership can be managed using invited groups, allowing one group to be added to another. For Backstage users integrating with GitLab, understanding this [inheritance model](https://docs.gitlab.co.jp/ee/user/group/subgroups/#subgroup-membership) and the use of invited groups is crucial for accurately mapping and managing group and user entities.
+
+The `GitLabOrgDiscoveryEntityProvider` mirrors GitLab's membership behavior as follows:
+
+- by default, every direct member of a GitLab group is also a member of the corresponding group in Backstage;
+- to include members of subgroups as members of the parent group, enable the `allowDescendants` option;
+- to include members of parent groups as members of their subgroups, enable the `allowInherited` option. This also has the effect that subgroups with no direct members will not be skipped in the group ingestion process and will be added as a group entity in Backstage;
+- to include members of invited groups as members of the inviting group, enable the `allowSharedFromGroups` option.
+
+Refer to the [GitLab Group Member Relation](https://docs.gitlab.com/ee/api/graphql/reference/#groupmemberrelation) documentation for more information.
 
 ### Users
 
