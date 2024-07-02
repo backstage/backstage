@@ -1,5 +1,16 @@
 # @backstage/core-app-api
 
+## 1.13.1-next.1
+
+### Patch Changes
+
+- db2e2d5: Updated config schema to support app.routes.bindings
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
 ## 1.13.0-next.0
 
 ### Minor Changes

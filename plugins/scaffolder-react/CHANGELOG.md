@@ -1,5 +1,29 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.10.0-next.1
+
+### Minor Changes
+
+- 354e68c: Improve validation error display text in scaffolder
+
+### Patch Changes
+
+- cc81579: Updated dependency `@rjsf/utils` to `5.18.5`.
+  Updated dependency `@rjsf/core` to `5.18.5`.
+  Updated dependency `@rjsf/material-ui` to `5.18.5`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.18.5`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.12.2-next.1
+  - @backstage/core-components@0.14.9-next.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/theme@0.5.6
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+  - @backstage/plugin-permission-react@0.4.23
+  - @backstage/plugin-scaffolder-common@1.5.3
+
 ## 1.10.0-next.0
 
 ### Minor Changes
