@@ -441,3 +441,30 @@ repoUrl:
 `secretsKey` is the key used within the template secrets context to store the credential and `additionalScopes` is any additional permission scopes to request.
 
 The supported `additionalScopes` values are `gerrit`, `github`, `gitlab`, `bitbucket`, and `azure`.
+
+## RepoBranchPicker
+
+The input props that can be specified under `ui:options` for the `RepoBranchPicker` field extension.
+
+### `requestUserCredentials`
+
+If defined will request user credentials to auth against the given SCM platform.
+
+```yaml
+repoUrl:
+  title: Repository Branch
+  type: string
+  ui:field: RepoBranchPicker
+  ui:options:
+    requestUserCredentials:
+      secretsKey: USER_OAUTH_TOKEN
+      additionalScopes:
+        github:
+          - workflow:write
+```
+
+`secretsKey` is the key used within the template secrets context to store the credential and `additionalScopes` is any additional permission scopes to request.
+
+The supported `additionalScopes` values are `gerrit`, `github`, `gitlab`, `bitbucket`, and `azure`.
+
+If you're also using the `RepoUrlPicker` field extension, you should simply duplicate this part from there.

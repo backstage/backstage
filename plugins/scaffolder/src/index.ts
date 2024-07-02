@@ -30,6 +30,7 @@ export {
   MyGroupsPickerFieldExtension,
   RepoUrlPickerFieldExtension,
   MultiEntityPickerFieldExtension,
+  RepoBranchPickerFieldExtension,
   ScaffolderPage,
   scaffolderPlugin,
 } from './plugin';

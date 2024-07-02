@@ -77,6 +77,23 @@ export async function handleAutocompleteRequest({
 
       return { results: result.map(title => ({ title })) };
     }
+    case 'branches': {
+      if (!context.workspace || !context.repository)
+        throw new InputError(
+          'Missing workspace and/or repository context parameter',
+        );
+
+      const result: string[] = [];
+
+      for await (const page of client
+        .listBranchesByRepository(context.repository, context.workspace)
+        .iteratePages()) {
+        const names = [...page.values!].map(p => p.name!);
+        result.push(...names);
+      }
+
+      return { results: result.map(title => ({ title })) };
+    }
     default:
       throw new InputError(`Invalid resource: ${resource}`);
   }

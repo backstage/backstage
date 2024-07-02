@@ -162,4 +162,33 @@ describe('BitbucketCloudClient', () => {
     expect(results).toHaveLength(1);
     expect(results[0].slug).toEqual('workspace1');
   });
+
+  it('listBranchesByRepository', async () => {
+    server.use(
+      rest.get(
+        'https://api.bitbucket.org/2.0/repositories/workspace1/repo1/refs/branches',
+        (_, res, ctx) => {
+          const response = {
+            values: [
+              {
+                type: 'branch',
+                name: 'branch1',
+              } as Models.Branch,
+            ],
+          };
+          return res(ctx.json(response));
+        },
+      ),
+    );
+
+    const pagination = client.listBranchesByRepository('repo1', 'workspace1');
+
+    const results = [];
+    for await (const result of pagination.iterateResults()) {
+      results.push(result);
+    }
+
+    expect(results).toHaveLength(1);
+    expect(results[0].name).toEqual('branch1');
+  });
 });
