@@ -26,20 +26,7 @@ app:
   #   sessionReplaySampleRate: 0
 ```
 
-If your [`app-config.yaml`](https://github.com/backstage/backstage/blob/e0506af8fc54074a160fb91c83d6cae8172d3bb3/app-config.yaml#L5) file does not have this configuration, you may have to adjust your [`packages/app/public/index.html`](https://github.com/backstage/backstage/blob/e0506af8fc54074a160fb91c83d6cae8172d3bb3/packages/app/public/index.html#L69) to include the Datadog RUM `init()` section manually.
-
-The `clientToken` and `applicationId` are generated from the Datadog RUM page
-following
-[these instructions](https://docs.datadoghq.com/real_user_monitoring/browser/).
-
-There are two optional arguments:
-
-- `site`: The Datadog site of your organization; defaults to `datadoghq.com`
-- `env`: The application environment for Datadog events (no default)
-
-## Script to fix Datadog RUM not Publishing Issue
-
-Copy and paste this section to your `packages/app/public/index.html`
+If your [`app-config.yaml`](https://github.com/backstage/backstage/blob/e0506af8fc54074a160fb91c83d6cae8172d3bb3/app-config.yaml#L5) file does not have this configuration, you may have to adjust your [`packages/app/public/index.html`](https://github.com/backstage/backstage/blob/e0506af8fc54074a160fb91c83d6cae8172d3bb3/packages/app/public/index.html#L69) to include the Datadog RUM `init()` section manually. If you a Datadog not publishing issue copy and paste this section in to your `packages/app/public/index.html`
 
 ```
 <% if (config.has('app.datadogRum')) { %>
@@ -81,3 +68,12 @@ Copy and paste this section to your `packages/app/public/index.html`
  </script>
  <% } %>
 ```
+
+The `clientToken` and `applicationId` are generated from the Datadog RUM page
+following
+[these instructions](https://docs.datadoghq.com/real_user_monitoring/browser/).
+
+There are two optional arguments:
+
+- `site`: The Datadog site of your organization; defaults to `datadoghq.com`
+- `env`: The application environment for Datadog events (no default)
