@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-catalog-backend-module-aws-accounts
+  title: '@backstage/plugin-catalog-backend-module-aws-accounts'
+  description: A Backstage catalog backend module that provides AWS accounts via AWS organizations.
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: catalog-maintainers
