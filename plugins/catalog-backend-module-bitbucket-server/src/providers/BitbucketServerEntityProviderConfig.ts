@@ -48,10 +48,8 @@ export function readProviderConfigs(
     // simple/single config variant
     return [readProviderConfig(DEFAULT_PROVIDER_ID, providersConfig)];
   }
-
   return providersConfig.keys().map(id => {
     const providerConfig = providersConfig.getConfig(id);
-
     return readProviderConfig(id, providerConfig);
   });
 }
