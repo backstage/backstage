@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 import { createRootLogger } from '@backstage/backend-common';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
-import { createPublishGitlabMergeRequestAction } from './gitlabMergeRequest';
-import { createMockDirectory } from '@backstage/backend-test-utils';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
-import { examples } from './gitlabMergeRequest.examples';
 import yaml from 'yaml';
+import { createPublishGitlabMergeRequestAction } from './gitlabMergeRequest';
+import { examples } from './gitlabMergeRequest.examples';
 
 // Make sure root logger is initialized ahead of FS mock
 createRootLogger();
@@ -40,6 +40,18 @@ const mockGitlabClient = {
     create: jest.fn(async (_: any) => {
       return {
         default_branch: 'main',
+        iid: 123,
+      };
+    }),
+    show: jest.fn(async (_: any) => {
+      return {
+        merge_status: 'can_be_merged',
+        iid: 123,
+      };
+    }),
+    accept: jest.fn(async (_: any) => {
+      return {
+        merge_status: 'can_be_merged',
       };
     }),
   },
@@ -299,6 +311,24 @@ describe('createGitLabMergeRequest', () => {
             execute_filemode: false,
           },
         ],
+      );
+    });
+
+    it(`Should ${examples[6].description}`, async () => {
+      const input = yaml.parse(examples[6].example).steps[0].input;
+      mockDir.setContent({
+        [workspacePath]: {
+          source: { 'foo.txt': 'Hello there!' },
+          irrelevant: { 'bar.txt': 'Nothing to see here' },
+        },
+      });
+
+      const ctx = createMockActionContext({ input, workspacePath });
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.MergeRequests.accept).toHaveBeenCalledWith(
+        'owner/repo',
+        123,
       );
     });
   });
