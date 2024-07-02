@@ -27,4 +27,5 @@ export {
   type IncrementalEntityProvider,
   type IncrementalEntityProviderOptions,
   type PluginEnvironment,
+  type PluginEnvironmentV2,
 } from './types';

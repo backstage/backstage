@@ -42,13 +42,16 @@ The Incremental Entity Provider backend is designed for data sources that provid
 ## Installation
 
 1. Install `@backstage/plugin-catalog-backend-module-incremental-ingestion` with `yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-incremental-ingestion` from the Backstage root directory.
-2. In your catalog.ts, import `IncrementalCatalogBuilder` from `@backstage/plugin-catalog-backend-module-incremental-ingestion` and instantiate it with `await IncrementalCatalogBuilder.create(env, builder)`. You have to pass `builder` into `IncrementalCatalogBuilder.create` function because `IncrementalCatalogBuilder` will convert an `IncrementalEntityProvider` into an `EntityProvider` and call `builder.addEntityProvider`.
+2. In your catalog.ts, import `IncrementalCatalogBuilder` from `@backstage/plugin-catalog-backend-module-incremental-ingestion` and instantiate it with `await IncrementalCatalogBuilder.createV2(env, builder)`. You have to pass `builder` into `IncrementalCatalogBuilder.create` function because `IncrementalCatalogBuilder` will convert an `IncrementalEntityProvider` into an `EntityProvider` and call `builder.addEntityProvider`.
 
 ```ts
-const builder = CatalogBuilder.create(env);
+const builder = CatalogBuilder.createV2(env);
 // incremental builder receives builder because it'll register
 // incremental entity providers with the builder
-const incrementalBuilder = await IncrementalCatalogBuilder.create(env, builder);
+const incrementalBuilder = await IncrementalCatalogBuilder.createV2(
+  env,
+  builder,
+);
 ```
 
 3. After building the regular `CatalogBuilder`, build the incremental builder:
@@ -63,21 +66,21 @@ const { incrementalAdminRouter } = await incrementBuilder.build();
 
 The final result should look something like this,
 
-```ts
+````ts
 import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
 import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
 import { IncrementalCatalogBuilder } from '@backstage/plugin-catalog-backend-module-incremental-ingestion';
 import { Router } from 'express';
 import { Duration } from 'luxon';
-import { PluginEnvironment } from '../types';
+import { PluginEnvironmentV2 } from '../types';
 
 export default async function createPlugin(
-  env: PluginEnvironment,
+  env: PluginEnvironmentV2,
 ): Promise<Router> {
   const builder = CatalogBuilder.create(env);
   // incremental builder receives builder because it'll register
   // incremental entity providers with the builder
-  const incrementalBuilder = await IncrementalCatalogBuilder.create(
+  const incrementalBuilder = await IncrementalCatalogBuilder.createV2(
     env,
     builder,
   );
@@ -93,7 +96,11 @@ export default async function createPlugin(
 
   return router;
 }
-```
+
+> **Note**
+>
+> If you are using an older plugin that does not use the necessary types required for `PluginEnvironmentV2`,
+> you can use the `create()` method instead of `createV2()`
 
 ## Administrative Routes
 
@@ -149,7 +156,7 @@ interface IncrementalEntityProvider<TCursor, TContext> {
    */
   around(burst: (context: TContext) => Promise<void>): Promise<void>;
 }
-```
+````
 
 For this tutorial, we'll write an Incremental Entity Provider that will call an imaginary API. This imaginary API will return a list of imaginary services. The imaginary API has an imaginary API client with the following interface.
 
@@ -312,7 +319,10 @@ Now that you have your new Incremental Entity Provider, we can connect it to the
 We'll assume you followed the <a href="#installation">Installation</a> instructions. After you create your `incrementalBuilder`, you can instantiate your Entity Provider and pass it to the `addIncrementalEntityProvider` method.
 
 ```ts
-const incrementalBuilder = await IncrementalCatalogBuilder.create(env, builder);
+const incrementalBuilder = await IncrementalCatalogBuilder.createV2(
+  env,
+  builder,
+);
 
 // Assuming the token for the API comes from config
 const token = config.getString('myApiClient.token');

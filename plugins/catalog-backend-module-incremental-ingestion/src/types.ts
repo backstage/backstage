@@ -32,7 +32,12 @@ import type { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import type { DurationObjectUnits } from 'luxon';
 import type { Logger } from 'winston';
 import { IncrementalIngestionDatabaseManager } from './database/IncrementalIngestionDatabaseManager';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  DatabaseService,
+  LoggerService,
+  SchedulerService,
+  UrlReaderService,
+} from '@backstage/backend-plugin-api';
 
 /**
  * Ingest entities into the catalog in bite-sized chunks.
@@ -186,13 +191,28 @@ export interface IncrementalEntityProviderOptions {
   rejectEmptySourceCollections?: boolean;
 }
 
-/** @public */
+/**
+ * @public
+ * @deprecated Many types here are deprecated. Use PluginEnvironmentV2 instead.
+ */
 export type PluginEnvironment = {
   logger: Logger;
   database: PluginDatabaseManager;
   scheduler: PluginTaskScheduler;
   config: Config;
   reader: UrlReader;
+  permissions: PermissionEvaluator;
+};
+
+/**
+ * @public
+ */
+export type PluginEnvironmentV2 = {
+  logger: Logger;
+  database: DatabaseService;
+  scheduler: SchedulerService;
+  config: Config;
+  reader: UrlReaderService;
   permissions: PermissionEvaluator;
 };
 
