@@ -129,6 +129,24 @@ export const getRepoUrlFromLocationAnnotation = (
   return {};
 };
 
+/**
+ * Return the built defaultEditUri based on the provided defaultEditUri and docs_dir.
+ *
+ * @param defaultEditUri - the value provided in app_config.yml that is to be used as the
+ *   edit_uri if a mkdocs.yml does not contain one
+ * @param docsDir - the configured docs folder in the mkdocs.yml (defaults to 'docs')
+ * @returns the edit_uri for the mkdocs.yml
+ */
+export const getDefaultEditUri = (
+  defaultEditUri: string,
+  docsDir: string = 'docs',
+): string => {
+  if (defaultEditUri.includes('{docs_dir}')) {
+    return defaultEditUri.replace(/{docs_dir}/i, docsDir);
+  }
+  return defaultEditUri;
+};
+
 class UnknownTag {
   constructor(public readonly data: any, public readonly type?: string) {}
 }

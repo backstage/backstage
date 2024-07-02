@@ -177,4 +177,19 @@ describe('readGeneratorConfig', () => {
       defaultPlugins: ['mkdocs-custom-plugin'],
     });
   });
+
+  it('should read default edit uri', () => {
+    const config = new ConfigReader({
+      techdocs: {
+        generator: {
+          defaultEditUri: 'edit/test/docs',
+        },
+      },
+    });
+
+    expect(readGeneratorConfig(config, logger)).toEqual({
+      runIn: 'docker',
+      defaultEditUri: 'edit/test/docs',
+    });
+  });
 });
