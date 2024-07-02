@@ -38,7 +38,7 @@ import {
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
 
-import { useShadowRootElements } from '@backstage/plugin-techdocs-react';
+import { useShadowRoot } from '@backstage/plugin-techdocs-react';
 
 const boxShadow =
   '0 3px 1px rgba(0,0,0,0.1),0 4px 8px rgba(0,0,0,0.13),0 0 0 1px rgba(0,0,0,0.02)';
@@ -140,7 +140,7 @@ const useStyles = makeStyles(theme => ({
 export const TextSizeAddon = () => {
   const classes = useStyles();
   const theme = useTheme();
-  const [body] = useShadowRootElements(['body']);
+  const shadowRoot = useShadowRoot();
 
   const [value, setValue] = useState<number>(() => {
     const initialValue = localStorage?.getItem(settings.key);
@@ -178,7 +178,8 @@ export const TextSizeAddon = () => {
     [index, values, handleChangeCommitted],
   );
 
-  useEffect(() => {
+  const updateTextSize = useCallback(() => {
+    const body = shadowRoot?.querySelector('body');
     if (!body) return;
     const htmlFontSize =
       (
@@ -190,7 +191,19 @@ export const TextSizeAddon = () => {
       '--md-typeset-font-size',
       `${htmlFontSize * (value / 100)}px`,
     );
-  }, [body, value, theme]);
+  }, [shadowRoot, theme, value]);
+
+  useEffect(() => {
+    const observer = new MutationObserver(updateTextSize);
+    if (shadowRoot) {
+      observer.observe(shadowRoot, { childList: true });
+    }
+    return () => observer.disconnect();
+  }, [shadowRoot, updateTextSize]);
+
+  useEffect(() => {
+    updateTextSize();
+  }, [updateTextSize]);
 
   return (
     <MenuItem className={classes.menuItem} button disableRipple>
