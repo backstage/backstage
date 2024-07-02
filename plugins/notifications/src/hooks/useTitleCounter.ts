@@ -25,7 +25,7 @@ const throttledSetTitle = throttle((shownTitle: string) => {
   document.title = shownTitle;
 }, 100);
 
-/** @public */
+/** @internal */
 export function useTitleCounter() {
   const [title, setTitle] = useState(document.title);
   const [count, setCount] = useState(0);

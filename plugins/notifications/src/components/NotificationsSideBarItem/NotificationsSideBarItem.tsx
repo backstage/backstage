@@ -114,7 +114,9 @@ export const NotificationsSidebarItem = (props?: {
   const notificationsRoute = useRouteRef(rootRouteRef);
   // TODO: Do we want to add long polling in case signals are not available
   const { lastSignal } = useSignal<NotificationSignal>('notifications');
-  const { sendWebNotification } = useWebNotifications(webNotificationsEnabled);
+  const { sendWebNotification, requestUserPermission } = useWebNotifications(
+    webNotificationsEnabled,
+  );
   const [refresh, setRefresh] = React.useState(false);
   const { setNotificationCount } = useTitleCounter();
 
@@ -126,6 +128,19 @@ export const NotificationsSidebarItem = (props?: {
             component={Link}
             to={notification.payload.link ?? notificationsRoute()}
             onClick={() => {
+              if (notification.payload.link) {
+                notificationsApi
+                  .updateNotifications({
+                    ids: [notification.id],
+                    read: true,
+                  })
+                  .catch(() => {
+                    alertApi.post({
+                      message: 'Failed to mark notification as read',
+                      severity: 'error',
+                    });
+                  });
+              }
               closeSnackbar(snackBarId);
             }}
           >
@@ -259,6 +274,9 @@ export const NotificationsSidebarItem = (props?: {
       )}
       <SidebarItem
         to={notificationsRoute()}
+        onClick={() => {
+          requestUserPermission();
+        }}
         hasNotifications={!error && !!unreadCount}
         text={text}
         icon={icon}
