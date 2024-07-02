@@ -48,3 +48,10 @@ export {
   type FeatureFlagConfig,
   type FrontendFeature,
 } from './types';
+export {
+  type CreateExtensionKindOptions,
+  type CreateExtensionKindInstanceOptions,
+  type CreateExtensionOverrideKindInstanceOptions,
+  ExtensionKind,
+  createExtensionKind,
+} from './createExtensionKind';
