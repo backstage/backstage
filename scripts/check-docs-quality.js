@@ -30,6 +30,7 @@ const IGNORED_WHEN_LISTING = [
   /^.*[/\\]knip-report\.md$/,
   /^docs[/\\]releases[/\\].*-changelog\.md$/,
   /^docs[/\\]reference[/\\]/,
+  /^README-[a-z]{2}_[A-Z]{2}\.md$/,
 ];
 
 const IGNORED_WHEN_EXPLICIT = [
