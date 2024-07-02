@@ -1,5 +1,15 @@
 # example-app
 
+## 0.2.99-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs@1.10.7-next.2
+  - @backstage/plugin-kubernetes@0.11.12-next.2
+  - @backstage/plugin-kubernetes-cluster@0.0.13-next.2
+  - @backstage/plugin-techdocs-module-addons-contrib@1.1.12-next.0
+
 ## 0.2.99-next.1
 
 ### Patch Changes
