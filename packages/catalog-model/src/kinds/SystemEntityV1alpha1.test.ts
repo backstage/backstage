@@ -32,6 +32,7 @@ describe('SystemV1alpha1Validator', () => {
       spec: {
         owner: 'me',
         domain: 'domain',
+        type: 'system-type',
       },
     };
   });
@@ -83,5 +84,15 @@ describe('SystemV1alpha1Validator', () => {
   it('rejects empty domain', async () => {
     (entity as any).spec.domain = '';
     await expect(validator.check(entity)).rejects.toThrow(/domain/);
+  });
+
+  it('accepts missing type', async () => {
+    delete (entity as any).spec.type;
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects empty type', async () => {
+    (entity as any).spec.type = '';
+    await expect(validator.check(entity)).rejects.toThrow(/type/);
   });
 });
