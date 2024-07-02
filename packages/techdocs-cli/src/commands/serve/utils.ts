@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-import { promisify } from 'util';
 import * as winston from 'winston';
-import { execFile } from 'child_process';
+import Docker from 'dockerode';
 
 export async function checkIfDockerIsOperational(
   logger: winston.Logger,
+  client: Docker,
 ): Promise<boolean> {
   logger.info('Checking Docker status...');
   try {
-    const runCheck = promisify(execFile);
-    await runCheck('docker', ['info'], { shell: true });
+    await client.ping();
     logger.info(
       'Docker is up and running. Proceed to starting up mkdocs server',
     );
