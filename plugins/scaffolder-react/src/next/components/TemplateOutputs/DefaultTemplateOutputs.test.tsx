@@ -31,7 +31,7 @@ describe('<DefaultTemplateOutputs />', () => {
       ],
     };
 
-    const { getByRole } = await renderInTestApp(
+    const { getByRole, queryByTestId } = await renderInTestApp(
       <DefaultTemplateOutputs output={output} />,
       {
         mountedRoutes: {
@@ -39,7 +39,8 @@ describe('<DefaultTemplateOutputs />', () => {
         },
       },
     );
-
+    expect(queryByTestId('output-box')).not.toBeNull();
+    expect(queryByTestId('text-output-box')).not.toBeNull();
     // first text output default visible
     expect(getByRole('heading', { level: 2 }).innerHTML).toBe(
       output.text[0].title,
@@ -60,5 +61,21 @@ describe('<DefaultTemplateOutputs />', () => {
 
       expect(getByRole('heading', { level: 2 }).innerHTML).toBe(text.title);
     }
+  });
+  it('should not render anything when output is empty', async () => {
+    // This is the default case when no output field is present in the template
+    const output = {};
+    const { queryByTestId } = await renderInTestApp(
+      <DefaultTemplateOutputs output={output} />,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    // Ensure that nothing renders from this component
+    expect(queryByTestId('output-box')).toBeNull();
+    expect(queryByTestId('text-output-box')).toBeNull();
   });
 });
