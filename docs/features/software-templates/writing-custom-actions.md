@@ -145,8 +145,10 @@ When the action `handler` is called, we provide you a `context` as the only
 argument. It looks like the following:
 
 - `ctx.baseUrl` - a string where the template is located
-- `ctx.checkpoint` - _Experimental_ allows to implement idempotency of the actions by not re-running the same function again if it was
-  executed successfully on the previous run. More information [here](https://github.com/backstage/backstage/tree/master/beps/0004-scaffolder-task-idempotency#checkpoints)
+- `ctx.checkpoint` - _Experimental_ allows to
+  implement [idempotency of the actions](https://github.com/backstage/backstage/tree/master/beps/0004-scaffolder-task-idempotency)
+  by not re-running the same function again if it was
+  executed successfully on the previous run.
 - `ctx.logger` - a Winston logger for additional logging inside your action
 - `ctx.logStream` - a stream version of the logger if needed
 - `ctx.workspacePath` - a string of the working directory of the template run
