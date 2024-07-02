@@ -508,7 +508,10 @@ export function getGitLabIntegrationRelativePath(
 ): string;
 
 // @public
-export function getGitLabRequestOptions(config: GitLabIntegrationConfig): {
+export function getGitLabRequestOptions(
+  config: GitLabIntegrationConfig,
+  token?: string,
+): {
   headers: Record<string, string>;
 };
 

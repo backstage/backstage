@@ -23,21 +23,21 @@ import {
   UrlReaderServiceSearchOptions,
   UrlReaderServiceSearchResponse,
 } from '@backstage/backend-plugin-api';
+import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import {
+  GitLabIntegration,
+  ScmIntegrations,
   getGitLabFileFetchUrl,
   getGitLabIntegrationRelativePath,
   getGitLabRequestOptions,
-  GitLabIntegration,
-  ScmIntegrations,
 } from '@backstage/integration';
-import fetch, { Response } from 'node-fetch';
 import parseGitUrl from 'git-url-parse';
-import { Minimatch } from 'minimatch';
-import { Readable } from 'stream';
-import { NotFoundError, NotModifiedError } from '@backstage/errors';
-import { ReadTreeResponseFactory, ReaderFactory } from './types';
 import { trimEnd, trimStart } from 'lodash';
+import { Minimatch } from 'minimatch';
+import fetch, { Response } from 'node-fetch';
+import { Readable } from 'stream';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
+import { ReadTreeResponseFactory, ReaderFactory } from './types';
 import { parseLastModified } from './util';
 
 /**
@@ -71,14 +71,14 @@ export class GitlabUrlReader implements UrlReaderService {
     url: string,
     options?: UrlReaderServiceReadUrlOptions,
   ): Promise<UrlReaderServiceReadUrlResponse> {
-    const { etag, lastModifiedAfter, signal } = options ?? {};
+    const { etag, lastModifiedAfter, signal, token } = options ?? {};
     const builtUrl = await this.getGitlabFetchUrl(url);
 
     let response: Response;
     try {
       response = await fetch(builtUrl, {
         headers: {
-          ...getGitLabRequestOptions(this.integration.config).headers,
+          ...getGitLabRequestOptions(this.integration.config, token).headers,
           ...(etag && { 'If-None-Match': etag }),
           ...(lastModifiedAfter && {
             'If-Modified-Since': lastModifiedAfter.toUTCString(),
@@ -120,7 +120,7 @@ export class GitlabUrlReader implements UrlReaderService {
     url: string,
     options?: UrlReaderServiceReadTreeOptions,
   ): Promise<UrlReaderServiceReadTreeResponse> {
-    const { etag, signal } = options ?? {};
+    const { etag, signal, token } = options ?? {};
     const { ref, full_name, filepath } = parseGitUrl(url);
 
     let repoFullName = full_name;
@@ -147,7 +147,7 @@ export class GitlabUrlReader implements UrlReaderService {
           repoFullName,
         )}`,
       ).toString(),
-      getGitLabRequestOptions(this.integration.config),
+      getGitLabRequestOptions(this.integration.config, token),
     );
     if (!projectGitlabResponse.ok) {
       const msg = `Failed to read tree from ${url}, ${projectGitlabResponse.status} ${projectGitlabResponse.statusText}`;
@@ -175,7 +175,7 @@ export class GitlabUrlReader implements UrlReaderService {
         )}/repository/commits?${commitsReqParams.toString()}`,
       ).toString(),
       {
-        ...getGitLabRequestOptions(this.integration.config),
+        ...getGitLabRequestOptions(this.integration.config, token),
         // TODO(freben): The signal cast is there because pre-3.x versions of
         // node-fetch have a very slightly deviating AbortSignal type signature.
         // The difference does not affect us in practice however. The cast can
@@ -209,7 +209,7 @@ export class GitlabUrlReader implements UrlReaderService {
         repoFullName,
       )}/repository/archive?${archiveReqParams.toString()}`,
       {
-        ...getGitLabRequestOptions(this.integration.config),
+        ...getGitLabRequestOptions(this.integration.config, token),
         // TODO(freben): The signal cast is there because pre-3.x versions of
         // node-fetch have a very slightly deviating AbortSignal type signature.
         // The difference does not affect us in practice however. The cast can
