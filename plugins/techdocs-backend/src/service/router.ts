@@ -39,6 +39,7 @@ import { CachedEntityLoader } from './CachedEntityLoader';
 import { DefaultDocsBuildStrategy } from './DefaultDocsBuildStrategy';
 import * as winston from 'winston';
 import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
+import {JSDOM} from "jsdom";
 
 /**
  * Required dependencies for running TechDocs in the "out-of-the-box"
@@ -227,6 +228,7 @@ export async function createRouter(
   router.get('/sync/:namespace/:kind/:name', async (req, res) => {
     const { kind, namespace, name } = req.params;
 
+
     const credentials = await httpAuth.credentials(req);
 
     const { token } = await auth.getPluginRequestToken({
@@ -242,6 +244,34 @@ export async function createRouter(
 
     const responseHandler: DocsSynchronizerSyncOpts = createEventStream(res);
 
+    router.use(
+      async (_req, res, next) => {
+        console.log('Request intercepted, start')
+        res.on('finish', () => {
+          console.log('Request intercepted, finish')
+        } )
+        res.on('close', () => {
+          console.log('Request intercepted, close')
+        })
+        res.on('end', () => {
+          console.log('Request intercepted, end')
+        })
+        res.on('write', () => {
+          console.log('Request intercepted, write')
+        })
+        res.on('send', () => {
+          console.log('Request intercepted, send')
+        })
+        //   const oldSend = res.send
+        //   res.send = function(data) {
+        //     console.log('in res send')
+        //     console.log(data) // do something with the data
+        //     res.send = oldSend // set function back to avoid the 'double-send'
+        //     return res.send(data) // just call as normal with data
+        //   }
+          next();
+      },
+    );
     // By default, techdocs-backend will only try to build documentation for an entity if techdocs.builder is set to
     // 'local'. If set to 'external', it will assume that an external process (e.g. CI/CD pipeline
     // of the repository) is responsible for building and publishing documentation to the storage provider.
@@ -284,6 +314,24 @@ export async function createRouter(
     );
   });
 
+  // // middleware to intercept response.send()
+  // router.use((_req, res, next) => {
+  //   // Storing the original send function
+  //   const originalSend = res.send;
+  //
+  //   // Override function
+  //   res.send = function (body) {
+  //     // Modify the response body
+  //     const Modifybody = "modified: " + body;
+  //
+  //     console.log('Intercepted response.send():', body);
+  //     console.log('Intercepted response.send():', Modifybody);
+  //     // Calling the original send function
+  //     originalSend.call(this, Modifybody);
+  //   };
+  //   next();
+  // });
+
   // Ensures that the related entity exists and the current user has permission to view it.
   if (config.getOptionalBoolean('permission.enabled')) {
     router.use(
@@ -319,8 +367,74 @@ export async function createRouter(
     router.use(createCacheMiddleware({ logger, cache }));
   }
 
+  function interceptResponse(req, res, next){
+    console.log('Intercepted request and response for:', req.url);
+
+    let dataChunks = [];
+    const oldWrite = res.write;
+    const oldEnd = res.end;
+
+    res.write = function(chunk) {
+      // console.log('Intercepted response.write():', chunk.toString('utf8'));
+      dataChunks.push(chunk);
+      oldWrite.apply(res, arguments);
+    };
+
+    res.end = function(chunk) {
+      if (chunk) {
+        dataChunks.push(chunk);
+      }
+
+      const responseBody = Buffer.concat(dataChunks).toString('utf8');
+      console.log('Intercepted response.end():', responseBody);
+      console.log('checkIfMkDocsRedirectInDoc:', checkIfMkDocsRedirectInDoc(responseBody) ? 'true' : 'false');
+      if(checkIfMkDocsRedirectInDoc(responseBody) && responseBody){
+        const redirectRelPath = determineRedirectPath(responseBody);
+        if(redirectRelPath){
+          const requestUrl = req.protocol + '://' + req.host + req.originalUrl;
+          console.log('original url', requestUrl);
+          console.log('Redirecting to:', redirectRelPath);
+        }
+
+      }
+      oldEnd.apply(res, arguments);
+    };
+
+
+    res.on('finish', () => {
+      console.log('Intercepted response.finish():', res.statusCode);
+
+    });
+    next()
+  }
+
+  const checkIfMkDocsRedirectInDoc = (body: string) => {
+    const title = '<title>Redirecting...</title>';
+    const metaTag = '<meta http-equiv="refresh"';
+    console.log("body.includes(title) ", body.includes(title));
+    console.log("body.includes(metaTag) ", body.includes(metaTag))  ;
+    if(body.includes(title) && body.includes(metaTag)){
+      return true;
+    }
+    return false ;
+  }
+  const determineRedirectPath = (body: string) => {
+    const dom = new JSDOM(body);
+    const metaTags = Array.from(dom.window.document.querySelectorAll('meta'))
+
+    for ( const metaTag of metaTags){
+      const metaContent = metaTag.getAttribute('content');
+      if(metaContent?.includes('url=') ) {
+        const redirectUrl = metaContent.split('url=')[1];
+        console.log('Redirecting to:', redirectUrl);
+        return redirectUrl;
+      }
+    }
+      return undefined;
+  };
+
   // Route middleware which serves files from the storage set in the publisher.
-  router.use('/static/docs', publisher.docsRouter());
+  router.use('/static/docs', interceptResponse, publisher.docsRouter());
 
   return router;
 }
