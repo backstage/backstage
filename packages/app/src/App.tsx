@@ -56,6 +56,7 @@ import {
   LightBox,
   ReportIssue,
   TextSize,
+  Redirects,
 } from '@backstage/plugin-techdocs-module-addons-contrib';
 import {
   SettingsLayout,
@@ -171,6 +172,7 @@ const routes = (
         <ReportIssue />
         <TextSize />
         <LightBox />
+        <Redirects />
       </TechDocsAddons>
     </Route>
     <Route

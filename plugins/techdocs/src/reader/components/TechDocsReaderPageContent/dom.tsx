@@ -46,6 +46,7 @@ import {
   useStylesTransformer,
 } from '../../transformers';
 import { useNavigateUrl } from './useNavigateUrl';
+import { replaceMetaRedirects } from '../../transformers/replaceMetaRedirects';
 
 const MOBILE_MEDIA_QUERY = 'screen and (max-width: 76.1875em)';
 
@@ -159,6 +160,7 @@ export const useTechDocsReaderDom = (
   const preRender = useCallback(
     (rawContent: string, contentPath: string) =>
       transformer(rawContent, [
+        replaceMetaRedirects(),
         sanitizerTransformer,
         addBaseUrl({
           techdocsStorageApi,

@@ -23,6 +23,7 @@ import { ExpandableNavigationAddon } from './ExpandableNavigation';
 import { ReportIssueAddon, ReportIssueProps } from './ReportIssue';
 import { TextSizeAddon } from './TextSize';
 import { LightBoxAddon } from './LigthBox';
+import { RedirectsAddon } from './Redirects';
 
 /**
  * The TechDocs addons contrib plugin
@@ -248,5 +249,51 @@ export const LightBox = techdocsModuleAddonsContribPlugin.provide(
     name: 'LightBox',
     location: TechDocsAddonLocations.Content,
     component: LightBoxAddon,
+  }),
+);
+
+/**
+ * This TechDocs addon allows users to open images in a lightbox on documentation pages, they can navigate between images if there are several on one page.
+ *
+ * @remarks
+ * The image size of the lightbox image is the same as the image size on the document page.
+ *
+ * @example
+ * Here's a simple example:
+ * ```
+ * import {
+ *   DefaultTechDocsHome,
+ *   TechDocsIndexPage,
+ *   TechDocsReaderPage,
+ * } from '@backstage/plugin-techdocs';
+ * import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
+ * import { LightBox } from '@backstage/plugin-techdocs-module-addons-contrib';
+ *
+ *
+ * const AppRoutes = () => {
+ *   <FlatRoutes>
+ *     // other plugin routes
+ *     <Route path="/docs" element={<TechDocsIndexPage />}>
+ *       <DefaultTechDocsHome />
+ *     </Route>
+ *     <Route
+ *       path="/docs/:namespace/:kind/:name/*"
+ *       element={<TechDocsReaderPage />}
+ *     >
+ *       <TechDocsAddons>
+ *         <LightBox />
+ *       </TechDocsAddons>
+ *     </Route>
+ *   </FlatRoutes>;
+ * };
+ * ```
+ *
+ * @public
+ */
+export const Redirects = techdocsModuleAddonsContribPlugin.provide(
+  createTechDocsAddonExtension({
+    name: 'Redirects',
+    location: TechDocsAddonLocations.Content,
+    component: RedirectsAddon,
   }),
 );
