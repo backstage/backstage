@@ -183,11 +183,15 @@ export class Preparers implements PreparerBuilder {
 }
 
 // @public
-export class Publisher {
+export class Publisher implements PublisherBuilder {
   static fromConfig(
     config: Config,
     options: PublisherFactory,
   ): Promise<PublisherBase>;
+  // (undocumented)
+  get(config: Config): PublisherBase;
+  // (undocumented)
+  register(type: PublisherType | 'techdocs', publisher: PublisherBase): void;
 }
 
 // @public
@@ -203,9 +207,16 @@ export interface PublisherBase {
 }
 
 // @public
+export type PublisherBuilder = {
+  register(type: PublisherType, publisher: PublisherBase): void;
+  get(config: Config): PublisherBase;
+};
+
+// @public
 export type PublisherFactory = {
   logger: Logger;
   discovery: PluginEndpointDiscovery;
+  customPublisher?: PublisherBase | undefined;
 };
 
 // @public
@@ -268,7 +279,7 @@ export class TechdocsGenerator implements GeneratorBase {
     config: Config;
     scmIntegrations: ScmIntegrationRegistry;
   });
-  static readonly defaultDockerImage = 'spotify/techdocs:v1.2.3';
+  static readonly defaultDockerImage = 'spotify/techdocs:v1.2.4';
   static fromConfig(
     config: Config,
     options: GeneratorOptions,
@@ -302,6 +313,15 @@ export interface TechdocsPreparerExtensionPoint {
 
 // @public
 export const techdocsPreparerExtensionPoint: ExtensionPoint<TechdocsPreparerExtensionPoint>;
+
+// @public
+export interface TechdocsPublisherExtensionPoint {
+  // (undocumented)
+  registerPublisher(type: PublisherType, publisher: PublisherBase): void;
+}
+
+// @public
+export const techdocsPublisherExtensionPoint: ExtensionPoint<TechdocsPublisherExtensionPoint>;
 
 // @public
 export const transformDirLocation: (

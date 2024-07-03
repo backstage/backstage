@@ -14,4 +14,12 @@
  * limitations under the License.
  */
 
-export * from './statusCheckHandler';
+export interface Config {
+  /** Configuration options for the scaffolder plugin */
+  scaffolder?: {
+    /**
+     * Sets GCP bucket name to store serialized workspace for scaffolder tasks.
+     */
+    EXPERIMENTAL_workspaceSerializationGcpBucketName?: string;
+  };
+}

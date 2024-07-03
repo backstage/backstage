@@ -203,6 +203,10 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
           rawErrors={rawErrors}
           state={state}
           onChange={updateLocalState}
+          accessToken={
+            uiSchema?.['ui:options']?.requestUserCredentials?.secretsKey &&
+            secrets[uiSchema['ui:options'].requestUserCredentials.secretsKey]
+          }
         />
       )}
       {hostType === 'azure' && (
@@ -228,6 +232,7 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
           setState(prevState => ({ ...prevState, repoName: repo }))
         }
         rawErrors={rawErrors}
+        availableRepos={state.availableRepos}
       />
     </>
   );

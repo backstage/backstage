@@ -40,7 +40,10 @@ import { DateTime, Duration } from 'luxon';
 import { TaskRecovery, TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { trimEventsTillLastRecovery } from './taskRecoveryHelper';
 import { intervalFromNowTill } from './dbUtil';
-import { restoreWorkspace, serializeWorkspace } from './serializer';
+import {
+  restoreWorkspace,
+  serializeWorkspace,
+} from '@backstage/plugin-scaffolder-node/alpha';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-scaffolder-backend',
@@ -517,7 +520,10 @@ export class DatabaseTaskStore implements TaskStore {
       .where({ id: options.taskId })
       .select('workspace');
 
-    await restoreWorkspace(options.targetPath, result.workspace);
+    await restoreWorkspace({
+      path: options.targetPath,
+      buffer: result.workspace,
+    });
   }
 
   async cleanWorkspace({ taskId }: { taskId: string }): Promise<void> {
@@ -534,7 +540,7 @@ export class DatabaseTaskStore implements TaskStore {
       await this.db<RawDbTaskRow>('tasks')
         .where({ id: options.taskId })
         .update({
-          workspace: await serializeWorkspace(options.path),
+          workspace: (await serializeWorkspace(options)).contents,
         });
     }
   }

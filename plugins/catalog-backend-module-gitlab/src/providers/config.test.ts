@@ -60,6 +60,7 @@ describe('config', () => {
         allowInherited: false,
         schedule: undefined,
         skipForkedRepos: false,
+        restrictUsersToGroup: false,
       }),
     );
   });
@@ -98,6 +99,7 @@ describe('config', () => {
         allowInherited: false,
         schedule: undefined,
         skipForkedRepos: false,
+        restrictUsersToGroup: false,
       }),
     );
   });
@@ -136,6 +138,7 @@ describe('config', () => {
         orgEnabled: false,
         allowInherited: false,
         schedule: undefined,
+        restrictUsersToGroup: false,
         skipForkedRepos: true,
       }),
     );
@@ -177,6 +180,7 @@ describe('config', () => {
         orgEnabled: false,
         allowInherited: false,
         skipForkedRepos: false,
+        restrictUsersToGroup: false,
         schedule: {
           frequency: { minutes: 30 },
           timeout: {

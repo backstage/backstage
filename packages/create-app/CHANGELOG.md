@@ -1,5 +1,21 @@
 # @backstage/create-app
 
+## 0.5.17-next.1
+
+### Patch Changes
+
+- 780d994: Added `MyGroupsSidebarItem` to the sidebar in the `create-app` template
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+
+## 0.5.17-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+
 ## 0.5.16
 
 ### Patch Changes

@@ -159,6 +159,18 @@ Scope: The Scaffolder frontend and backend plugins, and related tooling.
 | ------------------- | ------------ | ------------------------------------- | ---------------- |
 | Bogdan Nechyporenko | Bol.com      | [acierto](https://github.com/acierto) | `bogdan_haarlem` |
 
+### Documentation
+
+Team: @backstage/documentation-maintainers
+
+Scope: The Backstage Documentation
+
+| Name            | Organization  | GitHub                                                | Discord       |
+| --------------- | ------------- | ----------------------------------------------------- | ------------- |
+| Andre Wanlin    | Spotify       | [awanlin](https://github.com/awanlin)                 | `ahhhndre`    |
+| Aramis Sennyey  |               | [aramissennyeydd](https://github.com/aramissennyeydd) | `Aramis#7984` |
+| Peter Macdonald | VodafoneZiggo | [Parsifal-M](https://github.com/Parsifal-M)           | `parsifal`    |
+
 ## Sponsors
 
 | Name              | Organization | GitHub                                      | Email              |
@@ -187,6 +199,7 @@ Scope: The Scaffolder frontend and backend plugins, and related tooling.
 | Mark Avery                     | Cvent                     | [webark](https://github.com/webark)                   | `webark#8471`                  |
 | Miklós Kiss                    | Roadie.io                 | [kissmikijr](https://github.com/kissmikijr)           | `Miklos#7416`                  |
 | Patrick Jungermann             | Bonial International GmbH | [pjungermann](https://github.com/pjungermann)         | `pjungermann#6933`             |
+| Peter Macdonald                | VodafoneZiggo             | [Parsifal-M](https://github.com/Parsifal-M)           | `parsifal`                     |
 | Phil Kuang                     | FactSet Research Systems  | [kuangp](https://github.com/kuangp)                   | `pkuang#3202`                  |
 | Sebastian Poxhofer             | N26                       | [secustor](https://github.com/secustor)               | `secustor`                     |
 | Taras Mankovski                | Frontside                 | [taras](https://github.com/taras)                     | `tarasm#1256`                  |

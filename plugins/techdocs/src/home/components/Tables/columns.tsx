@@ -31,21 +31,12 @@ function customTitle(entity: Entity): string {
  */
 export const columnFactories = {
   createTitleColumn(options?: { hidden?: boolean }): TableColumn<DocsTableRow> {
+    const nameCol = columnFactories.createNameColumn()
     return {
-      title: 'Document',
+      ...nameCol,
       field: 'entity.metadata.title',
       hidden: options?.hidden,
-      highlight: true,
-      searchable: true,
-      render: (row: DocsTableRow) => (
-        <SubvalueCell
-          value={
-            <Link to={row.resolved.docsUrl}>{customTitle(row.entity)}</Link>
-          }
-          subvalue={row.entity.metadata.description}
-        />
-      ),
-    };
+    }
   },
   createNameColumn(): TableColumn<DocsTableRow> {
     return {
@@ -53,6 +44,12 @@ export const columnFactories = {
       field: 'entity.metadata.name',
       highlight: true,
       searchable: true,
+      defaultSort: 'asc',
+      customSort: (row1, row2) => {
+        const title1 = customTitle(row1.entity).toLocaleLowerCase();
+        const title2 = customTitle(row2.entity).toLocaleLowerCase();
+        return title1.localeCompare(title2);
+      },
       render: (row: DocsTableRow) => (
         <SubvalueCell
           value={
