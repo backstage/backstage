@@ -346,7 +346,7 @@ catalog:
         timeout: { minutes: 50 }
 ```
 
-This approach will also allow you to customize the schedule per environment
+This approach will also allow you to customize the schedule per environment. You can also [add a schema to your config](../../conf/defining.md).
 
 #### New Backend
 
