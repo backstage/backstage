@@ -133,13 +133,15 @@ describe('RepoBranchPicker', () => {
 
   describe('requestUserCredentials', () => {
     it('should call the scmAuthApi with the correct params', async () => {
+      const secretsKey = 'testKey';
+
       const SecretsComponent = () => {
         const { secrets } = useTemplateSecrets();
-        return (
-          <div data-testid="current-secrets">{JSON.stringify({ secrets })}</div>
-        );
+        const secret = secrets[secretsKey];
+        return secret ? <div>{secret}</div> : null;
       };
-      const { getByTestId } = await renderInTestApp(
+
+      const { getByText } = await renderInTestApp(
         <TestApiProvider
           apis={[
             [scmIntegrationsApiRef, mockIntegrationsApi],
@@ -155,7 +157,7 @@ describe('RepoBranchPicker', () => {
                 'ui:field': 'RepoBranchPicker',
                 'ui:options': {
                   requestUserCredentials: {
-                    secretsKey: 'testKey',
+                    secretsKey,
                     additionalScopes: { github: ['workflow'] },
                   },
                 },
@@ -190,22 +192,10 @@ describe('RepoBranchPicker', () => {
         },
       });
 
-      const currentSecrets = JSON.parse(
-        getByTestId('current-secrets').textContent!,
-      );
-
-      expect(currentSecrets).toEqual({
-        secrets: { testKey: 'abc123' },
-      });
+      expect(getByText('abc123')).toBeInTheDocument();
     });
 
     it('should call the scmAuthApi with the correct params if workspace is nested', async () => {
-      const SecretsComponent = () => {
-        const { secrets } = useTemplateSecrets();
-        return (
-          <div data-testid="current-secrets">{JSON.stringify({ secrets })}</div>
-        );
-      };
       await renderInTestApp(
         <TestApiProvider
           apis={[
@@ -237,7 +227,6 @@ describe('RepoBranchPicker', () => {
                 },
               }}
             />
-            <SecretsComponent />
           </SecretsContextProvider>
         </TestApiProvider>,
       );
@@ -256,13 +245,15 @@ describe('RepoBranchPicker', () => {
     });
 
     it('should not call the scmAuthApi if secret is available in the state', async () => {
+      const secretsKey = 'testKey';
+
       const SecretsComponent = () => {
         const { secrets } = useTemplateSecrets();
-        return (
-          <div data-testid="current-secrets">{JSON.stringify({ secrets })}</div>
-        );
+        const secret = secrets[secretsKey];
+        return secret ? <div>{secret}</div> : null;
       };
-      const { getByTestId } = await renderInTestApp(
+
+      const { getByText } = await renderInTestApp(
         <TestApiProvider
           apis={[
             [scmIntegrationsApiRef, mockIntegrationsApi],
@@ -270,7 +261,7 @@ describe('RepoBranchPicker', () => {
             [scaffolderApiRef, {}],
           ]}
         >
-          <SecretsContextProvider initialSecrets={{ testKey: 'abc123' }}>
+          <SecretsContextProvider initialSecrets={{ [secretsKey]: 'abc123' }}>
             <Form
               validator={validator}
               schema={{ type: 'string' }}
@@ -278,7 +269,7 @@ describe('RepoBranchPicker', () => {
                 'ui:field': 'RepoBranchPicker',
                 'ui:options': {
                   requestUserCredentials: {
-                    secretsKey: 'testKey',
+                    secretsKey,
                     additionalScopes: { github: ['workflow'] },
                   },
                 },
@@ -306,13 +297,7 @@ describe('RepoBranchPicker', () => {
       // as we already have a secret in the state, getCredentials should not be called again.
       expect(mockScmAuthApi.getCredentials).toHaveBeenCalledTimes(0);
 
-      const currentSecrets = JSON.parse(
-        getByTestId('current-secrets').textContent!,
-      );
-
-      expect(currentSecrets).toEqual({
-        secrets: { testKey: 'abc123' },
-      });
+      expect(getByText('abc123')).toBeInTheDocument();
     });
   });
 });
