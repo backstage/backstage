@@ -1,5 +1,12 @@
 # example-app
 
+## 0.2.102
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search@1.4.13
+
 ## 0.2.101
 
 ### Patch Changes

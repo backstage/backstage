@@ -1,5 +1,11 @@
 # @backstage/plugin-search
 
+## 1.4.13
+
+### Patch Changes
+
+- 314a686: Update deps in search api extension to include fetch api
+
 ## 1.4.12
 
 ### Patch Changes
