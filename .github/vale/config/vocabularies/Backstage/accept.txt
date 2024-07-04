@@ -222,6 +222,7 @@ mailto
 maintainer's
 maintainership
 makefile
+matchers
 Matomo
 md
 memcache
@@ -400,6 +401,7 @@ subheaders
 subkey
 subpath
 subroutes
+substring
 subtree
 superfences
 Superfences
