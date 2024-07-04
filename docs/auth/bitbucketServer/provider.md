@@ -10,8 +10,8 @@ users using Bitbucket Server. This does **NOT** work with Bitbucket Cloud.
 
 ## Create an Application Link in Bitbucket Server
 
-To add Bitbucket Server authentication, you must create an outgoing application link. Follow the steps described in
-the [Bitbucket Server documentation](https://confluence.atlassian.com/bitbucketserver/configure-an-outgoing-link-1108483656.html)
+To add Bitbucket Server authentication, you must create an incoming application link. Follow the steps described in
+the [Bitbucket Server documentation](https://confluence.atlassian.com/bitbucketserver/configure-an-incoming-link-1108483657.html)
 to create one.
 
 ## Configuration
