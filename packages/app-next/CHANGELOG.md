@@ -1,5 +1,12 @@
 # example-app-next
 
+## 0.0.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search@1.4.13
+
 ## 0.0.15
 
 ### Patch Changes
