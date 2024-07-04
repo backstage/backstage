@@ -16,7 +16,7 @@
 
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import FormControl from '@material-ui/core/FormControl';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import useDebounce from 'react-use/esm/useDebounce';
