@@ -27,6 +27,8 @@ export interface Config {
           token: string;
           subject: string;
         }>;
+        customHeader?: string;
+        customCookieAuthName?: string;
       };
       /**
        * The backstage token expiration.

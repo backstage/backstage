@@ -239,4 +239,83 @@ describe('helpers', () => {
       token: token,
     });
   });
+
+  it('works for regular tokens, through custom header auth', async () => {
+    jest.useFakeTimers({
+      now: 1600000004000,
+    });
+
+    const helper = AuthHelper.fromConfig(
+      new ConfigReader({ teamName: 'mock-team', customHeader: 'X-Auth-Token' }),
+      { cache },
+    );
+    const token = await tokenFactory.userToken();
+    const request = createRequest({
+      headers: { ['X-Auth-Token']: token },
+    });
+
+    const expected = {
+      cfIdentity: {
+        email: 'hello@example.com',
+        groups: [{ id: '123', email: 'foo@bar.com', name: 'foo' }],
+        id: '1234567890',
+        name: 'User Name',
+      },
+      claims: {
+        iss: `https://mock-team.cloudflareaccess.com`,
+        sub: '1234567890',
+        name: 'User Name',
+        iat: 1600000000,
+        exp: 1600000005,
+      },
+      expiresInSeconds: 5,
+    };
+
+    await expect(helper.authenticate(request)).resolves.toEqual({
+      ...expected,
+      token: token,
+    });
+    expect(cache.set).toHaveBeenCalledTimes(1);
+    expect(cache.set.mock.calls[0][0]).toBe(
+      'providers/cloudflare-access/profile-v1/1234567890',
+    );
+    expect(JSON.parse(cache.set.mock.calls[0][1] as string)).toEqual(expected);
+  });
+
+  it('works for regular tokens, through custom cookie auth name', async () => {
+    jest.useFakeTimers({
+      now: 1600000004000,
+    });
+
+    const helper = AuthHelper.fromConfig(
+      new ConfigReader({ teamName: 'mock-team', customCookieAuthName: 'CF_Custom_Auth' }),
+      { cache },
+    );
+    const token = await tokenFactory.userToken();
+    const request = createRequest({
+      cookies: { 'CF_Custom_Auth': token },
+    });
+
+    const expected = {
+      cfIdentity: {
+        email: 'hello@example.com',
+        groups: [{ id: '123', email: 'foo@bar.com', name: 'foo' }],
+        id: '1234567890',
+        name: 'User Name',
+      },
+      claims: {
+        iss: `https://mock-team.cloudflareaccess.com`,
+        sub: '1234567890',
+        name: 'User Name',
+        iat: 1600000000,
+        exp: 1600000005,
+      },
+      expiresInSeconds: 5,
+    };
+
+    await expect(helper.authenticate(request)).resolves.toEqual({
+      ...expected,
+      token: token,
+    });
+  });
 });
