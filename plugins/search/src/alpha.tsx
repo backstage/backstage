@@ -33,7 +33,7 @@ import {
   useApi,
   DiscoveryApi,
   discoveryApiRef,
-  identityApiRef,
+  fetchApiRef,
   FetchApi,
 } from '@backstage/core-plugin-api';
 
@@ -79,7 +79,7 @@ import {
 export const searchApi = createApiExtension({
   factory: {
     api: searchApiRef,
-    deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
+    deps: { discoveryApi: discoveryApiRef, fetchApi: fetchApiRef },
     factory: ({
       fetchApi,
       discoveryApi,
