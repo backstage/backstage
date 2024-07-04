@@ -31,12 +31,12 @@ function customTitle(entity: Entity): string {
  */
 export const columnFactories = {
   createTitleColumn(options?: { hidden?: boolean }): TableColumn<DocsTableRow> {
-    const nameCol = columnFactories.createNameColumn()
+    const nameCol = columnFactories.createNameColumn();
     return {
       ...nameCol,
       field: 'entity.metadata.title',
       hidden: options?.hidden,
-    }
+    };
   },
   createNameColumn(): TableColumn<DocsTableRow> {
     return {

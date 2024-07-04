@@ -58,7 +58,7 @@ const defaultColumns: TableColumn<DocsTableRow>[] = [
   columnFactories.createKindColumn(),
   columnFactories.createTypeColumn(),
 ];
-    
+
 /**
  * Component which renders a table documents
  *
