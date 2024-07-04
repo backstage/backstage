@@ -46,34 +46,34 @@ export const BitbucketRepoBranchPicker = ({
 
   const scaffolderApi = useApi(scaffolderApiRef);
 
-  useDebounce(
-    () => {
-      const updateAvailableBranches = async () => {
-        if (
-          host === 'bitbucket.org' &&
-          accessToken &&
-          workspace &&
-          repository &&
-          scaffolderApi.autocomplete
-        ) {
-          const { results } = await scaffolderApi.autocomplete({
-            token: accessToken,
-            resource: 'branches',
-            context: { workspace, repository },
-            provider: 'bitbucket-cloud',
-          });
+  const updateAvailableBranches = useCallback(() => {
+    if (
+      !scaffolderApi.autocomplete ||
+      !workspace ||
+      !repository ||
+      !accessToken ||
+      host !== 'bitbucket.org'
+    ) {
+      setAvailableBranches([]);
+      return;
+    }
 
-          setAvailableBranches(results.map(r => r.title));
-        } else {
-          setAvailableBranches([]);
-        }
-      };
+    scaffolderApi
+      .autocomplete({
+        token: accessToken,
+        resource: 'branches',
+        context: { workspace, repository },
+        provider: 'bitbucket-cloud',
+      })
+      .then(({ results }) => {
+        setAvailableBranches(results.map(r => r.title));
+      })
+      .catch(() => {
+        setAvailableBranches([]);
+      });
+  }, [host, workspace, repository, accessToken, scaffolderApi]);
 
-      updateAvailableBranches().catch(() => setAvailableBranches([]));
-    },
-    500,
-    [host, workspace, repository, accessToken],
-  );
+  useDebounce(updateAvailableBranches, 500, [updateAvailableBranches]);
 
   return (
     <FormControl
