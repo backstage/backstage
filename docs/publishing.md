@@ -75,7 +75,7 @@ Given one or more PRs towards master that we want to create a patch release for,
 ./scripts/patch-release-for-pr.js <pr-number> <pr-number-2> ...
 ```
 
-Wait until the script has finished executing, at the end of the output you will find a link of the format `https://github.com/backstage/backstage/compare/patch/...`. Open this link in your browser to create a PR for the patch release. Finish the sentence "This release fixes an issue where..." and create the PR.
+Wait until the script has finished executing, at the end of the output you will find a link of the format `https://github.com/backstage/backstage/pull/new/patch-release-pr-...`. Open this link in your browser to create a PR for the patch release. Finish the sentence "This release fixes an issue where..." and create the PR.
 
 Once the PR has been approved and merged, the patch release will be automatically created. The patch release is complete when a notification has been posted to Discord in the `#announcements` channel. Keep an eye on "Deploy Packages" workflow and re-trigger if it fails. It is safe to re-trigger any part of this workflow, including the release step.
 
