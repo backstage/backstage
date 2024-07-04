@@ -52,7 +52,7 @@ export function createPgDatabaseClient(
     database.client.pool.on(
       'createSuccess',
       async (_event: number, pgClient: Client) => {
-        await pgClient.query(`SET ROLE ${role}`);
+        await pgClient.query('SET ROLE $1', [role]);
       },
     );
   }
