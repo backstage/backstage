@@ -21,7 +21,7 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import useDebounce from 'react-use/esm/useDebounce';
 import { useApi } from '@backstage/core-plugin-api';
-import { RepoBranchPickerState } from './types';
+import { BaseRepoBranchPickerProps } from './types';
 import FormHelperText from '@material-ui/core/FormHelperText';
 
 /**
@@ -37,13 +37,9 @@ export const BitbucketRepoBranchPicker = ({
   rawErrors,
   accessToken,
   required,
-}: {
-  onChange: (state: RepoBranchPickerState) => void;
-  state: RepoBranchPickerState;
-  rawErrors: string[];
+}: BaseRepoBranchPickerProps<{
   accessToken?: string;
-  required?: boolean;
-}) => {
+}>) => {
   const { host, workspace, repository, branch } = state;
 
   const [availableBranches, setAvailableBranches] = useState<string[]>([]);

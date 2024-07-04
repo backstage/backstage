@@ -20,7 +20,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 
-import { RepoBranchPickerState } from './types';
+import { BaseRepoBranchPickerProps } from './types';
 
 /**
  * The underlying component that is rendered in the form for the `DefaultRepoBranchPicker`
@@ -34,12 +34,7 @@ export const DefaultRepoBranchPicker = ({
   state,
   rawErrors,
   required,
-}: {
-  onChange: (state: RepoBranchPickerState) => void;
-  state: RepoBranchPickerState;
-  rawErrors: string[];
-  required?: boolean;
-}) => {
+}: BaseRepoBranchPickerProps) => {
   const { branch } = state;
 
   return (

@@ -20,3 +20,10 @@ export interface RepoBranchPickerState {
   repository?: string;
   branch?: string;
 }
+
+export type BaseRepoBranchPickerProps<T extends {} = {}> = T & {
+  onChange: (state: RepoBranchPickerState) => void;
+  state: RepoBranchPickerState;
+  rawErrors: string[];
+  required?: boolean;
+};
