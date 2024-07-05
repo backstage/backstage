@@ -15,6 +15,23 @@
  */
 import { Express } from 'express';
 import { Server } from 'http';
+import { Proxy } from './proxy/setup';
+
+const proxy = new Proxy();
+
+beforeAll(async () => {
+  await proxy.setup();
+});
+
+afterAll(() => {
+  proxy.stop();
+});
+
+export async function wrapServer(app: Express): Promise<Server> {
+  const server = app.listen(+process.env.PORT!);
+  await proxy.initialize();
+  return { ...server, address: () => new URL(proxy.url) } as any;
+}
 
 /**
  * !!! THIS CURRENTLY ONLY SUPPORTS SUPERTEST !!!

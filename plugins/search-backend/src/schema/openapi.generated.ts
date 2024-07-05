@@ -207,7 +207,7 @@ export const spec = {
             name: 'filters',
             in: 'query',
             required: false,
-            style: 'deepObject',
+            style: 'form',
             explode: true,
             allowReserved: true,
             schema: {
