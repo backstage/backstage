@@ -24,7 +24,7 @@ import {
 import express from 'express';
 import request from 'supertest';
 import { createRouter } from './router';
-import { wrapInOpenApiTestServer } from '@backstage/backend-openapi-utils';
+import { wrapServer } from '@backstage/backend-openapi-utils';
 import { Server } from 'http';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 
@@ -83,7 +83,7 @@ describe('createRouter', () => {
       auth: mockServices.auth(),
       httpAuth: mockServices.httpAuth(),
     });
-    app = wrapInOpenApiTestServer(express().use(router));
+    app = await wrapServer(express().use(router));
   });
 
   beforeEach(() => {

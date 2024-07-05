@@ -32,4 +32,4 @@ export type {
 } from './utility';
 export type { ApiRouter } from './router';
 export { createValidatedOpenApiRouter, getOpenApiSpecRoute } from './stub';
-export { wrapInOpenApiTestServer } from './testUtils';
+export { wrapInOpenApiTestServer, wrapServer } from './testUtils';
