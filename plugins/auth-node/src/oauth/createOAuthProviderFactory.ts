@@ -23,7 +23,11 @@ import {
 import { OAuthEnvironmentHandler } from './OAuthEnvironmentHandler';
 import { createOAuthRouteHandlers } from './createOAuthRouteHandlers';
 import { OAuthStateTransform } from './state';
-import { OAuthAuthenticator, OAuthAuthenticatorResult } from './types';
+import {
+  OAuthAuthenticator,
+  OAuthAuthenticatorResult,
+  OAuthCookieManagerFactory,
+} from './types';
 import { SignInResolverFactory } from '../sign-in/createSignInResolverFactory';
 
 /** @public */
@@ -39,6 +43,7 @@ export function createOAuthProviderFactory<TProfile>(options: {
       unknown
     >;
   };
+  oAuthCookieManagerFactory?: OAuthCookieManagerFactory;
 }): AuthProviderFactory {
   return ctx => {
     return OAuthEnvironmentHandler.mapConfig(ctx.config, envConfig => {
@@ -61,6 +66,7 @@ export function createOAuthProviderFactory<TProfile>(options: {
         additionalScopes: options.additionalScopes,
         stateTransform: options.stateTransform,
         profileTransform: options.profileTransform,
+        oAuthCookieManagerFactory: options.oAuthCookieManagerFactory,
         signInResolver,
       });
     });

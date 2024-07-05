@@ -24,6 +24,7 @@ export {
   type PassportOAuthPrivateInfo,
   type PassportOAuthResult,
 } from './PassportOAuthAuthenticatorHelper';
+export { DefaultOAuthCookieManager } from './DefaultOAuthCookieManager';
 export { OAuthEnvironmentHandler } from './OAuthEnvironmentHandler';
 export { createOAuthProviderFactory } from './createOAuthProviderFactory';
 export {
@@ -42,4 +43,6 @@ export {
   type OAuthAuthenticatorScopeOptions,
   type OAuthAuthenticatorStartInput,
   type OAuthSession,
+  type OAuthCookieManager,
+  type OAuthCookieManagerFactory,
 } from './types';

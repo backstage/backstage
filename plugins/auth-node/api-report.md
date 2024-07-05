@@ -183,6 +183,7 @@ export function createOAuthProviderFactory<TProfile>(options: {
       unknown
     >;
   };
+  oAuthCookieManagerFactory?: OAuthCookieManagerFactory;
 }): AuthProviderFactory;
 
 // @public (undocumented)
@@ -236,6 +237,33 @@ export class DefaultIdentityClient implements IdentityApi {
   getIdentity(
     options: IdentityApiGetIdentityRequest,
   ): Promise<BackstageIdentityResponse | undefined>;
+}
+
+// @public (undocumented)
+export class DefaultOAuthCookieManager implements OAuthCookieManager {
+  constructor(options: {
+    providerId: string;
+    defaultAppOrigin: string;
+    baseUrl: string;
+    callbackUrl: string;
+    cookieConfigurer?: CookieConfigurer;
+  });
+  // (undocumented)
+  getGrantedScopes(req: Request_2): string | undefined;
+  // (undocumented)
+  getNonce(req: Request_2): string | undefined;
+  // (undocumented)
+  getRefreshToken(req: Request_2): string | undefined;
+  // (undocumented)
+  removeGrantedScopes(res: Response_2, origin?: string): void;
+  // (undocumented)
+  removeRefreshToken(res: Response_2, origin?: string): void;
+  // (undocumented)
+  setGrantedScopes(res: Response_2, scope: string, origin?: string): void;
+  // (undocumented)
+  setNonce(res: Response_2, nonce: string, origin?: string): void;
+  // (undocumented)
+  setRefreshToken(res: Response_2, refreshToken: string, origin?: string): void;
 }
 
 // @public (undocumented)
@@ -365,6 +393,35 @@ export interface OAuthAuthenticatorStartInput {
 }
 
 // @public (undocumented)
+export interface OAuthCookieManager {
+  // (undocumented)
+  getGrantedScopes(req: Request_2): string | undefined;
+  // (undocumented)
+  getNonce(req: Request_2): string | undefined;
+  // (undocumented)
+  getRefreshToken(req: Request_2): string | undefined;
+  // (undocumented)
+  removeGrantedScopes(res: Response_2, origin?: string): void;
+  // (undocumented)
+  removeRefreshToken(res: Response_2, origin?: string): void;
+  // (undocumented)
+  setGrantedScopes(res: Response_2, scope: string, origin?: string): void;
+  // (undocumented)
+  setNonce(res: Response_2, nonce: string, origin?: string): void;
+  // (undocumented)
+  setRefreshToken(res: Response_2, refreshToken: string, origin?: string): void;
+}
+
+// @public (undocumented)
+export type OAuthCookieManagerFactory = (options: {
+  cookieConfigurer?: CookieConfigurer;
+  providerId: string;
+  defaultAppOrigin: string;
+  baseUrl: string;
+  callbackUrl: string;
+}) => OAuthCookieManager;
+
+// @public (undocumented)
 export class OAuthEnvironmentHandler implements AuthProviderRouteHandlers {
   constructor(handlers: Map<string, AuthProviderRouteHandlers>);
   // (undocumented)
@@ -398,6 +455,8 @@ export interface OAuthRouteHandlersOptions<TProfile> {
   cookieConfigurer?: CookieConfigurer;
   // (undocumented)
   isOriginAllowed: (origin: string) => boolean;
+  // (undocumented)
+  oAuthCookieManagerFactory?: OAuthCookieManagerFactory;
   // (undocumented)
   profileTransform?: ProfileTransform<OAuthAuthenticatorResult<TProfile>>;
   // (undocumented)
