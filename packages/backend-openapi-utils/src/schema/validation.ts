@@ -522,7 +522,7 @@ export class OpenApiProxyValidator {
     ];
   }
 
-  validate(request: CompletedRequest, response: CompletedResponse) {
+  async validate(request: CompletedRequest, response: CompletedResponse) {
     const operation = this.findOperation(request);
     if (!operation) {
       throw RequestErrorFactory.createRequestError(
@@ -534,13 +534,15 @@ export class OpenApiProxyValidator {
     const [path, operationSchema] = operation;
 
     const validators = this.validators!;
-    for (const validator of validators) {
-      validator.validate({
-        pair: { request, response },
-        operationSchema,
-        path,
-      });
-    }
+    await Promise.all(
+      validators.map(validator =>
+        validator.validate({
+          pair: { request, response },
+          operationSchema,
+          path,
+        }),
+      ),
+    );
   }
 
   private findOperation(

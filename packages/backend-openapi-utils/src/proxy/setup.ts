@@ -44,11 +44,12 @@ export class Proxy {
         this.requestResponsePairs.set(request, response);
       }
       delete this.#openRequests[response.id];
-      try {
-        this.validator.validate(request, response);
-      } catch (err) {
+      this.validator.validate(request, response).catch(err => {
+        if (process.env.THROW) {
+          throw err;
+        }
         console.error(err);
-      }
+      });
     });
   }
 
