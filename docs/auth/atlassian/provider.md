@@ -100,4 +100,4 @@ backend.add(import('@backstage/plugin-auth-backend-module-atlassian-provider'));
 
 To add the provider to the frontend, add the `atlassianAuthApi` reference and
 `SignInPage` component as shown in
-[Adding the provider to the sign-in page](../index.md#adding-the-provider-to-the-sign-in-page).
+[Adding the provider to the sign-in page](../index.md#sign-in-configuration).

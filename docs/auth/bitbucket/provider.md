@@ -90,4 +90,4 @@ backend.add(import('@backstage/plugin-auth-backend-module-bitbucket-provider'));
 
 To add the provider to the frontend, add the `bitbucketAuthApi` reference and
 `SignInPage` component as shown in
-[Adding the provider to the sign-in page](../index.md#adding-the-provider-to-the-sign-in-page).
+[Adding the provider to the sign-in page](../index.md#sign-in-configuration).

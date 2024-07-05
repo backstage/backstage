@@ -109,4 +109,4 @@ backend.add(
 
 To add the provider to the frontend, add the `vmwareCloudAuthApiRef` reference and
 `SignInPage` component as shown in
-[Adding the provider to the sign-in page](../index.md#adding-the-provider-to-the-sign-in-page).
+[Adding the provider to the sign-in page](../index.md#sign-in-configuration).
