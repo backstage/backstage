@@ -27,8 +27,8 @@ export interface Config {
           token: string;
           subject: string;
         }>;
-        customHeader?: string;
-        customCookieAuthName?: string;
+        jwtHeaderName?: string;
+        authorizationCookieName?: string;
       };
       /**
        * The backstage token expiration.

@@ -240,13 +240,16 @@ describe('helpers', () => {
     });
   });
 
-  it('works for regular tokens, through custom header auth', async () => {
+  it('works for regular tokens, through jwtHeaderName header', async () => {
     jest.useFakeTimers({
       now: 1600000004000,
     });
 
     const helper = AuthHelper.fromConfig(
-      new ConfigReader({ teamName: 'mock-team', customHeader: 'X-Auth-Token' }),
+      new ConfigReader({
+        teamName: 'mock-team',
+        jwtHeaderName: 'X-Auth-Token',
+      }),
       { cache },
     );
     const token = await tokenFactory.userToken();
@@ -282,18 +285,21 @@ describe('helpers', () => {
     expect(JSON.parse(cache.set.mock.calls[0][1] as string)).toEqual(expected);
   });
 
-  it('works for regular tokens, through custom cookie auth name', async () => {
+  it('works for regular tokens, through authorizationCookieName cookie name', async () => {
     jest.useFakeTimers({
       now: 1600000004000,
     });
 
     const helper = AuthHelper.fromConfig(
-      new ConfigReader({ teamName: 'mock-team', customCookieAuthName: 'CF_Custom_Auth' }),
+      new ConfigReader({
+        teamName: 'mock-team',
+        authorizationCookieName: 'CF_Auth',
+      }),
       { cache },
     );
     const token = await tokenFactory.userToken();
     const request = createRequest({
-      cookies: { 'CF_Custom_Auth': token },
+      cookies: { CF_Custom_Auth: token },
     });
 
     const expected = {
