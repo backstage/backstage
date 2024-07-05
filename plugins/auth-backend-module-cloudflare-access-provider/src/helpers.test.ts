@@ -299,7 +299,7 @@ describe('helpers', () => {
     );
     const token = await tokenFactory.userToken();
     const request = createRequest({
-      cookies: { CF_Custom_Auth: token },
+      cookies: { CF_Auth: token },
     });
 
     const expected = {
