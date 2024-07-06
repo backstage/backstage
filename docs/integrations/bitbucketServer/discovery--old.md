@@ -7,7 +7,7 @@ description: Automatically discovering catalog entities from repositories in Bit
 ---
 
 :::info
-This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage [version 1.24](../../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](./discovery--old.md) instead, and [consider migrating](../../backend-system/building-backends/08-migrating.md)!
+This documentation is written for the old backend which has been replaced by [the new backend system](../../backend-system/index.md), being the default since Backstage [version 1.24](../../releases/v1.24.0.md). If have migrated to the new backend system, you may want to read [its own article](./discovery.md) instead. Otherwise, [consider migrating](../../backend-system/building-backends/08-migrating.md)!
 :::
 
 The Bitbucket Server integration has a special entity provider for discovering
@@ -20,22 +20,35 @@ This can be useful as an alternative to static locations or manually adding thin
 
 You will have to add the entity provider in the catalog initialization code of your
 backend. The provider is not installed by default, therefore you have to add a
-dependency to `@backstage/plugin-catalog-backend-module-bitbucket-server` to your backend package.
+dependency to `@backstage/plugin-catalog-backend-module-bitbucket-server` to your backend
+package.
 
 ```bash
 # From your Backstage root directory
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-bitbucket-server
 ```
 
-And update your backend by adding the following line:
+And then add the entity provider to your catalog builder:
 
-```ts title="packages/backend/src/index.ts"
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
-/* highlight-add-start */
-backend.add(
-  import('@backstage/plugin-catalog-backend-module-bitbucket-server/alpha'),
-);
-/* highlight-add-end */
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { BitbucketServerEntityProvider } from '@backstage/plugin-catalog-backend-module-bitbucket-server';
+
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
+  /* highlight-add-start */
+  builder.addEntityProvider(
+    BitbucketServerEntityProvider.fromConfig(env.config, {
+      logger: env.logger,
+      scheduler: env.scheduler,
+    }),
+  );
+  /* highlight-add-end */
+
+  // ..
+}
 ```
 
 ## Configuration
@@ -84,3 +97,27 @@ catalog:
     The amount of time that should pass before the first invocation happens.
   - **`scope`** _(optional)_:
     `'global'` or `'local'`. Sets the scope of concurrency control.
+
+## Custom location processing
+
+The Bitbucket Server Entity Provider will by default emit a location for each
+matching repository. However, it is possible to override this functionality and take full control of how each
+matching repository is processed.
+
+`BitbucketServerEntityProvider.fromConfig` takes an optional parameter
+`options.parser` where you can set your own parser to be used for each matched
+repository.
+
+```typescript
+const provider = BitbucketServerEntityProvider.fromConfig(env.config, {
+  logger: env.logger,
+  schedule: env.scheduler,
+  parser: async function* customLocationParser(options: {
+    location: LocationSpec;
+    client: BitbucketServerClient;
+  }) {
+    // Custom logic for interpreting the matching repository
+    // See defaultBitbucketServerLocationParser for an example
+  },
+});
+```
