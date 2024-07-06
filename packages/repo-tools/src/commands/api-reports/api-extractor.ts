@@ -1101,7 +1101,6 @@ export async function buildDocs({
         switch (hierarchyItem.kind) {
           case ApiItemKind.Model:
           case ApiItemKind.EntryPoint:
-          case ApiItemKind.None:
             // We don't show the model as part of the breadcrumb because it is the root-level container.
             // We don't show the entry point because today API Extractor doesn't support multiple entry points;
             // this may change in the future.
