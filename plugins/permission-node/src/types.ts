@@ -23,7 +23,7 @@ import { NoInfer } from './integration/util';
 
 /**
  * A conditional rule that can be provided in an
- * {@link @backstage/permission-common#AuthorizeDecision} response to an authorization request.
+ * {@link @backstage/plugin-permission-common#AuthorizeDecision} response to an authorization request.
  *
  * @remarks
  *
