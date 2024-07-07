@@ -164,11 +164,11 @@ describe('OpenApiProxyValidator', () => {
             statusCode: 200,
           });
 
-          await expect(
-            async () => await validator.validate(request, response),
-          ).rejects.toThrowErrorMatchingInlineSnapshot(
-            `"["GET /api/search"] Query parameter validation failed"`,
-          );
+          await expect(async () => await validator.validate(request, response))
+            .rejects.toThrowErrorMatchingInlineSnapshot(`
+            "["GET /api/search"] Query parameter validation failed.
+             - Value should be of type number"
+          `);
         });
 
         it('accepts valid parameter', async () => {

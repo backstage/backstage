@@ -23,7 +23,7 @@ import {
   ValidatorParams,
 } from './types';
 import Ajv from 'ajv';
-import { OperationError } from './errors';
+import { OperationError, OperationParsingError } from './errors';
 import { mockttpToFetchRequest } from './utils';
 
 type ReferencelessSchemaObject = SchemaObject & { $ref?: never };
@@ -150,9 +150,10 @@ export class QueryParameterParser
       const validate = this.ajv.compile(parameter.schema);
       const valid = validate(param);
       if (!valid) {
-        throw new OperationError(
+        throw new OperationParsingError(
           this.operation,
-          'Query parameter validation failed',
+          'Query parameter',
+          validate.errors!,
         );
       }
       queryParameters[name] = param;
@@ -339,9 +340,10 @@ export class HeaderParameterParser
       const valid = validate(header);
 
       if (!valid) {
-        throw new OperationError(
+        throw new OperationParsingError(
           this.operation,
-          'Header parameter validation failed',
+          'Header parameter',
+          validate.errors!,
         );
       }
       headerParameters[name] = header;
@@ -384,9 +386,10 @@ export class PathParameterParser
       const valid = validate(param);
 
       if (!valid) {
-        throw new OperationError(
+        throw new OperationParsingError(
           this.operation,
-          'Path parameter validation failed',
+          'Path parameter',
+          validate.errors!,
         );
       }
       pathParameters[name] = param;

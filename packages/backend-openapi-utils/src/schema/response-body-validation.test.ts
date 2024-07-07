@@ -60,11 +60,11 @@ describe('response body', () => {
     const responseBody = {
       result: 1,
     };
-    await expect(
-      parser.parse(toResponse(responseBody)),
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"["GET /api/search" (200)]: Response body validation failed"`,
-    );
+    await expect(parser.parse(toResponse(responseBody))).rejects
+      .toThrowErrorMatchingInlineSnapshot(`
+      "["GET /api/search" (200)]: Response body validation failed.
+       - The "result" property is not allowed"
+    `);
   });
 
   it('should throw error if response body is required but missing', async () => {

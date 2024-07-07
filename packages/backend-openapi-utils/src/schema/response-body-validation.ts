@@ -16,7 +16,11 @@
 
 import { JsonObject } from '@backstage/types';
 import { Operation, ParserOptions, ResponseParser } from './types';
-import { OperationError, OperationResponseError } from './errors';
+import {
+  OperationError,
+  OperationParsingResponseError,
+  OperationResponseError,
+} from './errors';
 import Ajv from 'ajv';
 import { OperationObject, ResponseObject } from 'openapi3-ts';
 
@@ -58,6 +62,7 @@ export class ResponseBodyParser
     const responseSchemas = operation.schema.responses;
     for (const [statusCode, schema] of Object.entries(responseSchemas)) {
       if (!schema.content) {
+        // Skip responses without content, eg 204 No Content.
         continue;
       } else if (!schema.content['application/json']) {
         throw new OperationError(
@@ -107,6 +112,7 @@ export class ResponseBodyParser
       );
     }
     const schema = responseSchema.content!['application/json'].schema;
+    // This is a bit of type laziness. Ideally, this would be a type-narrowing function, but I wasn't able to get the types to work.
     if (!schema) {
       throw new OperationError(this.operation, 'No schema found in response');
     }
@@ -133,10 +139,11 @@ export class ResponseBodyParser
     const jsonBody = (await response.json()) as JsonObject;
     const valid = validate(jsonBody);
     if (!valid) {
-      throw new OperationResponseError(
+      throw new OperationParsingResponseError(
         this.operation,
         response,
-        'Response body validation failed',
+        'Response body',
+        validate.errors!,
       );
     }
     return jsonBody;
@@ -144,9 +151,8 @@ export class ResponseBodyParser
 
   private findResponseSchema(
     operationSchema: OperationObject,
-    response: Response,
+    { status }: Response,
   ): ResponseObject | undefined {
-    const { status } = response;
     return (
       operationSchema.responses?.[status] ?? operationSchema.responses?.default
     );

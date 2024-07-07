@@ -15,6 +15,8 @@
  */
 
 import { Operation } from './types';
+import { ErrorObject } from 'ajv';
+import { humanifyAjvError } from './utils';
 
 export class OperationError extends Error {
   constructor(operation: Operation, message: string) {
@@ -32,6 +34,34 @@ export class OperationResponseError extends Error {
       `["${operation.method.toLocaleUpperCase('en-US')} ${operation.path}" (${
         response.status
       })]: ${message}`,
+    );
+  }
+}
+
+export class OperationParsingError extends OperationError {
+  constructor(operation: Operation, type: string, errors: ErrorObject[]) {
+    super(
+      operation,
+      `${type} validation failed.\n - ${errors
+        .map(humanifyAjvError)
+        .join('\n - ')}`,
+    );
+  }
+}
+
+export class OperationParsingResponseError extends OperationResponseError {
+  constructor(
+    operation: Operation,
+    response: Response,
+    type: string,
+    errors: ErrorObject[],
+  ) {
+    super(
+      operation,
+      response,
+      `${type} validation failed.\n - ${errors
+        .map(humanifyAjvError)
+        .join('\n - ')}`,
     );
   }
 }
