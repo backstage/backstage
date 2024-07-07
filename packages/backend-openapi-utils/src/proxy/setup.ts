@@ -16,6 +16,8 @@
 
 import * as mockttp from 'mockttp';
 import { OpenApiProxyValidator } from '../schema/validation';
+import getPort from 'get-port';
+import { Server } from 'http';
 
 export class Proxy {
   server: mockttp.Mockttp;
@@ -25,6 +27,8 @@ export class Proxy {
     mockttp.CompletedResponse
   >();
   validator: OpenApiProxyValidator;
+  public forwardTo: { port: number } = { port: 0 };
+  express: { server: Server | undefined } = { server: undefined };
   constructor() {
     this.server = mockttp.getLocal();
     this.validator = new OpenApiProxyValidator();
@@ -32,9 +36,10 @@ export class Proxy {
 
   async setup() {
     await this.server.start();
+    this.forwardTo.port = await getPort();
     this.server
       .forAnyRequest()
-      .thenForwardTo(`http://localhost:${process.env.PORT}`);
+      .thenForwardTo(`http://localhost:${this.forwardTo.port}`);
     await this.server.on('request', request => {
       this.#openRequests[request.id] = request;
     });
@@ -53,10 +58,9 @@ export class Proxy {
     });
   }
 
-  async initialize() {
-    await this.validator.initialize(
-      `http://localhost:${process.env.PORT}/openapi.json`,
-    );
+  async initialize(url: string, server: Server) {
+    await this.validator.initialize(`${url}/openapi.json`);
+    this.express.server = server;
   }
 
   stop() {
@@ -64,6 +68,9 @@ export class Proxy {
       throw new Error('There are still open requests');
     }
     this.server.stop();
+
+    // If this isn't expressly closed, it will cause a jest memory leak warning.
+    this.express.server?.close();
   }
 
   get url() {

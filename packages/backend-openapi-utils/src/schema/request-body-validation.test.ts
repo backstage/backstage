@@ -19,7 +19,12 @@ import { RequestBodyParser } from './request-body-validation';
 import Ajv from 'ajv';
 import { Operation, RequestParser } from './types';
 import _ from 'lodash';
-import { OperationObject, RequestBodyObject } from 'openapi3-ts';
+import {
+  ContentObject,
+  MediaTypeObject,
+  OperationObject,
+  RequestBodyObject,
+} from 'openapi3-ts';
 import { JsonObject } from '@backstage/types';
 
 const ajv = new Ajv();
@@ -78,5 +83,26 @@ describe('request body', () => {
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"["POST /api/search"] No request body found for /api/search"`,
     );
+  });
+
+  it('should throw error if request body is not application/json', async () => {
+    const request = toRequest({}, { 'content-type': 'text/plain' });
+    await expect(
+      parser.parse(request),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"["POST /api/search"] Content type is not application/json"`,
+    );
+  });
+
+  it('should NOT throw error if request body is not just application/json', async () => {
+    (schema.requestBody.content as ContentObject)[
+      'application/json; charset=utf-8'
+    ] = schema.requestBody.content['application/json'] as MediaTypeObject;
+    delete (schema.requestBody.content as ContentObject)['application/json'];
+    parser = new RequestBodyParser(operation, {
+      ajv,
+    });
+    const request = toRequest({});
+    expect(await parser.parse(request)).toEqual({});
   });
 });

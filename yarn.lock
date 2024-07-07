@@ -3750,6 +3750,7 @@ __metadata:
     express: ^4.17.1
     express-openapi-validator: ^5.0.4
     express-promise-router: ^4.1.0
+    get-port: ^7.1.0
     json-schema-to-ts: ^3.0.0
     lodash: ^4.17.21
     mockttp: ^3.13.0
@@ -28301,6 +28302,13 @@ __metadata:
   version: 5.1.1
   resolution: "get-port@npm:5.1.1"
   checksum: 0162663ffe5c09e748cd79d97b74cd70e5a5c84b760a475ce5767b357fb2a57cb821cee412d646aa8a156ed39b78aab88974eddaa9e5ee926173c036c0713787
+  languageName: node
+  linkType: hard
+
+"get-port@npm:^7.1.0":
+  version: 7.1.0
+  resolution: "get-port@npm:7.1.0"
+  checksum: f4d23b43026124007663a899578cc87ff37bfcf645c5c72651e9810ebafc759857784e409fb8e0ada9b90e5c5db089b0ae2f5f6b49fba1ce2e0aff86094ab17d
   languageName: node
   linkType: hard
 

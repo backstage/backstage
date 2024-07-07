@@ -61,15 +61,20 @@ export class ResponseBodyParser
     this.ajv = options.ajv;
     const responseSchemas = operation.schema.responses;
     for (const [statusCode, schema] of Object.entries(responseSchemas)) {
-      if (!schema.content) {
+      const contentTypes = schema.content;
+      if (!contentTypes) {
         // Skip responses without content, eg 204 No Content.
         continue;
-      } else if (!schema.content['application/json']) {
+      }
+      const jsonContentType = Object.keys(contentTypes).find(contentType =>
+        contentType.split(';').includes('application/json'),
+      );
+      if (!jsonContentType) {
         throw new OperationError(
           this.operation,
           `No application/json content type found in response for status code ${statusCode}`,
         );
-      } else if ('$ref' in schema.content['application/json'].schema) {
+      } else if ('$ref' in contentTypes[jsonContentType].schema) {
         throw new OperationError(
           this.operation,
           'Reference objects are not supported',
@@ -97,21 +102,25 @@ export class ResponseBodyParser
       );
     }
 
-    if (!responseSchema?.content && body?.length) {
+    const contentTypes = responseSchema.content;
+    if (!contentTypes && body?.length) {
       throw new OperationResponseError(
         this.operation,
         response,
         'Received a body but no schema was found',
       );
     }
-    if (!responseSchema?.content!['application/json']) {
+    const jsonContentType = Object.keys(contentTypes ?? {}).find(contentType =>
+      contentType.split(';').includes('application/json'),
+    );
+    if (!jsonContentType) {
       throw new OperationResponseError(
         this.operation,
         response,
         'No application/json content type found in response',
       );
     }
-    const schema = responseSchema.content!['application/json'].schema;
+    const schema = responseSchema.content![jsonContentType].schema;
     // This is a bit of type laziness. Ideally, this would be a type-narrowing function, but I wasn't able to get the types to work.
     if (!schema) {
       throw new OperationError(this.operation, 'No schema found in response');

@@ -77,13 +77,17 @@ export class RequestBodyParser
         'No content found in request body',
       );
     }
-    if (!requestBody!.content['application/json']) {
+    const contentTypes = requestBody!.content;
+    const jsonContentType = Object.keys(contentTypes).find(contentType =>
+      contentType.split(';').includes('application/json'),
+    );
+    if (!jsonContentType) {
       throw new OperationError(
         this.operation,
         'No application/json content type found in request body',
       );
     }
-    const schema = requestBody!.content['application/json'].schema;
+    const schema = requestBody!.content[jsonContentType].schema;
     if (!schema) {
       throw new OperationError(
         this.operation,
@@ -111,7 +115,7 @@ export class RequestBodyParser
 
     const contentType =
       request.headers.get('content-type') || 'application/json';
-    if (contentType !== 'application/json') {
+    if (!contentType.split(';').includes('application/json')) {
       throw new OperationError(
         this.operation,
         'Content type is not application/json',

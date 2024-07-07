@@ -44,6 +44,7 @@
     "express": "^4.17.1",
     "express-openapi-validator": "^5.0.4",
     "express-promise-router": "^4.1.0",
+    "get-port": "^7.1.0",
     "json-schema-to-ts": "^3.0.0",
     "lodash": "^4.17.21",
     "mockttp": "^3.13.0",
