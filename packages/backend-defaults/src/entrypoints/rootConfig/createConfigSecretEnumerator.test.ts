@@ -64,7 +64,8 @@ describe('createConfigSecretEnumerator', () => {
   it('should enumerate secrets', async () => {
     const enumerate = await createConfigSecretEnumerator({
       logger,
-      dir: path.resolve('../../../../packages/backend'),
+      // This is a little fragile, as it requires a relative path, open to other ideas here.
+      dir: path.resolve('../../../../../packages/backend'),
     });
     const secrets = enumerate(
       mockServices.rootConfig({
