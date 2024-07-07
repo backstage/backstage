@@ -28,8 +28,8 @@ afterAll(() => {
 });
 
 export async function wrapServer(app: Express): Promise<Server> {
-  const server = app.listen(+process.env.PORT!);
-  await proxy.initialize();
+  const server = app.listen(proxy.forwardTo.port);
+  await proxy.initialize(`http://localhost:${proxy.forwardTo.port}`, server);
   return { ...server, address: () => new URL(proxy.url) } as any;
 }
 
