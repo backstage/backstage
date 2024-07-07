@@ -81,6 +81,8 @@ async function generate(
 
   await exec(
     `yarn backstage-cli package lint --fix ${resolvedOutputDirectory}`,
+    [],
+    { signal: abortSignal?.signal },
   );
 
   const prettier = cliPaths.resolveTargetRoot('node_modules/.bin/prettier');
@@ -115,7 +117,5 @@ export async function command(
     }
     console.log(chalk.red(`Client generation failed:`));
     console.log(err);
-
-    process.exit(1);
   }
 }

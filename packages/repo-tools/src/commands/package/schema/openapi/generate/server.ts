@@ -72,6 +72,5 @@ export async function command(abortSignal?: AbortController): Promise<void> {
     }
     console.log(chalk.red(`OpenAPI server stub generation failed.`));
     console.log(err.message);
-    process.exit(1);
   }
 }
