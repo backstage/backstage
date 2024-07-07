@@ -19,14 +19,28 @@ import { Proxy } from './proxy/setup';
 
 const proxy = new Proxy();
 
-beforeAll(async () => {
-  await proxy.setup();
-});
+/**
+ * Setup the proxy hooks for the test suite. This will start the proxy before all tests and stop it after all tests.
+ * @public
+ */
+export function setupProxyHooks() {
+  beforeAll(async () => {
+    await proxy.setup();
+  });
 
-afterAll(() => {
-  proxy.stop();
-});
+  afterAll(() => {
+    proxy.stop();
+  });
+}
 
+/**
+ * !!! THIS CURRENTLY ONLY SUPPORTS SUPERTEST !!!
+ * Setup a server with a custom OpenAPI proxy. This proxy will capture all requests and responses and make sure they
+ *  conform to the spec.
+ * @param app - express server, needed to ensure we have the correct ports for the proxy.
+ * @returns - a configured HTTP server that should be used with supertest.
+ * @public
+ */
 export async function wrapServer(app: Express): Promise<Server> {
   const server = app.listen(proxy.forwardTo.port);
   await proxy.initialize(`http://localhost:${proxy.forwardTo.port}`, server);
