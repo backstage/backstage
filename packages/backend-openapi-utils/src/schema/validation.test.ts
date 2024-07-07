@@ -17,7 +17,7 @@
 import { findOperationByRequest, OpenApiProxyValidator } from './validation';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import { registerMswTestHooks } from '@backstage/test-utils';
 import { CompletedBody, CompletedRequest, CompletedResponse } from 'mockttp';
 import withResponseBody from './__fixtures__/schemas/withJsonResponseBody.json';
 import withQueryParameter from './__fixtures__/schemas/withQueryParameter.json';
@@ -61,7 +61,7 @@ function createMockttpResponse(response: {
 }
 
 describe('OpenApiProxyValidator', () => {
-  setupRequestMockHandlers(server);
+  registerMswTestHooks(server);
   let validator: OpenApiProxyValidator;
 
   async function mockSchema(schema: any) {

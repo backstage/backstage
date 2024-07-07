@@ -23,7 +23,7 @@ import {
 import express from 'express';
 import request from 'supertest';
 import { createRouter } from './router';
-import { wrapServer } from '@backstage/backend-openapi-utils';
+import { setupProxyHooks, wrapServer } from '@backstage/backend-openapi-utils';
 import { Server } from 'http';
 import {
   mockCredentials,
@@ -54,6 +54,8 @@ describe('createRouter', () => {
       return mockBaseUrl;
     },
   };
+
+  setupProxyHooks();
 
   beforeAll(async () => {
     const logger = mockServices.logger.mock();
