@@ -39,7 +39,7 @@ export function mockttpToFetchResponse(response: CompletedResponse) {
 export function humanifyAjvError(error: ErrorObject) {
   switch (error.keyword) {
     case 'required':
-      return `The ${error.params.missingProperty} property is required`;
+      return `The "${error.params.missingProperty}" property is required`;
     case 'type':
       return `${
         error.instancePath ? `"${error.instancePath}"` : 'Value'
