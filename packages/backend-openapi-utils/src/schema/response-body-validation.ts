@@ -16,22 +16,46 @@
 
 import { JsonObject } from '@backstage/types';
 import { Operation, ParserOptions, ResponseParser } from './types';
-import { OperationError } from './errors';
+import { OperationError, OperationResponseError } from './errors';
 import Ajv from 'ajv';
 import { OperationObject, ResponseObject } from 'openapi3-ts';
+
+class DisabledResponseBodyParser
+  implements ResponseParser<JsonObject | undefined>
+{
+  operation: Operation;
+  constructor(operation: Operation) {
+    this.operation = operation;
+  }
+  async parse(response: Response): Promise<JsonObject | undefined> {
+    const body = await response.text();
+    if (body?.length) {
+      throw new OperationError(
+        this.operation,
+        'Received a body but no schema was found',
+      );
+    }
+    return undefined;
+  }
+}
 
 export class ResponseBodyParser
   implements ResponseParser<JsonObject | undefined>
 {
   operation: Operation;
   ajv: Ajv;
+
+  static fromOperation(operation: Operation, options: ParserOptions) {
+    return operation.schema.responses &&
+      Object.keys(operation.schema.responses).length
+      ? new ResponseBodyParser(operation, options)
+      : new DisabledResponseBodyParser(operation);
+  }
+
   constructor(operation: Operation, options: ParserOptions) {
     this.operation = operation;
     this.ajv = options.ajv;
     const responseSchemas = operation.schema.responses;
-    if (!Object.keys(responseSchemas).length) {
-      throw new OperationError(this.operation, `No response schemas found`);
-    }
     for (const [statusCode, schema] of Object.entries(responseSchemas)) {
       if (!schema.content) {
         continue;
@@ -55,15 +79,30 @@ export class ResponseBodyParser
       this.operation.schema,
       response,
     );
-    if (!responseSchema?.content && body?.length) {
-      throw new OperationError(this.operation, 'No content found in response');
-    } else if (!responseSchema?.content && !body?.length) {
-      // If there is no content in the response schema and no body in the response, then the response is valid
+    if (!responseSchema?.content && !body?.length) {
+      // If there is no content in the response schema and no body in the response, then the response is valid.
+      // eg 204 No Content
       return undefined;
     }
-    if (!responseSchema?.content!['application/json']) {
-      throw new OperationError(
+    if (!responseSchema) {
+      throw new OperationResponseError(
         this.operation,
+        response,
+        `No schema found.`,
+      );
+    }
+
+    if (!responseSchema?.content && body?.length) {
+      throw new OperationResponseError(
+        this.operation,
+        response,
+        'Received a body but no schema was found',
+      );
+    }
+    if (!responseSchema?.content!['application/json']) {
+      throw new OperationResponseError(
+        this.operation,
+        response,
         'No application/json content type found in response',
       );
     }
@@ -72,18 +111,31 @@ export class ResponseBodyParser
       throw new OperationError(this.operation, 'No schema found in response');
     }
     if ('$ref' in schema) {
-      throw new OperationError(
+      throw new OperationResponseError(
         this.operation,
+        response,
         'Reference objects are not supported',
       );
+    }
+
+    if (!schema.required && !body?.length) {
+      throw new OperationResponseError(
+        this.operation,
+        response,
+        'Response body is required but missing',
+      );
+    } else if (!schema.required && !body?.length) {
+      // If there is no content in the response schema and no body in the response, then the response is valid
+      return undefined;
     }
 
     const validate = this.ajv.compile(schema);
     const jsonBody = (await response.json()) as JsonObject;
     const valid = validate(jsonBody);
     if (!valid) {
-      throw new OperationError(
+      throw new OperationResponseError(
         this.operation,
+        response,
         'Response body validation failed',
       );
     }

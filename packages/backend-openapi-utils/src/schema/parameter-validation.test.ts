@@ -16,7 +16,11 @@
 
 import _ from 'lodash';
 import withQueryParameter from './__fixtures__/schemas/withQueryParameter.json';
-import { QueryParameterParser } from './parameter-validation';
+import withPathParameter from './__fixtures__/schemas/withPathParameter.json';
+import {
+  PathParameterParser,
+  QueryParameterParser,
+} from './parameter-validation';
 import { OperationObject, ParameterObject } from 'openapi3-ts';
 import Ajv from 'ajv';
 import { Operation } from './types';
@@ -54,7 +58,7 @@ describe('query parameters', () => {
         await expect(
           parser.parse(request),
         ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `"[/api/search (get)]: Unexpected query parameters: extra"`,
+          `"["GET /api/search"] Unexpected query parameters: extra"`,
         );
       });
 
@@ -66,7 +70,7 @@ describe('query parameters', () => {
         await expect(
           parser.parse(request),
         ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `"[/api/search (get)]: Required query parameter param not found"`,
+          `"["GET /api/search"] Required query parameter param not found"`,
         );
       });
     });
@@ -90,7 +94,7 @@ describe('query parameters', () => {
         await expect(
           parser.parse(request),
         ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `"[/api/search (get)]: Query parameter validation failed"`,
+          `"["GET /api/search"] Query parameter validation failed"`,
         );
       });
     });
@@ -132,7 +136,7 @@ describe('query parameters', () => {
           await expect(
             parser.parse(request),
           ).rejects.toThrowErrorMatchingInlineSnapshot(
-            `"[/api/search (get)]: Required query parameter param not found"`,
+            `"["GET /api/search"] Required query parameter param not found"`,
           );
         });
 
@@ -143,7 +147,7 @@ describe('query parameters', () => {
           await expect(
             parser.parse(request),
           ).rejects.toThrowErrorMatchingInlineSnapshot(
-            `"[/api/search (get)]: Unexpected query parameters: extra"`,
+            `"["GET /api/search"] Unexpected query parameters: extra"`,
           );
         });
       });
@@ -177,7 +181,7 @@ describe('query parameters', () => {
           await expect(
             parser.parse(request),
           ).rejects.toThrowErrorMatchingInlineSnapshot(
-            `"[/api/search (get)]: Required query parameter param not found"`,
+            `"["GET /api/search"] Required query parameter param not found"`,
           );
         });
 
@@ -188,7 +192,7 @@ describe('query parameters', () => {
           await expect(
             parser.parse(request),
           ).rejects.toThrowErrorMatchingInlineSnapshot(
-            `"[/api/search (get)]: Unexpected query parameters: extra"`,
+            `"["GET /api/search"] Unexpected query parameters: extra"`,
           );
         });
       });
@@ -215,7 +219,7 @@ describe('query parameters', () => {
         await expect(
           parser.parse(request),
         ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `"[/api/search (get)]: Required query parameter param not found"`,
+          `"["GET /api/search"] Required query parameter param not found"`,
         );
       });
 
@@ -226,7 +230,7 @@ describe('query parameters', () => {
         await expect(
           parser.parse(request),
         ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `"[/api/search (get)]: Unexpected query parameters: extra"`,
+          `"["GET /api/search"] Unexpected query parameters: extra"`,
         );
       });
     });
@@ -252,7 +256,7 @@ describe('query parameters', () => {
         await expect(
           parser.parse(request),
         ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `"[/api/search (get)]: Required query parameter param not found"`,
+          `"["GET /api/search"] Required query parameter param not found"`,
         );
       });
 
@@ -263,7 +267,7 @@ describe('query parameters', () => {
         await expect(
           parser.parse(request),
         ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `"[/api/search (get)]: Unexpected query parameters: extra"`,
+          `"["GET /api/search"] Unexpected query parameters: extra"`,
         );
       });
     });
@@ -304,7 +308,7 @@ describe('query parameters', () => {
           await expect(
             parser.parse(request),
           ).rejects.toThrowErrorMatchingInlineSnapshot(
-            `"[/api/search (get)]: Required query parameter param not found"`,
+            `"["GET /api/search"] Required query parameter param not found"`,
           );
         });
 
@@ -361,7 +365,7 @@ describe('query parameters', () => {
           await expect(
             parser.parse(request),
           ).rejects.toThrowErrorMatchingInlineSnapshot(
-            `"[/api/search (get)]: Required query parameter param not found"`,
+            `"["GET /api/search"] Required query parameter param not found"`,
           );
         });
 
@@ -372,7 +376,7 @@ describe('query parameters', () => {
           await expect(
             parser.parse(request),
           ).rejects.toThrowErrorMatchingInlineSnapshot(
-            `"[/api/search (get)]: Unexpected query parameters: extra"`,
+            `"["GET /api/search"] Unexpected query parameters: extra"`,
           );
         });
       });
@@ -416,7 +420,7 @@ describe('query parameters', () => {
         await expect(
           parser.parse(request),
         ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `"[/api/search (get)]: Required query parameter param not found"`,
+          `"["GET /api/search"] Required query parameter param not found"`,
         );
       });
 
@@ -427,7 +431,7 @@ describe('query parameters', () => {
         await expect(
           parser.parse(request),
         ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `"[/api/search (get)]: Unexpected query parameters: extra"`,
+          `"["GET /api/search"] Unexpected query parameters: extra"`,
         );
       });
 
@@ -452,6 +456,69 @@ describe('query parameters', () => {
         } as Request;
         const result = await parser.parse(request);
         expect(result.param).toEqual({ key: { subkey: 'value' } });
+      });
+    });
+  });
+});
+
+describe('path parameters', () => {
+  let operation: Operation;
+  let parser: PathParameterParser;
+  let schema: (typeof withPathParameter)['paths']['/api/item/{id}']['get'];
+
+  beforeEach(() => {
+    schema = _.cloneDeep(withPathParameter.paths['/api/item/{id}'].get);
+    operation = {
+      schema: schema as OperationObject,
+      path: '/api/item/{id}',
+      method: 'get',
+    };
+    parser = new PathParameterParser(operation, { ajv });
+  });
+  describe('primitives', () => {
+    describe('string', () => {
+      it('should parse a string', async () => {
+        const request = {
+          url: 'http://localhost:8080/api/item/test',
+        } as Request;
+        const result = await parser.parse(request);
+        expect(result.id).toBe('test');
+      });
+
+      it('should throw an error if the parameter is required but missing', async () => {
+        (schema.parameters![0] as ParameterObject).required = true;
+        const request = {
+          url: 'http://localhost:8080/api/item',
+        } as Request;
+        await expect(
+          parser.parse(request),
+        ).rejects.toThrowErrorMatchingInlineSnapshot(
+          `"["GET /api/item/{id}"] Path parts do not match"`,
+        );
+      });
+    });
+
+    describe('number', () => {
+      beforeEach(() => {
+        schema.parameters![0].schema.type = 'number';
+      });
+      it('should parse a number', async () => {
+        const request = {
+          url: 'http://localhost:8080/api/item/42',
+        } as Request;
+        const result = await parser.parse(request);
+        expect(result.id).toBe(42);
+      });
+
+      it('should throw an error if the parameter is not a number', async () => {
+        const request = {
+          url: 'http://localhost:8080/api/item/hello',
+        } as Request;
+        await expect(
+          parser.parse(request),
+        ).rejects.toThrowErrorMatchingInlineSnapshot(
+          `"["GET /api/item/{id}"] Path parameter validation failed"`,
+        );
       });
     });
   });

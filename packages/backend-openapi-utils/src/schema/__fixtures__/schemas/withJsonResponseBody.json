@@ -23,7 +23,8 @@
                         }
                       }
                     }
-                  }
+                  },
+                  "additionalProperties": false
                 }
               }
             }

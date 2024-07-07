@@ -36,7 +36,11 @@ class BaseParameterParser {
   ajv: Ajv;
   operation: Operation;
   parameters: Record<string, ReferencelessParameterObject> = {};
-  constructor(operation: Operation, options: ParserOptions) {
+  constructor(
+    parameterIn: string,
+    operation: Operation,
+    options: ParserOptions,
+  ) {
     this.ajv = options.ajv;
     this.operation = operation;
     const { schema, path, method } = operation;
@@ -60,11 +64,21 @@ class BaseParameterParser {
           'Reference objects are not supported for parameters',
         );
       }
-      if (parameter.in === 'query') {
+      if (parameter.in === parameterIn) {
         this.parameters[parameter.name] =
           parameter as ReferencelessParameterObject;
       }
     }
+  }
+
+  optimisticallyParseValue(value: string, schema: SchemaObject) {
+    if (schema.type === 'integer') {
+      return parseInt(value, 10);
+    }
+    if (schema.type === 'number') {
+      return parseFloat(value);
+    }
+    return value;
   }
 }
 
@@ -72,6 +86,9 @@ export class QueryParameterParser
   extends BaseParameterParser
   implements RequestParser<Record<string, any>>
 {
+  constructor(operation: Operation, options: ParserOptions) {
+    super('query', operation, options);
+  }
   async parse(request: Request) {
     const { searchParams } = new URL(request.url);
     const remainingQueryParameters = new Set<string>(searchParams.keys());
@@ -127,13 +144,8 @@ export class QueryParameterParser
       } else if (!param && !parameter.required) {
         continue;
       }
-      if (parameter.schema.type === 'integer') {
-        // Try to parse the integer as AJV won't do it for us.
-        param = parseInt(param, 10);
-      }
-      if (parameter.schema.type === 'number') {
-        // Try to parse the number as AJV won't do it for us.
-        param = parseFloat(param);
+      if (param) {
+        param = this.optimisticallyParseValue(param, parameter.schema);
       }
       const validate = this.ajv.compile(parameter.schema);
       const valid = validate(param);
@@ -295,6 +307,9 @@ export class HeaderParameterParser
   extends BaseParameterParser
   implements RequestParser<Record<string, any>>
 {
+  constructor(operation: Operation, options: ParserOptions) {
+    super('header', operation, options);
+  }
   async parse(request: Request) {
     const headerParameters: Record<string, any> = {};
     for (const [name, parameter] of Object.entries(this.parameters)) {
@@ -339,15 +354,19 @@ export class PathParameterParser
   extends BaseParameterParser
   implements RequestParser<Record<string, any>>
 {
+  constructor(operation: Operation, options: ParserOptions) {
+    super('path', operation, options);
+  }
   async parse(request: Request) {
     const { pathname } = new URL(request.url);
     const params = this.parsePath({
       path: pathname,
       schema: this.operation.path,
     });
-    const pathParameters: Record<string, string> = {};
+    const pathParameters: Record<string, any> = {};
     for (const [name, parameter] of Object.entries(this.parameters)) {
-      if (!params[name] && parameter.required) {
+      let param: string | number = params[name];
+      if (!param && parameter.required) {
         throw new OperationError(
           this.operation,
           `Path parameter ${name} not found`,
@@ -356,8 +375,12 @@ export class PathParameterParser
         continue;
       }
 
+      if (param) {
+        param = this.optimisticallyParseValue(param, parameter.schema);
+      }
+
       const validate = this.ajv.compile(parameter.schema);
-      const valid = validate(params[name]);
+      const valid = validate(param);
 
       if (!valid) {
         throw new OperationError(
@@ -365,7 +388,7 @@ export class PathParameterParser
           'Path parameter validation failed',
         );
       }
-      pathParameters[name] = params[name];
+      pathParameters[name] = param;
     }
     return pathParameters;
   }

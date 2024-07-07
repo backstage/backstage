@@ -18,24 +18,51 @@ import { JsonObject } from '@backstage/types';
 import { Operation, ParserOptions, RequestParser } from './types';
 import { ValidateFunction } from 'ajv';
 import { OperationError } from './errors';
+import { RequestBodyObject, SchemaObject } from 'openapi3-ts';
 
+class DisabledRequestBodyParser
+  implements RequestParser<JsonObject | undefined>
+{
+  operation: Operation;
+  constructor(operation: Operation) {
+    this.operation = operation;
+  }
+  async parse(request: Request): Promise<JsonObject | undefined> {
+    const bodyText = await request.text();
+    if (bodyText?.length) {
+      throw new OperationError(
+        this.operation,
+        'Received a body but no schema was found',
+      );
+    }
+    return undefined;
+  }
+}
 export class RequestBodyParser
   implements RequestParser<JsonObject | undefined>
 {
   operation: Operation;
-  validate:
-    | { fn: ValidateFunction; disabled: false }
-    | {
-        fn: undefined;
-        disabled: true;
-      };
+  disabled: boolean = false;
+  validate!: ValidateFunction;
+  schema!: SchemaObject;
+  requestBodySchema!: RequestBodyObject;
+
+  static fromOperation(operation: Operation, options: ParserOptions) {
+    return operation.schema.requestBody
+      ? new RequestBodyParser(operation, options)
+      : new DisabledRequestBodyParser(operation);
+  }
+
   constructor(operation: Operation, options: ParserOptions) {
     this.operation = operation;
     const { schema: operationSchema } = this.operation;
     const requestBody = operationSchema.requestBody;
+
     if (!requestBody) {
-      this.validate = { disabled: true, fn: undefined };
-      return;
+      throw new OperationError(
+        this.operation,
+        'No request body found in operation',
+      );
     }
 
     if ('$ref' in requestBody!) {
@@ -69,26 +96,16 @@ export class RequestBodyParser
         'Reference objects are not supported',
       );
     }
-    this.validate = {
-      disabled: false,
-      fn: options.ajv.compile(operation.schema),
-    };
+    this.validate = options.ajv.compile(schema);
+    this.schema = schema;
+    this.requestBodySchema = requestBody;
   }
   async parse(request: Request): Promise<JsonObject | undefined> {
-    const { disabled, fn } = this.validate;
     const bodyText = await request.text();
-    if (!disabled && bodyText?.length) {
+    if (this.requestBodySchema.required && !bodyText?.length) {
       throw new OperationError(
         this.operation,
         `No request body found for ${request.url}`,
-      );
-    } else if (disabled && !bodyText?.length) {
-      // If there is no request body in the schema and no body in the request, then the request is valid
-      return undefined;
-    } else if (disabled && bodyText?.length) {
-      throw new OperationError(
-        this.operation,
-        'Received a body but no schema was found',
       );
     }
 
@@ -101,10 +118,8 @@ export class RequestBodyParser
       );
     }
     const body = (await request.json()) as JsonObject;
-    const valid = fn!(body);
+    const valid = this.validate(body);
     if (!valid) {
-      console.log(body);
-      console.error(fn!.errors);
       throw new OperationError(
         this.operation,
         `Request body validation failed.`,
