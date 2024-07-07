@@ -33,7 +33,12 @@ class RequestBodyValidator implements Validator {
   }
 
   async validate({ pair, operation }: ValidatorParams) {
-    const { request } = pair;
+    const { request, response } = pair;
+    if (response.statusCode === 400) {
+      // If the response is a 400, then the request is invalid and we shouldn't validate the parameters
+      return;
+    }
+
     // NOTE: There may be a worthwhile optimization here to cache these results to avoid re-parsing the schema for every request. As is, I don't think this is a big deal.
     const parser = RequestBodyParser.fromOperation(operation, { ajv });
     const fetchRequest = mockttpToFetchRequest(request);
