@@ -49,12 +49,7 @@ export class Proxy {
         this.requestResponsePairs.set(request, response);
       }
       delete this.#openRequests[response.id];
-      this.validator.validate(request, response).catch(err => {
-        if (process.env.THROW) {
-          throw err;
-        }
-        console.error(err);
-      });
+      this.validator.validate(request, response);
     });
   }
 
