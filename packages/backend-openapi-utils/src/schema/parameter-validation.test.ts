@@ -91,11 +91,11 @@ describe('query parameters', () => {
         const request = {
           url: 'http://localhost:8080/api/search?param=hello',
         } as Request;
-        await expect(
-          parser.parse(request),
-        ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `"["GET /api/search"] Query parameter validation failed"`,
-        );
+        await expect(parser.parse(request)).rejects
+          .toThrowErrorMatchingInlineSnapshot(`
+          "["GET /api/search"] Query parameter validation failed.
+           - Value should be of type number"
+        `);
       });
     });
   });
@@ -514,11 +514,11 @@ describe('path parameters', () => {
         const request = {
           url: 'http://localhost:8080/api/item/hello',
         } as Request;
-        await expect(
-          parser.parse(request),
-        ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `"["GET /api/item/{id}"] Path parameter validation failed"`,
-        );
+        await expect(parser.parse(request)).rejects
+          .toThrowErrorMatchingInlineSnapshot(`
+          "["GET /api/item/{id}"] Path parameter validation failed.
+           - Value should be of type number"
+        `);
       });
     });
   });

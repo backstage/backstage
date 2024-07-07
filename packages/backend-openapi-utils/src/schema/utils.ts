@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { CompletedRequest, CompletedResponse } from 'mockttp';
+import { ErrorObject } from 'ajv';
 
 export function mockttpToFetchRequest(request: CompletedRequest) {
   const headers = new Headers(request.rawHeaders);
@@ -33,4 +34,20 @@ export function mockttpToFetchResponse(response: CompletedResponse) {
     json: () => response.body?.getJson(),
     text: () => response.body?.getText(),
   } as Response;
+}
+
+export function humanifyAjvError(error: ErrorObject) {
+  switch (error.keyword) {
+    case 'required':
+      return `The ${error.params.missingProperty} property is required`;
+    case 'type':
+      console.log(error);
+      return `${
+        error.instancePath ? `"${error.instancePath}"` : 'Value'
+      } should be of type ${error.params.type}`;
+    case 'additionalProperties':
+      return `The "${error.params.additionalProperty}" property is not allowed`;
+    default:
+      return error.message;
+  }
 }

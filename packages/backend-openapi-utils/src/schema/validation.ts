@@ -24,7 +24,7 @@ import { RequestBodyParser } from './request-body-validation';
 import { mockttpToFetchRequest, mockttpToFetchResponse } from './utils';
 import { ResponseBodyParser } from './response-body-validation';
 
-const ajv = new Ajv({ allErrors: true }); // options can be passed, e.g. {allErrors: true}
+const ajv = new Ajv({ allErrors: true });
 
 class RequestBodyValidator implements Validator {
   schema: OpenAPIObject;
@@ -34,6 +34,7 @@ class RequestBodyValidator implements Validator {
 
   async validate({ pair, operation }: ValidatorParams) {
     const { request } = pair;
+    // NOTE: There may be a worthwhile optimization here to cache these results to avoid re-parsing the schema for every request. As is, I don't think this is a big deal.
     const parser = RequestBodyParser.fromOperation(operation, { ajv });
     const fetchRequest = mockttpToFetchRequest(request);
     await parser.parse(fetchRequest);
@@ -48,12 +49,19 @@ class ResponseBodyValidator implements Validator {
 
   async validate({ pair, operation }: ValidatorParams) {
     const { response } = pair;
+    // NOTE: There may be a worthwhile optimization here to cache these results to avoid re-parsing the schema for every request. As is, I don't think this is a big deal.
     const parser = ResponseBodyParser.fromOperation(operation, { ajv });
     const fetchResponse = mockttpToFetchResponse(response);
     await parser.parse(fetchResponse);
   }
 }
 
+/**
+ * Find an operation in an OpenAPI schema that matches a request. This is done by comparing the request URL to the paths in the schema.
+ * @param openApiSchema - The OpenAPI schema to search for the operation in.
+ * @param request - The request to find the operation for.
+ * @returns A tuple of the path and the operation object that matches the request.
+ */
 export function findOperationByRequest(
   openApiSchema: OpenAPIObject,
   request: CompletedRequest,
@@ -72,6 +80,7 @@ export function findOperationByRequest(
       if (pathParts[i] === parts[i]) {
         continue;
       }
+      // If the path part is a parameter, we can count it as a match. eg /api/{id} will match /api/1
       if (pathParts[i].startsWith('{') && pathParts[i].endsWith('}')) {
         continue;
       }

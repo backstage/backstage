@@ -61,11 +61,11 @@ describe('request body', () => {
     const requestBody = {
       query: 1,
     };
-    await expect(
-      parser.parse(toRequest(requestBody)),
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"["POST /api/search"] Request body validation failed."`,
-    );
+    await expect(parser.parse(toRequest(requestBody))).rejects
+      .toThrowErrorMatchingInlineSnapshot(`
+      "["POST /api/search"] Request body validation failed.
+       - "/query" should be of type string"
+    `);
   });
 
   it('should throw error if request body is required but missing', async () => {

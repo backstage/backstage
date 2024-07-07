@@ -17,7 +17,7 @@
 import { JsonObject } from '@backstage/types';
 import { Operation, ParserOptions, RequestParser } from './types';
 import { ValidateFunction } from 'ajv';
-import { OperationError } from './errors';
+import { OperationError, OperationParsingError } from './errors';
 import { RequestBodyObject, SchemaObject } from 'openapi3-ts';
 
 class DisabledRequestBodyParser
@@ -120,9 +120,10 @@ export class RequestBodyParser
     const body = (await request.json()) as JsonObject;
     const valid = this.validate(body);
     if (!valid) {
-      throw new OperationError(
+      throw new OperationParsingError(
         this.operation,
-        `Request body validation failed.`,
+        `Request body`,
+        this.validate.errors!,
       );
     }
     return body;
