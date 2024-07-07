@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 import { CompletedRequest, CompletedResponse } from 'mockttp';
-import {
-  OpenAPIObject,
-  OperationObject,
-  ParameterObject,
-  ResponseObject,
-  SchemaObject,
-} from 'openapi3-ts';
+import { OpenAPIObject, OperationObject } from 'openapi3-ts';
 import Ajv from 'ajv';
 import Parser from '@apidevtools/swagger-parser';
 import { Operation, Validator, ValidatorParams } from './types';
