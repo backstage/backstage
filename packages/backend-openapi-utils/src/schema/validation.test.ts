@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { OpenApiProxyValidator } from './validation';
+import { findOperationByRequest, OpenApiProxyValidator } from './validation';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
@@ -22,7 +22,7 @@ import { CompletedBody, CompletedRequest, CompletedResponse } from 'mockttp';
 import withResponseBody from './__fixtures__/schemas/withJsonResponseBody.json';
 import withQueryParameter from './__fixtures__/schemas/withQueryParameter.json';
 import _ from 'lodash';
-import { ParameterObject } from 'openapi3-ts';
+import { OpenAPIObject, ParameterObject } from 'openapi3-ts';
 
 const server = setupServer();
 
@@ -707,5 +707,117 @@ describe('OpenApiProxyValidator', () => {
         `"["GET /api/search" (200)]: Response body is required but missing"`,
       );
     });
+  });
+});
+
+describe('findOperationByRequest', () => {
+  it('finds an operation by request', () => {
+    const schema = {
+      openapi: '3.0.0',
+      info: {
+        title: 'Test',
+        version: '1.0.0',
+      },
+      paths: {
+        '/api/search': {
+          get: {
+            parameters: [],
+          },
+        },
+      },
+    };
+    const request = {
+      method: 'GET',
+      url: 'http://localhost:8080/api/search',
+    } as CompletedRequest;
+    expect(findOperationByRequest(schema as OpenAPIObject, request)).toEqual([
+      '/api/search',
+      schema.paths['/api/search'].get,
+    ]);
+  });
+
+  it('finds an operation by request when there are multiple other paths', () => {
+    const schema = {
+      openapi: '3.0.0',
+      info: {
+        title: 'Test',
+        version: '1.0.0',
+      },
+      paths: {
+        '/api/search': {
+          get: {
+            parameters: [],
+          },
+        },
+        '/api/catalog/by-ref': {
+          get: {
+            parameters: [],
+          },
+        },
+      },
+    };
+    const request = {
+      method: 'GET',
+      url: 'http://localhost:8080/api/search',
+    } as CompletedRequest;
+    expect(findOperationByRequest(schema as OpenAPIObject, request)).toEqual([
+      '/api/search',
+      schema.paths['/api/search'].get,
+    ]);
+  });
+
+  it('finds an operation by request when there are path parameters', () => {
+    const schema = {
+      openapi: '3.0.0',
+      info: {
+        title: 'Test',
+        version: '1.0.0',
+      },
+      paths: {
+        '/api/catalog/by-id/{id}': {
+          get: {
+            parameters: [],
+          },
+        },
+      },
+    };
+    const request = {
+      method: 'GET',
+      url: 'http://localhost:8080/api/catalog/by-id/123',
+    } as CompletedRequest;
+    expect(findOperationByRequest(schema as OpenAPIObject, request)).toEqual([
+      '/api/catalog/by-id/{id}',
+      schema.paths['/api/catalog/by-id/{id}'].get,
+    ]);
+  });
+
+  it('finds an operation by request when there are somewhat overlapping path parameters', () => {
+    const schema = {
+      openapi: '3.0.0',
+      info: {
+        title: 'Test',
+        version: '1.0.0',
+      },
+      paths: {
+        '/api/catalog/by-id/{id}': {
+          get: {
+            parameters: [],
+          },
+        },
+        '/api/catalog/by-id': {
+          get: {
+            parameters: [],
+          },
+        },
+      },
+    };
+    const request = {
+      method: 'GET',
+      url: 'http://localhost:8080/api/catalog/by-id/123',
+    } as CompletedRequest;
+    expect(findOperationByRequest(schema as OpenAPIObject, request)).toEqual([
+      '/api/catalog/by-id/{id}',
+      schema.paths['/api/catalog/by-id/{id}'].get,
+    ]);
   });
 });

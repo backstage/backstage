@@ -522,4 +522,48 @@ describe('path parameters', () => {
       });
     });
   });
+
+  describe('path parsing', () => {
+    it('should parse a path with a single parameters', async () => {
+      const parsedPath = PathParameterParser.parsePath({
+        operation,
+        schema: '/api/item/{id}',
+        path: '/api/item/test123',
+      });
+      expect(parsedPath).toEqual({ id: 'test123' });
+    });
+    it('should parse a path with multiple parameters', async () => {
+      const parsedPath = PathParameterParser.parsePath({
+        operation,
+        schema: '/api/item/{id}/{name}',
+        path: '/api/item/42/test',
+      });
+      // the string is expected here, but will be optimistically parsed as a number where it makes sense.
+      expect(parsedPath).toEqual({ id: '42', name: 'test' });
+    });
+
+    it('should throw an error if the path does not have enough parts', async () => {
+      expect(() =>
+        PathParameterParser.parsePath({
+          operation,
+          schema: '/api/item/{id}',
+          path: '/api/item',
+        }),
+      ).toThrowErrorMatchingInlineSnapshot(
+        `"["GET /api/item/{id}"] Path parts do not match"`,
+      );
+    });
+
+    it('should throw an error if the path has too many parts', async () => {
+      expect(() =>
+        PathParameterParser.parsePath({
+          operation,
+          schema: '/api/item/{id}',
+          path: '/api/item/test/123',
+        }),
+      ).toThrowErrorMatchingInlineSnapshot(
+        `"["GET /api/item/{id}"] Path parts do not match"`,
+      );
+    });
+  });
 });
