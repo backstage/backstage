@@ -41,7 +41,6 @@ export function humanifyAjvError(error: ErrorObject) {
     case 'required':
       return `The ${error.params.missingProperty} property is required`;
     case 'type':
-      console.log(error);
       return `${
         error.instancePath ? `"${error.instancePath}"` : 'Value'
       } should be of type ${error.params.type}`;

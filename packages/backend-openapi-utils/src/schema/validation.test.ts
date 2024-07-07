@@ -242,7 +242,7 @@ describe('OpenApiProxyValidator', () => {
           await expect(
             async () => await validator.validate(request, response),
           ).rejects.toThrowErrorMatchingInlineSnapshot(
-            `"["GET /api/search"] Invalid object parameter"`,
+            `"["GET /api/search"] Invalid object parameter, missing closing bracket for key "param[t""`,
           );
         });
       });
@@ -301,7 +301,7 @@ describe('OpenApiProxyValidator', () => {
           await expect(
             async () => await validator.validate(request, response),
           ).rejects.toThrowErrorMatchingInlineSnapshot(
-            `"["GET /api/search"] Invalid object parameter"`,
+            `"["GET /api/search"] Invalid object query parameter, must have an even number of key-value pairs"`,
           );
         });
         describe('explode', () => {
@@ -369,7 +369,7 @@ describe('OpenApiProxyValidator', () => {
             await expect(
               async () => await validator.validate(request, response),
             ).rejects.toThrowErrorMatchingInlineSnapshot(
-              `"["GET /api/search"] Invalid object parameter"`,
+              `"["GET /api/search"] Invalid object query parameter, must have an even number of key-value pairs"`,
             );
           });
         });
@@ -517,7 +517,7 @@ describe('OpenApiProxyValidator', () => {
             await expect(
               async () => await validator.validate(request, response),
             ).rejects.toThrowErrorMatchingInlineSnapshot(
-              `"["GET /api/search"] Array parameter should not have multiple values"`,
+              `"["GET /api/search"] Arrays must be comma separated in non-explode mode"`,
             );
           });
         });

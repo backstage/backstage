@@ -334,6 +334,51 @@ describe('query parameters', () => {
           });
           expect(result.extra).toEqual(['hello', 'world']);
         });
+
+        it('should respect other object encodings', async () => {
+          const parameter = {
+            name: 'extra',
+            in: 'query',
+            style: 'deepObject',
+            explode: true,
+            schema: { type: 'object' },
+            required: false,
+          } as ParameterObject;
+          schema.parameters!.push(parameter as any);
+          parser = new QueryParameterParser(operation, { ajv });
+          const request = {
+            url: 'http://localhost:8080/api/search?key=value&otherkey=value2&extra[hello]=world',
+          } as Request;
+
+          const result = await parser.parse(request);
+          expect(result.param).toEqual({
+            key: 'value',
+            otherkey: 'value2',
+          });
+          expect(result.extra).toEqual({ hello: 'world' });
+        });
+
+        it('should throw if there are 2 form explode parameters', async () => {
+          const parameter = {
+            name: 'extra',
+            in: 'query',
+            style: 'form',
+            explode: true,
+            schema: { type: 'object' },
+            required: false,
+          } as ParameterObject;
+          schema.parameters!.push(parameter as any);
+          parser = new QueryParameterParser(operation, { ajv });
+          const request = {
+            url: 'http://localhost:8080/api/search?key=value&otherkey=value2&extra[hello]=world',
+          } as Request;
+
+          await expect(() =>
+            parser.parse(request),
+          ).rejects.toThrowErrorMatchingInlineSnapshot(
+            `"["GET /api/search"] Ambiguous query parameters, you cannot have 2 form explode parameters"`,
+          );
+        });
       });
 
       describe('explode=false', () => {
