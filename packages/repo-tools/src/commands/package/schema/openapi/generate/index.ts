@@ -29,29 +29,43 @@ export async function command(opts: OptionValues) {
   }
 
   const sharedCommand = async (abortSignal?: AbortController) => {
+    const promises = [];
     if (opts.clientPackage) {
-      await generateClient(
-        opts.clientPackage,
-        opts.clientAdditionalProperties,
-        abortSignal,
+      promises.push(
+        generateClient(
+          opts.clientPackage,
+          opts.clientAdditionalProperties,
+          abortSignal,
+        ),
       );
     }
     if (opts.server) {
-      await generateServer(abortSignal);
+      promises.push(generateServer(abortSignal));
     }
+    await Promise.all(promises);
   };
 
   if (opts.watch) {
     try {
       const resolvedOpenapiPath = await getPathToCurrentOpenApiSpec();
       let abortController = new AbortController();
-      chokidar.watch(resolvedOpenapiPath).on('change', async () => {
-        console.log('detected changes');
+      const watcher = chokidar.watch(resolvedOpenapiPath);
+      watcher.on('change', () => {
+        console.log('Detected changes! Regenerating...');
         abortController.abort();
-        await sharedCommand(abortController);
         abortController = new AbortController();
+        sharedCommand(abortController);
       });
-      await sharedCommand();
+      watcher.on('error', error => {
+        console.error('Error happened', error);
+      });
+
+      watcher.on('ready', async () => {
+        console.log(
+          'Watching for changes in OpenAPI spec. Press Ctrl+C to stop.',
+        );
+        await sharedCommand();
+      });
       await new Promise(() => {});
     } catch (err) {
       console.error(chalk.red('Error: ', err));
