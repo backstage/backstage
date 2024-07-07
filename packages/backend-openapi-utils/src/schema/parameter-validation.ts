@@ -71,6 +71,13 @@ class BaseParameterParser {
     }
   }
 
+  /**
+   * Attempt to transform a string value to its expected type, this allows Ajv to perform validation. As these are parameters,
+   *  support for edge cases like nested type casting is not currently supported.
+   * @param value
+   * @param schema
+   * @returns
+   */
   optimisticallyParseValue(value: string, schema: SchemaObject) {
     if (schema.type === 'integer') {
       return parseInt(value, 10);
@@ -78,9 +85,19 @@ class BaseParameterParser {
     if (schema.type === 'number') {
       return parseFloat(value);
     }
+    if (schema.type === 'boolean') {
+      if (['true', 'false'].includes(value)) {
+        return value === 'true';
+      }
+      throw new Error('Invalid boolean value must be either "true" or "false"');
+    }
     return value;
   }
 }
+
+const PLACE_A_BEFORE_B = -1;
+const PLACE_A_AFTER_B = 1;
+const EQUAL = 0;
 
 export class QueryParameterParser
   extends BaseParameterParser
@@ -93,18 +110,52 @@ export class QueryParameterParser
     const { searchParams } = new URL(request.url);
     const remainingQueryParameters = new Set<string>(searchParams.keys());
     const queryParameters: Record<string, any> = {};
+
+    // object parameters with form/explode style should be processed last as they collect all remaining parameters.
     const parameterIterator = Object.entries(this.parameters).toSorted(
-      ([_, parameter]) => {
-        if (parameter.schema.type !== 'object') {
-          return -1;
+      ([_, parameterA], [_B, parameterB]) => {
+        if (
+          parameterA.schema.type !== 'object' &&
+          parameterB.schema.type !== 'object'
+        ) {
+          return EQUAL;
         }
-        if (parameter.style === 'form' || !parameter.style) {
-          if (parameter.explode || typeof parameter.explode === 'undefined') {
-            return 1;
-          }
-          return 0;
+        if (
+          parameterA.schema.type === 'object' &&
+          parameterB.schema.type !== 'object'
+        ) {
+          return PLACE_A_AFTER_B;
         }
-        return 0;
+        if (
+          parameterA.schema.type !== 'object' &&
+          parameterB.schema.type === 'object'
+        ) {
+          return PLACE_A_BEFORE_B;
+        }
+        const isParameterAForm =
+          parameterA.style === 'form' || !parameterA.style;
+        const isParameterAFormExplode =
+          isParameterAForm &&
+          (parameterA.explode || typeof parameterA.explode === 'undefined');
+        const isParameterBForm =
+          parameterB.style === 'form' || !parameterB.style;
+        const isParameterBFormExplode =
+          isParameterBForm &&
+          (parameterB.explode || typeof parameterB.explode === 'undefined');
+        // Sort the form explode to the bottom of the array.
+        if (isParameterAFormExplode && isParameterBFormExplode) {
+          throw new OperationError(
+            this.operation,
+            'Ambiguous query parameters, you cannot have 2 form explode parameters',
+          );
+        }
+        if (isParameterAFormExplode) {
+          return PLACE_A_AFTER_B;
+        }
+        if (isParameterBFormExplode) {
+          return PLACE_A_BEFORE_B;
+        }
+        return EQUAL;
       },
     );
     for (const [name, parameter] of parameterIterator) {
@@ -123,13 +174,15 @@ export class QueryParameterParser
       // eslint-disable-next-line prefer-const
       let [param, indices]: [any | null, string[]] = this.#findQueryParameters(
         this.parameters,
-        queryParameters,
+        remainingQueryParameters,
         searchParams,
         name,
       );
       if (!!param) {
         indices.forEach(index => remainingQueryParameters.delete(index));
       }
+
+      // The query parameters can be either a single value or an array of values, try to wrangle them into the expected format if they're not explicitly an array.
       if (parameter.schema.type !== 'array' && Array.isArray(param)) {
         param = param.length > 0 ? param[0] : undefined;
       }
@@ -145,6 +198,7 @@ export class QueryParameterParser
         continue;
       }
       if (param) {
+        // We do this here because all query parameters are strings but the schema will expect the real value.
         param = this.optimisticallyParseValue(param, parameter.schema);
       }
       const validate = this.ajv.compile(parameter.schema);
@@ -171,19 +225,26 @@ export class QueryParameterParser
 
   #findQueryParameters(
     parameters: Record<string, ParameterObject>,
-    currentQueryParameters: Record<string, any>,
+    remainingQueryParameters: Set<string>,
     searchParams: URLSearchParams,
     name: string,
   ): [any | null, string[]] {
     const parameter = parameters[name];
     const schema = parameter.schema as SchemaObject;
 
+    // Since getAll will return an empty array if the key is not found, we need to check if the key exists first.
     const getIfExists = (key: string) =>
       searchParams.has(key) ? searchParams.getAll(key) : null;
 
     if (schema.type === 'array') {
-      if (parameter.style === 'form' || !parameter.style) {
+      // Form is the default array format.
+      if (
+        parameter.style === 'form' ||
+        typeof parameter.style === 'undefined'
+      ) {
+        // As is explode = true.
         if (parameter.explode || typeof parameter.explode === 'undefined') {
+          // Support for qs explode format. Every value is stored as a separate query parameter.
           if (!searchParams.has(name) && searchParams.has(`${name}[0]`)) {
             const values: string[] = [];
             const indices: string[] = [];
@@ -195,15 +256,18 @@ export class QueryParameterParser
             }
             return [values, indices];
           }
+          // If not qs format, grab all values with the same name from search params.
           return [getIfExists(name), [name]];
         }
+        // Add support for qs non-standard array format. This is helpful for search-backend, since that uses qs still.
         if (!searchParams.has(name) && searchParams.has(`${name}[]`)) {
           return [searchParams.get(`${name}[]`)?.split(','), [`${name}[]`]];
         }
+        // Non-explode arrays should be comma separated.
         if (searchParams.has(name) && searchParams.getAll(name).length > 1) {
           throw new OperationError(
             this.operation,
-            'Array parameter should not have multiple values',
+            'Arrays must be comma separated in non-explode mode',
           );
         }
         return [searchParams.get(name)?.split(','), [name]];
@@ -218,14 +282,19 @@ export class QueryParameterParser
       );
     }
     if (schema.type === 'object') {
-      if (parameter.style === 'form' || !parameter.style) {
+      // Form is the default object format.
+      if (
+        parameter.style === 'form' ||
+        typeof parameter.style === 'undefined'
+      ) {
         if (parameter.explode) {
+          // Object form/explode is a collection of disjoint keys, there's no mapping for what they are so we collect all of them.
+          // This means we need to run this as the last query parameter that is processed.
           const obj: Record<string, string> = {};
           const indices: string[] = [];
           for (const [key, value] of searchParams.entries()) {
-            if (
-              this.#matchesOtherQueryParameters(currentQueryParameters, key)
-            ) {
+            // Have we processed this query parameter as part of another parameter parsing? If not, consider it to be a part of this object.
+            if (!remainingQueryParameters.has(key)) {
               continue;
             }
             indices.push(key);
@@ -233,6 +302,7 @@ export class QueryParameterParser
           }
           return [obj, indices];
         }
+        // For non-explode, the schema is comma separated key,value "pairs", so filter=key1,value1,key2,value2 would parse to {key1: value1, key2: value2}.
         const obj: Record<string, string> = {};
         const value = searchParams.get(name);
         if (value) {
@@ -240,7 +310,7 @@ export class QueryParameterParser
           if (parts.length % 2 !== 0) {
             throw new OperationError(
               this.operation,
-              'Invalid object parameter',
+              'Invalid object query parameter, must have an even number of key-value pairs',
             );
           }
           for (let i = 0; i < parts.length; i += 2) {
@@ -249,6 +319,8 @@ export class QueryParameterParser
         }
         return [obj, [name]];
       } else if (parameter.style === 'deepObject') {
+        // Deep object is a nested object structure, so we need to parse the keys to build the object.
+        // example: ?filter[key1]=value1&filter[key2]=value2 => { key1: value1, key2: value2 }
         const obj: Record<string, any> = {};
         const indices: string[] = [];
         for (const [key, value] of searchParams.entries()) {
@@ -261,7 +333,7 @@ export class QueryParameterParser
               if (!part.includes(']')) {
                 throw new OperationError(
                   this.operation,
-                  'Invalid object parameter',
+                  `Invalid object parameter, missing closing bracket for key "${key}"`,
                 );
               }
               const objKey = part.split(']')[0];
@@ -274,7 +346,7 @@ export class QueryParameterParser
             if (!lastPart.includes(']')) {
               throw new OperationError(
                 this.operation,
-                'Invalid object parameter',
+                `Invalid object parameter, missing closing bracket for key "${key}"`,
               );
             }
             currentLayer[lastPart.split(']')[0]] = value;
@@ -284,23 +356,11 @@ export class QueryParameterParser
       }
       throw new OperationError(
         this.operation,
-        'Unsupported style for object parameter',
+        `Unsupported style for object parameter, "${parameter.style}"`,
       );
     }
     // For everything else, just return the value.
     return [getIfExists(name), [name]];
-  }
-
-  #matchesOtherQueryParameters(
-    parameters: Record<string, any>,
-    nameToMatch: string,
-  ) {
-    for (const [name] of Object.entries(parameters)) {
-      if (name === nameToMatch) {
-        return true;
-      }
-    }
-    return false;
   }
 }
 
@@ -368,7 +428,7 @@ export class PathParameterParser
     });
     const pathParameters: Record<string, any> = {};
     for (const [name, parameter] of Object.entries(this.parameters)) {
-      let param: string | number = params[name];
+      let param: string | number | boolean = params[name];
       if (!param && parameter.required) {
         throw new OperationError(
           this.operation,
