@@ -112,8 +112,8 @@ describe('OpenApiProxyValidator', () => {
 
       await expect(
         async () => await validator.validate(request, response),
-      ).rejects.toMatchInlineSnapshot(
-        `[Error: [/api/search (GET)]: Received a body but no schema was found]`,
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"["GET /api/search"] Received a body but no schema was found"`,
       );
     });
   });
@@ -149,8 +149,8 @@ describe('OpenApiProxyValidator', () => {
 
           await expect(
             async () => await validator.validate(request, response),
-          ).rejects.toMatchInlineSnapshot(
-            `[Error: [/api/search (GET)]: Unexpected query parameters: test]`,
+          ).rejects.toThrowErrorMatchingInlineSnapshot(
+            `"["GET /api/search"] Unexpected query parameters: test"`,
           );
         });
 
@@ -166,8 +166,8 @@ describe('OpenApiProxyValidator', () => {
 
           await expect(
             async () => await validator.validate(request, response),
-          ).rejects.toMatchInlineSnapshot(
-            `[Error: [/api/search (GET)]: Query parameter validation failed]`,
+          ).rejects.toThrowErrorMatchingInlineSnapshot(
+            `"["GET /api/search"] Query parameter validation failed"`,
           );
         });
 
@@ -205,8 +205,8 @@ describe('OpenApiProxyValidator', () => {
 
           await expect(
             async () => await validator.validate(request, response),
-          ).rejects.toMatchInlineSnapshot(
-            `[Error: [/api/search (GET)]: Unexpected query parameters: param]`,
+          ).rejects.toThrowErrorMatchingInlineSnapshot(
+            `"["GET /api/search"] Unexpected query parameters: param"`,
           );
         });
 
@@ -224,8 +224,8 @@ describe('OpenApiProxyValidator', () => {
 
           await expect(
             async () => await validator.validate(request, response),
-          ).rejects.toMatchInlineSnapshot(
-            `[Error: [/api/search (GET)]: Required query parameter param not found]`,
+          ).rejects.toThrowErrorMatchingInlineSnapshot(
+            `"["GET /api/search"] Required query parameter param not found"`,
           );
         });
 
@@ -241,8 +241,8 @@ describe('OpenApiProxyValidator', () => {
 
           await expect(
             async () => await validator.validate(request, response),
-          ).rejects.toMatchInlineSnapshot(
-            `[Error: [/api/search (GET)]: Invalid object parameter]`,
+          ).rejects.toThrowErrorMatchingInlineSnapshot(
+            `"["GET /api/search"] Invalid object parameter"`,
           );
         });
       });
@@ -265,8 +265,8 @@ describe('OpenApiProxyValidator', () => {
 
           await expect(
             async () => await validator.validate(request, response),
-          ).rejects.toMatchInlineSnapshot(
-            `[Error: [/api/search (GET)]: Unexpected query parameters: param[t]`,
+          ).rejects.toThrowErrorMatchingInlineSnapshot(
+            `"["GET /api/search"] Unexpected query parameters: param[t"`,
           );
         });
 
@@ -284,8 +284,8 @@ describe('OpenApiProxyValidator', () => {
 
           await expect(
             async () => await validator.validate(request, response),
-          ).rejects.toMatchInlineSnapshot(
-            `[Error: [/api/search (GET)]: Required query parameter param not found]`,
+          ).rejects.toThrowErrorMatchingInlineSnapshot(
+            `"["GET /api/search"] Required query parameter param not found"`,
           );
         });
 
@@ -300,8 +300,8 @@ describe('OpenApiProxyValidator', () => {
           });
           await expect(
             async () => await validator.validate(request, response),
-          ).rejects.toMatchInlineSnapshot(
-            `[Error: [/api/search (GET)]: Invalid object parameter]`,
+          ).rejects.toThrowErrorMatchingInlineSnapshot(
+            `"["GET /api/search"] Invalid object parameter"`,
           );
         });
         describe('explode', () => {
@@ -369,7 +369,7 @@ describe('OpenApiProxyValidator', () => {
             await expect(
               async () => await validator.validate(request, response),
             ).rejects.toThrowErrorMatchingInlineSnapshot(
-              `"[/api/search (GET)]: Invalid object parameter"`,
+              `"["GET /api/search"] Invalid object parameter"`,
             );
           });
         });
@@ -428,8 +428,8 @@ describe('OpenApiProxyValidator', () => {
 
             await expect(
               async () => await validator.validate(request, response),
-            ).rejects.toMatchInlineSnapshot(
-              `[Error: [/api/search (GET)]: Required query parameter param not found]`,
+            ).rejects.toThrowErrorMatchingInlineSnapshot(
+              `"["GET /api/search"] Required query parameter param not found"`,
             );
           });
 
@@ -445,8 +445,8 @@ describe('OpenApiProxyValidator', () => {
 
             await expect(
               async () => await validator.validate(request, response),
-            ).rejects.toMatchInlineSnapshot(
-              `[Error: [/api/search (GET)]: Unexpected query parameters: param[]]`,
+            ).rejects.toThrowErrorMatchingInlineSnapshot(
+              `"["GET /api/search"] Unexpected query parameters: param[]"`,
             );
           });
         });
@@ -499,8 +499,8 @@ describe('OpenApiProxyValidator', () => {
 
             await expect(
               async () => await validator.validate(request, response),
-            ).rejects.toMatchInlineSnapshot(
-              `[Error: [/api/search (GET)]: Required query parameter param not found]`,
+            ).rejects.toThrowErrorMatchingInlineSnapshot(
+              `"["GET /api/search"] Required query parameter param not found"`,
             );
           });
 
@@ -516,8 +516,8 @@ describe('OpenApiProxyValidator', () => {
 
             await expect(
               async () => await validator.validate(request, response),
-            ).rejects.toMatchInlineSnapshot(
-              `[Error: [/api/search (GET)]: Array parameter should not have multiple values]`,
+            ).rejects.toThrowErrorMatchingInlineSnapshot(
+              `"["GET /api/search"] Array parameter should not have multiple values"`,
             );
           });
         });
@@ -609,8 +609,8 @@ describe('OpenApiProxyValidator', () => {
 
           await expect(
             async () => await validator.validate(request, response),
-          ).rejects.toMatchInlineSnapshot(
-            `[Error: [/api/search (GET)]: Required query parameter param not found]`,
+          ).rejects.toThrowErrorMatchingInlineSnapshot(
+            `"["GET /api/search"] Required query parameter param not found"`,
           );
         });
       });
@@ -662,8 +662,8 @@ describe('OpenApiProxyValidator', () => {
 
           await expect(
             async () => await validator.validate(request, response),
-          ).rejects.toMatchInlineSnapshot(
-            `[Error: [/api/search (GET)]: Required query parameter param not found]`,
+          ).rejects.toThrowErrorMatchingInlineSnapshot(
+            `"["GET /api/search"] Required query parameter param not found"`,
           );
         });
       });
@@ -703,8 +703,8 @@ describe('OpenApiProxyValidator', () => {
 
       await expect(
         async () => await validator.validate(request, response),
-      ).rejects.toMatchInlineSnapshot(
-        `[Error: [/api/search (GET)]: Response body validation failed]`,
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"["GET /api/search" (200)]: Response body is required but missing"`,
       );
     });
   });

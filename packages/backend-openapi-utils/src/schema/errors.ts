@@ -18,6 +18,20 @@ import { Operation } from './types';
 
 export class OperationError extends Error {
   constructor(operation: Operation, message: string) {
-    super(`[${operation.path} (${operation.method})]: ${message}`);
+    super(
+      `["${operation.method.toLocaleUpperCase('en-US')} ${
+        operation.path
+      }"] ${message}`,
+    );
+  }
+}
+
+export class OperationResponseError extends Error {
+  constructor(operation: Operation, response: Response, message: string) {
+    super(
+      `["${operation.method.toLocaleUpperCase('en-US')} ${operation.path}" (${
+        response.status
+      })]: ${message}`,
+    );
   }
 }

@@ -40,7 +40,7 @@ class RequestBodyValidator implements Validator {
 
   async validate({ pair, operation }: ValidatorParams) {
     const { request } = pair;
-    const parser = new RequestBodyParser(operation, { ajv });
+    const parser = RequestBodyParser.fromOperation(operation, { ajv });
     const fetchRequest = mockttpToFetchRequest(request);
     await parser.parse(fetchRequest);
   }
@@ -54,7 +54,7 @@ class ResponseBodyValidator implements Validator {
 
   async validate({ pair, operation }: ValidatorParams) {
     const { response } = pair;
-    const parser = new ResponseBodyParser(operation, { ajv });
+    const parser = ResponseBodyParser.fromOperation(operation, { ajv });
     const fetchResponse = mockttpToFetchResponse(response);
     await parser.parse(fetchResponse);
   }
