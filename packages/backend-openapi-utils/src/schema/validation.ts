@@ -60,6 +60,49 @@ class ResponseBodyValidator implements Validator {
   }
 }
 
+export function findOperationByRequest(
+  openApiSchema: OpenAPIObject,
+  request: CompletedRequest,
+): [string, OperationObject] | undefined {
+  const { url } = request;
+  const { pathname } = new URL(url);
+
+  const parts = pathname.split('/');
+  for (const [path, schema] of Object.entries(openApiSchema.paths)) {
+    const pathParts = path.split('/');
+    if (parts.length !== pathParts.length) {
+      continue;
+    }
+    let found = true;
+    for (let i = 0; i < parts.length; i++) {
+      if (pathParts[i] === parts[i]) {
+        continue;
+      }
+      if (pathParts[i].startsWith('{') && pathParts[i].endsWith('}')) {
+        continue;
+      }
+      found = false;
+      break;
+    }
+    if (!found) {
+      continue;
+    }
+    let matchingOperationType: OperationObject | undefined = undefined;
+    for (const [operationType, operation] of Object.entries(schema)) {
+      if (operationType === request.method.toLowerCase()) {
+        matchingOperationType = operation as OperationObject;
+        break;
+      }
+    }
+    if (!matchingOperationType) {
+      continue;
+    }
+    return [path, matchingOperationType];
+  }
+
+  return undefined;
+}
+
 export class OpenApiProxyValidator {
   schema: OpenAPIObject | undefined;
   validators: Validator[] | undefined;
@@ -74,7 +117,7 @@ export class OpenApiProxyValidator {
   }
 
   async validate(request: CompletedRequest, response: CompletedResponse) {
-    const operationPathTuple = this.findOperation(request);
+    const operationPathTuple = findOperationByRequest(this.schema!, request);
     if (!operationPathTuple) {
       throw new OperationError(
         { path: request.path, method: request.method } as Operation,
@@ -94,47 +137,5 @@ export class OpenApiProxyValidator {
         }),
       ),
     );
-  }
-
-  private findOperation(
-    request: CompletedRequest,
-  ): [string, OperationObject] | undefined {
-    const { url } = request;
-    const { pathname } = new URL(url);
-
-    const parts = pathname.split('/');
-    for (const [path, schema] of Object.entries(this.schema!.paths)) {
-      const pathParts = path.split('/');
-      if (parts.length !== pathParts.length) {
-        continue;
-      }
-      let found = true;
-      for (let i = 0; i < parts.length; i++) {
-        if (pathParts[i] === parts[i]) {
-          continue;
-        }
-        if (pathParts[i].startsWith('{') && pathParts[i].endsWith('}')) {
-          continue;
-        }
-        found = false;
-        break;
-      }
-      if (!found) {
-        continue;
-      }
-      let matchingOperationType: OperationObject | undefined = undefined;
-      for (const [operationType, operation] of Object.entries(schema)) {
-        if (operationType === request.method.toLowerCase()) {
-          matchingOperationType = operation as OperationObject;
-          break;
-        }
-      }
-      if (!matchingOperationType) {
-        continue;
-      }
-      return [path, matchingOperationType];
-    }
-
-    return undefined;
   }
 }

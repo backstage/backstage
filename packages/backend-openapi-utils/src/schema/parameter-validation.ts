@@ -359,7 +359,8 @@ export class PathParameterParser
   }
   async parse(request: Request) {
     const { pathname } = new URL(request.url);
-    const params = this.parsePath({
+    const params = PathParameterParser.parsePath({
+      operation: this.operation,
       path: pathname,
       schema: this.operation.path,
     });
@@ -393,11 +394,19 @@ export class PathParameterParser
     return pathParameters;
   }
 
-  parsePath({ schema, path }: { schema: string; path: string }) {
+  static parsePath({
+    operation,
+    schema,
+    path,
+  }: {
+    operation: Operation;
+    schema: string;
+    path: string;
+  }) {
     const parts = path.split('/');
     const pathParts = schema.split('/');
     if (parts.length !== pathParts.length) {
-      throw new OperationError(this.operation, 'Path parts do not match');
+      throw new OperationError(operation, 'Path parts do not match');
     }
     const params: Record<string, string> = {};
     for (let i = 0; i < parts.length; i++) {
