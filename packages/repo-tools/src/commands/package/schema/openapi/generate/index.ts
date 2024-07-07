@@ -19,6 +19,7 @@ import { command as generateClient } from './client';
 import { command as generateServer } from './server';
 import chokidar from 'chokidar';
 import { getPathToCurrentOpenApiSpec } from '../../../../../lib/openapi/helpers';
+import { debounce } from 'lodash';
 
 export async function command(opts: OptionValues) {
   if (!opts.clientPackage && !opts.server) {
@@ -50,11 +51,19 @@ export async function command(opts: OptionValues) {
       const resolvedOpenapiPath = await getPathToCurrentOpenApiSpec();
       let abortController = new AbortController();
       const watcher = chokidar.watch(resolvedOpenapiPath);
-      watcher.on('change', () => {
+
+      // The generate command currently takes ~8 seconds to run, so let's debounce calling it so we don't have to cancel it so much.
+      const debouncedCommand = debounce(() => {
         console.log('Detected changes! Regenerating...');
         abortController.abort();
         abortController = new AbortController();
-        sharedCommand(abortController);
+        sharedCommand(abortController).catch(err => {
+          console.error(chalk.red('Error: ', err));
+        });
+      }, 500);
+
+      watcher.on('change', () => {
+        debouncedCommand();
       });
       watcher.on('error', error => {
         console.error('Error happened', error);
@@ -64,7 +73,6 @@ export async function command(opts: OptionValues) {
         console.log(
           'Watching for changes in OpenAPI spec. Press Ctrl+C to stop.',
         );
-        await sharedCommand();
       });
       await new Promise(() => {});
     } catch (err) {
@@ -72,6 +80,10 @@ export async function command(opts: OptionValues) {
       process.exit(1);
     }
   } else {
-    await sharedCommand();
+    try {
+      await sharedCommand();
+    } catch (err) {
+      process.exit(1);
+    }
   }
 }
