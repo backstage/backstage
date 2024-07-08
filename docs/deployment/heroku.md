@@ -32,7 +32,7 @@ $ heroku domains -a <your-app>
 <your-app-123>.herokuapp.com
 ```
 
-Update `baseUrl` and `port` in `app-config.yaml`. The core [app-backend plugin](https://www.npmjs.com/package/@backstage/plugin-app-backend) allows a single Heroku app to serve the frontend and backend:
+The core [app-backend plugin](https://www.npmjs.com/package/@backstage/plugin-app-backend) allows a single Heroku app to serve the frontend and backend. To make this work you need to update the `baseUrl` and `port` in `app-config.production.yaml`:
 ```yaml
 app:
   baseUrl: https://<your-app-123>.herokuapp.com
