@@ -18,10 +18,54 @@ import { Entity } from '@backstage/catalog-model';
 import { Writable } from 'stream';
 import { Logger } from 'winston';
 import { ParsedLocationAnnotation } from '../../helpers';
-import { ContainerRunner } from '@backstage/backend-common';
+import {
+  ContainerRunner,
+  RunContainerOptions,
+} from '@backstage/backend-common';
 
-// Determines where the generator will be run
+/**
+ * Determines where the generator will be run. `'docker'` is a shorthand for running the generator in a container.
+ * If no {@link GeneratorOptions.containerRunner} is specified, the internal `DockerContainerRunner` will be used.
+ */
 export type GeneratorRunInType = 'docker' | 'local';
+
+/**
+ * Options passed to the {@link TechdocsContainerRunner.runContainer} method.
+ *
+ * Allows the deprecated `RunContainerOptions` for backward compatibility until it is removed.
+ *
+ * @public
+ */
+export type TechdocsRunContainerOptions =
+  | {
+      imageName: string;
+      command?: string | string[];
+      args: string[];
+      logStream?: Writable;
+      mountDirs?: Record<string, string>;
+      workingDir?: string;
+      envVars?: Record<string, string>;
+      pullImage?: boolean;
+      defaultUser?: boolean;
+    }
+  | RunContainerOptions;
+
+/**
+ * Handles the running of containers to generate TechDocs.
+ *
+ * Custom implementations, e.g. for Kubernetes or other execution environments, can be inspired by the internal default
+ * implementation `DockerContainerRunner`.
+ *
+ * Extends `ContainerRunner` for backward compatibility until it is removed.
+ *
+ * @public
+ */
+export interface TechdocsContainerRunner extends ContainerRunner {
+  /**
+   * Runs a container image to completion.
+   */
+  runContainer(opts: TechdocsRunContainerOptions): Promise<void>;
+}
 
 /**
  * Options for building generators
@@ -29,11 +73,7 @@ export type GeneratorRunInType = 'docker' | 'local';
  */
 export type GeneratorOptions = {
   logger: Logger;
-  /**
-   * @deprecated containerRunner is now instantiated in
-   * the generator and this option will be removed in the future
-   */
-  containerRunner?: ContainerRunner;
+  containerRunner?: TechdocsContainerRunner;
 };
 
 /**

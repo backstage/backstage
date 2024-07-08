@@ -14,6 +14,7 @@ import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Logger } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { RunContainerOptions } from '@backstage/backend-common';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { UrlReader } from '@backstage/backend-common';
 import * as winston from 'winston';
@@ -49,7 +50,7 @@ export type GeneratorBuilder = {
 // @public
 export type GeneratorOptions = {
   logger: Logger;
-  containerRunner?: ContainerRunner;
+  containerRunner?: TechdocsContainerRunner;
 };
 
 // @public
@@ -262,6 +263,11 @@ export interface TechdocsBuildsExtensionPoint {
 export const techdocsBuildsExtensionPoint: ExtensionPoint<TechdocsBuildsExtensionPoint>;
 
 // @public
+export interface TechdocsContainerRunner extends ContainerRunner {
+  runContainer(opts: TechdocsRunContainerOptions): Promise<void>;
+}
+
+// @public
 export interface TechDocsDocument extends IndexableDocument {
   kind: string;
   lifecycle: string;
@@ -275,7 +281,7 @@ export interface TechDocsDocument extends IndexableDocument {
 export class TechdocsGenerator implements GeneratorBase {
   constructor(options: {
     logger: Logger;
-    containerRunner?: ContainerRunner;
+    containerRunner?: TechdocsContainerRunner;
     config: Config;
     scmIntegrations: ScmIntegrationRegistry;
   });
@@ -322,6 +328,21 @@ export interface TechdocsPublisherExtensionPoint {
 
 // @public
 export const techdocsPublisherExtensionPoint: ExtensionPoint<TechdocsPublisherExtensionPoint>;
+
+// @public
+export type TechdocsRunContainerOptions =
+  | {
+      imageName: string;
+      command?: string | string[];
+      args: string[];
+      logStream?: Writable;
+      mountDirs?: Record<string, string>;
+      workingDir?: string;
+      envVars?: Record<string, string>;
+      pullImage?: boolean;
+      defaultUser?: boolean;
+    }
+  | RunContainerOptions;
 
 // @public
 export const transformDirLocation: (
