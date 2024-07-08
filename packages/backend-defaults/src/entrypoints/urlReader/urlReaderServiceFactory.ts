@@ -22,6 +22,12 @@ import {
   createServiceRef,
 } from '@backstage/backend-plugin-api';
 
+const urlReaderProviderFactoriesServiceRef = createServiceRef<ReaderFactory>({
+  id: 'core.urlReader.factories',
+  scope: 'plugin',
+  singleton: false,
+});
+
 /**
  * @public
  * A non-singleton reference to URL Reader factory services.
@@ -67,5 +73,21 @@ export const urlReaderServiceFactory = createServiceFactory({
       logger,
       factories,
     });
+  },
+});
+
+export const azureUrlReaderProviderFactory = createServiceFactory({
+  service: urlReaderProviderFactoriesServiceRef,
+  deps: {},
+  async factory() {
+    return AzureUrlReader.factory;
+  },
+});
+
+export const githubUrlReaderProviderFactory = createServiceFactory({
+  service: urlReaderProviderFactoriesServiceRef,
+  deps: {},
+  async factory() {
+    return GithubUrlReader.factory;
   },
 });
