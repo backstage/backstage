@@ -20,6 +20,7 @@ import { ForwardedError } from '@backstage/errors';
 import { PassThrough } from 'stream';
 import { pipeline as pipelineStream } from 'stream';
 import { promisify } from 'util';
+import { TechDocsContainerRunner } from './types';
 import { Writable } from 'stream';
 
 const pipeline = promisify(pipelineStream);
@@ -31,7 +32,7 @@ export type UserOptions = {
 /**
  * @internal
  */
-export class DockerContainerRunner {
+export class DockerContainerRunner implements TechDocsContainerRunner {
   private readonly dockerClient: Docker;
 
   constructor() {
