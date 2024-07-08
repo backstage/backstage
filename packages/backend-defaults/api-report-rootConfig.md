@@ -28,8 +28,8 @@ export interface RootConfigFactoryOptions {
 // @public (undocumented)
 export const rootConfigServiceFactory: ((
   options?: RootConfigFactoryOptions,
-) => ServiceFactory<RootConfigService, 'root'>) &
-  ServiceFactory<RootConfigService, 'root'>;
+) => ServiceFactory<RootConfigService, 'root', true>) &
+  ServiceFactory<RootConfigService, 'root', true>;
 
 // (No @packageDocumentation comment for this package)
 ```

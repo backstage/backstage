@@ -143,8 +143,8 @@ export type RootHttpRouterFactoryOptions = {
 // @public (undocumented)
 export const rootHttpRouterServiceFactory: ((
   options?: RootHttpRouterFactoryOptions,
-) => ServiceFactory<RootHttpRouterService, 'root'>) &
-  ServiceFactory<RootHttpRouterService, 'root'>;
+) => ServiceFactory<RootHttpRouterService, 'root', true>) &
+  ServiceFactory<RootHttpRouterService, 'root', true>;
 
 // (No @packageDocumentation comment for this package)
 ```

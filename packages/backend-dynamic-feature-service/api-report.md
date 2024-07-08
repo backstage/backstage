@@ -117,6 +117,7 @@ export interface DynamicPluginsFactoryOptions {
 export const dynamicPluginsFeatureDiscoveryServiceFactory: ServiceFactoryCompat<
   FeatureDiscoveryService,
   'root',
+  true,
   undefined
 >;
 
@@ -127,6 +128,7 @@ export const dynamicPluginsFrontendSchemas: BackendFeatureCompat;
 export const dynamicPluginsRootLoggerServiceFactory: ServiceFactoryCompat<
   RootLoggerService,
   'root',
+  true,
   undefined
 >;
 
@@ -147,6 +149,7 @@ export interface DynamicPluginsSchemasService {
 export const dynamicPluginsSchemasServiceFactory: ServiceFactoryCompat<
   DynamicPluginsSchemasService,
   'root',
+  true,
   DynamicPluginsSchemasOptions
 >;
 
@@ -154,13 +157,15 @@ export const dynamicPluginsSchemasServiceFactory: ServiceFactoryCompat<
 export const dynamicPluginsServiceFactory: ServiceFactoryCompat<
   DynamicPluginProvider,
   'root',
+  true,
   DynamicPluginsFactoryOptions
 >;
 
 // @public (undocumented)
 export const dynamicPluginsServiceRef: ServiceRef<
   DynamicPluginProvider,
-  'root'
+  'root',
+  true
 >;
 
 // @public (undocumented)

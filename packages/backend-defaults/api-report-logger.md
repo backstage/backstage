@@ -10,6 +10,7 @@ import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
 export const loggerServiceFactory: ServiceFactoryCompat<
   LoggerService,
   'plugin',
+  true,
   undefined
 >;
 

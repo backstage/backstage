@@ -10,6 +10,7 @@ import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
 export const httpAuthServiceFactory: ServiceFactoryCompat<
   HttpAuthService,
   'plugin',
+  true,
   undefined
 >;
 
