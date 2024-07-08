@@ -295,7 +295,7 @@ describe('helpers', () => {
         'edit_uri: https://github.com/backstage/backstage/edit/main/docs',
       );
       expect(updatedMkdocsYml.toString()).not.toContain(
-        'https://github.com/neworg/newrepo',
+        'edit_uri: https://github.com/neworg/newrepo',
       );
     });
 
