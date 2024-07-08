@@ -46,14 +46,14 @@ backend:
 Add a build script in `package.json` to compile frontend during deployment:
 ```json
 "scripts": {
-  "build": "yarn build:backend --config ../../app-config.yaml --config app-config.production.yaml"
+  "build": "yarn build:backend --config ../../app-config.yaml --config ../../app-config.production.yaml"
 ```
 
 ## Start Command
 
 Create a [Procfile](https://devcenter.heroku.com/articles/procfile) in the app's root:
 ```shell
-$ echo "web: yarn workspace backend start --config ../../app-config.yaml" > Procfile
+$ echo "web: yarn workspace backend start --config ../../app-config.yaml --config ../../app-config.production.yaml" > Procfile
 ```
 
 ## Database
@@ -63,7 +63,7 @@ Provision a [Heroku Postgres](https://elements.heroku.com/addons/heroku-postgres
 $ heroku addons:create heroku-postgresql -a <your-app>
 ```
 
-Update `database` in `app-config.yaml`:
+Update `database` in `app-config.production.yaml`:
 ```yaml
 backend:
   database:
@@ -98,4 +98,34 @@ View logs:
 
 ```shell
 $ heroku heroku -a <your-app>
+```
+
+## Docker
+
+As an alternative to git deploys, Heroku also [supports container images](https://devcenter.heroku.com/articles/container-registry-and-runtime).
+
+Login to Heroku's container registry:
+
+```shell
+$ heroku container:login
+```
+
+Configure the Heroku app to run a container image:
+
+```shell
+$ heroku stack:set container -a <your-app>
+```
+
+Locally run the [host build command](https://backstage.io/docs/deployment/docker/#host-build):
+```shell
+$ yarn build:backend --config ../../app-config.yaml --config ../../app-config.production.yaml
+```
+
+Build, push, and release the container image:
+```shell
+$ docker image build . -f packages/backend/Dockerfile --tag registry.heroku.com/<your-app>/web
+
+$ docker push registry.heroku.com/<your-app>/web
+
+$ heroku container:release web -a <your-app>
 ```
