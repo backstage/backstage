@@ -46,7 +46,11 @@ import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { UserInfoService } from '@backstage/backend-plugin-api';
 
 // @public @deprecated (undocumented)
-export const authServiceFactory: () => ServiceFactory<AuthService, 'plugin'>;
+export const authServiceFactory: () => ServiceFactory<
+  AuthService,
+  'plugin',
+  true
+>;
 
 // @public (undocumented)
 export interface Backend {
@@ -66,7 +70,11 @@ export interface Backend {
 }
 
 // @public @deprecated (undocumented)
-export const cacheServiceFactory: () => ServiceFactory<CacheService, 'plugin'>;
+export const cacheServiceFactory: () => ServiceFactory<
+  CacheService,
+  'plugin',
+  true
+>;
 
 // Warning: (ae-forgotten-export) The symbol "createConfigSecretEnumerator_2" needs to be exported by the entry point index.d.ts
 //
@@ -97,7 +105,8 @@ export interface CreateSpecializedBackendOptions {
 // @public @deprecated (undocumented)
 export const databaseServiceFactory: () => ServiceFactory<
   DatabaseService,
-  'plugin'
+  'plugin',
+  true
 >;
 
 // @public @deprecated
@@ -118,7 +127,8 @@ export type DefaultRootHttpRouterOptions = DefaultRootHttpRouterOptions_2;
 // @public @deprecated (undocumented)
 export const discoveryServiceFactory: () => ServiceFactory<
   DiscoveryService,
-  'plugin'
+  'plugin',
+  true
 >;
 
 // Warning: (ae-forgotten-export) The symbol "ExtendedHttpServer_2" needs to be exported by the entry point index.d.ts
@@ -143,13 +153,15 @@ export class HostDiscovery implements DiscoveryService {
 // @public @deprecated (undocumented)
 export const httpAuthServiceFactory: () => ServiceFactory<
   HttpAuthService,
-  'plugin'
+  'plugin',
+  true
 >;
 
 // @public @deprecated
 export const httpRouterServiceFactory: () => ServiceFactory<
   HttpRouterService,
-  'plugin'
+  'plugin',
+  true
 >;
 
 // Warning: (ae-forgotten-export) The symbol "HttpServerCertificateOptions_2" needs to be exported by the entry point index.d.ts
@@ -171,7 +183,7 @@ export type IdentityFactoryOptions = {
 // @public @deprecated (undocumented)
 export const identityServiceFactory: (
   options?: IdentityFactoryOptions | undefined,
-) => ServiceFactory<IdentityService, 'plugin'>;
+) => ServiceFactory<IdentityService, 'plugin', boolean>;
 
 // Warning: (ae-forgotten-export) The symbol "LifecycleMiddlewareOptions_2" needs to be exported by the entry point index.d.ts
 //
@@ -181,7 +193,8 @@ export type LifecycleMiddlewareOptions = LifecycleMiddlewareOptions_2;
 // @public @deprecated
 export const lifecycleServiceFactory: () => ServiceFactory<
   LifecycleService,
-  'plugin'
+  'plugin',
+  true
 >;
 
 // @public @deprecated
@@ -197,7 +210,8 @@ export function loadBackendConfig(options: {
 // @public @deprecated
 export const loggerServiceFactory: () => ServiceFactory<
   LoggerService,
-  'plugin'
+  'plugin',
+  true
 >;
 
 // @public @deprecated (undocumented)
@@ -224,7 +238,8 @@ export type MiddlewareFactoryOptions = MiddlewareFactoryOptions_2;
 // @public @deprecated (undocumented)
 export const permissionsServiceFactory: () => ServiceFactory<
   PermissionsService,
-  'plugin'
+  'plugin',
+  true
 >;
 
 // Warning: (ae-forgotten-export) The symbol "readCorsOptions_2" needs to be exported by the entry point index.d.ts
@@ -253,7 +268,7 @@ export interface RootConfigFactoryOptions {
 // @public @deprecated (undocumented)
 export const rootConfigServiceFactory: (
   options?: RootConfigFactoryOptions | undefined,
-) => ServiceFactory<RootConfigService, 'root'>;
+) => ServiceFactory<RootConfigService, 'root', boolean>;
 
 // Warning: (ae-forgotten-export) The symbol "RootHttpRouterConfigureContext_2" needs to be exported by the entry point index.d.ts
 //
@@ -268,42 +283,48 @@ export type RootHttpRouterFactoryOptions = RootHttpRouterFactoryOptions_2;
 // @public @deprecated (undocumented)
 export const rootHttpRouterServiceFactory: (
   options?: RootHttpRouterFactoryOptions_2 | undefined,
-) => ServiceFactory<RootHttpRouterService, 'root'>;
+) => ServiceFactory<RootHttpRouterService, 'root', boolean>;
 
 // @public @deprecated
 export const rootLifecycleServiceFactory: () => ServiceFactory<
   RootLifecycleService,
-  'root'
+  'root',
+  boolean
 >;
 
 // @public @deprecated
 export const rootLoggerServiceFactory: () => ServiceFactory<
   RootLoggerService,
-  'root'
+  'root',
+  boolean
 >;
 
 // @public @deprecated (undocumented)
 export const schedulerServiceFactory: () => ServiceFactory<
   SchedulerService,
-  'plugin'
+  'plugin',
+  true
 >;
 
 // @public @deprecated (undocumented)
 export const tokenManagerServiceFactory: () => ServiceFactory<
   TokenManagerService,
-  'plugin'
+  'plugin',
+  true
 >;
 
 // @public @deprecated (undocumented)
 export const urlReaderServiceFactory: () => ServiceFactory<
   UrlReaderService,
-  'plugin'
+  'plugin',
+  true
 >;
 
 // @public @deprecated (undocumented)
 export const userInfoServiceFactory: () => ServiceFactory<
   UserInfoService,
-  'plugin'
+  'plugin',
+  true
 >;
 
 // @public @deprecated

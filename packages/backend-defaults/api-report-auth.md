@@ -7,7 +7,11 @@ import { AuthService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 
 // @public
-export const authServiceFactory: () => ServiceFactory<AuthService, 'plugin'>;
+export const authServiceFactory: () => ServiceFactory<
+  AuthService,
+  'plugin',
+  true
+>;
 
 // (No @packageDocumentation comment for this package)
 ```

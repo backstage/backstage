@@ -37,7 +37,7 @@ export type SignalPayload<TMessage extends JsonObject = JsonObject> = {
 export interface SignalService extends SignalsService {}
 
 // @public @deprecated (undocumented)
-export const signalService: ServiceRef<SignalsService, 'plugin'>;
+export const signalService: ServiceRef<SignalsService, 'plugin', true>;
 
 // @public (undocumented)
 export interface SignalsService {
@@ -52,7 +52,7 @@ export type SignalsServiceOptions = {
 };
 
 // @public (undocumented)
-export const signalsServiceRef: ServiceRef<SignalsService, 'plugin'>;
+export const signalsServiceRef: ServiceRef<SignalsService, 'plugin', true>;
 
 // (No @packageDocumentation comment for this package)
 ```

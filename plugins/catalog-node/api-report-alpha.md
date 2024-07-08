@@ -88,7 +88,7 @@ export interface CatalogProcessingExtensionPoint {
 export const catalogProcessingExtensionPoint: ExtensionPoint<CatalogProcessingExtensionPoint>;
 
 // @alpha
-export const catalogServiceRef: ServiceRef<CatalogApi, 'plugin'>;
+export const catalogServiceRef: ServiceRef<CatalogApi, 'plugin', true>;
 
 // (No @packageDocumentation comment for this package)
 ```

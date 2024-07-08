@@ -13,7 +13,8 @@ import { transport } from 'winston';
 // @public
 export const rootLoggerServiceFactory: () => ServiceFactory<
   RootLoggerService,
-  'root'
+  'root',
+  boolean
 >;
 
 // @public

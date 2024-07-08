@@ -28,7 +28,7 @@ export interface RootConfigFactoryOptions {
 // @public (undocumented)
 export const rootConfigServiceFactory: (
   options?: RootConfigFactoryOptions | undefined,
-) => ServiceFactory<RootConfigService, 'root'>;
+) => ServiceFactory<RootConfigService, 'root', boolean>;
 
 // (No @packageDocumentation comment for this package)
 ```

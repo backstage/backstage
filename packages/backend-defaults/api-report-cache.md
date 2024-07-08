@@ -25,7 +25,11 @@ export type CacheManagerOptions = {
 };
 
 // @public
-export const cacheServiceFactory: () => ServiceFactory<CacheService, 'plugin'>;
+export const cacheServiceFactory: () => ServiceFactory<
+  CacheService,
+  'plugin',
+  true
+>;
 
 // @public (undocumented)
 export interface PluginCacheManager {

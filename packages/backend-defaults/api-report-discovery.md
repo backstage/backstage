@@ -10,7 +10,8 @@ import { ServiceFactory } from '@backstage/backend-plugin-api';
 // @public
 export const discoveryServiceFactory: () => ServiceFactory<
   DiscoveryService,
-  'plugin'
+  'plugin',
+  true
 >;
 
 // @public

@@ -9,7 +9,8 @@ import { UserInfoService } from '@backstage/backend-plugin-api';
 // @public
 export const userInfoServiceFactory: () => ServiceFactory<
   UserInfoService,
-  'plugin'
+  'plugin',
+  true
 >;
 
 // (No @packageDocumentation comment for this package)

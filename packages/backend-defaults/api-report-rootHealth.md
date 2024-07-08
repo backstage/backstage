@@ -9,7 +9,8 @@ import { ServiceFactory } from '@backstage/backend-plugin-api';
 // @public (undocumented)
 export const rootHealthServiceFactory: () => ServiceFactory<
   RootHealthService,
-  'root'
+  'root',
+  boolean
 >;
 
 // (No @packageDocumentation comment for this package)

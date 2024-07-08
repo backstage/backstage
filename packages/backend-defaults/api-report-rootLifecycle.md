@@ -9,7 +9,8 @@ import { ServiceFactory } from '@backstage/backend-plugin-api';
 // @public
 export const rootLifecycleServiceFactory: () => ServiceFactory<
   RootLifecycleService,
-  'root'
+  'root',
+  boolean
 >;
 
 // (No @packageDocumentation comment for this package)

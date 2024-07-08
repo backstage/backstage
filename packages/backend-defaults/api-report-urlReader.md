@@ -428,7 +428,8 @@ export class UrlReaders {
 // @public
 export const urlReaderServiceFactory: () => ServiceFactory<
   UrlReaderService,
-  'plugin'
+  'plugin',
+  true
 >;
 
 // @public

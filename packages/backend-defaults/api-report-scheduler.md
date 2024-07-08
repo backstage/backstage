@@ -20,7 +20,8 @@ export class DefaultSchedulerService {
 // @public
 export const schedulerServiceFactory: () => ServiceFactory<
   SchedulerService,
-  'plugin'
+  'plugin',
+  true
 >;
 
 // (No @packageDocumentation comment for this package)

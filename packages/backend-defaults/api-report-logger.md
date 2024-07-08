@@ -9,7 +9,8 @@ import { ServiceFactory } from '@backstage/backend-plugin-api';
 // @public
 export const loggerServiceFactory: () => ServiceFactory<
   LoggerService,
-  'plugin'
+  'plugin',
+  true
 >;
 
 // (No @packageDocumentation comment for this package)

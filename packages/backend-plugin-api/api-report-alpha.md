@@ -17,7 +17,8 @@ export interface FeatureDiscoveryService {
 // @alpha
 export const featureDiscoveryServiceRef: ServiceRef<
   FeatureDiscoveryService,
-  'root'
+  'root',
+  true
 >;
 
 // (No @packageDocumentation comment for this package)
