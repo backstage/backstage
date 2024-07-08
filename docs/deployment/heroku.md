@@ -9,7 +9,7 @@ Heroku is a Platform as a Service (PaaS) designed to simplify application deploy
 
 ## Create App
 
-Start with an exisiting Backstage app or follow the [getting started guide](https://backstage.io/docs/getting-started/) to create a new one:
+Starting with an existing Backstage app or follow the [getting started guide](https://backstage.io/docs/getting-started/) to create a new one:
 
 ```shell
 $ npx @backstage/create-app@latest
