@@ -22,12 +22,14 @@ $ heroku apps:create <your-app>
 ## Domain
 
 Get Heroku app URL:
+
 ```shell
 $ heroku domains -a <your-app>
 <your-app-123>.herokuapp.com
 ```
 
 The core [app-backend plugin](https://www.npmjs.com/package/@backstage/plugin-app-backend) allows a single Heroku app to serve the frontend and backend. To make this work you need to update the `baseUrl` and `port` in `app-config.production.yaml`:
+
 ```yaml
 app:
   baseUrl: https://<your-app-123>.herokuapp.com
@@ -44,6 +46,7 @@ backend:
 ## Build Script
 
 Add a build script in `package.json` to compile frontend during deployment:
+
 ```json
 "scripts": {
   "build": "yarn build:backend --config ../../app-config.yaml --config ../../app-config.production.yaml"
@@ -52,6 +55,7 @@ Add a build script in `package.json` to compile frontend during deployment:
 ## Start Command
 
 Create a [Procfile](https://devcenter.heroku.com/articles/procfile) in the app's root:
+
 ```shell
 $ echo "web: yarn workspace backend start --config ../../app-config.yaml --config ../../app-config.production.yaml" > Procfile
 ```
@@ -59,11 +63,13 @@ $ echo "web: yarn workspace backend start --config ../../app-config.yaml --confi
 ## Database
 
 Provision a [Heroku Postgres](https://elements.heroku.com/addons/heroku-postgresql) database:
+
 ```shell
 $ heroku addons:create heroku-postgresql -a <your-app>
 ```
 
 Update `database` in `app-config.production.yaml`:
+
 ```yaml
 backend:
   database:
@@ -75,6 +81,7 @@ backend:
 ```
 
 Allow postgres self-signed certificates:
+
 ```shell
 $ heroku config:set PGSSLMODE=no-verify -a <your-app>
 ```
@@ -117,11 +124,13 @@ $ heroku stack:set container -a <your-app>
 ```
 
 Locally run the [host build command](https://backstage.io/docs/deployment/docker/#host-build):
+
 ```shell
 $ yarn build:backend --config ../../app-config.yaml --config ../../app-config.production.yaml
 ```
 
 Build, push, and release the container image:
+
 ```shell
 $ docker image build . -f packages/backend/Dockerfile --tag registry.heroku.com/<your-app>/web
 
