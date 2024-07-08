@@ -2,12 +2,16 @@
 
 Welcome to the notifications plugin!
 
-_This plugin was created through the Backstage CLI_
-
 ## Getting started
 
 First, install the `@backstage/plugin-notifications-backend` and `@backstage/plugin-notifications-node` packages.
 See the documentation for installation instructions.
+
+Then add this frontend package:
+
+```bash
+yarn workspace app add @backstage/notifications
+```
 
 To add the notifications main menu, add the following to your `packages/app/src/components/Root/Root.tsx`:
 

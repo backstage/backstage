@@ -51,6 +51,8 @@ All parametrization is done through component properties, such as the `Notificat
 
 ![Notifications Page](notificationsPage.png)
 
+In the `packages/app/src/components/Root/Root.tsx`, tweak the [properties](https://backstage.io/docs/reference/plugin-notifications.notificationssidebaritem) of the `<NotificationsSidebarItem />` per specific needs.
+
 ## Use
 
 New notifications can be sent either by a backend plugin or an external service through the REST API.
@@ -134,12 +136,70 @@ notificationsApi.getNotification(yourId);
 notificationsApi.getNotification(lastSignal.notification_id);
 ```
 
+### Extending Notifications via Processors
+
+The notifications can be extended with `NotificationProcessor`. These processors allow to decorate notifications before they are sent or/and send the notifications to external services.
+
+Depending on the needs, a processor can modify the content of a notification or route it to different systems like email, Slack, or other services.
+
+A good example of how to write a processor is the [Email Processor](https://github.com/backstage/backstage/tree/master/plugins/notifications-backend-module-email).
+
+Start off by creating a notification processor:
+
+```ts
+import { Notification } from '@backstage/plugin-notifications-common';
+import { NotificationProcessor } from '@backstage/plugin-notifications-node';
+
+class MyNotificationProcessor implements NotificationProcessor {
+  async decorate(notification: Notification): Promise<Notification> {
+    if (notification.origin === 'plugin-my-plugin') {
+      notification.payload.icon = 'my-icon';
+    }
+    return notification;
+  }
+
+  async send(notification: Notification): Promise<void> {
+    nodemailer.sendEmail({
+      from: 'backstage',
+      to: 'user',
+      subject: notification.payload.title,
+      text: notification.payload.description,
+    });
+  }
+}
+```
+
+Both of the processing functions are optional, and you can implement only one of them.
+
+Add the notification processor to the notification system by:
+
+```ts
+import { notificationsProcessingExtensionPoint } from '@backstage/plugin-notifications-node';
+import { Notification } from '@backstage/plugin-notifications-common';
+
+export const myPlugin = createBackendPlugin({
+  pluginId: 'myPlugin',
+  register(env) {
+    env.registerInit({
+      deps: {
+        notifications: notificationsProcessingExtensionPoint,
+        // ...
+      },
+      async init({ notifications }) {
+        // ...
+        notifications.addProcessor(new MyNotificationProcessor());
+      },
+    });
+  },
+});
+```
+
 ### External Services
 
 When the emitter of a notification is a Backstage backend plugin, it is mandatory to use the integration via `@backstage/plugin-notifications-node` as described above.
 
 If the emitter is a service external to Backstage, an HTTP POST request can be issued directly to the API, assuming that authentication is properly configured.
-Refer to the service-to-service auth documentation for more details, focusing on the Static Tokens section for the simplest setup option.
+Refer to the [service-to-service auth documentation](https://backstage.io/docs/auth/service-to-service-auth) for more details, focusing on the Static Tokens section for the simplest setup option.
 
 An example request for creating a broadcast notification might look like:
 
@@ -149,20 +209,12 @@ curl -X POST https://[BACKSTAGE_BACKEND]/api/notifications -H "Content-Type: app
 
 ## Additional info
 
-Up-to-date documentation can be found in the plugins' README files:
+Additional details can be found in the plugins' implementation:
 
-- https://github.com/backstage/backstage/blob/master/plugins/notifications/README.md
+- https://github.com/backstage/backstage/blob/master/plugins/notifications
 
-- https://github.com/backstage/backstage/blob/master/plugins/notifications-backend/README.md
+- https://github.com/backstage/backstage/blob/master/plugins/notifications-backend
 
-- https://github.com/backstage/backstage/blob/master/plugins/notifications-node/README.md
+- https://github.com/backstage/backstage/blob/master/plugins/notifications-node
 
-- https://github.com/backstage/backstage/blob/master/plugins/signals-react/README.md
-
-## Processors
-
-The default backend behavior when emitting a new notification can be tweaked using processors.
-
-Depending on the needs, a processor can modify the content of a notification or route it to different systems like email, Slack, or other services.
-
-A good example of how to write a processor is the [Email Processor](https://github.com/backstage/backstage/tree/master/plugins/notifications-backend-module-email).
+- https://github.com/backstage/backstage/blob/master/plugins/signals-react
