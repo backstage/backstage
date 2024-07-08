@@ -17,6 +17,7 @@
 import {
   createTemplateAction,
   parseRepoUrl,
+  SerializedFile,
   serializeDirectoryContents,
 } from '@backstage/plugin-scaffolder-node';
 import { Types } from '@gitbeaker/core';
@@ -26,6 +27,20 @@ import { InputError } from '@backstage/errors';
 import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { createGitlabApi } from './helpers';
 import { examples } from './gitlabMergeRequest.examples';
+
+function getFileAction(
+  file: SerializedFile,
+  remoteFiles: Types.RepositoryTreeSchema[],
+  defaultCommitAction: 'create' | 'delete' | 'update' | 'auto' | undefined,
+): 'create' | 'delete' | 'update' {
+  if (defaultCommitAction === 'auto') {
+    return remoteFiles &&
+      remoteFiles.some(remoteFile => remoteFile.path === file.path)
+      ? 'update'
+      : 'create';
+  }
+  return defaultCommitAction ?? 'create';
+}
 
 /**
  * Create a new action that creates a gitlab merge request.
@@ -46,7 +61,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
     sourcePath?: string;
     targetPath?: string;
     token?: string;
-    commitAction?: 'create' | 'delete' | 'update';
+    commitAction?: 'create' | 'delete' | 'update' | 'auto';
     /** @deprecated projectID passed as query parameters in the repoUrl */
     projectid?: string;
     removeSourceBranch?: boolean;
@@ -109,9 +124,9 @@ export const createPublishGitlabMergeRequestAction = (options: {
           commitAction: {
             title: 'Commit action',
             type: 'string',
-            enum: ['create', 'update', 'delete'],
+            enum: ['create', 'update', 'delete', 'auto'],
             description:
-              'The action to be used for git commit. Defaults to create.',
+              'The action to be used for git commit. Defaults to create. "auto" is custom action provide by backstage, (automatic assign create or update action) /!\\ Use more api calls /!\\ *',
           },
           removeSourceBranch: {
             title: 'Delete source branch',
@@ -199,16 +214,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
         gitignore: true,
       });
 
-      const actions: Types.CommitAction[] = fileContents.map(file => ({
-        action: ctx.input.commitAction ?? 'create',
-        filePath: targetPath
-          ? path.posix.join(targetPath, file.path)
-          : file.path,
-        encoding: 'base64',
-        content: file.content.toString('base64'),
-        execute_filemode: file.executable,
-      }));
-
+      let remoteFiles: Types.RepositoryTreeSchema[];
       let targetBranch = targetBranchName;
       if (!targetBranch) {
         const projects = await api.Projects.show(repoID);
@@ -216,6 +222,27 @@ export const createPublishGitlabMergeRequestAction = (options: {
         const { default_branch: defaultBranch } = projects;
         targetBranch = defaultBranch!;
       }
+      try {
+        remoteFiles = await api.Repositories.tree(repoID, {
+          ref: targetBranch,
+          recursive: true,
+          path: targetPath ?? undefined,
+        });
+      } catch (e) {
+        ctx.logger.warn(
+          `Could not retrieve the list of files for ${repoID} (branch: ${targetBranch}) : ${e}`,
+        );
+      }
+
+      const actions: Types.CommitAction[] = fileContents.map(file => ({
+        action: getFileAction(file, remoteFiles, ctx.input.commitAction),
+        filePath: targetPath
+          ? path.posix.join(targetPath, file.path)
+          : file.path,
+        encoding: 'base64',
+        content: file.content.toString('base64'),
+        execute_filemode: file.executable,
+      }));
 
       try {
         await api.Branches.create(repoID, branchName, String(targetBranch));
