@@ -51,7 +51,7 @@ backend:
 Add a build script in `package.json` to compile frontend during deployment:
 ```json
 "scripts": {
-  "build": "yarn build:backend --config ../../app-config.yaml"
+  "build": "yarn build:backend --config ../../app-config.yaml --config app-config.production.yaml"
 ```
 
 ## Start Command
