@@ -16,9 +16,10 @@
 
 import {
   createOAuthAuthenticator,
+  OAuthAuthenticatorResult,
   PassportOAuthAuthenticatorHelper,
   PassportOAuthDoneCallback,
-  PassportProfile,
+  ProfileInfo,
 } from '@backstage/plugin-auth-node';
 import AtlassianStrategy from 'passport-atlassian-oauth2';
 
@@ -32,19 +33,20 @@ export type AtlassianPassportProfile = {
 };
 
 /** @public */
-export const atlassianAuthenticator = createOAuthAuthenticator<
-  any,
-  AtlassianPassportProfile
->({
-  defaultProfileTransform: async (input, context) => {
-    // const result = await PassportOAuthAuthenticatorHelper.defaultProfileTransform(input, context);
+export const atlassianAuthenticator = createOAuthAuthenticator({
+  defaultProfileTransform: async (
+    input: OAuthAuthenticatorResult<AtlassianPassportProfile>,
+  ) => {
+    const atlassianProfile = input.fullProfile as AtlassianPassportProfile;
+
+    const profile: ProfileInfo = {
+      displayName: atlassianProfile.displayName,
+      email: atlassianProfile.email,
+      picture: atlassianProfile.photo,
+    };
 
     return {
-      profile: {
-        displayName: input.fullProfile.displayName,
-        email: input.fullProfile.email,
-        picture: input.fullProfile.photo,
-      },
+      profile,
     };
   },
   scopes: {
@@ -98,10 +100,12 @@ export const atlassianAuthenticator = createOAuthAuthenticator<
   },
 
   async authenticate(input, helper) {
-    return helper.authenticate(input);
+    const result = await helper.authenticate(input);
+    return result as OAuthAuthenticatorResult<AtlassianPassportProfile>;
   },
 
   async refresh(input, helper) {
-    return helper.refresh(input);
+    const result = await helper.refresh(input);
+    return result as OAuthAuthenticatorResult<AtlassianPassportProfile>;
   },
 });
