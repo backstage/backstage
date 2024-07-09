@@ -214,7 +214,6 @@ export const createPublishGitlabMergeRequestAction = (options: {
         gitignore: true,
       });
 
-      let remoteFiles: Types.RepositoryTreeSchema[];
       let targetBranch = targetBranchName;
       if (!targetBranch) {
         const projects = await api.Projects.show(repoID);
@@ -222,16 +221,20 @@ export const createPublishGitlabMergeRequestAction = (options: {
         const { default_branch: defaultBranch } = projects;
         targetBranch = defaultBranch!;
       }
-      try {
-        remoteFiles = await api.Repositories.tree(repoID, {
-          ref: targetBranch,
-          recursive: true,
-          path: targetPath ?? undefined,
-        });
-      } catch (e) {
-        ctx.logger.warn(
-          `Could not retrieve the list of files for ${repoID} (branch: ${targetBranch}) : ${e}`,
-        );
+
+      let remoteFiles: Types.RepositoryTreeSchema[] = [];
+      if (ctx.input.commitAction && ctx.input.commitAction === 'auto') {
+        try {
+          remoteFiles = await api.Repositories.tree(repoID, {
+            ref: targetBranch,
+            recursive: true,
+            path: targetPath ?? undefined,
+          });
+        } catch (e) {
+          ctx.logger.warn(
+            `Could not retrieve the list of files for ${repoID} (branch: ${targetBranch}) : ${e}`,
+          );
+        }
       }
 
       const actions: Types.CommitAction[] = fileContents.map(file => ({
