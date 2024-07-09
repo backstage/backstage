@@ -1,5 +1,12 @@
 # @backstage/app-defaults
 
+## 1.5.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.9-next.1
+
 ## 1.5.8-next.1
 
 ### Patch Changes

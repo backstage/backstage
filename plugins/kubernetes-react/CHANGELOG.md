@@ -1,5 +1,13 @@
 # @backstage/plugin-kubernetes-react
 
+## 0.4.1-next.1
+
+### Patch Changes
+
+- e3cb6ab: Add a namespace label to RolloutDrawer
+- Updated dependencies
+  - @backstage/core-components@0.14.9-next.1
+
 ## 0.4.1-next.0
 
 ### Patch Changes

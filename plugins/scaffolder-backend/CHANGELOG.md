@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.23.0-next.2
+
+### Patch Changes
+
+- ff1bb4c: Added a documentation how to use checkpoints
+
 ## 1.23.0-next.1
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @backstage/core-components
 
+## 0.14.9-next.1
+
+### Patch Changes
+
+- 99d672d: Modified the `Select` component to take in a `data-testid` parameter ensuring backwards compatibility with default value corresponding to previously hardcoded `data-testid` of "select".
+
 ## 0.14.9-next.0
 
 ### Patch Changes
