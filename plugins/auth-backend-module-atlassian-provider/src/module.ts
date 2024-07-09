@@ -19,10 +19,7 @@ import {
   commonSignInResolvers,
   createOAuthProviderFactory,
 } from '@backstage/plugin-auth-node';
-import {
-  AtlassianPassportProfile,
-  atlassianAuthenticator,
-} from './authenticator';
+import { atlassianAuthenticator } from './authenticator';
 import { atlassianSignInResolvers } from './resolvers';
 
 /** @public */
@@ -37,7 +34,7 @@ export const authModuleAtlassianProvider = createBackendModule({
       async init({ providers }) {
         providers.registerProvider({
           providerId: 'atlassian',
-          factory: createOAuthProviderFactory<AtlassianPassportProfile>({
+          factory: createOAuthProviderFactory({
             authenticator: atlassianAuthenticator,
             signInResolverFactories: {
               ...atlassianSignInResolvers,
