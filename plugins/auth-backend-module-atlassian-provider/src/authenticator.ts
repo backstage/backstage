@@ -70,7 +70,6 @@ export const atlassianAuthenticator = createOAuthAuthenticator<
           baseURL: baseUrl,
           authorizationURL: `${baseUrl}/authorize`,
           tokenURL: `${baseUrl}/oauth/token`,
-          // profileURL: `${baseUrl}/api/v4/user`,
           profileURL: 'https://api.atlassian.com/me',
           scope: config.getOptionalString('additionalScopes')?.split(' ') || [],
         },
@@ -81,14 +80,9 @@ export const atlassianAuthenticator = createOAuthAuthenticator<
           fullProfile: PassportProfile & { email: string; photo: string },
           done: PassportOAuthDoneCallback,
         ) => {
-          const fullProfileWithEmails = {
-            ...fullProfile,
-            // avatarUrl: fullProfile.photo,
-            // emails: [{ value: fullProfile.email }],
-          };
           done(
             undefined,
-            { fullProfile: fullProfileWithEmails, params, accessToken },
+            { fullProfile, params, accessToken },
             { refreshToken },
           );
         },

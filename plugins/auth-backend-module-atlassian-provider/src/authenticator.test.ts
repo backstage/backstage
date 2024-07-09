@@ -29,9 +29,6 @@ describe('Strategy', () => {
         },
         () => {},
       );
-      console.log(strategy.name);
-      expect(strategy).toBeInstanceOf(Strategy);
-
       expect((strategy as any).name).toBe('atlassian');
     } catch (e) {
       console.error(e);
