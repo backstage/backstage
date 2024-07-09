@@ -1,5 +1,11 @@
 # @backstage/create-app
 
+## 0.5.17-next.2
+
+### Patch Changes
+
+- e90a2cd: Added the Catalog logs module to the `create-app` template
+
 ## 0.5.17-next.1
 
 ### Patch Changes
