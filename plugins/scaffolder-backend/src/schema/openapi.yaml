@@ -1,0 +1,12 @@
+openapi: 3.0.3
+info:
+  title: scaffolder
+  version: '1'
+  description: The Backstage backend plugin that provides the Backstage scaffolder
+  license:
+    name: Apache-2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  contact: {}
+servers:
+  - url: /
+components:
