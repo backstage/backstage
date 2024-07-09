@@ -77,7 +77,7 @@ export const atlassianAuthenticator = createOAuthAuthenticator<
           accessToken: string,
           refreshToken: string,
           params: any,
-          fullProfile: PassportProfile & { email: string; photo: string },
+          fullProfile: AtlassianPassportProfile,
           done: PassportOAuthDoneCallback,
         ) => {
           done(
