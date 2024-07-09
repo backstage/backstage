@@ -20,14 +20,35 @@ import {
   PassportOAuthDoneCallback,
   PassportProfile,
 } from '@backstage/plugin-auth-node';
-import { Strategy as AtlassianStrategy } from 'passport-atlassian-oauth2';
+import AtlassianStrategy from 'passport-atlassian-oauth2';
+
+export type AtlassianPassportProfile = {
+  id: string;
+  displayName: string;
+  email: string;
+  photo: string;
+  provider: string;
+  _json: any;
+};
 
 /** @public */
-export const atlassianAuthenticator = createOAuthAuthenticator({
-  defaultProfileTransform:
-    PassportOAuthAuthenticatorHelper.defaultProfileTransform,
+export const atlassianAuthenticator = createOAuthAuthenticator<
+  any,
+  AtlassianPassportProfile
+>({
+  defaultProfileTransform: async (input, context) => {
+    // const result = await PassportOAuthAuthenticatorHelper.defaultProfileTransform(input, context);
+
+    return {
+      profile: {
+        displayName: input.fullProfile.displayName,
+        email: input.fullProfile.email,
+        picture: input.fullProfile.photo,
+      },
+    };
+  },
   scopes: {
-    required: ['offline_access', 'read:jira-work', 'read:jira-user'],
+    required: ['offline_access', 'read:me', 'read:jira-work', 'read:jira-user'],
   },
   initialize({ callbackUrl, config }) {
     const clientId = config.getString('clientId');
@@ -49,18 +70,25 @@ export const atlassianAuthenticator = createOAuthAuthenticator({
           baseURL: baseUrl,
           authorizationURL: `${baseUrl}/authorize`,
           tokenURL: `${baseUrl}/oauth/token`,
-          profileURL: `${baseUrl}/api/v4/user`,
+          // profileURL: `${baseUrl}/api/v4/user`,
+          profileURL: 'https://api.atlassian.com/me',
+          scope: config.getOptionalString('additionalScopes')?.split(' ') || [],
         },
         (
           accessToken: string,
           refreshToken: string,
           params: any,
-          fullProfile: PassportProfile,
+          fullProfile: PassportProfile & { email: string; photo: string },
           done: PassportOAuthDoneCallback,
         ) => {
+          const fullProfileWithEmails = {
+            ...fullProfile,
+            // avatarUrl: fullProfile.photo,
+            // emails: [{ value: fullProfile.email }],
+          };
           done(
             undefined,
-            { fullProfile, params, accessToken },
+            { fullProfile: fullProfileWithEmails, params, accessToken },
             { refreshToken },
           );
         },
