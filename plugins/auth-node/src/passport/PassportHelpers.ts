@@ -42,12 +42,19 @@ export class PassportHelpers {
       email = firstEmail.value;
     }
 
+    // This is the case for Atlassian
+    if (profile.email) {
+      email = profile.email;
+    }
+
     let picture: string | undefined = undefined;
     if (profile.avatarUrl) {
       picture = profile.avatarUrl;
     } else if (profile.photos && profile.photos.length > 0) {
       const [firstPhoto] = profile.photos;
       picture = firstPhoto.value;
+    } else if (profile.photo) {
+      picture = profile.photo; // This is the case for Atlassian
     }
 
     let displayName: string | undefined =

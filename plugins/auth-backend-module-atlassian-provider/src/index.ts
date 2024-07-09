@@ -19,6 +19,5 @@
  * @packageDocumentation
  */
 export { atlassianAuthenticator } from './authenticator';
-export type { AtlassianPassportProfile } from './authenticator';
 export { authModuleAtlassianProvider as default } from './module';
 export { atlassianSignInResolvers } from './resolvers';

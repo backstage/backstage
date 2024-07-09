@@ -16,39 +16,16 @@
 
 import {
   createOAuthAuthenticator,
-  OAuthAuthenticatorResult,
   PassportOAuthAuthenticatorHelper,
   PassportOAuthDoneCallback,
-  ProfileInfo,
+  PassportProfile,
 } from '@backstage/plugin-auth-node';
 import AtlassianStrategy from 'passport-atlassian-oauth2';
 
-export type AtlassianPassportProfile = {
-  id: string;
-  displayName: string;
-  email: string;
-  photo: string;
-  provider: string;
-  _json: any;
-};
-
 /** @public */
 export const atlassianAuthenticator = createOAuthAuthenticator({
-  defaultProfileTransform: async (
-    input: OAuthAuthenticatorResult<AtlassianPassportProfile>,
-  ) => {
-    const atlassianProfile = input.fullProfile as AtlassianPassportProfile;
-
-    const profile: ProfileInfo = {
-      displayName: atlassianProfile.displayName,
-      email: atlassianProfile.email,
-      picture: atlassianProfile.photo,
-    };
-
-    return {
-      profile,
-    };
-  },
+  defaultProfileTransform:
+    PassportOAuthAuthenticatorHelper.defaultProfileTransform,
   scopes: {
     required: ['offline_access', 'read:me', 'read:jira-work', 'read:jira-user'],
   },
@@ -79,7 +56,7 @@ export const atlassianAuthenticator = createOAuthAuthenticator({
           accessToken: string,
           refreshToken: string,
           params: any,
-          fullProfile: AtlassianPassportProfile,
+          fullProfile: PassportProfile,
           done: PassportOAuthDoneCallback,
         ) => {
           done(
@@ -100,12 +77,10 @@ export const atlassianAuthenticator = createOAuthAuthenticator({
   },
 
   async authenticate(input, helper) {
-    const result = await helper.authenticate(input);
-    return result as OAuthAuthenticatorResult<AtlassianPassportProfile>;
+    return helper.authenticate(input);
   },
 
   async refresh(input, helper) {
-    const result = await helper.refresh(input);
-    return result as OAuthAuthenticatorResult<AtlassianPassportProfile>;
+    return helper.refresh(input);
   },
 });

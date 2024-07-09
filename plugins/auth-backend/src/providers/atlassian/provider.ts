@@ -26,7 +26,6 @@ import {
 import { OAuthResult } from '../../lib/oauth';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 import { AuthHandler } from '../types';
-import { AtlassianPassportProfile } from '@backstage/plugin-auth-backend-module-atlassian-provider';
 
 /**
  * Auth provider integration for Atlassian auth
@@ -48,7 +47,7 @@ export const atlassian = createAuthProviderIntegration({
       resolver: SignInResolver<OAuthResult>;
     };
   }) {
-    return createOAuthProviderFactory<AtlassianPassportProfile>({
+    return createOAuthProviderFactory({
       authenticator: atlassianAuthenticator,
       profileTransform: adaptLegacyOAuthHandler(options?.authHandler),
       signInResolver: adaptLegacyOAuthSignInResolver(options?.signIn?.resolver),
