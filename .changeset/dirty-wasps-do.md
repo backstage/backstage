@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder-backend': patch
 ---
 
-Catalog:Write scaffolder action shows incorrect log message
+Updated `catalog:write` scaffolder action to show correct file path location in log message
