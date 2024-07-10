@@ -19,10 +19,7 @@ import {
 } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { TestPipeline } from '@backstage/plugin-search-backend-node';
-import {
-  mockServices,
-  setupRequestMockHandlers,
-} from '@backstage/backend-test-utils';
+import { mockServices, setupMswHandlers } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { Readable } from 'stream';
@@ -82,7 +79,7 @@ describe('ToolDocumentCollatorFactory', () => {
     let collator: Readable;
 
     const worker = setupServer();
-    setupRequestMockHandlers(worker);
+    setupMswHandlers(worker);
 
     beforeEach(async () => {
       factory = ToolDocumentCollatorFactory.fromConfig(config, options);

@@ -26,10 +26,7 @@ import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import {
-  mockServices,
-  setupRequestMockHandlers,
-} from '@backstage/backend-test-utils';
+import { mockServices, setupMswHandlers } from '@backstage/backend-test-utils';
 import {
   FetchResponse,
   KubernetesRequestAuth,
@@ -1128,7 +1125,7 @@ describe('KubernetesFanOutHandler', () => {
 
     describe('with a real fetcher', () => {
       const worker = setupServer();
-      setupRequestMockHandlers(worker);
+      setupMswHandlers(worker);
 
       it('fetch error short-circuits requests to a single cluster, recovering across the fleet', async () => {
         const pods = [{ metadata: { name: 'pod-name' } }];

@@ -17,7 +17,7 @@
 import {
   ServiceFactoryTester,
   mockServices,
-  setupRequestMockHandlers,
+  setupMswHandlers,
 } from '@backstage/backend-test-utils';
 import { tokenManagerServiceFactory } from '@backstage/backend-app-api';
 import { authServiceFactory } from './authServiceFactory';
@@ -68,7 +68,7 @@ const mockDeps = [
 ];
 
 describe('authServiceFactory', () => {
-  setupRequestMockHandlers(server);
+  setupMswHandlers(server);
 
   afterEach(() => {
     jest.useRealTimers();

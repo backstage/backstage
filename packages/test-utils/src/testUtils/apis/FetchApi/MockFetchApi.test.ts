@@ -16,12 +16,12 @@
 
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { setupRequestMockHandlers } from '../../msw';
+import { setupMswHandlers } from '../../msw';
 import { MockFetchApi } from './MockFetchApi';
 
 describe('MockFetchApi', () => {
   const worker = setupServer();
-  setupRequestMockHandlers(worker);
+  setupMswHandlers(worker);
 
   it('works with default constructor', async () => {
     worker.use(

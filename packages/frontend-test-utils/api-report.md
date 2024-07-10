@@ -20,7 +20,7 @@ import { MockStorageApi } from '@backstage/test-utils';
 import { MockStorageBucket } from '@backstage/test-utils';
 import { RenderResult } from '@testing-library/react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { setupMswHandlers as setupRequestMockHandlers } from '@backstage/test-utils';
 import { TestApiProvider } from '@backstage/test-utils';
 import { TestApiProviderProps } from '@backstage/test-utils';
 import { TestApiRegistry } from '@backstage/test-utils';

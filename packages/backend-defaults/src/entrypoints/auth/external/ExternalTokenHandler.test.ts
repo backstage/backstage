@@ -17,10 +17,7 @@
 import { BackstagePrincipalAccessRestrictions } from '@backstage/backend-plugin-api';
 import { ExternalTokenHandler } from './ExternalTokenHandler';
 import { TokenHandler } from './types';
-import {
-  mockServices,
-  setupRequestMockHandlers,
-} from '@backstage/backend-test-utils';
+import { mockServices, setupMswHandlers } from '@backstage/backend-test-utils';
 import { randomBytes } from 'crypto';
 import { SignJWT, exportJWK, generateKeyPair } from 'jose';
 import { DateTime } from 'luxon';
@@ -81,7 +78,7 @@ class FakeTokenFactory {
 
 describe('ExternalTokenHandler', () => {
   const server = setupServer();
-  setupRequestMockHandlers(server);
+  setupMswHandlers(server);
 
   it('skips over inner handlers that do not match, and applies plugin restrictions', async () => {
     const handler1: TokenHandler = {

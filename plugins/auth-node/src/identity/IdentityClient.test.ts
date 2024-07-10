@@ -15,7 +15,7 @@
  */
 
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import { setupMswHandlers } from '@backstage/backend-test-utils';
 import {
   decodeProtectedHeader,
   exportJWK,
@@ -102,7 +102,7 @@ describe('IdentityClient', () => {
   let factory: FakeTokenFactory;
   const keyDurationSeconds = 5;
 
-  setupRequestMockHandlers(server);
+  setupMswHandlers(server);
 
   beforeEach(() => {
     client = IdentityClient.create({ discovery, issuer: mockBaseUrl });

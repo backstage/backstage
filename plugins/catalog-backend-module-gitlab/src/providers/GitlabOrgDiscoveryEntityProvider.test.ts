@@ -19,10 +19,7 @@ import {
   TaskInvocationDefinition,
   TaskRunner,
 } from '@backstage/backend-tasks';
-import {
-  mockServices,
-  setupRequestMockHandlers,
-} from '@backstage/backend-test-utils';
+import { mockServices, setupMswHandlers } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { DefaultEventsService } from '@backstage/plugin-events-node';
@@ -33,7 +30,7 @@ import { GroupNameTransformerOptions } from '../lib/types';
 import { GitlabOrgDiscoveryEntityProvider } from './GitlabOrgDiscoveryEntityProvider';
 
 const server = setupServer(...handlers);
-setupRequestMockHandlers(server);
+setupMswHandlers(server);
 afterEach(() => jest.clearAllMocks());
 
 class PersistingTaskRunner implements TaskRunner {

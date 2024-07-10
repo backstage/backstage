@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import { setupMswHandlers } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { SignJWT, exportJWK, generateKeyPair } from 'jose';
 import { rest } from 'msw';
@@ -81,7 +81,7 @@ describe('JWKSHandler', () => {
   let mockSubject: string;
   const keyDurationSeconds = 5;
 
-  setupRequestMockHandlers(server);
+  setupMswHandlers(server);
 
   beforeEach(() => {
     mockSubject = 'test_subject';

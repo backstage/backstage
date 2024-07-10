@@ -19,10 +19,7 @@ import {
   TaskInvocationDefinition,
   TaskRunner,
 } from '@backstage/backend-tasks';
-import {
-  mockServices,
-  setupRequestMockHandlers,
-} from '@backstage/backend-test-utils';
+import { mockServices, setupMswHandlers } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import fs from 'fs-extra';
@@ -57,7 +54,7 @@ class PersistingTaskRunner implements TaskRunner {
 const logger = mockServices.logger.mock();
 
 describe('GerritEntityProvider', () => {
-  setupRequestMockHandlers(server);
+  setupMswHandlers(server);
 
   afterEach(() => {
     jest.clearAllMocks();

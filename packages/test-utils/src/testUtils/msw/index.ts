@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { setupRequestMockHandlers } from './setupRequestMockHandlers';
+export { setupMswHandlers } from './setupMswHandlers';

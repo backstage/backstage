@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
+import { setupMswHandlers } from './testUtils/msw';
+
 /**
- * Sets up handlers for request mocking
  * @public
- * @param worker - service worker
+ * @deprecated Use `CreateMockDirectoryOptions` from `@backstage/backend-test-utils` instead.
  */
 export function setupRequestMockHandlers(worker: {
   listen: (t: any) => void;
   close: () => void;
   resetHandlers: () => void;
-}) {
-  beforeAll(() => worker.listen({ onUnhandledRequest: 'error' }));
-  afterAll(() => worker.close());
-  afterEach(() => worker.resetHandlers());
+}): void {
+  setupMswHandlers(worker);
 }

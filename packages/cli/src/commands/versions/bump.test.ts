@@ -18,10 +18,7 @@ import fs from 'fs-extra';
 import { Command } from 'commander';
 import * as runObj from '../../lib/run';
 import bump, { bumpBackstageJsonVersion, createVersionFinder } from './bump';
-import {
-  setupRequestMockHandlers,
-  withLogCollector,
-} from '@backstage/test-utils';
+import { setupMswHandlers, withLogCollector } from '@backstage/test-utils';
 import { YarnInfoInspectData } from '../../lib/versioning/packages';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
@@ -156,7 +153,7 @@ describe('bump', () => {
   });
 
   const worker = setupServer();
-  setupRequestMockHandlers(worker);
+  setupMswHandlers(worker);
 
   it('should bump backstage dependencies', async () => {
     mockDir.setContent({

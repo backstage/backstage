@@ -20,7 +20,7 @@ import { ScmIntegrations } from '@backstage/integration';
 import {
   createMockDirectory,
   mockServices,
-  setupRequestMockHandlers,
+  setupMswHandlers,
 } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -32,7 +32,7 @@ import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-
 describe('confluence:transform:markdown examples', () => {
   const baseUrl = `https://confluence.example.com`;
   const worker = setupServer();
-  setupRequestMockHandlers(worker);
+  setupMswHandlers(worker);
 
   const config = new ConfigReader({
     confluence: {

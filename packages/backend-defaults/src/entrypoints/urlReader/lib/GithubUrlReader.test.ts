@@ -22,7 +22,7 @@ import {
 } from '@backstage/integration';
 import {
   createMockDirectory,
-  setupRequestMockHandlers,
+  setupMswHandlers,
 } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
 import { rest } from 'msw';
@@ -74,7 +74,7 @@ const gheProcessor = new GithubUrlReader(
 
 describe('GithubUrlReader', () => {
   const worker = setupServer();
-  setupRequestMockHandlers(worker);
+  setupMswHandlers(worker);
 
   beforeEach(mockDir.clear);
 

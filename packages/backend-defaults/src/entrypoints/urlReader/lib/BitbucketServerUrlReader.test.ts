@@ -21,7 +21,7 @@ import {
 } from '@backstage/integration';
 import {
   createMockDirectory,
-  setupRequestMockHandlers,
+  setupMswHandlers,
 } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
 import { rest } from 'msw';
@@ -51,7 +51,7 @@ const reader = new BitbucketServerUrlReader(
 
 describe('BitbucketServerUrlReader', () => {
   const worker = setupServer();
-  setupRequestMockHandlers(worker);
+  setupMswHandlers(worker);
 
   describe('readTree', () => {
     const repoBuffer = fs.readFileSync(

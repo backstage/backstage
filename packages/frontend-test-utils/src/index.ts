@@ -28,4 +28,4 @@ export type { TestApiProviderProps } from '@backstage/test-utils';
 
 export { withLogCollector } from '@backstage/test-utils';
 
-export { setupRequestMockHandlers } from '@backstage/test-utils';
+export { setupMswHandlers as setupRequestMockHandlers } from '@backstage/test-utils';

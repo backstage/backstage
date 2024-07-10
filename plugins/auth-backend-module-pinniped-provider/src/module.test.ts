@@ -15,7 +15,7 @@
  */
 import {
   mockServices,
-  setupRequestMockHandlers,
+  setupMswHandlers,
   startTestBackend,
 } from '@backstage/backend-test-utils';
 import { Server } from 'http';
@@ -32,7 +32,7 @@ describe('authModulePinnipedProvider', () => {
   let publicKey: JWK;
 
   const mswServer = setupServer();
-  setupRequestMockHandlers(mswServer);
+  setupMswHandlers(mswServer);
 
   const issuerMetadata = {
     issuer: 'https://pinniped.test',

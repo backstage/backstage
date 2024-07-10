@@ -15,10 +15,7 @@
  */
 
 import { UrlReader, UrlReaders } from '@backstage/backend-common';
-import {
-  mockServices,
-  setupRequestMockHandlers,
-} from '@backstage/backend-test-utils';
+import { mockServices, setupMswHandlers } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -39,7 +36,7 @@ describe('UrlReaderProcessor', () => {
     set: jest.fn(),
   };
   const server = setupServer();
-  setupRequestMockHandlers(server);
+  setupMswHandlers(server);
 
   beforeEach(() => {
     jest.resetAllMocks();

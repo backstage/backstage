@@ -28,7 +28,7 @@ import { setupServer } from 'msw/node';
 import {
   createMockDirectory,
   mockServices,
-  setupRequestMockHandlers,
+  setupMswHandlers,
 } from '@backstage/backend-test-utils';
 import { Config } from '@kubernetes/client-node';
 
@@ -71,7 +71,7 @@ const POD_METRICS_FIXTURE = [
 
 describe('KubernetesFetcher', () => {
   const worker = setupServer();
-  setupRequestMockHandlers(worker);
+  setupMswHandlers(worker);
 
   const labels = (req: MockedRequest): object => {
     const selectorParam = req.url.searchParams.get('labelSelector');

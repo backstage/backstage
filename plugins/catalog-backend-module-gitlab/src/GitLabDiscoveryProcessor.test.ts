@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  mockServices,
-  setupRequestMockHandlers,
-} from '@backstage/backend-test-utils';
+import { mockServices, setupMswHandlers } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { LocationSpec } from '@backstage/plugin-catalog-node';
 import { rest, RestRequest } from 'msw';
@@ -157,7 +154,7 @@ function getProcessor({
 }
 
 describe('GitlabDiscoveryProcessor', () => {
-  setupRequestMockHandlers(server);
+  setupMswHandlers(server);
 
   beforeAll(() => {
     jest.useFakeTimers();

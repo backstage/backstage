@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  mockServices,
-  setupRequestMockHandlers,
-} from '@backstage/backend-test-utils';
+import { mockServices, setupMswHandlers } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { readGitLabIntegrationConfig } from '@backstage/integration';
 import { setupServer } from 'msw/node';
@@ -27,7 +24,7 @@ import { GitLabClient, paginated } from './client';
 import { GitLabGroup, GitLabUser } from './types';
 
 const server = setupServer(...handlers);
-setupRequestMockHandlers(server);
+setupMswHandlers(server);
 
 describe('GitLabClient', () => {
   describe('isSelfManaged', () => {

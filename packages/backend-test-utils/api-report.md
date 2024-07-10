@@ -403,6 +403,13 @@ export type ServiceMock<TService> = {
 };
 
 // @public
+export function setupMswHandlers(worker: {
+  listen: (t: any) => void;
+  close: () => void;
+  resetHandlers: () => void;
+}): void;
+
+// @public @deprecated (undocumented)
 export function setupRequestMockHandlers(worker: {
   listen: (t: any) => void;
   close: () => void;

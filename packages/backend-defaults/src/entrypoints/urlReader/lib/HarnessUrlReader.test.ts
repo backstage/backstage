@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  mockServices,
-  setupRequestMockHandlers,
-} from '@backstage/backend-test-utils';
+import { mockServices, setupMswHandlers } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { HarnessIntegration, readHarnessConfig } from '@backstage/integration';
 import { JsonObject } from '@backstage/types';
@@ -120,7 +117,7 @@ const handlers = [
 
 describe('HarnessUrlReader', () => {
   const worker = setupServer(...handlers);
-  setupRequestMockHandlers(worker);
+  setupMswHandlers(worker);
   beforeAll(() => worker.listen({ onUnhandledRequest: 'bypass' }));
   afterAll(() => {
     jest.clearAllMocks();

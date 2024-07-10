@@ -21,10 +21,7 @@ import {
 } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { DefaultTechDocsCollator } from './DefaultTechDocsCollator';
-import {
-  mockServices,
-  setupRequestMockHandlers,
-} from '@backstage/backend-test-utils';
+import { mockServices, setupMswHandlers } from '@backstage/backend-test-utils';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { ConfigReader } from '@backstage/config';
@@ -79,7 +76,7 @@ const expectedEntities: Entity[] = [
 
 describe('TechDocs Collator', () => {
   const worker = setupServer();
-  setupRequestMockHandlers(worker);
+  setupMswHandlers(worker);
 
   describe('DefaultTechDocsCollator with legacyPathCasing configuration', () => {
     let mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery>;
