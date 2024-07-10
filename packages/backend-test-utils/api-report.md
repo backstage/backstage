@@ -54,7 +54,7 @@ export interface CreateMockDirectoryOptions {
   mockOsTmpDir?: boolean;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function isDockerDisabledForTests(): boolean;
 
 // @public (undocumented)
