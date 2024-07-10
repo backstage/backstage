@@ -22,7 +22,6 @@ import { EventsService } from '@backstage/plugin-events-node';
 import { ExtendedHttpServer } from '@backstage/backend-app-api';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
-import { HttpRouterFactoryOptions } from '@backstage/backend-defaults/httpRouter';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
 import { IdentityService } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
@@ -221,9 +220,7 @@ export namespace mockServices {
   // (undocumented)
   export namespace httpRouter {
     const // (undocumented)
-      factory: (
-        options?: HttpRouterFactoryOptions | undefined,
-      ) => ServiceFactory<HttpRouterService, 'plugin'>;
+      factory: () => ServiceFactory<HttpRouterService, 'plugin'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<HttpRouterService> | undefined,
