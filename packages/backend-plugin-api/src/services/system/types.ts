@@ -55,6 +55,23 @@ export interface ServiceFactory<
   service: ServiceRef<TService, TScope>;
 }
 
+/**
+ * @public
+ * @deprecated This type exists only as a helper for old code that relied on `createServiceFactory` to return `() => ServiceFactory` instead of `ServiceFactory`. You should remove the `()` parentheses at the end of your usages. This type will be removed in a future release.
+ */
+export interface ServiceFactoryCompat<
+  TService = unknown,
+  TScope extends 'plugin' | 'root' = 'plugin' | 'root',
+  TOpts extends object | undefined = undefined,
+> extends ServiceFactory<TService, TScope> {
+  /**
+   * @deprecated You do not need to use this call signature; use the type directly instead by removing the `()` parentheses at the end. This call signature will be removed in a future release.
+   */
+  (
+    ...options: undefined extends TOpts ? [] : [options?: TOpts]
+  ): ServiceFactory<TService, TScope>;
+}
+
 /** @internal */
 export interface InternalServiceFactory<
   TService = unknown,
@@ -73,6 +90,7 @@ export interface InternalServiceFactory<
 /**
  * Represents either a {@link ServiceFactory} or a function that returns one.
  *
+ * @deprecated The support for service factory functions is deprecated and will be removed.
  * @public
  */
 export type ServiceFactoryOrFunction = ServiceFactory | (() => ServiceFactory);
@@ -81,9 +99,15 @@ export type ServiceFactoryOrFunction = ServiceFactory | (() => ServiceFactory);
 export interface ServiceRefOptions<TService, TScope extends 'root' | 'plugin'> {
   id: string;
   scope?: TScope;
-  defaultFactory?: (
+  defaultFactory?(
     service: ServiceRef<TService, TScope>,
-  ) => Promise<ServiceFactoryOrFunction>;
+  ): Promise<ServiceFactory>;
+  /**
+   * @deprecated The defaultFactory must return a plain `ServiceFactory` object, support for returning a function will be removed.
+   */
+  defaultFactory?(
+    service: ServiceRef<TService, TScope>,
+  ): Promise<() => ServiceFactory>;
 }
 
 /**
@@ -198,10 +222,14 @@ export function createServiceFactory<
   TOpts extends object | undefined = undefined,
 >(
   options: RootServiceFactoryOptions<TService, TImpl, TDeps>,
-): () => ServiceFactory<TService, 'root'>;
+): ServiceFactoryCompat<TService, 'root'>;
 /**
  * Creates a root scoped service factory with optional options.
  *
+ * @deprecated The ability to define options for service factories is deprecated
+ * and will be removed. Please use the non-callback form of createServiceFactory
+ * and provide an API that allows for a simple re-implementation of the service
+ * factory instead.
  * @public
  * @param options - The service factory configuration.
  */
@@ -214,7 +242,7 @@ export function createServiceFactory<
   options: (
     options?: TOpts,
   ) => RootServiceFactoryOptions<TService, TImpl, TDeps>,
-): (options?: TOpts) => ServiceFactory<TService, 'root'>;
+): ServiceFactoryCompat<TService, 'root', TOpts>;
 /**
  * Creates a plugin scoped service factory without options.
  *
@@ -229,10 +257,14 @@ export function createServiceFactory<
   TOpts extends object | undefined = undefined,
 >(
   options: PluginServiceFactoryOptions<TService, TContext, TImpl, TDeps>,
-): () => ServiceFactory<TService, 'plugin'>;
+): ServiceFactoryCompat<TService, 'plugin'>;
 /**
  * Creates a plugin scoped service factory with optional options.
  *
+ * @deprecated The ability to define options for service factories is deprecated
+ * and will be removed. Please use the non-callback form of createServiceFactory
+ * and provide an API that allows for a simple re-implementation of the service
+ * factory instead.
  * @public
  * @param options - The service factory configuration.
  */
@@ -246,7 +278,7 @@ export function createServiceFactory<
   options: (
     options?: TOpts,
   ) => PluginServiceFactoryOptions<TService, TContext, TImpl, TDeps>,
-): (options?: TOpts) => ServiceFactory<TService, 'plugin'>;
+): ServiceFactoryCompat<TService, 'plugin', TOpts>;
 export function createServiceFactory<
   TService,
   TImpl extends TService,
@@ -263,13 +295,13 @@ export function createServiceFactory<
       ) => PluginServiceFactoryOptions<TService, TContext, TImpl, TDeps>)
     | (() => RootServiceFactoryOptions<TService, TImpl, TDeps>)
     | (() => PluginServiceFactoryOptions<TService, TContext, TImpl, TDeps>),
-): (options: TOpts) => ServiceFactory {
+): ServiceFactoryCompat<TService, 'root' | 'plugin', TOpts> {
   const configCallback =
     typeof options === 'function' ? options : () => options;
   const factory = (
-    o: TOpts,
+    o?: TOpts,
   ): InternalServiceFactory<TService, 'plugin' | 'root'> => {
-    const anyConf = configCallback(o);
+    const anyConf = configCallback(o!);
     if (anyConf.service.scope === 'root') {
       const c = anyConf as RootServiceFactoryOptions<TService, TImpl, TDeps>;
       return {
@@ -303,7 +335,10 @@ export function createServiceFactory<
     };
   };
 
-  factory.$$type = '@backstage/BackendFeatureFactory';
-
-  return factory;
+  // This constructs the `ServiceFactoryCompat` type, which is both a plain
+  // factory object as well as a function that can be called to construct a
+  // factory, potentially with options. In the future only the plain factory
+  // form will be supported, but for now we need to allow callers to call the
+  // factory too.
+  return Object.assign(factory, factory(undefined as TOpts));
 }

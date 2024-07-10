@@ -8,7 +8,7 @@ import { ConfigSchema } from '@backstage/config-loader';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { RemoteConfigSourceOptions } from '@backstage/config-loader';
 import { RootConfigService } from '@backstage/backend-plugin-api';
-import { ServiceFactory } from '@backstage/backend-plugin-api';
+import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
 export function createConfigSecretEnumerator(options: {
@@ -26,9 +26,11 @@ export interface RootConfigFactoryOptions {
 }
 
 // @public (undocumented)
-export const rootConfigServiceFactory: (
-  options?: RootConfigFactoryOptions | undefined,
-) => ServiceFactory<RootConfigService, 'root'>;
+export const rootConfigServiceFactory: ServiceFactoryCompat<
+  RootConfigService,
+  'root',
+  RootConfigFactoryOptions
+>;
 
 // (No @packageDocumentation comment for this package)
 ```

@@ -19,7 +19,7 @@ import { RequestListener } from 'http';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { RootHttpRouterService } from '@backstage/backend-plugin-api';
 import type { Server } from 'node:http';
-import { ServiceFactory } from '@backstage/backend-plugin-api';
+import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
 
 // @public
 export function createHttpServer(
@@ -141,9 +141,11 @@ export type RootHttpRouterFactoryOptions = {
 };
 
 // @public (undocumented)
-export const rootHttpRouterServiceFactory: (
-  options?: RootHttpRouterFactoryOptions | undefined,
-) => ServiceFactory<RootHttpRouterService, 'root'>;
+export const rootHttpRouterServiceFactory: ServiceFactoryCompat<
+  RootHttpRouterService,
+  'root',
+  RootHttpRouterFactoryOptions
+>;
 
 // (No @packageDocumentation comment for this package)
 ```
