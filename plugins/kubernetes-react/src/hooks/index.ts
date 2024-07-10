@@ -15,7 +15,7 @@
  */
 
 export * from './useIsPodDeleteEnabled';
-export * from './usePodDeleteRestartButtonText';
+export * from './usePodDeleteButtonText';
 export * from './useIsPodExecTerminalEnabled';
 export * from './useIsPodExecTerminalSupported';
 export * from './useKubernetesObjects';
