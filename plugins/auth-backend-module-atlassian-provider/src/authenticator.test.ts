@@ -17,21 +17,16 @@ import Strategy from 'passport-atlassian-oauth2';
 
 describe('Strategy', () => {
   it('should be an instance of', () => {
-    try {
-      console.log(Strategy);
-      const strategy = new Strategy(
-        {
-          authorizationURL: 'https://auth.atlassian.com/authorize',
-          tokenURL: 'https://auth.atlassian.com/oauth/token',
-          clientID: 'my-client-id',
-          clientSecret: 'my-client-secret',
-          scope: ['offline_access', 'read:jira-work', 'read:jira-user'],
-        },
-        () => {},
-      );
-      expect((strategy as any).name).toBe('atlassian');
-    } catch (e) {
-      console.error(e);
-    }
+    const strategy = new Strategy(
+      {
+        authorizationURL: 'https://auth.atlassian.com/authorize',
+        tokenURL: 'https://auth.atlassian.com/oauth/token',
+        clientID: 'my-client-id',
+        clientSecret: 'my-client-secret',
+        scope: ['offline_access', 'read:jira-work', 'read:jira-user'],
+      },
+      () => {},
+    );
+    expect((strategy as any).name).toBe('atlassian');
   });
 });
