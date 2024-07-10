@@ -38,8 +38,8 @@ import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import type { Server } from 'node:http';
+import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
-import { ServiceFactoryOrFunction } from '@backstage/backend-plugin-api';
 import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { transport } from 'winston';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
@@ -99,7 +99,7 @@ export function createSpecializedBackend(
 // @public (undocumented)
 export interface CreateSpecializedBackendOptions {
   // (undocumented)
-  defaultServiceFactories: ServiceFactoryOrFunction[];
+  defaultServiceFactories: ServiceFactory[];
 }
 
 // @public @deprecated (undocumented)

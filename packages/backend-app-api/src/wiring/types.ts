@@ -18,7 +18,7 @@ import {
   BackendFeature,
   ExtensionPoint,
   ServiceRef,
-  ServiceFactoryOrFunction,
+  ServiceFactory,
 } from '@backstage/backend-plugin-api';
 
 /**
@@ -39,7 +39,7 @@ export interface Backend {
  * @public
  */
 export interface CreateSpecializedBackendOptions {
-  defaultServiceFactories: ServiceFactoryOrFunction[];
+  defaultServiceFactories: ServiceFactory[];
 }
 
 /**
