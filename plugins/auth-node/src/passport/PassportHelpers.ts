@@ -40,10 +40,8 @@ export class PassportHelpers {
     if (profile.emails && profile.emails.length > 0) {
       const [firstEmail] = profile.emails;
       email = firstEmail.value;
-    }
-
-    // This is the case for Atlassian
-    if (profile.email) {
+    } else if (profile.email) {
+      // This is the case for Atlassian
       email = profile.email;
     }
 
@@ -54,7 +52,8 @@ export class PassportHelpers {
       const [firstPhoto] = profile.photos;
       picture = firstPhoto.value;
     } else if (profile.photo) {
-      picture = profile.photo; // This is the case for Atlassian
+      // This is the case for Atlassian
+      picture = profile.photo;
     }
 
     let displayName: string | undefined =
