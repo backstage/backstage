@@ -29,7 +29,7 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
 import { createPublishBitbucketServerAction } from './bitbucketServer';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { setupMswHandlers } from '@backstage/backend-test-utils';
+import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import yaml from 'yaml';
@@ -68,7 +68,7 @@ describe('publish:bitbucketServer', () => {
     },
   });
   const server = setupServer();
-  setupMswHandlers(server);
+  registerMswTestHooks(server);
 
   beforeEach(() => {
     jest.resetAllMocks();

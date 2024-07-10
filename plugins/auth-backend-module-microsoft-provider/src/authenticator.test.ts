@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { setupMswHandlers } from '@backstage/backend-test-utils';
+import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import {
   encodeOAuthState,
@@ -43,7 +43,7 @@ describe('microsoftAuthenticator', () => {
   const microsoftApi = new FakeMicrosoftAPI();
 
   const server = setupServer();
-  setupMswHandlers(server);
+  registerMswTestHooks(server);
 
   let implementation: {
     domainHint: string | undefined;

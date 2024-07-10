@@ -20,7 +20,10 @@ import {
 import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { TestPipeline } from '@backstage/plugin-search-backend-node';
-import { mockServices, setupMswHandlers } from '@backstage/backend-test-utils';
+import {
+  mockServices,
+  registerMswTestHooks,
+} from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { Readable } from 'stream';
@@ -103,7 +106,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
     let collator: Readable;
 
     const worker = setupServer();
-    setupMswHandlers(worker);
+    registerMswTestHooks(worker);
 
     beforeEach(async () => {
       factory = DefaultTechDocsCollatorFactory.fromConfig(config, options);

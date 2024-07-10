@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { setupMswHandlers } from '@backstage/backend-test-utils';
+import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import {
   AuthResolverContext,
@@ -37,7 +37,7 @@ jest.mock('uid2', () => jest.fn().mockReturnValue('sessionid'));
 
 describe('vmwareCloudAuthenticator', () => {
   const server = setupServer();
-  setupMswHandlers(server);
+  registerMswTestHooks(server);
 
   let oAuthState: OAuthState = {
     nonce: 'nonce',

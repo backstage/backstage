@@ -19,13 +19,13 @@ import MockOAuthApi from '../../OAuthRequestApi/MockOAuthApi';
 import { UrlPatternDiscovery } from '../../DiscoveryApi';
 import { ConfigReader } from '@backstage/config';
 import { microsoftAuthApiRef } from '@backstage/core-plugin-api';
-import { setupMswHandlers } from '@backstage/test-utils';
+import { registerMswTestHooks } from '@backstage/test-utils';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 
 describe('MicrosoftAuth', () => {
   const server = setupServer();
-  setupMswHandlers(server);
+  registerMswTestHooks(server);
   const microsoftAuth = MicrosoftAuth.create({
     configApi: new ConfigReader(undefined),
     oauthRequestApi: new MockOAuthApi(),

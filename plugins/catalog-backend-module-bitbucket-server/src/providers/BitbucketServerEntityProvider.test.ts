@@ -19,7 +19,10 @@ import {
   TaskInvocationDefinition,
   TaskRunner,
 } from '@backstage/backend-tasks';
-import { mockServices, setupMswHandlers } from '@backstage/backend-test-utils';
+import {
+  mockServices,
+  registerMswTestHooks,
+} from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { rest } from 'msw';
@@ -100,7 +103,7 @@ function setupStubs(projects: Project[], baseUrl: string) {
 }
 
 describe('BitbucketServerEntityProvider', () => {
-  setupMswHandlers(server);
+  registerMswTestHooks(server);
   afterEach(() => {
     jest.clearAllMocks();
   });

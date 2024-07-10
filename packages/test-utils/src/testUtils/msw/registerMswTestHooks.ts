@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-import { registerMswTestHooks } from './testUtils/msw';
-
 /**
+ * Sets up handlers for request mocking
  * @public
- * @deprecated Use `registerMswTestHooks` from `@backstage/test-utils` instead.
+ * @param worker - service worker
  */
-export function setupRequestMockHandlers(worker: {
+export function registerMswTestHooks(worker: {
   listen: (t: any) => void;
   close: () => void;
   resetHandlers: () => void;
-}): void {
-  registerMswTestHooks(worker);
+}) {
+  beforeAll(() => worker.listen({ onUnhandledRequest: 'error' }));
+  afterAll(() => worker.close());
+  afterEach(() => worker.resetHandlers());
 }

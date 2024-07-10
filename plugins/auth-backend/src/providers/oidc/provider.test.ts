@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { mockServices, setupMswHandlers } from '@backstage/backend-test-utils';
+import {
+  mockServices,
+  registerMswTestHooks,
+} from '@backstage/backend-test-utils';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { Config, ConfigReader } from '@backstage/config';
 import {
@@ -35,7 +38,7 @@ describe('oidc.create', () => {
     nonce: 'foo',
   };
   const server = setupServer();
-  setupMswHandlers(server);
+  registerMswTestHooks(server);
 
   let publicKey: JWK;
   let tokenset: object;

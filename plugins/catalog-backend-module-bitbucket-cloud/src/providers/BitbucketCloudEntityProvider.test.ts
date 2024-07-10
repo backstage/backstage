@@ -20,7 +20,10 @@ import {
   TaskInvocationDefinition,
   TaskRunner,
 } from '@backstage/backend-tasks';
-import { mockServices, setupMswHandlers } from '@backstage/backend-test-utils';
+import {
+  mockServices,
+  registerMswTestHooks,
+} from '@backstage/backend-test-utils';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity, LocationEntity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
@@ -59,7 +62,7 @@ const logger = mockServices.logger.mock();
 const server = setupServer();
 
 describe('BitbucketCloudEntityProvider', () => {
-  setupMswHandlers(server);
+  registerMswTestHooks(server);
 
   const simpleConfig = new ConfigReader({
     catalog: {

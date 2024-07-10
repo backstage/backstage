@@ -366,6 +366,13 @@ export namespace mockServices {
 }
 
 // @public
+export function registerMswTestHooks(worker: {
+  listen: (t: any) => void;
+  close: () => void;
+  resetHandlers: () => void;
+}): void;
+
+// @public
 export class ServiceFactoryTester<TService, TScope extends 'root' | 'plugin'> {
   static from<TService, TScope extends 'root' | 'plugin'>(
     subject:
@@ -401,13 +408,6 @@ export type ServiceMock<TService> = {
     ? TService[Key] & jest.MockInstance<Return, Args>
     : TService[Key];
 };
-
-// @public
-export function setupMswHandlers(worker: {
-  listen: (t: any) => void;
-  close: () => void;
-  resetHandlers: () => void;
-}): void;
 
 // @public @deprecated (undocumented)
 export function setupRequestMockHandlers(worker: {

@@ -198,6 +198,13 @@ export type MockStorageBucket = {
 };
 
 // @public
+export function registerMswTestHooks(worker: {
+  listen: (t: any) => void;
+  close: () => void;
+  resetHandlers: () => void;
+}): void;
+
+// @public
 export function renderInTestApp(
   Component: ComponentType<PropsWithChildren<{}>> | ReactNode,
   options?: TestAppOptions & LegacyRootOption,
@@ -208,13 +215,6 @@ export function renderWithEffects(
   nodes: ReactElement,
   options?: Pick<RenderOptions, 'wrapper'> & LegacyRootOption,
 ): Promise<RenderResult>;
-
-// @public
-export function setupMswHandlers(worker: {
-  listen: (t: any) => void;
-  close: () => void;
-  resetHandlers: () => void;
-}): void;
 
 // @public @deprecated (undocumented)
 export function setupRequestMockHandlers(worker: {

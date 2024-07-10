@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { setupMswHandlers } from './setupMswHandlers';
+export { registerMswTestHooks } from './registerMswTestHooks';

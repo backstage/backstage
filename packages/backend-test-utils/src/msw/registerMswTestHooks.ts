@@ -19,7 +19,7 @@
  * @public
  * @param worker - service worker
  */
-export function setupMswHandlers(worker: {
+export function registerMswTestHooks(worker: {
   listen: (t: any) => void;
   close: () => void;
   resetHandlers: () => void;

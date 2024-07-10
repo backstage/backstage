@@ -22,7 +22,7 @@ import {
 import {
   createMockDirectory,
   mockServices,
-  setupMswHandlers,
+  registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
 import { rest } from 'msw';
@@ -104,7 +104,7 @@ describe('BitbucketUrlReader', () => {
   );
 
   const worker = setupServer();
-  setupMswHandlers(worker);
+  registerMswTestHooks(worker);
 
   describe('readUrl', () => {
     it('should be able to readUrl via buffer without ETag', async () => {

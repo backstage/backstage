@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { mockServices, setupMswHandlers } from '@backstage/backend-test-utils';
+import {
+  mockServices,
+  registerMswTestHooks,
+} from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { SignJWT, exportJWK, generateKeyPair } from 'jose';
 import { HttpResponse, http } from 'msw';
@@ -86,7 +89,7 @@ describe('helpers', () => {
   const tokenFactory = new MockTokenFactory();
   const cache = mockServices.cache.mock();
   const server = setupServer();
-  setupMswHandlers(server);
+  registerMswTestHooks(server);
 
   beforeEach(() => {
     jest.clearAllMocks();

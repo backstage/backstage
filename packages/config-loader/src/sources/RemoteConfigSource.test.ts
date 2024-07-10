@@ -15,14 +15,14 @@
  */
 
 import { rest } from 'msw';
-import { setupMswHandlers } from '@backstage/backend-test-utils';
+import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { setupServer } from 'msw/node';
 import { RemoteConfigSource } from './RemoteConfigSource';
 import { readN } from './__testUtils__/testUtils';
 
 describe('RemoteConfigSource', () => {
   const worker = setupServer();
-  setupMswHandlers(worker);
+  registerMswTestHooks(worker);
 
   it('should load config from a remote URL', async () => {
     worker.use(

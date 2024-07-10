@@ -1,53 +1,7 @@
 ---
-'@backstage/plugin-scaffolder-backend-module-confluence-to-markdown': patch
-'@backstage/plugin-auth-backend-module-cloudflare-access-provider': patch
-'@backstage/plugin-search-backend-module-stack-overflow-collator': patch
-'@backstage/plugin-scaffolder-backend-module-bitbucket-server': patch
-'@backstage/plugin-auth-backend-module-vmware-cloud-provider': patch
-'@backstage/plugin-scaffolder-backend-module-bitbucket-cloud': patch
-'@backstage/plugin-catalog-backend-module-bitbucket-server': patch
-'@backstage/plugin-auth-backend-module-microsoft-provider': patch
-'@backstage/plugin-catalog-backend-module-bitbucket-cloud': patch
-'@backstage/plugin-auth-backend-module-pinniped-provider': patch
-'@backstage/plugin-auth-backend-module-aws-alb-provider': patch
-'@backstage/plugin-scaffolder-backend-module-bitbucket': patch
-'@backstage/plugin-auth-backend-module-oidc-provider': patch
-'@backstage/plugin-scaffolder-backend-module-gerrit': patch
-'@backstage/plugin-scaffolder-backend-module-sentry': patch
-'@backstage/plugin-catalog-backend-module-puppetdb': patch
-'@backstage/plugin-scaffolder-backend-module-gitea': patch
-'@backstage/plugin-catalog-backend-module-msgraph': patch
-'@backstage/plugin-search-backend-module-techdocs': patch
-'@backstage/plugin-catalog-backend-module-gerrit': patch
-'@backstage/plugin-catalog-backend-module-github': patch
-'@backstage/plugin-catalog-backend-module-gitlab': patch
-'@backstage/plugin-search-backend-module-catalog': patch
-'@backstage/plugin-search-backend-module-explore': patch
-'@backstage/plugin-catalog-backend-module-azure': patch
-'@backstage/frontend-test-utils': patch
 '@backstage/backend-test-utils': patch
-'@backstage/release-manifests': patch
-'@backstage/plugin-kubernetes-backend': patch
-'@backstage/plugin-notifications-node': patch
-'@backstage/backend-defaults': patch
-'@backstage/core-components': patch
-'@backstage/plugin-kubernetes-react': patch
-'@backstage/plugin-techdocs-backend': patch
-'@backstage/plugin-catalog-backend': patch
-'@backstage/plugin-kubernetes-node': patch
-'@backstage/plugin-permission-node': patch
-'@backstage/config-loader': patch
-'@backstage/plugin-catalog-import': patch
-'@backstage/core-app-api': patch
-'@backstage/plugin-notifications': patch
-'@backstage/plugin-proxy-backend': patch
-'@backstage/plugin-user-settings': patch
-'@backstage/plugin-auth-backend': patch
-'@backstage/create-app': patch
+'@backstage/frontend-test-utils': patch
 '@backstage/test-utils': patch
-'@backstage/plugin-scaffolder': patch
-'@backstage/plugin-auth-node': patch
-'@backstage/cli': patch
 ---
 
-Rename frontend and backend `setupRequestMockHandlers` methods to `setupMswHandlers`.
+Rename frontend and backend `setupRequestMockHandlers` methods to `registerMswTestHooks`.

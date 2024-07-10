@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { registerMswTestHooks } from './msw';
 import { CreateMockDirectoryOptions } from './filesystem';
 import { isDockerDisabledForTests as _isDockerDisabledForTests } from './util';
-import { setupMswHandlers } from './msw';
 
 /**
  * @public
@@ -26,20 +26,20 @@ export type MockDirectoryOptions = CreateMockDirectoryOptions;
 
 /**
  * @public
- * @deprecated This is an internal function and will no longer be exported from this package.
- */
-export function isDockerDisabledForTests(): boolean {
-  return _isDockerDisabledForTests();
-}
-
-/**
- * @public
- * @deprecated Use `setupMswHandlers` from `@backstage/backend-test-utils` instead.
+ * @deprecated Use `registerMswTestHooks` from `@backstage/backend-test-utils` instead.
  */
 export function setupRequestMockHandlers(worker: {
   listen: (t: any) => void;
   close: () => void;
   resetHandlers: () => void;
 }): void {
-  setupMswHandlers(worker);
+  registerMswTestHooks(worker);
+}
+
+/**
+ * @public
+ * @deprecated This is an internal function and will no longer be exported from this package.
+ */
+export function isDockerDisabledForTests(): boolean {
+  return _isDockerDisabledForTests();
 }
