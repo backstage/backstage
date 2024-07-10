@@ -200,6 +200,8 @@ export function createGithubEnvironmentAction(options: {
           await client.rest.actions.getEnvironmentPublicKey({
             repository_id: repository.data.id,
             environment_name: name,
+            owner,
+            repo,
           });
 
         await Sodium.ready;
