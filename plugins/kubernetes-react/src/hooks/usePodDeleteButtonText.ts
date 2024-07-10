@@ -20,10 +20,10 @@ import { configApiRef, useApi } from '@backstage/core-plugin-api';
  *
  * @internal
  */
-export const usePodDeleteRestartButtonText = (): boolean | undefined => {
+export const usePodDeleteButtonText = (): string | undefined => {
   const configApi = useApi(configApiRef);
 
   return configApi
     .getOptionalConfig('kubernetes.frontend')
-    ?.getOptionalBoolean('podDelete.restartButtonText');
+    ?.getOptionalString('podDelete.buttonText');
 };
