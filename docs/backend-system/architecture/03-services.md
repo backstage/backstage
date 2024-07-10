@@ -190,43 +190,36 @@ If a service defines a default factory, that factory will be used if there is no
 
 When defining a default factory for a service, it is possible for it to end up with duplicate implementations at runtime. This applies both to any shared root context in your factory, as well as plugin specific instances of your service. This is because package dependency version ranges may not line up perfectly, causing duplicate installations of the same package. This can happen both for two different plugins using the same service, but also across a plugin and its modules. If your service would break in this scenario, you should not define a default factory for it, but instead require that users of your service explicitly install a factory in their backend instance.
 
-## Service Factory Options
+## Service Factory Customization
 
-:::note Note
-
-This pattern is discouraged, only use it when necessary. If possible you should prefer to make services configurable via static configuration instead.
-
-:::
-
-When declaring a service factory it's possible to include an options callback. This allows you to customize the factory through code when installing it in the backend. For example, this is how you install an explicit factory instance in the backend without any options:
+When declaring a service factory you may also want to make the export the building blocks of the implementation itself. This is to allow for further customization of the service implementation through code, beyond what is possible with static configuration, without the need to re-implement the entire service from scratch. For example, we might export our example `DefaultFooService` class, while moving construction to a static factory method to make it easier to evolve:
 
 ```ts
-const backend = createBackend();
+export class DefaultFooService {
+  static create(options: { transform: (foo: string) => string }) {
+    return new DefaultFooService(options.transform ?? (foo) => foo);
+  }
 
-backend.add(fooServiceFactory());
-```
+  private constructor(private readonly transform: (foo: string) => string) {}
 
-Note that we call `fooServiceFactory` to create the service factory instance. This is because `createServiceFactory` always returns a factory function that creates the actual service factory. To add options to your service factory, you wrap the object passed to `createServiceFactory` in a callback that accepts the desired options. Note that the options must always be optional. For example:
-
-```ts
-export interface FooFactoryOptions {
-  transform: (foo: string) => string;
+  foo(foo: string): string {
+    return this.transform(foo);
+  }
 }
-
-export const fooServiceFactory = createServiceFactory(
-  (options?: FooFactoryOptions) => ({
-    service: fooServiceRef,
-    factory() {
-      return new DefaultFooService(options?.transform);
-    },
-  }),
-);
 ```
 
-This lets us use the options to customize the factory implementation in any way we want. From the outside the service factory looks just like before, except that we're now also able to pass options when installing the factory:
+By exporting `DefaultFooService` we now make it relatively simple for advanced users of our service to customize the implementation. To do so, they can define their own service factory that uses our provided implementation:
 
 ```ts
-const backend = createBackend();
-
-backend.add(fooServiceFactory({ transform: foo => foo.toUpperCase() }));
+export const customFooServiceFactory = createServiceFactory({
+  service: fooServiceRef,
+  deps: {},
+  factory() {
+    return DefaultFooService.create({
+      transform: foo => foo.toUpperCase(),
+    });
+  },
+});
 ```
+
+This allows lets you provide more advanced options for the service implementation that couldn't be expressed through static configuration. It also gives users of the service implementation access to other services through dependency injection, which can be useful for their customizations.
