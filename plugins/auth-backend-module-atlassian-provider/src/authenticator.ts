@@ -50,7 +50,7 @@ export const atlassianAuthenticator = createOAuthAuthenticator({
           authorizationURL: `${baseUrl}/authorize`,
           tokenURL: `${baseUrl}/oauth/token`,
           profileURL: 'https://api.atlassian.com/me',
-          scope: config.getOptionalString('additionalScopes')?.split(' ') || [],
+          scope: [], // the Atlassian strategy requires a scope, but Backstage passes the right set of scopes when calling OAuth2Strategy.prototype.authenticate
         },
         (
           accessToken: string,
