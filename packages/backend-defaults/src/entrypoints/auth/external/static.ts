@@ -34,6 +34,8 @@ export class StaticTokenHandler implements TokenHandler {
     }
   >();
 
+  type = 'static';
+
   add(config: Config) {
     const token = config.getString('options.token');
     const subject = config.getString('options.subject');

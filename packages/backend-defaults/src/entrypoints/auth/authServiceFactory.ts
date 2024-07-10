@@ -17,12 +17,23 @@
 import {
   coreServices,
   createServiceFactory,
+  createServiceRef,
 } from '@backstage/backend-plugin-api';
 import { DefaultAuthService } from './DefaultAuthService';
 import { ExternalTokenHandler } from './external/ExternalTokenHandler';
 import { PluginTokenHandler } from './plugin/PluginTokenHandler';
 import { createPluginKeySource } from './plugin/keys/createPluginKeySource';
 import { UserTokenHandler } from './user/UserTokenHandler';
+import { TokenHandler } from './external/types';
+
+/**
+ * This "non-singleton" service
+ * @public
+ */
+export const authTokenHandlersServiceRef = createServiceRef<TokenHandler>({
+  id: `${coreServices.auth.id}.tokenHandlers`,
+  singleton: false,
+});
 
 /**
  * Handles token authentication and credentials management.
@@ -46,8 +57,17 @@ export const authServiceFactory = createServiceFactory({
     // keeps working as long as there are plugins that have not been migrated to the
     // new auth services in the new backend system.
     tokenManager: coreServices.tokenManager,
+    tokenHandlers: authTokenHandlersServiceRef,
   },
-  async factory({ config, discovery, plugin, tokenManager, logger, database }) {
+  async factory({
+    config,
+    discovery,
+    plugin,
+    tokenManager,
+    logger,
+    database,
+    tokenHandlers,
+  }) {
     const disableDefaultAuthPolicy =
       config.getOptionalBoolean(
         'backend.auth.dangerouslyDisableDefaultAuthPolicy',
@@ -78,6 +98,7 @@ export const authServiceFactory = createServiceFactory({
       ownPluginId: plugin.getId(),
       config,
       logger,
+      additionalHandlers: tokenHandlers,
     });
 
     return new DefaultAuthService(

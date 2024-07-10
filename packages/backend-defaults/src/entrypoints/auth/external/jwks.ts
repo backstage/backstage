@@ -38,6 +38,8 @@ export class JWKSHandler implements TokenHandler {
     allAccessRestrictions?: AccessRestriptionsMap;
   }> = [];
 
+  type = 'jwks';
+
   add(config: Config) {
     if (!config.getString('options.url').match(/^\S+$/)) {
       throw new Error(

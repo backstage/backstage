@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
-export { authServiceFactory } from './authServiceFactory';
+export {
+  authServiceFactory,
+  authTokenHandlersServiceRef,
+} from './authServiceFactory';

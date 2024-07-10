@@ -20,12 +20,16 @@ import {
   setupRequestMockHandlers,
 } from '@backstage/backend-test-utils';
 import { tokenManagerServiceFactory } from '@backstage/backend-app-api';
-import { authServiceFactory } from './authServiceFactory';
+import {
+  authServiceFactory,
+  authTokenHandlersServiceRef,
+} from './authServiceFactory';
 import { base64url, decodeJwt } from 'jose';
 import { discoveryServiceFactory } from '../discovery';
 import {
   BackstageServicePrincipal,
   BackstageUserPrincipal,
+  createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -463,5 +467,97 @@ describe('authServiceFactory', () => {
     ).resolves.toMatchObject({
       principal: { subject: 'unlimited-static-subject' },
     });
+  });
+
+  it('should support custom token handlers', async () => {
+    const tester = ServiceFactoryTester.from(authServiceFactory, {
+      dependencies: [
+        discoveryServiceFactory(),
+        mockServices.rootConfig.factory({
+          data: {
+            backend: {
+              baseUrl: 'http://localhost',
+              auth: {
+                externalAccess: [
+                  {
+                    type: 'test',
+                    options: {
+                      token: 'test-token',
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        }),
+        createServiceFactory({
+          service: authTokenHandlersServiceRef,
+          deps: {},
+          factory() {
+            const tokens = new Array<string>();
+            return {
+              type: 'test',
+              add(config) {
+                tokens.push(config.getString('options.token'));
+              },
+              async verifyToken(token) {
+                if (!tokens.includes(token)) {
+                  return undefined;
+                }
+                return {
+                  subject: 'tester',
+                };
+              },
+            };
+          },
+        }),
+      ],
+    });
+
+    const catalogAuth = await tester.getSubject('catalog');
+
+    await expect(catalogAuth.authenticate('test-token')).resolves.toMatchObject(
+      {
+        principal: {
+          subject: 'tester',
+        },
+      },
+    );
+
+    await expect(
+      catalogAuth.authenticate('other-token'),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`"Illegal token"`);
+  });
+
+  it('should throw an error if defautl token handlers are overriden', async () => {
+    const tester = ServiceFactoryTester.from(authServiceFactory, {
+      dependencies: [
+        discoveryServiceFactory(),
+        mockServices.rootConfig.factory({
+          data: {
+            backend: {
+              baseUrl: 'http://localhost',
+            },
+          },
+        }),
+        createServiceFactory({
+          service: authTokenHandlersServiceRef,
+          deps: {},
+          factory() {
+            return {
+              type: 'legacy',
+              add() {},
+              verifyToken: async () => undefined,
+            };
+          },
+        }),
+      ],
+    });
+
+    await expect(
+      tester.getSubject('catalog'),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"Failed to instantiate service 'core.auth' for 'catalog' because the factory function threw an error, Error: Refused to install duplicate external token handler for type 'legacy'"`,
+    );
   });
 });

@@ -40,6 +40,7 @@ export class ExternalTokenHandler {
     ownPluginId: string;
     config: RootConfigService;
     logger: LoggerService;
+    additionalHandlers?: TokenHandler[];
   }): ExternalTokenHandler {
     const { ownPluginId, config, logger } = options;
 
@@ -47,10 +48,19 @@ export class ExternalTokenHandler {
     const legacyHandler = new LegacyTokenHandler();
     const jwksHandler = new JWKSHandler();
     const handlers: Record<string, TokenHandler> = {
-      static: staticHandler,
-      legacy: legacyHandler,
-      jwks: jwksHandler,
+      [staticHandler.type]: staticHandler,
+      [legacyHandler.type]: legacyHandler,
+      [jwksHandler.type]: jwksHandler,
     };
+
+    for (const handler of options.additionalHandlers ?? []) {
+      if (Object.hasOwn(handlers, handler.type)) {
+        throw new Error(
+          `Refused to install duplicate external token handler for type '${handler.type}'`,
+        );
+      }
+      handlers[handler.type] = handler;
+    }
 
     // Load the new-style handlers
     const handlerConfigs = config.getOptionalConfigArray(NEW_CONFIG_KEY) ?? [];

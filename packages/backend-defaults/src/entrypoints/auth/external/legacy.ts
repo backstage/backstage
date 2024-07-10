@@ -33,6 +33,8 @@ export class LegacyTokenHandler implements TokenHandler {
     };
   }>();
 
+  type = 'legacy';
+
   add(config: Config) {
     const allAccessRestrictions = readAccessRestrictionsFromConfig(config);
     this.#doAdd(
