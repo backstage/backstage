@@ -82,6 +82,17 @@ export class ServiceFactoryTester<TService, TScope extends 'root' | 'plugin'> {
   /**
    * Returns the service instance for the subject.
    *
+   * @deprecated Use `getSubject` instead.
+   */
+  async get(
+    ...args: 'root' extends TScope ? [] : [pluginId?: string]
+  ): Promise<TService> {
+    return this.getSubject(...args);
+  }
+
+  /**
+   * Returns the service instance for the subject.
+   *
    * @remarks
    *
    * If the subject is a plugin scoped service factory a plugin ID
@@ -89,7 +100,7 @@ export class ServiceFactoryTester<TService, TScope extends 'root' | 'plugin'> {
    *
    * By default the plugin ID 'test' is used.
    */
-  async get(
+  async getSubject(
     ...args: 'root' extends TScope ? [] : [pluginId?: string]
   ): Promise<TService> {
     const [pluginId] = args;

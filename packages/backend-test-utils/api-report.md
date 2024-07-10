@@ -373,6 +373,7 @@ export class ServiceFactoryTester<TService, TScope extends 'root' | 'plugin'> {
       | (() => ServiceFactory<TService, TScope>),
     options?: ServiceFactoryTesterOptions,
   ): ServiceFactoryTester<TService, TScope>;
+  // @deprecated
   get(
     ...args: 'root' extends TScope ? [] : [pluginId?: string]
   ): Promise<TService>;
@@ -380,6 +381,9 @@ export class ServiceFactoryTester<TService, TScope extends 'root' | 'plugin'> {
     service: ServiceRef<TGetService, TGetScope>,
     ...args: 'root' extends TGetScope ? [] : [pluginId?: string]
   ): Promise<TGetService>;
+  getSubject(
+    ...args: 'root' extends TScope ? [] : [pluginId?: string]
+  ): Promise<TService>;
 }
 
 // @public

@@ -35,7 +35,7 @@ describe('httpRouterFactory', () => {
       dependencies: [rootHttpRouter.factory],
     });
 
-    const router1 = await tester.get('test1');
+    const router1 = await tester.getSubject('test1');
     router1.use(() => {});
     expect(rootHttpRouter.use).toHaveBeenCalledTimes(1);
     expect(rootHttpRouter.use).toHaveBeenCalledWith(
@@ -43,7 +43,7 @@ describe('httpRouterFactory', () => {
       expect.any(Function),
     );
 
-    const router2 = await tester.get('test2');
+    const router2 = await tester.getSubject('test2');
     router2.use(() => {});
     expect(rootHttpRouter.use).toHaveBeenCalledTimes(2);
     expect(rootHttpRouter.use).toHaveBeenCalledWith(
