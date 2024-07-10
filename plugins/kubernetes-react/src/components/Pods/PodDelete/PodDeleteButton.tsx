@@ -21,6 +21,8 @@ import CardActions from '@material-ui/core/CardActions';
 import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Close';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { kubernetesReactTranslationRef } from '../../../translation';
 
 import { usePodDelete } from './usePodDelete';
 import { PodScope } from './types';
@@ -47,7 +49,9 @@ export const PodDeleteButton = ({
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
   const deletePod = usePodDelete();
-  const getButtonText = buttonText ?? 'Delete Pod';
+
+  const { t } = useTranslationRef(kubernetesReactTranslationRef);
+  const getButtonText = buttonText ?? t('podDrawer.buttons.delete');
 
   const handleDeleteClick = async () => {
     setIsLoading(true);
