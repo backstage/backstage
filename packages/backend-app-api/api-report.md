@@ -58,9 +58,16 @@ export interface Backend {
   add(
     feature:
       | BackendFeature
+      | Promise<{
+          default: BackendFeature;
+        }>,
+  ): void;
+  // @deprecated (undocumented)
+  add(
+    feature:
       | (() => BackendFeature)
       | Promise<{
-          default: BackendFeature | (() => BackendFeature);
+          default: () => BackendFeature;
         }>,
   ): void;
   // (undocumented)

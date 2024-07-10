@@ -25,11 +25,18 @@ import {
  * @public
  */
 export interface Backend {
+  add(feature: BackendFeature | Promise<{ default: BackendFeature }>): void;
+  /**
+   * @deprecated The ability to add features defined as a callback is being
+   * removed. Please update the installed feature to no longer be defined as a
+   * callback, typically this means updating it to use the latest version of
+   * `@backstage/backend-plugin-api`. If the feature is from a third-party
+   * package, please reach out to the package maintainer to update it.
+   */
   add(
     feature:
-      | BackendFeature
       | (() => BackendFeature)
-      | Promise<{ default: BackendFeature | (() => BackendFeature) }>,
+      | Promise<{ default: () => BackendFeature }>,
   ): void;
   start(): Promise<void>;
   stop(): Promise<void>;
