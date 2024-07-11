@@ -4,6 +4,7 @@
 
 ```ts
 import { Config } from '@backstage/config';
+import { JsonValue } from '@backstage/types';
 
 // @public (undocumented)
 export const getProcessorFiltersFromConfig: (
@@ -38,7 +39,15 @@ export type NotificationPayload = {
   topic?: string;
   scope?: string;
   icon?: string;
+  metadata?: NotificationPayloadMetadata;
 };
+
+// @public (undocumented)
+export type NotificationPayloadMetadata = Array<{
+  name: string;
+  value: JsonValue;
+  type: string;
+}>;
 
 // @public (undocumented)
 export type NotificationProcessorFilters = {
