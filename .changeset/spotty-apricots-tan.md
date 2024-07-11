@@ -41,7 +41,7 @@ export class DefaultFooService implements FooService {
 A user that wishes to customize the service can then easily do so by defining their own factory:
 
 ```ts
-export const fooServiceFactory = createServiceFactory<FooService>({
+export const customFooServiceFactory = createServiceFactory<FooService>({
   service: fooServiceRef,
   deps: { logger: coreServices.logger },
   factory({ logger }) {

@@ -192,7 +192,7 @@ When defining a default factory for a service, it is possible for it to end up w
 
 ## Service Factory Customization
 
-When declaring a service factory you may also want to make the export the building blocks of the implementation itself. This is to allow for further customization of the service implementation through code, beyond what is possible with static configuration, without the need to re-implement the entire service from scratch. For example, we might export our example `DefaultFooService` class, while moving construction to a static factory method to make it easier to evolve:
+When declaring a service factory you may also want to make the export the building blocks of the implementation itself. This is to allow for further customization of the service implementation through code, beyond what is possible with static configuration, without the need to re-implement the entire service from scratch. For example, we might export our example `DefaultFooService` class, while moving construction to a static `create` factory method to make it easier to evolve:
 
 ```ts
 export class DefaultFooService {
@@ -222,4 +222,4 @@ export const customFooServiceFactory = createServiceFactory({
 });
 ```
 
-This allows lets you provide more advanced options for the service implementation that couldn't be expressed through static configuration. It also gives users of the service implementation access to other services through dependency injection, which can be useful for their customizations.
+This allows you to provide more advanced options for the service implementation that couldn't be expressed through static configuration. It also gives users of the service implementation access to other services through dependency injection, which can be useful for their customizations.
