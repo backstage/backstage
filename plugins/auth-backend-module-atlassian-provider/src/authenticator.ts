@@ -20,14 +20,14 @@ import {
   PassportOAuthDoneCallback,
   PassportProfile,
 } from '@backstage/plugin-auth-node';
-import { Strategy as AtlassianStrategy } from 'passport-atlassian-oauth2';
+import AtlassianStrategy from 'passport-atlassian-oauth2';
 
 /** @public */
 export const atlassianAuthenticator = createOAuthAuthenticator({
   defaultProfileTransform:
     PassportOAuthAuthenticatorHelper.defaultProfileTransform,
   scopes: {
-    required: ['offline_access', 'read:jira-work', 'read:jira-user'],
+    required: ['offline_access', 'read:me', 'read:jira-work', 'read:jira-user'],
   },
   initialize({ callbackUrl, config }) {
     const clientId = config.getString('clientId');
@@ -49,7 +49,8 @@ export const atlassianAuthenticator = createOAuthAuthenticator({
           baseURL: baseUrl,
           authorizationURL: `${baseUrl}/authorize`,
           tokenURL: `${baseUrl}/oauth/token`,
-          profileURL: `${baseUrl}/api/v4/user`,
+          profileURL: 'https://api.atlassian.com/me',
+          scope: [], // the Atlassian strategy requires a scope, but Backstage passes the right set of scopes when calling OAuth2Strategy.prototype.authenticate
         },
         (
           accessToken: string,
