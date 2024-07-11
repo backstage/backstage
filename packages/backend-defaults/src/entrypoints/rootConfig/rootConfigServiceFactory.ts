@@ -31,6 +31,7 @@ import {
  * for more information.
  *
  * @public
+ * @deprecated These service options will be removed, please use the `ConfigSources` API from `@backstage/config-loader` to implement your own version of the service factory instead.
  */
 export interface RootConfigFactoryOptions {
   /**

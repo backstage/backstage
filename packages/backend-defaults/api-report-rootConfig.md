@@ -17,7 +17,7 @@ export function createConfigSecretEnumerator(options: {
   schema?: ConfigSchema;
 }): Promise<(config: Config) => Iterable<string>>;
 
-// @public
+// @public @deprecated
 export interface RootConfigFactoryOptions {
   argv?: string[];
   remote?: Pick<RemoteConfigSourceOptions, 'reloadInterval'>;

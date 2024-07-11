@@ -36,12 +36,12 @@ createBackendPlugin({
 
 ## Configuring the service
 
-There's additional configuration that you can optionally pass to setup the `config` core service.
+There are several APIs from the `@backstage/config-loader` package that allow you to customize the implementation of the config service. The default implementation uses the `ConfigSources.default` method, which has several options, for example:
 
 - `argv` - Override the arguments that are passed to the config loader, instead of using `process.argv`
 - `remote` - Configure remote configuration loading
 
-You can configure these additional options by adding an override for the core service when calling `createBackend` like follows:
+You can use these to create your own config service implementation:
 
 ```ts
 import { rootConfigServiceFactory } from '@backstage/backend-app-api';
@@ -49,14 +49,24 @@ import { rootConfigServiceFactory } from '@backstage/backend-app-api';
 const backend = createBackend();
 
 backend.add(
-  rootConfigServiceFactory({
-    argv: [
-      '--config',
-      '/backstage/app-config.development.yaml',
-      '--config',
-      '/backstage/app-config.yaml',
-    ],
-    remote: { reloadIntervalSeconds: 60 },
+  createServiceFactory({
+    service: coreServices.rootConfig,
+    deps: {},
+    async factory() {
+      const source = ConfigSources.default({
+        argv: [
+          '--config',
+          '/backstage/app-config.development.yaml',
+          '--config',
+          '/backstage/app-config.yaml',
+        ],
+        remote: { reloadIntervalSeconds: 60 },
+      });
+      console.log(`Loading config from ${source}`);
+      return await ConfigSources.toConfig(source);
+    },
   }),
 );
 ```
+
+You can also use other config source such as `StaticConfigSource` and combine them with other sources using `ConfigSources.merge(...)`. You can also create your own config source by implementing the `ConfigSource` interface.
