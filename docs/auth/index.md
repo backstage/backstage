@@ -31,7 +31,7 @@ Backstage comes with many common authentication providers in the core library:
 - [Azure Easy Auth](microsoft/azure-easyauth.md)
 - [Bitbucket](bitbucket/provider.md)
 - [Bitbucket Server](bitbucketServer/provider.md)
-- [Cloudflare Access](cloudflare/access.md)
+- [Cloudflare Access](cloudflare/provider.md)
 - [GitHub](github/provider.md)
 - [GitLab](gitlab/provider.md)
 - [Google](google/provider.md)
@@ -158,7 +158,7 @@ Some auth providers are so-called "proxy" providers, meaning they're meant to be
 behind an authentication proxy. Examples of these are
 [Amazon Application Load Balancer](https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/aws-alb-aad-oidc-auth.md),
 [Azure EasyAuth](./microsoft/azure-easyauth.md),
-[Cloudflare Access](./cloudflare/access.md),
+[Cloudflare Access](./cloudflare/provider.md),
 [Google Identity-Aware Proxy](./google/gcp-iap-auth.md)
 and [OAuth2 Proxy](./oauth2-proxy/provider.md).
 

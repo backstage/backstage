@@ -124,6 +124,8 @@ The list of available resolvers is different for each provider, since they often
 depend on the information model returned from the upstream provider service.
 Consult the documentation of the respective provider to find the list.
 
+In the example above `emailMatchingUserEntityProfileEmail` and `emailLocalPartMatchingUserEntityName` are common to all auth providers and `usernameMatchingUserEntityName` is specific to GitHub.
+
 ### Building Custom Resolvers
 
 If the builtins don't work for you, you can also provide a completely custom

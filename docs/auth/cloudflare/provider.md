@@ -1,35 +1,45 @@
 ---
 id: provider
-title: OAuth 2 Proxy Provider
-sidebar_label: OAuth 2 Custom Proxy
-description: Adding OAuth2Proxy as an authentication provider in Backstage
+title: Cloudflare Access Provider
+sidebar_label: Cloudflare Access
+description: Adding Cloudflare Access as an authentication provider in Backstage
 ---
 
-The Backstage `@backstage/plugin-auth-backend` package comes with an
-`oauth2Proxy` authentication provider that can authenticate users by using a
-[oauth2-proxy](https://github.com/oauth2-proxy/oauth2-proxy) in front of an
-actual Backstage instance. This enables to reuse existing authentications within
-a cluster. In general the `oauth2-proxy` supports all OpenID Connect providers,
-for more details check this
-[list of supported providers](https://oauth2-proxy.github.io/oauth2-proxy/docs/configuration/oauth_provider).
+Similar to GCP IAP Proxy Provider or AWS ALB provider, developers can offload authentication
+support to Cloudflare Access.
+
+This tutorial shows how to use authentication on Cloudflare Access sitting in
+front of Backstage.
+
+It is assumed a Cloudflare tunnel is already serving traffic in front of a
+Backstage instance configured to serve the frontend app from the backend and is
+already gated using Cloudflare Access.
 
 ## Configuration
 
-The provider configuration can be added to your `app-config.yaml` under the root
-`auth` configuration:
+Let's start by adding the following `auth` configuration in your
+`app-config.yaml` or `app-config.production.yaml` or similar:
 
-```yaml title="app-config.yaml"
+```yaml
 auth:
-  environment: development
   providers:
-    oauth2Proxy:
+    cfaccess:
+      # You can find the team name in the Cloudflare Zero Trust dashboard.
+      teamName: <Team Name>
+      # This service tokens section is optional -- you only need it if you have
+      # some Cloudflare Service Tokens that you want to be able to log in to your
+      # Backstage instance.
+      serviceTokens:
+        - token: '1uh2fh19efvfh129f1f919u21f2f19jf2.access'
+          subject: 'bot-user@your-company.com'
+      # This picks what sign in resolver(s) you want to use.
       signIn:
         resolvers:
-          # typically you would pick one of these
           - resolver: emailMatchingUserEntityProfileEmail
           - resolver: emailLocalPartMatchingUserEntityName
-          - resolver: forwardedUserMatchingUserEntityName
 ```
+
+This config section must be in place for the provider to load at all.
 
 ### Resolvers
 
@@ -37,7 +47,6 @@ This provider includes several resolvers out of the box that you can use:
 
 - `emailMatchingUserEntityProfileEmail`: Matches the email address from the auth provider with the User entity that has a matching `spec.profile.email`. If no match is found it will throw a `NotFoundError`.
 - `emailLocalPartMatchingUserEntityName`: Matches the [local part](https://en.wikipedia.org/wiki/Email_address#Local-part) of the email address from the auth provider with the User entity that has a matching `name`. If no match is found it will throw a `NotFoundError`.
-- `forwardedUserMatchingUserEntityName`: Matches the value in the `x-forwarded-user` header from the auth provider with the User entity that has a matching `name`. If no match is found it will throw a `NotFoundError`.
 
 :::note Note
 
@@ -52,22 +61,22 @@ If these resolvers do not fit your needs you can build a custom resolver, this i
 To add the provider to the backend we will first need to install the package by running this command:
 
 ```bash title="from your Backstage root directory"
-yarn --cwd packages/backend add @backstage/plugin-auth-backend-module-oauth2-proxy-provider
+yarn --cwd packages/backend add @backstage/plugin-auth-backend-module-cloudflare-access-provider
 ```
 
-Then we will need to this line:
+Then we will need to add this line:
 
 ```ts title="in packages/backend/src/index.ts"
 backend.add(import('@backstage/plugin-auth-backend'));
 /* highlight-add-start */
 backend.add(
-  import('@backstage/plugin-auth-backend-module-oauth2-proxy-provider'),
+  import('@backstage/plugin-auth-backend-module-cloudflare-access-provider'),
 );
 /* highlight-add-end */
 ```
 
 ## Adding the provider to the Backstage frontend
 
-See [Sign-In with Proxy Providers](../index.md#sign-in-with-proxy-providers) for pointers on how to set up the sign-in page, and to also make it work smoothly for local development. You'll use `oauth2Proxy` as the provider name.
+See [Sign-In with Proxy Providers](../index.md#sign-in-with-proxy-providers) for pointers on how to set up the sign-in page, and to also make it work smoothly for local development. You'll use `cfaccess` as the provider name.
 
 If you [provide a custom sign in resolver](https://backstage.io/docs/auth/identity-resolver#building-custom-resolvers), you can skip the `signIn` block entirely.
