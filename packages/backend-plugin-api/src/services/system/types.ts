@@ -65,7 +65,7 @@ export interface ServiceFactoryCompat<
   TOpts extends object | undefined = undefined,
 > extends ServiceFactory<TService, TScope> {
   /**
-   * @deprecated You do not need to use this call signature; use the type directly instead by removing the `()` parentheses at the end. This call signature will be removed in a future release.
+   * @deprecated Callable service factories will be removed in a future release, please re-implement the service factory using the available APIs instead. If no options are being passed, you can simply remove the trailing `()`.
    */
   (
     ...options: undefined extends TOpts ? [] : [options?: TOpts]
