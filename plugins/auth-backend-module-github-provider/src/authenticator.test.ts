@@ -35,6 +35,7 @@ describe('githubAuthenticator', () => {
             },
           }),
         } as PassportOAuthAuthenticatorHelper,
+        {} as any,
       ),
     ).resolves.toEqual({
       fullProfile: { id: 'id' },
@@ -62,6 +63,7 @@ describe('githubAuthenticator', () => {
             },
           }),
         } as PassportOAuthAuthenticatorHelper,
+        {} as any,
       ),
     ).resolves.toEqual({
       fullProfile: { id: 'id' },
@@ -89,6 +91,7 @@ describe('githubAuthenticator', () => {
             },
           }),
         } as PassportOAuthAuthenticatorHelper,
+        {} as any,
       ),
     ).resolves.toEqual({
       fullProfile: { id: 'id' },
@@ -112,6 +115,7 @@ describe('githubAuthenticator', () => {
         {
           fetchProfile: async _input => ({ id: 'id' } as PassportProfile),
         } as PassportOAuthAuthenticatorHelper,
+        {} as any,
       ),
     ).resolves.toEqual({
       fullProfile: { id: 'id' },
@@ -136,6 +140,7 @@ describe('githubAuthenticator', () => {
         {
           refresh: async _input => res as any,
         } as PassportOAuthAuthenticatorHelper,
+        {} as any,
       ),
     ).resolves.toBe(res);
   });

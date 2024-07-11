@@ -403,6 +403,7 @@ describe('pinnipedAuthenticator', () => {
       const handlerResponse = await pinnipedAuthenticator.authenticate(
         handlerRequest,
         authCtx,
+        {} as any,
       );
       const accessToken = handlerResponse.session.accessToken;
 
@@ -413,6 +414,7 @@ describe('pinnipedAuthenticator', () => {
       const handlerResponse = await pinnipedAuthenticator.authenticate(
         handlerRequest,
         authCtx,
+        {} as any,
       );
       const refreshToken = handlerResponse.session.refreshToken;
 
@@ -423,6 +425,7 @@ describe('pinnipedAuthenticator', () => {
       const handlerResponse = await pinnipedAuthenticator.authenticate(
         handlerRequest,
         authCtx,
+        {} as any,
       );
       const responseScope = handlerResponse.session.scope;
 
@@ -448,6 +451,7 @@ describe('pinnipedAuthenticator', () => {
       const handlerResponse = await pinnipedAuthenticator.authenticate(
         handlerRequest,
         authCtx,
+        {} as any,
       );
 
       expect(handlerResponse.session.idToken).toEqual(clusterScopedIdToken);
@@ -511,7 +515,7 @@ describe('pinnipedAuthenticator', () => {
       };
 
       await expect(
-        pinnipedAuthenticator.authenticate(handlerRequest, authCtx),
+        pinnipedAuthenticator.authenticate(handlerRequest, authCtx, {} as any),
       ).rejects.toThrow(
         `Failed to get cluster specific ID token for "test_cluster": Error: RFC8693 token exchange failed with error: NetworkError: Connection timed out`,
       );
@@ -520,7 +524,7 @@ describe('pinnipedAuthenticator', () => {
     it('fails without authorization code', async () => {
       handlerRequest.req.url = 'https://test.com';
       return expect(
-        pinnipedAuthenticator.authenticate(handlerRequest, authCtx),
+        pinnipedAuthenticator.authenticate(handlerRequest, authCtx, {} as any),
       ).rejects.toThrow('Unexpected redirect');
     });
 
@@ -539,6 +543,7 @@ describe('pinnipedAuthenticator', () => {
             } as unknown as express.Request,
           },
           authCtx,
+          {} as any,
         ),
       ).rejects.toThrow(
         'Authentication rejected, state missing from the response',
@@ -555,6 +560,7 @@ describe('pinnipedAuthenticator', () => {
             } as unknown as express.Request,
           },
           authCtx,
+          {} as any,
         ),
       ).rejects.toThrow('authentication requires session support');
     });
@@ -592,6 +598,7 @@ describe('pinnipedAuthenticator', () => {
       const response = await pinnipedAuthenticator.authenticate(
         handlerRequest,
         authCtxCreatedWhileSupervisorUnavailable,
+        {} as any,
       );
       expect(response.session.accessToken).toEqual('accessToken');
     });
@@ -613,7 +620,11 @@ describe('pinnipedAuthenticator', () => {
         ),
       );
 
-      await pinnipedAuthenticator.authenticate(handlerRequest, authCtx);
+      await pinnipedAuthenticator.authenticate(
+        handlerRequest,
+        authCtx,
+        {} as any,
+      );
 
       await pinnipedAuthenticator.authenticate(
         {
@@ -630,6 +641,7 @@ describe('pinnipedAuthenticator', () => {
           } as unknown as express.Request,
         },
         authCtx,
+        {} as any,
       );
 
       expect(supervisorCalls).toEqual(1);
@@ -663,7 +675,11 @@ describe('pinnipedAuthenticator', () => {
         }),
       });
 
-      await pinnipedAuthenticator.authenticate(handlerRequest, authCtx);
+      await pinnipedAuthenticator.authenticate(
+        handlerRequest,
+        authCtx,
+        {} as any,
+      );
 
       jest
         .spyOn(DateTime, 'local')
@@ -684,6 +700,7 @@ describe('pinnipedAuthenticator', () => {
           } as unknown as express.Request,
         },
         authCtx,
+        {} as any,
       );
 
       expect(supervisorCalls).toEqual(2);
@@ -705,6 +722,7 @@ describe('pinnipedAuthenticator', () => {
       const refreshResponse = await pinnipedAuthenticator.refresh(
         refreshRequest,
         authCtx,
+        {} as any,
       );
 
       expect(refreshResponse.session.refreshToken).toBe('refreshToken');
@@ -714,6 +732,7 @@ describe('pinnipedAuthenticator', () => {
       const refreshResponse = await pinnipedAuthenticator.refresh(
         refreshRequest,
         authCtx,
+        {} as any,
       );
 
       expect(refreshResponse.session.accessToken).toBe('accessToken');
@@ -723,6 +742,7 @@ describe('pinnipedAuthenticator', () => {
       const refreshResponse = await pinnipedAuthenticator.refresh(
         refreshRequest,
         authCtx,
+        {} as any,
       );
 
       expect(refreshResponse.session.idToken).toBe(idToken);
@@ -761,6 +781,7 @@ describe('pinnipedAuthenticator', () => {
       const response = await pinnipedAuthenticator.refresh(
         refreshRequest,
         authCtxCreatedWhileSupervisorUnavailable,
+        {} as any,
       );
       expect(response.session.accessToken).toEqual('accessToken');
     });
@@ -782,8 +803,8 @@ describe('pinnipedAuthenticator', () => {
         ),
       );
 
-      await pinnipedAuthenticator.refresh(refreshRequest, authCtx);
-      await pinnipedAuthenticator.refresh(refreshRequest, authCtx);
+      await pinnipedAuthenticator.refresh(refreshRequest, authCtx, {} as any);
+      await pinnipedAuthenticator.refresh(refreshRequest, authCtx, {} as any);
 
       expect(supervisorCalls).toEqual(1);
     });
@@ -807,13 +828,13 @@ describe('pinnipedAuthenticator', () => {
         ),
       );
 
-      await pinnipedAuthenticator.refresh(refreshRequest, authCtx);
+      await pinnipedAuthenticator.refresh(refreshRequest, authCtx, {} as any);
 
       jest
         .spyOn(DateTime, 'local')
         .mockImplementation(() => fixedTime.plus({ seconds: 60000 }));
 
-      await pinnipedAuthenticator.refresh(refreshRequest, authCtx);
+      await pinnipedAuthenticator.refresh(refreshRequest, authCtx, {} as any);
 
       expect(supervisorCalls).toEqual(2);
     });

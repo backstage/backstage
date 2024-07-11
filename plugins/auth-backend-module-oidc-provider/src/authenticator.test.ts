@@ -305,6 +305,7 @@ describe('oidcAuthenticator', () => {
       const authenticatorResult = await oidcAuthenticator.authenticate(
         handlerRequest,
         implementation,
+        {} as any,
       );
       const accessToken = authenticatorResult.session.accessToken;
 
@@ -315,6 +316,7 @@ describe('oidcAuthenticator', () => {
       const authenticatorResult = await oidcAuthenticator.authenticate(
         handlerRequest,
         implementation,
+        {} as any,
       );
       const refreshToken = authenticatorResult.session.refreshToken;
 
@@ -325,6 +327,7 @@ describe('oidcAuthenticator', () => {
       const authenticatorResult = await oidcAuthenticator.authenticate(
         handlerRequest,
         implementation,
+        {} as any,
       );
       const responseScope = authenticatorResult.session.scope;
 
@@ -335,6 +338,7 @@ describe('oidcAuthenticator', () => {
       const authenticatorResult = await oidcAuthenticator.authenticate(
         handlerRequest,
         implementation,
+        {} as any,
       );
       const tokenType = authenticatorResult.session.tokenType;
 
@@ -345,6 +349,7 @@ describe('oidcAuthenticator', () => {
       const authenticatorResult = await oidcAuthenticator.authenticate(
         handlerRequest,
         implementation,
+        {} as any,
       );
 
       expect(authenticatorResult).toMatchObject({
@@ -362,6 +367,7 @@ describe('oidcAuthenticator', () => {
       const authenticatorResult = await oidcAuthenticator.authenticate(
         handlerRequest,
         implementation,
+        {} as any,
       );
 
       expect(authenticatorResult).toMatchObject({
@@ -377,7 +383,11 @@ describe('oidcAuthenticator', () => {
     it('fails without authorization code', async () => {
       handlerRequest.req.url = 'https://test.com';
       return expect(
-        oidcAuthenticator.authenticate(handlerRequest, implementation),
+        oidcAuthenticator.authenticate(
+          handlerRequest,
+          implementation,
+          {} as any,
+        ),
       ).rejects.toThrow('Unexpected redirect');
     });
 
@@ -396,6 +406,7 @@ describe('oidcAuthenticator', () => {
             } as unknown as express.Request,
           },
           implementation,
+          {} as any,
         ),
       ).rejects.toThrow(
         'Authentication failed, did not find expected authorization request details in session, req.session["oidc:oidc.test"] is undefined',
@@ -412,6 +423,7 @@ describe('oidcAuthenticator', () => {
             } as unknown as express.Request,
           },
           implementation,
+          {} as any,
         ),
       ).rejects.toThrow('authentication requires session support');
     });
@@ -432,6 +444,7 @@ describe('oidcAuthenticator', () => {
       const refreshResponse = await oidcAuthenticator.refresh(
         refreshRequest,
         implementation,
+        {} as any,
       );
 
       expect(refreshResponse.session.refreshToken).toBe('refreshToken');
@@ -441,6 +454,7 @@ describe('oidcAuthenticator', () => {
       const refreshResponse = await oidcAuthenticator.refresh(
         refreshRequest,
         implementation,
+        {} as any,
       );
 
       expect(refreshResponse.session.accessToken).toBe('accessToken');
@@ -450,6 +464,7 @@ describe('oidcAuthenticator', () => {
       const refreshResponse = await oidcAuthenticator.refresh(
         refreshRequest,
         implementation,
+        {} as any,
       );
 
       expect(refreshResponse.session.idToken).toBe(idToken);
@@ -469,11 +484,16 @@ describe('oidcAuthenticator', () => {
         req: {} as express.Request,
       };
 
-      await oidcAuthenticator.logout?.(logoutRequest, implementation);
+      await oidcAuthenticator.logout?.(
+        logoutRequest,
+        implementation,
+        {} as any,
+      );
 
       const refreshResponse = oidcAuthenticator.refresh(
         refreshRequest,
         implementation,
+        {} as any,
       );
 
       await expect(refreshResponse).rejects.toEqual(
@@ -518,11 +538,16 @@ describe('oidcAuthenticator', () => {
         }),
       });
 
-      await oidcAuthenticator.logout?.(logoutRequest, newImplementation);
+      await oidcAuthenticator.logout?.(
+        logoutRequest,
+        newImplementation,
+        {} as any,
+      );
 
       const refreshResponse = await oidcAuthenticator.refresh(
         refreshRequest,
         newImplementation,
+        {} as any,
       );
 
       expect(refreshResponse.session.refreshToken).toBe('refreshToken');

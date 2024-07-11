@@ -171,6 +171,7 @@ describe('microsoftAuthenticator', () => {
       const authenticateResponse = await microsoftAuthenticator.authenticate(
         createAuthenticateRequest(scope),
         implementation,
+        {} as any,
       );
 
       const profile = authenticateResponse.fullProfile;
@@ -189,6 +190,7 @@ describe('microsoftAuthenticator', () => {
       const authenticateResponse = await microsoftAuthenticator.authenticate(
         createAuthenticateRequest(foreignScope),
         implementation,
+        {} as any,
       );
 
       expect(authenticateResponse.fullProfile).toBeUndefined();
@@ -202,6 +204,7 @@ describe('microsoftAuthenticator', () => {
       const authenticateResponse = await microsoftAuthenticator.authenticate(
         createAuthenticateRequest(refreshScope),
         implementation,
+        {} as any,
       );
 
       const session = authenticateResponse.session;
@@ -220,6 +223,7 @@ describe('microsoftAuthenticator', () => {
       const authenticateResponse = await microsoftAuthenticator.authenticate(
         createAuthenticateRequest(scope),
         implementation,
+        {} as any,
       );
 
       const profile = authenticateResponse.fullProfile;
@@ -249,6 +253,7 @@ describe('microsoftAuthenticator', () => {
       const refreshResponse = await microsoftAuthenticator.refresh(
         createRefreshRequest(scope),
         implementation,
+        {} as any,
       );
 
       const profile = refreshResponse.fullProfile;
@@ -267,6 +272,7 @@ describe('microsoftAuthenticator', () => {
       const refreshResponse = await microsoftAuthenticator.refresh(
         createRefreshRequest(foreignScope),
         implementation,
+        {} as any,
       );
 
       expect(refreshResponse.fullProfile).toBeUndefined();

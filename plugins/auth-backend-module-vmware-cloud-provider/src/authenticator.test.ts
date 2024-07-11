@@ -267,6 +267,7 @@ describe('vmwareCloudAuthenticator', () => {
       } = await vmwareCloudAuthenticator.authenticate(
         authenticateRequest,
         authenticatorCtx,
+        {} as any,
       );
 
       expect(refreshToken).toBe('refreshToken');
@@ -276,6 +277,7 @@ describe('vmwareCloudAuthenticator', () => {
       const { session } = await vmwareCloudAuthenticator.authenticate(
         authenticateRequest,
         authenticatorCtx,
+        {} as any,
       );
 
       expect(session.idToken).toBe(idToken);
@@ -285,6 +287,7 @@ describe('vmwareCloudAuthenticator', () => {
       const result = await vmwareCloudAuthenticator.authenticate(
         authenticateRequest,
         authenticatorCtx,
+        {} as any,
       );
 
       const { profile } =
@@ -311,6 +314,7 @@ describe('vmwareCloudAuthenticator', () => {
       const result = await vmwareCloudAuthenticator.authenticate(
         authenticateRequest,
         authenticatorCtx,
+        {} as any,
       );
 
       return expect(
@@ -340,6 +344,7 @@ describe('vmwareCloudAuthenticator', () => {
       const result = await vmwareCloudAuthenticator.authenticate(
         authenticateRequest,
         authenticatorCtx,
+        {} as any,
       );
 
       return expect(
@@ -361,6 +366,7 @@ describe('vmwareCloudAuthenticator', () => {
             },
           } as OAuthAuthenticatorStartInput,
           authenticatorCtx,
+          {} as any,
         ),
       ).rejects.toThrow('requires session support');
     });
@@ -375,6 +381,7 @@ describe('vmwareCloudAuthenticator', () => {
             },
           } as OAuthAuthenticatorStartInput,
           authenticatorCtx,
+          {} as any,
         ),
       ).rejects.toThrow('Unexpected redirect');
     });
@@ -412,6 +419,7 @@ describe('vmwareCloudAuthenticator', () => {
           },
         } as OAuthAuthenticatorAuthenticateInput,
         authenticatorCtx,
+        {} as any,
       );
 
       expect(session).toBeDefined();
@@ -451,6 +459,7 @@ describe('vmwareCloudAuthenticator', () => {
       } = await vmwareCloudAuthenticator.refresh(
         refreshRequest,
         authenticatorCtx,
+        {} as any,
       );
 
       expect(refreshToken).toBe('refreshToken');
@@ -460,6 +469,7 @@ describe('vmwareCloudAuthenticator', () => {
       const result = await vmwareCloudAuthenticator.refresh(
         refreshRequest,
         authenticatorCtx,
+        {} as any,
       );
 
       const { profile } =

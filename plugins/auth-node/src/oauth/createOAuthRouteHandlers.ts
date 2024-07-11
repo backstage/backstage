@@ -192,6 +192,7 @@ export function createOAuthRouteHandlers<TProfile>(
         const result = await authenticator.authenticate(
           { req },
           authenticatorCtx,
+          res,
         );
         const { profile } = await profileTransform(result, resolverContext);
 
@@ -268,7 +269,11 @@ export function createOAuthRouteHandlers<TProfile>(
 
       if (authenticator.logout) {
         const refreshToken = cookieManager.getRefreshToken(req);
-        await authenticator.logout({ req, refreshToken }, authenticatorCtx);
+        await authenticator.logout(
+          { req, refreshToken },
+          authenticatorCtx,
+          res,
+        );
       }
 
       // remove refresh token cookie if it is set
@@ -303,6 +308,7 @@ export function createOAuthRouteHandlers<TProfile>(
         const result = await authenticator.refresh(
           { req, scope: scopeRefresh.scope, refreshToken },
           authenticatorCtx,
+          res,
         );
 
         const grantedScope = await scopeRefresh.commit(result);

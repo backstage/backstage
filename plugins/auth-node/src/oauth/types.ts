@@ -15,7 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { ProfileTransform } from '../types';
 
 /** @public */
@@ -91,12 +91,18 @@ export interface OAuthAuthenticator<TContext, TProfile> {
   authenticate(
     input: OAuthAuthenticatorAuthenticateInput,
     ctx: TContext,
+    rep: Response,
   ): Promise<OAuthAuthenticatorResult<TProfile>>;
   refresh(
     input: OAuthAuthenticatorRefreshInput,
     ctx: TContext,
+    rep: Response,
   ): Promise<OAuthAuthenticatorResult<TProfile>>;
-  logout?(input: OAuthAuthenticatorLogoutInput, ctx: TContext): Promise<void>;
+  logout?(
+    input: OAuthAuthenticatorLogoutInput,
+    ctx: TContext,
+    rep: Response,
+  ): Promise<void>;
 }
 
 /** @public */
