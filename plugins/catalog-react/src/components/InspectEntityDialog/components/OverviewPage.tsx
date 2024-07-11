@@ -36,6 +36,8 @@ import {
 } from './common';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { CopyTextButton } from '@backstage/core-components';
+import { catalogReactTranslationRef } from '../../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 const useStyles = makeStyles({
   root: {
@@ -59,11 +61,14 @@ export function OverviewPage(props: { entity: AlphaEntity }) {
     sortBy(relations, r => r.targetRef),
     'type',
   );
+  const { t } = useTranslationRef(catalogReactTranslationRef);
 
   const entityRef = stringifyEntityRef(props.entity);
   return (
     <>
-      <DialogContentText variant="h2">Overview</DialogContentText>
+      <DialogContentText variant="h2">
+        {t('inspectEntityDialog.overviewPage.title')}
+      </DialogContentText>
       <div className={classes.root}>
         <Container title="Identity">
           <List dense>

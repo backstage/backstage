@@ -15,9 +15,18 @@
  */
 
 import { CreateMockDirectoryOptions } from './filesystem';
+import { isDockerDisabledForTests as _isDockerDisabledForTests } from './util';
 
 /**
  * @public
  * @deprecated Use `CreateMockDirectoryOptions` from `@backstage/backend-test-utils` instead.
  */
 export type MockDirectoryOptions = CreateMockDirectoryOptions;
+
+/**
+ * @public
+ * @deprecated This is an internal function and will no longer be exported from this package.
+ */
+export function isDockerDisabledForTests(): boolean {
+  return _isDockerDisabledForTests();
+}

@@ -20,7 +20,7 @@ import camelCase from 'lodash/camelCase';
 import { paths } from '../../paths';
 import { addCodeownersEntry, getCodeownersFilePath } from '../../codeowners';
 import { CreateContext, createFactory } from '../types';
-import { addPackageDependency, Task } from '../../tasks';
+import { addPackageDependency, addToBackend, Task } from '../../tasks';
 import { ownerPrompt, pluginIdPrompt } from './common/prompts';
 import { executePluginPackageTemplate } from './common/tasks';
 import { resolvePackageName } from './common/util';
@@ -77,6 +77,10 @@ export const backendPlugin = createFactory<Options>({
             },
           },
         );
+      });
+
+      await addToBackend(name, {
+        type: 'plugin',
       });
     }
 

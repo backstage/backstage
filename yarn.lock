@@ -6542,6 +6542,7 @@ __metadata:
   resolution: "@backstage/plugin-notifications-common@workspace:plugins/notifications-common"
   dependencies:
     "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
     "@backstage/types": "workspace:^"
     "@material-ui/icons": ^4.9.1
   languageName: unknown
@@ -13749,15 +13750,15 @@ __metadata:
   linkType: hard
 
 "@pmmmwh/react-refresh-webpack-plugin@npm:^0.5.7":
-  version: 0.5.13
-  resolution: "@pmmmwh/react-refresh-webpack-plugin@npm:0.5.13"
+  version: 0.5.15
+  resolution: "@pmmmwh/react-refresh-webpack-plugin@npm:0.5.15"
   dependencies:
-    ansi-html-community: ^0.0.8
+    ansi-html: ^0.0.9
     core-js-pure: ^3.23.3
     error-stack-parser: ^2.0.6
     html-entities: ^2.1.0
     loader-utils: ^2.0.4
-    schema-utils: ^3.0.0
+    schema-utils: ^4.2.0
     source-map: ^0.7.3
   peerDependencies:
     "@types/webpack": 4.x || 5.x
@@ -13781,7 +13782,7 @@ __metadata:
       optional: true
     webpack-plugin-serve:
       optional: true
-  checksum: 9f931cf79945f58ee31569b83f4b294ae0849ea8232b6c79e690b46a3d7f2b981aa72718a4bd7517ab82657dddfed2a691c9d9e37295a87dfd0b18b2693d4aa6
+  checksum: 82df6244146209d63a12f0ca2e70b05274ee058c7e6d6eb4ced1228afde3b039a7f3f3cc0c76f1bb4b28deadbcf08bc2821c814f0bfee06979128578300fff3d
   languageName: node
   linkType: hard
 
@@ -18385,9 +18386,9 @@ __metadata:
   linkType: hard
 
 "@types/prop-types@npm:*, @types/prop-types@npm:^15.0.0, @types/prop-types@npm:^15.7.11, @types/prop-types@npm:^15.7.3":
-  version: 15.7.11
-  resolution: "@types/prop-types@npm:15.7.11"
-  checksum: 7519ff11d06fbf6b275029fe03fff9ec377b4cb6e864cac34d87d7146c7f5a7560fd164bdc1d2dbe00b60c43713631251af1fd3d34d46c69cd354602bc0c7c54
+  version: 15.7.12
+  resolution: "@types/prop-types@npm:15.7.12"
+  checksum: ac16cc3d0a84431ffa5cfdf89579ad1e2269549f32ce0c769321fdd078f84db4fbe1b461ed5a1a496caf09e637c0e367d600c541435716a55b1d9713f5035dfe
   languageName: node
   linkType: hard
 
@@ -20272,6 +20273,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"GendocuPublicApis@https://git.gendocu.com/gendocu/GendocuPublicApis.git#master":
+  version: 1.0.0
+  resolution: "GendocuPublicApis@https://git.gendocu.com/gendocu/GendocuPublicApis.git#commit=6e8d4c1d2342556a2e8e719f19385b266001ebae"
+  dependencies:
+    "@improbable-eng/grpc-web": ^0.14.0
+    google-protobuf: ^3.15.8
+  checksum: 2c8f28cd89e9a71e5f9df819115a89659d98f22d6e7a6b2f3fc0bc24a4ca954c0112070c00401749dcbcdeeb42ca070d6d8a36b3c205fbf13409fb1110b5966e
+  languageName: node
+  linkType: hard
+
 "a-sync-waterfall@npm:^1.0.0":
   version: 1.0.1
   resolution: "a-sync-waterfall@npm:1.0.1"
@@ -20621,6 +20632,15 @@ __metadata:
   bin:
     ansi-html: bin/ansi-html
   checksum: 04c568e8348a636963f915e48eaa3e01218322e1169acafdd79c384f22e5558c003f79bbc480c1563865497482817c7eed025f0653ebc17642fededa5cb42089
+  languageName: node
+  linkType: hard
+
+"ansi-html@npm:^0.0.9":
+  version: 0.0.9
+  resolution: "ansi-html@npm:0.0.9"
+  bin:
+    ansi-html: bin/ansi-html
+  checksum: a03754d6f66bae33938ed8bb3dd98174b7f4895ebe45226185036ed4a1388a7aaf2f2b9581608f0626432ba7add92cfc590aa6475a78bbb90d9d1e1d1af8cbe6
   languageName: node
   linkType: hard
 
@@ -23589,9 +23609,9 @@ __metadata:
   linkType: hard
 
 "core-js@npm:^3.6.5":
-  version: 3.37.0
-  resolution: "core-js@npm:3.37.0"
-  checksum: 212c3e9b3fc277dbb63739ef58a61c5709ccd0b36f09c3ce6946aa91fa180c60f57f976d4a5fdb9cda0c6cb55417379ba5a008fc3a1384ec94ec8ec61826469d
+  version: 3.37.1
+  resolution: "core-js@npm:3.37.1"
+  checksum: 2d58a5c599f05c3e04abc8bc5e64b88eb17d914c0f552f670fb800afa74ec54b4fcc7f231ad6bd45badaf62c0fb0ce30e6fe89cedb6bb6d54e6f19115c3c17ff
   languageName: node
   linkType: hard
 
@@ -27955,16 +27975,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gendocu-public-apis@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "gendocu-public-apis@npm:1.0.0"
-  dependencies:
-    "@improbable-eng/grpc-web": ^0.14.0
-    google-protobuf: ^3.15.8
-  checksum: ee1548d1285f9d2dc7ef04c959e620516322314c8aa2f2bfedd25345a6211abf51cdca4d54cca18de8f31a90f2b86ab171ae41f7c2f39dfdd0ac7163f875f719
-  languageName: node
-  linkType: hard
-
 "generate-function@npm:^2.3.1":
   version: 2.3.1
   resolution: "generate-function@npm:2.3.1"
@@ -28385,10 +28395,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"google-protobuf@npm:^3.15.8, google-protobuf@npm:^3.19.1":
-  version: 3.20.1
-  resolution: "google-protobuf@npm:3.20.1"
-  checksum: a440fbc329bb441b253bc421b01540918f4b66921c47a3bc57d154d2677dc917cb1a29126ff35ddc4d8872d1b5843ef1ece60b6dff506ba64a9f5807962d3f61
+"google-protobuf@npm:^3.15.8, google-protobuf@npm:^3.21.2":
+  version: 3.21.2
+  resolution: "google-protobuf@npm:3.21.2"
+  checksum: 3caa2e1e2654714cc1a201ac5e5faabcaa48f5fba3d8ff9b64ca66fe19e4e0506b94053f32eddc77bf3a7a47ac1660315c6744185c1e2bb27654fd76fe91b988
   languageName: node
   linkType: hard
 
@@ -28586,13 +28596,13 @@ __metadata:
   linkType: hard
 
 "grpc-docs@npm:^1.0.6, grpc-docs@npm:^1.1.2":
-  version: 1.1.3
-  resolution: "grpc-docs@npm:1.1.3"
+  version: 1.1.4
+  resolution: "grpc-docs@npm:1.1.4"
   dependencies:
     "@improbable-eng/grpc-web": ^0.15.0
     "@types/minimatch": ^3.0.5
-    gendocu-public-apis: ^1.0.0
-    google-protobuf: ^3.19.1
+    GendocuPublicApis: "https://git.gendocu.com/gendocu/GendocuPublicApis.git#master"
+    google-protobuf: ^3.21.2
     grpc-docs: ^1.0.6
     js-yaml: ^4.1.0
     minimatch: ^3.0.4
@@ -28605,7 +28615,7 @@ __metadata:
     styled-components: ^5.3.3
   peerDependencies:
     react: ^16.0.0
-  checksum: 1bcd3179ce276e8fd34229acc6d3f1024908b7e6734e36ddcc4852c6db0100b900093355652577ab476c9927167cff92b05e560713995803154d4dbd4459f973
+  checksum: 55b088011205fe82ced6af763136bb2494eb059445c5776bf29922439b814fa8983774a68910c47898cef5be82bea60801c2f96305e76170cff1df3f890b8d18
   languageName: node
   linkType: hard
 
@@ -32060,8 +32070,8 @@ __metadata:
   linkType: hard
 
 "knip@npm:^5.0.0":
-  version: 5.23.1
-  resolution: "knip@npm:5.23.1"
+  version: 5.23.2
+  resolution: "knip@npm:5.23.2"
   dependencies:
     "@ericcornelissen/bash-parser": 0.5.3
     "@nodelib/fs.walk": 2.0.0
@@ -32087,7 +32097,7 @@ __metadata:
   bin:
     knip: bin/knip.js
     knip-bun: bin/knip-bun.js
-  checksum: d3c39f266907b2c8f241e4d7d7c4b3a4fa1500c57f7e60f86bd3e9cd2684696e4c84b823d2a461b23cdc729a310ad571eec6ac22acacb5a4b17130d19ef5b866
+  checksum: efcfa5bea3848bb6e054cb80a840dbcc718a1c91d8f6c508a686239de5e1fe7775afc05d03fd624f07fb545767b4a08a5c59b7a29a009cbad001cb68a1e92859
   languageName: node
   linkType: hard
 
@@ -33966,11 +33976,11 @@ __metadata:
   linkType: hard
 
 "minimatch@npm:^9.0.0, minimatch@npm:^9.0.1, minimatch@npm:^9.0.3":
-  version: 9.0.4
-  resolution: "minimatch@npm:9.0.4"
+  version: 9.0.5
+  resolution: "minimatch@npm:9.0.5"
   dependencies:
     brace-expansion: ^2.0.1
-  checksum: cf717f597ec3eed7dabc33153482a2e8d49f4fd3c26e58fd9c71a94c5029a0838728841b93f46bf1263b65a8010e2ee800d0dc9b004ab8ba8b6d1ec07cc115b5
+  checksum: 2c035575eda1e50623c731ec6c14f65a85296268f749b9337005210bb2b34e2705f8ef1a358b188f69892286ab99dc42c8fb98a57bde55c8d81b3023c19cea28
   languageName: node
   linkType: hard
 
@@ -39902,7 +39912,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"schema-utils@npm:^3.0.0, schema-utils@npm:^3.1.1, schema-utils@npm:^3.2.0":
+"schema-utils@npm:^3.1.1, schema-utils@npm:^3.2.0":
   version: 3.3.0
   resolution: "schema-utils@npm:3.3.0"
   dependencies:
@@ -44713,6 +44723,7 @@ __metadata:
     "@yarnpkg/builder": ^4.0.0
     "@yarnpkg/core": ^4.0.3
     "@yarnpkg/fslib": ^3.0.2
+    chalk: ^4.0.0
     nodemon: ^3.0.1
     semver: ^7.6.0
   languageName: unknown

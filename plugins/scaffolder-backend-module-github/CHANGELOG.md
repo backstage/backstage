@@ -1,5 +1,22 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.4.0-next.1
+
+### Patch Changes
+
+- 141f366: Added action to enable GitHub Pages on a repo
+- dfaa28d: Adds `requireLastPushApproval` input property to configure Branch Protection Settings in `github:publish` action
+
+  Adds `requireLastPushApproval` input property to configure Branch Protection Settings in `github:repo:push` action
+
+- Updated dependencies
+  - @backstage/backend-common@0.23.3-next.1
+  - @backstage/backend-plugin-api@0.6.22-next.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.13.0-next.0
+  - @backstage/plugin-scaffolder-node@0.4.8-next.1
+
 ## 0.4.0-next.0
 
 ### Minor Changes

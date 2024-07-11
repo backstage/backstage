@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { createMockActionContext } from './mockActionConext';
+export { createMockActionContext } from './mockActionContext';
