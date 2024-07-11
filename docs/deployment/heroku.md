@@ -7,6 +7,8 @@ description: How to deploy Backstage to Heroku
 
 Heroku is a Platform as a Service (PaaS) designed to simplify application deployment.
 
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/chap/backstage-button)
+
 ## Create App
 
 Starting with an existing Backstage app or follow the [getting started guide](https://backstage.io/docs/getting-started/) to create a new one.
