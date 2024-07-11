@@ -292,11 +292,10 @@ export type RootHttpRouterConfigureContext = RootHttpRouterConfigureContext_2;
 export type RootHttpRouterFactoryOptions = RootHttpRouterFactoryOptions_2;
 
 // @public @deprecated (undocumented)
-export const rootHttpRouterServiceFactory: ServiceFactoryCompat<
-  RootHttpRouterService,
-  'root',
-  RootHttpRouterFactoryOptions_2
->;
+export const rootHttpRouterServiceFactory: ((
+  options?: RootHttpRouterFactoryOptions_2 | undefined,
+) => ServiceFactory<RootHttpRouterService, 'root'>) &
+  ServiceFactory<RootHttpRouterService, 'root'>;
 
 // @public @deprecated
 export const rootLifecycleServiceFactory: ServiceFactoryCompat<

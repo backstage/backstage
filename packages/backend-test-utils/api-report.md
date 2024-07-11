@@ -290,11 +290,10 @@ export namespace mockServices {
   // (undocumented)
   export namespace rootHttpRouter {
     const // (undocumented)
-      factory: ServiceFactoryCompat<
-        RootHttpRouterService,
-        'root',
-        RootHttpRouterFactoryOptions
-      >;
+      factory: ((
+        options?: RootHttpRouterFactoryOptions | undefined,
+      ) => ServiceFactory<RootHttpRouterService, 'root'>) &
+        ServiceFactory<RootHttpRouterService, 'root'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<RootHttpRouterService> | undefined,
