@@ -42,36 +42,45 @@ createBackendPlugin({
 
 ## Configuring the service
 
-There's additional options that you can pass to configure the root HTTP Router service. These options are passed when you call `createBackend`.
+The root HTTP service can easily be re-implemented using the `startRootHttpServer` function, exported by `@backstage/backend-defaults/rootHttpRouter`. It fully implements the root HTTP router, but also allows you to pass the following additional options:
 
 - `indexPath` - optional path to forward all unmatched requests to. Defaults to `/api/app` which is the `app-backend` plugin responsible for serving the frontend application through the backend.
 
 - `configure` - this is an optional function that you can use to configure the `express` instance. This is useful if you want to add your own middleware to the root router, such as logging, or other things that you want to do before the request is handled by the backend. It's also useful to override the order in which middleware is applied.
 
-You can configure the root HTTP Router service by passing the options to the `createBackend` function.
+You can use this to create your own root HTTP service implementation:
 
 ```ts
 import { rootHttpRouterServiceFactory } from '@backstage/backend-app-api';
+import { startRootHttpServer } from '@backstage/backend-defaults/rootHttpRouter';
 
 const backend = createBackend();
 
 backend.add(
-  rootHttpRouterServiceFactory({
-    configure: ({ app, middleware, routes, config, logger, lifecycle }) => {
-      // the built in middleware is provided through an option in the configure function
-      app.use(middleware.helmet());
-      app.use(middleware.cors());
-      app.use(middleware.compression());
+  createServiceFactory({
+    service: coreServices.rootHttpRouter,
+    // Using the `deps` property avoids the need to manually update the list of dependencies if they change
+    deps: startRootHttpServer.deps,
+    async factory(deps) {
+      return startRootHttpServer({
+        ...deps,
+        configure: ({ app, middleware, routes, config, logger }) => {
+          // the built in middleware is provided through an option in the configure function
+          app.use(middleware.helmet());
+          app.use(middleware.cors());
+          app.use(middleware.compression());
 
-      // you can add you your own middleware in here
-      app.use(custom.logging());
+          // you can add you your own middleware in here
+          app.use(custom.logging());
 
-      // here the routes that are registered by other plugins
-      app.use(routes);
+          // here the routes that are registered by other plugins
+          app.use(routes);
 
-      // some other middleware that comes after the other routes
-      app.use(middleware.notFound());
-      app.use(middleware.error());
+          // some other middleware that comes after the other routes
+          app.use(middleware.notFound());
+          app.use(middleware.error());
+        },
+      });
     },
   }),
 );
@@ -85,18 +94,27 @@ A `applyDefaults` helper is also made available to use the default app/router co
 
 ```ts
 import { rootHttpRouterServiceFactory } from '@backstage/backend-app-api';
+import { startRootHttpServer } from '@backstage/backend-defaults/rootHttpRouter';
 
 const backend = createBackend();
 
 backend.add(
-  rootHttpRouterServiceFactory({
-    configure: ({ server, applyDefaults }) => {
-      // apply default app/router configuration
-      applyDefaults();
+  createServiceFactory({
+    service: coreServices.rootHttpRouter,
+    // Using the `deps` property avoids the need to manually update the list of dependencies if they change
+    deps: startRootHttpServer.deps,
+    async factory(deps) {
+      return startRootHttpServer({
+        ...deps,
+        configure: ({ app, middleware, routes, config, logger }) => {
+          // apply default app/router configuration
+          applyDefaults();
 
-      // customize the Node.js HTTP Server timeouts
-      server.keepAliveTimeout = 65 * 1000;
-      server.headersTimeout = 66 * 1000;
+          // customize the Node.js HTTP Server timeouts
+          server.keepAliveTimeout = 65 * 1000;
+          server.headersTimeout = 66 * 1000;
+        },
+      });
     },
   }),
 );

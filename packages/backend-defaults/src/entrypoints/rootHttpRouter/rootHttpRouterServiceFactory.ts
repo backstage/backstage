@@ -20,6 +20,10 @@ import {
   createServiceFactory,
   LifecycleService,
   LoggerService,
+  RootLoggerService,
+  RootHealthService,
+  RootLifecycleService,
+  RootHttpRouterService,
 } from '@backstage/backend-plugin-api';
 import express, { RequestHandler, Express } from 'express';
 import type { Server } from 'node:http';
@@ -55,7 +59,7 @@ export interface RootHttpRouterConfigureContext {
  *
  * @public
  */
-export type RootHttpRouterFactoryOptions = {
+export type StartRootHttpServerOptions = {
   /**
    * The path to forward all unmatched requests to. Defaults to '/api/app' if
    * not given. Disables index path behavior if false is given.
@@ -63,64 +67,100 @@ export type RootHttpRouterFactoryOptions = {
   indexPath?: string | false;
 
   configure?(context: RootHttpRouterConfigureContext): void;
+
+  config: RootConfigService;
+  logger: RootLoggerService;
+  lifecycle: RootLifecycleService;
+  health: RootHealthService;
 };
 
-function defaultConfigure({ applyDefaults }: RootHttpRouterConfigureContext) {
-  applyDefaults();
+/**
+ * @deprecated Use {@link StartRootHttpServerOptions} instead.
+ * @public
+ */
+export type RootHttpRouterFactoryOptions = StartRootHttpServerOptions;
+
+/**
+ * Creates and starts a root HTTP server with the given options.
+ *
+ * @public
+ */
+export async function startRootHttpServer(
+  options: StartRootHttpServerOptions,
+): Promise<RootHttpRouterService> {
+  const {
+    indexPath,
+    configure = (ctx: RootHttpRouterConfigureContext) => ctx.applyDefaults(),
+    config,
+    lifecycle,
+    health,
+  } = options ?? {};
+
+  const logger = options.logger.child({ service: 'rootHttpRouter' });
+  const app = express();
+
+  const router = DefaultRootHttpRouter.create({ indexPath });
+  const middleware = MiddlewareFactory.create({ config, logger });
+  const routes = router.handler();
+
+  const healthRouter = createHealthRouter({ health });
+  const server = await createHttpServer(
+    app,
+    readHttpServerOptions(config.getOptionalConfig('backend')),
+    { logger },
+  );
+
+  configure({
+    app,
+    server,
+    routes,
+    middleware,
+    config,
+    logger,
+    lifecycle,
+    healthRouter,
+    applyDefaults() {
+      app.use(middleware.helmet());
+      app.use(middleware.cors());
+      app.use(middleware.compression());
+      app.use(middleware.logging());
+      app.use(healthRouter);
+      app.use(routes);
+      app.use(middleware.notFound());
+      app.use(middleware.error());
+    },
+  });
+
+  lifecycle.addShutdownHook(() => server.stop());
+
+  await server.start();
+
+  return router;
+}
+
+/**
+ * @public
+ */
+export namespace startRootHttpServer {
+  /**
+   * Dependency map for `startRootHttpServer`, to be passed to the `deps` options of `createServiceFactory`.
+   * @public
+   */
+  export const deps = {
+    config: coreServices.rootConfig,
+    logger: coreServices.rootLogger,
+    lifecycle: coreServices.rootLifecycle,
+    health: coreServices.rootHealth,
+  };
 }
 
 /** @public */
 export const rootHttpRouterServiceFactory = createServiceFactory(
   (options?: RootHttpRouterFactoryOptions) => ({
     service: coreServices.rootHttpRouter,
-    deps: {
-      config: coreServices.rootConfig,
-      rootLogger: coreServices.rootLogger,
-      lifecycle: coreServices.rootLifecycle,
-      health: coreServices.rootHealth,
-    },
-    async factory({ config, rootLogger, lifecycle, health }) {
-      const { indexPath, configure = defaultConfigure } = options ?? {};
-      const logger = rootLogger.child({ service: 'rootHttpRouter' });
-      const app = express();
-
-      const router = DefaultRootHttpRouter.create({ indexPath });
-      const middleware = MiddlewareFactory.create({ config, logger });
-      const routes = router.handler();
-
-      const healthRouter = createHealthRouter({ health });
-      const server = await createHttpServer(
-        app,
-        readHttpServerOptions(config.getOptionalConfig('backend')),
-        { logger },
-      );
-
-      configure({
-        app,
-        server,
-        routes,
-        middleware,
-        config,
-        logger,
-        lifecycle,
-        healthRouter,
-        applyDefaults() {
-          app.use(middleware.helmet());
-          app.use(middleware.cors());
-          app.use(middleware.compression());
-          app.use(middleware.logging());
-          app.use(healthRouter);
-          app.use(routes);
-          app.use(middleware.notFound());
-          app.use(middleware.error());
-        },
-      });
-
-      lifecycle.addShutdownHook(() => server.stop());
-
-      await server.start();
-
-      return router;
+    deps: startRootHttpServer.deps,
+    async factory(deps) {
+      return startRootHttpServer({ ...options, ...deps });
     },
   }),
 );

@@ -32,13 +32,13 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { RootHealthService } from '@backstage/backend-plugin-api';
-import { RootHttpRouterFactoryOptions } from '@backstage/backend-defaults/rootHttpRouter';
 import { RootHttpRouterService } from '@backstage/backend-plugin-api';
 import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
+import { StartRootHttpServerOptions } from '@backstage/backend-defaults/rootHttpRouter';
 import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { UserInfoService } from '@backstage/backend-plugin-api';
@@ -290,7 +290,7 @@ export namespace mockServices {
   export namespace rootHttpRouter {
     const // (undocumented)
       factory: (
-        options?: RootHttpRouterFactoryOptions | undefined,
+        options?: StartRootHttpServerOptions | undefined,
       ) => ServiceFactory<RootHttpRouterService, 'root'>;
     const // (undocumented)
       mock: (

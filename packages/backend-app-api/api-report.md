@@ -33,6 +33,7 @@ import { RemoteConfigSourceOptions } from '@backstage/config-loader';
 import { RequestHandler } from 'express';
 import { RequestListener } from 'http';
 import { RootConfigService } from '@backstage/backend-plugin-api';
+import { RootHealthService } from '@backstage/backend-plugin-api';
 import { RootHttpRouterService } from '@backstage/backend-plugin-api';
 import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
@@ -265,9 +266,11 @@ export type RootHttpRouterConfigureContext = RootHttpRouterConfigureContext_2;
 // @public @deprecated
 export type RootHttpRouterFactoryOptions = RootHttpRouterFactoryOptions_2;
 
+// Warning: (ae-forgotten-export) The symbol "StartRootHttpServerOptions" needs to be exported by the entry point index.d.ts
+//
 // @public @deprecated (undocumented)
 export const rootHttpRouterServiceFactory: (
-  options?: RootHttpRouterFactoryOptions_2 | undefined,
+  options?: StartRootHttpServerOptions | undefined,
 ) => ServiceFactory<RootHttpRouterService, 'root'>;
 
 // @public @deprecated

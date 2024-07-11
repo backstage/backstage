@@ -17,9 +17,13 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 import { RequestHandler } from 'express';
 import { RequestListener } from 'http';
 import { RootConfigService } from '@backstage/backend-plugin-api';
+import { RootHealthService } from '@backstage/backend-plugin-api';
 import { RootHttpRouterService } from '@backstage/backend-plugin-api';
+import { RootLifecycleService } from '@backstage/backend-plugin-api';
+import { RootLoggerService } from '@backstage/backend-plugin-api';
 import type { Server } from 'node:http';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
+import { ServiceRef } from '@backstage/backend-plugin-api';
 
 // @public
 export function createHttpServer(
@@ -134,16 +138,38 @@ export interface RootHttpRouterConfigureContext {
   server: Server;
 }
 
-// @public
-export type RootHttpRouterFactoryOptions = {
-  indexPath?: string | false;
-  configure?(context: RootHttpRouterConfigureContext): void;
-};
+// @public @deprecated (undocumented)
+export type RootHttpRouterFactoryOptions = StartRootHttpServerOptions;
 
 // @public (undocumented)
 export const rootHttpRouterServiceFactory: (
-  options?: RootHttpRouterFactoryOptions | undefined,
+  options?: StartRootHttpServerOptions | undefined,
 ) => ServiceFactory<RootHttpRouterService, 'root'>;
+
+// @public
+export function startRootHttpServer(
+  options: StartRootHttpServerOptions,
+): Promise<RootHttpRouterService>;
+
+// @public (undocumented)
+export namespace startRootHttpServer {
+  const deps: {
+    config: ServiceRef<RootConfigService, 'root'>;
+    logger: ServiceRef<RootLoggerService, 'root'>;
+    lifecycle: ServiceRef<RootLifecycleService, 'root'>;
+    health: ServiceRef<RootHealthService, 'root'>;
+  };
+}
+
+// @public
+export type StartRootHttpServerOptions = {
+  indexPath?: string | false;
+  configure?(context: RootHttpRouterConfigureContext): void;
+  config: RootConfigService;
+  logger: RootLoggerService;
+  lifecycle: RootLifecycleService;
+  health: RootHealthService;
+};
 
 // (No @packageDocumentation comment for this package)
 ```

@@ -21,6 +21,8 @@ export {
 export * from './http';
 export {
   rootHttpRouterServiceFactory,
+  startRootHttpServer,
   type RootHttpRouterConfigureContext,
   type RootHttpRouterFactoryOptions,
+  type StartRootHttpServerOptions,
 } from './rootHttpRouterServiceFactory';
