@@ -5,12 +5,3 @@
 Fixed bug resulting from missing required owner and repo arguments in `getEnvironmentPublicKey` in action `github:environment:create`.
 
 Adding environment secrets now works as expected.
-
-```diff
-  const publicKeyResponse = await client.rest.actions.getEnvironmentPublicKey({
-    repository_id: repository.data.id,
-+     owner,
-+     repo,
-      environment_name: name
-  });
-```
