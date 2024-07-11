@@ -270,15 +270,10 @@ export namespace mockServices {
     );
   }
   export namespace httpAuth {
-    /**
-     * Creates a mock service factory for the `HttpAuthService`.
-     *
-     * By default all requests without credentials are treated as requests from
-     * the default mock user principal. This behavior can be configured with the
-     * `defaultCredentials` option.
-     */
-    export const factory = createServiceFactory(
-      (options?: { defaultCredentials?: BackstageCredentials }) => ({
+    const factoryWithOptions = (options?: {
+      defaultCredentials?: BackstageCredentials;
+    }) =>
+      createServiceFactory({
         service: coreServices.httpAuth,
         deps: { plugin: coreServices.pluginMetadata },
         factory: ({ plugin }) =>
@@ -286,7 +281,17 @@ export namespace mockServices {
             plugin.getId(),
             options?.defaultCredentials ?? mockCredentials.user(),
           ),
-      }),
+      })();
+    /**
+     * Creates a mock service factory for the `HttpAuthService`.
+     *
+     * By default all requests without credentials are treated as requests from
+     * the default mock user principal. This behavior can be configured with the
+     * `defaultCredentials` option.
+     */
+    export const factory = Object.assign(
+      factoryWithOptions,
+      factoryWithOptions(),
     );
     export const mock = simpleMock(coreServices.httpAuth, () => ({
       credentials: jest.fn(),

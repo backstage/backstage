@@ -206,13 +206,10 @@ export namespace mockServices {
   }): HttpAuthService;
   // (undocumented)
   export namespace httpAuth {
-    const factory: ServiceFactoryCompat<
-      HttpAuthService,
-      'plugin',
-      {
-        defaultCredentials?: BackstageCredentials | undefined;
-      }
-    >;
+    const factory: ((options?: {
+      defaultCredentials?: BackstageCredentials;
+    }) => ServiceFactory<HttpAuthService, 'plugin'>) &
+      ServiceFactory<HttpAuthService, 'plugin'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<HttpAuthService> | undefined,
