@@ -347,6 +347,9 @@ describe('PluginTaskManagerImpl', () => {
       expect(parseDuration({ milliseconds: 5000 })).toEqual('PT5S');
       expect(parseDuration(Duration.fromMillis(5000))).toEqual('PT5S');
       expect(parseDuration({ cron: '1 * * * *' })).toEqual('1 * * * *');
+      expect(parseDuration({ trigger: 'manual' })).toEqual({
+        trigger: 'manual',
+      });
     });
   });
 });
