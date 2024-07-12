@@ -429,7 +429,7 @@ export class UrlReaders {
 export const urlReaderServiceFactory: ServiceFactoryCompat<
   UrlReaderService,
   'plugin',
-  true,
+  'singleton',
   undefined
 >;
 

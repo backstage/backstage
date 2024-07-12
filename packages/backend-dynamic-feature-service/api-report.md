@@ -117,7 +117,7 @@ export interface DynamicPluginsFactoryOptions {
 export const dynamicPluginsFeatureDiscoveryServiceFactory: ServiceFactoryCompat<
   FeatureDiscoveryService,
   'root',
-  true,
+  'singleton',
   undefined
 >;
 
@@ -128,7 +128,7 @@ export const dynamicPluginsFrontendSchemas: BackendFeatureCompat;
 export const dynamicPluginsRootLoggerServiceFactory: ServiceFactoryCompat<
   RootLoggerService,
   'root',
-  true,
+  'singleton',
   undefined
 >;
 
@@ -149,7 +149,7 @@ export interface DynamicPluginsSchemasService {
 export const dynamicPluginsSchemasServiceFactory: ServiceFactoryCompat<
   DynamicPluginsSchemasService,
   'root',
-  true,
+  'singleton',
   DynamicPluginsSchemasOptions
 >;
 
@@ -157,7 +157,7 @@ export const dynamicPluginsSchemasServiceFactory: ServiceFactoryCompat<
 export const dynamicPluginsServiceFactory: ServiceFactoryCompat<
   DynamicPluginProvider,
   'root',
-  true,
+  'singleton',
   DynamicPluginsFactoryOptions
 >;
 
@@ -165,7 +165,7 @@ export const dynamicPluginsServiceFactory: ServiceFactoryCompat<
 export const dynamicPluginsServiceRef: ServiceRef<
   DynamicPluginProvider,
   'root',
-  true
+  'singleton'
 >;
 
 // @public (undocumented)

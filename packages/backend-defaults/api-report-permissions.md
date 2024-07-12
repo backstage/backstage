@@ -10,7 +10,7 @@ import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
 export const permissionsServiceFactory: ServiceFactoryCompat<
   PermissionsService,
   'plugin',
-  true,
+  'singleton',
   undefined
 >;
 

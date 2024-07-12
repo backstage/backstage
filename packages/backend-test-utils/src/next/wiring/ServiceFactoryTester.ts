@@ -46,9 +46,9 @@ export interface ServiceFactoryTesterOptions {
 export class ServiceFactoryTester<
   TService,
   TScope extends 'root' | 'plugin',
-  TSingleton extends boolean = true,
+  TInstances extends 'singleton' | 'multiton' = 'singleton',
 > {
-  readonly #subject: ServiceRef<TService, TScope, TSingleton>;
+  readonly #subject: ServiceRef<TService, TScope, TInstances>;
   readonly #registry: ServiceRegistry;
 
   /**
@@ -61,11 +61,11 @@ export class ServiceFactoryTester<
   static from<
     TService,
     TScope extends 'root' | 'plugin',
-    TSingleton extends boolean = true,
+    TInstances extends 'singleton' | 'multiton' = 'singleton',
   >(
-    subject: ServiceFactory<TService, TScope, TSingleton>,
+    subject: ServiceFactory<TService, TScope, TInstances>,
     options?: ServiceFactoryTesterOptions,
-  ): ServiceFactoryTester<TService, TScope, TSingleton> {
+  ): ServiceFactoryTester<TService, TScope, TInstances> {
     const registry = ServiceRegistry.create([
       ...defaultServiceFactories,
       ...(options?.dependencies ?? []),
@@ -75,7 +75,7 @@ export class ServiceFactoryTester<
   }
 
   private constructor(
-    subject: ServiceRef<TService, TScope, TSingleton>,
+    subject: ServiceRef<TService, TScope, TInstances>,
     registry: ServiceRegistry,
   ) {
     this.#subject = subject;
@@ -89,7 +89,7 @@ export class ServiceFactoryTester<
    */
   async get(
     ...args: 'root' extends TScope ? [] : [pluginId?: string]
-  ): Promise<TSingleton extends true ? TService : TService[]> {
+  ): Promise<TInstances extends 'multiton' ? TService[] : TService> {
     return this.getSubject(...args);
   }
 
@@ -105,7 +105,7 @@ export class ServiceFactoryTester<
    */
   async getSubject(
     ...args: 'root' extends TScope ? [] : [pluginId?: string]
-  ): Promise<TSingleton extends true ? TService : TService[]> {
+  ): Promise<TInstances extends 'multiton' ? TService[] : TService> {
     const [pluginId] = args;
     const instance = this.#registry.get(this.#subject, pluginId ?? 'test')!;
     return instance;
@@ -121,11 +121,11 @@ export class ServiceFactoryTester<
   async getService<
     TGetService,
     TGetScope extends 'root' | 'plugin',
-    TGetSingleton extends boolean,
+    TGetInstances extends 'singleton' | 'multiton' = 'singleton',
   >(
-    service: ServiceRef<TGetService, TGetScope, TGetSingleton>,
+    service: ServiceRef<TGetService, TGetScope, TGetInstances>,
     ...args: 'root' extends TGetScope ? [] : [pluginId?: string]
-  ): Promise<TGetSingleton extends true ? TGetService : TGetService[]> {
+  ): Promise<TGetInstances extends 'multiton' ? TGetService[] : TGetService> {
     const [pluginId] = args;
     const instance = await this.#registry.get(service, pluginId ?? 'test');
     if (instance === undefined) {

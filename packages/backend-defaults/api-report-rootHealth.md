@@ -10,7 +10,7 @@ import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
 export const rootHealthServiceFactory: ServiceFactoryCompat<
   RootHealthService,
   'root',
-  true,
+  'singleton',
   undefined
 >;
 

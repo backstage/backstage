@@ -49,7 +49,7 @@ import { UserInfoService } from '@backstage/backend-plugin-api';
 export const authServiceFactory: ServiceFactoryCompat<
   AuthService,
   'plugin',
-  true,
+  'singleton',
   undefined
 >;
 
@@ -81,7 +81,7 @@ export interface Backend {
 export const cacheServiceFactory: ServiceFactoryCompat<
   CacheService,
   'plugin',
-  true,
+  'singleton',
   undefined
 >;
 
@@ -115,7 +115,7 @@ export interface CreateSpecializedBackendOptions {
 export const databaseServiceFactory: ServiceFactoryCompat<
   DatabaseService,
   'plugin',
-  true,
+  'singleton',
   undefined
 >;
 
@@ -138,7 +138,7 @@ export type DefaultRootHttpRouterOptions = DefaultRootHttpRouterOptions_2;
 export const discoveryServiceFactory: ServiceFactoryCompat<
   DiscoveryService,
   'plugin',
-  true,
+  'singleton',
   undefined
 >;
 
@@ -165,7 +165,7 @@ export class HostDiscovery implements DiscoveryService {
 export const httpAuthServiceFactory: ServiceFactoryCompat<
   HttpAuthService,
   'plugin',
-  true,
+  'singleton',
   undefined
 >;
 
@@ -173,7 +173,7 @@ export const httpAuthServiceFactory: ServiceFactoryCompat<
 export const httpRouterServiceFactory: ServiceFactoryCompat<
   HttpRouterService,
   'plugin',
-  true,
+  'singleton',
   undefined
 >;
 
@@ -197,7 +197,7 @@ export type IdentityFactoryOptions = {
 export const identityServiceFactory: ServiceFactoryCompat<
   IdentityService,
   'plugin',
-  true,
+  'singleton',
   IdentityFactoryOptions
 >;
 
@@ -210,7 +210,7 @@ export type LifecycleMiddlewareOptions = LifecycleMiddlewareOptions_2;
 export const lifecycleServiceFactory: ServiceFactoryCompat<
   LifecycleService,
   'plugin',
-  true,
+  'singleton',
   undefined
 >;
 
@@ -228,7 +228,7 @@ export function loadBackendConfig(options: {
 export const loggerServiceFactory: ServiceFactoryCompat<
   LoggerService,
   'plugin',
-  true,
+  'singleton',
   undefined
 >;
 
@@ -257,7 +257,7 @@ export type MiddlewareFactoryOptions = MiddlewareFactoryOptions_2;
 export const permissionsServiceFactory: ServiceFactoryCompat<
   PermissionsService,
   'plugin',
-  true,
+  'singleton',
   undefined
 >;
 
@@ -288,7 +288,7 @@ export interface RootConfigFactoryOptions {
 export const rootConfigServiceFactory: ServiceFactoryCompat<
   RootConfigService,
   'root',
-  true,
+  'singleton',
   RootConfigFactoryOptions
 >;
 
@@ -305,14 +305,14 @@ export type RootHttpRouterFactoryOptions = RootHttpRouterFactoryOptions_2;
 // @public @deprecated (undocumented)
 export const rootHttpRouterServiceFactory: ((
   options?: RootHttpRouterFactoryOptions_2 | undefined,
-) => ServiceFactory<RootHttpRouterService, 'root', true>) &
-  ServiceFactory<RootHttpRouterService, 'root', true>;
+) => ServiceFactory<RootHttpRouterService, 'root', 'singleton'>) &
+  ServiceFactory<RootHttpRouterService, 'root', 'singleton'>;
 
 // @public @deprecated
 export const rootLifecycleServiceFactory: ServiceFactoryCompat<
   RootLifecycleService,
   'root',
-  true,
+  'singleton',
   undefined
 >;
 
@@ -320,7 +320,7 @@ export const rootLifecycleServiceFactory: ServiceFactoryCompat<
 export const rootLoggerServiceFactory: ServiceFactoryCompat<
   RootLoggerService,
   'root',
-  true,
+  'singleton',
   undefined
 >;
 
@@ -328,7 +328,7 @@ export const rootLoggerServiceFactory: ServiceFactoryCompat<
 export const schedulerServiceFactory: ServiceFactoryCompat<
   SchedulerService,
   'plugin',
-  true,
+  'singleton',
   undefined
 >;
 
@@ -336,7 +336,7 @@ export const schedulerServiceFactory: ServiceFactoryCompat<
 export const tokenManagerServiceFactory: ServiceFactoryCompat<
   TokenManagerService,
   'plugin',
-  true,
+  'singleton',
   undefined
 >;
 
@@ -344,7 +344,7 @@ export const tokenManagerServiceFactory: ServiceFactoryCompat<
 export const urlReaderServiceFactory: ServiceFactoryCompat<
   UrlReaderService,
   'plugin',
-  true,
+  'singleton',
   undefined
 >;
 
@@ -352,7 +352,7 @@ export const urlReaderServiceFactory: ServiceFactoryCompat<
 export const userInfoServiceFactory: ServiceFactoryCompat<
   UserInfoService,
   'plugin',
-  true,
+  'singleton',
   undefined
 >;
 

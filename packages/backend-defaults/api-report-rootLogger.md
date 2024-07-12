@@ -14,7 +14,7 @@ import { transport } from 'winston';
 export const rootLoggerServiceFactory: ServiceFactoryCompat<
   RootLoggerService,
   'root',
-  true,
+  'singleton',
   undefined
 >;
 

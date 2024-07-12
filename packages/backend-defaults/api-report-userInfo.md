@@ -10,7 +10,7 @@ import { UserInfoService } from '@backstage/backend-plugin-api';
 export const userInfoServiceFactory: ServiceFactoryCompat<
   UserInfoService,
   'plugin',
-  true,
+  'singleton',
   undefined
 >;
 

@@ -42,7 +42,7 @@ export const urlReaderProviderFactoriesServiceRef =
   createServiceRef<ReaderFactory>({
     id: 'core.urlReader.factories',
     scope: 'plugin',
-    singleton: false,
+    multiton: true,
   });
 
 /**

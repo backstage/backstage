@@ -60,14 +60,14 @@ export class ServiceRegistry {
   static create(factories: Array<ServiceFactory>): ServiceRegistry {
     const factoryMap = new Map<string, InternalServiceFactory[]>();
     for (const factory of factories) {
-      if (factory.service.singleton) {
-        factoryMap.set(factory.service.id, [toInternalServiceFactory(factory)]);
-      } else {
+      if (factory.service.multiton) {
         const existing = factoryMap.get(factory.service.id) ?? [];
         factoryMap.set(
           factory.service.id,
           existing.concat(toInternalServiceFactory(factory)),
         );
+      } else {
+        factoryMap.set(factory.service.id, [toInternalServiceFactory(factory)]);
       }
     }
     const registry = new ServiceRegistry(factoryMap);
@@ -155,7 +155,7 @@ export class ServiceRegistry {
       if (this.#providedFactories.get(ref.id)) {
         return false;
       }
-      if (!ref.singleton) {
+      if (ref.multiton) {
         return false;
       }
 
@@ -205,7 +205,12 @@ export class ServiceRegistry {
       );
     }
 
-    if (factory.service.singleton) {
+    if (factory.service.multiton) {
+      const newFactories = (
+        this.#providedFactories.get(factoryId) ?? []
+      ).concat(toInternalServiceFactory(factory));
+      this.#providedFactories.set(factoryId, newFactories);
+    } else {
       if (this.#addedFactoryIds.has(factoryId)) {
         throw new Error(
           `Duplicate service implementations provided for ${factoryId}`,
@@ -216,11 +221,6 @@ export class ServiceRegistry {
       this.#providedFactories.set(factoryId, [
         toInternalServiceFactory(factory),
       ]);
-    } else {
-      const newFactories = (
-        this.#providedFactories.get(factoryId) ?? []
-      ).concat(toInternalServiceFactory(factory));
-      this.#providedFactories.set(factoryId, newFactories);
     }
   }
 
@@ -240,20 +240,20 @@ export class ServiceRegistry {
     }
   }
 
-  get<T, TSingleton extends boolean>(
-    ref: ServiceRef<T, 'plugin' | 'root', TSingleton>,
+  get<T, TInstances extends 'singleton' | 'multiton'>(
+    ref: ServiceRef<T, 'plugin' | 'root', TInstances>,
     pluginId: string,
-  ): Promise<TSingleton extends true ? T : T[]> | undefined {
+  ): Promise<TInstances extends 'multiton' ? T[] : T> | undefined {
     this.#instantiatedFactories.add(ref.id);
 
     const resolvedFactory = this.#resolveFactory(ref, pluginId);
 
     if (!resolvedFactory) {
-      return ref.singleton
-        ? undefined
-        : (Promise.resolve([]) as
-            | Promise<TSingleton extends true ? T : T[]>
-            | undefined);
+      return ref.multiton
+        ? (Promise.resolve([]) as
+            | Promise<TInstances extends 'multiton' ? T[] : T>
+            | undefined)
+        : undefined;
     }
 
     return resolvedFactory
@@ -346,6 +346,6 @@ export class ServiceRegistry {
           }),
         );
       })
-      .then(results => (ref.singleton ? results[0] : results));
+      .then(results => (ref.multiton ? results : results[0]));
   }
 }

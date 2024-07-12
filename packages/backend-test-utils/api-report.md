@@ -156,7 +156,12 @@ export namespace mockServices {
   // (undocumented)
   export namespace auth {
     const // (undocumented)
-      factory: ServiceFactoryCompat<AuthService, 'plugin', true, undefined>;
+      factory: ServiceFactoryCompat<
+        AuthService,
+        'plugin',
+        'singleton',
+        undefined
+      >;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<AuthService> | undefined,
@@ -165,7 +170,12 @@ export namespace mockServices {
   // (undocumented)
   export namespace cache {
     const // (undocumented)
-      factory: ServiceFactoryCompat<CacheService, 'plugin', true, undefined>;
+      factory: ServiceFactoryCompat<
+        CacheService,
+        'plugin',
+        'singleton',
+        undefined
+      >;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<CacheService> | undefined,
@@ -174,7 +184,12 @@ export namespace mockServices {
   // (undocumented)
   export namespace database {
     const // (undocumented)
-      factory: ServiceFactoryCompat<DatabaseService, 'plugin', true, undefined>;
+      factory: ServiceFactoryCompat<
+        DatabaseService,
+        'plugin',
+        'singleton',
+        undefined
+      >;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<DatabaseService> | undefined,
@@ -188,7 +203,7 @@ export namespace mockServices {
       factory: ServiceFactoryCompat<
         DiscoveryService,
         'plugin',
-        true,
+        'singleton',
         undefined
       >;
     const // (undocumented)
@@ -199,7 +214,12 @@ export namespace mockServices {
   // (undocumented)
   export namespace events {
     const // (undocumented)
-      factory: ServiceFactoryCompat<EventsService, 'plugin', true, undefined>;
+      factory: ServiceFactoryCompat<
+        EventsService,
+        'plugin',
+        'singleton',
+        undefined
+      >;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<EventsService> | undefined,
@@ -213,8 +233,8 @@ export namespace mockServices {
   export namespace httpAuth {
     const factory: ((options?: {
       defaultCredentials?: BackstageCredentials;
-    }) => ServiceFactory<HttpAuthService, 'plugin', true>) &
-      ServiceFactory<HttpAuthService, 'plugin', true>;
+    }) => ServiceFactory<HttpAuthService, 'plugin', 'singleton'>) &
+      ServiceFactory<HttpAuthService, 'plugin', 'singleton'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<HttpAuthService> | undefined,
@@ -226,7 +246,7 @@ export namespace mockServices {
       factory: ServiceFactoryCompat<
         HttpRouterService,
         'plugin',
-        true,
+        'singleton',
         undefined
       >;
     const // (undocumented)
@@ -239,7 +259,12 @@ export namespace mockServices {
   // (undocumented)
   export namespace identity {
     const // (undocumented)
-      factory: ServiceFactoryCompat<IdentityService, 'plugin', true, undefined>;
+      factory: ServiceFactoryCompat<
+        IdentityService,
+        'plugin',
+        'singleton',
+        undefined
+      >;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<IdentityService> | undefined,
@@ -251,7 +276,7 @@ export namespace mockServices {
       factory: ServiceFactoryCompat<
         LifecycleService,
         'plugin',
-        true,
+        'singleton',
         undefined
       >;
     const // (undocumented)
@@ -262,7 +287,12 @@ export namespace mockServices {
   // (undocumented)
   export namespace logger {
     const // (undocumented)
-      factory: ServiceFactoryCompat<LoggerService, 'plugin', true, undefined>;
+      factory: ServiceFactoryCompat<
+        LoggerService,
+        'plugin',
+        'singleton',
+        undefined
+      >;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<LoggerService> | undefined,
@@ -274,7 +304,7 @@ export namespace mockServices {
       factory: ServiceFactoryCompat<
         PermissionsService,
         'plugin',
-        true,
+        'singleton',
         undefined
       >;
     const // (undocumented)
@@ -291,15 +321,28 @@ export namespace mockServices {
       data?: JsonObject;
     };
     const // (undocumented)
-      factory: ServiceFactory<RootConfigService, 'root', boolean> &
+      factory: ServiceFactory<
+        RootConfigService,
+        'root',
+        'singleton' | 'multiton'
+      > &
         ((
           options?: Options | undefined,
-        ) => ServiceFactory<RootConfigService, 'root', boolean>);
+        ) => ServiceFactory<
+          RootConfigService,
+          'root',
+          'singleton' | 'multiton'
+        >);
   }
   // (undocumented)
   export namespace rootHealth {
     const // (undocumented)
-      factory: ServiceFactoryCompat<RootHealthService, 'root', true, undefined>;
+      factory: ServiceFactoryCompat<
+        RootHealthService,
+        'root',
+        'singleton',
+        undefined
+      >;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<RootHealthService> | undefined,
@@ -310,8 +353,8 @@ export namespace mockServices {
     const // (undocumented)
       factory: ((
         options?: RootHttpRouterFactoryOptions | undefined,
-      ) => ServiceFactory<RootHttpRouterService, 'root', true>) &
-        ServiceFactory<RootHttpRouterService, 'root', true>;
+      ) => ServiceFactory<RootHttpRouterService, 'root', 'singleton'>) &
+        ServiceFactory<RootHttpRouterService, 'root', 'singleton'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<RootHttpRouterService> | undefined,
@@ -323,7 +366,7 @@ export namespace mockServices {
       factory: ServiceFactoryCompat<
         RootLifecycleService,
         'root',
-        true,
+        'singleton',
         undefined
       >;
     const // (undocumented)
@@ -340,10 +383,10 @@ export namespace mockServices {
       level?: 'none' | 'error' | 'warn' | 'info' | 'debug';
     };
     const // (undocumented)
-      factory: ServiceFactory<LoggerService, 'root', boolean> &
+      factory: ServiceFactory<LoggerService, 'root', 'singleton' | 'multiton'> &
         ((
           options?: Options | undefined,
-        ) => ServiceFactory<LoggerService, 'root', boolean>);
+        ) => ServiceFactory<LoggerService, 'root', 'singleton' | 'multiton'>);
     const // (undocumented)
       mock: (
         partialImpl?: Partial<RootLoggerService> | undefined,
@@ -355,7 +398,7 @@ export namespace mockServices {
       factory: ServiceFactoryCompat<
         SchedulerService,
         'plugin',
-        true,
+        'singleton',
         undefined
       >;
     const // (undocumented)
@@ -371,7 +414,7 @@ export namespace mockServices {
       factory: ServiceFactoryCompat<
         TokenManagerService,
         'plugin',
-        true,
+        'singleton',
         undefined
       >;
     const // (undocumented)
@@ -385,7 +428,7 @@ export namespace mockServices {
       factory: ServiceFactoryCompat<
         UrlReaderService,
         'plugin',
-        true,
+        'singleton',
         undefined
       >;
     const // (undocumented)
@@ -401,7 +444,7 @@ export namespace mockServices {
     const factory: ServiceFactoryCompat<
       UserInfoService,
       'plugin',
-      true,
+      'singleton',
       undefined
     >;
     const // (undocumented)
@@ -422,31 +465,31 @@ export function registerMswTestHooks(worker: {
 export class ServiceFactoryTester<
   TService,
   TScope extends 'root' | 'plugin',
-  TSingleton extends boolean = true,
+  TInstances extends 'singleton' | 'multiton' = 'singleton',
 > {
   static from<
     TService,
     TScope extends 'root' | 'plugin',
-    TSingleton extends boolean = true,
+    TInstances extends 'singleton' | 'multiton' = 'singleton',
   >(
-    subject: ServiceFactory<TService, TScope, TSingleton>,
+    subject: ServiceFactory<TService, TScope, TInstances>,
     options?: ServiceFactoryTesterOptions,
-  ): ServiceFactoryTester<TService, TScope, TSingleton>;
+  ): ServiceFactoryTester<TService, TScope, TInstances>;
   // @deprecated
   get(
     ...args: 'root' extends TScope ? [] : [pluginId?: string]
-  ): Promise<TSingleton extends true ? TService : TService[]>;
+  ): Promise<TInstances extends 'multiton' ? TService[] : TService>;
   getService<
     TGetService,
     TGetScope extends 'root' | 'plugin',
-    TGetSingleton extends boolean,
+    TGetInstances extends 'singleton' | 'multiton' = 'singleton',
   >(
-    service: ServiceRef<TGetService, TGetScope, TGetSingleton>,
+    service: ServiceRef<TGetService, TGetScope, TGetInstances>,
     ...args: 'root' extends TGetScope ? [] : [pluginId?: string]
-  ): Promise<TGetSingleton extends true ? TGetService : TGetService[]>;
+  ): Promise<TGetInstances extends 'multiton' ? TGetService[] : TGetService>;
   getSubject(
     ...args: 'root' extends TScope ? [] : [pluginId?: string]
-  ): Promise<TSingleton extends true ? TService : TService[]>;
+  ): Promise<TInstances extends 'multiton' ? TService[] : TService>;
 }
 
 // @public

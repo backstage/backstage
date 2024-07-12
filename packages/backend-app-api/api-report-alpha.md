@@ -10,7 +10,7 @@ import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
 export const featureDiscoveryServiceFactory: ServiceFactoryCompat<
   FeatureDiscoveryService,
   'root',
-  true,
+  'singleton',
   undefined
 >;
 
