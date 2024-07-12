@@ -15,12 +15,12 @@
  */
 
 export interface Config {
+  /**
+   * @visibility frontend
+   * @deepVisibility frontend
+   */
   app?: {
     experimental?: {
-      /**
-       * @visibility frontend
-       * @deepVisibility frontend
-       */
       packages?: 'all' | { include?: string[]; exclude?: string[] };
     };
 
@@ -30,15 +30,10 @@ export interface Config {
        * key and the value is expected to be on the form `<pluginId>.<routeId>`.
        * If the value is `false`, the route will be disabled even if it has a
        * default mapping.
-       *
-       * @deepVisibility frontend
        */
       bindings?: { [externalRouteRefId: string]: string | false };
     };
 
-    /**
-     * @deepVisibility frontend
-     */
     extensions?: Array<
       | string
       | {
