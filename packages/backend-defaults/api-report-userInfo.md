@@ -10,7 +10,7 @@ import { UserInfoService } from '@backstage/backend-plugin-api';
 export const userInfoServiceFactory: () => ServiceFactory<
   UserInfoService,
   'plugin',
-  true
+  'singleton'
 >;
 
 // (No @packageDocumentation comment for this package)

@@ -10,7 +10,7 @@ import { ServiceFactory } from '@backstage/backend-plugin-api';
 export const rootHealthServiceFactory: () => ServiceFactory<
   RootHealthService,
   'root',
-  boolean
+  'singleton' | 'multiton'
 >;
 
 // (No @packageDocumentation comment for this package)

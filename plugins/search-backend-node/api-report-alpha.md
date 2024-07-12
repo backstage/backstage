@@ -49,7 +49,7 @@ export type SearchIndexServiceInitOptions = {
 export const searchIndexServiceRef: ServiceRef<
   SearchIndexService,
   'plugin',
-  true
+  'singleton'
 >;
 
 // (No @packageDocumentation comment for this package)

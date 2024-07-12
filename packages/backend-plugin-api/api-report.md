@@ -188,28 +188,32 @@ export type CacheServiceSetOptions = {
 
 // @public
 export namespace coreServices {
-  const auth: ServiceRef<AuthService, 'plugin', true>;
-  const userInfo: ServiceRef<UserInfoService, 'plugin', true>;
-  const cache: ServiceRef<CacheService, 'plugin', true>;
-  const rootConfig: ServiceRef<RootConfigService, 'root', true>;
-  const database: ServiceRef<DatabaseService, 'plugin', true>;
-  const discovery: ServiceRef<DiscoveryService, 'plugin', true>;
-  const rootHealth: ServiceRef<RootHealthService, 'root', true>;
-  const httpAuth: ServiceRef<HttpAuthService, 'plugin', true>;
-  const httpRouter: ServiceRef<HttpRouterService, 'plugin', true>;
-  const lifecycle: ServiceRef<LifecycleService, 'plugin', true>;
-  const logger: ServiceRef<LoggerService, 'plugin', true>;
-  const permissions: ServiceRef<PermissionsService, 'plugin', true>;
-  const pluginMetadata: ServiceRef<PluginMetadataService, 'plugin', true>;
-  const rootHttpRouter: ServiceRef<RootHttpRouterService, 'root', true>;
-  const rootLifecycle: ServiceRef<RootLifecycleService, 'root', true>;
-  const rootLogger: ServiceRef<RootLoggerService, 'root', true>;
-  const scheduler: ServiceRef<SchedulerService, 'plugin', true>;
+  const auth: ServiceRef<AuthService, 'plugin', 'singleton'>;
+  const userInfo: ServiceRef<UserInfoService, 'plugin', 'singleton'>;
+  const cache: ServiceRef<CacheService, 'plugin', 'singleton'>;
+  const rootConfig: ServiceRef<RootConfigService, 'root', 'singleton'>;
+  const database: ServiceRef<DatabaseService, 'plugin', 'singleton'>;
+  const discovery: ServiceRef<DiscoveryService, 'plugin', 'singleton'>;
+  const rootHealth: ServiceRef<RootHealthService, 'root', 'singleton'>;
+  const httpAuth: ServiceRef<HttpAuthService, 'plugin', 'singleton'>;
+  const httpRouter: ServiceRef<HttpRouterService, 'plugin', 'singleton'>;
+  const lifecycle: ServiceRef<LifecycleService, 'plugin', 'singleton'>;
+  const logger: ServiceRef<LoggerService, 'plugin', 'singleton'>;
+  const permissions: ServiceRef<PermissionsService, 'plugin', 'singleton'>;
+  const pluginMetadata: ServiceRef<
+    PluginMetadataService,
+    'plugin',
+    'singleton'
+  >;
+  const rootHttpRouter: ServiceRef<RootHttpRouterService, 'root', 'singleton'>;
+  const rootLifecycle: ServiceRef<RootLifecycleService, 'root', 'singleton'>;
+  const rootLogger: ServiceRef<RootLoggerService, 'root', 'singleton'>;
+  const scheduler: ServiceRef<SchedulerService, 'plugin', 'singleton'>;
   const // @deprecated
-    tokenManager: ServiceRef<TokenManagerService, 'plugin', true>;
-  const urlReader: ServiceRef<UrlReaderService, 'plugin', true>;
+    tokenManager: ServiceRef<TokenManagerService, 'plugin', 'singleton'>;
+  const urlReader: ServiceRef<UrlReaderService, 'plugin', 'singleton'>;
   const // @deprecated
-    identity: ServiceRef<IdentityService, 'plugin', true>;
+    identity: ServiceRef<IdentityService, 'plugin', 'singleton'>;
 }
 
 // @public
@@ -250,20 +254,20 @@ export interface CreateExtensionPointOptions {
 // @public
 export function createServiceFactory<
   TService,
-  TSingleton extends boolean,
+  TInstances extends 'singleton' | 'multiton',
   TImpl extends TService,
   TDeps extends {
     [name in string]: ServiceRef<unknown, 'root'>;
   },
   TOpts extends object | undefined = undefined,
 >(
-  options: RootServiceFactoryOptions<TService, TSingleton, TImpl, TDeps>,
+  options: RootServiceFactoryOptions<TService, TInstances, TImpl, TDeps>,
 ): () => ServiceFactory<TService, 'root'>;
 
 // @public
 export function createServiceFactory<
   TService,
-  TSingleton extends boolean,
+  TInstances extends 'singleton' | 'multiton',
   TImpl extends TService,
   TDeps extends {
     [name in string]: ServiceRef<unknown, 'root'>;
@@ -272,13 +276,13 @@ export function createServiceFactory<
 >(
   options: (
     options?: TOpts,
-  ) => RootServiceFactoryOptions<TService, TSingleton, TImpl, TDeps>,
+  ) => RootServiceFactoryOptions<TService, TInstances, TImpl, TDeps>,
 ): (options?: TOpts) => ServiceFactory<TService, 'root'>;
 
 // @public
 export function createServiceFactory<
   TService,
-  TSingleton extends boolean,
+  TInstances extends 'singleton' | 'multiton',
   TImpl extends TService,
   TDeps extends {
     [name in string]: ServiceRef<unknown>;
@@ -288,17 +292,17 @@ export function createServiceFactory<
 >(
   options: PluginServiceFactoryOptions<
     TService,
-    TSingleton,
+    TInstances,
     TContext,
     TImpl,
     TDeps
   >,
-): () => ServiceFactory<TService, 'plugin', TSingleton>;
+): () => ServiceFactory<TService, 'plugin', TInstances>;
 
 // @public
 export function createServiceFactory<
   TService,
-  TSingleton extends boolean,
+  TInstances extends 'singleton' | 'multiton',
   TImpl extends TService,
   TDeps extends {
     [name in string]: ServiceRef<unknown>;
@@ -310,7 +314,7 @@ export function createServiceFactory<
     options?: TOpts,
   ) => PluginServiceFactoryOptions<
     TService,
-    TSingleton,
+    TInstances,
     TContext,
     TImpl,
     TDeps
@@ -319,23 +323,23 @@ export function createServiceFactory<
 
 // @public
 export function createServiceRef<TService>(
-  options: ServiceRefOptions<TService, 'plugin', true>,
-): ServiceRef<TService, 'plugin', true>;
+  options: ServiceRefOptions<TService, 'plugin', 'singleton'>,
+): ServiceRef<TService, 'plugin', 'singleton'>;
 
 // @public
 export function createServiceRef<TService>(
-  options: ServiceRefOptions<TService, 'root', true>,
-): ServiceRef<TService, 'root', true>;
+  options: ServiceRefOptions<TService, 'root', 'singleton'>,
+): ServiceRef<TService, 'root', 'singleton'>;
 
 // @public
 export function createServiceRef<TService>(
-  options: ServiceRefOptions<TService, 'plugin', false>,
-): ServiceRef<TService, 'plugin', false>;
+  options: ServiceRefOptions<TService, 'plugin', 'multiton'>,
+): ServiceRef<TService, 'plugin', 'multiton'>;
 
 // @public
 export function createServiceRef<TService>(
-  options: ServiceRefOptions<TService, 'root', false>,
-): ServiceRef<TService, 'root', false>;
+  options: ServiceRefOptions<TService, 'root', 'multiton'>,
+): ServiceRef<TService, 'root', 'multiton'>;
 
 // @public
 export interface DatabaseService {
@@ -474,18 +478,18 @@ export interface PluginMetadataService {
 // @public @deprecated (undocumented)
 export type PluginServiceFactoryConfig<
   TService,
-  TSingleton extends boolean,
+  TInstances extends 'singleton' | 'multiton',
   TContext,
   TImpl extends TService,
   TDeps extends {
     [name in string]: ServiceRef<unknown>;
   },
-> = PluginServiceFactoryOptions<TService, TSingleton, TContext, TImpl, TDeps>;
+> = PluginServiceFactoryOptions<TService, TInstances, TContext, TImpl, TDeps>;
 
 // @public (undocumented)
 export interface PluginServiceFactoryOptions<
   TService,
-  TSingleton extends boolean,
+  TInstances extends 'singleton' | 'multiton',
   TContext,
   TImpl extends TService,
   TDeps extends {
@@ -505,7 +509,7 @@ export interface PluginServiceFactoryOptions<
   ): TImpl | Promise<TImpl>;
   initialization?: 'always' | 'lazy';
   // (undocumented)
-  service: ServiceRef<TService, 'plugin', TSingleton>;
+  service: ServiceRef<TService, 'plugin', TInstances>;
 }
 
 // @public
@@ -567,17 +571,17 @@ export interface RootLoggerService extends LoggerService {}
 // @public @deprecated (undocumented)
 export type RootServiceFactoryConfig<
   TService,
-  TSingleton extends boolean,
+  TInstances extends 'singleton' | 'multiton',
   TImpl extends TService,
   TDeps extends {
     [name in string]: ServiceRef<unknown>;
   },
-> = RootServiceFactoryOptions<TService, TSingleton, TImpl, TDeps>;
+> = RootServiceFactoryOptions<TService, TInstances, TImpl, TDeps>;
 
 // @public (undocumented)
 export interface RootServiceFactoryOptions<
-  TService,
-  TSingleton extends boolean,
+  TService, // TODO(Rugvip): Can we forward the entire service ref type here instead of forwarding each type arg once the callback form is gone?
+  TInstances extends 'singleton' | 'multiton',
   TImpl extends TService,
   TDeps extends {
     [name in string]: ServiceRef<unknown>;
@@ -589,7 +593,7 @@ export interface RootServiceFactoryOptions<
   factory(deps: ServiceRefsToInstances<TDeps, 'root'>): TImpl | Promise<TImpl>;
   initialization?: 'always' | 'lazy';
   // (undocumented)
-  service: ServiceRef<TService, 'root', TSingleton>;
+  service: ServiceRef<TService, 'root', TInstances>;
 }
 
 // @public
@@ -670,10 +674,10 @@ export type SearchResponseFile = UrlReaderServiceSearchResponseFile;
 export interface ServiceFactory<
   TService = unknown,
   TScope extends 'plugin' | 'root' = 'plugin' | 'root',
-  TSingleton extends boolean = boolean,
+  TInstances extends 'singleton' | 'multiton' = 'singleton' | 'multiton',
 > extends BackendFeature {
   // (undocumented)
-  service: ServiceRef<TService, TScope, TSingleton>;
+  service: ServiceRef<TService, TScope, TInstances>;
 }
 
 // @public
@@ -683,11 +687,11 @@ export type ServiceFactoryOrFunction = ServiceFactory | (() => ServiceFactory);
 export type ServiceRef<
   TService,
   TScope extends 'root' | 'plugin' = 'root' | 'plugin',
-  TSingleton extends boolean = boolean,
+  TInstances extends 'singleton' | 'multiton' = 'singleton' | 'multiton',
 > = {
   id: string;
   scope: TScope;
-  singleton: TSingleton;
+  multiton: TInstances extends 'multiton' ? true : false;
   T: TService;
   $$type: '@backstage/ServiceRef';
 };
@@ -696,14 +700,14 @@ export type ServiceRef<
 export type ServiceRefConfig<
   TService,
   TScope extends 'root' | 'plugin',
-  TSingleton extends boolean,
-> = ServiceRefOptions<TService, TScope, TSingleton>;
+  TInstances extends 'singleton' | 'multiton',
+> = ServiceRefOptions<TService, TScope, TInstances>;
 
 // @public (undocumented)
 export interface ServiceRefOptions<
   TService,
   TScope extends 'root' | 'plugin',
-  TSingleton extends boolean,
+  TInstances extends 'singleton' | 'multiton',
 > {
   // (undocumented)
   defaultFactory?: (
@@ -712,9 +716,9 @@ export interface ServiceRefOptions<
   // (undocumented)
   id: string;
   // (undocumented)
-  scope?: TScope;
+  multiton?: TInstances extends 'multiton' ? true : false;
   // (undocumented)
-  singleton?: TSingleton;
+  scope?: TScope;
 }
 
 // @public @deprecated

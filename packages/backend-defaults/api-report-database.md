@@ -35,7 +35,7 @@ export type DatabaseManagerOptions = {
 export const databaseServiceFactory: () => ServiceFactory<
   DatabaseService,
   'plugin',
-  true
+  'singleton'
 >;
 
 // @public @deprecated

@@ -68,7 +68,7 @@ export interface NotificationService {
 export const notificationService: ServiceRef<
   NotificationService,
   'plugin',
-  true
+  'singleton'
 >;
 
 // @public (undocumented)

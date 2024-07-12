@@ -11,7 +11,7 @@ import { ServiceFactory } from '@backstage/backend-plugin-api';
 export const discoveryServiceFactory: () => ServiceFactory<
   DiscoveryService,
   'plugin',
-  true
+  'singleton'
 >;
 
 // @public

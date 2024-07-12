@@ -14,7 +14,7 @@ import { transport } from 'winston';
 export const rootLoggerServiceFactory: () => ServiceFactory<
   RootLoggerService,
   'root',
-  boolean
+  'singleton' | 'multiton'
 >;
 
 // @public

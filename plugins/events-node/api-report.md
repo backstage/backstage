@@ -66,11 +66,11 @@ export type EventsServiceEventHandler = (params: EventParams) => Promise<void>;
 export const eventsServiceFactory: () => ServiceFactory<
   EventsService,
   'plugin',
-  true
+  'singleton'
 >;
 
 // @public
-export const eventsServiceRef: ServiceRef<EventsService, 'plugin', true>;
+export const eventsServiceRef: ServiceRef<EventsService, 'plugin', 'singleton'>;
 
 // @public (undocumented)
 export type EventsServiceSubscribeOptions = {

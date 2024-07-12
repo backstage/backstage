@@ -28,7 +28,7 @@ export type CacheManagerOptions = {
 export const cacheServiceFactory: () => ServiceFactory<
   CacheService,
   'plugin',
-  true
+  'singleton'
 >;
 
 // @public (undocumented)

@@ -28,7 +28,7 @@ export interface RootConfigFactoryOptions {
 // @public (undocumented)
 export const rootConfigServiceFactory: (
   options?: RootConfigFactoryOptions | undefined,
-) => ServiceFactory<RootConfigService, 'root', boolean>;
+) => ServiceFactory<RootConfigService, 'root', 'singleton' | 'multiton'>;
 
 // (No @packageDocumentation comment for this package)
 ```

@@ -21,7 +21,7 @@ export class DefaultSchedulerService {
 export const schedulerServiceFactory: () => ServiceFactory<
   SchedulerService,
   'plugin',
-  true
+  'singleton'
 >;
 
 // (No @packageDocumentation comment for this package)

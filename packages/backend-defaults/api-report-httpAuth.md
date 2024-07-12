@@ -10,7 +10,7 @@ import { ServiceFactory } from '@backstage/backend-plugin-api';
 export const httpAuthServiceFactory: () => ServiceFactory<
   HttpAuthService,
   'plugin',
-  true
+  'singleton'
 >;
 
 // (No @packageDocumentation comment for this package)

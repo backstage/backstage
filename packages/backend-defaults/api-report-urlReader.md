@@ -429,7 +429,7 @@ export class UrlReaders {
 export const urlReaderServiceFactory: () => ServiceFactory<
   UrlReaderService,
   'plugin',
-  true
+  'singleton'
 >;
 
 // @public

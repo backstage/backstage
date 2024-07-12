@@ -10,7 +10,7 @@ import { ServiceFactory } from '@backstage/backend-plugin-api';
 export const permissionsServiceFactory: () => ServiceFactory<
   PermissionsService,
   'plugin',
-  true
+  'singleton'
 >;
 
 // (No @packageDocumentation comment for this package)

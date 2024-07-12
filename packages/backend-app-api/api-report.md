@@ -49,7 +49,7 @@ import { UserInfoService } from '@backstage/backend-plugin-api';
 export const authServiceFactory: () => ServiceFactory<
   AuthService,
   'plugin',
-  true
+  'singleton'
 >;
 
 // @public (undocumented)
@@ -73,7 +73,7 @@ export interface Backend {
 export const cacheServiceFactory: () => ServiceFactory<
   CacheService,
   'plugin',
-  true
+  'singleton'
 >;
 
 // Warning: (ae-forgotten-export) The symbol "createConfigSecretEnumerator_2" needs to be exported by the entry point index.d.ts
@@ -106,7 +106,7 @@ export interface CreateSpecializedBackendOptions {
 export const databaseServiceFactory: () => ServiceFactory<
   DatabaseService,
   'plugin',
-  true
+  'singleton'
 >;
 
 // @public @deprecated
@@ -128,7 +128,7 @@ export type DefaultRootHttpRouterOptions = DefaultRootHttpRouterOptions_2;
 export const discoveryServiceFactory: () => ServiceFactory<
   DiscoveryService,
   'plugin',
-  true
+  'singleton'
 >;
 
 // Warning: (ae-forgotten-export) The symbol "ExtendedHttpServer_2" needs to be exported by the entry point index.d.ts
@@ -154,14 +154,14 @@ export class HostDiscovery implements DiscoveryService {
 export const httpAuthServiceFactory: () => ServiceFactory<
   HttpAuthService,
   'plugin',
-  true
+  'singleton'
 >;
 
 // @public @deprecated
 export const httpRouterServiceFactory: () => ServiceFactory<
   HttpRouterService,
   'plugin',
-  true
+  'singleton'
 >;
 
 // Warning: (ae-forgotten-export) The symbol "HttpServerCertificateOptions_2" needs to be exported by the entry point index.d.ts
@@ -183,7 +183,7 @@ export type IdentityFactoryOptions = {
 // @public @deprecated (undocumented)
 export const identityServiceFactory: (
   options?: IdentityFactoryOptions | undefined,
-) => ServiceFactory<IdentityService, 'plugin', boolean>;
+) => ServiceFactory<IdentityService, 'plugin', 'singleton' | 'multiton'>;
 
 // Warning: (ae-forgotten-export) The symbol "LifecycleMiddlewareOptions_2" needs to be exported by the entry point index.d.ts
 //
@@ -194,7 +194,7 @@ export type LifecycleMiddlewareOptions = LifecycleMiddlewareOptions_2;
 export const lifecycleServiceFactory: () => ServiceFactory<
   LifecycleService,
   'plugin',
-  true
+  'singleton'
 >;
 
 // @public @deprecated
@@ -211,7 +211,7 @@ export function loadBackendConfig(options: {
 export const loggerServiceFactory: () => ServiceFactory<
   LoggerService,
   'plugin',
-  true
+  'singleton'
 >;
 
 // @public @deprecated (undocumented)
@@ -239,7 +239,7 @@ export type MiddlewareFactoryOptions = MiddlewareFactoryOptions_2;
 export const permissionsServiceFactory: () => ServiceFactory<
   PermissionsService,
   'plugin',
-  true
+  'singleton'
 >;
 
 // Warning: (ae-forgotten-export) The symbol "readCorsOptions_2" needs to be exported by the entry point index.d.ts
@@ -268,7 +268,7 @@ export interface RootConfigFactoryOptions {
 // @public @deprecated (undocumented)
 export const rootConfigServiceFactory: (
   options?: RootConfigFactoryOptions | undefined,
-) => ServiceFactory<RootConfigService, 'root', boolean>;
+) => ServiceFactory<RootConfigService, 'root', 'singleton' | 'multiton'>;
 
 // Warning: (ae-forgotten-export) The symbol "RootHttpRouterConfigureContext_2" needs to be exported by the entry point index.d.ts
 //
@@ -283,48 +283,48 @@ export type RootHttpRouterFactoryOptions = RootHttpRouterFactoryOptions_2;
 // @public @deprecated (undocumented)
 export const rootHttpRouterServiceFactory: (
   options?: RootHttpRouterFactoryOptions_2 | undefined,
-) => ServiceFactory<RootHttpRouterService, 'root', boolean>;
+) => ServiceFactory<RootHttpRouterService, 'root', 'singleton' | 'multiton'>;
 
 // @public @deprecated
 export const rootLifecycleServiceFactory: () => ServiceFactory<
   RootLifecycleService,
   'root',
-  boolean
+  'singleton' | 'multiton'
 >;
 
 // @public @deprecated
 export const rootLoggerServiceFactory: () => ServiceFactory<
   RootLoggerService,
   'root',
-  boolean
+  'singleton' | 'multiton'
 >;
 
 // @public @deprecated (undocumented)
 export const schedulerServiceFactory: () => ServiceFactory<
   SchedulerService,
   'plugin',
-  true
+  'singleton'
 >;
 
 // @public @deprecated (undocumented)
 export const tokenManagerServiceFactory: () => ServiceFactory<
   TokenManagerService,
   'plugin',
-  true
+  'singleton'
 >;
 
 // @public @deprecated (undocumented)
 export const urlReaderServiceFactory: () => ServiceFactory<
   UrlReaderService,
   'plugin',
-  true
+  'singleton'
 >;
 
 // @public @deprecated (undocumented)
 export const userInfoServiceFactory: () => ServiceFactory<
   UserInfoService,
   'plugin',
-  true
+  'singleton'
 >;
 
 // @public @deprecated
