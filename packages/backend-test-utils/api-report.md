@@ -371,9 +371,7 @@ export namespace mockServices {
 // @public
 export class ServiceFactoryTester<TService, TScope extends 'root' | 'plugin'> {
   static from<TService, TScope extends 'root' | 'plugin'>(
-    subject:
-      | ServiceFactory<TService, TScope>
-      | (() => ServiceFactory<TService, TScope>),
+    subject: ServiceFactory<TService, TScope>,
     options?: ServiceFactoryTesterOptions,
   ): ServiceFactoryTester<TService, TScope>;
   get(
@@ -387,7 +385,7 @@ export class ServiceFactoryTester<TService, TScope extends 'root' | 'plugin'> {
 
 // @public
 export interface ServiceFactoryTesterOptions {
-  dependencies?: Array<ServiceFactory | (() => ServiceFactory)>;
+  dependencies?: Array<ServiceFactory>;
 }
 
 // @public (undocumented)
