@@ -18,13 +18,14 @@ import {
   AnalyticsContext,
   configApiRef,
   useApi,
+  useApp,
 } from '@backstage/core-plugin-api';
 import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { TextFieldProps } from '@material-ui/core/TextField';
-import SearchIcon from '@material-ui/icons/Search';
+import DefaultSearchIcon from '@material-ui/icons/Search';
 import React, {
   ChangeEvent,
   ComponentType,
@@ -145,6 +146,8 @@ export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps> =
       const inputPlaceholder =
         placeholder ??
         `Search in ${configApi.getOptionalString('app.title') || 'Backstage'}`;
+
+      const SearchIcon = useApp().getSystemIcon('search') || DefaultSearchIcon;
 
       const startAdornment = (
         <InputAdornment position="start">
