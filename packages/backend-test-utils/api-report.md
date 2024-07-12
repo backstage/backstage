@@ -430,9 +430,8 @@ export interface TestBackendOptions<TExtensionPoints extends any[]> {
   // (undocumented)
   features?: Array<
     | BackendFeature
-    | (() => BackendFeature)
     | Promise<{
-        default: BackendFeature | (() => BackendFeature);
+        default: BackendFeature;
       }>
   >;
 }
