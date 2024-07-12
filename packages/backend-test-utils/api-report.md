@@ -229,7 +229,7 @@ export namespace mockServices {
   // (undocumented)
   export namespace identity {
     const // (undocumented)
-      factory: () => ServiceFactory<IdentityService, 'plugin'>;
+      factory: ServiceFactoryCompat<IdentityService, 'plugin', undefined>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<IdentityService> | undefined,
@@ -271,9 +271,10 @@ export namespace mockServices {
       data?: JsonObject;
     };
     const // (undocumented)
-      factory: (
-        options?: Options | undefined,
-      ) => ServiceFactory<RootConfigService, 'root'>;
+      factory: ServiceFactory<RootConfigService, 'root'> &
+        ((
+          options?: Options | undefined,
+        ) => ServiceFactory<RootConfigService, 'root'>);
   }
   // (undocumented)
   export namespace rootHealth {
@@ -315,9 +316,10 @@ export namespace mockServices {
       level?: 'none' | 'error' | 'warn' | 'info' | 'debug';
     };
     const // (undocumented)
-      factory: (
-        options?: Options | undefined,
-      ) => ServiceFactory<LoggerService, 'root'>;
+      factory: ServiceFactory<LoggerService, 'root'> &
+        ((
+          options?: Options | undefined,
+        ) => ServiceFactory<LoggerService, 'root'>);
     const // (undocumented)
       mock: (
         partialImpl?: Partial<RootLoggerService> | undefined,
@@ -337,7 +339,7 @@ export namespace mockServices {
   // (undocumented)
   export namespace tokenManager {
     const // (undocumented)
-      factory: () => ServiceFactory<TokenManagerService, 'plugin'>;
+      factory: ServiceFactoryCompat<TokenManagerService, 'plugin', undefined>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<TokenManagerService> | undefined,
