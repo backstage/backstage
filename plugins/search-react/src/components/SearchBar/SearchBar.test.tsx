@@ -298,4 +298,37 @@ describe('SearchBar', () => {
 
     expect(analyticsApiMock.getEvents()).toHaveLength(0);
   });
+
+  it('Renders custom search icon', async () => {
+    const CustomSearchIcon = () => (
+      <svg>
+        <path id="custom-search-icon" />
+      </svg>
+    );
+
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [configApiRef, configApiMock],
+          [searchApiRef, searchApiMock],
+        ]}
+      >
+        <SearchContextProvider>
+          <SearchBar />
+        </SearchContextProvider>
+      </TestApiProvider>,
+      {
+        icons: {
+          search: CustomSearchIcon,
+        },
+      },
+    );
+
+    const queryButton = screen.getByLabelText('Query');
+
+    expect(queryButton).toBeInTheDocument();
+    expect(queryButton.innerHTML).toContain(
+      '<svg><path id="custom-search-icon"></path></svg>',
+    );
+  });
 });
