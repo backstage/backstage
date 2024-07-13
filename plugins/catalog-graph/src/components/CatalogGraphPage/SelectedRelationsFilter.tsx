@@ -26,6 +26,9 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useCallback, useMemo } from 'react';
 import { RelationPairs } from '../EntityRelationsGraph';
 
+/** @public */
+export type SelectedRelationsFilterClassKey = 'formControl';
+
 const useStyles = makeStyles(
   {
     formControl: {

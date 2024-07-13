@@ -60,6 +60,12 @@ export const catalogGraphPlugin: BackstagePlugin<
 // @public
 export const catalogGraphRouteRef: RouteRef<undefined>;
 
+// @public (undocumented)
+export type CustomLabelClassKey = 'text' | 'secondary';
+
+// @public (undocumented)
+export type CustomNodeClassKey = 'node' | 'text' | 'clickable';
+
 // @public
 export enum Direction {
   BOTTOM_TOP = 'BT',
@@ -106,6 +112,9 @@ export type EntityNodeData = {
 export const EntityRelationsGraph: (
   props: EntityRelationsGraphProps,
 ) => React_2.JSX.Element;
+
+// @public (undocumented)
+export type EntityRelationsGraphClassKey = 'progress' | 'container' | 'graph';
 
 // @public (undocumented)
 export type EntityRelationsGraphProps = {

@@ -58,10 +58,11 @@ const useStyles = makeStyles(
       overflow: 'hidden',
     },
   },
-  {
-    name: 'CatalogReactEntityOwnerPicker',
-  },
+  { name: 'CatalogReactEntityOwnerPicker' },
 );
+
+/** @public */
+export type FixedWidthFormControlLabelClassKey = 'label' | 'root';
 
 const FixedWidthFormControlLabel = withStyles(
   _theme => ({

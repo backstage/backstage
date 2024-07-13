@@ -30,6 +30,12 @@ import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
 import { catalogTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 
+/** @public */
+export type CatalogSearchResultListItemClassKey =
+  | 'item'
+  | 'flexContainer'
+  | 'itemText';
+
 const useStyles = makeStyles(
   {
     item: {

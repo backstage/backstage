@@ -28,6 +28,9 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 
+/** @public */
+export type SelectedKindsFilterClassKey = 'formControl';
+
 const useStyles = makeStyles(
   {
     formControl: {

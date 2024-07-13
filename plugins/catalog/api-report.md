@@ -222,6 +222,9 @@ export interface CatalogTableRow {
 }
 
 // @public (undocumented)
+export type CatalogTableToolbarClassKey = 'root' | 'text';
+
+// @public (undocumented)
 export type ColumnBreakpoints = Record<Breakpoint, number>;
 
 // @public
@@ -383,6 +386,9 @@ export interface EntityLabelsCardProps {
   // (undocumented)
   variant?: InfoCardVariants;
 }
+
+// @public (undocumented)
+export type EntityLabelsEmptyStateClassKey = 'code';
 
 // @public
 export const EntityLayout: {
@@ -595,6 +601,9 @@ export type PluginCatalogComponentsNameToClassKey = {
   PluginCatalogEntityLinksEmptyState: EntityLinksEmptyStateClassKey;
   PluginCatalogSystemDiagramCard: SystemDiagramCardClassKey;
   PluginCatalogEntityContextMenu: EntityContextMenuClassKey;
+  CatalogSearchResultListItem: CatalogSearchResultListItemClassKey;
+  pluginCatalogTableToolbar: CatalogTableToolbarClassKey;
+  PluginCatalogEntityLabelsEmptyState: EntityLabelsEmptyStateClassKey;
 };
 
 // @public (undocumented)
@@ -622,4 +631,8 @@ export type SystemDiagramCardClassKey =
   | 'componentNode'
   | 'apiNode'
   | 'resourceNode';
+
+// Warnings were encountered during analysis:
+//
+// src/overridableComponents.d.ts:14:5 - (ae-forgotten-export) The symbol "CatalogSearchResultListItemClassKey" needs to be exported by the entry point index.d.ts
 ```

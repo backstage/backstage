@@ -14,3 +14,8 @@
  * limitations under the License.
  */
 export { CatalogGraphPage } from './CatalogGraphPage';
+export type { CatalogGraphPageClassKey } from './CatalogGraphPage';
+export type { MaxDepthFilterClassKey } from './MaxDepthFilter';
+export type { SelectedKindsFilterClassKey } from './SelectedKindsFilter';
+export type { SelectedRelationsFilterClassKey } from './SelectedRelationsFilter';
+export type { SwitchFilterClassKey } from './SwitchFilter';
