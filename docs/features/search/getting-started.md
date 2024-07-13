@@ -133,79 +133,34 @@ For more information about using `Root.tsx`, please see
 Add the following plugins into your backend app:
 
 ```bash title="From your Backstage root directory"
-yarn --cwd packages/backend add @backstage/plugin-search-backend @backstage/plugin-search-backend-node
+yarn --cwd packages/backend add @backstage/plugin-search-backend @backstage/plugin-search-backend-module-pg @backstage/plugin-search-backend-module-catalog @backstage/plugin-search-backend-module-techdocs
 ```
 
-Create a `packages/backend/src/plugins/search.ts` file containing the following
-code:
+Then add the following lines:
 
-```typescript
-import { useHotCleanup } from '@backstage/backend-common';
-import { createRouter } from '@backstage/plugin-search-backend';
-import {
-  IndexBuilder,
-  LunrSearchEngine,
-} from '@backstage/plugin-search-backend-node';
-import { PluginEnvironment } from '../types';
-import { DefaultCatalogCollator } from '@backstage/plugin-catalog-backend';
-import { Router } from 'express';
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
 
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  const searchEngine = new LunrSearchEngine({
-    logger: env.logger,
-  });
-  const indexBuilder = new IndexBuilder({
-    logger: env.logger,
-    searchEngine,
-  });
+// Other plugins...
 
-  const every10MinutesSchedule = env.scheduler.createScheduledTaskRunner({
-    frequency: { minutes: 10 },
-    timeout: { minutes: 15 },
-    initialDelay: { seconds: 3 },
-  });
+/* highlight-add-start */
+// search plugin
+backend.add(import('@backstage/plugin-search-backend/alpha'));
 
-  indexBuilder.addCollator({
-    schedule: every10MinutesSchedule,
-    factory: DefaultCatalogCollatorFactory.fromConfig(env.config, {
-      discovery: env.discovery,
-      tokenManager: env.tokenManager,
-    }),
-  });
+// search engines
+backend.add(import('@backstage/plugin-search-backend-module-pg/alpha'));
 
-  const { scheduler } = await indexBuilder.build();
+// search collators
+backend.add(import('@backstage/plugin-search-backend-module-catalog/alpha'));
+backend.add(import('@backstage/plugin-search-backend-module-techdocs/alpha'));
+/* highlight-add-end */
 
-  scheduler.start();
-  useHotCleanup(module, () => scheduler.stop());
-
-  return await createRouter({
-    engine: indexBuilder.getSearchEngine(),
-    logger: env.logger,
-  });
-}
+backend.start();
 ```
 
-Make the following modifications to your `packages/backend/src/index.ts` file:
+With the above setup Search will use the [Lunr](https://github.com/olivernn/lunr.js) in-memory Search Engine but if your have Postgres setup as your database then it will use Postgres as your Search Engine. Learn more in the [Search Engines](./search-engines.md) documentation.
 
-Import the `plugins/search` file you created above:
-
-```typescript
-import search from './plugins/search';
-```
-
-Set up an environment for search:
-
-```typescript
-const searchEnv = useHotMemoize(module, () => createEnv('search'));
-```
-
-Register the search service with the router:
-
-```typescript
-apiRouter.use('/search', await search(searchEnv));
-```
+The above also sets up two Collators for you - Catalog and TechDocs - which will index content from these two locations so that you can easily search them. Learn more in the [Collators documentation](./collators.md).
 
 ## Customizing Search
 
