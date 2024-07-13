@@ -92,8 +92,10 @@ export type CatalogReactComponentsNameToClassKey = {
   CatalogReactEntitySearchBar: CatalogReactEntitySearchBarClassKey;
   CatalogReactEntityTagPicker: CatalogReactEntityTagPickerClassKey;
   CatalogReactEntityOwnerPicker: CatalogReactEntityOwnerPickerClassKey;
+  FixedWidthFormControlLabel: FixedWidthFormControlLabelClassKey;
   CatalogReactEntityProcessingStatusPicker: CatalogReactEntityProcessingStatusPickerClassKey;
   CatalogReactEntityAutocompletePickerClassKey: CatalogReactEntityAutocompletePickerClassKey;
+  BackstageMissingAnnotationEmptyState: MissingAnnotationEmptyStateClassKey;
 };
 
 // @public (undocumented)
@@ -648,6 +650,9 @@ export const FavoriteEntity: (
 export type FavoriteEntityProps = ComponentProps<typeof IconButton> & {
   entity: Entity;
 };
+
+// @public (undocumented)
+export type FixedWidthFormControlLabelClassKey = 'label' | 'root';
 
 // @public
 export function getEntityRelations(
