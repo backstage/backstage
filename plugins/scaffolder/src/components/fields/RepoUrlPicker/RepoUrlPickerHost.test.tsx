@@ -64,7 +64,7 @@ describe('RepoUrlPickerHostField', () => {
       </TestApiProvider>,
     );
 
-    fireEvent.mouseDown(getByTestId('select'));
+    fireEvent.mouseDown(getByTestId('host-select'));
     expect(getByText('gitlab.com')).toBeInTheDocument();
 
     const listbox = within(getByRole('combobox'));
@@ -93,7 +93,7 @@ describe('RepoUrlPickerHostField', () => {
       </TestApiProvider>,
     );
 
-    fireEvent.mouseDown(getByTestId('select'));
+    fireEvent.mouseDown(getByTestId('host-select'));
     expect(getByText('gitlab.com')).toBeInTheDocument();
 
     const listbox = within(getByRole('combobox'));

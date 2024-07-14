@@ -121,6 +121,8 @@ export interface RootHttpRouterConfigureContext {
   // (undocumented)
   config: RootConfigService;
   // (undocumented)
+  healthRouter: RequestHandler;
+  // (undocumented)
   lifecycle: LifecycleService;
   // (undocumented)
   logger: LoggerService;

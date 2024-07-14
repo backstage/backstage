@@ -194,6 +194,7 @@ export namespace coreServices {
   const rootConfig: ServiceRef<RootConfigService, 'root'>;
   const database: ServiceRef<DatabaseService, 'plugin'>;
   const discovery: ServiceRef<DiscoveryService, 'plugin'>;
+  const rootHealth: ServiceRef<RootHealthService, 'root'>;
   const httpAuth: ServiceRef<HttpAuthService, 'plugin'>;
   const httpRouter: ServiceRef<HttpRouterService, 'plugin'>;
   const lifecycle: ServiceRef<LifecycleService, 'plugin'>;
@@ -255,7 +256,7 @@ export function createServiceFactory<
   },
   TOpts extends object | undefined = undefined,
 >(
-  config: RootServiceFactoryConfig<TService, TImpl, TDeps>,
+  options: RootServiceFactoryOptions<TService, TImpl, TDeps>,
 ): () => ServiceFactory<TService, 'root'>;
 
 // @public
@@ -267,7 +268,9 @@ export function createServiceFactory<
   },
   TOpts extends object | undefined = undefined,
 >(
-  config: (options?: TOpts) => RootServiceFactoryConfig<TService, TImpl, TDeps>,
+  options: (
+    options?: TOpts,
+  ) => RootServiceFactoryOptions<TService, TImpl, TDeps>,
 ): (options?: TOpts) => ServiceFactory<TService, 'root'>;
 
 // @public
@@ -280,7 +283,7 @@ export function createServiceFactory<
   TContext = undefined,
   TOpts extends object | undefined = undefined,
 >(
-  config: PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>,
+  options: PluginServiceFactoryOptions<TService, TContext, TImpl, TDeps>,
 ): () => ServiceFactory<TService, 'plugin'>;
 
 // @public
@@ -293,19 +296,19 @@ export function createServiceFactory<
   TContext = undefined,
   TOpts extends object | undefined = undefined,
 >(
-  config: (
+  options: (
     options?: TOpts,
-  ) => PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>,
+  ) => PluginServiceFactoryOptions<TService, TContext, TImpl, TDeps>,
 ): (options?: TOpts) => ServiceFactory<TService, 'plugin'>;
 
 // @public
 export function createServiceRef<TService>(
-  config: ServiceRefConfig<TService, 'plugin'>,
+  options: ServiceRefOptions<TService, 'plugin'>,
 ): ServiceRef<TService, 'plugin'>;
 
 // @public
 export function createServiceRef<TService>(
-  config: ServiceRefConfig<TService, 'root'>,
+  options: ServiceRefOptions<TService, 'root'>,
 ): ServiceRef<TService, 'root'>;
 
 // @public
@@ -442,8 +445,18 @@ export interface PluginMetadataService {
   getId(): string;
 }
 
+// @public @deprecated (undocumented)
+export type PluginServiceFactoryConfig<
+  TService,
+  TContext,
+  TImpl extends TService,
+  TDeps extends {
+    [name in string]: ServiceRef<unknown>;
+  },
+> = PluginServiceFactoryOptions<TService, TContext, TImpl, TDeps>;
+
 // @public (undocumented)
-export interface PluginServiceFactoryConfig<
+export interface PluginServiceFactoryOptions<
   TService,
   TContext,
   TImpl extends TService,
@@ -500,6 +513,18 @@ export function resolveSafeChildPath(base: string, path: string): string;
 // @public
 export interface RootConfigService extends Config {}
 
+// @public (undocumented)
+export interface RootHealthService {
+  getLiveness(): Promise<{
+    status: number;
+    payload?: JsonValue;
+  }>;
+  getReadiness(): Promise<{
+    status: number;
+    payload?: JsonValue;
+  }>;
+}
+
 // @public
 export interface RootHttpRouterService {
   use(path: string, handler: Handler): void;
@@ -511,8 +536,17 @@ export interface RootLifecycleService extends LifecycleService {}
 // @public
 export interface RootLoggerService extends LoggerService {}
 
+// @public @deprecated (undocumented)
+export type RootServiceFactoryConfig<
+  TService,
+  TImpl extends TService,
+  TDeps extends {
+    [name in string]: ServiceRef<unknown>;
+  },
+> = RootServiceFactoryOptions<TService, TImpl, TDeps>;
+
 // @public (undocumented)
-export interface RootServiceFactoryConfig<
+export interface RootServiceFactoryOptions<
   TService,
   TImpl extends TService,
   TDeps extends {
@@ -625,8 +659,14 @@ export type ServiceRef<
   $$type: '@backstage/ServiceRef';
 };
 
+// @public @deprecated (undocumented)
+export type ServiceRefConfig<
+  TService,
+  TScope extends 'root' | 'plugin',
+> = ServiceRefOptions<TService, TScope>;
+
 // @public (undocumented)
-export interface ServiceRefConfig<TService, TScope extends 'root' | 'plugin'> {
+export interface ServiceRefOptions<TService, TScope extends 'root' | 'plugin'> {
   // (undocumented)
   defaultFactory?: (
     service: ServiceRef<TService, TScope>,

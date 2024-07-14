@@ -146,15 +146,11 @@ export const httpAuthServiceFactory: () => ServiceFactory<
   'plugin'
 >;
 
-// Warning: (ae-forgotten-export) The symbol "HttpRouterFactoryOptions_2" needs to be exported by the entry point index.d.ts
-//
-// @public @deprecated (undocumented)
-export type HttpRouterFactoryOptions = HttpRouterFactoryOptions_2;
-
 // @public @deprecated
-export const httpRouterServiceFactory: (
-  options?: HttpRouterFactoryOptions_2 | undefined,
-) => ServiceFactory<HttpRouterService, 'plugin'>;
+export const httpRouterServiceFactory: () => ServiceFactory<
+  HttpRouterService,
+  'plugin'
+>;
 
 // Warning: (ae-forgotten-export) The symbol "HttpServerCertificateOptions_2" needs to be exported by the entry point index.d.ts
 //

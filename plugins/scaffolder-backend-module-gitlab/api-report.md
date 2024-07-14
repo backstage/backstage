@@ -211,6 +211,7 @@ export const createTriggerGitlabPipelineAction: (options: {
     projectId: number;
     tokenDescription: string;
     token?: string | undefined;
+    variables?: Record<string, string> | undefined;
   },
   {
     pipelineUrl: string;

@@ -22,7 +22,6 @@ import { EventsService } from '@backstage/plugin-events-node';
 import { ExtendedHttpServer } from '@backstage/backend-app-api';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
-import { HttpRouterFactoryOptions } from '@backstage/backend-defaults/httpRouter';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
 import { IdentityService } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
@@ -32,6 +31,7 @@ import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
+import { RootHealthService } from '@backstage/backend-plugin-api';
 import { RootHttpRouterFactoryOptions } from '@backstage/backend-defaults/rootHttpRouter';
 import { RootHttpRouterService } from '@backstage/backend-plugin-api';
 import { RootLifecycleService } from '@backstage/backend-plugin-api';
@@ -54,7 +54,7 @@ export interface CreateMockDirectoryOptions {
   mockOsTmpDir?: boolean;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function isDockerDisabledForTests(): boolean;
 
 // @public (undocumented)
@@ -220,9 +220,7 @@ export namespace mockServices {
   // (undocumented)
   export namespace httpRouter {
     const // (undocumented)
-      factory: (
-        options?: HttpRouterFactoryOptions | undefined,
-      ) => ServiceFactory<HttpRouterService, 'plugin'>;
+      factory: () => ServiceFactory<HttpRouterService, 'plugin'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<HttpRouterService> | undefined,
@@ -278,6 +276,15 @@ export namespace mockServices {
       factory: (
         options?: Options | undefined,
       ) => ServiceFactory<RootConfigService, 'root'>;
+  }
+  // (undocumented)
+  export namespace rootHealth {
+    const // (undocumented)
+      factory: () => ServiceFactory<RootHealthService, 'root'>;
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<RootHealthService> | undefined,
+      ) => ServiceMock<RootHealthService>;
   }
   // (undocumented)
   export namespace rootHttpRouter {
@@ -366,6 +373,7 @@ export class ServiceFactoryTester<TService, TScope extends 'root' | 'plugin'> {
       | (() => ServiceFactory<TService, TScope>),
     options?: ServiceFactoryTesterOptions,
   ): ServiceFactoryTester<TService, TScope>;
+  // @deprecated
   get(
     ...args: 'root' extends TScope ? [] : [pluginId?: string]
   ): Promise<TService>;
@@ -373,6 +381,9 @@ export class ServiceFactoryTester<TService, TScope extends 'root' | 'plugin'> {
     service: ServiceRef<TGetService, TGetScope>,
     ...args: 'root' extends TGetScope ? [] : [pluginId?: string]
   ): Promise<TGetService>;
+  getSubject(
+    ...args: 'root' extends TScope ? [] : [pluginId?: string]
+  ): Promise<TService>;
 }
 
 // @public

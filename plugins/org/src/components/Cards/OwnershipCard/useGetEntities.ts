@@ -32,7 +32,7 @@ import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/esm/useAsync';
 import qs from 'qs';
 import { EntityRelationAggregation } from '../types';
-import { uniq } from 'lodash';
+import { uniq, uniqBy } from 'lodash';
 
 const limiter = limiterFactory(5);
 
@@ -125,11 +125,11 @@ const getChildOwnershipEntityRefs = async (
 
 const getOwners = async (
   entity: Entity,
-  relations: EntityRelationAggregation,
+  relationAggregation: EntityRelationAggregation,
   catalogApi: CatalogApi,
 ): Promise<string[]> => {
   const isGroup = entity.kind === 'Group';
-  const isAggregated = relations === 'aggregated';
+  const isAggregated = relationAggregation === 'aggregated';
   const isUserEntity = entity.kind === 'User';
 
   if (isAggregated && isGroup) {
@@ -143,30 +143,46 @@ const getOwners = async (
   return [stringifyEntityRef(entity)];
 };
 
-const getOwnedEntitiesByOwners = (
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+const batchGetOwnedEntitiesByOwners = async (
   owners: string[],
   kinds: string[],
   catalogApi: CatalogApi,
-) =>
-  catalogApi.getEntities({
-    filter: [
-      {
-        kind: kinds,
-        'relations.ownedBy': owners,
-      },
-    ],
-    fields: [
-      'kind',
-      'metadata.name',
-      'metadata.namespace',
-      'spec.type',
-      'relations',
-    ],
-  });
+  batchSize: number = 100,
+  delayMs: number = 100,
+) => {
+  const results = [];
+
+  for (let i = 0; i < owners.length; i += batchSize) {
+    const batch = owners.slice(i, i + batchSize);
+    const response = await catalogApi.getEntities({
+      filter: [
+        {
+          kind: kinds,
+          'relations.ownedBy': batch,
+        },
+      ],
+      fields: [
+        'kind',
+        'metadata.name',
+        'metadata.namespace',
+        'spec.type',
+        'relations',
+      ],
+    });
+
+    results.push(...response.items);
+
+    if (i + batchSize < owners.length) await delay(delayMs);
+  }
+
+  return uniqBy(results, stringifyEntityRef);
+};
 
 export function useGetEntities(
   entity: Entity,
-  relations: EntityRelationAggregation,
+  relationAggregation: EntityRelationAggregation,
   entityFilterKind?: string[],
   entityLimit = 6,
 ): {
@@ -189,15 +205,15 @@ export function useGetEntities(
     error,
     value: componentsWithCounters,
   } = useAsync(async () => {
-    const owners = await getOwners(entity, relations, catalogApi);
+    const owners = await getOwners(entity, relationAggregation, catalogApi);
 
-    const ownedEntitiesList = await getOwnedEntitiesByOwners(
+    const ownedEntitiesList = await batchGetOwnedEntitiesByOwners(
       owners,
       kinds,
       catalogApi,
     );
 
-    const counts = ownedEntitiesList.items.reduce(
+    const counts = ownedEntitiesList.reduce(
       (acc: EntityTypeProps[], ownedEntity) => {
         const match = acc.find(
           x => x.kind === ownedEntity.kind && x.type === ownedEntity.spec?.type,
@@ -230,7 +246,7 @@ export function useGetEntities(
       kind: string;
       queryParams: string;
     }>;
-  }, [catalogApi, entity, relations]);
+  }, [catalogApi, entity, relationAggregation]);
 
   return {
     componentsWithCounters,

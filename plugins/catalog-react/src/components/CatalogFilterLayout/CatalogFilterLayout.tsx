@@ -23,6 +23,8 @@ import Typography from '@material-ui/core/Typography';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { Theme, useTheme } from '@material-ui/core/styles';
 import FilterListIcon from '@material-ui/icons/FilterList';
+import { catalogReactTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export const Filters = (props: {
@@ -37,6 +39,7 @@ export const Filters = (props: {
   );
   const theme = useTheme();
   const [filterDrawerOpen, setFilterDrawerOpen] = useState<boolean>(false);
+  const { t } = useTranslationRef(catalogReactTranslationRef);
 
   return isScreenSmallerThanBreakpoint ? (
     <>
@@ -45,7 +48,7 @@ export const Filters = (props: {
         onClick={() => setFilterDrawerOpen(true)}
         startIcon={<FilterListIcon />}
       >
-        Filters
+        {t('catalogFilter.buttonTitle')}
       </Button>
       <Drawer
         open={filterDrawerOpen}
@@ -61,7 +64,7 @@ export const Filters = (props: {
             component="h2"
             style={{ marginBottom: theme.spacing(1) }}
           >
-            Filters
+            {t('catalogFilter.title')}
           </Typography>
           {props.children}
         </Box>

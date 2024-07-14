@@ -22,6 +22,8 @@ import { useNavigate } from 'react-router-dom';
 import { DeleteEntityDialog } from './DeleteEntityDialog';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { rootRouteRef } from '../../routes';
+import { catalogTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /**
  * Returns true if the given entity has the orphan annotation given by the
@@ -44,6 +46,7 @@ export function EntityOrphanWarning() {
   const catalogLink = useRouteRef(rootRouteRef);
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
   const { entity } = useEntity();
+  const { t } = useTranslationRef(catalogTranslationRef);
 
   const cleanUpAfterRemoval = async () => {
     setConfirmationDialogOpen(false);
@@ -53,8 +56,7 @@ export function EntityOrphanWarning() {
   return (
     <>
       <Alert severity="warning" onClick={() => setConfirmationDialogOpen(true)}>
-        This entity is not referenced by any location and is therefore not
-        receiving updates. Click here to delete.
+        {t('deleteEntity.description')}
       </Alert>
       <DeleteEntityDialog
         open={confirmationDialogOpen}

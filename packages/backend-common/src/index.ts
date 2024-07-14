@@ -22,5 +22,3 @@
 
 export * from './deprecated';
 export * from './compat';
-export * from './middleware';
-export * from './service';
