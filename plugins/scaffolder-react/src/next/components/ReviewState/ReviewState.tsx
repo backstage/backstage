@@ -18,7 +18,7 @@ import { StructuredMetadataTable } from '@backstage/core-components';
 import { JsonObject } from '@backstage/types';
 import { Draft07 as JSONSchema } from 'json-schema-library';
 import { ParsedTemplateSchema } from '../../hooks/useTemplateSchema';
-import { flattenObject, isJsonObject } from './util';
+import { processEntry } from './util';
 
 /**
  * The props for the {@link ReviewState} component.
@@ -38,49 +38,11 @@ export const ReviewState = (props: ReviewStateProps) => {
     Object.entries(props.formState)
       .flatMap(([key, value]) => {
         for (const step of props.schemas) {
-          const parsedSchema = new JSONSchema(step.mergedSchema);
-          const definitionInSchema = parsedSchema.getSchema({
-            pointer: `#/${key}`,
-            data: props.formState,
-          });
-
-          if (definitionInSchema) {
-            const backstageReviewOptions =
-              definitionInSchema['ui:backstage']?.review;
-
-            if (backstageReviewOptions) {
-              if (backstageReviewOptions.mask) {
-                return [[key, backstageReviewOptions.mask]];
-              }
-              if (backstageReviewOptions.show === false) {
-                return [];
-              }
-              if (backstageReviewOptions.explode && isJsonObject(value)) {
-                return flattenObject(value, key, parsedSchema, props.formState);
-              }
-            }
-
-            if (definitionInSchema['ui:widget'] === 'password') {
-              return [[key, '******']];
-            }
-
-            if (definitionInSchema.enum && definitionInSchema.enumNames) {
-              return [
-                [
-                  key,
-                  definitionInSchema.enumNames[
-                    definitionInSchema.enum.indexOf(value)
-                  ] || value,
-                ],
-              ];
-            }
-          }
+          return processEntry(key, value, step, props.formState);
         }
-
         return [[key, value]];
       })
       .filter(prop => prop.length > 0),
   );
-
   return <StructuredMetadataTable metadata={reviewData} />;
 };
