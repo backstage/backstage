@@ -184,8 +184,7 @@ Catalog errors are published to the [events plugin](https://github.com/backstage
 
 The first step is to add the events backend plugin to your Backstage application. Navigate to your Backstage application directory and add the plugin package.
 
-```ts
-# From your Backstage root directory
+```ts title="From your Backstage root directory"
 yarn --cwd packages/backend add @backstage/plugin-events-backend
 ```
 
@@ -201,8 +200,7 @@ If you want to log catalog errors you can install the `@backstage/plugin-catalog
 
 Install the catalog logs module.
 
-```ts
-# From your Backstage root directory
+```ts title="From your Backstage root directory"
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-logs
 ```
 

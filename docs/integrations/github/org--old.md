@@ -29,8 +29,7 @@ the Processor method (not recommended), it is described separately below.
 The provider is not installed by default, therefore you have to add a dependency
 to `@backstage/plugin-catalog-backend-module-github` to your backend package.
 
-```bash
-# From your Backstage root directory
+```bash title="From your Backstage root directory"
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-github
 ```
 
@@ -334,8 +333,7 @@ frequency with which they are refreshed, separately from other processors.
 The `GithubOrgReaderProcessor` is not registered by default, so you have to
 install and register it in the catalog plugin:
 
-```bash
-# From your Backstage root directory
+```bash title="From your Backstage root directory"
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-github
 ```
 

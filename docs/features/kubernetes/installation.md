@@ -15,8 +15,7 @@ If you haven't setup Backstage already, read the
 The first step is to add the Kubernetes frontend plugin to your Backstage
 application.
 
-```bash
-# From your Backstage root directory
+```bash title="From your Backstage root directory"
 yarn --cwd packages/app add @backstage/plugin-kubernetes
 ```
 
@@ -53,8 +52,7 @@ work.
 Navigate to `packages/backend` of your Backstage app, and install the
 `@backstage/plugin-kubernetes-backend` package.
 
-```bash
-# From your Backstage root directory
+```bash title="From your Backstage root directory"
 yarn --cwd packages/backend add @backstage/plugin-kubernetes-backend
 ```
 
@@ -109,8 +107,7 @@ To get the Kubernetes plugin install using the New Backend System you will need 
 
 Run this command to add the package:
 
-```bash
-# From your Backstage root directory
+```bash title="From your Backstage root directory"
 yarn --cwd packages/backend add @backstage/plugin-kubernetes-backend
 ```
 
