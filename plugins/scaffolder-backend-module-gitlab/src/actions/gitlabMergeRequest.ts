@@ -33,13 +33,13 @@ function getFileAction(
   remoteFiles: Types.RepositoryTreeSchema[],
   defaultCommitAction: 'create' | 'delete' | 'update' | 'auto' | undefined,
 ): 'create' | 'delete' | 'update' {
-  if (defaultCommitAction === 'auto') {
+  if (!defaultCommitAction || defaultCommitAction === 'auto') {
     return remoteFiles &&
       remoteFiles.some(remoteFile => remoteFile.path === file.path)
       ? 'update'
       : 'create';
   }
-  return defaultCommitAction ?? 'create';
+  return defaultCommitAction;
 }
 
 /**
@@ -126,7 +126,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
             type: 'string',
             enum: ['create', 'update', 'delete', 'auto'],
             description:
-              'The action to be used for git commit. Defaults to create. "auto" is custom action provide by backstage, (automatic assign create or update action) /!\\ Use more api calls /!\\ *',
+              'The action to be used for git commit. Defaults to auto. "auto" is custom action provide by backstage, (automatic assign create or update action) /!\\ Use more api calls /!\\ *',
           },
           removeSourceBranch: {
             title: 'Delete source branch',
