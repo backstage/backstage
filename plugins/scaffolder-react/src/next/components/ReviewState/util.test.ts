@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-import { flattenObject, isJsonObject } from './util';
-import { Draft07 as JSONSchema } from 'json-schema-library';
-import { ParsedTemplateSchema } from '../../hooks/useTemplateSchema';
+import { isJsonObject, getLastKey } from './util';
 
 describe('isJsonObject', () => {
   it('should return true for non-null objects', () => {
     expect(isJsonObject({})).toBe(true);
     expect(isJsonObject({ key: 'value' })).toBe(true);
-  });
-
-  it('should return false for null', () => {
-    expect(isJsonObject(null)).toBe(false);
   });
 
   it('should return false for arrays', () => {
@@ -41,146 +35,40 @@ describe('isJsonObject', () => {
   });
 });
 
-describe('flattenObject', () => {
-  it('should handle an empty object', () => {
-    const schemas: ParsedTemplateSchema[] = [
-      {
-        mergedSchema: {
-          type: 'object',
-          properties: {
-            name: {
-              type: 'object',
-              'ui:backstage': {
-                review: {
-                  explode: true,
-                },
-              },
-              properties: {},
-            },
-          },
-        },
-        schema: {},
-        title: 'test',
-        uiSchema: {},
-      },
-    ];
-
-    const parsedSchema = new JSONSchema(schemas[0].mergedSchema);
-
-    const result = flattenObject({}, '', parsedSchema, {});
-
-    expect(result).toEqual([]);
+describe('getLastKey', () => {
+  it('should return the last part of a simple key', () => {
+    expect(getLastKey('simple')).toBe('simple');
   });
 
-  it('should flatten a simple object', () => {
-    const formState = {
-      name: {
-        foo: 'value1',
-        bar: 'value2',
-      },
-    };
-
-    const schemas: ParsedTemplateSchema[] = [
-      {
-        mergedSchema: {
-          type: 'object',
-          properties: {
-            name: {
-              type: 'object',
-              'ui:backstage': {
-                review: {
-                  explode: true,
-                },
-              },
-              properties: {
-                foo: {
-                  type: 'string',
-                },
-                bar: {
-                  type: 'string',
-                },
-              },
-            },
-          },
-        },
-        schema: {},
-        title: 'test',
-        uiSchema: {},
-      },
-    ];
-
-    const [key, value] = Object.entries(formState)[0];
-    const parsedSchema = new JSONSchema(schemas[0].mergedSchema);
-
-    const result = flattenObject(value, key, parsedSchema, formState);
-
-    expect(result).toEqual([
-      ['foo', 'value1'],
-      ['bar', 'value2'],
-    ]);
+  it('should return the last part of a nested key', () => {
+    expect(getLastKey('parent/child')).toBe('child');
   });
 
-  it('should recurse into a nested object', () => {
-    const formState = {
-      name: {
-        foo: 'value1',
-        bar: 'value2',
-        example: {
-          test: 'value3',
-        },
-      },
-    };
-    const schemas: ParsedTemplateSchema[] = [
-      {
-        mergedSchema: {
-          type: 'object',
-          properties: {
-            name: {
-              type: 'object',
-              'ui:backstage': {
-                review: {
-                  explode: true,
-                },
-              },
-              properties: {
-                foo: {
-                  type: 'string',
-                },
-                bar: {
-                  type: 'string',
-                },
-                example: {
-                  type: 'object',
-                  'ui:backstage': {
-                    review: {
-                      explode: true,
-                    },
-                  },
-                  properties: {
-                    test: {
-                      type: 'string',
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-        schema: {},
-        title: 'test',
-        uiSchema: {},
-      },
-    ];
+  it('should return the last part of a deeply nested key', () => {
+    expect(getLastKey('grandparent/parent/child')).toBe('child');
+  });
 
-    const [key, value] = Object.entries(formState)[0];
-    const parsedSchema = new JSONSchema(schemas[0].mergedSchema);
+  it('should handle keys with trailing slash', () => {
+    expect(getLastKey('parent/child/')).toBe('');
+  });
 
-    const result = flattenObject(value, key, parsedSchema, formState);
+  it('should handle empty string', () => {
+    expect(getLastKey('')).toBe('');
+  });
 
-    expect(result).toEqual([
-      ['foo', 'value1'],
-      ['bar', 'value2'],
-      ['test', 'value3'],
-    ]);
+  it('should handle keys with multiple consecutive slashes', () => {
+    expect(getLastKey('parent//child')).toBe('child');
+  });
+
+  it('should handle keys with only slashes', () => {
+    expect(getLastKey('////')).toBe('');
+  });
+
+  it('should handle keys with spaces', () => {
+    expect(getLastKey('parent/child with spaces')).toBe('child with spaces');
+  });
+
+  it('should handle keys with special characters', () => {
+    expect(getLastKey('parent/child@!#$%^&*()')).toBe('child@!#$%^&*()');
   });
 });

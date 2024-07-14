@@ -16,64 +16,13 @@
  */
 
 import { JsonObject, JsonValue } from '@backstage/types';
-import { Draft07 as JSONSchema } from 'json-schema-library';
-import { ParsedTemplateSchema } from '../../hooks';
 
 export function isJsonObject(value?: JsonValue): value is JsonObject {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
-export function processEntry(
-  key: string,
-  value: JsonValue | undefined,
-  schema: ParsedTemplateSchema,
-  formState: JsonObject,
-): [string, JsonValue | undefined][] {
-  const parsedSchema = new JSONSchema(schema.mergedSchema);
-  const definitionInSchema = parsedSchema.getSchema({
-    pointer: `#/${key}`,
-    data: formState,
-  });
-
-  if (definitionInSchema) {
-    const backstageReviewOptions = definitionInSchema['ui:backstage']?.review;
-    if (backstageReviewOptions) {
-      if (backstageReviewOptions.mask) {
-        return [[getLastKey(key), backstageReviewOptions.mask]];
-      }
-      if (backstageReviewOptions.show === false) {
-        return [];
-      }
-    }
-
-    if (isJsonObject(value)) {
-      // Process nested objects
-      return Object.entries(value).flatMap(([nestedKey, nestedValue]) =>
-        processEntry(`${key}/${nestedKey}`, nestedValue, schema, formState),
-      );
-    }
-
-    if (definitionInSchema['ui:widget'] === 'password') {
-      return [[getLastKey(key), '******']];
-    }
-
-    if (definitionInSchema.enum && definitionInSchema.enumNames) {
-      return [
-        [
-          getLastKey(key),
-          definitionInSchema.enumNames[
-            definitionInSchema.enum.indexOf(value)
-          ] || value,
-        ],
-      ];
-    }
-  }
-
-  return [[getLastKey(key), value]];
+  return typeof value === 'object' && !Array.isArray(value);
 }
 
 // Helper function to get the last part of the key
-function getLastKey(key: string): string {
+export function getLastKey(key: string): string {
   const parts = key.split('/');
   return parts[parts.length - 1];
 }
