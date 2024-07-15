@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder': patch
 ---
 
-Cleaned up codebase
+Cleaned up codebase of RepoUrlPicker
