@@ -17,7 +17,7 @@ import React, { useEffect, useState } from 'react';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import { Select, SelectItem } from '@backstage/core-components';
-import { RepoUrlPickerState } from './types';
+import { BaseRepoUrlPickerProps } from './types';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
 import useDebounce from 'react-use/esm/useDebounce';
@@ -33,14 +33,13 @@ import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
  * @param allowedProjects - Allowed projects for the Bitbucket cloud repository
  *
  */
-export const BitbucketRepoPicker = (props: {
-  allowedOwners?: string[];
-  allowedProjects?: string[];
-  onChange: (state: RepoUrlPickerState) => void;
-  state: RepoUrlPickerState;
-  rawErrors: string[];
-  accessToken?: string;
-}) => {
+export const BitbucketRepoPicker = (
+  props: BaseRepoUrlPickerProps<{
+    allowedOwners?: string[];
+    allowedProjects?: string[];
+    accessToken?: string;
+  }>,
+) => {
   const {
     allowedOwners = [],
     allowedProjects = [],
