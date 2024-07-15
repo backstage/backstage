@@ -24,7 +24,7 @@ import { Config } from '@backstage/config';
 import ESLintPlugin from 'eslint-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import { ModuleFederationPlugin } from '@module-federation/enhanced';
+import { ModuleFederationPlugin } from '@module-federation/enhanced/webpack';
 import { LinkedPackageResolvePlugin } from './LinkedPackageResolvePlugin';
 import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
 import { RunScriptWebpackPlugin } from 'run-script-webpack-plugin';
