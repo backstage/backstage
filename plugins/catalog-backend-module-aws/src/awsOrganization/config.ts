@@ -22,6 +22,7 @@ import { Config } from '@backstage/config';
 export type AwsOrganizationProviderConfig = {
   /**
    * The role to assume for the processor.
+   * @deprecated Use `accountId` instead.
    */
   roleArn?: string;
 
