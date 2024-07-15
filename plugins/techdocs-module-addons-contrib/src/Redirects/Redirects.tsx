@@ -18,7 +18,7 @@ import {
   useShadowRootElements,
   useTechDocsReaderPage,
 } from '@backstage/plugin-techdocs-react';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import Alert from '@material-ui/lab/Alert';
 import { makeStyles } from '@material-ui/core';
 
@@ -85,7 +85,7 @@ export const RedirectsAddon = () => {
   ) : (
     <Alert className={classes.root} severity="info">
       This TechDocs page has been decommissioned. Redirecting to the new
-      documentation location...{' '}
+      documentation location.
     </Alert>
   );
 };

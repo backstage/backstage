@@ -21,8 +21,14 @@ export const replaceMetaRedirects = (): Transformer => {
       const metaContent = elem.getAttribute('content');
       const metaRefresh = elem.getAttribute('http-equiv');
 
-      if (metaContent?.includes('url=') && metaRefresh === 'refresh') {
-        const redirectUrl = metaContent.split('url=')[1];
+      const metaContentParameters = metaContent?.split(';');
+      const urlParam = metaContentParameters?.find(parameter =>
+        parameter.includes('url='),
+      );
+
+      if (urlParam && metaRefresh === 'refresh') {
+        const redirectUrl = urlParam.split('url=')[1];
+
         const link = document.createElement('a');
         link.setAttribute('href', redirectUrl);
         link.textContent = 'techdocs_redirect';

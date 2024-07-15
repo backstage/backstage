@@ -253,9 +253,39 @@ export const LightBox = techdocsModuleAddonsContribPlugin.provide(
 );
 
 /**
- * This is a TechDocs addon.
+ * This TechDocs addon enables the mkdocs-redirects plugin to work in the TechDocs plugin. It renders an Alert in the TechDocs Subheader before redirecting to the new page.
  *
- * @public
+ * @example
+ * Here's a simple example:
+ * ```
+ * import {
+ *   DefaultTechDocsHome,
+ *   TechDocsIndexPage,
+ *   TechDocsReaderPage,
+ * } from '@backstage/plugin-techdocs';
+ * import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
+ * import { Redirects } from '@backstage/plugin-techdocs-module-addons-contrib';
+ *
+ *
+ * const AppRoutes = () => {
+ *   <FlatRoutes>
+ *     // other plugin routes
+ *     <Route path="/docs" element={<TechDocsIndexPage />}>
+ *       <DefaultTechDocsHome />
+ *     </Route>
+ *     <Route
+ *       path="/docs/:namespace/:kind/:name/*"
+ *       element={<TechDocsReaderPage />}
+ *     >
+ *       <TechDocsAddons>
+ *         <Redirects />
+ *       </TechDocsAddons>
+ *     </Route>
+ *   </FlatRoutes>;
+ * };
+ * ```
+ *
+ * @beta
  */
 export const Redirects = techdocsModuleAddonsContribPlugin.provide(
   createTechDocsAddonExtension({
