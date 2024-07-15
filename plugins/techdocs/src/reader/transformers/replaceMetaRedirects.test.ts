@@ -45,4 +45,20 @@ describe('replaceMetaRedirects', () => {
 
     expect(shadowDom.querySelector('meta')).toBeTruthy();
   });
+
+  it('does not replace if url is not present in content attribute', async () => {
+    const shadowDom = await createTestShadowDom(
+      `<meta http-equiv="refresh" content="0;">`,
+      { preTransformers: [replaceMetaRedirects()], postTransformers: [] },
+    );
+    expect(shadowDom.querySelector('meta')).toBeTruthy();
+  });
+
+  it('does not break when parsing url content attribute in non standard meta tag', async () => {
+    const shadowDom = await createTestShadowDom(
+      `<meta http-equiv="refresh" content="0; url=https://example.com; foo=test">`,
+      { preTransformers: [replaceMetaRedirects()], postTransformers: [] },
+    );
+    expect(shadowDom.querySelector('meta')).toBeFalsy();
+  });
 });
