@@ -19,7 +19,9 @@ export const replaceMetaRedirects = (): Transformer => {
   return dom => {
     for (const elem of Array.from(dom.querySelectorAll('meta'))) {
       const metaContent = elem.getAttribute('content');
-      if (metaContent?.includes('url=')) {
+      const metaRefresh = elem.getAttribute('http-equiv');
+
+      if (metaContent?.includes('url=') && metaRefresh === 'refresh') {
         const redirectUrl = metaContent.split('url=')[1];
         const link = document.createElement('a');
         link.setAttribute('href', redirectUrl);

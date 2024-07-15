@@ -260,7 +260,7 @@ export const LightBox = techdocsModuleAddonsContribPlugin.provide(
 export const Redirects = techdocsModuleAddonsContribPlugin.provide(
   createTechDocsAddonExtension({
     name: 'Redirects',
-    location: TechDocsAddonLocations.Content,
+    location: TechDocsAddonLocations.Subheader,
     component: RedirectsAddon,
   }),
 );
