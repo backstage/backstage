@@ -77,6 +77,7 @@ export type RepoBranchPickerUiOptions =
 
 export type RepoBranchPickerProps = typeof RepoBranchPickerFieldSchema.type;
 
+// This has been duplicated from /plugins/scaffolder/src/components/fields/RepoUrlPicker/schema.ts
 // NOTE: There is a bug with this failing validation in the custom field explorer due
 // to https://github.com/rjsf-team/react-jsonschema-form/issues/675 even if
 // requestUserCredentials is not defined
