@@ -145,9 +145,11 @@ export async function createConfig(
   }
 
   if (options.moduleFederation) {
+    const isRemote = options.moduleFederation?.mode === 'remote';
+
     plugins.push(
       new ModuleFederationPlugin({
-        ...(options.moduleFederation?.mode === 'remote' && {
+        ...(isRemote && {
           filename: 'remoteEntry.js',
           exposes: {
             '.': paths.targetEntry,
@@ -160,45 +162,45 @@ export async function createConfig(
           react: {
             singleton: true,
             requiredVersion: '*',
-            eager: true,
+            eager: !isRemote,
           },
           'react-dom': {
             singleton: true,
             requiredVersion: '*',
-            eager: true,
+            eager: !isRemote,
           },
           // React Router
           'react-router': {
             singleton: true,
             requiredVersion: '*',
-            eager: true,
+            eager: !isRemote,
           },
           'react-router-dom': {
             singleton: true,
             requiredVersion: '*',
-            eager: true,
+            eager: !isRemote,
           },
           // MUI v4
           '@material-ui/core/styles': {
             singleton: true,
             requiredVersion: '*',
-            eager: true,
+            eager: !isRemote,
           },
           '@material-ui/styles': {
             singleton: true,
             requiredVersion: '*',
-            eager: true,
+            eager: !isRemote,
           },
           // MUI v5
           '@mui/material/styles/': {
             singleton: true,
             requiredVersion: '*',
-            eager: true,
+            eager: !isRemote,
           },
           '@emotion/react': {
             singleton: true,
             requiredVersion: '*',
-            eager: true,
+            eager: !isRemote,
           },
         },
       }),
