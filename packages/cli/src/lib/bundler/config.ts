@@ -24,6 +24,7 @@ import { Config } from '@backstage/config';
 import ESLintPlugin from 'eslint-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
+import { ModuleFederationPlugin } from '@module-federation/enhanced';
 import { LinkedPackageResolvePlugin } from './LinkedPackageResolvePlugin';
 import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
 import { RunScriptWebpackPlugin } from 'run-script-webpack-plugin';
@@ -128,18 +129,81 @@ export async function createConfig(
     }),
   );
 
-  plugins.push(
-    new HtmlWebpackPlugin({
-      meta: {
-        'backstage-app-mode': options?.appMode ?? 'public',
-      },
-      template: paths.targetHtml,
-      templateParameters: {
-        publicPath,
-        config: frontendConfig,
-      },
-    }),
-  );
+  if (options.moduleFederation?.mode !== 'remote') {
+    plugins.push(
+      new HtmlWebpackPlugin({
+        meta: {
+          'backstage-app-mode': options?.appMode ?? 'public',
+        },
+        template: paths.targetHtml,
+        templateParameters: {
+          publicPath,
+          config: frontendConfig,
+        },
+      }),
+    );
+  }
+
+  if (options.moduleFederation) {
+    plugins.push(
+      new ModuleFederationPlugin({
+        ...(options.moduleFederation?.mode === 'remote' && {
+          filename: 'remoteEntry.js',
+          exposes: {
+            '.': paths.targetEntry,
+          },
+        }),
+        name: options.moduleFederation.name,
+        runtime: false,
+        shared: {
+          // React
+          react: {
+            singleton: true,
+            requiredVersion: '*',
+            eager: true,
+          },
+          'react-dom': {
+            singleton: true,
+            requiredVersion: '*',
+            eager: true,
+          },
+          // React Router
+          'react-router': {
+            singleton: true,
+            requiredVersion: '*',
+            eager: true,
+          },
+          'react-router-dom': {
+            singleton: true,
+            requiredVersion: '*',
+            eager: true,
+          },
+          // MUI v4
+          '@material-ui/core/styles': {
+            singleton: true,
+            requiredVersion: '*',
+            eager: true,
+          },
+          '@material-ui/styles': {
+            singleton: true,
+            requiredVersion: '*',
+            eager: true,
+          },
+          // MUI v5
+          '@mui/material/styles/': {
+            singleton: true,
+            requiredVersion: '*',
+            eager: true,
+          },
+          '@emotion/react': {
+            singleton: true,
+            requiredVersion: '*',
+            eager: true,
+          },
+        },
+      }),
+    );
+  }
 
   const buildInfo = await readBuildInfo();
   plugins.push(
@@ -211,8 +275,10 @@ export async function createConfig(
       rules: loaders,
     },
     output: {
+      uniqueName: options.moduleFederation?.name,
       path: paths.targetDist,
-      publicPath: `${publicPath}/`,
+      publicPath:
+        options.moduleFederation?.mode === 'remote' ? 'auto' : `${publicPath}/`,
       filename: isDev ? '[name].js' : 'static/[name].[fullhash:8].js',
       chunkFilename: isDev
         ? '[name].chunk.js'

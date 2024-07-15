@@ -24,6 +24,7 @@ interface BuildAppOptions {
   targetDir: string;
   writeStats: boolean;
   configPaths: string[];
+  moduleFederationMode?: 'host' | 'remote';
 }
 
 export async function buildFrontend(options: BuildAppOptions) {
@@ -34,6 +35,13 @@ export async function buildFrontend(options: BuildAppOptions) {
     entry: 'src/index',
     parallelism: getEnvironmentParallelism(),
     statsJsonEnabled: writeStats,
+    moduleFederation: options.moduleFederationMode && {
+      // The default output mode requires the name to be a usable as a code
+      // symbol, there might be better options here but for now we need to
+      // sanitize the name.
+      name: name.replaceAll('@', '').replaceAll(/[/\\_-]/g, '_'),
+      mode: options.moduleFederationMode,
+    },
     ...(await loadCliConfig({
       args: configPaths,
       fromPackage: name,

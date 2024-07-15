@@ -30,6 +30,13 @@ export const optimization = (
       new EsbuildPlugin({
         target: 'es2019',
         format: 'iife',
+        exclude: 'remoteEntry.js',
+      }),
+      // Avoid iife wrapping of module federation remote entry as it breaks the variable assignment
+      new EsbuildPlugin({
+        target: 'es2019',
+        format: undefined,
+        include: 'remoteEntry.js',
       }),
     ],
     runtimeChunk: 'single',
