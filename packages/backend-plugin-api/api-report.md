@@ -9,6 +9,7 @@ import { AuthorizePermissionRequest } from '@backstage/plugin-permission-common'
 import { AuthorizePermissionResponse } from '@backstage/plugin-permission-common';
 import { Config } from '@backstage/config';
 import { Duration } from 'luxon';
+import { EvaluatorRequestOptions } from '@backstage/plugin-permission-common';
 import { Handler } from 'express';
 import { HumanDuration } from '@backstage/types';
 import { IdentityApi } from '@backstage/plugin-auth-node';
@@ -423,22 +424,20 @@ export interface LoggerService {
 export interface PermissionsService extends PermissionEvaluator {
   authorize(
     requests: AuthorizePermissionRequest[],
-    options?: PermissionsServiceRequestOptions,
+    options: PermissionsServiceRequestOptions,
   ): Promise<AuthorizePermissionResponse[]>;
   authorizeConditional(
     requests: QueryPermissionRequest[],
-    options?: PermissionsServiceRequestOptions,
+    options: PermissionsServiceRequestOptions,
   ): Promise<QueryPermissionResponse[]>;
 }
 
 // @public
-export type PermissionsServiceRequestOptions =
-  | {
-      token?: string;
-    }
-  | {
-      credentials: BackstageCredentials;
-    };
+export interface PermissionsServiceRequestOptions
+  extends EvaluatorRequestOptions {
+  // (undocumented)
+  credentials: BackstageCredentials;
+}
 
 // @public
 export interface PluginMetadataService {
