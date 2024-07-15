@@ -19,29 +19,52 @@ import { resolve as resolvePath } from 'path';
 import { buildBundle } from '../../lib/bundler';
 import { getEnvironmentParallelism } from '../../lib/parallel';
 import { loadCliConfig } from '../../lib/config';
+import chalk from 'chalk';
+import { BuildOptions } from '../../lib/bundler/types';
 
 interface BuildAppOptions {
   targetDir: string;
   writeStats: boolean;
   configPaths: string[];
-  moduleFederationMode?: 'host' | 'remote';
+  isModuleFederationRemote?: true;
+}
+
+function getModuleFederationOptions(
+  name: string,
+  isRemote?: boolean,
+): BuildOptions['moduleFederation'] {
+  if (!isRemote && !process.env.EXPERIMENTAL_MODULE_FEDERATION) {
+    return undefined;
+  }
+
+  console.log(
+    chalk.yellow(
+      `⚠️  WARNING: Module federation is experimental and will receive immediate breaking changes in the future.`,
+    ),
+  );
+
+  return {
+    mode: isRemote ? 'remote' : 'host',
+    // The default output mode requires the name to be a usable as a code
+    // symbol, there might be better options here but for now we need to
+    // sanitize the name.
+    name: name.replaceAll('@', '').replaceAll('/', '__').replaceAll('-', '_'),
+  };
 }
 
 export async function buildFrontend(options: BuildAppOptions) {
   const { targetDir, writeStats, configPaths } = options;
   const { name } = await fs.readJson(resolvePath(targetDir, 'package.json'));
+
   await buildBundle({
     targetDir,
     entry: 'src/index',
     parallelism: getEnvironmentParallelism(),
     statsJsonEnabled: writeStats,
-    moduleFederation: options.moduleFederationMode && {
-      // The default output mode requires the name to be a usable as a code
-      // symbol, there might be better options here but for now we need to
-      // sanitize the name.
-      name: name.replaceAll('@', '').replaceAll(/[/\\_-]/g, '_'),
-      mode: options.moduleFederationMode,
-    },
+    moduleFederation: getModuleFederationOptions(
+      name,
+      options.isModuleFederationRemote,
+    ),
     ...(await loadCliConfig({
       args: configPaths,
       fromPackage: name,

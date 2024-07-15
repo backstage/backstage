@@ -36,19 +36,10 @@ export async function command(opts: OptionValues): Promise<void> {
     });
 
     if (role === 'frontend') {
-      const enableModuleFederation = process.env.EXPERIMENTAL_MODULE_FEDERATION;
-      if (enableModuleFederation) {
-        console.log(
-          chalk.yellow(
-            `⚠️  WARNING: Module federation is experimental and will receive immediate breaking changes in the future.`,
-          ),
-        );
-      }
       return buildFrontend({
         targetDir: paths.targetDir,
         configPaths,
         writeStats: Boolean(opts.stats),
-        moduleFederationMode: enableModuleFederation ? 'host' : undefined,
       });
     }
     return buildBackend({
@@ -70,7 +61,7 @@ export async function command(opts: OptionValues): Promise<void> {
       targetDir: paths.targetDir,
       configPaths: [],
       writeStats: Boolean(opts.stats),
-      moduleFederationMode: 'remote',
+      isModuleFederationRemote: true,
     });
   }
 
