@@ -29,13 +29,14 @@ import { createGitlabApi } from './helpers';
 import { examples } from './gitlabMergeRequest.examples';
 
 function getFileAction(
-  file: SerializedFile,
+  fileInfo: { file: SerializedFile; targetPath: string | undefined },
   remoteFiles: Types.RepositoryTreeSchema[],
   defaultCommitAction: 'create' | 'delete' | 'update' | 'auto' | undefined,
 ): 'create' | 'delete' | 'update' {
   if (!defaultCommitAction || defaultCommitAction === 'auto') {
+    const filePath = path.join(fileInfo.targetPath ?? '', fileInfo.file.path);
     return remoteFiles &&
-      remoteFiles.some(remoteFile => remoteFile.path === file.path)
+      remoteFiles.some(remoteFile => remoteFile.path === filePath)
       ? 'update'
       : 'create';
   }
@@ -223,7 +224,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
       }
 
       let remoteFiles: Types.RepositoryTreeSchema[] = [];
-      if (ctx.input.commitAction && ctx.input.commitAction === 'auto') {
+      if (!ctx.input.commitAction || ctx.input.commitAction === 'auto') {
         try {
           remoteFiles = await api.Repositories.tree(repoID, {
             ref: targetBranch,
@@ -238,7 +239,11 @@ export const createPublishGitlabMergeRequestAction = (options: {
       }
 
       const actions: Types.CommitAction[] = fileContents.map(file => ({
-        action: getFileAction(file, remoteFiles, ctx.input.commitAction),
+        action: getFileAction(
+          { file, targetPath },
+          remoteFiles,
+          ctx.input.commitAction,
+        ),
         filePath: targetPath
           ? path.posix.join(targetPath, file.path)
           : file.path,
