@@ -48,11 +48,7 @@ export interface TestBackendOptions<TExtensionPoints extends any[]> {
       ];
     },
   ];
-  features?: Array<
-    | BackendFeature
-    | (() => BackendFeature)
-    | Promise<{ default: BackendFeature | (() => BackendFeature) }>
-  >;
+  features?: Array<BackendFeature | Promise<{ default: BackendFeature }>>;
 }
 
 /** @public */
