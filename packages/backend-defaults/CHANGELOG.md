@@ -1,5 +1,19 @@
 # @backstage/backend-defaults
 
+## 0.4.1
+
+### Patch Changes
+
+- 882ac70: Fixed the routing of the new health check service, the health endpoints should now properly be available at `/.backstage/health/v1/readiness` and `/.backstage/health/v1/liveness`.
+- Updated dependencies
+  - @backstage/backend-app-api@0.8.0
+  - @backstage/backend-common@0.23.3
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/config-loader@1.8.1
+  - @backstage/plugin-auth-node@0.4.17
+  - @backstage/plugin-events-node@0.3.8
+  - @backstage/plugin-permission-node@0.8.0
+
 ## 0.4.0
 
 ### Minor Changes
