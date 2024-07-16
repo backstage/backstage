@@ -64,6 +64,21 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
   }
 
   async getSession(options: GetSessionOptions): Promise<T | undefined> {
+    // eslint-disable-next-line consistent-this
+    const that = this;
+    const createSession = async () => {
+      // We can call authRequester multiple times, the returned session will contain all requested scopes.
+      that.currentSession = await that.connector.createSession({
+        ...options,
+        scopes: that.helper.getExtendedScope(
+          that.currentSession,
+          options.scopes,
+        ),
+      });
+      that.stateTracker.setIsSignedIn(true);
+      return that.currentSession;
+    };
+
     if (
       this.helper.sessionExistsAndHasScope(this.currentSession, options.scopes)
     ) {
@@ -83,10 +98,17 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
         }
         return refreshedSession;
       } catch (error) {
-        if (options.optional) {
-          return undefined;
+        try {
+          return createSession();
+        } catch (err) {
+          if (options.optional) {
+            return undefined;
+          }
+          throw new Error(
+            `Cannot create a new session after failing to refresh the session. Session refresh error: ${error}`,
+            err,
+          );
         }
-        throw error;
       }
     }
 
@@ -113,13 +135,8 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
       return undefined;
     }
 
-    // We can call authRequester multiple times, the returned session will contain all requested scopes.
-    this.currentSession = await this.connector.createSession({
-      ...options,
-      scopes: this.helper.getExtendedScope(this.currentSession, options.scopes),
-    });
-    this.stateTracker.setIsSignedIn(true);
-    return this.currentSession;
+    return createSession();
+    // return this.currentSession;
   }
 
   async removeSession() {
