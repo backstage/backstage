@@ -608,7 +608,10 @@ export interface SchedulerServiceTaskScheduleDefinition {
         cron: string;
       }
     | Duration
-    | HumanDuration;
+    | HumanDuration
+    | {
+        trigger: 'manual';
+      };
   initialDelay?: Duration | HumanDuration;
   scope?: 'global' | 'local';
   timeout: Duration | HumanDuration;
@@ -621,7 +624,14 @@ export interface SchedulerServiceTaskScheduleDefinitionConfig {
         cron: string;
       }
     | string
-    | HumanDuration;
+    | HumanDuration
+    /**
+     * This task will only run when manually triggered with the `triggerTask` method; no automatic
+     * scheduling. This is useful for locking of global tasks that should not be run concurrently.
+     */
+    | {
+        trigger: 'manual';
+      };
   initialDelay?: string | HumanDuration;
   scope?: 'global' | 'local';
   timeout: string | HumanDuration;
