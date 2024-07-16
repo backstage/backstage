@@ -18,6 +18,13 @@ import { AppConfig, Config } from '@backstage/config';
 import { BundlingPathsOptions } from './paths';
 import { ConfigSchema } from '@backstage/config-loader';
 
+export type ModuleFederationOptions = {
+  // Unique name for this module federation bundle
+  name: string;
+  // Whether this is a host or remote bundle
+  mode: 'host' | 'remote';
+};
+
 export type BundlingOptions = {
   checksEnabled: boolean;
   isDev: boolean;
@@ -29,6 +36,7 @@ export type BundlingOptions = {
   publicSubPath?: string;
   // Mode that the app is running in, 'protected' or 'public', default is 'public'
   appMode?: string;
+  moduleFederation?: ModuleFederationOptions;
 };
 
 export type ServeOptions = BundlingPathsOptions & {
@@ -46,6 +54,7 @@ export type BuildOptions = BundlingPathsOptions & {
   frontendConfig: Config;
   frontendAppConfigs: AppConfig[];
   fullConfig: Config;
+  moduleFederation?: ModuleFederationOptions;
 };
 
 export type BackendBundlingOptions = {
