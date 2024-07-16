@@ -13,6 +13,9 @@ export const ExpandableNavigation: () => JSX.Element | null;
 // @public
 export const LightBox: () => JSX.Element | null;
 
+// @beta
+export const Redirects: () => JSX.Element | null;
+
 // @public
 export const ReportIssue: (props: ReportIssueProps) => JSX.Element | null;
 
