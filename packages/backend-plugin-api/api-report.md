@@ -258,9 +258,9 @@ export function createServiceFactory<
   TOpts extends object | undefined = undefined,
 >(
   options: RootServiceFactoryOptions<TService, TImpl, TDeps>,
-): () => ServiceFactory<TService, 'root'>;
+): ServiceFactoryCompat<TService, 'root'>;
 
-// @public
+// @public @deprecated
 export function createServiceFactory<
   TService,
   TImpl extends TService,
@@ -272,7 +272,7 @@ export function createServiceFactory<
   options: (
     options?: TOpts,
   ) => RootServiceFactoryOptions<TService, TImpl, TDeps>,
-): (options?: TOpts) => ServiceFactory<TService, 'root'>;
+): ServiceFactoryCompat<TService, 'root', TOpts>;
 
 // @public
 export function createServiceFactory<
@@ -285,9 +285,9 @@ export function createServiceFactory<
   TOpts extends object | undefined = undefined,
 >(
   options: PluginServiceFactoryOptions<TService, TContext, TImpl, TDeps>,
-): () => ServiceFactory<TService, 'plugin'>;
+): ServiceFactoryCompat<TService, 'plugin'>;
 
-// @public
+// @public @deprecated
 export function createServiceFactory<
   TService,
   TImpl extends TService,
@@ -300,7 +300,7 @@ export function createServiceFactory<
   options: (
     options?: TOpts,
   ) => PluginServiceFactoryOptions<TService, TContext, TImpl, TDeps>,
-): (options?: TOpts) => ServiceFactory<TService, 'plugin'>;
+): ServiceFactoryCompat<TService, 'plugin', TOpts>;
 
 // @public
 export function createServiceRef<TService>(
@@ -644,7 +644,19 @@ export interface ServiceFactory<
   service: ServiceRef<TService, TScope>;
 }
 
-// @public
+// @public @deprecated (undocumented)
+export interface ServiceFactoryCompat<
+  TService = unknown,
+  TScope extends 'plugin' | 'root' = 'plugin' | 'root',
+  TOpts extends object | undefined = undefined,
+> extends ServiceFactory<TService, TScope> {
+  // @deprecated (undocumented)
+  (
+    ...options: undefined extends TOpts ? [] : [options?: TOpts]
+  ): ServiceFactory<TService, TScope>;
+}
+
+// @public @deprecated
 export type ServiceFactoryOrFunction = ServiceFactory | (() => ServiceFactory);
 
 // @public
@@ -667,9 +679,13 @@ export type ServiceRefConfig<
 // @public (undocumented)
 export interface ServiceRefOptions<TService, TScope extends 'root' | 'plugin'> {
   // (undocumented)
-  defaultFactory?: (
+  defaultFactory?(
     service: ServiceRef<TService, TScope>,
-  ) => Promise<ServiceFactoryOrFunction>;
+  ): Promise<ServiceFactory>;
+  // @deprecated (undocumented)
+  defaultFactory?(
+    service: ServiceRef<TService, TScope>,
+  ): Promise<() => ServiceFactory>;
   // (undocumented)
   id: string;
   // (undocumented)
