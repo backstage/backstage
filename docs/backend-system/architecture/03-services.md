@@ -223,3 +223,43 @@ export const customFooServiceFactory = createServiceFactory({
 ```
 
 This allows you to provide more advanced options for the service implementation that couldn't be expressed through static configuration. It also gives users of the service implementation access to other services through dependency injection, which can be useful for their customizations.
+
+## Service Factory Options Pattern
+
+:::note Note
+
+This pattern is discouraged, only use it when necessary. If possible you should prefer to make services configurable via static configuration or re-implementation instead.
+
+:::
+
+In some cases it might be beneficial to allow users of your service factory to pass options to the factory itself, rather than to the service implementation. This can be enabled by also defining the service factory as a function that returns a reconfigured factory. For example:
+
+```ts
+const fooServiceFactoryWithOptions = (options?: {
+  transform: (foo: string) => string;
+}) =>
+  createServiceFactory<FooService>({
+    service: fooServiceRef,
+    deps: {},
+    factory() {
+      return DefaultFooService.create({
+        transform: options?.transform,
+      });
+    },
+  });
+
+export const fooServiceFactory = Object.assign(
+  fooServiceFactoryWithOptions,
+  fooServiceFactoryWithOptions(),
+);
+```
+
+This makes it possible to use the `fooServiceFactory` directly, as well passing additional options to create a customized factory:
+
+```ts
+backend.add(fooServiceFactory);
+// OR
+backend.add(fooServiceFactory({ transform: foo => foo.toLowerCase() }));
+```
+
+This pattern is discouraged due to the inability to access other services through dependency injection. It is however used in a few places in the Backstage framework where the ability to directly pass options without re-implementing the service is very convenient, such as the `mockServices` from `@backstage/backend-test-utils`.
