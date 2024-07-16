@@ -1,5 +1,21 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.4.8
+
+### Patch Changes
+
+- 661b354: Fixed a bug where the `RepoUrlPicker` would still require the `owner` field for `azure`
+- b5deed0: Add support for `autocomplete` extension point to provide additional `autocomplete` handlers
+- 0b52438: Serialization of the scaffolder workspace into GCP bucket
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/backend-common@0.23.3
+  - @backstage/integration@1.13.0
+  - @backstage/plugin-scaffolder-common@1.5.4
+  - @backstage/catalog-model@1.5.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.4.8-next.1
 
 ### Patch Changes

@@ -1,5 +1,30 @@
 # @backstage/plugin-techdocs
 
+## 1.10.7
+
+### Patch Changes
+
+- 8fc2622: Fixed an issue that was causing techdocs pages unnecessarily re-render on navigate.
+- 6fa652c: Improve default sorting of docs table
+- 605b691: Allow for searching TechDocs by entity title
+- 60caa92: Fix double scrollbar bug in reader
+- Updated dependencies
+  - @backstage/plugin-techdocs-react@1.2.6
+  - @backstage/core-components@0.14.9
+  - @backstage/integration@1.13.0
+  - @backstage/plugin-catalog-react@1.12.2
+  - @backstage/plugin-search-common@1.2.13
+  - @backstage/frontend-plugin-api@0.6.7
+  - @backstage/integration-react@1.1.29
+  - @backstage/plugin-auth-react@0.1.4
+  - @backstage/plugin-search-react@1.7.13
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/core-compat-api@0.2.7
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+  - @backstage/theme@0.5.6
+
 ## 1.10.7-next.2
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # @backstage/plugin-permission-backend-module-allow-all-policy
 
+## 0.1.19
+
+### Patch Changes
+
+- ed10fd2: Internal refactor to use new `PolicyQueryUser` type.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/plugin-permission-common@0.8.0
+  - @backstage/plugin-permission-node@0.8.0
+  - @backstage/plugin-auth-node@0.4.17
+
 ## 0.1.19-next.1
 
 ### Patch Changes

@@ -1,5 +1,22 @@
 # @backstage/plugin-user-settings
 
+## 0.8.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.9
+  - @backstage/core-app-api@1.14.0
+  - @backstage/plugin-catalog-react@1.12.2
+  - @backstage/frontend-plugin-api@0.6.7
+  - @backstage/core-compat-api@0.2.7
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+  - @backstage/theme@0.5.6
+  - @backstage/types@1.1.1
+  - @backstage/plugin-signals-react@0.0.4
+  - @backstage/plugin-user-settings-common@0.0.1
+
 ## 0.8.9-next.2
 
 ### Patch Changes

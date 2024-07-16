@@ -1,5 +1,26 @@
 # @backstage/backend-common
 
+## 0.23.3
+
+### Patch Changes
+
+- 8c09c97: Deprecate legacy status check factory, handler and types.
+- d228862: Update default backend plugin created by the cli to use non-deprecated error handling middleware
+- c964a3d: Add dependencies that are needed by cross-imports from backend-defaults
+- b60db08: Fixing exporting of classes properly from new packages
+- b9ed1bb: bumped better-sqlite3 from ^9.0.0 to ^11.0.0
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/integration@1.13.0
+  - @backstage/plugin-auth-node@0.4.17
+  - @backstage/config-loader@1.8.1
+  - @backstage/backend-dev-utils@0.1.4
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+
 ## 0.23.3-next.1
 
 ### Patch Changes
