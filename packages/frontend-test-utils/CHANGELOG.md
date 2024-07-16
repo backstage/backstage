@@ -1,5 +1,16 @@
 # @backstage/frontend-test-utils
 
+## 0.1.10
+
+### Patch Changes
+
+- 95a3a0b: Rename frontend and backend `setupRequestMockHandlers` methods to `registerMswTestHooks`.
+- Updated dependencies
+  - @backstage/frontend-app-api@0.7.3
+  - @backstage/test-utils@1.5.8
+  - @backstage/frontend-plugin-api@0.6.7
+  - @backstage/types@1.1.1
+
 ## 0.1.10-next.2
 
 ### Patch Changes
