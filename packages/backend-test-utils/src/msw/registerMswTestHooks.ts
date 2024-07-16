@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,16 @@
  */
 
 /**
- * @packageDocumentation
- *
- * Contains utilities that can be used when testing frontend features such as extensions.
+ * Sets up handlers for request mocking
+ * @public
+ * @param worker - service worker
  */
-
-export * from './deprecated';
-export * from './apis';
-export * from './app';
-
-export { TestApiProvider, TestApiRegistry } from '@backstage/test-utils';
-export type { TestApiProviderProps } from '@backstage/test-utils';
-
-export { withLogCollector } from '@backstage/test-utils';
-
-export { registerMswTestHooks } from '@backstage/test-utils';
+export function registerMswTestHooks(worker: {
+  listen: (t: any) => void;
+  close: () => void;
+  resetHandlers: () => void;
+}) {
+  beforeAll(() => worker.listen({ onUnhandledRequest: 'error' }));
+  afterAll(() => worker.close());
+  afterEach(() => worker.resetHandlers());
+}

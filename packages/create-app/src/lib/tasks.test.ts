@@ -31,7 +31,7 @@ import {
 } from './tasks';
 import {
   createMockDirectory,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -423,7 +423,7 @@ describe('tasks', () => {
 
   describe('fetchYarnLockSeedTask', () => {
     const worker = setupServer();
-    setupRequestMockHandlers(worker);
+    registerMswTestHooks(worker);
 
     it('should fetch the yarn.lock seed file', async () => {
       worker.use(

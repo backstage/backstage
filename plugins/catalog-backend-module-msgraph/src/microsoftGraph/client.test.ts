@@ -15,7 +15,7 @@
  */
 
 import { TokenCredential } from '@azure/identity';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { MicrosoftGraphClient } from './client';
@@ -27,7 +27,7 @@ describe('MicrosoftGraphClient', () => {
   let client: MicrosoftGraphClient;
   const worker = setupServer();
 
-  setupRequestMockHandlers(worker);
+  registerMswTestHooks(worker);
 
   beforeEach(() => {
     tokenCredential.getToken.mockResolvedValue({

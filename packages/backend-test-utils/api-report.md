@@ -368,6 +368,13 @@ export namespace mockServices {
 }
 
 // @public
+export function registerMswTestHooks(worker: {
+  listen: (t: any) => void;
+  close: () => void;
+  resetHandlers: () => void;
+}): void;
+
+// @public
 export class ServiceFactoryTester<TService, TScope extends 'root' | 'plugin'> {
   static from<TService, TScope extends 'root' | 'plugin'>(
     subject: ServiceFactory<TService, TScope>,
@@ -402,7 +409,7 @@ export type ServiceMock<TService> = {
     : TService[Key];
 };
 
-// @public
+// @public @deprecated (undocumented)
 export function setupRequestMockHandlers(worker: {
   listen: (t: any) => void;
   close: () => void;

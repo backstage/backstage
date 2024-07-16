@@ -25,7 +25,7 @@ import {
 import {
   mockCredentials,
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { setupServer } from 'msw/node';
@@ -54,7 +54,7 @@ const config = new ConfigReader({
 });
 
 describe('ServerPermissionClient', () => {
-  setupRequestMockHandlers(server);
+  registerMswTestHooks(server);
 
   const discovery = mockServices.discovery.mock();
 
