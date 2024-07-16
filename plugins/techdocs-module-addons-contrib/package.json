@@ -8,9 +8,7 @@
     "pluginPackage": "@backstage/plugin-techdocs"
   },
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.esm.js",
-    "types": "dist/index.d.ts"
+    "access": "public"
   },
   "keywords": [
     "backstage",
@@ -33,8 +31,8 @@
   "types": "src/index.ts",
   "typesVersions": {
     "*": {
-      "alpha": [
-        "src/alpha.ts"
+      "beta": [
+        "src/beta.ts"
       ],
       "package.json": [
         "package.json"
