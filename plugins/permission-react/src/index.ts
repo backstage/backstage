@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+/**
+ * Components and hooks to help implement permissions in Backstage frontend plugins.
+ *
+ * @packageDocumentation
+ */
 export * from './components';
 export * from './hooks';
 export * from './apis';
