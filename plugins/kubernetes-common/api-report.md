@@ -9,6 +9,7 @@ import { FetchResponse as FetchResponse_2 } from '@backstage/plugin-kubernetes-c
 import type { JsonObject } from '@backstage/types';
 import type { JsonValue } from '@backstage/types';
 import { ObjectsByEntityResponse as ObjectsByEntityResponse_2 } from '@backstage/plugin-kubernetes-common';
+import type { ObjectToFetch } from '@backstage/plugin-kubernetes-node';
 import { PodStatus } from '@kubernetes/client-node';
 import { V1ConfigMap } from '@kubernetes/client-node';
 import { V1CronJob } from '@kubernetes/client-node';
@@ -342,7 +343,11 @@ export interface KubernetesRequestBody {
   // (undocumented)
   auth?: KubernetesRequestAuth;
   // (undocumented)
+  customResources?: CustomResourceMatcher[];
+  // (undocumented)
   entity: Entity;
+  // (undocumented)
+  objectTypesToFetch?: ObjectToFetch[];
 }
 
 // @public (undocumented)

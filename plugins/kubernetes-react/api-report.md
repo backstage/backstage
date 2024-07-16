@@ -26,6 +26,7 @@ import { JsonObject } from '@backstage/types';
 import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
+import type { ObjectToFetch } from '@backstage/plugin-kubernetes-node';
 import { OpenIdConnectApi } from '@backstage/core-plugin-api';
 import { Pod } from 'kubernetes-models/v1';
 import { Pod as Pod_2 } from 'kubernetes-models/v1/Pod';
@@ -847,6 +848,8 @@ export const useEvents: ({
 export const useKubernetesObjects: (
   entity: Entity,
   intervalMs?: number,
+  objectTypesToFetch?: ObjectToFetch[],
+  customResources?: CustomResourceMatcher[],
 ) => KubernetesObjects;
 
 // @public

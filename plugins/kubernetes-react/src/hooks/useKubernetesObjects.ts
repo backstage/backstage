@@ -17,7 +17,11 @@
 import { Entity } from '@backstage/catalog-model';
 import { useCallback } from 'react';
 import useInterval from 'react-use/esm/useInterval';
-import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
+import {
+  CustomResourceMatcher,
+  ObjectsByEntityResponse,
+} from '@backstage/plugin-kubernetes-common';
+import type { ObjectToFetch } from '@backstage/plugin-kubernetes-node';
 import { useApi } from '@backstage/core-plugin-api';
 import { generateAuth } from './auth';
 import useAsyncRetry from 'react-use/esm/useAsyncRetry';
@@ -41,6 +45,8 @@ export interface KubernetesObjects {
 export const useKubernetesObjects = (
   entity: Entity,
   intervalMs: number = 10000,
+  objectTypesToFetch?: ObjectToFetch[],
+  customResources?: CustomResourceMatcher[],
 ): KubernetesObjects => {
   const kubernetesApi = useApi(kubernetesApiRef);
   const kubernetesAuthProvidersApi = useApi(kubernetesAuthProvidersApiRef);
@@ -53,8 +59,16 @@ export const useKubernetesObjects = (
     return await kubernetesApi.getObjectsByEntity({
       auth,
       entity,
+      objectTypesToFetch,
+      customResources,
     });
-  }, [kubernetesApi, entity, kubernetesAuthProvidersApi]);
+  }, [
+    customResources,
+    entity,
+    kubernetesApi,
+    kubernetesAuthProvidersApi,
+    objectTypesToFetch,
+  ]);
 
   const { value, loading, error, retry } = useAsyncRetry(
     () => getObjects(),
