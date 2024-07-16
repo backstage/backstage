@@ -136,7 +136,6 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
     }
 
     return createSession();
-    // return this.currentSession;
   }
 
   async removeSession() {
