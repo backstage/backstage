@@ -107,11 +107,6 @@ describe('migrations', () => {
         },
       ]);
 
-      await knex
-        .delete()
-        .from('backstage_backend_tasks__tasks')
-        .where({ next_run_start_at: null });
-
       await migrateDownOnce(knex);
 
       await expect(

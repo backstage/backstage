@@ -31,6 +31,10 @@ exports.up = async function up(knex) {
  * @returns { Promise<void> }
  */
 exports.down = async function down(knex) {
+  await knex
+    .delete()
+    .from('backstage_backend_tasks__tasks')
+    .where({ next_run_start_at: null });
   await knex.schema.alterTable('backstage_backend_tasks__tasks', table => {
     table.dropNullable('next_run_start_at');
   });
