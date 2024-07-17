@@ -6893,6 +6893,7 @@ __metadata:
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     octokit: ^3.0.0
+    yaml: ^2.0.0
   languageName: unknown
   linkType: soft
 
