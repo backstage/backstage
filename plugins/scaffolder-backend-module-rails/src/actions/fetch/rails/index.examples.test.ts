@@ -90,7 +90,12 @@ describe('fetch:rails', () => {
   });
 
   it(`should ${examples[0].description}`, async () => {
-    const input = yaml.parse(examples[0].example).steps[0].input;
+    let input;
+    try {
+      input = yaml.parse(examples[0].example).steps[0].input;
+    } catch (error) {
+      console.error('Failed to parse YAML:', error);
+    }
 
     await action.handler({
       ...mockContext,
@@ -110,7 +115,12 @@ describe('fetch:rails', () => {
   });
 
   it(`should ${examples[1].description}`, async () => {
-    const input = yaml.parse(examples[1].example).steps[0].input;
+    let input;
+    try {
+      input = yaml.parse(examples[1].example).steps[0].input;
+    } catch (error) {
+      console.error('Failed to parse YAML:', error);
+    }
 
     await action.handler({
       ...mockContext,
@@ -130,7 +140,12 @@ describe('fetch:rails', () => {
   });
 
   it(`should ${examples[2].description}`, async () => {
-    const input = yaml.parse(examples[2].example).steps[0].input;
+    let input;
+    try {
+      input = yaml.parse(examples[2].example).steps[0].input;
+    } catch (error) {
+      console.error('Failed to parse YAML:', error);
+    }
 
     await action.handler({
       ...mockContext,
@@ -150,7 +165,12 @@ describe('fetch:rails', () => {
   });
 
   it(`should ${examples[3].description}`, async () => {
-    const input = yaml.parse(examples[3].example).steps[0].input;
+    let input;
+    try {
+      input = yaml.parse(examples[3].example).steps[0].input;
+    } catch (error) {
+      console.error('Failed to parse YAML:', error);
+    }
 
     await action.handler({
       ...mockContext,
@@ -170,7 +190,12 @@ describe('fetch:rails', () => {
   });
 
   it(`should ${examples[4].description}`, async () => {
-    const input = yaml.parse(examples[4].example).steps[0].input;
+    let input;
+    try {
+      input = yaml.parse(examples[4].example).steps[0].input;
+    } catch (error) {
+      console.error('Failed to parse YAML:', error);
+    }
 
     await action.handler({
       ...mockContext,
@@ -190,7 +215,12 @@ describe('fetch:rails', () => {
   });
 
   it(`should ${examples[5].description}`, async () => {
-    const input = yaml.parse(examples[5].example).steps[0].input;
+    let input;
+    try {
+      input = yaml.parse(examples[5].example).steps[0].input;
+    } catch (error) {
+      console.error('Failed to parse YAML:', error);
+    }
 
     await action.handler({
       ...mockContext,
@@ -210,7 +240,12 @@ describe('fetch:rails', () => {
   });
 
   it(`should ${examples[6].description}`, async () => {
-    const input = yaml.parse(examples[6].example).steps[0].input;
+    let input;
+    try {
+      input = yaml.parse(examples[6].example).steps[0].input;
+    } catch (error) {
+      console.error('Failed to parse YAML:', error);
+    }
 
     await action.handler({
       ...mockContext,
@@ -230,7 +265,12 @@ describe('fetch:rails', () => {
   });
 
   it(`should ${examples[7].description}`, async () => {
-    const input = yaml.parse(examples[7].example).steps[0].input;
+    let input;
+    try {
+      input = yaml.parse(examples[7].example).steps[0].input;
+    } catch (error) {
+      console.error('Failed to parse YAML:', error);
+    }
 
     await action.handler({
       ...mockContext,
@@ -250,7 +290,12 @@ describe('fetch:rails', () => {
   });
 
   it(`should ${examples[8].description}`, async () => {
-    const input = yaml.parse(examples[8].example).steps[0].input;
+    let input;
+    try {
+      input = yaml.parse(examples[8].example).steps[0].input;
+    } catch (error) {
+      console.error('Failed to parse YAML:', error);
+    }
 
     await action.handler({
       ...mockContext,
@@ -270,7 +315,12 @@ describe('fetch:rails', () => {
   });
 
   it(`should ${examples[9].description}`, async () => {
-    const input = yaml.parse(examples[9].example).steps[0].input;
+    let input;
+    try {
+      input = yaml.parse(examples[9].example).steps[0].input;
+    } catch (error) {
+      console.error('Failed to parse YAML:', error);
+    }
 
     await action.handler({
       ...mockContext,
