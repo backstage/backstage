@@ -256,6 +256,12 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
         client: {
           webSocketURL: { hostname: host, port },
         },
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, OPTIONS',
+          'Access-Control-Allow-Headers':
+            'X-Requested-With, content-type, Authorization',
+        },
       },
       compiler,
     );
