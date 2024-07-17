@@ -29,6 +29,7 @@ import { ModuleFederationPlugin } from '@module-federation/enhanced/webpack';
 import { LinkedPackageResolvePlugin } from './LinkedPackageResolvePlugin';
 import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
 import { RunScriptWebpackPlugin } from 'run-script-webpack-plugin';
+import ReactRefreshPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import { paths as cliPaths } from '../../lib/paths';
 import fs from 'fs-extra';
 import { getPackages } from '@manypkg/get-packages';
@@ -52,6 +53,21 @@ export function resolveBaseUrl(config: Config): URL {
   } catch (error) {
     throw new Error(`Invalid app.baseUrl, ${error}`);
   }
+}
+
+export function resolveEndpoint(config: Config): {
+  host: string;
+  port: number;
+} {
+  const url = resolveBaseUrl(config);
+
+  return {
+    host: config.getOptionalString('app.listen.host') ?? url.hostname,
+    port:
+      config.getOptionalNumber('app.listen.port') ??
+      Number(url.port) ??
+      (url.protocol === 'https:' ? 443 : 80),
+  };
 }
 
 async function readBuildInfo() {
@@ -106,6 +122,20 @@ export async function createConfig(
   let publicPath = validBaseUrl.pathname.replace(/\/$/, '');
   if (publicSubPath) {
     publicPath = `${publicPath}${publicSubPath}`.replace('//', '/');
+  }
+
+  if (isDev) {
+    const { host, port } = resolveEndpoint(options.frontendConfig);
+
+    plugins.push(
+      new ReactRefreshPlugin({
+        overlay: {
+          sockProtocol: 'ws',
+          sockHost: host,
+          sockPort: port,
+        },
+      }),
+    );
   }
 
   if (checksEnabled) {
