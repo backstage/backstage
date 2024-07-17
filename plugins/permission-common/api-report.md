@@ -94,9 +94,7 @@ export type EvaluatePermissionResponseBatch =
   PermissionMessageBatch<EvaluatePermissionResponse>;
 
 // @public
-export type EvaluatorRequestOptions = {
-  token?: string;
-};
+export interface EvaluatorRequestOptions {}
 
 // @public
 export type IdentifiedPermissionMessage<T> = T & {
@@ -162,13 +160,18 @@ export class PermissionClient implements PermissionEvaluator {
   constructor(options: { discovery: DiscoveryApi; config: Config });
   authorize(
     requests: AuthorizePermissionRequest[],
-    options?: EvaluatorRequestOptions,
+    options?: PermissionClientRequestOptions,
   ): Promise<AuthorizePermissionResponse[]>;
   authorizeConditional(
     queries: QueryPermissionRequest[],
-    options?: EvaluatorRequestOptions,
+    options?: PermissionClientRequestOptions,
   ): Promise<QueryPermissionResponse[]>;
 }
+
+// @public
+export type PermissionClientRequestOptions = {
+  token?: string;
+};
 
 // @public
 export type PermissionCondition<
@@ -191,11 +194,15 @@ export type PermissionCriteria<TQuery> =
 export interface PermissionEvaluator {
   authorize(
     requests: AuthorizePermissionRequest[],
-    options?: EvaluatorRequestOptions,
+    options?: EvaluatorRequestOptions & {
+      _ignored?: never;
+    },
   ): Promise<AuthorizePermissionResponse[]>;
   authorizeConditional(
     requests: QueryPermissionRequest[],
-    options?: EvaluatorRequestOptions,
+    options?: EvaluatorRequestOptions & {
+      _ignored?: never;
+    },
   ): Promise<QueryPermissionResponse[]>;
 }
 

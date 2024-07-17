@@ -1,5 +1,31 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.10.0
+
+### Minor Changes
+
+- 354e68c: Improve validation error display text in scaffolder
+- b5deed0: Add support for `bitbucketCloud` autocomplete in `RepoUrlPicker`
+
+### Patch Changes
+
+- cc81579: Updated dependency `@rjsf/utils` to `5.18.5`.
+  Updated dependency `@rjsf/core` to `5.18.5`.
+  Updated dependency `@rjsf/material-ui` to `5.18.5`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.18.5`.
+- 4d7e11f: disables rendering of output box if no output is returned
+- Updated dependencies
+  - @backstage/core-components@0.14.9
+  - @backstage/plugin-catalog-react@1.12.2
+  - @backstage/plugin-permission-react@0.4.24
+  - @backstage/plugin-scaffolder-common@1.5.4
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/theme@0.5.6
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
 ## 1.10.0-next.2
 
 ### Patch Changes

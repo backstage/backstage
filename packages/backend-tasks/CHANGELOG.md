@@ -1,5 +1,17 @@
 # @backstage/backend-tasks
 
+## 0.5.27
+
+### Patch Changes
+
+- 083eaf9: Fix bug where ISO durations could no longer be used for schedules
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/backend-common@0.23.3
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.5.27-next.1
 
 ### Patch Changes

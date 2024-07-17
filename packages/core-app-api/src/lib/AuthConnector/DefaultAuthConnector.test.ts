@@ -18,7 +18,7 @@ import { DefaultAuthConnector } from './DefaultAuthConnector';
 import MockOAuthApi from '../../apis/implementations/OAuthRequestApi/MockOAuthApi';
 import * as loginPopup from '../loginPopup';
 import { UrlPatternDiscovery } from '../../apis';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { registerMswTestHooks } from '@backstage/test-utils';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { ConfigReader } from '@backstage/config';
@@ -53,7 +53,7 @@ const defaultOptions = {
 
 describe('DefaultAuthConnector', () => {
   const server = setupServer();
-  setupRequestMockHandlers(server);
+  registerMswTestHooks(server);
 
   afterEach(() => {
     jest.resetAllMocks();

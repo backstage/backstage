@@ -1,5 +1,17 @@
 # @backstage/integration
 
+## 1.13.0
+
+### Minor Changes
+
+- b5deed0: Add support for `token` for `bitbucketCloud` integration
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 1.13.0-next.0
 
 ### Minor Changes

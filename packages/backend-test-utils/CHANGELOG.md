@@ -1,5 +1,27 @@
 # @backstage/backend-test-utils
 
+## 0.4.4
+
+### Patch Changes
+
+- 2f99178: The `ServiceFactoryTest.get` method was deprecated and the `ServiceFactoryTest.getSubject` should be used instead. The `getSubject` method has the same behavior, but has a better method name to indicate that the service instance returned is the subject currently being tested.
+- edf5cc3: The function `isDockerDisabledForTests` is deprecated and will no longer be exported in the near future as it should only be used internally.
+- b05e1e1: Service factories exported by this package have been updated to use the new service factory format that doesn't use a callback.
+- fce7887: Added mock for the Root Health Service in `mockServices`.
+- 906c817: Updated `startTestBackend` and `ServiceFactoryTester` to only accept plain service factory or backend feature objects, no longer supporting the callback form. This lines up with the changes to `@backstage/backend-plugin-api` and should not require any code changes.
+- 95a3a0b: Rename frontend and backend `setupRequestMockHandlers` methods to `registerMswTestHooks`.
+- b9ed1bb: bumped better-sqlite3 from ^9.0.0 to ^11.0.0
+- 98ccf00: Internal refactor of `mockServices.httpAuth.factory` to allow it to still be constructed with options, but without declaring options via `createServiceFactory`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/backend-defaults@0.4.0
+  - @backstage/backend-app-api@0.8.0
+  - @backstage/plugin-events-node@0.3.8
+  - @backstage/plugin-auth-node@0.4.17
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.4.4-next.1
 
 ### Patch Changes

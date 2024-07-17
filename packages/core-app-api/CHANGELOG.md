@@ -1,5 +1,29 @@
 # @backstage/core-app-api
 
+## 1.14.0
+
+### Minor Changes
+
+- d3c39fc: Allow for the disabling of external routes through config, which was rendered impossible after the introduction of default targets.
+
+  ```yaml
+  app:
+    routes:
+      bindings:
+        # This has the effect of removing the button for registering new
+        # catalog entities in the scaffolder template list view
+        scaffolder.registerComponent: false
+  ```
+
+### Patch Changes
+
+- db2e2d5: Updated config schema to support app.routes.bindings
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
 ## 1.13.1-next.1
 
 ### Patch Changes

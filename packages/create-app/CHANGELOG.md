@@ -1,5 +1,16 @@
 # @backstage/create-app
 
+## 0.5.17
+
+### Patch Changes
+
+- 780d994: Added `MyGroupsSidebarItem` to the sidebar in the `create-app` template
+- f03d12a: Bumped create-app version.
+- e90a2cd: Added the Catalog logs module to the `create-app` template
+- 3ac2a6a: Added the Postgres Search Engine to the `create-app` template
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+
 ## 0.5.17-next.2
 
 ### Patch Changes

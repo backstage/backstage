@@ -1,5 +1,25 @@
 # @backstage/plugin-catalog-react
 
+## 1.12.2
+
+### Patch Changes
+
+- 06c0956: Support i18n for catalog and catalog-react plugins
+- 2030962: Make EntityOwnerPicker display metadata.title or spec.profile.displayName for mode=only-owners instead of metadata.name
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.8.0
+  - @backstage/core-components@0.14.9
+  - @backstage/plugin-permission-react@0.4.24
+  - @backstage/plugin-catalog-common@1.0.25
+  - @backstage/frontend-plugin-api@0.6.7
+  - @backstage/integration-react@1.1.29
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
 ## 1.12.2-next.2
 
 ### Patch Changes

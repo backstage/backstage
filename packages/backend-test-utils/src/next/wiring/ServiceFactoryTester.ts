@@ -35,7 +35,7 @@ export interface ServiceFactoryTesterOptions {
    * If a service factory is provided for a service that already has a default
    * implementation, the provided factory will override the default.
    */
-  dependencies?: Array<ServiceFactory | (() => ServiceFactory)>;
+  dependencies?: Array<ServiceFactory>;
 }
 
 /**
@@ -55,20 +55,15 @@ export class ServiceFactoryTester<TService, TScope extends 'root' | 'plugin'> {
    * @returns A new tester instance for the provided subject.
    */
   static from<TService, TScope extends 'root' | 'plugin'>(
-    subject:
-      | ServiceFactory<TService, TScope>
-      | (() => ServiceFactory<TService, TScope>),
+    subject: ServiceFactory<TService, TScope>,
     options?: ServiceFactoryTesterOptions,
   ) {
-    const subjectFactory = typeof subject === 'function' ? subject() : subject;
     const registry = ServiceRegistry.create([
       ...defaultServiceFactories,
-      ...(options?.dependencies?.map(f =>
-        typeof f === 'function' ? f() : f,
-      ) ?? []),
-      subjectFactory,
+      ...(options?.dependencies ?? []),
+      subject,
     ]);
-    return new ServiceFactoryTester(subjectFactory.service, registry);
+    return new ServiceFactoryTester(subject.service, registry);
   }
 
   private constructor(

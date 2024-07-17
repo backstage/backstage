@@ -1,5 +1,33 @@
 # @backstage/backend-app-api
 
+## 0.8.0
+
+### Minor Changes
+
+- 1cb84d7: **BREAKING**: Removed the depreacted `getPath` option from `httpRouterServiceFactory`, as well as the `HttpRouterFactoryOptions` type.
+- f691c9b: **BREAKING**: Removed the ability to pass callback-form service factories through the `defaultServiceFactories` option of `createSpecializedBackend`. This is an immediate breaking change as usage of this function is expected to be very rare.
+
+### Patch Changes
+
+- 2f99178: The `ServiceFactoryTest.get` method was deprecated and the `ServiceFactoryTest.getSubject` should be used instead. The `getSubject` method has the same behavior, but has a better method name to indicate that the service instance returned is the subject currently being tested.
+- b05e1e1: Service factories exported by this package have been updated to use the new service factory format that doesn't use a callback.
+- 617a7d2: Internal refactor that avoids the use of service factory options.
+- b60db08: Fixing exporting of classes properly from new packages
+- 18b96b1: The ability to install backend features in callback form (`() => BackendFeature`) has been deprecated. This typically means that you need to update the installed features to use the latest version of `@backstage/backend-plugin-api`. If the feature is from a third-party package, please reach out to the package maintainer to update it.
+- a63c4b6: Fixing issue with `MiddlewareFactory` deprecation wrapping
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/backend-common@0.23.3
+  - @backstage/cli-node@0.2.7
+  - @backstage/backend-tasks@0.5.27
+  - @backstage/plugin-permission-node@0.8.0
+  - @backstage/plugin-auth-node@0.4.17
+  - @backstage/config-loader@1.8.1
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.7.10-next.1
 
 ### Patch Changes

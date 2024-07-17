@@ -1,5 +1,16 @@
 # @backstage/plugin-scaffolder-backend-module-gerrit
 
+## 0.1.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/integration@1.13.0
+  - @backstage/plugin-scaffolder-node@0.4.8
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 0.1.14-next.1
 
 ### Patch Changes

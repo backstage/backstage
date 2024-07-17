@@ -38,7 +38,7 @@ import {
   ServiceMock,
   mockCredentials,
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
   startTestBackend,
 } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
@@ -508,7 +508,7 @@ describe('API integration tests', () => {
 
   describe('/proxy', () => {
     const worker = setupServer();
-    setupRequestMockHandlers(worker);
+    registerMswTestHooks(worker);
 
     beforeEach(() => {
       worker.use(
