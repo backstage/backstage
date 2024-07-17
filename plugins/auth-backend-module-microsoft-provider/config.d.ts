@@ -29,6 +29,13 @@ export interface Config {
           domainHint?: string;
           callbackUrl?: string;
           additionalScopes?: string | string[];
+          signIn?: {
+            resolvers: Array<
+              | { resolver: 'emailMatchingUserEntityAnnotation' }
+              | { resolver: 'emailLocalPartMatchingUserEntityName' }
+              | { resolver: 'emailMatchingUserEntityProfileEmail' }
+            >;
+          };
         };
       };
     };
