@@ -31,7 +31,7 @@ import {
 } from './tasks';
 import {
   createMockDirectory,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -62,6 +62,7 @@ jest.mock('./versions', () => ({
     '@backstage/plugin-auth-backend-module-github-provider': '1.0.0',
     '@backstage/plugin-auth-backend-module-guest-provider': '1.0.0',
     '@backstage/plugin-catalog-backend': '1.0.0',
+    '@backstage/plugin-catalog-backend-module-logs': '1.0.0',
     '@backstage/plugin-catalog-backend-module-scaffolder-entity-model': '1.0.0',
     '@backstage/plugin-permission-common': '1.0.0',
     '@backstage/plugin-permission-node': '1.0.0',
@@ -422,7 +423,7 @@ describe('tasks', () => {
 
   describe('fetchYarnLockSeedTask', () => {
     const worker = setupServer();
-    setupRequestMockHandlers(worker);
+    registerMswTestHooks(worker);
 
     it('should fetch the yarn.lock seed file', async () => {
       worker.use(

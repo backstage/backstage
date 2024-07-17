@@ -34,6 +34,7 @@ import {
   MICROSOFT_GRAPH_USER_ID_ANNOTATION,
   MicrosoftGraphClient,
   MicrosoftGraphProviderConfig,
+  ProviderConfigTransformer,
   OrganizationTransformer,
   readMicrosoftGraphConfig,
   readMicrosoftGraphOrg,
@@ -94,6 +95,13 @@ export type MicrosoftGraphOrgEntityProviderOptions =
       organizationTransformer?:
         | OrganizationTransformer
         | Record<string, OrganizationTransformer>;
+
+      /**
+       * The function that transforms provider config dynamically.
+       */
+      providerConfigTransformer?:
+        | ProviderConfigTransformer
+        | Record<string, ProviderConfigTransformer>;
     };
 
 /**
@@ -152,6 +160,11 @@ export interface MicrosoftGraphOrgEntityProviderLegacyOptions {
    * The function that transforms an organization entry in msgraph to an entity.
    */
   organizationTransformer?: OrganizationTransformer;
+
+  /**
+   *  The function that transforms provider config dynamically.
+   */
+  providerConfigTransformer?: ProviderConfigTransformer;
 }
 
 /**
@@ -216,6 +229,10 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
           providerConfig.id,
           options.organizationTransformer,
         ),
+        providerConfigTransformer: getTransformer(
+          providerConfig.id,
+          options.providerConfigTransformer,
+        ),
       });
 
       if (taskRunner !== 'manual') {
@@ -257,6 +274,7 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
       userTransformer: options.userTransformer,
       groupTransformer: options.groupTransformer,
       organizationTransformer: options.organizationTransformer,
+      providerConfigTransformer: options.providerConfigTransformer,
       logger,
       provider,
     });
@@ -276,6 +294,7 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
       userTransformer?: UserTransformer;
       groupTransformer?: GroupTransformer;
       organizationTransformer?: OrganizationTransformer;
+      providerConfigTransformer?: ProviderConfigTransformer;
     },
   ) {}
 
@@ -300,7 +319,9 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
     }
 
     const logger = options?.logger ?? this.options.logger;
-    const provider = this.options.provider;
+    const provider = this.options.providerConfigTransformer
+      ? await this.options.providerConfigTransformer(this.options.provider)
+      : this.options.provider;
     const { markReadComplete } = trackProgress(logger);
     const client = MicrosoftGraphClient.create(this.options.provider);
     const { users, groups } = await readMicrosoftGraphOrg(

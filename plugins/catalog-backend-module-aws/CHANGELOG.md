@@ -1,5 +1,23 @@
 # @backstage/plugin-catalog-backend-module-aws
 
+## 0.3.17
+
+### Patch Changes
+
+- 4afa050: Export `defaultEksClusterEntityTransformer` to allow library consumers to layer additional changes on top of the default transformer.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/backend-common@0.23.3
+  - @backstage/backend-tasks@0.5.27
+  - @backstage/integration@1.13.0
+  - @backstage/plugin-catalog-node@1.12.4
+  - @backstage/plugin-catalog-common@1.0.25
+  - @backstage/plugin-kubernetes-common@0.8.1
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+
 ## 0.3.17-next.1
 
 ### Patch Changes

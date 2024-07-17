@@ -145,6 +145,7 @@ export async function createRouter(
         inputEngine,
         types,
         permissionEvaluator,
+        auth,
         config,
       )
     : inputEngine;

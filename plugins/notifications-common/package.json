@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-notifications-common",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Common functionalities for the notifications plugin",
   "backstage": {
     "role": "common-library",
@@ -39,6 +39,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
+    "@backstage/config": "workspace:^",
     "@material-ui/icons": "^4.9.1"
   },
   "devDependencies": {
