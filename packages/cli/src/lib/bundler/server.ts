@@ -30,7 +30,7 @@ import {
 import { paths as libPaths } from '../../lib/paths';
 import { loadCliConfig } from '../config';
 import { Lockfile } from '../versioning';
-import { createConfig, resolveBaseUrl } from './config';
+import { createConfig, resolveBaseUrl, resolveEndpoint } from './config';
 import { createDetectedModulesEntryPoint } from './packageDetection';
 import { resolveBundlingPaths, resolveOptionalBundlingPaths } from './paths';
 import { ServeOptions } from './types';
@@ -131,13 +131,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
 
   const { frontendConfig, fullConfig } = cliConfig;
   const url = resolveBaseUrl(frontendConfig);
-
-  const host =
-    frontendConfig.getOptionalString('app.listen.host') || url.hostname;
-  const port =
-    frontendConfig.getOptionalNumber('app.listen.port') ||
-    Number(url.port) ||
-    (url.protocol === 'https:' ? 443 : 80);
+  const { host, port } = resolveEndpoint(frontendConfig);
 
   const detectedModulesEntryPoint = await createDetectedModulesEntryPoint({
     config: fullConfig,
@@ -257,7 +251,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
         // When the dev server is behind a proxy, the host and public hostname differ
         allowedHosts: [url.hostname],
         client: {
-          webSocketURL: 'auto://0.0.0.0:0/ws',
+          webSocketURL: { hostname: host, port },
         },
       },
       compiler,
