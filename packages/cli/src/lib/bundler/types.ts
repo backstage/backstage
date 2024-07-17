@@ -43,6 +43,7 @@ export type ServeOptions = BundlingPathsOptions & {
   checksEnabled: boolean;
   configPaths: string[];
   verifyVersions?: boolean;
+  skipOpenBrowser?: boolean;
   moduleFederation?: ModuleFederationOptions;
 };
 
