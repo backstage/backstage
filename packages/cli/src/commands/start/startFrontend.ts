@@ -24,6 +24,7 @@ interface StartAppOptions {
 
   checksEnabled: boolean;
   configPaths: string[];
+  skipOpenBrowser?: boolean;
   isModuleFederationRemote?: boolean;
 }
 
@@ -35,6 +36,7 @@ export async function startFrontend(options: StartAppOptions) {
     checksEnabled: options.checksEnabled,
     configPaths: options.configPaths,
     verifyVersions: options.verifyVersions,
+    skipOpenBrowser: options.skipOpenBrowser,
     moduleFederation: getModuleFederationOptions(
       name,
       options.isModuleFederationRemote,

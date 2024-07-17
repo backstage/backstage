@@ -162,6 +162,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
   const config = await createConfig(paths, {
     ...commonConfigOptions,
     additionalEntryPoints: detectedModulesEntryPoint,
+    moduleFederation: options.moduleFederation,
   });
 
   if (process.env.EXPERIMENTAL_VITE) {
@@ -278,7 +279,9 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
     }
   });
 
-  openBrowser(url.href);
+  if (!options.skipOpenBrowser) {
+    openBrowser(url.href);
+  }
 
   const waitForExit = async () => {
     for (const signal of ['SIGINT', 'SIGTERM'] as const) {
