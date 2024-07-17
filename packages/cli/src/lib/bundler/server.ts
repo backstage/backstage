@@ -227,14 +227,17 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
               directory: paths.targetPublic,
             }
           : undefined,
-        historyApiFallback: {
-          // Paths with dots should still use the history fallback.
-          // See https://github.com/facebookincubator/create-react-app/issues/387.
-          disableDotRule: true,
+        historyApiFallback:
+          options.moduleFederation?.mode === 'remote'
+            ? false
+            : {
+                // Paths with dots should still use the history fallback.
+                // See https://github.com/facebookincubator/create-react-app/issues/387.
+                disableDotRule: true,
 
-          // The index needs to be rewritten relative to the new public path, including subroutes.
-          index: `${config.output?.publicPath}index.html`,
-        },
+                // The index needs to be rewritten relative to the new public path, including subroutes.
+                index: `${config.output?.publicPath}index.html`,
+              },
         server:
           url.protocol === 'https:'
             ? {
