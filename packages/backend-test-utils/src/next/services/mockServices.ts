@@ -70,21 +70,28 @@ function createLoggerMock() {
 }
 
 /** @internal */
-function simpleFactory<
+function simpleFactoryWithOptions<
   TService,
   TScope extends 'root' | 'plugin',
   TOptions extends [options?: object] = [],
 >(
   ref: ServiceRef<TService, TScope>,
   factory: (...options: TOptions) => TService,
-): (...options: TOptions) => ServiceFactory<TService, TScope> {
-  return createServiceFactory((options: unknown) => ({
-    service: ref as ServiceRef<TService, any>,
-    deps: {},
-    async factory() {
-      return (factory as any)(options);
-    },
-  })) as (...options: TOptions) => ServiceFactory<TService, any>;
+): ServiceFactory<TService, TScope> &
+  ((...options: TOptions) => ServiceFactory<TService, TScope>) {
+  const factoryWithOptions = (...options: TOptions) =>
+    createServiceFactory({
+      service: ref as ServiceRef<TService, any>,
+      deps: {},
+      async factory() {
+        return factory(...options);
+      },
+    })();
+  return Object.assign(
+    factoryWithOptions,
+    factoryWithOptions(...([undefined] as unknown as TOptions)),
+  ) as ServiceFactory<TService, TScope> &
+    ((...options: TOptions) => ServiceFactory<TService, TScope>);
 }
 
 /** @public */
@@ -134,7 +141,10 @@ export namespace mockServices {
   export namespace rootConfig {
     export type Options = { data?: JsonObject };
 
-    export const factory = simpleFactory(coreServices.rootConfig, rootConfig);
+    export const factory = simpleFactoryWithOptions(
+      coreServices.rootConfig,
+      rootConfig,
+    );
   }
 
   export function rootLogger(options?: rootLogger.Options): LoggerService {
@@ -145,7 +155,10 @@ export namespace mockServices {
       level?: 'none' | 'error' | 'warn' | 'info' | 'debug';
     };
 
-    export const factory = simpleFactory(coreServices.rootLogger, rootLogger);
+    export const factory = simpleFactoryWithOptions(
+      coreServices.rootLogger,
+      rootLogger,
+    );
     export const mock = simpleMock(coreServices.rootLogger, () => ({
       child: jest.fn(),
       debug: jest.fn(),
@@ -168,10 +181,11 @@ export namespace mockServices {
     };
   }
   export namespace tokenManager {
-    export const factory = simpleFactory(
-      coreServices.tokenManager,
-      tokenManager,
-    );
+    export const factory = createServiceFactory({
+      service: coreServices.tokenManager,
+      deps: {},
+      factory: () => tokenManager(),
+    });
     export const mock = simpleMock(coreServices.tokenManager, () => ({
       authenticate: jest.fn(),
       getToken: jest.fn(),
@@ -182,7 +196,11 @@ export namespace mockServices {
     return new MockIdentityService();
   }
   export namespace identity {
-    export const factory = simpleFactory(coreServices.identity, identity);
+    export const factory = createServiceFactory({
+      service: coreServices.identity,
+      deps: {},
+      factory: () => identity(),
+    });
     export const mock = simpleMock(coreServices.identity, () => ({
       getIdentity: jest.fn(),
     }));
@@ -270,15 +288,10 @@ export namespace mockServices {
     );
   }
   export namespace httpAuth {
-    /**
-     * Creates a mock service factory for the `HttpAuthService`.
-     *
-     * By default all requests without credentials are treated as requests from
-     * the default mock user principal. This behavior can be configured with the
-     * `defaultCredentials` option.
-     */
-    export const factory = createServiceFactory(
-      (options?: { defaultCredentials?: BackstageCredentials }) => ({
+    const factoryWithOptions = (options?: {
+      defaultCredentials?: BackstageCredentials;
+    }) =>
+      createServiceFactory({
         service: coreServices.httpAuth,
         deps: { plugin: coreServices.pluginMetadata },
         factory: ({ plugin }) =>
@@ -286,7 +299,17 @@ export namespace mockServices {
             plugin.getId(),
             options?.defaultCredentials ?? mockCredentials.user(),
           ),
-      }),
+      })();
+    /**
+     * Creates a mock service factory for the `HttpAuthService`.
+     *
+     * By default all requests without credentials are treated as requests from
+     * the default mock user principal. This behavior can be configured with the
+     * `defaultCredentials` option.
+     */
+    export const factory = Object.assign(
+      factoryWithOptions,
+      factoryWithOptions(),
     );
     export const mock = simpleMock(coreServices.httpAuth, () => ({
       credentials: jest.fn(),

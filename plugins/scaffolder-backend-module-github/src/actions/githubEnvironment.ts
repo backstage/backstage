@@ -199,6 +199,8 @@ export function createGithubEnvironmentAction(options: {
         const publicKeyResponse =
           await client.rest.actions.getEnvironmentPublicKey({
             repository_id: repository.data.id,
+            owner: owner,
+            repo: repo,
             environment_name: name,
           });
 

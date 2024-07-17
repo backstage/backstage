@@ -1,5 +1,15 @@
 # @backstage/cli-node
 
+## 0.2.7
+
+### Patch Changes
+
+- 133464c: Added internal metadata for the new experimental `frontend-dynamic-container` role.
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.2.6
 
 ### Patch Changes

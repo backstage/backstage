@@ -8,7 +8,9 @@ import { AnyOfCriteria } from '@backstage/plugin-permission-common';
 import { AuthorizePermissionRequest } from '@backstage/plugin-permission-common';
 import { AuthorizePermissionResponse } from '@backstage/plugin-permission-common';
 import { AuthService } from '@backstage/backend-plugin-api';
-import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
+import { BackstageUserIdentity } from '@backstage/plugin-auth-node';
+import { BackstageUserInfo } from '@backstage/backend-plugin-api';
 import { ConditionalPolicyDecision } from '@backstage/plugin-permission-common';
 import { Config } from '@backstage/config';
 import { DefinitivePolicyDecision } from '@backstage/plugin-permission-common';
@@ -246,10 +248,7 @@ export type PermissionIntegrationRouterOptions<
 // @public
 export interface PermissionPolicy {
   // (undocumented)
-  handle(
-    request: PolicyQuery,
-    user?: BackstageIdentityResponse,
-  ): Promise<PolicyDecision>;
+  handle(request: PolicyQuery, user?: PolicyQueryUser): Promise<PolicyDecision>;
 }
 
 // @public
@@ -270,6 +269,15 @@ export type PermissionRule<
 // @public
 export type PolicyQuery = {
   permission: Permission;
+};
+
+// @public
+export type PolicyQueryUser = {
+  token: string;
+  expiresInSeconds?: number;
+  identity: BackstageUserIdentity;
+  credentials: BackstageCredentials;
+  info: BackstageUserInfo;
 };
 
 // @public

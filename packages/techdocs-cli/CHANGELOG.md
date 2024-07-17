@@ -1,5 +1,17 @@
 # @techdocs/cli
 
+## 1.8.16
+
+### Patch Changes
+
+- c964a3d: Import discovery from backend-defaults instead of backend-common
+- Updated dependencies
+  - @backstage/backend-defaults@0.4.0
+  - @backstage/plugin-techdocs-node@1.12.8
+  - @backstage/catalog-model@1.5.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+
 ## 1.8.16-next.1
 
 ### Patch Changes

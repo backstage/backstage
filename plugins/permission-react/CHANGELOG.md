@@ -1,5 +1,15 @@
 # @backstage/plugin-permission-react
 
+## 0.4.24
+
+### Patch Changes
+
+- 28b2cfb: Improve API Reference documentation
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.8.0
+  - @backstage/config@1.2.0
+  - @backstage/core-plugin-api@1.9.3
+
 ## 0.4.23
 
 ### Patch Changes

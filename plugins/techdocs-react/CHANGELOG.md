@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs-react
 
+## 1.2.6
+
+### Patch Changes
+
+- 8ac9ce5: Resolved the issue where changes in TechDoc add-ons, including the TextSize add-on, were not reapplying during navigation
+- Updated dependencies
+  - @backstage/core-components@0.14.9
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/version-bridge@1.0.8
+
 ## 1.2.6-next.1
 
 ### Patch Changes

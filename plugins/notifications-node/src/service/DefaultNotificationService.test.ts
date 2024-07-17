@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { registerMswTestHooks } from '@backstage/test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { NotificationPayload } from '@backstage/plugin-notifications-common';
@@ -32,7 +32,7 @@ const testNotification: NotificationPayload = {
 
 describe('DefaultNotificationService', () => {
   const server = setupServer();
-  setupRequestMockHandlers(server);
+  registerMswTestHooks(server);
 
   const discovery = mockServices.discovery.mock({
     getBaseUrl: jest.fn().mockResolvedValue('http://example.com'),

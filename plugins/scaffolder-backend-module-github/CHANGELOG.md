@@ -1,5 +1,31 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.4.0
+
+### Minor Changes
+
+- 70c4b36: Adds support for custom tag policies when creating GitHub environments.
+
+### Patch Changes
+
+- ccfc9d1: Fixed bug resulting from missing required owner and repo arguments in `getEnvironmentPublicKey` in action `github:environment:create`.
+
+  Adding environment secrets now works as expected.
+
+- 141f366: Added action to enable GitHub Pages on a repo
+- 4410fed: Fixed issue with octokit call missing owner and repo when creating environment variables and secrets using github:environment:create action
+- dfaa28d: Adds `requireLastPushApproval` input property to configure Branch Protection Settings in `github:publish` action
+
+  Adds `requireLastPushApproval` input property to configure Branch Protection Settings in `github:repo:push` action
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/backend-common@0.23.3
+  - @backstage/integration@1.13.0
+  - @backstage/plugin-scaffolder-node@0.4.8
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 0.4.0-next.1
 
 ### Patch Changes

@@ -100,6 +100,4 @@ export function usePermission(
         resourceRef: string | undefined;
       },
 ): AsyncPermissionResult;
-
-// (No @packageDocumentation comment for this package)
 ```

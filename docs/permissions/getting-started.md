@@ -50,8 +50,7 @@ The permissions framework uses a new `permission-backend` plugin to accept autho
 
 1. Add `@backstage/plugin-permission-backend` as a dependency of your Backstage backend:
 
-   ```bash
-   # From your Backstage root directory
+   ```bash title="From your Backstage root directory"
    yarn --cwd packages/backend add @backstage/plugin-permission-backend
    ```
 
