@@ -38,6 +38,8 @@ import {
   createRoutableExtension,
   fetchApiRef,
 } from '@backstage/core-plugin-api';
+import { createPageExtension } from '@backstage/frontend-plugin-api';
+import { compatWrapper, convertLegacyRouteRef } from '@backstage/core-compat-api';
 
 export const rootCatalogKubernetesRouteRef = createRouteRef({
   id: 'kubernetes',
@@ -139,3 +141,16 @@ export const EntityKubernetesContent: (
     mountPoint: rootCatalogKubernetesRouteRef,
   }),
 );
+
+export const kubernetesPage = createPageExtension({
+  defaultPath: '/kubernetes',
+  // you can reuse the existing routeRef
+  // by wrapping into the convertLegacyRouteRef.
+  routeRef: convertLegacyRouteRef(rootCatalogKubernetesRouteRef),
+  // these inputs usually match the props required by the component.
+  loader: ({ inputs }) =>
+    import('./Router').then(m => 
+      compatWrapper(m.Router(inputs)),
+    ),
+});
+
