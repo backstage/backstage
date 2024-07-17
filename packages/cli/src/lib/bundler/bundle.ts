@@ -62,6 +62,7 @@ export async function buildBundle(options: BuildOptions) {
     const detectedModulesEntryPoint = await createDetectedModulesEntryPoint({
       config: options.fullConfig,
       targetPath: paths.targetPath,
+      dynamic: !!options.moduleFederation,
     });
 
     configs.push(

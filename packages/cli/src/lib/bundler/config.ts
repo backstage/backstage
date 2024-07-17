@@ -192,45 +192,37 @@ export async function createConfig(
           react: {
             singleton: true,
             requiredVersion: '*',
-            eager: !isRemote,
           },
           'react-dom': {
             singleton: true,
             requiredVersion: '*',
-            eager: !isRemote,
           },
           // React Router
           'react-router': {
             singleton: true,
             requiredVersion: '*',
-            eager: !isRemote,
           },
           'react-router-dom': {
             singleton: true,
             requiredVersion: '*',
-            eager: !isRemote,
           },
           // MUI v4
           '@material-ui/core/styles': {
             singleton: true,
             requiredVersion: '*',
-            eager: !isRemote,
           },
           '@material-ui/styles': {
             singleton: true,
             requiredVersion: '*',
-            eager: !isRemote,
           },
           // MUI v5
           '@mui/material/styles/': {
             singleton: true,
             requiredVersion: '*',
-            eager: !isRemote,
           },
           '@emotion/react': {
             singleton: true,
             requiredVersion: '*',
-            eager: !isRemote,
           },
         },
       }),

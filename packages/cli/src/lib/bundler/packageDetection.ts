@@ -110,15 +110,23 @@ const writeQueue = new PQueue({ concurrency: 1 });
 
 async function writeDetectedPackagesModule(
   pkgs: { name: string; export?: string; import: string }[],
+  dynamic?: boolean,
 ) {
-  const requirePackageScript = pkgs
-    ?.map(
-      pkg =>
-        `{ name: ${JSON.stringify(pkg.name)}, export: ${JSON.stringify(
-          pkg.export,
-        )}, default: require('${pkg.import}').default }`,
+  const packageLoads = pkgs
+    ?.map(pkg =>
+      dynamic
+        ? `import('${
+            pkg.import
+          }').then(pkg => window['__@backstage/discovered__'].modules.push({ name: ${JSON.stringify(
+            pkg.name,
+          )}, export: ${JSON.stringify(pkg.export)}, default: pkg.default }));`
+        : `window['__@backstage/discovered__'].modules.push({ name: ${JSON.stringify(
+            pkg.name,
+          )}, export: ${JSON.stringify(pkg.export)}, default: require('${
+            pkg.import
+          }').default });`,
     )
-    .join(',');
+    .join('\n');
 
   await writeQueue.add(() =>
     fs.writeFile(
@@ -127,7 +135,7 @@ async function writeDetectedPackagesModule(
         'node_modules',
         `${DETECTED_MODULES_MODULE_NAME}.js`,
       ),
-      `window['__@backstage/discovered__'] = { modules: [${requirePackageScript}] };`,
+      `window['__@backstage/discovered__'] = { modules: [] };\n${packageLoads}`,
     ),
   );
 }
@@ -135,9 +143,10 @@ async function writeDetectedPackagesModule(
 export async function createDetectedModulesEntryPoint(options: {
   config: Config;
   targetPath: string;
+  dynamic?: boolean;
   watch?: () => void;
 }): Promise<string[]> {
-  const { config, watch, targetPath } = options;
+  const { config, dynamic, watch, targetPath } = options;
 
   const detectionConfig = readPackageDetectionConfig(config);
   if (!detectionConfig) {
@@ -150,6 +159,7 @@ export async function createDetectedModulesEntryPoint(options: {
     watcher.on('change', async () => {
       await writeDetectedPackagesModule(
         await detectPackages(targetPath, detectionConfig),
+        dynamic,
       );
       watch();
     });
@@ -157,6 +167,7 @@ export async function createDetectedModulesEntryPoint(options: {
 
   await writeDetectedPackagesModule(
     await detectPackages(targetPath, detectionConfig),
+    dynamic,
   );
 
   return [DETECTED_MODULES_MODULE_NAME];

@@ -136,6 +136,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
   const detectedModulesEntryPoint = await createDetectedModulesEntryPoint({
     config: fullConfig,
     targetPath: paths.targetPath,
+    dynamic: !!options.moduleFederation,
     watch() {
       webpackServer?.invalidate();
       viteServer?.restart();
