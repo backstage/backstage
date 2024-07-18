@@ -8,8 +8,8 @@ This allows the creation of extension with the following pattern:
 
 ```tsx
 // create the extension kind
-const TestExtensionKind = createExtensionKind({
-  kind: 'test-extension',
+const EntityCardBlueprint = createExtensionBlueprint({
+  kind: 'entity-card',
   attachTo: { id: 'test', input: 'default' },
   output: {
     element: coreExtensionData.reactElement,
@@ -22,7 +22,7 @@ const TestExtensionKind = createExtensionKind({
 });
 
 // create an instance of the extension kind with props
-const testExtension = TestExtensionKind.create({
+const testExtension = EntityCardBlueprint.make({
   name: 'foo',
   params: {
     text: 'Hello World',

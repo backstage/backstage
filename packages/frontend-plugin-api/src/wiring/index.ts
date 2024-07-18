@@ -49,7 +49,7 @@ export {
   type FrontendFeature,
 } from './types';
 export {
-  type CreateExtensionKindOptions as ExtensionKindOptions,
-  ExtensionKind,
-  createExtensionKind,
-} from './createExtensionKind';
+  type CreateExtensionBlueprintOptions,
+  type ExtensionBlueprint,
+  createExtensionBlueprint,
+} from './createExtensionBlueprint';

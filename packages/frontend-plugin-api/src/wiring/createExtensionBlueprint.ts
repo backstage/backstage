@@ -29,7 +29,7 @@ import {
 /**
  * @public
  */
-export interface CreateExtensionKindOptions<
+export interface CreateExtensionBlueprintOptions<
   TParams,
   TInputs extends AnyExtensionInputMap,
   TOutput extends AnyExtensionDataMap,
@@ -55,13 +55,13 @@ export interface CreateExtensionKindOptions<
 /**
  * @public
  */
-export interface ExtensionKind<
+export interface ExtensionBlueprint<
   TParams,
   TInputs extends AnyExtensionInputMap,
   TOutput extends AnyExtensionDataMap,
   TConfig,
 > {
-  create(args: {
+  make(args: {
     namespace?: string;
     name?: string;
     attachTo?: { id: string; input: string };
@@ -77,6 +77,7 @@ export interface ExtensionKind<
         inputs: Expand<ResolvedExtensionInputs<TInputs>>;
         orignalFactory(
           context?: {
+            node?: AppNode;
             config?: TConfig;
             inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
           },
@@ -91,14 +92,14 @@ export interface ExtensionKind<
 /**
  * @internal
  */
-class ExtensionKindImpl<
+class ExtensionBlueprintImpl<
   TParams,
   TInputs extends AnyExtensionInputMap,
   TOutput extends AnyExtensionDataMap,
   TConfig,
 > {
   constructor(
-    private readonly options: CreateExtensionKindOptions<
+    private readonly options: CreateExtensionBlueprintOptions<
       TParams,
       TInputs,
       TOutput,
@@ -106,7 +107,7 @@ class ExtensionKindImpl<
     >,
   ) {}
 
-  public create(args: {
+  public make(args: {
     namespace?: string;
     name?: string;
     attachTo?: { id: string; input: string };
@@ -122,6 +123,7 @@ class ExtensionKindImpl<
         inputs: Expand<ResolvedExtensionInputs<TInputs>>;
         orignalFactory(
           context?: {
+            node?: AppNode;
             config?: TConfig;
             inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
           },
@@ -186,13 +188,13 @@ class ExtensionKindImpl<
  *
  * @public
  */
-export function createExtensionKind<
+export function createExtensionBlueprint<
   TParams,
   TInputs extends AnyExtensionInputMap,
   TOutput extends AnyExtensionDataMap,
   TConfig,
 >(
-  options: CreateExtensionKindOptions<TParams, TInputs, TOutput, TConfig>,
-): ExtensionKind<TParams, TInputs, TOutput, TConfig> {
-  return new ExtensionKindImpl(options);
+  options: CreateExtensionBlueprintOptions<TParams, TInputs, TOutput, TConfig>,
+): ExtensionBlueprint<TParams, TInputs, TOutput, TConfig> {
+  return new ExtensionBlueprintImpl(options);
 }

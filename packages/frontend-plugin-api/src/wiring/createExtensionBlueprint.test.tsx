@@ -16,27 +16,27 @@
 
 import React from 'react';
 import { coreExtensionData } from './coreExtensionData';
-import { createExtensionKind } from './createExtensionKind';
+import { createExtensionBlueprint } from './createExtensionBlueprint';
 import { createExtensionTester } from '@backstage/frontend-test-utils';
 
-describe('createExtensionKind', () => {
-  it('should allow creation of extension kinds', () => {
-    const TestExtension = createExtensionKind({
+describe('createExtensionBlueprint', () => {
+  it('should allow creation of extension blueprints', () => {
+    const TestExtensionBlueprint = createExtensionBlueprint({
       kind: 'test-extension',
       attachTo: { id: 'test', input: 'default' },
       output: {
         element: coreExtensionData.reactElement,
       },
-      factory(_, options: { text: string }) {
+      factory(_, params: { text: string }) {
         return {
-          element: <h1>{options.text}</h1>,
+          element: <h1>{params.text}</h1>,
         };
       },
     });
 
-    const extension = TestExtension.new({
+    const extension = TestExtensionBlueprint.make({
       name: 'my-extension',
-      options: {
+      params: {
         text: 'Hello, world!',
       },
     });
@@ -72,27 +72,27 @@ describe('createExtensionKind', () => {
   });
 
   it('should allow overriding of the default factory', () => {
-    const TestExtension = createExtensionKind({
+    const TestExtensionBlueprint = createExtensionBlueprint({
       kind: 'test-extension',
       attachTo: { id: 'test', input: 'default' },
       output: {
         element: coreExtensionData.reactElement,
       },
-      factory(_, options: { text: string }) {
+      factory(_, params: { text: string }) {
         return {
-          element: <h1>{options.text}</h1>,
+          element: <h1>{params.text}</h1>,
         };
       },
     });
 
-    const extension = TestExtension.new({
+    const extension = TestExtensionBlueprint.make({
       name: 'my-extension',
-      options: {
+      params: {
         text: 'Hello, world!',
       },
-      factory(_, options: { text: string }) {
+      factory(_, params: { text: string }) {
         return {
-          element: <h2>{options.text}</h2>,
+          element: <h2>{params.text}</h2>,
         };
       },
     });
