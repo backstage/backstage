@@ -14,17 +14,17 @@ const TestExtensionKind = createExtensionKind({
   output: {
     element: coreExtensionData.reactElement,
   },
-  factory(_, options: { text: string }) {
+  factory(_, params: { text: string }) {
     return {
-      element: <h1>{options.text}</h1>,
+      element: <h1>{params.text}</h1>,
     };
   },
 });
 
 // create an instance of the extension kind with props
-const testExtension = TestExtensionKind.new({
+const testExtension = TestExtensionKind.create({
   name: 'foo',
-  options: {
+  params: {
     text: 'Hello World',
   },
 });
