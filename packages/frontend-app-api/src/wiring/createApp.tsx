@@ -171,6 +171,7 @@ export interface CreateAppFeatureLoader {
 
 /** @public */
 export function createApp(options?: {
+  /** @deprecated - TODO */
   icons?: { [key in string]: IconComponent };
   features?: (FrontendFeature | CreateAppFeatureLoader)[];
   configLoader?: () => Promise<{ config: ConfigApi }>;
