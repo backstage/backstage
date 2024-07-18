@@ -34,6 +34,25 @@ import { PermissionRule } from '@backstage/plugin-permission-node';
 /**
  * @alpha
  */
+export interface CatalogLocationsExtensionPoint {
+  /**
+   * Allows setting custom location types, such as showcased in: https://backstage.io/docs/features/software-catalog/external-integrations/#creating-a-catalog-data-reader-processor
+   * @param locationTypes - List of location types to allow, default is "url" and "file"
+   */
+  setAllowedLocationTypes(locationTypes: Array<string>): void;
+}
+
+/**
+ * @alpha
+ */
+export const catalogLocationsExtensionPoint =
+  createExtensionPoint<CatalogLocationsExtensionPoint>({
+    id: 'catalog.locations',
+  });
+
+/**
+ * @alpha
+ */
 export interface CatalogProcessingExtensionPoint {
   addProcessor(
     ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
