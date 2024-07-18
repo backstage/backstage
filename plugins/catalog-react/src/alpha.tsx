@@ -166,7 +166,7 @@ export function createEntityContentExtension<
         title: config.title,
         routeRef: options.routeRef,
         element: (
-          <ExtensionBoundary node={node} routable>
+          <ExtensionBoundary node={node}>
             <ExtensionComponent />
           </ExtensionBoundary>
         ),
