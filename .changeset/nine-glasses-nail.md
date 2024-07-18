@@ -1,5 +1,4 @@
 ---
-'@backstage/backend-dynamic-feature-service': patch
 '@backstage/plugin-search-backend-module-pg': patch
 ---
 

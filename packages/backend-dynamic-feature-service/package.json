@@ -41,8 +41,8 @@
     "start": "backstage-cli package start"
   },
   "dependencies": {
+    "@backstage/backend-app-api": "workspace:^",
     "@backstage/backend-common": "workspace:^",
-    "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/backend-tasks": "workspace:^",
     "@backstage/cli-common": "workspace:^",
@@ -70,7 +70,6 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@backstage/backend-app-api": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "wait-for-expect": "^3.0.2"
