@@ -21,7 +21,6 @@ import {
   AnyExtensionDataMap,
   AnyExtensionInputMap,
   ExtensionDataValues,
-  ExtensionDefinition,
   ResolvedExtensionInputs,
   createExtension,
 } from './createExtension';
@@ -54,76 +53,6 @@ export interface CreateExtensionKindOptions<
 }
 
 /**
- * @public
- */
-export interface CreateExtensionKindInstanceOptions<
-  TOptions,
-  TInputs extends AnyExtensionInputMap,
-  TOutput extends AnyExtensionDataMap,
-  TConfig,
-> {
-  namespace?: string;
-  name?: string;
-  attachTo?: { id: string; input: string };
-  disabled?: boolean;
-  inputs?: TInputs;
-  output?: TOutput;
-  configSchema?: PortableSchema<TConfig>;
-  options: TOptions;
-  factory?(
-    context: {
-      node: AppNode;
-      config: TConfig;
-      inputs: Expand<ResolvedExtensionInputs<TInputs>>;
-      originalFactory(
-        context?: {
-          node?: AppNode;
-          config?: TConfig;
-          inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
-        },
-        options?: TOptions,
-      ): Expand<ExtensionDataValues<TOutput>>;
-    },
-    options: TOptions,
-  ): Expand<ExtensionDataValues<TOutput>>;
-}
-
-/**
- * @public
- */
-export interface CreateExtensionOverrideKindInstanceOptions<
-  TOptions,
-  TInputs extends AnyExtensionInputMap,
-  TOutput extends AnyExtensionDataMap,
-  TConfig,
-> {
-  namespace?: string;
-  name?: string;
-  attachTo?: { id: string; input: string };
-  disabled?: boolean;
-  inputs?: TInputs;
-  output?: TOutput;
-  configSchema?: PortableSchema<TConfig>;
-  options?: TOptions;
-  factory?(
-    context: {
-      node: AppNode;
-      config: TConfig;
-      inputs: Expand<ResolvedExtensionInputs<TInputs>>;
-      originalFactory(
-        context?: {
-          node?: AppNode;
-          config?: TConfig;
-          inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
-        },
-        options?: TOptions,
-      ): Expand<ExtensionDataValues<TOutput>>;
-    },
-    options: TOptions,
-  ): Expand<ExtensionDataValues<TOutput>>;
-}
-
-/**
  * TODO: should we export an interface instead of a concrete class?
  * @public
  */
@@ -145,7 +74,7 @@ export class ExtensionKind<
   }
 
   private constructor(
-    private readonly kindProperties: CreateExtensionKindOptions<
+    private readonly options: CreateExtensionKindOptions<
       TOptions,
       TInputs,
       TOutput,
@@ -153,41 +82,49 @@ export class ExtensionKind<
     >,
   ) {}
 
-  public new(
-    instanceProperties: CreateExtensionKindInstanceOptions<
-      TOptions,
-      TInputs,
-      TOutput,
-      TConfig
-    >,
-  ): ExtensionDefinition<TConfig> & {
-    override: (
-      overrides: CreateExtensionOverrideKindInstanceOptions<
-        TOptions,
-        TInputs,
-        TOutput,
-        TConfig
-      >,
-    ) => ExtensionDefinition<TConfig>;
-  } {
-    const extension = createExtension({
-      kind: this.kindProperties.kind,
-      namespace: instanceProperties.namespace ?? this.kindProperties.namespace,
-      name: instanceProperties.name ?? this.kindProperties.name,
-      attachTo: instanceProperties.attachTo ?? this.kindProperties.attachTo,
-      disabled: instanceProperties.disabled ?? this.kindProperties.disabled,
-      inputs: instanceProperties.inputs ?? this.kindProperties.inputs,
-      output: instanceProperties.output ?? this.kindProperties.output,
-      configSchema:
-        instanceProperties.configSchema ?? this.kindProperties.configSchema, // TODO: some config merging or smth
+  public new(args: {
+    namespace?: string;
+    name?: string;
+    attachTo?: { id: string; input: string };
+    disabled?: boolean;
+    inputs?: TInputs;
+    output?: TOutput;
+    configSchema?: PortableSchema<TConfig>;
+    options: TOptions;
+    factory?(
+      context: {
+        node: AppNode;
+        config: TConfig;
+        inputs: Expand<ResolvedExtensionInputs<TInputs>>;
+        orignalFactory(
+          context?: {
+            node?: AppNode;
+            config?: TConfig;
+            inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
+          },
+          options?: TOptions,
+        ): Expand<ExtensionDataValues<TOutput>>;
+      },
+      options: TOptions,
+    ): Expand<ExtensionDataValues<TOutput>>;
+  }) {
+    return createExtension({
+      kind: this.options.kind,
+      namespace: args.namespace ?? this.options.namespace,
+      name: args.name ?? this.options.name,
+      attachTo: args.attachTo ?? this.options.attachTo,
+      disabled: args.disabled ?? this.options.disabled,
+      inputs: args.inputs ?? this.options.inputs,
+      output: args.output ?? this.options.output,
+      configSchema: args.configSchema ?? this.options.configSchema, // TODO: some config merging or smth
       factory: ({ node, config, inputs }) => {
-        if (instanceProperties.factory) {
-          return instanceProperties.factory(
+        if (args.factory) {
+          return args.factory(
             {
               node,
               config,
               inputs,
-              originalFactory: (
+              orignalFactory: (
                 innerContext?: {
                   node?: AppNode;
                   config?: TConfig;
@@ -195,123 +132,29 @@ export class ExtensionKind<
                 },
                 innerOptions?: TOptions,
               ) =>
-                this.kindProperties.factory(
+                this.options.factory(
                   {
                     node: innerContext?.node ?? node,
                     config: innerContext?.config ?? config,
                     inputs: innerContext?.inputs ?? inputs,
                   },
-                  innerOptions ?? instanceProperties.options,
+                  innerOptions ?? args.options,
                 ),
             },
-            instanceProperties.options,
+            args.options,
           );
         }
 
-        return this.kindProperties.factory(
+        return this.options.factory(
           {
             node,
             config,
             inputs,
           },
-          instanceProperties.options,
+          args.options,
         );
       },
     });
-
-    return {
-      ...extension,
-      override: overrides => {
-        return createExtension({
-          kind: this.kindProperties.kind,
-          namespace:
-            overrides.namespace ??
-            instanceProperties.namespace ??
-            this.kindProperties.namespace,
-          name:
-            overrides.name ??
-            instanceProperties.name ??
-            this.kindProperties.name,
-          attachTo:
-            overrides.attachTo ??
-            instanceProperties.attachTo ??
-            this.kindProperties.attachTo,
-          disabled:
-            overrides.disabled ??
-            instanceProperties.disabled ??
-            this.kindProperties.disabled,
-          inputs:
-            overrides.inputs ??
-            instanceProperties.inputs ??
-            this.kindProperties.inputs,
-          output:
-            overrides.output ??
-            instanceProperties.output ??
-            this.kindProperties.output,
-          configSchema:
-            overrides.configSchema ??
-            instanceProperties.configSchema ??
-            this.kindProperties.configSchema, // TODO: some config merging or smth
-          factory: ({ node, config, inputs }) => {
-            if (overrides.factory) {
-              return overrides.factory(
-                {
-                  node,
-                  config,
-                  inputs,
-                  originalFactory: (
-                    innerContext?: {
-                      node?: AppNode;
-                      config?: TConfig;
-                      inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
-                    },
-                    innerOptions?: TOptions,
-                  ) =>
-                    instanceProperties.factory?.(
-                      {
-                        node: innerContext?.node ?? node,
-                        config: innerContext?.config ?? config,
-                        inputs: innerContext?.inputs ?? inputs,
-                        originalFactory: this.kindProperties.factory,
-                      },
-                      innerOptions ?? instanceProperties.options,
-                    ) ??
-                    this.kindProperties.factory(
-                      {
-                        node,
-                        config,
-                        inputs,
-                      },
-                      innerOptions ?? instanceProperties.options,
-                    ),
-                },
-                instanceProperties.options,
-              );
-            }
-
-            return (
-              instanceProperties.factory?.(
-                {
-                  node,
-                  config,
-                  inputs,
-                  originalFactory: this.kindProperties.factory,
-                },
-                instanceProperties.options,
-              ) ??
-              this.kindProperties.factory(
-                {
-                  node,
-                  config,
-                  inputs,
-                },
-                instanceProperties.options,
-              )
-            );
-          },
-        });
-      },
-    };
   }
 }
 
