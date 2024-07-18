@@ -48,8 +48,12 @@ const BUILD_CACHE_ENV_VAR = 'BACKSTAGE_CLI_EXPERIMENTAL_BUILD_CACHE';
 
 export function resolveBaseUrl(config: Config): URL {
   const baseUrl = config.getOptionalString('app.baseUrl');
+
   try {
-    return new URL(baseUrl ?? '/', 'http://localhost:3000');
+    return new URL(
+      baseUrl ?? '/',
+      `http://localhost:${process.env.PORT ?? '3000'}`,
+    );
   } catch (error) {
     throw new Error(`Invalid app.baseUrl, ${error}`);
   }

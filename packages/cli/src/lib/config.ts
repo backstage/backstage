@@ -96,11 +96,13 @@ export async function loadCliConfig(options: Options) {
     },
   });
 
+  const configurationLoadedMessage = appConfigs.length
+    ? `Loaded config from ${appConfigs.map(c => c.context).join(', ')}`
+    : `No configuration files found, running without config`;
+
   // printing to stderr to not clobber stdout in case the cli command
   // outputs structured data (e.g. as config:schema does)
-  process.stderr.write(
-    `Loaded config from ${appConfigs.map(c => c.context).join(', ')}\n`,
-  );
+  process.stderr.write(`${configurationLoadedMessage}\n`);
 
   try {
     const frontendAppConfigs = schema.process(appConfigs, {
