@@ -96,6 +96,9 @@ export function RoutedTabs(props: { routes: SubRoute[] }) {
         tabs={headerTabs}
         selectedIndex={index}
         onChange={onTabChange}
+        tabProps={{
+          component: Link,
+        }}
       />
       <Content>
         <Helmet title={route?.title} />
