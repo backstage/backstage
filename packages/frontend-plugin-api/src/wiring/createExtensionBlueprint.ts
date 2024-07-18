@@ -43,12 +43,12 @@ export interface CreateExtensionBlueprintOptions<
   output: TOutput;
   configSchema?: PortableSchema<TConfig>;
   factory(
+    params: TParams,
     context: {
       node: AppNode;
       config: TConfig;
       inputs: Expand<ResolvedExtensionInputs<TInputs>>;
     },
-    params: TParams,
   ): Expand<ExtensionDataValues<TOutput>>;
 }
 
@@ -71,20 +71,20 @@ export interface ExtensionBlueprint<
     configSchema?: PortableSchema<TConfig>;
     params: TParams;
     factory?(
+      params: TParams,
       context: {
         node: AppNode;
         config: TConfig;
         inputs: Expand<ResolvedExtensionInputs<TInputs>>;
         orignalFactory(
+          params?: TParams,
           context?: {
             node?: AppNode;
             config?: TConfig;
             inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
           },
-          params?: TParams,
         ): Expand<ExtensionDataValues<TOutput>>;
       },
-      params: TParams,
     ): Expand<ExtensionDataValues<TOutput>>;
   }): ExtensionDefinition<TConfig>;
 }
@@ -117,20 +117,20 @@ class ExtensionBlueprintImpl<
     configSchema?: PortableSchema<TConfig>;
     params: TParams;
     factory?(
+      params: TParams,
       context: {
         node: AppNode;
         config: TConfig;
         inputs: Expand<ResolvedExtensionInputs<TInputs>>;
         orignalFactory(
+          params?: TParams,
           context?: {
             node?: AppNode;
             config?: TConfig;
             inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
           },
-          params?: TParams,
         ): Expand<ExtensionDataValues<TOutput>>;
       },
-      params: TParams,
     ): Expand<ExtensionDataValues<TOutput>>;
   }): ExtensionDefinition<TConfig> {
     return createExtension({
@@ -144,39 +144,30 @@ class ExtensionBlueprintImpl<
       configSchema: args.configSchema ?? this.options.configSchema, // TODO: some config merging or smth
       factory: ({ node, config, inputs }) => {
         if (args.factory) {
-          return args.factory(
-            {
-              node,
-              config,
-              inputs,
-              orignalFactory: (
-                innerContext?: {
-                  config?: TConfig;
-                  inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
-                },
-                innerParams?: TParams,
-              ) =>
-                this.options.factory(
-                  {
-                    node,
-                    config: innerContext?.config ?? config,
-                    inputs: innerContext?.inputs ?? inputs,
-                  },
-                  innerParams ?? args.params,
-                ),
-            },
-            args.params,
-          );
-        }
-
-        return this.options.factory(
-          {
+          return args.factory(args.params, {
             node,
             config,
             inputs,
-          },
-          args.params,
-        );
+            orignalFactory: (
+              innerParams?: TParams,
+              innerContext?: {
+                config?: TConfig;
+                inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
+              },
+            ) =>
+              this.options.factory(innerParams ?? args.params, {
+                node,
+                config: innerContext?.config ?? config,
+                inputs: innerContext?.inputs ?? inputs,
+              }),
+          });
+        }
+
+        return this.options.factory(args.params, {
+          node,
+          config,
+          inputs,
+        });
       },
     });
   }

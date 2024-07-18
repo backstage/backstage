@@ -27,7 +27,7 @@ describe('createExtensionBlueprint', () => {
       output: {
         element: coreExtensionData.reactElement,
       },
-      factory(_, params: { text: string }) {
+      factory(params: { text: string }) {
         return {
           element: <h1>{params.text}</h1>,
         };
@@ -78,7 +78,7 @@ describe('createExtensionBlueprint', () => {
       output: {
         element: coreExtensionData.reactElement,
       },
-      factory(_, params: { text: string }) {
+      factory(params: { text: string }) {
         return {
           element: <h1>{params.text}</h1>,
         };
@@ -90,7 +90,7 @@ describe('createExtensionBlueprint', () => {
       params: {
         text: 'Hello, world!',
       },
-      factory(_, params: { text: string }) {
+      factory(params: { text: string }) {
         return {
           element: <h2>{params.text}</h2>,
         };

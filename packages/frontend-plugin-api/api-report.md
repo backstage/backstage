@@ -527,12 +527,12 @@ export interface CreateExtensionBlueprintOptions<
   disabled?: boolean;
   // (undocumented)
   factory(
+    params: TParams,
     context: {
       node: AppNode;
       config: TConfig;
       inputs: Expand<ResolvedExtensionInputs<TInputs>>;
     },
-    params: TParams,
   ): Expand<ExtensionDataValues<TOutput>>;
   // (undocumented)
   inputs?: TInputs;
@@ -899,20 +899,20 @@ export interface ExtensionBlueprint<
     configSchema?: PortableSchema<TConfig>;
     params: TParams;
     factory?(
+      params: TParams,
       context: {
         node: AppNode;
         config: TConfig;
         inputs: Expand<ResolvedExtensionInputs<TInputs>>;
         orignalFactory(
+          params?: TParams,
           context?: {
             node?: AppNode;
             config?: TConfig;
             inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
           },
-          params?: TParams,
         ): Expand<ExtensionDataValues<TOutput>>;
       },
-      params: TParams,
     ): Expand<ExtensionDataValues<TOutput>>;
   }): ExtensionDefinition<TConfig>;
 }

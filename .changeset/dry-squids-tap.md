@@ -14,7 +14,7 @@ const EntityCardBlueprint = createExtensionBlueprint({
   output: {
     element: coreExtensionData.reactElement,
   },
-  factory(_, params: { text: string }) {
+  factory(params: { text: string }) {
     return {
       element: <h1>{params.text}</h1>,
     };
