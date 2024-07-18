@@ -236,7 +236,10 @@ export async function createConfig(
   const mode = isDev ? 'development' : 'production';
   const optimization = optimizationConfig(options);
 
-  if (process.env.FORCE_REACT_DEVELOPMENT === 'true') {
+  if (
+    process.env.EXPERIMENTAL_MODULE_FEDERATION === 'true' &&
+    process.env.FORCE_REACT_DEVELOPMENT === 'true'
+  ) {
     console.log(
       chalk.yellow(
         `⚠️  WARNING: Forcing react and react-dom into development mode. This build should not be used in production.`,
