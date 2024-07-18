@@ -49,7 +49,7 @@ this BEP. Describe why the change is important and the benefits to users.
 
 As a user/integrator/admin, I would like to be able to add functionality to the Backstage CLI. Examples of this might be wanting additional templates for creating plugins, new build plugins, entity catalog validation, etc. While I could create my own CLI that sits on top of or adjacent to the Backstage CLI, that's confusing for users and means that I have to own the scaffolding of that new CLI.
 
-As a 3rd party plugin developer, I'd also like to be able to write CLI plugins that can be easily integrated with a customer's Backstage CLI instance. Owning a completely separate CLI is cumbersome and can be a poor DX, as can owning the integration layers for communicating with a Backstage instance. By building a plugin instead of an entire new CLI, I get a full CLI experience and I can tie into standard dependencies for the integration layers for free.
+As a 3rd party plugin developer, I'd also like to be able to write CLI commands that can be easily integrated with a customer's Backstage CLI instance. Owning a completely separate CLI is cumbersome and can be a poor DX, as can owning the integration layers for communicating with a Backstage instance. By creating a new command instead of an entire new CLI, I get a full CLI experience and I can tie into standard dependencies for the integration layers for free.
 
 ### Goals
 
@@ -58,12 +58,12 @@ List the specific goals of the BEP. What is it trying to achieve? How will we
 know that this has succeeded?
 -->
 
-1. No breaking changes to the current functionality of the Backstage CLI.
-1. Integrators can define CLI plugins that add functionality to the Backstage CLI.
-1. Users and integrators are able to install plugins into the CLI.
-1. Users can write plugins locally and install them into the CLI.
+1. Integrators can define custom CLI commands that add functionality to the Backstage CLI.
+1. Users and integrators are able to install new commands into the CLI.
+1. Users can write commands locally and install them into the CLI.
 1. Users will still be able to use the existing `backstage-cli` command.
 1. Shared dependency management, like peer dependencies, should work as expected.
+1. CLI packaging, users should be able to use your CLI outside of your Backstage repository.
 
 ### Non-Goals
 
@@ -72,7 +72,8 @@ What is out of scope for this BEP? Listing non-goals helps to focus discussion
 and make progress.
 -->
 
-1. CLI packaging, the ability to use this CLI outside of your local Backstage repo for personalized tasks.
+1. Distribution of your CLI, including compiling your CLI for different architectures.
+1. Module system for adding functionality across different plugins.
 
 ## Proposal
 
@@ -83,9 +84,11 @@ you're proposing, but should not include things like API designs or
 implementation.
 -->
 
-A new core for the Backstage CLI that enables modularization of the CLI. This should build off of the existing new backend system, leveraging its API wherever possible to reduce duplication of work and confusion around API shape. Some services will need to be adjusted to fit into the new CLI system, and others will need to be added to support newer workflows. Performance will also need to be prioritized as slow initialization times for the backend are noticeable once, slow CLI initialization will be consistently noticed whenever commands are run.
+A new core for the Backstage CLI that enables modularization of the CLI. This will be built as a new system, taking the best of the frontend and the backend systems and applying it for a CLI. Neither the frontend system or the backend system are wholly fit for this role as they're specializing in different run-times and focusing on different levels of abstractions.
 
-A new declarative installation method for plugins to be added to the CLI. Inspired by `Rushstack`'s [`rush-plugins` architecture](https://rushjs.io/pages/maintainer/using_rush_plugins/), users will define a new `cli-config.yaml` file with a map of profile names to plugin names and entry points. To solve the problem of peer dependencies and dependency management in general for the CLI, we propose creating a new `packages/cli` package that holds a `package.json` with the installed plugins. This package will not have any Typescript code nor executables and will simply define the dependencies needed for your modular CLI.
+Performance will also need to be prioritized as slow initialization times for the backend are noticeable once, slow CLI initialization will be consistently noticed whenever commands are run. Lazy loading of key dependencies will be a substantial part of this effort.
+
+A new declarative installation method for plugins to be added to the CLI. Inspired by `Rushstack`'s [`rush-plugins` architecture](https://rushjs.io/pages/maintainer/using_rush_plugins/), users will define a new `cli-config.yaml` file with a map of profile names to plugin names and entry points. To solve the problem of peer dependencies and dependency management in general for the CLI, we propose creating a new Backstage type `cli-profile` package that holds a `package.json` and a [lockfile](https://github.com/lirantal/nodejs-cli-apps-best-practices?tab=readme-ov-file#22-use-the-shrinkwrap-luke) with the installed plugins. This package will not have any Typescript code nor executables and will simply define the dependencies needed for your modular CLI. With the shrink wrap file, installs will also be repeatable.
 
 ## Design Details
 
@@ -97,148 +100,57 @@ If there's any ambiguity about HOW your proposal will be implemented, this is th
 
 ### Plugin Abstractions
 
-Reusing the existing new backend system's plugin/module/service abstractions for the new modular CLI is key to providing a familiar interface and not reinventing the wheel. While there is some small differences, the overall structure and abstractions should be comparable.
-
-#### Backend Adjustments
-
-While we can reuse many of the types and setup code for the `BackstageBackend` class, we need to adjust its initialization to not start a permanent waiting loop and pull out some of the shared functionality for plugin registration. we propose a set of new classes to store shared functionality,
+We propose a new system for the CLI, this system will be mostly focused on allowing developers to add Plugins, Commands and Services. Services will be the same as the backend system, allowing for dependency injection. Plugins will be the new replacement for frontend plugins and backend features. Commands will be the individual CLI commands.
 
 ```ts
-// This could probably be shared across CLI and server implementations.
-interface Initializer {
-  serviceRegistry: ServiceRegistry;
-  featureRegistry: FeatureRegistry;
-
-  // Create all of the required dependencies for the backend.
-  initialize(): Promise<void>;
+interface Plugin {
+  // Out of the box, we will have a registration point for adding new commands.
+  register(registrationPoints: {
+    [key: string]: RegistrationPointRef;
+  }): void | Promise<void>;
 }
 
-// This would need to be extended for CLI and server.
-interface Backend {
-  // Start the server/CLI.
-  start(): Promise<void>;
-
-  // Stop the server/CLI, for CLI this will be called immediately.
-  stop(): Promise<void>;
-}
-
-// Similar to the ServiceRegistry, having a single store of features allows the logic to be shared.
-// Features refers to plugins and modules only. This would mostly be the logic in #doStart on BackendInitializer.
-interface FeatureRegistry {
-  serviceRegistry: ServiceRegistry;
-
-  add(feature: BackendFeature | Promise<BackendFeature>): Promise<void>;
-
-  // Get a specific feature by ID.
-  get(pluginId: string, moduleId?: string): Promise<BackendFeature | undefined>;
-
-  getAll(): Promise<BackendFeature[]>;
-}
-```
-
-#### Services
-
-##### Existing Services
-
-Many of the existing shared services can be reused. Of those that cannot,
-
-###### `rootConfigService`
-
-The Backstage CLI currently doesn't ship with config information and doesn't require to be run in your local Backstage repo. We'll need some way of setting the URL of your Backstage instance, for plugins that require direct communication. We propose a `backstage-cli config set` command to set config, including Backstage instance URL, that writes to your `cli-config.yaml` file either in your git repo or globally.
-
-##### New Services
-
-The following new services would need to be added:
-
-###### Identity Service
-
-This service is intended to be used with [external auth](../0007-auth-external-services/README.md) to return a longer lasting user session that can be stored locally and used in HTTP calls to your Backstage instance.
-
-```ts
-interface LocalIdentityService {
-  // Similar to the AWS CLI, allow users to set an auth token that's stored to disk.
-  storeToken(token: string): Promise<void>;
-
-  // Return the token stored on disk, throw if it isn't present.
-  getToken(): Promise<string>;
-
-  // Does the user have a token set?
-  hasToken(): Promise<boolean>;
-}
-```
-
-###### CLI Services
-
-These services let users register commands with the CLI. It would be based on the `commander` API.
-
-:::note
-
-Having a standard service layer will let us further control what our CLIs should look like. We recommend moving towards a standard `[command] [subcommand]` format which is widely used across the Backstage CLI and repo tools. There are a few stragglers like `versions:bump`, `versions:migrate`, etc that can be aliased to point to the new commands.
-
-:::
-
-```ts
-// Allow users to register top level commands with the program.
-interface RootProgramService {
-  command(commandAndArgs: string, description: string): PluginCommandService;
-
-  // Alias the first argument to be called as the second argument.
-  alias(command: string, newCommand: string);
-}
-
-// A scoped command with the pluginId as the command name.
-interface PluginCommandService extends Command {}
-
-// Allow users to register commands under specific commands (of arbitrary depth).
 interface Command {
-  command(commandAndArgs: string, description: string): Command;
-  action(
-    argument: string,
-    description: string,
-    processingFn?: () => void,
-    defaultValue?: string,
-  ): Command;
-  action(handler: () => void | () => Promise<void>): void;
+  // What path in the CLI this command will sit at? eg ["repo", "build", "backend"]
+  path: string[];
+
+  init(deps: { [key: string]: ServiceRef }): Promise<void>;
 }
 ```
 
-Usage:
+Plugins are essentially how developers will package their set of Commands (and services).
 
-```ts
-createCliPlugin({
-  pluginId: 'package',
-  deps: {
-    program: services.cliProgramService,
-  },
-  register({ program }) {
-    // TODO: Figure out the best way to have commands register underneath a separate package.
-    program.command('package');
-  },
-});
-```
+Commands are at their core a sparse tree of nodes, connected by their paths to create a command-line interface. Users can create new Commands that tie directly into other commands' paths, for example, a user can add a new `build` command. Users aren't required to use a module interface to interact with other commands, both because other commands are unlikely to share much code and command hierarchy is not an indicator of interoperability. `build frontend` and `build backend` are similar domain commands but have much different end results.
+
+In this model, Commands do not have any inherited hierarchy, for example, flags cannot be set on the `package` command and expected to be inherited down to the `package migrate schema-tools` command. In those cases where inherited hierarchy might make sense, we propose using environment variables, like `LOG_LEVEL` and `DEBUG` to convey that state instead.
 
 #### Plugins
 
-What do plugins and modules mean in a CLI system?
+What do plugins mean in a CLI system?
 
-A plugin should continue to be a unit of self-contained functionality. It may have a top level CLI command, like `package`, `repo`, `api`, or `catalog`, but that is not required. If plugins define a top-level CLI command, they own the entire subtree of commands, i.e. `[command] [...subtree]`.
-
-A module ties a plugin to another plugin. The only way to register new sub commands is through modules. If those modules register subcommands, then they in turn own that subcommand and its subtree, i.e. `[command] [subcommand] [...subtree]`. It can also add functionality to other plugins through extension points.
+A plugin should continue to be a unit of self-contained functionality. It will own at least one Command and possibly a set of Services. For example, there could be a new Build plugin that holds the functionality for building the frontend and the backend.
 
 ##### Default Plugins
 
-By default, we propose having the following plugins installed, `package` and `repo`.
+As part of this effort, we propose breaking up the existing CLI into a set of plugins and then combining those plugins into a default profile. That set of plugins would be:
 
-For functionality that targets a single package, providing a standard `package` top-level command interface to add sub commands is helpful for organizing our information architecture as well as providing a good example of what the plugin/module split can look like.
-
-Similar to `package`, for commands that target the entire repository, like `test`, we should provide a standard interface.
+1. Build plugin - All of the existing build commands, as well as the rollup/esbuild/webpack configuration and orchestration.
+1. Start plugin - May be pulled into the build plugin, would hold all development related commands that aren't necessarily for static output/building.
+1. Clean plugin - Repository/package cleaning logic.
+1. Lint plugin - Both lint commands and their dependencies.
+1. Test plugin - All 3 test commands and their dependencies.
+1. Config plugin - All of the config related commands.
+1. Info plugin - Information about your Backstage installation.
+1. Migration plugin - Automatic migration scripts.
+1. "New plugin" plugin - Creating a new plugin flow.
+1. Version plugin - Handle versioning for your Backstage instance.
 
 ### CLI Installation
 
 There are 2 goals with this design,
 
 1. Not require a new `backstage-cli` executable to be created and distributed.
-1. Rely on existing module resolution technology by using a `package.json` to declare the dependencies to install.
+1. Leverage existing tools where possible, for example module resolution.
 
 #### Declaring your CLI
 
@@ -259,50 +171,143 @@ interface CliConfigYaml {
       [key: string]: {
         // The package name of the package that contains your dependency information.
         // Separate profiles can have separate packages to reduce dependency bloat.
-        entrypoint: string;
+        name: string;
 
-        // A list of plugins and their entrypoints to install into the CLI.
-        plugins: {
-          // The name of the plugin install, should match a key in the package.json.
-          name: string;
-
-          // Which file to use the default export of to install the above plugin? Defaults to `dist/index.js`
-          entrypoint?: string;
-        }[];
+        version: string;
       };
     };
   };
 }
 ```
 
-The CLI will start with the `default` profile, unless a `--profile` parameter is passed during execution, in which case we will instead load from that profile instead. In order to make the launch of this new modular CLI not a massive breaking change, we propose the creation of a new package, `@backstage/cli-default-profile` that contains the previous plugins that were bundled with the pre-modular CLI. Users that want to customize their CLI, we recommend using `@backstage/cli-default-profile` as a starting place, but being judicious about what functionality they actually need and installing that directly into a new profile.
+The CLI will start with the `default` profile, unless a `--profile` parameter is passed during execution, in which case we will instead load from that profile instead.
 
-Each `cli.profiles.[].entrypoint` above refers to a package name,
+We propose the creation of a new package, `@backstage/cli-profile-default` that contains the previous plugins that were bundled with the pre-modular CLI. Users that want to customize their CLI, we recommend using `@backstage/cli-profile-default` as a starting place, but being judicious about what functionality they actually need and installing that directly into a new profile.
+
+Each `cli.profiles.[key].name` above refers to a package name,
 
 ```yaml
 packages/
   cli/
-    package.json:
+    my-custom-profile:
       name: '@internal/cli-custom-profile'
+      version: '0.1.3'
 ```
 
 Upon initialization, the existing installation of `backstage-cli` will detect that `cli-config.yaml` is set and needs to load the profile and plugins.
 
 Users can declare both direct plugin dependencies and peer dependency resolutions in this profile to minimize the size of this new package and allow plugins to not have to bundle their own large dependencies (`eslint`, `esbuild`, etc).
 
-### Migrating existing plugins
+### Maintaining state
 
-We'll want a way similar to the new backend migration to easily use plugins in both the old and new contexts. We propose the following export strategy,
+We'll be using a separate lockfile to maintain dependency state across installs over time. Each profile will ship with this as part of its publish package, updates will then run an install using the lockfile.
 
-```ts title="plugin/src/index.ts"
-export default createCliPlugin(...);
+TODO: Figure out how this mechanism would work.
 
-// Each action would be re-exported.
-// This does introduce possible naming skew between commands in plugins vs commands in the old CLI. There are only 35 commands in the existing CLI, it should be easy to fix naming skew as it comes up.
-export const actions = {
-  'namedAction': fn,
+#### Keeping your CLI up to date
+
+We'll also need to make sure that users can be notified that a newer version is available and recommended to be upgraded to. Upgrades should also be a relatively painless process, developers shouldn't have yet another dependency to manually manage.
+
+To address this, we propose:
+
+1. Automatic version checks most CLIs/tools do this. When starting, check what the latest version is and if it's different than the current version print a message that tells the user to update their version.
+
+- For the main CLI, print a message telling users how to update it themselves, for example `npm i -g @backstage/cli@2.1.3`
+- For plugins, print a message telling users how to update it themselves, for example `npm i -g @backstage/cli-profile-default@0.1.2`
+- (stretch) Allow users to update the CLI from the CLI.
+
+1. (stretch) Easy/easier profile installs, similar to version checks for the main CLI, users will likely need to update their profiles at a regular cadence. Where possible, we should make this as easy as pressing 'y' on their keyboard.
+
+### Services
+
+We'll also need Services to store common functionality that no single command should own. Services will be injected into each Command and will mirror those found in the backend system.
+
+#### Config Service
+
+The Backstage CLI currently doesn't ship with config information and doesn't require to be run in your local Backstage repo. We'll need some way of setting the URL of your Backstage instance, for plugins that require direct communication. We propose a `backstage-cli config set` command to set config, including Backstage instance URL, that writes to your `cli-config.yaml` file either in your git repo or globally.
+
+```ts
+interface ConfigOptions {
+  global?: boolean;
+}
+
+interface ConfigService {
+  get(options: ConfigOptions): string | undefined;
+  set(key: string, options: ConfigOptions): void;
 }
 ```
+
+#### Identity Service
+
+This service is intended to be used with [external auth](../0007-auth-external-services/README.md) to return a longer lasting user session that can be stored locally and used in HTTP calls to your Backstage instance.
+
+```ts
+interface LocalIdentityService {
+  // Similar to the AWS CLI, allow users to set an auth token that's stored to disk.
+  storeToken(token: string): Promise<void>;
+
+  // Return the token stored on disk, throw if it isn't present.
+  getToken(): Promise<string>;
+
+  // Does the user have a token set?
+  hasToken(): Promise<boolean>;
+}
+```
+
+#### PluginCommandService
+
+Let users register actions with the CLI. It would be based on a subset of the `commander` API.
+
+```ts
+// A scoped command with the pluginId as the command name.
+interface PluginCommandService {
+  // Only allowed to call this once per Command.
+  action(processingFn: () => void | Promise<void>): PluginCommandService;
+  option(
+    argument: string,
+    description: string,
+    processingFn?: () => void,
+    defaultValue?: string,
+  ): Command;
+}
+```
+
+Usage:
+
+```ts
+createCliPlugin({
+  path: ['package', 'build'],
+  deps: {
+    command: services.pluginCommandService,
+  },
+  register({ command }) {
+    command
+      .option('-f', 'Forcefully build')
+      .action(lazy(() => import('./command').then(m => m.default)));
+  },
+});
+```
+
+```ts
+createCliPlugin({
+  path: ['package', 'test'],
+  deps: {
+    command: services.pluginCommandService,
+  },
+  register({ command }) {
+    command
+      .option(
+        '--pass-with-no-tests',
+        'Allow the tests to pass if there are no tests.',
+      )
+      .action(lazy(() => import('./command').then(m => m.default)));
+  },
+});
+```
+
+#### Logger Service
+
+This will generally be pulled from the backend system. Logs will likely need to be enabled with a global verbosity flag/environment variable.
 
 ## Release Plan
 
@@ -312,29 +317,7 @@ This section should describe the rollout process for any new features. It must t
 If there is any particular feedback to be gathered during the rollout, this should be described here as well.
 -->
 
-In order to prevent breaking changes, the release process for this is going to be involved. We propose creating a `cli-next` project that contains the new core CLI, using the `@backstage/cli-common` library to share functionality between the 2 `cli` projects where needed. Once that is stable, we would start to migrate existing commands into the new system. After migrating all of the core CLI functionality,
-
-```
-  new [options]
-  test
-  config:docs [options]
-  config:print [options]
-  config:check [options]
-  config:schema [options]
-  repo [command]
-  package [command]
-  migrate [command]
-  versions:bump [options]
-  versions:check [options]
-  versions:migrate [options]
-  clean
-  build-workspace [options] <workspace-dir> [packages...]
-  create-github-app <github-org>
-  info
-  help [command]
-```
-
-We could then launch the new CLI.
+TODO: While backwards compatibility/migration path is important, figuring out a good way to do that while rolling an interesting new paradigm will take work.
 
 ## Dependencies
 
