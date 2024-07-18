@@ -22,7 +22,7 @@ You will have to add the entity provider in the catalog initialization code of y
 backend. The provider is not installed by default, therefore you have to add a
 dependency to `@backstage/plugin-catalog-backend-module-bitbucket-server` to your backend package.
 
-```bash
+```bash title="From your Backstage root directory"
 # From your Backstage root directory
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-bitbucket-server
 ```
