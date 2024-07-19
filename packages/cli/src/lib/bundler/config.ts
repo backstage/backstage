@@ -251,7 +251,9 @@ export async function createConfig(
       `${dirname(require.resolve('react-dom/package.json'))}/`,
     ];
 
-    // Don't define process.env.NODE_ENV with value matching config.mode.
+    // Don't define process.env.NODE_ENV with value matching config.mode. If we
+    // don't set this to false, webpack will define the value of
+    // process.env.NODE_ENV for us, and the definition below will be ignored.
     optimization.nodeEnv = false;
 
     // Instead, provide a custom definition which always uses "development" if
