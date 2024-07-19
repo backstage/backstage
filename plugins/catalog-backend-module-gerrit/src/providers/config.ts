@@ -20,6 +20,8 @@ import { GerritProviderConfig } from './types';
 
 function readGerritConfig(id: string, config: Config): GerritProviderConfig {
   const branch = config.getOptionalString('branch') ?? 'master';
+  const catalogPath =
+    config.getOptionalString('catalogPath') ?? 'catalog-info.yaml';
   const host = config.getString('host');
   const query = config.getString('query');
 
@@ -29,6 +31,7 @@ function readGerritConfig(id: string, config: Config): GerritProviderConfig {
 
   return {
     branch,
+    catalogPath,
     host,
     id,
     query,
