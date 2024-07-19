@@ -181,7 +181,7 @@ export class GerritEntityProvider implements EntityProvider {
   private createLocationSpec(project: string): LocationSpec {
     return {
       type: 'url',
-      target: `${this.integration.config.gitilesBaseUrl}/${project}/+/refs/heads/${this.config.branch}/catalog-info.yaml`,
+      target: `${this.integration.config.gitilesBaseUrl}/${project}/+/refs/heads/${this.config.branch}/${this.config.catalogPath}`,
       presence: 'optional',
     };
   }

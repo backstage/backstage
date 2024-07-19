@@ -308,6 +308,14 @@ export function buildGerritGitilesArchiveUrl(
 ): string;
 
 // @public
+export function buildGerritGitilesUrl(
+  config: GerritIntegrationConfig,
+  project: string,
+  branch: string,
+  filePath: string,
+): string;
+
+// @public
 export class DefaultAzureCredentialsManager implements AzureCredentialsManager {
   static fromIntegrations(
     integrations: ScmIntegrationRegistry,
@@ -554,6 +562,11 @@ export function getGitHubRequestOptions(
 ): {
   headers: Record<string, string>;
 };
+
+// @public
+export function getGitilesAuthenticationUrl(
+  config: GerritIntegrationConfig,
+): string;
 
 // @public
 export function getGitLabFileFetchUrl(
