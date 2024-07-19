@@ -48,3 +48,8 @@ export {
   type FeatureFlagConfig,
   type FrontendFeature,
 } from './types';
+export {
+  type CreateExtensionBlueprintOptions,
+  type ExtensionBlueprint,
+  createExtensionBlueprint,
+} from './createExtensionBlueprint';

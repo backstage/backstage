@@ -499,6 +499,51 @@ export function createExtension<
   options: CreateExtensionOptions<TOutput, TInputs, TConfig>,
 ): ExtensionDefinition<TConfig>;
 
+// @public
+export function createExtensionBlueprint<
+  TParams,
+  TInputs extends AnyExtensionInputMap,
+  TOutput extends AnyExtensionDataMap,
+  TConfig,
+>(
+  options: CreateExtensionBlueprintOptions<TParams, TInputs, TOutput, TConfig>,
+): ExtensionBlueprint<TParams, TInputs, TOutput, TConfig>;
+
+// @public (undocumented)
+export interface CreateExtensionBlueprintOptions<
+  TParams,
+  TInputs extends AnyExtensionInputMap,
+  TOutput extends AnyExtensionDataMap,
+  TConfig,
+> {
+  // (undocumented)
+  attachTo: {
+    id: string;
+    input: string;
+  };
+  // (undocumented)
+  configSchema?: PortableSchema<TConfig>;
+  // (undocumented)
+  disabled?: boolean;
+  // (undocumented)
+  factory(
+    params: TParams,
+    context: {
+      node: AppNode;
+      config: TConfig;
+      inputs: Expand<ResolvedExtensionInputs<TInputs>>;
+    },
+  ): Expand<ExtensionDataValues<TOutput>>;
+  // (undocumented)
+  inputs?: TInputs;
+  // (undocumented)
+  kind: string;
+  // (undocumented)
+  namespace?: string;
+  // (undocumented)
+  output: TOutput;
+}
+
 // @public (undocumented)
 export function createExtensionDataRef<TData>(
   id: string,
@@ -538,7 +583,7 @@ export interface CreateExtensionOptions<
   // (undocumented)
   disabled?: boolean;
   // (undocumented)
-  factory(options: {
+  factory(context: {
     node: AppNode;
     config: TConfig;
     inputs: Expand<ResolvedExtensionInputs<TInputs>>;
@@ -834,6 +879,45 @@ export interface Extension<TConfig> {
 }
 
 // @public (undocumented)
+export interface ExtensionBlueprint<
+  TParams,
+  TInputs extends AnyExtensionInputMap,
+  TOutput extends AnyExtensionDataMap,
+  TConfig,
+> {
+  // (undocumented)
+  make(args: {
+    namespace?: string;
+    name?: string;
+    attachTo?: {
+      id: string;
+      input: string;
+    };
+    disabled?: boolean;
+    inputs?: TInputs;
+    output?: TOutput;
+    configSchema?: PortableSchema<TConfig>;
+    params: TParams;
+    factory?(
+      params: TParams,
+      context: {
+        node: AppNode;
+        config: TConfig;
+        inputs: Expand<ResolvedExtensionInputs<TInputs>>;
+        orignalFactory(
+          params?: TParams,
+          context?: {
+            node?: AppNode;
+            config?: TConfig;
+            inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
+          },
+        ): Expand<ExtensionDataValues<TOutput>>;
+      },
+    ): Expand<ExtensionDataValues<TOutput>>;
+  }): ExtensionDefinition<TConfig>;
+}
+
+// @public (undocumented)
 export function ExtensionBoundary(
   props: ExtensionBoundaryProps,
 ): React_2.JSX.Element;
@@ -844,7 +928,6 @@ export interface ExtensionBoundaryProps {
   children: ReactNode;
   // (undocumented)
   node: AppNode;
-  // (undocumented)
   routable?: boolean;
 }
 
