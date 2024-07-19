@@ -130,8 +130,11 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
   }
 
   const { frontendConfig, fullConfig } = cliConfig;
-  const url = resolveBaseUrl(frontendConfig);
-  const { host, port } = resolveEndpoint(frontendConfig);
+  const url = resolveBaseUrl(frontendConfig, options.moduleFederation);
+  const { host, port } = resolveEndpoint(
+    frontendConfig,
+    options.moduleFederation,
+  );
 
   const detectedModulesEntryPoint = await createDetectedModulesEntryPoint({
     config: fullConfig,
