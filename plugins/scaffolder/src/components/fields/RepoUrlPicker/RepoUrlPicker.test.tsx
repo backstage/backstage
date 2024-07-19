@@ -33,6 +33,7 @@ import {
   ScaffolderRJSFField,
 } from '@backstage/plugin-scaffolder-react';
 import { act, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 describe('RepoUrlPicker', () => {
   const mockScaffolderApi: Partial<ScaffolderApi> = {
@@ -323,14 +324,29 @@ describe('RepoUrlPicker', () => {
       });
     });
 
-    it('should not call the scmAuthApi if secret is available in the state', async () => {
+    it('should call the scmAuthApi with the new host when the host is changed', async () => {
       const SecretsComponent = () => {
         const { secrets } = useTemplateSecrets();
         return (
           <div data-testid="current-secrets">{JSON.stringify({ secrets })}</div>
         );
       };
-      const { getByTestId } = await renderInTestApp(
+      const allowedHosts = ['github.com', 'gitlab.example.com'];
+
+      (mockScmAuthApi.getCredentials as jest.Mock).mockImplementation(
+        ({ url }) => {
+          let token = '';
+          if (url === `https://${allowedHosts[0]}`) {
+            token = 'abc123';
+          } else if (url === `https://${allowedHosts[1]}`) {
+            token = 'def456';
+          }
+          return Promise.resolve({ token });
+        },
+      );
+      const secondHost = allowedHosts[1];
+
+      const { getAllByRole, getByTestId } = await renderInTestApp(
         <TestApiProvider
           apis={[
             [scmIntegrationsApiRef, mockIntegrationsApi],
@@ -338,16 +354,16 @@ describe('RepoUrlPicker', () => {
             [scaffolderApiRef, mockScaffolderApi],
           ]}
         >
-          <SecretsContextProvider initialSecrets={{ testKey: 'abc123' }}>
+          <SecretsContextProvider>
             <Form
               validator={validator}
               schema={{ type: 'string' }}
               uiSchema={{
                 'ui:field': 'RepoUrlPicker',
                 'ui:options': {
+                  allowedHosts,
                   requestUserCredentials: {
                     secretsKey: 'testKey',
-                    additionalScopes: { github: ['workflow'] },
                   },
                 },
               }}
@@ -361,19 +377,35 @@ describe('RepoUrlPicker', () => {
       );
 
       await act(async () => {
+        // need to wait for the debounce to finish to fetch credentials for the first selected host
+        await new Promise(resolve => setTimeout(resolve, 600));
+      });
+      const firstHostSecrets = JSON.parse(
+        getByTestId('current-secrets').textContent!,
+      );
+      expect(firstHostSecrets).toEqual({
+        secrets: { testKey: 'abc123' },
+      });
+
+      await act(async () => {
+        // Select the second host
+        const hostInput = getAllByRole('combobox')[0];
+        await userEvent.selectOptions(hostInput, secondHost);
+
         // need to wait for the debounce to finish
         await new Promise(resolve => setTimeout(resolve, 600));
       });
-
-      // as we already have a secret in the state, getCredentials should not be called again.
-      expect(mockScmAuthApi.getCredentials).toHaveBeenCalledTimes(0);
-
-      const currentSecrets = JSON.parse(
+      const secondHostSecrets = JSON.parse(
         getByTestId('current-secrets').textContent!,
       );
-
-      expect(currentSecrets).toEqual({
-        secrets: { testKey: 'abc123' },
+      expect(secondHostSecrets).toEqual({
+        secrets: { testKey: 'def456' },
+      });
+      expect(mockScmAuthApi.getCredentials).toHaveBeenCalledWith({
+        url: `https://${secondHost}`,
+        additionalScope: {
+          repoWrite: true,
+        },
       });
     });
   });
