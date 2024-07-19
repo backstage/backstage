@@ -237,6 +237,7 @@ export async function createConfig(
   const optimization = optimizationConfig(options);
 
   if (
+    mode === 'production' &&
     !!process.env.EXPERIMENTAL_MODULE_FEDERATION &&
     !!process.env.FORCE_REACT_DEVELOPMENT
   ) {
