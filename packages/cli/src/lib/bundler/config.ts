@@ -238,8 +238,8 @@ export async function createConfig(
 
   if (
     mode === 'production' &&
-    !!process.env.EXPERIMENTAL_MODULE_FEDERATION &&
-    !!process.env.FORCE_REACT_DEVELOPMENT
+    process.env.EXPERIMENTAL_MODULE_FEDERATION &&
+    process.env.FORCE_REACT_DEVELOPMENT
   ) {
     console.log(
       chalk.yellow(
