@@ -237,8 +237,8 @@ export async function createConfig(
   const optimization = optimizationConfig(options);
 
   if (
-    process.env.EXPERIMENTAL_MODULE_FEDERATION === 'true' &&
-    process.env.FORCE_REACT_DEVELOPMENT === 'true'
+    !!process.env.EXPERIMENTAL_MODULE_FEDERATION &&
+    !!process.env.FORCE_REACT_DEVELOPMENT
   ) {
     console.log(
       chalk.yellow(
