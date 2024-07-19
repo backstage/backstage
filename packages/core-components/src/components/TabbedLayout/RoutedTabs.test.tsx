@@ -160,4 +160,16 @@ describe('RoutedTabs', () => {
       rendered.queryByText('tabbed-test-content-2'),
     ).not.toBeInTheDocument();
   });
+
+  it('should render the tabs as <a> links', async () => {
+    const routes = [testRoute2, testRoute1, testRoute3];
+    const rendered = await renderInTestApp(<RoutedTabs routes={routes} />);
+
+    const tabs = rendered.queryAllByRole('tab');
+
+    for (const [k, v] of Object.entries(tabs)) {
+      expect(v.tagName).toBe('A');
+      expect(v).toHaveAttribute('href', routes[Number(k)].path);
+    }
+  });
 });
