@@ -18,7 +18,7 @@ import { createExtension } from './createExtension';
 import { createExtensionDataRef } from './createExtensionDataRef';
 import { createExtensionInput } from './createExtensionInput';
 
-const stringData = createExtensionDataRef<string>('string');
+const stringData = createExtensionDataRef<string>().with({ id: 'string' });
 
 function unused(..._any: any[]) {}
 

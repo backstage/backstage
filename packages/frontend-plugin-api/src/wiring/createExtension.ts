@@ -22,7 +22,7 @@ import { ExtensionInput } from './createExtensionInput';
 
 /** @public */
 export type AnyExtensionDataMap = {
-  [name in string]: ExtensionDataRef<unknown, { optional?: true }>;
+  [name in string]: ExtensionDataRef<unknown, string, { optional?: true }>;
 };
 
 /** @public */
