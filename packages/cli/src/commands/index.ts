@@ -396,7 +396,7 @@ export function registerCommands(program: Command) {
     .action(lazy(() => import('./versions/bump').then(m => m.default)));
 
   program
-    .command('versions:check')
+    .command('versions:check', { hidden: true })
     .option('--fix', 'Fix any auto-fixable versioning problems')
     .description('Check Backstage package versioning')
     .action(lazy(() => import('./versions/lint').then(m => m.default)));

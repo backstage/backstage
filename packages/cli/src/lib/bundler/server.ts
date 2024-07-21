@@ -14,22 +14,15 @@
  * limitations under the License.
  */
 
-import { PackageGraph } from '@backstage/cli-node';
 import { AppConfig } from '@backstage/config';
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import uniq from 'lodash/uniq';
 import openBrowser from 'react-dev-utils/openBrowser';
 import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 
-import {
-  forbiddenDuplicatesFilter,
-  includedFilter,
-} from '../../commands/versions/lint';
 import { paths as libPaths } from '../../lib/paths';
 import { loadCliConfig } from '../config';
-import { Lockfile } from '../versioning';
 import { createConfig, resolveBaseUrl, resolveEndpoint } from './config';
 import { createDetectedModulesEntryPoint } from './packageDetection';
 import { resolveBundlingPaths, resolveOptionalBundlingPaths } from './paths';
@@ -41,38 +34,6 @@ export async function serveBundle(options: ServeOptions) {
   const targetPkg = await fs.readJson(paths.targetPackageJson);
 
   if (options.verifyVersions) {
-    const lockfile = await Lockfile.load(
-      libPaths.resolveTargetRoot('yarn.lock'),
-    );
-    const result = lockfile.analyze({
-      filter: includedFilter,
-      localPackages: PackageGraph.fromPackages(
-        await PackageGraph.listTargetPackages(),
-      ),
-    });
-    const problemPackages = [...result.newVersions, ...result.newRanges]
-      .map(({ name }) => name)
-      .filter(forbiddenDuplicatesFilter);
-
-    if (problemPackages.length > 1) {
-      console.log(
-        chalk.yellow(
-          `⚠️   Some of the following packages may be outdated or have duplicate installations:
-
-          ${uniq(problemPackages).join(', ')}
-        `,
-        ),
-      );
-      console.log(
-        chalk.yellow(
-          `⚠️   This can be resolved using the following command:
-
-          yarn backstage-cli versions:check --fix
-      `,
-        ),
-      );
-    }
-
     if (
       targetPkg.dependencies?.['react-router']?.includes('beta') ||
       targetPkg.dependencies?.['react-router-dom']?.includes('beta')
