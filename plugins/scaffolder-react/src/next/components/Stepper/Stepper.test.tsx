@@ -392,6 +392,46 @@ describe('Stepper', () => {
     expect(getByText('invalid postcode')).toBeInTheDocument();
   });
 
+  it('should render ajv-errors message', async () => {
+    const manifest: TemplateParameterSchema = {
+      steps: [
+        {
+          title: 'Step 1',
+          schema: {
+            properties: {
+              postcode: {
+                type: 'string',
+                pattern: '[A-Z][0-9][A-Z] [0-9][A-Z][0-9]',
+              },
+            },
+            errorMessage: {
+              properties: {
+                postcode: 'invalid postcode',
+              },
+            },
+          },
+        },
+      ],
+      title: 'transformErrors Form Test',
+    };
+
+    const { getByText, getByRole } = await renderInTestApp(
+      <SecretsContextProvider>
+        <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
+      </SecretsContextProvider>,
+    );
+
+    await fireEvent.change(getByRole('textbox', { name: 'postcode' }), {
+      target: { value: 'invalid' },
+    });
+
+    await act(async () => {
+      await fireEvent.click(getByRole('button', { name: 'Review' }));
+    });
+
+    expect(getByText('invalid postcode')).toBeInTheDocument();
+  });
+
   it('should grab the initial formData from the query', async () => {
     const manifest: TemplateParameterSchema = {
       steps: [

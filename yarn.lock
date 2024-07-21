@@ -6778,6 +6778,7 @@ __metadata:
     command-exists: ^1.2.9
     fs-extra: ^11.2.0
     winston: ^3.2.1
+    yaml: ^2.0.0
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -6893,6 +6894,7 @@ __metadata:
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     octokit: ^3.0.0
+    yaml: ^2.0.0
   languageName: unknown
   linkType: soft
 
@@ -6916,6 +6918,7 @@ __metadata:
     command-exists: ^1.2.9
     fs-extra: ^11.0.0
     jest-when: ^3.1.0
+    yaml: ^2.0.0
   languageName: unknown
   linkType: soft
 
@@ -7110,6 +7113,7 @@ __metadata:
     "@types/json-schema": ^7.0.9
     "@types/luxon": ^3.0.0
     "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
+    ajv-errors: ^3.0.0
     classnames: ^2.2.6
     flatted: 3.3.1
     humanize-duration: ^3.25.1
@@ -41323,9 +41327,9 @@ __metadata:
   linkType: hard
 
 "stream-buffers@npm:^3.0.2":
-  version: 3.0.2
-  resolution: "stream-buffers@npm:3.0.2"
-  checksum: b09fdeea606e3113ebd0e07010ed0cf038608fa396130add9e45deaff5cc3ba845dc25c31ad24f8341f85907846344cb7c85f75ea52c6572e2ac646e9b6072d0
+  version: 3.0.3
+  resolution: "stream-buffers@npm:3.0.3"
+  checksum: 3f0bdc4b1fd3ff370cef5a2103dd930b8981d42d97741eeb087a660771e27f0fc35fa8a351bb36e15bbbbce0eea00fefed60d6cdff4c6c3f527580529f183807
   languageName: node
   linkType: hard
 
