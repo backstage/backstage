@@ -27,6 +27,7 @@ import {
 import { resolve as resolvePath } from 'path';
 import { RailsNewRunner } from './railsNewRunner';
 import { PassThrough } from 'stream';
+import { examples } from './index.examples';
 
 /**
  * Creates the `fetch:rails` Scaffolder action.
@@ -56,6 +57,7 @@ export function createFetchRailsAction(options: {
     id: 'fetch:rails',
     description:
       'Downloads a template from the given `url` into the workspace, and runs a rails new generator on it.',
+    examples,
     schema: {
       input: {
         type: 'object',

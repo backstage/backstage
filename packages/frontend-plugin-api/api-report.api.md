@@ -499,6 +499,51 @@ export function createExtension<
   options: CreateExtensionOptions<TOutput, TInputs, TConfig>,
 ): ExtensionDefinition<TConfig>;
 
+// @public
+export function createExtensionBlueprint<
+  TParams,
+  TInputs extends AnyExtensionInputMap,
+  TOutput extends AnyExtensionDataMap,
+  TConfig,
+>(
+  options: CreateExtensionBlueprintOptions<TParams, TInputs, TOutput, TConfig>,
+): ExtensionBlueprint<TParams, TInputs, TOutput, TConfig>;
+
+// @public (undocumented)
+export interface CreateExtensionBlueprintOptions<
+  TParams,
+  TInputs extends AnyExtensionInputMap,
+  TOutput extends AnyExtensionDataMap,
+  TConfig,
+> {
+  // (undocumented)
+  attachTo: {
+    id: string;
+    input: string;
+  };
+  // (undocumented)
+  configSchema?: PortableSchema<TConfig>;
+  // (undocumented)
+  disabled?: boolean;
+  // (undocumented)
+  factory(
+    params: TParams,
+    context: {
+      node: AppNode;
+      config: TConfig;
+      inputs: Expand<ResolvedExtensionInputs<TInputs>>;
+    },
+  ): Expand<ExtensionDataValues<TOutput>>;
+  // (undocumented)
+  inputs?: TInputs;
+  // (undocumented)
+  kind: string;
+  // (undocumented)
+  namespace?: string;
+  // (undocumented)
+  output: TOutput;
+}
+
 // @public (undocumented)
 export function createExtensionDataRef<TData>(
   id: string,
@@ -538,7 +583,7 @@ export interface CreateExtensionOptions<
   // (undocumented)
   disabled?: boolean;
   // (undocumented)
-  factory(options: {
+  factory(context: {
     node: AppNode;
     config: TConfig;
     inputs: Expand<ResolvedExtensionInputs<TInputs>>;
@@ -834,6 +879,45 @@ export interface Extension<TConfig> {
 }
 
 // @public (undocumented)
+export interface ExtensionBlueprint<
+  TParams,
+  TInputs extends AnyExtensionInputMap,
+  TOutput extends AnyExtensionDataMap,
+  TConfig,
+> {
+  // (undocumented)
+  make(args: {
+    namespace?: string;
+    name?: string;
+    attachTo?: {
+      id: string;
+      input: string;
+    };
+    disabled?: boolean;
+    inputs?: TInputs;
+    output?: TOutput;
+    configSchema?: PortableSchema<TConfig>;
+    params: TParams;
+    factory?(
+      params: TParams,
+      context: {
+        node: AppNode;
+        config: TConfig;
+        inputs: Expand<ResolvedExtensionInputs<TInputs>>;
+        orignalFactory(
+          params?: TParams,
+          context?: {
+            node?: AppNode;
+            config?: TConfig;
+            inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
+          },
+        ): Expand<ExtensionDataValues<TOutput>>;
+      },
+    ): Expand<ExtensionDataValues<TOutput>>;
+  }): ExtensionDefinition<TConfig>;
+}
+
+// @public (undocumented)
 export function ExtensionBoundary(
   props: ExtensionBoundaryProps,
 ): React_2.JSX.Element;
@@ -844,7 +928,6 @@ export interface ExtensionBoundaryProps {
   children: ReactNode;
   // (undocumented)
   node: AppNode;
-  // (undocumented)
   routable?: boolean;
 }
 
@@ -1191,9 +1274,8 @@ export { withApis };
 // src/apis/definitions/RouteResolutionApi.d.ts:30:5 - (ae-undocumented) Missing documentation for "resolve".
 // src/components/ExtensionBoundary.d.ts:4:1 - (ae-undocumented) Missing documentation for "ExtensionBoundaryProps".
 // src/components/ExtensionBoundary.d.ts:5:5 - (ae-undocumented) Missing documentation for "node".
-// src/components/ExtensionBoundary.d.ts:6:5 - (ae-undocumented) Missing documentation for "routable".
-// src/components/ExtensionBoundary.d.ts:7:5 - (ae-undocumented) Missing documentation for "children".
-// src/components/ExtensionBoundary.d.ts:10:1 - (ae-undocumented) Missing documentation for "ExtensionBoundary".
+// src/components/ExtensionBoundary.d.ts:12:5 - (ae-undocumented) Missing documentation for "children".
+// src/components/ExtensionBoundary.d.ts:15:1 - (ae-undocumented) Missing documentation for "ExtensionBoundary".
 // src/components/coreComponentRefs.d.ts:3:22 - (ae-undocumented) Missing documentation for "coreComponentRefs".
 // src/components/createComponentRef.d.ts:2:1 - (ae-undocumented) Missing documentation for "ComponentRef".
 // src/components/createComponentRef.d.ts:7:1 - (ae-undocumented) Missing documentation for "createComponentRef".
@@ -1255,6 +1337,17 @@ export { withApis };
 // src/wiring/createExtension.d.ts:78:5 - (ae-undocumented) Missing documentation for "disabled".
 // src/wiring/createExtension.d.ts:79:5 - (ae-undocumented) Missing documentation for "configSchema".
 // src/wiring/createExtension.d.ts:82:1 - (ae-undocumented) Missing documentation for "createExtension".
+// src/wiring/createExtensionBlueprint.d.ts:8:1 - (ae-undocumented) Missing documentation for "CreateExtensionBlueprintOptions".
+// src/wiring/createExtensionBlueprint.d.ts:9:5 - (ae-undocumented) Missing documentation for "kind".
+// src/wiring/createExtensionBlueprint.d.ts:10:5 - (ae-undocumented) Missing documentation for "namespace".
+// src/wiring/createExtensionBlueprint.d.ts:11:5 - (ae-undocumented) Missing documentation for "attachTo".
+// src/wiring/createExtensionBlueprint.d.ts:15:5 - (ae-undocumented) Missing documentation for "disabled".
+// src/wiring/createExtensionBlueprint.d.ts:16:5 - (ae-undocumented) Missing documentation for "inputs".
+// src/wiring/createExtensionBlueprint.d.ts:17:5 - (ae-undocumented) Missing documentation for "output".
+// src/wiring/createExtensionBlueprint.d.ts:18:5 - (ae-undocumented) Missing documentation for "configSchema".
+// src/wiring/createExtensionBlueprint.d.ts:19:5 - (ae-undocumented) Missing documentation for "factory".
+// src/wiring/createExtensionBlueprint.d.ts:28:1 - (ae-undocumented) Missing documentation for "ExtensionBlueprint".
+// src/wiring/createExtensionBlueprint.d.ts:29:5 - (ae-undocumented) Missing documentation for "make".
 // src/wiring/createExtensionDataRef.d.ts:2:1 - (ae-undocumented) Missing documentation for "ExtensionDataRef".
 // src/wiring/createExtensionDataRef.d.ts:11:1 - (ae-undocumented) Missing documentation for "ConfigurableExtensionDataRef".
 // src/wiring/createExtensionDataRef.d.ts:14:5 - (ae-undocumented) Missing documentation for "optional".

@@ -1,5 +1,29 @@
 # @backstage/plugin-permission-node
 
+## 0.8.0
+
+### Minor Changes
+
+- 36f91e8: **BREAKING**: Updated the `ServerPermissionClient` to match the new `PermissionsService` interface, where the deprecated `token` option has been removed and the options are now required.
+
+### Patch Changes
+
+- ed10fd2: The `PermissionPolicy` interface has been updated to align with the recent changes to the Backstage auth system. The second argument to the `handle` method is now of the new `PolicyQueryUser` type. This type maintains the old fields from the `BackstageIdentityResponse`, which are now all deprecated. Instead, two new fields have been added, which allows access to the same information:
+
+  - `credentials` - A `BackstageCredentials` object, which is useful for making requests to other services on behalf of the user as part of evaluating the policy. This replaces the deprecated `token` field. See the [Auth Service documentation](https://backstage.io/docs/backend-system/core-services/auth#creating-request-tokens) for information about how to create a token using these credentials.
+  - `info` - A `BackstageUserInfo` object, which contains the same information as the deprecated `identity`, except for the `type` field that was redundant.
+
+  Most existing policies can be updated by replacing the `BackstageIdentityResponse` type with `PolicyQueryUser`, which is exported from `@backstage/plugin-permission-node`, as well as replacing any occurrences of `user?.identity` with `user?.info`.
+
+- 28b2cfb: Fix invalid cross-reference in API Reference docs
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/backend-common@0.23.3
+  - @backstage/plugin-permission-common@0.8.0
+  - @backstage/plugin-auth-node@0.4.17
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 0.7.33-next.1
 
 ### Patch Changes

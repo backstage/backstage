@@ -1,5 +1,18 @@
 # @backstage/plugin-scaffolder-backend-module-bitbucket-server
 
+## 0.1.12
+
+### Patch Changes
+
+- 6a4ad4e: Instead of using hardcoded `targetBranch` now fetch the default branch from Bitbucket repository.
+  This prevents from errors when no `targetBranch` is provided and the default repository branch is different from `master`, for example: `main`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/integration@1.13.0
+  - @backstage/plugin-scaffolder-node@0.4.8
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 0.1.12-next.1
 
 ### Patch Changes

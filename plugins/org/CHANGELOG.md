@@ -1,5 +1,23 @@
 # @backstage/plugin-org
 
+## 0.6.27
+
+### Patch Changes
+
+- 5132d28: The `useGetEntities` hook could result in requests to `/api/catalog/entities` where the headers exceed the default maximum Node.js header size of 16KB. The hook logic has been adjusted to batch the requests.
+- c307ef4: Added `relationType` property to EntityMembersListCard component that allows for display users related to a group via some other relationship aside from `memberOf`.
+
+  Also, as a side effect, the `relationsType` property has been deprecated in favor of a more accurately named `relationAggregation` property.
+
+- Updated dependencies
+  - @backstage/core-components@0.14.9
+  - @backstage/plugin-catalog-react@1.12.2
+  - @backstage/plugin-catalog-common@1.0.25
+  - @backstage/frontend-plugin-api@0.6.7
+  - @backstage/catalog-model@1.5.0
+  - @backstage/core-compat-api@0.2.7
+  - @backstage/core-plugin-api@1.9.3
+
 ## 0.6.27-next.2
 
 ### Patch Changes

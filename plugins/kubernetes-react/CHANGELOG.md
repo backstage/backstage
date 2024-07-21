@@ -1,5 +1,19 @@
 # @backstage/plugin-kubernetes-react
 
+## 0.4.1
+
+### Patch Changes
+
+- e3cb6ab: Add a namespace label to RolloutDrawer
+- 2414d86: Fix the `HTML` markup of the `FixDialog` component, `ul` and `li` are not allowed inside a `p` tag.
+- Updated dependencies
+  - @backstage/core-components@0.14.9
+  - @backstage/plugin-kubernetes-common@0.8.1
+  - @backstage/catalog-model@1.5.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.4.1-next.1
 
 ### Patch Changes

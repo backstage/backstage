@@ -1,5 +1,45 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.23.0
+
+### Minor Changes
+
+- b5deed0: Add support for `autocomplete` extension point to provide additional `autocomplete` handlers
+- 0b52438: Serialization of the scaffolder workspace into GCP bucket
+
+### Patch Changes
+
+- b9451dd: Updated `catalog:write` scaffolder action to show correct file path location in log message
+- ff1bb4c: Added a documentation how to use checkpoints
+- da90cce: Updated dependency `esbuild` to `^0.21.0`.
+- 62d1fe3: Fix user entity not being fetched for scaffolder dry runner
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/backend-common@0.23.3
+  - @backstage/backend-tasks@0.5.27
+  - @backstage/plugin-scaffolder-backend-module-github@0.4.0
+  - @backstage/plugin-permission-common@0.8.0
+  - @backstage/plugin-permission-node@0.8.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.4.4
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.12
+  - @backstage/integration@1.13.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.14
+  - @backstage/plugin-scaffolder-node@0.4.8
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.12
+  - @backstage/plugin-bitbucket-cloud-common@0.2.21
+  - @backstage/plugin-auth-node@0.4.17
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.20
+  - @backstage/plugin-catalog-node@1.12.4
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.12
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.14
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.12
+  - @backstage/plugin-scaffolder-common@1.5.4
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 1.23.0-next.2
 
 ### Patch Changes

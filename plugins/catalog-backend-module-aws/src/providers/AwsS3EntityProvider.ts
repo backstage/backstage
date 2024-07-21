@@ -154,6 +154,7 @@ export class AwsS3EntityProvider implements EntityProvider {
       accountId ? { accountId } : undefined,
     );
     this.s3 = new S3({
+      customUserAgent: 'backstage-aws-catalog-s3-entity-provider',
       apiVersion: '2006-03-01',
       credentialDefaultProvider: () => credProvider.sdkCredentialProvider,
       endpoint: this.integration.config.endpoint,

@@ -35,7 +35,7 @@ import {
 } from './createAsyncValidators';
 import { ReviewState, type ReviewStateProps } from '../ReviewState';
 import { useTemplateSchema, useFormDataFromQuery } from '../../hooks';
-import validator from '@rjsf/validator-ajv8';
+import { customizeValidator } from '@rjsf/validator-ajv8';
 import { useTransformSchemaToProps } from '../../hooks/useTransformSchemaToProps';
 import { hasErrors } from './utils';
 import * as FieldOverrides from './FieldOverrides';
@@ -50,6 +50,10 @@ import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 import { ErrorListTemplate } from './ErrorListTemplate';
 import { makeStyles } from '@material-ui/core/styles';
 import { PasswordWidget } from '../PasswordWidget/PasswordWidget';
+import ajvErrors from 'ajv-errors';
+
+const validator = customizeValidator();
+ajvErrors(validator.ajv);
 
 const useStyles = makeStyles(theme => ({
   backButton: {

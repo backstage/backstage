@@ -1,5 +1,18 @@
 # @backstage/core-components
 
+## 0.14.9
+
+### Patch Changes
+
+- d4ffdbb: Fixed bug where `<Select>` component with empty string as placeholder gave an error
+- 99d672d: Modified the `Select` component to take in a `data-testid` parameter ensuring backwards compatibility with default value corresponding to previously hardcoded `data-testid` of "select".
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+  - @backstage/theme@0.5.6
+  - @backstage/version-bridge@1.0.8
+
 ## 0.14.9-next.1
 
 ### Patch Changes

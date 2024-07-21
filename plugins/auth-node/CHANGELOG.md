@@ -1,5 +1,19 @@
 # @backstage/plugin-auth-node
 
+## 0.4.17
+
+### Patch Changes
+
+- 55c1a72: Fix issues with Atlassian OAuth provider: retrieve the email and photo that were not in arrays but rather in single props.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/backend-common@0.23.3
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.4.17-next.1
 
 ### Patch Changes

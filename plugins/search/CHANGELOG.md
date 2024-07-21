@@ -1,5 +1,22 @@
 # @backstage/plugin-search
 
+## 1.4.14
+
+### Patch Changes
+
+- 1117aba: Update deps in search api extension to include fetch api
+- Updated dependencies
+  - @backstage/core-components@0.14.9
+  - @backstage/plugin-catalog-react@1.12.2
+  - @backstage/plugin-search-common@1.2.13
+  - @backstage/frontend-plugin-api@0.6.7
+  - @backstage/plugin-search-react@1.7.13
+  - @backstage/core-compat-api@0.2.7
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
 ## 1.4.14-next.2
 
 ### Patch Changes

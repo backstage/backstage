@@ -1,5 +1,18 @@
 # @backstage/plugin-notifications-node
 
+## 0.2.3
+
+### Patch Changes
+
+- 4e4ef2b: Move notification processor filter parsing to common package
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/backend-common@0.23.3
+  - @backstage/plugin-notifications-common@0.0.5
+  - @backstage/plugin-signals-node@0.1.8
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+
 ## 0.2.3-next.1
 
 ### Patch Changes

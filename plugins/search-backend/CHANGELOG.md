@@ -1,5 +1,23 @@
 # @backstage/plugin-search-backend
 
+## 1.5.14
+
+### Patch Changes
+
+- 343f656: The `AuthorizedSearchEngine` will now ignore the deprecated `token` option, and treat it as an unauthorized request. This will not have any effect in practice, since credentials are always provided by the router.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/backend-defaults@0.4.0
+  - @backstage/backend-common@0.23.3
+  - @backstage/plugin-permission-common@0.8.0
+  - @backstage/plugin-permission-node@0.8.0
+  - @backstage/backend-openapi-utils@0.1.15
+  - @backstage/plugin-search-backend-node@1.2.27
+  - @backstage/plugin-search-common@1.2.13
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 1.5.14-next.1
 
 ### Patch Changes

@@ -23,7 +23,7 @@ export function createHealthRouter(options: { health: RootHealthService }) {
   const router = Router();
 
   router.get(
-    '.backstage/health/v1/readiness',
+    '/.backstage/health/v1/readiness',
     async (_request: Request, response: Response) => {
       const { status, payload } = await options.health.getReadiness();
       response.status(status).json(payload);
@@ -31,7 +31,7 @@ export function createHealthRouter(options: { health: RootHealthService }) {
   );
 
   router.get(
-    '.backstage/health/v1/liveness',
+    '/.backstage/health/v1/liveness',
     async (_request: Request, response: Response) => {
       const { status, payload } = await options.health.getLiveness();
       response.status(status).json(payload);

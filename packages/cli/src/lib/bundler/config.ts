@@ -15,7 +15,8 @@
  */
 
 import { BackendBundlingOptions, BundlingOptions } from './types';
-import { posix as posixPath, resolve as resolvePath } from 'path';
+import { posix as posixPath, resolve as resolvePath, dirname } from 'path';
+import chalk from 'chalk';
 import webpack, { ProvidePlugin } from 'webpack';
 
 import { BackstagePackage } from '@backstage/cli-node';
@@ -33,7 +34,7 @@ import fs from 'fs-extra';
 import { getPackages } from '@manypkg/get-packages';
 import { isChildPath } from '@backstage/cli-common';
 import nodeExternals from 'webpack-node-externals';
-import { optimization } from './optimization';
+import { optimization as optimizationConfig } from './optimization';
 import pickBy from 'lodash/pickBy';
 import { readEntryPoints } from '../entryPoints';
 import { runPlain } from '../run';
@@ -232,12 +233,53 @@ export async function createConfig(
     require.resolve('react-refresh'),
   ];
 
+  const mode = isDev ? 'development' : 'production';
+  const optimization = optimizationConfig(options);
+
+  if (
+    mode === 'production' &&
+    process.env.EXPERIMENTAL_MODULE_FEDERATION &&
+    process.env.FORCE_REACT_DEVELOPMENT
+  ) {
+    console.log(
+      chalk.yellow(
+        `⚠️  WARNING: Forcing react and react-dom into development mode. This build should not be used in production.`,
+      ),
+    );
+
+    const reactPackageDirs = [
+      `${dirname(require.resolve('react/package.json'))}/`,
+      `${dirname(require.resolve('react-dom/package.json'))}/`,
+    ];
+
+    // Don't define process.env.NODE_ENV with value matching config.mode. If we
+    // don't set this to false, webpack will define the value of
+    // process.env.NODE_ENV for us, and the definition below will be ignored.
+    optimization.nodeEnv = false;
+
+    // Instead, provide a custom definition which always uses "development" if
+    // the module is part of `react` or `react-dom`, and `config.mode` otherwise.
+    plugins.push(
+      new webpack.DefinePlugin({
+        'process.env.NODE_ENV': webpack.DefinePlugin.runtimeValue(
+          ({ module }) => {
+            if (reactPackageDirs.some(val => module.resource.startsWith(val))) {
+              return '"development"';
+            }
+
+            return `"${mode}"`;
+          },
+        ),
+      }),
+    );
+  }
+
   const withCache = yn(process.env[BUILD_CACHE_ENV_VAR], { default: false });
 
   return {
-    mode: isDev ? 'development' : 'production',
+    mode,
     profile: false,
-    optimization: optimization(options),
+    optimization,
     bail: false,
     performance: {
       hints: false, // we check the gzip size instead

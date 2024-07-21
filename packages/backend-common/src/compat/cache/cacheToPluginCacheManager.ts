@@ -24,6 +24,7 @@ import {
  * old-backend plugin cache manager.
  *
  * @public
+ * @deprecated Migrate to use the new CacheService instead.
  */
 export function cacheToPluginCacheManager(cache: CacheService): {
   getClient(options?: CacheServiceOptions): CacheService;

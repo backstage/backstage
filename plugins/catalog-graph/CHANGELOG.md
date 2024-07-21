@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-graph
 
+## 0.4.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.9
+  - @backstage/plugin-catalog-react@1.12.2
+  - @backstage/frontend-plugin-api@0.6.7
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/core-compat-api@0.2.7
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/types@1.1.1
+
 ## 0.4.7-next.2
 
 ### Patch Changes

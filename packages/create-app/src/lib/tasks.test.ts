@@ -88,6 +88,8 @@ jest.mock('./versions', () => ({
     '@backstage/plugin-catalog-graph': '1.0.0',
     '@backstage/plugin-catalog-import': '1.0.0',
     '@backstage/plugin-catalog-react': '1.0.0',
+    '@backstage/plugin-kubernetes': '1.0.0',
+    '@backstage/plugin-kubernetes-backend': '1.0.0',
     '@backstage/plugin-org': '1.0.0',
     '@backstage/plugin-scaffolder': '1.0.0',
     '@backstage/plugin-permission-react': '1.0.0',

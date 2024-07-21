@@ -1,5 +1,18 @@
 # @backstage/plugin-permission-common
 
+## 0.8.0
+
+### Minor Changes
+
+- f4085b8: **BREAKING**: Removed the deprecated and unused `token` option from `EvaluatorRequestOptions`. The `PermissionsClient` now has its own `PermissionClientRequestOptions` type that declares the `token` option instead.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.7.14
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-backend-module-oauth2-proxy-provider
 
+## 0.1.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/plugin-auth-node@0.4.17
+  - @backstage/errors@1.2.4
+
 ## 0.1.15-next.1
 
 ### Patch Changes

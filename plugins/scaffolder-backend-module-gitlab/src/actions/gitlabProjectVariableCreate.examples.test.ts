@@ -26,7 +26,7 @@ const mockGitlabClient = {
     create: jest.fn(),
   },
 };
-jest.mock('@gitbeaker/node', () => ({
+jest.mock('@gitbeaker/rest', () => ({
   Gitlab: class {
     constructor() {
       return mockGitlabClient;
@@ -41,7 +41,7 @@ describe('gitlab:projectVariableAction: create examples', () => {
         {
           host: 'gitlab.com',
           token: 'tokenlols',
-          apiBaseUrl: 'https://api.gitlab.com',
+          apiBaseUrl: 'https://api.gitlab.com/api/v4',
         },
         {
           host: 'hosted.gitlab.com',
@@ -79,17 +79,18 @@ describe('gitlab:projectVariableAction: create examples', () => {
 
     expect(mockGitlabClient.ProjectVariables.create).toHaveBeenCalledWith(
       '123',
+      'MY_VARIABLE',
+      'my_value',
       {
-        key: 'MY_VARIABLE',
-        value: 'my_value',
-        variable_type: 'env_var',
-        environment_scope: '*',
+        variableType: 'env_var', // Correctly using variableType
+        environmentScope: '*',
         masked: false,
         protected: false,
         raw: false,
       },
     );
   });
+
   it(`Should ${examples[1].description}`, async () => {
     mockGitlabClient.ProjectVariables.create.mockResolvedValue({
       token: 'TOKEN',
@@ -102,14 +103,14 @@ describe('gitlab:projectVariableAction: create examples', () => {
 
     expect(mockGitlabClient.ProjectVariables.create).toHaveBeenCalledWith(
       '123',
+      'MY_VARIABLE',
+      'my-file-content',
       {
-        key: 'MY_VARIABLE',
-        value: 'my-file-content',
+        variableType: 'file', // Correctly using variableType
         protected: false,
         masked: false,
         raw: false,
-        environment_scope: '*',
-        variable_type: 'file',
+        environmentScope: '*',
       },
     );
   });
@@ -126,13 +127,13 @@ describe('gitlab:projectVariableAction: create examples', () => {
 
     expect(mockGitlabClient.ProjectVariables.create).toHaveBeenCalledWith(
       '456',
+      'MY_VARIABLE',
+      'my_value',
       {
-        key: 'MY_VARIABLE',
-        value: 'my_value',
         masked: false,
         raw: false,
-        environment_scope: '*',
-        variable_type: 'env_var',
+        environmentScope: '*',
+        variableType: 'env_var', // Correctly using variableType
         protected: true,
       },
     );
@@ -150,13 +151,13 @@ describe('gitlab:projectVariableAction: create examples', () => {
 
     expect(mockGitlabClient.ProjectVariables.create).toHaveBeenCalledWith(
       '789',
+      'DB_PASSWORD',
+      'password123',
       {
-        key: 'DB_PASSWORD',
-        value: 'password123',
         protected: false,
         raw: false,
-        environment_scope: '*',
-        variable_type: 'env_var',
+        environmentScope: '*',
+        variableType: 'env_var', // Correctly using variableType
         masked: true,
       },
     );
@@ -174,12 +175,12 @@ describe('gitlab:projectVariableAction: create examples', () => {
 
     expect(mockGitlabClient.ProjectVariables.create).toHaveBeenCalledWith(
       '123',
+      'MY_VARIABLE',
+      'my_value',
       {
-        key: 'MY_VARIABLE',
-        value: 'my_value',
         protected: false,
-        environment_scope: '*',
-        variable_type: 'env_var',
+        environmentScope: '*',
+        variableType: 'env_var', // Correctly using variableType
         masked: false,
         raw: true,
       },
@@ -198,14 +199,14 @@ describe('gitlab:projectVariableAction: create examples', () => {
 
     expect(mockGitlabClient.ProjectVariables.create).toHaveBeenCalledWith(
       '123',
+      'MY_VARIABLE',
+      'my_value',
       {
-        key: 'MY_VARIABLE',
-        value: 'my_value',
         protected: false,
-        variable_type: 'env_var',
+        variableType: 'env_var', // Correctly using variableType
         masked: false,
         raw: false,
-        environment_scope: 'production',
+        environmentScope: 'production',
       },
     );
   });
@@ -222,14 +223,14 @@ describe('gitlab:projectVariableAction: create examples', () => {
 
     expect(mockGitlabClient.ProjectVariables.create).toHaveBeenCalledWith(
       '123',
+      'MY_VARIABLE',
+      'my_value',
       {
-        key: 'MY_VARIABLE',
-        value: 'my_value',
         protected: false,
-        variable_type: 'env_var',
+        variableType: 'env_var', // Correctly using variableType
         masked: false,
         raw: false,
-        environment_scope: '*',
+        environmentScope: '*',
       },
     );
   });

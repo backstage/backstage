@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.4.4
+
+### Patch Changes
+
+- 0ac124b: Updated configuration instructions
+- 2fb0eb8: Added support for passing `variables` to `gitlab:pipeline:trigger`
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/backend-common@0.23.3
+  - @backstage/integration@1.13.0
+  - @backstage/plugin-scaffolder-node@0.4.8
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 0.4.4-next.1
 
 ### Patch Changes

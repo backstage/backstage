@@ -15,15 +15,24 @@
  */
 
 import React, { useEffect } from 'react';
-import { screen, waitFor } from '@testing-library/react';
-import { MockAnalyticsApi, TestApiProvider } from '@backstage/test-utils';
+import { act, screen, waitFor } from '@testing-library/react';
+import {
+  MockAnalyticsApi,
+  TestApiProvider,
+  withLogCollector,
+} from '@backstage/test-utils';
 import { ExtensionBoundary } from './ExtensionBoundary';
 import { coreExtensionData, createExtension } from '../wiring';
-import { analyticsApiRef, useAnalytics } from '@backstage/core-plugin-api';
+import {
+  analyticsApiRef,
+  createApiFactory,
+  useAnalytics,
+} from '@backstage/core-plugin-api';
 import { createRouteRef } from '../routing';
 import { createExtensionTester } from '@backstage/frontend-test-utils';
+import { createApiExtension } from '../extensions';
 
-const wrapInBoundaryExtension = (element: JSX.Element) => {
+const wrapInBoundaryExtension = (element?: JSX.Element) => {
   const routeRef = createRouteRef();
   return createExtension({
     name: 'test',
@@ -54,12 +63,25 @@ describe('ExtensionBoundary', () => {
   });
 
   it('should show app error component when an error is thrown', async () => {
-    const error = 'Something went wrong';
+    const errorMsg = 'Something went wrong';
     const ErrorComponent = () => {
-      throw new Error(error);
+      throw new Error(errorMsg);
     };
-    createExtensionTester(wrapInBoundaryExtension(<ErrorComponent />)).render();
-    await waitFor(() => expect(screen.getByText(error)).toBeInTheDocument());
+    const { error } = await withLogCollector(['error'], async () => {
+      createExtensionTester(
+        wrapInBoundaryExtension(<ErrorComponent />),
+      ).render();
+      await waitFor(() =>
+        expect(screen.getByText(errorMsg)).toBeInTheDocument(),
+      );
+    });
+    expect(error).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          message: expect.stringContaining(errorMsg),
+        }),
+      ]),
+    );
   });
 
   it('should wrap children with analytics context', async () => {
@@ -96,5 +118,39 @@ describe('ExtensionBoundary', () => {
         },
       });
     });
+  });
+
+  // TODO(Rugvip): It's annoying to test the inverse of this currently, because the extension tester overrides the subject to always output a path
+  it('should emit analytics events if routable', async () => {
+    const Emitter = () => {
+      const analytics = useAnalytics();
+      useEffect(() => {
+        analytics.captureEvent('dummy', 'dummy');
+      });
+      return null;
+    };
+    const analyticsApiMock = new MockAnalyticsApi();
+
+    await act(async () => {
+      createExtensionTester(wrapInBoundaryExtension(<Emitter />))
+        .add(
+          createApiExtension({
+            factory: createApiFactory(analyticsApiRef, analyticsApiMock),
+          }),
+        )
+        .render();
+    });
+
+    expect(analyticsApiMock.getEvents()).toEqual([
+      expect.objectContaining({
+        action: 'navigate',
+        subject: '/',
+        context: expect.objectContaining({
+          pluginId: 'root',
+          extensionId: 'test',
+        }),
+      }),
+      expect.objectContaining({ action: 'dummy' }),
+    ]);
   });
 });

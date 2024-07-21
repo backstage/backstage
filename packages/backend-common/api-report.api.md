@@ -129,7 +129,7 @@ export class CacheManager extends CacheManager_2 {}
 // @public @deprecated (undocumented)
 export type CacheManagerOptions = CacheManagerOptions_2;
 
-// @public
+// @public @deprecated
 export function cacheToPluginCacheManager(cache: CacheService): {
   getClient(options?: CacheServiceOptions): CacheService;
 };
@@ -142,7 +142,7 @@ export interface ContainerRunner {
   runContainer(opts: RunContainerOptions): Promise<void>;
 }
 
-// @public
+// @public @deprecated
 export function createLegacyAuthAdapters<
   TOptions extends {
     auth?: AuthService;
@@ -401,10 +401,10 @@ export type KubernetesContainerRunnerOptions = {
   timeoutMs?: number;
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type LegacyCreateRouter<TEnv> = (deps: TEnv) => Promise<RequestHandler>;
 
-// @public
+// @public @deprecated
 export const legacyPlugin: (
   name: string,
   createRouterImport: Promise<{
@@ -447,13 +447,13 @@ export function loadBackendConfig(options: {
   watch?: boolean;
 }): Promise<Config>;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function loggerToWinstonLogger(
   logger: LoggerService,
   opts?: TransportStreamOptions,
 ): Logger;
 
-// @public
+// @public @deprecated
 export function makeLegacyPlugin<
   TEnv extends Record<string, unknown>,
   TEnvTransforms extends {
@@ -690,8 +690,8 @@ export function useHotMemoize<T>(_module: NodeModule, valueFactory: () => T): T;
 
 // Warnings were encountered during analysis:
 //
-// src/compat/legacy/legacy.d.ts:6:1 - (ae-undocumented) Missing documentation for "LegacyCreateRouter".
-// src/compat/logging/loggerToWinstonLogger.d.ts:5:1 - (ae-undocumented) Missing documentation for "loggerToWinstonLogger".
+// src/compat/legacy/legacy.d.ts:7:1 - (ae-undocumented) Missing documentation for "LegacyCreateRouter".
+// src/compat/logging/loggerToWinstonLogger.d.ts:8:1 - (ae-undocumented) Missing documentation for "loggerToWinstonLogger".
 // src/deprecated/index.d.ts:34:1 - (ae-undocumented) Missing documentation for "PluginEndpointDiscovery".
 // src/deprecated/index.d.ts:76:5 - (ae-undocumented) Missing documentation for "getBaseUrl".
 // src/deprecated/index.d.ts:77:5 - (ae-undocumented) Missing documentation for "getExternalBaseUrl".

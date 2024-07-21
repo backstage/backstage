@@ -1,5 +1,42 @@
 # example-backend
 
+## 0.0.28
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/backend-defaults@0.4.0
+  - @backstage/plugin-permission-backend-module-allow-all-policy@0.1.19
+  - @backstage/backend-tasks@0.5.27
+  - @backstage/plugin-scaffolder-backend@1.23.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.4.0
+  - @backstage/plugin-permission-common@0.8.0
+  - @backstage/plugin-permission-backend@0.5.46
+  - @backstage/plugin-permission-node@0.8.0
+  - @backstage/plugin-techdocs-backend@1.10.9
+  - @backstage/plugin-notifications-backend@0.3.3
+  - @backstage/plugin-auth-node@0.4.17
+  - @backstage/plugin-search-backend@1.5.14
+  - @backstage/plugin-catalog-backend@1.24.0
+  - @backstage/plugin-app-backend@0.3.71
+  - @backstage/plugin-auth-backend@0.22.9
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.19
+  - @backstage/plugin-auth-backend-module-guest-provider@0.1.8
+  - @backstage/plugin-catalog-backend-module-backstage-openapi@0.2.5
+  - @backstage/plugin-catalog-backend-module-openapi@0.1.40
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.20
+  - @backstage/plugin-catalog-backend-module-unprocessed@0.4.9
+  - @backstage/plugin-devtools-backend@0.3.8
+  - @backstage/plugin-kubernetes-backend@0.18.3
+  - @backstage/plugin-proxy-backend@0.5.3
+  - @backstage/plugin-search-backend-module-catalog@0.1.28
+  - @backstage/plugin-search-backend-module-explore@0.1.28
+  - @backstage/plugin-search-backend-module-techdocs@0.1.27
+  - @backstage/plugin-search-backend-node@1.2.27
+  - @backstage/plugin-signals-backend@0.1.8
+  - @backstage/catalog-model@1.5.0
+
 ## 0.0.28-next.2
 
 ### Patch Changes

@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-backend-module-logs
 
+## 0.0.1
+
+### Patch Changes
+
+- 97caf55: Creates a new module to make logging catalog errors simple. This module subscribes to catalog events and logs them.
+
+  See [Backstage documentation](https://backstage.io/docs/features/software-catalog/configuration#subscribing-to-catalog-errors) for details on how to install
+  and configure the plugin.
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/plugin-events-node@0.3.8
+  - @backstage/plugin-catalog-backend@1.24.0
+
 ## 0.0.1-next.1
 
 ### Patch Changes
