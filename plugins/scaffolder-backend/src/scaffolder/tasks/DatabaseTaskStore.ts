@@ -484,7 +484,7 @@ export class DatabaseTaskStore implements TaskStore {
   async listEvents(
     options: TaskStoreListEventsOptions,
   ): Promise<{ events: SerializedTaskEvent[] }> {
-    const { taskId, after } = options;
+    const { isTaskRecoverable, taskId, after } = options;
     const rawEvents = await this.db<RawDbTaskEventRow>('task_events')
       .where({
         task_id: taskId,
@@ -502,6 +502,7 @@ export class DatabaseTaskStore implements TaskStore {
         const body = JSON.parse(event.body) as JsonObject;
         return {
           id: Number(event.id),
+          isTaskRecoverable,
           taskId,
           body,
           type: event.event_type,
@@ -599,6 +600,38 @@ export class DatabaseTaskStore implements TaskStore {
       task_id: taskId,
       event_type: 'cancelled',
       body: serializedBody,
+    });
+  }
+
+  async retryTask?(options: { taskId: string }): Promise<void> {
+    await this.db.transaction(async tx => {
+      const result = await tx<RawDbTaskRow>('tasks')
+        .where('id', options.taskId)
+        .update(
+          {
+            status: 'open',
+            last_heartbeat_at: this.db.fn.now(),
+          },
+          ['id', 'spec'],
+        );
+
+      for (const { id, spec } of result) {
+        const taskSpec = JSON.parse(spec as string) as TaskSpec;
+
+        await tx<RawDbTaskEventRow>('task_events')
+          .where('task_id', id)
+          .andWhere(q => q.whereIn('event_type', ['cancelled', 'completion']))
+          .del();
+
+        await tx<RawDbTaskEventRow>('task_events').insert({
+          task_id: id,
+          event_type: 'recovered',
+          body: JSON.stringify({
+            recoverStrategy:
+              taskSpec.EXPERIMENTAL_recovery?.EXPERIMENTAL_strategy ?? 'none',
+          }),
+        });
+      }
     });
   }
 

@@ -217,12 +217,10 @@ export class ScaffolderClient implements ScaffolderApi {
   }
 
   private streamLogsEventStream({
+    isTaskRecoverable,
     taskId,
     after,
-  }: {
-    taskId: string;
-    after?: number;
-  }): Observable<LogEvent> {
+  }: ScaffolderStreamLogsOptions): Observable<LogEvent> {
     return new ObservableImpl(subscriber => {
       const params = new URLSearchParams();
       if (after !== undefined) {
@@ -246,14 +244,14 @@ export class ScaffolderClient implements ScaffolderApi {
           };
 
           const ctrl = new AbortController();
-          fetchEventSource(url, {
+          void fetchEventSource(url, {
             fetch: this.fetchApi.fetch,
             signal: ctrl.signal,
             onmessage(e: EventSourceMessage) {
               if (e.event === 'log') {
                 processEvent(e);
                 return;
-              } else if (e.event === 'completion') {
+              } else if (e.event === 'completion' && !isTaskRecoverable) {
                 processEvent(e);
                 subscriber.complete();
                 ctrl.abort();
@@ -326,6 +324,21 @@ export class ScaffolderClient implements ScaffolderApi {
   async cancelTask(taskId: string): Promise<void> {
     const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
     const url = `${baseUrl}/v2/tasks/${encodeURIComponent(taskId)}/cancel`;
+
+    const response = await this.fetchApi.fetch(url, {
+      method: 'POST',
+    });
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return await response.json();
+  }
+
+  async retry?(taskId: string): Promise<void> {
+    const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
+    const url = `${baseUrl}/v2/tasks/${encodeURIComponent(taskId)}/retry`;
 
     const response = await this.fetchApi.fetch(url, {
       method: 'POST',

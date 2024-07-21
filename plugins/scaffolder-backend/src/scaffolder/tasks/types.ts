@@ -119,6 +119,7 @@ export type TaskStoreEmitOptions<TBody = JsonObject> = {
  * @public
  */
 export type TaskStoreListEventsOptions = {
+  isTaskRecoverable?: boolean;
   taskId: string;
   after?: number | undefined;
 };
@@ -169,6 +170,8 @@ export interface TaskStore {
   createTask(
     options: TaskStoreCreateTaskOptions,
   ): Promise<TaskStoreCreateTaskResult>;
+
+  retryTask?(options: { taskId: string }): Promise<void>;
 
   recoverTasks?(
     options: TaskStoreRecoverTaskOptions,

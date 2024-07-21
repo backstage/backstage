@@ -58,6 +58,9 @@ const useStyles = makeStyles(theme => ({
   cancelButton: {
     marginRight: theme.spacing(1),
   },
+  retryButton: {
+    marginRight: theme.spacing(1),
+  },
   logsVisibilityButton: {
     marginRight: theme.spacing(1),
   },
@@ -130,6 +133,12 @@ export const OngoingTask = (props: {
     return 0;
   }, [steps]);
 
+  const isRetryableTask =
+    taskStream.task?.spec.EXPERIMENTAL_recovery?.EXPERIMENTAL_strategy ===
+    'startOver';
+
+  const canRetry = canReadTask && canCreateTask && isRetryableTask;
+
   const startOver = useCallback(() => {
     const { namespace, name } =
       taskStream.task?.spec.templateInfo?.entity?.metadata ?? {};
@@ -156,6 +165,13 @@ export const OngoingTask = (props: {
     taskStream.task?.spec.templateInfo?.entity?.metadata,
     templateRouteRef,
   ]);
+
+  const [{ status: _ }, { execute: triggerRetry }] = useAsync(async () => {
+    if (taskId) {
+      analytics.captureEvent('retried', 'Template has been retried');
+      await scaffolderApi.retry?.(taskId);
+    }
+  });
 
   const [{ status: cancelStatus }, { execute: triggerCancel }] = useAsync(
     async () => {
@@ -190,9 +206,11 @@ export const OngoingTask = (props: {
       >
         <ContextMenu
           cancelEnabled={cancelEnabled}
+          canRetry={canRetry}
           logsVisible={logsVisible}
           buttonBarVisible={buttonBarVisible}
           onStartOver={startOver}
+          onRetry={triggerRetry}
           onToggleLogs={setLogVisibleState}
           onToggleButtonBar={setButtonBarVisibleState}
           taskId={taskId}
@@ -236,6 +254,14 @@ export const OngoingTask = (props: {
                     data-testid="cancel-button"
                   >
                     {t('ongoingTask.cancelButtonTitle')}
+                  </Button>
+                  <Button
+                    className={classes.retryButton}
+                    disabled={cancelEnabled || !canRetry}
+                    onClick={triggerRetry}
+                    data-testid="retry-button"
+                  >
+                    Retry
                   </Button>
                   <Button
                     className={classes.logsVisibilityButton}
