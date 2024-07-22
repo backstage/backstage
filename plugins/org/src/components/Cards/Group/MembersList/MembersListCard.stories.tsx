@@ -15,11 +15,14 @@
  */
 
 import { Entity, GroupEntity } from '@backstage/catalog-model';
-import { catalogApiRef, EntityProvider } from '@backstage/plugin-catalog-react';
-import { TestApiProvider } from '@backstage/test-utils';
+import {
+  catalogApiRef,
+  EntityProvider,
+  entityRouteRef,
+} from '@backstage/plugin-catalog-react';
+import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 import Grid from '@material-ui/core/Grid';
-import React from 'react';
-import { MemoryRouter } from 'react-router-dom';
+import React, { ComponentType, PropsWithChildren } from 'react';
 import {
   groupA,
   mockedCatalogApiSupportingGroups,
@@ -29,6 +32,16 @@ import { MembersListCard } from './MembersListCard';
 export default {
   title: 'Plugins/Org/Group Members List Card',
   component: MembersListCard,
+  decorators: [
+    (Story: ComponentType<PropsWithChildren<{}>>) =>
+      wrapInTestApp(
+        <div>
+          <Story />
+        </div>,
+        // The "entityRouteRef" is imported from "@backstage/plugin-catalog-react"
+        { mountedRoutes: { '/': entityRouteRef } },
+      ),
+  ],
 };
 
 const makeUser = ({
@@ -109,44 +122,39 @@ const catalogApi = (items: Entity[]) => ({
   getEntities: () => Promise.resolve({ items }),
 });
 
+// Removed the MemoryRouter and added the WrapinTestApp decorator for proper routing context
 export const Default = () => (
-  <MemoryRouter>
-    <TestApiProvider apis={[[catalogApiRef, catalogApi([alice, bob])]]}>
-      <EntityProvider entity={defaultEntity}>
-        <Grid container spacing={4}>
-          <Grid item xs={12} md={6}>
-            <MembersListCard />
-          </Grid>
+  <TestApiProvider apis={[[catalogApiRef, catalogApi([alice, bob])]]}>
+    <EntityProvider entity={defaultEntity}>
+      <Grid container spacing={4}>
+        <Grid item xs={12} md={6}>
+          <MembersListCard />
         </Grid>
-      </EntityProvider>
-    </TestApiProvider>
-  </MemoryRouter>
+      </Grid>
+    </EntityProvider>
+  </TestApiProvider>
 );
 
 export const Empty = () => (
-  <MemoryRouter>
-    <TestApiProvider apis={[[catalogApiRef, catalogApi([])]]}>
-      <EntityProvider entity={defaultEntity}>
-        <Grid container spacing={4}>
-          <Grid item xs={12} md={6}>
-            <MembersListCard />
-          </Grid>
+  <TestApiProvider apis={[[catalogApiRef, catalogApi([])]]}>
+    <EntityProvider entity={defaultEntity}>
+      <Grid container spacing={4}>
+        <Grid item xs={12} md={6}>
+          <MembersListCard />
         </Grid>
-      </EntityProvider>
-    </TestApiProvider>
-  </MemoryRouter>
+      </Grid>
+    </EntityProvider>
+  </TestApiProvider>
 );
 
 export const AggregateMembersToggle = () => (
-  <MemoryRouter>
-    <TestApiProvider apis={[[catalogApiRef, mockedCatalogApiSupportingGroups]]}>
-      <EntityProvider entity={groupA}>
-        <Grid container spacing={4}>
-          <Grid item xs={12} md={6}>
-            <MembersListCard showAggregateMembersToggle />
-          </Grid>
+  <TestApiProvider apis={[[catalogApiRef, mockedCatalogApiSupportingGroups]]}>
+    <EntityProvider entity={groupA}>
+      <Grid container spacing={4}>
+        <Grid item xs={12} md={6}>
+          <MembersListCard showAggregateMembersToggle />
         </Grid>
-      </EntityProvider>
-    </TestApiProvider>
-  </MemoryRouter>
+      </Grid>
+    </EntityProvider>
+  </TestApiProvider>
 );
