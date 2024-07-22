@@ -88,6 +88,7 @@ const REGISTRY_VERSIONS: { [name: string]: string } = {
   '@backstage/theme': '2.0.0',
   '@backstage-extra/custom': '1.1.0',
   '@backstage-extra/custom-two': '2.0.0',
+  '@backstage-community/custom': '1.1.0',
   '@backstage/create-app': '1.0.0',
 };
 
@@ -169,6 +170,7 @@ describe('bump', () => {
             name: 'a',
             dependencies: {
               '@backstage/core': '^1.0.5',
+              '@backstage-community/custom': '^1.0.0',
             },
           }),
         },
@@ -201,7 +203,8 @@ describe('bump', () => {
       await bump({ pattern: null, release: 'main' } as unknown as Command);
     });
     expectLogsToMatch(logs, [
-      'Using default pattern glob @backstage/*',
+      'Using default pattern glob @backstage?(-community)/*',
+      'Checking for updates of @backstage-community/custom',
       'Checking for updates of @backstage/core',
       'Checking for updates of @backstage/theme',
       'Checking for updates of @backstage/core-api',
@@ -209,6 +212,7 @@ describe('bump', () => {
       'unlocking @backstage/core@^1.0.3 ~> 1.0.6',
       'unlocking @backstage/core-api@^1.0.6 ~> 1.0.7',
       'unlocking @backstage/core-api@^1.0.3 ~> 1.0.7',
+      'bumping @backstage-community/custom in a to ^1.1.0',
       'bumping @backstage/core in a to ^1.0.6',
       'bumping @backstage/core in b to ^1.0.6',
       'bumping @backstage/theme in b to ^2.0.0',
@@ -220,7 +224,10 @@ describe('bump', () => {
       'Version bump complete!',
     ]);
 
-    expect(mockFetchPackageInfo).toHaveBeenCalledTimes(3);
+    expect(mockFetchPackageInfo).toHaveBeenCalledTimes(4);
+    expect(mockFetchPackageInfo).toHaveBeenCalledWith(
+      '@backstage-community/custom',
+    );
     expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/core');
     expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/core-api');
     expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/theme');
@@ -244,6 +251,7 @@ describe('bump', () => {
     expect(packageA).toEqual({
       name: 'a',
       dependencies: {
+        '@backstage-community/custom': '^1.1.0',
         '@backstage/core': '^1.0.6',
       },
     });
@@ -309,7 +317,7 @@ describe('bump', () => {
       } as unknown as Command);
     });
     expectLogsToMatch(logs, [
-      'Using default pattern glob @backstage/*',
+      'Using default pattern glob @backstage?(-community)/*',
       'Checking for updates of @backstage/core',
       'Checking for updates of @backstage/theme',
       'Checking for updates of @backstage/core-api',
@@ -422,7 +430,7 @@ describe('bump', () => {
       await bump({ pattern: null, release: 'main' } as unknown as Command);
     });
     expectLogsToMatch(logs, [
-      'Using default pattern glob @backstage/*',
+      'Using default pattern glob @backstage?(-community)/*',
       'Checking for updates of @backstage/core',
       'Checking for updates of @backstage/theme',
       'Checking for updates of @backstage/theme',
@@ -523,7 +531,7 @@ describe('bump', () => {
       ).rejects.toThrow('No release found for 999.0.1 version');
     });
     expect(logs.filter(Boolean)).toEqual([
-      'Using default pattern glob @backstage/*',
+      'Using default pattern glob @backstage?(-community)/*',
     ]);
 
     expect(runObj.run).toHaveBeenCalledTimes(0);
@@ -626,7 +634,7 @@ describe('bump', () => {
       await bump({ pattern: null, release: 'next' } as unknown as Command);
     });
     expectLogsToMatch(logs, [
-      'Using default pattern glob @backstage/*',
+      'Using default pattern glob @backstage?(-community)/*',
       'Checking for updates of @backstage/core',
       'Checking for updates of @backstage/theme',
       'Checking for updates of @backstage/theme',
@@ -843,7 +851,7 @@ describe('bump', () => {
       await bump({ pattern: null, release: 'main' } as unknown as Command);
     });
     expectLogsToMatch(logs, [
-      'Using default pattern glob @backstage/*',
+      'Using default pattern glob @backstage?(-community)/*',
       'Checking for updates of @backstage/core',
       'Checking for updates of @backstage/theme',
       'Package info not found, ignoring package @backstage/core',
@@ -943,7 +951,7 @@ describe('bump', () => {
       await bump({ pattern: null, release: 'main' } as unknown as Command);
     });
     expectLogsToMatch(logs, [
-      'Using default pattern glob @backstage/*',
+      'Using default pattern glob @backstage?(-community)/*',
       'Checking for updates of @backstage/backend-app-api',
       'Checking for updates of @backstage/backend-app-api',
       'Some packages are outdated, updating',
