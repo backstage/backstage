@@ -16,8 +16,9 @@
 import { IconComponent } from '../icons';
 import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
 
-const iconsDataRef =
-  createExtensionDataRef<{ [key in string]: IconComponent }>('core.icons');
+const iconsDataRef = createExtensionDataRef<{
+  [key in string]: IconComponent;
+}>().with({ id: 'core.icons' });
 
 /** @public */
 export const IconBundleBlueprint = createExtensionBlueprint({
@@ -27,5 +28,8 @@ export const IconBundleBlueprint = createExtensionBlueprint({
   output: {
     icons: iconsDataRef,
   },
-  factory: (_, params: { icons: { [key in string]: IconComponent } }) => params,
+  factory: (params: { icons: { [key in string]: IconComponent } }) => params,
+  dataRefs: {
+    icons: iconsDataRef,
+  },
 });

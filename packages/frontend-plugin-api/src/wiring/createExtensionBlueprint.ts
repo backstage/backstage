@@ -34,6 +34,7 @@ export interface CreateExtensionBlueprintOptions<
   TInputs extends AnyExtensionInputMap,
   TOutput extends AnyExtensionDataMap,
   TConfig,
+  TDataRefs extends AnyExtensionDataMap,
 > {
   kind: string;
   namespace?: string;
@@ -50,6 +51,8 @@ export interface CreateExtensionBlueprintOptions<
       inputs: Expand<ResolvedExtensionInputs<TInputs>>;
     },
   ): Expand<ExtensionDataValues<TOutput>>;
+
+  dataRefs?: TDataRefs;
 }
 
 /**
@@ -60,7 +63,10 @@ export interface ExtensionBlueprint<
   TInputs extends AnyExtensionInputMap,
   TOutput extends AnyExtensionDataMap,
   TConfig,
+  TDataRefs extends AnyExtensionDataMap,
 > {
+  dataRefs: TDataRefs;
+
   make(args: {
     namespace?: string;
     name?: string;
@@ -97,15 +103,21 @@ class ExtensionBlueprintImpl<
   TInputs extends AnyExtensionInputMap,
   TOutput extends AnyExtensionDataMap,
   TConfig,
+  TDataRefs extends AnyExtensionDataMap,
 > {
   constructor(
     private readonly options: CreateExtensionBlueprintOptions<
       TParams,
       TInputs,
       TOutput,
-      TConfig
+      TConfig,
+      TDataRefs
     >,
-  ) {}
+  ) {
+    this.dataRefs = options.dataRefs!;
+  }
+
+  dataRefs: TDataRefs;
 
   public make(args: {
     namespace?: string;
@@ -184,8 +196,15 @@ export function createExtensionBlueprint<
   TInputs extends AnyExtensionInputMap,
   TOutput extends AnyExtensionDataMap,
   TConfig,
+  TDataRefs extends AnyExtensionDataMap = never,
 >(
-  options: CreateExtensionBlueprintOptions<TParams, TInputs, TOutput, TConfig>,
-): ExtensionBlueprint<TParams, TInputs, TOutput, TConfig> {
+  options: CreateExtensionBlueprintOptions<
+    TParams,
+    TInputs,
+    TOutput,
+    TConfig,
+    TDataRefs
+  >,
+): ExtensionBlueprint<TParams, TInputs, TOutput, TConfig, TDataRefs> {
   return new ExtensionBlueprintImpl(options);
 }
