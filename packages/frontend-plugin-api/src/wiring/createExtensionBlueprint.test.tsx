@@ -18,6 +18,7 @@ import React from 'react';
 import { coreExtensionData } from './coreExtensionData';
 import { createExtensionBlueprint } from './createExtensionBlueprint';
 import { createExtensionTester } from '@backstage/frontend-test-utils';
+import { createExtensionDataRef } from './createExtensionDataRef';
 
 describe('createExtensionBlueprint', () => {
   it('should allow creation of extension blueprints', () => {
@@ -101,5 +102,29 @@ describe('createExtensionBlueprint', () => {
 
     const { container } = createExtensionTester(extension).render();
     expect(container.querySelector('h2')).toHaveTextContent('Hello, world!');
+  });
+
+  it('should allow exporting the dataRefs from the extension blueprint', () => {
+    const dataRef = createExtensionDataRef<string>().with({ id: 'test.data' });
+
+    const TestExtensionBlueprint = createExtensionBlueprint({
+      kind: 'test-extension',
+      attachTo: { id: 'test', input: 'default' },
+      output: {
+        element: coreExtensionData.reactElement,
+      },
+      dataRefs: {
+        data: dataRef,
+      },
+      factory(params: { text: string }) {
+        return {
+          element: <h1>{params.text}</h1>,
+        };
+      },
+    });
+
+    expect(TestExtensionBlueprint.dataRefs).toEqual({
+      data: dataRef,
+    });
   });
 });
