@@ -188,6 +188,25 @@ describe('gerrit core', () => {
       );
       expect(rootPath).toEqual('/');
     });
+    it('can parse an URL of a change.', () => {
+      const config: GerritIntegrationConfig = {
+        host: 'gerrit.com',
+        gitilesBaseUrl: 'https://gerrit.com/gitiles',
+      };
+      const { branch, filePath, project } = parseGerritGitilesUrl(
+        config,
+        'https://gerrit.com/gitiles/web/project/+/refs/changes/20/884120/1/README.md',
+      );
+      expect(project).toEqual('web/project');
+      expect(branch).toEqual('refs/changes/20/884120/1');
+      expect(filePath).toEqual('README.md');
+
+      const { filePath: rootPath } = parseGerritGitilesUrl(
+        config,
+        'https://gerrit.com/gitiles/web/project/+/refs/changes/20/884120/1/',
+      );
+      expect(rootPath).toEqual('/');
+    });
     it('throws on incorrect gitiles urls.', () => {
       const config: GerritIntegrationConfig = {
         host: 'gerrit.com',
@@ -202,7 +221,13 @@ describe('gerrit core', () => {
       expect(() =>
         parseGerritGitilesUrl(
           config,
-          'https://gerrit.com/web/project/+/refs/changes/1/11/master/README.md',
+          'https://gerrit.com/web/project/+/refs/meta/config/README.md',
+        ),
+      ).toThrow(/branch/);
+      expect(() =>
+        parseGerritGitilesUrl(
+          config,
+          'https://gerrit.com/web/project/+/refs/changes/11/2/README.md',
         ),
       ).toThrow(/branch/);
     });
@@ -302,6 +327,20 @@ describe('gerrit core', () => {
       );
       expect(authFileContentUrl).toEqual(
         'https://gerrit.com/a/projects/web%2Fproject/branches/master/files/README.md/content',
+      );
+    });
+    it('can create an url to access a change branch file.', () => {
+      const config: GerritIntegrationConfig = {
+        host: 'gerrit.com',
+        baseUrl: 'https://gerrit.com',
+        gitilesBaseUrl: 'https://gerrit.com',
+      };
+      const fileContentUrl = getGerritFileContentsApiUrl(
+        config,
+        'https://gerrit.com/web/project/+/refs/changes/01/123456/1/README.md',
+      );
+      expect(fileContentUrl).toEqual(
+        'https://gerrit.com/changes/123456/revisions/1/files/README.md/content',
       );
     });
   });
