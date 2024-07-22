@@ -522,9 +522,16 @@ export function createExtensionBlueprint<
   TInputs extends AnyExtensionInputMap,
   TOutput extends AnyExtensionDataMap,
   TConfig,
+  TDataRefs extends AnyExtensionDataMap = never,
 >(
-  options: CreateExtensionBlueprintOptions<TParams, TInputs, TOutput, TConfig>,
-): ExtensionBlueprint<TParams, TInputs, TOutput, TConfig>;
+  options: CreateExtensionBlueprintOptions<
+    TParams,
+    TInputs,
+    TOutput,
+    TConfig,
+    TDataRefs
+  >,
+): ExtensionBlueprint<TParams, TInputs, TOutput, TConfig, TDataRefs>;
 
 // @public (undocumented)
 export interface CreateExtensionBlueprintOptions<
@@ -532,6 +539,7 @@ export interface CreateExtensionBlueprintOptions<
   TInputs extends AnyExtensionInputMap,
   TOutput extends AnyExtensionDataMap,
   TConfig,
+  TDataRefs extends AnyExtensionDataMap,
 > {
   // (undocumented)
   attachTo: {
@@ -540,6 +548,8 @@ export interface CreateExtensionBlueprintOptions<
   };
   // (undocumented)
   configSchema?: PortableSchema<TConfig>;
+  // (undocumented)
+  dataRefs?: TDataRefs;
   // (undocumented)
   disabled?: boolean;
   // (undocumented)
@@ -917,7 +927,10 @@ export interface ExtensionBlueprint<
   TInputs extends AnyExtensionInputMap,
   TOutput extends AnyExtensionDataMap,
   TConfig,
+  TDataRefs extends AnyExtensionDataMap,
 > {
+  // (undocumented)
+  dataRefs: TDataRefs;
   // (undocumented)
   make(args: {
     namespace?: string;
@@ -1084,6 +1097,35 @@ export { githubAuthApiRef };
 export { gitlabAuthApiRef };
 
 export { googleAuthApiRef };
+
+// @public (undocumented)
+export const IconBundleBlueprint: ExtensionBlueprint<
+  {
+    icons: {
+      [x: string]: IconComponent;
+    };
+  },
+  AnyExtensionInputMap,
+  {
+    icons: ConfigurableExtensionDataRef<
+      'core.icons',
+      {
+        [x: string]: IconComponent;
+      },
+      {}
+    >;
+  },
+  unknown,
+  {
+    icons: ConfigurableExtensionDataRef<
+      'core.icons',
+      {
+        [x: string]: IconComponent;
+      },
+      {}
+    >;
+  }
+>;
 
 // @public
 export type IconComponent = ComponentType<
