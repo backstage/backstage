@@ -25,6 +25,7 @@ import {
   createThemeExtension,
   createTranslationExtension,
   FrontendFeature,
+  IconBundleBlueprint,
   iconsApiRef,
   RouteResolutionApi,
   routeResolutionApiRef,
@@ -247,6 +248,7 @@ export function createApp(options?: {
  * @public
  */
 export function createSpecializedApp(options?: {
+  /** @deprecated - TODO */
   icons?: { [key in string]: IconComponent };
   features?: FrontendFeature[];
   config?: ConfigApi;
@@ -374,6 +376,11 @@ function createApiHolder(
         (x): x is typeof createTranslationExtension.translationDataRef.T => !!x,
       ) ?? [];
 
+  const extensionIcons = tree.root.edges.attachments
+    .get('icons')
+    ?.map(e => e.instance?.getData(IconBundleBlueprint.dataRefs.icons))
+    .reduce((acc, bundle) => ({ ...acc, ...bundle }), {});
+
   for (const factory of pluginApis) {
     factoryRegistry.register('default', factory);
   }
@@ -414,7 +421,8 @@ function createApiHolder(
   factoryRegistry.register('static', {
     api: iconsApiRef,
     deps: {},
-    factory: () => new DefaultIconsApi({ ...defaultIcons, ...icons }),
+    factory: () =>
+      new DefaultIconsApi({ ...defaultIcons, ...extensionIcons, ...icons }),
   });
 
   factoryRegistry.register('static', {
