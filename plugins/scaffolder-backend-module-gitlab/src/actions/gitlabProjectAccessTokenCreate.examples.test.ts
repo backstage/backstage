@@ -215,7 +215,7 @@ describe('gitlab:projectAccessToken:create examples', () => {
       ['read_repository'],
       {
         accessLevel: 30,
-        expiresAt: '2025-07-21',
+        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
       },
     );
 
@@ -271,7 +271,7 @@ describe('gitlab:projectAccessToken:create examples', () => {
       ['read_repository'],
       {
         accessLevel: 40,
-        expiresAt: '2025-07-21',
+        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
       },
     );
 
@@ -299,7 +299,7 @@ describe('gitlab:projectAccessToken:create examples', () => {
       ['read_repository', 'read_api'],
       {
         accessLevel: 40,
-        expiresAt: '2025-07-21',
+        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
       },
     );
 
@@ -327,7 +327,7 @@ describe('gitlab:projectAccessToken:create examples', () => {
       ['read_repository'],
       {
         accessLevel: 10,
-        expiresAt: '2025-07-21',
+        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
       },
     );
 
@@ -355,7 +355,7 @@ describe('gitlab:projectAccessToken:create examples', () => {
       ['read_repository'],
       {
         accessLevel: 40,
-        expiresAt: '2025-07-21',
+        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
       },
     );
 
@@ -383,7 +383,7 @@ describe('gitlab:projectAccessToken:create examples', () => {
       ['read_repository'],
       {
         accessLevel: 50,
-        expiresAt: '2025-07-21',
+        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
       },
     );
 
@@ -411,7 +411,7 @@ describe('gitlab:projectAccessToken:create examples', () => {
       ['read_repository'],
       {
         accessLevel: 40,
-        expiresAt: '2025-07-21',
+        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
       },
     );
 
@@ -439,7 +439,7 @@ describe('gitlab:projectAccessToken:create examples', () => {
       ['read_repository'],
       {
         accessLevel: 40,
-        expiresAt: '2025-07-21',
+        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
       },
     );
 
