@@ -16,3 +16,5 @@
 
 export { default } from './plugin';
 export { createCatalogFilterExtension } from './createCatalogFilterExtension';
+export { catalogAboutEntityCard, catalogLinksEntityCard } from './entityCards';
+export { catalogOverviewEntityContent } from './entityContents';

@@ -4,8 +4,76 @@
 
 ```ts
 import { BackstagePlugin } from '@backstage/frontend-plugin-api';
+import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
+import { objectUtil } from 'zod';
 import { RouteRef } from '@backstage/frontend-plugin-api';
+import { ZodArray } from 'zod';
+import { ZodBoolean } from 'zod';
+import { ZodEnum } from 'zod';
+import { ZodNativeEnum } from 'zod';
+import { ZodNumber } from 'zod';
+import { ZodOptional } from 'zod';
+import { ZodString } from 'zod';
+import { ZodTuple } from 'zod';
+
+// Warning: (ae-missing-release-tag) "CatalogGraphEntityCard" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const CatalogGraphEntityCard: ExtensionDefinition<
+  {
+    filter?: string | undefined;
+    height?: number | undefined;
+    curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
+    direction?: Direction | undefined;
+    title?: string | undefined;
+    zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
+    relations?: string[] | undefined;
+    maxDepth?: number | undefined;
+    kinds?: string[] | undefined;
+    unidirectional?: boolean | undefined;
+    mergeRelations?: boolean | undefined;
+    relationPairs?: [string, string][] | undefined;
+  },
+  objectUtil.extendShape<
+    objectUtil.extendShape<
+      {
+        filter: ZodOptional<ZodString>;
+      },
+      {
+        title: ZodOptional<ZodString>;
+        height: ZodOptional<ZodNumber>;
+      }
+    >,
+    {
+      kinds: ZodOptional<ZodArray<ZodString, 'many'>>;
+      relations: ZodOptional<ZodArray<ZodString, 'many'>>;
+      maxDepth: ZodOptional<ZodNumber>;
+      unidirectional: ZodOptional<ZodBoolean>;
+      mergeRelations: ZodOptional<ZodBoolean>;
+      direction: ZodOptional<ZodNativeEnum<typeof Direction>>;
+      relationPairs: ZodOptional<
+        ZodArray<ZodTuple<[ZodString, ZodString], null>, 'many'>
+      >;
+      zoom: ZodOptional<ZodEnum<['enabled', 'disabled', 'enable-on-click']>>;
+      curve: ZodOptional<ZodEnum<['curveStepBefore', 'curveMonotoneX']>>;
+    }
+  >,
+  {
+    filter?: string | undefined;
+    height?: number | undefined;
+    curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
+    direction?: Direction | undefined;
+    title?: string | undefined;
+    zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
+    relations?: string[] | undefined;
+    maxDepth?: number | undefined;
+    kinds?: string[] | undefined;
+    unidirectional?: boolean | undefined;
+    mergeRelations?: boolean | undefined;
+    relationPairs?: [string, string][] | undefined;
+  }
+>;
 
 // @public (undocumented)
 const _default: BackstagePlugin<
@@ -24,6 +92,10 @@ const _default: BackstagePlugin<
   }
 >;
 export default _default;
+
+// Warnings were encountered during analysis:
+//
+// src/alpha.d.ts:6:5 - (ae-forgotten-export) The symbol "Direction" needs to be exported by the entry point alpha.d.ts
 
 // (No @packageDocumentation comment for this package)
 ```

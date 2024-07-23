@@ -7,6 +7,7 @@ import { BackstagePlugin } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
+import { ZodObject } from 'zod';
 
 // @alpha (undocumented)
 const _default: BackstagePlugin<
@@ -18,9 +19,12 @@ const _default: BackstagePlugin<
 export default _default;
 
 // @alpha (undocumented)
-export const settingsNavItem: ExtensionDefinition<{
-  title: string;
-}>;
+export const settingsNavItem: ExtensionDefinition<
+  {
+    title: string;
+  },
+  ZodObject<any, any, any, any, any>
+>;
 
 // @alpha (undocumented)
 export const userSettingsTranslationRef: TranslationRef<

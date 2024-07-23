@@ -11,6 +11,7 @@ import { ListItemProps } from '@material-ui/core/ListItem';
 import { PortableSchema } from '@backstage/frontend-plugin-api';
 import { SearchDocument } from '@backstage/plugin-search-common';
 import { SearchResult } from '@backstage/plugin-search-common';
+import { ZodObject } from 'zod';
 
 // @alpha (undocumented)
 export type BaseSearchResultListItemProps<T = {}> = T & {
@@ -25,7 +26,7 @@ export function createSearchResultListItemExtension<
   },
 >(
   options: SearchResultItemExtensionOptions<TConfig>,
-): ExtensionDefinition<TConfig>;
+): ExtensionDefinition<TConfig, ZodObject<any, any, any, any, any>>;
 
 // @alpha (undocumented)
 export namespace createSearchResultListItemExtension {

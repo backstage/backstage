@@ -89,6 +89,7 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { vmwareCloudAuthApiRef } from '@backstage/core-plugin-api';
 import { withApis } from '@backstage/core-plugin-api';
 import { z } from 'zod';
+import { ZodObject } from 'zod';
 import { ZodSchema } from 'zod';
 import { ZodTypeDef } from 'zod';
 
@@ -391,7 +392,7 @@ export function createApiExtension<
     configSchema?: PortableSchema<TConfig>;
     inputs?: TInputs;
   },
-): ExtensionDefinition<TConfig>;
+): ExtensionDefinition<TConfig, ZodObject<any, any, any, any, any>>;
 
 // @public (undocumented)
 export namespace createApiExtension {
@@ -487,7 +488,7 @@ export function createComponentExtension<
           inputs: Expand<ResolvedExtensionInputs<TInputs>>;
         }) => ComponentType<TProps>;
       };
-}): ExtensionDefinition<TConfig>;
+}): ExtensionDefinition<TConfig, ZodObject<any, any, any, any, any>>;
 
 // @public (undocumented)
 export namespace createComponentExtension {
@@ -511,10 +512,11 @@ export function createComponentRef<T extends {} = {}>(options: {
 export function createExtension<
   TOutput extends AnyExtensionDataMap,
   TInputs extends AnyExtensionInputMap,
-  TConfig = never,
+  TConfigSchema extends z.ZodObject<any, any, any, any, any>,
+  TConfig extends z.infer<TConfigSchema>,
 >(
-  options: CreateExtensionOptions<TOutput, TInputs, TConfig>,
-): ExtensionDefinition<TConfig>;
+  options: CreateExtensionOptions<TOutput, TInputs, TConfigSchema, TConfig>,
+): ExtensionDefinition<TConfig, TConfigSchema>;
 
 // @public
 export function createExtensionBlueprint<
@@ -605,7 +607,8 @@ export function createExtensionInput<
 export interface CreateExtensionOptions<
   TOutput extends AnyExtensionDataMap,
   TInputs extends AnyExtensionInputMap,
-  TConfig,
+  TConfigSchema extends z.ZodObject<any, any, any, any, any>,
+  TConfig extends z.infer<TConfigSchema>,
 > {
   // (undocumented)
   attachTo: {
@@ -613,6 +616,10 @@ export interface CreateExtensionOptions<
     input: string;
   };
   // (undocumented)
+  config?: {
+    schema: (context: { z: typeof z }) => TConfigSchema;
+  };
+  // @deprecated (undocumented)
   configSchema?: PortableSchema<TConfig>;
   // (undocumented)
   disabled?: boolean;
@@ -672,9 +679,12 @@ export function createNavItemExtension(options: {
   routeRef: RouteRef<undefined>;
   title: string;
   icon: IconComponent_2;
-}): ExtensionDefinition<{
-  title: string;
-}>;
+}): ExtensionDefinition<
+  {
+    title: string;
+  },
+  ZodObject<any, any, any, any, any>
+>;
 
 // @public (undocumented)
 export namespace createNavItemExtension {
@@ -696,7 +706,7 @@ export function createNavLogoExtension(options: {
   namespace?: string;
   logoIcon: JSX.Element;
   logoFull: JSX.Element;
-}): ExtensionDefinition<never>;
+}): ExtensionDefinition<any, ZodObject<any, any, any, any, any>>;
 
 // @public (undocumented)
 export namespace createNavLogoExtension {
@@ -851,7 +861,7 @@ export function createSubRouteRef<
 // @public (undocumented)
 export function createThemeExtension(
   theme: AppTheme,
-): ExtensionDefinition<never>;
+): ExtensionDefinition<any, ZodObject<any, any, any, any, any>>;
 
 // @public (undocumented)
 export namespace createThemeExtension {
@@ -867,7 +877,7 @@ export namespace createThemeExtension {
 export function createTranslationExtension(options: {
   name?: string;
   resource: TranslationResource | TranslationMessages;
-}): ExtensionDefinition<never>;
+}): ExtensionDefinition<any, ZodObject<any, any, any, any, any>>;
 
 // @public (undocumented)
 export namespace createTranslationExtension {
@@ -1011,7 +1021,10 @@ export type ExtensionDataValues<TExtensionData extends AnyExtensionDataMap> = {
 };
 
 // @public (undocumented)
-export interface ExtensionDefinition<TConfig> {
+export interface ExtensionDefinition<
+  TConfig,
+  TConfigSchema extends z.ZodObject<any, any, any, any, any> = any,
+> {
   // (undocumented)
   $$type: '@backstage/ExtensionDefinition';
   // (undocumented)
@@ -1021,6 +1034,8 @@ export interface ExtensionDefinition<TConfig> {
   };
   // (undocumented)
   readonly configSchema?: PortableSchema<TConfig>;
+  // (undocumented)
+  readonly configSchema2?: TConfigSchema;
   // (undocumented)
   readonly disabled: boolean;
   // (undocumented)

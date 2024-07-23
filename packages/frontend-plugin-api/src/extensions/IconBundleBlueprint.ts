@@ -33,3 +33,39 @@ export const IconBundleBlueprint = createExtensionBlueprint({
     icons: iconsDataRef,
   },
 });
+
+IconBundleBlueprint.make({
+  name: 'asd',
+  params: {
+    icons: {
+      'icon-name': () => null,
+    },
+  },
+});
+
+IconBundleBlueprint.make({
+  name: 'asd',
+  params: {
+    icons: {
+      'icon-name': () => null,
+    },
+  },
+});
+
+IconBundleBlueprint.make({
+  name: 'asd',
+  factory() {
+    return {
+      icons: {
+        'icon-name': () => null,
+      },
+    };
+  },
+});
+
+IconBundleBlueprint.make({
+  name: 'asd',
+  factory(f) {
+    return f({ icons: { 'icon-name': () => null } });
+  },
+});

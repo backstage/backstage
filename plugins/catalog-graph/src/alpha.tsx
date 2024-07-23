@@ -24,7 +24,7 @@ import {
   compatWrapper,
   convertLegacyRouteRef,
 } from '@backstage/core-compat-api';
-import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
+import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { catalogGraphRouteRef, catalogEntityRouteRef } from './routes';
 import { Direction } from './components';
 
@@ -46,24 +46,67 @@ function getEntityGraphRelationsConfigSchema(
   });
 }
 
-const CatalogGraphEntityCard = createEntityCardExtension({
+export const CatalogGraphEntityCard = EntityCardBlueprint.make({
   name: 'relations',
-  configSchema: createSchemaFromZod(z =>
-    z
-      .object({
-        // Filter is a config required to all entity cards
-        filter: z.string().optional(),
-        title: z.string().optional(),
-        height: z.number().optional(),
-        // Skipping a "variant" config for now, defaulting to "gridItem" in the component
-        // For more details, see this comment: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
-      })
-      .merge(getEntityGraphRelationsConfigSchema(z)),
-  ),
-  loader: async ({ config: { filter, ...props } }) =>
-    import('./components/CatalogGraphCard').then(m =>
-      compatWrapper(<m.CatalogGraphCard {...props} />),
-    ),
+  // configSchema: origSchema =>
+  //   createSchemaFromZod(z =>
+  //     z
+  //       .object({
+  //         // Filter is a config required to all entity cards
+  //         // filter: z.string().optional(),
+  //         title: z.string().optional(),
+  //         height: z.number().optional(),
+  //         // Skipping a "variant" config for now, defaulting to "gridItem" in the component
+  //         // For more details, see this comment: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
+  //       })
+  //       .merge(getEntityGraphRelationsConfigSchema(z))
+  //       .merge(origSchema),
+  //   ),
+
+  // config: {
+  //   schema: ({ z, parent }) =>
+  //     parent
+  //       .merge({
+  //         title: z.string().optional(),
+  //         height: z.number().optional(),
+  //       })
+  //       .merge(getEntityGraphRelationsConfigSchema(z)),
+  // },
+
+  // config: {
+  //   schema: ({ z, parent }) =>
+  //     parent
+  //       .extend({
+  //         title: z.string().optional(),
+  //         height: z.number().optional(),
+  //       })
+  //       .merge(getEntityGraphRelationsConfigSchema(z)),
+  //   // .merge(parent)
+  // },
+
+  // TODO: implement this and check the types. 👋 zod types.
+  config: {
+    schema: {
+      title: z => z.string().optional(),
+      height: z => z.number().optional(),
+    },
+  },
+
+  // config: {
+  //   schema: z => ({
+  //     title: z.string().optional(),
+  //     height: z.number().optional(),
+  //   }),
+  // },
+
+  factory(origFactory, { config: { filter: _, ...props } }) {
+    return origFactory({
+      loader: async () =>
+        import('./components/CatalogGraphCard').then(m =>
+          compatWrapper(<m.CatalogGraphCard {...props} />),
+        ),
+    });
+  },
 });
 
 const CatalogGraphPage = createPageExtension({

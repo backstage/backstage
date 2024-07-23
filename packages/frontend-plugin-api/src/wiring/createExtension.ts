@@ -19,7 +19,7 @@ import { PortableSchema } from '../schema';
 import { Expand } from '../types';
 import { ExtensionDataRef } from './createExtensionDataRef';
 import { ExtensionInput } from './createExtensionInput';
-
+import { z } from 'zod';
 /** @public */
 export type AnyExtensionDataMap = {
   [name in string]: ExtensionDataRef<unknown, string, { optional?: true }>;
@@ -82,6 +82,7 @@ export interface CreateExtensionOptions<
   TOutput extends AnyExtensionDataMap,
   TInputs extends AnyExtensionInputMap,
   TConfig,
+  TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodTypeAny },
 > {
   kind?: string;
   namespace?: string;
@@ -90,7 +91,11 @@ export interface CreateExtensionOptions<
   disabled?: boolean;
   inputs?: TInputs;
   output: TOutput;
+  /** @deprecated - use `config.schema` instead */
   configSchema?: PortableSchema<TConfig>;
+  config?: {
+    schema: TConfigSchema;
+  };
   factory(context: {
     node: AppNode;
     config: TConfig;
@@ -99,7 +104,7 @@ export interface CreateExtensionOptions<
 }
 
 /** @public */
-export interface ExtensionDefinition<TConfig> {
+export interface ExtensionDefinition<TConfig, TConfigSchema = {}> {
   $$type: '@backstage/ExtensionDefinition';
   readonly kind?: string;
   readonly namespace?: string;
@@ -107,6 +112,9 @@ export interface ExtensionDefinition<TConfig> {
   readonly attachTo: { id: string; input: string };
   readonly disabled: boolean;
   readonly configSchema?: PortableSchema<TConfig>;
+  readonly config?: {
+    schema: TConfigSchema;
+  };
 }
 
 /** @internal */
@@ -144,9 +152,10 @@ export function toInternalExtensionDefinition<TConfig>(
 export function createExtension<
   TOutput extends AnyExtensionDataMap,
   TInputs extends AnyExtensionInputMap,
-  TConfig = never,
+  TConfig,
+  TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodTypeAny },
 >(
-  options: CreateExtensionOptions<TOutput, TInputs, TConfig>,
+  options: CreateExtensionOptions<TOutput, TInputs, TConfig, TConfigSchema>,
 ): ExtensionDefinition<TConfig> {
   return {
     $$type: '@backstage/ExtensionDefinition',
@@ -159,6 +168,7 @@ export function createExtension<
     inputs: options.inputs ?? {},
     output: options.output,
     configSchema: options.configSchema,
+    config: options.config,
     factory({ inputs, ...rest }) {
       // TODO: Simplify this, but TS wouldn't infer the input type for some reason
       return options.factory({
