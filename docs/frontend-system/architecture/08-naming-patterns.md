@@ -98,9 +98,9 @@ export interface SearchResultItemExtensionData {
 }
 
 export const searchResultItemExtensionDataRef =
-  createExtensionDataRef<SearchResultItemExtensionData>(
-    'search.search-result-item',
-  );
+  createExtensionDataRef<SearchResultItemExtensionData>().with({
+    id: 'search.search-result-item',
+  });
 ```
 
 #### Grouped Extension Data
@@ -109,8 +109,12 @@ This way of defining extension data is similar to the standalone way, but it use
 
 ```ts
 export const coreExtensionData = {
-  reactElement: createExtensionDataRef<ReactElement>('core.react-element'),
-  routePath: createExtensionDataRef<string>('core.route-path'),
+  reactElement: createExtensionDataRef<ReactElement>().with({
+    id: 'core.react-element',
+  }),
+  routePath: createExtensionDataRef<string>().with({
+    id: 'core.route-path',
+  }),
 };
 ```
 
@@ -125,9 +129,9 @@ export function createGraphiQLEndpointExtension(options) {
 
 // Use a TypeScript namespace to merge the extension data references with the extension creator
 export namespace createGraphiQLEndpointExtension {
-  export const endpointDataRef = createExtensionDataRef</* ... */>(
-    'graphiql.graphiql-endpoint.endpoint',
-  );
+  export const endpointDataRef = createExtensionDataRef</* ... */>().with({
+    id: 'graphiql.graphiql-endpoint.endpoint',
+  });
 }
 ```
 

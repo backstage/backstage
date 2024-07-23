@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-backend-module-microsoft-provider
 
+## 0.1.18-next.0
+
+### Patch Changes
+
+- 39f36a9: Updated the Microsoft authenticator to accurately define required scopes, but to also omit the required and additional scopes when requesting resource scopes.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.1-next.0
+  - @backstage/plugin-auth-node@0.4.18-next.0
+
 ## 0.1.17
 
 ### Patch Changes

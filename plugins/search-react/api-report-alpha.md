@@ -31,6 +31,7 @@ export function createSearchResultListItemExtension<
 export namespace createSearchResultListItemExtension {
   const // (undocumented)
     itemDataRef: ConfigurableExtensionDataRef<
+      'search.search-result-list-item.item',
       {
         predicate?: SearchResultItemExtensionPredicate | undefined;
         component: SearchResultItemExtensionComponent;
