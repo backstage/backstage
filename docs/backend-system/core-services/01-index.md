@@ -27,6 +27,7 @@ import { coreServices } from '@backstage/backend-plugin-api';
 - [Logger Service](./logger.md) - Plugin-level logging.
 - [Permissions Service](./permissions.md) - Permission system integration for authorization of user actions.
 - [Plugin Metadata Service](./plugin-metadata.md) - Built-in service for accessing metadata about the current plugin.
+- [Redactions Service](./redactions.md) - Redact sensitive information.
 - [Root Config Service](./root-config.md) - Access to static configuration.
 - [Root Health Service](./root-health.md) - Health check endpoints for the backend.
 - [Root Http Router Service](./root-http-router.md) - HTTP route registration for root services.

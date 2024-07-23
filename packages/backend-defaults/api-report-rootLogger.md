@@ -6,6 +6,7 @@
 import { Format } from 'logform';
 import { JsonObject } from '@backstage/types';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { RedactionsService } from '@backstage/backend-plugin-api';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
 import { transport } from 'winston';
@@ -19,7 +20,7 @@ export const rootLoggerServiceFactory: ServiceFactoryCompat<
 
 // @public
 export class WinstonLogger implements RootLoggerService {
-  // (undocumented)
+  // @deprecated (undocumented)
   addRedactions(redactions: Iterable<string>): void;
   // (undocumented)
   child(meta: JsonObject): LoggerService;
@@ -31,10 +32,12 @@ export class WinstonLogger implements RootLoggerService {
   error(message: string, meta?: JsonObject): void;
   // (undocumented)
   info(message: string, meta?: JsonObject): void;
+  // @deprecated
   static redacter(): {
     format: Format;
     add: (redactions: Iterable<string>) => void;
   };
+  static redactionFormat(redactions: RedactionsService): Format;
   // (undocumented)
   warn(message: string, meta?: JsonObject): void;
 }
@@ -47,6 +50,8 @@ export interface WinstonLoggerOptions {
   level?: string;
   // (undocumented)
   meta?: JsonObject;
+  // (undocumented)
+  redactions?: RedactionsService;
   // (undocumented)
   transports?: transport[];
 }
