@@ -16,6 +16,7 @@
 
 import { ConfigReader } from '@backstage/config';
 import { readProviderConfigs } from './GithubEntityProviderConfig';
+import { DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 
 describe('readProviderConfigs', () => {
   afterEach(() => jest.resetAllMocks());
@@ -112,6 +113,7 @@ describe('readProviderConfigs', () => {
     expect(providerConfigs[0]).toEqual({
       id: 'providerOrganizationOnly',
       organization: 'test-org1',
+      namespace: DEFAULT_NAMESPACE,
       catalogPath: '/catalog-info.yaml',
       host: 'github.com',
       filters: {
@@ -130,6 +132,7 @@ describe('readProviderConfigs', () => {
     expect(providerConfigs[1]).toEqual({
       id: 'providerCustomCatalogPath',
       organization: 'test-org2',
+      namespace: DEFAULT_NAMESPACE,
       catalogPath: 'custom/path/catalog-info.yaml',
       host: 'github.com',
       filters: {
@@ -148,6 +151,7 @@ describe('readProviderConfigs', () => {
     expect(providerConfigs[2]).toEqual({
       id: 'providerWithRepositoryFilter',
       organization: 'test-org3', // organization
+      namespace: DEFAULT_NAMESPACE,
       catalogPath: '/catalog-info.yaml', // file
       host: 'github.com',
       filters: {
@@ -166,6 +170,7 @@ describe('readProviderConfigs', () => {
     expect(providerConfigs[3]).toEqual({
       id: 'providerWithBranchFilter',
       organization: 'test-org4',
+      namespace: DEFAULT_NAMESPACE,
       catalogPath: '/catalog-info.yaml',
       host: 'github.com',
       filters: {
@@ -184,6 +189,7 @@ describe('readProviderConfigs', () => {
     expect(providerConfigs[4]).toEqual({
       id: 'providerWithTopicFilter',
       organization: 'test-org5',
+      namespace: DEFAULT_NAMESPACE,
       catalogPath: '/catalog-info.yaml',
       host: 'github.com',
       filters: {
@@ -202,6 +208,7 @@ describe('readProviderConfigs', () => {
     expect(providerConfigs[5]).toEqual({
       id: 'providerWithForkFilter',
       organization: 'test-org6',
+      namespace: DEFAULT_NAMESPACE,
       catalogPath: '/catalog-info.yaml',
       host: 'github.com',
       filters: {
@@ -220,6 +227,7 @@ describe('readProviderConfigs', () => {
     expect(providerConfigs[6]).toEqual({
       id: 'providerWithVisibilityFilter',
       organization: 'test-org6',
+      namespace: DEFAULT_NAMESPACE,
       catalogPath: '/catalog-info.yaml',
       host: 'github.com',
       filters: {
@@ -238,6 +246,7 @@ describe('readProviderConfigs', () => {
     expect(providerConfigs[7]).toEqual({
       id: 'providerWithHost',
       organization: 'test-org1',
+      namespace: DEFAULT_NAMESPACE,
       catalogPath: '/catalog-info.yaml',
       host: 'ghe.internal.com',
       filters: {
@@ -256,6 +265,7 @@ describe('readProviderConfigs', () => {
     expect(providerConfigs[8]).toEqual({
       id: 'providerWithSchedule',
       organization: 'test-org1',
+      namespace: DEFAULT_NAMESPACE,
       catalogPath: '/catalog-info.yaml',
       host: 'github.com',
       filters: {

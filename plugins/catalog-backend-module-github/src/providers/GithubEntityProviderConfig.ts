@@ -18,6 +18,7 @@ import {
   readTaskScheduleDefinitionFromConfig,
   TaskScheduleDefinition,
 } from '@backstage/backend-tasks';
+import { DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 
 const DEFAULT_CATALOG_PATH = '/catalog-info.yaml';
@@ -27,6 +28,7 @@ export type GithubEntityProviderConfig = {
   id: string;
   catalogPath: string;
   organization: string;
+  namespace?: string;
   host: string;
   filters?: {
     repository?: RegExp;
@@ -69,6 +71,7 @@ function readProviderConfig(
   config: Config,
 ): GithubEntityProviderConfig {
   const organization = config.getString('organization');
+  const namespace = config.getOptionalString('namespace');
   const catalogPath =
     config.getOptionalString('catalogPath') ?? DEFAULT_CATALOG_PATH;
   const host = config.getOptionalString('host') ?? 'github.com';
@@ -103,6 +106,7 @@ function readProviderConfig(
     id,
     catalogPath,
     organization,
+    namespace: namespace ?? DEFAULT_NAMESPACE,
     host,
     filters: {
       repository: repositoryPattern
