@@ -86,7 +86,10 @@ describe('GithubEntityProvider', () => {
     });
   };
 
-  const createExpectedEntitiesForUrl = (url: string): DeferredEntity[] => {
+  const createExpectedEntitiesForUrl = (
+    url: string,
+    namespace: string = DEFAULT_NAMESPACE,
+  ): DeferredEntity[] => {
     return [
       {
         entity: {
@@ -222,7 +225,10 @@ describe('GithubEntityProvider', () => {
     await (taskDef.fn as () => Promise<void>)();
 
     const url = `https://github.com/test-org/test-repo/blob/main/custom/path/catalog-custom.yaml`;
-    const expectedEntities = createExpectedEntitiesForUrl(url);
+    const expectedEntities = createExpectedEntitiesForUrl(
+      url,
+      'bippitboppityboo',
+    );
 
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
