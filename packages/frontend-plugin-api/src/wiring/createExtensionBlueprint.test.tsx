@@ -88,20 +88,17 @@ describe('createExtensionBlueprint', () => {
 
     const extension = TestExtensionBlueprint.make({
       name: 'my-extension',
-      params: {
-        text: 'Hello, world!',
-      },
-      factory(params: { text: string }) {
-        return {
-          element: <h2>{params.text}</h2>,
-        };
+      factory(origFactory) {
+        return origFactory({
+          text: 'Hello, world!',
+        });
       },
     });
 
     expect(extension).toBeDefined();
 
     const { container } = createExtensionTester(extension).render();
-    expect(container.querySelector('h2')).toHaveTextContent('Hello, world!');
+    expect(container.querySelector('h1')).toHaveTextContent('Hello, world!');
   });
 
   it('should allow exporting the dataRefs from the extension blueprint', () => {
