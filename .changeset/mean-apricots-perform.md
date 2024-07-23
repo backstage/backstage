@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-kubernetes': minor
+'@backstage/plugin-kubernetes': patch
 ---
 
 Adds support for Backstage's new frontend system
