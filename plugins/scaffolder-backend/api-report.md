@@ -312,10 +312,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
     sourcePath?: string | undefined;
     targetPath?: string | undefined;
     token?: string | undefined;
-    commitAction?: 'auto' | 'update' | 'delete' | 'create' | undefined
-    /**
-     * @public @deprecated use import from \@backstage/plugin-scaffolder-backend-module-github instead
-     */;
+    commitAction?: 'auto' | 'update' | 'delete' | 'create' | undefined;
     projectid?: string | undefined;
     removeSourceBranch?: boolean | undefined;
     assignee?: string | undefined;
