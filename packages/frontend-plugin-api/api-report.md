@@ -931,36 +931,40 @@ export interface ExtensionBlueprint<
 > {
   // (undocumented)
   dataRefs: TDataRefs;
-  // (undocumented)
-  make(args: {
-    namespace?: string;
-    name?: string;
-    attachTo?: {
-      id: string;
-      input: string;
-    };
-    disabled?: boolean;
-    inputs?: TInputs;
-    output?: TOutput;
-    configSchema?: PortableSchema<TConfig>;
-    params: TParams;
-    factory?(
-      params: TParams,
-      context: {
-        node: AppNode;
-        config: TConfig;
-        inputs: Expand<ResolvedExtensionInputs<TInputs>>;
-        orignalFactory(
-          params?: TParams,
-          context?: {
-            node?: AppNode;
-            config?: TConfig;
-            inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
-          },
-        ): Expand<ExtensionDataValues<TOutput>>;
-      },
-    ): Expand<ExtensionDataValues<TOutput>>;
-  }): ExtensionDefinition<TConfig>;
+  make(
+    args: {
+      namespace?: string;
+      name?: string;
+      attachTo?: {
+        id: string;
+        input: string;
+      };
+      disabled?: boolean;
+      inputs?: TInputs;
+      output?: TOutput;
+      configSchema?: PortableSchema<TConfig>;
+    } & (
+      | {
+          factory(
+            originalFactory: (
+              params: TParams,
+              context?: {
+                config?: TConfig;
+                inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
+              },
+            ) => Expand<ExtensionDataValues<TOutput>>,
+            context: {
+              node: AppNode;
+              config: TConfig;
+              inputs: Expand<ResolvedExtensionInputs<TInputs>>;
+            },
+          ): Expand<ExtensionDataValues<TOutput>>;
+        }
+      | {
+          params: TParams;
+        }
+    ),
+  ): ExtensionDefinition<TConfig>;
 }
 
 // @public (undocumented)

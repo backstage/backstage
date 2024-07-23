@@ -67,32 +67,43 @@ export interface ExtensionBlueprint<
 > {
   dataRefs: TDataRefs;
 
-  make(args: {
-    namespace?: string;
-    name?: string;
-    attachTo?: { id: string; input: string };
-    disabled?: boolean;
-    inputs?: TInputs;
-    output?: TOutput;
-    configSchema?: PortableSchema<TConfig>;
-    params: TParams;
-    factory?(
-      params: TParams,
-      context: {
-        node: AppNode;
-        config: TConfig;
-        inputs: Expand<ResolvedExtensionInputs<TInputs>>;
-        orignalFactory(
-          params?: TParams,
-          context?: {
-            node?: AppNode;
-            config?: TConfig;
-            inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
-          },
-        ): Expand<ExtensionDataValues<TOutput>>;
-      },
-    ): Expand<ExtensionDataValues<TOutput>>;
-  }): ExtensionDefinition<TConfig>;
+  /**
+   * Creates a new extension from the blueprint.
+   *
+   * You must either pass `params` directly, or define a `factory` that can
+   * optionally call the original factory with the same params.
+   */
+  make(
+    args: {
+      namespace?: string;
+      name?: string;
+      attachTo?: { id: string; input: string };
+      disabled?: boolean;
+      inputs?: TInputs;
+      output?: TOutput;
+      configSchema?: PortableSchema<TConfig>;
+    } & (
+      | {
+          factory(
+            originalFactory: (
+              params: TParams,
+              context?: {
+                config?: TConfig;
+                inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
+              },
+            ) => Expand<ExtensionDataValues<TOutput>>,
+            context: {
+              node: AppNode;
+              config: TConfig;
+              inputs: Expand<ResolvedExtensionInputs<TInputs>>;
+            },
+          ): Expand<ExtensionDataValues<TOutput>>;
+        }
+      | {
+          params: TParams;
+        }
+    ),
+  ): ExtensionDefinition<TConfig>;
 }
 
 /**
@@ -127,21 +138,19 @@ class ExtensionBlueprintImpl<
     inputs?: TInputs;
     output?: TOutput;
     configSchema?: PortableSchema<TConfig>;
-    params: TParams;
+    params?: TParams;
     factory?(
-      params: TParams,
+      originalFactory: (
+        params: TParams,
+        context?: {
+          config?: TConfig;
+          inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
+        },
+      ) => Expand<ExtensionDataValues<TOutput>>,
       context: {
         node: AppNode;
         config: TConfig;
         inputs: Expand<ResolvedExtensionInputs<TInputs>>;
-        orignalFactory(
-          params?: TParams,
-          context?: {
-            node?: AppNode;
-            config?: TConfig;
-            inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
-          },
-        ): Expand<ExtensionDataValues<TOutput>>;
       },
     ): Expand<ExtensionDataValues<TOutput>>;
   }): ExtensionDefinition<TConfig> {
@@ -156,30 +165,33 @@ class ExtensionBlueprintImpl<
       configSchema: args.configSchema ?? this.options.configSchema, // TODO: some config merging or smth
       factory: ({ node, config, inputs }) => {
         if (args.factory) {
-          return args.factory(args.params, {
-            node,
-            config,
-            inputs,
-            orignalFactory: (
-              innerParams?: TParams,
+          return args.factory(
+            (
+              innerParams: TParams,
               innerContext?: {
                 config?: TConfig;
                 inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
               },
             ) =>
-              this.options.factory(innerParams ?? args.params, {
+              this.options.factory(innerParams, {
                 node,
                 config: innerContext?.config ?? config,
                 inputs: innerContext?.inputs ?? inputs,
               }),
+            {
+              node,
+              config,
+              inputs,
+            },
+          );
+        } else if (args.params) {
+          return this.options.factory(args.params, {
+            node,
+            config,
+            inputs,
           });
         }
-
-        return this.options.factory(args.params, {
-          node,
-          config,
-          inputs,
-        });
+        throw new Error('Either params or factory must be provided');
       },
     });
   }
