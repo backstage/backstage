@@ -91,7 +91,9 @@ To create a new extension data reference to represent a type of shared extension
 
 ```ts
 export const reactElementExtensionDataRef =
-  createExtensionDataRef<React.JSX.Element>('my-plugin.reactElement');
+  createExtensionDataRef<React.JSX.Element>().with({
+    id: 'my-plugin.reactElement',
+  });
 ```
 
 The `ExtensionDataRef` can then be used to describe an output property of the extension. This will enforce typing on the return value of the extension factory:

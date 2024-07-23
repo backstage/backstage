@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder-backend-module-rails
 
+## 0.4.40-next.0
+
+### Patch Changes
+
+- 449def7: Add examples for fetch:rails scaffolder action & improve related tests
+- Updated dependencies
+  - @backstage/backend-common@0.23.4-next.0
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/backend-plugin-api@0.7.1-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-node@0.4.9-next.0
+
 ## 0.4.39
 
 ### Patch Changes

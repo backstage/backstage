@@ -15,6 +15,7 @@
  */
 
 import { OptionValues } from 'commander';
+import { PackageRole } from '@backstage/cli-node';
 import { findRoleFromCommand } from '../../lib/role';
 import { startBackend, startBackendPlugin } from './startBackend';
 import { startFrontend } from './startFrontend';
@@ -47,6 +48,13 @@ export async function command(opts: OptionValues): Promise<void> {
     case 'frontend-plugin':
     case 'frontend-plugin-module':
       return startFrontend({ entry: 'dev/index', ...options });
+    case 'frontend-dynamic-container' as PackageRole: // experimental
+      return startFrontend({
+        entry: 'src/index',
+        ...options,
+        skipOpenBrowser: true,
+        isModuleFederationRemote: true,
+      });
     default:
       throw new Error(
         `Start command is not supported for package role '${role}'`,
