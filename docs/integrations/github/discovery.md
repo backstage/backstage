@@ -173,6 +173,8 @@ If you do so, `default` will be used as provider ID.
 - **`organization`**:
   Name of your organization account/workspace.
   If you want to add multiple organizations, you need to add one provider config each.
+- **`namespace`** _(optional)_:
+  The namespace to assign to ingested entities. Uses the `default` namespace if not provided.
 - **`validateLocationsExist`** _(optional)_:
   Whether to validate locations that exist before emitting them.
   This option avoids generating locations for catalog info files that do not exist in the source repository.

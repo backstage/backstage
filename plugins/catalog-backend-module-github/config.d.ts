@@ -66,6 +66,10 @@ export interface Config {
              */
             organization: string;
             /**
+             * (Optional) The namespace to assign to ingested entities.  Uses the `default` namespace if not provided.
+             */
+            namespace: string;
+            /**
              * (Optional) Path where to look for `catalog-info.yaml` files.
              * You can use wildcards - `*` or `**` - to search the path and/or the filename
              * Default: `/catalog-info.yaml`.
