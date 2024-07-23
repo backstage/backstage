@@ -114,6 +114,7 @@ import {
   coreExtensionData,
   createExtension,
   createExtensionOverrides,
+  createSignInPageExtension
 } from '@backstage/frontend-plugin-api';
 
 const signInPage = createSignInPageExtension({
