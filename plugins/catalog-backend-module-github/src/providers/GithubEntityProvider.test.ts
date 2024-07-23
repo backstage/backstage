@@ -96,7 +96,7 @@ describe('GithubEntityProvider', () => {
           apiVersion: 'backstage.io/v1alpha1',
           kind: 'Location',
           metadata: {
-            namespace: DEFAULT_NAMESPACE,
+            namespace,
             annotations: {
               'backstage.io/managed-by-location': `url:${url}`,
               'backstage.io/managed-by-origin-location': `url:${url}`,
@@ -170,9 +170,11 @@ describe('GithubEntityProvider', () => {
   });
 
   it('apply full update on scheduled execution with basic filters', async () => {
+    const namespace = 'bippitboppityboo';
     const config = createSingleProviderConfig({
       providerConfig: {
         catalogPath: 'custom/path/catalog-custom.yaml',
+        namespace,
         filters: {
           branch: 'main',
           repository: 'test-.*',
@@ -225,10 +227,7 @@ describe('GithubEntityProvider', () => {
     await (taskDef.fn as () => Promise<void>)();
 
     const url = `https://github.com/test-org/test-repo/blob/main/custom/path/catalog-custom.yaml`;
-    const expectedEntities = createExpectedEntitiesForUrl(
-      url,
-      'bippitboppityboo',
-    );
+    const expectedEntities = createExpectedEntitiesForUrl(url, namespace);
 
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
