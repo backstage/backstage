@@ -20,15 +20,15 @@ import { ConfigSchema, loadConfigSchema } from '@backstage/config-loader';
 import { getPackages } from '@manypkg/get-packages';
 
 /** @public */
-export async function createConfigSecretEnumerator(options: {
-  logger: LoggerService;
+export async function createConfigSecretEnumerator(options?: {
+  logger?: LoggerService;
   dir?: string;
   schema?: ConfigSchema;
 }): Promise<(config: Config) => Iterable<string>> {
-  const { logger, dir = process.cwd() } = options;
+  const { logger, dir = process.cwd() } = options ?? {};
   const { packages } = await getPackages(dir);
   const schema =
-    options.schema ??
+    options?.schema ??
     (await loadConfigSchema({
       dependencies: packages.map(p => p.packageJson.name),
     }));
@@ -46,9 +46,14 @@ export async function createConfigSecretEnumerator(options: {
       JSON.stringify(secretsData.data),
       (_, v) => typeof v === 'string' && secrets.add(v),
     );
-    logger.info(
-      `Found ${secrets.size} new secrets in config that will be redacted`,
-    );
+
+    const msg = `Found ${secrets.size} secrets in config that will be redacted`;
+    if (logger) {
+      logger.info(msg);
+    } else {
+      console.log(msg);
+    }
+
     return secrets;
   };
 }

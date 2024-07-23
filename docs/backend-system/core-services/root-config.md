@@ -66,6 +66,7 @@ For more advanced customization, there are several APIs from the `@backstage/con
 ```ts
 import { ConfigSources } from '@backstage/config-loader';
 import { createServiceFactory } from '@backstage/backend-plugin-api';
+import { createConfigSecretEnumerator } from '@backstage/backend-defaults/rootConfig';
 
 const backend = createBackend();
 
@@ -84,7 +85,16 @@ backend.add(
         remote: { reloadIntervalSeconds: 60 },
       });
       console.log(`Loading config from ${source}`);
-      return await ConfigSources.toConfig(source);
+
+      const config = await ConfigSources.toConfig(source);
+
+      const secretEnumerator = await createConfigSecretEnumerator();
+      redactions.addRedactions(secretEnumerator(config));
+      config.subscribe?.(() =>
+        redactions.addRedactions(secretEnumerator(config)),
+      );
+
+      return config;
     },
   }),
 );

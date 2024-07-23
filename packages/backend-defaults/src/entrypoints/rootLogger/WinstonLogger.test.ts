@@ -18,6 +18,7 @@ import { format } from 'logform';
 import { WinstonLogger } from './WinstonLogger';
 import Transport from 'winston-transport';
 import { MESSAGE } from 'triple-beam';
+import { DefaultRedactionsService } from '../redactions/redactionServiceFactory';
 
 describe('WinstonLogger', () => {
   it('creates a winston logger instance with default options', () => {
@@ -57,7 +58,7 @@ describe('WinstonLogger', () => {
     );
   });
 
-  it('should redact nested object', () => {
+  it('should redact nested object with deprecated redacter', () => {
     const mockTransport = new Transport({
       log: jest.fn(),
       logv: jest.fn(),
@@ -84,6 +85,48 @@ describe('WinstonLogger', () => {
           level: 'error',
           message: 'something went wrong',
           nested: '*** (world) from nested object',
+          null: null,
+          nullProto: {
+            foo: '*** foo',
+          },
+        }),
+      }),
+      expect.any(Function),
+    );
+  });
+
+  it('should redact nested object with redactions service', () => {
+    const mockTransport = new Transport({
+      log: jest.fn(),
+      logv: jest.fn(),
+    });
+
+    const redactions = new DefaultRedactionsService();
+
+    const logger = WinstonLogger.create({
+      format: format.json(),
+      transports: [mockTransport],
+      redactions,
+    });
+
+    // Both of these should work
+    redactions.addRedactions(['hello']);
+    logger.addRedactions(['world']);
+
+    logger.error('something went wrong', {
+      null: null,
+      nested: 'hello (world) from nested object',
+      nullProto: Object.create(null, {
+        foo: { value: 'hello foo', enumerable: true },
+      }),
+    });
+
+    expect(mockTransport.log).toHaveBeenCalledWith(
+      expect.objectContaining({
+        [MESSAGE]: JSON.stringify({
+          level: 'error',
+          message: 'something went wrong',
+          nested: '*** (***) from nested object',
           null: null,
           nullProto: {
             foo: '*** foo',

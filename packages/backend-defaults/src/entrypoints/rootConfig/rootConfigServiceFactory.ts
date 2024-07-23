@@ -22,6 +22,7 @@ import {
   ConfigSources,
   RemoteConfigSourceOptions,
 } from '@backstage/config-loader';
+import { createConfigSecretEnumerator } from './createConfigSecretEnumerator';
 
 /**
  * Access to static configuration.
@@ -50,15 +51,27 @@ export const rootConfigServiceFactoryWithOptions = (
 ) =>
   createServiceFactory({
     service: coreServices.rootConfig,
-    deps: {},
-    async factory() {
+    deps: {
+      redactions: coreServices.redactions,
+    },
+    async factory({ redactions }) {
       const source = ConfigSources.default({
         argv: options?.argv,
         remote: options?.remote,
         watch: options?.watch,
       });
+
       console.log(`Loading config from ${source}`);
-      return await ConfigSources.toConfig(source);
+
+      const config = await ConfigSources.toConfig(source);
+
+      const secretEnumerator = await createConfigSecretEnumerator();
+      redactions.addRedactions(secretEnumerator(config));
+      config.subscribe?.(() =>
+        redactions.addRedactions(secretEnumerator(config)),
+      );
+
+      return config;
     },
   })();
 
