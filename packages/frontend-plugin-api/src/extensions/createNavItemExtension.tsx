@@ -61,5 +61,5 @@ export namespace createNavItemExtension {
     title: string;
     icon: IconComponent;
     routeRef: RouteRef<undefined>;
-  }>('core.nav-item.target');
+  }>().with({ id: 'core.nav-item.target' });
 }

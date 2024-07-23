@@ -1,5 +1,22 @@
 # @backstage/plugin-devtools-backend
 
+## 0.3.9-next.0
+
+### Patch Changes
+
+- 32a38e1: Removed unused code for lockfile analysis.
+- Updated dependencies
+  - @backstage/backend-common@0.23.4-next.0
+  - @backstage/config-loader@1.8.2-next.0
+  - @backstage/backend-plugin-api@0.7.1-next.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-devtools-common@0.1.11
+  - @backstage/plugin-permission-common@0.8.0
+  - @backstage/plugin-permission-node@0.8.1-next.0
+
 ## 0.3.8
 
 ### Patch Changes

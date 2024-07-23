@@ -39,4 +39,67 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
+  {
+    description: 'Trigger a GitLab Project Pipeline with No Variables',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'triggerPipeline',
+          name: 'Trigger Project Pipeline',
+          action: 'gitlab:pipeline:trigger',
+          input: {
+            ...commonGitlabConfigExample,
+            projectId: 12,
+            tokenDescription:
+              'This is the text that will appear in the pipeline token',
+            token: 'glpt-xxxxxxxxxxxx',
+            branch: 'main',
+            variables: {},
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description: 'Trigger a GitLab Project Pipeline with Single Variables',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'triggerPipeline',
+          name: 'Trigger Project Pipeline',
+          action: 'gitlab:pipeline:trigger',
+          input: {
+            ...commonGitlabConfigExample,
+            projectId: 12,
+            tokenDescription:
+              'This is the text that will appear in the pipeline token',
+            token: 'glpt-xxxxxxxxxxxx',
+            branch: 'main',
+            variables: { var_one: 'one' },
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description: 'Trigger a GitLab Project Pipeline with Multiple Variables',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'triggerPipeline',
+          name: 'Trigger Project Pipeline',
+          action: 'gitlab:pipeline:trigger',
+          input: {
+            ...commonGitlabConfigExample,
+            projectId: 12,
+            tokenDescription:
+              'This is the text that will appear in the pipeline token',
+            token: 'glpt-xxxxxxxxxxxx',
+            branch: 'main',
+            variables: { var_one: 'one', var_two: 'two', var_three: 'three' },
+          },
+        },
+      ],
+    }),
+  },
 ];
