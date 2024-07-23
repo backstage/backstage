@@ -48,6 +48,7 @@ import {
 } from '@backstage/integration-react';
 import { createSignInPageExtension } from '@backstage/frontend-plugin-api';
 import { SignInPage } from '@backstage/core-components';
+import kubernetesPlugin from '@backstage/plugin-kubernetes/alpha';
 
 /*
 
@@ -121,6 +122,7 @@ const app = createApp({
     userSettingsPlugin,
     homePlugin,
     appVisualizerPlugin,
+    kubernetesPlugin,
     ...collectedLegacyPlugins,
     createExtensionOverrides({
       extensions: [
