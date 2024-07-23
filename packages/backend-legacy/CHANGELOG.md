@@ -1,5 +1,47 @@
 # example-backend-legacy
 
+## 0.2.101-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.23.4-next.0
+  - @backstage/plugin-scaffolder-backend-module-rails@0.4.40-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.4.5-next.0
+  - @backstage/plugin-catalog-backend@1.24.1-next.0
+  - @backstage/plugin-catalog-node@1.12.5-next.0
+  - @backstage/plugin-devtools-backend@0.3.9-next.0
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/plugin-search-backend-module-pg@0.5.33-next.0
+  - example-app@0.2.100-next.0
+  - @backstage/backend-tasks@0.5.28-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/plugin-app-backend@0.3.72-next.0
+  - @backstage/plugin-auth-backend@0.22.10-next.0
+  - @backstage/plugin-auth-node@0.4.18-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.21-next.0
+  - @backstage/plugin-catalog-backend-module-unprocessed@0.4.10-next.0
+  - @backstage/plugin-events-backend@0.3.10-next.0
+  - @backstage/plugin-events-node@0.3.9-next.0
+  - @backstage/plugin-kubernetes-backend@0.18.4-next.0
+  - @backstage/plugin-permission-backend@0.5.47-next.0
+  - @backstage/plugin-permission-common@0.8.0
+  - @backstage/plugin-permission-node@0.8.1-next.0
+  - @backstage/plugin-proxy-backend@0.5.4-next.0
+  - @backstage/plugin-scaffolder-backend@1.23.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-confluence-to-markdown@0.2.24-next.0
+  - @backstage/plugin-search-backend@1.5.15-next.0
+  - @backstage/plugin-search-backend-module-catalog@0.1.29-next.0
+  - @backstage/plugin-search-backend-module-elasticsearch@1.5.4-next.0
+  - @backstage/plugin-search-backend-module-explore@0.1.29-next.0
+  - @backstage/plugin-search-backend-module-techdocs@0.1.28-next.0
+  - @backstage/plugin-search-backend-node@1.2.28-next.0
+  - @backstage/plugin-signals-backend@0.1.9-next.0
+  - @backstage/plugin-signals-node@0.1.9-next.0
+  - @backstage/plugin-techdocs-backend@1.10.10-next.0
+
 ## 0.2.100
 
 ### Patch Changes
