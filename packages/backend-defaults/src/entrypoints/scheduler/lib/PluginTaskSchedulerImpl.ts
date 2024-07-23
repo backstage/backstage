@@ -23,13 +23,7 @@ import {
   SchedulerServiceTaskRunner,
   SchedulerServiceTaskScheduleDefinition,
 } from '@backstage/backend-plugin-api';
-import {
-  Counter,
-  Histogram,
-  metrics,
-  SpanStatusCode,
-  trace,
-} from '@opentelemetry/api';
+import { Counter, Histogram, metrics, trace } from '@opentelemetry/api';
 import { Knex } from 'knex';
 import { Duration } from 'luxon';
 import { LocalTaskWorker } from './LocalTaskWorker';
