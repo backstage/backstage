@@ -38,6 +38,10 @@ Sign-in page extension have a single purpose - to implement a custom sign-in pag
 
 Theme extensions provide custom themes for the app. They are always attached to the app extension and you can have any number of themes extensions installed in an app at once, letting the user choose which theme to use.
 
+### Icons - [Reference](../../reference/frontend-plugin-api.iconbundleblueprint.md)
+
+Icon bundle extensions provide the ability to replace or provide new icons to the app. You can use the above blueprint to make new extension instances which can be installed into the app.
+
 ### Translation - [Reference](../../reference/frontend-plugin-api.createtranslationextension.md)
 
 Translation extension provide custom translation messages for the app. They can be used both to override the default english messages to custom ones, as well as provide translations for additional languages.

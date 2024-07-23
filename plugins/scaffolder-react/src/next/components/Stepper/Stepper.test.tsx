@@ -549,6 +549,66 @@ describe('Stepper', () => {
     });
   });
 
+  it('should allow overrides to the uiSchema and formContext correctly', async () => {
+    const manifest: TemplateParameterSchema = {
+      title: 'Custom Fields',
+      steps: [
+        {
+          title: 'Test',
+          schema: {
+            properties: {
+              name: {
+                type: 'string',
+                'ui:placeholder': 'Enter your name',
+              },
+              age: {
+                type: 'number',
+                'ui:placeholder': 'Enter your age',
+              },
+            },
+          },
+        },
+      ],
+    };
+
+    const uiSchema = {
+      name: {
+        'ui:readonly': true,
+        'ui:placeholder': 'Should be overwritten',
+      },
+    };
+
+    const formContext = {
+      readOnlyAsDisabled: true,
+    };
+
+    const { getByRole } = await renderInTestApp(
+      <SecretsContextProvider>
+        <Stepper
+          manifest={manifest}
+          onCreate={jest.fn()}
+          extensions={[]}
+          formProps={{ uiSchema, formContext }}
+          initialState={{ name: 'Some Name', age: 40 }}
+        />
+      </SecretsContextProvider>,
+    );
+
+    expect(getByRole('textbox', { name: 'name' })).toHaveValue('Some Name');
+    expect(getByRole('textbox', { name: 'name' })).toBeDisabled();
+    expect(getByRole('textbox', { name: 'name' })).toHaveAttribute(
+      'placeholder',
+      'Enter your name',
+    );
+
+    expect(getByRole('spinbutton', { name: 'age' })).toHaveValue(40);
+    expect(getByRole('spinbutton', { name: 'age' })).toBeEnabled();
+    expect(getByRole('spinbutton', { name: 'age' })).toHaveAttribute(
+      'placeholder',
+      'Enter your age',
+    );
+  });
+
   describe('Scaffolder Layouts', () => {
     it('should render the step in the scaffolder layout', async () => {
       const ScaffolderLayout: LayoutTemplate = ({ properties }) => (

@@ -19,14 +19,13 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import { Select, SelectItem } from '@backstage/core-components';
-import { RepoUrlPickerState } from './types';
+import { BaseRepoUrlPickerProps } from './types';
 
-export const GithubRepoPicker = (props: {
-  allowedOwners?: string[];
-  rawErrors: string[];
-  state: RepoUrlPickerState;
-  onChange: (state: RepoUrlPickerState) => void;
-}) => {
+export const GithubRepoPicker = (
+  props: BaseRepoUrlPickerProps<{
+    allowedOwners?: string[];
+  }>,
+) => {
   const { allowedOwners = [], rawErrors, state, onChange } = props;
   const ownerItems: SelectItem[] = allowedOwners
     ? allowedOwners.map(i => ({ label: i, value: i }))

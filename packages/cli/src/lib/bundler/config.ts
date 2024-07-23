@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { BackendBundlingOptions, BundlingOptions } from './types';
+import {
+  BackendBundlingOptions,
+  BundlingOptions,
+  ModuleFederationOptions,
+} from './types';
 import { posix as posixPath, resolve as resolvePath, dirname } from 'path';
 import chalk from 'chalk';
 import webpack, { ProvidePlugin } from 'webpack';
@@ -29,6 +33,7 @@ import { ModuleFederationPlugin } from '@module-federation/enhanced/webpack';
 import { LinkedPackageResolvePlugin } from './LinkedPackageResolvePlugin';
 import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
 import { RunScriptWebpackPlugin } from 'run-script-webpack-plugin';
+import ReactRefreshPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import { paths as cliPaths } from '../../lib/paths';
 import fs from 'fs-extra';
 import { getPackages } from '@manypkg/get-packages';
@@ -45,13 +50,40 @@ import { hasReactDomClient } from './hasReactDomClient';
 
 const BUILD_CACHE_ENV_VAR = 'BACKSTAGE_CLI_EXPERIMENTAL_BUILD_CACHE';
 
-export function resolveBaseUrl(config: Config): URL {
+export function resolveBaseUrl(
+  config: Config,
+  moduleFederation?: ModuleFederationOptions,
+): URL {
   const baseUrl = config.getOptionalString('app.baseUrl');
+
+  const defaultBaseUrl =
+    moduleFederation?.mode === 'remote'
+      ? `http://localhost:${process.env.PORT ?? '3000'}`
+      : 'http://localhost:3000';
+
   try {
-    return new URL(baseUrl ?? '/', 'http://localhost:3000');
+    return new URL(baseUrl ?? '/', defaultBaseUrl);
   } catch (error) {
     throw new Error(`Invalid app.baseUrl, ${error}`);
   }
+}
+
+export function resolveEndpoint(
+  config: Config,
+  moduleFederation?: ModuleFederationOptions,
+): {
+  host: string;
+  port: number;
+} {
+  const url = resolveBaseUrl(config, moduleFederation);
+
+  return {
+    host: config.getOptionalString('app.listen.host') ?? url.hostname,
+    port:
+      config.getOptionalNumber('app.listen.port') ??
+      Number(url.port) ??
+      (url.protocol === 'https:' ? 443 : 80),
+  };
 }
 
 async function readBuildInfo() {
@@ -94,7 +126,13 @@ export async function createConfig(
   paths: BundlingPaths,
   options: BundlingOptions,
 ): Promise<webpack.Configuration> {
-  const { checksEnabled, isDev, frontendConfig, publicSubPath = '' } = options;
+  const {
+    checksEnabled,
+    isDev,
+    frontendConfig,
+    moduleFederation,
+    publicSubPath = '',
+  } = options;
 
   const { plugins, loaders } = transforms(options);
   // Any package that is part of the monorepo but outside the monorepo root dir need
@@ -102,10 +140,27 @@ export async function createConfig(
   const { packages } = await getPackages(cliPaths.targetDir);
   const externalPkgs = packages.filter(p => !isChildPath(paths.root, p.dir));
 
-  const validBaseUrl = resolveBaseUrl(frontendConfig);
+  const validBaseUrl = resolveBaseUrl(frontendConfig, moduleFederation);
   let publicPath = validBaseUrl.pathname.replace(/\/$/, '');
   if (publicSubPath) {
     publicPath = `${publicPath}${publicSubPath}`.replace('//', '/');
+  }
+
+  if (isDev) {
+    const { host, port } = resolveEndpoint(
+      options.frontendConfig,
+      options.moduleFederation,
+    );
+
+    plugins.push(
+      new ReactRefreshPlugin({
+        overlay: {
+          sockProtocol: 'ws',
+          sockHost: host,
+          sockPort: port,
+        },
+      }),
+    );
   }
 
   if (checksEnabled) {
