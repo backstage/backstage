@@ -7,8 +7,6 @@ description: How to deploy Backstage to Heroku
 
 Heroku is a Platform as a Service (PaaS) designed to simplify application deployment.
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/chap/backstage-button)
-
 ## Create App
 
 Starting with an existing Backstage app or follow the [getting started guide](https://backstage.io/docs/getting-started/) to create a new one.
@@ -17,8 +15,8 @@ Install the
 [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli) and create a new Heroku app:
 
 ```shell
-$ cd your-app/
-$ heroku apps:create <your-app>
+cd your-app/
+heroku apps:create <your-app>
 ```
 
 ## Domain
@@ -26,7 +24,7 @@ $ heroku apps:create <your-app>
 Get Heroku app URL:
 
 ```shell
-$ heroku domains -a <your-app>
+heroku domains -a <your-app>
 <your-app-123>.herokuapp.com
 ```
 
@@ -59,7 +57,7 @@ Add a build script in `package.json` to compile frontend during deployment:
 Create a [Procfile](https://devcenter.heroku.com/articles/procfile) in the app's root:
 
 ```shell
-$ echo "web: yarn workspace backend start --config ../../app-config.yaml --config ../../app-config.production.yaml" > Procfile
+echo "web: yarn workspace backend start --config ../../app-config.yaml --config ../../app-config.production.yaml" > Procfile
 ```
 
 ## Database
@@ -67,7 +65,7 @@ $ echo "web: yarn workspace backend start --config ../../app-config.yaml --confi
 Provision a [Heroku Postgres](https://elements.heroku.com/addons/heroku-postgresql) database:
 
 ```shell
-$ heroku addons:create heroku-postgresql -a <your-app>
+heroku addons:create heroku-postgresql -a <your-app>
 ```
 
 Update `database` in `app-config.production.yaml`:
@@ -85,7 +83,7 @@ backend:
 Allow postgres self-signed certificates:
 
 ```shell
-$ heroku config:set PGSSLMODE=no-verify -a <your-app>
+heroku config:set PGSSLMODE=no-verify -a <your-app>
 ```
 
 ## Deployment
@@ -93,20 +91,20 @@ $ heroku config:set PGSSLMODE=no-verify -a <your-app>
 Commit changes and push to Heroku to build and deploy:
 
 ```shell
-$ git add Procfile && git commit -am "configure heroku"
-$ git push heroku main
+git add Procfile && git commit -am "configure heroku"
+git push heroku main
 ```
 
 View the app in the browser:
 
 ```shell
-$ heroku open -a <your-app>
+heroku open -a <your-app>
 ```
 
 View logs:
 
 ```shell
-$ heroku heroku -a <your-app>
+heroku heroku -a <your-app>
 ```
 
 ## Docker
@@ -116,27 +114,27 @@ As an alternative to git deploys, Heroku also [supports container images](https:
 Login to Heroku's container registry:
 
 ```shell
-$ heroku container:login
+heroku container:login
 ```
 
 Configure the Heroku app to run a container image:
 
 ```shell
-$ heroku stack:set container -a <your-app>
+heroku stack:set container -a <your-app>
 ```
 
-Locally run the [host build command](https://backstage.io/docs/deployment/docker/#host-build):
+Locally run the [host build commands](https://backstage.io/docs/deployment/docker/#host-build), they must be run whenever you are going to publish a new image:
 
 ```shell
-$ yarn build:backend --config ../../app-config.yaml --config ../../app-config.production.yaml
+yarn install --frozen-lockfile
+yarn tsc
+yarn build:backend --config ../../app-config.yaml --config ../../app-config.production.yaml
 ```
 
-Build, push, and release the container image:
+Build, push, and release the container image to the `web` dyno:
 
 ```shell
-$ docker image build . -f packages/backend/Dockerfile --tag registry.heroku.com/<your-app>/web
-
-$ docker push registry.heroku.com/<your-app>/web
-
-$ heroku container:release web -a <your-app>
+docker image build . -f packages/backend/Dockerfile --tag registry.heroku.com/<your-app>/web
+docker push registry.heroku.com/<your-app>/web
+heroku container:release web -a <your-app>
 ```
