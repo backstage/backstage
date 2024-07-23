@@ -1,14 +1,14 @@
 ---
 id: dry run testing
 title: Dry Run Testing
-description: Documentation on how to enable and implement dry run testing in actions
+description: How to enable and implement dry run testing in actions
 ---
 
 Scaffolder templates can be tested using the dry run feature of scaffolder actions. This allows you to simulate the effects of running a scaffolder action without making any actual changes to your environment, for example creating a webhook in Github. Once dry run is enabled in the scaffolder action, you can add handling to actions you use in your scaffolder templates to define how an action should operate in a dry run scenario.
 
 ## Enabling dry run testing
 
-To enable dry run for your scaffolder action you need to add 'supportsDryRun: true' to the configuration object of 'createTemplateAction' in the function where the behavior of your action is defined:
+To enable dry run for your scaffolder action you need to add `supportsDryRun: true` to the configuration object of `createTemplateAction` in the function where the behavior of your action is defined:
 
 ```typescript
 export function exampleAction() {
@@ -38,7 +38,7 @@ export function exampleAction() {
 
 ## Adding handling for dry run
 
-To add handling for dry run functionality you need to add a check for 'ctx.isDryRun' inside the handler of the configuration object which is being passed into 'createTemplateAction' in the function where the behavior of your action is defined. Once the check is successful, you can perform the desired actions expected in a dry run, e.g. outputting non-sensitive inputs.
+To add handling for dry run functionality you need to add a check for `ctx.isDryRun` inside the handler of the configuration object which is being passed into `createTemplateAction` in the function where the behavior of your action is defined. Once the check is successful, you can perform the desired actions expected in a dry run, e.g. outputting non-sensitive inputs.
 
 ```typescript
 async handler(ctx) {
@@ -91,9 +91,7 @@ If you're using backend permissions, pass a front-end auth token from a current 
 
 You can also query the dry run endpoint directly in code, for example:
 
-`dry-run.js`
-
-```javascript
+```javascript title="dry-run.js"
 const template = yaml.load(
   await fs.readFile('path/to/templates/template.yaml', 'utf-8'),
 );
@@ -115,7 +113,7 @@ const response = await fetch(
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: 'Bearer <YOUR_API_KEY>', // replace 'YOUR_API_KEY' with your actual API key
+      Authorization: 'Bearer <FRONT_END_TOKEN>', // replace 'FRONT_END_TOKEN' with your actual front-end auth token
     },
     body: JSON.stringify(body),
   },
