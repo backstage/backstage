@@ -1,5 +1,18 @@
 # @backstage/config-loader
 
+## 1.8.2-next.0
+
+### Patch Changes
+
+- 493feac: Add boolean `allowMissingDefaultConfig` option to `ConfigSources.default` and
+  `ConfigSources.defaultForTargets`, which results in omission of a ConfigSource
+  for the default app-config.yaml configuration file if it's not present.
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 1.8.1
 
 ### Patch Changes

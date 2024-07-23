@@ -1,5 +1,24 @@
 # @backstage/plugin-catalog-backend-module-aws
 
+## 0.3.18-next.0
+
+### Patch Changes
+
+- ba8571e: Setup user agent header for AWS sdk clients, this enables users to better track API calls made from Backstage to AWS APIs through things like CloudTrail.
+- 90a7340: `AwsOrganizationCloudAccountProcessor` configuration field `roleArn` is deprecated in favor of new field `accountId`
+- Updated dependencies
+  - @backstage/backend-common@0.23.4-next.0
+  - @backstage/plugin-catalog-node@1.12.5-next.0
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/backend-plugin-api@0.7.1-next.0
+  - @backstage/backend-tasks@0.5.28-next.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/plugin-catalog-common@1.0.25
+  - @backstage/plugin-kubernetes-common@0.8.1
+
 ## 0.3.17
 
 ### Patch Changes
