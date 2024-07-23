@@ -700,8 +700,9 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     return targets
       .map(target => {
         const location = GithubEntityProvider.toLocationSpec(target);
-
-        return locationSpecToLocationEntity({ location });
+        const entity = locationSpecToLocationEntity({ location });
+        entity.metadata.namespace = this.config.namespace;
+        return entity;
       })
       .map(entity => {
         return {
@@ -718,9 +719,11 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
       .map(repository => this.createLocationUrl(repository))
       .map(GithubEntityProvider.toLocationSpec)
       .map(location => {
+        const entity = locationSpecToLocationEntity({ location });
+        entity.metadata.namespace = this.config.namespace;
         return {
           locationKey: this.getProviderName(),
-          entity: locationSpecToLocationEntity({ location }),
+          entity,
         };
       });
   }

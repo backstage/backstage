@@ -35,6 +35,7 @@ import {
   RepositoryEvent,
   RepositoryRenamedEvent,
 } from '@octokit/webhooks-types';
+import { DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 
 jest.mock('../lib/github', () => {
   return {
@@ -92,6 +93,7 @@ describe('GithubEntityProvider', () => {
           apiVersion: 'backstage.io/v1alpha1',
           kind: 'Location',
           metadata: {
+            namespace: DEFAULT_NAMESPACE,
             annotations: {
               'backstage.io/managed-by-location': `url:${url}`,
               'backstage.io/managed-by-origin-location': `url:${url}`,
