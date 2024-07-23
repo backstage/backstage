@@ -151,6 +151,7 @@ export { AnyApiRef };
 export type AnyExtensionDataMap = {
   [name in string]: ExtensionDataRef<
     unknown,
+    string,
     {
       optional?: true;
     }
@@ -317,13 +318,15 @@ export { configApiRef };
 
 // @public (undocumented)
 export interface ConfigurableExtensionDataRef<
+  TId extends string,
   TData,
   TConfig extends {
     optional?: true;
   } = {},
-> extends ExtensionDataRef<TData, TConfig> {
+> extends ExtensionDataRef<TData, TId, TConfig> {
   // (undocumented)
   optional(): ConfigurableExtensionDataRef<
+    TId,
     TData,
     TData & {
       optional: true;
@@ -347,9 +350,17 @@ export type CoreErrorBoundaryFallbackProps = {
 
 // @public (undocumented)
 export const coreExtensionData: {
-  reactElement: ConfigurableExtensionDataRef<JSX_2.Element, {}>;
-  routePath: ConfigurableExtensionDataRef<string, {}>;
-  routeRef: ConfigurableExtensionDataRef<RouteRef<AnyRouteRefParams>, {}>;
+  reactElement: ConfigurableExtensionDataRef<
+    'core.reactElement',
+    JSX_2.Element,
+    {}
+  >;
+  routePath: ConfigurableExtensionDataRef<'core.routing.path', string, {}>;
+  routeRef: ConfigurableExtensionDataRef<
+    'core.routing.ref',
+    RouteRef<AnyRouteRefParams>,
+    {}
+  >;
 };
 
 // @public (undocumented)
@@ -385,7 +396,11 @@ export function createApiExtension<
 // @public (undocumented)
 export namespace createApiExtension {
   const // (undocumented)
-    factoryDataRef: ConfigurableExtensionDataRef<AnyApiFactory, {}>;
+    factoryDataRef: ConfigurableExtensionDataRef<
+      'core.api.factory',
+      AnyApiFactory,
+      {}
+    >;
 }
 
 export { createApiFactory };
@@ -440,6 +455,7 @@ export function createAppRootWrapperExtension<
 export namespace createAppRootWrapperExtension {
   const // (undocumented)
     componentDataRef: ConfigurableExtensionDataRef<
+      'app.root.wrapper',
       React_2.ComponentType<{
         children?: React_2.ReactNode;
       }>,
@@ -477,6 +493,7 @@ export function createComponentExtension<
 export namespace createComponentExtension {
   const // (undocumented)
     componentDataRef: ConfigurableExtensionDataRef<
+      'core.component.component',
       {
         ref: ComponentRef;
         impl: ComponentType;
@@ -505,9 +522,16 @@ export function createExtensionBlueprint<
   TInputs extends AnyExtensionInputMap,
   TOutput extends AnyExtensionDataMap,
   TConfig,
+  TDataRefs extends AnyExtensionDataMap = never,
 >(
-  options: CreateExtensionBlueprintOptions<TParams, TInputs, TOutput, TConfig>,
-): ExtensionBlueprint<TParams, TInputs, TOutput, TConfig>;
+  options: CreateExtensionBlueprintOptions<
+    TParams,
+    TInputs,
+    TOutput,
+    TConfig,
+    TDataRefs
+  >,
+): ExtensionBlueprint<TParams, TInputs, TOutput, TConfig, TDataRefs>;
 
 // @public (undocumented)
 export interface CreateExtensionBlueprintOptions<
@@ -515,6 +539,7 @@ export interface CreateExtensionBlueprintOptions<
   TInputs extends AnyExtensionInputMap,
   TOutput extends AnyExtensionDataMap,
   TConfig,
+  TDataRefs extends AnyExtensionDataMap,
 > {
   // (undocumented)
   attachTo: {
@@ -523,6 +548,8 @@ export interface CreateExtensionBlueprintOptions<
   };
   // (undocumented)
   configSchema?: PortableSchema<TConfig>;
+  // (undocumented)
+  dataRefs?: TDataRefs;
   // (undocumented)
   disabled?: boolean;
   // (undocumented)
@@ -544,10 +571,17 @@ export interface CreateExtensionBlueprintOptions<
   output: TOutput;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function createExtensionDataRef<TData>(
   id: string,
-): ConfigurableExtensionDataRef<TData>;
+): ConfigurableExtensionDataRef<string, TData>;
+
+// @public (undocumented)
+export function createExtensionDataRef<TData>(): {
+  with<TId extends string>(options: {
+    id: TId;
+  }): ConfigurableExtensionDataRef<TId, TData>;
+};
 
 // @public (undocumented)
 export function createExtensionInput<
@@ -646,6 +680,7 @@ export function createNavItemExtension(options: {
 export namespace createNavItemExtension {
   const // (undocumented)
     targetDataRef: ConfigurableExtensionDataRef<
+      'core.nav-item.target',
       {
         title: string;
         icon: IconComponent_2;
@@ -667,6 +702,7 @@ export function createNavLogoExtension(options: {
 export namespace createNavLogoExtension {
   const // (undocumented)
     logoElementsDataRef: ConfigurableExtensionDataRef<
+      'core.nav-logo.logo-elements',
       {
         logoIcon?: JSX.Element | undefined;
         logoFull?: JSX.Element | undefined;
@@ -760,6 +796,7 @@ export function createRouterExtension<
 export namespace createRouterExtension {
   const // (undocumented)
     componentDataRef: ConfigurableExtensionDataRef<
+      'app.router.wrapper',
       React_2.ComponentType<{
         children?: React_2.ReactNode;
       }>,
@@ -796,6 +833,7 @@ export function createSignInPageExtension<
 export namespace createSignInPageExtension {
   const // (undocumented)
     componentDataRef: ConfigurableExtensionDataRef<
+      'core.sign-in-page.component',
       React_2.ComponentType<SignInPageProps>,
       {}
     >;
@@ -818,7 +856,11 @@ export function createThemeExtension(
 // @public (undocumented)
 export namespace createThemeExtension {
   const // (undocumented)
-    themeDataRef: ConfigurableExtensionDataRef<AppTheme, {}>;
+    themeDataRef: ConfigurableExtensionDataRef<
+      'core.theme.theme',
+      AppTheme,
+      {}
+    >;
 }
 
 // @public (undocumented)
@@ -831,6 +873,7 @@ export function createTranslationExtension(options: {
 export namespace createTranslationExtension {
   const // (undocumented)
     translationDataRef: ConfigurableExtensionDataRef<
+      'core.translation.translation',
       | TranslationResource<string>
       | TranslationMessages<
           string,
@@ -884,37 +927,44 @@ export interface ExtensionBlueprint<
   TInputs extends AnyExtensionInputMap,
   TOutput extends AnyExtensionDataMap,
   TConfig,
+  TDataRefs extends AnyExtensionDataMap,
 > {
   // (undocumented)
-  make(args: {
-    namespace?: string;
-    name?: string;
-    attachTo?: {
-      id: string;
-      input: string;
-    };
-    disabled?: boolean;
-    inputs?: TInputs;
-    output?: TOutput;
-    configSchema?: PortableSchema<TConfig>;
-    params: TParams;
-    factory?(
-      params: TParams,
-      context: {
-        node: AppNode;
-        config: TConfig;
-        inputs: Expand<ResolvedExtensionInputs<TInputs>>;
-        orignalFactory(
-          params?: TParams,
-          context?: {
-            node?: AppNode;
-            config?: TConfig;
-            inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
-          },
-        ): Expand<ExtensionDataValues<TOutput>>;
-      },
-    ): Expand<ExtensionDataValues<TOutput>>;
-  }): ExtensionDefinition<TConfig>;
+  dataRefs: TDataRefs;
+  make(
+    args: {
+      namespace?: string;
+      name?: string;
+      attachTo?: {
+        id: string;
+        input: string;
+      };
+      disabled?: boolean;
+      inputs?: TInputs;
+      output?: TOutput;
+      configSchema?: PortableSchema<TConfig>;
+    } & (
+      | {
+          factory(
+            originalFactory: (
+              params: TParams,
+              context?: {
+                config?: TConfig;
+                inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
+              },
+            ) => Expand<ExtensionDataValues<TOutput>>,
+            context: {
+              node: AppNode;
+              config: TConfig;
+              inputs: Expand<ResolvedExtensionInputs<TInputs>>;
+            },
+          ): Expand<ExtensionDataValues<TOutput>>;
+        }
+      | {
+          params: TParams;
+        }
+    ),
+  ): ExtensionDefinition<TConfig>;
 }
 
 // @public (undocumented)
@@ -934,11 +984,12 @@ export interface ExtensionBoundaryProps {
 // @public (undocumented)
 export type ExtensionDataRef<
   TData,
+  TId extends string = string,
   TConfig extends {
     optional?: true;
   } = {},
 > = {
-  id: string;
+  id: TId;
   T: TData;
   config: TConfig;
   $$type: '@backstage/ExtensionDataRef';
@@ -1050,6 +1101,35 @@ export { githubAuthApiRef };
 export { gitlabAuthApiRef };
 
 export { googleAuthApiRef };
+
+// @public (undocumented)
+export const IconBundleBlueprint: ExtensionBlueprint<
+  {
+    icons: {
+      [x: string]: IconComponent;
+    };
+  },
+  AnyExtensionInputMap,
+  {
+    icons: ConfigurableExtensionDataRef<
+      'core.icons',
+      {
+        [x: string]: IconComponent;
+      },
+      {}
+    >;
+  },
+  unknown,
+  {
+    icons: ConfigurableExtensionDataRef<
+      'core.icons',
+      {
+        [x: string]: IconComponent;
+      },
+      {}
+    >;
+  }
+>;
 
 // @public
 export type IconComponent = ComponentType<

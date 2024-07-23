@@ -36,19 +36,14 @@ import { convertLegacyApp } from '@backstage/core-compat-api';
 import { FlatRoutes } from '@backstage/core-app-api';
 import { Route } from 'react-router';
 import { CatalogImportPage } from '@backstage/plugin-catalog-import';
-import {
-  createApiFactory,
-  configApiRef,
-  SignInPageProps,
-} from '@backstage/core-plugin-api';
+import { createApiFactory, configApiRef } from '@backstage/core-plugin-api';
 import {
   ScmAuth,
   ScmIntegrationsApi,
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
-import { createSignInPageExtension } from '@backstage/frontend-plugin-api';
-import { SignInPage } from '@backstage/core-components';
 import kubernetesPlugin from '@backstage/plugin-kubernetes/alpha';
+import { signInPageOverrides } from './overrides/SignInPage';
 
 /*
 
@@ -91,12 +86,6 @@ const homePageExtension = createExtension({
   },
 });
 
-const signInPage = createSignInPageExtension({
-  name: 'guest',
-  loader: async () => (props: SignInPageProps) =>
-    <SignInPage {...props} providers={['guest']} />,
-});
-
 const scmAuthExtension = createApiExtension({
   factory: ScmAuth.createDefaultApiFactory(),
 });
@@ -123,13 +112,13 @@ const app = createApp({
     homePlugin,
     appVisualizerPlugin,
     kubernetesPlugin,
+    signInPageOverrides,
     ...collectedLegacyPlugins,
     createExtensionOverrides({
       extensions: [
         homePageExtension,
         scmAuthExtension,
         scmIntegrationApi,
-        signInPage,
         notFoundErrorPage,
       ],
     }),

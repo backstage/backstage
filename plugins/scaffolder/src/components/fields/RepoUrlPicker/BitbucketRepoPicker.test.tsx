@@ -27,9 +27,11 @@ import { act } from 'react-dom/test-utils';
 
 describe('BitbucketRepoPicker', () => {
   const scaffolderApiMock: Partial<ScaffolderApi> = {
-    autocomplete: jest.fn().mockImplementation(opts => ({
-      results: [{ title: `${opts.resource}_example` }],
-    })),
+    autocomplete: jest.fn().mockImplementation(opts =>
+      Promise.resolve({
+        results: [{ title: `${opts.resource}_example` }],
+      }),
+    ),
   };
 
   it('renders a select if there is a list of allowed owners', async () => {

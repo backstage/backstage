@@ -32,9 +32,11 @@ import { resolveAppTree } from './resolveAppTree';
 import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 import { withLogCollector } from '@backstage/test-utils';
 
-const testDataRef = createExtensionDataRef<string>('test');
-const otherDataRef = createExtensionDataRef<number>('other');
-const inputMirrorDataRef = createExtensionDataRef<unknown>('mirror');
+const testDataRef = createExtensionDataRef<string>().with({ id: 'test' });
+const otherDataRef = createExtensionDataRef<number>().with({ id: 'other' });
+const inputMirrorDataRef = createExtensionDataRef<unknown>().with({
+  id: 'mirror',
+});
 
 const simpleExtension = resolveExtensionDefinition(
   createExtension({

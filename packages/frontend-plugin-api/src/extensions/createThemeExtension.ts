@@ -33,6 +33,7 @@ export function createThemeExtension(theme: AppTheme) {
 
 /** @public */
 export namespace createThemeExtension {
-  export const themeDataRef =
-    createExtensionDataRef<AppTheme>('core.theme.theme');
+  export const themeDataRef = createExtensionDataRef<AppTheme>().with({
+    id: 'core.theme.theme',
+  });
 }
