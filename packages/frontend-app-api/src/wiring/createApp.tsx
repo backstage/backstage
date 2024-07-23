@@ -172,7 +172,7 @@ export interface CreateAppFeatureLoader {
 
 /** @public */
 export function createApp(options?: {
-  /** @deprecated - TODO */
+  /** @deprecated - Please use {@link @backstage/frontend-app-api#IconBundleBlueprint} to make new icon bundles which can be installed in the app seperately */
   icons?: { [key in string]: IconComponent };
   features?: (FrontendFeature | CreateAppFeatureLoader)[];
   configLoader?: () => Promise<{ config: ConfigApi }>;
@@ -248,7 +248,7 @@ export function createApp(options?: {
  * @public
  */
 export function createSpecializedApp(options?: {
-  /** @deprecated - TODO */
+  /** @deprecated - Please use {@link @backstage/frontend-app-api#IconBundleBlueprint} to make new icon bundles which can be installed in the app seperately */
   icons?: { [key in string]: IconComponent };
   features?: FrontendFeature[];
   config?: ConfigApi;
