@@ -22,6 +22,7 @@ import {
   RouteRef,
   coreExtensionData,
   createExtension,
+  createExtensionBlueprint,
   createExtensionDataRef,
   createSchemaFromZod,
 } from '@backstage/frontend-plugin-api';
@@ -46,6 +47,44 @@ export const catalogExtensionData = {
     id: 'catalog.entity-filter-expression',
   }),
 };
+
+/** @alpha */
+export const EntityCardBlueprint = createExtensionBlueprint({
+  kind: 'entity-card',
+  attachTo: { id: 'entity-content:catalog/overview', input: 'cards' },
+  configSchema: createSchemaFromZod(z =>
+    z.object({
+      filter: z.string().optional(),
+    }),
+  ),
+  output: {
+    element: coreExtensionData.reactElement,
+    filterFunction: catalogExtensionData.entityFilterFunction.optional(),
+    filterExpression: catalogExtensionData.entityFilterExpression.optional(),
+  },
+  factory(
+    params: {
+      filter?:
+        | typeof catalogExtensionData.entityFilterFunction.T
+        | typeof catalogExtensionData.entityFilterExpression.T;
+      loader: () => Promise<JSX.Element>;
+    },
+    { node, config },
+  ) {
+    const ExtensionComponent = lazy(() =>
+      params.loader().then(element => ({ default: () => element })),
+    );
+
+    return {
+      element: (
+        <ExtensionBoundary node={node}>
+          <ExtensionComponent />
+        </ExtensionBoundary>
+      ),
+      ...mergeFilters({ config, options: params }),
+    };
+  },
+});
 
 // TODO: Figure out how to merge with provided config schema
 /** @alpha */
