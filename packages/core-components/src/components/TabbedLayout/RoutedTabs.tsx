@@ -79,9 +79,9 @@ export function RoutedTabs(props: { routes: SubRoute[] }) {
           id: path,
           label: title,
           tabProps: {
-            ...tabProps,
             component: Link,
             to,
+            ...tabProps,
           },
         };
       }),
