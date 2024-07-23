@@ -19,7 +19,7 @@ import { KubernetesBackendClient } from './KubernetesBackendClient';
 import { rest } from 'msw';
 import { UrlPatternDiscovery } from '@backstage/core-app-api';
 import { setupServer } from 'msw/node';
-import { MockFetchApi, setupRequestMockHandlers } from '@backstage/test-utils';
+import { MockFetchApi, registerMswTestHooks } from '@backstage/test-utils';
 import {
   CustomObjectsByEntityRequest,
   KubernetesRequestBody,
@@ -36,7 +36,7 @@ describe('KubernetesBackendClient', () => {
   };
   let mockResponse: ObjectsByEntityResponse;
   const worker = setupServer();
-  setupRequestMockHandlers(worker);
+  registerMswTestHooks(worker);
 
   const identityApi = {
     getCredentials: jest.fn(),

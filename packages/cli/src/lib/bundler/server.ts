@@ -30,7 +30,7 @@ import {
 import { paths as libPaths } from '../../lib/paths';
 import { loadCliConfig } from '../config';
 import { Lockfile } from '../versioning';
-import { createConfig, resolveBaseUrl } from './config';
+import { createConfig, resolveBaseUrl, resolveEndpoint } from './config';
 import { createDetectedModulesEntryPoint } from './packageDetection';
 import { resolveBundlingPaths, resolveOptionalBundlingPaths } from './paths';
 import { ServeOptions } from './types';
@@ -130,14 +130,11 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
   }
 
   const { frontendConfig, fullConfig } = cliConfig;
-  const url = resolveBaseUrl(frontendConfig);
-
-  const host =
-    frontendConfig.getOptionalString('app.listen.host') || url.hostname;
-  const port =
-    frontendConfig.getOptionalNumber('app.listen.port') ||
-    Number(url.port) ||
-    (url.protocol === 'https:' ? 443 : 80);
+  const url = resolveBaseUrl(frontendConfig, options.moduleFederation);
+  const { host, port } = resolveEndpoint(
+    frontendConfig,
+    options.moduleFederation,
+  );
 
   const detectedModulesEntryPoint = await createDetectedModulesEntryPoint({
     config: fullConfig,
@@ -162,6 +159,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
   const config = await createConfig(paths, {
     ...commonConfigOptions,
     additionalEntryPoints: detectedModulesEntryPoint,
+    moduleFederation: options.moduleFederation,
   });
 
   if (process.env.EXPERIMENTAL_VITE) {
@@ -232,14 +230,17 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
               directory: paths.targetPublic,
             }
           : undefined,
-        historyApiFallback: {
-          // Paths with dots should still use the history fallback.
-          // See https://github.com/facebookincubator/create-react-app/issues/387.
-          disableDotRule: true,
+        historyApiFallback:
+          options.moduleFederation?.mode === 'remote'
+            ? false
+            : {
+                // Paths with dots should still use the history fallback.
+                // See https://github.com/facebookincubator/create-react-app/issues/387.
+                disableDotRule: true,
 
-          // The index needs to be rewritten relative to the new public path, including subroutes.
-          index: `${config.output?.publicPath}index.html`,
-        },
+                // The index needs to be rewritten relative to the new public path, including subroutes.
+                index: `${config.output?.publicPath}index.html`,
+              },
         server:
           url.protocol === 'https:'
             ? {
@@ -256,7 +257,13 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
         // When the dev server is behind a proxy, the host and public hostname differ
         allowedHosts: [url.hostname],
         client: {
-          webSocketURL: 'auto://0.0.0.0:0/ws',
+          webSocketURL: { hostname: host, port },
+        },
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, OPTIONS',
+          'Access-Control-Allow-Headers':
+            'X-Requested-With, content-type, Authorization',
         },
       },
       compiler,
@@ -278,7 +285,9 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
     }
   });
 
-  openBrowser(url.href);
+  if (!options.skipOpenBrowser) {
+    openBrowser(url.href);
+  }
 
   const waitForExit = async () => {
     for (const signal of ['SIGINT', 'SIGTERM'] as const) {

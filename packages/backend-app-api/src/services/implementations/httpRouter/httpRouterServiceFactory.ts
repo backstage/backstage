@@ -15,16 +15,7 @@
  */
 
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import {
-  httpRouterServiceFactory as _httpRouterServiceFactory,
-  type HttpRouterFactoryOptions as _HttpRouterFactoryOptions,
-} from '../../../../../backend-defaults/src/entrypoints/httpRouter/httpRouterServiceFactory';
-
-/**
- * @public
- * @deprecated Please import from `@backstage/backend-defaults/httpRouter` instead.
- */
-export type HttpRouterFactoryOptions = _HttpRouterFactoryOptions;
+import { httpRouterServiceFactory as _httpRouterServiceFactory } from '../../../../../backend-defaults/src/entrypoints/httpRouter/httpRouterServiceFactory';
 
 /**
  * HTTP route registration for plugins.

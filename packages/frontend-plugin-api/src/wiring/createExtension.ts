@@ -22,7 +22,7 @@ import { ExtensionInput } from './createExtensionInput';
 
 /** @public */
 export type AnyExtensionDataMap = {
-  [name in string]: ExtensionDataRef<unknown, { optional?: true }>;
+  [name in string]: ExtensionDataRef<unknown, string, { optional?: true }>;
 };
 
 /** @public */
@@ -91,7 +91,7 @@ export interface CreateExtensionOptions<
   inputs?: TInputs;
   output: TOutput;
   configSchema?: PortableSchema<TConfig>;
-  factory(options: {
+  factory(context: {
     node: AppNode;
     config: TConfig;
     inputs: Expand<ResolvedExtensionInputs<TInputs>>;
@@ -115,7 +115,7 @@ export interface InternalExtensionDefinition<TConfig>
   readonly version: 'v1';
   readonly inputs: AnyExtensionInputMap;
   readonly output: AnyExtensionDataMap;
-  factory(options: {
+  factory(context: {
     node: AppNode;
     config: TConfig;
     inputs: ResolvedExtensionInputs<any>;

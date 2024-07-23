@@ -1,5 +1,13 @@
 # @backstage/plugin-events-node
 
+## 0.3.8
+
+### Patch Changes
+
+- b05e1e1: Service factories exported by this package have been updated to use the new service factory format that doesn't use a callback.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+
 ## 0.3.8-next.1
 
 ### Patch Changes

@@ -21,7 +21,7 @@ import {
 } from '@backstage/backend-tasks';
 import {
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
@@ -32,7 +32,7 @@ import * as mock from '../__testUtils__/mocks';
 import { GitlabDiscoveryEntityProvider } from './GitlabDiscoveryEntityProvider';
 
 const server = setupServer(...handlers);
-setupRequestMockHandlers(server);
+registerMswTestHooks(server);
 afterEach(() => jest.clearAllMocks());
 
 class PersistingTaskRunner implements TaskRunner {

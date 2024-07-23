@@ -17,12 +17,21 @@ import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
 // @alpha (undocumented)
 export const catalogExtensionData: {
-  entityContentTitle: ConfigurableExtensionDataRef<string, {}>;
+  entityContentTitle: ConfigurableExtensionDataRef<
+    'catalog.entity-content-title',
+    string,
+    {}
+  >;
   entityFilterFunction: ConfigurableExtensionDataRef<
+    'catalog.entity-filter-function',
     (entity: Entity) => boolean,
     {}
   >;
-  entityFilterExpression: ConfigurableExtensionDataRef<string, {}>;
+  entityFilterExpression: ConfigurableExtensionDataRef<
+    'catalog.entity-filter-expression',
+    string,
+    {}
+  >;
 };
 
 // @alpha (undocumented)

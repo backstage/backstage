@@ -15,7 +15,6 @@
  */
 import {
   NotificationProcessor,
-  NotificationProcessorFilters,
   NotificationSendOptions,
 } from '@backstage/plugin-notifications-node';
 import {
@@ -30,9 +29,9 @@ import {
   CatalogClient,
 } from '@backstage/catalog-client';
 import {
+  getProcessorFiltersFromConfig,
   Notification,
-  notificationSeverities,
-  NotificationSeverity,
+  NotificationProcessorFilters,
 } from '@backstage/plugin-notifications-common';
 import {
   createSendmailTransport,
@@ -86,30 +85,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       ? durationToMilliseconds(readDurationFromConfig(cacheConfig))
       : 3_600_000;
     this.frontendBaseUrl = config.getString('app.baseUrl');
-    this.filter = {};
-    const minSeverity = emailProcessorConfig.getOptionalString(
-      'filter.minSeverity',
-    ) as NotificationSeverity;
-    if (minSeverity) {
-      if (notificationSeverities.includes(minSeverity)) {
-        this.filter.minSeverity = minSeverity;
-      } else {
-        throw new Error(`Invalid minSeverity: ${minSeverity}`);
-      }
-    }
-    const maxSeverity = emailProcessorConfig.getOptionalString(
-      'filter.maxSeverity',
-    ) as NotificationSeverity;
-    if (maxSeverity) {
-      if (notificationSeverities.includes(maxSeverity)) {
-        this.filter.maxSeverity = maxSeverity;
-      } else {
-        throw new Error(`Invalid maxSeverity: ${maxSeverity}`);
-      }
-    }
-    this.filter.excludedTopics = emailProcessorConfig.getOptionalStringArray(
-      'filter.excludedTopics',
-    );
+    this.filter = getProcessorFiltersFromConfig(emailProcessorConfig);
   }
 
   private async getTransporter() {

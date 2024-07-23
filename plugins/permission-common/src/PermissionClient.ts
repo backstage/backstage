@@ -27,7 +27,6 @@ import {
   PermissionEvaluator,
   QueryPermissionRequest,
   AuthorizePermissionRequest,
-  EvaluatorRequestOptions,
   AuthorizePermissionResponse,
   QueryPermissionResponse,
 } from './types/api';
@@ -94,6 +93,15 @@ const responseSchema = <T>(
   });
 
 /**
+ * Options for {@link PermissionClient} requests.
+ *
+ * @public
+ */
+export type PermissionClientRequestOptions = {
+  token?: string;
+};
+
+/**
  * An isomorphic client for requesting authorization for Backstage permissions.
  * @public
  */
@@ -112,7 +120,7 @@ export class PermissionClient implements PermissionEvaluator {
    */
   async authorize(
     requests: AuthorizePermissionRequest[],
-    options?: EvaluatorRequestOptions,
+    options?: PermissionClientRequestOptions,
   ): Promise<AuthorizePermissionResponse[]> {
     return this.makeRequest(
       requests,
@@ -126,7 +134,7 @@ export class PermissionClient implements PermissionEvaluator {
    */
   async authorizeConditional(
     queries: QueryPermissionRequest[],
-    options?: EvaluatorRequestOptions,
+    options?: PermissionClientRequestOptions,
   ): Promise<QueryPermissionResponse[]> {
     return this.makeRequest(queries, queryPermissionResponseSchema, options);
   }

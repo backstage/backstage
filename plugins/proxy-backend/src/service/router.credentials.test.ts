@@ -20,7 +20,7 @@ import {
 } from '@backstage/backend-app-api';
 import {
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
   startTestBackend,
 } from '@backstage/backend-test-utils';
 import { ResponseError } from '@backstage/errors';
@@ -34,7 +34,7 @@ import fetch from 'node-fetch';
 
 describe('credentials', () => {
   const worker = setupServer();
-  setupRequestMockHandlers(worker);
+  registerMswTestHooks(worker);
 
   it('handles all valid credentials settings', async () => {
     const config = {

@@ -22,6 +22,7 @@ import { paths } from '../../lib/paths';
 import { buildFrontend } from './buildFrontend';
 import { buildBackend } from './buildBackend';
 import { isValidUrl } from '../../lib/urls';
+import chalk from 'chalk';
 
 export async function command(opts: OptionValues): Promise<void> {
   const role = await findRoleFromCommand(opts);
@@ -46,6 +47,21 @@ export async function command(opts: OptionValues): Promise<void> {
       configPaths,
       skipBuildDependencies: Boolean(opts.skipBuildDependencies),
       minify: Boolean(opts.minify),
+    });
+  }
+
+  // experimental
+  if ((role as string) === 'frontend-dynamic-container') {
+    console.log(
+      chalk.yellow(
+        `⚠️  WARNING: The 'frontend-dynamic-container' package role is experimental and will receive immediate breaking changes in the future.`,
+      ),
+    );
+    return buildFrontend({
+      targetDir: paths.targetDir,
+      configPaths: [],
+      writeStats: Boolean(opts.stats),
+      isModuleFederationRemote: true,
     });
   }
 

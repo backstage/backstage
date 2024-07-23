@@ -16,7 +16,7 @@
 
 import {
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { SignJWT, exportJWK, generateKeyPair } from 'jose';
@@ -89,7 +89,7 @@ describe('helpers', () => {
   const tokenFactory = new MockTokenFactory();
   const cache = mockServices.cache.mock();
   const server = setupServer();
-  setupRequestMockHandlers(server);
+  registerMswTestHooks(server);
 
   beforeEach(() => {
     jest.clearAllMocks();

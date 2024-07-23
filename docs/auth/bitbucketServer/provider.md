@@ -37,7 +37,7 @@ The Bitbucket Server provider is a structure with two configuration keys:
 ## Adding the provider to the Backstage frontend
 
 To add the provider to the frontend, add the `bitbucketServerAuthApi` reference and `SignInPage` component as shown
-in [Adding the provider to the sign-in page](../index.md#adding-the-provider-to-the-sign-in-page).
+in [Adding the provider to the sign-in page](../index.md#sign-in-configuration).
 
 ## Using Bitbucket Server for sign-in
 
