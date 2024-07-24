@@ -189,4 +189,40 @@ describe('createExtensionBlueprint', () => {
       },
     }).render();
   });
+
+  it('should not allow overlapping config keys', () => {
+    const TestExtensionBlueprint = createExtensionBlueprint({
+      kind: 'test-extension',
+      attachTo: { id: 'test', input: 'default' },
+      output: {
+        element: coreExtensionData.reactElement,
+      },
+      config: {
+        schema: {
+          text: z => z.string(),
+        },
+      },
+      factory(params: { text: string }) {
+        return {
+          element: <div>{params.text}</div>,
+        };
+      },
+    });
+
+    TestExtensionBlueprint.make({
+      name: 'my-extension',
+      params: {
+        text: 'Hello, world!',
+      },
+      config: {
+        schema: {
+          // @ts-expect-error
+          text: z => z.number(),
+          something: z => z.string(),
+        },
+      },
+    });
+
+    expect('test').toBe('test');
+  });
 });

@@ -92,6 +92,8 @@ export interface ExtensionBlueprint<
           [key in keyof TExtensionConfigSchema]: (
             zImpl: typeof z,
           ) => TExtensionConfigSchema[key];
+        } & {
+          [key in keyof TConfig]?: never;
         };
       };
     } & (
