@@ -25,7 +25,7 @@ import { TestPipeline } from '@backstage/plugin-search-backend-node';
 import { ConfigReader } from '@backstage/config';
 import { Readable } from 'stream';
 import { setupServer } from 'msw/node';
-import { rest } from 'msw';
+import { rest, RestRequest } from 'msw';
 
 const logger = mockServices.logger.mock();
 
@@ -68,9 +68,17 @@ const mockOverrideQuestion = {
   has_more: false,
 };
 
-const testSearchQuery = (request, expectedSearch) => {
-  const executedSearch = {};
-  request.url.searchParams.forEach((value, key) => {
+const testSearchQuery = (
+  request: RestRequest | undefined,
+  expectedSearch: unknown,
+) => {
+  if (!request) {
+    expect(request).not.toBeFalsy();
+    return;
+  }
+
+  const executedSearch: { [key: string]: string } = {};
+  request.url.searchParams.forEach((value: string, key: string) => {
     executedSearch[key] = value;
   });
   expect(executedSearch).toEqual(expectedSearch);
