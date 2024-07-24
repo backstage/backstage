@@ -15,7 +15,7 @@
  */
 
 import { AppNode } from '../apis';
-import { PortableSchema } from '../schema';
+import { PortableSchema, createSchemaFromZod } from '../schema';
 import { Expand } from '../types';
 import { ExtensionDataRef } from './createExtensionDataRef';
 import { ExtensionInput } from './createExtensionInput';
@@ -106,10 +106,7 @@ export interface CreateExtensionOptions<
 }
 
 /** @public */
-export interface ExtensionDefinition<
-  TConfig,
-  TConfigSchema = never /* TODO -> refactor */,
-> {
+export interface ExtensionDefinition<TConfig> {
   $$type: '@backstage/ExtensionDefinition';
   readonly kind?: string;
   readonly namespace?: string;
@@ -117,9 +114,6 @@ export interface ExtensionDefinition<
   readonly attachTo: { id: string; input: string };
   readonly disabled: boolean;
   readonly configSchema?: PortableSchema<TConfig>;
-  readonly config?: {
-    schema: TConfigSchema;
-  };
 }
 
 /** @internal */
@@ -162,6 +156,18 @@ export function createExtension<
 >(
   options: CreateExtensionOptions<TOutput, TInputs, TConfig, TConfigSchema>,
 ): ExtensionDefinition<TConfig> {
+  // TODO: resovle configSchema from either configSchema or config.schema
+  const newConfigSchema = options.config?.schema;
+  const configSchema = newConfigSchema
+    ? createSchemaFromZod(innerZ =>
+        innerZ.object(
+          Object.fromEntries(
+            Object.entries(newConfigSchema).map(([k, v]) => [k, v(innerZ)]),
+          ),
+        ),
+      )
+    : options.configSchema;
+
   return {
     $$type: '@backstage/ExtensionDefinition',
     version: 'v1',
@@ -172,8 +178,7 @@ export function createExtension<
     disabled: options.disabled ?? false,
     inputs: options.inputs ?? {},
     output: options.output,
-    configSchema: options.configSchema,
-    config: options.config,
+    configSchema,
     factory({ inputs, ...rest }) {
       // TODO: Simplify this, but TS wouldn't infer the input type for some reason
       return options.factory({
