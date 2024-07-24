@@ -33,7 +33,7 @@ export interface CreateExtensionBlueprintOptions<
   TParams,
   TInputs extends AnyExtensionInputMap,
   TOutput extends AnyExtensionDataMap,
-  TConfigSchema extends { [key in string]: z.ZodTypeAny },
+  TConfigSchema extends { [key in string]: z.ZodType },
   TDataRefs extends AnyExtensionDataMap,
 > {
   kind: string;
@@ -79,7 +79,7 @@ export interface ExtensionBlueprint<
    * You must either pass `params` directly, or define a `factory` that can
    * optionally call the original factory with the same params.
    */
-  make<TExtensionConfigSchema extends { [key in string]: z.ZodTypeAny }>(
+  make<TExtensionConfigSchema extends { [key in string]: z.ZodType }>(
     args: {
       namespace?: string;
       name?: string;
@@ -135,7 +135,7 @@ class ExtensionBlueprintImpl<
   TParams,
   TInputs extends AnyExtensionInputMap,
   TOutput extends AnyExtensionDataMap,
-  TConfigSchema extends { [key in string]: z.ZodTypeAny },
+  TConfigSchema extends { [key in string]: z.ZodType },
   TDataRefs extends AnyExtensionDataMap,
 > {
   constructor(
@@ -153,7 +153,7 @@ class ExtensionBlueprintImpl<
   dataRefs: TDataRefs;
 
   public make<
-    TExtensionConfigSchema extends { [key in string]: z.ZodTypeAny },
+    TExtensionConfigSchema extends { [key in string]: z.ZodType },
   >(args: {
     namespace?: string;
     name?: string;
@@ -202,7 +202,7 @@ class ExtensionBlueprintImpl<
   > {
     const schema = {
       ...this.options.config?.schema,
-      ...args.config,
+      ...args.config?.schema,
     } as {
       [key in keyof TConfigSchema]: (zImpl: typeof z) => TConfigSchema[key];
     } & {
@@ -266,7 +266,7 @@ export function createExtensionBlueprint<
   TParams,
   TInputs extends AnyExtensionInputMap,
   TOutput extends AnyExtensionDataMap,
-  TConfigSchema extends { [key in string]: z.ZodTypeAny },
+  TConfigSchema extends { [key in string]: z.ZodType },
   TDataRefs extends AnyExtensionDataMap = never,
 >(
   options: CreateExtensionBlueprintOptions<

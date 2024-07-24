@@ -291,4 +291,66 @@ describe('createExtension', () => {
       'ExtensionDefinition{namespace=test,attachTo=root@default}',
     );
   });
+
+  it('should create an extension with config', () => {
+    const extension = createExtension({
+      namespace: 'test',
+      attachTo: { id: 'root', input: 'default' },
+      config: {
+        schema: {
+          foo: z => z.string(),
+          bar: z => z.string().default('bar'),
+          baz: z => z.string().optional(),
+        },
+      },
+      output: {
+        foo: stringData,
+      },
+      factory({ config }) {
+        const a1: string = config.foo;
+        const a2: string = config.bar;
+        // @ts-expect-error
+        const a3: string = config.baz;
+        // @ts-expect-error
+        const c1: number = config.foo;
+        // @ts-expect-error
+        const c2: number = config.bar;
+        // @ts-expect-error
+        const c3: number = config.baz;
+        unused(a1, a2, a3, c1, c2, c3);
+
+        return {
+          foo: 'bar',
+        };
+      },
+    });
+    expect(extension.namespace).toBe('test');
+    expect(String(extension)).toBe(
+      'ExtensionDefinition{namespace=test,attachTo=root@default}',
+    );
+
+    expect(
+      extension.configSchema?.parse({
+        foo: 'x',
+        bar: 'y',
+        baz: 'z',
+        qux: 'w',
+      }),
+    ).toEqual({
+      foo: 'x',
+      bar: 'y',
+      baz: 'z',
+    });
+    expect(
+      extension.configSchema?.parse({
+        foo: 'x',
+      }),
+    ).toEqual({
+      foo: 'x',
+      bar: 'bar',
+    });
+    expect(() => extension.configSchema?.parse({})).toThrow(
+      "Missing required value at 'foo'",
+    );
+  });
 });

@@ -82,7 +82,7 @@ export interface CreateExtensionOptions<
   TOutput extends AnyExtensionDataMap,
   TInputs extends AnyExtensionInputMap,
   TConfig,
-  TConfigSchema extends { [key: string]: z.ZodTypeAny },
+  TConfigSchema extends { [key: string]: z.ZodType },
 > {
   kind?: string;
   namespace?: string;
@@ -100,7 +100,9 @@ export interface CreateExtensionOptions<
   };
   factory(context: {
     node: AppNode;
-    config: TConfig;
+    config: TConfig & {
+      [key in keyof TConfigSchema]: z.infer<TConfigSchema[key]>;
+    };
     inputs: Expand<ResolvedExtensionInputs<TInputs>>;
   }): Expand<ExtensionDataValues<TOutput>>;
 }
@@ -152,12 +154,14 @@ export function createExtension<
   TOutput extends AnyExtensionDataMap,
   TInputs extends AnyExtensionInputMap,
   TConfig,
-  TConfigSchema extends { [key: string]: z.ZodTypeAny },
+  TConfigSchema extends { [key: string]: z.ZodType },
 >(
   options: CreateExtensionOptions<TOutput, TInputs, TConfig, TConfigSchema>,
 ): ExtensionDefinition<TConfig> {
-  // TODO: resovle configSchema from either configSchema or config.schema
   const newConfigSchema = options.config?.schema;
+  if (newConfigSchema && options.configSchema) {
+    throw new Error(`Cannot provide both configSchema and config.schema`);
+  }
   const configSchema = newConfigSchema
     ? createSchemaFromZod(innerZ =>
         innerZ.object(
@@ -179,10 +183,13 @@ export function createExtension<
     inputs: options.inputs ?? {},
     output: options.output,
     configSchema,
-    factory({ inputs, ...rest }) {
+    factory({ inputs, config, ...rest }) {
       // TODO: Simplify this, but TS wouldn't infer the input type for some reason
       return options.factory({
         inputs: inputs as Expand<ResolvedExtensionInputs<TInputs>>,
+        config: config as TConfig & {
+          [key in keyof TConfigSchema]: z.infer<TConfigSchema[key]>;
+        },
         ...rest,
       });
     },
