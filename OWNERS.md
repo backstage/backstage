@@ -53,7 +53,7 @@ Team: @backstage/search-maintainers
 Scope: The Backstage Search plugin
 
 | Name                     | Organization | Team           | GitHub                                        | Discord           |
-| ------------------------ | ------------ | -------------- | ----------------------------------------------| ----------------- |
+| ------------------------ | ------------ | -------------- | --------------------------------------------- | ----------------- |
 | Emma Indal               | Spotify      | Infinite Buck$ | [emmaindal](http://github.com/emmaindal)      | emmaindal#7503    |
 | Raghunandan Balachandran | Spotify      | Infinite Buck$ | [soapraj](http://github.com/soapraj)          | raghunandanb#1114 |
 | Alex Lorenzi             | Spotify      | ProTean        | [AlexLorenzi](https://github.com/AlexLorenzi) | alexlorenzi       |
