@@ -57,7 +57,7 @@ export const transforms = (options: TransformOptions): Transforms => {
           loader: require.resolve('swc-loader'),
           options: {
             jsc: {
-              target: 'ES2022',
+              target: 'es2022',
               externalHelpers: !isBackend,
               parser: {
                 syntax: 'typescript',
@@ -85,7 +85,7 @@ export const transforms = (options: TransformOptions): Transforms => {
           loader: require.resolve('swc-loader'),
           options: {
             jsc: {
-              target: 'ES2022',
+              target: 'es2022',
               externalHelpers: !isBackend,
               parser: {
                 syntax: 'ecmascript',
