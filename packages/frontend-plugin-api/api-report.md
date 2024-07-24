@@ -1221,8 +1221,14 @@ export const IconBundleBlueprint: ExtensionBlueprint<
       {}
     >;
   },
-  {},
-  {},
+  {
+    icons: string;
+    test: string;
+  },
+  {
+    test: string;
+    icons?: string | undefined;
+  },
   {
     icons: ConfigurableExtensionDataRef<
       'core.icons',
