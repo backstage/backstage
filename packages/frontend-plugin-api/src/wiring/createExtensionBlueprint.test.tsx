@@ -20,6 +20,8 @@ import { createExtensionBlueprint } from './createExtensionBlueprint';
 import { createExtensionTester } from '@backstage/frontend-test-utils';
 import { createExtensionDataRef } from './createExtensionDataRef';
 
+function unused(..._any: any[]) {}
+
 describe('createExtensionBlueprint', () => {
   it('should allow creation of extension blueprints', () => {
     const TestExtensionBlueprint = createExtensionBlueprint({
@@ -123,5 +125,153 @@ describe('createExtensionBlueprint', () => {
     expect(TestExtensionBlueprint.dataRefs).toEqual({
       data: dataRef,
     });
+  });
+
+  it('should allow defining a config schema with additional properties in the instance', () => {
+    const TestExtensionBlueprint = createExtensionBlueprint({
+      kind: 'test-extension',
+      attachTo: { id: 'test', input: 'default' },
+      output: {
+        element: coreExtensionData.reactElement,
+      },
+      config: {
+        schema: {
+          text: z => z.string(),
+        },
+      },
+      factory(_, { config }) {
+        // @ts-expect-error
+        const b = config.something;
+
+        const a: string = config.text;
+        unused(a);
+
+        expect(config.text).toBe('Hello, world!');
+
+        return {
+          element: <h1>{config.text}</h1>,
+        };
+      },
+    });
+
+    const extension = TestExtensionBlueprint.make({
+      name: 'my-extension',
+      params: {
+        text: 'Hello, world!',
+      },
+      config: {
+        schema: {
+          something: z => z.string(),
+          defaulted: z => z.string().optional().default('default'),
+        },
+      },
+      factory(origFactory, { config }) {
+        const b: string = config.something;
+        const c: string = config.text;
+        const d: string = config.defaulted;
+
+        unused(b, c, d);
+
+        expect(config.text).toBe('Hello, world!');
+        expect(config.something).toBe('something new!');
+        expect(config.defaulted).toBe('lolz');
+        return origFactory({});
+      },
+    });
+
+    expect.assertions(4);
+
+    createExtensionTester(extension, {
+      config: {
+        something: 'something new!',
+        text: 'Hello, world!',
+        defaulted: 'lolz',
+      },
+    }).render();
+  });
+
+  it('should not allow overlapping config keys', () => {
+    const TestExtensionBlueprint = createExtensionBlueprint({
+      kind: 'test-extension',
+      attachTo: { id: 'test', input: 'default' },
+      output: {
+        element: coreExtensionData.reactElement,
+      },
+      config: {
+        schema: {
+          text: z => z.string(),
+        },
+      },
+      factory(params: { text: string }) {
+        return {
+          element: <div>{params.text}</div>,
+        };
+      },
+    });
+
+    TestExtensionBlueprint.make({
+      name: 'my-extension',
+      params: {
+        text: 'Hello, world!',
+      },
+      config: {
+        schema: {
+          // @ts-expect-error
+          text: z => z.number(),
+          something: z => z.string(),
+        },
+      },
+    });
+
+    expect('test').toBe('test');
+  });
+
+  it('should allow setting config when one was not already defined in the blueprint', () => {
+    const TestExtensionBlueprint = createExtensionBlueprint({
+      kind: 'test-extension',
+      attachTo: { id: 'test', input: 'default' },
+      output: {
+        element: coreExtensionData.reactElement,
+      },
+      factory(_, { config }) {
+        // @ts-expect-error
+        const b = config.something;
+
+        return {
+          element: <div />,
+        };
+      },
+    });
+
+    const extension = TestExtensionBlueprint.make({
+      name: 'my-extension',
+      params: {
+        text: 'Hello, world!',
+      },
+      config: {
+        schema: {
+          something: z => z.string(),
+          defaulted: z => z.string().optional().default('default'),
+        },
+      },
+      factory(origFactory, { config }) {
+        const b: string = config.something;
+
+        unused(b);
+
+        expect(config.something).toBe('something new!');
+        expect(config.defaulted).toBe('lolz');
+        return origFactory({});
+      },
+    });
+
+    expect.assertions(2);
+
+    createExtensionTester(extension, {
+      config: {
+        something: 'something new!',
+        defaulted: 'lolz',
+      },
+    }).render();
   });
 });
