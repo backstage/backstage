@@ -1,5 +1,16 @@
 # @backstage/frontend-app-api
 
+## 0.7.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.14.1
+  - @backstage/core-components@0.14.9
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/frontend-plugin-api@0.6.7
+  - @backstage/config@1.2.0
+
 ## 0.7.3
 
 ### Patch Changes

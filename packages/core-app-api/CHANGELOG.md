@@ -1,5 +1,14 @@
 # @backstage/core-app-api
 
+## 1.14.1
+
+### Patch Changes
+
+- cf675fb: The request to delete the session cookie when running the app in protected mode is now done with a plain `fetch` rather than `FetchApi`. This fixes a bug where the app would immediately try to sign-in again when removing the cookie during logout.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/config@1.2.0
+
 ## 1.14.0
 
 ### Minor Changes
