@@ -86,7 +86,6 @@ export class StackOverflowQuestionsCollatorFactory
     this.requestParams = options.requestParams ?? {
       order: 'desc',
       sort: 'activity',
-      site: 'stackoverflow',
       ...(options.requestParams ?? {}),
     };
     this.logger = options.logger.child({ documentType: this.type });
