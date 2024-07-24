@@ -12,39 +12,6 @@ import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { PortableSchema } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
-import { ZodObject } from 'zod';
-
-// Warning: (ae-missing-release-tag) "catalogAboutEntityCard" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const catalogAboutEntityCard: ExtensionDefinition<
-  {
-    filter?: string | undefined;
-  },
-  ZodObject<any, any, any, any, any>
->;
-
-// Warning: (ae-missing-release-tag) "catalogLinksEntityCard" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const catalogLinksEntityCard: ExtensionDefinition<
-  {
-    filter?: string | undefined;
-  },
-  ZodObject<any, any, any, any, any>
->;
-
-// Warning: (ae-missing-release-tag) "catalogOverviewEntityContent" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const catalogOverviewEntityContent: ExtensionDefinition<
-  {
-    title: string;
-    path: string;
-    filter?: string | undefined;
-  },
-  ZodObject<any, any, any, any, any>
->;
 
 // @alpha (undocumented)
 export const catalogTranslationRef: TranslationRef<
@@ -139,7 +106,7 @@ export function createCatalogFilterExtension<
   inputs?: TInputs;
   configSchema?: PortableSchema<TConfig>;
   loader: (options: { config: TConfig }) => Promise<JSX.Element>;
-}): ExtensionDefinition<TConfig, ZodObject<any, any, any, any, any>>;
+}): ExtensionDefinition<TConfig>;
 
 // @alpha (undocumented)
 const _default: BackstagePlugin<

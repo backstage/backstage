@@ -4,21 +4,8 @@
 
 ```ts
 import { BackstagePlugin } from '@backstage/frontend-plugin-api';
-import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
-
-// Warning: (ae-missing-release-tag) "CatalogGraphEntityCard" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const CatalogGraphEntityCard: ExtensionDefinition<
-  {
-    title: string | undefined;
-    height: number | undefined;
-  } & {
-    filter: string | undefined;
-  }
->;
 
 // @public (undocumented)
 const _default: BackstagePlugin<

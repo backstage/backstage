@@ -6,7 +6,6 @@
 import { BackstagePlugin } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
-import { ZodObject } from 'zod';
 
 // @alpha (undocumented)
 const _default: BackstagePlugin<
@@ -18,27 +17,18 @@ const _default: BackstagePlugin<
 export default _default;
 
 // @alpha (undocumented)
-export const searchApi: ExtensionDefinition<
-  {},
-  ZodObject<any, any, any, any, any>
->;
+export const searchApi: ExtensionDefinition<{}>;
 
 // @alpha (undocumented)
-export const searchNavItem: ExtensionDefinition<
-  {
-    title: string;
-  },
-  ZodObject<any, any, any, any, any>
->;
+export const searchNavItem: ExtensionDefinition<{
+  title: string;
+}>;
 
 // @alpha (undocumented)
-export const searchPage: ExtensionDefinition<
-  {
-    path: string;
-    noTrack: boolean;
-  },
-  any
->;
+export const searchPage: ExtensionDefinition<{
+  path: string;
+  noTrack: boolean;
+}>;
 
 // (No @packageDocumentation comment for this package)
 ```

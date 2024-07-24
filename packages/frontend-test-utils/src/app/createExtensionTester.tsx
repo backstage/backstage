@@ -102,11 +102,11 @@ export class ExtensionTester {
         ...output,
         path: coreExtensionData.routePath,
       },
-      factory: (params: any) => ({
+      factory: params => ({
         ...factory(params),
         path: '/',
       }),
-    } as any);
+    });
     tester.add(extension, options);
     return tester;
   }

@@ -89,7 +89,6 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { vmwareCloudAuthApiRef } from '@backstage/core-plugin-api';
 import { withApis } from '@backstage/core-plugin-api';
 import { z } from 'zod';
-import { ZodObject } from 'zod';
 import { ZodSchema } from 'zod';
 import { ZodTypeDef } from 'zod';
 
@@ -392,7 +391,7 @@ export function createApiExtension<
     configSchema?: PortableSchema<TConfig>;
     inputs?: TInputs;
   },
-): ExtensionDefinition<TConfig, ZodObject<any, any, any, any, any>>;
+): ExtensionDefinition<TConfig>;
 
 // @public (undocumented)
 export namespace createApiExtension {
@@ -488,7 +487,7 @@ export function createComponentExtension<
           inputs: Expand<ResolvedExtensionInputs<TInputs>>;
         }) => ComponentType<TProps>;
       };
-}): ExtensionDefinition<TConfig, ZodObject<any, any, any, any, any>>;
+}): ExtensionDefinition<TConfig>;
 
 // @public (undocumented)
 export namespace createComponentExtension {
@@ -512,35 +511,49 @@ export function createComponentRef<T extends {} = {}>(options: {
 export function createExtension<
   TOutput extends AnyExtensionDataMap,
   TInputs extends AnyExtensionInputMap,
-  TConfigSchema extends z.ZodObject<any, any, any, any, any>,
-  TConfig extends z.infer<TConfigSchema>,
+  TConfig,
+  TConfigSchema extends {
+    [key: string]: z.ZodType;
+  },
 >(
-  options: CreateExtensionOptions<TOutput, TInputs, TConfigSchema, TConfig>,
-): ExtensionDefinition<TConfig, TConfigSchema>;
+  options: CreateExtensionOptions<TOutput, TInputs, TConfig, TConfigSchema>,
+): ExtensionDefinition<TConfig>;
 
 // @public
 export function createExtensionBlueprint<
   TParams,
   TInputs extends AnyExtensionInputMap,
   TOutput extends AnyExtensionDataMap,
-  TConfig,
+  TConfigSchema extends {
+    [key in string]: z.ZodType;
+  },
   TDataRefs extends AnyExtensionDataMap = never,
 >(
   options: CreateExtensionBlueprintOptions<
     TParams,
     TInputs,
     TOutput,
-    TConfig,
+    TConfigSchema,
     TDataRefs
   >,
-): ExtensionBlueprint<TParams, TInputs, TOutput, TConfig, TDataRefs>;
+): ExtensionBlueprint<
+  TParams,
+  TInputs,
+  TOutput,
+  {
+    [key in keyof TConfigSchema]: z.infer<TConfigSchema[key]>;
+  },
+  TDataRefs
+>;
 
 // @public (undocumented)
 export interface CreateExtensionBlueprintOptions<
   TParams,
   TInputs extends AnyExtensionInputMap,
   TOutput extends AnyExtensionDataMap,
-  TConfig,
+  TConfigSchema extends {
+    [key in string]: z.ZodType;
+  },
   TDataRefs extends AnyExtensionDataMap,
 > {
   // (undocumented)
@@ -549,7 +562,11 @@ export interface CreateExtensionBlueprintOptions<
     input: string;
   };
   // (undocumented)
-  configSchema?: PortableSchema<TConfig>;
+  config?: {
+    schema: {
+      [key in keyof TConfigSchema]: (zImpl: typeof z) => TConfigSchema[key];
+    };
+  };
   // (undocumented)
   dataRefs?: TDataRefs;
   // (undocumented)
@@ -559,7 +576,9 @@ export interface CreateExtensionBlueprintOptions<
     params: TParams,
     context: {
       node: AppNode;
-      config: TConfig;
+      config: {
+        [key in keyof TConfigSchema]: z.infer<TConfigSchema[key]>;
+      };
       inputs: Expand<ResolvedExtensionInputs<TInputs>>;
     },
   ): Expand<ExtensionDataValues<TOutput>>;
@@ -607,8 +626,10 @@ export function createExtensionInput<
 export interface CreateExtensionOptions<
   TOutput extends AnyExtensionDataMap,
   TInputs extends AnyExtensionInputMap,
-  TConfigSchema extends z.ZodObject<any, any, any, any, any>,
-  TConfig extends z.infer<TConfigSchema>,
+  TConfig,
+  TConfigSchema extends {
+    [key: string]: z.ZodType;
+  },
 > {
   // (undocumented)
   attachTo: {
@@ -617,7 +638,9 @@ export interface CreateExtensionOptions<
   };
   // (undocumented)
   config?: {
-    schema: (context: { z: typeof z }) => TConfigSchema;
+    schema: {
+      [key in keyof TConfigSchema]: (zImpl: typeof z) => TConfigSchema[key];
+    };
   };
   // @deprecated (undocumented)
   configSchema?: PortableSchema<TConfig>;
@@ -626,7 +649,9 @@ export interface CreateExtensionOptions<
   // (undocumented)
   factory(context: {
     node: AppNode;
-    config: TConfig;
+    config: TConfig & {
+      [key in keyof TConfigSchema]: z.infer<TConfigSchema[key]>;
+    };
     inputs: Expand<ResolvedExtensionInputs<TInputs>>;
   }): Expand<ExtensionDataValues<TOutput>>;
   // (undocumented)
@@ -679,12 +704,9 @@ export function createNavItemExtension(options: {
   routeRef: RouteRef<undefined>;
   title: string;
   icon: IconComponent_2;
-}): ExtensionDefinition<
-  {
-    title: string;
-  },
-  ZodObject<any, any, any, any, any>
->;
+}): ExtensionDefinition<{
+  title: string;
+}>;
 
 // @public (undocumented)
 export namespace createNavItemExtension {
@@ -706,7 +728,7 @@ export function createNavLogoExtension(options: {
   namespace?: string;
   logoIcon: JSX.Element;
   logoFull: JSX.Element;
-}): ExtensionDefinition<any, ZodObject<any, any, any, any, any>>;
+}): ExtensionDefinition<unknown>;
 
 // @public (undocumented)
 export namespace createNavLogoExtension {
@@ -814,7 +836,7 @@ export namespace createRouterExtension {
     >;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function createSchemaFromZod<TOutput, TInput>(
   schemaCreator: (zImpl: typeof z) => ZodSchema<TOutput, ZodTypeDef, TInput>,
 ): PortableSchema<TOutput>;
@@ -861,7 +883,7 @@ export function createSubRouteRef<
 // @public (undocumented)
 export function createThemeExtension(
   theme: AppTheme,
-): ExtensionDefinition<any, ZodObject<any, any, any, any, any>>;
+): ExtensionDefinition<unknown>;
 
 // @public (undocumented)
 export namespace createThemeExtension {
@@ -877,7 +899,7 @@ export namespace createThemeExtension {
 export function createTranslationExtension(options: {
   name?: string;
   resource: TranslationResource | TranslationMessages;
-}): ExtensionDefinition<any, ZodObject<any, any, any, any, any>>;
+}): ExtensionDefinition<unknown>;
 
 // @public (undocumented)
 export namespace createTranslationExtension {
@@ -936,12 +958,18 @@ export interface ExtensionBlueprint<
   TParams,
   TInputs extends AnyExtensionInputMap,
   TOutput extends AnyExtensionDataMap,
-  TConfig,
+  TConfig extends {
+    [key in string]: unknown;
+  },
   TDataRefs extends AnyExtensionDataMap,
 > {
   // (undocumented)
   dataRefs: TDataRefs;
-  make(
+  make<
+    TExtensionConfigSchema extends {
+      [key in string]: z.ZodType;
+    },
+  >(
     args: {
       namespace?: string;
       name?: string;
@@ -952,7 +980,15 @@ export interface ExtensionBlueprint<
       disabled?: boolean;
       inputs?: TInputs;
       output?: TOutput;
-      configSchema?: PortableSchema<TConfig>;
+      config?: {
+        schema: {
+          [key in keyof TExtensionConfigSchema]: (
+            zImpl: typeof z,
+          ) => TExtensionConfigSchema[key];
+        } & {
+          [key in keyof TConfig]?: never;
+        };
+      };
     } & (
       | {
           factory(
@@ -965,7 +1001,11 @@ export interface ExtensionBlueprint<
             ) => Expand<ExtensionDataValues<TOutput>>,
             context: {
               node: AppNode;
-              config: TConfig;
+              config: {
+                [key in keyof TExtensionConfigSchema]: z.infer<
+                  TExtensionConfigSchema[key]
+                >;
+              } & TConfig;
               inputs: Expand<ResolvedExtensionInputs<TInputs>>;
             },
           ): Expand<ExtensionDataValues<TOutput>>;
@@ -974,7 +1014,13 @@ export interface ExtensionBlueprint<
           params: TParams;
         }
     ),
-  ): ExtensionDefinition<TConfig>;
+  ): ExtensionDefinition<
+    {
+      [key in keyof TExtensionConfigSchema]: z.infer<
+        TExtensionConfigSchema[key]
+      >;
+    } & TConfig
+  >;
 }
 
 // @public (undocumented)
@@ -1021,10 +1067,7 @@ export type ExtensionDataValues<TExtensionData extends AnyExtensionDataMap> = {
 };
 
 // @public (undocumented)
-export interface ExtensionDefinition<
-  TConfig,
-  TConfigSchema extends z.ZodObject<any, any, any, any, any> = any,
-> {
+export interface ExtensionDefinition<TConfig> {
   // (undocumented)
   $$type: '@backstage/ExtensionDefinition';
   // (undocumented)
@@ -1034,8 +1077,6 @@ export interface ExtensionDefinition<
   };
   // (undocumented)
   readonly configSchema?: PortableSchema<TConfig>;
-  // (undocumented)
-  readonly configSchema2?: TConfigSchema;
   // (undocumented)
   readonly disabled: boolean;
   // (undocumented)
@@ -1134,7 +1175,9 @@ export const IconBundleBlueprint: ExtensionBlueprint<
       {}
     >;
   },
-  unknown,
+  {
+    [x: string]: any;
+  },
   {
     icons: ConfigurableExtensionDataRef<
       'core.icons',

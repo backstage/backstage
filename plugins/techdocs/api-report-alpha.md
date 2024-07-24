@@ -6,7 +6,6 @@
 import { BackstagePlugin } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
-import { ZodObject } from 'zod';
 
 // @alpha (undocumented)
 const _default: BackstagePlugin<
@@ -24,16 +23,13 @@ const _default: BackstagePlugin<
 export default _default;
 
 // @alpha (undocumented)
-export const techDocsSearchResultListItemExtension: ExtensionDefinition<
-  {
-    lineClamp: number;
-    noTrack: boolean;
-    asListItem: boolean;
-    asLink: boolean;
-    title?: string | undefined;
-  },
-  ZodObject<any, any, any, any, any>
->;
+export const techDocsSearchResultListItemExtension: ExtensionDefinition<{
+  lineClamp: number;
+  noTrack: boolean;
+  asListItem: boolean;
+  asLink: boolean;
+  title?: string | undefined;
+}>;
 
 // (No @packageDocumentation comment for this package)
 ```
