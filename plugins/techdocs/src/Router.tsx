@@ -61,8 +61,10 @@ export const Router = () => {
  *
  * @public
  */
-export const EmbeddedDocsRouter = (props: PropsWithChildren<{}>) => {
-  const { children } = props;
+export const EmbeddedDocsRouter = (
+  props: PropsWithChildren<{ emptyState?: React.ReactElement }>,
+) => {
+  const { children, emptyState } = props;
   const { entity } = useEntity();
 
   // Using objects instead of <Route> elements, otherwise "outlet" will be null on sub-pages and add-ons won't render
@@ -84,7 +86,11 @@ export const EmbeddedDocsRouter = (props: PropsWithChildren<{}>) => {
     entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION];
 
   if (!projectId) {
-    return <MissingAnnotationEmptyState annotation={[TECHDOCS_ANNOTATION]} />;
+    return (
+      emptyState ?? (
+        <MissingAnnotationEmptyState annotation={[TECHDOCS_ANNOTATION]} />
+      )
+    );
   }
 
   return element;
