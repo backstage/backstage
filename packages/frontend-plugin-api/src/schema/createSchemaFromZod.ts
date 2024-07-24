@@ -25,7 +25,7 @@ import { PortableSchema } from './types';
  */
 export function createSchemaFromZod<TOutput, TInput>(
   schemaCreator: (zImpl: typeof z) => ZodSchema<TOutput, ZodTypeDef, TInput>,
-): PortableSchema<TOutput> {
+): PortableSchema<TOutput, TInput> {
   const schema = schemaCreator(z);
   return {
     // TODO: Types allow z.array etc here but it will break stuff

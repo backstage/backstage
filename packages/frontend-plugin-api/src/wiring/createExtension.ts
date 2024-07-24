@@ -82,6 +82,7 @@ export interface CreateExtensionOptions<
   TOutput extends AnyExtensionDataMap,
   TInputs extends AnyExtensionInputMap,
   TConfig,
+  TConfigInput,
   TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
 > {
   kind?: string;
@@ -92,33 +93,38 @@ export interface CreateExtensionOptions<
   inputs?: TInputs;
   output: TOutput;
   /** @deprecated - use `config.schema` instead */
-  configSchema?: PortableSchema<TConfig>;
+  configSchema?: PortableSchema<TConfig, TConfigInput>;
   config?: {
     schema: TConfigSchema;
   };
   factory(context: {
     node: AppNode;
-    config: TConfig & {
-      [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
-    };
+    config: TConfig &
+      (string extends keyof TConfigSchema
+        ? {}
+        : {
+            [key in keyof TConfigSchema]: z.infer<
+              ReturnType<TConfigSchema[key]>
+            >;
+          });
     inputs: Expand<ResolvedExtensionInputs<TInputs>>;
   }): Expand<ExtensionDataValues<TOutput>>;
 }
 
 /** @public */
-export interface ExtensionDefinition<TConfig> {
+export interface ExtensionDefinition<TConfig, TConfigInput = TConfig> {
   $$type: '@backstage/ExtensionDefinition';
   readonly kind?: string;
   readonly namespace?: string;
   readonly name?: string;
   readonly attachTo: { id: string; input: string };
   readonly disabled: boolean;
-  readonly configSchema?: PortableSchema<TConfig>;
+  readonly configSchema?: PortableSchema<TConfig, TConfigInput>;
 }
 
 /** @internal */
-export interface InternalExtensionDefinition<TConfig>
-  extends ExtensionDefinition<TConfig> {
+export interface InternalExtensionDefinition<TConfig, TConfigInput>
+  extends ExtensionDefinition<TConfig, TConfigInput> {
   readonly version: 'v1';
   readonly inputs: AnyExtensionInputMap;
   readonly output: AnyExtensionDataMap;
@@ -130,10 +136,13 @@ export interface InternalExtensionDefinition<TConfig>
 }
 
 /** @internal */
-export function toInternalExtensionDefinition<TConfig>(
-  overrides: ExtensionDefinition<TConfig>,
-): InternalExtensionDefinition<TConfig> {
-  const internal = overrides as InternalExtensionDefinition<TConfig>;
+export function toInternalExtensionDefinition<TConfig, TConfigInput>(
+  overrides: ExtensionDefinition<TConfig, TConfigInput>,
+): InternalExtensionDefinition<TConfig, TConfigInput> {
+  const internal = overrides as InternalExtensionDefinition<
+    TConfig,
+    TConfigInput
+  >;
   if (internal.$$type !== '@backstage/ExtensionDefinition') {
     throw new Error(
       `Invalid extension definition instance, bad type '${internal.$$type}'`,
@@ -152,10 +161,32 @@ export function createExtension<
   TOutput extends AnyExtensionDataMap,
   TInputs extends AnyExtensionInputMap,
   TConfig,
+  TConfigInput,
   TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
 >(
-  options: CreateExtensionOptions<TOutput, TInputs, TConfig, TConfigSchema>,
-): ExtensionDefinition<TConfig> {
+  options: CreateExtensionOptions<
+    TOutput,
+    TInputs,
+    TConfig,
+    TConfigInput,
+    TConfigSchema
+  >,
+): ExtensionDefinition<
+  TConfig &
+    (string extends keyof TConfigSchema
+      ? {}
+      : {
+          [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
+        }),
+  TConfigInput &
+    (string extends keyof TConfigSchema
+      ? {}
+      : z.input<
+          z.ZodObject<{
+            [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
+          }>
+        >)
+> {
   const newConfigSchema = options.config?.schema;
   if (newConfigSchema && options.configSchema) {
     throw new Error(`Cannot provide both configSchema and config.schema`);
@@ -205,5 +236,22 @@ export function createExtension<
       parts.push(`attachTo=${options.attachTo.id}@${options.attachTo.input}`);
       return `ExtensionDefinition{${parts.join(',')}}`;
     },
-  } as InternalExtensionDefinition<TConfig>;
+  } as InternalExtensionDefinition<
+    TConfig &
+      (string extends keyof TConfigSchema
+        ? {}
+        : {
+            [key in keyof TConfigSchema]: z.infer<
+              ReturnType<TConfigSchema[key]>
+            >;
+          }),
+    TConfigInput &
+      (string extends keyof TConfigSchema
+        ? {}
+        : z.input<
+            z.ZodObject<{
+              [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
+            }>
+          >)
+  >;
 }
