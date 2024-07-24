@@ -8,6 +8,7 @@
     "pluginPackages": [
       "@backstage/plugin-techdocs",
       "@backstage/plugin-techdocs-backend",
+      "@backstage/plugin-techdocs-common",
       "@backstage/plugin-techdocs-node",
       "@backstage/plugin-techdocs-react"
     ]
