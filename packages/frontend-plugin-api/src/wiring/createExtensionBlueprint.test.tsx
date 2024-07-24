@@ -225,4 +225,53 @@ describe('createExtensionBlueprint', () => {
 
     expect('test').toBe('test');
   });
+
+  it('should allow setting config when one was not already defined in the blueprint', () => {
+    const TestExtensionBlueprint = createExtensionBlueprint({
+      kind: 'test-extension',
+      attachTo: { id: 'test', input: 'default' },
+      output: {
+        element: coreExtensionData.reactElement,
+      },
+      factory(_, { config }) {
+        // @ts-expect-error
+        const b = config.something;
+
+        return {
+          element: <div />,
+        };
+      },
+    });
+
+    const extension = TestExtensionBlueprint.make({
+      name: 'my-extension',
+      params: {
+        text: 'Hello, world!',
+      },
+      config: {
+        schema: {
+          something: z => z.string(),
+          defaulted: z => z.string().optional().default('default'),
+        },
+      },
+      factory(origFactory, { config }) {
+        const b: string = config.something;
+
+        unused(b);
+
+        expect(config.something).toBe('something new!');
+        expect(config.defaulted).toBe('lolz');
+        return origFactory({});
+      },
+    });
+
+    expect.assertions(2);
+
+    createExtensionTester(extension, {
+      config: {
+        something: 'something new!',
+        defaulted: 'lolz',
+      },
+    }).render();
+  });
 });

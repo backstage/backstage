@@ -82,7 +82,7 @@ export interface CreateExtensionOptions<
   TOutput extends AnyExtensionDataMap,
   TInputs extends AnyExtensionInputMap,
   TConfig,
-  TConfigSchema extends { [key: string]: z.ZodType },
+  TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
 > {
   kind?: string;
   namespace?: string;
@@ -94,14 +94,12 @@ export interface CreateExtensionOptions<
   /** @deprecated - use `config.schema` instead */
   configSchema?: PortableSchema<TConfig>;
   config?: {
-    schema: {
-      [key in keyof TConfigSchema]: (zImpl: typeof z) => TConfigSchema[key];
-    };
+    schema: TConfigSchema;
   };
   factory(context: {
     node: AppNode;
     config: TConfig & {
-      [key in keyof TConfigSchema]: z.infer<TConfigSchema[key]>;
+      [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
     };
     inputs: Expand<ResolvedExtensionInputs<TInputs>>;
   }): Expand<ExtensionDataValues<TOutput>>;
@@ -154,7 +152,7 @@ export function createExtension<
   TOutput extends AnyExtensionDataMap,
   TInputs extends AnyExtensionInputMap,
   TConfig,
-  TConfigSchema extends { [key: string]: z.ZodType },
+  TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
 >(
   options: CreateExtensionOptions<TOutput, TInputs, TConfig, TConfigSchema>,
 ): ExtensionDefinition<TConfig> {
@@ -188,7 +186,7 @@ export function createExtension<
       return options.factory({
         inputs: inputs as Expand<ResolvedExtensionInputs<TInputs>>,
         config: config as TConfig & {
-          [key in keyof TConfigSchema]: z.infer<TConfigSchema[key]>;
+          [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
         },
         ...rest,
       });
