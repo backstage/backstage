@@ -186,7 +186,8 @@ export type KubernetesObjectTypes =
   | 'ingresses'
   | 'customresources'
   | 'statefulsets'
-  | 'daemonsets';
+  | 'daemonsets'
+  | 'secrets';
 // If updating this list, also make sure to update
 // `objectTypes` and `apiVersionOverrides` in config.d.ts on @backstage/plugin-kubernetes-backend!
 
