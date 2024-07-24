@@ -82,7 +82,7 @@ export interface CreateExtensionOptions<
   TOutput extends AnyExtensionDataMap,
   TInputs extends AnyExtensionInputMap,
   TConfig,
-  TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodTypeAny },
+  TConfigSchema extends { [key: string]: z.ZodTypeAny },
 > {
   kind?: string;
   namespace?: string;
@@ -94,7 +94,9 @@ export interface CreateExtensionOptions<
   /** @deprecated - use `config.schema` instead */
   configSchema?: PortableSchema<TConfig>;
   config?: {
-    schema: TConfigSchema;
+    schema: {
+      [key in keyof TConfigSchema]: (zImpl: typeof z) => TConfigSchema[key];
+    };
   };
   factory(context: {
     node: AppNode;
@@ -104,7 +106,10 @@ export interface CreateExtensionOptions<
 }
 
 /** @public */
-export interface ExtensionDefinition<TConfig, TConfigSchema = {}> {
+export interface ExtensionDefinition<
+  TConfig,
+  TConfigSchema = never /* TODO -> refactor */,
+> {
   $$type: '@backstage/ExtensionDefinition';
   readonly kind?: string;
   readonly namespace?: string;
@@ -153,7 +158,7 @@ export function createExtension<
   TOutput extends AnyExtensionDataMap,
   TInputs extends AnyExtensionInputMap,
   TConfig,
-  TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodTypeAny },
+  TConfigSchema extends { [key: string]: z.ZodTypeAny },
 >(
   options: CreateExtensionOptions<TOutput, TInputs, TConfig, TConfigSchema>,
 ): ExtensionDefinition<TConfig> {

@@ -33,7 +33,7 @@ export interface CreateExtensionBlueprintOptions<
   TParams,
   TInputs extends AnyExtensionInputMap,
   TOutput extends AnyExtensionDataMap,
-  TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodTypeAny },
+  TConfigSchema extends { [key: string]: z.ZodTypeAny },
   TDataRefs extends AnyExtensionDataMap,
 > {
   kind: string;
@@ -43,15 +43,17 @@ export interface CreateExtensionBlueprintOptions<
   inputs?: TInputs;
   output: TOutput;
   config?: {
-    schema: TConfigSchema;
+    schema: {
+      [key in keyof TConfigSchema]: (zImpl: typeof z) => TConfigSchema[key];
+    };
   };
   factory(
     params: TParams,
     context: {
       node: AppNode;
-      config: {
-        [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
-      };
+      config: Expand<{
+        [key in keyof TConfigSchema]: z.infer<TConfigSchema[key]>;
+      }>;
       inputs: Expand<ResolvedExtensionInputs<TInputs>>;
     },
   ): Expand<ExtensionDataValues<TOutput>>;
@@ -66,7 +68,7 @@ export interface ExtensionBlueprint<
   TParams,
   TInputs extends AnyExtensionInputMap,
   TOutput extends AnyExtensionDataMap,
-  TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodTypeAny },
+  TConfigSchema extends { [key: string]: z.ZodTypeAny },
   TDataRefs extends AnyExtensionDataMap,
 > {
   dataRefs: TDataRefs;
@@ -77,11 +79,7 @@ export interface ExtensionBlueprint<
    * You must either pass `params` directly, or define a `factory` that can
    * optionally call the original factory with the same params.
    */
-  make<
-    TExtensionConfigSchema extends {
-      [key: string]: (zImpl: typeof z) => z.ZodTypeAny;
-    },
-  >(
+  make<TExtensionConfigSchema extends { [key: string]: z.ZodTypeAny }>(
     args: {
       namespace?: string;
       name?: string;
@@ -90,7 +88,11 @@ export interface ExtensionBlueprint<
       inputs?: TInputs;
       output?: TOutput;
       config?: {
-        schema: TExtensionConfigSchema;
+        schema: {
+          [key in keyof TExtensionConfigSchema]: (
+            zImpl: typeof z,
+          ) => TExtensionConfigSchema[key];
+        };
       };
     } & (
       | {
@@ -98,21 +100,23 @@ export interface ExtensionBlueprint<
             originalFactory: (
               params: TParams,
               context?: {
-                config?: {
-                  [key in keyof TConfigSchema]: z.infer<
-                    ReturnType<TConfigSchema[key]>
-                  >;
-                };
+                config?: Expand<{
+                  [key in keyof TConfigSchema]: z.infer<TConfigSchema[key]>;
+                }>;
                 inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
               },
             ) => Expand<ExtensionDataValues<TOutput>>,
             context: {
               node: AppNode;
-              config: {
-                [key in keyof TExtensionConfigSchema]: z.infer<
-                  ReturnType<TExtensionConfigSchema[key]>
-                >;
-              };
+              config: Expand<
+                {
+                  [key in keyof TExtensionConfigSchema]: z.infer<
+                    TExtensionConfigSchema[key]
+                  >;
+                } & {
+                  [key in keyof TConfigSchema]: z.infer<TConfigSchema[key]>;
+                }
+              >;
               inputs: Expand<ResolvedExtensionInputs<TInputs>>;
             },
           ): Expand<ExtensionDataValues<TOutput>>;
@@ -124,7 +128,7 @@ export interface ExtensionBlueprint<
   ): ExtensionDefinition<
     {
       [key in keyof TExtensionConfigSchema]: z.infer<
-        ReturnType<TExtensionConfigSchema[key]>
+        TExtensionConfigSchema[key]
       >;
     },
     TExtensionConfigSchema
@@ -138,7 +142,7 @@ class ExtensionBlueprintImpl<
   TParams,
   TInputs extends AnyExtensionInputMap,
   TOutput extends AnyExtensionDataMap,
-  TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodTypeAny },
+  TConfigSchema extends { [key: string]: z.ZodTypeAny },
   TDataRefs extends AnyExtensionDataMap,
 > {
   constructor(
@@ -156,7 +160,7 @@ class ExtensionBlueprintImpl<
   dataRefs: TDataRefs;
 
   public make<
-    TExtensionConfigSchema extends TConfigSchema = TConfigSchema,
+    TExtensionConfigSchema extends { [key: string]: z.ZodTypeAny },
   >(args: {
     namespace?: string;
     name?: string;
@@ -166,37 +170,45 @@ class ExtensionBlueprintImpl<
     output?: TOutput;
     params?: TParams;
     config?: {
-      schema: TConfigSchema;
+      schema: {
+        [key in keyof TConfigSchema]: (zImpl: typeof z) => TConfigSchema[key];
+      };
     };
     factory?(
       originalFactory: (
         params: TParams,
         context?: {
-          config?: {
-            [key in keyof TConfigSchema]: z.infer<
-              ReturnType<TConfigSchema[key]>
-            >;
-          };
+          config?: Expand<{
+            [key in keyof TConfigSchema]: z.infer<TConfigSchema[key]>;
+          }>;
           inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
         },
       ) => Expand<ExtensionDataValues<TOutput>>,
       context: {
         node: AppNode;
-        config: {
-          [key in keyof TExtensionConfigSchema]: z.infer<
-            ReturnType<TExtensionConfigSchema[key]>
-          >;
-        };
+        config: Expand<
+          {
+            [key in keyof TExtensionConfigSchema]: z.infer<
+              TExtensionConfigSchema[key]
+            >;
+          } & {
+            [key in keyof TConfigSchema]: z.infer<TConfigSchema[key]>;
+          }
+        >;
         inputs: Expand<ResolvedExtensionInputs<TInputs>>;
       },
     ): Expand<ExtensionDataValues<TOutput>>;
   }): ExtensionDefinition<
-    {
-      [key in keyof TExtensionConfigSchema]: z.infer<
-        ReturnType<TExtensionConfigSchema[key]>
-      >;
-    },
-    TExtensionConfigSchema
+    Expand<
+      {
+        [key in keyof TExtensionConfigSchema]: z.infer<
+          TExtensionConfigSchema[key]
+        >;
+      } & {
+        [key in keyof TConfigSchema]: z.infer<TConfigSchema[key]>;
+      }
+    >,
+    Expand<TConfigSchema & TExtensionConfigSchema>
   > {
     return createExtension({
       kind: this.options.kind,
@@ -206,18 +218,31 @@ class ExtensionBlueprintImpl<
       disabled: args.disabled ?? this.options.disabled,
       inputs: args.inputs ?? this.options.inputs,
       output: args.output ?? this.options.output,
-      config: args.config,
+      config: {
+        schema: {
+          ...this.options.config?.schema,
+          ...args.config,
+        } as Expand<
+          {
+            [key in keyof TConfigSchema]: (
+              zImpl: typeof z,
+            ) => TConfigSchema[key];
+          } & {
+            [key in keyof TExtensionConfigSchema]: (
+              zImpl: typeof z,
+            ) => TExtensionConfigSchema[key];
+          }
+        >,
+      },
       factory: ({ node, config, inputs }) => {
         if (args.factory) {
           return args.factory(
             (
               innerParams: TParams,
               innerContext?: {
-                config?: {
-                  [key in keyof TConfigSchema]: z.infer<
-                    ReturnType<TConfigSchema[key]>
-                  >;
-                };
+                config?: Expand<{
+                  [key in keyof TConfigSchema]: z.infer<TConfigSchema[key]>;
+                }>;
                 inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
               },
             ) =>
@@ -255,7 +280,7 @@ export function createExtensionBlueprint<
   TParams,
   TInputs extends AnyExtensionInputMap,
   TOutput extends AnyExtensionDataMap,
-  TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodTypeAny },
+  TConfigSchema extends { [key: string]: z.ZodTypeAny },
   TDataRefs extends AnyExtensionDataMap = never,
 >(
   options: CreateExtensionBlueprintOptions<
@@ -266,5 +291,5 @@ export function createExtensionBlueprint<
     TDataRefs
   >,
 ): ExtensionBlueprint<TParams, TInputs, TOutput, TConfigSchema, TDataRefs> {
-  return new ExtensionBlueprintImpl(options);
+  return new ExtensionBlueprintImpl(options) as any;
 }
