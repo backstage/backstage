@@ -28,6 +28,12 @@ export const IconBundleBlueprint = createExtensionBlueprint({
   output: {
     icons: iconsDataRef,
   },
+  config: {
+    schema: {
+      icons: z => z.string().default('blob'),
+      test: z => z.string(),
+    },
+  },
   factory: (params: { icons: { [key in string]: IconComponent } }) => params,
   dataRefs: {
     icons: iconsDataRef,

@@ -26,7 +26,7 @@ import {
 /** @alpha */
 export function createCatalogFilterExtension<
   TInputs extends AnyExtensionInputMap,
-  TConfig = never,
+  TConfig,
 >(options: {
   namespace?: string;
   name?: string;

@@ -67,6 +67,7 @@ export interface ExtensionBlueprint<
   TInputs extends AnyExtensionInputMap,
   TOutput extends AnyExtensionDataMap,
   TConfig extends { [key in string]: unknown },
+  TConfigInput extends { [key in string]: unknown },
   TDataRefs extends AnyExtensionDataMap,
 > {
   dataRefs: TDataRefs;
@@ -125,7 +126,15 @@ export interface ExtensionBlueprint<
       [key in keyof TExtensionConfigSchema]: z.infer<
         ReturnType<TExtensionConfigSchema[key]>
       >;
-    } & TConfig
+    } & TConfig,
+    z.input<
+      z.ZodObject<{
+        [key in keyof TExtensionConfigSchema]: ReturnType<
+          TExtensionConfigSchema[key]
+        >;
+      }>
+    > &
+      TConfigInput
   >;
 }
 
@@ -199,7 +208,18 @@ class ExtensionBlueprintImpl<
       >;
     } & {
       [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
-    }
+    },
+    z.input<
+      z.ZodObject<
+        {
+          [key in keyof TExtensionConfigSchema]: ReturnType<
+            TExtensionConfigSchema[key]
+          >;
+        } & {
+          [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
+        }
+      >
+    >
   > {
     const schema = {
       ...this.options.config?.schema,
@@ -279,6 +299,13 @@ export function createExtensionBlueprint<
   string extends keyof TConfigSchema
     ? {}
     : { [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>> },
+  string extends keyof TConfigSchema
+    ? {}
+    : z.input<
+        z.ZodObject<{
+          [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
+        }>
+      >,
   TDataRefs
 > {
   return new ExtensionBlueprintImpl(options) as ExtensionBlueprint<
@@ -290,6 +317,13 @@ export function createExtensionBlueprint<
       : {
           [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
         },
+    string extends keyof TConfigSchema
+      ? {}
+      : z.input<
+          z.ZodObject<{
+            [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
+          }>
+        >,
     TDataRefs
   >;
 }

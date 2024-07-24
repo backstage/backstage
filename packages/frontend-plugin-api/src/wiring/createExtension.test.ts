@@ -334,6 +334,7 @@ describe('createExtension', () => {
         foo: 'x',
         bar: 'y',
         baz: 'z',
+        // @ts-expect-error
         qux: 'w',
       }),
     ).toEqual({
@@ -349,8 +350,9 @@ describe('createExtension', () => {
       foo: 'x',
       bar: 'bar',
     });
-    expect(() => extension.configSchema?.parse({})).toThrow(
-      "Missing required value at 'foo'",
-    );
+    expect(() => {
+      // @ts-expect-error
+      return extension.configSchema?.parse({});
+    }).toThrow("Missing required value at 'foo'");
   });
 });
