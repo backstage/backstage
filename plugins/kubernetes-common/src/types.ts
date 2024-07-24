@@ -28,6 +28,7 @@ import {
   V1Pod,
   V1ReplicaSet,
   V1ResourceQuota,
+  V1Secret,
   V1Service,
   V1StatefulSet,
 } from '@kubernetes/client-node';
@@ -139,7 +140,8 @@ export type FetchResponse =
   | CustomResourceFetchResponse
   | StatefulSetsFetchResponse
   | DaemonSetsFetchResponse
-  | PodStatusFetchResponse;
+  | PodStatusFetchResponse
+  | SecretFetchResponse;
 
 /** @public */
 export interface PodFetchResponse {
@@ -229,6 +231,12 @@ export interface DaemonSetsFetchResponse {
 export interface PodStatusFetchResponse {
   type: 'podstatus';
   resources: Array<PodStatus>;
+}
+
+/** @public */
+export interface SecretFetchResponse {
+  type: 'secrets';
+  resources: Array<V1Secret>;
 }
 
 /** @public */
