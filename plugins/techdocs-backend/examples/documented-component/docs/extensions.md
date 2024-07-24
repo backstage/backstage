@@ -23,20 +23,20 @@ And they end up looking like this:
 
 <!-- prettier-ignore -->
 !!! warn
-Defining admonitions can be addicting.
+    Defining admonitions can be addicting.
 
 <!-- prettier-ignore -->
 !!! note
-You can learn a lot about TechDocs by just visiting the Backstage web site at
-https://backstage.io/docs.
+    You can learn a lot about TechDocs by just visiting the Backstage web site at
+    https://backstage.io/docs.
 
 <!-- prettier-ignore -->
 !!! info
-TechDocs is the core feature that supports documentation as code in Backstage.
+    TechDocs is the core feature that supports documentation as code in Backstage.
 
 <!-- prettier-ignore -->
 !!! tip
-Don't forget to spell check your documentation.
+    Don't forget to spell check your documentation.
 
 ## PlantUML
 
@@ -59,16 +59,16 @@ Pymdownx (Python Markdown extensions) are a variety of smaller additions.
 
 <!-- prettier-ignore -->
 ??? note "What is the answer to life, the universe, and everything? (click me for the answer)"
-The answer is 42.
+    The answer is 42.
 
 <!-- prettier-ignore -->
 ??? note "What is 4 plus 4?"
-The answer is 8.
+    The answer is 8.
 
 <!-- prettier-ignore -->
 ???+ note "How do I get support?"
-You can get support by opening an issue in this repository. This detail is open by default
-so it's more easily visible without requiring the user to click to open it.
+    You can get support by opening an issue in this repository. This detail is open by default
+    so it's more easily visible without requiring the user to click to open it.
 
 ### Task Lists
 
