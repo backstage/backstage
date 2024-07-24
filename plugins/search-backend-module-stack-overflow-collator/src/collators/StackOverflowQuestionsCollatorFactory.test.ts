@@ -68,27 +68,36 @@ const mockOverrideQuestion = {
   has_more: false,
 };
 
-describe('StackOverflowQuestionsCollatorFactory', () => {
+const testSearchQuery = (request, expectedSearch) => {
+  const executedSearch = {};
+  request.url.searchParams.forEach((value, key) => {
+    executedSearch[key] = value;
+  });
+  expect(executedSearch).toEqual(expectedSearch);
+};
+
+describe('StackOverflowQuestionsCollatorFactory using custom request params', () => {
   const config = new ConfigReader({
     stackoverflow: {
       baseUrl: 'http://stack.overflow.local',
     },
   });
 
-  const defaultOptions: StackOverflowQuestionsCollatorFactoryOptions = {
-    logger,
-    requestParams: {
-      tagged: ['developer-portal'],
-      pagesize: 100,
-      order: 'desc',
-      sort: 'activity',
-    },
-  };
+  const optionsWithCustomRequestParams: StackOverflowQuestionsCollatorFactoryOptions =
+    {
+      logger,
+      requestParams: {
+        tagged: ['developer-portal'],
+        pagesize: 100,
+        order: 'desc',
+        sort: 'activity',
+      },
+    };
 
   it('has expected type', () => {
     const factory = StackOverflowQuestionsCollatorFactory.fromConfig(
       config,
-      defaultOptions,
+      optionsWithCustomRequestParams,
     );
     expect(factory.type).toBe('stack-overflow');
   });
@@ -100,89 +109,300 @@ describe('StackOverflowQuestionsCollatorFactory', () => {
     it('returns a readable stream', async () => {
       const factory = StackOverflowQuestionsCollatorFactory.fromConfig(
         config,
-        defaultOptions,
+        optionsWithCustomRequestParams,
       );
       const collator = await factory.getCollator();
       expect(collator).toBeInstanceOf(Readable);
     });
 
     it('fetches from the configured endpoint', async () => {
+      let request;
       worker.use(
-        rest.get('http://stack.overflow.local/questions', (_, res, ctx) =>
-          res(ctx.status(200), ctx.json(mockQuestion)),
-        ),
+        rest.get('http://stack.overflow.local/questions', (req, res, ctx) => {
+          request = req;
+
+          return res(ctx.status(200), ctx.json(mockQuestion));
+        }),
       );
       const factory = StackOverflowQuestionsCollatorFactory.fromConfig(
         config,
-        defaultOptions,
+        optionsWithCustomRequestParams,
       );
       const collator = await factory.getCollator();
       const pipeline = TestPipeline.fromCollator(collator);
       const { documents } = await pipeline.execute();
 
+      const expectedSearch = {
+        order: 'desc',
+        sort: 'activity',
+        tagged: 'developer-portal',
+        page: '1',
+        pagesize: '100',
+      };
+      testSearchQuery(request, expectedSearch);
       expect(documents).toHaveLength(mockQuestion.items.length);
     });
 
     it('fetches from the overridden endpoint', async () => {
+      let request;
       worker.use(
-        rest.get('http://stack.overflow.override/questions', (_, res, ctx) =>
-          res(ctx.status(200), ctx.json(mockOverrideQuestion)),
+        rest.get(
+          'http://stack.overflow.override/questions',
+          (req, res, ctx) => {
+            request = req;
+            return res(ctx.status(200), ctx.json(mockOverrideQuestion));
+          },
         ),
       );
       const factory = StackOverflowQuestionsCollatorFactory.fromConfig(config, {
         logger,
         baseUrl: 'http://stack.overflow.override',
-        requestParams: defaultOptions.requestParams,
+        requestParams: optionsWithCustomRequestParams.requestParams,
       });
       const collator = await factory.getCollator();
 
       const pipeline = TestPipeline.fromCollator(collator);
       const { documents } = await pipeline.execute();
 
+      const expectedSearch = {
+        order: 'desc',
+        sort: 'activity',
+        tagged: 'developer-portal',
+        page: '1',
+        pagesize: '100',
+      };
+      testSearchQuery(request, expectedSearch);
       expect(documents).toHaveLength(mockOverrideQuestion.items.length);
     });
 
     it('uses API key when provided', async () => {
+      let request;
       worker.use(
-        rest.get('http://stack.overflow.override/questions', (req, res, ctx) =>
-          req.url.searchParams.get('key') === 'abcdefg'
-            ? res(ctx.status(200), ctx.json(mockOverrideQuestion))
-            : res(ctx.status(401), ctx.json({})),
+        rest.get(
+          'http://stack.overflow.override/questions',
+          (req, res, ctx) => {
+            request = req;
+            return req.url.searchParams.get('key') === 'abcdefg'
+              ? res(ctx.status(200), ctx.json(mockOverrideQuestion))
+              : res(ctx.status(401), ctx.json({}));
+          },
         ),
       );
       const factory = StackOverflowQuestionsCollatorFactory.fromConfig(config, {
         logger,
         baseUrl: 'http://stack.overflow.override',
         apiKey: 'abcdefg',
-        requestParams: defaultOptions.requestParams,
+        requestParams: optionsWithCustomRequestParams.requestParams,
       });
       const collator = await factory.getCollator();
 
       const pipeline = TestPipeline.fromCollator(collator);
       const { documents } = await pipeline.execute();
 
+      const expectedSearch = {
+        key: 'abcdefg',
+        order: 'desc',
+        sort: 'activity',
+        tagged: 'developer-portal',
+        page: '1',
+        pagesize: '100',
+      };
+      testSearchQuery(request, expectedSearch);
       expect(documents).toHaveLength(mockOverrideQuestion.items.length);
     });
 
     it('uses teamName when provided', async () => {
+      let request;
       worker.use(
-        rest.get('http://stack.overflow.override/questions', (req, res, ctx) =>
-          req.url.searchParams.get('team') === 'abcdefg'
-            ? res(ctx.status(200), ctx.json(mockOverrideQuestion))
-            : res(ctx.status(401), ctx.json({})),
+        rest.get(
+          'http://stack.overflow.override/questions',
+          (req, res, ctx) => {
+            request = req;
+            return req.url.searchParams.get('team') === 'abcdefg'
+              ? res(ctx.status(200), ctx.json(mockOverrideQuestion))
+              : res(ctx.status(401), ctx.json({}));
+          },
         ),
       );
       const factory = StackOverflowQuestionsCollatorFactory.fromConfig(config, {
         logger,
         baseUrl: 'http://stack.overflow.override',
         teamName: 'abcdefg',
-        requestParams: defaultOptions.requestParams,
+        requestParams: optionsWithCustomRequestParams.requestParams,
       });
       const collator = await factory.getCollator();
 
       const pipeline = TestPipeline.fromCollator(collator);
       const { documents } = await pipeline.execute();
 
+      const expectedSearch = {
+        team: 'abcdefg',
+        order: 'desc',
+        sort: 'activity',
+        tagged: 'developer-portal',
+        page: '1',
+        pagesize: '100',
+      };
+      testSearchQuery(request, expectedSearch);
+      expect(documents).toHaveLength(mockOverrideQuestion.items.length);
+    });
+  });
+});
+
+describe('StackOverflowQuestionsCollatorFactory using default request params', () => {
+  const config = new ConfigReader({
+    stackoverflow: {
+      baseUrl: 'http://stack.overflow.local',
+    },
+  });
+
+  const optionsWithCustomRequestParams: StackOverflowQuestionsCollatorFactoryOptions =
+    {
+      logger,
+    };
+
+  it('has expected type', () => {
+    const factory = StackOverflowQuestionsCollatorFactory.fromConfig(
+      config,
+      optionsWithCustomRequestParams,
+    );
+    expect(factory.type).toBe('stack-overflow');
+  });
+
+  describe('getCollator', () => {
+    const worker = setupServer();
+    registerMswTestHooks(worker);
+
+    it('returns a readable stream', async () => {
+      const factory = StackOverflowQuestionsCollatorFactory.fromConfig(
+        config,
+        optionsWithCustomRequestParams,
+      );
+      const collator = await factory.getCollator();
+      expect(collator).toBeInstanceOf(Readable);
+    });
+
+    it('fetches from the configured endpoint', async () => {
+      let request;
+      worker.use(
+        rest.get('http://stack.overflow.local/questions', (req, res, ctx) => {
+          request = req;
+
+          return res(ctx.status(200), ctx.json(mockQuestion));
+        }),
+      );
+      const factory = StackOverflowQuestionsCollatorFactory.fromConfig(
+        config,
+        optionsWithCustomRequestParams,
+      );
+      const collator = await factory.getCollator();
+      const pipeline = TestPipeline.fromCollator(collator);
+      const { documents } = await pipeline.execute();
+
+      const expectedSearch = {
+        order: 'desc',
+        sort: 'activity',
+        page: '1',
+      };
+      testSearchQuery(request, expectedSearch);
+      expect(documents).toHaveLength(mockQuestion.items.length);
+    });
+
+    it('fetches from the overridden endpoint', async () => {
+      let request;
+      worker.use(
+        rest.get(
+          'http://stack.overflow.override/questions',
+          (req, res, ctx) => {
+            request = req;
+            return res(ctx.status(200), ctx.json(mockOverrideQuestion));
+          },
+        ),
+      );
+      const factory = StackOverflowQuestionsCollatorFactory.fromConfig(config, {
+        logger,
+        baseUrl: 'http://stack.overflow.override',
+        requestParams: optionsWithCustomRequestParams.requestParams,
+      });
+      const collator = await factory.getCollator();
+
+      const pipeline = TestPipeline.fromCollator(collator);
+      const { documents } = await pipeline.execute();
+
+      const expectedSearch = {
+        order: 'desc',
+        sort: 'activity',
+        page: '1',
+      };
+      testSearchQuery(request, expectedSearch);
+      expect(documents).toHaveLength(mockOverrideQuestion.items.length);
+    });
+
+    it('uses API key when provided', async () => {
+      let request;
+      worker.use(
+        rest.get(
+          'http://stack.overflow.override/questions',
+          (req, res, ctx) => {
+            request = req;
+            return req.url.searchParams.get('key') === 'abcdefg'
+              ? res(ctx.status(200), ctx.json(mockOverrideQuestion))
+              : res(ctx.status(401), ctx.json({}));
+          },
+        ),
+      );
+      const factory = StackOverflowQuestionsCollatorFactory.fromConfig(config, {
+        logger,
+        baseUrl: 'http://stack.overflow.override',
+        apiKey: 'abcdefg',
+        requestParams: optionsWithCustomRequestParams.requestParams,
+      });
+      const collator = await factory.getCollator();
+
+      const pipeline = TestPipeline.fromCollator(collator);
+      const { documents } = await pipeline.execute();
+
+      const expectedSearch = {
+        key: 'abcdefg',
+        order: 'desc',
+        sort: 'activity',
+        page: '1',
+      };
+      testSearchQuery(request, expectedSearch);
+      expect(documents).toHaveLength(mockOverrideQuestion.items.length);
+    });
+
+    it('uses teamName when provided', async () => {
+      let request;
+      worker.use(
+        rest.get(
+          'http://stack.overflow.override/questions',
+          (req, res, ctx) => {
+            request = req;
+            return req.url.searchParams.get('team') === 'abcdefg'
+              ? res(ctx.status(200), ctx.json(mockOverrideQuestion))
+              : res(ctx.status(401), ctx.json({}));
+          },
+        ),
+      );
+      const factory = StackOverflowQuestionsCollatorFactory.fromConfig(config, {
+        logger,
+        baseUrl: 'http://stack.overflow.override',
+        teamName: 'abcdefg',
+        requestParams: optionsWithCustomRequestParams.requestParams,
+      });
+      const collator = await factory.getCollator();
+
+      const pipeline = TestPipeline.fromCollator(collator);
+      const { documents } = await pipeline.execute();
+
+      const expectedSearch = {
+        team: 'abcdefg',
+        order: 'desc',
+        sort: 'activity',
+        page: '1',
+      };
+      testSearchQuery(request, expectedSearch);
       expect(documents).toHaveLength(mockOverrideQuestion.items.length);
     });
   });

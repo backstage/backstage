@@ -83,7 +83,7 @@ export class StackOverflowQuestionsCollatorFactory
     this.maxPage = options.maxPage;
     // Sets the same default request parameters as the official API documentation
     // See https://api.stackexchange.com/docs/questions
-    this.requestParams = options.requestParams ?? {
+    this.requestParams = {
       order: 'desc',
       sort: 'activity',
       ...(options.requestParams ?? {}),
