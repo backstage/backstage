@@ -15,6 +15,12 @@
  */
 
 /** @public */
+export type ExtensionDataValue<TData, TId extends string> = {
+  id: TId;
+  value: TData;
+};
+
+/** @public */
 export type ExtensionDataRef<
   TData,
   TId extends string = string,
@@ -37,6 +43,7 @@ export interface ConfigurableExtensionDataRef<
     TData,
     TData & { optional: true }
   >;
+  (t: TData): ExtensionDataValue<TData, TId>;
 }
 
 /**

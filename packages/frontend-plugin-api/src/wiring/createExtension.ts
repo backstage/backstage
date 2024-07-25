@@ -17,17 +17,25 @@
 import { AppNode } from '../apis';
 import { PortableSchema, createSchemaFromZod } from '../schema';
 import { Expand } from '../types';
-import { ExtensionDataRef } from './createExtensionDataRef';
+import { ExtensionDataRef, ExtensionDataValue } from './createExtensionDataRef';
 import { ExtensionInput } from './createExtensionInput';
 import { z } from 'zod';
+
 /** @public */
 export type AnyExtensionDataMap = {
   [name in string]: ExtensionDataRef<unknown, string, { optional?: true }>;
 };
 
+export type AnyExtensionDataRef = ExtensionDataRef<
+  unknown,
+  string,
+  { optional?: true }
+>;
+
 /** @public */
 export type AnyExtensionInputMap = {
   [inputName in string]: ExtensionInput<
+    ExtensionDataRef<unknown, string, { optional?: true }>,
     AnyExtensionDataMap,
     { optional: boolean; singleton: boolean }
   >;
@@ -51,22 +59,41 @@ export type ExtensionDataValues<TExtensionData extends AnyExtensionDataMap> = {
     : never]?: TExtensionData[DataName]['T'];
 };
 
+/** @public */
+export type ExtensionDataContainer<UExtensionData extends AnyExtensionDataRef> =
+  {
+    get<TId extends UExtensionData['id']>(
+      ref: ExtensionDataRef<any, TId, any>,
+    ): UExtensionData extends ExtensionDataRef<infer IData, TId, infer IConfig>
+      ? IConfig['optional'] extends true
+        ? IData | undefined
+        : IData
+      : never;
+  };
+
 /**
  * Convert a single extension input into a matching resolved input.
  * @public
  */
-export type ResolvedExtensionInput<TExtensionData extends AnyExtensionDataMap> =
-  {
-    node: AppNode;
-    output: ExtensionDataValues<TExtensionData>;
-  };
+export type ResolvedExtensionInput<
+  TExtensionData extends AnyExtensionDataMap | AnyExtensionDataRef,
+> = TExtensionData extends AnyExtensionDataRef
+  ? {
+      node: AppNode;
+    } & ExtensionDataContainer<TExtensionData>
+  : TExtensionData extends AnyExtensionDataMap
+  ? {
+      node: AppNode;
+      output: ExtensionDataValues<TExtensionData>;
+    }
+  : never;
 
 /**
  * Converts an extension input map into a matching collection of resolved inputs.
  * @public
  */
 export type ResolvedExtensionInputs<
-  TInputs extends { [name in string]: ExtensionInput<any, any> },
+  TInputs extends { [name in string]: ExtensionInput<any, any, any> },
 > = {
   [InputName in keyof TInputs]: false extends TInputs[InputName]['config']['singleton']
     ? Array<Expand<ResolvedExtensionInput<TInputs[InputName]['extensionData']>>>
@@ -77,8 +104,11 @@ export type ResolvedExtensionInputs<
       >;
 };
 
-/** @public */
-export interface CreateExtensionOptions<
+/**
+ * @public
+ * @deprecated This way of structuring the options is deprecated, this type will be removed in the future
+ */
+export interface LegacyCreateExtensionOptions<
   TOutput extends AnyExtensionDataMap,
   TInputs extends AnyExtensionInputMap,
   TConfig,
@@ -109,6 +139,44 @@ export interface CreateExtensionOptions<
           });
     inputs: Expand<ResolvedExtensionInputs<TInputs>>;
   }): Expand<ExtensionDataValues<TOutput>>;
+}
+
+/** @public */
+export interface CreateExtensionOptions<
+  UOutput extends AnyExtensionDataRef,
+  TInputs extends AnyExtensionInputMap,
+  TConfig,
+  TConfigInput,
+  TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
+> {
+  kind?: string;
+  namespace?: string;
+  name?: string;
+  attachTo: { id: string; input: string };
+  disabled?: boolean;
+  inputs?: TInputs;
+  output: Array<UOutput>;
+  /** @deprecated - use `config.schema` instead */
+  configSchema?: PortableSchema<TConfig, TConfigInput>;
+  config?: {
+    schema: TConfigSchema;
+  };
+  factory(context: {
+    node: AppNode;
+    config: TConfig &
+      (string extends keyof TConfigSchema
+        ? {}
+        : {
+            [key in keyof TConfigSchema]: z.infer<
+              ReturnType<TConfigSchema[key]>
+            >;
+          });
+    inputs: Expand<ResolvedExtensionInputs<TInputs>>;
+  }): Iterable<
+    UOutput extends ExtensionDataRef<infer IData, infer IId, infer _IConfig>
+      ? ExtensionDataValue<IData, IId>
+      : never
+  >;
 }
 
 /** @public */
@@ -156,19 +224,22 @@ export function toInternalExtensionDefinition<TConfig, TConfigInput>(
   return internal;
 }
 
-/**
- * @public
- * @deprecated - use the array format of `output` instead, see TODO-doc-link
- */
+/** @public */
 export function createExtension<
-  TOutput extends AnyExtensionDataMap,
-  TInputs extends AnyExtensionInputMap,
+  UOutput extends AnyExtensionDataRef,
+  TInputs extends {
+    [inputName in string]: ExtensionInput<
+      AnyExtensionDataRef,
+      never,
+      { optional: boolean; singleton: boolean }
+    >;
+  },
   TConfig,
   TConfigInput,
   TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
 >(
   options: CreateExtensionOptions<
-    TOutput,
+    UOutput,
     TInputs,
     TConfig,
     TConfigInput,
@@ -190,15 +261,19 @@ export function createExtension<
           }>
         >)
 >;
+/**
+ * @public
+ * @deprecated - use the array format of `output` instead, see TODO-doc-link
+ */
 export function createExtension<
-  UOutput extends ExtensionDataRef<unknown, string, { optional?: true }>,
+  TOutput extends AnyExtensionDataMap,
   TInputs extends AnyExtensionInputMap,
   TConfig,
   TConfigInput,
   TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
 >(
-  options: CreateExtensionOptions<
-    UOutput,
+  options: LegacyCreateExtensionOptions<
+    TOutput,
     TInputs,
     TConfig,
     TConfigInput,

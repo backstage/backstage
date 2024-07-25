@@ -15,10 +15,12 @@
  */
 
 import { AnyExtensionDataMap } from './createExtension';
+import { ExtensionDataRef } from './createExtensionDataRef';
 
 /** @public */
 export interface ExtensionInput<
-  TExtensionData extends AnyExtensionDataMap,
+  TExtensionData extends ExtensionDataRef<unknown, string, { optional?: true }>,
+  TExtensionDataMap extends AnyExtensionDataMap,
   TConfig extends { singleton: boolean; optional: boolean },
 > {
   $$type: '@backstage/ExtensionInput';
@@ -37,6 +39,7 @@ export function createExtensionInput<
   extensionData: TExtensionData,
   config?: TConfig,
 ): ExtensionInput<
+  never,
   TExtensionData,
   {
     singleton: TConfig['singleton'] extends true ? true : false;
@@ -45,13 +48,14 @@ export function createExtensionInput<
 >;
 /** @public */
 export function createExtensionInput<
-  TExtensionData extends AnyExtensionDataMap,
+  UExtensionData extends ExtensionDataRef<unknown, string, { optional?: true }>,
   TConfig extends { singleton?: boolean; optional?: boolean },
 >(
-  extensionData: TExtensionData,
+  extensionData: Array<UExtensionData>,
   config?: TConfig,
 ): ExtensionInput<
-  TExtensionData,
+  UExtensionData,
+  never,
   {
     singleton: TConfig['singleton'] extends true ? true : false;
     optional: TConfig['optional'] extends true ? true : false;

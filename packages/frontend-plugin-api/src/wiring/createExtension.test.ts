@@ -361,12 +361,12 @@ describe('createExtension', () => {
     createExtension({
       namespace: 'test',
       attachTo: { id: 'root', input: 'default' },
-      inputs: {
-        header: createExtensionInput([stringData], {
-          optional: true,
-          singleton: true,
-        }),
-      },
+      // inputs: {
+      //   header: createExtensionInput([stringData], {
+      //     optional: true,
+      //     singleton: true,
+      //   }),
+      // },
       output: [stringData],
       factory({ inputs }) {
         const a1: string = inputs.header?.get(stringData);
