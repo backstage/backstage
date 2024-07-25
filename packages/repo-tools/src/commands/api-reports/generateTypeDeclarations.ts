@@ -26,16 +26,20 @@ import { paths as cliPaths } from '../../lib/paths';
  * If the `tsc` command exits with a non-zero exit code, the process will be terminated with the same exit code.
  *
  * @param tsconfigFilePath {string} The path to the `tsconfig.json` file to use for generating the declaration files.
+ * @param skipLibCheck {boolean} Whether to skip type checking of all declaration files.
  * @returns {Promise<void>} A promise that resolves when the declaration files have been generated.
  */
-export async function generateTypeDeclarations(tsconfigFilePath: string) {
+export async function generateTypeDeclarations(
+  tsconfigFilePath: string,
+  skipLibCheck: boolean = false,
+) {
   await fs.remove(cliPaths.resolveTargetRoot('dist-types'));
   const { status } = spawnSync(
     'yarn',
     [
       'tsc',
       ['--project', tsconfigFilePath],
-      ['--skipLibCheck', 'false'],
+      ['--skipLibCheck', skipLibCheck.toString()],
       ['--incremental', 'false'],
     ].flat(),
     {

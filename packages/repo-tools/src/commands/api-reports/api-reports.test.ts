@@ -529,5 +529,20 @@ describe('buildApiReports', () => {
 
       expect(generateTypeDeclarations).toHaveBeenCalled();
     });
+
+    it('should pass skipLibCheck option to generateTypeDeclarations', async () => {
+      const opts = {
+        tsc: true,
+        skipLibCheck: true,
+      };
+      const paths = ['packages/*'];
+
+      await buildApiReports(paths, opts);
+
+      expect(generateTypeDeclarations).toHaveBeenCalledWith(
+        expect.any(String),
+        true,
+      );
+    });
   });
 });

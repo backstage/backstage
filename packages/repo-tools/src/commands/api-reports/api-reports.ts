@@ -33,6 +33,7 @@ type Options = {
   allowAllWarnings?: boolean;
   omitMessages?: string;
   validateReleaseTags?: boolean;
+  skipLibCheck?: boolean;
 } & OptionValues;
 
 export const buildApiReports = async (paths: string[] = [], opts: Options) => {
@@ -46,6 +47,7 @@ export const buildApiReports = async (paths: string[] = [], opts: Options) => {
   const allowWarnings = parseArrayOption(opts.allowWarnings);
   const allowAllWarnings = opts.allowAllWarnings;
   const omitMessages = parseArrayOption(opts.omitMessages);
+  const skipLibCheck = opts.skipLibCheck ?? false;
 
   const isAllPackages = !paths?.length;
   const selectedPackageDirs = await resolvePackagePaths({
@@ -75,7 +77,7 @@ export const buildApiReports = async (paths: string[] = [], opts: Options) => {
 
   if (runTsc) {
     console.log('# Compiling TypeScript');
-    await generateTypeDeclarations(tsconfigFilePath);
+    await generateTypeDeclarations(tsconfigFilePath, skipLibCheck);
   }
 
   const { tsPackageDirs, cliPackageDirs } = await categorizePackageDirs(
