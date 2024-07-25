@@ -167,7 +167,7 @@ This is a pretty ugly workaround, but maybe the only option we have. Also at thi
 
 Perhaps we just accept this as a limitation, and document it as such.
 
-Templating for `errorMessages` has been solved by using the `ajv-errors` library https://github.com/backstage/backstage/pull/25624, you can see more about [backrefs and pointers here](https://ajv.js.org/packages/ajv-errors.html). Any other template strings that will be passed through the underlying components and to be left untemplated should be encapsulated with options instead of passing through raw strings. The below example illustrates an `entityAndName` format, which under the hood, might do something like `${{ parameters.entity }} - ${{ parameters.name }}`, but this implementation never leaks out to the templating language.
+Templating for `errorMessages` has been solved by using the `ajv-errors` library https://github.com/backstage/backstage/pull/25624, you can see more about [`backrefs` and pointers here](https://ajv.js.org/packages/ajv-errors.html). Any other template strings that will be passed through the underlying components and to be left untemplated should be encapsulated with options instead of passing through raw strings. The below example illustrates an `entityAndName` format, which under the hood, might do something like `${{ parameters.entity }} - ${{ parameters.name }}`, but this implementation never leaks out to the templating language.
 
 ```yaml
 parameters:
