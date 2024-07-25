@@ -38,7 +38,6 @@ export default {
         <div>
           <Story />
         </div>,
-        // The "entityRouteRef" is imported from "@backstage/plugin-catalog-react"
         { mountedRoutes: { '/': entityRouteRef } },
       ),
   ],
@@ -121,8 +120,6 @@ const bob = makeUser({
 const catalogApi = (items: Entity[]) => ({
   getEntities: () => Promise.resolve({ items }),
 });
-
-// Removed the MemoryRouter and added the WrapinTestApp decorator for proper routing context
 export const Default = () => (
   <TestApiProvider apis={[[catalogApiRef, catalogApi([alice, bob])]]}>
     <EntityProvider entity={defaultEntity}>
