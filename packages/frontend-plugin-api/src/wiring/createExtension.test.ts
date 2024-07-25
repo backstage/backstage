@@ -19,6 +19,7 @@ import { createExtensionDataRef } from './createExtensionDataRef';
 import { createExtensionInput } from './createExtensionInput';
 
 const stringData = createExtensionDataRef<string>().with({ id: 'string' });
+const numberData = createExtensionDataRef<number>().with({ id: 'number' });
 
 function unused(..._any: any[]) {}
 
@@ -354,5 +355,33 @@ describe('createExtension', () => {
       // @ts-expect-error
       return extension.configSchema?.parse({});
     }).toThrow("Missing required value at 'foo'");
+  });
+
+  it('should new form of inputs and outputs', () => {
+    createExtension({
+      namespace: 'test',
+      attachTo: { id: 'root', input: 'default' },
+      inputs: {
+        header: createExtensionInput([stringData], {
+          optional: true,
+          singleton: true,
+        }),
+      },
+      output: [stringData],
+      factory({ inputs }) {
+        const a1: string = inputs.header?.get(stringData);
+        // @ts-expect-error
+        const a2: number = inputs.header?.get(stringData);
+
+        unused(a1, a2);
+        return [
+          stringData('asd'),
+          // @ts-expect-error
+          numberData(3),
+        ];
+      },
+    });
+
+    expect(true).toBe(true);
   });
 });

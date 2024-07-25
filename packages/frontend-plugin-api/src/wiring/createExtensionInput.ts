@@ -26,7 +26,37 @@ export interface ExtensionInput<
   config: TConfig;
 }
 
+/**
+ * @public
+ * @deprecated
+ */
+export function createExtensionInput<
+  TExtensionData extends AnyExtensionDataMap,
+  TConfig extends { singleton?: boolean; optional?: boolean },
+>(
+  extensionData: TExtensionData,
+  config?: TConfig,
+): ExtensionInput<
+  TExtensionData,
+  {
+    singleton: TConfig['singleton'] extends true ? true : false;
+    optional: TConfig['optional'] extends true ? true : false;
+  }
+>;
 /** @public */
+export function createExtensionInput<
+  TExtensionData extends AnyExtensionDataMap,
+  TConfig extends { singleton?: boolean; optional?: boolean },
+>(
+  extensionData: TExtensionData,
+  config?: TConfig,
+): ExtensionInput<
+  TExtensionData,
+  {
+    singleton: TConfig['singleton'] extends true ? true : false;
+    optional: TConfig['optional'] extends true ? true : false;
+  }
+>;
 export function createExtensionInput<
   TExtensionData extends AnyExtensionDataMap,
   TConfig extends { singleton?: boolean; optional?: boolean },

@@ -156,7 +156,70 @@ export function toInternalExtensionDefinition<TConfig, TConfigInput>(
   return internal;
 }
 
-/** @public */
+/**
+ * @public
+ * @deprecated - use the array format of `output` instead, see TODO-doc-link
+ */
+export function createExtension<
+  TOutput extends AnyExtensionDataMap,
+  TInputs extends AnyExtensionInputMap,
+  TConfig,
+  TConfigInput,
+  TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
+>(
+  options: CreateExtensionOptions<
+    TOutput,
+    TInputs,
+    TConfig,
+    TConfigInput,
+    TConfigSchema
+  >,
+): ExtensionDefinition<
+  TConfig &
+    (string extends keyof TConfigSchema
+      ? {}
+      : {
+          [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
+        }),
+  TConfigInput &
+    (string extends keyof TConfigSchema
+      ? {}
+      : z.input<
+          z.ZodObject<{
+            [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
+          }>
+        >)
+>;
+export function createExtension<
+  UOutput extends ExtensionDataRef<unknown, string, { optional?: true }>,
+  TInputs extends AnyExtensionInputMap,
+  TConfig,
+  TConfigInput,
+  TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
+>(
+  options: CreateExtensionOptions<
+    UOutput,
+    TInputs,
+    TConfig,
+    TConfigInput,
+    TConfigSchema
+  >,
+): ExtensionDefinition<
+  TConfig &
+    (string extends keyof TConfigSchema
+      ? {}
+      : {
+          [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
+        }),
+  TConfigInput &
+    (string extends keyof TConfigSchema
+      ? {}
+      : z.input<
+          z.ZodObject<{
+            [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
+          }>
+        >)
+>;
 export function createExtension<
   TOutput extends AnyExtensionDataMap,
   TInputs extends AnyExtensionInputMap,
