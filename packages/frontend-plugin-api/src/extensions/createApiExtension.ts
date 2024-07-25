@@ -72,6 +72,7 @@ export function createApiExtension<
 
 /** @public */
 export namespace createApiExtension {
-  export const factoryDataRef =
-    createExtensionDataRef<AnyApiFactory>('core.api.factory');
+  export const factoryDataRef = createExtensionDataRef<AnyApiFactory>().with({
+    id: 'core.api.factory',
+  });
 }

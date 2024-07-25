@@ -88,9 +88,9 @@ const TestAppNavExtension = createExtension({
 /** @public */
 export class ExtensionTester {
   /** @internal */
-  static forSubject<TConfig>(
-    subject: ExtensionDefinition<TConfig>,
-    options?: { config?: TConfig },
+  static forSubject<TConfig, TConfigInput>(
+    subject: ExtensionDefinition<TConfig, TConfigInput>,
+    options?: { config?: TConfigInput },
   ): ExtensionTester {
     const tester = new ExtensionTester();
     const { output, factory, ...rest } = toInternalExtensionDefinition(subject);
@@ -107,7 +107,7 @@ export class ExtensionTester {
         path: '/',
       }),
     });
-    tester.add(extension, options);
+    tester.add(extension, options as TConfigInput & {});
     return tester;
   }
 
@@ -117,9 +117,9 @@ export class ExtensionTester {
     config?: JsonValue;
   }>();
 
-  add<TConfig>(
-    extension: ExtensionDefinition<TConfig>,
-    options?: { config?: TConfig },
+  add<TConfig, TConfigInput>(
+    extension: ExtensionDefinition<TConfig, TConfigInput>,
+    options?: { config?: TConfigInput },
   ): ExtensionTester {
     const { name, namespace } = extension;
 

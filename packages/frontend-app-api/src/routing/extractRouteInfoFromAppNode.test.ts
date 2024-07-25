@@ -70,7 +70,7 @@ function createTestExtension(options: {
   });
 }
 
-function routeInfoFromExtensions(extensions: ExtensionDefinition<unknown>[]) {
+function routeInfoFromExtensions(extensions: ExtensionDefinition<any, any>[]) {
   const plugin = createPlugin({
     id: 'test',
     extensions,

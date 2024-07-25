@@ -39,10 +39,10 @@ export { ErrorWithContext };
 // @public (undocumented)
 export class ExtensionTester {
   // (undocumented)
-  add<TConfig>(
-    extension: ExtensionDefinition<TConfig>,
+  add<TConfig, TConfigInput>(
+    extension: ExtensionDefinition<TConfig, TConfigInput>,
     options?: {
-      config?: TConfig;
+      config?: TConfigInput;
     },
   ): ExtensionTester;
   // (undocumented)

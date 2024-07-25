@@ -51,5 +51,5 @@ export namespace createNavLogoExtension {
   export const logoElementsDataRef = createExtensionDataRef<{
     logoIcon?: JSX.Element;
     logoFull?: JSX.Element;
-  }>('core.nav-logo.logo-elements');
+  }>().with({ id: 'core.nav-logo.logo-elements' });
 }
