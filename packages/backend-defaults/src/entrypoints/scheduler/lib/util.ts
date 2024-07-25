@@ -18,7 +18,7 @@ import { InputError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { DateTime, Duration } from 'luxon';
 
-export const TRACER_ID = '@backstage/backend-defaults/scheduler';
+export const TRACER_ID = 'backstage-backend-defaults-scheduler';
 
 // Keep the IDs compatible with e.g. Prometheus labels
 export function validateId(id: string) {
