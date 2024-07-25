@@ -1,5 +1,28 @@
 # @backstage/backend-defaults
 
+## 0.4.2-next.0
+
+### Patch Changes
+
+- 4e79d19: The `createHealthRouter` utility that allows you to create a health check router is now exported via `@backstage/backend-defaults/rootHttpRouter`.
+- 78c1329: Updated `GitlabUrlReader.readUrl` and `GitlabUrlReader.readTree` to accept a user-provided token, supporting both bearer and private tokens.
+- 8e967da: Fixed the routing of the new health check service, the health endpoints should now properly be available at `/.backstage/health/v1/readiness` and `/.backstage/health/v1/liveness`.
+- Updated dependencies
+  - @backstage/backend-common@0.23.4-next.0
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/config-loader@1.8.2-next.0
+  - @backstage/backend-app-api@0.8.1-next.0
+  - @backstage/backend-dev-utils@0.1.4
+  - @backstage/backend-plugin-api@0.7.1-next.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.18-next.0
+  - @backstage/plugin-events-node@0.3.9-next.0
+  - @backstage/plugin-permission-node@0.8.1-next.0
+
 ## 0.4.0
 
 ### Minor Changes

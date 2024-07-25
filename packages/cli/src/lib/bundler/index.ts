@@ -16,4 +16,5 @@
 
 export { serveBackend } from './backend';
 export { buildBundle } from './bundle';
+export { getModuleFederationOptions } from './moduleFederation';
 export { serveBundle } from './server';
