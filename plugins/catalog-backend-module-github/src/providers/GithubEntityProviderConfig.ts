@@ -71,7 +71,7 @@ function readProviderConfig(
   config: Config,
 ): GithubEntityProviderConfig {
   const organization = config.getString('organization');
-  const namespace = config.getOptionalString('namespace');
+  const namespace = config.getOptionalString('namespace') ?? DEFAULT_NAMESPACE;
   const catalogPath =
     config.getOptionalString('catalogPath') ?? DEFAULT_CATALOG_PATH;
   const host = config.getOptionalString('host') ?? 'github.com';
@@ -106,7 +106,7 @@ function readProviderConfig(
     id,
     catalogPath,
     organization,
-    namespace: namespace ?? DEFAULT_NAMESPACE,
+    namespace,
     host,
     filters: {
       repository: repositoryPattern
