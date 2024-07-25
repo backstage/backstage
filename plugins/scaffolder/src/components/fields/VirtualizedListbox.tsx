@@ -22,29 +22,40 @@ const renderRow = (props: ListChildComponentProps) => {
   return React.cloneElement(data[index], { style });
 };
 
+const OuterElementContext = React.createContext({});
+
+const OuterElementType = React.forwardRef<HTMLDivElement>((props, ref) => {
+  const outerProps = React.useContext(OuterElementContext);
+  return <div ref={ref} {...props} {...outerProps} />;
+});
+
 export const VirtualizedListbox = React.forwardRef<
   HTMLDivElement,
   { children?: React.ReactNode }
 >((props, ref) => {
-  const itemData = React.Children.toArray(props.children);
+  const { children, ...other } = props;
+  const itemData = React.Children.toArray(children);
   const itemCount = itemData.length;
 
   const itemSize = 36;
 
   const itemsToShow = Math.min(10, itemCount);
-  const height = Math.max(itemSize, itemsToShow * itemSize - 0.5 * itemSize);
+  const height = itemsToShow * itemSize;
 
   return (
     <div ref={ref}>
-      <FixedSizeList
-        height={height}
-        itemData={itemData}
-        itemCount={itemCount}
-        itemSize={itemSize}
-        width="100%"
-      >
-        {renderRow}
-      </FixedSizeList>
+      <OuterElementContext.Provider value={other}>
+        <FixedSizeList
+          height={height}
+          itemData={itemData}
+          itemCount={itemCount}
+          itemSize={itemSize}
+          outerElementType={OuterElementType}
+          width="100%"
+        >
+          {renderRow}
+        </FixedSizeList>
+      </OuterElementContext.Provider>
     </div>
   );
 });
