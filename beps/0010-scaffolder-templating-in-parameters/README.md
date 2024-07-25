@@ -210,7 +210,3 @@ information to express the idea and why it was not acceptable.
 - This could lead to confusion as `filters` such as `parseRepoUrl` and `pick` and any custom filters which you define in the backend would not be available in the client side.
 
 - Also with the limitations of the `default` value being updated only on first render and never re-evaluated, there's no performance benefit of doing things client side anymore.
-
-```
-
-```
