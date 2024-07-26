@@ -22,7 +22,7 @@ import {
   ExtensionDataRef,
   ExtensionDataValue,
 } from './createExtensionDataRef';
-import { ExtensionInput } from './createExtensionInput';
+import { ExtensionInput, LegacyExtensionInput } from './createExtensionInput';
 import { z } from 'zod';
 
 /**
@@ -33,10 +33,12 @@ export type AnyExtensionDataMap = {
   [name in string]: AnyExtensionDataRef;
 };
 
-/** @public */
+/**
+ * @public
+ * @deprecated This type will be removed.
+ */
 export type AnyExtensionInputMap = {
-  [inputName in string]: ExtensionInput<
-    AnyExtensionDataRef,
+  [inputName in string]: LegacyExtensionInput<
     AnyExtensionDataMap,
     { optional: boolean; singleton: boolean }
   >;
@@ -95,7 +97,7 @@ export type ResolvedExtensionInput<
  * @public
  */
 export type ResolvedExtensionInputs<
-  TInputs extends { [name in string]: ExtensionInput<any, any, any> },
+  TInputs extends { [name in string]: ExtensionInput<any, any> },
 > = {
   [InputName in keyof TInputs]: false extends TInputs[InputName]['config']['singleton']
     ? Array<Expand<ResolvedExtensionInput<TInputs[InputName]['extensionData']>>>
@@ -146,7 +148,12 @@ export interface LegacyCreateExtensionOptions<
 /** @public */
 export type CreateExtensionOptions<
   UOutput extends AnyExtensionDataRef,
-  TInputs extends AnyExtensionInputMap,
+  TInputs extends {
+    [inputName in string]: ExtensionInput<
+      AnyExtensionDataRef,
+      { optional: boolean; singleton: boolean }
+    >;
+  },
   TConfig,
   TConfigInput,
   TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
@@ -205,17 +212,40 @@ export interface ExtensionDefinition<TConfig, TConfigInput = TConfig> {
 }
 
 /** @internal */
-export interface InternalExtensionDefinition<TConfig, TConfigInput>
-  extends ExtensionDefinition<TConfig, TConfigInput> {
-  readonly version: 'v1';
-  readonly inputs: AnyExtensionInputMap;
-  readonly output: AnyExtensionDataMap | Array<AnyExtensionDataRef>;
-  factory(context: {
-    node: AppNode;
-    config: TConfig;
-    inputs: ResolvedExtensionInputs<any>;
-  }): ExtensionDataValues<any> | Iterable<ExtensionDataValue<any, any>>;
-}
+export type InternalExtensionDefinition<TConfig, TConfigInput> =
+  ExtensionDefinition<TConfig, TConfigInput> &
+    (
+      | {
+          readonly version: 'v1';
+          readonly inputs: AnyExtensionInputMap;
+          readonly output: AnyExtensionDataMap;
+          factory(context: {
+            node: AppNode;
+            config: TConfig;
+            inputs: ResolvedExtensionInputs<AnyExtensionInputMap>;
+          }): ExtensionDataValues<any>;
+        }
+      | {
+          readonly version: 'v2';
+          readonly inputs: {
+            [inputName in string]: ExtensionInput<
+              AnyExtensionDataRef,
+              { optional: boolean; singleton: boolean }
+            >;
+          };
+          readonly output: Array<AnyExtensionDataRef>;
+          factory(context: {
+            node: AppNode;
+            config: TConfig;
+            inputs: ResolvedExtensionInputs<{
+              [inputName in string]: ExtensionInput<
+                AnyExtensionDataRef,
+                { optional: boolean; singleton: boolean }
+              >;
+            }>;
+          }): Iterable<ExtensionDataValue<any, any>>;
+        }
+    );
 
 /** @internal */
 export function toInternalExtensionDefinition<TConfig, TConfigInput>(
@@ -230,9 +260,10 @@ export function toInternalExtensionDefinition<TConfig, TConfigInput>(
       `Invalid extension definition instance, bad type '${internal.$$type}'`,
     );
   }
-  if (internal.version !== 'v1') {
+  const version = internal.version;
+  if (version !== 'v1' && version !== 'v2') {
     throw new Error(
-      `Invalid extension definition instance, bad version '${internal.version}'`,
+      `Invalid extension definition instance, bad version '${version}'`,
     );
   }
   return internal;
@@ -244,7 +275,6 @@ export function createExtension<
   TInputs extends {
     [inputName in string]: ExtensionInput<
       AnyExtensionDataRef,
-      never,
       { optional: boolean; singleton: boolean }
     >;
   },
@@ -313,7 +343,13 @@ export function createExtension<
 >;
 export function createExtension<
   UOutput extends AnyExtensionDataRef,
-  TInputs extends AnyExtensionInputMap,
+  TInputs extends {
+    [inputName in string]: ExtensionInput<
+      AnyExtensionDataRef,
+      { optional: boolean; singleton: boolean }
+    >;
+  },
+  TLegacyInputs extends AnyExtensionInputMap,
   TConfig,
   TConfigInput,
   TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
@@ -330,7 +366,7 @@ export function createExtension<
       >
     | LegacyCreateExtensionOptions<
         AnyExtensionDataMap,
-        TInputs,
+        TLegacyInputs,
         TConfig,
         TConfigInput,
         TConfigSchema
@@ -367,7 +403,7 @@ export function createExtension<
 
   return {
     $$type: '@backstage/ExtensionDefinition',
-    version: 'v1',
+    version: Symbol.iterator in options.output ? 'v2' : 'v1',
     kind: options.kind,
     namespace: options.namespace,
     name: options.name,
@@ -376,16 +412,7 @@ export function createExtension<
     inputs: options.inputs ?? {},
     output: options.output,
     configSchema,
-    factory({ inputs, config, ...rest }) {
-      // TODO: Simplify this, but TS wouldn't infer the input type for some reason
-      return options.factory({
-        inputs: inputs as Expand<ResolvedExtensionInputs<TInputs>>,
-        config: config as TConfig & {
-          [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
-        },
-        ...rest,
-      });
-    },
+    factory: options.factory,
     toString() {
       const parts: string[] = [];
       if (options.kind) {

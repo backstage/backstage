@@ -40,7 +40,7 @@ describe('createExtension', () => {
         };
       },
     });
-    expect(extension.namespace).toBe('test');
+    expect(extension).toMatchObject({ version: 'v1', namespace: 'test' });
 
     // When declared as an error function without a block the TypeScript errors
     // are a more specific and will often point at the property that is problematic.
@@ -177,7 +177,7 @@ describe('createExtension', () => {
         foo: 'bar',
       }),
     });
-    expect(extension.namespace).toBe('test');
+    expect(extension).toMatchObject({ version: 'v1', namespace: 'test' });
 
     createExtension({
       ...baseConfig,
@@ -287,7 +287,7 @@ describe('createExtension', () => {
         };
       },
     });
-    expect(extension.namespace).toBe('test');
+    expect(extension).toMatchObject({ version: 'v1', namespace: 'test' });
     expect(String(extension)).toBe(
       'ExtensionDefinition{namespace=test,attachTo=root@default}',
     );
@@ -325,7 +325,7 @@ describe('createExtension', () => {
         };
       },
     });
-    expect(extension.namespace).toBe('test');
+    expect(extension).toMatchObject({ version: 'v1', namespace: 'test' });
     expect(String(extension)).toBe(
       'ExtensionDefinition{namespace=test,attachTo=root@default}',
     );
@@ -358,98 +358,108 @@ describe('createExtension', () => {
   });
 
   it('should support new form of outputs', () => {
-    // @ts-expect-error
-    createExtension({
-      namespace: 'test',
-      attachTo: { id: 'root', input: 'default' },
-      output: [stringDataRef, numberDataRef],
-      factory() {
-        return []; // Missing all outputs
-      },
-    });
+    expect(
+      // @ts-expect-error
+      createExtension({
+        namespace: 'test',
+        attachTo: { id: 'root', input: 'default' },
+        output: [stringDataRef, numberDataRef],
+        factory() {
+          return []; // Missing all outputs
+        },
+      }),
+    ).toMatchObject({ version: 'v2' });
 
-    // @ts-expect-error
-    createExtension({
-      namespace: 'test',
-      attachTo: { id: 'root', input: 'default' },
-      output: [stringDataRef, numberDataRef],
-      factory() {
-        return [stringDataRef('hello')]; // Missing number output
-      },
-    });
+    expect(
+      // @ts-expect-error
+      createExtension({
+        namespace: 'test',
+        attachTo: { id: 'root', input: 'default' },
+        output: [stringDataRef, numberDataRef],
+        factory() {
+          return [stringDataRef('hello')]; // Missing number output
+        },
+      }),
+    ).toMatchObject({ version: 'v2' });
 
     // Duplicate output, we won't attempt to handle this a compile time and instead error out at runtime
-    createExtension({
-      namespace: 'test',
-      attachTo: { id: 'root', input: 'default' },
-      output: [stringDataRef],
-      factory() {
-        return [stringDataRef('hello'), stringDataRef('hello')];
-      },
-    });
+    expect(
+      createExtension({
+        namespace: 'test',
+        attachTo: { id: 'root', input: 'default' },
+        output: [stringDataRef],
+        factory() {
+          return [stringDataRef('hello'), stringDataRef('hello')];
+        },
+      }),
+    ).toMatchObject({ version: 'v2' });
 
-    createExtension({
-      namespace: 'test',
-      attachTo: { id: 'root', input: 'default' },
-      output: [stringDataRef, numberDataRef],
-      factory() {
-        return [stringDataRef('hello'), numberDataRef(4)];
-      },
-    });
+    expect(
+      createExtension({
+        namespace: 'test',
+        attachTo: { id: 'root', input: 'default' },
+        output: [stringDataRef, numberDataRef],
+        factory() {
+          return [stringDataRef('hello'), numberDataRef(4)];
+        },
+      }),
+    ).toMatchObject({ version: 'v2' });
 
-    createExtension({
-      namespace: 'test',
-      attachTo: { id: 'root', input: 'default' },
-      output: [stringDataRef, numberDataRef.optional()],
-      factory() {
-        return [stringDataRef('hello'), numberDataRef(4)];
-      },
-    });
+    expect(
+      createExtension({
+        namespace: 'test',
+        attachTo: { id: 'root', input: 'default' },
+        output: [stringDataRef, numberDataRef.optional()],
+        factory() {
+          return [stringDataRef('hello'), numberDataRef(4)];
+        },
+      }),
+    ).toMatchObject({ version: 'v2' });
 
-    createExtension({
-      namespace: 'test',
-      attachTo: { id: 'root', input: 'default' },
-      output: [stringDataRef, numberDataRef.optional()],
-      factory() {
-        return [stringDataRef('hello')]; // Missing number output, but it's optional so that's allowed
-      },
-    });
-
-    expect(true).toBe(true);
+    expect(
+      createExtension({
+        namespace: 'test',
+        attachTo: { id: 'root', input: 'default' },
+        output: [stringDataRef, numberDataRef.optional()],
+        factory() {
+          return [stringDataRef('hello')]; // Missing number output, but it's optional so that's allowed
+        },
+      }),
+    ).toMatchObject({ version: 'v2' });
   });
 
   it('should support new form of inputs', () => {
-    createExtension({
-      namespace: 'test',
-      attachTo: { id: 'root', input: 'default' },
-      inputs: {
-        header: createExtensionInput([stringDataRef.optional()], {
-          optional: true,
-          singleton: true,
-        }),
-        content: createExtensionInput([stringDataRef, numberDataRef], {
-          optional: false,
-          singleton: true,
-        }),
-      },
-      output: [stringDataRef],
-      factory({ inputs }) {
-        const headerStr = inputs.header?.get(stringDataRef);
-        const contentStr = inputs.content.get(stringDataRef);
-        const contentNum = inputs.content.get(numberDataRef);
+    expect(
+      createExtension({
+        namespace: 'test',
+        attachTo: { id: 'root', input: 'default' },
+        inputs: {
+          header: createExtensionInput([stringDataRef.optional()], {
+            optional: true,
+            singleton: true,
+          }),
+          content: createExtensionInput([stringDataRef, numberDataRef], {
+            optional: false,
+            singleton: true,
+          }),
+        },
+        output: [stringDataRef],
+        factory({ inputs }) {
+          const headerStr = inputs.header?.get(stringDataRef);
+          const contentStr = inputs.content.get(stringDataRef);
+          const contentNum = inputs.content.get(numberDataRef);
 
-        // @ts-expect-error
-        inputs.header?.get(numberDataRef);
+          // @ts-expect-error
+          inputs.header?.get(numberDataRef);
 
-        // @ts-expect-error
-        const x1: string = headerStr; // string | undefined
+          // @ts-expect-error
+          const x1: string = headerStr; // string | undefined
 
-        unused(x1);
+          unused(x1);
 
-        return [stringDataRef(contentStr.repeat(contentNum))];
-      },
-    });
-
-    expect(true).toBe(true);
+          return [stringDataRef(contentStr.repeat(contentNum))];
+        },
+      }),
+    ).toMatchObject({ version: 'v2' });
   });
 });
