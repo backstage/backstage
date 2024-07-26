@@ -18,13 +18,9 @@ import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
-import { RepoUrlPickerState } from './types';
+import { BaseRepoUrlPickerProps } from './types';
 
-export const GerritRepoPicker = (props: {
-  onChange: (state: RepoUrlPickerState) => void;
-  state: RepoUrlPickerState;
-  rawErrors: string[];
-}) => {
+export const GerritRepoPicker = (props: BaseRepoUrlPickerProps) => {
   const { onChange, rawErrors, state } = props;
   const { workspace, owner } = state;
   return (

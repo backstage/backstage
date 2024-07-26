@@ -42,13 +42,9 @@ export async function buildBundle(options: BuildOptions) {
 
   const paths = resolveBundlingPaths(options);
   const publicPaths = await resolveOptionalBundlingPaths({
+    targetDir: options.targetDir,
     entry: 'src/index-public-experimental',
     dist: 'dist/public',
-  });
-
-  const detectedModulesEntryPoint = await createDetectedModulesEntryPoint({
-    config: options.fullConfig,
-    targetPath: paths.targetPath,
   });
 
   const commonConfigOptions = {
@@ -57,26 +53,39 @@ export async function buildBundle(options: BuildOptions) {
     isDev: false,
     getFrontendAppConfigs: () => options.frontendAppConfigs,
   };
-  const configs = [
-    await createConfig(paths, {
-      ...commonConfigOptions,
-      additionalEntryPoints: detectedModulesEntryPoint,
-      appMode: publicPaths ? 'protected' : 'public',
-    }),
-  ];
 
-  if (publicPaths) {
-    console.log(
-      chalk.yellow(
-        `⚠️  WARNING: The app /public entry point is an experimental feature that may receive immediate breaking changes.`,
-      ),
-    );
+  const configs = [];
+
+  if (options.moduleFederation?.mode === 'remote') {
+    // Package detection is disabled for remote bundles
+    configs.push(await createConfig(paths, commonConfigOptions));
+  } else {
+    const detectedModulesEntryPoint = await createDetectedModulesEntryPoint({
+      config: options.fullConfig,
+      targetPath: paths.targetPath,
+    });
+
     configs.push(
-      await createConfig(publicPaths, {
+      await createConfig(paths, {
         ...commonConfigOptions,
-        appMode: 'public',
+        additionalEntryPoints: detectedModulesEntryPoint,
+        appMode: publicPaths ? 'protected' : 'public',
       }),
     );
+
+    if (publicPaths) {
+      console.log(
+        chalk.yellow(
+          `⚠️  WARNING: The app /public entry point is an experimental feature that may receive immediate breaking changes.`,
+        ),
+      );
+      configs.push(
+        await createConfig(publicPaths, {
+          ...commonConfigOptions,
+          appMode: 'public',
+        }),
+      );
+    }
   }
 
   const isCi = yn(process.env.CI, { default: false });

@@ -19,7 +19,7 @@ import { ExternalTokenHandler } from './ExternalTokenHandler';
 import { TokenHandler } from './types';
 import {
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { randomBytes } from 'crypto';
 import { SignJWT, exportJWK, generateKeyPair } from 'jose';
@@ -81,7 +81,7 @@ class FakeTokenFactory {
 
 describe('ExternalTokenHandler', () => {
   const server = setupServer();
-  setupRequestMockHandlers(server);
+  registerMswTestHooks(server);
 
   it('skips over inner handlers that do not match, and applies plugin restrictions', async () => {
     const handler1: TokenHandler = {

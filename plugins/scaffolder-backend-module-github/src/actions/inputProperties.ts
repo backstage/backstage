@@ -64,6 +64,11 @@ const requiredConversationResolution = {
     'Requires all conversations on code to be resolved before a pull request can be merged into this branch',
   type: 'boolean',
 };
+const requireLastPushApproval = {
+  title: 'Require last push approval',
+  type: 'boolean',
+  description: `Whether the most recent push to a PR must be approved by someone other than the person who pushed it. The default value is 'false'`,
+};
 const repoVisibility = {
   title: 'Repository Visibility',
   type: 'string',
@@ -326,6 +331,7 @@ export { dismissStaleReviews };
 export { requiredStatusCheckContexts };
 export { requireBranchesToBeUpToDate };
 export { requiredConversationResolution };
+export { requireLastPushApproval };
 export { hasProjects };
 export { hasIssues };
 export { hasWiki };

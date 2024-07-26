@@ -64,6 +64,8 @@ import { catalogEntityRefreshPermission } from '@backstage/plugin-catalog-common
 import { useSourceTemplateCompoundEntityRef } from './hooks';
 import { taskCreatePermission } from '@backstage/plugin-scaffolder-common/alpha';
 import { usePermission } from '@backstage/plugin-permission-react';
+import { catalogTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 const TECHDOCS_ANNOTATION = 'backstage.io/techdocs-ref';
 
@@ -120,6 +122,7 @@ export function AboutCard(props: AboutCardProps) {
   const { allowed: canRefresh } = useEntityPermission(
     catalogEntityRefreshPermission,
   );
+  const { t } = useTranslationRef(catalogTranslationRef);
 
   const { allowed: canCreateTemplateTask } = usePermission({
     permission: taskCreatePermission,
@@ -146,13 +149,13 @@ export function AboutCard(props: AboutCardProps) {
   }
 
   const viewInSource: IconLinkVerticalProps = {
-    label: 'View Source',
+    label: t('aboutCard.viewSource'),
     disabled: !entitySourceLocation,
     icon: <ScmIntegrationIcon type={entitySourceLocation?.integrationType} />,
     href: entitySourceLocation?.locationTargetUrl,
   };
   const viewInTechDocs: IconLinkVerticalProps = {
-    label: 'View TechDocs',
+    label: t('aboutCard.viewTechdocs'),
     disabled:
       !(
         entity.metadata.annotations?.[TECHDOCS_ANNOTATION] ||
@@ -180,7 +183,7 @@ export function AboutCard(props: AboutCardProps) {
     const Icon = app.getSystemIcon('scaffolder') ?? CreateComponentIcon;
 
     const launchTemplate: IconLinkVerticalProps = {
-      label: 'Launch Template',
+      label: t('aboutCard.launchTemplate'),
       icon: <Icon />,
       disabled: !templateRoute || !canCreateTemplateTask,
       href:
@@ -216,25 +219,25 @@ export function AboutCard(props: AboutCardProps) {
     try {
       await catalogApi.refreshEntity(stringifyEntityRef(entity));
       alertApi.post({
-        message: 'Refresh scheduled',
+        message: t('aboutCard.refreshScheduledMessage'),
         severity: 'info',
         display: 'transient',
       });
     } catch (e) {
       errorApi.post(e);
     }
-  }, [catalogApi, alertApi, errorApi, entity]);
+  }, [catalogApi, entity, alertApi, t, errorApi]);
 
   return (
     <Card className={cardClass}>
       <CardHeader
-        title="About"
+        title={t('aboutCard.title')}
         action={
           <>
             {allowRefresh && canRefresh && (
               <IconButton
                 aria-label="Refresh"
-                title="Schedule entity refresh"
+                title={t('aboutCard.refreshButtonTitle')}
                 onClick={refreshEntity}
               >
                 <CachedIcon />
@@ -244,7 +247,7 @@ export function AboutCard(props: AboutCardProps) {
               component={Link}
               aria-label="Edit"
               disabled={!entityMetadataEditUrl}
-              title="Edit Metadata"
+              title={t('aboutCard.editButtonTitle')}
               to={entityMetadataEditUrl ?? '#'}
             >
               <EditIcon />
@@ -252,7 +255,7 @@ export function AboutCard(props: AboutCardProps) {
             {sourceTemplateRef && templateRoute && (
               <IconButton
                 component={Link}
-                title="Create something similar"
+                title={t('aboutCard.createSimilarButtonTitle')}
                 to={templateRoute({
                   namespace: sourceTemplateRef.namespace,
                   templateName: sourceTemplateRef.name,

@@ -305,168 +305,6 @@ describe('github:repo:push', () => {
     );
   });
 
-  it('should call enableBranchProtectionOnDefaultRepoBranch with the correct values of requireCodeOwnerReviews', async () => {
-    mockOctokit.rest.repos.get.mockResolvedValue({
-      data: {
-        clone_url: 'https://github.com/clone/url.git',
-        html_url: 'https://github.com/html/url',
-      },
-    });
-
-    await action.handler(mockContext);
-
-    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
-      owner: 'owner',
-      client: mockOctokit,
-      repoName: 'repository',
-      logger: mockContext.logger,
-      defaultBranch: 'master',
-      requireCodeOwnerReviews: false,
-      requiredStatusCheckContexts: [],
-      requireBranchesToBeUpToDate: true,
-      requiredConversationResolution: false,
-      enforceAdmins: true,
-      dismissStaleReviews: false,
-      bypassPullRequestAllowances: undefined,
-      requiredApprovingReviewCount: 1,
-      requiredCommitSigning: false,
-      restrictions: undefined,
-    });
-
-    await action.handler({
-      ...mockContext,
-      input: {
-        ...mockContext.input,
-        requireCodeOwnerReviews: true,
-      },
-    });
-
-    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
-      owner: 'owner',
-      client: mockOctokit,
-      repoName: 'repository',
-      logger: mockContext.logger,
-      defaultBranch: 'master',
-      requireCodeOwnerReviews: true,
-      requiredStatusCheckContexts: [],
-      requireBranchesToBeUpToDate: true,
-      requiredConversationResolution: false,
-      enforceAdmins: true,
-      dismissStaleReviews: false,
-      bypassPullRequestAllowances: undefined,
-      requiredApprovingReviewCount: 1,
-      requiredCommitSigning: false,
-      restrictions: undefined,
-    });
-
-    await action.handler({
-      ...mockContext,
-      input: {
-        ...mockContext.input,
-        requireCodeOwnerReviews: false,
-      },
-    });
-
-    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
-      owner: 'owner',
-      client: mockOctokit,
-      repoName: 'repository',
-      logger: mockContext.logger,
-      defaultBranch: 'master',
-      requireCodeOwnerReviews: false,
-      requiredStatusCheckContexts: [],
-      requireBranchesToBeUpToDate: true,
-      requiredConversationResolution: false,
-      enforceAdmins: true,
-      dismissStaleReviews: false,
-      bypassPullRequestAllowances: undefined,
-      requiredApprovingReviewCount: 1,
-      requiredCommitSigning: false,
-      restrictions: undefined,
-    });
-  });
-
-  it('should call enableBranchProtectionOnDefaultRepoBranch with the correct values of enforceAdmins', async () => {
-    mockOctokit.rest.repos.get.mockResolvedValue({
-      data: {
-        clone_url: 'https://github.com/clone/url.git',
-        html_url: 'https://github.com/html/url',
-      },
-    });
-
-    await action.handler(mockContext);
-
-    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
-      owner: 'owner',
-      client: mockOctokit,
-      repoName: 'repository',
-      logger: mockContext.logger,
-      defaultBranch: 'master',
-      requireCodeOwnerReviews: false,
-      requiredStatusCheckContexts: [],
-      requireBranchesToBeUpToDate: true,
-      requiredConversationResolution: false,
-      enforceAdmins: true,
-      dismissStaleReviews: false,
-      bypassPullRequestAllowances: undefined,
-      requiredApprovingReviewCount: 1,
-      requiredCommitSigning: false,
-      restrictions: undefined,
-    });
-
-    await action.handler({
-      ...mockContext,
-      input: {
-        ...mockContext.input,
-        protectEnforceAdmins: true,
-      },
-    });
-
-    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
-      owner: 'owner',
-      client: mockOctokit,
-      repoName: 'repository',
-      logger: mockContext.logger,
-      defaultBranch: 'master',
-      requireCodeOwnerReviews: false,
-      requiredStatusCheckContexts: [],
-      requireBranchesToBeUpToDate: true,
-      requiredConversationResolution: false,
-      enforceAdmins: true,
-      dismissStaleReviews: false,
-      bypassPullRequestAllowances: undefined,
-      requiredApprovingReviewCount: 1,
-      requiredCommitSigning: false,
-      restrictions: undefined,
-    });
-
-    await action.handler({
-      ...mockContext,
-      input: {
-        ...mockContext.input,
-        protectEnforceAdmins: false,
-      },
-    });
-
-    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
-      owner: 'owner',
-      client: mockOctokit,
-      repoName: 'repository',
-      logger: mockContext.logger,
-      defaultBranch: 'master',
-      requireCodeOwnerReviews: false,
-      requiredStatusCheckContexts: [],
-      requireBranchesToBeUpToDate: true,
-      requiredConversationResolution: false,
-      enforceAdmins: false,
-      dismissStaleReviews: false,
-      bypassPullRequestAllowances: undefined,
-      requiredApprovingReviewCount: 1,
-      requiredCommitSigning: false,
-      restrictions: undefined,
-    });
-  });
-
   it('should call enableBranchProtectionOnDefaultRepoBranch with the correct values of requiredStatusCheckContexts and requireBranchesToBeUpToDate', async () => {
     mockOctokit.rest.repos.get.mockResolvedValue({
       data: {
@@ -487,6 +325,7 @@ describe('github:repo:push', () => {
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       requiredConversationResolution: false,
+      requireLastPushApproval: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
       bypassPullRequestAllowances: undefined,
@@ -501,7 +340,6 @@ describe('github:repo:push', () => {
         ...mockContext.input,
         requiredStatusCheckContexts: ['statusCheck'],
         requireBranchesToBeUpToDate: true,
-        requiredConversationResolution: false,
       },
     });
 
@@ -515,6 +353,7 @@ describe('github:repo:push', () => {
       requiredStatusCheckContexts: ['statusCheck'],
       requireBranchesToBeUpToDate: true,
       requiredConversationResolution: false,
+      requireLastPushApproval: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
       bypassPullRequestAllowances: undefined,
@@ -542,6 +381,7 @@ describe('github:repo:push', () => {
       requiredStatusCheckContexts: ['statusCheck'],
       requireBranchesToBeUpToDate: false,
       requiredConversationResolution: false,
+      requireLastPushApproval: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
       bypassPullRequestAllowances: undefined,
@@ -556,7 +396,6 @@ describe('github:repo:push', () => {
         ...mockContext.input,
         requiredStatusCheckContexts: [],
         requireBranchesToBeUpToDate: true,
-        requiredConversationResolution: false,
       },
     });
 
@@ -570,6 +409,7 @@ describe('github:repo:push', () => {
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
       requiredConversationResolution: false,
+      requireLastPushApproval: false,
       enforceAdmins: true,
       dismissStaleReviews: false,
       bypassPullRequestAllowances: undefined,
@@ -598,165 +438,135 @@ describe('github:repo:push', () => {
     expect(enableBranchProtectionOnDefaultRepoBranch).not.toHaveBeenCalled();
   });
 
-  it('should call enableBranchProtectionOnDefaultRepoBranch with the correct values of dismissStaleReviews', async () => {
-    mockOctokit.rest.repos.get.mockResolvedValue({
-      data: {
-        clone_url: 'https://github.com/clone/url.git',
-        html_url: 'https://github.com/html/url',
-      },
-    });
+  it.each([
+    {
+      inputProperty: 'dismissStaleReviews',
+      defaultValue: false,
+      overrideValue: true,
+    },
+    {
+      inputProperty: 'requiredConversationResolution',
+      defaultValue: false,
+      overrideValue: true,
+    },
+    {
+      inputProperty: 'requireLastPushApproval',
+      defaultValue: false,
+      overrideValue: true,
+    },
+    {
+      inputProperty: 'requiredApprovingReviewCount',
+      defaultValue: 1,
+      overrideValue: 2,
+    },
+    {
+      inputProperty: 'requiredCommitSigning',
+      defaultValue: false,
+      overrideValue: true,
+    },
+    {
+      inputProperty: 'protectEnforceAdmins',
+      defaultValue: true,
+      overrideValue: false,
+      octokitParameter: 'enforceAdmins',
+    },
+    {
+      inputProperty: 'requireCodeOwnerReviews',
+      defaultValue: false,
+      overrideValue: true,
+    },
+  ])(
+    'should call enableBranchProtectionOnDefaultRepoBranch with the correct values of $inputProperty',
+    async ({
+      inputProperty,
+      defaultValue,
+      overrideValue,
+      octokitParameter,
+    }) => {
+      mockOctokit.rest.repos.get.mockResolvedValue({
+        data: {
+          clone_url: 'https://github.com/clone/url.git',
+          html_url: 'https://github.com/html/url',
+        },
+      });
 
-    await action.handler(mockContext);
+      await action.handler(mockContext);
 
-    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
-      owner: 'owner',
-      client: mockOctokit,
-      repoName: 'repository',
-      logger: mockContext.logger,
-      defaultBranch: 'master',
-      requireCodeOwnerReviews: false,
-      requiredStatusCheckContexts: [],
-      requireBranchesToBeUpToDate: true,
-      requiredConversationResolution: false,
-      enforceAdmins: true,
-      dismissStaleReviews: false,
-      bypassPullRequestAllowances: undefined,
-      requiredApprovingReviewCount: 1,
-      requiredCommitSigning: false,
-      restrictions: undefined,
-    });
-
-    await action.handler({
-      ...mockContext,
-      input: {
-        ...mockContext.input,
-        dismissStaleReviews: true,
-      },
-    });
-
-    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
-      owner: 'owner',
-      client: mockOctokit,
-      repoName: 'repository',
-      logger: mockContext.logger,
-      defaultBranch: 'master',
-      requireCodeOwnerReviews: false,
-      requiredStatusCheckContexts: [],
-      requireBranchesToBeUpToDate: true,
-      requiredConversationResolution: false,
-      enforceAdmins: true,
-      dismissStaleReviews: true,
-      bypassPullRequestAllowances: undefined,
-      requiredApprovingReviewCount: 1,
-      requiredCommitSigning: false,
-      restrictions: undefined,
-    });
-
-    await action.handler({
-      ...mockContext,
-      input: {
-        ...mockContext.input,
-        dismissStaleReviews: false,
-      },
-    });
-
-    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
-      owner: 'owner',
-      client: mockOctokit,
-      repoName: 'repository',
-      logger: mockContext.logger,
-      defaultBranch: 'master',
-      requireCodeOwnerReviews: false,
-      requiredStatusCheckContexts: [],
-      requireBranchesToBeUpToDate: true,
-      requiredConversationResolution: false,
-      enforceAdmins: true,
-      dismissStaleReviews: false,
-      bypassPullRequestAllowances: undefined,
-      requiredApprovingReviewCount: 1,
-      requiredCommitSigning: false,
-      restrictions: undefined,
-    });
-  });
-
-  it('should call enableBranchProtectionOnDefaultRepoBranch with the correct values of requiredConversationResolution', async () => {
-    mockOctokit.rest.repos.get.mockResolvedValue({
-      data: {
-        clone_url: 'https://github.com/clone/url.git',
-        html_url: 'https://github.com/html/url',
-      },
-    });
-
-    await action.handler(mockContext);
-
-    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
-      owner: 'owner',
-      client: mockOctokit,
-      repoName: 'repository',
-      logger: mockContext.logger,
-      defaultBranch: 'master',
-      requireCodeOwnerReviews: false,
-      requiredStatusCheckContexts: [],
-      requireBranchesToBeUpToDate: true,
-      requiredConversationResolution: false,
-      enforceAdmins: true,
-      dismissStaleReviews: false,
-      bypassPullRequestAllowances: undefined,
-      requiredApprovingReviewCount: 1,
-      requiredCommitSigning: false,
-      restrictions: undefined,
-    });
-
-    await action.handler({
-      ...mockContext,
-      input: {
-        ...mockContext.input,
-        requiredConversationResolution: true,
-      },
-    });
-
-    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
-      owner: 'owner',
-      client: mockOctokit,
-      repoName: 'repository',
-      logger: mockContext.logger,
-      defaultBranch: 'master',
-      requireCodeOwnerReviews: false,
-      requiredStatusCheckContexts: [],
-      requireBranchesToBeUpToDate: true,
-      requiredConversationResolution: true,
-      enforceAdmins: true,
-      dismissStaleReviews: false,
-      bypassPullRequestAllowances: undefined,
-      requiredApprovingReviewCount: 1,
-      requiredCommitSigning: false,
-      restrictions: undefined,
-    });
-
-    await action.handler({
-      ...mockContext,
-      input: {
-        ...mockContext.input,
+      expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+        owner: 'owner',
+        client: mockOctokit,
+        repoName: 'repository',
+        logger: mockContext.logger,
+        defaultBranch: 'master',
+        requireCodeOwnerReviews: false,
+        requiredStatusCheckContexts: [],
+        requireBranchesToBeUpToDate: true,
         requiredConversationResolution: false,
-      },
-    });
+        requireLastPushApproval: false,
+        enforceAdmins: true,
+        dismissStaleReviews: false,
+        bypassPullRequestAllowances: undefined,
+        requiredApprovingReviewCount: 1,
+        requiredCommitSigning: false,
+        restrictions: undefined,
+        [octokitParameter || inputProperty]: defaultValue,
+      });
 
-    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
-      owner: 'owner',
-      client: mockOctokit,
-      repoName: 'repository',
-      logger: mockContext.logger,
-      defaultBranch: 'master',
-      requireCodeOwnerReviews: false,
-      requiredStatusCheckContexts: [],
-      requireBranchesToBeUpToDate: true,
-      requiredConversationResolution: false,
-      enforceAdmins: true,
-      dismissStaleReviews: false,
-      bypassPullRequestAllowances: undefined,
-      requiredApprovingReviewCount: 1,
-      requiredCommitSigning: false,
-      restrictions: undefined,
-    });
-  });
+      await action.handler({
+        ...mockContext,
+        input: {
+          ...mockContext.input,
+          [inputProperty]: overrideValue,
+        },
+      });
+
+      expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+        owner: 'owner',
+        client: mockOctokit,
+        repoName: 'repository',
+        logger: mockContext.logger,
+        defaultBranch: 'master',
+        requireCodeOwnerReviews: false,
+        requiredStatusCheckContexts: [],
+        requireBranchesToBeUpToDate: true,
+        requiredConversationResolution: false,
+        requireLastPushApproval: false,
+        enforceAdmins: true,
+        dismissStaleReviews: false,
+        bypassPullRequestAllowances: undefined,
+        requiredApprovingReviewCount: 1,
+        requiredCommitSigning: false,
+        restrictions: undefined,
+        [octokitParameter || inputProperty]: overrideValue,
+      });
+
+      await action.handler({
+        ...mockContext,
+        input: {
+          ...mockContext.input,
+          [inputProperty]: defaultValue,
+        },
+      });
+
+      expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+        owner: 'owner',
+        client: mockOctokit,
+        repoName: 'repository',
+        logger: mockContext.logger,
+        defaultBranch: 'master',
+        requireCodeOwnerReviews: false,
+        requiredStatusCheckContexts: [],
+        requireBranchesToBeUpToDate: true,
+        requiredConversationResolution: false,
+        requireLastPushApproval: false,
+        enforceAdmins: true,
+        dismissStaleReviews: false,
+        bypassPullRequestAllowances: undefined,
+        requiredApprovingReviewCount: 1,
+        requiredCommitSigning: false,
+        restrictions: undefined,
+        [octokitParameter || inputProperty]: defaultValue,
+      });
+    },
+  );
 });

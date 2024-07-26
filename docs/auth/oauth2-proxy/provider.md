@@ -47,25 +47,27 @@ The resolvers will be tried in order, but will only be skipped if they throw a `
 
 If these resolvers do not fit your needs you can build a custom resolver, this is covered in the [Building Custom Resolvers](../identity-resolver.md#building-custom-resolvers) section of the Sign-in Identities and Resolvers documentation.
 
-## Adding the provider to the Backstage frontend
+## Backend Installation
 
-It is recommended to use the `ProxiedSignInPage` for this provider, which is
-installed in `packages/app/src/App.tsx` like this:
+To add the provider to the backend we will first need to install the package by running this command:
 
-```tsx title="packages/app/src/App.tsx"
-/* highlight-add-next-line */
-import { ProxiedSignInPage } from '@backstage/core-components';
-
-const app = createApp({
-  /* highlight-add-start */
-  components: {
-    SignInPage: props => (
-      <ProxiedSignInPage {...props} provider="oauth2Proxy" />
-    ),
-  },
-  /* highlight-add-end */
-  // ..
-});
+```bash title="from your Backstage root directory"
+yarn --cwd packages/backend add @backstage/plugin-auth-backend-module-oauth2-proxy-provider
 ```
 
-See [Sign-In with Proxy Providers](../index.md#sign-in-with-proxy-providers) for pointers on how to set up the sign-in page to also work smoothly for local development.
+Then we will need to this line:
+
+```ts title="in packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-auth-backend'));
+/* highlight-add-start */
+backend.add(
+  import('@backstage/plugin-auth-backend-module-oauth2-proxy-provider'),
+);
+/* highlight-add-end */
+```
+
+## Adding the provider to the Backstage frontend
+
+See [Sign-In with Proxy Providers](../index.md#sign-in-with-proxy-providers) for pointers on how to set up the sign-in page, and to also make it work smoothly for local development. You'll use `oauth2Proxy` as the provider name.
+
+If you [provide a custom sign in resolver](https://backstage.io/docs/auth/identity-resolver#building-custom-resolvers), you can skip the `signIn` block entirely.

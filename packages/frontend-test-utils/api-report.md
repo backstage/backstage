@@ -18,9 +18,9 @@ import { MockFetchApiOptions } from '@backstage/test-utils';
 import { MockPermissionApi } from '@backstage/test-utils';
 import { MockStorageApi } from '@backstage/test-utils';
 import { MockStorageBucket } from '@backstage/test-utils';
+import { registerMswTestHooks } from '@backstage/test-utils';
 import { RenderResult } from '@testing-library/react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { TestApiProvider } from '@backstage/test-utils';
 import { TestApiProviderProps } from '@backstage/test-utils';
 import { TestApiRegistry } from '@backstage/test-utils';
@@ -39,10 +39,10 @@ export { ErrorWithContext };
 // @public (undocumented)
 export class ExtensionTester {
   // (undocumented)
-  add<TConfig>(
-    extension: ExtensionDefinition<TConfig>,
+  add<TConfig, TConfigInput>(
+    extension: ExtensionDefinition<TConfig, TConfigInput>,
     options?: {
-      config?: TConfig;
+      config?: TConfigInput;
     },
   ): ExtensionTester;
   // (undocumented)
@@ -73,13 +73,20 @@ export { MockStorageApi };
 
 export { MockStorageBucket };
 
+export { registerMswTestHooks };
+
 // @public
 export function renderInTestApp(
   element: JSX.Element,
   options?: TestAppOptions,
 ): RenderResult;
 
-export { setupRequestMockHandlers };
+// @public @deprecated (undocumented)
+export function setupRequestMockHandlers(worker: {
+  listen: (t: any) => void;
+  close: () => void;
+  resetHandlers: () => void;
+}): void;
 
 export { TestApiProvider };
 

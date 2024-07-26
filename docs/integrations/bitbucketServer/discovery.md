@@ -23,7 +23,6 @@ backend. The provider is not installed by default, therefore you have to add a
 dependency to `@backstage/plugin-catalog-backend-module-bitbucket-server` to your backend package.
 
 ```bash title="From your Backstage root directory"
-# From your Backstage root directory
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-bitbucket-server
 ```
 

@@ -27,6 +27,7 @@ import { TokenManager } from '../../deprecated';
 
 /**
  * @public
+ * @deprecated Fully use the new backend system instead.
  */
 export type LegacyCreateRouter<TEnv> = (deps: TEnv) => Promise<RequestHandler>;
 
@@ -69,6 +70,7 @@ function wrapTokenManager(tokenManager: TokenManager, auth: AuthService) {
  * Creates a new custom plugin compatibility wrapper.
  *
  * @public
+ * @deprecated Fully use the new backend system instead.
  * @remarks
  *
  * Usually you can use {@link legacyPlugin} directly instead, but you might
@@ -128,6 +130,7 @@ export function makeLegacyPlugin<
  * register it with the http router based on the plugin id.
  *
  * @public
+ * @deprecated Fully use the new backend system instead.
  * @remarks
  *
  * This is intended to be used by plugin authors to ease the transition to the

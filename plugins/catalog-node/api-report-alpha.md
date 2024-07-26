@@ -35,6 +35,14 @@ export interface CatalogAnalysisExtensionPoint {
 export const catalogAnalysisExtensionPoint: ExtensionPoint<CatalogAnalysisExtensionPoint>;
 
 // @alpha (undocumented)
+export interface CatalogLocationsExtensionPoint {
+  setAllowedLocationTypes(locationTypes: Array<string>): void;
+}
+
+// @alpha (undocumented)
+export const catalogLocationsExtensionPoint: ExtensionPoint<CatalogLocationsExtensionPoint>;
+
+// @alpha (undocumented)
 export interface CatalogModelExtensionPoint {
   setEntityDataParser(parser: CatalogProcessorParser): void;
   setFieldValidators(validators: Partial<Validators>): void;

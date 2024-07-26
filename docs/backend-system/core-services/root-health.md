@@ -1,7 +1,7 @@
 ---
 id: root-health
 title: Root Health Service
-sidebar_label: Health
+sidebar_label: Root Health
 description: Documentation for the Health service
 ---
 

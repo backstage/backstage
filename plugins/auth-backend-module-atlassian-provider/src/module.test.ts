@@ -64,10 +64,12 @@ describe('authModuleAtlassianProvider', () => {
     expect(startUrl.pathname).toBe('/authorize');
     expect(Object.fromEntries(startUrl.searchParams)).toEqual({
       response_type: 'code',
+      audience: 'api.atlassian.com',
       client_id: 'my-client-id',
+      prompt: 'consent',
       redirect_uri: `http://localhost:${server.port()}/api/auth/atlassian/handler/frame`,
       state: expect.any(String),
-      scope: 'offline_access read:jira-work read:jira-user',
+      scope: 'offline_access read:me read:jira-work read:jira-user',
     });
 
     expect(decodeOAuthState(startUrl.searchParams.get('state')!)).toEqual({
@@ -92,10 +94,7 @@ describe('authModuleAtlassianProvider', () => {
                   development: {
                     clientId: 'my-client-id',
                     clientSecret: 'my-client-secret',
-                    additionalScopes: [
-                      'read:filter:jira',
-                      'read:jira-work', // already required
-                    ],
+                    additionalScopes: 'read:filter:jira read:jira-work', // 2nd is already required
                   },
                 },
               },
@@ -123,11 +122,14 @@ describe('authModuleAtlassianProvider', () => {
     expect(startUrl.origin).toBe('https://auth.atlassian.com');
     expect(startUrl.pathname).toBe('/authorize');
     expect(Object.fromEntries(startUrl.searchParams)).toEqual({
+      audience: 'api.atlassian.com',
       response_type: 'code',
       client_id: 'my-client-id',
+      prompt: 'consent',
       redirect_uri: `http://localhost:${server.port()}/api/auth/atlassian/handler/frame`,
       state: expect.any(String),
-      scope: 'offline_access read:jira-work read:jira-user read:filter:jira',
+      scope:
+        'offline_access read:me read:jira-work read:jira-user read:filter:jira',
     });
 
     expect(decodeOAuthState(startUrl.searchParams.get('state')!)).toEqual({

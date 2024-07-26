@@ -24,8 +24,7 @@ You will have to add the GitHub Entity provider to your backend as it is not ins
 dependency on `@backstage/plugin-catalog-backend-module-github` to your backend
 package.
 
-```bash
-# From your Backstage root directory
+```bash title="From your Backstage root directory"
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-github
 ```
 
@@ -40,8 +39,9 @@ backend.add(import('@backstage/plugin-catalog-backend-module-github/alpha'));
 ## Events Support
 
 The catalog module for GitHub comes with events support enabled.
-This will make it subscribe to its relevant topics (`github.push`)
-and expects these events to be published via the `EventsService`.
+This will make it subscribe to its relevant topics (`github.push`,
+`github.repository`) and expects these events to be published
+via the `EventsService`.
 
 Additionally, you should install the
 [event router by `events-backend-module-github`](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-github/README.md)
@@ -55,7 +55,15 @@ You can decide between the following options (extensible):
 - [via HTTP endpoint](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
 - [via an AWS SQS queue](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md)
 
-You can check the official docs to [configure your webhook](https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks) and to [secure your request](https://docs.github.com/en/developers/webhooks-and-events/webhooks/securing-your-webhooks). The webhook will need to be configured to forward `push` events.
+You can check the official docs to [configure your webhook](https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks) and to [secure your request](https://docs.github.com/en/developers/webhooks-and-events/webhooks/securing-your-webhooks).
+
+The webhook(s) will need to be configured to react to `push` and
+`repository` events.
+
+Certain actions like `transferred` by the `repository` event type
+will not be supported when you use repository webhooks.
+Please check the GitHubs documentation for these event types and
+its actions.
 
 ## Configuration
 

@@ -304,5 +304,16 @@ describe('github:environment:create', () => {
       key_id: 'keyid',
       encrypted_value: expect.any(String),
     });
+    expect(
+      mockOctokit.rest.actions.getEnvironmentPublicKey,
+    ).toHaveBeenCalledTimes(1);
+    expect(
+      mockOctokit.rest.actions.getEnvironmentPublicKey,
+    ).toHaveBeenCalledWith({
+      repository_id: 'repoid',
+      owner: 'owner',
+      repo: 'repository',
+      environment_name: 'envname',
+    });
   });
 });

@@ -16,8 +16,3 @@
 // package: the name of the package, e.g. @testing-library/react
 // query: the version query to pin the version for, e.g. ^14.0.0
 // version: the version to pin to, must be in range of the query, e.g. 14.11.0
-
-ajv@^8.0.0, ajv@^8.10.0, ajv@^8.11.0, ajv@^8.12.0, ajv@^8.14.0, ajv@^8.6.0, ajv@^8.6.3, ajv@^8.8.2, ajv@^8.9.0:
-  version "8.14.0"
-  resolved "https://registry.yarnpkg.com/ajv/-/ajv-8.14.0.tgz#f514ddfd4756abb200e1704414963620a625ebbb"
-  integrity sha512-oYs1UUtO97ZO2lJ4bwnWeQW8/zvOIQLGKcvPTsWmvc2SYgBb+upuNS5NxoLaMU4h8Ju3Nbj6Cq8mD2LQoqVKFA==

@@ -15,14 +15,14 @@
  */
 
 import { AppNode } from '../apis';
-import { PortableSchema } from '../schema';
+import { PortableSchema, createSchemaFromZod } from '../schema';
 import { Expand } from '../types';
 import { ExtensionDataRef } from './createExtensionDataRef';
 import { ExtensionInput } from './createExtensionInput';
-
+import { z } from 'zod';
 /** @public */
 export type AnyExtensionDataMap = {
-  [name in string]: ExtensionDataRef<unknown, { optional?: true }>;
+  [name in string]: ExtensionDataRef<unknown, string, { optional?: true }>;
 };
 
 /** @public */
@@ -82,6 +82,8 @@ export interface CreateExtensionOptions<
   TOutput extends AnyExtensionDataMap,
   TInputs extends AnyExtensionInputMap,
   TConfig,
+  TConfigInput,
+  TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
 > {
   kind?: string;
   namespace?: string;
@@ -90,32 +92,43 @@ export interface CreateExtensionOptions<
   disabled?: boolean;
   inputs?: TInputs;
   output: TOutput;
-  configSchema?: PortableSchema<TConfig>;
-  factory(options: {
+  /** @deprecated - use `config.schema` instead */
+  configSchema?: PortableSchema<TConfig, TConfigInput>;
+  config?: {
+    schema: TConfigSchema;
+  };
+  factory(context: {
     node: AppNode;
-    config: TConfig;
+    config: TConfig &
+      (string extends keyof TConfigSchema
+        ? {}
+        : {
+            [key in keyof TConfigSchema]: z.infer<
+              ReturnType<TConfigSchema[key]>
+            >;
+          });
     inputs: Expand<ResolvedExtensionInputs<TInputs>>;
   }): Expand<ExtensionDataValues<TOutput>>;
 }
 
 /** @public */
-export interface ExtensionDefinition<TConfig> {
+export interface ExtensionDefinition<TConfig, TConfigInput = TConfig> {
   $$type: '@backstage/ExtensionDefinition';
   readonly kind?: string;
   readonly namespace?: string;
   readonly name?: string;
   readonly attachTo: { id: string; input: string };
   readonly disabled: boolean;
-  readonly configSchema?: PortableSchema<TConfig>;
+  readonly configSchema?: PortableSchema<TConfig, TConfigInput>;
 }
 
 /** @internal */
-export interface InternalExtensionDefinition<TConfig>
-  extends ExtensionDefinition<TConfig> {
+export interface InternalExtensionDefinition<TConfig, TConfigInput>
+  extends ExtensionDefinition<TConfig, TConfigInput> {
   readonly version: 'v1';
   readonly inputs: AnyExtensionInputMap;
   readonly output: AnyExtensionDataMap;
-  factory(options: {
+  factory(context: {
     node: AppNode;
     config: TConfig;
     inputs: ResolvedExtensionInputs<any>;
@@ -123,10 +136,13 @@ export interface InternalExtensionDefinition<TConfig>
 }
 
 /** @internal */
-export function toInternalExtensionDefinition<TConfig>(
-  overrides: ExtensionDefinition<TConfig>,
-): InternalExtensionDefinition<TConfig> {
-  const internal = overrides as InternalExtensionDefinition<TConfig>;
+export function toInternalExtensionDefinition<TConfig, TConfigInput>(
+  overrides: ExtensionDefinition<TConfig, TConfigInput>,
+): InternalExtensionDefinition<TConfig, TConfigInput> {
+  const internal = overrides as InternalExtensionDefinition<
+    TConfig,
+    TConfigInput
+  >;
   if (internal.$$type !== '@backstage/ExtensionDefinition') {
     throw new Error(
       `Invalid extension definition instance, bad type '${internal.$$type}'`,
@@ -144,10 +160,47 @@ export function toInternalExtensionDefinition<TConfig>(
 export function createExtension<
   TOutput extends AnyExtensionDataMap,
   TInputs extends AnyExtensionInputMap,
-  TConfig = never,
+  TConfig,
+  TConfigInput,
+  TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
 >(
-  options: CreateExtensionOptions<TOutput, TInputs, TConfig>,
-): ExtensionDefinition<TConfig> {
+  options: CreateExtensionOptions<
+    TOutput,
+    TInputs,
+    TConfig,
+    TConfigInput,
+    TConfigSchema
+  >,
+): ExtensionDefinition<
+  TConfig &
+    (string extends keyof TConfigSchema
+      ? {}
+      : {
+          [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
+        }),
+  TConfigInput &
+    (string extends keyof TConfigSchema
+      ? {}
+      : z.input<
+          z.ZodObject<{
+            [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
+          }>
+        >)
+> {
+  const newConfigSchema = options.config?.schema;
+  if (newConfigSchema && options.configSchema) {
+    throw new Error(`Cannot provide both configSchema and config.schema`);
+  }
+  const configSchema = newConfigSchema
+    ? createSchemaFromZod(innerZ =>
+        innerZ.object(
+          Object.fromEntries(
+            Object.entries(newConfigSchema).map(([k, v]) => [k, v(innerZ)]),
+          ),
+        ),
+      )
+    : options.configSchema;
+
   return {
     $$type: '@backstage/ExtensionDefinition',
     version: 'v1',
@@ -158,11 +211,14 @@ export function createExtension<
     disabled: options.disabled ?? false,
     inputs: options.inputs ?? {},
     output: options.output,
-    configSchema: options.configSchema,
-    factory({ inputs, ...rest }) {
+    configSchema,
+    factory({ inputs, config, ...rest }) {
       // TODO: Simplify this, but TS wouldn't infer the input type for some reason
       return options.factory({
         inputs: inputs as Expand<ResolvedExtensionInputs<TInputs>>,
+        config: config as TConfig & {
+          [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
+        },
         ...rest,
       });
     },
@@ -180,5 +236,22 @@ export function createExtension<
       parts.push(`attachTo=${options.attachTo.id}@${options.attachTo.input}`);
       return `ExtensionDefinition{${parts.join(',')}}`;
     },
-  } as InternalExtensionDefinition<TConfig>;
+  } as InternalExtensionDefinition<
+    TConfig &
+      (string extends keyof TConfigSchema
+        ? {}
+        : {
+            [key in keyof TConfigSchema]: z.infer<
+              ReturnType<TConfigSchema[key]>
+            >;
+          }),
+    TConfigInput &
+      (string extends keyof TConfigSchema
+        ? {}
+        : z.input<
+            z.ZodObject<{
+              [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
+            }>
+          >)
+  >;
 }
