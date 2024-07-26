@@ -8,8 +8,8 @@ templates
 api-report.md
 api-report-*.md
 # new reports
-api-report.api.md
-api-report-*.api.md
+report.api.md
+report-*.api.md
 
 knip-report.md
 cli-report.md
