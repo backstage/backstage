@@ -27,6 +27,12 @@ export interface Config {
           token: string;
           subject: string;
         }>;
+        signIn?: {
+          resolvers: Array<
+            | { resolver: 'emailLocalPartMatchingUserEntityName' }
+            | { resolver: 'emailMatchingUserEntityProfileEmail' }
+          >;
+        };
       };
       /**
        * The backstage token expiration.
