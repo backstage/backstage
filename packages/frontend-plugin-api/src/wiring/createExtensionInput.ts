@@ -15,31 +15,85 @@
  */
 
 import { AnyExtensionDataMap } from './createExtension';
+import { ExtensionDataRef } from './createExtensionDataRef';
 
 /** @public */
 export interface ExtensionInput<
-  TExtensionData extends AnyExtensionDataMap,
+  TExtensionData extends ExtensionDataRef<unknown, string, { optional?: true }>,
+  TExtensionDataMap extends AnyExtensionDataMap,
   TConfig extends { singleton: boolean; optional: boolean },
 > {
   $$type: '@backstage/ExtensionInput';
-  extensionData: TExtensionData;
+  extensionData: TExtensionData | TExtensionDataMap;
   config: TConfig;
 }
 
+/**
+ * @public
+ * @deprecated Use the following form instead: `createExtensionInput([dataRef1, dataRef2])`
+ */
+export function createExtensionInput<
+  TExtensionDataMap extends AnyExtensionDataMap,
+  TConfig extends { singleton?: boolean; optional?: boolean },
+>(
+  extensionData: TExtensionDataMap,
+  config?: TConfig,
+): ExtensionInput<
+  never,
+  TExtensionDataMap,
+  {
+    singleton: TConfig['singleton'] extends true ? true : false;
+    optional: TConfig['optional'] extends true ? true : false;
+  }
+>;
 /** @public */
 export function createExtensionInput<
-  TExtensionData extends AnyExtensionDataMap,
+  UExtensionData extends ExtensionDataRef<unknown, string, { optional?: true }>,
+  TConfig extends { singleton?: boolean; optional?: boolean },
+>(
+  extensionData: Array<UExtensionData>,
+  config?: TConfig,
+): ExtensionInput<
+  UExtensionData,
+  never,
+  {
+    singleton: TConfig['singleton'] extends true ? true : false;
+    optional: TConfig['optional'] extends true ? true : false;
+  }
+>;
+export function createExtensionInput<
+  TExtensionData extends ExtensionDataRef<unknown, string, { optional?: true }>,
+  TExtensionDataMap extends AnyExtensionDataMap,
   TConfig extends { singleton?: boolean; optional?: boolean },
 >(
   extensionData: TExtensionData,
   config?: TConfig,
 ): ExtensionInput<
   TExtensionData,
+  TExtensionDataMap,
   {
     singleton: TConfig['singleton'] extends true ? true : false;
     optional: TConfig['optional'] extends true ? true : false;
   }
 > {
+  if (Array.isArray(extensionData)) {
+    const seen = new Set();
+    const duplicates = [];
+    for (const dataRef of extensionData) {
+      if (seen.has(dataRef.id)) {
+        duplicates.push(dataRef.id);
+      } else {
+        seen.add(dataRef.id);
+      }
+    }
+    if (duplicates.length > 0) {
+      throw new Error(
+        `ExtensionInput may not have duplicate data refs: '${duplicates.join(
+          "', '",
+        )}'`,
+      );
+    }
+  }
   return {
     $$type: '@backstage/ExtensionInput',
     extensionData,
