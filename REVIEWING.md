@@ -168,7 +168,7 @@ In this section we will be talking about changed "types", but by that we mean an
 
 #### API Reports
 
-We generate API Reports using the [API Extractor](https://api-extractor.com/) tool. These reports are generated for most packages in the Backstage repository, and are stored in the `api-report.api.md` file of each package. For CLI package we use custom tooling, and instead store the result in `cli-report.md`. Whenever the public API of a package changes, the API Report needs to be updated to reflect the new state of the API. Our CI checks will fail if the API reports are not up to date in a pull request.
+We generate API Reports using the [API Extractor](https://api-extractor.com/) tool. These reports are generated for most packages in the Backstage repository, and are stored in the `report.api.md` file of each package. For CLI package we use custom tooling, and instead store the result in `cli-report.md`. Whenever the public API of a package changes, the API Report needs to be updated to reflect the new state of the API. Our CI checks will fail if the API reports are not up to date in a pull request.
 
 Each API report contains a list of all the exported types of each package. As long as the API report does not have any warnings it will contain the full publicly facing API of the package, meaning you do not need to consider any other changes to the package from the point of view of TypeScript API stability.
 
