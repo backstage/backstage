@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-scaffolder-backend-module-gerrit': minor
+'@backstage/plugin-scaffolder-backend-module-gerrit': patch
 ---
 
-a
+Added test cases for publish:gerrit action
