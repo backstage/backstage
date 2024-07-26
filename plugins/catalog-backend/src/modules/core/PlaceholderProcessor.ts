@@ -143,13 +143,13 @@ export async function yamlPlaceholderResolver(
     documents = yaml.parseAllDocuments(content).filter(d => d);
   } catch (e) {
     throw new Error(
-      `Placeholder \$${params.key} failed to parse YAML data at ${params.value}, ${e}`,
+      `Placeholder $${params.key} failed to parse YAML data at ${params.value}, ${e}`,
     );
   }
 
   if (documents.length !== 1) {
     throw new Error(
-      `Placeholder \$${params.key} expected to find exactly one document of data at ${params.value}, found ${documents.length}`,
+      `Placeholder $${params.key} expected to find exactly one document of data at ${params.value}, found ${documents.length}`,
     );
   }
 
@@ -157,7 +157,7 @@ export async function yamlPlaceholderResolver(
 
   if (document.errors?.length) {
     throw new Error(
-      `Placeholder \$${params.key} found an error in the data at ${params.value}, ${document.errors[0]}`,
+      `Placeholder $${params.key} found an error in the data at ${params.value}, ${document.errors[0].message}`,
     );
   }
 
@@ -175,7 +175,7 @@ export async function jsonPlaceholderResolver(
     return JSON.parse(content);
   } catch (e) {
     throw new Error(
-      `Placeholder \$${params.key} failed to parse JSON data at ${params.value}, ${e}`,
+      `Placeholder $${params.key} failed to parse JSON data at ${params.value}, ${e}`,
     );
   }
 }
@@ -204,7 +204,7 @@ async function readTextLocation(
     return { content: data.toString('utf-8'), url: newUrl };
   } catch (e) {
     throw new Error(
-      `Placeholder \$${params.key} could not read location ${params.value}, ${e}`,
+      `Placeholder $${params.key} could not read location ${params.value}, ${e}`,
     );
   }
 }
@@ -217,7 +217,7 @@ function relativeUrl({
 }: PlaceholderResolverParams): string {
   if (typeof value !== 'string') {
     throw new Error(
-      `Placeholder \$${key} expected a string value parameter, in the form of an absolute URL or a relative path`,
+      `Placeholder $${key} expected a string value parameter, in the form of an absolute URL or a relative path`,
     );
   }
 
@@ -229,7 +229,7 @@ function relativeUrl({
     // path traversal attacks and access to any file on the host system. Implementing this
     // would require additional security measures.
     throw new Error(
-      `Placeholder \$${key} could not form a URL out of ${baseUrl} and ${value}, ${e}`,
+      `Placeholder $${key} could not form a URL out of ${baseUrl} and ${value}, ${e}`,
     );
   }
 }

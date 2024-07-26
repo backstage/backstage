@@ -472,7 +472,7 @@ describe('yamlPlaceholderResolver', () => {
   it('rejects invalid yaml', async () => {
     read.mockResolvedValue(Buffer.from('a: 1\n----\n', 'utf-8'));
     await expect(yamlPlaceholderResolver(params)).rejects.toThrow(
-      /Placeholder \$a found an error in the data at .\/file.yaml, YAMLParseError: Implicit map keys need to be followed by map values at line 2, column 1:\s+a: 1/,
+      /Placeholder \$a found an error in the data at .\/file.yaml, Implicit map keys need to be followed by map values at line 2, column 1:\s+a: 1/,
     );
   });
 
