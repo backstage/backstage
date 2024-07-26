@@ -59,22 +59,22 @@ const simpleExtension = resolveExtensionDefinition(
   }),
 );
 
-function makeSpec<TConfig>(
-  extension: Extension<TConfig>,
+function makeSpec<TConfig, TConfigInput>(
+  extension: Extension<TConfig, TConfigInput>,
   spec?: Partial<AppNodeSpec>,
 ): AppNodeSpec {
   return {
     id: extension.id,
     attachTo: extension.attachTo,
     disabled: extension.disabled,
-    extension,
+    extension: extension as Extension<unknown, unknown>,
     source: undefined,
     ...spec,
   };
 }
 
-function makeNode<TConfig>(
-  extension: Extension<TConfig>,
+function makeNode<TConfig, TConfigInput>(
+  extension: Extension<TConfig, TConfigInput>,
   spec?: Partial<AppNodeSpec>,
 ): AppNode {
   return {
@@ -85,8 +85,8 @@ function makeNode<TConfig>(
   };
 }
 
-function makeInstanceWithId<TConfig>(
-  extension: Extension<TConfig>,
+function makeInstanceWithId<TConfig, TConfigInput>(
+  extension: Extension<TConfig, TConfigInput>,
   config?: TConfig,
 ): AppNode {
   const node = makeNode(extension, { config });

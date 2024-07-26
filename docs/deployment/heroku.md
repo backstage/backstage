@@ -104,7 +104,7 @@ heroku open -a <your-app>
 View logs:
 
 ```shell
-heroku heroku -a <your-app>
+heroku logs -a <your-app>
 ```
 
 ## Docker
