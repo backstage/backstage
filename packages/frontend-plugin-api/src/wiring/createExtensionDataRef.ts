@@ -34,6 +34,13 @@ export type ExtensionDataRef<
 };
 
 /** @public */
+export type AnyExtensionDataRef = ExtensionDataRef<
+  unknown,
+  string,
+  { optional?: true }
+>;
+
+/** @public */
 export interface ConfigurableExtensionDataRef<
   TData,
   TId extends string,
