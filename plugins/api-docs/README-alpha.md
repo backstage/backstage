@@ -303,7 +303,7 @@ See a complete cards list below:
 
 ##### Has Apis Entity Card
 
-An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md) extension that renders a table of entities that have an api relation with a particular Software catalog entity.
+An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/report-alpha.api.md) extension that renders a table of entities that have an api relation with a particular Software catalog entity.
 
 | Kind          | Namespace  | Name       | Id                              |
 | ------------- | ---------- | ---------- | ------------------------------- |
@@ -376,7 +376,7 @@ For more information about where to place extension overrides, see the official 
 
 ##### Definition Entity Card
 
-An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md) extension that renders an entity api definition widget.
+An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/report-alpha.api.md) extension that renders an entity api definition widget.
 
 | Kind          | Namespace  | Name         | Id                                |
 | ------------- | ---------- | ------------ | --------------------------------- |
@@ -449,7 +449,7 @@ For more information about where to place extension overrides, see the official 
 
 ##### Provided Apis Entity Card
 
-An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md) extension that renders a table of apis provided by a particular Software Catalog Component.
+An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/report-alpha.api.md) extension that renders a table of apis provided by a particular Software Catalog Component.
 
 | Kind          | Namespace  | Name            | Id                                   |
 | ------------- | ---------- | --------------- | ------------------------------------ |
@@ -522,7 +522,7 @@ For more information about where to place extension overrides, see the official 
 
 ##### Consumed Apis Entity Card
 
-An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md) extension that renders a table of apis consumed by a particular Software Catalog Component.
+An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/report-alpha.api.md) extension that renders a table of apis consumed by a particular Software Catalog Component.
 
 | Kind          | Namespace  | Name            | Id                                   |
 | ------------- | ---------- | --------------- | ------------------------------------ |
@@ -595,7 +595,7 @@ For more information about where to place extension overrides, see the official 
 
 ##### Providing Components Entity Card
 
-An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md) extension that renders a table of components that provides a particular Software Catalog api.
+An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/report-alpha.api.md) extension that renders a table of components that provides a particular Software Catalog api.
 
 | Kind          | Namespace  | Name                   | Id                                          |
 | ------------- | ---------- | ---------------------- | ------------------------------------------- |
@@ -670,7 +670,7 @@ For more information about where to place extension overrides, see the official 
 
 ##### Consuming Components Entity Card
 
-An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md) extension that renders a table of components that consumes a particular Software Catalog api.
+An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/report-alpha.api.md) extension that renders a table of components that consumes a particular Software Catalog api.
 
 | Kind          | Namespace  | Name                   | Id                                          |
 | ------------- | ---------- | ---------------------- | ------------------------------------------- |
@@ -754,7 +754,7 @@ See a complete contents list below:
 
 ##### Definition Entity Content
 
-An [entity content](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md) extension that renders a tab in the entity page showing a particular entity api definition.
+An [entity content](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/report-alpha.api.md) extension that renders a tab in the entity page showing a particular entity api definition.
 
 | Kind             | Namespace  | Name         | Id                                   |
 | ---------------- | ---------- | ------------ | ------------------------------------ |

@@ -90,7 +90,7 @@ Route binding is also possible through code. For more information, see [this](ht
 
 ### Entity Group Profile Card
 
-This [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md) extension allows you to view, edit, or update groups metadata, such as team avatar, name, email, parent, and child groups.
+This [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/report-alpha.api.md) extension allows you to view, edit, or update groups metadata, such as team avatar, name, email, parent, and child groups.
 
 | Kind          | Namespace | Name            | Id                              |
 | ------------- | --------- | --------------- | ------------------------------- |
@@ -142,7 +142,7 @@ For more information about where to place extension overrides, see the official 
 
 ### Entity Members List Card
 
-An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md) extension that displays the names and emails of group members. By clicking the member's name, you'll be directed to the user's catalog page, and the email opens your default email program.
+An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/report-alpha.api.md) extension that displays the names and emails of group members. By clicking the member's name, you'll be directed to the user's catalog page, and the email opens your default email program.
 
 | Kind          | Namespace | Name           | Id                             |
 | ------------- | --------- | -------------- | ------------------------------ |
@@ -194,7 +194,7 @@ For more information about where to place extension overrides, see the official 
 
 ### Entity Ownership Card
 
-An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md) extension that displays direct or aggregated group or user ownership relationships. Each entity listed in the card links to its respective entity page in the catalog.
+An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/report-alpha.api.md) extension that displays direct or aggregated group or user ownership relationships. Each entity listed in the card links to its respective entity page in the catalog.
 
 | Kind          | Namespace | Name        | Id                          |
 | ------------- | --------- | ----------- | --------------------------- |
@@ -246,7 +246,7 @@ For more information about where to place extension overrides, see the official 
 
 ### Entity User Profile Card
 
-This [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md) extension allows you to view user metadata including avatar, name, email, and team. Clicking on the email link will open your default email program while clicking on the team link will direct you to the team page in the catalog plugin.
+This [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/report-alpha.api.md) extension allows you to view user metadata including avatar, name, email, and team. Clicking on the email link will open your default email program while clicking on the team link will direct you to the team page in the catalog plugin.
 
 | Kind          | Namespace | Name           | Id                             |
 | ------------- | --------- | -------------- | ------------------------------ |
