@@ -68,7 +68,7 @@ In general our changeset feedback bot will take care of informing whether a chan
 
 Changes that do NOT need a new changeset:
 
-- Changes to any test, storybook, or other local development files, for example, `MyComponent.test.tsx`, `MyComponent.stories.tsx`, `**mocks**/MyMock.ts`, `.eslintrc.js`, `setupTests.ts`, or `api-report.api.md`. Explained differently, it is only files that affect the published package that need changesets, such as source files and additional resources like `package.json`, `README.md`, `config.d.ts`, etc.
+- Changes to any test, storybook, or other local development files, for example, `MyComponent.test.tsx`, `MyComponent.stories.tsx`, `**mocks**/MyMock.ts`, `.eslintrc.js`, `setupTests.ts`, or `report.api.md`. Explained differently, it is only files that affect the published package that need changesets, such as source files and additional resources like `package.json`, `README.md`, `config.d.ts`, etc.
 - When tweaking a change that has not yet been released, you can rely on and potentially modify the existing changeset instead.
 - Changes that do not belong to a published packages, either because it's not a package at all, such as `docs/`, or because the package is private, such as `packages/app`.
 - Changes that do not end up having an effect on the published package, such as whitespace fixes or code formatting changes. Although it's also fine to have a short changeset for these kind of changes too.
