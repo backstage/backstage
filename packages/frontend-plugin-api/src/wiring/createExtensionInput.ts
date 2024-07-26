@@ -20,11 +20,23 @@ import { ExtensionDataRef } from './createExtensionDataRef';
 /** @public */
 export interface ExtensionInput<
   TExtensionData extends ExtensionDataRef<unknown, string, { optional?: true }>,
+  TConfig extends { singleton: boolean; optional: boolean },
+> {
+  $$type: '@backstage/ExtensionInput';
+  extensionData: TExtensionData;
+  config: TConfig;
+}
+
+/**
+ * @public
+ * @deprecated This type will be removed. Use `ExtensionInput` instead.
+ */
+export interface LegacyExtensionInput<
   TExtensionDataMap extends AnyExtensionDataMap,
   TConfig extends { singleton: boolean; optional: boolean },
 > {
   $$type: '@backstage/ExtensionInput';
-  extensionData: TExtensionData | TExtensionDataMap;
+  extensionData: TExtensionDataMap;
   config: TConfig;
 }
 
@@ -38,8 +50,7 @@ export function createExtensionInput<
 >(
   extensionData: TExtensionDataMap,
   config?: TConfig,
-): ExtensionInput<
-  never,
+): LegacyExtensionInput<
   TExtensionDataMap,
   {
     singleton: TConfig['singleton'] extends true ? true : false;
@@ -55,7 +66,6 @@ export function createExtensionInput<
   config?: TConfig,
 ): ExtensionInput<
   UExtensionData,
-  never,
   {
     singleton: TConfig['singleton'] extends true ? true : false;
     optional: TConfig['optional'] extends true ? true : false;
@@ -68,14 +78,21 @@ export function createExtensionInput<
 >(
   extensionData: TExtensionData,
   config?: TConfig,
-): ExtensionInput<
-  TExtensionData,
-  TExtensionDataMap,
-  {
-    singleton: TConfig['singleton'] extends true ? true : false;
-    optional: TConfig['optional'] extends true ? true : false;
-  }
-> {
+):
+  | LegacyExtensionInput<
+      TExtensionDataMap,
+      {
+        singleton: TConfig['singleton'] extends true ? true : false;
+        optional: TConfig['optional'] extends true ? true : false;
+      }
+    >
+  | ExtensionInput<
+      TExtensionData,
+      {
+        singleton: TConfig['singleton'] extends true ? true : false;
+        optional: TConfig['optional'] extends true ? true : false;
+      }
+    > {
   if (Array.isArray(extensionData)) {
     const seen = new Set();
     const duplicates = [];

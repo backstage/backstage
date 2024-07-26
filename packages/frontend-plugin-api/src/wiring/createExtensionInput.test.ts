@@ -15,7 +15,11 @@
  */
 
 import { createExtensionDataRef } from './createExtensionDataRef';
-import { ExtensionInput, createExtensionInput } from './createExtensionInput';
+import {
+  ExtensionInput,
+  LegacyExtensionInput,
+  createExtensionInput,
+} from './createExtensionInput';
 
 const stringDataRef = createExtensionDataRef<string>().with({ id: 'str' });
 const numberDataRef = createExtensionDataRef<number>().with({ id: 'num' });
@@ -33,25 +37,21 @@ describe('createExtensionInput', () => {
 
     const x1: ExtensionInput<
       typeof stringDataRef | typeof numberDataRef,
-      never,
       { singleton: false; optional: false }
     > = input;
     // @ts-expect-error
     const x2: ExtensionInput<
       typeof stringDataRef,
-      never,
       { singleton: false; optional: false }
     > = input;
     // @ts-expect-error
     const x3: ExtensionInput<
       typeof stringDataRef | typeof numberDataRef,
-      never,
       { singleton: true; optional: false }
     > = input;
     // @ts-expect-error
     const x4: ExtensionInput<
       typeof stringDataRef | typeof numberDataRef,
-      never,
       { singleton: false; optional: true }
     > = input;
 
@@ -70,25 +70,21 @@ describe('createExtensionInput', () => {
 
     const x1: ExtensionInput<
       typeof stringDataRef | typeof numberDataRef,
-      never,
       { singleton: true; optional: false }
     > = input;
     // @ts-expect-error
     const x2: ExtensionInput<
       typeof stringDataRef,
-      never,
       { singleton: true; optional: false }
     > = input;
     // @ts-expect-error
     const x3: ExtensionInput<
       typeof stringDataRef | typeof numberDataRef,
-      never,
       { singleton: false; optional: false }
     > = input;
     // @ts-expect-error
     const x4: ExtensionInput<
       typeof stringDataRef | typeof numberDataRef,
-      never,
       { singleton: false; optional: true }
     > = input;
 
@@ -108,25 +104,21 @@ describe('createExtensionInput', () => {
 
     const x1: ExtensionInput<
       typeof stringDataRef | typeof numberDataRef,
-      never,
       { singleton: true; optional: true }
     > = input;
     // @ts-expect-error
     const x2: ExtensionInput<
       typeof stringDataRef,
-      never,
       { singleton: true; optional: true }
     > = input;
     // @ts-expect-error
     const x3: ExtensionInput<
       typeof stringDataRef | typeof numberDataRef,
-      never,
       { singleton: false; optional: false }
     > = input;
     // @ts-expect-error
     const x4: ExtensionInput<
       typeof stringDataRef | typeof numberDataRef,
-      never,
       { singleton: false; optional: true }
     > = input;
 
@@ -151,26 +143,22 @@ describe('createExtensionInput', () => {
         config: { singleton: false, optional: false },
       });
 
-      const x1: ExtensionInput<
-        never,
+      const x1: LegacyExtensionInput<
         { str: typeof stringDataRef; num: typeof numberDataRef },
         { singleton: false; optional: false }
       > = input;
       // @ts-expect-error
-      const x2: ExtensionInput<
-        never,
+      const x2: LegacyExtensionInput<
         { str: typeof numberDataRef; num: typeof stringDataRef }, // switched
         { singleton: false; optional: false }
       > = input;
       // @ts-expect-error
-      const x3: ExtensionInput<
-        never,
+      const x3: LegacyExtensionInput<
         { str: typeof stringDataRef; num: typeof numberDataRef },
         { singleton: true; optional: false }
       > = input;
       // @ts-expect-error
-      const x4: ExtensionInput<
-        never,
+      const x4: LegacyExtensionInput<
         { str: typeof stringDataRef; num: typeof numberDataRef },
         { singleton: false; optional: true }
       > = input;
