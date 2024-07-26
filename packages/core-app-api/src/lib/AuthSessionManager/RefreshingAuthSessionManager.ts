@@ -106,7 +106,7 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
           }
           throw new Error(
             `Cannot create a new session after failing to refresh the session. Session refresh error: ${error}`,
-            err,
+            { cause: err },
           );
         }
       }
