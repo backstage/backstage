@@ -32,9 +32,11 @@ import { resolveAppTree } from './resolveAppTree';
 import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 import { withLogCollector } from '@backstage/test-utils';
 
-const testDataRef = createExtensionDataRef<string>('test');
-const otherDataRef = createExtensionDataRef<number>('other');
-const inputMirrorDataRef = createExtensionDataRef<unknown>('mirror');
+const testDataRef = createExtensionDataRef<string>().with({ id: 'test' });
+const otherDataRef = createExtensionDataRef<number>().with({ id: 'other' });
+const inputMirrorDataRef = createExtensionDataRef<unknown>().with({
+  id: 'mirror',
+});
 
 const simpleExtension = resolveExtensionDefinition(
   createExtension({
@@ -57,22 +59,22 @@ const simpleExtension = resolveExtensionDefinition(
   }),
 );
 
-function makeSpec<TConfig>(
-  extension: Extension<TConfig>,
+function makeSpec<TConfig, TConfigInput>(
+  extension: Extension<TConfig, TConfigInput>,
   spec?: Partial<AppNodeSpec>,
 ): AppNodeSpec {
   return {
     id: extension.id,
     attachTo: extension.attachTo,
     disabled: extension.disabled,
-    extension,
+    extension: extension as Extension<unknown, unknown>,
     source: undefined,
     ...spec,
   };
 }
 
-function makeNode<TConfig>(
-  extension: Extension<TConfig>,
+function makeNode<TConfig, TConfigInput>(
+  extension: Extension<TConfig, TConfigInput>,
   spec?: Partial<AppNodeSpec>,
 ): AppNode {
   return {
@@ -83,8 +85,8 @@ function makeNode<TConfig>(
   };
 }
 
-function makeInstanceWithId<TConfig>(
-  extension: Extension<TConfig>,
+function makeInstanceWithId<TConfig, TConfigInput>(
+  extension: Extension<TConfig, TConfigInput>,
   config?: TConfig,
 ): AppNode {
   const node = makeNode(extension, { config });

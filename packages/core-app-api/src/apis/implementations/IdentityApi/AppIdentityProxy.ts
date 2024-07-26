@@ -153,8 +153,9 @@ export class AppIdentityProxy implements IdentityApi {
       // It is fine if we do NOT worry yet about deleting cookies for OTHER backends like techdocs
       const appBaseUrl = await ctx.discoveryApi.getBaseUrl('app');
       try {
-        await ctx.fetchApi.fetch(`${appBaseUrl}/.backstage/auth/v1/cookie`, {
+        await fetch(`${appBaseUrl}/.backstage/auth/v1/cookie`, {
           method: 'DELETE',
+          credentials: 'include',
         });
       } catch {
         // Ignore the error for those who use static serving of the frontend

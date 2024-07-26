@@ -295,7 +295,32 @@ describe('helpers', () => {
         'edit_uri: https://github.com/backstage/backstage/edit/main/docs',
       );
       expect(updatedMkdocsYml.toString()).not.toContain(
-        'https://github.com/neworg/newrepo',
+        'edit_uri: https://github.com/neworg/newrepo',
+      );
+    });
+
+    it('should add edit_uri to mkdocs.yml with existing repo_url', async () => {
+      const parsedLocationAnnotation: ParsedLocationAnnotation = {
+        type: 'url',
+        target: 'https://github.com/neworg/newrepo/tree/main/',
+      };
+
+      await patchMkdocsYmlPreBuild(
+        mockDir.resolve('mkdocs_with_repo_url.yml'),
+        mockLogger,
+        parsedLocationAnnotation,
+        scmIntegrations,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_with_repo_url.yml'),
+      );
+
+      expect(updatedMkdocsYml.toString()).toContain(
+        'edit_uri: https://github.com/neworg/newrepo/edit/main/docs',
+      );
+      expect(updatedMkdocsYml.toString()).toContain(
+        'repo_url: https://github.com/backstage/backstage',
       );
     });
 

@@ -28,6 +28,13 @@ export interface Config {
           callbackUrl?: string;
           enterpriseInstanceUrl?: string;
           additionalScopes?: string | string[];
+          signIn?: {
+            resolvers: Array<
+              | { resolver: 'usernameMatchingUserEntityName' }
+              | { resolver: 'emailLocalPartMatchingUserEntityName' }
+              | { resolver: 'emailMatchingUserEntityProfileEmail' }
+            >;
+          };
         };
       };
     };

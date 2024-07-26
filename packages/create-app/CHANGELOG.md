@@ -1,5 +1,13 @@
 # @backstage/create-app
 
+## 0.5.18-next.0
+
+### Patch Changes
+
+- c0a705d: Added the Kubernetes plugin to `create-app`
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+
 ## 0.5.17
 
 ### Patch Changes

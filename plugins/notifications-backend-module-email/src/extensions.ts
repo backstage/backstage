@@ -20,9 +20,9 @@ import { Notification } from '@backstage/plugin-notifications-common';
  * @public
  */
 export interface NotificationTemplateRenderer {
-  getSubject?(notification: Notification): string;
-  getText?(notification: Notification): string;
-  getHtml?(notification: Notification): string;
+  getSubject?(notification: Notification): Promise<string>;
+  getText?(notification: Notification): Promise<string>;
+  getHtml?(notification: Notification): Promise<string>;
 }
 
 /**

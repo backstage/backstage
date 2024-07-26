@@ -280,10 +280,10 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
     const mailOptions = {
       from: this.sender,
       subject:
-        this.templateRenderer?.getSubject?.(notification) ??
+        (await this.templateRenderer?.getSubject?.(notification)) ??
         notification.payload.title,
-      html: this.templateRenderer?.getHtml?.(notification),
-      text: this.templateRenderer?.getText?.(notification),
+      html: await this.templateRenderer?.getHtml?.(notification),
+      text: await this.templateRenderer?.getText?.(notification),
       replyTo: this.replyTo,
     };
 

@@ -1,5 +1,20 @@
 # @backstage/plugin-catalog-graph
 
+## 0.4.8-next.0
+
+### Patch Changes
+
+- fba7537: Memoize entity graph nodes when applying an `entityFilter` to prevent repeated redraws
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.8-next.0
+  - @backstage/plugin-catalog-react@1.12.3-next.0
+  - @backstage/core-components@0.14.10-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/core-compat-api@0.2.8-next.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/types@1.1.1
+
 ## 0.4.7
 
 ### Patch Changes

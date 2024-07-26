@@ -27,6 +27,13 @@ export interface Config {
           clientSecret: string;
           issuer: string;
           callbackUrl?: string;
+          signIn?: {
+            resolvers: Array<
+              | { resolver: 'usernameMatchingUserEntityName' }
+              | { resolver: 'emailLocalPartMatchingUserEntityName' }
+              | { resolver: 'emailMatchingUserEntityProfileEmail' }
+            >;
+          };
         };
       };
     };

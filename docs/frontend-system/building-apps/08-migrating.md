@@ -314,6 +314,31 @@ const app = createApp({
 });
 ```
 
+### `icons`
+
+Icons are now installed as extensions, using the `IconBundleBlueprint` to make new instances which can be added to the app.
+
+```ts
+import { IconBundleBlueprint } from '@backstage/frontend-plugin-api';
+
+const exampleIconBundle = IconBundleBlueprint.make({
+  name: 'example-bundle',
+  params: {
+    icons: {
+      user: MyOwnUserIcon,
+    },
+  },
+});
+
+const app = createApp({
+  features: [
+    createExtensionOverrides({
+      extensions: [exampleIconBundle],
+    }),
+  ],
+});
+```
+
 ### `bindRoutes`
 
 Route bindings can still be done using this option, but you now also have the ability to bind routes using static configuration instead. See the section on [binding routes](../architecture/07-routes.md#binding-external-route-references) for more information.

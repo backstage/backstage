@@ -1,5 +1,26 @@
 # @backstage/plugin-catalog-react
 
+## 1.12.3-next.0
+
+### Patch Changes
+
+- 31bfc44: Updated alpha definitions of extension data references.
+- 9b89b82: Internal refactor to remove unnecessary `routable` prop in the implementation of the `createEntityContentExtension` alpha export.
+- bebd569: Fix extra divider displayed on user list picker component
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.8-next.0
+  - @backstage/core-components@0.14.10-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+  - @backstage/integration-react@1.1.30-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+  - @backstage/plugin-catalog-common@1.0.25
+  - @backstage/plugin-permission-common@0.8.0
+  - @backstage/plugin-permission-react@0.4.24
+
 ## 1.12.2
 
 ### Patch Changes

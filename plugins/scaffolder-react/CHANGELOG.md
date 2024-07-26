@@ -1,5 +1,27 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.11.0-next.0
+
+### Minor Changes
+
+- 8839381: Add scaffolder option to display object items in separate rows on review page
+
+### Patch Changes
+
+- d0e95a7: Add ability to customise form fields in the UI by exposing `uiSchema` and `formContext` in `FormProps`
+- 4670f06: support `ajv-errors` for scaffolder validation to allow for customizing the error messages
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.12.3-next.0
+  - @backstage/core-components@0.14.10-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/theme@0.5.6
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+  - @backstage/plugin-permission-react@0.4.24
+  - @backstage/plugin-scaffolder-common@1.5.4
+
 ## 1.10.0
 
 ### Minor Changes
