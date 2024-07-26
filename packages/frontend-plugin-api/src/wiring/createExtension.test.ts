@@ -357,7 +357,68 @@ describe('createExtension', () => {
     }).toThrow("Missing required value at 'foo'");
   });
 
-  it('should new form of inputs and outputs', () => {
+  it('should support new form of outputs', () => {
+    // @ts-expect-error
+    createExtension({
+      namespace: 'test',
+      attachTo: { id: 'root', input: 'default' },
+      output: [stringDataRef, numberDataRef],
+      factory() {
+        return []; // Missing all outputs
+      },
+    });
+
+    // @ts-expect-error
+    createExtension({
+      namespace: 'test',
+      attachTo: { id: 'root', input: 'default' },
+      output: [stringDataRef, numberDataRef],
+      factory() {
+        return [stringDataRef('hello')]; // Missing number output
+      },
+    });
+
+    // Duplicate output, we won't attempt to handle this a compile time and instead error out at runtime
+    createExtension({
+      namespace: 'test',
+      attachTo: { id: 'root', input: 'default' },
+      output: [stringDataRef],
+      factory() {
+        return [stringDataRef('hello'), stringDataRef('hello')];
+      },
+    });
+
+    createExtension({
+      namespace: 'test',
+      attachTo: { id: 'root', input: 'default' },
+      output: [stringDataRef, numberDataRef],
+      factory() {
+        return [stringDataRef('hello'), numberDataRef(4)];
+      },
+    });
+
+    createExtension({
+      namespace: 'test',
+      attachTo: { id: 'root', input: 'default' },
+      output: [stringDataRef, numberDataRef.optional()],
+      factory() {
+        return [stringDataRef('hello'), numberDataRef(4)];
+      },
+    });
+
+    createExtension({
+      namespace: 'test',
+      attachTo: { id: 'root', input: 'default' },
+      output: [stringDataRef, numberDataRef.optional()],
+      factory() {
+        return [stringDataRef('hello')]; // Missing number output, but it's optional so that's allowed
+      },
+    });
+
+    expect(true).toBe(true);
+  });
+
+  it('should support new form of inputs', () => {
     createExtension({
       namespace: 'test',
       attachTo: { id: 'root', input: 'default' },
@@ -386,55 +447,6 @@ describe('createExtension', () => {
         unused(x1);
 
         return [stringDataRef(contentStr.repeat(contentNum))];
-      },
-    });
-
-    // Double output
-    createExtension({
-      namespace: 'test',
-      attachTo: { id: 'root', input: 'default' },
-      output: [stringDataRef],
-      // @ts-expect-error
-      factory() {
-        return [stringDataRef('hello'), stringDataRef('hello')];
-      },
-    });
-
-    // Missing output
-    createExtension({
-      namespace: 'test',
-      attachTo: { id: 'root', input: 'default' },
-      output: [stringDataRef, numberDataRef],
-      // @ts-expect-error
-      factory() {
-        return [stringDataRef('hello')];
-      },
-    });
-
-    createExtension({
-      namespace: 'test',
-      attachTo: { id: 'root', input: 'default' },
-      output: [stringDataRef, numberDataRef],
-      factory() {
-        return [stringDataRef('hello'), numberDataRef(4)];
-      },
-    });
-
-    createExtension({
-      namespace: 'test',
-      attachTo: { id: 'root', input: 'default' },
-      output: [stringDataRef, numberDataRef.optional()],
-      factory() {
-        return [stringDataRef('hello'), numberDataRef(4)];
-      },
-    });
-
-    createExtension({
-      namespace: 'test',
-      attachTo: { id: 'root', input: 'default' },
-      output: [stringDataRef, numberDataRef.optional()],
-      factory() {
-        return [stringDataRef('hello')];
       },
     });
 

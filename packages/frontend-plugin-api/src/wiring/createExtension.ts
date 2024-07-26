@@ -143,27 +143,6 @@ export interface LegacyCreateExtensionOptions<
   }): Expand<ExtensionDataValues<TOutput>>;
 }
 
-// TODO(Rugvip): This creates a permutation of all possible output tuples,
-// taking the optionality into account. It's not optimal, since it might hurt
-// performance for large outputs, doesn't provide a very clear error message,
-// and doesn't allow us to refactor to allow for a generator.
-/** @public */
-type ExtensionFactoryOutput<
-  URef extends AnyExtensionDataRef,
-  TPickRef extends AnyExtensionDataRef = URef,
-> = [URef] extends [never]
-  ? []
-  : TPickRef extends ExtensionDataRef<infer IData, infer IId, infer IConfig>
-  ?
-      | (IConfig['optional'] extends true
-          ? ExtensionFactoryOutput<Exclude<URef, TPickRef>>
-          : never)
-      | [
-          ExtensionDataValue<IData, IId>,
-          ...ExtensionFactoryOutput<Exclude<URef, TPickRef>>,
-        ]
-  : never;
-
 /** @public */
 export type CreateExtensionOptions<
   UOutput extends AnyExtensionDataRef,
@@ -171,6 +150,7 @@ export type CreateExtensionOptions<
   TConfig,
   TConfigInput,
   TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
+  UFactoryOutput extends ExtensionDataValue<any, any>,
 > = {
   kind?: string;
   namespace?: string;
@@ -195,8 +175,23 @@ export type CreateExtensionOptions<
             >;
           });
     inputs: Expand<ResolvedExtensionInputs<TInputs>>;
-  }): ExtensionFactoryOutput<UOutput>;
-};
+  }): Iterable<UFactoryOutput>;
+} & ((
+  UOutput extends any
+    ? UOutput['config']['optional'] extends true
+      ? never
+      : UOutput['id']
+    : never
+) extends infer IRequiredOutputIds
+  ? [IRequiredOutputIds] extends [UFactoryOutput['id']]
+    ? {}
+    : {
+        'Error: The extension factory is missing the following outputs': Exclude<
+          IRequiredOutputIds,
+          UFactoryOutput['id']
+        >;
+      }
+  : never);
 
 /** @public */
 export interface ExtensionDefinition<TConfig, TConfigInput = TConfig> {
@@ -256,13 +251,15 @@ export function createExtension<
   TConfig,
   TConfigInput,
   TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
+  UFactoryOutput extends ExtensionDataValue<any, any>,
 >(
   options: CreateExtensionOptions<
     UOutput,
     TInputs,
     TConfig,
     TConfigInput,
-    TConfigSchema
+    TConfigSchema,
+    UFactoryOutput
   >,
 ): ExtensionDefinition<
   TConfig &
@@ -320,6 +317,7 @@ export function createExtension<
   TConfig,
   TConfigInput,
   TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
+  UFactoryOutput extends ExtensionDataValue<any, any>,
 >(
   options:
     | CreateExtensionOptions<
@@ -327,7 +325,8 @@ export function createExtension<
         TInputs,
         TConfig,
         TConfigInput,
-        TConfigSchema
+        TConfigSchema,
+        UFactoryOutput
       >
     | LegacyCreateExtensionOptions<
         AnyExtensionDataMap,
