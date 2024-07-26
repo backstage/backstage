@@ -393,16 +393,19 @@ export async function runApiExtraction({
     );
 
     const remainingReportFiles = new Set(
-      fs.readdirSync(projectFolder).filter(filename =>
-        // https://regex101.com/r/QDZIV0/1
-        filename.match(/^.*?api-report(-[^.-]+)?(\.md(\.api\.md)?)$/),
+      fs.readdirSync(projectFolder).filter(
+        filename =>
+          // https://regex101.com/r/QDZIV0/2
+          filename !== 'knip-report.md' &&
+          // this has to temporarily match all old api report formats
+          filename.match(/^.*?(api-)?report(-[^.-]+)?(.*?)\.md$/),
       ),
     );
 
     for (const packageEntryPoint of packageEntryPoints) {
       const suffix =
         packageEntryPoint.name === 'index' ? '' : `-${packageEntryPoint.name}`;
-      const reportFileName = `api-report${suffix}`;
+      const reportFileName = `report${suffix}`;
       const reportPath = resolvePath(projectFolder, reportFileName);
       remainingReportFiles.delete(reportFileName);
 
