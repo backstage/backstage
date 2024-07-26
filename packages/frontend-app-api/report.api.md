@@ -62,5 +62,5 @@ export function createSpecializedApp(options?: {
 
 // Warnings were encountered during analysis:
 //
-// src/wiring/createApp.d.ts:26:1 - (ae-undocumented) Missing documentation for "createApp".
+// src/wiring/createApp.d.ts:32:1 - (ae-undocumented) Missing documentation for "createApp".
 ```

@@ -159,6 +159,7 @@ export const rootHttpRouterServiceFactory: ((
 // src/entrypoints/rootHttpRouter/DefaultRootHttpRouter.d.ts:23:5 - (ae-undocumented) Missing documentation for "create".
 // src/entrypoints/rootHttpRouter/DefaultRootHttpRouter.d.ts:25:5 - (ae-undocumented) Missing documentation for "use".
 // src/entrypoints/rootHttpRouter/DefaultRootHttpRouter.d.ts:26:5 - (ae-undocumented) Missing documentation for "handler".
+// src/entrypoints/rootHttpRouter/createHealthRouter.d.ts:6:1 - (ae-undocumented) Missing documentation for "createHealthRouter".
 // src/entrypoints/rootHttpRouter/http/MiddlewareFactory.d.ts:9:5 - (ae-undocumented) Missing documentation for "config".
 // src/entrypoints/rootHttpRouter/http/MiddlewareFactory.d.ts:10:5 - (ae-undocumented) Missing documentation for "logger".
 // src/entrypoints/rootHttpRouter/http/types.d.ts:9:5 - (ae-undocumented) Missing documentation for "start".
