@@ -317,7 +317,7 @@ export const techDocsSearchResultListItemExtension: ExtensionDefinition<{
 // Warnings were encountered during analysis:
 //
 // src/alpha.d.ts:2:22 - (ae-undocumented) Missing documentation for "techDocsSearchResultListItemExtension".
-// src/alpha.d.ts:10:15 - (ae-undocumented) Missing documentation for "_default".
+// src/alpha.d.ts:16:15 - (ae-undocumented) Missing documentation for "_default".
 
 // (No @packageDocumentation comment for this package)
 ```

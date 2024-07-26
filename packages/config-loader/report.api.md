@@ -293,9 +293,9 @@ export type TransformFunc<T extends number | string | boolean> = (
 // src/sources/ConfigSources.d.ts:42:5 - (ae-undocumented) Missing documentation for "watch".
 // src/sources/ConfigSources.d.ts:43:5 - (ae-undocumented) Missing documentation for "rootDir".
 // src/sources/ConfigSources.d.ts:44:5 - (ae-undocumented) Missing documentation for "remote".
-// src/sources/ConfigSources.d.ts:60:5 - (ae-undocumented) Missing documentation for "targets".
-// src/sources/ConfigSources.d.ts:68:5 - (ae-undocumented) Missing documentation for "argv".
-// src/sources/ConfigSources.d.ts:69:5 - (ae-undocumented) Missing documentation for "env".
+// src/sources/ConfigSources.d.ts:65:5 - (ae-undocumented) Missing documentation for "targets".
+// src/sources/ConfigSources.d.ts:73:5 - (ae-undocumented) Missing documentation for "argv".
+// src/sources/ConfigSources.d.ts:74:5 - (ae-undocumented) Missing documentation for "env".
 // src/sources/EnvConfigSource.d.ts:46:5 - (ae-undocumented) Missing documentation for "readConfigData".
 // src/sources/EnvConfigSource.d.ts:47:5 - (ae-undocumented) Missing documentation for "toString".
 // src/sources/FileConfigSource.d.ts:40:5 - (ae-undocumented) Missing documentation for "readConfigData".

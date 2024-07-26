@@ -198,8 +198,8 @@ export const searchPage: ExtensionDefinition<{
 //
 // src/alpha.d.ts:2:22 - (ae-undocumented) Missing documentation for "searchApi".
 // src/alpha.d.ts:4:22 - (ae-undocumented) Missing documentation for "searchPage".
-// src/alpha.d.ts:9:22 - (ae-undocumented) Missing documentation for "searchNavItem".
-// src/alpha.d.ts:13:15 - (ae-undocumented) Missing documentation for "_default".
+// src/alpha.d.ts:12:22 - (ae-undocumented) Missing documentation for "searchNavItem".
+// src/alpha.d.ts:18:15 - (ae-undocumented) Missing documentation for "_default".
 
 // (No @packageDocumentation comment for this package)
 ```

@@ -59,8 +59,8 @@ export const createPublishBitbucketServerPullRequestAction: typeof bitbucketServ
 
 // Warnings were encountered during analysis:
 //
-// src/deprecated.d.ts:7:22 - (ae-undocumented) Missing documentation for "createPublishBitbucketCloudAction".
-// src/deprecated.d.ts:11:22 - (ae-undocumented) Missing documentation for "createBitbucketPipelinesRunAction".
-// src/deprecated.d.ts:22:22 - (ae-undocumented) Missing documentation for "createPublishBitbucketServerAction".
-// src/deprecated.d.ts:26:22 - (ae-undocumented) Missing documentation for "createPublishBitbucketServerPullRequestAction".
+// src/deprecated.d.ts:8:22 - (ae-undocumented) Missing documentation for "createPublishBitbucketCloudAction".
+// src/deprecated.d.ts:13:22 - (ae-undocumented) Missing documentation for "createBitbucketPipelinesRunAction".
+// src/deprecated.d.ts:29:22 - (ae-undocumented) Missing documentation for "createPublishBitbucketServerAction".
+// src/deprecated.d.ts:34:22 - (ae-undocumented) Missing documentation for "createPublishBitbucketServerPullRequestAction".
 ```

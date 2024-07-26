@@ -130,7 +130,7 @@ export const userSettingsTranslationRef: TranslationRef<
 // Warnings were encountered during analysis:
 //
 // src/alpha.d.ts:3:22 - (ae-undocumented) Missing documentation for "settingsNavItem".
-// src/alpha.d.ts:9:15 - (ae-undocumented) Missing documentation for "_default".
+// src/alpha.d.ts:11:15 - (ae-undocumented) Missing documentation for "_default".
 // src/translation.d.ts:2:22 - (ae-undocumented) Missing documentation for "userSettingsTranslationRef".
 
 // (No @packageDocumentation comment for this package)
