@@ -407,7 +407,6 @@ export async function runApiExtraction({
         packageEntryPoint.name === 'index' ? '' : `-${packageEntryPoint.name}`;
       const reportFileName = `report${suffix}`;
       const reportPath = resolvePath(projectFolder, reportFileName);
-      remainingReportFiles.delete(reportFileName);
 
       const warningCountBefore = await countApiReportWarnings(reportPath);
 
@@ -484,6 +483,11 @@ export async function runApiExtraction({
         tsdocConfigFile: await getTsDocConfig(),
         ignoreMissingEntryPoint: true,
       });
+
+      // remove extracted reports from current list
+      for (const reportConfig of extractorConfig.reportConfigs) {
+        remainingReportFiles.delete(reportConfig.fileName);
+      }
 
       // The `packageFolder` needs to point to the location within `dist-types` in order for relative
       // paths to be logged. Unfortunately the `prepare` method above derives it from the `packageJsonFullPath`,
