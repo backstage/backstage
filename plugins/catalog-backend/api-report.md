@@ -64,6 +64,7 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmLocationAnalyzer as ScmLocationAnalyzer_2 } from '@backstage/plugin-catalog-node';
 import { TokenManager } from '@backstage/backend-common';
 import { UrlReader } from '@backstage/backend-common';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { Validators } from '@backstage/catalog-model';
 
 // @public @deprecated
@@ -413,7 +414,7 @@ export class PlaceholderProcessor implements CatalogProcessor_2 {
 // @public (undocumented)
 export type PlaceholderProcessorOptions = {
   resolvers: Record<string, PlaceholderResolver_2>;
-  reader: UrlReader;
+  reader: UrlReaderService;
   integrations: ScmIntegrationRegistry;
 };
 
