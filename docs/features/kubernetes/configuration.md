@@ -539,11 +539,9 @@ Overrides for the Kubernetes object types fetched from the cluster. The default 
 - ingresses
 - statefulsets
 - daemonsets
-- secrets
 
-You may use this config to override the default object types if you only want a subset of
-the default ones. However, it's currently not supported to fetch object types other
-than the ones specified in the default types.
+You may use this config to override the default object types if you only want specific ones.
+However, the only additional object type to fetch at the moment is `secrets`.
 
 Example:
 
@@ -557,6 +555,7 @@ kubernetes:
     - pods
     - services
     - statefulsets
+    - secrets
 ```
 
 ### Role Based Access Control

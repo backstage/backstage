@@ -137,12 +137,16 @@ export const DEFAULT_OBJECTS: ObjectToFetch[] = [
     plural: 'daemonsets',
     objectType: 'daemonsets',
   },
+];
+
+export const ALL_OBJECTS: ObjectToFetch[] = [
   {
     group: '',
     apiVersion: 'v1',
     plural: 'secrets',
     objectType: 'secrets',
   },
+  ...DEFAULT_OBJECTS,
 ];
 
 export interface KubernetesFanOutHandlerOptions
