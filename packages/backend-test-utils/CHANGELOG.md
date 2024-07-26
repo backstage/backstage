@@ -1,5 +1,20 @@
 # @backstage/backend-test-utils
 
+## 0.4.5-next.0
+
+### Patch Changes
+
+- 4e79d19: The default services for `startTestBackend` and `ServiceFactoryTester` now includes the Root Health Service.
+- Updated dependencies
+  - @backstage/backend-defaults@0.4.2-next.0
+  - @backstage/backend-app-api@0.8.1-next.0
+  - @backstage/backend-plugin-api@0.7.1-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.18-next.0
+  - @backstage/plugin-events-node@0.3.9-next.0
+
 ## 0.4.4
 
 ### Patch Changes

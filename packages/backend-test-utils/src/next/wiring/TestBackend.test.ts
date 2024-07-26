@@ -242,6 +242,15 @@ describe('TestBackend', () => {
     expect(res.body).toEqual({ message: 'pong' });
   });
 
+  it('should expose health check endpoints', async () => {
+    const { server } = await startTestBackend({ features: [] });
+
+    const res = await request(server).get('/.backstage/health/v1/liveness');
+
+    expect(res.status).toEqual(200);
+    expect(res.body).toEqual({ status: 'ok' });
+  });
+
   it('should provide extension point implementations', async () => {
     expect.assertions(3);
 

@@ -18,6 +18,7 @@ export {
   DefaultRootHttpRouter,
   type DefaultRootHttpRouterOptions,
 } from './DefaultRootHttpRouter';
+export { createHealthRouter } from './createHealthRouter';
 export * from './http';
 export {
   rootHttpRouterServiceFactory,

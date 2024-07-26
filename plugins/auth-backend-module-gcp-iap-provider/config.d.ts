@@ -32,6 +32,15 @@ export interface Config {
            * The name of the header to read the JWT token from, defaults to `'x-goog-iap-jwt-assertion'`.
            */
           jwtHeader?: string;
+
+          signIn?: {
+            resolvers: Array<
+              | { resolver: 'emailMatchingUserEntityAnnotation' }
+              | { resolver: 'idMatchingUserEntityAnnotation' }
+              | { resolver: 'emailLocalPartMatchingUserEntityName' }
+              | { resolver: 'emailMatchingUserEntityProfileEmail' }
+            >;
+          };
         };
       };
     };

@@ -24,6 +24,7 @@ import {
   createExtensionInput,
   createThemeExtension,
   createTranslationExtension,
+  IconBundleBlueprint,
 } from '@backstage/frontend-plugin-api';
 
 export const App = createExtension({
@@ -41,6 +42,9 @@ export const App = createExtension({
     }),
     translations: createExtensionInput({
       translation: createTranslationExtension.translationDataRef,
+    }),
+    icons: createExtensionInput({
+      icon: IconBundleBlueprint.dataRefs.icons,
     }),
     root: createExtensionInput(
       {

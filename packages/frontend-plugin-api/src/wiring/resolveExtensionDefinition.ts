@@ -26,16 +26,17 @@ import {
 import { PortableSchema } from '../schema';
 
 /** @public */
-export interface Extension<TConfig> {
+export interface Extension<TConfig, TConfigInput = TConfig> {
   $$type: '@backstage/Extension';
   readonly id: string;
   readonly attachTo: { id: string; input: string };
   readonly disabled: boolean;
-  readonly configSchema?: PortableSchema<TConfig>;
+  readonly configSchema?: PortableSchema<TConfig, TConfigInput>;
 }
 
 /** @internal */
-export interface InternalExtension<TConfig> extends Extension<TConfig> {
+export interface InternalExtension<TConfig, TConfigInput>
+  extends Extension<TConfig, TConfigInput> {
   readonly version: 'v1';
   readonly inputs: AnyExtensionInputMap;
   readonly output: AnyExtensionDataMap;
@@ -47,10 +48,10 @@ export interface InternalExtension<TConfig> extends Extension<TConfig> {
 }
 
 /** @internal */
-export function toInternalExtension<TConfig>(
-  overrides: Extension<TConfig>,
-): InternalExtension<TConfig> {
-  const internal = overrides as InternalExtension<TConfig>;
+export function toInternalExtension<TConfig, TConfigInput>(
+  overrides: Extension<TConfig, TConfigInput>,
+): InternalExtension<TConfig, TConfigInput> {
+  const internal = overrides as InternalExtension<TConfig, TConfigInput>;
   if (internal.$$type !== '@backstage/Extension') {
     throw new Error(
       `Invalid extension instance, bad type '${internal.$$type}'`,
@@ -65,10 +66,10 @@ export function toInternalExtension<TConfig>(
 }
 
 /** @internal */
-export function resolveExtensionDefinition<TConfig>(
-  definition: ExtensionDefinition<TConfig>,
+export function resolveExtensionDefinition<TConfig, TConfigInput>(
+  definition: ExtensionDefinition<TConfig, TConfigInput>,
   context?: { namespace?: string },
-): Extension<TConfig> {
+): Extension<TConfig, TConfigInput> {
   const internalDefinition = toInternalExtensionDefinition(definition);
   const { name, kind, namespace: _, ...rest } = internalDefinition;
   const namespace = internalDefinition.namespace ?? context?.namespace;
@@ -91,5 +92,5 @@ export function resolveExtensionDefinition<TConfig>(
     toString() {
       return `Extension{id=${id}}`;
     },
-  } as Extension<TConfig>;
+  } as Extension<TConfig, TConfigInput>;
 }

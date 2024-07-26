@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.5.31-next.0
+
+### Patch Changes
+
+- 58dff4d: Added option to ingest groups based on their group membership in Azure Entra ID
+- Updated dependencies
+  - @backstage/backend-common@0.23.4-next.0
+  - @backstage/plugin-catalog-node@1.12.5-next.0
+  - @backstage/backend-plugin-api@0.7.1-next.0
+  - @backstage/backend-tasks@0.5.28-next.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/plugin-catalog-common@1.0.25
+
 ## 0.5.30
 
 ### Patch Changes

@@ -99,14 +99,14 @@ export const catalogTranslationRef: TranslationRef<
 // @alpha (undocumented)
 export function createCatalogFilterExtension<
   TInputs extends AnyExtensionInputMap,
-  TConfig = never,
+  TConfig,
 >(options: {
   namespace?: string;
   name?: string;
   inputs?: TInputs;
   configSchema?: PortableSchema<TConfig>;
   loader: (options: { config: TConfig }) => Promise<JSX.Element>;
-}): ExtensionDefinition<TConfig>;
+}): ExtensionDefinition<TConfig & {}, TConfig & {}>;
 
 // @alpha (undocumented)
 const _default: BackstagePlugin<

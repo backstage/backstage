@@ -11,7 +11,11 @@ const _default: BackstagePlugin<{}, {}>;
 export default _default;
 
 // @alpha (undocumented)
-export const titleExtensionDataRef: ConfigurableExtensionDataRef<string, {}>;
+export const titleExtensionDataRef: ConfigurableExtensionDataRef<
+  'title',
+  string,
+  {}
+>;
 
 // (No @packageDocumentation comment for this package)
 ```

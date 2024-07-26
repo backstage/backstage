@@ -36,15 +36,15 @@ export * from './translation';
 
 /** @alpha */
 export const catalogExtensionData = {
-  entityContentTitle: createExtensionDataRef<string>(
-    'catalog.entity-content-title',
-  ),
-  entityFilterFunction: createExtensionDataRef<(entity: Entity) => boolean>(
-    'catalog.entity-filter-function',
-  ),
-  entityFilterExpression: createExtensionDataRef<string>(
-    'catalog.entity-filter-expression',
-  ),
+  entityContentTitle: createExtensionDataRef<string>().with({
+    id: 'catalog.entity-content-title',
+  }),
+  entityFilterFunction: createExtensionDataRef<
+    (entity: Entity) => boolean
+  >().with({ id: 'catalog.entity-filter-function' }),
+  entityFilterExpression: createExtensionDataRef<string>().with({
+    id: 'catalog.entity-filter-expression',
+  }),
 };
 
 // TODO: Figure out how to merge with provided config schema

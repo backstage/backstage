@@ -17,9 +17,10 @@
 /** @public */
 export type ExtensionDataRef<
   TData,
+  TId extends string = string,
   TConfig extends { optional?: true } = {},
 > = {
-  id: string;
+  id: TId;
   T: TData;
   config: TConfig;
   $$type: '@backstage/ExtensionDataRef';
@@ -27,30 +28,59 @@ export type ExtensionDataRef<
 
 /** @public */
 export interface ConfigurableExtensionDataRef<
+  TId extends string,
   TData,
   TConfig extends { optional?: true } = {},
-> extends ExtensionDataRef<TData, TConfig> {
-  optional(): ConfigurableExtensionDataRef<TData, TData & { optional: true }>;
+> extends ExtensionDataRef<TData, TId, TConfig> {
+  optional(): ConfigurableExtensionDataRef<
+    TId,
+    TData,
+    TData & { optional: true }
+  >;
 }
 
-// TODO: change to options object with ID.
-/** @public */
+/**
+ * @public
+ * @deprecated Use the following form instead: `createExtensionDataRef<Type>().with({ id: 'core.foo' })`
+ */
 export function createExtensionDataRef<TData>(
   id: string,
-): ConfigurableExtensionDataRef<TData> {
+): ConfigurableExtensionDataRef<string, TData>;
+/** @public */
+export function createExtensionDataRef<TData>(): {
+  with<TId extends string>(options: {
+    id: TId;
+  }): ConfigurableExtensionDataRef<TId, TData>;
+};
+export function createExtensionDataRef<TData>(id?: string):
+  | ConfigurableExtensionDataRef<string, TData>
+  | {
+      with<TId extends string>(options: {
+        id: TId;
+      }): ConfigurableExtensionDataRef<TId, TData>;
+    } {
+  const createRef = <TId extends string>(refId: TId) =>
+    ({
+      id: refId,
+      $$type: '@backstage/ExtensionDataRef',
+      config: {},
+      optional() {
+        return {
+          ...this,
+          config: { ...this.config, optional: true },
+        };
+      },
+      toString() {
+        const optional = Boolean(this.config.optional);
+        return `ExtensionDataRef{id=${refId},optional=${optional}}`;
+      },
+    } as ConfigurableExtensionDataRef<TId, TData, { optional?: true }>);
+  if (id) {
+    return createRef(id);
+  }
   return {
-    id,
-    $$type: '@backstage/ExtensionDataRef',
-    config: {},
-    optional() {
-      return {
-        ...this,
-        config: { ...this.config, optional: true },
-      };
+    with<TId extends string>(options: { id: TId }) {
+      return createRef(options.id);
     },
-    toString() {
-      const optional = Boolean(this.config.optional);
-      return `ExtensionDataRef{id=${id},optional=${optional}}`;
-    },
-  } as ConfigurableExtensionDataRef<TData, { optional?: true }>;
+  };
 }

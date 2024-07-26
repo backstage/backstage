@@ -42,6 +42,7 @@ export async function buildBundle(options: BuildOptions) {
 
   const paths = resolveBundlingPaths(options);
   const publicPaths = await resolveOptionalBundlingPaths({
+    targetDir: options.targetDir,
     entry: 'src/index-public-experimental',
     dist: 'dist/public',
   });

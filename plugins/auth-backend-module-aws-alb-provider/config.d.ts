@@ -21,6 +21,12 @@ export interface Config {
       awsalb?: {
         issuer?: string;
         region: string;
+        signIn?: {
+          resolvers: Array<
+            | { resolver: 'emailLocalPartMatchingUserEntityName' }
+            | { resolver: 'emailMatchingUserEntityProfileEmail' }
+          >;
+        };
       };
     };
   };
