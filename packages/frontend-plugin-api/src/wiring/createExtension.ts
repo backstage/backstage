@@ -80,15 +80,15 @@ export type ExtensionDataContainer<UExtensionData extends AnyExtensionDataRef> =
  * @public
  */
 export type ResolvedExtensionInput<
-  TExtensionData extends AnyExtensionDataMap | AnyExtensionDataRef,
-> = [TExtensionData] extends [AnyExtensionDataRef]
+  TExtensionInput extends ExtensionInput<any, any>,
+> = TExtensionInput['extensionData'] extends Array<AnyExtensionDataRef>
   ? {
       node: AppNode;
-    } & ExtensionDataContainer<TExtensionData>
-  : TExtensionData extends AnyExtensionDataMap
+    } & ExtensionDataContainer<TExtensionInput['extensionData'][number]>
+  : TExtensionInput['extensionData'] extends AnyExtensionDataMap
   ? {
       node: AppNode;
-      output: ExtensionDataValues<TExtensionData>;
+      output: ExtensionDataValues<TExtensionInput['extensionData']>;
     }
   : never;
 
@@ -97,15 +97,15 @@ export type ResolvedExtensionInput<
  * @public
  */
 export type ResolvedExtensionInputs<
-  TInputs extends { [name in string]: ExtensionInput<any, any> },
+  TInputs extends {
+    [name in string]: ExtensionInput<any, any> | LegacyExtensionInput<any, any>;
+  },
 > = {
   [InputName in keyof TInputs]: false extends TInputs[InputName]['config']['singleton']
-    ? Array<Expand<ResolvedExtensionInput<TInputs[InputName]['extensionData']>>>
+    ? Array<Expand<ResolvedExtensionInput<TInputs[InputName]>>>
     : false extends TInputs[InputName]['config']['optional']
-    ? Expand<ResolvedExtensionInput<TInputs[InputName]['extensionData']>>
-    : Expand<
-        ResolvedExtensionInput<TInputs[InputName]['extensionData']> | undefined
-      >;
+    ? Expand<ResolvedExtensionInput<TInputs[InputName]>>
+    : Expand<ResolvedExtensionInput<TInputs[InputName]> | undefined>;
 };
 
 /**

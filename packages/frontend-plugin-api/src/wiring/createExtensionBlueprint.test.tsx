@@ -57,13 +57,7 @@ describe('createExtensionBlueprint', () => {
       name: 'my-extension',
       namespace: undefined,
       output: {
-        element: {
-          $$type: '@backstage/ExtensionDataRef',
-          config: {},
-          id: 'core.reactElement',
-          optional: expect.any(Function),
-          toString: expect.any(Function),
-        },
+        element: coreExtensionData.reactElement,
       },
       factory: expect.any(Function),
       toString: expect.any(Function),
