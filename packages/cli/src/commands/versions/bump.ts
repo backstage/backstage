@@ -80,12 +80,6 @@ export default async (opts: OptionValues) => {
   const lockfile = await Lockfile.load(lockfilePath);
   const hasYarnPlugin = await getHasYarnPlugin();
 
-  if (hasYarnPlugin) {
-    console.log(
-      `Backstage yarn plugin detected, will use backstage: version ranges where possible...`,
-    );
-  }
-
   let pattern = opts.pattern;
 
   if (!pattern) {
@@ -295,6 +289,21 @@ export default async (opts: OptionValues) => {
         console.log();
       }
     } else {
+      console.log();
+    }
+
+    if (hasYarnPlugin) {
+      console.log();
+      console.log(
+        chalk.blue(
+          `${chalk.bold(
+            'NOTE',
+          )}: this bump used backstage:^ versions in package.json files, since the Backstage ` +
+            `yarn plugin was detected in the repository. To migrate back to explicit npm versions, ` +
+            `remove the plugin by running "yarn plugin remove @yarnpkg/plugin-backstage", then ` +
+            `repeat this command.`,
+        ),
+      );
       console.log();
     }
 
