@@ -30,7 +30,8 @@ import {
   CatalogProcessorResult,
 } from '@backstage/plugin-catalog-node';
 import { defaultEntityDataParser } from '../util/parse';
-import { UrlReaderProcessor } from './UrlReaderProcessor';
+import { NamespaceTransformer, UrlReaderProcessor } from './UrlReaderProcessor';
+import { DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 
 describe('UrlReaderProcessor', () => {
   const mockApiOrigin = 'http://localhost';
@@ -53,7 +54,13 @@ describe('UrlReaderProcessor', () => {
         backend: { reading: { allow: [{ host: 'localhost' }] } },
       }),
     });
-    const processor = new UrlReaderProcessor({ reader, logger });
+    const namespaceTransformer: NamespaceTransformer = result =>
+      new URL(result.location.target).hostname;
+    const processor = new UrlReaderProcessor({
+      reader,
+      logger,
+      namespaceTransformer,
+    });
     const spec = {
       type: 'url',
       target: `${mockApiOrigin}/component.yaml`,
@@ -84,7 +91,10 @@ describe('UrlReaderProcessor', () => {
     expect(emitted[0]).toEqual({
       type: 'entity',
       location: spec,
-      entity: { kind: 'component', metadata: { name: 'mock-url-entity' } },
+      entity: {
+        kind: 'component',
+        metadata: { name: 'mock-url-entity', namespace: 'localhost' },
+      },
     });
     expect(emitted[1]).toEqual({
       type: 'refresh',
@@ -96,7 +106,77 @@ describe('UrlReaderProcessor', () => {
         {
           type: 'entity',
           location: spec,
-          entity: { kind: 'component', metadata: { name: 'mock-url-entity' } },
+          entity: {
+            kind: 'component',
+            metadata: { name: 'mock-url-entity', namespace: 'localhost' },
+          },
+        },
+      ],
+    });
+    expect(mockCache.set).toHaveBeenCalledTimes(1);
+  });
+
+  it('should use the default namespace when no transformer is provided', async () => {
+    const logger = mockServices.logger.mock();
+    const reader = UrlReaders.default({
+      logger,
+      config: new ConfigReader({
+        backend: { reading: { allow: [{ host: 'localhost' }] } },
+      }),
+    });
+    const processor = new UrlReaderProcessor({
+      reader,
+      logger,
+    });
+    const spec = {
+      type: 'url',
+      target: `${mockApiOrigin}/component.yaml`,
+    };
+
+    server.use(
+      rest.get(`${mockApiOrigin}/component.yaml`, (_, res, ctx) =>
+        res(
+          ctx.set({ ETag: 'my-etag' }),
+          ctx.json({
+            kind: 'component',
+            metadata: { name: 'mock-url-entity' },
+          }),
+        ),
+      ),
+    );
+
+    const emitted = new Array<CatalogProcessorResult>();
+    await processor.readLocation(
+      spec,
+      false,
+      result => emitted.push(result),
+      defaultEntityDataParser,
+      mockCache,
+    );
+
+    expect(emitted.length).toBe(2);
+    expect(emitted[0]).toEqual({
+      type: 'entity',
+      location: spec,
+      entity: {
+        kind: 'component',
+        metadata: { name: 'mock-url-entity', namespace: DEFAULT_NAMESPACE },
+      },
+    });
+    expect(emitted[1]).toEqual({
+      type: 'refresh',
+      key: 'url:http://localhost/component.yaml',
+    });
+    expect(mockCache.set).toHaveBeenCalledWith('v1', {
+      etag: 'my-etag',
+      value: [
+        {
+          type: 'entity',
+          location: spec,
+          entity: {
+            kind: 'component',
+            metadata: { name: 'mock-url-entity', namespace: DEFAULT_NAMESPACE },
+          },
         },
       ],
     });
