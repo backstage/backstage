@@ -195,10 +195,17 @@ export default async (opts: OptionValues) => {
               // versions, we need to perform the same transformation.
               const oldLockfileRange = await asLockfileVersion(oldRange);
 
-              // Don't use backstage:^ versions for peerDependencies; they only
-              // support npm and workspace: versions.
               const useBackstageRange =
-                hasYarnPlugin && depType !== 'peerDependencies';
+                hasYarnPlugin &&
+                // Only use backstage:^ versions if the package is present in
+                // the manifest for the release we're bumping to.
+                releaseManifest.packages.find(
+                  ({ name: manifestPackageName }) =>
+                    dep.name === manifestPackageName,
+                ) &&
+                // Don't use backstage:^ versions for peerDependencies; they only
+                // support npm and workspace: versions.
+                depType !== 'peerDependencies';
 
               const newRange = useBackstageRange ? 'backstage:^' : dep.range;
 
