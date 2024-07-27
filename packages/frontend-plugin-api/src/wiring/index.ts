@@ -23,6 +23,7 @@ export {
   type ExtensionDataValues,
   type ResolvedExtensionInput,
   type ResolvedExtensionInputs,
+  type LegacyCreateExtensionOptions,
   type AnyExtensionInputMap,
   type AnyExtensionDataMap,
 } from './createExtension';
