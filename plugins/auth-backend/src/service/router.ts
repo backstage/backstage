@@ -48,6 +48,7 @@ import { StaticTokenIssuer } from '../identity/StaticTokenIssuer';
 import { StaticKeyStore } from '../identity/StaticKeyStore';
 import { Config } from '@backstage/config';
 import { bindProviderRouters, ProviderFactories } from '../providers/router';
+import { createCookieAuthErrorMiddleware } from './createCookieAuthErrorMiddleware';
 
 /** @public */
 export interface RouterOptions {
@@ -170,10 +171,15 @@ export async function createRouter(
   });
 
   // Gives a more helpful error message than a plain 404
-  router.use('/:provider/', req => {
+  router.use('/:provider/', (req, _, next) => {
     const { provider } = req.params;
+    if (provider.startsWith('.backstage')) {
+      return next('route');
+    }
     throw new NotFoundError(`Unknown auth provider '${provider}'`);
   });
+
+  router.use(createCookieAuthErrorMiddleware(authUrl));
 
   return router;
 }

@@ -25,7 +25,7 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import React, { useState } from 'react';
-import { useMountEffect } from '@react-hookz/web';
+import { useAsync, useMountEffect } from '@react-hookz/web';
 import { Progress } from '../../components/Progress';
 import { Content } from '../Content/Content';
 import { ContentHeader } from '../ContentHeader/ContentHeader';
@@ -37,6 +37,7 @@ import { GridItem, useStyles } from './styles';
 import { IdentityProviders, SignInProviderConfig } from './types';
 import { coreComponentsTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { useSearchParams } from 'react-router-dom';
 
 type MultiSignInPageProps = SignInPageProps & {
   providers: IdentityProviders;
@@ -106,6 +107,8 @@ export const SingleSignInPage = ({
   // displayed for a split second when the user is already logged-in.
   const [showLoginPage, setShowLoginPage] = useState<boolean>(false);
 
+  const [searchParams, _setSearchParams] = useSearchParams();
+
   type LoginOpts = { checkExisting?: boolean; showPopup?: boolean };
   const login = async ({ checkExisting, showPopup }: LoginOpts) => {
     try {
@@ -152,7 +155,19 @@ export const SingleSignInPage = ({
     }
   };
 
-  useMountEffect(() => login({ checkExisting: true }));
+  const [_state, actions] = useAsync(async () => {
+    if (searchParams.get('error') !== 'false') {
+      const errorResponse = await authApi.getSignInAuthError();
+      if (errorResponse) {
+        setError(errorResponse);
+      }
+    }
+  });
+
+  useMountEffect(() => {
+    actions.execute();
+    login({ checkExisting: true });
+  });
 
   return showLoginPage ? (
     <Page themeId="home">

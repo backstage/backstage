@@ -175,6 +175,10 @@ export default class MicrosoftAuth {
     return this.microsoftGraph().signOut();
   }
 
+  getSignInAuthError() {
+    return this.microsoftGraph().getSignInAuthError();
+  }
+
   sessionState$() {
     return this.microsoftGraph().sessionState$();
   }

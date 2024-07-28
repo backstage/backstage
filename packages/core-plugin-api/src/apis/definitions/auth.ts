@@ -292,6 +292,11 @@ export type SessionApi = {
   signOut(): Promise<void>;
 
   /**
+   * Get any caught errors during the auth redirect flow
+   */
+  getSignInAuthError(): Promise<Error | undefined>;
+
+  /**
    * Observe the current state of the auth session. Emits the current state on subscription.
    */
   sessionState$(): Observable<SessionState>;
