@@ -20,7 +20,7 @@ nav:
       - Support and community: 'overview/support.md'
       - Logo assets: 'overview/logos.md'
   - Getting Started:
-      - Installing a standalone server: 'getting-started/index.md'
+      - Creating your Backstage App: 'getting-started/index.md'
       - Configuring Backstage:
           - Database: 'getting-started/config/database.md'
           - Authentication: 'getting-started/config/authentication.md'
