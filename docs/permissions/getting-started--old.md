@@ -5,7 +5,7 @@ description: How to get started with the permission framework as an integrator
 ---
 
 :::info
-This documentation is written for the old backend which has been replaced by [the new backend system](../../backend-system/index.md), being the default since Backstage [version 1.24](../../releases/v1.24.0.md). If have migrated to the new backend system, you may want to read [its own article](./getting-started.md) instead. Otherwise, [consider migrating](../../backend-system/building-backends/08-migrating.md)!
+This documentation is written for the old backend which has been replaced by [the new backend system](../backend-system/index.md), being the default since Backstage [version 1.24](../releases/v1.24.0.md). If have migrated to the new backend system, you may want to read [its own article](./getting-started.md) instead. Otherwise, [consider migrating](../backend-system/building-backends/08-migrating.md)!
 :::
 
 If you prefer to watch a video instead, you can start with this video introduction:

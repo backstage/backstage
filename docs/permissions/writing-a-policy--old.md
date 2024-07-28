@@ -5,7 +5,7 @@ description: How to write your own permission policy as a Backstage integrator
 ---
 
 :::info
-This documentation is written for the old backend which has been replaced by [the new backend system](../../backend-system/index.md), being the default since Backstage [version 1.24](../../releases/v1.24.0.md). If have migrated to the new backend system, you may want to read [its own article](./writing-a-policy.md) instead. Otherwise, [consider migrating](../../backend-system/building-backends/08-migrating.md)!
+This documentation is written for the old backend which has been replaced by [the new backend system](../backend-system/index.md), being the default since Backstage [version 1.24](../releases/v1.24.0.md). If have migrated to the new backend system, you may want to read [its own article](./writing-a-policy.md) instead. Otherwise, [consider migrating](../backend-system/building-backends/08-migrating.md)!
 :::
 
 In the [previous section](./getting-started.md), we were able to set up the permission framework and make a simple change to our `TestPermissionPolicy` to confirm that policy is indeed wired up correctly.

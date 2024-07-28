@@ -5,7 +5,7 @@ description: How to define custom permission rules for existing resources
 ---
 
 :::info
-This documentation is written for the old backend which has been replaced by [the new backend system](../../backend-system/index.md), being the default since Backstage [version 1.24](../../releases/v1.24.0.md). If have migrated to the new backend system, you may want to read [its own article](./custom-rules.md) instead. Otherwise, [consider migrating](../../backend-system/building-backends/08-migrating.md)!
+This documentation is written for the old backend which has been replaced by [the new backend system](../backend-system/index.md), being the default since Backstage [version 1.24](../releases/v1.24.0.md). If have migrated to the new backend system, you may want to read [its own article](./custom-rules.md) instead. Otherwise, [consider migrating](../backend-system/building-backends/08-migrating.md)!
 :::
 
 For some use cases, you may want to define custom [rules](../references/glossary.md#rule-permission-plugin) in addition to the ones provided by a plugin. In the [previous section](./writing-a-policy.md) we used the `isEntityOwner` rule to control access for catalog entities. Let's extend this policy with a custom rule that checks what [system](https://backstage.io/docs/features/software-catalog/system-model#system) an entity is part of.
