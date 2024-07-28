@@ -593,24 +593,38 @@ export function createExtension<
 // @public
 export function createExtensionBlueprint<
   TParams,
-  TInputs extends AnyExtensionInputMap,
-  TOutput extends AnyExtensionDataMap,
+  UOutput extends AnyExtensionDataRef,
+  TInputs extends {
+    [inputName in string]: ExtensionInput<
+      AnyExtensionDataRef,
+      {
+        optional: boolean;
+        singleton: boolean;
+      }
+    >;
+  },
+  UExtraOutput extends AnyExtensionDataRef,
   TConfigSchema extends {
     [key in string]: (zImpl: typeof z) => z.ZodType;
   },
-  TDataRefs extends AnyExtensionDataMap = never,
+  UFactoryOutput extends ExtensionDataValue<any, any>,
+  TDataRefs extends {
+    [name in string]: AnyExtensionDataRef;
+  } = never,
 >(
   options: CreateExtensionBlueprintOptions<
     TParams,
+    UOutput,
     TInputs,
-    TOutput,
     TConfigSchema,
+    UFactoryOutput,
     TDataRefs
   >,
 ): ExtensionBlueprint<
   TParams,
+  UOutput,
   TInputs,
-  TOutput,
+  UExtraOutput,
   string extends keyof TConfigSchema
     ? {}
     : {
@@ -627,29 +641,38 @@ export function createExtensionBlueprint<
 >;
 
 // @public (undocumented)
-export interface CreateExtensionBlueprintOptions<
+export type CreateExtensionBlueprintOptions<
   TParams,
-  TInputs extends AnyExtensionInputMap,
-  TOutput extends AnyExtensionDataMap,
+  UOutput extends AnyExtensionDataRef,
+  TInputs extends {
+    [inputName in string]: ExtensionInput<
+      AnyExtensionDataRef,
+      {
+        optional: boolean;
+        singleton: boolean;
+      }
+    >;
+  },
   TConfigSchema extends {
     [key in string]: (zImpl: typeof z) => z.ZodType;
   },
-  TDataRefs extends AnyExtensionDataMap,
-> {
-  // (undocumented)
+  UFactoryOutput extends ExtensionDataValue<any, any>,
+  TDataRefs extends {
+    [name in string]: AnyExtensionDataRef;
+  },
+> = {
+  kind: string;
+  namespace?: string;
   attachTo: {
     id: string;
     input: string;
   };
-  // (undocumented)
+  disabled?: boolean;
+  inputs?: TInputs;
+  output: Array<UOutput>;
   config?: {
     schema: TConfigSchema;
   };
-  // (undocumented)
-  dataRefs?: TDataRefs;
-  // (undocumented)
-  disabled?: boolean;
-  // (undocumented)
   factory(
     params: TParams,
     context: {
@@ -659,16 +682,9 @@ export interface CreateExtensionBlueprintOptions<
       };
       inputs: Expand<ResolvedExtensionInputs<TInputs>>;
     },
-  ): Expand<ExtensionDataValues<TOutput>>;
-  // (undocumented)
-  inputs?: TInputs;
-  // (undocumented)
-  kind: string;
-  // (undocumented)
-  namespace?: string;
-  // (undocumented)
-  output: TOutput;
-}
+  ): Iterable<UFactoryOutput>;
+  dataRefs?: TDataRefs;
+} & VerifyExtensionFactoryOutput<UOutput, UFactoryOutput>;
 
 // @public @deprecated (undocumented)
 export function createExtensionDataRef<TData>(
@@ -769,22 +785,7 @@ export type CreateExtensionOptions<
           });
     inputs: Expand<ResolvedExtensionInputs<TInputs>>;
   }): Iterable<UFactoryOutput>;
-} & ((
-  UOutput extends any
-    ? UOutput['config']['optional'] extends true
-      ? never
-      : UOutput['id']
-    : never
-) extends infer IRequiredOutputIds
-  ? [IRequiredOutputIds] extends [UFactoryOutput['id']]
-    ? {}
-    : {
-        'Error: The extension factory is missing the following outputs': Exclude<
-          IRequiredOutputIds,
-          UFactoryOutput['id']
-        >;
-      }
-  : never);
+} & VerifyExtensionFactoryOutput<UOutput, UFactoryOutput>;
 
 // @public (undocumented)
 export function createExtensionOverrides(
@@ -1081,15 +1082,26 @@ export interface Extension<TConfig, TConfigInput = TConfig> {
 // @public (undocumented)
 export interface ExtensionBlueprint<
   TParams,
-  TInputs extends AnyExtensionInputMap,
-  TOutput extends AnyExtensionDataMap,
+  UOutput extends AnyExtensionDataRef,
+  TInputs extends {
+    [inputName in string]: ExtensionInput<
+      AnyExtensionDataRef,
+      {
+        optional: boolean;
+        singleton: boolean;
+      }
+    >;
+  },
+  UExtraOutput extends AnyExtensionDataRef,
   TConfig extends {
     [key in string]: unknown;
   },
   TConfigInput extends {
     [key in string]: unknown;
   },
-  TDataRefs extends AnyExtensionDataMap,
+  TDataRefs extends {
+    [name in string]: AnyExtensionDataRef;
+  },
 > {
   // (undocumented)
   dataRefs: TDataRefs;
@@ -1097,6 +1109,7 @@ export interface ExtensionBlueprint<
     TExtensionConfigSchema extends {
       [key in string]: (zImpl: typeof z) => z.ZodType;
     },
+    UFactoryOutput extends ExtensionDataValue<any, any>,
   >(
     args: {
       namespace?: string;
@@ -1107,7 +1120,7 @@ export interface ExtensionBlueprint<
       };
       disabled?: boolean;
       inputs?: TInputs;
-      output?: TOutput;
+      output?: Array<UExtraOutput>;
       config?: {
         schema: TExtensionConfigSchema & {
           [KName in keyof TConfig]?: `Error: Config key '${KName &
@@ -1115,7 +1128,7 @@ export interface ExtensionBlueprint<
         };
       };
     } & (
-      | {
+      | ({
           factory(
             originalFactory: (
               params: TParams,
@@ -1123,7 +1136,7 @@ export interface ExtensionBlueprint<
                 config?: TConfig;
                 inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
               },
-            ) => Expand<ExtensionDataValues<TOutput>>,
+            ) => Iterable<ExtensionDataRefToValue<UOutput>>,
             context: {
               node: AppNode;
               config: TConfig & {
@@ -1133,8 +1146,11 @@ export interface ExtensionBlueprint<
               };
               inputs: Expand<ResolvedExtensionInputs<TInputs>>;
             },
-          ): Expand<ExtensionDataValues<TOutput>>;
-        }
+          ): Iterable<UFactoryOutput>;
+        } & VerifyExtensionFactoryOutput<
+          UOutput & UExtraOutput,
+          UFactoryOutput
+        >)
       | {
           params: TParams;
         }
@@ -1195,6 +1211,12 @@ export type ExtensionDataRef<
   readonly T: TData;
   readonly config: TConfig;
 };
+
+// @public (undocumented)
+export type ExtensionDataRefToValue<TDataRef extends AnyExtensionDataRef> =
+  TDataRef extends ExtensionDataRef<infer IData, infer IId, any>
+    ? ExtensionDataValue<IData, IId>
+    : never;
 
 // @public (undocumented)
 export type ExtensionDataValue<TData, TId extends string> = {
@@ -1323,16 +1345,23 @@ export const IconBundleBlueprint: ExtensionBlueprint<
       [x: string]: IconComponent;
     };
   },
-  AnyExtensionInputMap,
+  ConfigurableExtensionDataRef<
+    {
+      [x: string]: IconComponent;
+    },
+    'core.icons',
+    {}
+  >,
   {
-    icons: ConfigurableExtensionDataRef<
+    [x: string]: ExtensionInput<
+      AnyExtensionDataRef,
       {
-        [x: string]: IconComponent;
-      },
-      'core.icons',
-      {}
+        optional: boolean;
+        singleton: boolean;
+      }
     >;
   },
+  AnyExtensionDataRef,
   {
     icons: string;
     test: string;

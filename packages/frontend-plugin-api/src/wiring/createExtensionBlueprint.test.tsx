@@ -27,13 +27,9 @@ describe('createExtensionBlueprint', () => {
     const TestExtensionBlueprint = createExtensionBlueprint({
       kind: 'test-extension',
       attachTo: { id: 'test', input: 'default' },
-      output: {
-        element: coreExtensionData.reactElement,
-      },
+      output: [coreExtensionData.reactElement],
       factory(params: { text: string }) {
-        return {
-          element: <h1>{params.text}</h1>,
-        };
+        return [coreExtensionData.reactElement(<h1>{params.text}</h1>)];
       },
     });
 
@@ -56,12 +52,10 @@ describe('createExtensionBlueprint', () => {
       kind: 'test-extension',
       name: 'my-extension',
       namespace: undefined,
-      output: {
-        element: coreExtensionData.reactElement,
-      },
+      output: [coreExtensionData.reactElement],
       factory: expect.any(Function),
       toString: expect.any(Function),
-      version: 'v1',
+      version: 'v2',
     });
 
     const { container } = createExtensionTester(extension).render();
@@ -72,13 +66,9 @@ describe('createExtensionBlueprint', () => {
     const TestExtensionBlueprint = createExtensionBlueprint({
       kind: 'test-extension',
       attachTo: { id: 'test', input: 'default' },
-      output: {
-        element: coreExtensionData.reactElement,
-      },
+      output: [coreExtensionData.reactElement],
       factory(params: { text: string }) {
-        return {
-          element: <h1>{params.text}</h1>,
-        };
+        return [coreExtensionData.reactElement(<h1>{params.text}</h1>)];
       },
     });
 
@@ -103,16 +93,12 @@ describe('createExtensionBlueprint', () => {
     const TestExtensionBlueprint = createExtensionBlueprint({
       kind: 'test-extension',
       attachTo: { id: 'test', input: 'default' },
-      output: {
-        element: coreExtensionData.reactElement,
-      },
+      output: [coreExtensionData.reactElement],
       dataRefs: {
         data: dataRef,
       },
       factory(params: { text: string }) {
-        return {
-          element: <h1>{params.text}</h1>,
-        };
+        return [coreExtensionData.reactElement(<h1>{params.text}</h1>)];
       },
     });
 
@@ -125,9 +111,7 @@ describe('createExtensionBlueprint', () => {
     const TestExtensionBlueprint = createExtensionBlueprint({
       kind: 'test-extension',
       attachTo: { id: 'test', input: 'default' },
-      output: {
-        element: coreExtensionData.reactElement,
-      },
+      output: [coreExtensionData.reactElement],
       config: {
         schema: {
           text: z => z.string(),
@@ -142,9 +126,7 @@ describe('createExtensionBlueprint', () => {
 
         expect(config.text).toBe('Hello, world!');
 
-        return {
-          element: <h1>{config.text}</h1>,
-        };
+        return [coreExtensionData.reactElement(<h1>{config.text}</h1>)];
       },
     });
 
@@ -188,18 +170,14 @@ describe('createExtensionBlueprint', () => {
     const TestExtensionBlueprint = createExtensionBlueprint({
       kind: 'test-extension',
       attachTo: { id: 'test', input: 'default' },
-      output: {
-        element: coreExtensionData.reactElement,
-      },
+      output: [coreExtensionData.reactElement],
       config: {
         schema: {
           text: z => z.string(),
         },
       },
       factory(params: { text: string }) {
-        return {
-          element: <div>{params.text}</div>,
-        };
+        return [coreExtensionData.reactElement(<div>{params.text}</div>)];
       },
     });
 
@@ -224,16 +202,12 @@ describe('createExtensionBlueprint', () => {
     const TestExtensionBlueprint = createExtensionBlueprint({
       kind: 'test-extension',
       attachTo: { id: 'test', input: 'default' },
-      output: {
-        element: coreExtensionData.reactElement,
-      },
+      output: [coreExtensionData.reactElement],
       factory(_, { config }) {
         // @ts-expect-error
         const b = config.something;
 
-        return {
-          element: <div />,
-        };
+        return [coreExtensionData.reactElement(<div />)];
       },
     });
 

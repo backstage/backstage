@@ -36,6 +36,7 @@ export {
   createExtensionDataRef,
   type AnyExtensionDataRef,
   type ExtensionDataRef,
+  type ExtensionDataRefToValue,
   type ExtensionDataValue,
   type ConfigurableExtensionDataRef,
 } from './createExtensionDataRef';

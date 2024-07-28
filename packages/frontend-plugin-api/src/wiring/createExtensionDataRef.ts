@@ -34,6 +34,12 @@ export type ExtensionDataRef<
 };
 
 /** @public */
+export type ExtensionDataRefToValue<TDataRef extends AnyExtensionDataRef> =
+  TDataRef extends ExtensionDataRef<infer IData, infer IId, any>
+    ? ExtensionDataValue<IData, IId>
+    : never;
+
+/** @public */
 export type AnyExtensionDataRef = ExtensionDataRef<
   unknown,
   string,

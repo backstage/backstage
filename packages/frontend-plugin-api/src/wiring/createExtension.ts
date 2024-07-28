@@ -145,6 +145,27 @@ export interface LegacyCreateExtensionOptions<
   }): Expand<ExtensionDataValues<TOutput>>;
 }
 
+/** @ignore */
+export type VerifyExtensionFactoryOutput<
+  UDeclaredOutput extends AnyExtensionDataRef,
+  UFactoryOutput extends ExtensionDataValue<any, any>,
+> = (
+  UDeclaredOutput extends any
+    ? UDeclaredOutput['config']['optional'] extends true
+      ? never
+      : UDeclaredOutput['id']
+    : never
+) extends infer IRequiredOutputIds
+  ? [IRequiredOutputIds] extends [UFactoryOutput['id']]
+    ? {}
+    : {
+        'Error: The extension factory is missing the following outputs': Exclude<
+          IRequiredOutputIds,
+          UFactoryOutput['id']
+        >;
+      }
+  : never;
+
 /** @public */
 export type CreateExtensionOptions<
   UOutput extends AnyExtensionDataRef,
@@ -183,22 +204,7 @@ export type CreateExtensionOptions<
           });
     inputs: Expand<ResolvedExtensionInputs<TInputs>>;
   }): Iterable<UFactoryOutput>;
-} & ((
-  UOutput extends any
-    ? UOutput['config']['optional'] extends true
-      ? never
-      : UOutput['id']
-    : never
-) extends infer IRequiredOutputIds
-  ? [IRequiredOutputIds] extends [UFactoryOutput['id']]
-    ? {}
-    : {
-        'Error: The extension factory is missing the following outputs': Exclude<
-          IRequiredOutputIds,
-          UFactoryOutput['id']
-        >;
-      }
-  : never);
+} & VerifyExtensionFactoryOutput<UOutput, UFactoryOutput>;
 
 /** @public */
 export interface ExtensionDefinition<TConfig, TConfigInput = TConfig> {
