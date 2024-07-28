@@ -21,6 +21,7 @@ import {
   useApiHolder,
   errorApiRef,
   IdentityApi,
+  authErrorApiRef,
 } from '@backstage/core-plugin-api';
 import {
   IdentityProviders,
@@ -31,6 +32,8 @@ import { commonProvider } from './commonProvider';
 import { guestProvider } from './guestProvider';
 import { customProvider } from './customProvider';
 import { IdentityApiSignOutProxy } from './IdentityApiSignOutProxy';
+import { useSearchParams } from 'react-router-dom';
+import { useMountEffect, useAsync } from '@react-hookz/web';
 
 const PROVIDER_STORAGE_KEY = '@backstage/core:SignInPage:provider';
 
@@ -86,7 +89,21 @@ export const useSignInProviders = (
 ) => {
   const errorApi = useApi(errorApiRef);
   const apiHolder = useApiHolder();
+  const authErrorApi = useApi(authErrorApiRef);
   const [loading, setLoading] = useState(true);
+
+  const [searchParams, _setSearchParams] = useSearchParams();
+
+  const [_, { execute }] = useAsync(async () => {
+    if (searchParams.get('error') !== 'false') {
+      const errorResponse = await authErrorApi.getSignInAuthError();
+      if (errorResponse) {
+        errorApi.post(errorResponse);
+      }
+    }
+  });
+
+  useMountEffect(execute);
 
   // This decorates the result with sign out logic from this hook
   const handleWrappedResult = useCallback(

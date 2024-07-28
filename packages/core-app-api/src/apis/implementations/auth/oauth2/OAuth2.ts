@@ -31,12 +31,10 @@ import {
   SessionApi,
   BackstageIdentityApi,
   BackstageUserIdentity,
-  DiscoveryApi,
 } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
 import { OAuth2Session } from './types';
 import { OAuthApiCreateOptions } from '../types';
-import { getSignInAuthError } from '../../../../lib';
 
 /**
  * OAuth2 create options.
@@ -154,21 +152,18 @@ export default class OAuth2
       },
     });
 
-    return new OAuth2({ sessionManager, scopeTransform, discoveryApi });
+    return new OAuth2({ sessionManager, scopeTransform });
   }
 
   private readonly sessionManager: SessionManager<OAuth2Session>;
   private readonly scopeTransform: (scopes: string[]) => string[];
-  private readonly discoveryApi: DiscoveryApi;
 
   private constructor(options: {
     sessionManager: SessionManager<OAuth2Session>;
     scopeTransform: (scopes: string[]) => string[];
-    discoveryApi: DiscoveryApi;
   }) {
     this.sessionManager = options.sessionManager;
     this.scopeTransform = options.scopeTransform;
-    this.discoveryApi = options.discoveryApi;
   }
 
   async signIn() {
@@ -228,9 +223,5 @@ export default class OAuth2
       : scopes.split(/[\s|,]/).filter(Boolean);
 
     return new Set(scopeTransform(scopeList));
-  }
-
-  async getSignInAuthError() {
-    return getSignInAuthError(this.discoveryApi);
   }
 }

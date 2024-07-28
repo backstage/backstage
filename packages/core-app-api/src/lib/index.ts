@@ -16,6 +16,5 @@
 
 export * from './subjects';
 export * from './loginPopup';
-export * from './signInAuthError';
 export * from './AuthConnector';
 export * from './AuthSessionManager';

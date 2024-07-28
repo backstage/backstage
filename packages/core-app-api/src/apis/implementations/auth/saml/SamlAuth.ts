@@ -22,7 +22,6 @@ import {
   SessionApi,
   SessionState,
   BackstageIdentityResponse,
-  DiscoveryApi,
 } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
 import { DirectAuthConnector } from '../../../../lib/AuthConnector';
@@ -33,7 +32,6 @@ import {
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import { AuthApiCreateOptions } from '../types';
 import { SamlSession, samlSessionSchema } from './types';
-import { getSignInAuthError } from '../../../../lib';
 
 export type SamlAuthResponse = {
   profile: ProfileInfo;
@@ -77,7 +75,7 @@ export default class SamlAuth
       schema: samlSessionSchema,
     });
 
-    return new SamlAuth(authSessionStore, discoveryApi);
+    return new SamlAuth(authSessionStore);
   }
 
   sessionState$(): Observable<SessionState> {
@@ -86,7 +84,6 @@ export default class SamlAuth
 
   private constructor(
     private readonly sessionManager: SessionManager<SamlSession>,
-    private readonly discoveryApi: DiscoveryApi,
   ) {}
 
   async signIn() {
@@ -106,9 +103,5 @@ export default class SamlAuth
   async getProfile(options: AuthRequestOptions = {}) {
     const session = await this.sessionManager.getSession(options);
     return session?.profile;
-  }
-
-  async getSignInAuthError() {
-    return getSignInAuthError(this.discoveryApi);
   }
 }

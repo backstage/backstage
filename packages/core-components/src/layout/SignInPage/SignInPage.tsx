@@ -19,6 +19,7 @@ import {
   configApiRef,
   SignInPageProps,
   useApi,
+  authErrorApiRef,
 } from '@backstage/core-plugin-api';
 import { UserIdentity } from './UserIdentity';
 import Button from '@material-ui/core/Button';
@@ -98,6 +99,7 @@ export const SingleSignInPage = ({
   const classes = useStyles();
   const authApi = useApi(provider.apiRef);
   const configApi = useApi(configApiRef);
+  const authErrorApi = useApi(authErrorApiRef);
   const { t } = useTranslationRef(coreComponentsTranslationRef);
 
   const [error, setError] = useState<Error>();
@@ -155,9 +157,9 @@ export const SingleSignInPage = ({
     }
   };
 
-  const [_state, actions] = useAsync(async () => {
+  const [_, { execute }] = useAsync(async () => {
     if (searchParams.get('error') !== 'false') {
-      const errorResponse = await authApi.getSignInAuthError();
+      const errorResponse = await authErrorApi.getSignInAuthError();
       if (errorResponse) {
         setError(errorResponse);
       }
@@ -165,7 +167,7 @@ export const SingleSignInPage = ({
   });
 
   useMountEffect(() => {
-    actions.execute();
+    execute();
     login({ checkExisting: true });
   });
 

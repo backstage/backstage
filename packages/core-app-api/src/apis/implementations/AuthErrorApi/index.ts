@@ -13,17 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DiscoveryApi } from '@backstage/core-plugin-api';
-import { deserializeError } from '@backstage/errors';
 
-export async function getSignInAuthError(
-  discoveryApi: DiscoveryApi,
-): Promise<Error | undefined> {
-  const baseUrl = await discoveryApi.getBaseUrl('auth');
-  const response = await fetch(`${baseUrl}/.backstage/error`, {
-    credentials: 'include',
-  });
-  const data = await response.json();
-
-  return data ? deserializeError(data) : undefined;
-}
+export { SignInAuthErrorApi } from './SignInAuthErrorApi';
