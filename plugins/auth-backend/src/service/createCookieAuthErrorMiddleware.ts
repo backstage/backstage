@@ -30,7 +30,7 @@ export function createCookieAuthErrorMiddleware(authUrl: string) {
     if (error) {
       const { hostname: domain } = new URL(authUrl);
 
-      res.clearCookie('auth-error', {
+      res.clearCookie(AUTH_ERROR_COOKIE, {
         path: '/api/auth/.backstage/error',
         domain,
       });
