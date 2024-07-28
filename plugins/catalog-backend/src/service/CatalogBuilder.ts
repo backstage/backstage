@@ -135,6 +135,26 @@ export type CatalogEnvironment = {
   auth?: AuthService;
   httpAuth?: HttpAuthService;
 };
+/**
+ * @public
+
+* Returns the default list of entity processors. These are responsible for reading,
+* parsing, and processing entities before they are persisted in the catalog. Changing
+* the order of processing can give more control to custom processors.
+ */
+export function defaultProcessors(
+  deps: Pick<CatalogEnvironment, 'logger' | 'config' | 'reader'>,
+) {
+  const { config, logger, reader } = deps;
+  const integrations = ScmIntegrations.fromConfig(config);
+
+  return [
+    new FileReaderProcessor(),
+    new UrlReaderProcessor({ reader, logger }),
+    CodeOwnersProcessor.fromConfig(config, { logger, reader }),
+    new AnnotateLocationEntityProcessor({ integrations }),
+  ];
+}
 
 /**
  * A builder that helps wire up all of the component parts of the catalog.
@@ -364,15 +384,7 @@ export class CatalogBuilder {
    *
    */
   getDefaultProcessors(): CatalogProcessor[] {
-    const { config, logger, reader } = this.env;
-    const integrations = ScmIntegrations.fromConfig(config);
-
-    return [
-      new FileReaderProcessor(),
-      new UrlReaderProcessor({ reader, logger }),
-      CodeOwnersProcessor.fromConfig(config, { logger, reader }),
-      new AnnotateLocationEntityProcessor({ integrations }),
-    ];
+    return defaultProcessors(this.env);
   }
 
   /**
