@@ -157,7 +157,7 @@ export const SingleSignInPage = ({
     }
   };
 
-  const [_, { execute }] = useAsync(async () => {
+  const [_, { execute: checkAuthErrors }] = useAsync(async () => {
     if (searchParams.get('error') !== 'false') {
       const errorResponse = await authErrorApi.getSignInAuthError();
       if (errorResponse) {
@@ -167,7 +167,7 @@ export const SingleSignInPage = ({
   });
 
   useMountEffect(() => {
-    execute();
+    checkAuthErrors();
     login({ checkExisting: true });
   });
 

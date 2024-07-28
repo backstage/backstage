@@ -94,7 +94,7 @@ export const useSignInProviders = (
 
   const [searchParams, _setSearchParams] = useSearchParams();
 
-  const [_, { execute }] = useAsync(async () => {
+  const [_, { execute: checkAuthErrors }] = useAsync(async () => {
     if (searchParams.get('error') !== 'false') {
       const errorResponse = await authErrorApi.getSignInAuthError();
       if (errorResponse) {
@@ -103,7 +103,7 @@ export const useSignInProviders = (
     }
   });
 
-  useMountEffect(execute);
+  useMountEffect(checkAuthErrors);
 
   // This decorates the result with sign out logic from this hook
   const handleWrappedResult = useCallback(
