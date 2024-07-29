@@ -83,6 +83,7 @@ export interface CatalogProcessingExtensionPoint {
   addProcessor(
     ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
   ): void;
+  replaceDefaultProcessors(processors: CatalogProcessor[]): void;
   // (undocumented)
   setOnProcessingErrorHandler(
     handler: (event: {
