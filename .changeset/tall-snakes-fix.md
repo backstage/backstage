@@ -2,4 +2,4 @@
 '@backstage/backend-plugin-api': patch
 ---
 
-fix typo in getPluginRequestToken comments
+fix typo in `getPluginRequestToken` comments
