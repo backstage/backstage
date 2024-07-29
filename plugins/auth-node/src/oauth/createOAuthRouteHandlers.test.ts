@@ -743,7 +743,7 @@ describe('createOAuthRouteHandlers', () => {
       });
     });
 
-    it('should set cookie on caught error redirect', async () => {
+    it('should set cookie and redirect on caught error', async () => {
       const app = wrapInApp(createOAuthRouteHandlers(baseConfig));
       const res = await request(app)
         .get('/my-provider/handler/frame')
