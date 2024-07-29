@@ -41,5 +41,5 @@ export type AuthErrorApi = {
  * @public
  */
 export const authErrorApiRef: ApiRef<AuthErrorApi> = createApiRef({
-  id: 'core.authError',
+  id: 'core.auth-error',
 });

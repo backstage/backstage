@@ -22,17 +22,25 @@ const AUTH_ERROR_COOKIE = 'auth-error';
  * @public
  * Creates a middleware that can be used to get auth errors in redirect flow
  */
-export function createCookieAuthErrorMiddleware(authUrl: string) {
+export function createCookieAuthErrorMiddleware(
+  appUrl: string,
+  authUrl: string,
+) {
   const router = Router();
 
   router.get('/.backstage/error', async (req, res) => {
     const error = req.cookies[AUTH_ERROR_COOKIE];
     if (error) {
-      const { hostname: domain } = new URL(authUrl);
+      const { hostname: domain, protocol } = new URL(authUrl);
+      const secure = protocol === 'https:';
+      const sameSite =
+        new URL(appUrl).hostname !== domain && secure ? 'none' : 'lax';
 
       res.clearCookie(AUTH_ERROR_COOKIE, {
         path: '/api/auth/.backstage/error',
         domain,
+        sameSite,
+        secure,
       });
       res.status(200).json(error);
     } else {

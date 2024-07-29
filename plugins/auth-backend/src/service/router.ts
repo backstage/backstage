@@ -179,7 +179,7 @@ export async function createRouter(
     throw new NotFoundError(`Unknown auth provider '${provider}'`);
   });
 
-  router.use(createCookieAuthErrorMiddleware(authUrl));
+  router.use(createCookieAuthErrorMiddleware(appUrl, authUrl));
 
   return router;
 }
