@@ -139,7 +139,7 @@ class CustomPermissionPolicy implements PermissionPolicy {
 
 Now that we have a custom rule defined and added to our policy, we need provide it to the catalog plugin. This step is important because the catalog plugin will use the rule's `toQuery` and `apply` methods while evaluating conditional authorize results. There's no guarantee that the catalog and permission backends are running on the same server, so we must explicitly link the rule to ensure that it's available at runtime.
 
-The api for providing custom rules may differ between plugins, but there should typically be some extension point that you can use to create a module that adds your rule. For the catalog, this extension point is exposed via `catalogPermissionExtensionPoint`. Here's the steps you'll need to take to add the `isInSystemRule` we created above to the catalog:
+The api for providing custom rules may differ between plugins, but there should typically be an [extension point](../backend-system/architecture/05-extension-points.md) that you can use in your created module to add your rule. For the catalog, this extension point is exposed via `catalogPermissionExtensionPoint`. Here's the steps you'll need to take to add the `isInSystemRule` we created above to the catalog:
 
 1. We will be using the `@backstage/plugin-catalog-node` package as it contains the extension point we need. Run this to add it:
 

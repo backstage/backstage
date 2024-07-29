@@ -28,7 +28,7 @@ Like many other parts of Backstage, the permissions framework relies on informat
 
 ## Test Permission Policy
 
-To get help validate the permission framework is setup we'll create a Test Permission Policy:
+To help validate the permission framework is setup we'll create a Test Permission Policy:
 
 1. Backstage ships with a default Allow All Policy, we want to remove that as it would override our Test Permission Policy. To do this remove the following line:
 
