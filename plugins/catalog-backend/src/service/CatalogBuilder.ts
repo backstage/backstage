@@ -142,7 +142,7 @@ export type CatalogEnvironment = {
 * parsing, and processing entities before they are persisted in the catalog. Changing
 * the order of processing can give more control to custom processors.
  */
-export function defaultProcessors(
+export function getDefaultProcessors(
   deps: Pick<CatalogEnvironment, 'logger' | 'config' | 'reader'>,
 ) {
   const { config, logger, reader } = deps;
@@ -384,7 +384,7 @@ export class CatalogBuilder {
    *
    */
   getDefaultProcessors(): CatalogProcessor[] {
-    return defaultProcessors(this.env);
+    return getDefaultProcessors(this.env);
   }
 
   /**

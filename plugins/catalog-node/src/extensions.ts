@@ -55,9 +55,6 @@ export const catalogLocationsExtensionPoint =
  */
 export interface CatalogProcessingExtensionPoint {
   /**
-   * Sets what entity processors to use. These are responsible for reading,
-   * parsing, and processing entities before they are persisted in the catalog.
-   *
    * This function replaces the default set of processors, consider using with
    * {@link CatalogBuilder#getDefaultProcessors}; use with care.
    *
