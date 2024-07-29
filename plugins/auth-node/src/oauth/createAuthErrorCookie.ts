@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { Response } from 'express';
-import { CookieConfigurer } from '../types';
 import { serializeError } from '@backstage/errors';
 
 const ONE_MINUTE_MS = 60 * 1000;
@@ -29,7 +28,7 @@ function configureAuthErrorCookie(apiUrl: string, appOrigin: string) {
   // different domain than the app, we set the SameSite attribute
   // to 'none' to allow third-party access to the cookie, but
   // only if it's in a secure context (https).
-  let sameSite: ReturnType<CookieConfigurer>['sameSite'] = 'lax';
+  let sameSite: 'lax' | 'none' = 'lax';
   if (new URL(appOrigin).hostname !== domain && secure) {
     sameSite = 'none';
   }

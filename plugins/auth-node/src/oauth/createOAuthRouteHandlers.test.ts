@@ -742,5 +742,29 @@ describe('createOAuthRouteHandlers', () => {
         },
       });
     });
+
+    it('should set cookie on caught error redirect', async () => {
+      const app = wrapInApp(createOAuthRouteHandlers(baseConfig));
+      const res = await request(app)
+        .get('/my-provider/handler/frame')
+        .query({
+          state: encodeOAuthState({
+            env: 'development',
+            nonce: '123',
+            flow: 'redirect',
+            redirectUrl: 'http://localhost:3000',
+          }),
+        });
+
+      // redirects on error with auth error cookie
+      expect(res.status).toBe(302);
+      const setCookieHeader = res.header['set-cookie'];
+      expect(setCookieHeader).toBeDefined();
+
+      const authErrorCookie = setCookieHeader.find((cookie: string) =>
+        cookie.startsWith('auth-error='),
+      );
+      expect(authErrorCookie).toBeDefined();
+    });
   });
 });
