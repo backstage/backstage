@@ -11,13 +11,9 @@ This allows the creation of extension instances with the following pattern:
 const EntityCardBlueprint = createExtensionBlueprint({
   kind: 'entity-card',
   attachTo: { id: 'test', input: 'default' },
-  output: {
-    element: coreExtensionData.reactElement,
-  },
+  output: [coreExtensionData.reactElement],
   factory(params: { text: string }) {
-    return {
-      element: <h1>{params.text}</h1>,
-    };
+    return [coreExtensionData.reactElement(<h1>{params.text}</h1>)];
   },
 });
 

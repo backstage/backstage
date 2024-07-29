@@ -12,8 +12,8 @@ export default _default;
 
 // @alpha (undocumented)
 export const titleExtensionDataRef: ConfigurableExtensionDataRef<
-  'title',
   string,
+  'title',
   {}
 >;
 
