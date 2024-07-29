@@ -24,6 +24,7 @@ import {
   AuthorizeResult,
   DefinitivePolicyDecision,
   IdentifiedPermissionMessage,
+  MetadataResponseSerializedRule as CommonMetadataResponseSerializedRule,
   Permission,
   PermissionCondition,
   PermissionCriteria,
@@ -109,13 +110,10 @@ export type ApplyConditionsResponse = {
  * converted from a ZodSchema to a JsonSchema.
  *
  * @public
+ * @deprecated Please import from `@backstage/plugin-permission-common` instead.
  */
-export type MetadataResponseSerializedRule = {
-  name: string;
-  description: string;
-  resourceType: string;
-  paramsSchema?: ReturnType<typeof zodToJsonSchema>;
-};
+export type MetadataResponseSerializedRule =
+  CommonMetadataResponseSerializedRule;
 
 /**
  * Response type for the .metadata endpoint.
