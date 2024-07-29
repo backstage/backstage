@@ -1,5 +1,28 @@
 # @backstage/plugin-scaffolder
 
+## 1.23.1-next.0
+
+### Patch Changes
+
+- bbd9f56: Cleaned up codebase of RepoUrlPicker
+- b8600fe: Fix issue with `RepoUrlPicker` not refreshing the credentials for a different host
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.8-next.0
+  - @backstage/plugin-catalog-react@1.12.3-next.0
+  - @backstage/core-components@0.14.10-next.0
+  - @backstage/plugin-scaffolder-react@1.11.0-next.0
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/core-compat-api@0.2.8-next.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+  - @backstage/integration-react@1.1.30-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.25
+  - @backstage/plugin-permission-react@0.4.24
+  - @backstage/plugin-scaffolder-common@1.5.4
+
 ## 1.23.0
 
 ### Minor Changes

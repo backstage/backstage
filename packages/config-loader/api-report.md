@@ -21,6 +21,7 @@ export type AsyncConfigSourceGenerator = AsyncGenerator<
 
 // @public
 export interface BaseConfigSourcesOptions {
+  allowMissingDefaultConfig?: boolean;
   // (undocumented)
   remote?: Pick<RemoteConfigSourceOptions, 'reloadInterval'>;
   // (undocumented)
@@ -87,7 +88,7 @@ export interface ConfigSourcesDefaultOptions extends BaseConfigSourcesOptions {
   // (undocumented)
   argv?: string[];
   // (undocumented)
-  env?: Record<string, string>;
+  env?: Record<string, string | undefined>;
 }
 
 // @public

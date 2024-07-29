@@ -17,7 +17,7 @@
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { GitLabIntegrationConfig } from './config';
-import { getGitLabFileFetchUrl } from './core';
+import { getGitLabFileFetchUrl, getGitLabRequestOptions } from './core';
 
 const worker = setupServer();
 
@@ -183,6 +183,49 @@ describe('gitlab core', () => {
         await expect(
           getGitLabFileFetchUrl(target, configWithNoToken),
         ).resolves.toBe(fetchUrl);
+      });
+    });
+  });
+
+  describe('getGitLabRequestOptions', () => {
+    it('should return Authorization header when oauthToken is provided', () => {
+      const token = '1234567890';
+      const result = getGitLabRequestOptions(
+        configSelfHosteWithRelativePath,
+        token,
+      );
+
+      expect(result).toEqual({
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    });
+
+    it('should return private-token header when gl-token is provided', () => {
+      const token = 'glpat-1234566';
+      const result = getGitLabRequestOptions(
+        configSelfHosteWithRelativePath,
+        token,
+      );
+
+      expect(result).toEqual({
+        headers: {
+          'PRIVATE-TOKEN': token,
+        },
+      });
+    });
+
+    it('should return private-token header when oauthToken is undefined', () => {
+      const oauthToken = undefined;
+      const result = getGitLabRequestOptions(
+        configSelfHosteWithRelativePath,
+        oauthToken,
+      );
+      expect(result).toEqual({
+        headers: {
+          'PRIVATE-TOKEN': configSelfHosteWithRelativePath.token,
+        },
       });
     });
   });

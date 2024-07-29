@@ -1,5 +1,19 @@
 # @backstage/plugin-search-react
 
+## 1.7.14-next.0
+
+### Patch Changes
+
+- 31bfc44: Updated alpha definitions of extension data references.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.8-next.0
+  - @backstage/core-components@0.14.10-next.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/theme@0.5.6
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+  - @backstage/plugin-search-common@1.2.13
+
 ## 1.7.13
 
 ### Patch Changes

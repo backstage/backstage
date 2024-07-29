@@ -106,6 +106,7 @@ export class AwsEKSClusterProcessor implements CatalogProcessor {
     }
 
     const eksClient = new EKS({
+      customUserAgent: 'backstage-aws-catalog-eks-cluster-processor',
       credentials,
       credentialDefaultProvider: providerFunction,
       region,

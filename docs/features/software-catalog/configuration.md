@@ -58,6 +58,20 @@ catalog:
       target: ../../examples/all.yaml
 ```
 
+:::note
+There might be cases where you need to test some `file` configurations in a Docker container. In a case like this, as the backend is serving the frontend in a default setup, the path would be from the root. Also, you need to **make sure to copy your files into your container**.
+
+Using the example above that would look like this:
+
+```yaml
+catalog:
+  locations:
+    - type: file
+      target: ./examples/all.yaml
+```
+
+:::
+
 ### Integration Processors
 
 Integrations may simply provide a mechanism to handle `url` location type for an

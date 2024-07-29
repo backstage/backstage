@@ -67,7 +67,7 @@ describe('authModuleMicrosoftProvider', () => {
     expect(startUrl.pathname).toBe('/my-tenant-id/oauth2/v2.0/authorize');
     expect(Object.fromEntries(startUrl.searchParams)).toEqual({
       response_type: 'code',
-      scope: 'User.Read.All',
+      scope: 'email openid offline_access user.read User.Read.All',
       client_id: 'my-client-id',
       redirect_uri: `http://localhost:${server.port()}/api/auth/microsoft/handler/frame`,
       state: expect.any(String),
@@ -97,6 +97,7 @@ describe('authModuleMicrosoftProvider', () => {
                     clientSecret: 'another-client-secret',
                     tenantId: 'another-tenant-id',
                     domainHint: 'somedomain',
+                    additionalScopes: ['some-extra-scope'],
                   },
                 },
               },
@@ -125,11 +126,71 @@ describe('authModuleMicrosoftProvider', () => {
     expect(startUrl.pathname).toBe('/another-tenant-id/oauth2/v2.0/authorize');
     expect(Object.fromEntries(startUrl.searchParams)).toEqual({
       response_type: 'code',
-      scope: 'user.read',
+      scope: 'email openid offline_access user.read some-extra-scope',
       client_id: 'another-client-id',
       redirect_uri: `http://localhost:${server.port()}/api/auth/microsoft/handler/frame`,
       state: expect.any(String),
       domain_hint: 'somedomain',
+    });
+
+    expect(decodeOAuthState(startUrl.searchParams.get('state')!)).toEqual({
+      env: 'development',
+      nonce: decodeURIComponent(nonceCookie.value),
+    });
+  });
+
+  it('should not include required scopes for resources', async () => {
+    const { server } = await startTestBackend({
+      features: [
+        authPlugin,
+        authModuleMicrosoftProvider,
+        mockServices.rootConfig.factory({
+          data: {
+            app: {
+              baseUrl: 'http://localhost:3000',
+            },
+            auth: {
+              providers: {
+                microsoft: {
+                  development: {
+                    clientId: 'another-client-id',
+                    clientSecret: 'another-client-secret',
+                    tenantId: 'another-tenant-id',
+                    additionalScopes: ['some-extra-scope'],
+                  },
+                },
+              },
+            },
+          },
+        }),
+      ],
+    });
+
+    const agent = request.agent(server);
+
+    const res = await agent.get(
+      '/api/auth/microsoft/start?env=development&scope=some-resource/some-scope',
+    );
+
+    expect(res.status).toEqual(302);
+
+    const nonceCookie = agent.jar.getCookie('microsoft-nonce', {
+      domain: 'localhost',
+      path: '/api/auth/microsoft/handler',
+      script: false,
+      secure: false,
+    });
+    expect(nonceCookie).toBeDefined();
+
+    const startUrl = new URL(res.get('location'));
+    expect(startUrl.origin).toBe('https://login.microsoftonline.com');
+    expect(startUrl.pathname).toBe('/another-tenant-id/oauth2/v2.0/authorize');
+    expect(Object.fromEntries(startUrl.searchParams)).toEqual({
+      response_type: 'code',
+      scope: 'some-resource/some-scope offline_access',
+      client_id: 'another-client-id',
+      redirect_uri: `http://localhost:${server.port()}/api/auth/microsoft/handler/frame`,
+      state: expect.any(String),
     });
 
     expect(decodeOAuthState(startUrl.searchParams.get('state')!)).toEqual({

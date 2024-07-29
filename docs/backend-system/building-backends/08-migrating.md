@@ -497,7 +497,7 @@ catalog:
   providers:
     githubOrg:
       - id: production
-        githubUrl: 'https://github.com',
+        githubUrl: 'https://github.com'
         orgs: ['backstage']
         schedule:
           frequency: PT30M
@@ -536,8 +536,8 @@ catalog:
   providers:
     githubOrg:
       - id: production
-        githubUrl: 'https://github.com',
-        orgs: ['org-a', 'org-b'],
+        githubUrl: 'https://github.com'
+        orgs: ['org-a', 'org-b']
         schedule:
           frequency: PT30M
           timeout: PT15M
