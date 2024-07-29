@@ -16,6 +16,7 @@
 
 import express from 'express';
 import request from 'supertest';
+import cookieParser from 'cookie-parser';
 import { createCookieAuthErrorMiddleware } from './createCookieAuthErrorMiddleware';
 
 const AUTH_ERROR_COOKIE = 'auth-error';
@@ -28,19 +29,7 @@ describe('createCookieAuthErrorMiddleware', () => {
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
 
-    // Mock cookie parser middleware
-    app.use((req, _, next) => {
-      req.cookies = {};
-      const cookieHeader = req.headers.cookie;
-      if (cookieHeader) {
-        const cookies = cookieHeader.split(';');
-        cookies.forEach(cookie => {
-          const [name, ...rest] = cookie.split('=');
-          req.cookies[name.trim()] = decodeURIComponent(rest.join('='));
-        });
-      }
-      next();
-    });
+    app.use(cookieParser());
 
     app.use(
       createCookieAuthErrorMiddleware(
