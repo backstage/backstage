@@ -21,8 +21,8 @@ const ONE_MINUTE_MS = 60 * 1000;
 
 const AUTH_ERROR_COOKIE = 'auth-error';
 
-function configureAuthErrorCookie(redirectUrl: string, appOrigin: string) {
-  const { hostname: domain, pathname: path, protocol } = new URL(redirectUrl);
+function configureAuthErrorCookie(apiUrl: string, appOrigin: string) {
+  const { hostname: domain, pathname: path, protocol } = new URL(apiUrl);
   const secure = protocol === 'https:';
 
   // For situations where the auth-backend is running on a
@@ -42,15 +42,15 @@ export function createAuthErrorCookie(
   origin: string,
   options: {
     error: Error;
-    redirectUrl: string;
+    apiUrl: string;
   },
 ) {
-  const { error, redirectUrl } = options;
+  const { error, apiUrl } = options;
   const jsonData = serializeError(error);
 
   res.cookie(AUTH_ERROR_COOKIE, jsonData, {
     maxAge: ONE_MINUTE_MS,
     httpOnly: true,
-    ...configureAuthErrorCookie(redirectUrl, origin),
+    ...configureAuthErrorCookie(apiUrl, origin),
   });
 }

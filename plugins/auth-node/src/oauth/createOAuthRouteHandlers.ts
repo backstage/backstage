@@ -254,7 +254,7 @@ export function createOAuthRouteHandlers<TProfile>(
         if (state?.flow === 'redirect' && state?.redirectUrl) {
           createAuthErrorCookie(res, state?.redirectUrl, {
             error: { name, message },
-            redirectUrl: `${baseUrl}/.backstage/error`,
+            apiUrl: `${baseUrl}/.backstage/error`,
           });
 
           const redirectUrl = new URL(state.redirectUrl);

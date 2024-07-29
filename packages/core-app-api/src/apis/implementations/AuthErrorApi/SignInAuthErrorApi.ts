@@ -31,6 +31,9 @@ export class SignInAuthErrorApi implements AuthErrorApi {
 
   async getSignInAuthError(): Promise<Error | undefined> {
     const baseUrl = await this.discoveryApi.getBaseUrl('auth');
+
+    // use native fetch instead of depending on fetchApi because
+    // we are not signed in and are calling an unauthenticated endpoint
     const response = await fetch(`${baseUrl}/.backstage/error`, {
       credentials: 'include',
     });
