@@ -44,7 +44,7 @@ export function createCookieAuthErrorMiddleware(
       });
       res.status(200).json(error);
     } else {
-      res.status(404);
+      res.status(404).end();
     }
   });
 
