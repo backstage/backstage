@@ -170,16 +170,13 @@ export async function createRouter(
     userInfoDatabaseHandler,
   });
 
+  router.use(createCookieAuthErrorMiddleware(appUrl, authUrl));
+
   // Gives a more helpful error message than a plain 404
-  router.use('/:provider/', (req, _, next) => {
+  router.use('/:provider/', req => {
     const { provider } = req.params;
-    if (provider.startsWith('.backstage')) {
-      return next('route');
-    }
     throw new NotFoundError(`Unknown auth provider '${provider}'`);
   });
-
-  router.use(createCookieAuthErrorMiddleware(appUrl, authUrl));
 
   return router;
 }
