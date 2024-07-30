@@ -106,3 +106,5 @@ export default createFrontendPlugin({
   }),
   extensions: [scaffolderApi, scaffolderPage, scaffolderNavItem],
 });
+
+export * from './translation';

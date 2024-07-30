@@ -18,20 +18,23 @@ import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import TextField from '@material-ui/core/TextField';
 import { BaseRepoUrlPickerProps } from './types';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../../translation';
 
 export const GerritRepoPicker = (props: BaseRepoUrlPickerProps) => {
   const { onChange, rawErrors, state } = props;
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const { workspace, owner } = state;
   return (
     <>
       <FormControl margin="normal" error={rawErrors?.length > 0 && !workspace}>
         <TextField
           id="ownerInput"
-          label="Owner"
+          label={t('fields.gerritRepoPicker.owner.title')}
           onChange={e => onChange({ owner: e.target.value })}
+          helperText={t('fields.gerritRepoPicker.owner.description')}
           value={owner}
         />
-        <FormHelperText>The owner of the project (optional)</FormHelperText>
       </FormControl>
       <FormControl
         margin="normal"
@@ -40,13 +43,11 @@ export const GerritRepoPicker = (props: BaseRepoUrlPickerProps) => {
       >
         <TextField
           id="parentInput"
-          label="Parent"
+          label={t('fields.gerritRepoPicker.parent.title')}
           onChange={e => onChange({ workspace: e.target.value })}
           value={workspace}
+          helperText={t('fields.gerritRepoPicker.parent.description')}
         />
-        <FormHelperText>
-          The project parent that the repo will belong to
-        </FormHelperText>
       </FormControl>
     </>
   );
