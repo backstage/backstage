@@ -33,7 +33,7 @@ Backstage comes with many common authentication providers in the core library:
 - [Google IAP](google/gcp-iap-auth.md)
 - [Okta](okta/provider.md)
 - [OAuth 2 Custom Proxy](oauth2-proxy/provider.md)
-- [OIDC Proxy](oidc/oidc-proxy.md)
+- [OIDC Proxy](oidc/provider.md)
 - [OneLogin](onelogin/provider.md)
 - [VMware Cloud](vmware-cloud/provider.md)
 
