@@ -17,7 +17,7 @@
 import { JsonObject } from '@backstage/types';
 
 /** @public */
-export type PortableSchema<TOutput> = {
-  parse: (input: unknown) => TOutput;
+export type PortableSchema<TOutput, TInput = TOutput> = {
+  parse: (input: TInput) => TOutput;
   schema: JsonObject;
 };

@@ -470,6 +470,13 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       return false;
     }
 
+    if (this.config.excludeRepos?.includes(project.path_with_namespace ?? '')) {
+      this.logger.debug(
+        `Skipping project ${project.path_with_namespace} as it is excluded.`,
+      );
+      return false;
+    }
+
     const project_branch =
       this.config.branch ??
       project.default_branch ??

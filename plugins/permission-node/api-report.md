@@ -17,6 +17,7 @@ import { DefinitivePolicyDecision } from '@backstage/plugin-permission-common';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import express from 'express';
 import { IdentifiedPermissionMessage } from '@backstage/plugin-permission-common';
+import { MetadataResponseSerializedRule as MetadataResponseSerializedRule_2 } from '@backstage/plugin-permission-common';
 import { NotCriteria } from '@backstage/plugin-permission-common';
 import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
@@ -29,7 +30,6 @@ import { QueryPermissionRequest } from '@backstage/plugin-permission-common';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { z } from 'zod';
-import zodToJsonSchema from 'zod-to-json-schema';
 
 // @public
 export type ApplyConditionsRequest = {
@@ -194,13 +194,8 @@ export type MetadataResponse = {
   rules: MetadataResponseSerializedRule[];
 };
 
-// @public
-export type MetadataResponseSerializedRule = {
-  name: string;
-  description: string;
-  resourceType: string;
-  paramsSchema?: ReturnType<typeof zodToJsonSchema>;
-};
+// @public @deprecated
+export type MetadataResponseSerializedRule = MetadataResponseSerializedRule_2;
 
 // @public
 export type PermissionIntegrationRouterOptions<

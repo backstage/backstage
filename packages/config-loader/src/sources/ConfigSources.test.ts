@@ -69,13 +69,18 @@ describe('ConfigSources', () => {
   });
 
   it('should create default sources for targets', () => {
+    const fsSpy = jest.spyOn(fs, 'pathExistsSync').mockImplementation(path => {
+      return path === `${root}app-config.yaml`;
+    });
+
     expect(
       mergeSources(
         ConfigSources.defaultForTargets({ rootDir: '/', targets: [] }),
       ),
     ).toEqual([{ name: 'FileConfigSource', path: `${root}app-config.yaml` }]);
 
-    const fsSpy = jest.spyOn(fs, 'pathExistsSync').mockReturnValue(true);
+    fsSpy.mockReturnValue(true);
+
     expect(
       mergeSources(
         ConfigSources.defaultForTargets({ rootDir: '/', targets: [] }),
@@ -159,6 +164,10 @@ describe('ConfigSources', () => {
   });
 
   it('should create a default source', () => {
+    const fsSpy = jest.spyOn(fs, 'pathExistsSync').mockImplementation(path => {
+      return path === `${root}app-config.yaml`;
+    });
+
     expect(
       mergeSources(
         ConfigSources.default({
@@ -184,6 +193,8 @@ describe('ConfigSources', () => {
       { name: 'FileConfigSource', path: resolvePath('b.yaml') },
       { name: 'EnvConfigSource', env: { HOME: '/' } },
     ]);
+
+    fsSpy.mockRestore();
   });
 
   it('should merge sources', () => {

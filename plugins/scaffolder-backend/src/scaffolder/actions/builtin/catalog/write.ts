@@ -54,7 +54,7 @@ export function createCatalogWriteAction() {
       const path = filePath ?? 'catalog-info.yaml';
       ctx.logger.info(`Writing ${path}`);
 
-      await fs.writeFile(
+      await fs.outputFile(
         resolveSafeChildPath(ctx.workspacePath, path),
         yaml.stringify({
           ...entity,

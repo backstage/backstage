@@ -27,7 +27,9 @@ import { MockConfigApi, renderWithEffects } from '@backstage/test-utils';
 import { createExtensionInput } from './createExtensionInput';
 import { BackstagePlugin } from './types';
 
-const nameExtensionDataRef = createExtensionDataRef<string>('name');
+const nameExtensionDataRef = createExtensionDataRef<string>().with({
+  id: 'name',
+});
 
 const Extension1 = createExtension({
   name: '1',
