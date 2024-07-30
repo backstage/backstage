@@ -432,10 +432,11 @@ describe('createRouter', () => {
         });
 
         const response = await request(app).get(
-          `/v2/tasks?createdBy=user:default/foo`,
+          `/v2/tasks?createdBy=user:default/foo&status=completed`,
         );
         expect(taskBroker.list).toHaveBeenCalledWith({
           createdBy: 'user:default/foo',
+          status: 'completed',
         });
 
         expect(response.status).toEqual(200);
