@@ -3412,11 +3412,11 @@ __metadata:
   linkType: hard
 
 "@backstage-community/plugin-stackstorm@npm:^0.1.16":
-  version: 0.1.16
-  resolution: "@backstage-community/plugin-stackstorm@npm:0.1.16"
+  version: 0.1.17
+  resolution: "@backstage-community/plugin-stackstorm@npm:0.1.17"
   dependencies:
-    "@backstage/core-components": ^0.14.4
-    "@backstage/core-plugin-api": ^1.9.2
+    "@backstage/core-components": ^0.14.9
+    "@backstage/core-plugin-api": ^1.9.3
     "@backstage/errors": ^1.2.4
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -3426,7 +3426,7 @@ __metadata:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
-  checksum: 2fd7d290cd98ad09b16862a5dee3302796942e85818abf9c4a9102038a4fb83e86ceee39d901e59bb7fb7c60df7797524f8c6a5cfee1a4a0ea59edcbb4de5a0a
+  checksum: 3fa2b45da036e4001a9e034a8841b58877d0b4189d244806b3b1808d3c2a34bb4ab4acbcff629edda47d03b2941c51743dd84f7352ed0d700988aaee946b65f3
   languageName: node
   linkType: hard
 
