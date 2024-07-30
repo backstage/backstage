@@ -21,28 +21,26 @@ export interface Config {
        * Configuration for the oidc identity aware proxy auth provider.
        */
       oidcProxy?: {
-        [authEnv: string]: {
-          /**
-           * the iss claim value to assert validating an id token.
-           */
-          issuer: string;
+        /**
+         * the iss claim value to assert validating an id token.
+         */
+        issuer: string;
 
-          /**
-           * the aud claim value to assert when validating an id token.
-           */
-          audience: string;
+        /**
+         * the aud claim value to assert when validating an id token.
+         */
+        audience: string;
 
-          /**
-           * the header to read the id token from.  Defaults to `'x-oidc-id-token'`.
-           */
-          idTokenHeader?: string;
+        /**
+         * the header to read the id token from.  Defaults to `'x-oidc-id-token'`.
+         */
+        idTokenHeader?: string;
 
-          signIn?: {
-            resolvers: Array<
-              | { resolver: 'emailLocalPartAsSubjectWithoutCatalogUser' }
-              | { resolver: 'emailMatchingUserEntityProfileEmail' }
-            >;
-          };
+        signIn?: {
+          resolvers: Array<
+            | { resolver: 'emailLocalPartAsSubjectWithoutCatalogUser' }
+            | { resolver: 'emailMatchingUserEntityProfileEmail' }
+          >;
         };
       };
     };
