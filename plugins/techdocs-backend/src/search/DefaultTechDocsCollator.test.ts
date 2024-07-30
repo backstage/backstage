@@ -28,6 +28,7 @@ import {
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { ConfigReader } from '@backstage/config';
+import { TECHDOCS_ANNOTATION } from '@backstage/plugin-techdocs-common';
 
 const logger = loggerToWinstonLogger(mockServices.logger.mock());
 
@@ -66,7 +67,7 @@ const expectedEntities: Entity[] = [
       name: 'test-entity-with-docs',
       description: 'Documented description',
       annotations: {
-        'backstage.io/techdocs-ref': './',
+        [TECHDOCS_ANNOTATION]: './',
       },
     },
     spec: {
