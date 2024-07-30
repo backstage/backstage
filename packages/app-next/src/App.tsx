@@ -20,6 +20,7 @@ import { pagesPlugin } from './examples/pagesPlugin';
 import notFoundErrorPage from './examples/notFoundErrorPageExtension';
 import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
 import homePlugin, {
+  extensions,
   titleExtensionDataRef,
 } from '@backstage/plugin-home/alpha';
 
@@ -74,13 +75,46 @@ TODO:
 
 /* app.tsx */
 
-const homePageExtension = createExtension({
-  name: 'myhomepage',
-  attachTo: { id: 'page:home', input: 'props' },
-  output: {
-    children: coreExtensionData.reactElement,
-    title: titleExtensionDataRef,
-  },
+// const homePageExtension = createExtension({
+//   name: 'myhomepage',
+//   attachTo: { id: 'page:home', input: 'props' },
+//   output: {
+//     children: coreExtensionData.reactElement,
+//     title: titleExtensionDataRef,
+//   },
+//   factory() {
+//     return { children: homePage, title: 'just a title' };
+//   },
+// });
+
+// const homePage = createPageExtension({
+//   defaultPath: '/home',
+//   routeRef: rootRouteRef,
+//   inputs: {
+//     props: createExtensionInput(
+//       {
+//         children: coreExtensionData.reactElement.optional(),
+//         title: titleExtensionDataRef.optional(),
+//       },
+
+//       {
+//         singleton: true,
+//         optional: true,
+//       },
+//     ),
+//   },
+//   loader: ({ inputs }) =>
+//     import('./components/').then(m =>
+//       compatWrapper(
+//         <m.HomepageCompositionRoot
+//           children={inputs.props?.output.children}
+//           title={inputs.props?.output.title}
+//         />,
+//       ),
+//     ),
+// });
+
+const homePageExtension = extensions.homePage.override({
   factory() {
     return { children: homePage, title: 'just a title' };
   },
