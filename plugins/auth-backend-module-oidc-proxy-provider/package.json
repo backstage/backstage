@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-auth-backend-module-oidc-proxy-provider",
   "version": "0.1.0",
-  "description": "A Holos Platform auth provider module for the Backstage auth backend, generally useful with OIDC ID tokens set in HTTP request headers by external auth proxies.",
+  "description": "A oidc proxy auth provider module for the Backstage auth backend, generally useful with OIDC ID tokens set in HTTP request headers by external auth proxies.",
   "backstage": {
     "role": "backend-plugin-module",
     "pluginId": "auth",

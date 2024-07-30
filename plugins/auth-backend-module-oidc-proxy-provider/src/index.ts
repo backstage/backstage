@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
+/**
+ * The oidc-proxy-provider backend module for the auth plugin.
+ *
+ * @packageDocumentation
+ */
 export { authModuleOidcProxyProvider as default } from './module';
+export {
+  createOidcProxyAuthenticator,
+  DEFAULT_OIDC_ID_TOKEN_HEADER,
+} from './authenticator';
 export { oidcProxySignInResolvers } from './resolvers';
 export { type OidcProxyResult, type IDTokenInfo } from './types';

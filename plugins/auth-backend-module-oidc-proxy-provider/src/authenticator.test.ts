@@ -16,7 +16,7 @@
 
 import { mockServices } from '@backstage/backend-test-utils';
 import { Request } from 'express';
-import { createHolosProxyAuthenticator } from './authenticator';
+import { createOidcProxyAuthenticator } from './authenticator';
 
 const mockLogger = mockServices.logger.mock();
 
@@ -32,7 +32,7 @@ jest.mock('./helpers', () => ({
 
 describe('OidcProxyProvider', () => {
   it('should find default id token header', async () => {
-    const authenticator = createHolosProxyAuthenticator(mockLogger);
+    const authenticator = createOidcProxyAuthenticator(mockLogger);
     const ctx = authenticator.initialize({
       config: mockServices.rootConfig({
         data: {
@@ -59,7 +59,7 @@ describe('OidcProxyProvider', () => {
   });
 
   it('should find custom id token header', async () => {
-    const authenticator = createHolosProxyAuthenticator(mockLogger);
+    const authenticator = createOidcProxyAuthenticator(mockLogger);
     const oidcIdTokenHeader = 'x-custom-header';
     const ctx = authenticator.initialize({
       config: mockServices.rootConfig({
@@ -88,7 +88,7 @@ describe('OidcProxyProvider', () => {
   });
 
   it('should throw if header is missing', async () => {
-    const authenticator = createHolosProxyAuthenticator(mockLogger);
+    const authenticator = createOidcProxyAuthenticator(mockLogger);
     const ctx = authenticator.initialize({
       config: mockServices.rootConfig({
         data: {
