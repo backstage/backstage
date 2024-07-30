@@ -51,11 +51,9 @@ export function createTokenValidator(
         });
 
         return payload as unknown as IDTokenInfo;
-      } catch (error) {
-        if (!`${error}`.includes('signature verification failed')) {
-          throw new AuthenticationError(
-            `could not validate id token: ${error}`,
-          );
+      } catch (e) {
+        if (e.code !== 'ERR_JWS_SIGNATURE_VERIFICATION_FAILED') {
+          throw new AuthenticationError(`could not validate id token: ${e}`, e);
         }
       }
     }
