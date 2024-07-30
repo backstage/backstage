@@ -36,9 +36,9 @@ auth:
           # token to a catalog entity by matching the email token claim to the
           # User spec.profile.email field of the catalog entity.
           - resolver: emailMatchingUserEntityProfileEmail
-          # signInWithoutCatalogUser allows Sign-In without a pre-existing User
-          # entity in the catalog.
-          - resolver: signInWithoutCatalogUser
+          # emailLocalPartAsSubjectWithoutCatalogUser allows Sign-In without a
+          # pre-existing User entity in the catalog.
+          - resolver: emailLocalPartAsSubjectWithoutCatalogUser
 ```
 
 Consult your identity provider to obtain the value of the `issuer` and `audience` claims. If you have a token you can extract these values using [jwt.io](https://jwt.io).
@@ -50,7 +50,7 @@ This config section must be in place for the provider to load at all. Now let's 
 The `oidcProxy` provider supports two resolvers.
 
 - `emailMatchingUserEntityProfileEmail`: Matches the `email` id token claim with the User entity that has a matching `spec.profile.email`.
-- `signInWithoutCatalogUser`: allows Sign-In without a pre-existing User entity in the catalog.
+- `emailLocalPartAsSubjectWithoutCatalogUser`: allows Sign-In without a pre-existing User entity in the catalog.
 
 :::note Note
 
