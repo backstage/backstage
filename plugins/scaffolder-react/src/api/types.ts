@@ -234,6 +234,8 @@ export interface ScaffolderApi {
     token: string;
     provider: string;
     resource: string;
-    context?: Record<string, string>;
-  }): Promise<{ results: { title: string }[] }>;
+    context?: Record<string, unknown>;
+  }): Promise<{
+    results: { title: string; context?: Record<string, unknown> }[];
+  }>;
 }
