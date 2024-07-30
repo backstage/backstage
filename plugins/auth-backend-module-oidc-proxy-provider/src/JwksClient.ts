@@ -26,7 +26,12 @@ import { GetKeyFunction } from 'jose/dist/types/types';
 
 const CLOCK_MARGIN_S = 10;
 
-export class JwksClient {
+export interface KeyStoreClient {
+  get getKey(): GetKeyFunction<JWSHeaderParameters, FlattenedJWSInput>;
+  refreshKeyStore(rawJwtToken: string): Promise<void>;
+}
+
+export class JwksClient implements KeyStoreClient {
   #keyStore?: GetKeyFunction<JWSHeaderParameters, FlattenedJWSInput>;
   #keyStoreUpdated: number = 0;
 

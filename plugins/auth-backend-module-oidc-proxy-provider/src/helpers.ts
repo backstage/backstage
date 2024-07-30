@@ -16,7 +16,7 @@
 
 import { AuthenticationError } from '@backstage/errors';
 import { IDTokenInfo } from './types';
-import { JwksClient } from './JwksClient';
+import { KeyStoreClient } from './JwksClient';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { jwtVerify } from 'jose';
 
@@ -24,7 +24,7 @@ export function createTokenValidator(
   logger: LoggerService,
   iss: string,
   aud: string,
-  jwksClient: JwksClient,
+  jwksClient: KeyStoreClient,
 ): (token: string) => Promise<IDTokenInfo> {
   const verifyOpts = {
     issuer: iss,
