@@ -24,12 +24,12 @@ import { OidcProxyResult } from './types';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
- * DEFAULT_OIDC_ID_TOKEN_HEADER represents the default http request header used
- * when an alternative header has not been explicitly configured.
+ * the default http request header used when an alternative header has not been
+ * explicitly configured.
  */
-const DEFAULT_OIDC_ID_TOKEN_HEADER = 'x-oidc-id-token';
+export const DEFAULT_OIDC_ID_TOKEN_HEADER = 'x-oidc-id-token';
 
-export function createHolosProxyAuthenticator(logger: LoggerService) {
+export function createOidcProxyAuthenticator(logger: LoggerService) {
   return createProxyAuthenticator({
     defaultProfileTransform: async (result: OidcProxyResult) => {
       const profileInfo: ProfileInfo = { email: result.idToken.email };
@@ -39,7 +39,7 @@ export function createHolosProxyAuthenticator(logger: LoggerService) {
       if ('picture' in result.idToken) {
         profileInfo.picture = result.idToken.picture as string;
       }
-      logger.debug(`holos profile transform: ${JSON.stringify(profileInfo)}`);
+      logger.debug(`oidc proxy profile transform: ${JSON.stringify(profileInfo)}`);
       return { profile: profileInfo };
     },
     initialize({ config }) {

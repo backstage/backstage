@@ -18,22 +18,22 @@ export interface Config {
   auth?: {
     providers?: {
       /**
-       * Configuration for the Holos Platform identity aware proxy auth provider.
+       * Configuration for the oidc identity aware proxy auth provider.
        */
       oidcProxy?: {
         [authEnv: string]: {
           /**
-           * issuer represents the iss claim value to assert validating an id token.
+           * the iss claim value to assert validating an id token.
            */
           issuer: string;
 
           /**
-           * audience represents the aud claim value to assert when validating an id token.
+           * the aud claim value to assert when validating an id token.
            */
           audience: string;
 
           /**
-           * idTokenHeader represents the header to read the id token from.  Defaults to `'x-oidc-id-token'`.
+           * the header to read the id token from.  Defaults to `'x-oidc-id-token'`.
            */
           idTokenHeader?: string;
         };

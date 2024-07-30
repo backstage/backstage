@@ -1,5 +1,5 @@
 ---
-id: oidc-proxy-auth
+id: provider
 title: OIDC Proxy Provider
 sidebar_label: OIDC Proxy
 # prettier-ignore
@@ -8,11 +8,11 @@ description: Using an OIDC ID token from a request header as an authentication p
 
 This tutorial shows how to authenticate and sign in users who access Backstage with an oidc id token already present in the incoming http request from their browser.
 
-Backstage allows offloading the responsibility of authenticating users to a service mesh. The `oidcProxy` provider is developed and intended for use with the [Holos](https://openinfrastructure.co/holos/) platform, which integrates Backstage with Istio [External Authorization](https://istio.io/latest/docs/tasks/security/authorization/authz-custom/).
+Backstage allows offloading the responsibility of authenticating users to a service mesh. The `oidcProxy` provider is developed and intended for use with platforms such as [Holos](https://holos.run/) which integrates Backstage with Istio [External Authorization](https://istio.io/latest/docs/tasks/security/authorization/authz-custom/).
 
-The authentication and authorization process are generally useful, however, and are not specific to Holos or to Istio. Any HTTP proxy operating as an identity aware proxy (IAP) capable of providing an oidc id token in a requiest header is compatible with this `oidcProxy` provider. For example, [NGINX](https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-subrequest-authentication/), [oauth2-proxy](https://github.com/oauth2-proxy/oauth2-proxy), and Envoy [External Authorization](https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_filters/ext_authz_filter) are all capable of providing the id token in the http request.
+The authentication and authorization process are generally useful, however, and are not specific to Holos or to Istio. Any HTTP proxy operating as an identity aware proxy (IAP) capable of providing an oidc id token in a request header is compatible with this `oidcProxy` provider. For example, [NGINX](https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-subrequest-authentication/), [oauth2-proxy](https://github.com/oauth2-proxy/oauth2-proxy), and Envoy [External Authorization](https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_filters/ext_authz_filter) are all capable of providing the id token in the http request.
 
-It is assumed an IAP is already serving traffic in front of a Backstage instance configured to serve the frontend app from the backend.
+It is assumed an IAP is already handling traffic for Backstage.
 
 ## Configuration
 
@@ -28,7 +28,7 @@ auth:
       # audience is required, must match one of the aud values listed in the id token.
       audience: 'https://backstage.example.com'
       # oidcIdTokenHeader is optional and may be set to any value except `authorization`.
-      # The value of the header is the id token without a "Bearer " prefix.
+      # The value of the header is the id token without any prefix or suffix.
       oidcIdTokenHeader: 'x-oidc-id-token'
       signIn:
         resolvers:

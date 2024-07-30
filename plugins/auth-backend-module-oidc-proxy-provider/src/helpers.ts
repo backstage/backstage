@@ -34,7 +34,6 @@ export function createTokenValidator(
       jwksUri = await discoverJwksUri(iss);
     }
 
-    logger.info(`jwksUri: ${jwksUri}`);
     // Verify the token was signed by the issuer.  Performs one round trip to
     // the jwks uri every authentication request to fetch the current key set
     // from the issuer.  May be optimized in the future, but this happens only
@@ -81,6 +80,10 @@ async function discoverJwksUri(iss: string): Promise<string> {
   });
 }
 
+// Load the jwks with improved error handling compared to jose
+// createRemoteJWKSet().  The intent is to handle the edge case where ZITADEL
+// returns an empty jwks.  Refer to
+// https://github.com/zitadel/zitadel/issues/6949#issuecomment-2035030448
 async function loadJwksUri(
   logger: LoggerService,
   jwksUri: string,
