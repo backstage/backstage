@@ -49,6 +49,8 @@ import { SerializedTaskEvent as SerializedTaskEvent_2 } from '@backstage/plugin-
 import { TaskBroker as TaskBroker_2 } from '@backstage/plugin-scaffolder-node';
 import { TaskBrokerDispatchOptions as TaskBrokerDispatchOptions_2 } from '@backstage/plugin-scaffolder-node';
 import { TaskBrokerDispatchResult as TaskBrokerDispatchResult_2 } from '@backstage/plugin-scaffolder-node';
+import { TaskBrokerListOptions } from '@backstage/plugin-scaffolder-node';
+import { TaskBrokerListResult } from '@backstage/plugin-scaffolder-node';
 import { TaskCompletionState as TaskCompletionState_2 } from '@backstage/plugin-scaffolder-node';
 import { TaskContext as TaskContext_2 } from '@backstage/plugin-scaffolder-node';
 import { TaskEventType as TaskEventType_2 } from '@backstage/plugin-scaffolder-node';
@@ -427,8 +429,16 @@ export class DatabaseTaskStore implements TaskStore {
   // (undocumented)
   heartbeatTask(taskId: string): Promise<void>;
   // (undocumented)
-  list(options: { createdBy?: string }): Promise<{
+  list(options: {
+    createdBy?: string;
+    limit?: number;
+    offset?: number;
+    orderBy?: 'created_at' | 'last_heartbeat_at' | 'status';
+    order?: 'asc' | 'desc';
+    status?: 'cancelled' | 'completed' | 'failed' | 'open' | 'processing';
+  }): Promise<{
     tasks: SerializedTask_2[];
+    total: number;
   }>;
   // (undocumented)
   listEvents(options: TaskStoreListEventsOptions): Promise<{
@@ -646,9 +656,7 @@ export interface TaskStore {
   // (undocumented)
   heartbeatTask(taskId: string): Promise<void>;
   // (undocumented)
-  list?(options: { createdBy?: string }): Promise<{
-    tasks: SerializedTask[];
-  }>;
+  list?(options: TaskBrokerListOptions): Promise<TaskBrokerListResult>;
   // (undocumented)
   listEvents(options: TaskStoreListEventsOptions): Promise<{
     events: SerializedTaskEvent[];

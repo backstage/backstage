@@ -104,6 +104,27 @@ export type TaskBrokerDispatchOptions = {
 };
 
 /**
+ * The options passed to {@link TaskBroker.list}
+ *
+ * @public
+ */
+export type TaskBrokerListOptions = {
+  createdBy?: string;
+  status?: TaskStatus;
+  limit?: number;
+  offset?: number;
+  orderBy?: 'created_at' | 'last_heartbeat_at' | 'status';
+  order?: 'asc' | 'desc';
+};
+
+/**
+ * The result of {@link TaskBroker.list}
+ *
+ * @public
+ */
+export type TaskBrokerListResult = { tasks: SerializedTask[]; total: number };
+
+/**
  * Task
  *
  * @public
@@ -180,5 +201,5 @@ export interface TaskBroker {
 
   get(taskId: string): Promise<SerializedTask>;
 
-  list?(options?: { createdBy?: string }): Promise<{ tasks: SerializedTask[] }>;
+  list?(options?: TaskBrokerListOptions): Promise<TaskBrokerListResult>;
 }

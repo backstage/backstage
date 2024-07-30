@@ -22,19 +22,19 @@ import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
 import {
   TaskStore,
-  TaskStoreEmitOptions,
-  TaskStoreListEventsOptions,
   TaskStoreCreateTaskOptions,
   TaskStoreCreateTaskResult,
-  TaskStoreShutDownTaskOptions,
+  TaskStoreEmitOptions,
+  TaskStoreListEventsOptions,
   TaskStoreRecoverTaskOptions,
+  TaskStoreShutDownTaskOptions,
 } from './types';
 import {
-  SerializedTaskEvent,
   SerializedTask,
-  TaskStatus,
+  SerializedTaskEvent,
   TaskEventType,
   TaskSecrets,
+  TaskStatus,
 } from '@backstage/plugin-scaffolder-node';
 import { DateTime, Duration } from 'luxon';
 import { TaskRecovery, TaskSpec } from '@backstage/plugin-scaffolder-common';
@@ -182,7 +182,12 @@ export class DatabaseTaskStore implements TaskStore {
 
   async list(options: {
     createdBy?: string;
-  }): Promise<{ tasks: SerializedTask[] }> {
+    limit?: number;
+    offset?: number;
+    orderBy?: 'created_at' | 'last_heartbeat_at' | 'status';
+    order?: 'asc' | 'desc';
+    status?: 'cancelled' | 'completed' | 'failed' | 'open' | 'processing';
+  }): Promise<{ tasks: SerializedTask[]; total: number }> {
     const queryBuilder = this.db<RawDbTaskRow>('tasks');
 
     if (options.createdBy) {
@@ -191,7 +196,33 @@ export class DatabaseTaskStore implements TaskStore {
       });
     }
 
-    const results = await queryBuilder.orderBy('created_at', 'desc').select();
+    if (options.status) {
+      queryBuilder.where({ status: options.status });
+    }
+
+    const totalQuery = queryBuilder.clone();
+
+    if (options.orderBy || options.order) {
+      queryBuilder.orderBy(
+        options.orderBy ?? 'created_at',
+        options.order ?? 'desc',
+      );
+    }
+
+    if (options.limit) {
+      queryBuilder.limit(options.limit);
+    }
+
+    if (options.offset) {
+      queryBuilder.offset(options.offset);
+    }
+
+    const results = await queryBuilder.select();
+    const { totalRows } = await totalQuery
+      .count<Record<string, number>>({
+        totalRows: 'id',
+      })
+      .first();
 
     const tasks = results.map(result => ({
       id: result.id,
@@ -202,7 +233,7 @@ export class DatabaseTaskStore implements TaskStore {
       createdAt: parseSqlDateToIsoString(result.created_at),
     }));
 
-    return { tasks };
+    return { tasks, total: totalRows };
   }
 
   async getTask(taskId: string): Promise<SerializedTask> {

@@ -15,10 +15,10 @@
  */
 
 import {
+  createLegacyAuthAdapters,
   HostDiscovery,
   PluginDatabaseManager,
   UrlReader,
-  createLegacyAuthAdapters,
 } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { CatalogApi } from '@backstage/catalog-client';
@@ -35,22 +35,22 @@ import { ScmIntegrations } from '@backstage/integration';
 import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
 import {
   TaskSpec,
+  TemplateEntityStepV1beta3,
   TemplateEntityV1beta3,
   templateEntityV1beta3Validator,
   TemplateParametersV1beta3,
-  TemplateEntityStepV1beta3,
 } from '@backstage/plugin-scaffolder-common';
 import {
   RESOURCE_TYPE_SCAFFOLDER_ACTION,
   RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
   scaffolderActionPermissions,
+  scaffolderTaskPermissions,
   scaffolderTemplatePermissions,
   taskCancelPermission,
   taskCreatePermission,
   taskReadPermission,
   templateParameterReadPermission,
   templateStepReadPermission,
-  scaffolderTaskPermissions,
 } from '@backstage/plugin-scaffolder-common/alpha';
 import express from 'express';
 import Router from 'express-promise-router';
@@ -58,8 +58,9 @@ import { validate } from 'jsonschema';
 import { Logger } from 'winston';
 import { z } from 'zod';
 import {
-  TemplateAction,
   TaskBroker,
+  TaskStatus,
+  TemplateAction,
   TemplateFilter,
   TemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
@@ -581,6 +582,64 @@ export async function createRouter(
         throw new InputError('createdBy query parameter must be a string');
       }
 
+      const [queryLimit] = [req.query.limit].flat();
+      const limit = queryLimit
+        ? Number.parseInt(queryLimit as string, 10)
+        : undefined;
+      if (limit !== undefined && (isNaN(limit) || limit < 1)) {
+        throw new InputError('limit must be non-negative integer');
+      }
+
+      const [queryOffset] = [req.query.offset].flat();
+      const offset = queryOffset
+        ? Number.parseInt(queryOffset as string, 10)
+        : undefined;
+      if (offset !== undefined && isNaN(offset)) {
+        throw new InputError('offset must be non-negative integer');
+      }
+
+      const [queryOrderBy] = [req.query.orderBy].flat();
+      let orderBy = undefined;
+      if (queryOrderBy) {
+        if (
+          typeof queryOrderBy !== 'string' ||
+          !['created_at', 'last_heartbeat_at', 'status'].includes(
+            queryOrderBy as string,
+          )
+        ) {
+          throw new InputError(
+            'orderBy must be one of created_at, last_heartbeat_at, status',
+          );
+        }
+        orderBy = queryOrderBy as 'created_at' | 'last_heartbeat_at' | 'status';
+      }
+
+      const [queryOrder] = [req.query.order].flat();
+      let order = undefined;
+      if (queryOrder) {
+        if (
+          typeof queryOrder !== 'string' ||
+          !['desc', 'asc'].includes(queryOrder)
+        ) {
+          throw new InputError('order must be one of desc, asc');
+        }
+        order = queryOrder as 'asc' | 'desc';
+      }
+
+      const [queryStatus] = [req.query.status].flat();
+      let status = undefined;
+      if (queryStatus) {
+        if (
+          typeof queryStatus !== 'string' ||
+          !['cancelled', 'completed', 'failed', 'open', 'processing'].includes(
+            queryStatus,
+          )
+        ) {
+          throw new InputError('status must be one of supported values');
+        }
+        status = queryStatus as TaskStatus;
+      }
+
       if (!taskBroker.list) {
         throw new Error(
           'TaskBroker does not support listing tasks, please implement the list method on the TaskBroker.',
@@ -589,6 +648,11 @@ export async function createRouter(
 
       const tasks = await taskBroker.list({
         createdBy: userEntityRef,
+        limit,
+        offset,
+        orderBy,
+        order,
+        status,
       });
 
       res.status(200).json(tasks);

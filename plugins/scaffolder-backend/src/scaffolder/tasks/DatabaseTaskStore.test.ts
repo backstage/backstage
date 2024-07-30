@@ -95,6 +95,37 @@ describe('DatabaseTaskStore', () => {
     expect(tasks[0].id).toBeDefined();
   });
 
+  it('should list tasks with limit and offset', async () => {
+    const { store } = await createStore();
+
+    await store.createTask({
+      spec: {} as TaskSpec,
+      createdBy: 'me',
+    });
+
+    await store.createTask({
+      spec: {} as TaskSpec,
+      createdBy: 'him',
+    });
+
+    const { tasks, total } = await store.list({ limit: 1, offset: 0 });
+    expect(tasks.length).toBe(1);
+    expect(total).toBe(2);
+    expect(tasks[0].createdBy).toBe('me');
+    expect(tasks[0].status).toBe('open');
+    expect(tasks[0].id).toBeDefined();
+
+    const { tasks: tasks2, total: total2 } = await store.list({
+      limit: 1,
+      offset: 1,
+    });
+    expect(tasks2.length).toBe(1);
+    expect(total2).toBe(2);
+    expect(tasks2[0].createdBy).toBe('him');
+    expect(tasks2[0].status).toBe('open');
+    expect(tasks2[0].id).toBeDefined();
+  });
+
   it('should sent an event to start cancelling the task', async () => {
     const { store } = await createStore();
 

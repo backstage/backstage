@@ -21,8 +21,8 @@ import {
 import { ConfigReader } from '@backstage/config';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import {
-  TaskSecrets,
   SerializedTaskEvent,
+  TaskSecrets,
 } from '@backstage/plugin-scaffolder-node';
 import { DatabaseTaskStore } from './DatabaseTaskStore';
 import { StorageTaskBroker, TaskManager } from './StorageTaskBroker';
@@ -231,6 +231,7 @@ describe('StorageTaskBroker', () => {
           id: taskId,
         }),
       ]),
+      total: 13,
     });
   });
 
@@ -244,7 +245,22 @@ describe('StorageTaskBroker', () => {
     const task = await storage.getTask(taskId);
 
     const promise = broker.list({ createdBy: 'user:default/foo' });
-    await expect(promise).resolves.toEqual({ tasks: [task] });
+    await expect(promise).resolves.toEqual({ tasks: [task], total: 1 });
+  });
+
+  it('should list tasks with limit and offset', async () => {
+    const broker = new StorageTaskBroker(storage, logger);
+    const { taskId } = await broker.dispatch(emptyTaskSpec);
+
+    const promise = broker.list({ limit: 100, offset: 10 });
+    await expect(promise).resolves.toEqual({
+      tasks: expect.arrayContaining([
+        expect.objectContaining({
+          id: taskId,
+        }),
+      ]),
+      total: 15,
+    });
   });
 
   it('should handle checkpoints in task state', async () => {

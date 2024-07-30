@@ -20,13 +20,15 @@ import { JsonObject, JsonValue, Observable } from '@backstage/types';
 import { Logger } from 'winston';
 import ObservableImpl from 'zen-observable';
 import {
-  TaskSecrets,
   SerializedTask,
   SerializedTaskEvent,
   TaskBroker,
   TaskBrokerDispatchOptions,
+  TaskBrokerListOptions,
+  TaskBrokerListResult,
   TaskCompletionState,
   TaskContext,
+  TaskSecrets,
 } from '@backstage/plugin-scaffolder-node';
 import { InternalTaskSecrets, TaskStore } from './types';
 import { readDuration } from './helper';
@@ -277,15 +279,13 @@ export class StorageTaskBroker implements TaskBroker {
     >,
   ) {}
 
-  async list(options?: {
-    createdBy?: string;
-  }): Promise<{ tasks: SerializedTask[] }> {
+  async list(options?: TaskBrokerListOptions): Promise<TaskBrokerListResult> {
     if (!this.storage.list) {
       throw new Error(
         'TaskStore does not implement the list method. Please implement the list method to be able to list tasks',
       );
     }
-    return await this.storage.list({ createdBy: options?.createdBy });
+    return await this.storage.list(options ?? {});
   }
 
   private deferredDispatch = defer();

@@ -396,6 +396,7 @@ describe('createRouter', () => {
               createdBy: '',
             },
           ],
+          total: 1,
         });
 
         const response = await request(app).get(`/v2/tasks`);
@@ -413,6 +414,7 @@ describe('createRouter', () => {
               createdBy: '',
             },
           ],
+          total: 1,
         });
       });
 
@@ -429,13 +431,18 @@ describe('createRouter', () => {
               createdBy: 'user:default/foo',
             },
           ],
+          total: 1,
         });
 
         const response = await request(app).get(
-          `/v2/tasks?createdBy=user:default/foo`,
+          `/v2/tasks?createdBy=user:default/foo&limit=1&offset=0&order=asc&orderBy=status`,
         );
         expect(taskBroker.list).toHaveBeenCalledWith({
           createdBy: 'user:default/foo',
+          limit: 1,
+          offset: 0,
+          order: 'asc',
+          orderBy: 'status',
         });
 
         expect(response.status).toEqual(200);
@@ -449,7 +456,28 @@ describe('createRouter', () => {
               createdBy: 'user:default/foo',
             },
           ],
+          total: 1,
         });
+      });
+
+      it('should throw an error on invalid limit', async () => {
+        const response = await request(app).get(`/v2/tasks?limit=0`);
+        expect(response.status).toEqual(500);
+      });
+
+      it('should throw an error on invalid offset', async () => {
+        const response = await request(app).get(`/v2/tasks?offset=invalid`);
+        expect(response.status).toEqual(500);
+      });
+
+      it('should throw an error on invalid orderBy', async () => {
+        const response = await request(app).get(`/v2/tasks?orderBy=0`);
+        expect(response.status).toEqual(500);
+      });
+
+      it('should throw an error on invalid order', async () => {
+        const response = await request(app).get(`/v2/tasks?order=0`);
+        expect(response.status).toEqual(500);
       });
     });
 
@@ -1194,6 +1222,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
               createdBy: '',
             },
           ],
+          total: 1,
         });
 
         const response = await request(app).get(`/v2/tasks`);
@@ -1211,6 +1240,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
               createdBy: '',
             },
           ],
+          total: 1,
         });
       });
 
@@ -1227,6 +1257,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
               createdBy: 'user:default/foo',
             },
           ],
+          total: 1,
         });
 
         const response = await request(app).get(
@@ -1247,6 +1278,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
               createdBy: 'user:default/foo',
             },
           ],
+          total: 1,
         });
       });
     });

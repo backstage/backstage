@@ -315,9 +315,7 @@ export interface TaskBroker {
   // (undocumented)
   get(taskId: string): Promise<SerializedTask>;
   // (undocumented)
-  list?(options?: { createdBy?: string }): Promise<{
-    tasks: SerializedTask[];
-  }>;
+  list?(options?: TaskBrokerListOptions): Promise<TaskBrokerListResult>;
   // (undocumented)
   recoverTasks?(): Promise<void>;
   // (undocumented)
@@ -334,6 +332,22 @@ export type TaskBrokerDispatchOptions = {
 // @public
 export type TaskBrokerDispatchResult = {
   taskId: string;
+};
+
+// @public
+export type TaskBrokerListOptions = {
+  createdBy?: string;
+  status?: TaskStatus;
+  limit?: number;
+  offset?: number;
+  orderBy?: 'created_at' | 'last_heartbeat_at' | 'status';
+  order?: 'asc' | 'desc';
+};
+
+// @public
+export type TaskBrokerListResult = {
+  tasks: SerializedTask[];
+  total: number;
 };
 
 // @public

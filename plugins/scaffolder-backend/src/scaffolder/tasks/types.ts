@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-import { JsonValue, JsonObject, HumanDuration } from '@backstage/types';
+import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
 import { TaskSpec, TaskStep } from '@backstage/plugin-scaffolder-common';
-import { TaskSecrets } from '@backstage/plugin-scaffolder-node';
 import {
-  TemplateAction,
-  TaskStatus as _TaskStatus,
-  TaskCompletionState as _TaskCompletionState,
   SerializedTask as _SerializedTask,
-  TaskEventType as _TaskEventType,
   SerializedTaskEvent as _SerializedTaskEvent,
-  TaskBrokerDispatchResult as _TaskBrokerDispatchResult,
-  TaskBrokerDispatchOptions as _TaskBrokerDispatchOptions,
-  TaskContext as _TaskContext,
   TaskBroker as _TaskBroker,
+  TaskBrokerDispatchOptions as _TaskBrokerDispatchOptions,
+  TaskBrokerDispatchResult as _TaskBrokerDispatchResult,
+  TaskBrokerListOptions,
+  TaskBrokerListResult,
+  TaskCompletionState as _TaskCompletionState,
+  TaskContext as _TaskContext,
+  TaskEventType as _TaskEventType,
+  TaskSecrets,
+  TaskStatus as _TaskStatus,
+  TemplateAction,
 } from '@backstage/plugin-scaffolder-node';
 
 /**
@@ -190,7 +192,7 @@ export interface TaskStore {
     tasks: { taskId: string }[];
   }>;
 
-  list?(options: { createdBy?: string }): Promise<{ tasks: SerializedTask[] }>;
+  list?(options: TaskBrokerListOptions): Promise<TaskBrokerListResult>;
 
   emitLogEvent(options: TaskStoreEmitOptions): Promise<void>;
 

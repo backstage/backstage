@@ -21,6 +21,8 @@ export type {
   TaskBroker,
   TaskBrokerDispatchOptions,
   TaskBrokerDispatchResult,
+  TaskBrokerListOptions,
+  TaskBrokerListResult,
   TaskCompletionState,
   TaskContext,
   TaskEventType,
