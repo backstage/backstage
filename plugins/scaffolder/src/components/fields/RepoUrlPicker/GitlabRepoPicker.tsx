@@ -54,6 +54,7 @@ export const GitlabRepoPicker = (
         token: accessToken,
         resource: 'groups',
         provider: 'gitlab',
+        context: { host },
       })
       .then(({ results }) => {
         setAvailableGroups(
@@ -96,6 +97,7 @@ export const GitlabRepoPicker = (
         context: {
           groupId: selectedGroup?.context.groupId,
           userId: selectedGroup?.context.userId,
+          host,
         },
         provider: 'gitlab',
       })

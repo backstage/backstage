@@ -15,41 +15,46 @@
  */
 
 import { InputError } from '@backstage/errors';
-import { handleAutocompleteRequest } from './autocomplete';
+import { createHandleAutocompleteRequest } from './autocomplete';
+import { ScmIntegrations } from '@backstage/integration';
+import { ConfigReader } from '@backstage/config';
 
 const mockGitlabClient = {
   Users: {
-    current: jest
+    showCurrentUser: jest
       .fn()
       .mockResolvedValue({ id: 'id-test', username: 'username-test' }),
-    projects: jest.fn().mockResolvedValue([]),
+    allProjects: jest.fn().mockResolvedValue([]),
   },
   Groups: {
     all: jest.fn().mockResolvedValue([{ full_path: 'workspace1', id: '123' }]),
-    projects: jest.fn().mockResolvedValue([{ name: 'repo-test' }]),
+    allProjects: jest.fn().mockResolvedValue([{ name: 'repo-test' }]),
   },
 };
-jest.mock('@gitbeaker/node', () => {
-  return {
-    Gitlab: jest.fn(() => mockGitlabClient),
-  };
-});
+jest.mock('@gitbeaker/rest', () => ({
+  Gitlab: class {
+    constructor() {
+      return mockGitlabClient;
+    }
+  },
+}));
 
 describe('handleAutocompleteRequest', () => {
-  it('should pass the token to the client', async () => {
-    const accessToken = 'foo';
-    const { Gitlab } = require('@gitbeaker/node');
-    await handleAutocompleteRequest({
-      token: accessToken,
-      context: {},
-      resource: 'groups',
-    });
-
-    expect(Gitlab).toHaveBeenCalledWith(
-      expect.objectContaining({ token: accessToken }),
-    );
+  const config = new ConfigReader({
+    integrations: {
+      gitlab: [
+        {
+          host: 'gitlab.com',
+          token: 'glpat-abcdef',
+          apiBaseUrl: 'https://gitlab.com/api/v4',
+        },
+      ],
+    },
   });
-
+  const integrations = ScmIntegrations.fromConfig(config);
+  const handleAutocompleteRequest = createHandleAutocompleteRequest({
+    integrations,
+  });
   it('should return groups', async () => {
     const result = await handleAutocompleteRequest({
       token: 'foo',
@@ -91,7 +96,7 @@ describe('handleAutocompleteRequest', () => {
     await expect(
       handleAutocompleteRequest({
         token: 'token',
-        resource: 'projects',
+        resource: 'repositories',
         context: {},
       }),
     ).rejects.toThrow(InputError);

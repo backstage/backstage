@@ -34,7 +34,7 @@ import {
   createTriggerGitlabPipelineAction,
   editGitlabIssueAction,
 } from './actions';
-import { handleAutocompleteRequest } from './autocomplete/autocomplete';
+import { createHandleAutocompleteRequest } from './autocomplete/autocomplete';
 
 /**
  * @public
@@ -68,7 +68,7 @@ export const gitlabModule = createBackendModule({
 
         autocomplete.addAutocompleteProvider({
           id: 'gitlab',
-          handler: handleAutocompleteRequest,
+          handler: createHandleAutocompleteRequest({ integrations }),
         });
       },
     });

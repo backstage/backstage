@@ -15,84 +15,95 @@
  */
 
 import { InputError } from '@backstage/errors';
-import { Gitlab } from '@gitbeaker/node';
-import { GroupSchema } from '@gitbeaker/rest';
+import { ScmIntegrationRegistry } from '@backstage/integration';
+import { getClient } from '../util';
 
-export async function handleAutocompleteRequest({
-  resource,
-  token,
-  context,
-}: {
-  resource: string;
-  token: string;
-  context: Record<string, string>;
-}): Promise<{
-  results: { title: string; context?: { groupId?: string; userId?: string } }[];
-}> {
-  const client = new Gitlab({
-    host: 'https://gitlab.com/',
+export function createHandleAutocompleteRequest(options: {
+  integrations: ScmIntegrationRegistry;
+}) {
+  return async function handleAutocompleteRequest({
+    resource,
     token,
-  });
+    context,
+  }: {
+    resource: string;
+    token?: string;
+    context: Record<string, string | undefined>;
+  }): Promise<{
+    results: {
+      title: string;
+      context?: { groupId?: string; userId?: string };
+    }[];
+  }> {
+    const { integrations } = options;
+    const client = getClient({
+      host: context.host ?? 'gitlab.com',
+      integrations,
+      token,
+    });
 
-  switch (resource) {
-    case 'groups': {
-      let groups: GroupSchema[] = [];
-      let page = 1;
-      const perPage = 100;
-      let response: GroupSchema[] = [];
-      while (response.length < perPage) {
-        response = await client.Groups.all({
-          page,
-          perPage,
-          min_access_level: 10, // at least guest access
+    switch (resource) {
+      case 'groups': {
+        let groups: any[] = [];
+        let page = 1;
+        const perPage = 100;
+        let response = [];
+        let continueFetch = true;
+        while (continueFetch) {
+          response = await client.Groups.all({
+            pagination: 'offset',
+            page,
+            perPage,
+          });
+
+          groups = groups.concat(response);
+          if (response.length < perPage) continueFetch = false;
+          page++;
+        }
+
+        const result: {
+          results: {
+            title: string;
+            context?: { groupId?: string; userId?: string };
+          }[];
+        } = {
+          results: groups.map(group => ({
+            title: group.full_path,
+            context: {
+              groupId: `${group.id}`,
+            },
+          })),
+        };
+        // append also user context
+        const user = await client.Users.showCurrentUser();
+        result.results.push({
+          title: user.username,
+          context: {
+            userId: `${user.id}`,
+          },
         });
 
-        groups = groups.concat(response);
-        page++;
+        return result;
       }
+      case 'repositories': {
+        if (!context.groupId && !context.userId)
+          throw new InputError('Missing groupId and userId context parameter');
 
-      const result: {
-        results: {
-          title: string;
-          context?: { groupId?: string; userId?: string };
-        }[];
-      } = {
-        results: groups.map(group => ({
-          title: group.full_path,
-          context: {
-            groupId: `${group.id}`,
-          },
-        })),
-      };
-      // append also user context
-      const user = await client.Users.current();
-      result.results.push({
-        title: user.username,
-        context: {
-          userId: `${user.id}`,
-        },
-      });
+        let response;
+        if (context.userId) {
+          response = await client.Users.allProjects(Number(context.userId));
+        } else {
+          response = await client.Groups.allProjects(context.groupId!);
+        }
 
-      return result;
-    }
-    case 'repositories': {
-      if (!context.groupId && !context.userId)
-        throw new InputError('Missing groupId and userId context parameter');
-
-      let response;
-      if (context.userId) {
-        response = await client.Users.projects(Number(context.userId));
-      } else {
-        response = await client.Groups.projects(context.groupId);
+        return {
+          results: response.map(project => ({
+            title: project.name.trim(),
+          })),
+        };
       }
-
-      return {
-        results: response.map(project => ({
-          title: project.name.trim(),
-        })),
-      };
+      default:
+        throw new InputError(`Invalid resource: ${resource}`);
     }
-    default:
-      throw new InputError(`Invalid resource: ${resource}`);
-  }
+  };
 }
