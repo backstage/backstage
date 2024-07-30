@@ -21,6 +21,8 @@ import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import { BaseRepoUrlPickerProps } from './types';
 import { Select, SelectItem } from '@backstage/core-components';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../../translation';
 
 export const AzureRepoPicker = (
   props: BaseRepoUrlPickerProps<{
@@ -35,6 +37,7 @@ export const AzureRepoPicker = (
     state,
     onChange,
   } = props;
+  const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const organizationItems: SelectItem[] = allowedOrganizations
     ? allowedOrganizations.map(i => ({ label: i, value: i }))
@@ -56,7 +59,7 @@ export const AzureRepoPicker = (
         {allowedOrganizations?.length ? (
           <Select
             native
-            label="Organization"
+            label={t('fields.azureRepoPicker.organization.title')}
             onChange={s =>
               onChange({ organization: String(Array.isArray(s) ? s[0] : s) })
             }
@@ -66,7 +69,9 @@ export const AzureRepoPicker = (
           />
         ) : (
           <>
-            <InputLabel htmlFor="orgInput">Organization</InputLabel>
+            <InputLabel htmlFor="orgInput">
+              {t('fields.azureRepoPicker.organization.title')}
+            </InputLabel>
             <Input
               id="orgInput"
               onChange={e => onChange({ organization: e.target.value })}
@@ -75,7 +80,7 @@ export const AzureRepoPicker = (
           </>
         )}
         <FormHelperText>
-          The Organization that this repo will belong to
+          {t('fields.azureRepoPicker.organization.description')}
         </FormHelperText>
       </FormControl>
       <FormControl
@@ -86,7 +91,7 @@ export const AzureRepoPicker = (
         {allowedProject?.length ? (
           <Select
             native
-            label="Project"
+            label={t('fields.azureRepoPicker.project.title')}
             onChange={s =>
               onChange({ project: String(Array.isArray(s) ? s[0] : s) })
             }
@@ -96,7 +101,9 @@ export const AzureRepoPicker = (
           />
         ) : (
           <>
-            <InputLabel htmlFor="projectInput">Project</InputLabel>
+            <InputLabel htmlFor="projectInput">
+              {t('fields.azureRepoPicker.project.title')}
+            </InputLabel>
             <Input
               id="projectInput"
               onChange={e => onChange({ project: e.target.value })}
@@ -105,7 +112,7 @@ export const AzureRepoPicker = (
           </>
         )}
         <FormHelperText>
-          The Project that this repo will belong to
+          {t('fields.azureRepoPicker.project.description')}
         </FormHelperText>
       </FormControl>
     </>

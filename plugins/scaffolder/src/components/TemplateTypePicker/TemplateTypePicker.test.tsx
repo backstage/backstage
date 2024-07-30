@@ -26,7 +26,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { AlertApi, alertApiRef } from '@backstage/core-plugin-api';
 import { ApiProvider } from '@backstage/core-app-api';
-import { renderWithEffects, TestApiRegistry } from '@backstage/test-utils';
+import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { GetEntityFacetsResponse } from '@backstage/catalog-client';
 
 const entities: Entity[] = [
@@ -86,7 +86,7 @@ const apis = TestApiRegistry.from(
 
 describe('<TemplateTypePicker/>', () => {
   it('renders available entity types', async () => {
-    const rendered = await renderWithEffects(
+    const rendered = await renderInTestApp(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
           value={{
@@ -109,7 +109,7 @@ describe('<TemplateTypePicker/>', () => {
   });
 
   it('sets the selected type filters', async () => {
-    const rendered = await renderWithEffects(
+    const rendered = await renderInTestApp(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
           value={{

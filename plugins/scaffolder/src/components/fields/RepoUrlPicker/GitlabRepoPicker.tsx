@@ -20,6 +20,8 @@ import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import { Select, SelectItem } from '@backstage/core-components';
 import { BaseRepoUrlPickerProps } from './types';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../../translation';
 
 export const GitlabRepoPicker = (
   props: BaseRepoUrlPickerProps<{
@@ -28,6 +30,7 @@ export const GitlabRepoPicker = (
   }>,
 ) => {
   const { allowedOwners = [], state, onChange, rawErrors } = props;
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const ownerItems: SelectItem[] = allowedOwners
     ? allowedOwners.map(i => ({ label: i, value: i }))
     : [{ label: 'Loading...', value: 'loading' }];
@@ -44,7 +47,7 @@ export const GitlabRepoPicker = (
         {allowedOwners?.length ? (
           <Select
             native
-            label="Owner Available"
+            label={t('fields.gitlabRepoPicker.owner.title')}
             onChange={selected =>
               onChange({
                 owner: String(Array.isArray(selected) ? selected[0] : selected),
@@ -56,7 +59,9 @@ export const GitlabRepoPicker = (
           />
         ) : (
           <>
-            <InputLabel htmlFor="ownerInput">Owner</InputLabel>
+            <InputLabel htmlFor="ownerInput">
+              {t('fields.gitlabRepoPicker.owner.inputTitle')}
+            </InputLabel>
             <Input
               id="ownerInput"
               onChange={e => onChange({ owner: e.target.value })}
@@ -65,8 +70,7 @@ export const GitlabRepoPicker = (
           </>
         )}
         <FormHelperText>
-          GitLab namespace where this repository will belong to. It can be the
-          name of organization, group, subgroup, user, or the project.
+          {t('fields.gitlabRepoPicker.owner.description')}
         </FormHelperText>
       </FormControl>
     </>

@@ -16,6 +16,8 @@
 import React from 'react';
 import { EntityPicker } from '../EntityPicker/EntityPicker';
 import { OwnerPickerProps } from './schema';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../../translation';
 
 export { OwnerPickerSchema } from './schema';
 
@@ -26,8 +28,12 @@ export { OwnerPickerSchema } from './schema';
  * @public
  */
 export const OwnerPicker = (props: OwnerPickerProps) => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const {
-    schema: { title = 'Owner', description = 'The owner of the component' },
+    schema: {
+      title = t('fields.ownerPicker.title'),
+      description = t('fields.ownerPicker.description'),
+    },
     uiSchema,
     ...restProps
   } = props;

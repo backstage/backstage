@@ -28,6 +28,8 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { useEntityTypeFilter } from '@backstage/plugin-catalog-react';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../translation';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -41,6 +43,7 @@ export const TemplateTypePicker = () => {
   const alertApi = useApi(alertApiRef);
   const { error, loading, availableTypes, selectedTypes, setSelectedTypes } =
     useEntityTypeFilter();
+  const { t } = useTranslationRef(scaffolderTranslationRef);
 
   if (loading) return <Progress />;
 
@@ -61,7 +64,7 @@ export const TemplateTypePicker = () => {
         component="label"
         htmlFor="categories-picker"
       >
-        Categories
+        {t('templateTypePicker.title')}
       </Typography>
       <Autocomplete<string, true>
         id="categories-picker"
