@@ -49,7 +49,7 @@ The default Backstage app comes with a guest Sign In Resolver. This resolver mak
 
 ### Add sign-in option to the frontend
 
-Backstage will re-read the configuration. If there's no errors, that's great! We can continue with the next part of the configuration. The next step is needed to change the sign-in page, this you actually need to add in the source code.
+Backstage will re-read the configuration. If there's no errors, that's great! We can continue with the next part of the configuration. The next step is needed to change the sign-in page. For this, you'll actually need to write some code.
 
 Open `packages/app/src/App.tsx` and below the last `import` line, add:
 
