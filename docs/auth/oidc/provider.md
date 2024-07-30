@@ -85,21 +85,7 @@ backend.add(
 
 ## Frontend Changes
 
-This provider is intended for use with the `ProxiedSignInPage`, which is installed in `packages/app/src/App.tsx` like this:
-
-```tsx title="packages/app/src/App.tsx"
-/* highlight-add-next-line */
-import { ProxiedSignInPage } from '@backstage/core-components';
-
-const app = createApp({
-  /* highlight-add-start */
-  components: {
-    SignInPage: props => <ProxiedSignInPage {...props} provider="oidcProxy" />,
-  },
-  /* highlight-add-end */
-  // ..
-});
-```
+This provider is intended for use with the `ProxiedSignInPage`.  Refer to [Sign-In with Proxy Providers](https://backstage.io/docs/auth/#sign-in-with-proxy-providers) for information on how to install the sign in page.
 
 ## Verification
 
