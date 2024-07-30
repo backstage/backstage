@@ -13,23 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useApp } from '@backstage/core-plugin-api';
 import React from 'react';
 import SvgIcon from '@material-ui/core/SvgIcon';
+import { OverridableComponent } from '@material-ui/core/OverridableComponent';
+import { SvgIconTypeMap } from '@material-ui/core/SvgIcon/SvgIcon';
+import { IconComponent } from '@backstage/core-plugin-api';
 
-export function EntityKindIcon({
-  kind,
+export function EntityIcon({
+  icon,
   ...props
 }: {
-  kind: string;
+  icon: IconComponent | undefined;
   x?: number;
   y?: number;
   width?: number;
   height?: number;
   className?: string;
 }) {
-  const app = useApp();
-  const Icon =
-    app.getSystemIcon(`kind:${kind.toLocaleLowerCase('en-US')}`) ?? SvgIcon;
+  const Icon = (icon as OverridableComponent<SvgIconTypeMap>) ?? SvgIcon;
   return <Icon {...props} />;
 }
