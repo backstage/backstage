@@ -78,7 +78,7 @@ components: {
 
 ### Add the auth provider to the backend
 
-To add the auth provider to the backend we will first need to install the package by running this command:
+To add the auth provider to the backend, we will first need to install the package by running this command:
 
 ```bash title="from your Backstage root directory"
 yarn --cwd packages/backend add @backstage/plugin-auth-backend-module-github-provider
