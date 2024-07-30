@@ -25,47 +25,48 @@ import {
 import { OidcProxyResult } from './types';
 
 /**
- * Available sign-in resolvers for the auth provider to assoicate oidc id tokens
+ * Available sign-in resolvers for the auth provider to associate oidc id tokens
  * with a backstage User entity.
  *
  * @public
  */
 export namespace oidcProxySignInResolvers {
   /**
-   * singInWithoutCatalogUser signs the user in without requiring a pre-existing
-   * User entity in the catalog.  Refer to
+   * signs the user in without requiring a pre-existing User entity in the
+   * catalog.  Refer to
    * https://backstage.io/docs/auth/identity-resolver/#sign-in-without-users-in-the-catalog
    */
-  export const signInWithoutCatalogUser = createSignInResolverFactory({
-    create() {
-      return async ({ profile }, ctx) => {
-        if (!profile.email) {
-          throw new Error(
-            'could not sign in: oidc-proxy provider: missing email claim from id token',
-          );
-        }
+  export const emailLocalPartAsSubjectWithoutCatalogUser =
+    createSignInResolverFactory({
+      create() {
+        return async ({ profile }, ctx) => {
+          if (!profile.email) {
+            throw new Error(
+              'could not sign in: oidc-proxy provider: missing email claim from id token',
+            );
+          }
 
-        const [localPart] = profile.email.split('@');
+          const [localPart] = profile.email.split('@');
 
-        const userEntity = stringifyEntityRef({
-          kind: 'User',
-          name: localPart,
-          namespace: DEFAULT_NAMESPACE,
-        });
+          const userEntity = stringifyEntityRef({
+            kind: 'User',
+            name: localPart,
+            namespace: DEFAULT_NAMESPACE,
+          });
 
-        return ctx.issueToken({
-          claims: {
-            sub: userEntity,
-            ent: [userEntity],
-          },
-        });
-      };
-    },
-  });
+          return ctx.issueToken({
+            claims: {
+              sub: userEntity,
+              ent: [userEntity],
+            },
+          });
+        };
+      },
+    });
 
   /**
-   * emailMatchingUserEntityProfileEmail resolves the id token email claim with
-   * the spec.profile.email field of an existing User entity in the catalog.
+   * resolves the id token email claim with the spec.profile.email field of an
+   * existing User entity in the catalog.
    */
   export const emailMatchingUserEntityProfileEmail =
     createSignInResolverFactory({

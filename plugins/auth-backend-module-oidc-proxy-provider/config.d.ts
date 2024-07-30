@@ -36,6 +36,13 @@ export interface Config {
            * the header to read the id token from.  Defaults to `'x-oidc-id-token'`.
            */
           idTokenHeader?: string;
+
+          signIn?: {
+            resolvers: Array<
+              | { resolver: 'emailLocalPartAsSubjectWithoutCatalogUser' }
+              | { resolver: 'emailMatchingUserEntityProfileEmail' }
+            >;
+          };
         };
       };
     };
