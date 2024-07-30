@@ -14,101 +14,37 @@
  * limitations under the License.
  */
 
-import { LoggerService } from '@backstage/backend-plugin-api';
 import { AuthenticationError } from '@backstage/errors';
-import { JWK, KeyLike, importJWK, jwtVerify } from 'jose';
-import fetch from 'node-fetch';
 import { IDTokenInfo } from './types';
+import { JwksClient } from './JwksClient';
+import { LoggerService } from '@backstage/backend-plugin-api';
+import { jwtVerify } from 'jose';
 
 export function createTokenValidator(
   logger: LoggerService,
   iss: string,
   aud: string,
-  providedJwks?: (KeyLike | Uint8Array)[],
+  jwksClient: JwksClient,
 ): (token: string) => Promise<IDTokenInfo> {
-  let jwksUri: string = '';
+  const verifyOpts = {
+    issuer: iss,
+    audience: aud,
+    requiredClaims: ['iat', 'exp', 'sub', 'email'],
+  };
 
   return async function tokenValidator(token) {
-    // Perform discovery once to avoid two round trips on every authentication request.
-    if (jwksUri === '' && providedJwks === undefined) {
-      jwksUri = await discoverJwksUri(iss);
-    }
+    await jwksClient.refreshKeyStore(token);
 
-    // Verify the token was signed by the issuer.  Performs one round trip to
-    // the jwks uri every authentication request to fetch the current key set
-    // from the issuer.  May be optimized in the future, but this happens only
-    // at sign-in, not for every request to the backend.
-    //
-    // Refer to https://github.com/panva/jose/blob/v5.4.0/docs/functions/jwks_remote.createRemoteJWKSet.md#returns-1
-    const jwks = providedJwks ?? (await loadJwksUri(logger, jwksUri));
+    // Verify the token and required claims.
+    const { payload } = await jwtVerify(
+      token,
+      jwksClient.getKey,
+      verifyOpts,
+    ).catch(e => {
+      logger.error(`invalid token: ${e}`);
+      throw new AuthenticationError('Invalid token', e);
+    });
 
-    for (const key of jwks) {
-      try {
-        const { payload } = await jwtVerify(token, key, {
-          issuer: iss,
-          audience: aud,
-          requiredClaims: ['sub', 'email'],
-        });
-
-        return payload as unknown as IDTokenInfo;
-      } catch (e) {
-        if (e.code !== 'ERR_JWS_SIGNATURE_VERIFICATION_FAILED') {
-          throw new AuthenticationError(`could not validate id token: ${e}`, e);
-        }
-      }
-    }
-    throw new AuthenticationError(
-      'could not validate id token: signature verification failed',
-    );
+    return payload as unknown as IDTokenInfo;
   };
-}
-
-async function discoverJwksUri(iss: string): Promise<string> {
-  const resp = await fetch(`${iss}/.well-known/openid-configuration`);
-  if (!resp.ok) {
-    throw new Error(`could not fetch discovery document: ${resp.statusText}`);
-  }
-  return resp.json().then(discoveryDocument => {
-    if (!discoveryDocument.jwks_uri) {
-      throw new Error(
-        `missing jwks_uri from ${iss}/.well-known-openid-configuration`,
-      );
-    }
-    return discoveryDocument.jwks_uri;
-  });
-}
-
-// Load the jwks with improved error handling compared to jose
-// createRemoteJWKSet().  The intent is to handle the edge case where ZITADEL
-// returns an empty jwks.  Refer to
-// https://github.com/zitadel/zitadel/issues/6949#issuecomment-2035030448
-async function loadJwksUri(
-  logger: LoggerService,
-  jwksUri: string,
-): Promise<KeyLike[]> {
-  try {
-    const response = await fetch(jwksUri);
-    if (!response.ok) {
-      throw new Error(`could not fetch jwks: ${response.statusText}`);
-    }
-    const jwks = await response.json();
-    if (!Array.isArray(jwks.keys)) {
-      throw new Error('could not load jwks: missing keys field');
-    }
-
-    const keys: KeyLike[] = await Promise.all(
-      jwks.keys.map(async (jwk: JWK) => {
-        try {
-          return await importJWK(jwk);
-        } catch (error) {
-          throw new Error(`could not import jwk: ${error}`);
-        }
-      }),
-    );
-
-    return keys;
-  } catch (error) {
-    logger.error(`could not load jwks uri ${jwksUri}: ${error}`);
-    throw error;
-  }
 }

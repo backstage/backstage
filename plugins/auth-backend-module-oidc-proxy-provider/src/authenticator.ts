@@ -22,6 +22,8 @@ import {
 import { createTokenValidator } from './helpers';
 import { OidcProxyResult } from './types';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import fetch from 'node-fetch';
+import { JwksClient } from './JwksClient';
 
 /**
  * the default http request header used when an alternative header has not been
@@ -39,7 +41,9 @@ export function createOidcProxyAuthenticator(logger: LoggerService) {
       if ('picture' in result.idToken) {
         profileInfo.picture = result.idToken.picture as string;
       }
-      logger.debug(`oidc proxy profile transform: ${JSON.stringify(profileInfo)}`);
+      logger.debug(
+        `oidc proxy profile transform: ${JSON.stringify(profileInfo)}`,
+      );
       return { profile: profileInfo };
     },
     initialize({ config }) {
@@ -49,7 +53,12 @@ export function createOidcProxyAuthenticator(logger: LoggerService) {
         config.getOptionalString('oidcIdTokenHeader') ??
         DEFAULT_OIDC_ID_TOKEN_HEADER;
 
-      const tokenValidator = createTokenValidator(logger, iss, aud);
+      // oidc discovery of jwks
+      const jwksClient = new JwksClient(async () => {
+        return new URL(await discoverJwksUri(iss));
+      });
+
+      const tokenValidator = createTokenValidator(logger, iss, aud, jwksClient);
 
       return { oidcIdTokenHeader, tokenValidator };
     },
@@ -69,5 +78,20 @@ export function createOidcProxyAuthenticator(logger: LoggerService) {
         providerInfo: { idToken },
       };
     },
+  });
+}
+
+async function discoverJwksUri(iss: string): Promise<string> {
+  const resp = await fetch(`${iss}/.well-known/openid-configuration`);
+  if (!resp.ok) {
+    throw new Error(`could not fetch discovery document: ${resp.statusText}`);
+  }
+  return resp.json().then(discoveryDocument => {
+    if (!discoveryDocument.jwks_uri) {
+      throw new Error(
+        `missing jwks_uri from ${iss}/.well-known-openid-configuration`,
+      );
+    }
+    return discoveryDocument.jwks_uri;
   });
 }
