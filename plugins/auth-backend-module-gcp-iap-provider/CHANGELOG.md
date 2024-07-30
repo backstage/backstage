@@ -1,5 +1,16 @@
 # @backstage/plugin-auth-backend-module-gcp-iap-provider
 
+## 0.2.18-next.1
+
+### Patch Changes
+
+- c8f1cae: Add `signIn` to authentication provider configuration schema
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.18-next.1
+
 ## 0.2.18-next.0
 
 ### Patch Changes
