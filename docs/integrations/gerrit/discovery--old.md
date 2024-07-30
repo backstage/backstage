@@ -1,5 +1,5 @@
 ---
-id: discovery
+id: discovery--old
 title: Gerrit Discovery
 sidebar_label: Discovery
 # prettier-ignore
@@ -7,7 +7,7 @@ description: Automatically discovering catalog entities from Gerrit repositories
 ---
 
 :::info
-This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage [version 1.24](../../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](./discovery--old.md) instead, and [consider migrating](../../backend-system/building-backends/08-migrating.md)!
+This documentation is written for the old backend which has been replaced by [the new backend system](../../backend-system/index.md), being the default since Backstage [version 1.24](../../releases/v1.24.0.md). If have migrated to the new backend system, you may want to read [its own article](./discovery.md) instead. Otherwise, [consider migrating](../../backend-system/building-backends/08-migrating.md)!
 :::
 
 The Gerrit integration has a special entity provider for discovering catalog entities
@@ -24,13 +24,19 @@ the Gerrit provider plugin:
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-gerrit
 ```
 
-Then update your backend by adding the following line:
+Then add the plugin to the plugin catalog `packages/backend/src/plugins/catalog.ts`:
 
-```ts title="packages/backend/src/index.ts"
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
-/* highlight-add-start */
-backend.add(import('@backstage/plugin-catalog-backend-module-gerrit/alpha'));
-/* highlight-add-end */
+```ts
+/* packages/backend/src/plugins/catalog.ts */
+import { GerritEntityProvider } from '@backstage/plugin-catalog-backend-module-gerrit';
+const builder = await CatalogBuilder.create(env);
+/** ... other processors and/or providers ... */
+builder.addEntityProvider(
+  GerritEntityProvider.fromConfig(env.config, {
+    logger: env.logger,
+    scheduler: env.scheduler,
+  }),
+);
 ```
 
 ## Configuration
