@@ -1,14 +1,24 @@
 ---
 id: authentication
 title: Authentication
-description: How to set up authentication into your Backstage installation
+description: How to setup authentication for your Backstage app
 ---
 
 Audience: Admins or Developers
 
-### Setting up authentication
+## Summary
+
+We'll be walking you through how to setup authentication for your Backstage app using Github. After finishing this guide, you'll have both working authentication and users in your Backstage app to match to the users logging in!
 
 There are multiple authentication providers available for you to use with Backstage, feel free to follow [the instructions for adding authentication](../../auth/index.md).
+
+:::note Note
+
+The default Backstage app comes with a guest Sign In Resolver. This resolver makes all users share a single "guest" identity and is only intended as a minimum requirement to quickly get up and running. You can read more about how [Sign In Resolvers](../../auth/identity-resolver.md#sign-in-resolvers) play a role in creating a [Backstage User Identity](../../auth/identity-resolver.md#backstage-user-identity) for logged in users.
+
+:::
+
+## Setting up authentication
 
 For this tutorial we choose to use GitHub, a free service most of you might be familiar with. For other options, see
 [the auth provider documentation](../../auth/github/provider.md#create-an-oauth-app-on-github).
@@ -41,15 +51,9 @@ auth:
     /* highlight-add-end */
 ```
 
-:::note Note
+## Add sign-in option to the frontend
 
-The default Backstage app comes with a guest Sign In Resolver. This resolver makes all users share a single "guest" identity and is only intended as a minimum requirement to quickly get up and running. You can read more about how [Sign In Resolvers](../../auth/identity-resolver.md#sign-in-resolvers) play a role in creating a [Backstage User Identity](../../auth/identity-resolver.md#backstage-user-identity) for logged in users.
-
-:::
-
-### Add sign-in option to the frontend
-
-Backstage will re-read the configuration. If there's no errors, that's great! We can continue with the next part of the configuration. The next step is needed to change the sign-in page. For this, you'll actually need to write some code.
+The next step is to change the sign-in page. For this, you'll actually need to write some code.
 
 Open `packages/app/src/App.tsx` and below the last `import` line, add:
 
@@ -76,7 +80,7 @@ components: {
 },
 ```
 
-### Add the auth provider to the backend
+## Add the auth provider to the backend
 
 To add the auth provider to the backend, we will first need to install the package by running this command:
 
@@ -93,7 +97,7 @@ backend.add(import('@backstage/plugin-auth-backend-module-github-provider'));
 /* highlight-add-end */
 ```
 
-Restart Backstage from the terminal, by stopping it with `Ctrl+C`, and starting it with `yarn dev`. You should be welcomed by a login prompt!
+Restart Backstage from the terminal, by stopping it with `Ctrl+C`, and starting it with `yarn dev`. You should be welcomed by a login prompt! If you try to login at this point you will get a "Failed to sign-in, unable to resolve user identity" message, read on as we'll fix that next.
 
 :::note Note
 
@@ -101,9 +105,7 @@ Sometimes the frontend starts before the backend resulting in errors on the sign
 
 :::
 
-If you try to login at this point you will get a "Failed to sign-in, unable to resolve user identity" message, read on as we'll fix that next.
-
-### Adding a User
+## Adding a User
 
 As part of the authentication process it will try to match details from the Auth Provider User Profile to User in your Catalog. This is what the `resolver` in the config we added to the `app-config.yaml` in the "[Setting up authentication](#setting-up-authentication)" section is doing.
 
@@ -134,7 +136,7 @@ could read:
 - [Authentication in Backstage](../../auth/index.md)
 - [Using organizational data from GitHub](../../integrations/github/org.md)
 
-### Setting up a GitHub Integration
+## Setting up a GitHub Integration
 
 The GitHub integration supports loading catalog entities from GitHub or GitHub Enterprise. Entities can be added to static catalog configuration, registered with the catalog-import plugin, or discovered from a GitHub organization. Users and Groups can also be loaded from an organization. While using [GitHub Apps](../../integrations/github/github-apps.md) might be the best way to set up integrations, for this tutorial you'll use a Personal Access Token.
 
