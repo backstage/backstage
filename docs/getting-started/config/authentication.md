@@ -17,7 +17,7 @@ Go to [https://github.com/settings/applications/new](https://github.com/settings
 
 ![Screenshot of the GitHub OAuth creation page](../../assets/getting-started/gh-oauth.png)
 
-Take note of the `Client ID` and the `Client Secret` (clicking the "Generate a new client secret" button will get this value for you). Open `app-config.yaml`, and add your `clientId` and `clientSecret` to this file. It should end up looking like this:
+Take note of the `Client ID` and the `Client Secret` (clicking the "Generate a new client secret" button will get this value for you). Open `app-config.yaml`, and add them as `clientId` and `clientSecret` in this file. It should end up looking like this:
 
 ```yaml title="app-config.yaml"
 auth:
