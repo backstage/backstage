@@ -126,7 +126,7 @@ For the sake of this guide we'll simply step you though adding a User to the `or
 
 3. Now make sure to replace the text "YOUR GITHUB USERNAME" with your actual GitHub User name.
 
-Let's restart Backstage from the terminal ponce more, by stopping it with `Control-C`, and starting it with `yarn dev`. You should now be able to log into Backstage and see items in you Catalog.
+Let's restart Backstage from the terminal once more, by stopping it with `Ctrl+C`, and starting it with `yarn dev`. You should now be able to log into Backstage and see items in your Catalog.
 
 To learn more about Authentication in Backstage, here are some docs you
 could read:
