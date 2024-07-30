@@ -1,5 +1,15 @@
 # @backstage/core-compat-api
 
+## 0.2.8-next.1
+
+### Patch Changes
+
+- 6349099: Added config input type to the extensions
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.8-next.1
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/version-bridge@1.0.8
+
 ## 0.2.8-next.0
 
 ### Patch Changes

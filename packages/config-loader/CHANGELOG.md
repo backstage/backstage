@@ -1,5 +1,20 @@
 # @backstage/config-loader
 
+## 1.9.0-next.1
+
+### Minor Changes
+
+- 274428f: Add configuration key to File and Remote `ConfigSource`s that enables configuration of parsing logic. Previously limited to yaml, these `ConfigSource`s now allow for a multitude of parsing options (e.g. JSON).
+
+### Patch Changes
+
+- 1edd6c2: The `env` option of `ConfigSources.default` now correctly allows undefined members.
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 1.8.2-next.0
 
 ### Patch Changes
