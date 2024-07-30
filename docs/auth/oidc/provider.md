@@ -22,7 +22,7 @@ Start by adding the following `auth` configuration in your `app-config.yaml` or
 ```yaml
 auth:
   providers:
-    oidc-proxy:
+    oidcProxy:
       # issuer is required, must match the iss claim of the id token.
       issuer: https://login.example.com
       # audience is required, must match one of the aud values listed in the id token.
@@ -85,7 +85,7 @@ backend.add(
 
 ## Frontend Changes
 
-This provider is intended for use with the `ProxiedSignInPage`.  Refer to [Sign-In with Proxy Providers](https://backstage.io/docs/auth/#sign-in-with-proxy-providers) for information on how to install the sign in page.
+This provider is intended for use with the `ProxiedSignInPage`. Refer to [Sign-In with Proxy Providers](https://backstage.io/docs/auth/#sign-in-with-proxy-providers) for information on how to install the sign in page.
 
 ## Verification
 
