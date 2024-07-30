@@ -86,6 +86,8 @@ const homePageExtension = createExtension({
   },
 });
 
+homePlugin.get();
+
 const scmAuthExtension = createApiExtension({
   factory: ScmAuth.createDefaultApiFactory(),
 });

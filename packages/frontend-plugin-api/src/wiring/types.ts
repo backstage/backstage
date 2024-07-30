@@ -15,6 +15,7 @@
  */
 
 import { ExternalRouteRef, RouteRef, SubRouteRef } from '../routing';
+import { Extension } from './resolveExtensionDefinition';
 
 /**
  * Feature flag configuration.
@@ -36,11 +37,19 @@ export type AnyExternalRoutes = { [name in string]: ExternalRouteRef };
 export interface BackstagePlugin<
   Routes extends AnyRoutes = AnyRoutes,
   ExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
+  PluginId extends string = string,
+  Extensions extends { [name in string]: Extension<unknown> } = {},
 > {
   readonly $$type: '@backstage/BackstagePlugin';
   readonly id: string;
   readonly routes: Routes;
   readonly externalRoutes: ExternalRoutes;
+
+  get(id: {
+    [key in keyof Extensions]: Extensions[key] extends Extension<infer T>
+      ? T
+      : never;
+  }): Extensions;
 }
 
 /** @public */

@@ -118,8 +118,9 @@ export interface LegacyCreateExtensionOptions<
   TConfig,
   TConfigInput,
   TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
+  TKind extends string,
 > {
-  kind?: string;
+  kind?: TKind;
   namespace?: string;
   name?: string;
   attachTo: { id: string; input: string };
@@ -179,8 +180,9 @@ export type CreateExtensionOptions<
   TConfigInput,
   TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
   UFactoryOutput extends ExtensionDataValue<any, any>,
+  TKind extends string,
 > = {
-  kind?: string;
+  kind?: TKind;
   namespace?: string;
   name?: string;
   attachTo: { id: string; input: string };
@@ -207,9 +209,13 @@ export type CreateExtensionOptions<
 } & VerifyExtensionFactoryOutput<UOutput, UFactoryOutput>;
 
 /** @public */
-export interface ExtensionDefinition<TConfig, TConfigInput = TConfig> {
+export interface ExtensionDefinition<
+  TConfig,
+  TConfigInput = TConfig,
+  TKind extends string = string,
+> {
   $$type: '@backstage/ExtensionDefinition';
-  readonly kind?: string;
+  readonly kind?: TKind;
   readonly namespace?: string;
   readonly name?: string;
   readonly attachTo: { id: string; input: string };
@@ -288,6 +294,7 @@ export function createExtension<
   TConfigInput,
   TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
   UFactoryOutput extends ExtensionDataValue<any, any>,
+  TKind extends string,
 >(
   options: CreateExtensionOptions<
     UOutput,
@@ -295,7 +302,8 @@ export function createExtension<
     TConfig,
     TConfigInput,
     TConfigSchema,
-    UFactoryOutput
+    UFactoryOutput,
+    TKind
   >,
 ): ExtensionDefinition<
   TConfig &
@@ -311,7 +319,8 @@ export function createExtension<
           z.ZodObject<{
             [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
           }>
-        >)
+        >),
+  TKind
 >;
 /**
  * @public
@@ -323,13 +332,15 @@ export function createExtension<
   TConfig,
   TConfigInput,
   TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
+  TKind extends string,
 >(
   options: LegacyCreateExtensionOptions<
     TOutput,
     TInputs,
     TConfig,
     TConfigInput,
-    TConfigSchema
+    TConfigSchema,
+    TKind
   >,
 ): ExtensionDefinition<
   TConfig &
@@ -345,7 +356,8 @@ export function createExtension<
           z.ZodObject<{
             [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
           }>
-        >)
+        >),
+  TKind
 >;
 export function createExtension<
   UOutput extends AnyExtensionDataRef,
@@ -360,6 +372,7 @@ export function createExtension<
   TConfigInput,
   TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
   UFactoryOutput extends ExtensionDataValue<any, any>,
+  TKind extends string,
 >(
   options:
     | CreateExtensionOptions<
@@ -368,14 +381,16 @@ export function createExtension<
         TConfig,
         TConfigInput,
         TConfigSchema,
-        UFactoryOutput
+        UFactoryOutput,
+        TKind
       >
     | LegacyCreateExtensionOptions<
         AnyExtensionDataMap,
         TLegacyInputs,
         TConfig,
         TConfigInput,
-        TConfigSchema
+        TConfigSchema,
+        TKind
       >,
 ): ExtensionDefinition<
   TConfig &
@@ -391,7 +406,8 @@ export function createExtension<
           z.ZodObject<{
             [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
           }>
-        >)
+        >),
+  TKind
 > {
   const newConfigSchema = options.config?.schema;
   if (newConfigSchema && options.configSchema) {
@@ -433,22 +449,5 @@ export function createExtension<
       parts.push(`attachTo=${options.attachTo.id}@${options.attachTo.input}`);
       return `ExtensionDefinition{${parts.join(',')}}`;
     },
-  } as InternalExtensionDefinition<
-    TConfig &
-      (string extends keyof TConfigSchema
-        ? {}
-        : {
-            [key in keyof TConfigSchema]: z.infer<
-              ReturnType<TConfigSchema[key]>
-            >;
-          }),
-    TConfigInput &
-      (string extends keyof TConfigSchema
-        ? {}
-        : z.input<
-            z.ZodObject<{
-              [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
-            }>
-          >)
-  >;
+  };
 }

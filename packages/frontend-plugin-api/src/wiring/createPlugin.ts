@@ -30,8 +30,9 @@ import {
 export interface PluginOptions<
   Routes extends AnyRoutes,
   ExternalRoutes extends AnyExternalRoutes,
+  PluginId extends string = string,
 > {
-  id: string;
+  id: PluginId;
   routes?: Routes;
   externalRoutes?: ExternalRoutes;
   extensions?: ExtensionDefinition<any, any>[];
@@ -52,9 +53,10 @@ export interface InternalBackstagePlugin<
 export function createPlugin<
   Routes extends AnyRoutes = {},
   ExternalRoutes extends AnyExternalRoutes = {},
+  PluginId extends string = string,
 >(
-  options: PluginOptions<Routes, ExternalRoutes>,
-): BackstagePlugin<Routes, ExternalRoutes> {
+  options: PluginOptions<Routes, ExternalRoutes, PluginId>,
+): BackstagePlugin<Routes, ExternalRoutes, PluginId> {
   const extensions = (options.extensions ?? []).map(def =>
     resolveExtensionDefinition(def, { namespace: options.id }),
   );
@@ -77,7 +79,7 @@ export function createPlugin<
   return {
     $$type: '@backstage/BackstagePlugin',
     version: 'v1',
-    id: options.id,
+    id: options.id as PluginId,
     routes: options.routes ?? ({} as Routes),
     externalRoutes: options.externalRoutes ?? ({} as ExternalRoutes),
     featureFlags: options.featureFlags ?? [],

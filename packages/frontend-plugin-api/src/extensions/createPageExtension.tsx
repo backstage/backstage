@@ -35,6 +35,7 @@ import { ExtensionDefinition } from '../wiring/createExtension';
 export function createPageExtension<
   TConfig extends { path: string },
   TInputs extends AnyExtensionInputMap,
+  TKind extends string,
 >(
   options: (
     | {
@@ -55,7 +56,7 @@ export function createPageExtension<
       inputs: Expand<ResolvedExtensionInputs<TInputs>>;
     }) => Promise<JSX.Element>;
   },
-): ExtensionDefinition<TConfig> {
+): ExtensionDefinition<TConfig, TConfig, TKind> {
   const configSchema =
     'configSchema' in options
       ? options.configSchema
@@ -64,7 +65,7 @@ export function createPageExtension<
         ) as PortableSchema<TConfig>);
 
   return createExtension({
-    kind: 'page',
+    kind: 'page' as TKind,
     namespace: options.namespace,
     name: options.name,
     attachTo: options.attachTo ?? { id: 'app/routes', input: 'routes' },
