@@ -38,7 +38,7 @@ export interface BackstagePlugin<
   Routes extends AnyRoutes = AnyRoutes,
   ExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
   PluginId extends string = string,
-  Extensions extends { [name in string]: Extension<unknown> } = {},
+  Extensions,
 > {
   readonly $$type: '@backstage/BackstagePlugin';
   readonly id: string;
@@ -47,7 +47,9 @@ export interface BackstagePlugin<
 
   get(id: {
     [key in keyof Extensions]: Extensions[key] extends Extension<infer T>
-      ? T
+      ? T extends { id: infer Id }
+        ? Id
+        : never
       : never;
   }): Extensions;
 }

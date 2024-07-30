@@ -31,11 +31,15 @@ export interface PluginOptions<
   Routes extends AnyRoutes,
   ExternalRoutes extends AnyExternalRoutes,
   PluginId extends string = string,
+  Extensions extends ExtensionDefinition<any, any>[] = ExtensionDefinition<
+    any,
+    any
+  >[],
 > {
   id: PluginId;
   routes?: Routes;
   externalRoutes?: ExternalRoutes;
-  extensions?: ExtensionDefinition<any, any>[];
+  extensions?: Extensions;
   featureFlags?: FeatureFlagConfig[];
 }
 
@@ -54,8 +58,12 @@ export function createPlugin<
   Routes extends AnyRoutes = {},
   ExternalRoutes extends AnyExternalRoutes = {},
   PluginId extends string = string,
+  Extensions extends ExtensionDefinition<any, any>[] = ExtensionDefinition<
+    any,
+    any
+  >[],
 >(
-  options: PluginOptions<Routes, ExternalRoutes, PluginId>,
+  options: PluginOptions<Routes, ExternalRoutes, PluginId, Extensions>,
 ): BackstagePlugin<Routes, ExternalRoutes, PluginId> {
   const extensions = (options.extensions ?? []).map(def =>
     resolveExtensionDefinition(def, { namespace: options.id }),
