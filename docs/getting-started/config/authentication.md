@@ -93,7 +93,7 @@ backend.add(import('@backstage/plugin-auth-backend-module-github-provider'));
 /* highlight-add-end */
 ```
 
-Restart Backstage from the terminal, by stopping it with `Control-C`, and starting it with `yarn dev`. You should be welcomed by a login prompt!
+Restart Backstage from the terminal, by stopping it with `Ctrl+C`, and starting it with `yarn dev`. You should be welcomed by a login prompt!
 
 :::note Note
 
