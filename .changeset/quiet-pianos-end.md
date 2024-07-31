@@ -8,4 +8,4 @@
 
 Implemented `handleAutocompleteRequest` for gitlab.
 Extended `GitlabRepoPicker` with Autocomplete.
-Extended autocompleteHandler to output also optional `context`.
+Extended `autocompleteHandler` to output also optional `context`.
