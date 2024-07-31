@@ -1,5 +1,23 @@
 # @backstage/cli
 
+## 0.27.0-next.2
+
+### Patch Changes
+
+- b2d97fd: Fixing loading of additional config files with new `ConfigSources`
+- adabb40: New command now supports setting package license
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.7
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.9.0-next.1
+  - @backstage/errors@1.2.4
+  - @backstage/eslint-plugin@0.1.8
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
 ## 0.27.0-next.1
 
 ### Patch Changes
