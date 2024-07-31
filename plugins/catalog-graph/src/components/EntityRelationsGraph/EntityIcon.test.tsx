@@ -16,12 +16,14 @@
 
 import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
-import { EntityKindIcon } from './EntityKindIcon';
+import { EntityIcon } from './EntityIcon';
+import MuiMemoryIcon from '@material-ui/icons/Memory';
+import { IconComponent } from '@backstage/core-plugin-api';
 
 describe('<EntityKindIcon />', () => {
   it('renders without exploding', async () => {
     const { baseElement } = await renderInTestApp(
-      <EntityKindIcon kind="Component" />,
+      <EntityIcon icon={MuiMemoryIcon as IconComponent} />,
     );
 
     expect(baseElement.querySelector('svg')).toBeInTheDocument();
@@ -29,7 +31,7 @@ describe('<EntityKindIcon />', () => {
 
   it('renders without exploding for unknown kind', async () => {
     const { baseElement } = await renderInTestApp(
-      <EntityKindIcon kind="unknown" />,
+      <EntityIcon icon={undefined} />,
     );
 
     expect(baseElement.querySelector('svg')).toBeInTheDocument();

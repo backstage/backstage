@@ -50,7 +50,6 @@ Open `packages/app/src/App.tsx` and below the last `import` line, add:
 
 ```typescript title="packages/app/src/App.tsx"
 import { githubAuthApiRef } from '@backstage/core-plugin-api';
-import { SignInPage } from '@backstage/core-components';
 ```
 
 Search for `const app = createApp({` in this file, and below `apis,` add:

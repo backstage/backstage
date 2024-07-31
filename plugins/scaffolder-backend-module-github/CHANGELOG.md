@@ -1,5 +1,18 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.4.1-next.1
+
+### Patch Changes
+
+- d21d307: Added examples for github:environment:create action and improve its test cases
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/backend-common@0.23.4-next.1
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-scaffolder-node@0.4.9-next.1
+
 ## 0.4.1-next.0
 
 ### Patch Changes

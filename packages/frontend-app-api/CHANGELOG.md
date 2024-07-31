@@ -1,5 +1,22 @@
 # @backstage/frontend-app-api
 
+## 0.7.5-next.1
+
+### Patch Changes
+
+- 3be9aeb: Added support for v2 extensions, which declare their inputs and outputs without using a data map.
+- 6349099: Added config input type to the extensions
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.8-next.1
+  - @backstage/config@1.2.0
+  - @backstage/core-app-api@1.14.2-next.0
+  - @backstage/core-components@0.14.10-next.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+  - @backstage/theme@0.5.6
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
 ## 0.7.4-next.0
 
 ### Patch Changes

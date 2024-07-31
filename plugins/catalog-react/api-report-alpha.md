@@ -18,18 +18,18 @@ import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 // @alpha (undocumented)
 export const catalogExtensionData: {
   entityContentTitle: ConfigurableExtensionDataRef<
-    'catalog.entity-content-title',
     string,
+    'catalog.entity-content-title',
     {}
   >;
   entityFilterFunction: ConfigurableExtensionDataRef<
-    'catalog.entity-filter-function',
     (entity: Entity) => boolean,
+    'catalog.entity-filter-function',
     {}
   >;
   entityFilterExpression: ConfigurableExtensionDataRef<
-    'catalog.entity-filter-expression',
     string,
+    'catalog.entity-filter-expression',
     {}
   >;
 };
@@ -115,7 +115,7 @@ export function createEntityCardExtension<
     config: TConfig;
     inputs: Expand<ResolvedExtensionInputs<TInputs>>;
   }) => Promise<JSX.Element>;
-}): ExtensionDefinition<TConfig>;
+}): ExtensionDefinition<TConfig & {}, TConfig & {}>;
 
 // @alpha (undocumented)
 export function createEntityContentExtension<
@@ -138,11 +138,18 @@ export function createEntityContentExtension<
   loader: (options: {
     inputs: Expand<ResolvedExtensionInputs<TInputs>>;
   }) => Promise<JSX.Element>;
-}): ExtensionDefinition<{
-  title: string;
-  path: string;
-  filter?: string | undefined;
-}>;
+}): ExtensionDefinition<
+  {
+    title: string;
+    path: string;
+    filter?: string | undefined;
+  },
+  {
+    filter?: string | undefined;
+    title?: string | undefined;
+    path?: string | undefined;
+  }
+>;
 
 // @alpha
 export function isOwnerOf(owner: Entity, entity: Entity): boolean;

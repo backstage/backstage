@@ -24,7 +24,7 @@ describe('home', () => {
 
   // Temporarily ensure we are installing a working version of the react-grid-layout library
   // For more details, see: https://github.com/react-grid-layout/react-grid-layout/issues/1959
-  // TODO(@backstage/discoverability-maintainers): Delete this once the sub-dependency issue has been resolved.
+  // TODO(@backstage/home-maintainers): Delete this once the sub-dependency issue has been resolved.
   it('should pin react-grid-layout version to 1.3.4', async () => {
     expect(packageJson.dependencies['react-grid-layout']).toBe('1.3.4');
   });

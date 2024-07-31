@@ -42,6 +42,7 @@ import {
   ScmIntegrationsApi,
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
+import kubernetesPlugin from '@backstage/plugin-kubernetes/alpha';
 import { signInPageOverrides } from './overrides/SignInPage';
 
 /*
@@ -110,6 +111,7 @@ const app = createApp({
     userSettingsPlugin,
     homePlugin,
     appVisualizerPlugin,
+    kubernetesPlugin,
     signInPageOverrides,
     ...collectedLegacyPlugins,
     createExtensionOverrides({

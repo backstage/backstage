@@ -19,6 +19,7 @@ import { MemoryRouter, Link } from 'react-router-dom';
 import { RenderResult, render } from '@testing-library/react';
 import { createSpecializedApp } from '@backstage/frontend-app-api';
 import {
+  ExtensionDataValue,
   ExtensionDefinition,
   IconComponent,
   RouteRef,
@@ -88,26 +89,53 @@ const TestAppNavExtension = createExtension({
 /** @public */
 export class ExtensionTester {
   /** @internal */
-  static forSubject<TConfig>(
-    subject: ExtensionDefinition<TConfig>,
-    options?: { config?: TConfig },
+  static forSubject<TConfig, TConfigInput>(
+    subject: ExtensionDefinition<TConfig, TConfigInput>,
+    options?: { config?: TConfigInput },
   ): ExtensionTester {
     const tester = new ExtensionTester();
-    const { output, factory, ...rest } = toInternalExtensionDefinition(subject);
+    const internal = toInternalExtensionDefinition(subject);
+
     // attaching to app/routes to render as index route
-    const extension = createExtension({
-      ...rest,
-      attachTo: { id: 'app/routes', input: 'routes' },
-      output: {
-        ...output,
-        path: coreExtensionData.routePath,
-      },
-      factory: params => ({
-        ...factory(params),
-        path: '/',
-      }),
-    });
-    tester.add(extension, options);
+    if (internal.version === 'v1') {
+      tester.add(
+        createExtension({
+          ...internal,
+          attachTo: { id: 'app/routes', input: 'routes' },
+          output: {
+            ...internal.output,
+            path: coreExtensionData.routePath,
+          },
+          factory: params => ({
+            ...internal.factory(params as any),
+            path: '/',
+          }),
+        }),
+        options as TConfigInput & {},
+      );
+    } else if (internal.version === 'v2') {
+      tester.add(
+        createExtension({
+          ...internal,
+          attachTo: { id: 'app/routes', input: 'routes' },
+          output: internal.output.find(
+            ref => ref.id === coreExtensionData.routePath.id,
+          )
+            ? internal.output
+            : [...internal.output, coreExtensionData.routePath],
+          factory: params => {
+            const parentOutput = Array.from(
+              internal.factory(params) as Iterable<
+                ExtensionDataValue<any, any>
+              >,
+            ).filter(val => val.id !== coreExtensionData.routePath.id);
+
+            return [...parentOutput, coreExtensionData.routePath('/')];
+          },
+        }),
+        options as TConfigInput & {},
+      );
+    }
     return tester;
   }
 
@@ -117,9 +145,9 @@ export class ExtensionTester {
     config?: JsonValue;
   }>();
 
-  add<TConfig>(
-    extension: ExtensionDefinition<TConfig>,
-    options?: { config?: TConfig },
+  add<TConfig, TConfigInput>(
+    extension: ExtensionDefinition<TConfig, TConfigInput>,
+    options?: { config?: TConfigInput },
   ): ExtensionTester {
     const { name, namespace } = extension;
 

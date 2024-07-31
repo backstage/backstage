@@ -1,5 +1,71 @@
 # @backstage/frontend-plugin-api
 
+## 0.6.8-next.1
+
+### Patch Changes
+
+- 3be9aeb: Extensions have been changed to be declared with an array of inputs and outputs, rather than a map of named data refs. This change was made to reduce confusion around the role of the input and output names, as well as enable more powerful APIs for overriding extensions.
+
+  An extension that was previously declared like this:
+
+  ```tsx
+  const exampleExtension = createExtension({
+    name: 'example',
+    inputs: {
+      items: createExtensionInput({
+        element: coreExtensionData.reactElement,
+      }),
+    },
+    output: {
+      element: coreExtensionData.reactElement,
+    },
+    factory({ inputs }) {
+      return {
+        element: (
+          <div>
+            Example
+            {inputs.items.map(item => {
+              return <div>{item.output.element}</div>;
+            })}
+          </div>
+        ),
+      };
+    },
+  });
+  ```
+
+  Should be migrated to the following:
+
+  ```tsx
+  const exampleExtension = createExtension({
+    name: 'example',
+    inputs: {
+      items: createExtensionInput([coreExtensionData.reactElement]),
+    },
+    output: [coreExtensionData.reactElement],
+    factory({ inputs }) {
+      return [
+        coreExtensionData.reactElement(
+          <div>
+            Example
+            {inputs.items.map(item => {
+              return <div>{item.get(coreExtensionData.reactElement)}</div>;
+            })}
+          </div>,
+        ),
+      ];
+    },
+  });
+  ```
+
+- 3fb421d: Added support to be able to define `zod` config schema in Blueprints, with built in schema merging from the Blueprint and the extension instances.
+- 6349099: Added config input type to the extensions
+- Updated dependencies
+  - @backstage/core-components@0.14.10-next.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
 ## 0.6.8-next.0
 
 ### Patch Changes
