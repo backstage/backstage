@@ -24,6 +24,7 @@ import {
   AuthorizeResult,
   DefinitivePolicyDecision,
   IdentifiedPermissionMessage,
+  MetadataResponse as CommonMetadataResponse,
   MetadataResponseSerializedRule as CommonMetadataResponseSerializedRule,
   Permission,
   PermissionCondition,
@@ -119,11 +120,9 @@ export type MetadataResponseSerializedRule =
  * Response type for the .metadata endpoint.
  *
  * @public
+ * @deprecated Please import from `@backstage/plugin-permission-common` instead.
  */
-export type MetadataResponse = {
-  permissions?: Permission[];
-  rules: MetadataResponseSerializedRule[];
-};
+export type MetadataResponse = CommonMetadataResponse;
 
 const applyConditions = <TResourceType extends string, TResource>(
   criteria: PermissionCriteria<PermissionCondition<TResourceType>>,

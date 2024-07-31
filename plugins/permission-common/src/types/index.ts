@@ -40,7 +40,10 @@ export type {
   NotCriteria,
 } from './api';
 export type { DiscoveryApi } from './discovery';
-export type { MetadataResponseSerializedRule } from './integration';
+export type {
+  MetadataResponse,
+  MetadataResponseSerializedRule,
+} from './integration';
 export type {
   BasicPermission,
   PermissionAttributes,
