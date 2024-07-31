@@ -55,6 +55,18 @@ describe('handleAutocompleteRequest', () => {
   const handleAutocompleteRequest = createHandleAutocompleteRequest({
     integrations,
   });
+
+  it('should pass the host to the client', async () => {
+    const byHost = jest.spyOn(integrations.gitlab, 'byHost');
+    const accessToken = 'foo';
+    await handleAutocompleteRequest({
+      token: accessToken,
+      context: {},
+      resource: 'groups',
+    });
+
+    expect(byHost).toHaveBeenCalledWith('gitlab.com');
+  });
   it('should return groups', async () => {
     const result = await handleAutocompleteRequest({
       token: 'foo',

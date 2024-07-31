@@ -27,7 +27,7 @@ export function createHandleAutocompleteRequest(options: {
     context,
   }: {
     resource: string;
-    token?: string;
+    token: string;
     context: Record<string, string | undefined>;
   }): Promise<{
     results: {
