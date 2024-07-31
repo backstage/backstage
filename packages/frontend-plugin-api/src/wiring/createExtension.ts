@@ -274,6 +274,8 @@ export type OverrideExtensionOptions<
         [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
       };
       inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
+      // todo(blam): Think this is better as a DataContainer instead
+      // should probably update that everywhere.
     }) => Iterable<UOriginalFactoryOutput>,
     context: {
       node: AppNode;
@@ -292,8 +294,11 @@ export type OverrideExtensionOptions<
       inputs: Expand<ResolvedExtensionInputs<TInputs>>;
     },
   ): Iterable<UFactoryOverrideOutput>;
-  // todo(blam): need to verify that the outputs are meged properly.
-} & VerifyExtensionFactoryOutput<UOutput, UFactoryOverrideOutput>;
+  // todo(blam): need to verify that the outputs are merged and verified properly.
+} & VerifyExtensionFactoryOutput<
+  UOutput & UFactoryOverrideOutput,
+  UFactoryOverrideOutput
+>;
 
 /** @public */
 export type OverridableExtension<
