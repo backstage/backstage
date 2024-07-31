@@ -287,6 +287,11 @@ export interface Config {
           }
       >;
     };
+    /**
+     * @visibility frontend
+     * @deepVisibility frontend
+     */
+    packages?: 'all' | { include?: string[]; exclude?: string[] };
   };
 
   /** Discovery options. */
