@@ -194,6 +194,7 @@ Options:
   --scope <scope>
   --npm-registry <URL>
   --baseVersion <version>
+  --license <license>
   --no-private
   -h, --help
 ```
