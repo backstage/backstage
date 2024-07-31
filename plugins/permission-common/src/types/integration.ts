@@ -15,6 +15,7 @@
  */
 
 import zodToJsonSchema from 'zod-to-json-schema';
+import { Permission } from './permission';
 
 /**
  * Serialized permission rules, with the paramsSchema
@@ -27,4 +28,15 @@ export type MetadataResponseSerializedRule = {
   description: string;
   resourceType: string;
   paramsSchema?: ReturnType<typeof zodToJsonSchema>;
+};
+
+/**
+ * Response type for the .metadata endpoint in
+ * {@link @backstage/plugin-permission-node#createPermissionIntegrationRouter}
+ *
+ * @public
+ */
+export type MetadataResponse = {
+  permissions?: Permission[];
+  rules: MetadataResponseSerializedRule[];
 };
