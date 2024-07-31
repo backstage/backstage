@@ -3392,14 +3392,14 @@ __metadata:
   linkType: hard
 
 "@backstage-community/plugin-puppetdb@npm:^0.1.18":
-  version: 0.1.18
-  resolution: "@backstage-community/plugin-puppetdb@npm:0.1.18"
+  version: 0.1.19
+  resolution: "@backstage-community/plugin-puppetdb@npm:0.1.19"
   dependencies:
-    "@backstage/catalog-model": ^1.4.5
-    "@backstage/core-components": ^0.14.4
-    "@backstage/core-plugin-api": ^1.9.2
+    "@backstage/catalog-model": ^1.5.0
+    "@backstage/core-components": ^0.14.9
+    "@backstage/core-plugin-api": ^1.9.3
     "@backstage/errors": ^1.2.4
-    "@backstage/plugin-catalog-react": ^1.11.3
+    "@backstage/plugin-catalog-react": ^1.12.2
     "@material-ui/core": ^4.12.2
     "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     react-use: ^17.2.4
@@ -3407,7 +3407,7 @@ __metadata:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
-  checksum: d0e4fe3f818aa05c527d773d558291b97f3a4fee1b1a765e0e6f5a2f36ca1897e3933e92abdeffeb8b33701c21314eb3565900ff78624fe1d5eff3ee2781cfff
+  checksum: abe5e3b5b9772b5cdc17074f58f38bdbf81516afe7b9241e06844729608ec2a56899437a7cf82d4c8f3608038c15217bd6ea971f41dbce2934e7b05986bfcc10
   languageName: node
   linkType: hard
 
@@ -3852,7 +3852,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/catalog-model@^1.4.3, @backstage/catalog-model@^1.4.5, @backstage/catalog-model@^1.5.0, @backstage/catalog-model@workspace:^, @backstage/catalog-model@workspace:packages/catalog-model":
+"@backstage/catalog-model@^1.4.3, @backstage/catalog-model@^1.5.0, @backstage/catalog-model@workspace:^, @backstage/catalog-model@workspace:packages/catalog-model":
   version: 0.0.0-use.local
   resolution: "@backstage/catalog-model@workspace:packages/catalog-model"
   dependencies:
@@ -5840,7 +5840,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-react@npm:^1.11.3, @backstage/plugin-catalog-react@npm:^1.9.3":
+"@backstage/plugin-catalog-react@npm:^1.12.2, @backstage/plugin-catalog-react@npm:^1.9.3":
   version: 1.12.2
   resolution: "@backstage/plugin-catalog-react@npm:1.12.2"
   dependencies:
