@@ -25,10 +25,6 @@ import {
   createRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { compatWrapper } from '@backstage/core-compat-api';
-import {
-  PageExtensionBlueprint,
-  createNewPageExtension,
-} from '@backstage/frontend-plugin-api/src/extensions/createPageExtension';
 
 const rootRouteRef = createRouteRef();
 
@@ -39,15 +35,15 @@ export const titleExtensionDataRef = createExtensionDataRef<string>().with({
   id: 'title',
 });
 
-const homePage = createNewPageExtension({
+const homePage = createPageExtension({
   defaultPath: '/home',
   routeRef: rootRouteRef,
   inputs: {
     props: createExtensionInput(
-      [
-        coreExtensionData.reactElement.optional(),
-        titleExtensionDataRef.optional(),
-      ],
+      {
+        children: coreExtensionData.reactElement.optional(),
+        title: titleExtensionDataRef.optional(),
+      },
 
       {
         singleton: true,
@@ -59,48 +55,12 @@ const homePage = createNewPageExtension({
     import('./components/').then(m =>
       compatWrapper(
         <m.HomepageCompositionRoot
-          children={inputs.props?.get(coreExtensionData.reactElement)}
-          title={inputs.props?.get(titleExtensionDataRef)}
+          children={inputs.props?.output.children}
+          title={inputs.props?.output.title}
         />,
       ),
     ),
 });
-
-// const homePage2 = PageExtensionBlueprint.make({
-//   inputs: {
-//     props: createExtensionInput(
-//       [
-//         coreExtensionData.reactElement.optional(),
-//         titleExtensionDataRef.optional(),
-//       ],
-//       {
-//         singleton: true,
-//         optional: true,
-//       },
-//     ),
-//   },
-//   factory(origFactory, { config, inputs, node }) {
-//     return origFactory({
-//       defaultPath: '/home',
-//       routeRef: rootRouteRef,
-//       loader: () =>
-//         import('./components/').then(m =>
-//           compatWrapper(
-//             <m.HomepageCompositionRoot
-//               children={inputs.props?.[0].get(coreExtensionData.reactElement)}
-//               title={inputs.props?.[0].get(coreExtensionData.reactElement}
-//             />,
-//           ),
-//   },
-// });
-
-/**
- * @alpha
- * This will not be the way to export extensions eventually,
- * will be something like `homePlugin.extensions.homePage` or `homePlugin.extensions.get('page')`
- * Just haven't worked out a nice way to fix the types yet
- */
-export const extensions = { homePage };
 
 /**
  * @alpha
