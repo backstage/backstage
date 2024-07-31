@@ -19,6 +19,8 @@ import { coreExtensionData } from './coreExtensionData';
 import { createExtensionBlueprint } from './createExtensionBlueprint';
 import { createExtensionTester } from '@backstage/frontend-test-utils';
 import { createExtensionDataRef } from './createExtensionDataRef';
+import { createExtensionInput } from './createExtensionInput';
+import { RouteRef } from '../routing';
 
 function unused(..._any: any[]) {}
 
@@ -241,5 +243,48 @@ describe('createExtensionBlueprint', () => {
         defaulted: 'lolz',
       },
     }).render();
+  });
+
+  it('should allow getting inputs properly', () => {
+    createExtensionBlueprint({
+      kind: 'test-extension',
+      attachTo: { id: 'test', input: 'default' },
+      inputs: {
+        test: createExtensionInput(
+          [
+            coreExtensionData.routeRef,
+            coreExtensionData.reactElement.optional(),
+          ],
+          { singleton: true },
+        ),
+      },
+      output: [
+        coreExtensionData.reactElement,
+        coreExtensionData.routeRef.optional(),
+      ],
+      factory(_, { inputs }) {
+        const route = inputs.test.get(coreExtensionData.routeRef);
+        const optional = inputs.test.get(coreExtensionData.reactElement);
+
+        // @ts-expect-error
+        const optional2: JSX.Element = optional;
+        const optional3: JSX.Element | undefined = optional;
+
+        const route2: RouteRef = route;
+
+        unused(optional2, optional3, route2);
+
+        if (!route) {
+          return [coreExtensionData.reactElement(<div />)];
+        }
+
+        return [
+          coreExtensionData.reactElement(<div />),
+          coreExtensionData.routeRef(route),
+        ];
+      },
+    });
+
+    expect(true).toBe(true);
   });
 });
