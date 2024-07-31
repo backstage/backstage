@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-techdocs-node",
-  "version": "1.12.7-next.0",
+  "version": "1.12.9-next.1",
   "description": "Common node.js functionalities for TechDocs, to be shared between techdocs-backend plugin and techdocs-cli",
   "backstage": {
     "role": "node-library",
@@ -8,6 +8,7 @@
     "pluginPackages": [
       "@backstage/plugin-techdocs",
       "@backstage/plugin-techdocs-backend",
+      "@backstage/plugin-techdocs-common",
       "@backstage/plugin-techdocs-node",
       "@backstage/plugin-techdocs-react"
     ]
@@ -60,6 +61,7 @@
     "@backstage/integration": "workspace:^",
     "@backstage/integration-aws-node": "workspace:^",
     "@backstage/plugin-search-common": "workspace:^",
+    "@backstage/plugin-techdocs-common": "workspace:^",
     "@google-cloud/storage": "^7.0.0",
     "@smithy/node-http-handler": "^2.1.7",
     "@trendyol-js/openstack-swift-sdk": "^0.0.7",

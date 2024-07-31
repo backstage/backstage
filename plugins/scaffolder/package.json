@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder",
-  "version": "1.22.0-next.0",
+  "version": "1.23.1-next.1",
   "description": "The Backstage plugin that helps you create new things",
   "backstage": {
     "role": "frontend-plugin",
@@ -81,10 +81,10 @@
     "@material-ui/lab": "4.0.0-alpha.61",
     "@microsoft/fetch-event-source": "^2.0.1",
     "@react-hookz/web": "^24.0.0",
-    "@rjsf/core": "5.18.4",
-    "@rjsf/material-ui": "5.18.4",
-    "@rjsf/utils": "5.18.4",
-    "@rjsf/validator-ajv8": "5.18.4",
+    "@rjsf/core": "5.18.5",
+    "@rjsf/material-ui": "5.18.5",
+    "@rjsf/utils": "5.18.5",
+    "@rjsf/validator-ajv8": "5.18.5",
     "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "@uiw/react-codemirror": "^4.9.3",
     "classnames": "^2.2.6",
@@ -96,6 +96,7 @@
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",
     "qs": "^6.9.4",
+    "react-resizable": "^3.0.5",
     "react-use": "^17.2.4",
     "react-window": "^1.8.10",
     "yaml": "^2.0.0",
@@ -116,6 +117,7 @@
     "@testing-library/user-event": "^14.0.0",
     "@types/humanize-duration": "^3.18.1",
     "@types/json-schema": "^7.0.9",
+    "@types/react-resizable": "^3.0.8",
     "@types/react-window": "^1.8.8",
     "msw": "^1.0.0",
     "swr": "^2.0.0"

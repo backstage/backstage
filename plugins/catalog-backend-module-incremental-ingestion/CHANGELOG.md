@@ -1,5 +1,69 @@
 # @backstage/plugin-catalog-backend-module-incremental-ingestion
 
+## 0.4.28-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.8.1-next.0
+  - @backstage/plugin-catalog-backend@1.24.1-next.1
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/backend-common@0.23.4-next.1
+  - @backstage/plugin-catalog-node@1.12.5-next.1
+  - @backstage/backend-tasks@0.5.28-next.1
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-events-node@0.3.9-next.1
+
+## 0.4.28-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.23.4-next.0
+  - @backstage/plugin-catalog-backend@1.24.1-next.0
+  - @backstage/plugin-catalog-node@1.12.5-next.0
+  - @backstage/backend-plugin-api@0.7.1-next.0
+  - @backstage/backend-tasks@0.5.28-next.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-events-node@0.3.9-next.0
+  - @backstage/plugin-permission-common@0.8.0
+
+## 0.4.27
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/backend-common@0.23.3
+  - @backstage/backend-tasks@0.5.27
+  - @backstage/plugin-permission-common@0.8.0
+  - @backstage/plugin-events-node@0.3.8
+  - @backstage/plugin-catalog-backend@1.24.0
+  - @backstage/plugin-catalog-node@1.12.4
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 0.4.27-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.24.0-next.1
+  - @backstage/backend-common@0.23.3-next.1
+  - @backstage/backend-plugin-api@0.6.22-next.1
+  - @backstage/backend-tasks@0.5.27-next.1
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-catalog-node@1.12.4-next.1
+  - @backstage/plugin-events-node@0.3.8-next.1
+  - @backstage/plugin-permission-common@0.7.14
+
 ## 0.4.26-next.0
 
 ### Patch Changes

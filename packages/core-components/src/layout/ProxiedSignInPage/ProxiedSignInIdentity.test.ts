@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { registerMswTestHooks } from '@backstage/test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import {
@@ -60,7 +60,7 @@ describe('ProxiedSignInIdentity', () => {
     afterEach(() => jest.useRealTimers());
 
     const worker = setupServer();
-    setupRequestMockHandlers(worker);
+    registerMswTestHooks(worker);
 
     it('runs the happy path', async () => {
       const getBaseUrl = jest.fn();

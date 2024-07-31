@@ -1,5 +1,70 @@
 # @backstage/plugin-devtools-backend
 
+## 0.3.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.9.0-next.1
+  - @backstage/plugin-permission-common@0.8.1-next.0
+  - @backstage/plugin-permission-node@0.8.1-next.1
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/backend-common@0.23.4-next.1
+  - @backstage/plugin-devtools-common@0.1.12-next.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.3.9-next.0
+
+### Patch Changes
+
+- 32a38e1: Removed unused code for lockfile analysis.
+- Updated dependencies
+  - @backstage/backend-common@0.23.4-next.0
+  - @backstage/config-loader@1.8.2-next.0
+  - @backstage/backend-plugin-api@0.7.1-next.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-devtools-common@0.1.11
+  - @backstage/plugin-permission-common@0.8.0
+  - @backstage/plugin-permission-node@0.8.1-next.0
+
+## 0.3.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/backend-common@0.23.3
+  - @backstage/plugin-permission-common@0.8.0
+  - @backstage/plugin-permission-node@0.8.0
+  - @backstage/config-loader@1.8.1
+  - @backstage/plugin-devtools-common@0.1.11
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.3.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.23.3-next.1
+  - @backstage/backend-plugin-api@0.6.22-next.1
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.8.1
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-devtools-common@0.1.10
+  - @backstage/plugin-permission-common@0.7.14
+  - @backstage/plugin-permission-node@0.7.33-next.1
+
 ## 0.3.7-next.0
 
 ### Patch Changes

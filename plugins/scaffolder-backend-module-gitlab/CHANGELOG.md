@@ -1,5 +1,67 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.4.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/backend-common@0.23.4-next.1
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-scaffolder-node@0.4.9-next.1
+
+## 0.4.5-next.0
+
+### Patch Changes
+
+- fad1b90: Allow the `createGitlabProjectVariableAction` to use oauth tokens
+- aab708e: Added test cases for gitlab:issue:edit examples
+- ef742dc: Added test cases for gitlab:projectAccessToken:create example
+- 1ba4c2f: Added test cases for gitlab:pipeline:trigger examples
+- a6603e4: Add custom action for merge request: **auto**
+
+  The **Auto** action selects the committed action between _create_ and _update_.
+
+  The **Auto** action fetches files using the **/projects/repository/tree endpoint**.
+  After fetching, it checks if the file exists locally and in the repository. If it does, it chooses **update**; otherwise, it chooses **create**.
+
+- Updated dependencies
+  - @backstage/backend-common@0.23.4-next.0
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/backend-plugin-api@0.7.1-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-scaffolder-node@0.4.9-next.0
+
+## 0.4.4
+
+### Patch Changes
+
+- 0ac124b: Updated configuration instructions
+- 2fb0eb8: Added support for passing `variables` to `gitlab:pipeline:trigger`
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/backend-common@0.23.3
+  - @backstage/integration@1.13.0
+  - @backstage/plugin-scaffolder-node@0.4.8
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 0.4.4-next.1
+
+### Patch Changes
+
+- 2fb0eb8: Added support for passing `variables` to `gitlab:pipeline:trigger`
+- Updated dependencies
+  - @backstage/backend-common@0.23.3-next.1
+  - @backstage/backend-plugin-api@0.6.22-next.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.13.0-next.0
+  - @backstage/plugin-scaffolder-node@0.4.8-next.1
+
 ## 0.4.3-next.0
 
 ### Patch Changes

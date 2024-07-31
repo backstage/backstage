@@ -39,4 +39,5 @@ export type {
   GroupTransformer,
   OrganizationTransformer,
   UserTransformer,
+  ProviderConfigTransformer,
 } from './types';

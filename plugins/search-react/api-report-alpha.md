@@ -25,7 +25,7 @@ export function createSearchResultListItemExtension<
   },
 >(
   options: SearchResultItemExtensionOptions<TConfig>,
-): ExtensionDefinition<TConfig>;
+): ExtensionDefinition<TConfig & {}, TConfig & {}>;
 
 // @alpha (undocumented)
 export namespace createSearchResultListItemExtension {
@@ -35,6 +35,7 @@ export namespace createSearchResultListItemExtension {
         predicate?: SearchResultItemExtensionPredicate | undefined;
         component: SearchResultItemExtensionComponent;
       },
+      'search.search-result-list-item.item',
       {}
     >;
 }

@@ -1,5 +1,38 @@
 # @backstage/plugin-auth-backend-module-bitbucket-provider
 
+## 0.1.6-next.1
+
+### Patch Changes
+
+- c8f1cae: Add `signIn` to authentication provider configuration schema
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/plugin-auth-node@0.4.18-next.1
+
+## 0.1.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.1-next.0
+  - @backstage/plugin-auth-node@0.4.18-next.0
+
+## 0.1.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/plugin-auth-node@0.4.17
+
+## 0.1.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.22-next.1
+  - @backstage/plugin-auth-node@0.4.17-next.1
+
 ## 0.1.4-next.0
 
 ### Patch Changes

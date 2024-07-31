@@ -1,5 +1,101 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.11.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.12.3-next.1
+  - @backstage/plugin-permission-react@0.4.25-next.0
+  - @backstage/plugin-scaffolder-common@1.5.5-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/core-components@0.14.10-next.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/theme@0.5.6
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
+## 1.11.0-next.0
+
+### Minor Changes
+
+- 8839381: Add scaffolder option to display object items in separate rows on review page
+
+### Patch Changes
+
+- d0e95a7: Add ability to customise form fields in the UI by exposing `uiSchema` and `formContext` in `FormProps`
+- 4670f06: support `ajv-errors` for scaffolder validation to allow for customizing the error messages
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.12.3-next.0
+  - @backstage/core-components@0.14.10-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/theme@0.5.6
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+  - @backstage/plugin-permission-react@0.4.24
+  - @backstage/plugin-scaffolder-common@1.5.4
+
+## 1.10.0
+
+### Minor Changes
+
+- 354e68c: Improve validation error display text in scaffolder
+- b5deed0: Add support for `bitbucketCloud` autocomplete in `RepoUrlPicker`
+
+### Patch Changes
+
+- cc81579: Updated dependency `@rjsf/utils` to `5.18.5`.
+  Updated dependency `@rjsf/core` to `5.18.5`.
+  Updated dependency `@rjsf/material-ui` to `5.18.5`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.18.5`.
+- 4d7e11f: disables rendering of output box if no output is returned
+- Updated dependencies
+  - @backstage/core-components@0.14.9
+  - @backstage/plugin-catalog-react@1.12.2
+  - @backstage/plugin-permission-react@0.4.24
+  - @backstage/plugin-scaffolder-common@1.5.4
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/theme@0.5.6
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
+## 1.10.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.9-next.1
+  - @backstage/plugin-catalog-react@1.12.2-next.2
+
+## 1.10.0-next.1
+
+### Minor Changes
+
+- 354e68c: Improve validation error display text in scaffolder
+
+### Patch Changes
+
+- cc81579: Updated dependency `@rjsf/utils` to `5.18.5`.
+  Updated dependency `@rjsf/core` to `5.18.5`.
+  Updated dependency `@rjsf/material-ui` to `5.18.5`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.18.5`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.12.2-next.1
+  - @backstage/core-components@0.14.9-next.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/theme@0.5.6
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+  - @backstage/plugin-permission-react@0.4.23
+  - @backstage/plugin-scaffolder-common@1.5.3
+
 ## 1.10.0-next.0
 
 ### Minor Changes

@@ -37,6 +37,7 @@ import express from 'express';
 // Direct internal import to avoid duplication
 // eslint-disable-next-line @backstage/no-forbidden-package-imports
 import { InternalBackendFeature } from '@backstage/backend-plugin-api/src/wiring/types';
+import { createHealthRouter } from '@backstage/backend-defaults/rootHttpRouter';
 
 /** @public */
 export interface TestBackendOptions<TExtensionPoints extends any[]> {
@@ -48,11 +49,7 @@ export interface TestBackendOptions<TExtensionPoints extends any[]> {
       ];
     },
   ];
-  features?: Array<
-    | BackendFeature
-    | (() => BackendFeature)
-    | Promise<{ default: BackendFeature | (() => BackendFeature) }>
-  >;
+  features?: Array<BackendFeature | Promise<{ default: BackendFeature }>>;
 }
 
 /** @public */
@@ -77,6 +74,7 @@ export const defaultServiceFactories = [
   mockServices.lifecycle.factory(),
   mockServices.logger.factory(),
   mockServices.permissions.factory(),
+  mockServices.rootHealth.factory(),
   mockServices.rootLifecycle.factory(),
   mockServices.rootLogger.factory(),
   mockServices.scheduler.factory(),
@@ -255,15 +253,18 @@ export async function startTestBackend<TExtensionPoints extends any[]>(
       config: coreServices.rootConfig,
       lifecycle: coreServices.rootLifecycle,
       rootLogger: coreServices.rootLogger,
+      health: coreServices.rootHealth,
     },
-    async factory({ config, lifecycle, rootLogger }) {
+    async factory({ config, lifecycle, rootLogger, health }) {
       const router = DefaultRootHttpRouter.create();
       const logger = rootLogger.child({ service: 'rootHttpRouter' });
 
       const app = express();
 
       const middleware = MiddlewareFactory.create({ config, logger });
+      const healthRouter = createHealthRouter({ health });
 
+      app.use(healthRouter);
       app.use(router.handler());
       app.use(middleware.notFound());
       app.use(middleware.error());

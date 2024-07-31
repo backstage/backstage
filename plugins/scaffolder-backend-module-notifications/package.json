@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-backend-module-notifications",
-  "version": "0.0.4-next.0",
+  "version": "0.0.6-next.1",
   "description": "The notifications backend module for the scaffolder plugin.",
   "backstage": {
     "role": "backend-plugin-module",
@@ -38,7 +38,8 @@
     "@backstage/plugin-notifications-common": "workspace:^",
     "@backstage/plugin-notifications-node": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
-    "octokit": "^3.0.0"
+    "octokit": "^3.0.0",
+    "yaml": "^2.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

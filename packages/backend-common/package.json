@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-common",
-  "version": "0.23.2-next.0",
+  "version": "0.23.4-next.1",
   "description": "Common functionality library for Backstage backends",
   "backstage": {
     "role": "node-library"
@@ -137,7 +137,7 @@
     "@types/webpack-env": "^1.15.2",
     "@types/yauzl": "^2.10.0",
     "aws-sdk-client-mock": "^4.0.0",
-    "better-sqlite3": "^9.0.0",
+    "better-sqlite3": "^11.0.0",
     "http-errors": "^2.0.0",
     "msw": "^1.0.0",
     "mysql2": "^3.0.0",

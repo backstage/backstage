@@ -40,6 +40,18 @@ If you're using an existing app registration, and backstage already has a client
 If not, go to the **Certificates & Secrets** page, then the **Client secrets** tab and create a new client secret.
 Make a note of this value as you'll need it in the next section.
 
+## Outbound Network Access
+
+If your environment has restrictions on outgoing access (e.g. through
+firewall rules), make sure your Backstage backend has access to the following
+hosts:
+
+- `login.microsoftonline.com`, to get and exchange authorization codes and access
+  tokens
+- `graph.microsoft.com`, to fetch user profile information (as seen
+  in [this source code](https://github.com/seanfisher/passport-microsoft/blob/0456aa9bce05579c18e77f51330176eb26373658/lib/strategy.js#L93-L95)).
+  If this host is unreachable, users may see an `Authentication failed, failed to fetch user profile` error when they attempt to log in.
+
 ## Configuration
 
 The provider configuration can then be added to your `app-config.yaml` under the
@@ -55,8 +67,6 @@ auth:
         clientSecret: ${AZURE_CLIENT_SECRET}
         tenantId: ${AZURE_TENANT_ID}
         domainHint: ${AZURE_TENANT_ID}
-        additionalScopes:
-          - Mail.Send
         signIn:
           resolvers:
             # typically you would pick one of these
@@ -74,7 +84,7 @@ The Microsoft provider is a structure with three mandatory configuration keys:
   Leave blank if your app registration is multi tenant.
   When specified, this reduces login friction for users with accounts in multiple tenants by automatically filtering away accounts from other tenants.
   For more details, see [Home Realm Discovery](https://learn.microsoft.com/en-us/azure/active-directory/manage-apps/home-realm-discovery-policy)
-- `additionalScopes` (optional): List of scopes for the App Registration. The default and mandatory value is ['user.read'].
+- `additionalScopes` (optional): List of scopes for the App Registration, to be requested in addition to the required ones.
 
 ### Resolvers
 
@@ -92,20 +102,25 @@ The resolvers will be tried in order, but will only be skipped if they throw a `
 
 If these resolvers do not fit your needs you can build a custom resolver, this is covered in the [Building Custom Resolvers](../identity-resolver.md#building-custom-resolvers) section of the Sign-in Identities and Resolvers documentation.
 
+## Backend Installation
+
+To add the provider to the backend we will first need to install the package by running this command:
+
+```bash title="from your Backstage root directory"
+yarn --cwd packages/backend add @backstage/plugin-auth-backend-module-microsoft-provider
+```
+
+Then we will need to this line:
+
+```ts title="in packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-auth-backend'));
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-auth-backend-module-microsoft-provider'));
+/* highlight-add-end */
+```
+
 ## Adding the provider to the Backstage frontend
 
 To add the provider to the frontend, add the `microsoftAuthApiRef` reference and
 `SignInPage` component as shown in
-[Adding the provider to the sign-in page](../index.md#adding-the-provider-to-the-sign-in-page).
-
-## Outbound Network Access
-
-If your environment has restrictions on outgoing access (e.g. through
-firewall rules), make sure your Backstage backend has access to the following
-hosts:
-
-- `login.microsoftonline.com`, to get and exchange authorization codes and access
-  tokens
-- `graph.microsoft.com`, to fetch user profile information (as seen
-  in [this source code](https://github.com/seanfisher/passport-microsoft/blob/0456aa9bce05579c18e77f51330176eb26373658/lib/strategy.js#L93-L95)).
-  If this host is unreachable, users may see an `Authentication failed, failed to fetch user profile` error when they attempt to log in.
+[Adding the provider to the sign-in page](../index.md#sign-in-configuration).

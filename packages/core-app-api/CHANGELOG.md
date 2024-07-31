@@ -1,5 +1,51 @@
 # @backstage/core-app-api
 
+## 1.14.1-next.0
+
+### Patch Changes
+
+- 9a46a81: The request to delete the session cookie when running the app in protected mode is now done with a plain `fetch` rather than `FetchApi`. This fixes a bug where the app would immediately try to sign-in again when removing the cookie during logout.
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
+## 1.14.0
+
+### Minor Changes
+
+- d3c39fc: Allow for the disabling of external routes through config, which was rendered impossible after the introduction of default targets.
+
+  ```yaml
+  app:
+    routes:
+      bindings:
+        # This has the effect of removing the button for registering new
+        # catalog entities in the scaffolder template list view
+        scaffolder.registerComponent: false
+  ```
+
+### Patch Changes
+
+- db2e2d5: Updated config schema to support app.routes.bindings
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
+## 1.13.1-next.1
+
+### Patch Changes
+
+- db2e2d5: Updated config schema to support app.routes.bindings
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
 ## 1.13.0-next.0
 
 ### Minor Changes

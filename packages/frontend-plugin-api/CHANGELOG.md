@@ -1,5 +1,159 @@
 # @backstage/frontend-plugin-api
 
+## 0.6.8-next.1
+
+### Patch Changes
+
+- 3be9aeb: Extensions have been changed to be declared with an array of inputs and outputs, rather than a map of named data refs. This change was made to reduce confusion around the role of the input and output names, as well as enable more powerful APIs for overriding extensions.
+
+  An extension that was previously declared like this:
+
+  ```tsx
+  const exampleExtension = createExtension({
+    name: 'example',
+    inputs: {
+      items: createExtensionInput({
+        element: coreExtensionData.reactElement,
+      }),
+    },
+    output: {
+      element: coreExtensionData.reactElement,
+    },
+    factory({ inputs }) {
+      return {
+        element: (
+          <div>
+            Example
+            {inputs.items.map(item => {
+              return <div>{item.output.element}</div>;
+            })}
+          </div>
+        ),
+      };
+    },
+  });
+  ```
+
+  Should be migrated to the following:
+
+  ```tsx
+  const exampleExtension = createExtension({
+    name: 'example',
+    inputs: {
+      items: createExtensionInput([coreExtensionData.reactElement]),
+    },
+    output: [coreExtensionData.reactElement],
+    factory({ inputs }) {
+      return [
+        coreExtensionData.reactElement(
+          <div>
+            Example
+            {inputs.items.map(item => {
+              return <div>{item.get(coreExtensionData.reactElement)}</div>;
+            })}
+          </div>,
+        ),
+      ];
+    },
+  });
+  ```
+
+- 3fb421d: Added support to be able to define `zod` config schema in Blueprints, with built in schema merging from the Blueprint and the extension instances.
+- 6349099: Added config input type to the extensions
+- Updated dependencies
+  - @backstage/core-components@0.14.10-next.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
+## 0.6.8-next.0
+
+### Patch Changes
+
+- 4e53ad6: Introduce a new way to encapsulate extension kinds that replaces the extension creator pattern with `createExtensionBlueprint`
+
+  This allows the creation of extension instances with the following pattern:
+
+  ```tsx
+  // create the extension blueprint which is used to create instances
+  const EntityCardBlueprint = createExtensionBlueprint({
+    kind: 'entity-card',
+    attachTo: { id: 'test', input: 'default' },
+    output: {
+      element: coreExtensionData.reactElement,
+    },
+    factory(params: { text: string }) {
+      return {
+        element: <h1>{params.text}</h1>,
+      };
+    },
+  });
+
+  // create an instance of the extension blueprint with params
+  const testExtension = EntityCardBlueprint.make({
+    name: 'foo',
+    params: {
+      text: 'Hello World',
+    },
+  });
+  ```
+
+- 9b89b82: The `ExtensionBoundary` now by default infers whether it's routable from whether it outputs a route path.
+- 7777b5f: Added a new `IconBundleBlueprint` that lets you create icon bundle extensions that can be installed in an App in order to override or add new app icons.
+
+  ```tsx
+  import { IconBundleBlueprint } from '@backstage/frontend-plugin-api';
+
+  const exampleIconBundle = IconBundleBlueprint.make({
+    name: 'example-bundle',
+    params: {
+      icons: {
+        user: MyOwnUserIcon,
+      },
+    },
+  });
+  ```
+
+- 31bfc44: Extension data references can now be defined in a way that encapsulates the ID string in the type, in addition to the data type itself. The old way of creating extension data references is deprecated and will be removed in a future release.
+
+  For example, the following code:
+
+  ```ts
+  export const myExtension =
+    createExtensionDataRef<MyType>('my-plugin.my-data');
+  ```
+
+  Should be updated to the following:
+
+  ```ts
+  export const myExtension = createExtensionDataRef<MyType>().with({
+    id: 'my-plugin.my-data',
+  });
+  ```
+
+- Updated dependencies
+  - @backstage/core-components@0.14.10-next.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
+## 0.6.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.9
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
+## 0.6.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.9-next.1
+
 ## 0.6.7-next.0
 
 ### Patch Changes

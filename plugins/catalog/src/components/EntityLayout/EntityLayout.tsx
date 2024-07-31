@@ -53,6 +53,8 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
 import { rootRouteRef, unregisterRedirectRouteRef } from '../../routes';
+import { catalogTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export type EntityLayoutRouteProps = {
@@ -117,11 +119,12 @@ function headerProps(
 function EntityLabels(props: { entity: Entity }) {
   const { entity } = props;
   const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
+  const { t } = useTranslationRef(catalogTranslationRef);
   return (
     <>
       {ownedByRelations.length > 0 && (
         <HeaderLabel
-          label="Owner"
+          label={t('entityLabels.ownerLabel')}
           contentTypograpyRootComponent="p"
           value={
             <EntityRefLinks
@@ -134,7 +137,7 @@ function EntityLabels(props: { entity: Entity }) {
       )}
       {entity.spec?.lifecycle && (
         <HeaderLabel
-          label="Lifecycle"
+          label={t('entityLabels.lifecycleLabel')}
           value={entity.spec.lifecycle?.toString()}
         />
       )}
@@ -234,6 +237,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
   const navigate = useNavigate();
   const catalogRoute = useRouteRef(rootRouteRef);
   const unregisterRedirectRoute = useRouteRef(unregisterRedirectRouteRef);
+  const { t } = useTranslationRef(catalogTranslationRef);
 
   const cleanUpAfterRemoval = async () => {
     setConfirmationDialogOpen(false);
@@ -286,7 +290,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
           {NotFoundComponent ? (
             NotFoundComponent
           ) : (
-            <WarningPanel title="Entity not found">
+            <WarningPanel title={t('entityLabels.warningPanelTitle')}>
               There is no {kind} with the requested{' '}
               <Link to="https://backstage.io/docs/features/software-catalog/references">
                 kind, namespace, and name

@@ -23,6 +23,8 @@ import {
   systemEntityColumns,
   systemEntityHelpLink,
 } from '../RelatedEntitiesCard';
+import { catalogTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export interface HasSystemsCardProps {
@@ -31,7 +33,8 @@ export interface HasSystemsCardProps {
 }
 
 export function HasSystemsCard(props: HasSystemsCardProps) {
-  const { variant = 'gridItem', title = 'Has systems' } = props;
+  const { t } = useTranslationRef(catalogTranslationRef);
+  const { variant = 'gridItem', title = t('hasSystemsCard.title') } = props;
   return (
     <RelatedEntitiesCard
       variant={variant}
@@ -40,7 +43,7 @@ export function HasSystemsCard(props: HasSystemsCardProps) {
       relationType={RELATION_HAS_PART}
       columns={systemEntityColumns}
       asRenderableEntities={asSystemEntities}
-      emptyMessage="No system is part of this domain"
+      emptyMessage={t('hasSystemsCard.emptyMessage')}
       emptyHelpLink={systemEntityHelpLink}
     />
   );

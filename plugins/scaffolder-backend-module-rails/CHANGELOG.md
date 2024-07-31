@@ -1,5 +1,59 @@
 # @backstage/plugin-scaffolder-backend-module-rails
 
+## 0.4.40-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/backend-common@0.23.4-next.1
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-node@0.4.9-next.1
+
+## 0.4.40-next.0
+
+### Patch Changes
+
+- 449def7: Add examples for fetch:rails scaffolder action & improve related tests
+- Updated dependencies
+  - @backstage/backend-common@0.23.4-next.0
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/backend-plugin-api@0.7.1-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-node@0.4.9-next.0
+
+## 0.4.39
+
+### Patch Changes
+
+- 0ac124b: Updated configuration instructions
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/backend-common@0.23.3
+  - @backstage/integration@1.13.0
+  - @backstage/plugin-scaffolder-node@0.4.8
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.4.39-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.23.3-next.1
+  - @backstage/backend-plugin-api@0.6.22-next.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.13.0-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-node@0.4.8-next.1
+
 ## 0.4.38-next.0
 
 ### Patch Changes

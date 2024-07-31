@@ -145,7 +145,7 @@ ApiReportGenerator.generateReviewFileContent =
           if (!localName) {
             // Sometimes the symbol name is suffixed with a number to disambiguate,
             // e.g. "Props_14" instead of "Props" if there are multiple Props interfaces
-            // so we tyry to strip that suffix and look up the symbol again.
+            // so we try to strip that suffix and look up the symbol again.
             const [, trimmedSymbolName] = symbolName.match(/(.*)_\d+/) || [];
             localName = (sourceFile as any).identifiers?.get(trimmedSymbolName);
           }

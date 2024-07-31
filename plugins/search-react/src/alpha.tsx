@@ -137,5 +137,5 @@ export namespace createSearchResultListItemExtension {
   export const itemDataRef = createExtensionDataRef<{
     predicate?: SearchResultItemExtensionPredicate;
     component: SearchResultItemExtensionComponent;
-  }>('search.search-result-list-item.item');
+  }>().with({ id: 'search.search-result-list-item.item' });
 }

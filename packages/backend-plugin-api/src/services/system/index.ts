@@ -16,10 +16,11 @@
 
 export type {
   ServiceRef,
-  ServiceRefConfig,
+  ServiceRefOptions,
   ServiceFactory,
-  PluginServiceFactoryConfig,
-  RootServiceFactoryConfig,
+  PluginServiceFactoryOptions,
+  RootServiceFactoryOptions,
   ServiceFactoryOrFunction,
+  ServiceFactoryCompat,
 } from './types';
 export { createServiceRef, createServiceFactory } from './types';

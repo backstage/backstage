@@ -1,5 +1,54 @@
 # @backstage/plugin-events-backend-module-aws-sqs
 
+## 0.3.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/backend-common@0.23.4-next.1
+  - @backstage/backend-tasks@0.5.28-next.1
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-events-node@0.3.9-next.1
+
+## 0.3.9-next.0
+
+### Patch Changes
+
+- ba8571e: Setup user agent header for AWS sdk clients, this enables users to better track API calls made from Backstage to AWS APIs through things like CloudTrail.
+- Updated dependencies
+  - @backstage/backend-common@0.23.4-next.0
+  - @backstage/backend-plugin-api@0.7.1-next.0
+  - @backstage/backend-tasks@0.5.28-next.0
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-events-node@0.3.9-next.0
+
+## 0.3.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/backend-common@0.23.3
+  - @backstage/backend-tasks@0.5.27
+  - @backstage/plugin-events-node@0.3.8
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
+## 0.3.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.23.3-next.1
+  - @backstage/backend-plugin-api@0.6.22-next.1
+  - @backstage/backend-tasks@0.5.27-next.1
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-events-node@0.3.8-next.1
+
 ## 0.3.7-next.0
 
 ### Patch Changes

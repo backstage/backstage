@@ -1,5 +1,74 @@
 # @backstage/plugin-search-backend
 
+## 1.5.15-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.8.1-next.0
+  - @backstage/plugin-permission-node@0.8.1-next.1
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/backend-common@0.23.4-next.1
+  - @backstage/backend-defaults@0.4.2-next.1
+  - @backstage/plugin-search-backend-node@1.2.28-next.1
+  - @backstage/plugin-search-common@1.2.14-next.0
+  - @backstage/backend-openapi-utils@0.1.16-next.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 1.5.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.23.4-next.0
+  - @backstage/backend-defaults@0.4.2-next.0
+  - @backstage/backend-openapi-utils@0.1.16-next.0
+  - @backstage/backend-plugin-api@0.7.1-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.8.0
+  - @backstage/plugin-permission-node@0.8.1-next.0
+  - @backstage/plugin-search-backend-node@1.2.28-next.0
+  - @backstage/plugin-search-common@1.2.13
+
+## 1.5.14
+
+### Patch Changes
+
+- 343f656: The `AuthorizedSearchEngine` will now ignore the deprecated `token` option, and treat it as an unauthorized request. This will not have any effect in practice, since credentials are always provided by the router.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/backend-defaults@0.4.0
+  - @backstage/backend-common@0.23.3
+  - @backstage/plugin-permission-common@0.8.0
+  - @backstage/plugin-permission-node@0.8.0
+  - @backstage/backend-openapi-utils@0.1.15
+  - @backstage/plugin-search-backend-node@1.2.27
+  - @backstage/plugin-search-common@1.2.13
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 1.5.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.3.4-next.1
+  - @backstage/backend-common@0.23.3-next.1
+  - @backstage/backend-openapi-utils@0.1.15-next.1
+  - @backstage/backend-plugin-api@0.6.22-next.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.14
+  - @backstage/plugin-permission-node@0.7.33-next.1
+  - @backstage/plugin-search-backend-node@1.2.27-next.1
+  - @backstage/plugin-search-common@1.2.12
+
 ## 1.5.13-next.0
 
 ### Patch Changes

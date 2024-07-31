@@ -1,5 +1,74 @@
 # @backstage/plugin-catalog-backend-module-ldap
 
+## 0.7.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/plugin-catalog-common@1.0.26-next.0
+  - @backstage/plugin-catalog-node@1.12.5-next.1
+  - @backstage/backend-tasks@0.5.28-next.1
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.7.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.12.5-next.0
+  - @backstage/backend-plugin-api@0.7.1-next.0
+  - @backstage/backend-tasks@0.5.28-next.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.25
+
+## 0.7.0
+
+### Minor Changes
+
+- cb32ca7: **BREAKING**: `readLdapOrg` and the `LdapProviderConfig` type now always accept arrays of user and group configs, not just single items.
+
+  Added support for single ldap catalog provider to provide list and undefined user and group bindings next to standard single one.
+
+### Patch Changes
+
+- 083eaf9: Fix bug where ISO durations could no longer be used for schedules
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/backend-tasks@0.5.27
+  - @backstage/plugin-catalog-node@1.12.4
+  - @backstage/plugin-catalog-common@1.0.25
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.7.0-next.1
+
+### Minor Changes
+
+- cb32ca7: **BREAKING**: `readLdapOrg` and the `LdapProviderConfig` type now always accept arrays of user and group configs, not just single items.
+
+  Added support for single ldap catalog provider to provide list and undefined user and group bindings next to standard single one.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.22-next.1
+  - @backstage/backend-tasks@0.5.27-next.1
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.24
+  - @backstage/plugin-catalog-node@1.12.4-next.1
+
 ## 0.6.2-next.0
 
 ### Patch Changes

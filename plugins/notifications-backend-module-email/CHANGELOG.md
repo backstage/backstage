@@ -1,5 +1,111 @@
 # @backstage/plugin-notifications-backend-module-email
 
+## 0.2.0-next.1
+
+### Minor Changes
+
+- def53a7: **BREAKING** Following `NotificationTemplateRenderer` methods now return a Promise and **must** be awaited: `getSubject`, `getText` and `getHtml`.
+
+  Required changes and example usage:
+
+  ```diff
+  import { notificationsEmailTemplateExtensionPoint } from '@backstage/plugin-notifications-backend-module-email';
+  import { Notification } from '@backstage/plugin-notifications-common';
+  +import { getNotificationSubject, getNotificationTextContent, getNotificationHtmlContent } from 'my-notification-processing-library`
+  export const notificationsModuleEmailDecorator = createBackendModule({
+    pluginId: 'notifications',
+    moduleId: 'email.templates',
+    register(reg) {
+      reg.registerInit({
+        deps: {
+          emailTemplates: notificationsEmailTemplateExtensionPoint,
+        },
+        async init({ emailTemplates }) {
+          emailTemplates.setTemplateRenderer({
+  -          getSubject(notification) {
+  +          async getSubject(notification) {
+  -            return `New notification from ${notification.source}`;
+  +            const subject = await getNotificationSubject(notification);
+  +            return `New notification from ${subject}`;
+            },
+  -          getText(notification) {
+  +          async getText(notification) {
+  -            return notification.content;
+  +            const text = await getNotificationTextContent(notification);
+  +            return text;
+            },
+  -          getHtml(notification) {
+  +          async getHtml(notification) {
+  -            return `<p>${notification.content}</p>`;
+  +            const html = await getNotificationHtmlContent(notification);
+  +            return html;
+            },
+          });
+        },
+      });
+    },
+  });
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/backend-common@0.23.4-next.1
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-notifications-common@0.0.5
+  - @backstage/plugin-notifications-node@0.2.4-next.1
+
+## 0.1.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.23.4-next.0
+  - @backstage/backend-plugin-api@0.7.1-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+  - @backstage/plugin-notifications-common@0.0.5
+  - @backstage/plugin-notifications-node@0.2.4-next.0
+
+## 0.1.3
+
+### Patch Changes
+
+- 4e4ef2b: Move notification processor filter parsing to common package
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/backend-common@0.23.3
+  - @backstage/plugin-notifications-common@0.0.5
+  - @backstage/plugin-notifications-node@0.2.3
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+
+## 0.1.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.23.3-next.1
+  - @backstage/backend-plugin-api@0.6.22-next.1
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+  - @backstage/plugin-notifications-common@0.0.4
+  - @backstage/plugin-notifications-node@0.2.3-next.1
+
 ## 0.1.2-next.0
 
 ### Patch Changes

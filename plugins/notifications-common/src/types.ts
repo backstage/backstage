@@ -116,3 +116,12 @@ export type NotificationReadSignal = {
 
 /** @public */
 export type NotificationSignal = NewNotificationSignal | NotificationReadSignal;
+
+/**
+ * @public
+ */
+export type NotificationProcessorFilters = {
+  minSeverity?: NotificationSeverity;
+  maxSeverity?: NotificationSeverity;
+  excludedTopics?: string[];
+};

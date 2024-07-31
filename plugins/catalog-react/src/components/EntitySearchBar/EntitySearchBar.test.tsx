@@ -15,16 +15,17 @@
  */
 
 import React from 'react';
-import { fireEvent, render, waitFor, screen } from '@testing-library/react';
+import { fireEvent, waitFor, screen } from '@testing-library/react';
 import { EntitySearchBar } from './EntitySearchBar';
 import { EntityTextFilter } from '../../filters';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
+import { renderInTestApp } from '@backstage/test-utils';
 
 describe('EntitySearchBar', () => {
   it('should display search value and execute set callback', async () => {
     const updateFilters = jest.fn();
 
-    render(
+    await renderInTestApp(
       <MockEntityListContextProvider
         value={{
           updateFilters,

@@ -17,7 +17,7 @@
 import {
   ServiceFactoryTester,
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { tokenManagerServiceFactory } from '@backstage/backend-app-api';
 import { authServiceFactory } from './authServiceFactory';
@@ -68,7 +68,7 @@ const mockDeps = [
 ];
 
 describe('authServiceFactory', () => {
-  setupRequestMockHandlers(server);
+  registerMswTestHooks(server);
 
   afterEach(() => {
     jest.useRealTimers();
@@ -86,8 +86,8 @@ describe('authServiceFactory', () => {
       dependencies: mockDeps,
     });
 
-    const searchAuth = await tester.get('search');
-    const catalogAuth = await tester.get('catalog');
+    const searchAuth = await tester.getSubject('search');
+    const catalogAuth = await tester.getSubject('catalog');
 
     const { token: searchToken } = await searchAuth.getPluginRequestToken({
       onBehalfOf: await searchAuth.getOwnServiceCredentials(),
@@ -117,8 +117,8 @@ describe('authServiceFactory', () => {
       dependencies: mockDeps,
     });
 
-    const searchAuth = await tester.get('search');
-    const catalogAuth = await tester.get('catalog');
+    const searchAuth = await tester.getSubject('search');
+    const catalogAuth = await tester.getSubject('catalog');
 
     server.use(
       rest.get(
@@ -163,7 +163,7 @@ describe('authServiceFactory', () => {
       dependencies: mockDeps,
     });
 
-    const catalogAuth = await tester.get('catalog');
+    const catalogAuth = await tester.getSubject('catalog');
 
     await expect(
       catalogAuth.getPluginRequestToken({
@@ -194,7 +194,7 @@ describe('authServiceFactory', () => {
       dependencies: mockDeps,
     });
 
-    const catalogAuth = await tester.get('catalog');
+    const catalogAuth = await tester.getSubject('catalog');
 
     const { token } = await catalogAuth.getPluginRequestToken({
       onBehalfOf: {
@@ -261,7 +261,7 @@ describe('authServiceFactory', () => {
       dependencies: mockDeps,
     });
 
-    const catalogAuth = await tester.get('catalog');
+    const catalogAuth = await tester.getSubject('catalog');
 
     const fullToken =
       'eyJ0eXAiOiJ2bmQuYmFja3N0YWdlLnVzZXIiLCJhbGciOiJFUzI1NiIsImtpZCI6IjhkMDFjM2RiLTU2ZjktNDVmMC04NmRkLTA1YjNjODM1YjNkMyJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjcwMDcvYXBpL2F1dGgiLCJzdWIiOiJ1c2VyOmRldmVsb3BtZW50L2d1ZXN0IiwiZW50IjpbInVzZXI6ZGV2ZWxvcG1lbnQvZ3Vlc3QiLCJncm91cDpkZWZhdWx0L3RlYW0tYSJdLCJhdWQiOiJiYWNrc3RhZ2UiLCJpYXQiOjE3MTIwNzE3MTQsImV4cCI6MTcxMjA3NTMxNCwidWlwIjoiSmwxVEpycG9VUjR1NENjUE9nalJMeHpEMi1FMGZPR3ptSm81UWI2eS1aN19meG5oVVBEdWVWRE1CS0l6WF9pc0lvSDhlZm9EUFA5bG9aQnpPblB5Z2cifQ.1gVMq1ofO8PzRctu72D6c4IMqXuIabT79WdGEhW6vIrBRs_qhuWAa94Wvz_KYKpBTb2nxgzXJ5OeddeoYApMyQ';
@@ -318,9 +318,9 @@ describe('authServiceFactory', () => {
       dependencies: mockDeps,
     });
 
-    const searchAuth = await tester.get('search');
-    const catalogAuth = await tester.get('catalog');
-    const permissionAuth = await tester.get('permission');
+    const searchAuth = await tester.getSubject('search');
+    const catalogAuth = await tester.getSubject('catalog');
+    const permissionAuth = await tester.getSubject('permission');
 
     /* Corresponding private key in case this test needs to be updated in the future:
      {
@@ -431,7 +431,7 @@ describe('authServiceFactory', () => {
       dependencies: mockDeps,
     });
 
-    const catalogAuth = await tester.get('catalog');
+    const catalogAuth = await tester.getSubject('catalog');
 
     await expect(
       catalogAuth.authenticate('limited-static-token'),
@@ -450,7 +450,7 @@ describe('authServiceFactory', () => {
       },
     });
 
-    const scaffolderAuth = await tester.get('scaffolder');
+    const scaffolderAuth = await tester.getSubject('scaffolder');
 
     await expect(
       scaffolderAuth.authenticate('limited-static-token'),

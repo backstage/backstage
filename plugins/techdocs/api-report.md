@@ -78,6 +78,13 @@ export type DocsGroupConfig = {
 export const DocsTable: {
   (props: DocsTableProps): React_2.JSX.Element | null;
   columns: {
+    createTitleColumn(
+      options?:
+        | {
+            hidden?: boolean | undefined;
+          }
+        | undefined,
+    ): TableColumn<DocsTableRow>;
     createNameColumn(): TableColumn<DocsTableRow>;
     createOwnerColumn(): TableColumn<DocsTableRow>;
     createKindColumn(): TableColumn<DocsTableRow>;
@@ -142,6 +149,13 @@ export type EntityListDocsGridPageProps = {
 export const EntityListDocsTable: {
   (props: EntityListDocsTableProps): React_2.JSX.Element;
   columns: {
+    createTitleColumn(
+      options?:
+        | {
+            hidden?: boolean | undefined;
+          }
+        | undefined,
+    ): TableColumn<DocsTableRow>;
     createNameColumn(): TableColumn<DocsTableRow>;
     createOwnerColumn(): TableColumn<DocsTableRow>;
     createKindColumn(): TableColumn<DocsTableRow>;
