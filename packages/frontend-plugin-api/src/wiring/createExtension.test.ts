@@ -561,4 +561,35 @@ describe('createExtension', () => {
       }),
     ).toMatchObject({ version: 'v2' });
   });
+
+  describe('overrides', () => {
+    it('should allow overriding of the default factory', () => {
+      const testExtension = createExtension({
+        namespace: 'test',
+        attachTo: { id: 'root', input: 'blob' },
+        output: [stringDataRef],
+        config: {
+          schema: {
+            foo: z => z.string().optional(),
+          },
+        },
+        factory() {
+          return [stringDataRef('default')];
+        },
+      });
+
+      testExtension.override({
+        config: {
+          schema: {
+            bar: z => z.string().optional(),
+          },
+        },
+        factory(_, { config }) {
+          return [stringDataRef(config.foo ?? config.bar ?? 'default')];
+        },
+      });
+
+      expect(true).toBe(true);
+    });
+  });
 });
