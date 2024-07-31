@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 import { JsonObject, JsonValue } from '@backstage/types';
 
 export function isJsonObject(value?: JsonValue): value is JsonObject {
-  return typeof value === 'object' && !Array.isArray(value);
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 // Helper function to get the last part of the key
