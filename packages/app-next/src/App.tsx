@@ -115,8 +115,8 @@ TODO:
 // });
 
 const homePageExtension = extensions.homePage.override({
-  factory() {
-    return { children: homePage, title: 'just a title' };
+  factory(origi) {
+    return origi();
   },
 });
 

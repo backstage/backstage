@@ -20,6 +20,7 @@ import { Expand } from '../types';
 import {
   AnyExtensionDataRef,
   ExtensionDataRef,
+  ExtensionDataRefToValue,
   ExtensionDataValue,
 } from './createExtensionDataRef';
 import { ExtensionInput, LegacyExtensionInput } from './createExtensionInput';
@@ -234,6 +235,79 @@ export interface ExtensionDefinition<TConfig, TConfigInput = TConfig> {
   readonly configSchema?: PortableSchema<TConfig, TConfigInput>;
 }
 
+export type OverrideExtensionOptions<
+  UOutput extends AnyExtensionDataRef,
+  TInputs extends {
+    [inputName in string]: ExtensionInput<
+      AnyExtensionDataRef,
+      { optional: boolean; singleton: boolean }
+    >;
+  },
+  TConfig,
+  TConfigInput,
+  TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
+  UFactoryOutput extends ExtensionDataValue<any, any>,
+> = {
+  kind?: string;
+  namespace?: string;
+  name?: string;
+  attachTo?: { id: string; input: string };
+  disabled?: boolean;
+  inputs?: TInputs;
+  output: Array<UOutput>;
+  /** @deprecated - use `config.schema` instead */
+  configSchema?: PortableSchema<TConfig, TConfigInput>;
+  config?: {
+    schema: TConfigSchema;
+  };
+  factory?(
+    originalFactory: (context?: {
+      config?: {
+        [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
+      };
+      inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
+    }) => Iterable<ExtensionDataRefToValue<UOutput>>,
+    context: {
+      node: AppNode;
+      config: TConfig &
+        (string extends keyof TConfigSchema
+          ? {}
+          : {
+              [key in keyof TConfigSchema]: z.infer<
+                ReturnType<TConfigSchema[key]>
+              >;
+            });
+      inputs: Expand<ResolvedExtensionInputs<TInputs>>;
+    },
+  ): Iterable<UFactoryOutput>;
+} & VerifyExtensionFactoryOutput<UOutput, UFactoryOutput>;
+
+/** @public */
+export type OverridableExtension<
+  UOutput extends AnyExtensionDataRef,
+  TInputs extends {
+    [inputName in string]: ExtensionInput<
+      AnyExtensionDataRef,
+      { optional: boolean; singleton: boolean }
+    >;
+  },
+  TConfig,
+  TConfigInput,
+  TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
+  UFactoryOutput extends ExtensionDataValue<any, any>,
+> = {
+  override(
+    options: OverrideExtensionOptions<
+      UOutput,
+      TInputs,
+      TConfig,
+      TConfigInput,
+      TConfigSchema,
+      UFactoryOutput
+    >,
+  ): ExtensionDefinition<TConfig, TConfigInput>;
+};
+
 /** @internal */
 export type InternalExtensionDefinition<TConfig, TConfigInput> =
   ExtensionDefinition<TConfig, TConfigInput> &
@@ -329,7 +403,15 @@ export function createExtension<
             [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
           }>
         >)
->;
+> &
+  OverridableExtension<
+    UOutput,
+    TInputs,
+    TConfig,
+    TConfigInput,
+    TConfigSchema,
+    UFactoryOutput
+  >;
 /**
  * @public
  * @deprecated - use the array format of `output` instead, see TODO-doc-link
@@ -409,7 +491,15 @@ export function createExtension<
             [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
           }>
         >)
-> {
+> &
+  OverridableExtension<
+    UOutput,
+    TInputs,
+    TConfig,
+    TConfigInput,
+    TConfigSchema,
+    UFactoryOutput
+  > {
   const newConfigSchema = options.config?.schema;
   if (newConfigSchema && options.configSchema) {
     throw new Error(`Cannot provide both configSchema and config.schema`);

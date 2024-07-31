@@ -127,7 +127,7 @@ export function createNewPageExtension<
       inputs: Expand<ResolvedExtensionInputs<TInputs>>;
     }) => Promise<JSX.Element>;
   },
-): ExtensionDefinition<TConfig> {
+) {
   const configSchema =
     'configSchema' in options
       ? options.configSchema

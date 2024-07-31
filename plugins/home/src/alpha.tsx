@@ -66,10 +66,6 @@ const homePage = createNewPageExtension({
     ),
 });
 
-homePage.override({
-  factory() {},
-});
-
 // const homePage2 = PageExtensionBlueprint.make({
 //   inputs: {
 //     props: createExtensionInput(
