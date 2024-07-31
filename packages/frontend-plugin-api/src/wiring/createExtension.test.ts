@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { coreExtensionData } from './coreExtensionData';
 import { createExtension } from './createExtension';
 import { createExtensionDataRef } from './createExtensionDataRef';
 import { createExtensionInput } from './createExtensionInput';
@@ -563,7 +564,7 @@ describe('createExtension', () => {
   });
 
   describe('overrides', () => {
-    it('should allow overriding of the default factory', () => {
+    it('should allow overriding of config and merging', () => {
       const testExtension = createExtension({
         namespace: 'test',
         attachTo: { id: 'root', input: 'blob' },
@@ -588,6 +589,55 @@ describe('createExtension', () => {
           return [stringDataRef(config.foo ?? config.bar ?? 'default')];
         },
       });
+
+      expect(true).toBe(true);
+    });
+
+    it('should allow overriding of outputs', () => {
+      const testExtension = createExtension({
+        namespace: 'test',
+        attachTo: { id: 'root', input: 'blob' },
+        output: [stringDataRef],
+        inputs: {
+          test: createExtensionInput([stringDataRef], { singleton: true }),
+        },
+        config: {
+          schema: {
+            foo: z => z.string().optional(),
+          },
+        },
+        factory({ inputs }) {
+          return [stringDataRef(inputs.test.get(stringDataRef))];
+        },
+      });
+
+      const override = testExtension.override({
+        output: [numberDataRef],
+        factory(_, { inputs }) {
+          return [
+            numberDataRef(inputs.test.get(stringDataRef).length),
+            stringDataRef('default'),
+          ];
+        },
+      });
+
+      // @ts-expect-error - should fail as the string output from previous is not provided
+      const override2 = testExtension.override({
+        output: [numberDataRef],
+        factory(_, { inputs }) {
+          return [numberDataRef(inputs.test.get(stringDataRef).length)];
+        },
+      });
+
+      // @ts-expect-error - this should fail because string output should be merged?
+      const override3 = testExtension.override({
+        output: [numberDataRef],
+        factory(_, { inputs }) {
+          return [stringDataRef(inputs.test.get(stringDataRef))];
+        },
+      });
+
+      unused(override, override2, override3);
 
       expect(true).toBe(true);
     });
