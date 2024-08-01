@@ -22,7 +22,6 @@ import {
   createExtension,
   ResolvedExtensionInputs,
   AnyExtensionInputMap,
-  createExtensionBlueprint,
 } from '../wiring';
 import { RouteRef } from '../routing';
 import { Expand } from '../types';
@@ -96,59 +95,3 @@ export function createPageExtension<
     },
   });
 }
-
-/**
- * A blueprint for creating extensions for routable React page components.
- * @public
- */
-export const PageExtensionBlueprint = createExtensionBlueprint({
-  kind: 'page',
-  attachTo: { id: 'app/routes', input: 'routes' },
-  output: [
-    coreExtensionData.routePath,
-    coreExtensionData.reactElement,
-    coreExtensionData.routeRef.optional(),
-  ],
-  config: {
-    schema: {
-      path: z => z.string().optional(),
-    },
-  },
-  factory(
-    {
-      defaultPath,
-      loader,
-      routeRef,
-    }: {
-      defaultPath?: string;
-      // TODO(blam) This type is impossible to type properly here as we don't have access
-      // to the input type generic. Maybe not a deal breaker though.
-      // It means we have to override the factory function in the `.make` method instead.
-      loader: (opts: unknown) => Promise<JSX.Element>;
-      routeRef?: RouteRef;
-    },
-    { config, inputs, node },
-  ) {
-    const ExtensionComponent = lazy(() =>
-      loader({ config, inputs }).then(element => ({ default: () => element })),
-    );
-
-    // TODO(blam): this is a little awkward for optional returns.
-    // I wonder if we should be using generators or yield instead
-    // for a better API here.
-    const outputs = [
-      coreExtensionData.routePath(config.path ?? defaultPath!),
-      coreExtensionData.reactElement(
-        <ExtensionBoundary node={node}>
-          <ExtensionComponent />
-        </ExtensionBoundary>,
-      ),
-    ];
-
-    if (routeRef) {
-      return [...outputs, coreExtensionData.routeRef(routeRef)];
-    }
-
-    return outputs;
-  },
-});
