@@ -8,6 +8,7 @@
     "pluginPackages": [
       "@backstage/plugin-search",
       "@backstage/plugin-search-backend",
+      "@backstage/plugin-search-backend-node",
       "@backstage/plugin-search-common",
       "@backstage/plugin-search-react"
     ]

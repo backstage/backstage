@@ -4,9 +4,13 @@
   "description": "A library for Backstage backend plugins that want to interact with the search backend plugin",
   "backstage": {
     "role": "node-library",
-    "pluginId": "search-backend",
+    "pluginId": "search",
     "pluginPackages": [
-      "@backstage/plugin-search-backend-node"
+      "@backstage/plugin-search",
+      "@backstage/plugin-search-backend",
+      "@backstage/plugin-search-backend-node",
+      "@backstage/plugin-search-common",
+      "@backstage/plugin-search-react"
     ]
   },
   "publishConfig": {
