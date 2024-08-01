@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { over } from 'lodash';
 import { AppNode } from '../apis';
 import { PortableSchema, createSchemaFromZod } from '../schema';
 import { Expand } from '../types';
@@ -547,8 +548,89 @@ export function createExtension<
       parts.push(`attachTo=${options.attachTo.id}@${options.attachTo.input}`);
       return `ExtensionDefinition{${parts.join(',')}}`;
     },
-    override() {
-      // todo(blam): implement.
+    override<
+      TConfigSchemaOverrides extends {
+        [key in string]: (zImpl: typeof z) => z.ZodType;
+      },
+      UOutputOverrides extends AnyExtensionDataRef,
+      UFactoryOverrideOutput extends ExtensionDataValue<any, any>,
+    >(
+      overrideOptions: OverrideExtensionOptions<
+        UOutput,
+        TInputs,
+        TConfig,
+        TConfigInput,
+        TConfigSchema,
+        TConfigSchemaOverrides,
+        UOutputOverrides,
+        UFactoryOverrideOutput
+      >,
+    ) {
+      const overrideNewConfigSchema = overrideOptions.config?.schema;
+      if (overrideNewConfigSchema && overrideOptions.configSchema) {
+        throw new Error(`Cannot provide both configSchema and config.schema`);
+      }
+
+      const mergedConfigSchema = {
+        ...options.config?.schema,
+        ...overrideOptions.config?.schema,
+      };
+
+      const overrideConfigSchema = mergedConfigSchema
+        ? createSchemaFromZod(innerZ =>
+            innerZ.object(
+              Object.fromEntries(
+                Object.entries(mergedConfigSchema).map(([k, v]) => [
+                  k,
+                  v(innerZ),
+                ]),
+              ),
+            ),
+          )
+        : overrideOptions.configSchema;
+
+      const buildDataContainer = (outputs): ExtensionDataContainer<UOutput> => {
+        const dataMap = new Map<string, unknown>();
+        if (Symbol.iterator in outputs) {
+          for (const output of outputs) {
+            dataMap.set(output.id, output.value);
+          }
+        }
+
+        return {
+          get(ref) {
+            return dataMap.get(ref.id);
+          },
+        } as ExtensionDataContainer<UOutput>;
+      };
+
+      return createExtension({
+        attachTo: options.attachTo,
+        output: overrideOptions.output ?? options.output,
+        configSchema: overrideConfigSchema,
+        factory: ({ node, config, inputs }) => {
+          if (overrideOptions.factory) {
+            return overrideOptions.factory(
+              innerCtx => {
+                const originalFactoryResponse = options.factory({
+                  node,
+                  config: innerCtx?.config ?? config,
+                  inputs: innerCtx?.inputs ?? inputs,
+                });
+
+                return buildDataContainer(originalFactoryResponse);
+              },
+              { node, config, inputs },
+            );
+          }
+          return options.factory(originalFactory, context);
+        },
+        disabled: overrideOptions.disabled ?? options.disabled,
+        inputs: overrideOptions.inputs ?? options.inputs,
+        kind: overrideOptions.kind ?? options.kind,
+        name: overrideOptions.name ?? options.name,
+        namespace: overrideOptions.namespace ?? options.namespace,
+      });
     },
   } as InternalExtensionDefinition<
     TConfig &

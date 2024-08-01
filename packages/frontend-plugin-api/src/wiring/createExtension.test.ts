@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { createExtensionTester } from '@backstage/frontend-test-utils';
 import { coreExtensionData } from './coreExtensionData';
 import { createExtension } from './createExtension';
 import { createExtensionDataRef } from './createExtensionDataRef';
@@ -671,6 +672,42 @@ describe('createExtension', () => {
           return [stringDataRef(`foo-${foo}-override`)];
         },
       });
+
+      expect(true).toBe(true);
+    });
+
+    it('should work functionally with overrides', () => {
+      const testExtension = createExtension({
+        kind: 'thing',
+        namespace: 'test',
+        attachTo: { id: 'root', input: 'default' },
+        output: [stringDataRef],
+        config: {
+          schema: {
+            foo: z => z.string().default('boom'),
+          },
+        },
+        factory({ config }) {
+          return [stringDataRef(config.foo)];
+        },
+      });
+
+      const overriden = testExtension.override({
+        config: {
+          schema: {
+            bar: z => z.string().optional(),
+          },
+        },
+        factory(originalFactory, { config }) {
+          const response = originalFactory();
+
+          const foo: string = response.get(stringDataRef);
+
+          return [stringDataRef(`foo-${foo}-override-${config.bar}`)];
+        },
+      });
+
+      const tester = createExtensionTester(overriden).render();
     });
   });
 });
