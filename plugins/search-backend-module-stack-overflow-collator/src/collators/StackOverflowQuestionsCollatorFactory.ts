@@ -40,7 +40,7 @@ export interface StackOverflowDocument extends IndexableDocument {
  * @public
  */
 export type StackOverflowQuestionsRequestParams = {
-  [key: string]: string | string[] | number;
+  [key: string]: string | string[] | number | null;
 };
 
 /**
@@ -58,6 +58,8 @@ export type StackOverflowQuestionsCollatorFactoryOptions = {
   logger: LoggerService;
 };
 
+const DEFAULT_BASE_URL = 'https://api.stackexchange.com/2.3';
+const DEFAULT_MAX_PAGE = 100;
 /**
  * Search collator responsible for collecting stack overflow questions to index.
  *
@@ -81,6 +83,8 @@ export class StackOverflowQuestionsCollatorFactory
     this.apiAccessToken = options.apiAccessToken;
     this.teamName = options.teamName;
     this.maxPage = options.maxPage;
+    this.logger = options.logger.child({ documentType: this.type });
+
     // Sets the same default request parameters as the official API documentation
     // See https://api.stackexchange.com/docs/questions
     this.requestParams = {
@@ -88,7 +92,10 @@ export class StackOverflowQuestionsCollatorFactory
       sort: 'activity',
       ...(options.requestParams ?? {}),
     };
-    this.logger = options.logger.child({ documentType: this.type });
+
+    if (!options.requestParams?.site && this.baseUrl === DEFAULT_BASE_URL) {
+      this.requestParams.site = 'stackoverflow';
+    }
   }
 
   static fromConfig(
@@ -101,12 +108,12 @@ export class StackOverflowQuestionsCollatorFactory
     );
     const teamName = config.getOptionalString('stackoverflow.teamName');
     const baseUrl =
-      config.getOptionalString('stackoverflow.baseUrl') ||
-      'https://api.stackexchange.com/2.3';
-    const maxPage = options.maxPage || 100;
+      config.getOptionalString('stackoverflow.baseUrl') || DEFAULT_BASE_URL;
+    const maxPage = options.maxPage || DEFAULT_MAX_PAGE;
     const requestParams = config
       .getOptionalConfig('stackoverflow.requestParams')
       ?.get<StackOverflowQuestionsRequestParams>();
+
     return new StackOverflowQuestionsCollatorFactory({
       baseUrl,
       maxPage,

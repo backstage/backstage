@@ -29,6 +29,8 @@ import { rest, RestRequest } from 'msw';
 
 const logger = mockServices.logger.mock();
 
+const BASE_URL = 'https://api.stackexchange.com/2.3';
+
 const mockQuestion = {
   items: [
     {
@@ -108,6 +110,98 @@ describe('StackOverflowQuestionsCollatorFactory using custom request params', ()
       optionsWithCustomRequestParams,
     );
     expect(factory.type).toBe('stack-overflow');
+  });
+
+  describe('Manage site query parameter', () => {
+    const worker = setupServer();
+    registerMswTestHooks(worker);
+
+    it('uses site query parameter when provided and baseUrl is not default', async () => {
+      let request;
+      worker.use(
+        rest.get('http://stack.overflow.local/questions', (req, res, ctx) => {
+          request = req;
+
+          return res(ctx.status(200), ctx.json(mockQuestion));
+        }),
+      );
+      const factory = StackOverflowQuestionsCollatorFactory.fromConfig(config, {
+        logger,
+        baseUrl: 'http://stack.overflow.local',
+        requestParams: {
+          site: 'stackoverflow',
+        },
+      });
+
+      const collator = await factory.getCollator();
+      const pipeline = TestPipeline.fromCollator(collator);
+      const { documents } = await pipeline.execute();
+      const expectedSearch = {
+        order: 'desc',
+        site: 'stackoverflow',
+        sort: 'activity',
+        page: '1',
+      };
+      testSearchQuery(request, expectedSearch);
+      expect(documents).toHaveLength(mockQuestion.items.length);
+    });
+
+    it('uses site query parameter when provided and baseUrl is default', async () => {
+      let request;
+      worker.use(
+        rest.get(`${BASE_URL}/questions`, (req, res, ctx) => {
+          request = req;
+
+          return res(ctx.status(200), ctx.json(mockQuestion));
+        }),
+      );
+      const factory = StackOverflowQuestionsCollatorFactory.fromConfig(config, {
+        logger,
+        baseUrl: BASE_URL,
+        requestParams: {
+          site: 'foo_bar_baz',
+        },
+      });
+
+      const collator = await factory.getCollator();
+      const pipeline = TestPipeline.fromCollator(collator);
+      const { documents } = await pipeline.execute();
+      const expectedSearch = {
+        order: 'desc',
+        site: 'foo_bar_baz',
+        sort: 'activity',
+        page: '1',
+      };
+      testSearchQuery(request, expectedSearch);
+      expect(documents).toHaveLength(mockQuestion.items.length);
+    });
+
+    it('uses default when site is not provided and baseUrl is default', async () => {
+      let request;
+      worker.use(
+        rest.get(`${BASE_URL}/questions`, (req, res, ctx) => {
+          request = req;
+
+          return res(ctx.status(200), ctx.json(mockQuestion));
+        }),
+      );
+      const factory = StackOverflowQuestionsCollatorFactory.fromConfig(config, {
+        logger,
+        baseUrl: BASE_URL,
+      });
+
+      const collator = await factory.getCollator();
+      const pipeline = TestPipeline.fromCollator(collator);
+      const { documents } = await pipeline.execute();
+      const expectedSearch = {
+        order: 'desc',
+        site: 'stackoverflow',
+        sort: 'activity',
+        page: '1',
+      };
+      testSearchQuery(request, expectedSearch);
+      expect(documents).toHaveLength(mockQuestion.items.length);
+    });
   });
 
   describe('getCollator', () => {
@@ -260,7 +354,7 @@ describe('StackOverflowQuestionsCollatorFactory using custom request params', ()
 describe('StackOverflowQuestionsCollatorFactory using default request params', () => {
   const config = new ConfigReader({
     stackoverflow: {
-      baseUrl: 'http://stack.overflow.local',
+      baseUrl: BASE_URL,
     },
   });
 
@@ -293,7 +387,7 @@ describe('StackOverflowQuestionsCollatorFactory using default request params', (
     it('fetches from the configured endpoint', async () => {
       let request;
       worker.use(
-        rest.get('http://stack.overflow.local/questions', (req, res, ctx) => {
+        rest.get(`${BASE_URL}/questions`, (req, res, ctx) => {
           request = req;
 
           return res(ctx.status(200), ctx.json(mockQuestion));
@@ -309,6 +403,7 @@ describe('StackOverflowQuestionsCollatorFactory using default request params', (
 
       const expectedSearch = {
         order: 'desc',
+        site: 'stackoverflow',
         sort: 'activity',
         page: '1',
       };
@@ -319,17 +414,14 @@ describe('StackOverflowQuestionsCollatorFactory using default request params', (
     it('fetches from the overridden endpoint', async () => {
       let request;
       worker.use(
-        rest.get(
-          'http://stack.overflow.override/questions',
-          (req, res, ctx) => {
-            request = req;
-            return res(ctx.status(200), ctx.json(mockOverrideQuestion));
-          },
-        ),
+        rest.get(`${BASE_URL}/questions`, (req, res, ctx) => {
+          request = req;
+          return res(ctx.status(200), ctx.json(mockOverrideQuestion));
+        }),
       );
       const factory = StackOverflowQuestionsCollatorFactory.fromConfig(config, {
         logger,
-        baseUrl: 'http://stack.overflow.override',
+        baseUrl: BASE_URL,
         requestParams: optionsWithCustomRequestParams.requestParams,
       });
       const collator = await factory.getCollator();
@@ -339,6 +431,7 @@ describe('StackOverflowQuestionsCollatorFactory using default request params', (
 
       const expectedSearch = {
         order: 'desc',
+        site: 'stackoverflow',
         sort: 'activity',
         page: '1',
       };
@@ -349,19 +442,16 @@ describe('StackOverflowQuestionsCollatorFactory using default request params', (
     it('uses API key when provided', async () => {
       let request;
       worker.use(
-        rest.get(
-          'http://stack.overflow.override/questions',
-          (req, res, ctx) => {
-            request = req;
-            return req.url.searchParams.get('key') === 'abcdefg'
-              ? res(ctx.status(200), ctx.json(mockOverrideQuestion))
-              : res(ctx.status(401), ctx.json({}));
-          },
-        ),
+        rest.get(`${BASE_URL}/questions`, (req, res, ctx) => {
+          request = req;
+          return req.url.searchParams.get('key') === 'abcdefg'
+            ? res(ctx.status(200), ctx.json(mockOverrideQuestion))
+            : res(ctx.status(401), ctx.json({}));
+        }),
       );
       const factory = StackOverflowQuestionsCollatorFactory.fromConfig(config, {
         logger,
-        baseUrl: 'http://stack.overflow.override',
+        baseUrl: BASE_URL,
         apiKey: 'abcdefg',
         requestParams: optionsWithCustomRequestParams.requestParams,
       });
@@ -373,6 +463,7 @@ describe('StackOverflowQuestionsCollatorFactory using default request params', (
       const expectedSearch = {
         key: 'abcdefg',
         order: 'desc',
+        site: 'stackoverflow',
         sort: 'activity',
         page: '1',
       };
@@ -383,19 +474,16 @@ describe('StackOverflowQuestionsCollatorFactory using default request params', (
     it('uses teamName when provided', async () => {
       let request;
       worker.use(
-        rest.get(
-          'http://stack.overflow.override/questions',
-          (req, res, ctx) => {
-            request = req;
-            return req.url.searchParams.get('team') === 'abcdefg'
-              ? res(ctx.status(200), ctx.json(mockOverrideQuestion))
-              : res(ctx.status(401), ctx.json({}));
-          },
-        ),
+        rest.get(`${BASE_URL}/questions`, (req, res, ctx) => {
+          request = req;
+          return req.url.searchParams.get('team') === 'abcdefg'
+            ? res(ctx.status(200), ctx.json(mockOverrideQuestion))
+            : res(ctx.status(401), ctx.json({}));
+        }),
       );
       const factory = StackOverflowQuestionsCollatorFactory.fromConfig(config, {
         logger,
-        baseUrl: 'http://stack.overflow.override',
+        baseUrl: BASE_URL,
         teamName: 'abcdefg',
         requestParams: optionsWithCustomRequestParams.requestParams,
       });
@@ -407,6 +495,7 @@ describe('StackOverflowQuestionsCollatorFactory using default request params', (
       const expectedSearch = {
         team: 'abcdefg',
         order: 'desc',
+        site: 'stackoverflow',
         sort: 'activity',
         page: '1',
       };
