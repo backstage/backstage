@@ -4,8 +4,7 @@ title: Collators
 description: Indexing you Backstage content with Collators
 ---
 
-You need to be able to search something! Collators are the way to define what
-can be searched. Backstage includes 2 collators out of the box for the [Catalog](#catalog) and [TechDocs](#techdocs). There's also some from the [Backstage Community](#community-collators) too!
+Backstage includes 2 [collators](./concepts.md#collators) out of the box for the [Catalog](#catalog) and [TechDocs](#techdocs). There's also some from the [Backstage Community](#community-collators) too!
 
 ## Catalog
 
