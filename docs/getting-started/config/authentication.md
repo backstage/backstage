@@ -10,7 +10,7 @@ Audience: Admins or Developers
 
 We'll be walking you through how to setup authentication for your Backstage app using Github. After finishing this guide, you'll have both working authentication and users in your Backstage app to match to the users logging in!
 
-There are multiple authentication providers available for you to use with Backstage, feel free to follow [the instructions for adding authentication](../../auth/index.md).
+There are multiple authentication providers available for you to use with Backstage, feel free to follow [their instructions for adding authentication](../../auth/index.md).
 
 :::note Note
 
@@ -20,10 +20,10 @@ The default Backstage app comes with a guest Sign In Resolver. This resolver mak
 
 ## Setting up authentication
 
-For this tutorial we choose to use GitHub, a free service most of you might be familiar with. For other options, see
-[the auth provider documentation](../../auth/github/provider.md#create-an-oauth-app-on-github).
+For this tutorial we choose to use GitHub, a free service most of you might be familiar with, and we'll be using an OAuth app. For detailed options, see
+[the GitHub auth provider documentation](../../auth/github/provider.md#create-an-oauth-app-on-github).
 
-Go to [https://github.com/settings/applications/new](https://github.com/settings/applications/new) to create your OAuth App. The `Homepage URL` should point to Backstage's frontend, in our tutorial it would be `http://localhost:3000`. The `Authorization callback URL` will point to the auth backend, which will most likely be `http://localhost:7007/api/auth/github/handler/frame`.
+Go to [https://github.com/settings/applications/new](https://github.com/settings/applications/new) to create your OAuth App. The "Homepage URL" should point to Backstage's frontend, in our tutorial it would be `http://localhost:3000`. The "Authorization callback URL" will point to the auth backend, which will most likely be `http://localhost:7007/api/auth/github/handler/frame`.
 
 ![Screenshot of the GitHub OAuth creation page](../../assets/getting-started/gh-oauth.png)
 
@@ -43,11 +43,6 @@ auth:
       development:
         clientId: YOUR CLIENT ID
         clientSecret: YOUR CLIENT SECRET
-        signIn:
-          resolvers:
-            # Matches the GitHub username with the Backstage user entity name.
-            # See https://backstage.io/docs/auth/github/provider#resolvers for more resolvers.
-            - resolver: usernameMatchingUserEntityName
     /* highlight-add-end */
 ```
 
@@ -80,6 +75,34 @@ components: {
 },
 ```
 
+## Add sign-in resolver(s)
+
+Next we need to add the sign-in resolver to our configuration. Here's how:
+
+```yaml title="app-config.yaml"
+auth:
+  # see https://backstage.io/docs/auth/ to learn about auth providers
+  environment: development
+  providers:
+    # See https://backstage.io/docs/auth/guest/provider
+    guest: {}
+    github:
+      development:
+        clientId: YOUR CLIENT ID
+        clientSecret: YOUR CLIENT SECRET
+        /* highlight-add-start */
+        signIn:
+          resolvers:
+            # Matches the GitHub username with the Backstage user entity name.
+            # See https://backstage.io/docs/auth/github/provider#resolvers for more resolvers.
+            - resolver: usernameMatchingUserEntityName
+        /* highlight-add-end */
+```
+
+What this will do is take the user details provided by the auth provider and match that against a User in the Catalog. In this case - `usernameMatchingUserEntityName` - will match the GitHub user name with the `metadata.name` value of a User in the Catalog, if none is found you will get an "Failed to sign-in, unable to resolve user identity" message. We'll cover this in the next few sections.
+
+Learn more about this topic in the [Sign-in Resolvers](../../auth/identity-resolver.md#sign-in-resolvers) documentation.
+
 ## Add the auth provider to the backend
 
 To add the auth provider to the backend, we will first need to install the package by running this command:
@@ -107,13 +130,11 @@ Sometimes the frontend starts before the backend resulting in errors on the sign
 
 ## Adding a User
 
-As part of the authentication process it will try to match details from the Auth Provider User Profile to User in your Catalog. This is what the `resolver` in the config we added to the `app-config.yaml` in the "[Setting up authentication](#setting-up-authentication)" section is doing.
-
 The recommended approach for adding Users, and Groups, into your Catalog is to use one of the existing Org Entity Providers - [like this one for GitHub](https://backstage.io/docs/integrations/github/org) - or if those don't work you may need to [create one](https://backstage.io/docs/features/software-catalog/external-integrations#custom-entity-providers) that fits your Organization's needs.
 
 For the sake of this guide we'll simply step you though adding a User to the `org.yaml` file that is included when you create a new Backstage instance. Let's do that:
 
-1. Fist open the `/examples/org.yaml` file in your text editor of choice
+1. First open the `/examples/org.yaml` file in your text editor of choice
 2. At the bottom we'll add the following YAML:
 
    ```yaml
@@ -146,7 +167,7 @@ Create your Personal Access Token by opening [the GitHub token creation page](ht
 
 Set the scope to your likings. For this tutorial, selecting `repo` and `workflow` is required as the scaffolding job in this guide configures a GitHub actions workflow for the newly created project.
 
-For this tutorial, we will be writing the token to `app-config.local.yaml`. This file might not exist for you, so if it doesn't go ahead and create it alongside the `app-config.yaml` at the root of the project. This file should also be excluded in `.gitignore`, to avoid accidental committing of this file.
+For this tutorial, we will be writing the token to `app-config.local.yaml`. This file might not exist for you, so if it doesn't go ahead and create it alongside the `app-config.yaml` at the root of the project. This file should also be excluded in `.gitignore`, to avoid accidental committing of this file. More details on this file can be found in the [Static Configuration documentation](../../conf/index.md).
 
 In your `app-config.local.yaml` go ahead and add the following:
 
