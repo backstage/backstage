@@ -75,7 +75,7 @@ This interface defines the information related to the actor who triggered the lo
 
 ```ts
 export type ActorDetails = {
-  actorId: string | null;
+  actorId?: string;
   ip?: string;
   hostname?: string;
   userAgent?: string;
@@ -88,16 +88,12 @@ These interfaces define the structure of request and response data that might be
 
 ```ts
 export type AuditRequest = {
-  body: any;
   url: string;
   method: string;
-  params?: any;
-  query?: any;
 };
 
 export type AuditResponse = {
   status: number;
-  body?: any;
 };
 ```
 
@@ -114,20 +110,12 @@ export type AuditEventSuccessStatus = { status: 'succeeded' };
 /**
  * Indicates the event failed and includes details about the encountered errors.
  */
-export type AuditEventFailureStatus = {
+export type AuditEventFailureStatus<E = ErrorLike> = {
   status: 'failed';
-  errors: ErrorLike[];
+  errors: E;
 };
 
-/**
- * Indicates the event failed with errors that don't perfectly fit the expected structure.
- */
-export type AuditEventUnknownFailureStatus = {
-  status: 'failed';
-  errors: unknown[];
-};
-
-export type AuditEventStatus = AuditEventSuccessStatus | AuditEventFailureStatus;
+export type AuditEventStatus = AuditEventSuccessStatus | AuditEventFailureStatus | undefined;
 ```
 
 #### EventAuditor Interface
@@ -139,45 +127,28 @@ This interface defines the functionalities of an `EventAuditor` class. This clas
 
 ```ts
 /**
- * Common fields of an audit event. Note: timestamp and pluginId are automatically added at event creation.
+ * Common fields of an audit event.
  *
  * @public
  */
-export type AuditEventDetails = {
-  actor: ActorDetails;
-  eventName: string;
-  stage: string;
-  request?: AuditRequest;
-  response?: AuditResponse;
-  meta: JsonValue;
-  isAuditEvent: true;
-} & AuditEventStatus;
-
-export type AuditEventDetailsOptions = {
-  eventName: string;
-  stage: string;
-  metadata?: JsonValue;
-  response?: AuditResponse;
-  actorId?: string;
-  request?: Request;
-} & (AuditEventSuccessStatus | AuditEventUnknownFailureStatus);
-
-export type AuditEventOptions = {
+export type AuditEventOptions = AuditEventStatus & {
   eventName: string;
   message: string;
   stage: string;
   level?: 'info' | 'debug' | 'warn' | 'error';
-  actorId?: string;
   metadata?: JsonValue;
   response?: AuditResponse;
   request?: Request;
-} & (AuditEventSuccessStatus | AuditEventUnknownFailureStatus);
+} & ({ actorId: string; } | { credentials: BackstageCredentials } | undefined);
 
-export type EventAuditorOptions = {
-  logger: LoggerService;
-  authService: AuthService;
-  httpAuthService: HttpAuthService;
-};
+export type AuditEvent = {
+  actor: ActorDetails;
+  eventName: string;
+  stage: string;
+  isAuditLog: true;
+  request?: AuditRequest;
+  response?: AuditResponse;
+} & AuditLogStatus;
 
 export interface EventAuditor {
   /**
@@ -186,16 +157,6 @@ export interface EventAuditor {
    * @public
    */
   getActorId(request?: Request): Promise<string | undefined>;
-
-  /**
-   * Generates the audit event details to place in the metadata argument of the logger
-   *
-   * Secrets in the metadata field and request body, params and query field should be redacted by the user before passing in the request object
-   * @public
-   */
-  createAuditEventDetails(
-    options: AuditEventDetailsOptions,
-  ): Promise<AuditEventDetails>;
 
   /**
    * Generates an Audit Event and logs it at the level passed by the user.
