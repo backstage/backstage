@@ -19,26 +19,4 @@
  *
  * @packageDocumentation
  */
-
-export { IndexBuilder } from './IndexBuilder';
-export { Scheduler } from './Scheduler';
-export * from './collators';
-export { LunrSearchEngine } from './engines';
-export type {
-  ConcreteLunrQuery,
-  LunrQueryTranslator,
-  LunrSearchEngineIndexer,
-} from './engines';
-export type {
-  IndexBuilderOptions,
-  RegisterCollatorParameters,
-  RegisterDecoratorParameters,
-  SearchEngine,
-  QueryRequestOptions,
-  QueryTranslator,
-} from './types';
-export * from './errors';
-export * from './indexing';
-export * from './test-utils';
-
-export type { ScheduleTaskParameters } from './Scheduler';
+export * from '@backstage/plugin-search-node';

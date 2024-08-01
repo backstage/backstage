@@ -7,7 +7,8 @@
     "pluginId": "search-backend",
     "pluginPackages": [
       "@backstage/plugin-search-backend-node"
-    ]
+    ],
+    "moved": "@backstage/plugin-search-node"
   },
   "publishConfig": {
     "access": "public"
@@ -49,23 +50,9 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/backend-common": "workspace:^",
-    "@backstage/backend-plugin-api": "workspace:^",
-    "@backstage/backend-tasks": "workspace:^",
-    "@backstage/config": "workspace:^",
-    "@backstage/errors": "workspace:^",
-    "@backstage/plugin-permission-common": "workspace:^",
-    "@backstage/plugin-search-common": "workspace:^",
-    "@types/lunr": "^2.3.3",
-    "lodash": "^4.17.21",
-    "lunr": "^2.3.9",
-    "ndjson": "^2.0.0",
-    "uuid": "^9.0.0"
+    "@backstage/plugin-search-node": "workspace:^"
   },
   "devDependencies": {
-    "@backstage/backend-common": "workspace:^",
-    "@backstage/backend-test-utils": "workspace:^",
-    "@backstage/cli": "workspace:^",
-    "@types/ndjson": "^2.0.1"
+    "@backstage/cli": "workspace:^"
   }
 }
