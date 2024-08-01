@@ -28,7 +28,7 @@ import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { Router } from 'express';
-import { ServiceFactory } from '@backstage/backend-plugin-api';
+import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 import { TaskRunner } from '@backstage/backend-tasks';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
@@ -114,18 +114,20 @@ export interface DynamicPluginsFactoryOptions {
 }
 
 // @public (undocumented)
-export const dynamicPluginsFeatureDiscoveryServiceFactory: () => ServiceFactory<
+export const dynamicPluginsFeatureDiscoveryServiceFactory: ServiceFactoryCompat<
   FeatureDiscoveryService,
-  'root'
+  'root',
+  undefined
 >;
 
 // @public (undocumented)
 export const dynamicPluginsFrontendSchemas: BackendFeatureCompat;
 
 // @public (undocumented)
-export const dynamicPluginsRootLoggerServiceFactory: () => ServiceFactory<
+export const dynamicPluginsRootLoggerServiceFactory: ServiceFactoryCompat<
   RootLoggerService,
-  'root'
+  'root',
+  undefined
 >;
 
 // @public (undocumented)
@@ -142,14 +144,18 @@ export interface DynamicPluginsSchemasService {
 }
 
 // @public (undocumented)
-export const dynamicPluginsSchemasServiceFactory: (
-  options?: DynamicPluginsSchemasOptions | undefined,
-) => ServiceFactory<DynamicPluginsSchemasService, 'root'>;
+export const dynamicPluginsSchemasServiceFactory: ServiceFactoryCompat<
+  DynamicPluginsSchemasService,
+  'root',
+  DynamicPluginsSchemasOptions
+>;
 
 // @public (undocumented)
-export const dynamicPluginsServiceFactory: (
-  options?: DynamicPluginsFactoryOptions | undefined,
-) => ServiceFactory<DynamicPluginProvider, 'root'>;
+export const dynamicPluginsServiceFactory: ServiceFactoryCompat<
+  DynamicPluginProvider,
+  'root',
+  DynamicPluginsFactoryOptions
+>;
 
 // @public (undocumented)
 export const dynamicPluginsServiceRef: ServiceRef<

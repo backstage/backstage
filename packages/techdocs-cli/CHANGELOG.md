@@ -1,5 +1,50 @@
 # @techdocs/cli
 
+## 1.8.17-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.12.9-next.1
+  - @backstage/backend-defaults@0.4.2-next.1
+  - @backstage/catalog-model@1.5.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+
+## 1.8.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.4.2-next.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/plugin-techdocs-node@1.12.9-next.0
+
+## 1.8.16
+
+### Patch Changes
+
+- c964a3d: Import discovery from backend-defaults instead of backend-common
+- Updated dependencies
+  - @backstage/backend-defaults@0.4.0
+  - @backstage/plugin-techdocs-node@1.12.8
+  - @backstage/catalog-model@1.5.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+
+## 1.8.16-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.12.8-next.1
+  - @backstage/backend-defaults@0.3.4-next.1
+  - @backstage/catalog-model@1.5.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+
 ## 1.8.15-next.0
 
 ### Patch Changes

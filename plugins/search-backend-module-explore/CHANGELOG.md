@@ -1,5 +1,54 @@
 # @backstage/plugin-search-backend-module-explore
 
+## 0.1.29-next.1
+
+### Patch Changes
+
+- 93fc1a0: Updated dependency `@backstage-community/plugin-explore-common` to `^0.0.4`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/backend-common@0.23.4-next.1
+  - @backstage/plugin-search-backend-node@1.2.28-next.1
+  - @backstage/plugin-search-common@1.2.14-next.0
+  - @backstage/backend-tasks@0.5.28-next.1
+  - @backstage/config@1.2.0
+
+## 0.1.29-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.23.4-next.0
+  - @backstage/backend-plugin-api@0.7.1-next.0
+  - @backstage/backend-tasks@0.5.28-next.0
+  - @backstage/config@1.2.0
+  - @backstage/plugin-search-backend-node@1.2.28-next.0
+  - @backstage/plugin-search-common@1.2.13
+
+## 0.1.28
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/backend-common@0.23.3
+  - @backstage/backend-tasks@0.5.27
+  - @backstage/plugin-search-backend-node@1.2.27
+  - @backstage/plugin-search-common@1.2.13
+  - @backstage/config@1.2.0
+
+## 0.1.28-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.23.3-next.1
+  - @backstage/backend-plugin-api@0.6.22-next.1
+  - @backstage/backend-tasks@0.5.27-next.1
+  - @backstage/config@1.2.0
+  - @backstage/plugin-search-backend-node@1.2.27-next.1
+  - @backstage/plugin-search-common@1.2.12
+
 ## 0.1.27-next.0
 
 ### Patch Changes

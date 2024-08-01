@@ -1,5 +1,53 @@
 # @backstage/repo-tools
 
+## 0.9.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.9.0-next.1
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/catalog-model@1.5.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.7
+  - @backstage/errors@1.2.4
+
+## 0.9.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.8.2-next.0
+  - @backstage/backend-plugin-api@0.7.1-next.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.7
+  - @backstage/errors@1.2.4
+
+## 0.9.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/cli-node@0.2.7
+  - @backstage/config-loader@1.8.1
+  - @backstage/catalog-model@1.5.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/errors@1.2.4
+
+## 0.9.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.22-next.1
+  - @backstage/catalog-model@1.5.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.6
+  - @backstage/config-loader@1.8.1
+  - @backstage/errors@1.2.4
+
 ## 0.9.3-next.0
 
 ### Patch Changes

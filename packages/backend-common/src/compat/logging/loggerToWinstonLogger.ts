@@ -53,7 +53,10 @@ class BackstageLoggerTransport extends Transport {
   }
 }
 
-/** @public */
+/**
+ * @public
+ * @deprecated Migrate to use the new LoggerService instead.
+ */
 export function loggerToWinstonLogger(
   logger: LoggerService,
   opts?: TransportStreamOptions,

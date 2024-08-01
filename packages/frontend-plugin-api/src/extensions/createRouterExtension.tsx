@@ -77,8 +77,7 @@ export function createRouterExtension<
 
 /** @public */
 export namespace createRouterExtension {
-  export const componentDataRef =
-    createExtensionDataRef<ComponentType<PropsWithChildren<{}>>>(
-      'app.router.wrapper',
-    );
+  export const componentDataRef = createExtensionDataRef<
+    ComponentType<PropsWithChildren<{}>>
+  >().with({ id: 'app.router.wrapper' });
 }

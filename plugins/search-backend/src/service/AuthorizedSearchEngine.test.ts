@@ -32,6 +32,7 @@ import {
   decodePageCursor,
   AuthorizedSearchEngine,
 } from './AuthorizedSearchEngine';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 
 describe('AuthorizedSearchEngine', () => {
   const typeUsers = 'users';
@@ -117,10 +118,11 @@ describe('AuthorizedSearchEngine', () => {
     searchEngine,
     defaultTypes,
     permissionEvaluator,
+    mockServices.auth(),
     new ConfigReader({}),
   );
 
-  const options = { token: 'token' };
+  const options = { credentials: mockCredentials.user() };
 
   const allowAll: PermissionEvaluator['authorize'] &
     PermissionEvaluator['authorizeConditional'] = async queries => {
@@ -149,7 +151,7 @@ describe('AuthorizedSearchEngine', () => {
         types: ['one', 'two'],
         filters,
       },
-      { token: 'token' },
+      options,
     );
   });
 
@@ -160,7 +162,18 @@ describe('AuthorizedSearchEngine', () => {
     await authorizedSearchEngine.query({ term: '' }, options);
     expect(mockedQuery).toHaveBeenCalledWith(
       { term: '', types: ['users', 'templates', 'services', 'groups'] },
-      { token: 'token' },
+      options,
+    );
+  });
+
+  it('should fall back to none credentials if a token is provided', async () => {
+    mockedQuery.mockImplementation(async () => ({ results }));
+    mockedPermissionQuery.mockImplementation(allowAll);
+
+    await authorizedSearchEngine.query({ term: '' }, { token: 'token' });
+    expect(mockedQuery).toHaveBeenCalledWith(
+      { term: '', types: ['users', 'templates', 'services', 'groups'] },
+      { credentials: mockCredentials.none() },
     );
   });
 
@@ -184,7 +197,7 @@ describe('AuthorizedSearchEngine', () => {
     );
     expect(mockedQuery).toHaveBeenCalledWith(
       { term: '', types: ['users', 'templates'] },
-      { token: 'token' },
+      options,
     );
     expect(mockedPermissionQuery).toHaveBeenCalledTimes(1);
     expect(mockedPermissionQuery).toHaveBeenLastCalledWith(
@@ -192,7 +205,7 @@ describe('AuthorizedSearchEngine', () => {
         { permission: defaultTypes[typeUsers].visibilityPermission },
         { permission: defaultTypes[typeTemplates].visibilityPermission },
       ],
-      { token: 'token' },
+      options,
     );
   });
 
@@ -218,7 +231,7 @@ describe('AuthorizedSearchEngine', () => {
 
     expect(mockedQuery).toHaveBeenCalledWith(
       { term: '', types: ['templates', 'services', 'groups'] },
-      { token: 'token' },
+      options,
     );
 
     expect(mockedPermissionQuery).toHaveBeenCalledTimes(1);
@@ -270,7 +283,7 @@ describe('AuthorizedSearchEngine', () => {
 
     expect(mockedQuery).toHaveBeenCalledWith(
       { term: '', types: ['users'] },
-      { token: 'token' },
+      options,
     );
   });
 
@@ -326,7 +339,7 @@ describe('AuthorizedSearchEngine', () => {
           }),
         },
       ],
-      { token: 'token' },
+      options,
     );
     expect(mockedAuthorize).toHaveBeenCalledTimes(1);
     expect(mockedAuthorize).toHaveBeenCalledWith(
@@ -338,7 +351,7 @@ describe('AuthorizedSearchEngine', () => {
           resourceRef: 'template_doc_0',
         },
       ],
-      { token: 'token' },
+      options,
     );
   });
 
@@ -403,7 +416,7 @@ describe('AuthorizedSearchEngine', () => {
     expect(mockedQuery).toHaveBeenNthCalledWith(
       1,
       { term: '', types: ['users', 'templates', 'services'] },
-      { token: 'token' },
+      options,
     );
     expect(mockedQuery).toHaveBeenNthCalledWith(
       2,
@@ -412,7 +425,7 @@ describe('AuthorizedSearchEngine', () => {
         types: ['users', 'templates', 'services'],
         pageCursor: 'MQ==',
       },
-      { token: 'token' },
+      options,
     );
     expect(mockedQuery).toHaveBeenNthCalledWith(
       3,
@@ -421,7 +434,7 @@ describe('AuthorizedSearchEngine', () => {
         types: ['users', 'templates', 'services'],
         pageCursor: 'Mg==',
       },
-      { token: 'token' },
+      options,
     );
 
     const expectedResult = allDocuments
@@ -494,7 +507,7 @@ describe('AuthorizedSearchEngine', () => {
     expect(mockedQuery).toHaveBeenNthCalledWith(
       1,
       { term: '', types: ['users', 'templates', 'services', 'groups'] },
-      { token: 'token' },
+      options,
     );
     expect(mockedQuery).toHaveBeenNthCalledWith(
       2,
@@ -503,7 +516,7 @@ describe('AuthorizedSearchEngine', () => {
         types: ['users', 'templates', 'services', 'groups'],
         pageCursor: 'MQ==',
       },
-      { token: 'token' },
+      options,
     );
     expect(mockedQuery).toHaveBeenNthCalledWith(
       3,
@@ -512,7 +525,7 @@ describe('AuthorizedSearchEngine', () => {
         types: ['users', 'templates', 'services', 'groups'],
         pageCursor: 'Mg==',
       },
-      { token: 'token' },
+      options,
     );
 
     const expectedResult = allDocuments
@@ -574,7 +587,7 @@ describe('AuthorizedSearchEngine', () => {
     expect(mockedQuery).toHaveBeenNthCalledWith(
       1,
       { term: '', types: ['users', 'templates', 'services'] },
-      { token: 'token' },
+      options,
     );
     expect(mockedQuery).toHaveBeenNthCalledWith(
       2,
@@ -583,7 +596,7 @@ describe('AuthorizedSearchEngine', () => {
         types: ['users', 'templates', 'services'],
         pageCursor: 'MQ==',
       },
-      { token: 'token' },
+      options,
     );
     expect(mockedQuery).toHaveBeenNthCalledWith(
       3,
@@ -592,7 +605,7 @@ describe('AuthorizedSearchEngine', () => {
         types: ['users', 'templates', 'services'],
         pageCursor: 'Mg==',
       },
-      { token: 'token' },
+      options,
     );
 
     const expectedResults = servicesWithAuth

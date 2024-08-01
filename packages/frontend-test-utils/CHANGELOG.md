@@ -1,5 +1,56 @@
 # @backstage/frontend-test-utils
 
+## 0.1.12-next.1
+
+### Patch Changes
+
+- 3be9aeb: Added support for v2 extensions, which declare their inputs and outputs without using a data map.
+- 6349099: Added config input type to the extensions
+- Updated dependencies
+  - @backstage/frontend-app-api@0.7.5-next.1
+  - @backstage/frontend-plugin-api@0.6.8-next.1
+  - @backstage/test-utils@1.5.10-next.1
+  - @backstage/types@1.1.1
+
+## 0.1.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.8-next.0
+  - @backstage/frontend-app-api@0.7.4-next.0
+  - @backstage/test-utils@1.5.9-next.0
+  - @backstage/types@1.1.1
+
+## 0.1.10
+
+### Patch Changes
+
+- 95a3a0b: Rename frontend and backend `setupRequestMockHandlers` methods to `registerMswTestHooks`.
+- Updated dependencies
+  - @backstage/frontend-app-api@0.7.3
+  - @backstage/test-utils@1.5.8
+  - @backstage/frontend-plugin-api@0.6.7
+  - @backstage/types@1.1.1
+
+## 0.1.10-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-app-api@0.7.3-next.2
+  - @backstage/frontend-plugin-api@0.6.7-next.1
+
+## 0.1.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-app-api@0.7.3-next.1
+  - @backstage/test-utils@1.5.8-next.1
+  - @backstage/frontend-plugin-api@0.6.7-next.0
+  - @backstage/types@1.1.1
+
 ## 0.1.9-next.0
 
 ### Patch Changes

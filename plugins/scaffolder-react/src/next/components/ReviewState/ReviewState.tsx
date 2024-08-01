@@ -15,9 +15,10 @@
  */
 import React from 'react';
 import { StructuredMetadataTable } from '@backstage/core-components';
-import { JsonObject } from '@backstage/types';
+import { JsonObject, JsonValue } from '@backstage/types';
 import { Draft07 as JSONSchema } from 'json-schema-library';
 import { ParsedTemplateSchema } from '../../hooks/useTemplateSchema';
+import { isJsonObject, getLastKey } from './util';
 
 /**
  * The props for the {@link ReviewState} component.
@@ -28,6 +29,55 @@ export type ReviewStateProps = {
   formState: JsonObject;
 };
 
+function processSchema(
+  key: string,
+  value: JsonValue | undefined,
+  schema: ParsedTemplateSchema,
+  formState: JsonObject,
+): [string, JsonValue | undefined][] {
+  const parsedSchema = new JSONSchema(schema.mergedSchema);
+  const definitionInSchema = parsedSchema.getSchema({
+    pointer: `#/${key}`,
+    data: formState,
+  });
+
+  if (definitionInSchema) {
+    const backstageReviewOptions = definitionInSchema['ui:backstage']?.review;
+    if (backstageReviewOptions) {
+      if (backstageReviewOptions.mask) {
+        return [[getLastKey(key), backstageReviewOptions.mask]];
+      }
+      if (backstageReviewOptions.show === false) {
+        return [];
+      }
+    }
+
+    if (definitionInSchema['ui:widget'] === 'password') {
+      return [[getLastKey(key), '******']];
+    }
+
+    if (definitionInSchema.enum && definitionInSchema.enumNames) {
+      return [
+        [
+          getLastKey(key),
+          definitionInSchema.enumNames[
+            definitionInSchema.enum.indexOf(value)
+          ] || value,
+        ],
+      ];
+    }
+
+    if (backstageReviewOptions?.explode !== false && isJsonObject(value)) {
+      // Recurse nested objects
+      return Object.entries(value).flatMap(([nestedKey, nestedValue]) =>
+        processSchema(`${key}/${nestedKey}`, nestedValue, schema, formState),
+      );
+    }
+  }
+
+  return [[getLastKey(key), value]];
+}
+
 /**
  * The component used by the {@link Stepper} to render the review step.
  * @alpha
@@ -35,42 +85,11 @@ export type ReviewStateProps = {
 export const ReviewState = (props: ReviewStateProps) => {
   const reviewData = Object.fromEntries(
     Object.entries(props.formState)
-      .map(([key, value]) => {
+      .flatMap(([key, value]) => {
         for (const step of props.schemas) {
-          const parsedSchema = new JSONSchema(step.mergedSchema);
-          const definitionInSchema = parsedSchema.getSchema({
-            pointer: `#/${key}`,
-            data: props.formState,
-          });
-
-          if (definitionInSchema) {
-            const backstageReviewOptions =
-              definitionInSchema['ui:backstage']?.review;
-
-            if (backstageReviewOptions) {
-              if (backstageReviewOptions.mask) {
-                return [key, backstageReviewOptions.mask];
-              }
-              if (backstageReviewOptions.show === false) {
-                return [];
-              }
-            }
-
-            if (definitionInSchema['ui:widget'] === 'password') {
-              return [key, '******'];
-            }
-
-            if (definitionInSchema.enum && definitionInSchema.enumNames) {
-              return [
-                key,
-                definitionInSchema.enumNames[
-                  definitionInSchema.enum.indexOf(value)
-                ] || value,
-              ];
-            }
-          }
+          return processSchema(key, value, step, props.formState);
         }
-        return [key, value];
+        return [[key, value]];
       })
       .filter(prop => prop.length > 0),
   );

@@ -1,5 +1,47 @@
 # @backstage/plugin-scaffolder-node-test-utils
 
+## 0.1.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.23.4-next.1
+  - @backstage/backend-test-utils@0.4.5-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-node@0.4.9-next.1
+
+## 0.1.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.23.4-next.0
+  - @backstage/backend-test-utils@0.4.5-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-node@0.4.9-next.0
+
+## 0.1.9
+
+### Patch Changes
+
+- 54429b5: Filename and imports correction for mockActionContext.ts
+- Updated dependencies
+  - @backstage/backend-test-utils@0.4.4
+  - @backstage/backend-common@0.23.3
+  - @backstage/plugin-scaffolder-node@0.4.8
+  - @backstage/types@1.1.1
+
+## 0.1.9-next.1
+
+### Patch Changes
+
+- 54429b5: Filename and imports correction for mockActionContext.ts
+- Updated dependencies
+  - @backstage/backend-test-utils@0.4.4-next.1
+  - @backstage/backend-common@0.23.3-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-node@0.4.8-next.1
+
 ## 0.1.8-next.0
 
 ### Patch Changes

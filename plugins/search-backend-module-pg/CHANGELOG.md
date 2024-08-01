@@ -1,5 +1,52 @@
 # @backstage/plugin-search-backend-module-pg
 
+## 0.5.33-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/backend-common@0.23.4-next.1
+  - @backstage/plugin-search-backend-node@1.2.28-next.1
+  - @backstage/plugin-search-common@1.2.14-next.0
+  - @backstage/config@1.2.0
+
+## 0.5.33-next.0
+
+### Patch Changes
+
+- 7251567: Removing `@backstage/backend-app-api` dependency
+- Updated dependencies
+  - @backstage/backend-common@0.23.4-next.0
+  - @backstage/backend-plugin-api@0.7.1-next.0
+  - @backstage/config@1.2.0
+  - @backstage/plugin-search-backend-node@1.2.28-next.0
+  - @backstage/plugin-search-common@1.2.13
+
+## 0.5.32
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/backend-app-api@0.8.0
+  - @backstage/backend-common@0.23.3
+  - @backstage/plugin-search-backend-node@1.2.27
+  - @backstage/plugin-search-common@1.2.13
+  - @backstage/config@1.2.0
+
+## 0.5.32-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.23.3-next.1
+  - @backstage/backend-app-api@0.7.10-next.1
+  - @backstage/backend-plugin-api@0.6.22-next.1
+  - @backstage/config@1.2.0
+  - @backstage/plugin-search-backend-node@1.2.27-next.1
+  - @backstage/plugin-search-common@1.2.12
+
 ## 0.5.31-next.0
 
 ### Patch Changes

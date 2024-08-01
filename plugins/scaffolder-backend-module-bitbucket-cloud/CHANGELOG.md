@@ -1,5 +1,54 @@
 # @backstage/plugin-scaffolder-backend-module-bitbucket-cloud
 
+## 0.1.13-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-bitbucket-cloud-common@0.2.22-next.0
+  - @backstage/plugin-scaffolder-node@0.4.9-next.1
+
+## 0.1.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/backend-plugin-api@0.7.1-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-bitbucket-cloud-common@0.2.22-next.0
+  - @backstage/plugin-scaffolder-node@0.4.9-next.0
+
+## 0.1.12
+
+### Patch Changes
+
+- b5deed0: Add support for `autocomplete` handler to provide autocomplete options for `RepoUrlPicker`
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/integration@1.13.0
+  - @backstage/plugin-scaffolder-node@0.4.8
+  - @backstage/plugin-bitbucket-cloud-common@0.2.21
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 0.1.12-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.22-next.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.13.0-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.21-next.0
+  - @backstage/plugin-scaffolder-node@0.4.8-next.1
+
 ## 0.1.11-next.0
 
 ### Patch Changes

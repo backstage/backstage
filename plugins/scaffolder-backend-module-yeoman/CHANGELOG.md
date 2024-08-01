@@ -1,5 +1,45 @@
 # @backstage/plugin-scaffolder-backend-module-yeoman
 
+## 0.3.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-node@0.4.9-next.1
+  - @backstage/plugin-scaffolder-node-test-utils@0.1.10-next.1
+
+## 0.3.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-node@0.4.9-next.0
+  - @backstage/plugin-scaffolder-node-test-utils@0.1.10-next.0
+
+## 0.3.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/plugin-scaffolder-node@0.4.8
+  - @backstage/plugin-scaffolder-node-test-utils@0.1.9
+  - @backstage/types@1.1.1
+
+## 0.3.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node-test-utils@0.1.9-next.1
+  - @backstage/backend-plugin-api@0.6.22-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-node@0.4.8-next.1
+
 ## 0.3.5-next.0
 
 ### Patch Changes

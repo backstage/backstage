@@ -1,5 +1,125 @@
 # @backstage/plugin-auth-backend
 
+## 0.22.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend-module-cloudflare-access-provider@0.1.6-next.1
+  - @backstage/plugin-auth-backend-module-atlassian-provider@0.2.4-next.1
+  - @backstage/plugin-auth-backend-module-bitbucket-provider@0.1.6-next.1
+  - @backstage/plugin-auth-backend-module-microsoft-provider@0.1.18-next.1
+  - @backstage/plugin-auth-backend-module-onelogin-provider@0.1.4-next.1
+  - @backstage/plugin-auth-backend-module-aws-alb-provider@0.1.15-next.1
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.18-next.1
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.20-next.1
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.20-next.1
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.20-next.1
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.2.4-next.1
+  - @backstage/plugin-auth-backend-module-oidc-provider@0.2.4-next.1
+  - @backstage/plugin-auth-backend-module-okta-provider@0.0.16-next.1
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/backend-common@0.23.4-next.1
+  - @backstage/plugin-catalog-node@1.12.5-next.1
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-backend-module-azure-easyauth-provider@0.1.6-next.1
+  - @backstage/plugin-auth-backend-module-oauth2-proxy-provider@0.1.16-next.1
+  - @backstage/plugin-auth-node@0.4.18-next.1
+
+## 0.22.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.23.4-next.0
+  - @backstage/plugin-catalog-node@1.12.5-next.0
+  - @backstage/plugin-auth-backend-module-microsoft-provider@0.1.18-next.0
+  - @backstage/backend-plugin-api@0.7.1-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-backend-module-atlassian-provider@0.2.4-next.0
+  - @backstage/plugin-auth-backend-module-aws-alb-provider@0.1.15-next.0
+  - @backstage/plugin-auth-backend-module-azure-easyauth-provider@0.1.6-next.0
+  - @backstage/plugin-auth-backend-module-bitbucket-provider@0.1.6-next.0
+  - @backstage/plugin-auth-backend-module-cloudflare-access-provider@0.1.6-next.0
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.18-next.0
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.20-next.0
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.20-next.0
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.20-next.0
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.2.4-next.0
+  - @backstage/plugin-auth-backend-module-oauth2-proxy-provider@0.1.16-next.0
+  - @backstage/plugin-auth-backend-module-oidc-provider@0.2.4-next.0
+  - @backstage/plugin-auth-backend-module-okta-provider@0.0.16-next.0
+  - @backstage/plugin-auth-backend-module-onelogin-provider@0.1.4-next.0
+  - @backstage/plugin-auth-node@0.4.18-next.0
+
+## 0.22.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/plugin-auth-backend-module-atlassian-provider@0.2.3
+  - @backstage/backend-common@0.23.3
+  - @backstage/plugin-auth-node@0.4.17
+  - @backstage/plugin-auth-backend-module-aws-alb-provider@0.1.14
+  - @backstage/plugin-auth-backend-module-azure-easyauth-provider@0.1.5
+  - @backstage/plugin-auth-backend-module-bitbucket-provider@0.1.5
+  - @backstage/plugin-auth-backend-module-cloudflare-access-provider@0.1.5
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.17
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.19
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.19
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.19
+  - @backstage/plugin-auth-backend-module-microsoft-provider@0.1.17
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.2.3
+  - @backstage/plugin-auth-backend-module-oauth2-proxy-provider@0.1.15
+  - @backstage/plugin-auth-backend-module-oidc-provider@0.2.3
+  - @backstage/plugin-auth-backend-module-okta-provider@0.0.15
+  - @backstage/plugin-auth-backend-module-onelogin-provider@0.1.3
+  - @backstage/plugin-catalog-node@1.12.4
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.22.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.23.3-next.1
+  - @backstage/backend-plugin-api@0.6.22-next.1
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-backend-module-atlassian-provider@0.2.3-next.1
+  - @backstage/plugin-auth-backend-module-aws-alb-provider@0.1.14-next.1
+  - @backstage/plugin-auth-backend-module-azure-easyauth-provider@0.1.5-next.1
+  - @backstage/plugin-auth-backend-module-bitbucket-provider@0.1.5-next.1
+  - @backstage/plugin-auth-backend-module-cloudflare-access-provider@0.1.5-next.1
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.17-next.1
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.19-next.1
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.19-next.1
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.19-next.1
+  - @backstage/plugin-auth-backend-module-microsoft-provider@0.1.17-next.1
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.2.3-next.1
+  - @backstage/plugin-auth-backend-module-oauth2-proxy-provider@0.1.15-next.1
+  - @backstage/plugin-auth-backend-module-oidc-provider@0.2.3-next.1
+  - @backstage/plugin-auth-backend-module-okta-provider@0.0.15-next.1
+  - @backstage/plugin-auth-backend-module-onelogin-provider@0.1.3-next.1
+  - @backstage/plugin-auth-node@0.4.17-next.1
+  - @backstage/plugin-catalog-node@1.12.4-next.1
+
 ## 0.22.8-next.0
 
 ### Patch Changes

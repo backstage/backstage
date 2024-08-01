@@ -1,5 +1,87 @@
 # @backstage/backend-common
 
+## 0.23.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.9.0-next.1
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/backend-dev-utils@0.1.4
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.18-next.1
+
+## 0.23.4-next.0
+
+### Patch Changes
+
+- ba8571e: Setup user agent header for AWS sdk clients, this enables users to better track API calls made from Backstage to AWS APIs through things like CloudTrail.
+- 7e13b7a: The remaining exports in the package have now been deprecated:
+
+  - `cacheToPluginCacheManager`
+  - `createLegacyAuthAdapters`
+  - `LegacyCreateRouter`
+  - `legacyPlugin`
+  - `loggerToWinstonLogger`
+  - `makeLegacyPlugin`
+
+  Users of these export should fully [migrate to the new backend system](https://backstage.io/docs/backend-system/building-backends/migrating).
+
+- Updated dependencies
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/config-loader@1.8.2-next.0
+  - @backstage/backend-dev-utils@0.1.4
+  - @backstage/backend-plugin-api@0.7.1-next.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.18-next.0
+
+## 0.23.3
+
+### Patch Changes
+
+- 8c09c97: Deprecate legacy status check factory, handler and types.
+- d228862: Update default backend plugin created by the cli to use non-deprecated error handling middleware
+- c964a3d: Add dependencies that are needed by cross-imports from backend-defaults
+- b60db08: Fixing exporting of classes properly from new packages
+- b9ed1bb: bumped better-sqlite3 from ^9.0.0 to ^11.0.0
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/integration@1.13.0
+  - @backstage/plugin-auth-node@0.4.17
+  - @backstage/config-loader@1.8.1
+  - @backstage/backend-dev-utils@0.1.4
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+
+## 0.23.3-next.1
+
+### Patch Changes
+
+- b9ed1bb: bumped better-sqlite3 from ^9.0.0 to ^11.0.0
+- Updated dependencies
+  - @backstage/backend-dev-utils@0.1.4
+  - @backstage/backend-plugin-api@0.6.22-next.1
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.8.1
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.13.0-next.0
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.17-next.1
+
 ## 0.23.2-next.0
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-search-backend",
-  "version": "1.5.13-next.0",
+  "version": "1.5.15-next.1",
   "description": "The Backstage backend plugin that provides your backstage app with search",
   "backstage": {
     "role": "backend-plugin",
@@ -8,6 +8,7 @@
     "pluginPackages": [
       "@backstage/plugin-search",
       "@backstage/plugin-search-backend",
+      "@backstage/plugin-search-backend-node",
       "@backstage/plugin-search-common",
       "@backstage/plugin-search-react"
     ]

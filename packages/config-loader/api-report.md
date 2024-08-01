@@ -21,6 +21,7 @@ export type AsyncConfigSourceGenerator = AsyncGenerator<
 
 // @public
 export interface BaseConfigSourcesOptions {
+  allowMissingDefaultConfig?: boolean;
   // (undocumented)
   remote?: Pick<RemoteConfigSourceOptions, 'reloadInterval'>;
   // (undocumented)
@@ -87,7 +88,7 @@ export interface ConfigSourcesDefaultOptions extends BaseConfigSourcesOptions {
   // (undocumented)
   argv?: string[];
   // (undocumented)
-  env?: Record<string, string>;
+  env?: Record<string, string | undefined>;
 }
 
 // @public
@@ -141,6 +142,7 @@ export class FileConfigSource implements ConfigSource {
 
 // @public
 export interface FileConfigSourceOptions {
+  parser?: Parser;
   path: string;
   substitutionFunc?: EnvFunc;
   watch?: boolean;
@@ -219,6 +221,11 @@ export interface MutableConfigSourceOptions {
 }
 
 // @public
+export type Parser = ({ contents }: { contents: string }) => Promise<{
+  result?: JsonObject;
+}>;
+
+// @public
 export interface ReadConfigDataOptions {
   // (undocumented)
   signal?: AbortSignal;
@@ -242,6 +249,7 @@ export class RemoteConfigSource implements ConfigSource {
 
 // @public
 export interface RemoteConfigSourceOptions {
+  parser?: Parser;
   reloadInterval?: HumanDuration;
   substitutionFunc?: EnvFunc;
   url: string;

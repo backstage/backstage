@@ -1,5 +1,101 @@
 # @backstage/backend-defaults
 
+## 0.4.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.9.0-next.1
+  - @backstage/plugin-permission-node@0.8.1-next.1
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/backend-app-api@0.8.1-next.1
+  - @backstage/backend-common@0.23.4-next.1
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/backend-dev-utils@0.1.4
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.18-next.1
+  - @backstage/plugin-events-node@0.3.9-next.1
+
+## 0.4.2-next.0
+
+### Patch Changes
+
+- 4e79d19: The `createHealthRouter` utility that allows you to create a health check router is now exported via `@backstage/backend-defaults/rootHttpRouter`.
+- 78c1329: Updated `GitlabUrlReader.readUrl` and `GitlabUrlReader.readTree` to accept a user-provided token, supporting both bearer and private tokens.
+- 8e967da: Fixed the routing of the new health check service, the health endpoints should now properly be available at `/.backstage/health/v1/readiness` and `/.backstage/health/v1/liveness`.
+- Updated dependencies
+  - @backstage/backend-common@0.23.4-next.0
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/config-loader@1.8.2-next.0
+  - @backstage/backend-app-api@0.8.1-next.0
+  - @backstage/backend-dev-utils@0.1.4
+  - @backstage/backend-plugin-api@0.7.1-next.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.18-next.0
+  - @backstage/plugin-events-node@0.3.9-next.0
+  - @backstage/plugin-permission-node@0.8.1-next.0
+
+## 0.4.0
+
+### Minor Changes
+
+- 1cb84d7: **BREAKING**: Removed the depreacted `getPath` option from `httpRouterServiceFactory`, as well as the `HttpRouterFactoryOptions` type.
+
+### Patch Changes
+
+- 53ced70: Added a new Root Health Service which adds new endpoints for health checks.
+- 2f99178: The `ServiceFactoryTest.get` method was deprecated and the `ServiceFactoryTest.getSubject` should be used instead. The `getSubject` method has the same behavior, but has a better method name to indicate that the service instance returned is the subject currently being tested.
+- 083eaf9: Fix bug where ISO durations could no longer be used for schedules
+- b05e1e1: Service factories exported by this package have been updated to use the new service factory format that doesn't use a callback.
+- 419f387: Refactor of `rootHttpRouterServiceFactory` to allow it to be constructed with options, but without declaring options via `createServiceFactory`.
+- cb14a05: Repack the package to fix issues with typescript with named exports
+- b9ed1bb: bumped better-sqlite3 from ^9.0.0 to ^11.0.0
+- e28af58: Refactor of `rootConfigServiceFactory` to allow it to be constructed with options, but without declaring options via `createServiceFactory`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/backend-app-api@0.8.0
+  - @backstage/backend-common@0.23.3
+  - @backstage/plugin-permission-node@0.8.0
+  - @backstage/integration@1.13.0
+  - @backstage/plugin-events-node@0.3.8
+  - @backstage/plugin-auth-node@0.4.17
+  - @backstage/config-loader@1.8.1
+  - @backstage/backend-dev-utils@0.1.4
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+
+## 0.3.4-next.1
+
+### Patch Changes
+
+- b9ed1bb: bumped better-sqlite3 from ^9.0.0 to ^11.0.0
+- Updated dependencies
+  - @backstage/backend-common@0.23.3-next.1
+  - @backstage/backend-app-api@0.7.10-next.1
+  - @backstage/backend-dev-utils@0.1.4
+  - @backstage/backend-plugin-api@0.6.22-next.1
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.8.1
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.13.0-next.0
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.17-next.1
+  - @backstage/plugin-events-node@0.3.8-next.1
+  - @backstage/plugin-permission-node@0.7.33-next.1
+
 ## 0.3.3-next.0
 
 ### Patch Changes

@@ -84,6 +84,7 @@ import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
+import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
 
 /**
  * Provides entities from fictional frobs service.
@@ -92,11 +93,17 @@ export class FrobsProvider implements EntityProvider {
   private readonly env: string;
   private readonly reader: UrlReader;
   private connection?: EntityProviderConnection;
+  private taskRunner: SchedulerServiceTaskRunner;
 
   /** [1] */
-  constructor(env: string, reader: UrlReader) {
+  constructor(
+    env: string,
+    reader: UrlReader,
+    taskRunner: SchedulerServiceTaskRunner,
+  ) {
     this.env = env;
     this.reader = reader;
+    this.taskRunner = taskRunner;
   }
 
   /** [2] */
@@ -107,6 +114,12 @@ export class FrobsProvider implements EntityProvider {
   /** [3] */
   async connect(connection: EntityProviderConnection): Promise<void> {
     this.connection = connection;
+    this.taskRunner.run({
+      id: this.getProviderName(),
+      fn: async () => {
+        await this.run();
+      },
+    });
   }
 
   /** [4] */
@@ -248,23 +261,16 @@ export default async function createPlugin(
 ): Promise<Router> {
   const builder = CatalogBuilder.create(env);
   /* highlight-add-start */
-  const frobs = new FrobsProvider('production', env.reader);
+  const taskRunner = env.scheduler.createScheduledTaskRunner({
+    frequency: { minutes: 30 },
+    timeout: { minutes: 10 },
+  });
+  const frobs = new FrobsProvider('production', env.reader, taskRunner);
   builder.addEntityProvider(frobs);
   /* highlight-add-end */
 
   const { processingEngine, router } = await builder.build();
   await processingEngine.start();
-
-  /* highlight-add-start */
-  await env.scheduler.scheduleTask({
-    id: 'run_frobs_refresh',
-    fn: async () => {
-      await frobs.run();
-    },
-    frequency: { minutes: 30 },
-    timeout: { minutes: 10 },
-  });
-  /* highlight-add-end */
 
   // ..
 }
@@ -300,9 +306,17 @@ export const catalogModuleFrobsProvider = createBackendModule({
       deps: {
         catalog: catalogProcessingExtensionPoint,
         reader: coreServices.urlReader,
+        /* highlight-add-start */
+        scheduler: coreServices.scheduler,
+        /* highlight-add-end */
       },
-      async init({ catalog, reader }) {
-        catalog.addEntityProvider(new FrobsProvider('dev', reader));
+      async init({ catalog, reader, scheduler }) {
+        const taskRunner = scheduler.createScheduledTaskRunner({
+          frequency: { minutes: 30 },
+          timeout: { minutes: 10 },
+        });
+        const frobs = new FrobsProvider('dev', reader, taskRunner);
+        catalog.addEntityProvider(frobs);
       },
     });
   },
@@ -316,6 +330,98 @@ backend.add(catalogModuleFrobsProvider);
 // Other plugins ...
 
 backend.start();
+```
+
+#### Follow-up: Config Defined Schedule
+
+If you want to go a step further and increase the configurability of your new `FrobsProvider`, you can define the schedule that the task runs at in `app-config.yaml` instead of requiring code changes to adjust.
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    frobs-provider:
+      schedule:
+        initialDelay: { seconds: 30 }
+        frequency: { hours: 1 }
+        timeout: { minutes: 50 }
+```
+
+This approach will also allow you to customize the schedule per environment. You can also [add a schema to your config](../../conf/defining.md).
+
+#### New Backend
+
+```ts title="packages/backend/src/index.ts"
+import {
+  SchedulerServiceTaskScheduleDefinition,
+  /* highlight-add-start */
+  readSchedulerServiceTaskScheduleDefinitionFromConfig,
+  /* highlight-add-end */
+} from '@backstage/backend-plugin-api';
+
+export const catalogModuleFrobsProvider = createBackendModule({
+  pluginId: 'catalog',
+  moduleId: 'frobs-provider',
+  register(env) {
+    env.registerInit({
+      deps: {
+        // ... other deps
+        /* highlight-add-start */
+        rootConfig: coreServices.rootConfig,
+        /* highlight-add-end */
+      },
+      async init({ catalog, reader, scheduler, rootConfig }) {
+        /* highlight-add-start */
+        const config = rootConfig.getConfig('catalog.providers.frobs-provider'); // Generally, catalog config goes under catalog.providers.pluginId
+        // Add a default schedule if you don't define one in config.
+        const schedule = config.has('schedule')
+          ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
+              config.getConfig('schedule'),
+            )
+          : {
+              frequency: { minutes: 30 },
+              timeout: { minutes: 10 },
+            };
+        const taskRunner: SchedulerServiceTaskRunner =
+          scheduler.createScheduledTaskRunner(schedule);
+        /* highlight-add-end */
+
+        // rest of your code
+      },
+    });
+  },
+});
+```
+
+#### Old Backend
+
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { FrobsProvider } from '../path/to/class';
+import {
+  /* highlight-add-start */
+  readSchedulerServiceTaskScheduleDefinitionFromConfig,
+  /* highlight-add-end */
+} from '@backstage/backend-plugin-api';
+
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  /* highlight-add-start */
+  const config = env.config.getConfig('catalog.providers.frobs-provider'); // Generally, catalog config goes under catalog.providers.pluginId
+  // Add a default schedule if you don't define one in config.
+  const schedule = config.has('schedule')
+    ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
+        config.getConfig('schedule'),
+      )
+    : {
+        frequency: { minutes: 30 },
+        timeout: { minutes: 10 },
+      };
+  const taskRunner = env.scheduler.createScheduledTaskRunner(schedule);
+  /* highlight-add-end */
+
+  // ..
+}
 ```
 
 ### Example User Entity Provider

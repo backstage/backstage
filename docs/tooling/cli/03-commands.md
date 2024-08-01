@@ -26,7 +26,6 @@ repo [command]                                 Command that run across an entire
 package [command]                              Lifecycle scripts for individual packages
 migrate [command]                              Migration utilities
 versions:bump [options]                        Bump Backstage packages to the latest versions
-versions:check [options]                       Check Backstage package versioning
 clean                                          Delete cache directories [DEPRECATED]
 build-workspace <workspace-dir> [packages...]  Builds a temporary dist workspace from the provided
                                                 packages
@@ -327,8 +326,7 @@ Options:
 ## versions\:bump
 
 Bump all `@backstage` packages to the latest versions. This checks for updates
-in the package registry, and will update entries both in `yarn.lock` and
-`package.json` files when necessary.
+in the package registry, and will update entries `package.json` files when necessary.
 
 ```text
 Usage: backstage-cli versions:bump [options]
@@ -337,23 +335,6 @@ Options:
   -h, --help        display help for command
   --pattern <glob>  Override glob for matching packages to upgrade
   --release <version|next|main> Bump to a specific Backstage release line or version (default: "main")
-```
-
-## versions\:check
-
-Validate `@backstage` dependencies within the repo, making sure that there are
-no duplicates of packages that might lead to breakages.
-
-By supplying the `--fix` flag the command will attempt to fix any conflict that
-can be resolved by editing `yarn.lock`, but will not attempt to search for
-remote updates or modify any `package.json` files.
-
-```text
-Usage: backstage-cli versions:check [options]
-
-Options:
-  --fix       Fix any auto-fixable versioning problems
-  -h, --help  display help for command
 ```
 
 ## build-workspace

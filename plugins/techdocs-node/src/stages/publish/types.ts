@@ -17,6 +17,7 @@ import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Logger } from 'winston';
 import express from 'express';
+import { Config } from '@backstage/config';
 
 /**
  * Options for building publishers
@@ -25,6 +26,7 @@ import express from 'express';
 export type PublisherFactory = {
   logger: Logger;
   discovery: PluginEndpointDiscovery;
+  customPublisher?: PublisherBase | undefined;
 };
 
 /**
@@ -157,3 +159,12 @@ export interface PublisherBase {
    */
   migrateDocsCase?(migrateRequest: MigrateRequest): Promise<void>;
 }
+
+/**
+ * Definition for a TechDocs publisher builder
+ * @public
+ */
+export type PublisherBuilder = {
+  register(type: PublisherType, publisher: PublisherBase): void;
+  get(config: Config): PublisherBase;
+};

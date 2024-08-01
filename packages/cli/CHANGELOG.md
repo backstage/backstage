@@ -1,5 +1,120 @@
 # @backstage/cli
 
+## 0.27.0-next.2
+
+### Patch Changes
+
+- b2d97fd: Fixing loading of additional config files with new `ConfigSources`
+- adabb40: New command now supports setting package license
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.7
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.9.0-next.1
+  - @backstage/errors@1.2.4
+  - @backstage/eslint-plugin@0.1.8
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
+## 0.27.0-next.1
+
+### Patch Changes
+
+- e6e7d86: Switched the target from `'ES2022'` to `'es2022'` for better compatibility with older versions of `swc`.
+- Updated dependencies
+  - @backstage/config-loader@1.9.0-next.1
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.7
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/eslint-plugin@0.1.8
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
+## 0.27.0-next.0
+
+### Minor Changes
+
+- 32a38e1: **BREAKING**: The lockfile (`yarn.lock`) dependency analysis and mutations have been removed from several commands.
+
+  The `versions:bump` command will no longer attempt to bump and deduplicate dependencies by modifying the lockfile, it will only update `package.json` files.
+
+  The `versions:check` command has been removed, since its only purpose was verification and mutation of the lockfile. We recommend using the `yarn dedupe` command instead, or the `yarn-deduplicate` package if you're using Yarn classic.
+
+  The check that was built into the `package start` command has been removed, it will no longer warn about lockfile mismatches.
+
+  The packages in the Backstage ecosystem handle package duplications much better now than when these CLI features were first introduced, so the need for these features has diminished. By removing them, we drastically reduce the integration between the Backstage CLI and Yarn, making it much easier to add support for other package managers in the future.
+
+### Patch Changes
+
+- 7eb08a6: Add frontend-dynamic-container role to eslint config factory
+- fbc7819: Use ES2022 in CLI bundler
+- e53074f: Updated default backend plugin to use `RootConfigService` instead of `Config`. This also removes the dependency on `@backstage/config` as it's no longer used.
+- ee2b0e5: The experimental module federation build now has the ability to force the use of development versions of `react` and `react-dom` by setting the `FORCE_REACT_DEVELOPMENT` flag.
+- 239dffc: Remove usage of deprecated functionality from @backstage/config-loader
+- 0eedec3: Add support for dynamic plugins via the EXPERIMENTAL_MODULE_FEDERATION environment variable when running `yarn start`.
+- dc4fb4f: Fix for `repo build --all` not properly detecting the experimental public entry point.
+- Updated dependencies
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/config-loader@1.8.2-next.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.7
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/eslint-plugin@0.1.8
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
+## 0.26.11
+
+### Patch Changes
+
+- 133464c: Added experimental support for dynamic frontend plugin builds, enabled via setting `EXPERIMENTAL_MODULE_FEDERATION` for the app build, and using the `frontend-dynamic-container` package role to create a container. Both of these are experimental and will change in the future.
+- e2e320c: - remove unused dependencies `winston` and `yn` from the template of backend plugins;
+  - update `msw` to version `2.3.1` in the template of backend plugins;
+    starting with v1 and switching later to v2 is tedious and not straight forward; it's easier to start with v2;
+- 0540c5a: Updated the scaffolding output message for `plugin-common` in `backstage-cli`. Now, when executing `backstage-cli new` to create a new `plugin-common` package, the output message accurately reflects the action by displaying `Creating common plugin package...` instead of the previous, less accurate `Creating backend plugin...`.
+- 7652db4: Only bootstrap global-agent if it's actually being used
+- f0c0039: Fix issue with CLI that was preventing upgrading from 1.28
+- d228862: Update default backend plugin created by the cli to use non-deprecated error handling middleware
+- da90cce: Updated dependency `esbuild` to `^0.21.0`.
+- a60d73b: Fix a few minor issues with the backend template that were causing failing linting checks in the main repo.
+- 0510d98: Subpath export `package.json` should be of a unique name to avoid typescript resolution issues
+- 4baac0c: The `backendPlugin` and `backendModule` factory now includes a step for automatically adding the new backend plugin/module to the `index.ts` file of the backend.
+- Updated dependencies
+  - @backstage/cli-node@0.2.7
+  - @backstage/integration@1.13.0
+  - @backstage/config-loader@1.8.1
+  - @backstage/catalog-model@1.5.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/eslint-plugin@0.1.8
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
+## 0.26.11-next.1
+
+### Patch Changes
+
+- 4baac0c: The `backendPlugin` and `backendModule` factory now includes a step for automatically adding the new backend plugin/module to the `index.ts` file of the backend.
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.6
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.8.1
+  - @backstage/errors@1.2.4
+  - @backstage/eslint-plugin@0.1.8
+  - @backstage/integration@1.13.0-next.0
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
 ## 0.26.10-next.0
 
 ### Patch Changes

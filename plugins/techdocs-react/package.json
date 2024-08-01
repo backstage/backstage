@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-techdocs-react",
-  "version": "1.2.6-next.0",
+  "version": "1.2.7-next.0",
   "description": "Shared frontend utilities for TechDocs and Addons",
   "backstage": {
     "role": "web-library",
@@ -8,6 +8,7 @@
     "pluginPackages": [
       "@backstage/plugin-techdocs",
       "@backstage/plugin-techdocs-backend",
+      "@backstage/plugin-techdocs-common",
       "@backstage/plugin-techdocs-node",
       "@backstage/plugin-techdocs-react"
     ]
