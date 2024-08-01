@@ -17,7 +17,7 @@ The following example is how you can override the root logger service to add add
 
 ```ts
 import { coreServices } from '@backstage/backend-plugin-api';
-import { WinstonLogger } from '@backstage/backend-app-api';
+import { WinstonLogger } from '@backstage/backend-defaults/rootLogger';
 
 const backend = createBackend();
 
