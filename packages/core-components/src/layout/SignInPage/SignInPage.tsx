@@ -109,7 +109,10 @@ export const SingleSignInPage = ({
   // displayed for a split second when the user is already logged-in.
   const [showLoginPage, setShowLoginPage] = useState<boolean>(false);
 
+  // User was redirected back to sign in page with error from auth redirect flow
   const [searchParams, _setSearchParams] = useSearchParams();
+  const errorParam = searchParams.get('error');
+  const hasErrorSearchParam = errorParam !== 'false' && errorParam !== null;
 
   type LoginOpts = { checkExisting?: boolean; showPopup?: boolean };
   const login = async ({ checkExisting, showPopup }: LoginOpts) => {
@@ -123,7 +126,7 @@ export const SingleSignInPage = ({
       }
 
       // If no session exists, show the sign-in page
-      if (!identityResponse && (showPopup || auto)) {
+      if (!identityResponse && (showPopup || auto) && !hasErrorSearchParam) {
         // Unless auto is set to true, this step should not happen.
         // When user intentionally clicks the Sign In button, autoShowPopup is set to true
         setShowLoginPage(true);
@@ -158,7 +161,7 @@ export const SingleSignInPage = ({
   };
 
   const [_, { execute: checkAuthErrors }] = useAsync(async () => {
-    if (searchParams.get('error') !== 'false') {
+    if (hasErrorSearchParam) {
       const errorResponse = await authErrorApi.getSignInAuthError();
       if (errorResponse) {
         setError(errorResponse);

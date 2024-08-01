@@ -92,10 +92,13 @@ export const useSignInProviders = (
   const authErrorApi = useApi(authErrorApiRef);
   const [loading, setLoading] = useState(true);
 
+  // User was redirected back to sign in page with error from auth redirect flow
   const [searchParams, _setSearchParams] = useSearchParams();
+  const errorParam = searchParams.get('error');
+  const hasErrorSearchParam = errorParam !== 'false' && errorParam !== null;
 
   const [_, { execute: checkAuthErrors }] = useAsync(async () => {
-    if (searchParams.get('error') !== 'false') {
+    if (hasErrorSearchParam) {
       const errorResponse = await authErrorApi.getSignInAuthError();
       if (errorResponse) {
         errorApi.post(errorResponse);
