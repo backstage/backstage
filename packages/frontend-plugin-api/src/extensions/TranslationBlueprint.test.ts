@@ -38,6 +38,10 @@ describe('TranslationBlueprint', () => {
   it('should return an extension instance with sane defaults', () => {
     expect(
       TranslationBlueprint.make({
+        // todo(blam): we can't set the namespace dynamically based of the ResourceType.
+        // work out if we should wrap this up or another solution.
+        namespace: messages.id,
+        name: 'test',
         params: {
           resource: messages,
         },
@@ -54,8 +58,8 @@ describe('TranslationBlueprint', () => {
         "factory": [Function],
         "inputs": {},
         "kind": "translation",
-        "name": undefined,
-        "namespace": undefined,
+        "name": "test",
+        "namespace": "test",
         "output": [
           [Function],
         ],
