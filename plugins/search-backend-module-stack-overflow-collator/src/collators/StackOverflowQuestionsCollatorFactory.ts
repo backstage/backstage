@@ -40,7 +40,7 @@ export interface StackOverflowDocument extends IndexableDocument {
  * @public
  */
 export type StackOverflowQuestionsRequestParams = {
-  [key: string]: string | string[] | number | null;
+  [key: string]: string | string[] | number;
 };
 
 /**
