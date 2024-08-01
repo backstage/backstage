@@ -19,6 +19,7 @@ import { normalizeUrl } from './rewriteDocLinks';
 
 export const handleMetaRedirects = (
   navigate: (to: string) => void,
+  entityName: string,
 ): Transformer => {
   return dom => {
     for (const elem of Array.from(dom.querySelectorAll('meta'))) {
@@ -38,11 +39,18 @@ export const handleMetaRedirects = (
           absoluteRedirectObj.hostname !== window.location.hostname;
 
         if (isExternalRedirect) {
-          continue;
+          const currentTechDocPath = window.location.pathname;
+          const indexOfSiteHome = currentTechDocPath.indexOf(entityName);
+          const siteHomePath = currentTechDocPath.slice(
+            0,
+            indexOfSiteHome + entityName.length,
+          );
+          navigate(siteHomePath);
+        } else {
+          // The navigate function from dom.tsx is a wrapper around react-router navigate function that helps absolute url redirects.
+          navigate(absoluteRedirectObj.href);
         }
-
-        // This navigate is a helper navigate function that allows redirecting to full url
-        navigate(absoluteRedirectObj.href);
+        return dom;
       }
     }
     return dom;
