@@ -665,6 +665,9 @@ describe('createExtension', () => {
 
           const foo: string = response.get(stringDataRef);
 
+          // @ts-expect-error - fails because original factory does not return number
+          const number: boolean = response.get(numberDataRef);
+
           return [stringDataRef(`foo-${foo}-override`)];
         },
       });
