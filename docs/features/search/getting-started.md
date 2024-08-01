@@ -133,7 +133,7 @@ For more information about using `Root.tsx`, please see
 Add the following plugins into your backend app:
 
 ```bash title="From your Backstage root directory"
-yarn --cwd packages/backend add @backstage/plugin-search-backend @backstage/plugin-search-backend-node
+yarn --cwd packages/backend add @backstage/plugin-search-backend @backstage/plugin-search-node
 ```
 
 Create a `packages/backend/src/plugins/search.ts` file containing the following
@@ -142,10 +142,7 @@ code:
 ```typescript
 import { useHotCleanup } from '@backstage/backend-common';
 import { createRouter } from '@backstage/plugin-search-backend';
-import {
-  IndexBuilder,
-  LunrSearchEngine,
-} from '@backstage/plugin-search-backend-node';
+import { IndexBuilder, LunrSearchEngine } from '@backstage/plugin-search-node';
 import { PluginEnvironment } from '../types';
 import { DefaultCatalogCollator } from '@backstage/plugin-catalog-backend';
 import { Router } from 'express';

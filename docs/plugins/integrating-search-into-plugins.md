@@ -140,7 +140,7 @@ export class FaqCollatorFactory implements DocumentCollatorFactory {
 
 #### 5. Test your collator
 
-To verify your implementation works as expected make sure to add tests for it. For your convenience, there is the [`TestPipeline`](https://backstage.io/docs/reference/plugin-search-backend-node.testpipeline) utility that emulates a pipeline into which you can integrate your custom collator.
+To verify your implementation works as expected make sure to add tests for it. For your convenience, there is the [`TestPipeline`](https://backstage.io/docs/reference/plugin-search-node.testpipeline) utility that emulates a pipeline into which you can integrate your custom collator.
 
 Look at [DefaultTechDocsCollatorFactory test](https://github.com/backstage/backstage/blob/de294ce5c410c9eb56da6870a1fab795268f60e3/plugins/techdocs-backend/src/search/DefaultTechDocsCollatorFactory.test.ts), for an example.
 

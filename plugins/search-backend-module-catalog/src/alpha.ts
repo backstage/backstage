@@ -29,7 +29,7 @@ import {
   CatalogCollatorEntityTransformer,
   DefaultCatalogCollatorFactory,
 } from '@backstage/plugin-search-backend-module-catalog';
-import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
+import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-node/alpha';
 import { readScheduleConfigOptions } from './collators/config';
 
 /**

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TestPipeline } from '@backstage/plugin-search-backend-node';
+import { TestPipeline } from '@backstage/plugin-search-node';
 import { range } from 'lodash';
 import { Transform } from 'stream';
 import { PgSearchEngineIndexer } from './PgSearchEngineIndexer';

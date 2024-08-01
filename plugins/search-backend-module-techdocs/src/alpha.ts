@@ -30,7 +30,7 @@ import {
   DefaultTechDocsCollatorFactory,
   TechDocsCollatorEntityTransformer,
 } from '@backstage/plugin-search-backend-module-techdocs';
-import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
+import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-node/alpha';
 
 /** @alpha */
 export interface TechDocsCollatorEntityTransformerExtensionPoint {

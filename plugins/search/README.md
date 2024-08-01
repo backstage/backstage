@@ -40,6 +40,6 @@ Don't forget, a lot of functionality is available in web libraries and backend p
     communication with the Backstage backend.
   - Exposing the `SearchApi` and its corresponding ref.
   - Exposing reusable components, such as `<SearchBar>` and `<SearchFilter>`, etc.
-- `@backstage/plugin-search-backend-node`, which is responsible for the search
+- `@backstage/plugin-search-node`, which is responsible for the search
   index management
 - `@backstage/plugin-search-backend`, which is responsible for query processing

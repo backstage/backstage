@@ -59,7 +59,7 @@
     "@backstage/plugin-search-backend-module-explore": "workspace:^",
     "@backstage/plugin-search-backend-module-pg": "workspace:^",
     "@backstage/plugin-search-backend-module-techdocs": "workspace:^",
-    "@backstage/plugin-search-backend-node": "workspace:^",
+    "@backstage/plugin-search-node": "workspace:^",
     "@backstage/plugin-signals-backend": "workspace:^",
     "@backstage/plugin-signals-node": "workspace:^",
     "@backstage/plugin-techdocs-backend": "workspace:^",

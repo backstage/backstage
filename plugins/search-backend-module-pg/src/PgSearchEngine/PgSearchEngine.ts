@@ -15,7 +15,7 @@
  */
 
 import { PluginDatabaseManager } from '@backstage/backend-common';
-import { SearchEngine } from '@backstage/plugin-search-backend-node';
+import { SearchEngine } from '@backstage/plugin-search-node';
 import {
   SearchQuery,
   IndexableResultSet,

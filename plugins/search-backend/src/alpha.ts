@@ -23,14 +23,14 @@ import {
   RegisterCollatorParameters,
   RegisterDecoratorParameters,
   SearchEngine,
-} from '@backstage/plugin-search-backend-node';
+} from '@backstage/plugin-search-node';
 import {
   SearchEngineRegistryExtensionPoint,
   searchEngineRegistryExtensionPoint,
   searchIndexRegistryExtensionPoint,
   SearchIndexRegistryExtensionPoint,
   searchIndexServiceRef,
-} from '@backstage/plugin-search-backend-node/alpha';
+} from '@backstage/plugin-search-node/alpha';
 
 import { createRouter } from './service/router';
 

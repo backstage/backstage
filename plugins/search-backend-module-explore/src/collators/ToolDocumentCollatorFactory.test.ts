@@ -18,7 +18,7 @@ import {
   TokenManager,
 } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
-import { TestPipeline } from '@backstage/plugin-search-backend-node';
+import { TestPipeline } from '@backstage/plugin-search-node';
 import {
   mockServices,
   registerMswTestHooks,

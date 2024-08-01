@@ -7,7 +7,7 @@
 
 import { ApiResponse } from '@opensearch-project/opensearch';
 import { ApiResponse as ApiResponse_2 } from '@elastic/elasticsearch';
-import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node';
+import { BatchSearchEngineIndexer } from '@backstage/plugin-search-node';
 import { BulkHelper } from '@elastic/elasticsearch/lib/Helpers';
 import { BulkStats } from '@elastic/elasticsearch/lib/Helpers';
 import { Config } from '@backstage/config';
@@ -17,7 +17,7 @@ import { IndexableResultSet } from '@backstage/plugin-search-common';
 import { Logger } from 'winston';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { Readable } from 'stream';
-import { SearchEngine } from '@backstage/plugin-search-backend-node';
+import { SearchEngine } from '@backstage/plugin-search-node';
 import { SearchQuery } from '@backstage/plugin-search-common';
 import { TransportRequestPromise } from '@opensearch-project/opensearch/lib/Transport';
 import { TransportRequestPromise as TransportRequestPromise_2 } from '@elastic/elasticsearch/lib/Transport';

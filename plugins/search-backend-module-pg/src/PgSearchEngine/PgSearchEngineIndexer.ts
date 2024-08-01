@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node';
+import { BatchSearchEngineIndexer } from '@backstage/plugin-search-node';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Knex } from 'knex';
 import { Logger } from 'winston';

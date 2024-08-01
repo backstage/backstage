@@ -20,7 +20,7 @@ import {
   IndexableResultSet,
   SearchQuery,
 } from '@backstage/plugin-search-common';
-import { SearchEngine } from '@backstage/plugin-search-backend-node';
+import { MissingIndexError, SearchEngine } from '@backstage/plugin-search-node';
 import { isEmpty, isNumber, isNaN as nan } from 'lodash';
 
 import { AwsSigv4Signer } from '@opensearch-project/opensearch/aws';
@@ -34,7 +34,6 @@ import { ElasticSearchClientWrapper } from './ElasticSearchClientWrapper';
 import { ElasticSearchCustomIndexTemplate } from './types';
 import { ElasticSearchSearchEngineIndexer } from './ElasticSearchSearchEngineIndexer';
 import { Logger } from 'winston';
-import { MissingIndexError } from '@backstage/plugin-search-backend-node';
 import esb from 'elastic-builder';
 import { v4 as uuid } from 'uuid';
 import {

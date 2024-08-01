@@ -21,14 +21,14 @@ import { SearchQuery, IndexableResultSet } from './types';
  * A type of function responsible for translating an abstract search query into
  * a concrete query relevant to a particular search engine.
  * @public
- * @deprecated Import from `@backstage/plugin-search-backend-node` instead
+ * @deprecated Import from `@backstage/plugin-search-node` instead
  */
 export type QueryTranslator = (query: SearchQuery) => unknown;
 
 /**
  * Options when querying a search engine.
  * @public
- * @deprecated Import from `@backstage/plugin-search-backend-node` instead
+ * @deprecated Import from `@backstage/plugin-search-node` instead
  */
 export type QueryRequestOptions = {
   token?: string;
@@ -39,7 +39,7 @@ export type QueryRequestOptions = {
  * for performing indexing and querying and translating abstract queries into
  * concrete, search engine-specific queries.
  * @public
- * @deprecated Import from `@backstage/plugin-search-backend-node` instead
+ * @deprecated Import from `@backstage/plugin-search-node` instead
  */
 export interface SearchEngine {
   /**

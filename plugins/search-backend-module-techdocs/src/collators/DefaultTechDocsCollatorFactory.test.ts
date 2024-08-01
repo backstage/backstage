@@ -19,7 +19,7 @@ import {
 } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
-import { TestPipeline } from '@backstage/plugin-search-backend-node';
+import { TestPipeline } from '@backstage/plugin-search-node';
 import {
   mockServices,
   registerMswTestHooks,

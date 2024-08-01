@@ -15,7 +15,7 @@ import { EventsService } from '@backstage/plugin-events-node';
 import { FeatureDiscoveryService } from '@backstage/backend-plugin-api/alpha';
 import { HttpPostIngressOptions } from '@backstage/plugin-events-node';
 import { IdentityApi } from '@backstage/plugin-auth-node';
-import { IndexBuilder } from '@backstage/plugin-search-backend-node';
+import { IndexBuilder } from '@backstage/plugin-search-node';
 import { Logger } from 'winston';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PackagePlatform } from '@backstage/cli-node';

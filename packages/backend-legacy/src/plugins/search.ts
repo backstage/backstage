@@ -24,7 +24,7 @@ import {
   IndexBuilder,
   SearchEngine,
   LunrSearchEngine,
-} from '@backstage/plugin-search-backend-node';
+} from '@backstage/plugin-search-node';
 import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-search-backend-module-techdocs';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';

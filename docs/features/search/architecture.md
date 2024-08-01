@@ -51,6 +51,6 @@ Architecture non-goals:
 | Frontend Plugin Library   | @backstage/plugin-search-react                        |
 | Isomorphic Plugin Library | @backstage/plugin-search-common                       |
 | Backend Plugin            | @backstage/plugin-search-backend                      |
-| Backend Plugin Library    | @backstage/plugin-search-backend-node                 |
 | Backend Plugin Module     | @backstage/plugin-search-backend-module-elasticsearch |
 | Backend Plugin Module     | @backstage/plugin-search-backend-module-pg            |
+| Backend Plugin Library    | @backstage/plugin-search-node                         |

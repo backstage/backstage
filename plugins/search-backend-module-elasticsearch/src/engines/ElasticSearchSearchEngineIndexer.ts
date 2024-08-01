@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node';
+import { BatchSearchEngineIndexer } from '@backstage/plugin-search-node';
 import { ElasticSearchClientWrapper } from './ElasticSearchClientWrapper';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Logger } from 'winston';

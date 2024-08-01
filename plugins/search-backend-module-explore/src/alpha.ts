@@ -23,7 +23,7 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
+import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-node/alpha';
 
 import { ToolDocumentCollatorFactory } from '@backstage/plugin-search-backend-module-explore';
 import { readTaskScheduleDefinitionFromConfig } from '@backstage/backend-tasks';

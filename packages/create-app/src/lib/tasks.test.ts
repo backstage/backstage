@@ -74,7 +74,7 @@ jest.mock('./versions', () => ({
     '@backstage/plugin-search-backend-module-catalog': '1.0.0',
     '@backstage/plugin-search-backend-module-pg': '1.0.0',
     '@backstage/plugin-search-backend-module-techdocs': '1.0.0',
-    '@backstage/plugin-search-backend-node': '1.0.0',
+    '@backstage/plugin-search-node': '1.0.0',
     '@backstage/plugin-techdocs-backend': '1.0.0',
     '@backstage/app-defaults': '1.0.0',
     '@backstage/core-app-api': '1.0.0',

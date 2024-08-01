@@ -35,7 +35,7 @@ import { Permission } from '@backstage/plugin-permission-common';
 
 /**
  * @public
- * @deprecated Upgrade to a more recent `@backstage/plugin-search-backend-node` and
+ * @deprecated Upgrade to a more recent `@backstage/plugin-search-node` and
  * use `DefaultCatalogCollatorFactory` instead.
  */
 export class DefaultCatalogCollator {

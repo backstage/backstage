@@ -35,7 +35,7 @@ import {
   QueryRequestOptions,
   QueryTranslator,
   SearchEngine,
-} from '@backstage/plugin-search-backend-node';
+} from '@backstage/plugin-search-node';
 import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
 import { Writable } from 'stream';

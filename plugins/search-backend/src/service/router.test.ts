@@ -17,10 +17,7 @@
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import {
-  IndexBuilder,
-  SearchEngine,
-} from '@backstage/plugin-search-backend-node';
+import { IndexBuilder, SearchEngine } from '@backstage/plugin-search-node';
 import express from 'express';
 import request from 'supertest';
 import { createRouter } from './router';

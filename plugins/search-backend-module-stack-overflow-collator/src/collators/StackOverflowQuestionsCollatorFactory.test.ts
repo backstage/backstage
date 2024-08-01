@@ -21,7 +21,7 @@ import {
   mockServices,
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
-import { TestPipeline } from '@backstage/plugin-search-backend-node';
+import { TestPipeline } from '@backstage/plugin-search-node';
 import { ConfigReader } from '@backstage/config';
 import { Readable } from 'stream';
 import { setupServer } from 'msw/node';

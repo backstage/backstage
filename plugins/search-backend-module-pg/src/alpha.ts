@@ -17,7 +17,7 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { searchEngineRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
+import { searchEngineRegistryExtensionPoint } from '@backstage/plugin-search-node/alpha';
 import { PgSearchEngine } from './PgSearchEngine';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 

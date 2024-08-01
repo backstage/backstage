@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TestPipeline } from '@backstage/plugin-search-backend-node';
+import { TestPipeline } from '@backstage/plugin-search-node';
 import Mock from '@elastic/elasticsearch-mock';
 import { range } from 'lodash';
 import { ElasticSearchClientWrapper } from './ElasticSearchClientWrapper';

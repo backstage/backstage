@@ -34,7 +34,7 @@ import {
   IndexableResultSet,
   SearchResultSet,
 } from '@backstage/plugin-search-common';
-import { SearchEngine } from '@backstage/plugin-search-backend-node';
+import { SearchEngine } from '@backstage/plugin-search-node';
 import { AuthorizedSearchEngine } from './AuthorizedSearchEngine';
 import { createOpenApiRouter } from '../schema/openapi.generated';
 import {
