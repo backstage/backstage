@@ -151,6 +151,9 @@ describe('API integration tests', () => {
               [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'oidc',
               [ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER]: 'google',
             },
+            dashboardParameters: {
+              projectName: 'project-a',
+            },
           },
         ]),
       ],
@@ -178,6 +181,9 @@ describe('API integration tests', () => {
             name: 'some-other-cluster',
             authProvider: 'oidc',
             oidcTokenProvider: 'google',
+            dashboardParameters: {
+              projectName: 'project-a',
+            },
           },
         ],
       });
