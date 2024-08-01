@@ -8,6 +8,7 @@
       "@backstage/plugin-search",
       "@backstage/plugin-search-backend",
       "@backstage/plugin-search-common",
+      "@backstage/plugin-search-node",
       "@backstage/plugin-search-react"
     ]
   },
