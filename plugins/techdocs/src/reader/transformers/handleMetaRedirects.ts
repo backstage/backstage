@@ -17,7 +17,9 @@
 import { Transformer } from './transformer';
 import { normalizeUrl } from './rewriteDocLinks';
 
-export const liftMetaRedirects = (): Transformer => {
+export const handleMetaRedirects = (
+  navigate: (to: string) => void,
+): Transformer => {
   return dom => {
     for (const elem of Array.from(dom.querySelectorAll('meta'))) {
       if (elem.getAttribute('http-equiv') === 'refresh') {
@@ -27,17 +29,20 @@ export const liftMetaRedirects = (): Transformer => {
         if (!metaContentParameters || metaContentParameters.length < 2) {
           continue;
         }
-        const relUrl = metaContentParameters[1];
+
+        const metaUrl = metaContentParameters[1];
         const normalizedCurrentUrl = normalizeUrl(window.location.href);
-        const absoluteRedirect = new URL(relUrl, normalizedCurrentUrl).href;
+        // If metaUrl is relative, it will be resolved with base href. If it is absolute, it will replace the base href when creating URL object.
+        const absoluteRedirectObj = new URL(metaUrl, normalizedCurrentUrl);
+        const isExternalRedirect =
+          absoluteRedirectObj.hostname !== window.location.hostname;
 
-        const newContentValue = metaContentParameters[0].includes(';')
-          ? `${metaContentParameters[0]}url=${absoluteRedirect}`
-          : `url=${absoluteRedirect}`;
-        elem.setAttribute('content', newContentValue);
+        if (isExternalRedirect) {
+          continue;
+        }
 
-        // Lift the meta tag from shadowDom to the main document
-        document.body.appendChild(elem);
+        // This navigate is a helper navigate function that allows redirecting to full url
+        navigate(absoluteRedirectObj.href);
       }
     }
     return dom;
