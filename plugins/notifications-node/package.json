@@ -44,7 +44,7 @@
     "@backstage/plugin-notifications-common": "workspace:^",
     "@backstage/plugin-signals-node": "workspace:^",
     "knex": "^3.0.0",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "^2.7.0",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

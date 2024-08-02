@@ -79,7 +79,7 @@
     "@types/uuid": "^9.0.0",
     "@types/yup": "^0.32.0",
     "msw": "^2.0.0",
-    "node-fetch": "^2.6.7"
+    "node-fetch": "^2.7.0"
   },
   "configSchema": "config.d.ts"
 }

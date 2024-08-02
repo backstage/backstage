@@ -55,7 +55,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/plugin-search-backend-node": "workspace:^",
     "@backstage/plugin-search-common": "workspace:^",
-    "node-fetch": "^2.6.7"
+    "node-fetch": "^2.7.0"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
