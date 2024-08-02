@@ -46,7 +46,7 @@ describe('handleMetaRedirects', () => {
     jest.clearAllMocks();
   });
 
-  it('should navigate to relative URL if meta tag is present', async () => {
+  it('should navigate to relative URL if meta redirect tag is present', async () => {
     await setUpNewTestShadowDom(
       `<meta http-equiv="refresh" content="0; url=../anotherPage">`,
       'http://localhost/docs/default/component/testEntity/subpath',
@@ -57,7 +57,7 @@ describe('handleMetaRedirects', () => {
     );
   });
 
-  it('should navigate to site home if meta tag is present and external', async () => {
+  it('should navigate to site home if meta redirect tag is present and external', async () => {
     await setUpNewTestShadowDom(
       `<meta http-equiv="refresh" content="0; url=http://external.com/test">`,
       'http://localhost/docs/default/component/testEntity/subpath',
@@ -66,7 +66,7 @@ describe('handleMetaRedirects', () => {
     expect(navigate).toHaveBeenCalledWith('/docs/default/component/testEntity');
   });
 
-  it('should navigate to absolute URL if meta tag is present and not external', async () => {
+  it('should navigate to absolute URL if meta redirect tag is present and not external', async () => {
     await setUpNewTestShadowDom(
       `<meta http-equiv="refresh" content="0; url=http://localhost/test">`,
       'http://localhost/docs/default/component/testEntity/subpath',
@@ -75,7 +75,7 @@ describe('handleMetaRedirects', () => {
     expect(navigate).toHaveBeenCalledWith('http://localhost/test');
   });
 
-  it('should not navigate if meta tag is not present', async () => {
+  it('should not navigate if meta redirect tag is not present', async () => {
     await setUpNewTestShadowDom(
       `<meta name="keywords" content="TechDocs, Example">`,
       'http://localhost/docs/default/component/testEntity/subpath',

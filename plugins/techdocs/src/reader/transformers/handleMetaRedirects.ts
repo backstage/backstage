@@ -39,6 +39,7 @@ export const handleMetaRedirects = (
           absoluteRedirectObj.hostname !== window.location.hostname;
 
         if (isExternalRedirect) {
+          // If the redirect is external, navigate to the documentation site home instead of the external url.
           const currentTechDocPath = window.location.pathname;
           const indexOfSiteHome = currentTechDocPath.indexOf(entityName);
           const siteHomePath = currentTechDocPath.slice(
