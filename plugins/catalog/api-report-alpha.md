@@ -85,6 +85,8 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'hasResourcesCard.emptyMessage': 'No resource is part of this system';
     readonly 'hasSubcomponentsCard.title': 'Has subcomponents';
     readonly 'hasSubcomponentsCard.emptyMessage': 'No subcomponent is part of this component';
+    readonly 'hasSubdomainsCard.title': 'Has subdomains';
+    readonly 'hasSubdomainsCard.emptyMessage': 'No subdomain is part of this domain';
     readonly 'hasSystemsCard.title': 'Has systems';
     readonly 'hasSystemsCard.emptyMessage': 'No system is part of this domain';
     readonly 'relatedEntitiesCard.emptyHelpLinkTitle': 'Learn how to change this.';
