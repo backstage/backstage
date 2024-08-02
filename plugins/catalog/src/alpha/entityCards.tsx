@@ -84,6 +84,14 @@ export const catalogHasSubcomponentsEntityCard = createEntityCardExtension({
     ),
 });
 
+export const catalogHasSubdomainsEntityCard = createEntityCardExtension({
+  name: 'has-subdomains',
+  loader: async () =>
+    import('../components/HasSubdomainsCard').then(m =>
+      compatWrapper(<m.HasSubdomainsCard variant="gridItem" />),
+    ),
+});
+
 export const catalogHasSystemsEntityCard = createEntityCardExtension({
   name: 'has-systems',
   loader: async () =>
@@ -101,5 +109,6 @@ export default [
   catalogHasComponentsEntityCard,
   catalogHasResourcesEntityCard,
   catalogHasSubcomponentsEntityCard,
+  catalogHasSubdomainsEntityCard,
   catalogHasSystemsEntityCard,
 ];
