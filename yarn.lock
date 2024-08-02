@@ -3503,7 +3503,7 @@ __metadata:
     minimist: ^1.2.5
     morgan: ^1.10.0
     msw: ^1.0.0
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     node-forge: ^1.3.1
     path-to-regexp: ^6.2.1
     selfsigned: ^2.0.0
@@ -3588,7 +3588,7 @@ __metadata:
     morgan: ^1.10.0
     msw: ^1.0.0
     mysql2: ^3.0.0
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     node-forge: ^1.3.1
     p-limit: ^3.1.0
     path-to-regexp: ^6.2.1
@@ -3677,7 +3677,7 @@ __metadata:
     morgan: ^1.10.0
     msw: ^1.0.0
     mysql2: ^3.0.0
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     node-forge: ^1.3.1
     p-limit: ^3.1.0
     path-to-regexp: ^6.2.1
@@ -4009,7 +4009,7 @@ __metadata:
     mini-css-extract-plugin: ^2.4.2
     minimatch: ^9.0.0
     msw: ^1.0.0
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     node-libs-browser: ^2.2.1
     nodemon: ^3.0.1
     npm-packlist: ^5.0.0
@@ -4103,7 +4103,7 @@ __metadata:
     lodash: ^4.17.21
     minimist: ^1.2.5
     msw: ^1.0.0
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     typescript-json-schema: ^0.63.0
     yaml: ^2.0.0
     zen-observable: ^0.10.0
@@ -4395,7 +4395,7 @@ __metadata:
     handlebars: ^4.7.3
     inquirer: ^8.2.0
     msw: ^1.0.0
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     nodemon: ^3.0.1
     ora: ^5.3.0
     recursive-readdir: ^2.2.2
@@ -4746,7 +4746,7 @@ __metadata:
     knex: ^3.0.0
     lodash: ^4.17.21
     luxon: ^3.0.0
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     supertest: ^6.1.3
     yn: ^4.0.0
   languageName: unknown
@@ -4816,7 +4816,7 @@ __metadata:
     jose: ^5.0.0
     msw: ^2.0.8
     node-cache: ^5.1.2
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
   languageName: unknown
   linkType: soft
 
@@ -4871,7 +4871,7 @@ __metadata:
     express: ^4.18.2
     jose: ^5.0.0
     msw: ^2.0.0
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     node-mocks-http: ^1.0.0
     uuid: ^9.0.0
   languageName: unknown
@@ -4972,7 +4972,7 @@ __metadata:
     express: ^4.18.2
     jose: ^5.0.0
     msw: ^1.0.0
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     passport-microsoft: ^1.0.0
     supertest: ^6.3.3
   languageName: unknown
@@ -5171,7 +5171,7 @@ __metadata:
     morgan: ^1.10.0
     msw: ^1.0.0
     node-cache: ^5.1.2
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     openid-client: ^5.2.1
     passport: ^0.7.0
     passport-auth0: ^1.4.3
@@ -5208,7 +5208,7 @@ __metadata:
     jose: ^5.0.0
     lodash: ^4.17.21
     msw: ^1.0.0
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     passport: ^0.7.0
     supertest: ^6.1.3
     uuid: ^9.0.0
@@ -5301,7 +5301,7 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     luxon: ^3.0.0
     msw: ^1.0.0
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     uuid: ^9.0.0
   languageName: unknown
   linkType: soft
@@ -5367,7 +5367,7 @@ __metadata:
     "@types/node-fetch": ^2.5.12
     luxon: ^3.0.0
     msw: ^1.0.0
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     uuid: ^9.0.0
   languageName: unknown
   linkType: soft
@@ -5406,7 +5406,7 @@ __metadata:
     fs-extra: ^11.2.0
     luxon: ^3.0.0
     msw: ^1.0.0
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     uuid: ^9.0.0
   languageName: unknown
   linkType: soft
@@ -5453,7 +5453,7 @@ __metadata:
     luxon: ^3.0.0
     minimatch: ^9.0.0
     msw: ^1.0.0
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     uuid: ^9.0.0
   languageName: unknown
   linkType: soft
@@ -5497,7 +5497,7 @@ __metadata:
     lodash: ^4.17.21
     luxon: ^3.0.0
     msw: ^1.0.0
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     uuid: ^9.0.0
   languageName: unknown
   linkType: soft
@@ -5583,7 +5583,7 @@ __metadata:
     lodash: ^4.17.21
     luxon: ^3.0.0
     msw: ^1.0.0
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     p-limit: ^3.0.2
     qs: ^6.9.4
     uuid: ^9.0.0
@@ -5630,7 +5630,7 @@ __metadata:
     lodash: ^4.17.21
     luxon: ^3.0.0
     msw: ^1.0.0
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     uuid: ^9.0.0
   languageName: unknown
   linkType: soft
@@ -5713,7 +5713,7 @@ __metadata:
     luxon: ^3.0.0
     minimatch: ^9.0.0
     msw: ^1.0.0
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     p-limit: ^3.0.2
     prom-client: ^15.0.0
     supertest: ^6.1.3
@@ -6064,7 +6064,7 @@ __metadata:
     express-promise-router: ^4.1.0
     fs-extra: ^11.0.0
     lodash: ^4.17.21
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     ping: ^0.4.1
     semver: ^7.5.3
     supertest: ^6.2.4
@@ -6339,7 +6339,7 @@ __metadata:
     luxon: ^3.0.0
     morgan: ^1.10.0
     msw: ^1.0.0
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     stream-buffers: ^3.0.2
     supertest: ^6.1.3
     winston: ^3.2.1
@@ -6412,7 +6412,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@kubernetes/client-node": ^0.20.0
     msw: ^1.3.1
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     supertest: ^6.1.3
     winston: ^3.2.1
   languageName: unknown
@@ -6546,7 +6546,7 @@ __metadata:
     express-promise-router: ^4.1.0
     knex: ^3.0.0
     msw: ^1.0.0
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     supertest: ^6.2.4
     uuid: ^9.0.0
     winston: ^3.2.1
@@ -6579,7 +6579,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     knex: ^3.0.0
     msw: ^1.0.0
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     uuid: ^9.0.0
   languageName: unknown
   linkType: soft
@@ -6721,7 +6721,7 @@ __metadata:
     express-promise-router: ^4.1.0
     lodash: ^4.17.21
     msw: ^1.0.0
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     supertest: ^6.1.6
     yn: ^4.0.0
     zod: ^3.22.4
@@ -6841,7 +6841,7 @@ __metadata:
     http-proxy-middleware: ^2.0.0
     morgan: ^1.10.0
     msw: ^2.0.0
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     uuid: ^9.0.0
     winston: ^3.2.1
     yaml: ^2.0.0
@@ -6881,7 +6881,7 @@ __metadata:
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     fs-extra: ^11.2.0
     msw: ^1.0.0
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     yaml: ^2.0.0
   languageName: unknown
   linkType: soft
@@ -6900,7 +6900,7 @@ __metadata:
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     fs-extra: ^11.2.0
     msw: ^1.0.0
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     yaml: ^2.0.0
   languageName: unknown
   linkType: soft
@@ -6921,7 +6921,7 @@ __metadata:
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     fs-extra: ^11.2.0
     msw: ^1.0.0
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     yaml: ^2.0.0
   languageName: unknown
   linkType: soft
@@ -6942,7 +6942,7 @@ __metadata:
     fs-extra: ^11.2.0
     git-url-parse: ^14.0.0
     msw: ^1.0.0
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     node-html-markdown: ^1.3.0
     yaml: ^2.0.0
   languageName: unknown
@@ -7001,7 +7001,7 @@ __metadata:
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     msw: ^1.0.0
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     yaml: ^2.0.0
   languageName: unknown
   linkType: soft
@@ -7019,7 +7019,7 @@ __metadata:
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     msw: ^1.0.0
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     yaml: ^2.0.0
   languageName: unknown
   linkType: soft
@@ -7124,7 +7124,7 @@ __metadata:
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     msw: ^2.0.0
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     yaml: ^2.3.3
   languageName: unknown
   linkType: soft
@@ -7456,7 +7456,7 @@ __metadata:
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
     msw: ^1.2.1
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
   languageName: unknown
   linkType: soft
 
@@ -7491,7 +7491,7 @@ __metadata:
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
     msw: ^1.2.1
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     qs: ^6.9.4
   languageName: unknown
   linkType: soft
@@ -7516,7 +7516,7 @@ __metadata:
     "@backstage/plugin-techdocs-node": "workspace:^"
     lodash: ^4.17.21
     msw: ^1.0.0
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     p-limit: ^3.1.0
   languageName: unknown
   linkType: soft
@@ -7687,7 +7687,7 @@ __metadata:
     express-promise-router: ^4.1.0
     http-proxy-middleware: ^2.0.0
     msw: ^1.0.0
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     supertest: ^6.2.4
     uuid: ^9.0.0
     winston: ^3.2.1
@@ -7810,7 +7810,7 @@ __metadata:
     knex: ^3.0.0
     lodash: ^4.17.21
     msw: ^1.0.0
-    node-fetch: ^2.6.7
+    node-fetch: ^2.7.0
     p-limit: ^3.1.0
     supertest: ^6.1.3
     winston: ^3.2.1
