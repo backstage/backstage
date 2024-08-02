@@ -914,7 +914,7 @@ describe('instantiateAppNodeTree', () => {
                   namespace: 'app',
                   name: 'test',
                   attachTo: { id: 'ignored', input: 'ignored' },
-                  output: [],
+                  output: [testDataRef],
                   factory() {
                     const error = new Error('NOPE');
                     error.name = 'NopeError';
@@ -981,11 +981,12 @@ describe('instantiateAppNodeTree', () => {
           createAppNodeInstance({
             node: makeNode(
               resolveExtensionDefinition(
+                // @ts-expect-error
                 createExtension({
                   namespace: 'app',
                   name: 'test',
                   attachTo: { id: 'ignored', input: 'ignored' },
-                  output: [],
+                  output: [], // Output not declared
                   factory({}) {
                     return [testDataRef('test')] as any;
                   },
