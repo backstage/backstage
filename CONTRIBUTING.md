@@ -99,7 +99,7 @@ You'll see how you get both logs for the frontend `webpack-dev-server` which ser
 
 Visit <http://localhost:3000> and you should see the bleeding edge of Backstage ready for contributions!
 
-If you want to get a better understanding of the layout of the repo not that you have a local copy running feel free to review the [Backstage Project Structure](https://backstage.io/docs/getting-started/project-structure) documentation.
+If you want to get a better understanding of the layout of the repo now that you have a local copy running feel free to review the [Backstage Project Structure](https://backstage.io/docs/getting-started/#general-folder-structure) documentation.
 
 ## Coding Guidelines
 

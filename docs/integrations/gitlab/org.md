@@ -25,8 +25,7 @@ This provider can also be configured to ingest GitLab data based on [GitLab Syst
 
 As this provider is not one of the default providers, you will first need to install the Gitlab provider plugin:
 
-```bash
-# From your Backstage root directory
+```bash title="From your Backstage root directory"
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-gitlab @backstage/plugin-catalog-backend-module-gitlab-org
 ```
 

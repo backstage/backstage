@@ -20,7 +20,7 @@ nav:
       - Support and community: 'overview/support.md'
       - Logo assets: 'overview/logos.md'
   - Getting Started:
-      - Installing a standalone server: 'getting-started/index.md'
+      - Creating your Backstage App: 'getting-started/index.md'
       - Configuring Backstage:
           - Database: 'getting-started/config/database.md'
           - Authentication: 'getting-started/config/authentication.md'
@@ -158,7 +158,7 @@ nav:
           - Azure EasyAuth: 'auth/microsoft/azure-easyauth.md'
           - Bitbucket: 'auth/bitbucket/provider.md'
           - Bitbucket Server: 'auth/bitbucketServer/provider.md'
-          - Cloudflare Access: 'auth/cloudflare/access.md'
+          - Cloudflare Access: 'auth/cloudflare/provider.md'
           - GitHub: 'auth/github/provider.md'
           - GitLab: 'auth/gitlab/provider.md'
           - Google: 'auth/google/provider.md'

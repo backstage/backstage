@@ -264,4 +264,522 @@ describe('github:environment:create examples', () => {
       encrypted_value: expect.any(String),
     });
   });
+
+  it(`should ${examples[4].description}`, async () => {
+    const input = yaml.parse(examples[4].example).steps[0].input;
+
+    await action.handler({
+      ...mockContext,
+      input,
+    });
+
+    expect(
+      mockOctokit.rest.repos.createOrUpdateEnvironment,
+    ).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repository',
+      environment_name: 'envname',
+      deployment_branch_policy: null,
+    });
+
+    expect(
+      mockOctokit.rest.repos.createDeploymentBranchPolicy,
+    ).toHaveBeenCalledTimes(2);
+    expect(
+      mockOctokit.rest.repos.createDeploymentBranchPolicy,
+    ).toHaveBeenCalledWith({
+      environment_name: 'envname',
+      name: 'release/*/*',
+      owner: 'owner',
+      repo: 'repository',
+      type: 'tag',
+    });
+    expect(
+      mockOctokit.rest.repos.createDeploymentBranchPolicy,
+    ).toHaveBeenCalledWith({
+      environment_name: 'envname',
+      name: 'v*.*.*',
+      owner: 'owner',
+      repo: 'repository',
+      type: 'tag',
+    });
+
+    expect(
+      mockOctokit.rest.actions.createEnvironmentVariable,
+    ).not.toHaveBeenCalled();
+
+    expect(
+      mockOctokit.rest.actions.createOrUpdateEnvironmentSecret,
+    ).not.toHaveBeenCalled();
+  });
+
+  it(`should ${examples[5].description}`, async () => {
+    const input = yaml.parse(examples[5].example).steps[0].input;
+
+    await action.handler({
+      ...mockContext,
+      input,
+    });
+
+    expect(
+      mockOctokit.rest.repos.createOrUpdateEnvironment,
+    ).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repository',
+      environment_name: 'envname',
+      deployment_branch_policy: {
+        custom_branch_policies: true,
+        protected_branches: false,
+      },
+    });
+
+    expect(
+      mockOctokit.rest.repos.createDeploymentBranchPolicy,
+    ).toHaveBeenCalledTimes(4);
+    expect(
+      mockOctokit.rest.repos.createDeploymentBranchPolicy,
+    ).toHaveBeenCalledWith({
+      environment_name: 'envname',
+      name: 'release/*',
+      owner: 'owner',
+      repo: 'repository',
+      type: 'tag',
+    });
+    expect(
+      mockOctokit.rest.repos.createDeploymentBranchPolicy,
+    ).toHaveBeenCalledWith({
+      environment_name: 'envname',
+      name: 'feature/*',
+      owner: 'owner',
+      repo: 'repository',
+      type: 'branch',
+    });
+
+    expect(
+      mockOctokit.rest.actions.createEnvironmentVariable,
+    ).not.toHaveBeenCalled();
+
+    expect(
+      mockOctokit.rest.actions.createOrUpdateEnvironmentSecret,
+    ).not.toHaveBeenCalled();
+  });
+
+  it(`should ${examples[6].description}`, async () => {
+    const input = yaml.parse(examples[6].example).steps[0].input;
+
+    await action.handler({
+      ...mockContext,
+      input,
+    });
+
+    expect(
+      mockOctokit.rest.repos.createOrUpdateEnvironment,
+    ).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repository',
+      environment_name: 'envname',
+      deployment_branch_policy: {
+        custom_branch_policies: true,
+        protected_branches: false,
+      },
+    });
+
+    expect(
+      mockOctokit.rest.repos.createDeploymentBranchPolicy,
+    ).toHaveBeenCalledTimes(4);
+    expect(
+      mockOctokit.rest.repos.createDeploymentBranchPolicy,
+    ).toHaveBeenCalledWith({
+      environment_name: 'envname',
+      name: 'dev/*',
+      owner: 'owner',
+      repo: 'repository',
+      type: 'branch',
+    });
+    expect(
+      mockOctokit.rest.repos.createDeploymentBranchPolicy,
+    ).toHaveBeenCalledWith({
+      environment_name: 'envname',
+      name: 'test/*',
+      owner: 'owner',
+      repo: 'repository',
+      type: 'branch',
+    });
+
+    expect(
+      mockOctokit.rest.actions.createEnvironmentVariable,
+    ).toHaveBeenCalledTimes(2);
+
+    expect(
+      mockOctokit.rest.actions.createEnvironmentVariable,
+    ).toHaveBeenCalledWith({
+      environment_name: 'envname',
+      name: 'API_KEY',
+      owner: 'owner',
+      repo: 'repository',
+      repository_id: 'repoid',
+      value: '123456789',
+    });
+    expect(
+      mockOctokit.rest.actions.createEnvironmentVariable,
+    ).toHaveBeenCalledWith({
+      environment_name: 'envname',
+      name: 'NODE_ENV',
+      owner: 'owner',
+      repo: 'repository',
+      repository_id: 'repoid',
+      value: 'production',
+    });
+
+    expect(
+      mockOctokit.rest.actions.createOrUpdateEnvironmentSecret,
+    ).toHaveBeenCalledTimes(2);
+    expect(
+      mockOctokit.rest.actions.createOrUpdateEnvironmentSecret,
+    ).toHaveBeenCalledWith({
+      encrypted_value: expect.any(String),
+      environment_name: 'envname',
+      key_id: 'keyid',
+      owner: 'owner',
+      repo: 'repository',
+      repository_id: 'repoid',
+      secret_name: 'API_SECRET',
+    });
+    expect(
+      mockOctokit.rest.actions.createOrUpdateEnvironmentSecret,
+    ).toHaveBeenCalledWith({
+      encrypted_value: expect.any(String),
+      environment_name: 'envname',
+      key_id: 'keyid',
+      owner: 'owner',
+      repo: 'repository',
+      repository_id: 'repoid',
+      secret_name: 'DATABASE_URL',
+    });
+  });
+
+  it(`should ${examples[7].description}`, async () => {
+    const input = yaml.parse(examples[7].example).steps[0].input;
+
+    await action.handler({
+      ...mockContext,
+      input,
+    });
+
+    expect(
+      mockOctokit.rest.repos.createOrUpdateEnvironment,
+    ).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repository',
+      environment_name: 'envname',
+      deployment_branch_policy: null,
+    });
+
+    expect(
+      mockOctokit.rest.repos.createDeploymentBranchPolicy,
+    ).not.toHaveBeenCalled();
+
+    expect(
+      mockOctokit.rest.actions.createEnvironmentVariable,
+    ).not.toHaveBeenCalled();
+
+    expect(
+      mockOctokit.rest.actions.createOrUpdateEnvironmentSecret,
+    ).not.toHaveBeenCalled();
+  });
+
+  it(`should ${examples[8].description}`, async () => {
+    const input = yaml.parse(examples[8].example).steps[0].input;
+
+    await action.handler({
+      ...mockContext,
+      input,
+    });
+
+    expect(
+      mockOctokit.rest.repos.createOrUpdateEnvironment,
+    ).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repository',
+      environment_name: 'envname',
+      deployment_branch_policy: null,
+    });
+
+    expect(
+      mockOctokit.rest.repos.createDeploymentBranchPolicy,
+    ).not.toHaveBeenCalled();
+
+    expect(
+      mockOctokit.rest.actions.createEnvironmentVariable,
+    ).not.toHaveBeenCalled();
+
+    expect(
+      mockOctokit.rest.actions.createOrUpdateEnvironmentSecret,
+    ).not.toHaveBeenCalled();
+  });
+
+  it(`should ${examples[9].description}`, async () => {
+    const input = yaml.parse(examples[9].example).steps[0].input;
+
+    await action.handler({
+      ...mockContext,
+      input,
+    });
+
+    expect(
+      mockOctokit.rest.repos.createOrUpdateEnvironment,
+    ).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repository',
+      environment_name: 'envname',
+      deployment_branch_policy: {
+        custom_branch_policies: true,
+        protected_branches: false,
+      },
+    });
+
+    expect(
+      mockOctokit.rest.repos.createDeploymentBranchPolicy,
+    ).toHaveBeenCalledTimes(4);
+    expect(
+      mockOctokit.rest.repos.createDeploymentBranchPolicy,
+    ).toHaveBeenCalledWith({
+      environment_name: 'envname',
+      name: 'release/*',
+      owner: 'owner',
+      repo: 'repository',
+      type: 'branch',
+    });
+    expect(
+      mockOctokit.rest.repos.createDeploymentBranchPolicy,
+    ).toHaveBeenCalledWith({
+      environment_name: 'envname',
+      name: 'hotfix/*',
+      owner: 'owner',
+      repo: 'repository',
+      type: 'branch',
+    });
+    expect(
+      mockOctokit.rest.repos.createDeploymentBranchPolicy,
+    ).toHaveBeenCalledWith({
+      environment_name: 'envname',
+      name: 'v*',
+      owner: 'owner',
+      repo: 'repository',
+      type: 'tag',
+    });
+
+    expect(
+      mockOctokit.rest.actions.createEnvironmentVariable,
+    ).not.toHaveBeenCalled();
+
+    expect(
+      mockOctokit.rest.actions.createOrUpdateEnvironmentSecret,
+    ).not.toHaveBeenCalled();
+  });
+
+  it(`should ${examples[10].description}`, async () => {
+    const input = yaml.parse(examples[10].example).steps[0].input;
+
+    await action.handler({
+      ...mockContext,
+      input,
+    });
+
+    expect(
+      mockOctokit.rest.repos.createOrUpdateEnvironment,
+    ).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repository',
+      environment_name: 'envname',
+      deployment_branch_policy: null,
+    });
+
+    expect(
+      mockOctokit.rest.repos.createDeploymentBranchPolicy,
+    ).not.toHaveBeenCalled();
+
+    expect(
+      mockOctokit.rest.actions.createEnvironmentVariable,
+    ).toHaveBeenCalledTimes(2);
+    expect(
+      mockOctokit.rest.actions.createEnvironmentVariable,
+    ).toHaveBeenCalledWith({
+      environment_name: 'envname',
+      name: 'VAR1',
+      owner: 'owner',
+      repo: 'repository',
+      repository_id: 'repoid',
+      value: 'value1',
+    });
+    expect(
+      mockOctokit.rest.actions.createEnvironmentVariable,
+    ).toHaveBeenCalledWith({
+      environment_name: 'envname',
+      name: 'VAR2',
+      owner: 'owner',
+      repo: 'repository',
+      repository_id: 'repoid',
+      value: 'value2',
+    });
+
+    expect(
+      mockOctokit.rest.actions.createOrUpdateEnvironmentSecret,
+    ).not.toHaveBeenCalled();
+  });
+
+  it(`should ${examples[11].description}`, async () => {
+    const input = yaml.parse(examples[11].example).steps[0].input;
+
+    await action.handler({
+      ...mockContext,
+      input,
+    });
+
+    expect(
+      mockOctokit.rest.repos.createOrUpdateEnvironment,
+    ).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repository',
+      environment_name: 'envname',
+      deployment_branch_policy: null,
+    });
+
+    expect(
+      mockOctokit.rest.repos.createDeploymentBranchPolicy,
+    ).not.toHaveBeenCalled();
+
+    expect(
+      mockOctokit.rest.actions.createEnvironmentVariable,
+    ).not.toHaveBeenCalled();
+    expect(
+      mockOctokit.rest.actions.createOrUpdateEnvironmentSecret,
+    ).toHaveBeenCalledTimes(2);
+    expect(
+      mockOctokit.rest.actions.createOrUpdateEnvironmentSecret,
+    ).toHaveBeenCalledWith({
+      encrypted_value: expect.any(String),
+      environment_name: 'envname',
+      key_id: 'keyid',
+      owner: 'owner',
+      repo: 'repository',
+      repository_id: 'repoid',
+      secret_name: 'SECRET1',
+    });
+    expect(
+      mockOctokit.rest.actions.createOrUpdateEnvironmentSecret,
+    ).toHaveBeenCalledWith({
+      encrypted_value: expect.any(String),
+      environment_name: 'envname',
+      key_id: 'keyid',
+      owner: 'owner',
+      repo: 'repository',
+      repository_id: 'repoid',
+      secret_name: 'SECRET2',
+    });
+  });
+
+  it(`should ${examples[12].description}`, async () => {
+    const input = yaml.parse(examples[12].example).steps[0].input;
+
+    await action.handler({
+      ...mockContext,
+      input,
+    });
+
+    expect(
+      mockOctokit.rest.repos.createOrUpdateEnvironment,
+    ).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repository',
+      environment_name: 'envname',
+      deployment_branch_policy: {
+        custom_branch_policies: false,
+        protected_branches: true,
+      },
+    });
+
+    expect(
+      mockOctokit.rest.repos.createDeploymentBranchPolicy,
+    ).not.toHaveBeenCalled();
+
+    expect(
+      mockOctokit.rest.actions.createEnvironmentVariable,
+    ).not.toHaveBeenCalled();
+    expect(
+      mockOctokit.rest.actions.createOrUpdateEnvironmentSecret,
+    ).not.toHaveBeenCalled();
+  });
+
+  it(`should ${examples[13].description}`, async () => {
+    const input = yaml.parse(examples[13].example).steps[0].input;
+
+    await action.handler({
+      ...mockContext,
+      input,
+    });
+
+    expect(
+      mockOctokit.rest.repos.createOrUpdateEnvironment,
+    ).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repository',
+      environment_name: 'envname',
+      deployment_branch_policy: null,
+    });
+
+    expect(
+      mockOctokit.rest.repos.createDeploymentBranchPolicy,
+    ).not.toHaveBeenCalled();
+
+    expect(
+      mockOctokit.rest.actions.createEnvironmentVariable,
+    ).toHaveBeenCalledTimes(2);
+    expect(
+      mockOctokit.rest.actions.createEnvironmentVariable,
+    ).toHaveBeenCalledWith({
+      environment_name: 'envname',
+      name: 'VAR1',
+      owner: 'owner',
+      repo: 'repository',
+      repository_id: 'repoid',
+      value: 'value1',
+    });
+    expect(
+      mockOctokit.rest.actions.createEnvironmentVariable,
+    ).toHaveBeenCalledWith({
+      environment_name: 'envname',
+      name: 'VAR2',
+      owner: 'owner',
+      repo: 'repository',
+      repository_id: 'repoid',
+      value: 'value2',
+    });
+
+    expect(
+      mockOctokit.rest.actions.createOrUpdateEnvironmentSecret,
+    ).toHaveBeenCalledTimes(2);
+    expect(
+      mockOctokit.rest.actions.createOrUpdateEnvironmentSecret,
+    ).toHaveBeenCalledWith({
+      encrypted_value: expect.any(String),
+      environment_name: 'envname',
+      key_id: 'keyid',
+      owner: 'owner',
+      repo: 'repository',
+      repository_id: 'repoid',
+      secret_name: 'SECRET1',
+    });
+    expect(
+      mockOctokit.rest.actions.createOrUpdateEnvironmentSecret,
+    ).toHaveBeenCalledWith({
+      encrypted_value: expect.any(String),
+      environment_name: 'envname',
+      key_id: 'keyid',
+      owner: 'owner',
+      repo: 'repository',
+      repository_id: 'repoid',
+      secret_name: 'SECRET2',
+    });
+  });
 });

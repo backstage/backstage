@@ -90,6 +90,9 @@ describe('read microsoft graph', () => {
     yield {
       '@odata.type': '#microsoft.graph.group',
       id: 'childgroupid',
+      displayName: 'Child Group Name',
+      description: 'Child Group Description',
+      mail: 'childgroup@example.com',
     };
     yield {
       '@odata.type': '#microsoft.graph.user',
@@ -769,6 +772,117 @@ describe('read microsoft graph', () => {
       expect(client.getGroupMembers).toHaveBeenCalledWith('groupid', {
         top: 999,
       });
+    });
+
+    it('should read groups and their sub groups', async () => {
+      async function* getExampleGroupMembersForSubGroup(): AsyncIterable<GroupMember> {
+        yield {
+          '@odata.type': '#microsoft.graph.user',
+          id: 'userid2',
+        };
+      }
+
+      client.getGroups.mockImplementation(getExampleGroups);
+      client.getGroupMembers.mockImplementationOnce(getExampleGroupMembers);
+      client.getGroupMembers.mockImplementationOnce(
+        getExampleGroupMembersForSubGroup,
+      );
+      client.getOrganization.mockResolvedValue({
+        id: 'tenantid',
+        displayName: 'Organization Name',
+      });
+      client.getGroupPhotoWithSizeLimit.mockResolvedValue(
+        'data:image/jpeg;base64,...',
+      );
+
+      const { groups, groupMember, groupMemberOf, rootGroup } =
+        await readMicrosoftGraphGroups(client, 'tenantid', {
+          groupIncludeSubGroups: true,
+        });
+
+      const expectedRootGroup = group({
+        metadata: {
+          annotations: {
+            'graph.microsoft.com/tenant-id': 'tenantid',
+          },
+          name: 'organization_name',
+          description: 'Organization Name',
+        },
+        spec: {
+          type: 'root',
+          profile: {
+            displayName: 'Organization Name',
+          },
+          children: [],
+        },
+      });
+      expect(groups).toEqual([
+        expectedRootGroup,
+        group({
+          metadata: {
+            annotations: {
+              'graph.microsoft.com/group-id': 'childgroupid',
+            },
+            name: 'child_group_name',
+            description: 'Child Group Description',
+          },
+          spec: {
+            type: 'team',
+            profile: {
+              displayName: 'Child Group Name',
+              email: 'childgroup@example.com',
+              // TODO: Loading groups photos doesn't work right now as Microsoft
+              // Graph doesn't allows this yet
+              /* picture: 'data:image/jpeg;base64,...',*/
+            },
+            children: [],
+          },
+        }),
+        group({
+          metadata: {
+            annotations: {
+              'graph.microsoft.com/group-id': 'groupid',
+            },
+            name: 'group_name',
+            description: 'Group Description',
+          },
+          spec: {
+            type: 'team',
+            profile: {
+              displayName: 'Group Name',
+              email: 'group@example.com',
+              // TODO: Loading groups photos doesn't work right now as Microsoft
+              // Graph doesn't allows this yet
+              /* picture: 'data:image/jpeg;base64,...',*/
+            },
+            children: [],
+          },
+        }),
+      ]);
+      expect(rootGroup).toEqual(expectedRootGroup);
+      expect(groupMember.get('groupid')).toEqual(new Set(['childgroupid']));
+      expect(groupMemberOf.get('userid')).toEqual(new Set(['groupid']));
+      expect(groupMemberOf.get('userid2')).toEqual(new Set(['childgroupid']));
+      expect(groupMember.get('organization_name')).toEqual(new Set());
+
+      expect(client.getGroups).toHaveBeenCalledTimes(1);
+      expect(client.getGroups).toHaveBeenCalledWith(
+        {
+          top: 999,
+        },
+        undefined,
+      );
+      expect(client.getGroupMembers).toHaveBeenCalledTimes(2);
+      expect(client.getGroupMembers).toHaveBeenCalledWith('groupid', {
+        top: 999,
+      });
+      expect(client.getGroupMembers).toHaveBeenCalledWith('childgroupid', {
+        top: 999,
+      });
+      // TODO: Loading groups photos doesn't work right now as Microsoft Graph
+      // doesn't allows this yet
+      // expect(client.getGroupPhotoWithSizeLimit).toBeCalledTimes(1);
+      // expect(client.getGroupPhotoWithSizeLimit).toBeCalledWith('groupid', 120);
     });
   });
 

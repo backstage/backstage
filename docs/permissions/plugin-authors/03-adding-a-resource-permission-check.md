@@ -237,12 +237,12 @@ Let's go back to the permission policy's handle function and try to authorize ou
 
 ```ts title="packages/backend/src/plugins/permission.ts"
 import {
-  BackstageIdentityResponse,
   IdentityClient
 } from '@backstage/plugin-auth-node';
 import {
   PermissionPolicy,
   PolicyQuery,
+  PolicyQueryUser,
 } from '@backstage/plugin-permission-node';
 import { isPermission } from '@backstage/plugin-permission-common';
 /* highlight-remove-next-line */
@@ -262,9 +262,9 @@ import {
 async handle(
   request: PolicyQuery,
   /* highlight-remove-next-line */
-  _user?: BackstageIdentityResponse,
+  _user?: PolicyQueryUser,
   /* highlight-add-next-line */
-  user?: BackstageIdentityResponse,
+  user?: PolicyQueryUser,
 ): Promise<PolicyDecision> {
   if (isPermission(request.permission, todoListCreatePermission)) {
     return {
@@ -276,7 +276,7 @@ async handle(
     return createTodoListConditionalDecision(
       request.permission,
       todoListConditions.isOwner({
-        userId: user?.identity.userEntityRef ?? '',
+        userId: user?.info.userEntityRef ?? '',
       }),
     );
   }

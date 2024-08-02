@@ -71,8 +71,7 @@ Backstage application / backend exposes it.
 To actually attach and run the plugin router, you will make some modifications
 to your backend.
 
-```bash
-# From your Backstage root directory
+```bash title="From your Backstage root directory"
 yarn --cwd packages/backend add @internal/plugin-carmen-backend@^0.1.0 # Change this to match the plugin's package.json
 ```
 

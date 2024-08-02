@@ -23,13 +23,22 @@ const _default: BackstagePlugin<
 export default _default;
 
 // @alpha (undocumented)
-export const techDocsSearchResultListItemExtension: ExtensionDefinition<{
-  lineClamp: number;
-  noTrack: boolean;
-  asListItem: boolean;
-  asLink: boolean;
-  title?: string | undefined;
-}>;
+export const techDocsSearchResultListItemExtension: ExtensionDefinition<
+  {
+    lineClamp: number;
+    noTrack: boolean;
+    asListItem: boolean;
+    asLink: boolean;
+    title?: string | undefined;
+  },
+  {
+    lineClamp: number;
+    noTrack: boolean;
+    asListItem: boolean;
+    asLink: boolean;
+    title?: string | undefined;
+  }
+>;
 
 // (No @packageDocumentation comment for this package)
 ```

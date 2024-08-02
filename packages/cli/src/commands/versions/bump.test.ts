@@ -18,15 +18,11 @@ import fs from 'fs-extra';
 import { Command } from 'commander';
 import * as runObj from '../../lib/run';
 import bump, { bumpBackstageJsonVersion, createVersionFinder } from './bump';
-import {
-  setupRequestMockHandlers,
-  withLogCollector,
-} from '@backstage/test-utils';
+import { registerMswTestHooks, withLogCollector } from '@backstage/test-utils';
 import { YarnInfoInspectData } from '../../lib/versioning/packages';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { NotFoundError } from '@backstage/errors';
-import { Lockfile } from '../../lib/versioning/Lockfile';
 import {
   MockDirectory,
   createMockDirectory,
@@ -120,17 +116,6 @@ const lockfileMock = `${HEADER}
   version "1.0.3"
 `;
 
-// This is the lockfile that we produce to unlock versions before we run yarn install
-const lockfileMockResult = `${HEADER}
-"@backstage/core@^1.0.5":
-  version "1.0.6"
-  dependencies:
-    "@backstage/core-api" "^1.0.6"
-
-"@backstage/theme@^1.0.0":
-  version "1.0.0"
-`;
-
 // Avoid flakes by comparing sorted log lines. File system access is async, which leads to the log line order being indeterministic
 const expectLogsToMatch = (
   recievedLogs: String[],
@@ -156,7 +141,7 @@ describe('bump', () => {
   });
 
   const worker = setupServer();
-  setupRequestMockHandlers(worker);
+  registerMswTestHooks(worker);
 
   it('should bump backstage dependencies', async () => {
     mockDir.setContent({
@@ -207,11 +192,7 @@ describe('bump', () => {
       'Using default pattern glob @backstage/*',
       'Checking for updates of @backstage/core',
       'Checking for updates of @backstage/theme',
-      'Checking for updates of @backstage/core-api',
       'Some packages are outdated, updating',
-      'unlocking @backstage/core@^1.0.3 ~> 1.0.6',
-      'unlocking @backstage/core-api@^1.0.6 ~> 1.0.7',
-      'unlocking @backstage/core-api@^1.0.3 ~> 1.0.7',
       'bumping @backstage/core in a to ^1.0.6',
       'bumping @backstage/core in b to ^1.0.6',
       'bumping @backstage/theme in b to ^2.0.0',
@@ -223,9 +204,8 @@ describe('bump', () => {
       'Version bump complete!',
     ]);
 
-    expect(mockFetchPackageInfo).toHaveBeenCalledTimes(3);
+    expect(mockFetchPackageInfo).toHaveBeenCalledTimes(2);
     expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/core');
-    expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/core-api');
     expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/theme');
 
     expect(runObj.run).toHaveBeenCalledTimes(1);
@@ -234,12 +214,6 @@ describe('bump', () => {
       ['install'],
       expect.any(Object),
     );
-
-    const lockfileContents = await fs.readFile(
-      mockDir.resolve('yarn.lock'),
-      'utf8',
-    );
-    expect(lockfileContents).toBe(lockfileMockResult);
 
     const packageA = await fs.readJson(
       mockDir.resolve('packages/a/package.json'),
@@ -315,11 +289,7 @@ describe('bump', () => {
       'Using default pattern glob @backstage/*',
       'Checking for updates of @backstage/core',
       'Checking for updates of @backstage/theme',
-      'Checking for updates of @backstage/core-api',
       'Some packages are outdated, updating',
-      'unlocking @backstage/core@^1.0.3 ~> 1.0.6',
-      'unlocking @backstage/core-api@^1.0.6 ~> 1.0.7',
-      'unlocking @backstage/core-api@^1.0.3 ~> 1.0.7',
       'bumping @backstage/core in a to ^1.0.6',
       'bumping @backstage/core in b to ^1.0.6',
       'bumping @backstage/theme in b to ^2.0.0',
@@ -331,9 +301,8 @@ describe('bump', () => {
       'Version bump complete!',
     ]);
 
-    expect(mockFetchPackageInfo).toHaveBeenCalledTimes(3);
+    expect(mockFetchPackageInfo).toHaveBeenCalledTimes(2);
     expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/core');
-    expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/core-api');
     expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/theme');
 
     expect(runObj.run).not.toHaveBeenCalledWith(
@@ -341,12 +310,6 @@ describe('bump', () => {
       ['install'],
       expect.any(Object),
     );
-
-    const lockfileContents = await fs.readFile(
-      mockDir.resolve('yarn.lock'),
-      'utf8',
-    );
-    expect(lockfileContents).toBe(lockfileMockResult);
 
     const packageA = await fs.readJson(
       mockDir.resolve('packages/a/package.json'),
@@ -428,12 +391,7 @@ describe('bump', () => {
       'Using default pattern glob @backstage/*',
       'Checking for updates of @backstage/core',
       'Checking for updates of @backstage/theme',
-      'Checking for updates of @backstage/theme',
-      'Checking for updates of @backstage/core-api',
       'Some packages are outdated, updating',
-      'unlocking @backstage/core@^1.0.3 ~> 1.0.6',
-      'unlocking @backstage/core-api@^1.0.6 ~> 1.0.7',
-      'unlocking @backstage/core-api@^1.0.3 ~> 1.0.7',
       'bumping @backstage/theme in b to ^5.0.0',
       'bumping @backstage/core in b to ^1.0.6',
       'bumping @backstage/core in a to ^1.0.6',
@@ -446,9 +404,8 @@ describe('bump', () => {
       'Version bump complete!',
     ]);
 
-    expect(mockFetchPackageInfo).toHaveBeenCalledTimes(2);
+    expect(mockFetchPackageInfo).toHaveBeenCalledTimes(1);
     expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/core');
-    expect(mockFetchPackageInfo).not.toHaveBeenCalledWith('@backstage/theme');
 
     expect(runObj.run).toHaveBeenCalledTimes(1);
     expect(runObj.run).toHaveBeenCalledWith(
@@ -456,12 +413,6 @@ describe('bump', () => {
       ['install'],
       expect.any(Object),
     );
-
-    const lockfileContents = await fs.readFile(
-      mockDir.resolve('yarn.lock'),
-      'utf8',
-    );
-    expect(lockfileContents).toBe(lockfileMockResult);
 
     const packageA = await fs.readJson(
       mockDir.resolve('packages/a/package.json'),
@@ -632,12 +583,7 @@ describe('bump', () => {
       'Using default pattern glob @backstage/*',
       'Checking for updates of @backstage/core',
       'Checking for updates of @backstage/theme',
-      'Checking for updates of @backstage/theme',
-      'Checking for updates of @backstage/core-api',
       'Some packages are outdated, updating',
-      'unlocking @backstage/core@^1.0.3 ~> 1.0.6',
-      'unlocking @backstage/core-api@^1.0.6 ~> 1.0.7',
-      'unlocking @backstage/core-api@^1.0.3 ~> 1.0.7',
       'bumping @backstage/theme in b to ^5.0.0',
       'bumping @backstage/core in b to ^1.0.6',
       'bumping @backstage/core in a to ^1.0.6',
@@ -660,21 +606,6 @@ describe('bump', () => {
   version "1.0.1"
 
 "@backstage-extra/custom-two@^1.0.0":
-  version "1.0.0"
-`;
-    const customLockfileMockResult = `${HEADER}
-"@backstage-extra/custom-two@^1.0.0":
-  version "1.0.0"
-
-"@backstage-extra/custom@^1.1.0":
-  version "1.1.0"
-
-"@backstage/core@^1.0.5":
-  version "1.0.6"
-  dependencies:
-    "@backstage/core-api" "^1.0.6"
-
-"@backstage/theme@^1.0.0":
   version "1.0.0"
 `;
     mockDir.setContent({
@@ -734,12 +665,7 @@ describe('bump', () => {
       'Checking for updates of @backstage-extra/custom',
       'Checking for updates of @backstage-extra/custom-two',
       'Checking for updates of @backstage/theme',
-      'Checking for updates of @backstage/core-api',
       'Some packages are outdated, updating',
-      'unlocking @backstage/core@^1.0.3 ~> 1.0.6',
-      'unlocking @backstage-extra/custom@^1.0.1 ~> 1.1.0',
-      'unlocking @backstage/core-api@^1.0.6 ~> 1.0.7',
-      'unlocking @backstage/core-api@^1.0.3 ~> 1.0.7',
       'bumping @backstage/core in a to ^1.0.6',
       'bumping @backstage-extra/custom in a to ^1.1.0',
       'bumping @backstage-extra/custom-two in a to ^2.0.0',
@@ -757,7 +683,7 @@ describe('bump', () => {
       'Version bump complete!',
     ]);
 
-    expect(mockFetchPackageInfo).toHaveBeenCalledTimes(5);
+    expect(mockFetchPackageInfo).toHaveBeenCalledTimes(4);
     expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/core');
     expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/theme');
 
@@ -767,12 +693,6 @@ describe('bump', () => {
       ['install'],
       expect.any(Object),
     );
-
-    const lockfileContents = await fs.readFile(
-      mockDir.resolve('yarn.lock'),
-      'utf8',
-    );
-    expect(lockfileContents).toEqual(customLockfileMockResult);
 
     const packageA = await fs.readJson(
       mockDir.resolve('packages/a/package.json'),
@@ -801,7 +721,7 @@ describe('bump', () => {
 
   it('should ignore not found packages', async () => {
     mockDir.setContent({
-      'yarn.lock': lockfileMockResult,
+      'yarn.lock': lockfileMock,
       'package.json': JSON.stringify({
         workspaces: {
           packages: ['packages/*'],
@@ -851,20 +771,10 @@ describe('bump', () => {
       'Checking for updates of @backstage/theme',
       'Package info not found, ignoring package @backstage/core',
       'Package info not found, ignoring package @backstage/theme',
-      'Checking for updates of @backstage/core',
-      'Checking for updates of @backstage/theme',
-      'Package info not found, ignoring package @backstage/core',
-      'Package info not found, ignoring package @backstage/theme',
       'All Backstage packages are up to date!',
     ]);
 
     expect(runObj.run).toHaveBeenCalledTimes(0);
-
-    const lockfileContents = await fs.readFile(
-      mockDir.resolve('yarn.lock'),
-      'utf8',
-    );
-    expect(lockfileContents).toBe(lockfileMockResult);
 
     const packageA = await fs.readJson(
       mockDir.resolve('packages/a/package.json'),
@@ -885,83 +795,6 @@ describe('bump', () => {
         '@backstage/theme': '^2.0.0', // not bumped
       },
     });
-  });
-
-  // eslint-disable-next-line jest/expect-expect
-  it('should log duplicates', async () => {
-    jest.spyOn(Lockfile.prototype, 'analyze').mockReturnValue({
-      invalidRanges: [],
-      newVersions: [],
-      newRanges: [
-        {
-          name: '@backstage/backend-app-api',
-          oldRange: '^1.0.0',
-          newRange: '^2.0.0',
-          oldVersion: '1.0.0',
-          newVersion: '2.0.0',
-        },
-      ],
-    });
-    mockDir.setContent({
-      'yarn.lock': `${HEADER}
-"@backstage/backend-app-api@^1.0.0":
-  version "1.0.0"
-`,
-      'package.json': JSON.stringify({
-        workspaces: {
-          packages: ['packages/*'],
-        },
-      }),
-      packages: {
-        a: {
-          'package.json': JSON.stringify({
-            name: 'a',
-            dependencies: {
-              '@backstage/backend-app-api': '^1.0.0',
-            },
-          }),
-        },
-      },
-    });
-
-    jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
-    worker.use(
-      rest.get(
-        'https://versions.backstage.io/v1/tags/main/manifest.json',
-        (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.json({
-              packages: [
-                {
-                  name: '@backstage/backend-app-api',
-                  version: '2.0.0',
-                },
-              ],
-            }),
-          ),
-      ),
-    );
-    const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
-      await bump({ pattern: null, release: 'main' } as unknown as Command);
-    });
-    expectLogsToMatch(logs, [
-      'Using default pattern glob @backstage/*',
-      'Checking for updates of @backstage/backend-app-api',
-      'Checking for updates of @backstage/backend-app-api',
-      'Some packages are outdated, updating',
-      'bumping @backstage/backend-app-api in a to ^2.0.0',
-      'Running yarn install to install new versions',
-      'Checking for moved packages to the @backstage-community namespace...',
-      '⚠️  The following packages may have breaking changes:',
-      '  @backstage/backend-app-api : 1.0.0 ~> 2.0.0',
-      '    https://github.com/backstage/backstage/blob/master/packages/backend-app-api/CHANGELOG.md',
-      'Version bump complete!',
-      '  ⚠️ Warning! ⚠️',
-      '  The below package(s) have incompatible duplicate installations, likely due to a bad dependency in a plugin.',
-      '  You can investigate this by running `yarn why <package-name>`, and report the issue to the plugin maintainers.',
-      '    @backstage/backend-app-api',
-    ]);
   });
 });
 

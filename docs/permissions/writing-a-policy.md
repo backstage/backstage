@@ -10,7 +10,10 @@ That policy looked like this:
 
 ```typescript title="packages/backend/src/plugins/permission.ts"
 class TestPermissionPolicy implements PermissionPolicy {
-  async handle(request: PolicyQuery): Promise<PolicyDecision> {
+  async handle(
+    request: PolicyQuery,
+    _user?: PolicyQueryUser,
+  ): Promise<PolicyDecision> {
     if (request.permission.name === 'catalog.entity.delete') {
       return {
         result: AuthorizeResult.DENY,
@@ -35,14 +38,6 @@ As we confirmed in the previous section, we know that this now prevents us from 
 Let's change the policy to the following:
 
 ```ts
-/* highlight-remove-next-line */
-import { IdentityClient } from '@backstage/plugin-auth-node';
-/* highlight-add-start */
-import {
-  BackstageIdentityResponse,
-  IdentityClient
-} from '@backstage/plugin-auth-node';
-  /* highlight-add-end */
 import {
   AuthorizeResult,
   PolicyDecision,
@@ -65,7 +60,7 @@ class TestPermissionPolicy implements PermissionPolicy {
   /* highlight-add-start */
   async handle(
     request: PolicyQuery,
-    user?: BackstageIdentityResponse,
+    user?: PolicyQueryUser,
    ): Promise<PolicyDecision> {
   /* highlight-add-end */
     /* highlight-remove-next-line */
@@ -81,7 +76,7 @@ class TestPermissionPolicy implements PermissionPolicy {
       return createCatalogConditionalDecision(
         request.permission,
         catalogConditions.isEntityOwner({
-          claims: user?.identity.ownershipEntityRefs ?? [],
+          claims: user?.info.ownershipEntityRefs ?? [],
         }),
       );
       /* highlight-add-end */
@@ -95,7 +90,7 @@ Let's walk through the new code that we just added.
 
 Instead of returning an Definitive Policy Decision, we use factory methods to construct a [Conditional Policy Decision](https://backstage.io/docs/reference/plugin-permission-common.conditionalpolicydecision) (See the [Concepts page](./concepts.md) for more details). Since the policy doesn't have enough information to determine if `user` is the entity owner, this criteria is encapsulated within the conditional decision. However, `createCatalogConditionalDecision` will not compile unless `request.permission` is a catalog entity [`ResourcePermission`](https://backstage.io/docs/reference/plugin-permission-common.resourcepermission). This type constraint ensures that policies return conditional decisions that are compatible with the requested permission. To address this, we use [`isPermission`](https://backstage.io/docs/reference/plugin-permission-common.ispermission) to ["narrow"](https://www.typescriptlang.org/docs/handbook/2/narrowing.html) the type of `request.permission` to `ResourcePermission<'catalog-entity'>`. This matches the runtime behavior that was in place before, but you'll notice that the type of `request.permission` has changed within the scope of that `if` statement.
 
-The `catalogConditions` object contains all of the rules defined by the catalog plugin. These rules can be combined to form a [`PermissionCriteria`](https://backstage.io/docs/reference/plugin-permission-common.permissioncriteria) object, but for this case we only need to use the `isEntityOwner` rule. This rule accepts a list of entity refs that represent User identity and Group membership used to determine ownership. The second argument to `PermissionPolicy#handle` provides us with a `BackstageIdentityResponse` object, from which we can grab the user's `ownershipEntityRefs`. We provide an empty array as a fallback since the user may be anonymous.
+The `catalogConditions` object contains all of the rules defined by the catalog plugin. These rules can be combined to form a [`PermissionCriteria`](https://backstage.io/docs/reference/plugin-permission-common.permissioncriteria) object, but for this case we only need to use the `isEntityOwner` rule. This rule accepts a list of entity refs that represent User identity and Group membership used to determine ownership. The second argument to `PermissionPolicy#handle` provides us with a `PolicyQueryUser` object, from which we can grab the user's `ownershipEntityRefs`. We provide an empty array as a fallback since the user may be anonymous.
 
 You should now be able to see in your Backstage app that the unregister entity button is enabled for entities that you own, but disabled for all other entities!
 
@@ -125,7 +120,7 @@ import {
 class TestPermissionPolicy implements PermissionPolicy {
   async handle(
     request: PolicyQuery,
-    user?: BackstageIdentityResponse,
+    user?: PolicyQueryUser,
   ): Promise<PolicyDecision> {
     /* highlight-remove-next-line */
     if (isPermission(request.permission, catalogEntityDeletePermission)) {
@@ -134,7 +129,7 @@ class TestPermissionPolicy implements PermissionPolicy {
       return createCatalogConditionalDecision(
         request.permission,
         catalogConditions.isEntityOwner({
-          claims: user?.identity.ownershipEntityRefs ?? [],
+          claims: user?.info.ownershipEntityRefs ?? [],
         }),
       );
     }

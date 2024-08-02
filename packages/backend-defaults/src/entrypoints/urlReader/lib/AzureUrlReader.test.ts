@@ -26,7 +26,7 @@ import {
 import {
   createMockDirectory,
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
 import { rest } from 'msw';
@@ -76,7 +76,7 @@ describe('AzureUrlReader', () => {
   beforeEach(mockDir.clear);
 
   const worker = setupServer();
-  setupRequestMockHandlers(worker);
+  registerMswTestHooks(worker);
 
   describe('read', () => {
     beforeEach(() => {

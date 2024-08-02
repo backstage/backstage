@@ -85,4 +85,12 @@ describe('<Select />', () => {
 
     expect(getByTestId('select').textContent).toBe('All results');
   });
+
+  it('should function correctly when a custom data-testid is provided', async () => {
+    const { getByTestId } = render(
+      <Select {...minProps} data-testid="custom-select" />,
+    );
+    const input = getByTestId('custom-select');
+    expect(input.textContent).toBe('All results');
+  });
 });

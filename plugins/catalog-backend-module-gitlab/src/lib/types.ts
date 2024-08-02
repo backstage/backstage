@@ -201,6 +201,11 @@ export type GitlabProviderConfig = {
    * If the project is a fork, skip repository
    */
   skipForkedRepos?: boolean;
+  /**
+   * List of repositories to exclude from discovery, should be the full path to the repository, e.g. `group/project`
+   * Paths should not start or end with a slash.
+   */
+  excludeRepos?: string[];
 };
 
 /**

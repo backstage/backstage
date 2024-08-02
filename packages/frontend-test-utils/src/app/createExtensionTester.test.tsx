@@ -24,12 +24,18 @@ import {
   createApiExtension,
   createApiFactory,
   createExtension,
+  createExtensionDataRef,
+  createExtensionInput,
   createSchemaFromZod,
   useAnalytics,
   useApi,
 } from '@backstage/frontend-plugin-api';
 import { MockAnalyticsApi } from '../apis';
 import { createExtensionTester } from './createExtensionTester';
+
+const stringDataRef = createExtensionDataRef<string>().with({
+  id: 'test.string',
+});
 
 describe('createExtensionTester', () => {
   const defaultDefinition = {
@@ -228,5 +234,134 @@ describe('createExtensionTester', () => {
         ]),
       ),
     );
+  });
+
+  it('should return the correct dataRef when called', () => {
+    const extension = createExtension({
+      namespace: 'test',
+      attachTo: { id: 'ignored', input: 'ignored' },
+      output: { text: stringDataRef },
+      factory: () => ({ text: 'test-text' }),
+    });
+
+    const tester = createExtensionTester(extension);
+
+    expect(tester.data(stringDataRef)).toBe('test-text');
+  });
+
+  it('should throw an error if trying to access an instance not provided to the tester', () => {
+    const extension = createExtension({
+      namespace: 'test',
+      name: 'e1',
+      attachTo: { id: 'ignored', input: 'ignored' },
+      output: { text: stringDataRef },
+      factory: () => ({ text: 'test-text' }),
+    });
+
+    const extension2 = createExtension({
+      namespace: 'test',
+      name: 'e2',
+      attachTo: { id: 'ignored', input: 'ignored' },
+      output: { text: stringDataRef },
+      factory: () => ({ text: 'test-text' }),
+    });
+
+    const tester = createExtensionTester(extension);
+
+    expect(() => tester.query(extension2)).toThrow(
+      "Extension with ID 'test/e2' not found, please make sure it's added to the tester",
+    );
+  });
+
+  it('should throw an error if trying to access an instance which is not part of the tree', () => {
+    const extension = createExtension({
+      namespace: 'test',
+      name: 'e1',
+      attachTo: { id: 'ignored', input: 'ignored' },
+      output: { text: stringDataRef },
+      factory: () => ({ text: 'test-text' }),
+    });
+
+    const extension2 = createExtension({
+      namespace: 'test',
+      name: 'e2',
+      attachTo: { id: 'ignored', input: 'ignored' },
+      output: { text: stringDataRef },
+      factory: () => ({ text: 'test-text' }),
+    });
+
+    const tester = createExtensionTester(extension).add(extension2);
+
+    expect(() => tester.query(extension2)).toThrow(
+      "Extension with ID 'test/e2' has not been instantiated, because it is not part of the test subject's extension tree",
+    );
+  });
+
+  // TODO: this should be implemented
+  // eslint-disable-next-line jest/no-disabled-tests
+  it.skip('should allow querying an extension and getting outputs', () => {
+    const extension = createExtension({
+      namespace: 'test',
+      name: 'e1',
+      attachTo: { id: 'ignored', input: 'ignored' },
+      output: { text: stringDataRef },
+      inputs: {
+        input: createExtensionInput(
+          {
+            output: stringDataRef,
+          },
+          { singleton: true },
+        ),
+      },
+      factory: ({ inputs }) => ({
+        text: `nest-${inputs.input.output.output}`,
+      }),
+    });
+
+    const extension2 = createExtension({
+      namespace: 'test',
+      name: 'e2',
+      attachTo: { id: 'test/e1', input: 'blob' },
+      output: { text: stringDataRef },
+      factory: () => ({ text: 'test-text' }),
+    });
+
+    const tester = createExtensionTester(extension).add(extension2);
+
+    expect(tester.query(extension).data(stringDataRef)).toBe('nest-test-text');
+    expect(tester.query(extension2).data(stringDataRef)).toBe('test-text');
+    // @ts-expect-error
+    expect(tester.query(extension).input('input').data(stringDataRef)).toBe(
+      'nest-test-text',
+    );
+  });
+
+  // TODO: this should be implemented
+  // eslint-disable-next-line jest/no-disabled-tests
+  it.skip('should allow defining inputs to extensions without a corresponding extension definition', () => {
+    const extension = createExtension({
+      namespace: 'test',
+      name: 'e1',
+      attachTo: { id: 'ignored', input: 'ignored' },
+      output: { text: stringDataRef },
+      inputs: {
+        input: createExtensionInput(
+          {
+            output: stringDataRef,
+          },
+          { singleton: true },
+        ),
+      },
+      factory: ({ inputs }) => ({
+        text: `nest-${inputs.input.output.output}`,
+      }),
+    });
+
+    const tester = createExtensionTester(extension, {
+      // @ts-expect-error
+      inputs: { input: 'test-text' },
+    });
+
+    expect(tester.query(extension).data(stringDataRef)).toBe('nest-test-text');
   });
 });

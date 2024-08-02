@@ -19,6 +19,8 @@ import { Profile } from 'passport';
 /** @public */
 export type PassportProfile = Profile & {
   avatarUrl?: string;
+  email?: string;
+  photo?: string;
 };
 
 /** @public */

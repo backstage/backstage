@@ -31,10 +31,9 @@ import {
 } from '@backstage/core-components';
 import {
   useApi,
-  DiscoveryApi,
   discoveryApiRef,
-  identityApiRef,
-  FetchApi,
+  fetchApiRef,
+  createApiFactory,
 } from '@backstage/core-plugin-api';
 
 import {
@@ -77,17 +76,12 @@ import {
 
 /** @alpha */
 export const searchApi = createApiExtension({
-  factory: {
+  factory: createApiFactory({
     api: searchApiRef,
-    deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
-    factory: ({
-      fetchApi,
-      discoveryApi,
-    }: {
-      fetchApi: FetchApi;
-      discoveryApi: DiscoveryApi;
-    }) => new SearchClient({ discoveryApi, fetchApi }),
-  },
+    deps: { discoveryApi: discoveryApiRef, fetchApi: fetchApiRef },
+    factory: ({ discoveryApi, fetchApi }) =>
+      new SearchClient({ discoveryApi, fetchApi }),
+  }),
 });
 
 const useSearchPageStyles = makeStyles((theme: Theme) => ({

@@ -66,8 +66,7 @@ catalog:
 As this provider is not one of the default providers, you will first need to install
 the AWS catalog plugin:
 
-```bash
-# From your Backstage root directory
+```bash title="From your Backstage root directory"
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-aws
 ```
 

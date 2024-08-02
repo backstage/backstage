@@ -18,7 +18,7 @@ import { JsonObject } from '@backstage/types';
 import { UserTokenHandler } from './UserTokenHandler';
 import {
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -64,7 +64,7 @@ async function createToken(options: {
 describe('UserTokenHandler', () => {
   let userTokenHandler: UserTokenHandler;
 
-  setupRequestMockHandlers(server);
+  registerMswTestHooks(server);
 
   beforeEach(() => {
     jest.useRealTimers();

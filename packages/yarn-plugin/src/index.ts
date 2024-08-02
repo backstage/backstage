@@ -21,9 +21,20 @@
  * @packageDocumentation
  */
 
-import { Plugin } from '@yarnpkg/core';
+import { Plugin, semverUtils, YarnVersion } from '@yarnpkg/core';
+import chalk from 'chalk';
 import { beforeWorkspacePacking } from './handlers/beforeWorkspacePacking';
 import { BackstageResolver } from './resolver/BackstageResolver';
+
+if (!semverUtils.satisfiesWithPrereleases(YarnVersion, '^4.1.1')) {
+  console.error();
+  console.error(
+    `${chalk.bold.red(
+      'Unsupported yarn version.',
+    )}: The Backstage yarn plugin only works with yarn ^4.1.1. Please upgrade yarn, or remove this plugin with "yarn plugin remove @yarnpkg/plugin-backstage".`,
+  );
+  console.error();
+}
 
 /**
  * @public

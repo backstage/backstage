@@ -38,8 +38,7 @@ You will have to add the GitHub Org provider to your backend as it is not instal
 dependency on `@backstage/plugin-catalog-backend-module-github-org` to your backend
 package.
 
-```bash
-# From your Backstage root directory
+```bash title="From your Backstage root directory"
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-github-org
 ```
 

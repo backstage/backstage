@@ -30,7 +30,7 @@ import path from 'path';
 import { createPublishGerritAction } from './gerrit';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { initRepoAndPush } from '@backstage/plugin-scaffolder-node';
@@ -61,7 +61,7 @@ describe('publish:gerrit', () => {
     },
   });
   const server = setupServer();
-  setupRequestMockHandlers(server);
+  registerMswTestHooks(server);
 
   beforeEach(() => {
     jest.resetAllMocks();

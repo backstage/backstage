@@ -18,7 +18,7 @@ import { ConfigReader } from '@backstage/config';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import {
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -30,7 +30,7 @@ const fetchUrlReader = new FetchUrlReader();
 describe('FetchUrlReader', () => {
   const worker = setupServer();
 
-  setupRequestMockHandlers(worker);
+  registerMswTestHooks(worker);
 
   beforeEach(() => {
     jest.clearAllMocks();

@@ -1,6 +1,6 @@
 ---
 title: Plugin Metadata
-status: implementable
+status: implemented
 authors:
   - '@Rugvip'
 owners:
@@ -10,15 +10,7 @@ project-areas:
 creation-date: yyyy-mm-dd
 ---
 
-<!--
-**Note:** When your BEP is complete, all these pre-existing comments should be removed
-
-When editing BEPs, aim for tightly-scoped, single-topic PRs to keep discussions focused. If you disagree with what is already in a document, open a new PR with suggested changes.
--->
-
 # BEP: Plugin Metadata
-
-<!-- Before merging the initial BEP PR, create a feature issue and update the below link. You can wait with this step until the BEP is ready to be merged. -->
 
 [**Discussion Issue**](https://github.com/backstage/backstage/issues/25076)
 

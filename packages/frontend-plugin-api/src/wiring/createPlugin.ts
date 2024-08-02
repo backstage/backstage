@@ -34,7 +34,7 @@ export interface PluginOptions<
   id: string;
   routes?: Routes;
   externalRoutes?: ExternalRoutes;
-  extensions?: ExtensionDefinition<unknown>[];
+  extensions?: ExtensionDefinition<any, any>[];
   featureFlags?: FeatureFlagConfig[];
 }
 

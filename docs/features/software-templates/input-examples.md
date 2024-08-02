@@ -26,6 +26,25 @@ parameters:
         ui:help: 'Hint: additional description...'
 ```
 
+#### Custom validation error message
+
+```yaml
+parameters:
+  - title: Fill in some steps
+    properties:
+      name:
+        title: Simple text input
+        type: string
+        description: Description about input
+        maxLength: 8
+        pattern: '^([a-zA-Z][a-zA-Z0-9]*)(-[a-zA-Z0-9]+)*$'
+        ui:autofocus: true
+        ui:help: 'Hint: additional description...'
+    errorMessage:
+      properties:
+        name: '1-8 alphanumeric tokens (first starts with letter) delimited by -'
+```
+
 ### Multi line text input
 
 ```yaml
@@ -259,7 +278,11 @@ spec:
 
 ## Use placeholders to reference remote files
 
-#### Note: testing of this functionality is not yet supported using _create/edit_
+:::note
+
+Testing of this functionality is not yet supported using _create/edit_. In addition, this functionality only works for remote files and not local files. You also cannot nest files.
+
+:::
 
 ### template.yaml
 

@@ -3,7 +3,7 @@
   "version": "{{pluginVersion}}",
   "main": "src/index.ts",
   "types": "src/index.ts",
-  "license": "Apache-2.0",
+  "license": "{{license}}",
 {{#if privatePackage}}
   "private": {{privatePackage}},
 {{/if}}
@@ -31,7 +31,6 @@
     "@backstage/backend-common": "{{versionQuery '@backstage/backend-common'}}",
     "@backstage/backend-defaults": "{{versionQuery '@backstage/backend-defaults'}}",
     "@backstage/backend-plugin-api": "{{versionQuery '@backstage/backend-plugin-api'}}",
-    "@backstage/config": "{{versionQuery '@backstage/config'}}",
     "express": "{{versionQuery 'express' '4.17.1'}}",
     "express-promise-router": "{{versionQuery 'express-promise-router' '4.1.0'}}",
     "node-fetch": "{{versionQuery 'node-fetch' '2.6.7'}}"

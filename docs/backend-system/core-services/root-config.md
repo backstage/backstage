@@ -60,3 +60,34 @@ backend.add(
   }),
 );
 ```
+
+For more advanced customization, there are several APIs from the `@backstage/config-loader` package that allow you to customize the implementation of the config service. The default implementation uses the `ConfigSources.default` method, which has the same options as the `rootConfigServiceFactory` function. You can use these to create your own config service implementation:
+
+```ts
+import { ConfigSources } from '@backstage/config-loader';
+import { createServiceFactory } from '@backstage/backend-plugin-api';
+
+const backend = createBackend();
+
+backend.add(
+  createServiceFactory({
+    service: coreServices.rootConfig,
+    deps: {},
+    async factory() {
+      const source = ConfigSources.default({
+        argv: [
+          '--config',
+          '/backstage/app-config.development.yaml',
+          '--config',
+          '/backstage/app-config.yaml',
+        ],
+        remote: { reloadIntervalSeconds: 60 },
+      });
+      console.log(`Loading config from ${source}`);
+      return await ConfigSources.toConfig(source);
+    },
+  }),
+);
+```
+
+You can also use other config source such as `StaticConfigSource` and combine them with other sources using `ConfigSources.merge(...)`. You can also create your own config source by implementing the `ConfigSource` interface.

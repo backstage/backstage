@@ -63,18 +63,16 @@ When a given dependency version is the _same_ between different packages, the
 dependency is hoisted to the main `node_modules` folder in the monorepo root to
 be shared between packages. When _different_ versions of the same dependency are
 encountered, Yarn creates a `node_modules` folder within a particular package.
+This can lead to multiple versions of the same package being installed and used
+in the same app.
 
-This can lead to confusing situations with type definitions, or anything with
-global state. React [Context](https://reactjs.org/docs/context.html), for
-example, depends on global referential equality. This can cause problems in
-Backstage with API lookup, or config loading.
+All Backstage core packages are implemented in such as way that package
+duplication is **not** a problem. For example, duplicate installations of
+packages like `@backstage/core-plugin-api`, `@backstage/core-components`,
+`@backstage/plugin-catalog-react`, and `@backstage/backend-plugin-api` are all
+acceptable.
 
-To help resolve these situations, the Backstage CLI has
-[versions:check](https://backstage.io/docs/tooling/cli/03-commands#versionscheck). This
-will validate versions of `@backstage` packages in your app to check for
-duplicate definitions:
-
-```bash
-# Add --fix to attempt automatic resolution in yarn.lock
-yarn backstage-cli versions:check
-```
+While package duplication might be acceptable in many cases, you might want to
+deduplicate packages for the purpose of optimizing bundle size and installation
+speed. We recommend using deduplication utilities such as `yarn dedupe` to trim
+down the number of duplicate packages.

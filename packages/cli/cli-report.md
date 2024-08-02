@@ -22,7 +22,6 @@ Commands:
   package [command]
   migrate [command]
   versions:bump [options]
-  versions:check [options]
   versions:migrate [options]
   clean
   build-workspace [options] <workspace-dir> [packages...]
@@ -194,6 +193,7 @@ Options:
   --scope <scope>
   --npm-registry <URL>
   --baseVersion <version>
+  --license <license>
   --no-private
   -h, --help
 ```
@@ -604,16 +604,6 @@ Options:
   --release <version|next|main>
   --skip-install
   --skip-migrate
-  -h, --help
-```
-
-### `backstage-cli versions:check`
-
-```
-Usage: backstage-cli versions:check [options]
-
-Options:
-  --fix
   -h, --help
 ```
 

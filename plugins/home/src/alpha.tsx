@@ -31,7 +31,9 @@ const rootRouteRef = createRouteRef();
 /**
  * @alpha
  */
-export const titleExtensionDataRef = createExtensionDataRef<string>('title');
+export const titleExtensionDataRef = createExtensionDataRef<string>().with({
+  id: 'title',
+});
 
 const homePage = createPageExtension({
   defaultPath: '/home',

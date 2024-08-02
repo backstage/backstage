@@ -48,13 +48,13 @@ function toInternalServiceFactory<TService, TScope extends 'plugin' | 'root'>(
   return f;
 }
 
-const pluginMetadataServiceFactory = createServiceFactory(
-  (options?: { pluginId: string }) => ({
+function createPluginMetadataServiceFactory(pluginId: string) {
+  return createServiceFactory({
     service: coreServices.pluginMetadata,
     deps: {},
-    factory: async () => ({ getId: () => options?.pluginId! }),
-  }),
-);
+    factory: async () => ({ getId: () => pluginId }),
+  });
+}
 
 export class ServiceRegistry {
   static create(factories: Array<ServiceFactory>): ServiceRegistry {
@@ -97,7 +97,7 @@ export class ServiceRegistry {
     // Special case handling of the plugin metadata service, generating a custom factory for it each time
     if (ref.id === coreServices.pluginMetadata.id) {
       return Promise.resolve(
-        toInternalServiceFactory(pluginMetadataServiceFactory({ pluginId })),
+        toInternalServiceFactory(createPluginMetadataServiceFactory(pluginId)),
       );
     }
 

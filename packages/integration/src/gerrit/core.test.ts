@@ -17,7 +17,7 @@
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import fetch from 'cross-fetch';
-import { setupRequestMockHandlers } from '../helpers';
+import { registerMswTestHooks } from '../helpers';
 import { GerritIntegrationConfig } from './config';
 import {
   buildGerritGitilesArchiveUrl,
@@ -32,7 +32,7 @@ import {
 
 describe('gerrit core', () => {
   const worker = setupServer();
-  setupRequestMockHandlers(worker);
+  registerMswTestHooks(worker);
 
   describe('buildGerritGitilesArchiveUrl', () => {
     const config: GerritIntegrationConfig = {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { graphql as graphqlOctokit } from '@octokit/graphql';
 import { graphql as graphqlMsw } from 'msw';
@@ -39,7 +39,7 @@ describe('github', () => {
   const graphql = graphqlOctokit.defaults({ request: { fetch } });
 
   const server = setupServer();
-  setupRequestMockHandlers(server);
+  registerMswTestHooks(server);
 
   describe('getOrganizationUsers using defaultUserMapper', () => {
     it('reads members', async () => {

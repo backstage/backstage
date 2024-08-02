@@ -1,5 +1,20 @@
 # @backstage/plugin-bitbucket-cloud-common
 
+## 0.2.22-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.14.0-next.0
+
+## 0.2.21
+
+### Patch Changes
+
+- b5deed0: Add support for `autocomplete` handler to provide autocomplete options for `RepoUrlPicker`
+- Updated dependencies
+  - @backstage/integration@1.13.0
+
 ## 0.2.21-next.0
 
 ### Patch Changes

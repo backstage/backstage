@@ -25,8 +25,7 @@ backend. They are not installed by default, therefore you have to add a
 dependency on `@backstage/plugin-catalog-backend-module-github` to your backend
 package.
 
-```bash
-# From your Backstage root directory
+```bash title="From your Backstage root directory"
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-github
 ```
 
@@ -273,8 +272,7 @@ backend. They are not installed by default, therefore you have to add a
 dependency on `@backstage/plugin-catalog-backend-module-github` to your backend
 package, plus `@backstage/integration` for the basic credentials management:
 
-```bash
-# From your Backstage root directory
+```bash title="From your Backstage root directory"
 yarn --cwd packages/backend add @backstage/integration @backstage/plugin-catalog-backend-module-github
 ```
 

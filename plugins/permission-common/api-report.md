@@ -5,6 +5,7 @@
 ```ts
 import { Config } from '@backstage/config';
 import { JsonPrimitive } from '@backstage/types';
+import zodToJsonSchema from 'zod-to-json-schema';
 
 // @public
 export type AllOfCriteria<TQuery> = {
@@ -94,9 +95,7 @@ export type EvaluatePermissionResponseBatch =
   PermissionMessageBatch<EvaluatePermissionResponse>;
 
 // @public
-export type EvaluatorRequestOptions = {
-  token?: string;
-};
+export interface EvaluatorRequestOptions {}
 
 // @public
 export type IdentifiedPermissionMessage<T> = T & {
@@ -126,6 +125,20 @@ export function isResourcePermission<T extends string = string>(
 
 // @public
 export function isUpdatePermission(permission: Permission): boolean;
+
+// @public
+export type MetadataResponse = {
+  permissions?: Permission[];
+  rules: MetadataResponseSerializedRule[];
+};
+
+// @public
+export type MetadataResponseSerializedRule = {
+  name: string;
+  description: string;
+  resourceType: string;
+  paramsSchema?: ReturnType<typeof zodToJsonSchema>;
+};
 
 // @public
 export type NotCriteria<TQuery> = {
@@ -162,13 +175,18 @@ export class PermissionClient implements PermissionEvaluator {
   constructor(options: { discovery: DiscoveryApi; config: Config });
   authorize(
     requests: AuthorizePermissionRequest[],
-    options?: EvaluatorRequestOptions,
+    options?: PermissionClientRequestOptions,
   ): Promise<AuthorizePermissionResponse[]>;
   authorizeConditional(
     queries: QueryPermissionRequest[],
-    options?: EvaluatorRequestOptions,
+    options?: PermissionClientRequestOptions,
   ): Promise<QueryPermissionResponse[]>;
 }
+
+// @public
+export type PermissionClientRequestOptions = {
+  token?: string;
+};
 
 // @public
 export type PermissionCondition<
@@ -191,11 +209,15 @@ export type PermissionCriteria<TQuery> =
 export interface PermissionEvaluator {
   authorize(
     requests: AuthorizePermissionRequest[],
-    options?: EvaluatorRequestOptions,
+    options?: EvaluatorRequestOptions & {
+      _ignored?: never;
+    },
   ): Promise<AuthorizePermissionResponse[]>;
   authorizeConditional(
     requests: QueryPermissionRequest[],
-    options?: EvaluatorRequestOptions,
+    options?: EvaluatorRequestOptions & {
+      _ignored?: never;
+    },
   ): Promise<QueryPermissionResponse[]>;
 }
 

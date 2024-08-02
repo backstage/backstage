@@ -1,6 +1,6 @@
 area:techdocs:
   - '/(techdocs|tech-docs|tech docs)/i'
-area:discoverability:
+area:search:
   - '/search/i'
 area:events:
   - '/events/i'

@@ -92,11 +92,14 @@ RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
 RUN --mount=type=cache,target=/home/node/.cache/yarn,sharing=locked,uid=1000,gid=1000 \
     yarn install --frozen-lockfile --production --network-timeout 300000
 
+# This will include the examples, if you don't need these simply remove this line
+COPY --chown=node:node examples ./examples
+
 # Then copy the rest of the backend bundle, along with any other files we might want.
 COPY --chown=node:node packages/backend/dist/bundle.tar.gz app-config*.yaml ./
 RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
 
-CMD ["node", "packages/backend", "--config", "app-config.yaml"]
+CMD ["node", "packages/backend", "--config", "app-config.yaml", "--config", "app-config.production.yaml"]
 ```
 
 For more details on how the `backend:bundle` command and the `skeleton.tar.gz`
@@ -251,12 +254,15 @@ RUN --mount=type=cache,target=/home/node/.cache/yarn,sharing=locked,uid=1000,gid
 COPY --from=build --chown=node:node /app/packages/backend/dist/bundle/ ./
 
 # Copy any other files that we need at runtime
-COPY --chown=node:node app-config.yaml ./
+COPY --chown=node:node app-config*.yaml ./
+
+# This will include the examples, if you don't need these simply remove this line
+COPY --chown=node:node examples ./examples
 
 # This switches many Node.js dependencies to production mode.
 ENV NODE_ENV production
 
-CMD ["node", "packages/backend", "--config", "app-config.yaml"]
+CMD ["node", "packages/backend", "--config", "app-config.yaml", "--config", "app-config.production.yaml"]
 ```
 
 Note that a newly created Backstage app will typically not have a `plugins/`
@@ -277,6 +283,7 @@ packages/*/dist
 packages/*/node_modules
 plugins/*/dist
 plugins/*/node_modules
+*.local.yaml
 ```
 
 Once you have added both the `Dockerfile` and `.dockerignore` to the root of
@@ -312,14 +319,12 @@ first step in doing so is to remove the `app-backend` plugin from the backend
 package, which is done as follows:
 
 1. Delete `packages/backend/src/plugins/app.ts`
-2. Remove the following lines from `packages/backend/src/index.ts`:
-   ```tsx
-   import app from './plugins/app';
-   // ...
-     const appEnv = useHotMemoize(module, () => createEnv('app'));
-   // ...
-       .addRouter('', await app(appEnv));
+2. Remove the following line from `packages/backend/src/index.ts`:
+
+   ```ts
+   backend.add(import('@backstage/plugin-app-backend/alpha'));
    ```
+
 3. Remove the `@backstage/plugin-app-backend` and the app package dependency
    (e.g. `app`) from `packages/backend/package.json`. If you don't remove the
    app package dependency the app will still be built and bundled with the

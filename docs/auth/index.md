@@ -12,12 +12,7 @@ access to external resources.
 
 :::note Note
 
-Identity management and the Sign-In page in Backstage is NOT a method for blocking
-access for unauthorized users. The identity system only serves to provide a personalized
-experience and access to a Backstage Identity Token, which can be passed to backend plugins.
-This also means that your Backstage backend APIs are by default unauthenticated.
-Thus, if your Backstage instance is exposed to the Internet, anyone can access
-information in the Backstage. You can learn more [here](../overview/threat-model.md#integrator-responsibilities).
+Identity management and the Sign-In page in Backstage will only block external access when using the new backend system, without setting `backend.auth.dangerouslyDisableDefaultAuthPolicy` in configuration. Even so, the frontend bundle is not protected from external access, protecting it requires the use of the [experimental public entry point](https://backstage.io/docs/tutorials/enable-public-entry/). You can learn more about this in the [Threat Model](../overview/threat-model.md#operator-responsibilities).
 
 :::
 
@@ -31,7 +26,7 @@ Backstage comes with many common authentication providers in the core library:
 - [Azure Easy Auth](microsoft/azure-easyauth.md)
 - [Bitbucket](bitbucket/provider.md)
 - [Bitbucket Server](bitbucketServer/provider.md)
-- [Cloudflare Access](cloudflare/access.md)
+- [Cloudflare Access](cloudflare/provider.md)
 - [GitHub](github/provider.md)
 - [GitLab](gitlab/provider.md)
 - [Google](google/provider.md)
@@ -158,7 +153,7 @@ Some auth providers are so-called "proxy" providers, meaning they're meant to be
 behind an authentication proxy. Examples of these are
 [Amazon Application Load Balancer](https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/aws-alb-aad-oidc-auth.md),
 [Azure EasyAuth](./microsoft/azure-easyauth.md),
-[Cloudflare Access](./cloudflare/access.md),
+[Cloudflare Access](./cloudflare/provider.md),
 [Google Identity-Aware Proxy](./google/gcp-iap-auth.md)
 and [OAuth2 Proxy](./oauth2-proxy/provider.md).
 

@@ -16,7 +16,7 @@
 
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
-import { buildBundle } from '../../lib/bundler';
+import { buildBundle, getModuleFederationOptions } from '../../lib/bundler';
 import { getEnvironmentParallelism } from '../../lib/parallel';
 import { loadCliConfig } from '../../lib/config';
 
@@ -24,16 +24,22 @@ interface BuildAppOptions {
   targetDir: string;
   writeStats: boolean;
   configPaths: string[];
+  isModuleFederationRemote?: true;
 }
 
 export async function buildFrontend(options: BuildAppOptions) {
   const { targetDir, writeStats, configPaths } = options;
   const { name } = await fs.readJson(resolvePath(targetDir, 'package.json'));
+
   await buildBundle({
     targetDir,
     entry: 'src/index',
     parallelism: getEnvironmentParallelism(),
     statsJsonEnabled: writeStats,
+    moduleFederation: getModuleFederationOptions(
+      name,
+      options.isModuleFederationRemote,
+    ),
     ...(await loadCliConfig({
       args: configPaths,
       fromPackage: name,

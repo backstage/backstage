@@ -96,6 +96,11 @@ const Community = () => {
       url: 'https://tanzu.vmware.com/developer-portal',
       logo: 'img/partner-logo-tanzubybroadcom.png',
     },
+    {
+      name: 'StatusNeo',
+      url: 'https://statusneo.com/backstage',
+      logo: 'img/partner-logo-statusneo.png',
+    },
   ];
   //#endregion
 

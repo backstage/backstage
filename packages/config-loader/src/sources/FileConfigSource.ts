@@ -17,16 +17,17 @@
 import chokidar, { FSWatcher } from 'chokidar';
 import fs from 'fs-extra';
 import { basename, dirname, isAbsolute, resolve as resolvePath } from 'path';
-import yaml from 'yaml';
 import {
   AsyncConfigSourceGenerator,
   ConfigSource,
   ConfigSourceData,
   SubstitutionFunc,
+  Parser,
   ReadConfigDataOptions,
 } from './types';
 import { createConfigTransformer } from './transform';
 import { NotFoundError } from '@backstage/errors';
+import { parseYamlContent } from './utils';
 
 /**
  * Options for {@link FileConfigSource.create}.
@@ -48,6 +49,11 @@ export interface FileConfigSourceOptions {
    * A substitution function to use instead of the default environment substitution.
    */
   substitutionFunc?: SubstitutionFunc;
+
+  /**
+   * A content parsing function to transform string content to configuration values.
+   */
+  parser?: Parser;
 }
 
 async function readFile(path: string): Promise<string | undefined> {
@@ -95,11 +101,13 @@ export class FileConfigSource implements ConfigSource {
   readonly #path: string;
   readonly #substitutionFunc?: SubstitutionFunc;
   readonly #watch?: boolean;
+  readonly #parser: Parser;
 
   private constructor(options: FileConfigSourceOptions) {
     this.#path = options.path;
     this.#substitutionFunc = options.substitutionFunc;
     this.#watch = options.watch ?? true;
+    this.#parser = options.parser ?? parseYamlContent;
   }
 
   // Work is duplicated across each read, in practice that should not
@@ -154,12 +162,12 @@ export class FileConfigSource implements ConfigSource {
         watchedPaths.push(this.#path);
       }
 
-      const content = await readFile(this.#path);
-      if (content === undefined) {
+      const contents = await readFile(this.#path);
+      if (contents === undefined) {
         throw new NotFoundError(`Config file "${this.#path}" does not exist`);
       }
-      const parsed = yaml.parse(content);
-      if (parsed === null) {
+      const { result: parsed } = await this.#parser({ contents });
+      if (parsed === undefined) {
         return [];
       }
       try {

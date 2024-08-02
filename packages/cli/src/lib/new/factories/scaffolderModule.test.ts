@@ -62,6 +62,7 @@ describe('scaffolderModule factory', () => {
         modified = true;
       },
       createTemporaryDirectory: (name: string) => fs.mkdtemp(name),
+      license: 'Apache-2.0',
     });
 
     expect(modified).toBe(true);

@@ -124,6 +124,8 @@ The list of available resolvers is different for each provider, since they often
 depend on the information model returned from the upstream provider service.
 Consult the documentation of the respective provider to find the list.
 
+In the example above `emailMatchingUserEntityProfileEmail` and `emailLocalPartMatchingUserEntityName` are common to all auth providers and `usernameMatchingUserEntityName` is specific to GitHub.
+
 ### Building Custom Resolvers
 
 If the builtins don't work for you, you can also provide a completely custom
@@ -401,3 +403,22 @@ const customAuth = createBackendModule({
 ```
 
 Remember to `backend.add` the created module just like above.
+
+## Common Sign-In Resolver Errors
+
+There are two common Sign-In Resolver errors you might run into.
+
+First is: "The 'Auth Provider Name' provider is not configured to support sign-in". Here is what this looks like for the GitHub Auth provider:
+
+![The GitHub provider is not configured to support sign-in](../assets/auth/github-provider-not-configured-to-support-sign-in.png)
+
+This error can be caused by the following:
+
+- The `signIn.resolvers` have not be added to your Auth Provider configuration. Adding this will resolve the error.
+- There is a syntax error in your Auth Provider configuration. Running `yarn backstage-cli config:check --strict` will help identify the syntax error.
+
+The second common error is: "Failed to sign-in, unable to resolve user identity". Here is what this looks like for the GitHub Auth provider:
+
+![Failed to sign-in, unable to resolve user identity](../assets/auth/github-unable-to-reolve-identity.png)
+
+This error is caused by the Sign-In Resolver you configured being unable to find a matching User in the Catalog. To fix this you need to import User, and Group, data from some source of truth for this data at your Organization. To do this you can use one of the existing Org Data providers like the ones for [Entra ID (Azure AD/MS Graph)](../integrations/azure/org.md), [GitHub](../integrations/github/org.md), [GitLab](../integrations/gitlab/org.md), etc. or if none of those fit your needs you can create a [Custom Entity Provider](../features/software-catalog/external-integrations.md#custom-entity-providers).

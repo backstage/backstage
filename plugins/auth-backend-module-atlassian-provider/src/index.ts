@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 /**
  * The atlassian-provider backend module for the auth plugin.
  *
  * @packageDocumentation
  */
-
 export { atlassianAuthenticator } from './authenticator';
 export { authModuleAtlassianProvider as default } from './module';
 export { atlassianSignInResolvers } from './resolvers';

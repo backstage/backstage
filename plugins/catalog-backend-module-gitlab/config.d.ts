@@ -63,6 +63,11 @@ export interface Config {
            * (Optional) Skip forked repository
            */
           skipForkedRepos?: boolean;
+          /**
+           * (Optional) A list of strings containing the paths of the repositories to skip
+           * Should be in the format group/subgroup/repo, with no leading or trailing slashes.
+           */
+          excludeRepos?: string[];
         };
       };
     };

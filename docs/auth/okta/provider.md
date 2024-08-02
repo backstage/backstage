@@ -83,8 +83,25 @@ The resolvers will be tried in order, but will only be skipped if they throw a `
 
 If these resolvers do not fit your needs you can build a custom resolver, this is covered in the [Building Custom Resolvers](../identity-resolver.md#building-custom-resolvers) section of the Sign-in Identities and Resolvers documentation.
 
+## Backend Installation
+
+To add the provider to the backend we will first need to install the package by running this command:
+
+```bash title="from your Backstage root directory"
+yarn --cwd packages/backend add @backstage/plugin-auth-backend-module-okta-provider
+```
+
+Then we will need to add this line:
+
+```ts title="in packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-auth-backend'));
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-auth-backend-module-okta-provider'));
+/* highlight-add-end */
+```
+
 ## Adding the provider to the Backstage frontend
 
 To add the provider to the frontend, add the `oktaAuthApi` reference and
 `SignInPage` component as shown in
-[Adding the provider to the sign-in page](../index.md#adding-the-provider-to-the-sign-in-page).
+[Adding the provider to the sign-in page](../index.md#sign-in-configuration).

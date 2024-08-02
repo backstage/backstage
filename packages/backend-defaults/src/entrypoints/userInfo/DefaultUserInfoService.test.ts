@@ -17,7 +17,7 @@
 import { BackstageUserPrincipal } from '@backstage/backend-plugin-api';
 import {
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { JsonObject } from '@backstage/types';
 import { SignJWT, base64url, importJWK } from 'jose';
@@ -28,7 +28,7 @@ import { DefaultUserInfoService } from './DefaultUserInfoService';
 
 describe('DefaultUserInfoService', () => {
   const server = setupServer();
-  setupRequestMockHandlers(server);
+  registerMswTestHooks(server);
 
   const mockPublicKey = {
     kty: 'EC',

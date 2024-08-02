@@ -25,8 +25,7 @@ This will only work with the new backend system. There is no support for this in
 
 Add the `@backstage/plugin-auth-backend-module-guest-provider` to your backend installation.
 
-```sh
-# From your Backstage root directory
+```sh title="From your Backstage root directory"
 yarn --cwd packages/backend add @backstage/plugin-auth-backend-module-guest-provider
 ```
 

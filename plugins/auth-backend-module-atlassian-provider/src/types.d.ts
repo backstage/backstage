@@ -18,8 +18,9 @@ declare module 'passport-atlassian-oauth2' {
   import { Request } from 'express';
   import { StrategyCreated } from 'passport';
 
-  export class Strategy {
+  export default class Strategy {
     constructor(options: any, verify: any);
+    name?: string;
     authenticate(this: StrategyCreated<this>, req: Request, options?: any): any;
   }
 }

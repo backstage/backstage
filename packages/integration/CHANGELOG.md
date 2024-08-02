@@ -1,5 +1,30 @@
 # @backstage/integration
 
+## 1.14.0-next.0
+
+### Minor Changes
+
+- 78c1329: Updated `GitlabUrlReader.readUrl` and `GitlabUrlReader.readTree` to accept a user-provided token, supporting both bearer and private tokens.
+
+### Patch Changes
+
+- c591670: Updated functions for `getHarnessEditContentsUrl`, `getHarnessFileContentsUrl`, `getHarnessArchiveUrl`, `getHarnessLatestCommitUrl` and `parseHarnessUrl` to handle account and org level urls
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 1.13.0
+
+### Minor Changes
+
+- b5deed0: Add support for `token` for `bitbucketCloud` integration
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 1.13.0-next.0
 
 ### Minor Changes

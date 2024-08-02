@@ -35,7 +35,7 @@ import {
 } from './createAsyncValidators';
 import { ReviewState, type ReviewStateProps } from '../ReviewState';
 import { useTemplateSchema, useFormDataFromQuery } from '../../hooks';
-import validator from '@rjsf/validator-ajv8';
+import { customizeValidator } from '@rjsf/validator-ajv8';
 import { useTransformSchemaToProps } from '../../hooks/useTransformSchemaToProps';
 import { hasErrors } from './utils';
 import * as FieldOverrides from './FieldOverrides';
@@ -50,6 +50,11 @@ import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 import { ErrorListTemplate } from './ErrorListTemplate';
 import { makeStyles } from '@material-ui/core/styles';
 import { PasswordWidget } from '../PasswordWidget/PasswordWidget';
+import ajvErrors from 'ajv-errors';
+import { merge } from 'lodash';
+
+const validator = customizeValidator();
+ajvErrors(validator.ajv);
 
 const useStyles = makeStyles(theme => ({
   backButton: {
@@ -189,6 +194,14 @@ export const Stepper = (stepperProps: StepperProps) => {
     setFormState(current => ({ ...current, ...formData }));
   };
 
+  const {
+    formContext: propFormContext,
+    uiSchema: propUiSchema,
+    ...restFormProps
+  } = props.formProps ?? {};
+
+  const mergedUiSchema = merge({}, propUiSchema, currentStep?.uiSchema);
+
   return (
     <>
       {isValidating && <LinearProgress variant="indeterminate" />}
@@ -225,9 +238,9 @@ export const Stepper = (stepperProps: StepperProps) => {
             validator={validator}
             extraErrors={errors as unknown as ErrorSchema}
             formData={formState}
-            formContext={{ formData: formState }}
+            formContext={{ ...propFormContext, formData: formState }}
             schema={currentStep.schema}
-            uiSchema={currentStep.uiSchema}
+            uiSchema={mergedUiSchema}
             onSubmit={handleNext}
             fields={fields}
             showErrorList="top"
@@ -237,7 +250,7 @@ export const Stepper = (stepperProps: StepperProps) => {
             experimental_defaultFormStateBehavior={{
               allOf: 'populateDefaults',
             }}
-            {...(props.formProps ?? {})}
+            {...restFormProps}
           >
             <div className={styles.footer}>
               <Button

@@ -16,7 +16,7 @@
 
 import {
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { readGitLabIntegrationConfig } from '@backstage/integration';
@@ -27,7 +27,7 @@ import { GitLabClient, paginated } from './client';
 import { GitLabGroup, GitLabUser } from './types';
 
 const server = setupServer(...handlers);
-setupRequestMockHandlers(server);
+registerMswTestHooks(server);
 
 describe('GitLabClient', () => {
   describe('isSelfManaged', () => {

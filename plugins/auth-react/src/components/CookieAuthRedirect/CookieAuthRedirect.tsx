@@ -45,6 +45,7 @@ export function CookieAuthRedirect() {
         ref={form => form?.submit()}
         action={window.location.href}
         method="POST"
+        style={{ visibility: 'hidden' }}
       >
         <input type="hidden" name="type" value="sign-in" />
         <input type="hidden" name="token" value={state.result} />

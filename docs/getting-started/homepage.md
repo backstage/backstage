@@ -28,8 +28,7 @@ Now, let's get started by installing the home plugin and creating a simple homep
 
 #### 1. Install the plugin
 
-```bash
-# From your Backstage root directory
+```bash title="From your Backstage root directory"
 yarn --cwd packages/app add @backstage/plugin-home
 ```
 

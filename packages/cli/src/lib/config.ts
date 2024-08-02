@@ -14,14 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  ConfigTarget,
-  loadConfig,
-  loadConfigSchema,
-} from '@backstage/config-loader';
+import { ConfigSources, loadConfigSchema } from '@backstage/config-loader';
 import { AppConfig, ConfigReader } from '@backstage/config';
 import { paths } from './paths';
-import { isValidUrl } from './urls';
 import { getPackages } from '@manypkg/get-packages';
 import { PackageGraph } from '@backstage/cli-node';
 
@@ -37,13 +32,6 @@ type Options = {
 };
 
 export async function loadCliConfig(options: Options) {
-  const configTargets: ConfigTarget[] = [];
-  options.args.forEach(arg => {
-    if (!isValidUrl(arg)) {
-      configTargets.push({ path: paths.resolveTarget(arg) });
-    }
-  });
-
   // Consider all packages in the monorepo when loading in config
   const { packages } = await getPackages(paths.targetDir);
 
@@ -75,32 +63,62 @@ export async function loadCliConfig(options: Options) {
     noUndeclaredProperties: options.strict,
   });
 
-  const { appConfigs } = await loadConfig({
-    experimentalEnvFunc: options.mockEnv
+  const source = ConfigSources.default({
+    allowMissingDefaultConfig: true,
+    substitutionFunc: options.mockEnv
       ? async name => process.env[name] || 'x'
       : undefined,
-    configRoot: paths.targetRoot,
-    configTargets: configTargets,
-    watch: options.watch && {
-      onChange(newAppConfigs) {
-        const newFrontendAppConfigs = schema.process(newAppConfigs, {
-          visibility: options.fullVisibility
-            ? ['frontend', 'backend', 'secret']
-            : ['frontend'],
-          withFilteredKeys: options.withFilteredKeys,
-          withDeprecatedKeys: options.withDeprecatedKeys,
-          ignoreSchemaErrors: !options.strict,
-        });
-        options.watch?.(newFrontendAppConfigs);
-      },
-    },
+    watch: Boolean(options.watch),
+    rootDir: paths.targetRoot,
+    argv: options.args.flatMap(t => ['--config', paths.resolveTarget(t)]),
   });
+
+  const appConfigs = await new Promise<AppConfig[]>((resolve, reject) => {
+    async function loadConfigReaderLoop() {
+      let loaded = false;
+
+      try {
+        const abortController = new AbortController();
+        for await (const { configs } of source.readConfigData({
+          signal: abortController.signal,
+        })) {
+          if (loaded) {
+            const newFrontendAppConfigs = schema.process(configs, {
+              visibility: options.fullVisibility
+                ? ['frontend', 'backend', 'secret']
+                : ['frontend'],
+              withFilteredKeys: options.withFilteredKeys,
+              withDeprecatedKeys: options.withDeprecatedKeys,
+              ignoreSchemaErrors: !options.strict,
+            });
+            options.watch?.(newFrontendAppConfigs);
+          } else {
+            resolve(configs);
+            loaded = true;
+
+            if (!options.watch) {
+              abortController.abort();
+            }
+          }
+        }
+      } catch (error) {
+        if (loaded) {
+          console.error(`Failed to reload configuration, ${error}`);
+        } else {
+          reject(error);
+        }
+      }
+    }
+    loadConfigReaderLoop();
+  });
+
+  const configurationLoadedMessage = appConfigs.length
+    ? `Loaded config from ${appConfigs.map(c => c.context).join(', ')}`
+    : `No configuration files found, running without config`;
 
   // printing to stderr to not clobber stdout in case the cli command
   // outputs structured data (e.g. as config:schema does)
-  process.stderr.write(
-    `Loaded config from ${appConfigs.map(c => c.context).join(', ')}\n`,
-  );
+  process.stderr.write(`${configurationLoadedMessage}\n`);
 
   try {
     const frontendAppConfigs = schema.process(appConfigs, {

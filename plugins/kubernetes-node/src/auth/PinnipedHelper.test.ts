@@ -18,7 +18,7 @@ import { ExtendedHttpServer } from '@backstage/backend-app-api';
 import { ClusterDetails } from '../types';
 import {
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
   startTestBackend,
 } from '@backstage/backend-test-utils';
 import { createBackendModule } from '@backstage/backend-plugin-api';
@@ -43,7 +43,7 @@ describe('Pinniped - tokenCredentialRequest', () => {
   const logger = loggerToWinstonLogger(mockServices.logger.mock());
   let httpsRequest: jest.SpyInstance;
   const worker = setupServer();
-  setupRequestMockHandlers(worker);
+  registerMswTestHooks(worker);
 
   beforeAll(() => {
     httpsRequest = jest.spyOn(

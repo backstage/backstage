@@ -24,13 +24,9 @@ import { Backend, CreateSpecializedBackendOptions } from './types';
 export function createSpecializedBackend(
   options: CreateSpecializedBackendOptions,
 ): Backend {
-  const services = options.defaultServiceFactories.map(sf =>
-    typeof sf === 'function' ? sf() : sf,
-  );
-
   const exists = new Set<string>();
   const duplicates = new Set<string>();
-  for (const { service } of services) {
+  for (const { service } of options.defaultServiceFactories) {
     if (exists.has(service.id)) {
       duplicates.add(service.id);
     } else {
@@ -47,5 +43,5 @@ export function createSpecializedBackend(
     );
   }
 
-  return new BackstageBackend(services);
+  return new BackstageBackend(options.defaultServiceFactories);
 }

@@ -15,7 +15,7 @@
  */
 import {
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { Config, ConfigReader } from '@backstage/config';
@@ -38,7 +38,7 @@ describe('oidc.create', () => {
     nonce: 'foo',
   };
   const server = setupServer();
-  setupRequestMockHandlers(server);
+  registerMswTestHooks(server);
 
   let publicKey: JWK;
   let tokenset: object;

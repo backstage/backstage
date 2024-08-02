@@ -23,6 +23,7 @@ import {
 } from '@backstage/catalog-model';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { TECHDOCS_ANNOTATION } from '@backstage/plugin-techdocs-common';
 import path from 'path';
 import { Logger } from 'winston';
 import { PreparerResponse, RemoteProtocol } from './stages/prepare/types';
@@ -122,10 +123,7 @@ export const getLocationForEntity = (
   entity: Entity,
   scmIntegration: ScmIntegrationRegistry,
 ): ParsedLocationAnnotation => {
-  const annotation = parseReferenceAnnotation(
-    'backstage.io/techdocs-ref',
-    entity,
-  );
+  const annotation = parseReferenceAnnotation(TECHDOCS_ANNOTATION, entity);
 
   switch (annotation.type) {
     case 'url':
@@ -149,10 +147,7 @@ export const getDocFilesFromRepository = async (
   entity: Entity,
   opts?: { etag?: string; logger?: Logger },
 ): Promise<PreparerResponse> => {
-  const { target } = parseReferenceAnnotation(
-    'backstage.io/techdocs-ref',
-    entity,
-  );
+  const { target } = parseReferenceAnnotation(TECHDOCS_ANNOTATION, entity);
 
   opts?.logger?.debug(`Reading files from ${target}`);
   // readTree will throw NotModifiedError if etag has not changed.

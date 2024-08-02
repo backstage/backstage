@@ -21,7 +21,7 @@ import {
 } from '@backstage/backend-tasks';
 import {
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
@@ -103,7 +103,7 @@ function setupStubs(projects: Project[], baseUrl: string) {
 }
 
 describe('BitbucketServerEntityProvider', () => {
-  setupRequestMockHandlers(server);
+  registerMswTestHooks(server);
   afterEach(() => {
     jest.clearAllMocks();
   });

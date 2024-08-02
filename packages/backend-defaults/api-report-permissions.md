@@ -4,12 +4,13 @@
 
 ```ts
 import { PermissionsService } from '@backstage/backend-plugin-api';
-import { ServiceFactory } from '@backstage/backend-plugin-api';
+import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
 
 // @public
-export const permissionsServiceFactory: () => ServiceFactory<
+export const permissionsServiceFactory: ServiceFactoryCompat<
   PermissionsService,
-  'plugin'
+  'plugin',
+  undefined
 >;
 
 // (No @packageDocumentation comment for this package)

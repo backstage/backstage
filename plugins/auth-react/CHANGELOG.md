@@ -1,5 +1,31 @@
 # @backstage/plugin-auth-react
 
+## 0.1.5-next.0
+
+### Patch Changes
+
+- aeac3e9: feat: Hide visibility of CookieAuthRedirect
+- Updated dependencies
+  - @backstage/core-components@0.14.10-next.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+
+## 0.1.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.9
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+
+## 0.1.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.9-next.1
+
 ## 0.1.4-next.0
 
 ### Patch Changes

@@ -186,6 +186,13 @@ describe('createRouter', () => {
               mockCredentials.user().principal.userEntityRef,
             ],
           },
+          info: {
+            userEntityRef: mockCredentials.user().principal.userEntityRef,
+            ownershipEntityRefs: [
+              mockCredentials.user().principal.userEntityRef,
+            ],
+          },
+          credentials: mockCredentials.user(),
         },
       );
       expect(response.body).toEqual({

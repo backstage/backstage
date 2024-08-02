@@ -24,8 +24,7 @@ You will have to add the GitHub Entity provider to your backend as it is not ins
 dependency on `@backstage/plugin-catalog-backend-module-github` to your backend
 package.
 
-```bash
-# From your Backstage root directory
+```bash title="From your Backstage root directory"
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-github
 ```
 

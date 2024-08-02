@@ -96,4 +96,210 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
+  {
+    description: 'Create a GitHub Environment with Custom Tag Policies',
+    example: yaml.stringify({
+      steps: [
+        {
+          action: 'github:environment:create',
+          name: 'Create Environment',
+          input: {
+            repoUrl: 'github.com?repo=repository&owner=owner',
+            name: 'envname',
+            customTagPolicyNames: ['release/*/*', 'v*.*.*'],
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description:
+      'Create a GitHub Environment with Both Branch and Tag Policies',
+    example: yaml.stringify({
+      steps: [
+        {
+          action: 'github:environment:create',
+          name: 'Create Environment',
+          input: {
+            repoUrl: 'github.com?repo=repository&owner=owner',
+            name: 'envname',
+            deploymentBranchPolicy: {
+              protected_branches: false,
+              custom_branch_policies: true,
+            },
+            customBranchPolicyNames: ['feature/*', 'hotfix/*'],
+            customTagPolicyNames: ['release/*', 'v*'],
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description: 'Create a GitHub Environment with Full Configuration',
+    example: yaml.stringify({
+      steps: [
+        {
+          action: 'github:environment:create',
+          name: 'Create Environment',
+          input: {
+            repoUrl: 'github.com?repo=repository&owner=owner',
+            name: 'envname',
+            deploymentBranchPolicy: {
+              protected_branches: false,
+              custom_branch_policies: true,
+            },
+            customBranchPolicyNames: ['dev/*', 'test/*'],
+            customTagPolicyNames: ['v1.*', 'v2.*'],
+            environmentVariables: {
+              API_KEY: '123456789',
+              NODE_ENV: 'production',
+            },
+            secrets: {
+              DATABASE_URL: 'supersecretdatabaseurl',
+              API_SECRET: 'supersecretapisecret',
+            },
+            token: 'ghp_abcdef1234567890',
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description: 'Create a GitHub Environment with Only Token Authentication',
+    example: yaml.stringify({
+      steps: [
+        {
+          action: 'github:environment:create',
+          name: 'Create Environment',
+          input: {
+            repoUrl: 'github.com?repo=repository&owner=owner',
+            name: 'envname',
+            token: 'ghp_abcdef1234567890',
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description: 'Create a GitHub Environment with No Deployment Policies',
+    example: yaml.stringify({
+      steps: [
+        {
+          action: 'github:environment:create',
+          name: 'Create Environment',
+          input: {
+            repoUrl: 'github.com?repo=repository&owner=owner',
+            name: 'envname',
+            deploymentBranchPolicy: null,
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description:
+      'Create a GitHub Environment with Custom Branch and Tag Policies',
+    example: yaml.stringify({
+      steps: [
+        {
+          action: 'github:environment:create',
+          name: 'Create Environment',
+          input: {
+            repoUrl: 'github.com?repo=repository&owner=owner',
+            name: 'envname',
+            deploymentBranchPolicy: {
+              protected_branches: false,
+              custom_branch_policies: true,
+            },
+            customBranchPolicyNames: ['release/*', 'hotfix/*'],
+            customTagPolicyNames: ['v*', 'release-*'],
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description: 'Create a GitHub Environment with Environment Variables Only',
+    example: yaml.stringify({
+      steps: [
+        {
+          action: 'github:environment:create',
+          name: 'Create Environment',
+          input: {
+            repoUrl: 'github.com?repo=repository&owner=owner',
+            name: 'envname',
+            environmentVariables: {
+              VAR1: 'value1',
+              VAR2: 'value2',
+            },
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description: 'Create a GitHub Environment with Deployment Secrets Only',
+    example: yaml.stringify({
+      steps: [
+        {
+          action: 'github:environment:create',
+          name: 'Create Environment',
+          input: {
+            repoUrl: 'github.com?repo=repository&owner=owner',
+            name: 'envname',
+            secrets: {
+              SECRET1: 'secretvalue1',
+              SECRET2: 'secretvalue2',
+            },
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description:
+      'Create a GitHub Environment with Deployment Branch Policy and Token',
+    example: yaml.stringify({
+      steps: [
+        {
+          action: 'github:environment:create',
+          name: 'Create Environment',
+          input: {
+            repoUrl: 'github.com?repo=repository&owner=owner',
+            name: 'envname',
+            deploymentBranchPolicy: {
+              protected_branches: true,
+              custom_branch_policies: false,
+            },
+            token: 'ghp_abcdef1234567890',
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description:
+      'Create a GitHub Environment with Environment Variables, Secrets, and Token',
+    example: yaml.stringify({
+      steps: [
+        {
+          action: 'github:environment:create',
+          name: 'Create Environment',
+          input: {
+            repoUrl: 'github.com?repo=repository&owner=owner',
+            name: 'envname',
+            environmentVariables: {
+              VAR1: 'value1',
+              VAR2: 'value2',
+            },
+            secrets: {
+              SECRET1: 'secretvalue1',
+              SECRET2: 'secretvalue2',
+            },
+            token: 'ghp_abcdef1234567890',
+          },
+        },
+      ],
+    }),
+  },
 ];

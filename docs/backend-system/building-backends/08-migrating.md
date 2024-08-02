@@ -497,7 +497,7 @@ catalog:
   providers:
     githubOrg:
       - id: production
-        githubUrl: 'https://github.com',
+        githubUrl: 'https://github.com'
         orgs: ['backstage']
         schedule:
           frequency: PT30M
@@ -536,8 +536,8 @@ catalog:
   providers:
     githubOrg:
       - id: production
-        githubUrl: 'https://github.com',
-        orgs: ['org-a', 'org-b'],
+        githubUrl: 'https://github.com'
+        orgs: ['org-a', 'org-b']
         schedule:
           frequency: PT30M
           timeout: PT15M
@@ -1254,7 +1254,6 @@ In order to add your own permission policy you'll need to do the following:
 
 ```ts
 import { createBackendModule } from '@backstage/backend-plugin-api';
-import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import {
   PolicyDecision,
   AuthorizeResult,
@@ -1262,13 +1261,14 @@ import {
 import {
   PermissionPolicy,
   PolicyQuery,
+  PolicyQueryUser,
 } from '@backstage/plugin-permission-node';
 import { policyExtensionPoint } from '@backstage/plugin-permission-node/alpha';
 
 class CustomPermissionPolicy implements PermissionPolicy {
   async handle(
     request: PolicyQuery,
-    user?: BackstageIdentityResponse,
+    user?: PolicyQueryUser,
   ): Promise<PolicyDecision> {
     // TODO: Add code here that inspects the incoming request and user, and returns AuthorizeResult.ALLOW, AuthorizeResult.DENY, or AuthorizeResult.CONDITIONAL as needed. See the docs at https://backstage.io/docs/permissions/writing-a-policy for more information
 

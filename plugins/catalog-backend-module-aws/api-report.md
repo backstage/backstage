@@ -107,6 +107,9 @@ export class AwsS3EntityProvider implements EntityProvider {
 }
 
 // @public
+export const defaultEksClusterEntityTransformer: EksClusterEntityTransformer;
+
+// @public
 export type EksClusterEntityTransformer = (
   cluster: Cluster,
   accountId: string,

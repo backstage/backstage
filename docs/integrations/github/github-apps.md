@@ -109,8 +109,8 @@ integrations:
           webhookSecret: ${AUTH_ORG_WEBHOOK_SECRET}
 ```
 
-:::Note
-Note that in both examples above `apps` is an array which means you can add multiple GitHub Apps using `$include` or environment variables as long as they are each for a different GitHub Org as mentioned under the [Caveats](#caveats) section
+:::note
+Note that in both examples above `apps` is an array which means you can add multiple GitHub Apps using `$include` or environment variables as long as they are each for a different GitHub Org as mentioned under the [Caveats](#caveats) section.
 :::
 
 ## Limiting the GitHub App installations

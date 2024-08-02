@@ -1,6 +1,7 @@
 {
   "releases": {
     "Release Notes": [
+      "releases/v1.29.0",
       "releases/v1.28.0",
       "releases/v1.27.0",
       "releases/v1.26.0",
@@ -429,6 +430,7 @@
           "backend-system/core-services/permissions",
           "backend-system/core-services/plugin-metadata",
           "backend-system/core-services/root-config",
+          "backend-system/core-services/root-health",
           "backend-system/core-services/root-http-router",
           "backend-system/core-services/root-lifecycle",
           "backend-system/core-services/root-logger",

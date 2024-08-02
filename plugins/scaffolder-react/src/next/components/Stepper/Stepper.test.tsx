@@ -392,6 +392,46 @@ describe('Stepper', () => {
     expect(getByText('invalid postcode')).toBeInTheDocument();
   });
 
+  it('should render ajv-errors message', async () => {
+    const manifest: TemplateParameterSchema = {
+      steps: [
+        {
+          title: 'Step 1',
+          schema: {
+            properties: {
+              postcode: {
+                type: 'string',
+                pattern: '[A-Z][0-9][A-Z] [0-9][A-Z][0-9]',
+              },
+            },
+            errorMessage: {
+              properties: {
+                postcode: 'invalid postcode',
+              },
+            },
+          },
+        },
+      ],
+      title: 'transformErrors Form Test',
+    };
+
+    const { getByText, getByRole } = await renderInTestApp(
+      <SecretsContextProvider>
+        <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
+      </SecretsContextProvider>,
+    );
+
+    await fireEvent.change(getByRole('textbox', { name: 'postcode' }), {
+      target: { value: 'invalid' },
+    });
+
+    await act(async () => {
+      await fireEvent.click(getByRole('button', { name: 'Review' }));
+    });
+
+    expect(getByText('invalid postcode')).toBeInTheDocument();
+  });
+
   it('should grab the initial formData from the query', async () => {
     const manifest: TemplateParameterSchema = {
       steps: [
@@ -507,6 +547,66 @@ describe('Stepper', () => {
     await act(async () => {
       await fireEvent.click(getByRole('button', { name: 'Make' }));
     });
+  });
+
+  it('should allow overrides to the uiSchema and formContext correctly', async () => {
+    const manifest: TemplateParameterSchema = {
+      title: 'Custom Fields',
+      steps: [
+        {
+          title: 'Test',
+          schema: {
+            properties: {
+              name: {
+                type: 'string',
+                'ui:placeholder': 'Enter your name',
+              },
+              age: {
+                type: 'number',
+                'ui:placeholder': 'Enter your age',
+              },
+            },
+          },
+        },
+      ],
+    };
+
+    const uiSchema = {
+      name: {
+        'ui:readonly': true,
+        'ui:placeholder': 'Should be overwritten',
+      },
+    };
+
+    const formContext = {
+      readOnlyAsDisabled: true,
+    };
+
+    const { getByRole } = await renderInTestApp(
+      <SecretsContextProvider>
+        <Stepper
+          manifest={manifest}
+          onCreate={jest.fn()}
+          extensions={[]}
+          formProps={{ uiSchema, formContext }}
+          initialState={{ name: 'Some Name', age: 40 }}
+        />
+      </SecretsContextProvider>,
+    );
+
+    expect(getByRole('textbox', { name: 'name' })).toHaveValue('Some Name');
+    expect(getByRole('textbox', { name: 'name' })).toBeDisabled();
+    expect(getByRole('textbox', { name: 'name' })).toHaveAttribute(
+      'placeholder',
+      'Enter your name',
+    );
+
+    expect(getByRole('spinbutton', { name: 'age' })).toHaveValue(40);
+    expect(getByRole('spinbutton', { name: 'age' })).toBeEnabled();
+    expect(getByRole('spinbutton', { name: 'age' })).toHaveAttribute(
+      'placeholder',
+      'Enter your age',
+    );
   });
 
   describe('Scaffolder Layouts', () => {

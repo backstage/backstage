@@ -20,7 +20,7 @@ import { errorHandler } from '@backstage/backend-common';
 import {
   createMockDirectory,
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { NotFoundError } from '@backstage/errors';
 import {
@@ -90,7 +90,7 @@ describe('KubernetesProxy', () => {
     getExternalBaseUrl: jest.fn(),
   };
 
-  setupRequestMockHandlers(worker);
+  registerMswTestHooks(worker);
 
   const buildMockRequest = (clusterName: any, path: string): Request => {
     const req = getMockReq({

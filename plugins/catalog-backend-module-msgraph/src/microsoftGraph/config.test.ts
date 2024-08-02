@@ -174,6 +174,7 @@ describe('readProviderConfigs', () => {
                 expand: 'member',
                 filter: 'securityEnabled eq false',
                 select: ['id', 'displayName', 'description'],
+                includeSubGroups: true,
               },
               schedule: {
                 frequency: 'PT30M',
@@ -202,6 +203,7 @@ describe('readProviderConfigs', () => {
         groupExpand: 'member',
         groupSelect: ['id', 'displayName', 'description'],
         groupFilter: 'securityEnabled eq false',
+        groupIncludeSubGroups: true,
         schedule: {
           frequency: { minutes: 30 },
           timeout: {

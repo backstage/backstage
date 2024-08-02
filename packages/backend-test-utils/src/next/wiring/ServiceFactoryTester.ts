@@ -35,7 +35,7 @@ export interface ServiceFactoryTesterOptions {
    * If a service factory is provided for a service that already has a default
    * implementation, the provided factory will override the default.
    */
-  dependencies?: Array<ServiceFactory | (() => ServiceFactory)>;
+  dependencies?: Array<ServiceFactory>;
 }
 
 /**
@@ -55,20 +55,15 @@ export class ServiceFactoryTester<TService, TScope extends 'root' | 'plugin'> {
    * @returns A new tester instance for the provided subject.
    */
   static from<TService, TScope extends 'root' | 'plugin'>(
-    subject:
-      | ServiceFactory<TService, TScope>
-      | (() => ServiceFactory<TService, TScope>),
+    subject: ServiceFactory<TService, TScope>,
     options?: ServiceFactoryTesterOptions,
   ) {
-    const subjectFactory = typeof subject === 'function' ? subject() : subject;
     const registry = ServiceRegistry.create([
       ...defaultServiceFactories,
-      ...(options?.dependencies?.map(f =>
-        typeof f === 'function' ? f() : f,
-      ) ?? []),
-      subjectFactory,
+      ...(options?.dependencies ?? []),
+      subject,
     ]);
-    return new ServiceFactoryTester(subjectFactory.service, registry);
+    return new ServiceFactoryTester(subject.service, registry);
   }
 
   private constructor(
@@ -82,6 +77,17 @@ export class ServiceFactoryTester<TService, TScope extends 'root' | 'plugin'> {
   /**
    * Returns the service instance for the subject.
    *
+   * @deprecated Use `getSubject` instead.
+   */
+  async get(
+    ...args: 'root' extends TScope ? [] : [pluginId?: string]
+  ): Promise<TService> {
+    return this.getSubject(...args);
+  }
+
+  /**
+   * Returns the service instance for the subject.
+   *
    * @remarks
    *
    * If the subject is a plugin scoped service factory a plugin ID
@@ -89,7 +95,7 @@ export class ServiceFactoryTester<TService, TScope extends 'root' | 'plugin'> {
    *
    * By default the plugin ID 'test' is used.
    */
-  async get(
+  async getSubject(
     ...args: 'root' extends TScope ? [] : [pluginId?: string]
   ): Promise<TService> {
     const [pluginId] = args;

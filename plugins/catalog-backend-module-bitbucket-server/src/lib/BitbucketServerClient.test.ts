@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { BitbucketServerIntegrationConfig } from '@backstage/integration';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -50,7 +50,7 @@ describe('BitbucketServerClient', () => {
     config: config,
   });
 
-  setupRequestMockHandlers(server);
+  registerMswTestHooks(server);
 
   it('listProjects', async () => {
     server.use(

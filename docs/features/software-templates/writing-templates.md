@@ -533,6 +533,11 @@ catalogFilter:
     metadata.annotations.github.com/team-slug: { exists: true }
 ```
 
+#### Custom validation messages
+
+You may specify custom JSON Schema validation messages as supported by the
+[ajv-errors](https://github.com/ajv-validator/ajv-errors) plugin library to [ajv](https://github.com/ajv-validator/ajv).
+
 ## `spec.steps` - `Action[]`
 
 The `steps` is an array of the things that you want to happen part of this

@@ -51,6 +51,10 @@ describe('gitlab:projectAccessToken:create examples', () => {
           host: 'hosted.gitlab.com',
           apiBaseUrl: 'https://api.hosted.gitlab.com',
         },
+        {
+          host: 'gitlab.example.com',
+          apiBaseUrl: 'https://api.gitlab.example.com',
+        },
       ],
     },
   });
@@ -191,5 +195,257 @@ describe('gitlab:projectAccessToken:create examples', () => {
     );
 
     expect(mockContext.output).toHaveBeenCalledWith('access_token', 'TOKEN');
+  });
+
+  it(`should ${examples[5].description}`, async () => {
+    mockGitlabClient.ProjectAccessTokens.create.mockResolvedValue({
+      token: 'personal-access-token',
+      username: 'gitlab-user',
+    });
+
+    const input = yaml.parse(examples[5].example).steps[0].input;
+    await action.handler({
+      ...mockContext,
+      input,
+    });
+
+    expect(mockGitlabClient.ProjectAccessTokens.create).toHaveBeenCalledWith(
+      '456',
+      'tokenname',
+      ['read_repository'],
+      {
+        accessLevel: 30,
+        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
+      },
+    );
+
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'access_token',
+      'personal-access-token',
+    );
+  });
+
+  it(`should ${examples[6].description}`, async () => {
+    mockGitlabClient.ProjectAccessTokens.create.mockResolvedValue({
+      token: 'personal-access-token',
+      username: 'gitlab-user',
+    });
+
+    const input = yaml.parse(examples[6].example).steps[0].input;
+    await action.handler({
+      ...mockContext,
+      input,
+    });
+
+    expect(mockGitlabClient.ProjectAccessTokens.create).toHaveBeenCalledWith(
+      '456',
+      'full-access-token',
+      ['read_repository'],
+      {
+        accessLevel: 40,
+        expiresAt: '2024-12-31',
+      },
+    );
+
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'access_token',
+      'personal-access-token',
+    );
+  });
+
+  it(`should ${examples[7].description}`, async () => {
+    mockGitlabClient.ProjectAccessTokens.create.mockResolvedValue({
+      token: 'personal-access-token',
+      username: 'gitlab-user',
+    });
+
+    const input = yaml.parse(examples[7].example).steps[0].input;
+    await action.handler({
+      ...mockContext,
+      input,
+    });
+
+    expect(mockGitlabClient.ProjectAccessTokens.create).toHaveBeenCalledWith(
+      '101112',
+      'tokenname',
+      ['read_repository'],
+      {
+        accessLevel: 40,
+        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
+      },
+    );
+
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'access_token',
+      'personal-access-token',
+    );
+  });
+
+  it(`should ${examples[8].description}`, async () => {
+    mockGitlabClient.ProjectAccessTokens.create.mockResolvedValue({
+      token: 'personal-access-token',
+      username: 'gitlab-user',
+    });
+
+    const input = yaml.parse(examples[8].example).steps[0].input;
+    await action.handler({
+      ...mockContext,
+      input,
+    });
+
+    expect(mockGitlabClient.ProjectAccessTokens.create).toHaveBeenCalledWith(
+      '101112',
+      'tokenname',
+      ['read_repository', 'read_api'],
+      {
+        accessLevel: 40,
+        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
+      },
+    );
+
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'access_token',
+      'personal-access-token',
+    );
+  });
+
+  it(`should ${examples[9].description}`, async () => {
+    mockGitlabClient.ProjectAccessTokens.create.mockResolvedValue({
+      token: 'personal-access-token',
+      username: 'gitlab-user',
+    });
+
+    const input = yaml.parse(examples[9].example).steps[0].input;
+    await action.handler({
+      ...mockContext,
+      input,
+    });
+
+    expect(mockGitlabClient.ProjectAccessTokens.create).toHaveBeenCalledWith(
+      '101112',
+      'tokenname',
+      ['read_repository'],
+      {
+        accessLevel: 10,
+        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
+      },
+    );
+
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'access_token',
+      'personal-access-token',
+    );
+  });
+
+  it(`should ${examples[10].description}`, async () => {
+    mockGitlabClient.ProjectAccessTokens.create.mockResolvedValue({
+      token: 'personal-access-token',
+      username: 'gitlab-user',
+    });
+
+    const input = yaml.parse(examples[10].example).steps[0].input;
+    await action.handler({
+      ...mockContext,
+      input,
+    });
+
+    expect(mockGitlabClient.ProjectAccessTokens.create).toHaveBeenCalledWith(
+      '101112',
+      'tokenname',
+      ['read_repository'],
+      {
+        accessLevel: 40,
+        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
+      },
+    );
+
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'access_token',
+      'personal-access-token',
+    );
+  });
+
+  it(`should ${examples[11].description}`, async () => {
+    mockGitlabClient.ProjectAccessTokens.create.mockResolvedValue({
+      token: 'personal-access-token',
+      username: 'gitlab-user',
+    });
+
+    const input = yaml.parse(examples[11].example).steps[0].input;
+    await action.handler({
+      ...mockContext,
+      input,
+    });
+
+    expect(mockGitlabClient.ProjectAccessTokens.create).toHaveBeenCalledWith(
+      '101112',
+      'tokenname',
+      ['read_repository'],
+      {
+        accessLevel: 50,
+        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
+      },
+    );
+
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'access_token',
+      'personal-access-token',
+    );
+  });
+
+  it(`should ${examples[12].description}`, async () => {
+    mockGitlabClient.ProjectAccessTokens.create.mockResolvedValue({
+      token: 'personal-access-token',
+      username: 'gitlab-user',
+    });
+
+    const input = yaml.parse(examples[12].example).steps[0].input;
+    await action.handler({
+      ...mockContext,
+      input,
+    });
+
+    expect(mockGitlabClient.ProjectAccessTokens.create).toHaveBeenCalledWith(
+      '101112',
+      'no-expiry-token',
+      ['read_repository'],
+      {
+        accessLevel: 40,
+        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
+      },
+    );
+
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'access_token',
+      'personal-access-token',
+    );
+  });
+
+  it(`should ${examples[13].description}`, async () => {
+    mockGitlabClient.ProjectAccessTokens.create.mockResolvedValue({
+      token: 'personal-access-token',
+      username: 'gitlab-user',
+    });
+
+    const input = yaml.parse(examples[13].example).steps[0].input;
+    await action.handler({
+      ...mockContext,
+      input,
+    });
+
+    expect(mockGitlabClient.ProjectAccessTokens.create).toHaveBeenCalledWith(
+      '101112',
+      'tokenname',
+      ['read_repository'],
+      {
+        accessLevel: 40,
+        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
+      },
+    );
+
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'access_token',
+      'personal-access-token',
+    );
   });
 });

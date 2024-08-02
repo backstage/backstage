@@ -6,4 +6,4 @@ metadata:
 spec:
   lifecycle: production
   type: backstage-web-library
-  owner: discoverability-maintainers
+  owner: search-maintainers

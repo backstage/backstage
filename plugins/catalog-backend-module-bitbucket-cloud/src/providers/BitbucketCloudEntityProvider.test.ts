@@ -22,7 +22,7 @@ import {
 } from '@backstage/backend-tasks';
 import {
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity, LocationEntity } from '@backstage/catalog-model';
@@ -62,7 +62,7 @@ const logger = mockServices.logger.mock();
 const server = setupServer();
 
 describe('BitbucketCloudEntityProvider', () => {
-  setupRequestMockHandlers(server);
+  registerMswTestHooks(server);
 
   const simpleConfig = new ConfigReader({
     catalog: {

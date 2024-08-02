@@ -16,7 +16,7 @@
 
 import {
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { LocationSpec } from '@backstage/plugin-catalog-node';
@@ -157,7 +157,7 @@ function getProcessor({
 }
 
 describe('GitlabDiscoveryProcessor', () => {
-  setupRequestMockHandlers(server);
+  registerMswTestHooks(server);
 
   beforeAll(() => {
     jest.useFakeTimers();

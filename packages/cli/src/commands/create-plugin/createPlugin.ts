@@ -19,16 +19,16 @@ import { promisify } from 'util';
 import chalk from 'chalk';
 import inquirer, { Answers, Question } from 'inquirer';
 import { exec as execCb } from 'child_process';
-import { resolve as resolvePath, join as joinPath } from 'path';
+import { join as joinPath, resolve as resolvePath } from 'path';
 import camelCase from 'lodash/camelCase';
 import upperFirst from 'lodash/upperFirst';
 import os from 'os';
 import { OptionValues } from 'commander';
 import { assertError } from '@backstage/errors';
 import {
-  parseOwnerIds,
   addCodeownersEntry,
   getCodeownersFilePath,
+  parseOwnerIds,
 } from '../../lib/codeowners';
 import { paths } from '../../lib/paths';
 import { Task, templatingTask } from '../../lib/tasks';
@@ -266,6 +266,7 @@ export default async (opts: OptionValues) => {
   const { version: pluginVersion } = isMonoRepo
     ? await fs.readJson(paths.resolveTargetRoot('lerna.json'))
     : { version: '0.1.0' };
+  const license = opts.license ?? 'Apache-2.0';
 
   let lockfile: Lockfile | undefined;
   try {
@@ -299,6 +300,7 @@ export default async (opts: OptionValues) => {
         name,
         privatePackage,
         npmRegistry,
+        license,
       },
       createPackageVersionProvider(lockfile),
       isMonoRepo,

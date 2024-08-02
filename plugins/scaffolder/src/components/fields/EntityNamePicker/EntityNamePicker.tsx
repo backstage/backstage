@@ -46,6 +46,7 @@ export const EntityNamePicker = (props: EntityNamePickerProps) => {
       margin="normal"
       error={rawErrors?.length > 0 && !formData}
       inputProps={{ autoFocus }}
+      FormHelperTextProps={{ margin: 'dense', style: { marginLeft: 0 } }}
     />
   );
 };

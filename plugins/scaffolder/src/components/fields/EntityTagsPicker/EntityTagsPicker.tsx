@@ -116,6 +116,7 @@ export const EntityTagsPicker = (props: EntityTagsPickerProps) => {
               helperText ??
               "Add any relevant tags, hit 'Enter' to add new tags. Valid format: [a-z0-9+#] separated by [-], at most 63 characters"
             }
+            FormHelperTextProps={{ margin: 'dense', style: { marginLeft: 0 } }}
           />
         )}
       />

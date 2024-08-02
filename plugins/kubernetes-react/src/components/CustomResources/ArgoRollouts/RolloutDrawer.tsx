@@ -18,6 +18,7 @@ import React from 'react';
 import { KubernetesStructuredMetadataTableDrawer } from '../../KubernetesDrawer';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
+import Chip from '@material-ui/core/Chip';
 
 export const RolloutDrawer = ({
   rollout,
@@ -26,6 +27,7 @@ export const RolloutDrawer = ({
   rollout: any;
   expanded?: boolean;
 }) => {
+  const namespace = rollout.metadata?.namespace;
   return (
     <KubernetesStructuredMetadataTableDrawer
       object={rollout}
@@ -50,6 +52,11 @@ export const RolloutDrawer = ({
             Rollout
           </Typography>
         </Grid>
+        {namespace && (
+          <Grid item>
+            <Chip size="small" label={`namespace: ${namespace}`} />
+          </Grid>
+        )}
       </Grid>
     </KubernetesStructuredMetadataTableDrawer>
   );

@@ -15,7 +15,7 @@
  */
 
 import { setupServer } from 'msw/node';
-import { setupRequestMockHandlers } from '../helpers';
+import { registerMswTestHooks } from '../helpers';
 import { HarnessIntegrationConfig } from './config';
 import {
   getHarnessArchiveUrl,
@@ -28,7 +28,7 @@ import {
 
 describe('Harness code core', () => {
   const worker = setupServer();
-  setupRequestMockHandlers(worker);
+  registerMswTestHooks(worker);
 
   describe('getHarnessFileContentsUrl', () => {
     it('can create an url from arguments', () => {

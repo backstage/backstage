@@ -17,14 +17,54 @@
 import { ExtensionDefinition } from './createExtension';
 import { resolveExtensionDefinition } from './resolveExtensionDefinition';
 
-const baseDef = {
-  $$type: '@backstage/ExtensionDefinition',
-  version: 'v1',
-  attachTo: { id: '', input: '' },
-  disabled: false,
-};
-
 describe('resolveExtensionDefinition', () => {
+  const baseDef = {
+    $$type: '@backstage/ExtensionDefinition',
+    version: 'v2',
+    attachTo: { id: '', input: '' },
+    disabled: false,
+  };
+
+  it.each([
+    [{ namespace: 'ns' }, 'ns'],
+    [{ namespace: 'n' }, 'n'],
+    [{ namespace: 'ns', name: 'n' }, 'ns/n'],
+    [{ kind: 'k', namespace: 'ns' }, 'k:ns'],
+    [{ kind: 'k', namespace: 'ns', name: 'n' }, 'k:ns/n'],
+  ])(`should resolve extension IDs %s`, (definition, expected) => {
+    const resolved = resolveExtensionDefinition({
+      ...baseDef,
+      ...definition,
+    } as ExtensionDefinition<unknown>);
+    expect(resolved.id).toBe(expected);
+    expect(String(resolved)).toBe(`Extension{id=${expected}}`);
+  });
+
+  it('should fail to resolve extension ID without namespace', () => {
+    expect(() =>
+      resolveExtensionDefinition({
+        ...baseDef,
+        kind: 'k',
+      } as ExtensionDefinition<unknown>),
+    ).toThrow(
+      'Extension must declare an explicit namespace or name as it could not be resolved from context, kind=k namespace=undefined name=undefined',
+    );
+    expect(() =>
+      resolveExtensionDefinition(baseDef as ExtensionDefinition<unknown>),
+    ).toThrow(
+      'Extension must declare an explicit namespace or name as it could not be resolved from context, kind=undefined namespace=undefined name=undefined',
+    );
+  });
+});
+
+describe('old resolveExtensionDefinition', () => {
+  const baseDef = {
+    $$type: '@backstage/ExtensionDefinition',
+    version: 'v1',
+    attachTo: { id: '', input: '' },
+    disabled: false,
+  };
+
   it.each([
     [{ namespace: 'ns' }, 'ns'],
     [{ namespace: 'n' }, 'n'],

@@ -43,6 +43,8 @@ app:
     - entity-card:org/ownership
     - entity-card:org/user-profile
 
+    - entity-content:kubernetes/kubernetes
+
   # scmAuthExtension: >-
   #   createScmAuthExtension({
   #     id: 'apis.scmAuth.addons.ghe',

@@ -16,7 +16,7 @@
 
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { setupRequestMockHandlers } from '../helpers';
+import { registerMswTestHooks } from '../helpers';
 import { BitbucketCloudIntegrationConfig } from './config';
 import {
   getBitbucketCloudDefaultBranch,
@@ -27,7 +27,7 @@ import {
 
 describe('bitbucketCloud core', () => {
   const worker = setupServer();
-  setupRequestMockHandlers(worker);
+  registerMswTestHooks(worker);
 
   describe('getBitbucketCloudRequestOptions', () => {
     it('insert basic auth when needed', () => {

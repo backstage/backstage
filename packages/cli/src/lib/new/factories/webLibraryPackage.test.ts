@@ -64,6 +64,7 @@ describe('webLibraryPackage factory', () => {
         modified = true;
       },
       createTemporaryDirectory: () => fs.mkdtemp('test'),
+      license: 'Apache-2.0',
     });
 
     expect(modified).toBe(true);
@@ -134,6 +135,7 @@ describe('webLibraryPackage factory', () => {
       defaultVersion: '1.0.0',
       markAsModified: () => {},
       createTemporaryDirectory: () => fs.mkdtemp('test'),
+      license: 'Apache-2.0',
     });
 
     expect(Task.forCommand).toHaveBeenCalledTimes(2);

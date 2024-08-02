@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { codeSearch, CodeSearchResponse } from './azure';
@@ -26,7 +26,7 @@ import { ConfigReader } from '@backstage/config';
 
 describe('azure', () => {
   const server = setupServer();
-  setupRequestMockHandlers(server);
+  registerMswTestHooks(server);
 
   const createFixture = (host: string, token: string) => {
     const azureConfig = {

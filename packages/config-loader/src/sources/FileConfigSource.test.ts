@@ -59,6 +59,19 @@ describe('FileConfigSource', () => {
     ]);
   });
 
+  it('should read a config file with optional parser', async () => {
+    const tmp = await tmpFiles({ 'a.json': JSON.stringify({ a: 1 }) });
+
+    const source = FileConfigSource.create({
+      path: tmp.resolve('a.json'),
+      parser: async ({ contents }) => ({ result: JSON.parse(contents) }),
+    });
+
+    await expect(readN(source, 1)).resolves.toEqual([
+      [{ data: { a: 1 }, context: 'a.json', path: tmp.resolve('a.json') }],
+    ]);
+  });
+
   it('should watch config files', async () => {
     const tmp = await tmpFiles({ 'a.yaml': 'a: 1' });
 

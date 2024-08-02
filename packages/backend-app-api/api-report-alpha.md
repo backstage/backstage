@@ -4,12 +4,13 @@
 
 ```ts
 import { FeatureDiscoveryService } from '@backstage/backend-plugin-api/alpha';
-import { ServiceFactory } from '@backstage/backend-plugin-api';
+import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
 
 // @alpha (undocumented)
-export const featureDiscoveryServiceFactory: () => ServiceFactory<
+export const featureDiscoveryServiceFactory: ServiceFactoryCompat<
   FeatureDiscoveryService,
-  'root'
+  'root',
+  undefined
 >;
 
 // (No @packageDocumentation comment for this package)

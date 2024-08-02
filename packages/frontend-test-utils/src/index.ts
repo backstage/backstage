@@ -20,6 +20,7 @@
  * Contains utilities that can be used when testing frontend features such as extensions.
  */
 
+export * from './deprecated';
 export * from './apis';
 export * from './app';
 
@@ -28,4 +29,4 @@ export type { TestApiProviderProps } from '@backstage/test-utils';
 
 export { withLogCollector } from '@backstage/test-utils';
 
-export { setupRequestMockHandlers } from '@backstage/test-utils';
+export { registerMswTestHooks } from '@backstage/test-utils';

@@ -59,8 +59,8 @@ describe('catalog:write', () => {
       },
     });
 
-    expect(fsMock.writeFile).toHaveBeenCalledTimes(1);
-    expect(fsMock.writeFile).toHaveBeenCalledWith(
+    expect(fsMock.outputFile).toHaveBeenCalledTimes(1);
+    expect(fsMock.outputFile).toHaveBeenCalledWith(
       resolvePath(mockContext.workspacePath, 'catalog-info.yaml'),
       yaml.stringify(entity),
     );
@@ -88,8 +88,8 @@ describe('catalog:write', () => {
       },
     });
 
-    expect(fsMock.writeFile).toHaveBeenCalledTimes(1);
-    expect(fsMock.writeFile).toHaveBeenCalledWith(
+    expect(fsMock.outputFile).toHaveBeenCalledTimes(1);
+    expect(fsMock.outputFile).toHaveBeenCalledWith(
       resolvePath(mockContext.workspacePath, 'some-dir/entity-info.yaml'),
       yaml.stringify(entity),
     );
@@ -118,8 +118,8 @@ describe('catalog:write', () => {
       'backstage.io/source-template': 'template:default/test-skeleton',
     };
 
-    expect(fsMock.writeFile).toHaveBeenCalledTimes(1);
-    expect(fsMock.writeFile).toHaveBeenCalledWith(
+    expect(fsMock.outputFile).toHaveBeenCalledTimes(1);
+    expect(fsMock.outputFile).toHaveBeenCalledWith(
       resolvePath(mockContext.workspacePath, 'catalog-info.yaml'),
       yaml.stringify(expectedEntity),
     );

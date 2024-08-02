@@ -24,8 +24,7 @@ There are also several modules available for various SCM tools:
 
 Here's how to add an action module, first you need to run this command:
 
-```sh
-# From your Backstage root directory
+```sh title="From your Backstage root directory"
 yarn --cwd packages/backend add @backstage/plugin-scaffolder-backend-module-github
 ```
 

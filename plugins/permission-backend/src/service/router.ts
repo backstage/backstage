@@ -22,10 +22,7 @@ import {
   errorHandler,
 } from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
-import {
-  BackstageIdentityResponse,
-  IdentityApi,
-} from '@backstage/plugin-auth-node';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,
   EvaluatePermissionRequest,
@@ -40,6 +37,7 @@ import {
   ApplyConditionsRequestEntry,
   ApplyConditionsResponseEntry,
   PermissionPolicy,
+  PolicyQueryUser,
 } from '@backstage/plugin-permission-node';
 import { PermissionIntegrationClient } from './PermissionIntegrationClient';
 import { memoize } from 'lodash';
@@ -130,9 +128,9 @@ const handleRequest = async (
     );
   });
 
-  let user: BackstageIdentityResponse | undefined;
+  let user: PolicyQueryUser | undefined;
   if (auth.isPrincipal(credentials, 'user')) {
-    const { ownershipEntityRefs } = await userInfo.getUserInfo(credentials);
+    const info = await userInfo.getUserInfo(credentials);
     const { token } = await auth.getPluginRequestToken({
       onBehalfOf: credentials,
       targetPluginId: 'catalog', // TODO: unknown at this point
@@ -141,9 +139,11 @@ const handleRequest = async (
       identity: {
         type: 'user',
         userEntityRef: credentials.principal.userEntityRef,
-        ownershipEntityRefs,
+        ownershipEntityRefs: info.ownershipEntityRefs,
       },
       token,
+      credentials,
+      info,
     };
   }
 

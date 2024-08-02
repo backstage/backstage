@@ -36,12 +36,15 @@ Please ensure the appropriate database drivers are installed in your `backend`
 package. If you intend to use both PostgreSQL and SQLite, you can install
 both of them.
 
-```bash
-# From your Backstage root directory
-# install pg if you need PostgreSQL
-yarn --cwd packages/backend add pg
+Install pg if you need PostgreSQL:
 
-# install SQLite 3 if you intend to set it as the client
+```bash title="From your Backstage root directory"
+yarn --cwd packages/backend add pg
+```
+
+Install SQLite 3 if you intend to set it as the client:
+
+```bash title="From your Backstage root directory"
 yarn --cwd packages/backend add better-sqlite3
 ```
 

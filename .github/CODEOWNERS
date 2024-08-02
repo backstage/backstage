@@ -9,10 +9,10 @@ yarn.lock                                         @backstage/maintainers @backst
 */yarn.lock                                       @backstage/maintainers @backstage-service
 /.changeset/*.md
 /beps/0001-notifications-system                   @backstage/maintainers @backstage/notifications-maintainers
-/docs/assets/search                               @backstage/discoverability-maintainers
-/docs/features/search                             @backstage/discoverability-maintainers
+/docs/assets/search                               @backstage/search-maintainers
+/docs/features/search                             @backstage/search-maintainers
 /docs/features/techdocs                           @backstage/techdocs-maintainers
-/docs/plugins/integrating-search-into-plugins.md  @backstage/discoverability-maintainers
+/docs/plugins/integrating-search-into-plugins.md  @backstage/search-maintainers
 /packages/cli/src/commands/onboard                @backstage/sharks
 /packages/backend-openapi-utils                   @backstage/maintainers @backstage/reviewers @backstage/openapi-tooling-maintainers
 /packages/techdocs-cli                            @backstage/techdocs-maintainers
@@ -50,8 +50,8 @@ yarn.lock                                         @backstage/maintainers @backst
 /plugins/explore-react                            @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers
 /plugins/fossa                                    @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers
 /plugins/git-release-manager                      @backstage/maintainers @backstage/reviewers @erikengervall
-/plugins/home                                     @backstage/discoverability-maintainers
-/plugins/home-*                                   @backstage/discoverability-maintainers
+/plugins/home                                     @backstage/home-maintainers
+/plugins/home-*                                   @backstage/home-maintainers
 /plugins/kafka                                    @backstage/maintainers @backstage/reviewers @andrewthauer
 /plugins/kafka-backend                            @backstage/maintainers @backstage/reviewers @andrewthauer
 /plugins/kubernetes                               @backstage/kubernetes-maintainers
@@ -70,13 +70,11 @@ yarn.lock                                         @backstage/maintainers @backst
 /plugins/rollbar-backend                          @backstage/maintainers @backstage/reviewers @andrewthauer
 /plugins/scaffolder                               @backstage/maintainers @backstage/reviewers @backstage/scaffolder-maintainers
 /plugins/scaffolder-*                             @backstage/maintainers @backstage/reviewers @backstage/scaffolder-maintainers
-/plugins/search                                   @backstage/discoverability-maintainers
-/plugins/search-*                                 @backstage/discoverability-maintainers
+/plugins/search                                   @backstage/search-maintainers
+/plugins/search-*                                 @backstage/search-maintainers
 /plugins/signals                                  @backstage/maintainers @backstage/notifications-maintainers
 /plugins/signals-*                                @backstage/maintainers @backstage/notifications-maintainers
 /plugins/sonarqube                                @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers
-/plugins/stack-overflow                           @backstage/discoverability-maintainers
-/plugins/stack-overflow-backend                   @backstage/discoverability-maintainers
 /plugins/techdocs                                 @backstage/techdocs-maintainers
 /plugins/techdocs-*                               @backstage/techdocs-maintainers
 /plugins/user-settings-backend                    @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers

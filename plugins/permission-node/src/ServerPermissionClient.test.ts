@@ -25,7 +25,7 @@ import {
 import {
   mockCredentials,
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { setupServer } from 'msw/node';
@@ -54,7 +54,7 @@ const config = new ConfigReader({
 });
 
 describe('ServerPermissionClient', () => {
-  setupRequestMockHandlers(server);
+  registerMswTestHooks(server);
 
   const discovery = mockServices.discovery.mock();
 
@@ -83,18 +83,22 @@ describe('ServerPermissionClient', () => {
       const client = ServerPermissionClient.fromConfig(new ConfigReader({}), {
         discovery,
         tokenManager: mockServices.tokenManager.mock(),
+        auth: mockServices.auth(),
       });
 
-      await client.authorize([
-        {
-          permission: testBasicPermission,
-        },
-      ]);
+      await client.authorize(
+        [
+          {
+            permission: testBasicPermission,
+          },
+        ],
+        { credentials: mockCredentials.none() },
+      );
 
       expect(mockAuthorizeHandler).not.toHaveBeenCalled();
     });
 
-    it('should bypass the permission backend if permissions are enabled and request has valid server token', async () => {
+    it('should bypass the permission backend if permissions are enabled and request has valid server credentials', async () => {
       const client = ServerPermissionClient.fromConfig(config, {
         discovery,
         tokenManager: mockServices.tokenManager.mock(),
@@ -102,13 +106,13 @@ describe('ServerPermissionClient', () => {
       });
 
       await client.authorize([{ permission: testBasicPermission }], {
-        token: mockCredentials.service.token(),
+        credentials: mockCredentials.service(),
       });
 
       expect(mockAuthorizeHandler).not.toHaveBeenCalled();
     });
 
-    it('should call the permission backend if permissions are enabled and request does not have valid server token', async () => {
+    it('should call the permission backend if permissions are enabled and request does not have valid server credentials', async () => {
       const client = ServerPermissionClient.fromConfig(config, {
         discovery,
         tokenManager: mockServices.tokenManager.mock(),
@@ -116,10 +120,18 @@ describe('ServerPermissionClient', () => {
       });
 
       await client.authorize([{ permission: testBasicPermission }], {
-        token: mockCredentials.user.token(),
+        credentials: mockCredentials.user(),
       });
 
       expect(mockAuthorizeHandler).toHaveBeenCalled();
+      expect(
+        mockAuthorizeHandler.mock.calls[0][0].headers.get('authorization'),
+      ).toBe(
+        mockCredentials.service.header({
+          onBehalfOf: mockCredentials.user(),
+          targetPluginId: 'permission',
+        }),
+      );
     });
   });
 
@@ -145,201 +157,59 @@ describe('ServerPermissionClient', () => {
       const client = ServerPermissionClient.fromConfig(new ConfigReader({}), {
         discovery,
         tokenManager: mockServices.tokenManager.mock(),
-      });
-
-      await client.authorizeConditional([
-        { permission: testResourcePermission },
-      ]);
-
-      expect(mockAuthorizeHandler).not.toHaveBeenCalled();
-    });
-
-    it('should bypass the permission backend if permissions are enabled and request has valid server token', async () => {
-      const client = ServerPermissionClient.fromConfig(config, {
-        discovery,
-        tokenManager: mockServices.tokenManager.mock(),
+        auth: mockServices.auth(),
       });
 
       await client.authorizeConditional(
         [{ permission: testResourcePermission }],
         {
-          token: mockCredentials.service.token(),
+          credentials: mockCredentials.none(),
         },
       );
 
       expect(mockAuthorizeHandler).not.toHaveBeenCalled();
     });
 
-    it('should call the permission backend if permissions are enabled and request does not have valid server token', async () => {
-      const auth = mockServices.auth();
+    it('should bypass the permission backend if permissions are enabled and request has valid server credentials', async () => {
       const client = ServerPermissionClient.fromConfig(config, {
         discovery,
         tokenManager: mockServices.tokenManager.mock(),
-        auth,
+        auth: mockServices.auth(),
       });
 
       await client.authorizeConditional(
         [{ permission: testResourcePermission }],
         {
-          token: mockCredentials.user.token(),
+          credentials: mockCredentials.service(),
+        },
+      );
+
+      expect(mockAuthorizeHandler).not.toHaveBeenCalled();
+    });
+
+    it('should call the permission backend if permissions are enabled and request does not have valid server credentials', async () => {
+      const client = ServerPermissionClient.fromConfig(config, {
+        discovery,
+        tokenManager: mockServices.tokenManager.mock(),
+        auth: mockServices.auth(),
+      });
+
+      await client.authorizeConditional(
+        [{ permission: testResourcePermission }],
+        {
+          credentials: mockCredentials.user(),
         },
       );
 
       expect(mockAuthorizeHandler).toHaveBeenCalled();
-    });
-  });
-
-  describe('with credentials', () => {
-    describe('authorize', () => {
-      let mockAuthorizeHandler: jest.Mock;
-
-      beforeEach(() => {
-        mockAuthorizeHandler = jest.fn((req, res, { json }: RestContext) => {
-          const responses = req.body.items.map(
-            (r: IdentifiedPermissionMessage<DefinitivePolicyDecision>) => ({
-              id: r.id,
-              result: AuthorizeResult.ALLOW,
-            }),
-          );
-
-          return res(json({ items: responses }));
-        });
-
-        server.use(rest.post(`${mockBaseUrl}/authorize`, mockAuthorizeHandler));
-      });
-
-      it('should bypass the permission backend if permissions are disabled', async () => {
-        const client = ServerPermissionClient.fromConfig(new ConfigReader({}), {
-          discovery,
-          tokenManager: mockServices.tokenManager.mock(),
-          auth: mockServices.auth(),
-        });
-
-        await client.authorize(
-          [
-            {
-              permission: testBasicPermission,
-            },
-          ],
-          { credentials: mockCredentials.none() },
-        );
-
-        expect(mockAuthorizeHandler).not.toHaveBeenCalled();
-      });
-
-      it('should bypass the permission backend if permissions are enabled and request has valid server token', async () => {
-        const client = ServerPermissionClient.fromConfig(config, {
-          discovery,
-          tokenManager: mockServices.tokenManager.mock(),
-          auth: mockServices.auth(),
-        });
-
-        await client.authorize([{ permission: testBasicPermission }], {
-          credentials: mockCredentials.service(),
-        });
-
-        expect(mockAuthorizeHandler).not.toHaveBeenCalled();
-      });
-
-      it('should call the permission backend if permissions are enabled and request does not have valid server token', async () => {
-        const client = ServerPermissionClient.fromConfig(config, {
-          discovery,
-          tokenManager: mockServices.tokenManager.mock(),
-          auth: mockServices.auth(),
-        });
-
-        await client.authorize([{ permission: testBasicPermission }], {
-          credentials: mockCredentials.user(),
-        });
-
-        expect(mockAuthorizeHandler).toHaveBeenCalled();
-        expect(
-          mockAuthorizeHandler.mock.calls[0][0].headers.get('authorization'),
-        ).toBe(
-          mockCredentials.service.header({
-            onBehalfOf: mockCredentials.user(),
-            targetPluginId: 'permission',
-          }),
-        );
-      });
-    });
-
-    describe('authorizeConditional', () => {
-      let mockAuthorizeHandler: jest.Mock;
-
-      beforeEach(() => {
-        mockAuthorizeHandler = jest.fn((req, res, { json }: RestContext) => {
-          const responses = req.body.items.map(
-            (r: IdentifiedPermissionMessage<ConditionalPolicyDecision>) => ({
-              id: r.id,
-              result: AuthorizeResult.ALLOW,
-            }),
-          );
-
-          return res(json({ items: responses }));
-        });
-
-        server.use(rest.post(`${mockBaseUrl}/authorize`, mockAuthorizeHandler));
-      });
-
-      it('should bypass the permission backend if permissions are disabled', async () => {
-        const client = ServerPermissionClient.fromConfig(new ConfigReader({}), {
-          discovery,
-          tokenManager: mockServices.tokenManager.mock(),
-          auth: mockServices.auth(),
-        });
-
-        await client.authorizeConditional(
-          [{ permission: testResourcePermission }],
-          {
-            credentials: mockCredentials.none(),
-          },
-        );
-
-        expect(mockAuthorizeHandler).not.toHaveBeenCalled();
-      });
-
-      it('should bypass the permission backend if permissions are enabled and request has valid server token', async () => {
-        const client = ServerPermissionClient.fromConfig(config, {
-          discovery,
-          tokenManager: mockServices.tokenManager.mock(),
-          auth: mockServices.auth(),
-        });
-
-        await client.authorizeConditional(
-          [{ permission: testResourcePermission }],
-          {
-            credentials: mockCredentials.service(),
-          },
-        );
-
-        expect(mockAuthorizeHandler).not.toHaveBeenCalled();
-      });
-
-      it('should call the permission backend if permissions are enabled and request does not have valid server token', async () => {
-        const client = ServerPermissionClient.fromConfig(config, {
-          discovery,
-          tokenManager: mockServices.tokenManager.mock(),
-          auth: mockServices.auth(),
-        });
-
-        await client.authorizeConditional(
-          [{ permission: testResourcePermission }],
-          {
-            credentials: mockCredentials.user(),
-          },
-        );
-
-        expect(mockAuthorizeHandler).toHaveBeenCalled();
-        expect(
-          mockAuthorizeHandler.mock.calls[0][0].headers.get('authorization'),
-        ).toBe(
-          mockCredentials.service.header({
-            onBehalfOf: mockCredentials.user(),
-            targetPluginId: 'permission',
-          }),
-        );
-      });
+      expect(
+        mockAuthorizeHandler.mock.calls[0][0].headers.get('authorization'),
+      ).toBe(
+        mockCredentials.service.header({
+          onBehalfOf: mockCredentials.user(),
+          targetPluginId: 'permission',
+        }),
+      );
     });
   });
 

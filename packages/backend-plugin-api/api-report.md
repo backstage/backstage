@@ -9,6 +9,7 @@ import { AuthorizePermissionRequest } from '@backstage/plugin-permission-common'
 import { AuthorizePermissionResponse } from '@backstage/plugin-permission-common';
 import { Config } from '@backstage/config';
 import { Duration } from 'luxon';
+import { EvaluatorRequestOptions } from '@backstage/plugin-permission-common';
 import { Handler } from 'express';
 import { HumanDuration } from '@backstage/types';
 import { IdentityApi } from '@backstage/plugin-auth-node';
@@ -256,10 +257,10 @@ export function createServiceFactory<
   },
   TOpts extends object | undefined = undefined,
 >(
-  config: RootServiceFactoryConfig<TService, TImpl, TDeps>,
-): () => ServiceFactory<TService, 'root'>;
+  options: RootServiceFactoryOptions<TService, TImpl, TDeps>,
+): ServiceFactoryCompat<TService, 'root'>;
 
-// @public
+// @public @deprecated
 export function createServiceFactory<
   TService,
   TImpl extends TService,
@@ -268,45 +269,47 @@ export function createServiceFactory<
   },
   TOpts extends object | undefined = undefined,
 >(
-  config: (options?: TOpts) => RootServiceFactoryConfig<TService, TImpl, TDeps>,
-): (options?: TOpts) => ServiceFactory<TService, 'root'>;
-
-// @public
-export function createServiceFactory<
-  TService,
-  TImpl extends TService,
-  TDeps extends {
-    [name in string]: ServiceRef<unknown>;
-  },
-  TContext = undefined,
-  TOpts extends object | undefined = undefined,
->(
-  config: PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>,
-): () => ServiceFactory<TService, 'plugin'>;
-
-// @public
-export function createServiceFactory<
-  TService,
-  TImpl extends TService,
-  TDeps extends {
-    [name in string]: ServiceRef<unknown>;
-  },
-  TContext = undefined,
-  TOpts extends object | undefined = undefined,
->(
-  config: (
+  options: (
     options?: TOpts,
-  ) => PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>,
-): (options?: TOpts) => ServiceFactory<TService, 'plugin'>;
+  ) => RootServiceFactoryOptions<TService, TImpl, TDeps>,
+): ServiceFactoryCompat<TService, 'root', TOpts>;
+
+// @public
+export function createServiceFactory<
+  TService,
+  TImpl extends TService,
+  TDeps extends {
+    [name in string]: ServiceRef<unknown>;
+  },
+  TContext = undefined,
+  TOpts extends object | undefined = undefined,
+>(
+  options: PluginServiceFactoryOptions<TService, TContext, TImpl, TDeps>,
+): ServiceFactoryCompat<TService, 'plugin'>;
+
+// @public @deprecated
+export function createServiceFactory<
+  TService,
+  TImpl extends TService,
+  TDeps extends {
+    [name in string]: ServiceRef<unknown>;
+  },
+  TContext = undefined,
+  TOpts extends object | undefined = undefined,
+>(
+  options: (
+    options?: TOpts,
+  ) => PluginServiceFactoryOptions<TService, TContext, TImpl, TDeps>,
+): ServiceFactoryCompat<TService, 'plugin', TOpts>;
 
 // @public
 export function createServiceRef<TService>(
-  config: ServiceRefConfig<TService, 'plugin'>,
+  options: ServiceRefOptions<TService, 'plugin'>,
 ): ServiceRef<TService, 'plugin'>;
 
 // @public
 export function createServiceRef<TService>(
-  config: ServiceRefConfig<TService, 'root'>,
+  options: ServiceRefOptions<TService, 'root'>,
 ): ServiceRef<TService, 'root'>;
 
 // @public
@@ -421,30 +424,38 @@ export interface LoggerService {
 export interface PermissionsService extends PermissionEvaluator {
   authorize(
     requests: AuthorizePermissionRequest[],
-    options?: PermissionsServiceRequestOptions,
+    options: PermissionsServiceRequestOptions,
   ): Promise<AuthorizePermissionResponse[]>;
   authorizeConditional(
     requests: QueryPermissionRequest[],
-    options?: PermissionsServiceRequestOptions,
+    options: PermissionsServiceRequestOptions,
   ): Promise<QueryPermissionResponse[]>;
 }
 
 // @public
-export type PermissionsServiceRequestOptions =
-  | {
-      token?: string;
-    }
-  | {
-      credentials: BackstageCredentials;
-    };
+export interface PermissionsServiceRequestOptions
+  extends EvaluatorRequestOptions {
+  // (undocumented)
+  credentials: BackstageCredentials;
+}
 
 // @public
 export interface PluginMetadataService {
   getId(): string;
 }
 
+// @public @deprecated (undocumented)
+export type PluginServiceFactoryConfig<
+  TService,
+  TContext,
+  TImpl extends TService,
+  TDeps extends {
+    [name in string]: ServiceRef<unknown>;
+  },
+> = PluginServiceFactoryOptions<TService, TContext, TImpl, TDeps>;
+
 // @public (undocumented)
-export interface PluginServiceFactoryConfig<
+export interface PluginServiceFactoryOptions<
   TService,
   TContext,
   TImpl extends TService,
@@ -524,8 +535,17 @@ export interface RootLifecycleService extends LifecycleService {}
 // @public
 export interface RootLoggerService extends LoggerService {}
 
+// @public @deprecated (undocumented)
+export type RootServiceFactoryConfig<
+  TService,
+  TImpl extends TService,
+  TDeps extends {
+    [name in string]: ServiceRef<unknown>;
+  },
+> = RootServiceFactoryOptions<TService, TImpl, TDeps>;
+
 // @public (undocumented)
-export interface RootServiceFactoryConfig<
+export interface RootServiceFactoryOptions<
   TService,
   TImpl extends TService,
   TDeps extends {
@@ -624,7 +644,19 @@ export interface ServiceFactory<
   service: ServiceRef<TService, TScope>;
 }
 
-// @public
+// @public @deprecated (undocumented)
+export interface ServiceFactoryCompat<
+  TService = unknown,
+  TScope extends 'plugin' | 'root' = 'plugin' | 'root',
+  TOpts extends object | undefined = undefined,
+> extends ServiceFactory<TService, TScope> {
+  // @deprecated (undocumented)
+  (
+    ...options: undefined extends TOpts ? [] : [options?: TOpts]
+  ): ServiceFactory<TService, TScope>;
+}
+
+// @public @deprecated
 export type ServiceFactoryOrFunction = ServiceFactory | (() => ServiceFactory);
 
 // @public
@@ -638,12 +670,22 @@ export type ServiceRef<
   $$type: '@backstage/ServiceRef';
 };
 
+// @public @deprecated (undocumented)
+export type ServiceRefConfig<
+  TService,
+  TScope extends 'root' | 'plugin',
+> = ServiceRefOptions<TService, TScope>;
+
 // @public (undocumented)
-export interface ServiceRefConfig<TService, TScope extends 'root' | 'plugin'> {
+export interface ServiceRefOptions<TService, TScope extends 'root' | 'plugin'> {
   // (undocumented)
-  defaultFactory?: (
+  defaultFactory?(
     service: ServiceRef<TService, TScope>,
-  ) => Promise<ServiceFactoryOrFunction>;
+  ): Promise<ServiceFactory>;
+  // @deprecated (undocumented)
+  defaultFactory?(
+    service: ServiceRef<TService, TScope>,
+  ): Promise<() => ServiceFactory>;
   // (undocumented)
   id: string;
   // (undocumented)

@@ -39,10 +39,10 @@ export function defaultUserTransformer(
 // @public
 export type GroupMember =
   | (MicrosoftGraph.Group & {
-      '@odata.type': '#microsoft.graph.user';
+      '@odata.type': '#microsoft.graph.group';
     })
   | (MicrosoftGraph.User & {
-      '@odata.type': '#microsoft.graph.group';
+      '@odata.type': '#microsoft.graph.user';
     });
 
 // @public
@@ -126,6 +126,7 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
     userTransformer?: UserTransformer;
     groupTransformer?: GroupTransformer;
     organizationTransformer?: OrganizationTransformer;
+    providerConfigTransformer?: ProviderConfigTransformer;
   });
   // (undocumented)
   connect(connection: EntityProviderConnection): Promise<void>;
@@ -145,6 +146,7 @@ export interface MicrosoftGraphOrgEntityProviderLegacyOptions {
   id: string;
   logger: LoggerService;
   organizationTransformer?: OrganizationTransformer;
+  providerConfigTransformer?: ProviderConfigTransformer;
   schedule: 'manual' | TaskRunner;
   target: string;
   userTransformer?: UserTransformer;
@@ -162,6 +164,9 @@ export type MicrosoftGraphOrgEntityProviderOptions =
       organizationTransformer?:
         | OrganizationTransformer
         | Record<string, OrganizationTransformer>;
+      providerConfigTransformer?:
+        | ProviderConfigTransformer
+        | Record<string, ProviderConfigTransformer>;
     };
 
 // @public @deprecated
@@ -210,6 +215,7 @@ export type MicrosoftGraphProviderConfig = {
   groupFilter?: string;
   groupSearch?: string;
   groupSelect?: string[];
+  groupIncludeSubGroups?: boolean;
   queryMode?: 'basic' | 'advanced';
   loadUserPhotos?: boolean;
   schedule?: TaskScheduleDefinition;
@@ -233,6 +239,11 @@ export type OrganizationTransformer = (
   organization: MicrosoftGraph.Organization,
 ) => Promise<GroupEntity | undefined>;
 
+// @public
+export type ProviderConfigTransformer = (
+  provider: MicrosoftGraphProviderConfig,
+) => Promise<MicrosoftGraphProviderConfig>;
+
 // @public @deprecated
 export function readMicrosoftGraphConfig(
   config: Config,
@@ -253,6 +264,7 @@ export function readMicrosoftGraphOrg(
     groupSearch?: string;
     groupFilter?: string;
     groupSelect?: string[];
+    groupIncludeSubGroups?: boolean;
     queryMode?: 'basic' | 'advanced';
     userTransformer?: UserTransformer;
     groupTransformer?: GroupTransformer;
