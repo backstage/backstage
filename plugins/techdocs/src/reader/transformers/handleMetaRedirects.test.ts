@@ -16,6 +16,7 @@
 
 import { handleMetaRedirects } from './handleMetaRedirects';
 import { createTestShadowDom } from '../../test-utils';
+import { screen } from '@testing-library/react';
 
 describe('handleMetaRedirects', () => {
   const navigate = jest.fn();
@@ -35,15 +36,19 @@ describe('handleMetaRedirects', () => {
       },
       writable: true,
     });
-
     return await createTestShadowDom(html, {
       preTransformers: [],
       postTransformers: [handleMetaRedirects(navigate, entityName)],
     });
   };
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
 
   afterEach(() => {
     jest.clearAllMocks();
+    jest.useRealTimers();
+    document.body.innerHTML = '';
   });
 
   it('should navigate to relative URL if meta tag is present', async () => {
@@ -52,6 +57,13 @@ describe('handleMetaRedirects', () => {
       'http://localhost/docs/default/component/testEntity/subpath',
       '/docs/default/component/testEntity/subpath',
     );
+
+    expect(
+      await screen.findByText(
+        'The documentation at this path is no longer maintained. Redirecting to the designated replacement...',
+      ),
+    ).toBeInTheDocument();
+    jest.runAllTimers();
     expect(navigate).toHaveBeenCalledWith(
       'http://localhost/docs/default/component/testEntity/anotherPage',
     );
@@ -63,6 +75,13 @@ describe('handleMetaRedirects', () => {
       'http://localhost/docs/default/component/testEntity/subpath',
       '/docs/default/component/testEntity/subpath',
     );
+
+    expect(
+      await screen.findByText(
+        'The documentation at this path is no longer maintained. Redirecting to the designated replacement...',
+      ),
+    ).toBeInTheDocument();
+    jest.runAllTimers();
     expect(navigate).toHaveBeenCalledWith('/docs/default/component/testEntity');
   });
 
@@ -72,6 +91,13 @@ describe('handleMetaRedirects', () => {
       'http://localhost/docs/default/component/testEntity/subpath',
       '/docs/default/component/testEntity/subpath',
     );
+
+    expect(
+      await screen.findByText(
+        'The documentation at this path is no longer maintained. Redirecting to the designated replacement...',
+      ),
+    ).toBeInTheDocument();
+    jest.runAllTimers();
     expect(navigate).toHaveBeenCalledWith('http://localhost/test');
   });
 
@@ -81,6 +107,8 @@ describe('handleMetaRedirects', () => {
       'http://localhost/docs/default/component/testEntity/subpath',
       '/docs/default/component/testEntity/subpath',
     );
+
+    jest.advanceTimersByTime(4000);
     expect(navigate).not.toHaveBeenCalled();
   });
 });
