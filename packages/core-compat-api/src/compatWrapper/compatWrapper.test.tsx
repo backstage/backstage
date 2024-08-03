@@ -16,21 +16,27 @@
 
 import React from 'react';
 import {
+  componentsApiRef,
+  coreComponentRefs,
   coreExtensionData,
   createExtension,
+  iconsApiRef,
+  useRouteRef as useNewRouteRef,
+  useApi,
 } from '@backstage/frontend-plugin-api';
 import {
   createExtensionTester,
-  renderInTestApp,
+  renderInTestApp as renderInNewTestApp,
 } from '@backstage/frontend-test-utils';
 import { screen } from '@testing-library/react';
 import { compatWrapper } from './compatWrapper';
 import {
-  createRouteRef,
   useApp,
-  useRouteRef,
+  useRouteRef as useOldRouteRef,
+  createRouteRef as createOldRouteRef,
 } from '@backstage/core-plugin-api';
 import { convertLegacyRouteRef } from '../convertLegacyRouteRef';
+import { renderInTestApp as renderInOldTestApp } from '@backstage/test-utils';
 
 describe('BackwardsCompatProvider', () => {
   it('should convert the app context', () => {
@@ -74,17 +80,46 @@ describe('BackwardsCompatProvider', () => {
   });
 
   it('should convert the routing context', () => {
-    const routeRef = createRouteRef({ id: 'test' });
+    const routeRef = createOldRouteRef({ id: 'test' });
 
     function Component() {
-      const link = useRouteRef(routeRef);
+      const link = useOldRouteRef(routeRef);
       return <div>link: {link()}</div>;
     }
 
-    renderInTestApp(compatWrapper(<Component />), {
+    renderInNewTestApp(compatWrapper(<Component />), {
       mountedRoutes: { '/test': convertLegacyRouteRef(routeRef) },
     });
 
     expect(screen.getByText('link: /test')).toBeInTheDocument();
+  });
+});
+
+describe('ForwardsCompatProvider', () => {
+  it('should convert the app context', async () => {
+    function Component() {
+      const components = useApi(componentsApiRef);
+      const icons = useApi(iconsApiRef);
+      return (
+        <div data-testid="ctx">
+          components:{' '}
+          {Object.entries(coreComponentRefs)
+            .map(
+              ([name, ref]) =>
+                `${name}=${Boolean(components.getComponent(ref))}`,
+            )
+            .join(', ')}
+          {'\n'}
+          icons: {icons.listIconKeys().join(', ')}
+        </div>
+      );
+    }
+
+    await renderInOldTestApp(compatWrapper(<Component />));
+
+    expect(screen.getByTestId('ctx').textContent).toMatchInlineSnapshot(`
+      "components: progress=true, notFoundErrorPage=true, errorBoundaryFallback=true
+      icons: kind:api, kind:component, kind:domain, kind:group, kind:location, kind:system, kind:user, kind:resource, kind:template, brokenImage, catalog, scaffolder, techdocs, search, chat, dashboard, docs, email, github, group, help, user, warning"
+    `);
   });
 });
