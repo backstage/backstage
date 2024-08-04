@@ -14,59 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  createBackendModule,
-  createBackendPlugin,
-  createExtensionPoint,
-} from './factories';
+import { createBackendModule } from './createBackendModule';
 import { InternalBackendFeature } from './types';
-
-describe('createExtensionPoint', () => {
-  it('should create an ExtensionPoint', () => {
-    const extensionPoint = createExtensionPoint({ id: 'x' });
-    expect(extensionPoint).toBeDefined();
-    expect(extensionPoint.id).toBe('x');
-    expect(() => extensionPoint.T).not.toThrow();
-    expect(String(extensionPoint)).toBe('extensionPoint{x}');
-  });
-});
-
-describe('createBackendPlugin', () => {
-  it('should create a BackendPlugin', () => {
-    const result = createBackendPlugin({
-      pluginId: 'x',
-      register(r) {
-        r.registerInit({ deps: {}, async init() {} });
-      },
-    });
-
-    // legacy form
-    const legacy = result() as unknown as InternalBackendFeature;
-    expect(legacy.$$type).toEqual('@backstage/BackendFeature');
-    expect(legacy.version).toEqual('v1');
-    expect(legacy.getRegistrations).toEqual(expect.any(Function));
-
-    // new form
-    const plugin = result as unknown as InternalBackendFeature;
-    expect(plugin.$$type).toEqual('@backstage/BackendFeature');
-    expect(plugin.version).toEqual('v1');
-    expect(plugin.getRegistrations).toEqual(expect.any(Function));
-    expect(plugin.getRegistrations()).toEqual([
-      {
-        type: 'plugin',
-        pluginId: 'x',
-        extensionPoints: [],
-        init: {
-          deps: expect.any(Object),
-          func: expect.any(Function),
-        },
-      },
-    ]);
-
-    // @ts-expect-error
-    expect(plugin({ a: 'a' })).toBeDefined();
-  });
-});
 
 describe('createBackendModule', () => {
   it('should create a BackendModule', () => {
