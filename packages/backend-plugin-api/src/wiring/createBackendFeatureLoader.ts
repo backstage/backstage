@@ -16,7 +16,7 @@
 
 import { ServiceRef } from '../services';
 import { BackendFeature } from '../types';
-import { InternalBackendFeature } from './types';
+import { InternalBackendFeatureLoader } from './types';
 
 /**
  * @public
@@ -43,31 +43,25 @@ export interface CreateBackendFeatureLoaderOptions<
 export function createBackendFeatureLoader<
   TDeps extends { [name in string]: unknown },
 >(options: CreateBackendFeatureLoaderOptions<TDeps>): BackendFeature {
-  const registrations = [
-    {
-      type: 'loader',
-      description: `created at '${new Date().toISOString()}'`,
-      deps: options.deps,
-      async loader(deps: TDeps) {
-        const it = await options.loader(deps);
-        const result = new Array<BackendFeature>();
-        for await (const item of it) {
-          if ('$$type' in item && item.$$type === '@backstage/BackendFeature') {
-            result.push(item);
-          } else if ('default' in item) {
-            result.push(item.default);
-          } else {
-            throw new Error(`Invalid item "${item}"`);
-          }
-        }
-        return result;
-      },
-    },
-  ];
-
   return {
     $$type: '@backstage/BackendFeature',
     version: 'v1',
-    getRegistrations: () => registrations,
-  } as InternalBackendFeature;
+    featureType: 'loader',
+    description: `created at '${new Date().toISOString()}'`,
+    deps: options.deps,
+    async loader(deps: TDeps) {
+      const it = await options.loader(deps);
+      const result = new Array<BackendFeature>();
+      for await (const item of it) {
+        if ('$$type' in item && item.$$type === '@backstage/BackendFeature') {
+          result.push(item);
+        } else if ('default' in item) {
+          result.push(item.default);
+        } else {
+          throw new Error(`Invalid item "${item}"`);
+        }
+      }
+      return result;
+    },
+  } as InternalBackendFeatureLoader;
 }

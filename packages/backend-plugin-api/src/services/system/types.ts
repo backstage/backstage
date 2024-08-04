@@ -78,6 +78,7 @@ export interface InternalServiceFactory<
   TScope extends 'plugin' | 'root' = 'plugin' | 'root',
 > extends ServiceFactory<TService, TScope> {
   version: 'v1';
+  featureType: 'service';
   initialization?: 'always' | 'lazy';
   deps: { [key in string]: ServiceRef<unknown> };
   createRootContext?(deps: { [key in string]: unknown }): Promise<unknown>;
@@ -307,6 +308,7 @@ export function createServiceFactory<
       return {
         $$type: '@backstage/BackendFeature',
         version: 'v1',
+        featureType: 'service',
         service: c.service,
         initialization: c.initialization,
         deps: c.deps,
@@ -322,6 +324,7 @@ export function createServiceFactory<
     return {
       $$type: '@backstage/BackendFeature',
       version: 'v1',
+      featureType: 'service',
       service: c.service,
       initialization: c.initialization,
       ...('createRootContext' in c

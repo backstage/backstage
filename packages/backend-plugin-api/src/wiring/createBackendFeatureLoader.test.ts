@@ -15,33 +15,25 @@
  */
 
 import { coreServices, createServiceFactory } from '../services';
+import { InternalServiceFactory } from '../services/system/types';
 import { BackendFeature } from '../types';
 import { createBackendFeatureLoader } from './createBackendFeatureLoader';
 import { createBackendPlugin } from './createBackendPlugin';
-import {
-  InternalBackendFeature,
-  InternalBackendFeatureLoaderRegistration,
-} from './types';
+import { InternalBackendFeatureLoader } from './types';
 
 describe('createBackendFeatureLoader', () => {
   it('should create an empty feature loader', () => {
     const result = createBackendFeatureLoader({
       deps: {},
       loader: () => [],
-    });
+    }) as InternalBackendFeatureLoader;
 
-    const plugin = result as unknown as InternalBackendFeature;
-    expect(plugin.$$type).toEqual('@backstage/BackendFeature');
-    expect(plugin.version).toEqual('v1');
-    expect(plugin.getRegistrations).toEqual(expect.any(Function));
-    expect(plugin.getRegistrations()).toEqual([
-      {
-        type: 'loader',
-        description: expect.stringMatching(/^created at '.*'$/),
-        deps: expect.any(Object),
-        loader: expect.any(Function),
-      },
-    ]);
+    expect(result.$$type).toEqual('@backstage/BackendFeature');
+    expect(result.version).toEqual('v1');
+    expect(result.featureType).toEqual('loader');
+    expect(result.deps).toEqual({});
+    expect(result.loader).toEqual(expect.any(Function));
+    expect(result.description).toMatch(/^created at '.*'$/);
   });
 
   it('should create a feature loader that loads a few features', async () => {
@@ -69,29 +61,21 @@ describe('createBackendFeatureLoader', () => {
           }),
         ];
       },
-    }) as InternalBackendFeature;
+    }) as InternalBackendFeatureLoader;
 
     expect(result.$$type).toEqual('@backstage/BackendFeature');
     expect(result.version).toEqual('v1');
-    expect(result.getRegistrations).toEqual(expect.any(Function));
+    expect(result.featureType).toEqual('loader');
 
-    const registrations = result.getRegistrations();
-    expect(registrations).toEqual([
-      {
-        type: 'loader',
-        description: expect.stringMatching(/^created at '.*'$/),
-        deps: expect.any(Object),
-        loader: expect.any(Function),
-      },
-    ]);
-
-    const results = await (registrations[0] as any).loader({ config: {} });
+    const results = await result.loader({ config: {} });
     expect(results.length).toBe(3);
     const [pluginX, serviceFactory, pluginY] = results;
     expect(pluginX.$$type).toBe('@backstage/BackendFeature');
     expect(serviceFactory.$$type).toBe('@backstage/BackendFeature');
     expect(pluginY.$$type).toBe('@backstage/BackendFeature');
-    expect(serviceFactory.service.id).toBe(coreServices.pluginMetadata.id);
+    expect((serviceFactory as InternalServiceFactory).service.id).toBe(
+      coreServices.pluginMetadata.id,
+    );
   });
 
   it('should support multiple output formats', async () => {
@@ -99,10 +83,8 @@ describe('createBackendFeatureLoader', () => {
     const dynamicFeature = Promise.resolve({ default: feature });
 
     async function extractResult(f: BackendFeature) {
-      const internal = f as InternalBackendFeature;
-      const reg =
-        internal.getRegistrations()[0] as InternalBackendFeatureLoaderRegistration;
-      return reg.loader({});
+      const internal = f as InternalBackendFeatureLoader;
+      return internal.loader({});
     }
 
     await expect(

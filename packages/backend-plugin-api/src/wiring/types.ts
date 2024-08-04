@@ -75,10 +75,9 @@ export interface BackendModuleRegistrationPoints {
 /** @internal */
 export interface InternalBackendFeature extends BackendFeature {
   version: 'v1';
+  featureType: 'registrations';
   getRegistrations(): Array<
-    | InternalBackendPluginRegistration
-    | InternalBackendModuleRegistration
-    | InternalBackendFeatureLoaderRegistration
+    InternalBackendPluginRegistration | InternalBackendModuleRegistration
   >;
 }
 
@@ -108,8 +107,9 @@ export interface InternalBackendModuleRegistration {
 /**
  * @public
  */
-export interface InternalBackendFeatureLoaderRegistration {
-  type: 'loader';
+export interface InternalBackendFeatureLoader extends BackendFeature {
+  version: 'v1';
+  featureType: 'loader';
   description: string;
   deps: Record<string, ServiceRef<unknown>>;
   loader(deps: Record<string, unknown>): Promise<BackendFeature[]>;
