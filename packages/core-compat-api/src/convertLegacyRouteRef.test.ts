@@ -15,6 +15,9 @@
  */
 
 import {
+  RouteRef as OldRouteRef,
+  SubRouteRef as OldSubRouteRef,
+  ExternalRouteRef as OldExternalRouteRef,
   createRouteRef as createOldRouteRef,
   createSubRouteRef as createOldSubRouteRef,
   createExternalRouteRef as createOldExternalRouteRef,
@@ -23,6 +26,9 @@ import {
   RouteRef as NewRouteRef,
   SubRouteRef as NewSubRouteRef,
   ExternalRouteRef as NewExternalRouteRef,
+  createRouteRef as createNewRouteRef,
+  createSubRouteRef as createNewSubRouteRef,
+  createExternalRouteRef as createNewExternalRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { convertLegacyRouteRef } from './convertLegacyRouteRef';
 
@@ -70,6 +76,15 @@ describe('convertLegacyRouteRef', () => {
     const ref3Converted: NewExternalRouteRef = convertLegacyRouteRef(ref3);
     const ref4Converted: NewExternalRouteRef = convertLegacyRouteRef(ref4);
 
+    // Check for reference equality
+    expect(ref1).toBe(ref1Converted);
+    expect(ref2).toBe(ref2Converted);
+    expect(ref1sub1).toBe(ref1sub1Converted);
+    expect(ref1sub2).toBe(ref1sub2Converted);
+    expect(ref2sub1).toBe(ref2sub1Converted);
+    expect(ref3).toBe(ref3Converted);
+    expect(ref4).toBe(ref4Converted);
+
     const ref1Internal = toInternalNewRouteRef(ref1Converted);
     const ref2Internal = toInternalNewRouteRef(ref2Converted);
     const ref1sub1Internal = toInternalNewSubRouteRef(ref1sub1Converted);
@@ -115,5 +130,77 @@ describe('convertLegacyRouteRef', () => {
     );
     expect(ref4Internal.getParams()).toEqual(['p1', 'p2']);
     expect(ref4Internal.optional).toBe(true);
+  });
+
+  it('converts new to old', () => {
+    const ref1 = createNewRouteRef();
+    const ref2 = createNewRouteRef({ params: ['p1', 'p2'] });
+    const ref1sub1 = createNewSubRouteRef({
+      parent: ref1,
+      path: '/sub1',
+    });
+    const ref1sub2 = createNewSubRouteRef({
+      parent: ref1,
+      path: '/sub2/:p3',
+    });
+    const ref2sub1 = createNewSubRouteRef({
+      parent: ref2,
+      path: '/sub1/:p3',
+    });
+    const ref3 = createNewExternalRouteRef();
+    const ref4 = createNewExternalRouteRef({
+      optional: true,
+      defaultTarget: 'ref2',
+      params: ['p1', 'p2'],
+    });
+
+    const ref1Converted: OldRouteRef = convertLegacyRouteRef(ref1);
+    const ref2Converted: OldRouteRef = convertLegacyRouteRef(ref2);
+    const ref1sub1Converted: OldSubRouteRef = convertLegacyRouteRef(ref1sub1);
+    const ref1sub2Converted: OldSubRouteRef = convertLegacyRouteRef(ref1sub2);
+    const ref2sub1Converted: OldSubRouteRef = convertLegacyRouteRef(ref2sub1);
+    const ref3Converted: OldExternalRouteRef = convertLegacyRouteRef(ref3);
+    const ref4Converted: OldExternalRouteRef = convertLegacyRouteRef(ref4);
+
+    // Check for reference equality
+    expect(ref1).toBe(ref1Converted);
+    expect(ref2).toBe(ref2Converted);
+    expect(ref1sub1).toBe(ref1sub1Converted);
+    expect(ref1sub2).toBe(ref1sub2Converted);
+    expect(ref2sub1).toBe(ref2sub1Converted);
+    expect(ref3).toBe(ref3Converted);
+    expect(ref4).toBe(ref4Converted);
+
+    expect(String(ref1Converted)).toMatch(/^RouteRef\{created at '.*'\}$/);
+    expect(ref1Converted.params).toEqual([]);
+    expect(String(ref2Converted)).toMatch(/^RouteRef\{created at '.*'\}$/);
+    expect(ref2Converted.params).toEqual(['p1', 'p2']);
+
+    expect(String(ref1sub1Converted)).toMatch(
+      /^SubRouteRef\{at \/sub1 with parent created at '.*'\}$/,
+    );
+    expect(ref1sub1Converted.params).toEqual([]);
+    expect(ref1sub1Converted.parent).toBe(ref1);
+    expect(String(ref1sub2Converted)).toMatch(
+      /^SubRouteRef\{at \/sub2\/:p3 with parent created at '.*'\}$/,
+    );
+    expect(ref1sub2Converted.params).toEqual(['p3']);
+    expect(ref1sub2Converted.parent).toBe(ref1);
+    expect(String(ref2sub1Converted)).toMatch(
+      /^SubRouteRef\{at \/sub1\/:p3 with parent created at '.*'\}$/,
+    );
+    expect(ref2sub1Converted.params).toEqual(['p1', 'p2', 'p3']);
+    expect(ref2sub1Converted.parent).toBe(ref2);
+
+    expect(String(ref3Converted)).toMatch(
+      /^ExternalRouteRef\{created at '.*'\}$/,
+    );
+    expect(ref3Converted.params).toEqual([]);
+    expect(ref3Converted.optional).toBe(false);
+    expect(String(ref4Converted)).toMatch(
+      /^ExternalRouteRef\{created at '.*'\}$/,
+    );
+    expect(ref4Converted.params).toEqual(['p1', 'p2']);
+    expect(ref4Converted.optional).toBe(true);
   });
 });
