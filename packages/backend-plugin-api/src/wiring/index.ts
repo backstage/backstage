@@ -21,6 +21,10 @@ import { type CreateExtensionPointOptions } from './createExtensionPoint';
 export { createBackendModule } from './createBackendModule';
 export { createBackendPlugin } from './createBackendPlugin';
 export { createExtensionPoint } from './createExtensionPoint';
+export {
+  createBackendFeatureLoader,
+  type CreateBackendFeatureLoaderOptions,
+} from './createBackendFeatureLoader';
 
 export type {
   BackendModuleRegistrationPoints,

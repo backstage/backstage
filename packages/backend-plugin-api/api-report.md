@@ -214,6 +214,47 @@ export namespace coreServices {
 }
 
 // @public
+export function createBackendFeatureLoader<
+  TDeps extends {
+    [name in string]: unknown;
+  },
+>(options: CreateBackendFeatureLoaderOptions<TDeps>): BackendFeature;
+
+// @public
+export interface CreateBackendFeatureLoaderOptions<
+  TDeps extends {
+    [name in string]: unknown;
+  },
+> {
+  // (undocumented)
+  deps?: {
+    [name in keyof TDeps]: ServiceRef<TDeps[name], 'root'>;
+  };
+  // (undocumented)
+  loader(deps: TDeps):
+    | Iterable<
+        | BackendFeature
+        | Promise<{
+            default: BackendFeature;
+          }>
+      >
+    | Promise<
+        Iterable<
+          | BackendFeature
+          | Promise<{
+              default: BackendFeature;
+            }>
+        >
+      >
+    | AsyncIterable<
+        | BackendFeature
+        | {
+            default: BackendFeature;
+          }
+      >;
+}
+
+// @public
 export function createBackendModule(
   options: CreateBackendModuleOptions,
 ): BackendFeatureCompat;
