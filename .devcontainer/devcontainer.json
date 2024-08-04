@@ -1,18 +1,22 @@
 {
-    "name": "Backstage Dev Container",
-    "dockerFile": "Dockerfile",
-    "context": "..",
-    "forwardPorts": [
-        3000,
-        7007
-    ],
-    "postCreateCommand": "yarn install && yarn dev",
-    "settings": {
-        "terminal.integrated.shell.linux": "/bin/bash"
+    "build": {
+      "dockerfile": "Dockerfile"
     },
-    "extensions": [
-        "esbenp.prettier-vscode",
-        "dbaeumer.vscode-eslint"
+    "runOptions": {
+      "command": ["npx", "@backstage/create-app@latest"],
+      "env": {
+        "NODE_ENV": "development",
+        "PORT": 3000,
+        "YARN_VERSION": "classic",
+        "npm_config_useragent": "vscode"
+      }
+    },
+    "dependsOn": [
+      {
+        "name": "node:14-alpine",
+        "port": 3000
+      }
     ],
-    "remoteUser": "node"
-}
+    "extensions": ["place", "vsc-dev-containers.languages-typescript"],
+    "workspaceFolder": "${workspaceFolder}"
+  }
