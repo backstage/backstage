@@ -1,26 +1,17 @@
-# Use the official Node.js image.
-FROM node:18-bullseye
+# Use an official Node.js runtime as our base image
+FROM node:14-alpine
 
-# Install dependencies for building
-RUN apt-get update && apt-get install -y \
-    curl \
-    wget \
-    make \
-    build-essential \
-    docker.io \
-    git \
-    && rm -rf /var/lib/apt/lists/*
+# Set the working directory in the container to /app
+WORKDIR /app
 
-# Install Yarn using the official Yarn APT repository
-RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
-    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
-    apt-get update && apt-get install -y yarn
+# Copy the Backstage app code into the container
+COPY . .
 
-# Create a directory for the app
-WORKDIR /workspace
+# Install dependencies specified in package.json
+RUN yarn install --frozen-lockfile
 
-# Copy the current working directory contents into the container
-COPY . /workspace
+# Make port 3000 available from the host machine (if not already available)
+EXPOSE 3000
 
-# Set the default command to yarn dev
-CMD ["yarn", "dev"]
+# Run the command to start the Backstage app
+CMD ["npx", "@backstage/create-app@latest"]
