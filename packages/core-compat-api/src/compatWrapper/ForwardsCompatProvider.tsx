@@ -21,22 +21,34 @@ import {
   useApp,
 } from '@backstage/core-plugin-api';
 import {
+  AnyRouteRefParams,
   ComponentRef,
   ComponentsApi,
   CoreErrorBoundaryFallbackProps,
   CoreNotFoundErrorPageProps,
   CoreProgressProps,
+  ExternalRouteRef,
   IconComponent,
   IconsApi,
+  RouteFunc,
+  RouteRef,
+  RouteResolutionApi,
+  RouteResolutionApiResolveOptions,
+  SubRouteRef,
   componentsApiRef,
   coreComponentRefs,
   iconsApiRef,
+  routeResolutionApiRef,
 } from '@backstage/frontend-plugin-api';
 import React, { ComponentType, useMemo } from 'react';
 import { ReactNode } from 'react';
 import { toLegacyPlugin } from './BackwardsCompatProvider';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { ApiProvider } from '../../../core-app-api/src/apis/system/ApiProvider';
+import { useVersionedContext } from '@backstage/version-bridge';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { type RouteResolver } from '../../../core-plugin-api/src/routing/useRouteRef';
+import { convertLegacyRouteRef } from '../convertLegacyRouteRef';
 
 class CompatComponentsApi implements ComponentsApi {
   readonly #Progress: ComponentType<CoreProgressProps>;
@@ -88,13 +100,34 @@ class CompatIconsApi implements IconsApi {
   }
 }
 
-class AppFallbackApis implements ApiHolder {
+class CompatRouteResolutionApi implements RouteResolutionApi {
+  readonly #routeResolver: RouteResolver;
+
+  constructor(routeResolver: RouteResolver) {
+    this.#routeResolver = routeResolver;
+  }
+
+  resolve<TParams extends AnyRouteRefParams>(
+    anyRouteRef:
+      | RouteRef<TParams>
+      | SubRouteRef<TParams>
+      | ExternalRouteRef<TParams, any>,
+    options?: RouteResolutionApiResolveOptions | undefined,
+  ): RouteFunc<TParams> | undefined {
+    const legacyRef = convertLegacyRouteRef(anyRouteRef as RouteRef<TParams>);
+    return this.#routeResolver.resolve(legacyRef, options?.sourcePath ?? '/');
+  }
+}
+
+class ForwardsCompatApis implements ApiHolder {
   readonly #componentsApi: ComponentsApi;
   readonly #iconsApi: IconsApi;
+  readonly #routeResolutionApi: RouteResolutionApi;
 
-  constructor(app: AppContext) {
+  constructor(app: AppContext, routeResolver: RouteResolver) {
     this.#componentsApi = new CompatComponentsApi(app);
     this.#iconsApi = new CompatIconsApi(app);
+    this.#routeResolutionApi = new CompatRouteResolutionApi(routeResolver);
   }
 
   get<T>(ref: ApiRef<any>): T | undefined {
@@ -102,6 +135,8 @@ class AppFallbackApis implements ApiHolder {
       return this.#componentsApi as T;
     } else if (ref.id === iconsApiRef.id) {
       return this.#iconsApi as T;
+    } else if (ref.id === routeResolutionApiRef.id) {
+      return this.#routeResolutionApi as T;
     }
     return undefined;
   }
@@ -109,7 +144,21 @@ class AppFallbackApis implements ApiHolder {
 
 function NewAppApisProvider(props: { children: ReactNode }) {
   const app = useApp();
-  const appFallbackApis = useMemo(() => new AppFallbackApis(app), [app]);
+  const versionedRouteResolverContext = useVersionedContext<{
+    1: RouteResolver;
+  }>('routing-context');
+  if (!versionedRouteResolverContext) {
+    throw new Error('Routing context is not available');
+  }
+  const routeResolver = versionedRouteResolverContext.atVersion(1);
+  if (!routeResolver) {
+    throw new Error('RoutingContext v1 not available');
+  }
+
+  const appFallbackApis = useMemo(
+    () => new ForwardsCompatApis(app, routeResolver),
+    [app, routeResolver],
+  );
 
   return <ApiProvider apis={appFallbackApis}>{props.children}</ApiProvider>;
 }

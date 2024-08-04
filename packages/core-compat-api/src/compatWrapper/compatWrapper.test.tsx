@@ -22,6 +22,7 @@ import {
   createExtension,
   iconsApiRef,
   useRouteRef as useNewRouteRef,
+  createRouteRef as createNewRouteRef,
   useApi,
 } from '@backstage/frontend-plugin-api';
 import {
@@ -121,5 +122,20 @@ describe('ForwardsCompatProvider', () => {
       "components: progress=true, notFoundErrorPage=true, errorBoundaryFallback=true
       icons: kind:api, kind:component, kind:domain, kind:group, kind:location, kind:system, kind:user, kind:resource, kind:template, brokenImage, catalog, scaffolder, techdocs, search, chat, dashboard, docs, email, github, group, help, user, warning"
     `);
+  });
+
+  it('should convert the routing context', async () => {
+    const routeRef = createNewRouteRef();
+
+    function Component() {
+      const link = useNewRouteRef(routeRef);
+      return <div>link: {link()}</div>;
+    }
+
+    await renderInOldTestApp(compatWrapper(<Component />), {
+      mountedRoutes: { '/test': convertLegacyRouteRef(routeRef) },
+    });
+
+    expect(screen.getByText('link: /test')).toBeInTheDocument();
   });
 });
