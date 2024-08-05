@@ -16,6 +16,7 @@
 
 import { ServiceRef } from '../services';
 import { BackendFeature } from '../types';
+import { describeParentCallSite } from './describeParentCallSite';
 import { InternalBackendFeatureLoader } from './types';
 
 /**
@@ -47,7 +48,7 @@ export function createBackendFeatureLoader<
     $$type: '@backstage/BackendFeature',
     version: 'v1',
     featureType: 'loader',
-    description: `created at '${new Date().toISOString()}'`,
+    description: `created at '${describeParentCallSite()}'`,
     deps: options.deps,
     async loader(deps: TDeps) {
       const it = await options.loader(deps);
