@@ -54,6 +54,7 @@ export class BackendInitializer {
   #extensionPoints = new Map<string, { impl: unknown; pluginId: string }>();
   #serviceRegistry: ServiceRegistry;
   #registeredFeatures = new Array<Promise<BackendFeature>>();
+  #registeredFeatureLoaders = new Array<InternalBackendFeatureLoader>();
 
   constructor(defaultApiFactories: ServiceFactory[]) {
     this.#serviceRegistry = ServiceRegistry.create([...defaultApiFactories]);
@@ -109,12 +110,9 @@ export class BackendInitializer {
   #addFeature(feature: BackendFeature) {
     if (isServiceFactory(feature)) {
       this.#serviceRegistry.add(feature);
+    } else if (isBackendFeatureLoader(feature)) {
+      this.#registeredFeatureLoaders.push(feature);
     } else if (isBackendRegistrations(feature)) {
-      if (feature.version !== 'v1') {
-        throw new Error(
-          `Failed to add feature, invalid version '${feature.version}'`,
-        );
-      }
       this.#registrations.push(feature);
     } else {
       throw new Error(
@@ -169,6 +167,8 @@ export class BackendInitializer {
       }
       this.#serviceRegistry.checkForCircularDeps();
     }
+
+    await this.#applyBackendFeatureLoaders(this.#registeredFeatureLoaders);
 
     // Initialize all root scoped services
     await this.#serviceRegistry.initializeEagerServicesWithScope('root');
@@ -385,6 +385,69 @@ export class BackendInitializer {
 
     throw new Error('Unexpected plugin lifecycle service implementation');
   }
+
+  async #applyBackendFeatureLoaders(loaders: InternalBackendFeatureLoader[]) {
+    for (const loader of loaders) {
+      const deps = new Map<string, unknown>();
+      const missingRefs = new Set<ServiceOrExtensionPoint>();
+
+      for (const [name, ref] of Object.entries(loader.deps ?? {})) {
+        if (ref.scope !== 'root') {
+          throw new Error(
+            `Feature loaders can only depend on root scoped services, but '${name}' is scoped to '${ref.scope}'. Offending loader is ${loader.description}`,
+          );
+        }
+        const impl = await this.#serviceRegistry.get(
+          ref as ServiceRef<unknown>,
+          'root',
+        );
+        if (impl) {
+          deps.set(name, impl);
+        } else {
+          missingRefs.add(ref);
+        }
+      }
+
+      if (missingRefs.size > 0) {
+        const missing = Array.from(missingRefs).join(', ');
+        throw new Error(
+          `No service available for the following ref(s): ${missing}, depended on by feature loader ${loader.description}`,
+        );
+      }
+
+      const result = await loader
+        .loader(Object.fromEntries(deps))
+        .catch(error => {
+          throw new ForwardedError(
+            `Feature loader ${loader.description} failed`,
+            error,
+          );
+        });
+
+      let didAddServiceFactory = false;
+      const newLoaders = new Array<InternalBackendFeatureLoader>();
+
+      for await (const feature of result) {
+        if (isBackendFeatureLoader(feature)) {
+          newLoaders.push(feature);
+        } else {
+          didAddServiceFactory =
+            didAddServiceFactory || isServiceFactory(feature);
+          this.#addFeature(feature);
+        }
+      }
+
+      // Every time we add a new service factory we need to make sure that we don't have circular dependencies
+      if (didAddServiceFactory) {
+        this.#serviceRegistry.checkForCircularDeps();
+      }
+
+      // Apply loaders recursively, depth-first
+      if (newLoaders.length > 0) {
+        await this.#applyBackendFeatureLoaders(newLoaders);
+      }
+    }
+  }
 }
 
 function toInternalBackendFeature(
@@ -410,10 +473,7 @@ function isServiceFactory(
     return true;
   }
   // Backwards compatibility for v1 registrations that use duck typing
-  if ('service' in internal) {
-    return true;
-  }
-  return false;
+  return 'service' in internal;
 }
 
 function isBackendRegistrations(
@@ -424,8 +484,11 @@ function isBackendRegistrations(
     return true;
   }
   // Backwards compatibility for v1 registrations that use duck typing
-  if ('getRegistrations' in internal) {
-    return true;
-  }
-  return false;
+  return 'getRegistrations' in internal;
+}
+
+function isBackendFeatureLoader(
+  feature: BackendFeature,
+): feature is InternalBackendFeatureLoader {
+  return toInternalBackendFeature(feature).featureType === 'loader';
 }
