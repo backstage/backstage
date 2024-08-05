@@ -15,7 +15,7 @@
  */
 
 import { createBackendPlugin } from './createBackendPlugin';
-import { InternalBackendFeature } from './types';
+import { InternalBackendRegistrations } from './types';
 
 describe('createBackendPlugin', () => {
   it('should create a BackendPlugin', () => {
@@ -27,13 +27,13 @@ describe('createBackendPlugin', () => {
     });
 
     // legacy form
-    const legacy = result() as unknown as InternalBackendFeature;
+    const legacy = result() as unknown as InternalBackendRegistrations;
     expect(legacy.$$type).toEqual('@backstage/BackendFeature');
     expect(legacy.version).toEqual('v1');
     expect(legacy.getRegistrations).toEqual(expect.any(Function));
 
     // new form
-    const plugin = result as unknown as InternalBackendFeature;
+    const plugin = result as unknown as InternalBackendRegistrations;
     expect(plugin.$$type).toEqual('@backstage/BackendFeature');
     expect(plugin.version).toEqual('v1');
     expect(plugin.getRegistrations).toEqual(expect.any(Function));

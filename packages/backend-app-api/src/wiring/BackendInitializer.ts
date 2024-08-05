@@ -26,7 +26,13 @@ import {
 import { ServiceOrExtensionPoint } from './types';
 // Direct internal import to avoid duplication
 // eslint-disable-next-line @backstage/no-forbidden-package-imports
-import { InternalBackendFeature } from '@backstage/backend-plugin-api/src/wiring/types';
+import type {
+  InternalBackendFeature,
+  InternalBackendFeatureLoader,
+  InternalBackendRegistrations,
+} from '@backstage/backend-plugin-api/src/wiring/types';
+// eslint-disable-next-line @backstage/no-forbidden-package-imports
+import type { InternalServiceFactory } from '@backstage/backend-plugin-api/src/services/system/types';
 import { ForwardedError, ConflictError } from '@backstage/errors';
 import { featureDiscoveryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { DependencyGraph } from '../lib/DependencyGraph';
@@ -44,7 +50,7 @@ export interface BackendRegisterInit {
 
 export class BackendInitializer {
   #startPromise?: Promise<void>;
-  #features = new Array<InternalBackendFeature>();
+  #registrations = new Array<InternalBackendRegistrations>();
   #extensionPoints = new Map<string, { impl: unknown; pluginId: string }>();
   #serviceRegistry: ServiceRegistry;
   #registeredFeatures = new Array<Promise<BackendFeature>>();
@@ -101,21 +107,15 @@ export class BackendInitializer {
   }
 
   #addFeature(feature: BackendFeature) {
-    if (feature.$$type !== '@backstage/BackendFeature') {
-      throw new Error(
-        `Failed to add feature, invalid type '${feature.$$type}'`,
-      );
-    }
-
     if (isServiceFactory(feature)) {
       this.#serviceRegistry.add(feature);
-    } else if (isInternalBackendFeature(feature)) {
+    } else if (isBackendRegistrations(feature)) {
       if (feature.version !== 'v1') {
         throw new Error(
           `Failed to add feature, invalid version '${feature.version}'`,
         );
       }
-      this.#features.push(feature);
+      this.#registrations.push(feature);
     } else {
       throw new Error(
         `Failed to add feature, invalid feature ${JSON.stringify(feature)}`,
@@ -176,8 +176,8 @@ export class BackendInitializer {
     const pluginInits = new Map<string, BackendRegisterInit>();
     const moduleInits = new Map<string, Map<string, BackendRegisterInit>>();
 
-    // Enumerate all features
-    for (const feature of this.#features) {
+    // Enumerate all registrations
+    for (const feature of this.#registrations) {
       for (const r of feature.getRegistrations()) {
         const provides = new Set<ExtensionPoint<unknown>>();
 
@@ -205,7 +205,7 @@ export class BackendInitializer {
             consumes: new Set(Object.values(r.init.deps)),
             init: r.init,
           });
-        } else {
+        } else if (r.type === 'module') {
           let modules = moduleInits.get(r.pluginId);
           if (!modules) {
             modules = new Map();
@@ -221,6 +221,8 @@ export class BackendInitializer {
             consumes: new Set(Object.values(r.init.deps)),
             init: r.init,
           });
+        } else {
+          throw new Error(`Invalid registration type '${(r as any).type}'`);
         }
       }
     }
@@ -385,14 +387,45 @@ export class BackendInitializer {
   }
 }
 
-function isServiceFactory(feature: BackendFeature): feature is ServiceFactory {
-  return !!(feature as ServiceFactory).service;
+function toInternalBackendFeature(
+  feature: BackendFeature,
+): InternalBackendFeature {
+  if (feature.$$type !== '@backstage/BackendFeature') {
+    throw new Error(`Invalid BackendFeature, bad type '${feature.$$type}'`);
+  }
+  const internal = feature as InternalBackendFeature;
+  if (internal.version !== 'v1') {
+    throw new Error(
+      `Invalid BackendFeature, bad version '${internal.version}'`,
+    );
+  }
+  return internal;
 }
 
-function isInternalBackendFeature(
+function isServiceFactory(
   feature: BackendFeature,
-): feature is InternalBackendFeature {
-  return (
-    typeof (feature as InternalBackendFeature).getRegistrations === 'function'
-  );
+): feature is InternalServiceFactory {
+  const internal = toInternalBackendFeature(feature);
+  if (internal.featureType === 'service') {
+    return true;
+  }
+  // Backwards compatibility for v1 registrations that use duck typing
+  if ('service' in internal) {
+    return true;
+  }
+  return false;
+}
+
+function isBackendRegistrations(
+  feature: BackendFeature,
+): feature is InternalBackendRegistrations {
+  const internal = toInternalBackendFeature(feature);
+  if (internal.featureType === 'registrations') {
+    return true;
+  }
+  // Backwards compatibility for v1 registrations that use duck typing
+  if ('getRegistrations' in internal) {
+    return true;
+  }
+  return false;
 }
