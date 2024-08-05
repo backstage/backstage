@@ -328,18 +328,20 @@ describe('createExtensionBlueprint', () => {
   });
 
   it('should allow providing callback for properties to set with params', () => {
+    type TestParams = { test: string };
+
     const Blueprint = createExtensionBlueprint({
       kind: 'test-extension',
       attachTo: { id: 'test', input: 'default' },
+      name: (params: TestParams) => `${params.test}-name`,
       output: [coreExtensionData.reactElement],
-      namespace: props => props.test,
-      name: props => `${props.test}-name`,
+      namespace: (props: TestParams) => props.test,
       config: {
-        schema: props => ({
+        schema: (props: TestParams) => ({
           test: z => z.string().default(props.test),
         }),
       },
-      factory(params: { test: string }) {
+      factory(params: TestParams) {
         return [coreExtensionData.reactElement(<div>{params.test}</div>)];
       },
     });
@@ -359,7 +361,7 @@ describe('createExtensionBlueprint', () => {
             "additionalProperties": false,
             "properties": {
               "test": {
-                "default": "test",
+                "default": "hello",
                 "type": "string",
               },
             },

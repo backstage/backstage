@@ -47,12 +47,13 @@ export type CreateExtensionBlueprintOptions<
   UFactoryOutput extends ExtensionDataValue<any, any>,
   TDataRefs extends { [name in string]: AnyExtensionDataRef },
 > = {
-  kind: string | ((params: TParams) => string);
+  kind: string;
   namespace?: string | ((params: TParams) => string);
   attachTo: { id: string; input: string };
   disabled?: boolean;
   inputs?: TInputs;
   output: Array<UOutput>;
+  name?: string | ((params: TParams) => string);
   config?: {
     schema: TConfigSchema | ((params: TParams) => TConfigSchema);
   };
@@ -250,15 +251,30 @@ class ExtensionBlueprintImpl<
       >
     >
   > {
+    const optionsSchema =
+      typeof this.options.config?.schema === 'function'
+        ? this.options.config?.schema(args.params!)
+        : this.options.config?.schema;
+
     const schema = {
-      ...this.options.config?.schema,
+      ...optionsSchema,
       ...args.config?.schema,
     } as TConfigSchema & TExtensionConfigSchema;
 
+    const namespace =
+      typeof this.options.namespace === 'function'
+        ? this.options.namespace(args.params!)
+        : this.options.namespace;
+
+    const name =
+      typeof this.options.name === 'function'
+        ? this.options.name(args.params!)
+        : this.options.name;
+
     return createExtension({
       kind: this.options.kind,
-      namespace: args.namespace ?? this.options.namespace,
-      name: args.name,
+      namespace: args.namespace ?? namespace,
+      name: args.name ?? name,
       attachTo: args.attachTo ?? this.options.attachTo,
       disabled: args.disabled ?? this.options.disabled,
       inputs: args.inputs ?? this.options.inputs,
