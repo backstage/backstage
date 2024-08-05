@@ -148,7 +148,9 @@ export interface LegacyCreateExtensionOptions<
 /** @ignore */
 export type VerifyExtensionFactoryOutput<
   UDeclaredOutput extends AnyExtensionDataRef,
-  UFactoryOutput extends ExtensionDataValue<any, any>,
+  UFactoryOutput extends
+    | ExtensionDataValue<any, any>
+    | ExtensionDataContainer<any>,
 > = (
   UDeclaredOutput extends any
     ? UDeclaredOutput['config']['optional'] extends true
@@ -156,21 +158,29 @@ export type VerifyExtensionFactoryOutput<
       : UDeclaredOutput['id']
     : never
 ) extends infer IRequiredOutputIds
-  ? [IRequiredOutputIds] extends [UFactoryOutput['id']]
-    ? [UFactoryOutput['id']] extends [UDeclaredOutput['id']]
-      ? {}
+  ? (
+      UFactoryOutput extends ExtensionDataValue<any, any>
+        ? UFactoryOutput['id']
+        : UFactoryOutput extends ExtensionDataContainer<infer IDataRefs>
+        ? IDataRefs['id']
+        : never
+    ) extends infer IFactoryOutputIds
+    ? [IRequiredOutputIds] extends [IFactoryOutputIds]
+      ? [IFactoryOutputIds] extends [UDeclaredOutput['id']]
+        ? {}
+        : {
+            'Error: The extension factory has undeclared output(s)': Exclude<
+              IFactoryOutputIds,
+              UDeclaredOutput['id']
+            >;
+          }
       : {
-          'Error: The extension factory has undeclared output(s)': Exclude<
-            UFactoryOutput['id'],
-            UDeclaredOutput['id']
+          'Error: The extension factory is missing the following output(s)': Exclude<
+            IRequiredOutputIds,
+            IFactoryOutputIds
           >;
         }
-    : {
-        'Error: The extension factory is missing the following output(s)': Exclude<
-          IRequiredOutputIds,
-          UFactoryOutput['id']
-        >;
-      }
+    : never
   : never;
 
 /** @public */

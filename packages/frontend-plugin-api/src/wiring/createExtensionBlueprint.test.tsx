@@ -21,6 +21,7 @@ import { createExtensionTester } from '@backstage/frontend-test-utils';
 import { createExtensionDataRef } from './createExtensionDataRef';
 import { createExtensionInput } from './createExtensionInput';
 import { RouteRef } from '../routing';
+import { toInternalExtensionDefinition } from './createExtension';
 
 function unused(..._any: any[]) {}
 
@@ -445,6 +446,81 @@ describe('createExtensionBlueprint', () => {
       },
       factory(origFactory) {
         return origFactory({});
+      },
+    });
+
+    expect(true).toBe(true);
+  });
+
+  it('should replace the outputs when provided through make', () => {
+    const testDataRef1 = createExtensionDataRef<string>().with({ id: 'test1' });
+    const testDataRef2 = createExtensionDataRef<string>().with({ id: 'test2' });
+
+    const blueprint = createExtensionBlueprint({
+      kind: 'test-extension',
+      attachTo: { id: 'test', input: 'default' },
+      output: [testDataRef1],
+      factory() {
+        return [testDataRef1('foo')];
+      },
+    });
+
+    const ext = toInternalExtensionDefinition(
+      blueprint.make({
+        output: [testDataRef2],
+        factory(origFactory) {
+          const parent = origFactory({});
+          return [testDataRef2(`${parent.get(testDataRef1)}bar`)];
+        },
+      }),
+    );
+
+    expect(ext.output).toEqual([testDataRef2]);
+  });
+
+  it('should allow returning of the parent data container', () => {
+    const testDataRef1 = createExtensionDataRef<string>().with({ id: 'test1' });
+    const testDataRef2 = createExtensionDataRef<string>().with({ id: 'test2' });
+
+    const blueprint = createExtensionBlueprint({
+      kind: 'test-extension',
+      attachTo: { id: 'test', input: 'default' },
+      output: [testDataRef1],
+      factory() {
+        return [testDataRef1('foo')];
+      },
+    });
+
+    blueprint.make({
+      output: [testDataRef1, testDataRef2],
+      *factory(origFactory) {
+        yield origFactory({});
+        yield testDataRef2('bar');
+      },
+    });
+
+    expect(true).toBe(true);
+    // todo: test that the data is actually available
+  });
+
+  it('should not allow returning parent output if outputs are overridden', () => {
+    const testDataRef1 = createExtensionDataRef<string>().with({ id: 'test1' });
+    const testDataRef2 = createExtensionDataRef<string>().with({ id: 'test2' });
+
+    const blueprint = createExtensionBlueprint({
+      kind: 'test-extension',
+      attachTo: { id: 'test', input: 'default' },
+      output: [testDataRef1.optional()],
+      factory() {
+        return [testDataRef1('foo')];
+      },
+    });
+
+    blueprint.make({
+      output: [testDataRef2.optional()],
+      *factory(origFactory) {
+        // yield testDataRef1('bar');
+        yield testDataRef2('bar');
       },
     });
 

@@ -204,7 +204,7 @@ class ExtensionBlueprintImpl<
       [key in string]: (zImpl: typeof z) => z.ZodType;
     },
     UFactoryOutput extends ExtensionDataValue<any, any>,
-    UExtraOutput extends AnyExtensionDataRef,
+    UNewOutput extends AnyExtensionDataRef,
     TExtraInputs extends {
       [inputName in string]: ExtensionInput<
         AnyExtensionDataRef,
@@ -220,7 +220,7 @@ class ExtensionBlueprintImpl<
       [KName in keyof TInputs]?: `Error: Input '${KName &
         string}' is already defined in parent definition`;
     };
-    output?: Array<UExtraOutput>;
+    output?: Array<UNewOutput>;
     params?: TParams;
     config?: {
       schema: TExtensionConfigSchema;
@@ -296,7 +296,7 @@ class ExtensionBlueprintImpl<
       attachTo: args.attachTo ?? this.options.attachTo,
       disabled: args.disabled ?? this.options.disabled,
       inputs: { ...args.inputs, ...this.options.inputs },
-      output: [...(args.output ?? []), ...this.options.output],
+      output: args.output ?? this.options.output,
       config: Object.keys(schema).length === 0 ? undefined : { schema },
       factory: ({ node, config, inputs }) => {
         if (args.factory) {
