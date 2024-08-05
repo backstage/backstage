@@ -157,9 +157,16 @@ export type VerifyExtensionFactoryOutput<
     : never
 ) extends infer IRequiredOutputIds
   ? [IRequiredOutputIds] extends [UFactoryOutput['id']]
-    ? {}
+    ? [UFactoryOutput['id']] extends [UDeclaredOutput['id']]
+      ? {}
+      : {
+          'Error: The extension factory has undeclared output(s)': Exclude<
+            UFactoryOutput['id'],
+            UDeclaredOutput['id']
+          >;
+        }
     : {
-        'Error: The extension factory is missing the following outputs': Exclude<
+        'Error: The extension factory is missing the following output(s)': Exclude<
           IRequiredOutputIds,
           UFactoryOutput['id']
         >;

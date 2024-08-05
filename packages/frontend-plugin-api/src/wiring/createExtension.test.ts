@@ -395,6 +395,18 @@ describe('createExtension', () => {
     ).toMatchObject({ version: 'v2' });
 
     expect(
+      // @ts-expect-error
+      createExtension({
+        namespace: 'test',
+        attachTo: { id: 'root', input: 'default' },
+        output: [stringDataRef],
+        factory() {
+          return [stringDataRef('hello'), numberDataRef(4)];
+        },
+      }),
+    ).toMatchObject({ version: 'v2' });
+
+    expect(
       createExtension({
         namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
@@ -423,6 +435,93 @@ describe('createExtension', () => {
         output: [stringDataRef, numberDataRef.optional()],
         factory() {
           return [stringDataRef('hello')]; // Missing number output, but it's optional so that's allowed
+        },
+      }),
+    ).toMatchObject({ version: 'v2' });
+  });
+
+  it('should support new form of outputs with a generator', () => {
+    expect(
+      // @ts-expect-error
+      createExtension({
+        namespace: 'test',
+        attachTo: { id: 'root', input: 'default' },
+        output: [stringDataRef, numberDataRef],
+        *factory() {
+          // Missing all outputs
+        },
+      }),
+    ).toMatchObject({ version: 'v2' });
+
+    expect(
+      // @ts-expect-error
+      createExtension({
+        namespace: 'test',
+        attachTo: { id: 'root', input: 'default' },
+        output: [stringDataRef, numberDataRef],
+        *factory() {
+          yield stringDataRef('hello'); // Missing number output
+        },
+      }),
+    ).toMatchObject({ version: 'v2' });
+
+    // Duplicate output, we won't attempt to handle this a compile time and instead error out at runtime
+    expect(
+      createExtension({
+        namespace: 'test',
+        attachTo: { id: 'root', input: 'default' },
+        output: [stringDataRef],
+        *factory() {
+          yield stringDataRef('hello');
+          yield stringDataRef('hello');
+        },
+      }),
+    ).toMatchObject({ version: 'v2' });
+
+    expect(
+      // @ts-expect-error
+      createExtension({
+        namespace: 'test',
+        attachTo: { id: 'root', input: 'default' },
+        output: [stringDataRef],
+        *factory() {
+          yield stringDataRef('hello');
+          yield numberDataRef(4); // No declared output
+        },
+      }),
+    ).toMatchObject({ version: 'v2' });
+
+    expect(
+      createExtension({
+        namespace: 'test',
+        attachTo: { id: 'root', input: 'default' },
+        output: [stringDataRef, numberDataRef],
+        *factory() {
+          yield stringDataRef('hello');
+          yield numberDataRef(4);
+        },
+      }),
+    ).toMatchObject({ version: 'v2' });
+
+    expect(
+      createExtension({
+        namespace: 'test',
+        attachTo: { id: 'root', input: 'default' },
+        output: [stringDataRef, numberDataRef.optional()],
+        *factory() {
+          yield stringDataRef('hello');
+          yield numberDataRef(4);
+        },
+      }),
+    ).toMatchObject({ version: 'v2' });
+
+    expect(
+      createExtension({
+        namespace: 'test',
+        attachTo: { id: 'root', input: 'default' },
+        output: [stringDataRef, numberDataRef.optional()],
+        *factory() {
+          yield stringDataRef('hello'); // Missing number output, but it's optional so that's allowed
         },
       }),
     ).toMatchObject({ version: 'v2' });

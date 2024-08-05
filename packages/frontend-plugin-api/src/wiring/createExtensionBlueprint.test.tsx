@@ -64,6 +64,45 @@ describe('createExtensionBlueprint', () => {
     expect(container.querySelector('h1')).toHaveTextContent('Hello, world!');
   });
 
+  it('should allow creation of extension blueprints with a generator', () => {
+    const TestExtensionBlueprint = createExtensionBlueprint({
+      kind: 'test-extension',
+      attachTo: { id: 'test', input: 'default' },
+      output: [coreExtensionData.reactElement],
+      *factory(params: { text: string }) {
+        yield coreExtensionData.reactElement(<h1>{params.text}</h1>);
+      },
+    });
+
+    const extension = TestExtensionBlueprint.make({
+      name: 'my-extension',
+      params: {
+        text: 'Hello, world!',
+      },
+    });
+
+    expect(extension).toEqual({
+      $$type: '@backstage/ExtensionDefinition',
+      attachTo: {
+        id: 'test',
+        input: 'default',
+      },
+      configSchema: undefined,
+      disabled: false,
+      inputs: {},
+      kind: 'test-extension',
+      name: 'my-extension',
+      namespace: undefined,
+      output: [coreExtensionData.reactElement],
+      factory: expect.any(Function),
+      toString: expect.any(Function),
+      version: 'v2',
+    });
+
+    const { container } = createExtensionTester(extension).render();
+    expect(container.querySelector('h1')).toHaveTextContent('Hello, world!');
+  });
+
   it('should allow overriding of the default factory', () => {
     const TestExtensionBlueprint = createExtensionBlueprint({
       kind: 'test-extension',
