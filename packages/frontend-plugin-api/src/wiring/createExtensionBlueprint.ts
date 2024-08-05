@@ -328,7 +328,10 @@ class ExtensionBlueprintImpl<
           return this.options.factory(args.params, {
             node,
             config,
-            inputs,
+            // TODO: Figure out types once legacy data map input type is gone
+            inputs: inputs as unknown as Expand<
+              ResolvedExtensionInputs<TInputs>
+            >,
           });
         }
         throw new Error('Either params or factory must be provided');
