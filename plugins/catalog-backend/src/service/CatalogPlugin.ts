@@ -46,7 +46,7 @@ import { ForwardedError } from '@backstage/errors';
 class CatalogLocationsExtensionPointImpl
   implements CatalogLocationsExtensionPoint
 {
-  #locationTypes = new Array<string>();
+  #locationTypes: string[] | undefined;
 
   setAllowedLocationTypes(locationTypes: Array<string>) {
     this.#locationTypes = locationTypes;
@@ -293,9 +293,11 @@ export const catalogPlugin = createBackendPlugin({
         builder.addPermissionRules(...permissionExtensions.permissionRules);
         builder.setFieldFormatValidators(modelExtensions.fieldValidators);
 
-        builder.setAllowedLocationTypes(
-          locationTypeExtensions.allowedLocationTypes,
-        );
+        if (locationTypeExtensions.allowedLocationTypes) {
+          builder.setAllowedLocationTypes(
+            locationTypeExtensions.allowedLocationTypes,
+          );
+        }
 
         const { processingEngine, router } = await builder.build();
 

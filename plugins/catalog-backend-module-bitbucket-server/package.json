@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-bitbucket-server",
-  "version": "0.1.36",
+  "version": "0.1.37-next.1",
   "backstage": {
     "role": "backend-plugin-module",
     "pluginId": "catalog",
@@ -59,7 +59,7 @@
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
     "@types/node-fetch": "^2.5.12",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "^2.7.0",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

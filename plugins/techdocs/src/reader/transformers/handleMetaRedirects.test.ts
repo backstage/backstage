@@ -51,7 +51,7 @@ describe('handleMetaRedirects', () => {
     document.body.innerHTML = '';
   });
 
-  it('should navigate to relative URL if meta tag is present', async () => {
+  it('should navigate to relative URL if meta redirect tag is present', async () => {
     await setUpNewTestShadowDom(
       `<meta http-equiv="refresh" content="0; url=../anotherPage">`,
       'http://localhost/docs/default/component/testEntity/subpath',

@@ -67,8 +67,6 @@ auth:
         clientSecret: ${AZURE_CLIENT_SECRET}
         tenantId: ${AZURE_TENANT_ID}
         domainHint: ${AZURE_TENANT_ID}
-        additionalScopes:
-          - Mail.Send
         signIn:
           resolvers:
             # typically you would pick one of these
@@ -86,7 +84,7 @@ The Microsoft provider is a structure with three mandatory configuration keys:
   Leave blank if your app registration is multi tenant.
   When specified, this reduces login friction for users with accounts in multiple tenants by automatically filtering away accounts from other tenants.
   For more details, see [Home Realm Discovery](https://learn.microsoft.com/en-us/azure/active-directory/manage-apps/home-realm-discovery-policy)
-- `additionalScopes` (optional): List of scopes for the App Registration. The default and mandatory value is ['user.read'].
+- `additionalScopes` (optional): List of scopes for the App Registration, to be requested in addition to the required ones.
 
 ### Resolvers
 

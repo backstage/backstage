@@ -14,15 +14,41 @@
  * limitations under the License.
  */
 
-import { createExtensionDataRef } from './createExtensionDataRef';
+import {
+  ExtensionDataValue,
+  createExtensionDataRef,
+} from './createExtensionDataRef';
 
 describe('createExtensionDataRef', () => {
   it('can be created and read', () => {
+    const ref = createExtensionDataRef().with({ id: 'foo' });
+    expect(ref.id).toBe('foo');
+    expect(String(ref)).toBe('ExtensionDataRef{id=foo,optional=false}');
+    const refOptional = ref.optional();
+    expect(refOptional.id).toBe('foo');
+    expect(String(refOptional)).toBe('ExtensionDataRef{id=foo,optional=true}');
+  });
+
+  it('can be created and read in the deprecated way', () => {
     const ref = createExtensionDataRef('foo');
     expect(ref.id).toBe('foo');
     expect(String(ref)).toBe('ExtensionDataRef{id=foo,optional=false}');
     const refOptional = ref.optional();
     expect(refOptional.id).toBe('foo');
     expect(String(refOptional)).toBe('ExtensionDataRef{id=foo,optional=true}');
+  });
+
+  it('can be used to encapsulate a value', () => {
+    const ref = createExtensionDataRef<string>().with({ id: 'foo' });
+    const val: ExtensionDataValue<string, 'foo'> = ref('hello');
+    expect(val).toEqual({
+      $$type: '@backstage/ExtensionDataValue',
+      id: 'foo',
+      value: 'hello',
+    });
+    // @ts-expect-error
+    ref(3);
+    // @ts-expect-error
+    ref();
   });
 });

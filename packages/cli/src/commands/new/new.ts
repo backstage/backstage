@@ -70,11 +70,14 @@ export default async (opts: OptionValues) => {
     return dir;
   }
 
+  const license = opts.license ?? 'Apache-2.0';
+
   let modified = false;
   try {
     await factory.create(options, {
       isMonoRepo: await isMonoRepo(),
       defaultVersion,
+      license,
       scope: opts.scope?.replace(/^@/, ''),
       npmRegistry: opts.npmRegistry,
       private: Boolean(opts.private),

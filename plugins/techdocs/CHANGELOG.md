@@ -1,5 +1,50 @@
 # @backstage/plugin-techdocs
 
+## 1.10.8-next.1
+
+### Patch Changes
+
+- 69bd940: Use annotation constants from new techdocs-common package.
+- 6349099: Added config input type to the extensions
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.12.3-next.1
+  - @backstage/plugin-techdocs-common@0.1.0-next.0
+  - @backstage/frontend-plugin-api@0.6.8-next.1
+  - @backstage/core-compat-api@0.2.8-next.1
+  - @backstage/plugin-search-react@1.7.14-next.1
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/plugin-search-common@1.2.14-next.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/core-components@0.14.10-next.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+  - @backstage/integration-react@1.1.30-next.0
+  - @backstage/theme@0.5.6
+  - @backstage/plugin-auth-react@0.1.5-next.0
+  - @backstage/plugin-techdocs-react@1.2.7-next.0
+
+## 1.10.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.8-next.0
+  - @backstage/plugin-catalog-react@1.12.3-next.0
+  - @backstage/plugin-search-react@1.7.14-next.0
+  - @backstage/core-components@0.14.10-next.0
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/plugin-auth-react@0.1.5-next.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/core-compat-api@0.2.8-next.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+  - @backstage/integration-react@1.1.30-next.0
+  - @backstage/theme@0.5.6
+  - @backstage/plugin-search-common@1.2.13
+  - @backstage/plugin-techdocs-react@1.2.7-next.0
+
 ## 1.10.7
 
 ### Patch Changes

@@ -17,7 +17,6 @@
 import { ModuleOptions, WebpackPluginInstance } from 'webpack';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { svgrTemplate } from '../svgrTemplate';
-import ReactRefreshPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 
 type Transforms = {
   loaders: ModuleOptions['rules'];
@@ -58,7 +57,7 @@ export const transforms = (options: TransformOptions): Transforms => {
           loader: require.resolve('swc-loader'),
           options: {
             jsc: {
-              target: 'es2019',
+              target: 'es2022',
               externalHelpers: !isBackend,
               parser: {
                 syntax: 'typescript',
@@ -86,7 +85,7 @@ export const transforms = (options: TransformOptions): Transforms => {
           loader: require.resolve('swc-loader'),
           options: {
             jsc: {
-              target: 'es2019',
+              target: 'es2022',
               externalHelpers: !isBackend,
               parser: {
                 syntax: 'ecmascript',
@@ -119,7 +118,7 @@ export const transforms = (options: TransformOptions): Transforms => {
           loader: require.resolve('swc-loader'),
           options: {
             jsc: {
-              target: 'es2019',
+              target: 'es2022',
               externalHelpers: !isBackend,
               parser: {
                 syntax: 'ecmascript',
@@ -193,15 +192,7 @@ export const transforms = (options: TransformOptions): Transforms => {
 
   const plugins = new Array<WebpackPluginInstance>();
 
-  if (isDev) {
-    if (!isBackend) {
-      plugins.push(
-        new ReactRefreshPlugin({
-          overlay: { sockProtocol: 'ws' },
-        }),
-      );
-    }
-  } else {
+  if (!isDev) {
     plugins.push(
       new MiniCssExtractPlugin({
         filename: 'static/[name].[contenthash:8].css',
