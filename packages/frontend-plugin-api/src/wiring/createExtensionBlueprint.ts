@@ -47,14 +47,14 @@ export type CreateExtensionBlueprintOptions<
   UFactoryOutput extends ExtensionDataValue<any, any>,
   TDataRefs extends { [name in string]: AnyExtensionDataRef },
 > = {
-  kind: string;
-  namespace?: string;
+  kind: string | ((params: TParams) => string);
+  namespace?: string | ((params: TParams) => string);
   attachTo: { id: string; input: string };
   disabled?: boolean;
   inputs?: TInputs;
   output: Array<UOutput>;
   config?: {
-    schema: TConfigSchema;
+    schema: TConfigSchema | ((params: TParams) => TConfigSchema);
   };
   factory(
     params: TParams,
@@ -254,6 +254,7 @@ class ExtensionBlueprintImpl<
       ...this.options.config?.schema,
       ...args.config?.schema,
     } as TConfigSchema & TExtensionConfigSchema;
+
     return createExtension({
       kind: this.options.kind,
       namespace: args.namespace ?? this.options.namespace,

@@ -326,4 +326,60 @@ describe('createExtensionBlueprint', () => {
 
     expect(true).toBe(true);
   });
+
+  it('should allow providing callback for properties to set with params', () => {
+    const Blueprint = createExtensionBlueprint({
+      kind: 'test-extension',
+      attachTo: { id: 'test', input: 'default' },
+      output: [coreExtensionData.reactElement],
+      namespace: props => props.test,
+      name: props => `${props.test}-name`,
+      config: {
+        schema: props => ({
+          test: z => z.string().default(props.test),
+        }),
+      },
+      factory(params: { test: string }) {
+        return [coreExtensionData.reactElement(<div>{params.test}</div>)];
+      },
+    });
+
+    expect(Blueprint.make({ params: { test: 'hello' } }))
+      .toMatchInlineSnapshot(`
+      {
+        "$$type": "@backstage/ExtensionDefinition",
+        "attachTo": {
+          "id": "test",
+          "input": "default",
+        },
+        "configSchema": {
+          "parse": [Function],
+          "schema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "test": {
+                "default": "test",
+                "type": "string",
+              },
+            },
+            "type": "object",
+          },
+        },
+        "disabled": false,
+        "factory": [Function],
+        "inputs": {},
+        "kind": "test-extension",
+        "name": "hello-name",
+        "namespace": "hello",
+        "output": [
+          [Function],
+        ],
+        "toString": [Function],
+        "version": "v2",
+      }
+    `);
+
+    expect(true).toBe(true);
+  });
 });
