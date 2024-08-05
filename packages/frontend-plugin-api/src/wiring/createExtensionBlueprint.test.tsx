@@ -384,4 +384,70 @@ describe('createExtensionBlueprint', () => {
 
     expect(true).toBe(true);
   });
+
+  it('should allow merging of inputs', () => {
+    const blueprint = createExtensionBlueprint({
+      kind: 'test-extension',
+      attachTo: { id: 'test', input: 'default' },
+      inputs: {
+        test: createExtensionInput([coreExtensionData.routeRef], {
+          singleton: true,
+        }),
+      },
+      output: [coreExtensionData.reactElement.optional()],
+      factory(_params: { x?: string }, { inputs }) {
+        const ref: RouteRef = inputs.test.get(coreExtensionData.routeRef);
+
+        unused(ref);
+        return [];
+      },
+    });
+
+    blueprint.make({
+      inputs: {
+        test2: createExtensionInput([coreExtensionData.reactElement], {
+          singleton: true,
+        }),
+      },
+      factory(origFactory, { inputs }) {
+        const ref: RouteRef = inputs.test.get(coreExtensionData.routeRef);
+
+        const el: JSX.Element = inputs.test2.get(
+          coreExtensionData.reactElement,
+        );
+
+        unused(ref, el);
+
+        return origFactory({});
+      },
+    });
+
+    expect(true).toBe(true);
+  });
+
+  it('should not allow overriding inputs', () => {
+    const blueprint = createExtensionBlueprint({
+      kind: 'test-extension',
+      attachTo: { id: 'test', input: 'default' },
+      inputs: {
+        test: createExtensionInput([coreExtensionData.routeRef]),
+      },
+      output: [coreExtensionData.reactElement.optional()],
+      factory() {
+        return [];
+      },
+    });
+
+    blueprint.make({
+      inputs: {
+        // @ts-expect-error
+        test: createExtensionInput([]), // Overrides are not allowed
+      },
+      factory(origFactory) {
+        return origFactory({});
+      },
+    });
+
+    expect(true).toBe(true);
+  });
 });
