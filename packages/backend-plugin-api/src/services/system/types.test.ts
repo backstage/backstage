@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { createServiceFactory, createServiceRef } from './types';
+import {
+  InternalServiceFactory,
+  createServiceFactory,
+  createServiceRef,
+} from './types';
 
 const ref = createServiceRef<string>({ id: 'x' });
 const rootDep = createServiceRef<number>({ id: 'y', scope: 'root' });
@@ -36,6 +40,10 @@ describe('createServiceFactory', () => {
       },
     });
     expect(metaFactory).toEqual(expect.any(Function));
+    expect(metaFactory().$$type).toBe('@backstage/BackendFeature');
+    expect((metaFactory() as InternalServiceFactory).featureType).toBe(
+      'service',
+    );
     expect(metaFactory().service).toBe(ref);
 
     // @ts-expect-error
