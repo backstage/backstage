@@ -603,7 +603,6 @@ export function createExtensionBlueprint<
       }
     >;
   },
-  UExtraOutput extends AnyExtensionDataRef,
   TConfigSchema extends {
     [key in string]: (zImpl: typeof z) => z.ZodType;
   },
@@ -624,7 +623,6 @@ export function createExtensionBlueprint<
   TParams,
   UOutput,
   TInputs,
-  UExtraOutput,
   string extends keyof TConfigSchema
     ? {}
     : {
@@ -1090,7 +1088,6 @@ export interface ExtensionBlueprint<
       }
     >;
   },
-  UExtraOutput extends AnyExtensionDataRef,
   TConfig extends {
     [key in string]: unknown;
   },
@@ -1108,6 +1105,16 @@ export interface ExtensionBlueprint<
       [key in string]: (zImpl: typeof z) => z.ZodType;
     },
     UFactoryOutput extends ExtensionDataValue<any, any>,
+    UNewOutput extends AnyExtensionDataRef,
+    TExtraInputs extends {
+      [inputName in string]: ExtensionInput<
+        AnyExtensionDataRef,
+        {
+          optional: boolean;
+          singleton: boolean;
+        }
+      >;
+    },
   >(
     args: {
       namespace?: string;
@@ -1117,8 +1124,11 @@ export interface ExtensionBlueprint<
         input: string;
       };
       disabled?: boolean;
-      inputs?: TInputs;
-      output?: Array<UExtraOutput>;
+      inputs?: TExtraInputs & {
+        [KName in keyof TInputs]?: `Error: Input '${KName &
+          string}' is already defined in parent definition`;
+      };
+      output?: Array<UNewOutput>;
       config?: {
         schema: TExtensionConfigSchema & {
           [KName in keyof TConfig]?: `Error: Config key '${KName &
@@ -1134,7 +1144,7 @@ export interface ExtensionBlueprint<
                 config?: TConfig;
                 inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
               },
-            ) => Iterable<ExtensionDataRefToValue<UOutput>>,
+            ) => ExtensionDataContainer<UOutput>,
             context: {
               node: AppNode;
               config: TConfig & {
@@ -1142,11 +1152,11 @@ export interface ExtensionBlueprint<
                   ReturnType<TExtensionConfigSchema[key]>
                 >;
               };
-              inputs: Expand<ResolvedExtensionInputs<TInputs>>;
+              inputs: Expand<ResolvedExtensionInputs<TInputs & TExtraInputs>>;
             },
           ): Iterable<UFactoryOutput>;
         } & VerifyExtensionFactoryOutput<
-          UOutput & UExtraOutput,
+          AnyExtensionDataRef extends UNewOutput ? UOutput : UNewOutput,
           UFactoryOutput
         >)
       | {
@@ -1186,7 +1196,17 @@ export interface ExtensionBoundaryProps {
 
 // @public (undocumented)
 export type ExtensionDataContainer<UExtensionData extends AnyExtensionDataRef> =
-  {
+  Iterable<
+    UExtensionData extends ExtensionDataRef<
+      infer IData,
+      infer IId,
+      infer IConfig
+    >
+      ? IConfig['optional'] extends true
+        ? never
+        : ExtensionDataValue<IData, IId>
+      : never
+  > & {
     get<TId extends UExtensionData['id']>(
       ref: ExtensionDataRef<any, TId, any>,
     ): UExtensionData extends ExtensionDataRef<infer IData, TId, infer IConfig>
@@ -1356,7 +1376,6 @@ export const IconBundleBlueprint: ExtensionBlueprint<
       }
     >;
   },
-  AnyExtensionDataRef,
   {
     icons: string;
     test: string;
