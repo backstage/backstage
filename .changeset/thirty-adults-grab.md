@@ -3,4 +3,4 @@
 '@backstage/plugin-catalog-node': patch
 ---
 
-Explicit declare if the service ref accepts `single` ou `multiple` implementations.
+Explicit declare if the service ref accepts `single` or `multiple` implementations.
