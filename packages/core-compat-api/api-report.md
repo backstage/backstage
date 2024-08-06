@@ -37,12 +37,9 @@ export function convertLegacyRouteRef<TParams extends AnyRouteRefParams>(
 ): SubRouteRef_2<TParams>;
 
 // @public
-export function convertLegacyRouteRef<
-  TParams extends AnyRouteRefParams,
-  TOptional extends boolean,
->(
-  ref: ExternalRouteRef<TParams, TOptional>,
-): ExternalRouteRef_2<TParams, TOptional>;
+export function convertLegacyRouteRef<TParams extends AnyRouteRefParams>(
+  ref: ExternalRouteRef<TParams>,
+): ExternalRouteRef_2<TParams>;
 
 // @public
 export function convertLegacyRouteRef<TParams extends AnyRouteRefParams>(
@@ -55,12 +52,9 @@ export function convertLegacyRouteRef<TParams extends AnyRouteRefParams>(
 ): SubRouteRef<TParams>;
 
 // @public
-export function convertLegacyRouteRef<
-  TParams extends AnyRouteRefParams,
-  TOptional extends boolean,
->(
-  ref: ExternalRouteRef_2<TParams, TOptional>,
-): ExternalRouteRef<TParams, TOptional>;
+export function convertLegacyRouteRef<TParams extends AnyRouteRefParams>(
+  ref: ExternalRouteRef_2<TParams>,
+): ExternalRouteRef<TParams, true>;
 
 // @public
 export function convertLegacyRouteRefs<
@@ -93,8 +87,8 @@ export type ToNewRouteRef<T extends RouteRef | SubRouteRef | ExternalRouteRef> =
     ? RouteRef_2<IParams>
     : T extends SubRouteRef<infer IParams>
     ? SubRouteRef_2<IParams>
-    : T extends ExternalRouteRef<infer IParams, infer IOptional>
-    ? ExternalRouteRef_2<IParams, IOptional>
+    : T extends ExternalRouteRef<infer IParams>
+    ? ExternalRouteRef_2<IParams>
     : never;
 
 // (No @packageDocumentation comment for this package)

@@ -47,9 +47,11 @@ const IndexPage = createPageExtension({
       return (
         <div>
           op
-          <div>
-            <Link to={page1Link()}>Page 1</Link>
-          </div>
+          {page1Link && (
+            <div>
+              <Link to={page1Link()}>Page 1</Link>
+            </div>
+          )}
           <div>
             <Link to="/home">Home</Link>
           </div>
@@ -82,10 +84,10 @@ const Page1 = createPageExtension({
       return (
         <div>
           <h1>This is page 1</h1>
-          <Link to={indexLink()}>Go back</Link>
+          {indexLink && <Link to={indexLink()}>Go back</Link>}
           <Link to="./page2">Page 2</Link>
           {/* <Link to={page2Link()}>Page 2</Link> */}
-          <Link to={xLink()}>Page X</Link>
+          {xLink && <Link to={xLink()}>Page X</Link>}
 
           <div>
             Sub-page content:
@@ -115,7 +117,7 @@ const ExternalPage = createPageExtension({
       return (
         <div>
           <h1>This is page X</h1>
-          <Link to={indexLink()}>Go back</Link>
+          {indexLink && <Link to={indexLink()}>Go back</Link>}
         </div>
       );
     };

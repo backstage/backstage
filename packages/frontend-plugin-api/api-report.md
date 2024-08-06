@@ -800,13 +800,11 @@ export function createExternalRouteRef<
         [param in TParamKeys]: string;
       }
     | undefined = undefined,
-  TOptional extends boolean = false,
   TParamKeys extends string = string,
 >(options?: {
   readonly params?: string extends TParamKeys
     ? (keyof TParams)[]
     : TParamKeys[];
-  optional?: TOptional;
   defaultTarget?: string;
 }): ExternalRouteRef<
   keyof TParams extends never
@@ -815,8 +813,7 @@ export function createExternalRouteRef<
     ? TParams
     : {
         [param in TParamKeys]: string;
-      },
-  TOptional
+      }
 >;
 
 // @public
@@ -1301,12 +1298,9 @@ export interface ExtensionOverridesOptions {
 // @public
 export interface ExternalRouteRef<
   TParams extends AnyRouteRefParams = AnyRouteRefParams,
-  TOptional extends boolean = boolean,
 > {
   // (undocumented)
   readonly $$type: '@backstage/ExternalRouteRef';
-  // (undocumented)
-  readonly optional: TOptional;
   // (undocumented)
   readonly T: TParams;
 }
@@ -1571,7 +1565,7 @@ export interface RouteResolutionApi {
     anyRouteRef:
       | RouteRef<TParams>
       | SubRouteRef<TParams>
-      | ExternalRouteRef<TParams, any>,
+      | ExternalRouteRef<TParams>,
     options?: RouteResolutionApiResolveOptions,
   ): RouteFunc<TParams> | undefined;
 }
@@ -1633,17 +1627,12 @@ export function useComponentRef<T extends {}>(
 ): ComponentType<T>;
 
 // @public
-export function useRouteRef<
-  TOptional extends boolean,
-  TParams extends AnyRouteRefParams,
->(
-  routeRef: ExternalRouteRef<TParams, TOptional>,
-): TOptional extends true ? RouteFunc<TParams> | undefined : RouteFunc<TParams>;
-
-// @public
 export function useRouteRef<TParams extends AnyRouteRefParams>(
-  routeRef: RouteRef<TParams> | SubRouteRef<TParams>,
-): RouteFunc<TParams>;
+  routeRef:
+    | RouteRef<TParams>
+    | SubRouteRef<TParams>
+    | ExternalRouteRef<TParams>,
+): RouteFunc<TParams> | undefined;
 
 // @public
 export function useRouteRefParams<Params extends AnyRouteRefParams>(

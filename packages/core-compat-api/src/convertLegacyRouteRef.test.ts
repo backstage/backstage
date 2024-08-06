@@ -123,13 +123,11 @@ describe('convertLegacyRouteRef', () => {
       'routeRef{type=external,id=ref3}',
     );
     expect(ref3Internal.getParams()).toEqual([]);
-    expect(ref3Internal.optional).toBe(false);
     expect(ref4Internal.getDefaultTarget()).toBe('ref2');
     expect(ref4Internal.getDescription()).toBe(
       'routeRef{type=external,id=ref4}',
     );
     expect(ref4Internal.getParams()).toEqual(['p1', 'p2']);
-    expect(ref4Internal.optional).toBe(true);
   });
 
   it('converts new to old', () => {
@@ -149,7 +147,6 @@ describe('convertLegacyRouteRef', () => {
     });
     const ref3 = createNewExternalRouteRef();
     const ref4 = createNewExternalRouteRef({
-      optional: true,
       defaultTarget: 'ref2',
       params: ['p1', 'p2'],
     });
@@ -196,7 +193,7 @@ describe('convertLegacyRouteRef', () => {
       /^ExternalRouteRef\{created at '.*'\}$/,
     );
     expect(ref3Converted.params).toEqual([]);
-    expect(ref3Converted.optional).toBe(false);
+    expect(ref3Converted.optional).toBe(true);
     expect(String(ref4Converted)).toMatch(
       /^ExternalRouteRef\{created at '.*'\}$/,
     );

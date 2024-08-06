@@ -129,7 +129,7 @@ describe('ForwardsCompatProvider', () => {
 
     function Component() {
       const link = useNewRouteRef(routeRef);
-      return <div>link: {link()}</div>;
+      return <div>link: {link?.()}</div>;
     }
 
     await renderInOldTestApp(compatWrapper(<Component />), {
