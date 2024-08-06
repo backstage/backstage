@@ -21,9 +21,20 @@ import { createExtensionTester } from '@backstage/frontend-test-utils';
 import { createExtensionDataRef } from './createExtensionDataRef';
 import { createExtensionInput } from './createExtensionInput';
 import { RouteRef } from '../routing';
-import { toInternalExtensionDefinition } from './createExtension';
+import {
+  ExtensionDefinition,
+  toInternalExtensionDefinition,
+} from './createExtension';
 
 function unused(..._any: any[]) {}
+
+function factoryOutput(ext: ExtensionDefinition<any, any>) {
+  const int = toInternalExtensionDefinition(ext);
+  if (int.version !== 'v2') {
+    throw new Error('Expected v2 extension');
+  }
+  return Array.from(int.factory({} as any));
+}
 
 describe('createExtensionBlueprint', () => {
   it('should allow creation of extension blueprints', () => {
@@ -476,6 +487,8 @@ describe('createExtensionBlueprint', () => {
     );
 
     expect(ext.output).toEqual([testDataRef2]);
+
+    expect(factoryOutput(ext)).toEqual([testDataRef2('foobar')]);
   });
 
   it('should allow returning of the parent data container', () => {
@@ -491,23 +504,28 @@ describe('createExtensionBlueprint', () => {
       },
     });
 
-    blueprint.make({
-      output: [testDataRef1, testDataRef2],
-      *factory(origFactory) {
-        yield* origFactory({});
-        yield testDataRef2('bar');
-      },
-    });
+    expect(
+      factoryOutput(
+        blueprint.make({
+          output: [testDataRef1, testDataRef2],
+          *factory(origFactory) {
+            yield* origFactory({});
+            yield testDataRef2('bar');
+          },
+        }),
+      ),
+    ).toEqual([testDataRef1('foo'), testDataRef2('bar')]);
 
-    blueprint.make({
-      output: [testDataRef1, testDataRef2],
-      factory(origFactory) {
-        return [...origFactory({}), testDataRef2('bar')];
-      },
-    });
-
-    expect(true).toBe(true);
-    // todo: test that the data is actually available
+    expect(
+      factoryOutput(
+        blueprint.make({
+          output: [testDataRef1, testDataRef2],
+          factory(origFactory) {
+            return [...origFactory({}), testDataRef2('bar')];
+          },
+        }),
+      ),
+    ).toEqual([testDataRef1('foo'), testDataRef2('bar')]);
   });
 
   it('should not allow returning parent output if outputs are overridden', () => {
@@ -523,13 +541,58 @@ describe('createExtensionBlueprint', () => {
       },
     });
 
+    // @ts-expect-error
     blueprint.make({
       output: [testDataRef2.optional()],
       *factory() {
+        yield testDataRef1('foo');
         yield testDataRef2('bar');
       },
     });
 
-    expect(true).toBe(true);
+    expect(
+      factoryOutput(
+        blueprint.make({
+          output: [testDataRef2.optional()],
+          *factory() {
+            yield testDataRef2('bar');
+          },
+        }),
+      ),
+    ).toEqual([testDataRef2('bar')]);
+  });
+
+  it('should not rely on optional outputs when forwarding from parent', () => {
+    const testDataRef1 = createExtensionDataRef<string>().with({ id: 'test1' });
+    const testDataRef2 = createExtensionDataRef<string>().with({ id: 'test2' });
+
+    const blueprint = createExtensionBlueprint({
+      kind: 'test-extension',
+      attachTo: { id: 'test', input: 'default' },
+      output: [testDataRef1, testDataRef2.optional()],
+      factory() {
+        return [testDataRef1('foo')];
+      },
+    });
+
+    // @ts-expect-error
+    blueprint.make({
+      output: [testDataRef1, testDataRef2],
+      *factory(origFactory) {
+        yield* origFactory({});
+      },
+    });
+
+    expect(
+      factoryOutput(
+        blueprint.make({
+          output: [testDataRef1, testDataRef2],
+          *factory(origFactory) {
+            yield* origFactory({});
+            yield testDataRef2('bar');
+          },
+        }),
+      ),
+    ).toEqual([testDataRef1('foo'), testDataRef2('bar')]);
   });
 });

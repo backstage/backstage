@@ -28,6 +28,7 @@ import { z } from 'zod';
 import { ExtensionInput } from './createExtensionInput';
 import {
   AnyExtensionDataRef,
+  ExtensionDataRef,
   ExtensionDataValue,
 } from './createExtensionDataRef';
 
@@ -167,6 +168,30 @@ export interface ExtensionBlueprint<
     > &
       TConfigInput
   >;
+}
+
+/** @internal */
+function createDataContainer<UData extends AnyExtensionDataRef>(
+  values: Iterable<
+    UData extends ExtensionDataRef<infer IData, infer IId>
+      ? ExtensionDataValue<IData, IId>
+      : never
+  >,
+): ExtensionDataContainer<UData> {
+  const container = new Map<string, ExtensionDataValue<any, any>>();
+
+  for (const output of values) {
+    container.set(output.id, output);
+  }
+
+  return {
+    get(ref) {
+      return container.get(ref.id)?.value;
+    },
+    [Symbol.iterator]() {
+      return container.values();
+    },
+  } as ExtensionDataContainer<UData>;
 }
 
 /**
@@ -312,11 +337,13 @@ class ExtensionBlueprintImpl<
                 inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
               },
             ): ExtensionDataContainer<UOutput> => {
-              return this.options.factory(innerParams, {
-                node,
-                config: innerContext?.config ?? config,
-                inputs: (innerContext?.inputs ?? inputs) as any, // TODO: Fix the way input values are overridden
-              });
+              return createDataContainer<UOutput>(
+                this.options.factory(innerParams, {
+                  node,
+                  config: innerContext?.config ?? config,
+                  inputs: (innerContext?.inputs ?? inputs) as any, // TODO: Fix the way input values are overridden
+                }),
+              );
             },
             {
               node,
