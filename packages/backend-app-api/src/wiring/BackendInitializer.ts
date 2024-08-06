@@ -25,14 +25,14 @@ import {
 } from '@backstage/backend-plugin-api';
 import { ServiceOrExtensionPoint } from './types';
 // Direct internal import to avoid duplication
-// eslint-disable-next-line @backstage/no-forbidden-package-imports
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type {
   InternalBackendFeature,
   InternalBackendFeatureLoader,
   InternalBackendRegistrations,
-} from '@backstage/backend-plugin-api/src/wiring/types';
-// eslint-disable-next-line @backstage/no-forbidden-package-imports
-import type { InternalServiceFactory } from '@backstage/backend-plugin-api/src/services/system/types';
+} from '../../../backend-plugin-api/src/wiring/types';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import type { InternalServiceFactory } from '../../../backend-plugin-api/src/services/system/types';
 import { ForwardedError, ConflictError } from '@backstage/errors';
 import { featureDiscoveryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { DependencyGraph } from '../lib/DependencyGraph';
@@ -431,8 +431,7 @@ export class BackendInitializer {
         if (isBackendFeatureLoader(feature)) {
           newLoaders.push(feature);
         } else {
-          didAddServiceFactory =
-            didAddServiceFactory || isServiceFactory(feature);
+          didAddServiceFactory ||= isServiceFactory(feature);
           this.#addFeature(feature);
         }
       }
