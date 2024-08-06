@@ -30,7 +30,7 @@ import {
  * Creating a service factory implementation for a Custom URL Reader.
  * ```ts
  * createServiceFactory({
- *   service: urlReaderProviderFactoriesServiceRef,
+ *   service: urlReaderFactoriesServiceRef,
  *   deps: {},
  *   async factory() {
  *     return CustomUrlReader.factory;
@@ -38,12 +38,11 @@ import {
  * });
  * ```
  */
-export const urlReaderProviderFactoriesServiceRef =
-  createServiceRef<ReaderFactory>({
-    id: 'core.urlReader.factories',
-    scope: 'plugin',
-    multiton: true,
-  });
+export const urlReaderFactoriesServiceRef = createServiceRef<ReaderFactory>({
+  id: 'core.urlReader.factories',
+  scope: 'plugin',
+  multiton: true,
+});
 
 /**
  * Reading content from external systems.
@@ -59,7 +58,7 @@ export const urlReaderServiceFactory = createServiceFactory({
   deps: {
     config: coreServices.rootConfig,
     logger: coreServices.logger,
-    factories: urlReaderProviderFactoriesServiceRef,
+    factories: urlReaderFactoriesServiceRef,
   },
   async factory({ config, logger, factories }) {
     return UrlReaders.default({

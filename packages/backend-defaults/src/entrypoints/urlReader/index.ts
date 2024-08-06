@@ -15,4 +15,7 @@
  */
 
 export * from './lib';
-export { urlReaderServiceFactory } from './urlReaderServiceFactory';
+export {
+  urlReaderServiceFactory,
+  urlReaderFactoriesServiceRef,
+} from './urlReaderServiceFactory';
