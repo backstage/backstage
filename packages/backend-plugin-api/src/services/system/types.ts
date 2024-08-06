@@ -39,7 +39,7 @@ export type ServiceRef<
    */
   scope: TScope;
 
-  multiton: TInstances extends 'multiton' ? true : false;
+  multiton?: TInstances extends 'multiton' ? true : false;
 
   /**
    * Utility for getting the type of the service, using `typeof serviceRef.T`.
@@ -189,7 +189,7 @@ type ServiceRefsToInstances<
 > = {
   [key in keyof T as T[key]['scope'] extends TScope
     ? key
-    : never]: T[key]['multiton'] extends true
+    : never]: T[key]['multiton'] extends true | undefined
     ? Array<T[key]['T']>
     : T[key]['T'];
 };

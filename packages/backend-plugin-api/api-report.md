@@ -703,7 +703,7 @@ export type ServiceRef<
 > = {
   id: string;
   scope: TScope;
-  multiton: TInstances extends 'multiton' ? true : false;
+  multiton?: TInstances extends 'multiton' ? true : false;
   T: TService;
   $$type: '@backstage/ServiceRef';
 };

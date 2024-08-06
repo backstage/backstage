@@ -324,6 +324,24 @@ describe('createServiceFactory', () => {
     metaFactory();
   });
 
+  it('should support old service refs without a multiton field', () => {
+    const oldPluginDep = pluginDep as Omit<typeof pluginDep, 'multiton'>; // Old refs don't have a multiton field
+    const metaFactory = createServiceFactory({
+      service: ref,
+      deps: {
+        plugin: oldPluginDep,
+      },
+      async factory({ plugin }) {
+        const plugin1: boolean = plugin;
+        // @ts-expect-error
+        const plugin2: number = plugin;
+        unused(plugin1, plugin2);
+        return 'x';
+      },
+    });
+    expect(metaFactory).toEqual(expect.any(Function));
+  });
+
   it('should only allow objects as options', () => {
     // @ts-expect-error
     const metaFactory = createServiceFactory((_opts: string) => ({
