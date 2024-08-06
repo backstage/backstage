@@ -4171,6 +4171,7 @@ __metadata:
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/frontend-test-utils": "workspace:^"
     "@backstage/plugin-catalog": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
     "@oriflame/backstage-plugin-score-card": ^0.8.0
     "@testing-library/jest-dom": ^6.0.0

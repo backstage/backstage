@@ -45,6 +45,24 @@ export function convertLegacyRouteRef<
 ): ExternalRouteRef_2<TParams, TOptional>;
 
 // @public
+export function convertLegacyRouteRef<TParams extends AnyRouteRefParams>(
+  ref: RouteRef_2<TParams>,
+): RouteRef<TParams>;
+
+// @public
+export function convertLegacyRouteRef<TParams extends AnyRouteRefParams>(
+  ref: SubRouteRef_2<TParams>,
+): SubRouteRef<TParams>;
+
+// @public
+export function convertLegacyRouteRef<
+  TParams extends AnyRouteRefParams,
+  TOptional extends boolean,
+>(
+  ref: ExternalRouteRef_2<TParams, TOptional>,
+): ExternalRouteRef<TParams, TOptional>;
+
+// @public
 export function convertLegacyRouteRefs<
   TRefs extends {
     [name in string]: RouteRef | SubRouteRef | ExternalRouteRef;
