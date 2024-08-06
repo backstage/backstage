@@ -18,6 +18,7 @@ export function createLifecycleMiddleware(
 export const httpRouterServiceFactory: ServiceFactoryCompat<
   HttpRouterService,
   'plugin',
+  'singleton',
   undefined
 >;
 

@@ -43,8 +43,12 @@ export interface ServiceFactoryTesterOptions {
  *
  * @public
  */
-export class ServiceFactoryTester<TService, TScope extends 'root' | 'plugin'> {
-  readonly #subject: ServiceRef<TService, TScope>;
+export class ServiceFactoryTester<
+  TService,
+  TScope extends 'root' | 'plugin',
+  TInstances extends 'singleton' | 'multiton' = 'singleton',
+> {
+  readonly #subject: ServiceRef<TService, TScope, TInstances>;
   readonly #registry: ServiceRegistry;
 
   /**
@@ -54,10 +58,14 @@ export class ServiceFactoryTester<TService, TScope extends 'root' | 'plugin'> {
    * @param options - Additional options
    * @returns A new tester instance for the provided subject.
    */
-  static from<TService, TScope extends 'root' | 'plugin'>(
-    subject: ServiceFactory<TService, TScope>,
+  static from<
+    TService,
+    TScope extends 'root' | 'plugin',
+    TInstances extends 'singleton' | 'multiton' = 'singleton',
+  >(
+    subject: ServiceFactory<TService, TScope, TInstances>,
     options?: ServiceFactoryTesterOptions,
-  ) {
+  ): ServiceFactoryTester<TService, TScope, TInstances> {
     const registry = ServiceRegistry.create([
       ...defaultServiceFactories,
       ...(options?.dependencies ?? []),
@@ -67,7 +75,7 @@ export class ServiceFactoryTester<TService, TScope extends 'root' | 'plugin'> {
   }
 
   private constructor(
-    subject: ServiceRef<TService, TScope>,
+    subject: ServiceRef<TService, TScope, TInstances>,
     registry: ServiceRegistry,
   ) {
     this.#subject = subject;
@@ -81,7 +89,7 @@ export class ServiceFactoryTester<TService, TScope extends 'root' | 'plugin'> {
    */
   async get(
     ...args: 'root' extends TScope ? [] : [pluginId?: string]
-  ): Promise<TService> {
+  ): Promise<TInstances extends 'multiton' ? TService[] : TService> {
     return this.getSubject(...args);
   }
 
@@ -97,9 +105,10 @@ export class ServiceFactoryTester<TService, TScope extends 'root' | 'plugin'> {
    */
   async getSubject(
     ...args: 'root' extends TScope ? [] : [pluginId?: string]
-  ): Promise<TService> {
+  ): Promise<TInstances extends 'multiton' ? TService[] : TService> {
     const [pluginId] = args;
-    return this.#registry.get(this.#subject, pluginId ?? 'test')!;
+    const instance = this.#registry.get(this.#subject, pluginId ?? 'test')!;
+    return instance;
   }
 
   /**
@@ -109,10 +118,14 @@ export class ServiceFactoryTester<TService, TScope extends 'root' | 'plugin'> {
    *
    * A plugin ID can optionally be provided for plugin scoped services, otherwise the plugin ID 'test' is used.
    */
-  async getService<TGetService, TGetScope extends 'root' | 'plugin'>(
-    service: ServiceRef<TGetService, TGetScope>,
+  async getService<
+    TGetService,
+    TGetScope extends 'root' | 'plugin',
+    TGetInstances extends 'singleton' | 'multiton' = 'singleton',
+  >(
+    service: ServiceRef<TGetService, TGetScope, TGetInstances>,
     ...args: 'root' extends TGetScope ? [] : [pluginId?: string]
-  ): Promise<TGetService> {
+  ): Promise<TGetInstances extends 'multiton' ? TGetService[] : TGetService> {
     const [pluginId] = args;
     const instance = await this.#registry.get(service, pluginId ?? 'test');
     if (instance === undefined) {
