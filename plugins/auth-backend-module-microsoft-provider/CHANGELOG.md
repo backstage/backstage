@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-backend-module-microsoft-provider
 
+## 0.1.18-next.2
+
+### Patch Changes
+
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.2
+  - @backstage/plugin-auth-node@0.5.0-next.2
+
 ## 0.1.18-next.1
 
 ### Patch Changes

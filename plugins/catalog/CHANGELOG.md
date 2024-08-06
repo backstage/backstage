@@ -1,5 +1,31 @@
 # @backstage/plugin-catalog
 
+## 1.22.0-next.2
+
+### Minor Changes
+
+- 6925dcb: Introduces the HasSubdomainsCard component that displays the subdomains of a given domain
+
+### Patch Changes
+
+- 604a504: The entity relation cards available for the new frontend system via `/alpha` now have more accurate and granular default filters.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.7.0-next.2
+  - @backstage/core-compat-api@0.2.8-next.2
+  - @backstage/plugin-search-common@1.2.14-next.1
+  - @backstage/plugin-search-react@1.7.14-next.2
+  - @backstage/plugin-catalog-react@1.12.3-next.2
+  - @backstage/plugin-catalog-common@1.0.26-next.1
+  - @backstage/plugin-permission-react@0.4.25-next.1
+  - @backstage/plugin-scaffolder-common@1.5.5-next.1
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/core-components@0.14.10-next.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+  - @backstage/integration-react@1.1.30-next.0
+  - @backstage/types@1.1.1
+
 ## 1.21.2-next.1
 
 ### Patch Changes

@@ -1,5 +1,24 @@
 # @backstage/plugin-techdocs-backend
 
+## 1.10.10-next.2
+
+### Patch Changes
+
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.2
+  - @backstage/plugin-permission-common@0.8.1-next.1
+  - @backstage/plugin-search-backend-module-techdocs@0.1.28-next.2
+  - @backstage/backend-common@0.23.4-next.2
+  - @backstage/plugin-techdocs-node@1.12.9-next.2
+  - @backstage/plugin-catalog-common@1.0.26-next.1
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-techdocs-common@0.1.0-next.0
+
 ## 1.10.10-next.1
 
 ### Patch Changes

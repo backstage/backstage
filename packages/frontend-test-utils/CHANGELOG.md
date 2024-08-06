@@ -1,5 +1,18 @@
 # @backstage/frontend-test-utils
 
+## 0.1.12-next.2
+
+### Patch Changes
+
+- 8209449: Added new APIs for testing extensions
+- 72754db: Updated usage of `useRouteRef`, which can now always return `undefined`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.7.0-next.2
+  - @backstage/frontend-app-api@0.7.5-next.2
+  - @backstage/test-utils@1.5.10-next.2
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
 ## 0.1.12-next.1
 
 ### Patch Changes

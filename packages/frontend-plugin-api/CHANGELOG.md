@@ -1,5 +1,22 @@
 # @backstage/frontend-plugin-api
 
+## 0.7.0-next.2
+
+### Minor Changes
+
+- 72754db: **BREAKING**: All types of route refs are always considered optional by `useRouteRef`, which means the caller must always handle a potential `undefined` return value. Related to this change, the `optional` option from `createExternalRouteRef` has been removed, since it is no longer necessary.
+
+  This is released as an immediate breaking change as we expect the usage of the new route refs to be extremely low or zero, since plugins that support the new system will still use route refs and `useRouteRef` from `@backstage/core-plugin-api` in combination with `convertLegacyRouteRef` from `@backstage/core-compat-api`.
+
+### Patch Changes
+
+- 210d066: Added support for using the `params` in other properties of the `createExtensionBlueprint` options by providing a callback.
+- Updated dependencies
+  - @backstage/core-components@0.14.10-next.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
 ## 0.6.8-next.1
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # @backstage/plugin-permission-common
 
+## 0.8.1-next.1
+
+### Patch Changes
+
+- df784fe: Add the MetadataResponse type from @backstage/plugin-permission-node, since this
+  type might be used in frontend code.
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.8.1-next.0
 
 ### Patch Changes
