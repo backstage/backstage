@@ -662,7 +662,7 @@ export type CreateExtensionBlueprintOptions<
   },
 > = {
   kind: string;
-  namespace?: string;
+  namespace?: string | ((params: TParams) => string);
   attachTo: {
     id: string;
     input: string;
@@ -670,8 +670,9 @@ export type CreateExtensionBlueprintOptions<
   disabled?: boolean;
   inputs?: TInputs;
   output: Array<UOutput>;
+  name?: string | ((params: TParams) => string);
   config?: {
-    schema: TConfigSchema;
+    schema: TConfigSchema | ((params: TParams) => TConfigSchema);
   };
   factory(
     params: TParams,
