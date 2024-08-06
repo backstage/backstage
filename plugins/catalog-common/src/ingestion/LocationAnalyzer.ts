@@ -17,11 +17,13 @@
 import { LocationSpec } from '../common';
 import { Entity } from '@backstage/catalog-model';
 import { RecursivePartial } from './RecursivePartial';
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 
 /** @public */
 export type AnalyzeLocationRequest = {
   location: LocationSpec;
   catalogFilename?: string;
+  credentials: BackstageCredentials;
 };
 
 /** @public */

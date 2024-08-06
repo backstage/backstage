@@ -301,9 +301,13 @@ export async function createRouter(
         location: locationInput,
         catalogFilename: z.string().optional(),
       });
+      const credentials = await httpAuth.credentials(req);
       const parsedBody = schema.parse(body);
+      const analyzeLocationRequest = { ...parsedBody, credentials };
       try {
-        const output = await locationAnalyzer.analyzeLocation(parsedBody);
+        const output = await locationAnalyzer.analyzeLocation(
+          analyzeLocationRequest,
+        );
         res.status(200).json(output);
       } catch (err) {
         if (
