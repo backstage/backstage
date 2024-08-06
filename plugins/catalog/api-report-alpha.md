@@ -121,23 +121,17 @@ const _default: BackstagePlugin<
     }>;
   },
   {
-    viewTechDoc: ExternalRouteRef<
-      {
-        name: string;
-        kind: string;
-        namespace: string;
-      },
-      true
-    >;
-    createComponent: ExternalRouteRef<undefined, true>;
-    createFromTemplate: ExternalRouteRef<
-      {
-        namespace: string;
-        templateName: string;
-      },
-      true
-    >;
-    unregisterRedirect: ExternalRouteRef<undefined, true>;
+    viewTechDoc: ExternalRouteRef<{
+      name: string;
+      kind: string;
+      namespace: string;
+    }>;
+    createComponent: ExternalRouteRef<undefined>;
+    createFromTemplate: ExternalRouteRef<{
+      namespace: string;
+      templateName: string;
+    }>;
+    unregisterRedirect: ExternalRouteRef<undefined>;
   }
 >;
 export default _default;

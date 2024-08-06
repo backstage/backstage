@@ -56,10 +56,13 @@ const NavItem = (props: {
   icon: IconComponent;
 }) => {
   const { routeRef, title, icon: Icon } = props;
-  const to = useRouteRef(routeRef)();
+  const link = useRouteRef(routeRef);
+  if (!link) {
+    return null;
+  }
   return (
     <li>
-      <Link to={to}>
+      <Link to={link()}>
         <Icon /> {title}
       </Link>
     </li>

@@ -73,9 +73,12 @@ const SidebarNavItem = (
   props: (typeof createNavItemExtension.targetDataRef)['T'],
 ) => {
   const { icon: Icon, title, routeRef } = props;
-  const to = useRouteRef(routeRef)();
+  const link = useRouteRef(routeRef);
+  if (!link) {
+    return null;
+  }
   // TODO: Support opening modal, for example, the search one
-  return <SidebarItem to={to} icon={Icon} text={title} />;
+  return <SidebarItem to={link()} icon={Icon} text={title} />;
 };
 
 export const AppNav = createExtension({

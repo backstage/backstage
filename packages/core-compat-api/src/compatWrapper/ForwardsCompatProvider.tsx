@@ -111,7 +111,7 @@ class CompatRouteResolutionApi implements RouteResolutionApi {
     anyRouteRef:
       | RouteRef<TParams>
       | SubRouteRef<TParams>
-      | ExternalRouteRef<TParams, any>,
+      | ExternalRouteRef<TParams>,
     options?: RouteResolutionApiResolveOptions | undefined,
   ): RouteFunc<TParams> | undefined {
     const legacyRef = convertLegacyRouteRef(anyRouteRef as RouteRef<TParams>);

@@ -51,8 +51,8 @@ export type ToNewRouteRef<
   ? RouteRef<IParams>
   : T extends LegacySubRouteRef<infer IParams>
   ? SubRouteRef<IParams>
-  : T extends LegacyExternalRouteRef<infer IParams, infer IOptional>
-  ? ExternalRouteRef<IParams, IOptional>
+  : T extends LegacyExternalRouteRef<infer IParams>
+  ? ExternalRouteRef<IParams>
   : never;
 
 /**
@@ -109,12 +109,9 @@ export function convertLegacyRouteRef<TParams extends AnyRouteRefParams>(
  *
  * In the future the legacy createExternalRouteRef will instead create refs compatible with both systems.
  */
-export function convertLegacyRouteRef<
-  TParams extends AnyRouteRefParams,
-  TOptional extends boolean,
->(
-  ref: LegacyExternalRouteRef<TParams, TOptional>,
-): ExternalRouteRef<TParams, TOptional>;
+export function convertLegacyRouteRef<TParams extends AnyRouteRefParams>(
+  ref: LegacyExternalRouteRef<TParams>,
+): ExternalRouteRef<TParams>;
 
 /**
  * A temporary helper to convert a new route ref to the legacy system.
@@ -148,12 +145,9 @@ export function convertLegacyRouteRef<TParams extends AnyRouteRefParams>(
  *
  * In the future the legacy createExternalRouteRef will instead create refs compatible with both systems.
  */
-export function convertLegacyRouteRef<
-  TParams extends AnyRouteRefParams,
-  TOptional extends boolean,
->(
-  ref: ExternalRouteRef<TParams, TOptional>,
-): LegacyExternalRouteRef<TParams, TOptional>;
+export function convertLegacyRouteRef<TParams extends AnyRouteRefParams>(
+  ref: ExternalRouteRef<TParams>,
+): LegacyExternalRouteRef<TParams, true>;
 export function convertLegacyRouteRef(
   ref:
     | LegacyRouteRef
@@ -209,6 +203,7 @@ function convertNewToOld(
     const newRef = toInternalExternalRouteRef(ref);
     return Object.assign(ref, {
       [routeRefType]: 'external',
+      optional: true,
       params: newRef.getParams(),
       defaultTarget: newRef.getDefaultTarget(),
     } as Omit<LegacyExternalRouteRef, '$$routeRefType' | 'optional'>) as unknown as LegacyExternalRouteRef;
@@ -282,7 +277,6 @@ function convertOldToNew(
     const newRef = toInternalExternalRouteRef(
       createExternalRouteRef<{ [key in string]: string }>({
         params: legacyRef.params as string[],
-        optional: legacyRef.optional,
         defaultTarget:
           'getDefaultTarget' in legacyRef
             ? (legacyRef.getDefaultTarget as () => string | undefined)()
@@ -293,7 +287,6 @@ function convertOldToNew(
       $$type: '@backstage/ExternalRouteRef' as const,
       version: 'v1',
       T: newRef.T,
-      optional: newRef.optional,
       getParams() {
         return newRef.getParams();
       },
