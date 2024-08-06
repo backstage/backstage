@@ -3649,6 +3649,7 @@ __metadata:
     "@types/http-errors": ^2.0.0
     "@types/morgan": ^1.9.0
     "@types/node-forge": ^1.3.0
+    "@types/pg-format": ^1.0.5
     "@types/stoppable": ^1.1.0
     archiver: ^6.0.0
     aws-sdk-client-mock: ^4.0.0
@@ -18590,6 +18591,13 @@ __metadata:
   dependencies:
     "@types/express": "*"
   checksum: e4a02fa338536eb82694ea548689a7214b1ca98df6a896080daa2b6a8859db02a1e6244eeefaf6f3cc9c268239bb4a7912049a9ed86192144a65c10e55219f80
+  languageName: node
+  linkType: hard
+
+"@types/pg-format@npm:^1.0.5":
+  version: 1.0.5
+  resolution: "@types/pg-format@npm:1.0.5"
+  checksum: e7907b1e478b54aec581d14bc4df349d40d6e30e1f03605e9d162f515f35064e9deaeeb563cb812adfac271522c7ed68b13ebb6e2036d557c5533cf6357419bd
   languageName: node
   linkType: hard
 
