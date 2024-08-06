@@ -29,6 +29,7 @@ import { Connector } from '../types';
 import defaultNameOverride from './defaultNameOverride';
 import defaultSchemaOverride from './defaultSchemaOverride';
 import { mergeDatabaseConfig } from './mergeDatabaseConfig';
+import { format } from 'pg-format';
 
 // Limits the number of concurrent DDL operations to 1
 const ddlLimiter = limiterFactory(1);
@@ -52,7 +53,8 @@ export function createPgDatabaseClient(
     database.client.pool.on(
       'createSuccess',
       async (_event: number, pgClient: Client) => {
-        await pgClient.query('SET ROLE $1', [role]);
+        const query = format('SET ROLE %I', role);
+        await pgClient.query(query);
       },
     );
   }

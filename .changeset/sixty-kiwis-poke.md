@@ -2,4 +2,4 @@
 '@backstage/backend-defaults': patch
 ---
 
-use parameterized query to prevent chance of SQL-injection
+use formatted query to prevent chance of SQL-injection

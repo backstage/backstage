@@ -3683,6 +3683,7 @@ __metadata:
     path-to-regexp: ^6.2.1
     pg: ^8.11.3
     pg-connection-string: ^2.3.0
+    pg-format: ^1.0.4
     raw-body: ^2.4.1
     selfsigned: ^2.0.0
     stoppable: ^1.1.0
@@ -36952,6 +36953,13 @@ __metadata:
   version: 2.6.4
   resolution: "pg-connection-string@npm:2.6.4"
   checksum: 2c1d2ac1add1f93076f1594d217a0980f79add05dc48de6363e1c550827c78a6ee3e3b5420da9c54858f6b678cdb348aed49732ee68158b6cdb70f1d1c748cf9
+  languageName: node
+  linkType: hard
+
+"pg-format@npm:^1.0.4":
+  version: 1.0.4
+  resolution: "pg-format@npm:1.0.4"
+  checksum: 159b43ad57d2f963f1072def86080dd2a6dd42c1a86046e388d47b491e00afe795139520eb01c8dffc43ac0243c77b3c4c5882d0ec5f488bb3281f17458b1b3d
   languageName: node
   linkType: hard
 
