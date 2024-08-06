@@ -4,17 +4,7 @@ Welcome to the notifications backend plugin!
 
 ## Getting started
 
-```bash
-yarn workspace backend add @backstage/notifications-backend
-```
-
-Add the notifications to your backend:
-
-```ts
-const backend = createBackend();
-// ...
-backend.add(import('@backstage/plugin-notifications-backend'));
-```
+To install, please refer the [Getting Started](https://backstage.io/docs/notifications) Backstage Notifications and Signals documentation section.
 
 For users to be able to see notifications in real-time, you have to install also
 the signals plugin (`@backstage/plugin-signals-node`, `@backstage/plugin-signals-backend`, and

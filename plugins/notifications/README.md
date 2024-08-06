@@ -4,40 +4,9 @@ Welcome to the notifications plugin!
 
 ## Getting started
 
-First, install the `@backstage/plugin-notifications-backend` and `@backstage/plugin-notifications-node` packages.
-See the documentation for installation instructions.
+To install, please refer the [Getting Started](https://backstage.io/docs/notifications) Backstage Notifications and Signals documentation section.
 
-Then add this frontend package:
-
-```bash
-yarn workspace app add @backstage/notifications
-```
-
-To add the notifications main menu, add the following to your `packages/app/src/components/Root/Root.tsx`:
-
-```tsx
-import { NotificationsSidebarItem } from '@backstage/plugin-notifications';
-
-<SidebarPage>
-  <Sidebar>
-    <SidebarGroup>
-      // ...
-      <NotificationsSidebarItem />
-    </SidebarGroup>
-  </Sidebar>
-</SidebarPage>;
-```
-
-Also add the route to notifications to `packages/app/src/App.tsx`:
-
-```tsx
-import { NotificationsPage } from '@backstage/plugin-notifications';
-
-<FlatRoutes>
-  // ...
-  <Route path="/notifications" element={<NotificationsPage />} />
-</FlatRoutes>;
-```
+Please mind installing the `@backstage/plugin-notifications-backend` and `@backstage/plugin-notifications-node` packages before this frontend plugin.
 
 ## Real-time notifications
 

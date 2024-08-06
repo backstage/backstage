@@ -6,7 +6,7 @@ description: How to get started with the notifications and signals
 
 The Backstage Notifications System provides a way for plugins and external services to send notifications to Backstage users.
 These notifications are displayed in the dedicated page of the Backstage frontend UI or by frontend plugins per specific scenarios.
-Additionally, plugins can implement processors to send notifications through external channels like email, Slack, or MS Teams.
+Additionally, notifications can be sent to external channels (like email) via "processors" implemented within plugins.
 
 Notifications can be optionally integrated with the signals (a push mechanism) to ensure users receive them immediately.
 
@@ -30,6 +30,104 @@ Example of use-cases:
 - Notifications for component owners: e.g., build failures, successful deployments, new vulnerabilities
 - Notifications for individuals: e.g., updates you have subscribed to, new required training courses
 - Notifications pertaining to a particular entity in the catalog: A notification might apply to an entity and the owning team.
+
+## Installation in Older Environments
+
+Newer versions of instances created by the create-app have both the notifications and signals plugins included by default, this section can be skipped right to the Configuration.
+
+Following installation instructions are valid for enabling the plugins in older environments.
+
+### Add Notifications Backend
+
+```bash
+yarn workspace backend add @backstage/plugin-notifications-backend
+```
+
+Add the notifications to your `backend/src/index.ts`:
+
+```ts
+const backend = createBackend();
+// ...
+backend.add(import('@backstage/plugin-notifications-backend'));
+```
+
+### Add Notifications Frontend
+
+```bash
+yarn workspace app add @backstage/notifications
+```
+
+To add the notifications main menu, add following to your `packages/app/src/components/Root/Root.tsx`:
+
+```tsx
+import { NotificationsSidebarItem } from '@backstage/plugin-notifications';
+
+<SidebarPage>
+  <Sidebar>
+    <SidebarGroup>
+      // ...
+      <NotificationsSidebarItem />
+    </SidebarGroup>
+  </Sidebar>
+</SidebarPage>;
+```
+
+Also add the route to notifications to `packages/app/src/App.tsx`:
+
+```tsx
+import { NotificationsPage } from '@backstage/plugin-notifications';
+
+<FlatRoutes>
+  // ...
+  <Route path="/notifications" element={<NotificationsPage />} />
+</FlatRoutes>;
+```
+
+### Optional: Add Signals Backend
+
+Optionally add Signals to your backend by
+
+```bash
+yarn workspace backend add @backstage/plugin-signals-backend
+```
+
+Add the signals to your `backend/src/index.ts`:
+
+```ts
+const backend = createBackend();
+// ...
+backend.add(import('@backstage/plugin-signals-backend'));
+```
+
+### Optional: Signals Frontend
+
+The use of signals is optional but improves user experience.
+
+Start with:
+
+```bash
+yarn workspace app add @backstage/plugin-signals
+```
+
+To install the plugin, you have to add the following to your `packages/app/src/plugins.ts`:
+
+```ts
+export { signalsPlugin } from '@backstage/plugin-signals';
+```
+
+And make sure that your `packages/app/src/App.tsx` contains:
+
+```ts
+import * as plugins from './plugins';
+
+const app = createApp({
+  // ...
+  plugins: Object.values(plugins),
+  // ...
+});
+```
+
+If the signals plugin is properly configured, it will be automatically discovered by the notifications plugin and used.
 
 ## Configuration
 
@@ -209,7 +307,9 @@ curl -X POST https://[BACKSTAGE_BACKEND]/api/notifications -H "Content-Type: app
 
 ## Additional info
 
-Additional details can be found in the plugins' implementation:
+An example of a backend plugin sending notifications can be found in https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-notifications.
+
+Sources of the notifications and signal plugins:
 
 - https://github.com/backstage/backstage/blob/master/plugins/notifications
 
