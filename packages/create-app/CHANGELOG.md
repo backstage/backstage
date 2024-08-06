@@ -1,5 +1,13 @@
 # @backstage/create-app
 
+## 0.5.18-next.3
+
+### Patch Changes
+
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+
 ## 0.5.18-next.2
 
 ### Patch Changes

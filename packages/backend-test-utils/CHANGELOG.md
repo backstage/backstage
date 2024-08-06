@@ -1,5 +1,21 @@
 # @backstage/backend-test-utils
 
+## 0.4.5-next.2
+
+### Patch Changes
+
+- 8b13183: Internal updates to support latest version of `BackendFeauture`s from `@backstage/backend-plugin-api`.
+- 7c5f3b0: Update the `ServiceFactoryTester` to be able to test services that enables multi implementation installation.
+- Updated dependencies
+  - @backstage/backend-defaults@0.4.2-next.2
+  - @backstage/backend-plugin-api@0.8.0-next.2
+  - @backstage/backend-app-api@0.8.1-next.2
+  - @backstage/plugin-auth-node@0.5.0-next.2
+  - @backstage/plugin-events-node@0.3.9-next.2
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.4.5-next.1
 
 ### Patch Changes
