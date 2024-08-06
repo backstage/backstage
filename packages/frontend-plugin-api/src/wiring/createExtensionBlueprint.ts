@@ -18,6 +18,7 @@ import { AppNode } from '../apis';
 import { Expand } from '../types';
 import {
   CreateExtensionOptions,
+  ExtensionDataContainer,
   ExtensionDefinition,
   ResolvedExtensionInputs,
   VerifyExtensionFactoryOutput,
@@ -27,7 +28,6 @@ import { z } from 'zod';
 import { ExtensionInput } from './createExtensionInput';
 import {
   AnyExtensionDataRef,
-  ExtensionDataRefToValue,
   ExtensionDataValue,
 } from './createExtensionDataRef';
 
@@ -100,7 +100,7 @@ export interface ExtensionBlueprint<
       [key in string]: (zImpl: typeof z) => z.ZodType;
     },
     UFactoryOutput extends ExtensionDataValue<any, any>,
-    UExtraOutput extends AnyExtensionDataRef,
+    UNewOutput extends AnyExtensionDataRef,
     TExtraInputs extends {
       [inputName in string]: ExtensionInput<
         AnyExtensionDataRef,
@@ -117,7 +117,7 @@ export interface ExtensionBlueprint<
         [KName in keyof TInputs]?: `Error: Input '${KName &
           string}' is already defined in parent definition`;
       };
-      output?: Array<UExtraOutput>;
+      output?: Array<UNewOutput>;
       config?: {
         schema: TExtensionConfigSchema & {
           [KName in keyof TConfig]?: `Error: Config key '${KName &
@@ -133,7 +133,7 @@ export interface ExtensionBlueprint<
                 config?: TConfig;
                 inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
               },
-            ) => Iterable<ExtensionDataRefToValue<UOutput>>,
+            ) => ExtensionDataContainer<UOutput>,
             context: {
               node: AppNode;
               config: TConfig & {
@@ -145,7 +145,7 @@ export interface ExtensionBlueprint<
             },
           ): Iterable<UFactoryOutput>;
         } & VerifyExtensionFactoryOutput<
-          UOutput & UExtraOutput,
+          AnyExtensionDataRef extends UNewOutput ? UOutput : UNewOutput,
           UFactoryOutput
         >)
       | {
@@ -236,7 +236,7 @@ class ExtensionBlueprintImpl<
           };
           inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
         },
-      ) => Iterable<ExtensionDataRefToValue<UOutput>>,
+      ) => ExtensionDataContainer<UOutput>,
       context: {
         node: AppNode;
         config: {
@@ -311,7 +311,7 @@ class ExtensionBlueprintImpl<
                 };
                 inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
               },
-            ): Iterable<ExtensionDataRefToValue<UOutput>> => {
+            ): ExtensionDataContainer<UOutput> => {
               return this.options.factory(innerParams, {
                 node,
                 config: innerContext?.config ?? config,

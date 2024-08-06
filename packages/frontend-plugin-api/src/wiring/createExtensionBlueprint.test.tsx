@@ -494,8 +494,15 @@ describe('createExtensionBlueprint', () => {
     blueprint.make({
       output: [testDataRef1, testDataRef2],
       *factory(origFactory) {
-        yield origFactory({});
+        yield* origFactory({});
         yield testDataRef2('bar');
+      },
+    });
+
+    blueprint.make({
+      output: [testDataRef1, testDataRef2],
+      factory(origFactory) {
+        return [...origFactory({}), testDataRef2('bar')];
       },
     });
 
@@ -518,8 +525,7 @@ describe('createExtensionBlueprint', () => {
 
     blueprint.make({
       output: [testDataRef2.optional()],
-      *factory(origFactory) {
-        // yield testDataRef1('bar');
+      *factory() {
         yield testDataRef2('bar');
       },
     });
