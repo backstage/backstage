@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,29 +19,9 @@ import { makeFieldSchemaFromZod } from '../utils';
 /**
  * @public
  */
-export const RepoUrlPickerFieldSchema = makeFieldSchemaFromZod(
+export const RepoBranchPickerFieldSchema = makeFieldSchemaFromZod(
   z.string(),
   z.object({
-    allowedHosts: z
-      .array(z.string())
-      .optional()
-      .describe('List of allowed SCM platform hosts'),
-    allowedOrganizations: z
-      .array(z.string())
-      .optional()
-      .describe('List of allowed organizations in the given SCM platform'),
-    allowedOwners: z
-      .array(z.string())
-      .optional()
-      .describe('List of allowed owners in the given SCM platform'),
-    allowedProjects: z
-      .array(z.string())
-      .optional()
-      .describe('List of allowed projects in the given SCM platform'),
-    allowedRepos: z
-      .array(z.string())
-      .optional()
-      .describe('List of allowed repos in the given SCM platform'),
     requestUserCredentials: z
       .object({
         secretsKey: z
@@ -88,17 +68,17 @@ export const RepoUrlPickerFieldSchema = makeFieldSchemaFromZod(
 
 /**
  * The input props that can be specified under `ui:options` for the
- * `RepoUrlPicker` field extension.
+ * `RepoBranchPicker` field extension.
  *
  * @public
  */
-export type RepoUrlPickerUiOptions =
-  typeof RepoUrlPickerFieldSchema.uiOptionsType;
+export type RepoBranchPickerUiOptions =
+  typeof RepoBranchPickerFieldSchema.uiOptionsType;
 
-export type RepoUrlPickerProps = typeof RepoUrlPickerFieldSchema.type;
+export type RepoBranchPickerProps = typeof RepoBranchPickerFieldSchema.type;
 
-// This has been duplicated to /plugins/scaffolder/src/components/fields/RepoBranchPicker/schema.ts
+// This has been duplicated from /plugins/scaffolder/src/components/fields/RepoUrlPicker/schema.ts
 // NOTE: There is a bug with this failing validation in the custom field explorer due
 // to https://github.com/rjsf-team/react-jsonschema-form/issues/675 even if
 // requestUserCredentials is not defined
-export const RepoUrlPickerSchema = RepoUrlPickerFieldSchema.schema;
+export const RepoBranchPickerSchema = RepoBranchPickerFieldSchema.schema;
