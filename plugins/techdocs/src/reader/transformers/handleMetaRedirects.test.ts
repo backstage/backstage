@@ -60,7 +60,7 @@ describe('handleMetaRedirects', () => {
 
     expect(
       await screen.findByText(
-        'The documentation at this path is no longer maintained. Redirecting to the designated replacement...',
+        'This TechDocs page is no longer maintained. Will automatically redirect to the designated replacement.',
       ),
     ).toBeInTheDocument();
     jest.runAllTimers();
@@ -78,7 +78,7 @@ describe('handleMetaRedirects', () => {
 
     expect(
       await screen.findByText(
-        'The documentation at this path is no longer maintained. Redirecting to the designated replacement...',
+        'This TechDocs page is no longer maintained. Will automatically redirect to the designated replacement.',
       ),
     ).toBeInTheDocument();
     jest.runAllTimers();
@@ -94,7 +94,7 @@ describe('handleMetaRedirects', () => {
 
     expect(
       await screen.findByText(
-        'The documentation at this path is no longer maintained. Redirecting to the designated replacement...',
+        'This TechDocs page is no longer maintained. Will automatically redirect to the designated replacement.',
       ),
     ).toBeInTheDocument();
     jest.runAllTimers();

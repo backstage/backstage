@@ -19,8 +19,27 @@ import { normalizeUrl } from './rewriteDocLinks';
 import Snackbar from '@material-ui/core/Snackbar';
 import React, { useState } from 'react';
 import { renderReactElement } from './renderReactElement';
+import Button from '@material-ui/core/Button';
+import { makeStyles } from '@material-ui/core/styles';
 
-const RedirectNotification = () => {
+type RedirectNotificationProps = {
+  handleButtonClick: () => void;
+  message: string;
+  autoHideDuration: number;
+};
+
+const useStyles = makeStyles(theme => ({
+  button: {
+    color: theme.palette.primary.light,
+    textDecoration: 'underline',
+  },
+}));
+const RedirectNotification = ({
+  message,
+  handleButtonClick,
+  autoHideDuration,
+}: RedirectNotificationProps) => {
+  const classes = useStyles();
   const [open, setOpen] = useState(true);
   const handleClose = () => {
     setOpen(prev => !prev);
@@ -30,9 +49,19 @@ const RedirectNotification = () => {
     <Snackbar
       open={open}
       anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-      autoHideDuration={5000}
+      autoHideDuration={autoHideDuration}
+      color="primary"
       onClose={handleClose}
-      message="The documentation at this path is no longer maintained. Redirecting to the designated replacement..."
+      message={message}
+      action={
+        <Button
+          classes={{ root: classes.button }}
+          size="small"
+          onClick={handleButtonClick}
+        >
+          Redirect now
+        </Button>
+      }
     />
   );
 };
@@ -41,6 +70,7 @@ export const handleMetaRedirects = (
   navigate: (to: string) => void,
   entityName: string,
 ): Transformer => {
+  const redirectAfterMs = 4000;
   const determineRedirectURL = (metaUrl: string) => {
     const normalizedCurrentUrl = normalizeUrl(window.location.href);
     // If metaUrl is relative, it will be resolved with base href. If it is absolute, it will replace the base href when creating URL object.
@@ -74,12 +104,19 @@ export const handleMetaRedirects = (
         const redirectURL = determineRedirectURL(metaUrl);
         const container = document.createElement('div');
 
-        renderReactElement(<RedirectNotification />, container);
+        renderReactElement(
+          <RedirectNotification
+            message="This TechDocs page is no longer maintained. Will automatically redirect to the designated replacement."
+            handleButtonClick={() => navigate(redirectURL)}
+            autoHideDuration={redirectAfterMs}
+          />,
+          container,
+        );
         document.body.appendChild(container);
 
         setTimeout(() => {
           navigate(redirectURL);
-        }, 4000);
+        }, redirectAfterMs);
 
         return dom;
       }
