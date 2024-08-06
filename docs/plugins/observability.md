@@ -44,7 +44,7 @@ export function createRouter({ logger }) {
 
 You can also add additional metadata to all logs for your Backstage instance by
 overriding the `rootLogger` implementation, you can see an example in
-[the `rootLogger` docs](../backend-system/core-services/root-logger#configuring-the-service).
+[the `rootLogger` docs](../backend-system/core-services/root-logger.md#configuring-the-service).
 
 ### Old Backend
 
@@ -77,7 +77,7 @@ The new backend provides a `RootHealthService` which implements
 to provide health checks for the entire backend instance.
 
 You can read more about this new service and how to customize it in the
-[Root Health Service documentation](../backend-system/core-services/root-health/).
+[Root Health Service documentation](../backend-system/core-services/root-health.md).
 
 ### New Backend (pre 1.29.0)
 
