@@ -342,6 +342,7 @@ export async function createRouter(
         });
       }
 
+      const credentials = await httpAuth.credentials(req);
       const processingResult = await orchestrator.process({
         entity: {
           ...entity,
@@ -354,6 +355,7 @@ export async function createRouter(
             },
           },
         },
+        credentials: credentials,
       });
 
       if (!processingResult.ok)
