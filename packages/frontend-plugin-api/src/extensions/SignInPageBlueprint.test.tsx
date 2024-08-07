@@ -48,7 +48,7 @@ describe('SignInPageBlueprint', () => {
   });
 
   it('should return the component as the componentRef', async () => {
-    const MockSignInPage = () => <div data-test-id="mock-sign-in" />;
+    const MockSignInPage = () => <div data-testid="mock-sign-in" />;
 
     const extension = SignInPageBlueprint.make({
       params: { loader: async () => () => <MockSignInPage /> },
