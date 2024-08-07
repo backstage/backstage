@@ -622,7 +622,7 @@ export function createExtensionBlueprint<
 ): ExtensionBlueprint<
   TParams,
   UOutput,
-  TInputs,
+  string extends keyof TInputs ? {} : TInputs,
   string extends keyof TConfigSchema
     ? {}
     : {
@@ -1367,15 +1367,7 @@ export const IconBundleBlueprint: ExtensionBlueprint<
     'core.icons',
     {}
   >,
-  {
-    [x: string]: ExtensionInput<
-      AnyExtensionDataRef,
-      {
-        optional: boolean;
-        singleton: boolean;
-      }
-    >;
-  },
+  {},
   {
     icons: string;
     test: string;
