@@ -108,7 +108,7 @@ describe('handleMetaRedirects', () => {
       '/docs/default/component/testEntity/subpath',
     );
 
-    jest.advanceTimersByTime(4000);
+    jest.runAllTimers();
     expect(navigate).not.toHaveBeenCalled();
   });
 });
