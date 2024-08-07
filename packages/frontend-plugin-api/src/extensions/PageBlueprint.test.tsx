@@ -107,23 +107,22 @@ describe('PageBlueprint', () => {
   it('should allow defining additional inputs to the extension', async () => {
     const myPage = PageBlueprint.make({
       name: 'test-page',
-      params: {
-        loader: async ({ inputs }) => {
-          return (
-            <div data-testid="test">
-              {inputs.cards.map(c => c.get(coreExtensionData.reactElement))}
-            </div>
-          );
-        },
-        defaultPath: '/test',
-        routeRef: mockRouteRef,
-      },
-      /* todo(blam): need to fix the typescript here, as inputs is not the right type, wont let me merge without specifying parent opts */
       inputs: {
         cards: createExtensionInput([coreExtensionData.reactElement], {
           optional: false,
           singleton: false,
         }),
+      },
+      factory(originalFactory, { inputs }) {
+        return originalFactory({
+          loader: async () => (
+            <div data-testid="test">
+              {inputs.cards.map(c => c.get(coreExtensionData.reactElement))}
+            </div>
+          ),
+          defaultPath: '/test',
+          routeRef: mockRouteRef,
+        });
       },
     });
 
