@@ -21,6 +21,9 @@ export const RouterBlueprint = createExtensionBlueprint({
   kind: 'app-router-component',
   attachTo: { id: 'app/root', input: 'router' },
   output: [createRouterExtension.componentDataRef],
+  dataRefs: {
+    component: createRouterExtension.componentDataRef,
+  },
   *factory(
     {
       Component,

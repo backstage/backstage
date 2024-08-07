@@ -14,28 +14,30 @@
  * limitations under the License.
  */
 import React from 'react';
-import { SignInPageBlueprint } from './SignInPageBlueprint';
+import { NavLogoBlueprint } from './NavLogoBlueprint';
 import { createExtensionTester } from '@backstage/frontend-test-utils';
-import { waitFor } from '@testing-library/react';
 
-describe('SignInPageBlueprint', () => {
+describe('NavLogoBlueprint', () => {
   it('should create an extension with sensible defaults', () => {
-    expect(
-      SignInPageBlueprint.make({
-        params: { loader: async () => () => <div /> },
-      }),
-    ).toMatchInlineSnapshot(`
+    const extension = NavLogoBlueprint.make({
+      params: {
+        logoFull: <div>Logo Full</div>,
+        logoIcon: <div>Logo Icon</div>,
+      },
+    });
+
+    expect(extension).toMatchInlineSnapshot(`
       {
         "$$type": "@backstage/ExtensionDefinition",
         "attachTo": {
-          "id": "app/root",
-          "input": "signInPage",
+          "id": "app/nav",
+          "input": "logos",
         },
         "configSchema": undefined,
         "disabled": false,
         "factory": [Function],
         "inputs": {},
-        "kind": "sign-in-page",
+        "kind": "nav-logo",
         "name": undefined,
         "namespace": undefined,
         "output": [
@@ -47,21 +49,23 @@ describe('SignInPageBlueprint', () => {
     `);
   });
 
-  it('should return the component as the componentRef', async () => {
-    const MockSignInPage = () => <div data-test-id="mock-sign-in" />;
+  it('should return a valid component ref', () => {
+    const logoFull = <div>Logo Full</div>;
+    const logoIcon = <div>Logo Icon</div>;
 
-    const extension = SignInPageBlueprint.make({
-      params: { loader: async () => () => <MockSignInPage /> },
+    const extension = NavLogoBlueprint.make({
+      name: 'test',
+      params: {
+        logoFull,
+        logoIcon,
+      },
     });
 
     const tester = createExtensionTester(extension);
-    expect(tester.data(SignInPageBlueprint.dataRefs.component)).toBeDefined();
 
-    const { getByTestId } = tester.render();
-
-    // todo(blam): need a better way to test this, currently fails.
-    await waitFor(() => {
-      expect(getByTestId('mock-sign-in')).toBeInTheDocument();
+    expect(tester.data(NavLogoBlueprint.dataRefs.logoElements)).toEqual({
+      logoFull,
+      logoIcon,
     });
   });
 });
