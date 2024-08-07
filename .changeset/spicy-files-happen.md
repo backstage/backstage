@@ -1,6 +1,6 @@
 ---
 '@backstage/plugin-catalog-backend': patch
-'@backstage/plugin-catalog-common': patch
+'@backstage/plugin-catalog-node': patch
 ---
 
 - The `analyze-location` endpoint is now protected by the `catalog.location.create` permission.
