@@ -297,6 +297,7 @@
       "conf/writing",
       "conf/defining"
     ],
+    "Notifications": ["notifications/index"],
     "Auth and identity": [
       "auth/index",
       {
