@@ -28,7 +28,7 @@ app:
 
 If your [`app-config.yaml`](https://github.com/backstage/backstage/blob/e0506af8fc54074a160fb91c83d6cae8172d3bb3/app-config.yaml#L5) file does not have this configuration, you may have to adjust your [`packages/app/public/index.html`](https://github.com/backstage/backstage/blob/e0506af8fc54074a160fb91c83d6cae8172d3bb3/packages/app/public/index.html#L69) to include the Datadog RUM `init()` section manually.
 
-Please note, there's a bug where env value MUST be specified at build time
+Please note that the env value MUST be specified at build time
 
 :::note
 In case after a proper configuration, the events still arent being capture copy and paste this section in to your `packages/app/public/index.html` under the `<head>` tag.
