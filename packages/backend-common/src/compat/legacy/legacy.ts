@@ -18,6 +18,7 @@ import {
   AuthService,
   coreServices,
   createBackendPlugin,
+  HttpRouterService,
   ServiceRef,
 } from '@backstage/backend-plugin-api';
 import { RequestHandler } from 'express';
@@ -107,7 +108,10 @@ export function makeLegacyPlugin<
                   return [key, transform(dep)];
                 }
                 if (key === 'tokenManager') {
-                  return [key, wrapTokenManager(dep as TokenManager, _auth)];
+                  return [
+                    key,
+                    wrapTokenManager(dep as TokenManager, _auth as AuthService),
+                  ];
                 }
                 return [key, dep];
               }),
@@ -115,7 +119,7 @@ export function makeLegacyPlugin<
             const router = await createRouter(
               pluginEnv as TransformedEnv<TEnv, TEnvTransforms>,
             );
-            _router.use(router);
+            (_router as HttpRouterService).use(router);
           },
         });
       },

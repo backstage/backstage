@@ -82,14 +82,12 @@ export interface BackendModuleRegistrationPoints {
   ): void;
   // (undocumented)
   registerInit<
-    Deps extends {
-      [name in string]: unknown;
+    TDeps extends {
+      [name in string]: ServiceRef<unknown> | ExtensionPoint<unknown>;
     },
   >(options: {
-    deps: {
-      [name in keyof Deps]: ServiceRef<Deps[name]> | ExtensionPoint<Deps[name]>;
-    };
-    init(deps: Deps): Promise<void>;
+    deps: TDeps;
+    init(deps: DepsToInstances<TDeps>): Promise<void>;
   }): void;
 }
 
@@ -105,14 +103,12 @@ export interface BackendPluginRegistrationPoints {
   ): void;
   // (undocumented)
   registerInit<
-    Deps extends {
-      [name in string]: unknown;
+    TDeps extends {
+      [name in string]: ServiceRef<unknown>;
     },
   >(options: {
-    deps: {
-      [name in keyof Deps]: ServiceRef<Deps[name]>;
-    };
-    init(deps: Deps): Promise<void>;
+    deps: TDeps;
+    init(deps: DepsToInstances<TDeps>): Promise<void>;
   }): void;
 }
 
