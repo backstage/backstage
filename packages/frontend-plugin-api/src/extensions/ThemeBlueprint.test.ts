@@ -27,11 +27,7 @@ describe('ThemeBlueprint', () => {
   } as AppTheme;
 
   it('should create an extension with sensible defaults', () => {
-    expect(
-      // todo(blam): we can't inject theme.id as the name here like the old extension creator.
-      // Wonder if theres a better solution.
-      ThemeBlueprint.make({ name: 'blob', params: { theme } }),
-    ).toMatchInlineSnapshot(`
+    expect(ThemeBlueprint.make({ params: { theme } })).toMatchInlineSnapshot(`
       {
         "$$type": "@backstage/ExtensionDefinition",
         "attachTo": {
@@ -43,7 +39,7 @@ describe('ThemeBlueprint', () => {
         "factory": [Function],
         "inputs": {},
         "kind": "theme",
-        "name": "blob",
+        "name": "light",
         "namespace": "app",
         "output": [
           [Function],
@@ -55,7 +51,7 @@ describe('ThemeBlueprint', () => {
   });
 
   it('should return the theme as an themeDataRef', async () => {
-    const extension = ThemeBlueprint.make({ name: 'blob', params: { theme } });
+    const extension = ThemeBlueprint.make({ params: { theme } });
 
     expect(
       createExtensionTester(extension).data(ThemeBlueprint.dataRefs.theme),

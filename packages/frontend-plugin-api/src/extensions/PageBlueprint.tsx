@@ -31,7 +31,7 @@ export const PageBlueprint = createExtensionBlueprint({
       path: z => z.string().optional(),
     },
   },
-  factory(
+  *factory(
     {
       defaultPath,
       loader,
@@ -50,22 +50,15 @@ export const PageBlueprint = createExtensionBlueprint({
       loader({ config, inputs }).then(element => ({ default: () => element })),
     );
 
-    // TODO(blam): this is a little awkward for optional returns.
-    // I wonder if we should be using generators or yield instead
-    // for a better API here.
-    const outputs = [
-      coreExtensionData.routePath(config.path ?? defaultPath!),
-      coreExtensionData.reactElement(
-        <ExtensionBoundary node={node}>
-          <ExtensionComponent />
-        </ExtensionBoundary>,
-      ),
-    ];
+    yield coreExtensionData.routePath(config.path ?? defaultPath!);
+    yield coreExtensionData.reactElement(
+      <ExtensionBoundary node={node}>
+        <ExtensionComponent />
+      </ExtensionBoundary>,
+    );
 
     if (routeRef) {
-      return [...outputs, coreExtensionData.routeRef(routeRef)];
+      yield coreExtensionData.routeRef(routeRef);
     }
-
-    return outputs;
   },
 });

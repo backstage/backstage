@@ -94,7 +94,7 @@ describe('PageBlueprint', () => {
 
     const tester = createExtensionTester(myPage);
 
-    // TODO(blam): test for the routePath output doesn't work.
+    // TODO(blam): test for the routePath output doesn't work, due to the the way the test harness works
     // expect(tester.data(coreExtensionData.routePath)).toBe('/test');
 
     expect(tester.data(coreExtensionData.routeRef)).toBe(mockRouteRef);
@@ -111,7 +111,6 @@ describe('PageBlueprint', () => {
         loader: async ({ inputs }) => {
           return (
             <div data-testid="test">
-              {/* todo(blam): need to fix the typescript here, as inputs is not the right type */}
               {inputs.cards.map(c => c.get(coreExtensionData.reactElement))}
             </div>
           );
@@ -119,6 +118,7 @@ describe('PageBlueprint', () => {
         defaultPath: '/test',
         routeRef: mockRouteRef,
       },
+      /* todo(blam): need to fix the typescript here, as inputs is not the right type, wont let me merge without specifying parent opts */
       inputs: {
         cards: createExtensionInput([coreExtensionData.reactElement], {
           optional: false,

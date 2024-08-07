@@ -21,6 +21,7 @@ import { createThemeExtension } from './createThemeExtension';
 export const ThemeBlueprint = createExtensionBlueprint({
   kind: 'theme',
   namespace: 'app',
+  name: ({ theme }) => theme.id,
   attachTo: { id: 'app', input: 'themes' },
   output: [createThemeExtension.themeDataRef],
   dataRefs: {

@@ -20,6 +20,7 @@ import { TranslationMessages, TranslationResource } from '../translation';
 
 export const TranslationBlueprint = createExtensionBlueprint({
   kind: 'translation',
+  namespace: ({ resource }) => resource.id,
   attachTo: { id: 'app', input: 'translations' },
   output: [createTranslationExtension.translationDataRef],
   dataRefs: {

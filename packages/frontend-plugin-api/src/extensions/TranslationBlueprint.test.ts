@@ -22,7 +22,7 @@ import { TranslationBlueprint } from './TranslationBlueprint';
 
 describe('TranslationBlueprint', () => {
   const translationRef = createTranslationRef({
-    id: 'test',
+    id: 'translationRefId',
     messages: {
       test: 'test',
     },
@@ -38,10 +38,7 @@ describe('TranslationBlueprint', () => {
   it('should return an extension instance with sane defaults', () => {
     expect(
       TranslationBlueprint.make({
-        // todo(blam): we can't set the namespace dynamically based of the ResourceType.
-        // work out if we should wrap this up or another solution.
-        namespace: messages.id,
-        name: 'test',
+        name: 'blob',
         params: {
           resource: messages,
         },
@@ -58,8 +55,8 @@ describe('TranslationBlueprint', () => {
         "factory": [Function],
         "inputs": {},
         "kind": "translation",
-        "name": "test",
-        "namespace": "test",
+        "name": "blob",
+        "namespace": "translationRefId",
         "output": [
           [Function],
         ],
@@ -71,6 +68,7 @@ describe('TranslationBlueprint', () => {
 
   it('should output a translation data ref', () => {
     const extension = TranslationBlueprint.make({
+      name: 'blob',
       params: {
         resource: messages,
       },
