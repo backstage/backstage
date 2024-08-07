@@ -7,6 +7,7 @@ ADRs
 airbrake
 Airbrake
 Airbrakes
+ajv
 Alaria
 Alef
 allowlisted
@@ -84,7 +85,9 @@ debounce
 Debounce
 debuggability
 declaratively
+deduplicate
 deduplicated
+deduplication
 deliverables
 denormalized
 dependabot

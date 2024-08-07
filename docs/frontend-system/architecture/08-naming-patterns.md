@@ -38,33 +38,31 @@ Note that while we use this naming pattern for the plugin instance this is only 
 
 | Description | Pattern                         | Examples                                                            |
 | ----------- | ------------------------------- | ------------------------------------------------------------------- |
-| Creator     | `create<Kind>Extension`         | `createPageExtension`, `createEntityCardExtension`                  |
+| Blueprint   | `<Kind>Blueprint`               | `PageBlueprint`, `EntityCardBlueprint`                              |
 | ID          | `[<kind>:]<namespace>[/<name>]` | `'core.nav'`, `'page:user-settings'`, `'entity-card:catalog/about'` |
 | Symbol      | `<namespace>[<Name>][<Kind>]`   | `coreNav`, `userSettingsPage`, `catalogAboutEntityCard`             |
 
-When you create a new extension you never provide the ID directly. Instead, you indirectly or directly provide the kind, namespace, and name parts that make up the ID. The kind is always provided by the extension creator function used to create the extension, the only exception is if you use `createExtension` directly. Any extension that is provided by a plugin will by default have its namespace set to the plugin ID, so you generally only need to provide an explicit namespace if you want to override an existing extension. The name is also optional, and primarily used to distinguish between multiple extensions of the same kind and namespace. If a plugin doesn't need to distinguish between different extensions of the same kind, the name can be omitted.
+When you create a new extension you never provide the ID directly. Instead, you indirectly or directly provide the kind, namespace, and name parts that make up the ID. The kind is always provided by the blueprint creator, the only exception is if you use `createExtension` directly. Any extension that is provided by a plugin will by default have its namespace set to the plugin ID, so you generally only need to provide an explicit namespace if you want to override an existing extension. The name is also optional, and primarily used to distinguish between multiple extensions of the same kind and namespace. If a plugin doesn't need to distinguish between different extensions of the same kind, the name can be omitted.
 
 Example:
 
 ```ts
-// This is an extension creator that is used to create an extension of the 'page' kind.
-export function createPageExtension(options) {
-  return createExtension({
-    kind: 'page', // Kinds are kebab-case
-    // ...options
-  });
-}
+// This is an extension blueprint that is used to create an extension of the 'page' kind.
+export const PageBlueprint = createExtensionBlueprint({
+  kind: 'page',
+  // ...
+});
 
 // The namespace is inferred from the plugin ID, in this case 'catalog'
 // The final ID for this extension will be 'page:catalog/entity'
-const catalogEntityPage = createPageExtension({
+const catalogEntityPage = PageBlueprint.make({
   name: 'entity',
   // ...
 });
 
 // The name is omitted, because the catalog plugin only provides a single extension of this kind
 // The final ID for this extension will be 'search-result-list-item:catalog'
-const catalogSearchResultListItem = createSearchResultListItemExtension({
+const catalogSearchResultListItem = SearchResultListItemBlueprint.make({
   // ...
 });
 
@@ -100,9 +98,9 @@ export interface SearchResultItemExtensionData {
 }
 
 export const searchResultItemExtensionDataRef =
-  createExtensionDataRef<SearchResultItemExtensionData>(
-    'search.search-result-item',
-  );
+  createExtensionDataRef<SearchResultItemExtensionData>().with({
+    id: 'search.search-result-item',
+  });
 ```
 
 #### Grouped Extension Data
@@ -111,8 +109,12 @@ This way of defining extension data is similar to the standalone way, but it use
 
 ```ts
 export const coreExtensionData = {
-  reactElement: createExtensionDataRef<ReactElement>('core.react-element'),
-  routePath: createExtensionDataRef<string>('core.route-path'),
+  reactElement: createExtensionDataRef<ReactElement>().with({
+    id: 'core.react-element',
+  }),
+  routePath: createExtensionDataRef<string>().with({
+    id: 'core.route-path',
+  }),
 };
 ```
 
@@ -127,9 +129,9 @@ export function createGraphiQLEndpointExtension(options) {
 
 // Use a TypeScript namespace to merge the extension data references with the extension creator
 export namespace createGraphiQLEndpointExtension {
-  export const endpointDataRef = createExtensionDataRef</* ... */>(
-    'graphiql.graphiql-endpoint.endpoint',
-  );
+  export const endpointDataRef = createExtensionDataRef</* ... */>().with({
+    id: 'graphiql.graphiql-endpoint.endpoint',
+  });
 }
 ```
 

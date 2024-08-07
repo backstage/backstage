@@ -16,7 +16,7 @@
 
 import {
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { HarnessIntegration, readHarnessConfig } from '@backstage/integration';
@@ -120,7 +120,7 @@ const handlers = [
 
 describe('HarnessUrlReader', () => {
   const worker = setupServer(...handlers);
-  setupRequestMockHandlers(worker);
+  registerMswTestHooks(worker);
   beforeAll(() => worker.listen({ onUnhandledRequest: 'bypass' }));
   afterAll(() => {
     jest.clearAllMocks();

@@ -1,5 +1,63 @@
 # @backstage/plugin-auth-node
 
+## 0.5.0-next.2
+
+### Minor Changes
+
+- 579afd0: **BREAKING**: Sign-in resolvers configured via `.signIn.resolvers` now take precedence over sign-in resolvers passed to `signInResolver` option of `createOAuthProviderFactory`. This effectively makes sign-in resolvers passed via the `signInResolver` the default one, which you can then override through configuration.
+
+### Patch Changes
+
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.2
+  - @backstage/backend-common@0.23.4-next.2
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.4.18-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/backend-common@0.23.4-next.1
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.4.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.23.4-next.0
+  - @backstage/backend-plugin-api@0.7.1-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.4.17
+
+### Patch Changes
+
+- 55c1a72: Fix issues with Atlassian OAuth provider: retrieve the email and photo that were not in arrays but rather in single props.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/backend-common@0.23.3
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.4.17-next.1
 
 ### Patch Changes

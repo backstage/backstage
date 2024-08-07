@@ -60,7 +60,6 @@ This feature assumes your backstage instance has enabled the [permissions framew
 A sample policy like:
 
 ```typescript
-import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,
   PolicyDecision,
@@ -68,12 +67,13 @@ import {
 import {
   PermissionPolicy,
   PolicyQuery,
+  PolicyQueryUser,
 } from '@backstage/plugin-permission-node';
 
 class KubernetesDenyAllProxyEndpointPolicy implements PermissionPolicy {
   async handle(
     request: PolicyQuery,
-    user?: BackstageIdentityResponse,
+    user?: PolicyQueryUser,
   ): Promise<PolicyDecision> {
     if (request.permission.name === 'kubernetes.proxy') {
       return {

@@ -81,4 +81,43 @@ describe('migrations', () => {
       await knex.destroy();
     },
   );
+
+  it.each(databases.eachSupportedId())(
+    '20240712211735_nullable_next_run.js, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+
+      await migrateUntilBefore(knex, '20240712211735_nullable_next_run.js');
+      await migrateUpOnce(knex);
+
+      await knex('backstage_backend_tasks__tasks').insert({
+        id: 'test',
+        settings_json: '{}',
+        next_run_start_at: knex.raw('null'),
+      });
+
+      await expect(knex('backstage_backend_tasks__tasks')).resolves.toEqual([
+        {
+          id: 'test',
+          settings_json: '{}',
+          next_run_start_at: null,
+          current_run_ticket: null,
+          current_run_started_at: null,
+          current_run_expires_at: null,
+        },
+      ]);
+
+      await migrateDownOnce(knex);
+
+      await expect(
+        knex('backstage_backend_tasks__tasks').insert({
+          id: 'test',
+          settings_json: '{}',
+          next_run_start_at: knex.raw('null'),
+        }),
+      ).rejects.toEqual(expect.anything());
+
+      await knex.destroy();
+    },
+  );
 });

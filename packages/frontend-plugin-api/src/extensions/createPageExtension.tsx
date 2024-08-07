@@ -87,7 +87,7 @@ export function createPageExtension<
         path: config.path,
         routeRef: options.routeRef,
         element: (
-          <ExtensionBoundary node={node} routable>
+          <ExtensionBoundary node={node}>
             <ExtensionComponent />
           </ExtensionBoundary>
         ),

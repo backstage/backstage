@@ -22,6 +22,7 @@ import {
   ScmIntegrationRegistry,
   ScmIntegrations,
 } from '@backstage/integration';
+import { TECHDOCS_ANNOTATION } from '@backstage/plugin-techdocs-common';
 import { Logger } from 'winston';
 import { parseReferenceAnnotation, transformDirLocation } from '../../helpers';
 import {
@@ -70,10 +71,7 @@ export class DirectoryPreparer implements PreparerBase {
     entity: Entity,
     options?: PreparerOptions,
   ): Promise<PreparerResponse> {
-    const annotation = parseReferenceAnnotation(
-      'backstage.io/techdocs-ref',
-      entity,
-    );
+    const annotation = parseReferenceAnnotation(TECHDOCS_ANNOTATION, entity);
     const { type, target } = transformDirLocation(
       entity,
       annotation,

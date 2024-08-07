@@ -195,7 +195,7 @@ const scaffolderModuleCustomExtensions = createBackendModule({
 const backend = createBackend();
 backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
 /* highlight-add-next-line */
-backend.add(scaffolderModuleCustomExtensions());
+backend.add(scaffolderModuleCustomExtensions);
 ```
 
 If your custom action requires core services such as `config` or `cache` they can be imported in the dependencies and passed to the custom action function.

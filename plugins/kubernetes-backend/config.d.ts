@@ -68,6 +68,11 @@ export interface Config {
             caData?: string;
             /** @visibility secret  */
             caFile?: string;
+            customResources?: Array<{
+              group: string;
+              apiVersion: string;
+              plural: string;
+            }>;
           }>;
         }
       | {

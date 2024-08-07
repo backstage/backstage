@@ -276,6 +276,17 @@ export namespace Models {
   }
 
   /**
+   * A paginated list of branches.
+   * @public
+   */
+  export interface PaginatedBranches extends Paginated<Branch> {
+    /**
+     * The values of the current page.
+     */
+    values?: Set<Branch>;
+  }
+
+  /**
    * Object describing a user's role on resources like commits or pull requests.
    * @public
    */

@@ -312,7 +312,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
     sourcePath?: string | undefined;
     targetPath?: string | undefined;
     token?: string | undefined;
-    commitAction?: 'update' | 'delete' | 'create' | undefined;
+    commitAction?: 'auto' | 'update' | 'delete' | 'create' | undefined;
     projectid?: string | undefined;
     removeSourceBranch?: boolean | undefined;
     assignee?: string | undefined;
@@ -427,7 +427,7 @@ export class DatabaseTaskStore implements TaskStore {
   // (undocumented)
   heartbeatTask(taskId: string): Promise<void>;
   // (undocumented)
-  list(options: { createdBy?: string }): Promise<{
+  list(options: { createdBy?: string; status?: TaskStatus_2 }): Promise<{
     tasks: SerializedTask_2[];
   }>;
   // (undocumented)
@@ -646,7 +646,7 @@ export interface TaskStore {
   // (undocumented)
   heartbeatTask(taskId: string): Promise<void>;
   // (undocumented)
-  list?(options: { createdBy?: string }): Promise<{
+  list?(options: { createdBy?: string; status?: TaskStatus }): Promise<{
     tasks: SerializedTask[];
   }>;
   // (undocumented)

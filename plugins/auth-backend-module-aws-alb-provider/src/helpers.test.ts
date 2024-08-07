@@ -19,7 +19,7 @@ import { JWTHeaderParameters, UnsecuredJWT } from 'jose';
 import NodeCache from 'node-cache';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { PassportProfile } from '@backstage/plugin-auth-node';
 import { makeProfileInfo, provisionKeyCache } from './helpers';
 
@@ -34,7 +34,7 @@ describe.each([
   ],
 ])('helpers', (region, url) => {
   const server = setupServer();
-  setupRequestMockHandlers(server);
+  registerMswTestHooks(server);
 
   const nodeCache = jest.fn() as unknown as NodeCache;
   nodeCache.set = jest.fn();

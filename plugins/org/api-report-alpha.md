@@ -10,7 +10,7 @@ import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 const _default: BackstagePlugin<
   {},
   {
-    catalogIndex: ExternalRouteRef<undefined, true>;
+    catalogIndex: ExternalRouteRef<undefined>;
   }
 >;
 export default _default;

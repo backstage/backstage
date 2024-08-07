@@ -75,6 +75,7 @@ export const backendModule = createFactory<Options>({
         packageVersion: ctx.defaultVersion,
         privatePackage: ctx.private,
         npmRegistry: ctx.npmRegistry,
+        license: ctx.license,
       },
     });
 

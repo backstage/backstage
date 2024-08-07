@@ -66,9 +66,8 @@ import { catalogConditions, createCatalogConditionalDecision, createCatalogPermi
 /* highlight-remove-next-line */
 import { createConditionFactory } from '@backstage/plugin-permission-node';
 /* highlight-add-next-line */
-import { PermissionPolicy, PolicyQuery, createConditionFactory } from '@backstage/plugin-permission-node';
+import { PermissionPolicy, PolicyQuery, PolicyQueryUser, createConditionFactory } from '@backstage/plugin-permission-node';
 /* highlight-add-start */
-import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import { AuthorizeResult, PolicyDecision, isResourcePermission } from '@backstage/plugin-permission-common';
 /* highlight-add-end */
 ...
@@ -102,21 +101,21 @@ const isInSystem = createConditionFactory(isInSystemRule);
 class TestPermissionPolicy implements PermissionPolicy {
   async handle(
     request: PolicyQuery,
-    user?: BackstageIdentityResponse,
+    user?: PolicyQueryUser,
   ): Promise<PolicyDecision> {
     if (isResourcePermission(request.permission, 'catalog-entity')) {
       return createCatalogConditionalDecision(
         request.permission,
         /* highlight-remove-start */
         catalogConditions.isEntityOwner({
-          claims: user?.identity.ownershipEntityRefs ?? [],
+          claims: user?.info.ownershipEntityRefs ?? [],
         }),
         /* highlight-remove-end */
         /* highlight-add-start */
         {
           anyOf: [
             catalogConditions.isEntityOwner({
-              claims: user?.identity.ownershipEntityRefs ?? [],
+              claims: user?.info.ownershipEntityRefs ?? [],
             }),
             isInSystem({ systemRef: 'interviewing' }),
           ],

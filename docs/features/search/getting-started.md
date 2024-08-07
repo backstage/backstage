@@ -16,8 +16,7 @@ If you haven't setup Backstage already, start
 
 ## Adding Search to the Frontend
 
-```bash
-# From your Backstage root directory
+```bash title="From your Backstage root directory"
 yarn --cwd packages/app add @backstage/plugin-search @backstage/plugin-search-react
 ```
 
@@ -133,8 +132,7 @@ For more information about using `Root.tsx`, please see
 
 Add the following plugins into your backend app:
 
-```bash
-# From your Backstage root directory
+```bash title="From your Backstage root directory"
 yarn --cwd packages/backend add @backstage/plugin-search-backend @backstage/plugin-search-backend-node
 ```
 

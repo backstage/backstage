@@ -1,5 +1,41 @@
 # @backstage/plugin-auth-backend-module-oauth2-proxy-provider
 
+## 0.1.16-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.2
+  - @backstage/plugin-auth-node@0.5.0-next.2
+  - @backstage/errors@1.2.4
+
+## 0.1.16-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-auth-node@0.4.18-next.1
+
+## 0.1.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.1-next.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-auth-node@0.4.18-next.0
+
+## 0.1.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/plugin-auth-node@0.4.17
+  - @backstage/errors@1.2.4
+
 ## 0.1.15-next.1
 
 ### Patch Changes

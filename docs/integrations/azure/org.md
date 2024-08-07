@@ -18,8 +18,7 @@ Microsoft Graph API.
 
 The package is not installed by default, therefore you have to add `@backstage/plugin-catalog-backend-module-msgraph` to your backend package.
 
-```bash
-# From your Backstage root directory
+```bash title="From your Backstage root directory"
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-msgraph
 ```
 
@@ -110,6 +109,17 @@ microsoftGraphOrg:
     group:
       filter: securityEnabled eq false and mailEnabled eq true and groupTypes/any(c:c+eq+'Unified')
       search: '"description:One" AND ("displayName:Video" OR "displayName:Drive")'
+```
+
+If you don't want to only ingest groups matching the `search` and/or `filter` query, but also the groups which are members of the matched groups, you can use the `includeSubGroups` configuration:
+
+```yaml
+microsoftGraphOrg:
+  providerId:
+    group:
+      filter: securityEnabled eq false and mailEnabled eq true and groupTypes/any(c:c+eq+'Unified')
+      search: '"description:One" AND ("displayName:Video" OR "displayName:Drive")'
+      includeSubGroups: true
 ```
 
 In addition to these groups, one additional group will be created for your organization.

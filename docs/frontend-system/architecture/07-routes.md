@@ -101,23 +101,26 @@ export const IndexPage = () => {
   return (
     <div>
       <h1>Index Page</h1>
-      <a
-        {/* highlight-start */}
-        href={getDetailsPath({
-          kind: 'component',
-          namespace: 'default',
-          name: 'foo',
-        })}
-        {/* highlight-end */}
-      >
-        See "Foo" details
-      </a>
+      {/* highlight-next-line */}
+      {getDetailsPath && (
+        <a
+          {/* highlight-start */}
+          href={getDetailsPath({
+            kind: 'component',
+            namespace: 'default',
+            name: 'foo',
+          })}
+          {/* highlight-end */}
+        >
+          See "Foo" details
+        </a>
+      )}
     </div>
   );
 };
 ```
 
-We use the `useRouteRef` hook to create a link generator function that returns the details page path. We then call the link generator, passing it an object with the kind, namespace, and name. These parameters are used to construct a concrete path to the "Foo" details page.
+We use the `useRouteRef` hook to create a link generator function that returns the details page path. First we need to check whether the route is available, the link generator function will be `undefined` if it isn't. We then call the link generator, passing it an object with the kind, namespace, and name. These parameters are used to construct a concrete path to the "Foo" details page.
 
 Let's see how the details page can get the parameters from the URL:
 
@@ -176,8 +179,11 @@ export const IndexPage = () => {
   return (
     <div>
       <h1>Index Page</h1>
-      {/* highlight-next-line */}
-      <a href={getCreateComponentPath()}>Create Component</a>
+      {/* highlight-start */}
+      {getCreateComponentPath && (
+        <a href={getCreateComponentPath()}>Create Component</a>
+      )}
+      {/* highlight-end */}
     </div>
   );
 };
@@ -289,42 +295,6 @@ export const createComponentExternalRouteRef = createExternalRouteRef({
 });
 ```
 
-### Optional External Route References
-
-It is possible to define an `ExternalRouteRef` as optional, so it is not required to bind it in the app.
-
-```tsx title="plugins/catalog/src/routes.ts"
-import { createExternalRouteRef } from '@backstage/frontend-plugin-api';
-
-export const createComponentExternalRouteRef = createExternalRouteRef({
-  // highlight-next-line
-  optional: true,
-});
-```
-
-When calling `useRouteRef` with an optional external route, its return signature is changed to `RouteFunc | undefined`, and the returned value can be used to decide whether a certain link should be displayed or if an action should be taken:
-
-```tsx title="plugins/catalog/src/components/IndexPage.tsx"
-import React from 'react';
-import { useRouteRef } from '@backstage/frontend-plugin-api';
-import { createComponentExternalRouteRef } from '../routes';
-
-export const IndexPage = () => {
-  const getCreateComponentPath = useRouteRef(createComponentExternalRouteRef);
-  return (
-    <div>
-      <h1>Index Page</h1>
-      {/* Rendering the link only if the getCreateComponentPath is defined */}
-      {/* highlight-start */}
-      {getCreateComponentPath && (
-        <a href={getCreateComponentPath()}>Create Component</a>
-      )}
-      {/* highlight-end */}
-    </div>
-  );
-};
-```
-
 ## Sub Route References
 
 The last kind of route ref that can be created is a `SubRouteRef`, which can be used to create a route ref with a fixed path relative to an absolute `RouteRef`. They are useful if you have a page that internally is mounted at a sub route of a page extension component, and you want other plugins to be able to route to that page. And they can be a useful utility to handle routing within a plugin itself as well.
@@ -368,17 +338,21 @@ import { DetailsPage } from './DetailsPage';
 
 export const IndexPage = () => {
   const { pathname } = useLocation();
+
+  // highlight-start
   const getIndexPath = useRouteRef(indexRouteRef);
   const getDetailsPath = useRouteRef(detailsSubRouteRef);
+  // highlight-end
+
   return (
     <div>
       <h1>Index Page</h1>
       {/* Linking to the details sub route */}
-      {pathname === getIndexPath() ? (
-        // highlight-start
+      {/* highlight-start */}
+      {pathname === getIndexPath?.() ? (
         <a
           {/* Setting the details sub route params */}
-          href={getDetailsPath({
+          href={getDetailsPath?.({
             kind: 'component',
             namespace: 'default',
             name: 'foo',
@@ -386,13 +360,14 @@ export const IndexPage = () => {
         >
           Show details
         </a>
-        // highlight-end
+        {/* highlight-end */}
       ) : (
-        // highlight-next-line
-        <a href={getIndexPath()}>Hide details</a>
+        {/* highlight-next-line */}
+        <a href={getIndexPath?.()}>Hide details</a>
       )}
       {/* Registering the details sub route */}
       <Routes>
+        {/* highlight-next-line */}
         <Route path={detailsSubRouteRef.path} element={<DetailsPage />} />
       </Routes>
     </div>

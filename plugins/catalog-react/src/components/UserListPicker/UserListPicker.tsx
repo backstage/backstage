@@ -247,11 +247,11 @@ export const UserListPicker = (props: UserListPickerProps) => {
           </Typography>
           <Card className={classes.groupWrapper}>
             <List disablePadding dense role="menu" aria-label={group.name}>
-              {group.items.map(item => (
+              {group.items.map((item, index) => (
                 <MenuItem
                   role="none presentation"
                   key={item.id}
-                  divider
+                  divider={index !== group.items.length - 1}
                   onClick={() => setSelectedUserFilter(item.id)}
                   selected={item.id === filters.user?.value}
                   className={classes.menuItem}

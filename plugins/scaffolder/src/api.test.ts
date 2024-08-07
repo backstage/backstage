@@ -16,7 +16,7 @@
 
 import { ConfigReader } from '@backstage/core-app-api';
 import { ScmIntegrations } from '@backstage/integration';
-import { MockFetchApi, setupRequestMockHandlers } from '@backstage/test-utils';
+import { MockFetchApi, registerMswTestHooks } from '@backstage/test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { ScaffolderClient } from './api';
@@ -30,7 +30,7 @@ const mockFetchEventSource = fetchEventSource as jest.MockedFunction<
 const server = setupServer();
 
 describe('api', () => {
-  setupRequestMockHandlers(server);
+  registerMswTestHooks(server);
   const mockBaseUrl = 'http://backstage/api';
 
   const discoveryApi = { getBaseUrl: async () => mockBaseUrl };

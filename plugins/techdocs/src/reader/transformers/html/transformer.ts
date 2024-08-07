@@ -44,17 +44,39 @@ export const useSanitizerTransformer = (): Transformer => {
       const hosts = config?.getOptionalStringArray('allowedIframeHosts');
 
       DOMPurify.addHook('beforeSanitizeElements', removeUnsafeLinks);
-      const tags = ['link'];
+      const tags = ['link', 'meta'];
 
       if (hosts) {
         tags.push('iframe');
         DOMPurify.addHook('beforeSanitizeElements', removeUnsafeIframes(hosts));
       }
 
+      // Only allow meta tags if they are used for refreshing the page. They are required for the redirect feature.
+      DOMPurify.addHook('uponSanitizeElement', (currNode, data) => {
+        if (data.tagName === 'meta') {
+          const isMetaRefreshTag =
+            currNode.getAttribute('http-equiv') === 'refresh' &&
+            currNode.getAttribute('content')?.includes('url=');
+          if (!isMetaRefreshTag) {
+            currNode.parentNode?.removeChild(currNode);
+          }
+        }
+      });
+
+      // Only allow http-equiv and content attributes on meta tags. They are required for the redirect feature.
+      DOMPurify.addHook('uponSanitizeAttribute', (currNode, data) => {
+        if (currNode.tagName !== 'meta') {
+          if (data.attrName === 'http-equiv' || data.attrName === 'content') {
+            currNode.removeAttribute(data.attrName);
+          }
+        }
+      });
+
       // using outerHTML as we want to preserve the html tag attributes (lang)
       return DOMPurify.sanitize(dom.outerHTML, {
         ADD_TAGS: tags,
         FORBID_TAGS: ['style'],
+        ADD_ATTR: ['http-equiv', 'content'],
         WHOLE_DOCUMENT: true,
         RETURN_DOM: true,
       });

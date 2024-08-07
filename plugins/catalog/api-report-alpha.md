@@ -85,6 +85,8 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'hasResourcesCard.emptyMessage': 'No resource is part of this system';
     readonly 'hasSubcomponentsCard.title': 'Has subcomponents';
     readonly 'hasSubcomponentsCard.emptyMessage': 'No subcomponent is part of this component';
+    readonly 'hasSubdomainsCard.title': 'Has subdomains';
+    readonly 'hasSubdomainsCard.emptyMessage': 'No subdomain is part of this domain';
     readonly 'hasSystemsCard.title': 'Has systems';
     readonly 'hasSystemsCard.emptyMessage': 'No system is part of this domain';
     readonly 'relatedEntitiesCard.emptyHelpLinkTitle': 'Learn how to change this.';
@@ -99,14 +101,14 @@ export const catalogTranslationRef: TranslationRef<
 // @alpha (undocumented)
 export function createCatalogFilterExtension<
   TInputs extends AnyExtensionInputMap,
-  TConfig = never,
+  TConfig,
 >(options: {
   namespace?: string;
   name?: string;
   inputs?: TInputs;
   configSchema?: PortableSchema<TConfig>;
   loader: (options: { config: TConfig }) => Promise<JSX.Element>;
-}): ExtensionDefinition<TConfig>;
+}): ExtensionDefinition<TConfig & {}, TConfig & {}>;
 
 // @alpha (undocumented)
 const _default: BackstagePlugin<
@@ -119,23 +121,17 @@ const _default: BackstagePlugin<
     }>;
   },
   {
-    viewTechDoc: ExternalRouteRef<
-      {
-        name: string;
-        kind: string;
-        namespace: string;
-      },
-      true
-    >;
-    createComponent: ExternalRouteRef<undefined, true>;
-    createFromTemplate: ExternalRouteRef<
-      {
-        namespace: string;
-        templateName: string;
-      },
-      true
-    >;
-    unregisterRedirect: ExternalRouteRef<undefined, true>;
+    viewTechDoc: ExternalRouteRef<{
+      name: string;
+      kind: string;
+      namespace: string;
+    }>;
+    createComponent: ExternalRouteRef<undefined>;
+    createFromTemplate: ExternalRouteRef<{
+      namespace: string;
+      templateName: string;
+    }>;
+    unregisterRedirect: ExternalRouteRef<undefined>;
   }
 >;
 export default _default;

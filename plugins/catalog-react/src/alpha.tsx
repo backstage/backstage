@@ -36,15 +36,15 @@ export * from './translation';
 
 /** @alpha */
 export const catalogExtensionData = {
-  entityContentTitle: createExtensionDataRef<string>(
-    'catalog.entity-content-title',
-  ),
-  entityFilterFunction: createExtensionDataRef<(entity: Entity) => boolean>(
-    'catalog.entity-filter-function',
-  ),
-  entityFilterExpression: createExtensionDataRef<string>(
-    'catalog.entity-filter-expression',
-  ),
+  entityContentTitle: createExtensionDataRef<string>().with({
+    id: 'catalog.entity-content-title',
+  }),
+  entityFilterFunction: createExtensionDataRef<
+    (entity: Entity) => boolean
+  >().with({ id: 'catalog.entity-filter-function' }),
+  entityFilterExpression: createExtensionDataRef<string>().with({
+    id: 'catalog.entity-filter-expression',
+  }),
 };
 
 // TODO: Figure out how to merge with provided config schema
@@ -83,7 +83,7 @@ export function createEntityCardExtension<
       id: 'entity-content:catalog/overview',
       input: 'cards',
     },
-    disabled: options.disabled ?? true,
+    disabled: options.disabled,
     output: {
       element: coreExtensionData.reactElement,
       filterFunction: catalogExtensionData.entityFilterFunction.optional(),
@@ -137,7 +137,7 @@ export function createEntityContentExtension<
       id: 'page:catalog/entity',
       input: 'contents',
     },
-    disabled: options.disabled ?? true,
+    disabled: options.disabled,
     output: {
       element: coreExtensionData.reactElement,
       path: coreExtensionData.routePath,
@@ -166,7 +166,7 @@ export function createEntityContentExtension<
         title: config.title,
         routeRef: options.routeRef,
         element: (
-          <ExtensionBoundary node={node} routable>
+          <ExtensionBoundary node={node}>
             <ExtensionComponent />
           </ExtensionBoundary>
         ),
