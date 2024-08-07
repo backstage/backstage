@@ -100,7 +100,13 @@ export function resolveExtensionDefinition<TConfig, TConfigInput>(
   context?: { namespace?: string },
 ): Extension<TConfig, TConfigInput> {
   const internalDefinition = toInternalExtensionDefinition(definition);
-  const { name, kind, namespace: _, ...rest } = internalDefinition;
+  const {
+    name,
+    kind,
+    namespace: _skip1,
+    override: _skip2,
+    ...rest
+  } = internalDefinition;
   const namespace = internalDefinition.namespace ?? context?.namespace;
 
   const namePart =

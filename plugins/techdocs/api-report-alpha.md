@@ -37,7 +37,9 @@ export const techDocsSearchResultListItemExtension: ExtensionDefinition<
     asListItem: boolean;
     asLink: boolean;
     title?: string | undefined;
-  }
+  },
+  never,
+  never
 >;
 
 // (No @packageDocumentation comment for this package)

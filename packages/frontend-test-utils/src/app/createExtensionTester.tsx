@@ -169,7 +169,7 @@ export class ExtensionTester {
             : [...internal.output, coreExtensionData.routePath],
           factory: params => {
             const parentOutput = Array.from(
-              internal.factory(params) as Iterable<
+              internal.factory(params as any) as Iterable<
                 ExtensionDataValue<any, any>
               >,
             ).filter(val => val.id !== coreExtensionData.routePath.id);
