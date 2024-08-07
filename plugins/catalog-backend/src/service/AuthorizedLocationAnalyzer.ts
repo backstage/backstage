@@ -17,7 +17,10 @@
 import { NotAllowedError } from '@backstage/errors';
 import { catalogLocationCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
-import { PermissionsService } from '@backstage/backend-plugin-api';
+import {
+  BackstageCredentials,
+  PermissionsService,
+} from '@backstage/backend-plugin-api';
 import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
 import { AnalyzeLocationRequest } from '@backstage/plugin-catalog-common';
 import { AnalyzeLocationResponse } from '@backstage/plugin-catalog-common';
@@ -30,6 +33,7 @@ export class AuthorizedLocationAnalyzer implements LocationAnalyzer {
 
   async analyzeLocation(
     request: AnalyzeLocationRequest,
+    credentials: BackstageCredentials,
   ): Promise<AnalyzeLocationResponse> {
     const authorizeDecision = (
       await this.permissionApi.authorize(
@@ -38,12 +42,12 @@ export class AuthorizedLocationAnalyzer implements LocationAnalyzer {
             permission: catalogLocationCreatePermission,
           },
         ],
-        { credentials: request.credentials },
+        { credentials: credentials },
       )
     )[0];
     if (authorizeDecision.result !== AuthorizeResult.ALLOW) {
       throw new NotAllowedError();
     }
-    return this.service.analyzeLocation(request);
+    return this.service.analyzeLocation(request, credentials);
   }
 }

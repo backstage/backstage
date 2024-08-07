@@ -303,10 +303,10 @@ export async function createRouter(
       });
       const credentials = await httpAuth.credentials(req);
       const parsedBody = schema.parse(body);
-      const analyzeLocationRequest = { ...parsedBody, credentials };
       try {
         const output = await locationAnalyzer.analyzeLocation(
-          analyzeLocationRequest,
+          parsedBody,
+          credentials,
         );
         res.status(200).json(output);
       } catch (err) {

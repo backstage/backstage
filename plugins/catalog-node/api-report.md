@@ -172,6 +172,7 @@ export type EntityRelationSpec = {
 export type LocationAnalyzer = {
   analyzeLocation(
     location: AnalyzeLocationRequest,
+    credentials: BackstageCredentials
   ): Promise<AnalyzeLocationResponse>;
 };
 
