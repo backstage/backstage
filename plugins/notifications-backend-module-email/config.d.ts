@@ -136,6 +136,14 @@ export interface Config {
            */
           excludedTopics?: string[];
         };
+        /**
+         * White list of addresses to send email to
+         */
+        allowlistEmailAddresses?: string[];
+        /**
+         * Black list of addresses to not send email to
+         */
+        denylistEmailAddresses?: string[];
       };
     };
   };

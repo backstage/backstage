@@ -57,6 +57,8 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
   private readonly throttleInterval: number;
   private readonly frontendBaseUrl: string;
   private readonly filter: NotificationProcessorFilters;
+  private readonly allowlistEmailAddresses?: string[];
+  private readonly denylistEmailAddresses?: string[];
 
   constructor(
     private readonly logger: LoggerService,
@@ -86,6 +88,12 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       ? durationToMilliseconds(readDurationFromConfig(cacheConfig))
       : 3_600_000;
     this.frontendBaseUrl = config.getString('app.baseUrl');
+    this.allowlistEmailAddresses = emailProcessorConfig.getOptionalStringArray(
+      'allowlistEmailAddresses',
+    );
+    this.denylistEmailAddresses = emailProcessorConfig.getOptionalStringArray(
+      'denylistEmailAddresses',
+    );
     this.filter = getProcessorFiltersFromConfig(emailProcessorConfig);
   }
 
@@ -200,10 +208,25 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
     notification: Notification,
     options: NotificationSendOptions,
   ) {
+    let emails: string[];
     if (options.recipients.type === 'broadcast' || notification.user === null) {
-      return await this.getBroadcastEmails();
+      emails = await this.getBroadcastEmails();
+    } else {
+      emails = await this.getUserEmail(notification.user);
     }
-    return await this.getUserEmail(notification.user);
+
+    if (this.allowlistEmailAddresses) {
+      emails = emails.filter(email =>
+        this.allowlistEmailAddresses?.includes(email),
+      );
+    }
+
+    if (this.denylistEmailAddresses) {
+      emails = emails.filter(
+        email => !this.denylistEmailAddresses?.includes(email),
+      );
+    }
+    return emails;
   }
 
   private async sendMail(options: Mail.Options) {
