@@ -1,5 +1,5 @@
 ---
-id: getting-started
+id: index
 title: Getting Started
 description: How to get started with the notifications and signals
 ---
@@ -203,7 +203,7 @@ The use of signals with notifications is optional but generally enhances user ex
 
 When a notification is created, a new signal is emitted to a general-purpose message bus to announce it to subscribed listeners.
 
-The frontend maintains a persistent connection (web socket) to receive these announcements from the notifications channel.
+The frontend maintains a persistent connection (WebSocket) to receive these announcements from the notifications channel.
 The specific details of the updated or created notification should be retrieved via a request to the notifications API, except for new notifications, where the payload is included in the signal for performance reasons.
 
 In a frontend plugin, to subscribe for notifications' signals:
