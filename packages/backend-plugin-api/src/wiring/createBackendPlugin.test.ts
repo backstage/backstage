@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+import { createServiceRef } from '../services';
 import { createBackendPlugin } from './createBackendPlugin';
+import { createExtensionPoint } from './createExtensionPoint';
 import { InternalBackendRegistrations } from './types';
 
 describe('createBackendPlugin', () => {
@@ -51,5 +53,51 @@ describe('createBackendPlugin', () => {
 
     // @ts-expect-error
     expect(plugin({ a: 'a' })).toBeDefined();
+  });
+
+  it('should be able to depend on all compatible dependencies', () => {
+    const singleServiceRef = createServiceRef<string>({ id: 'single' });
+    const multiServiceRef = createServiceRef<string>({
+      id: 'multi',
+      multiton: true,
+    });
+
+    const plugin = createBackendPlugin({
+      pluginId: 'x',
+      register(r) {
+        r.registerInit({
+          deps: {
+            single: singleServiceRef,
+            multi: multiServiceRef,
+          },
+          async init({ single, multi }) {
+            const a: string = single;
+            const b: string[] = multi;
+            expect([a, b]).toBe('unused');
+          },
+        });
+      },
+    });
+
+    expect(plugin.$$type).toEqual('@backstage/BackendFeature');
+  });
+
+  it('should not be able to depend on extension points', () => {
+    const extensionPoint = createExtensionPoint<string>({ id: 'point' });
+
+    const plugin = createBackendPlugin({
+      pluginId: 'x',
+      register(r) {
+        r.registerInit({
+          deps: {
+            // @ts-expect-error
+            point: extensionPoint,
+          },
+          async init() {},
+        });
+      },
+    });
+
+    expect(plugin.$$type).toEqual('@backstage/BackendFeature');
   });
 });
