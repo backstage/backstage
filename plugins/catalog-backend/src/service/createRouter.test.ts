@@ -742,6 +742,7 @@ describe('createRouter readonly disabled', () => {
         expect(response.status).toEqual(200);
         expect(orchestrator.process).toHaveBeenCalledTimes(1);
         expect(orchestrator.process).toHaveBeenCalledWith({
+          credentials: mockCredentials.user(),
           entity: {
             apiVersion: 'a',
             kind: 'b',
@@ -779,6 +780,7 @@ describe('createRouter readonly disabled', () => {
         expect(response.body.errors[0].message).toEqual('Invalid entity name');
         expect(orchestrator.process).toHaveBeenCalledTimes(1);
         expect(orchestrator.process).toHaveBeenCalledWith({
+          credentials: mockCredentials.user(),
           entity: {
             apiVersion: 'a',
             kind: 'b',
