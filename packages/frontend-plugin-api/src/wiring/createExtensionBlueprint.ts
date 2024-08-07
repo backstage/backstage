@@ -420,7 +420,7 @@ export function createExtensionBlueprint<
 ): ExtensionBlueprint<
   TParams,
   UOutput,
-  TInputs,
+  string extends keyof TInputs ? {} : TInputs,
   string extends keyof TConfigSchema
     ? {}
     : { [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>> },
@@ -436,7 +436,7 @@ export function createExtensionBlueprint<
   return new ExtensionBlueprintImpl(options) as ExtensionBlueprint<
     TParams,
     UOutput,
-    TInputs,
+    string extends keyof TInputs ? {} : TInputs,
     string extends keyof TConfigSchema
       ? {}
       : {
