@@ -21,8 +21,20 @@ import { createExtensionTester } from '@backstage/frontend-test-utils';
 import { createExtensionDataRef } from './createExtensionDataRef';
 import { createExtensionInput } from './createExtensionInput';
 import { RouteRef } from '../routing';
+import {
+  ExtensionDefinition,
+  toInternalExtensionDefinition,
+} from './createExtension';
 
 function unused(..._any: any[]) {}
+
+function factoryOutput(ext: ExtensionDefinition<any, any>) {
+  const int = toInternalExtensionDefinition(ext);
+  if (int.version !== 'v2') {
+    throw new Error('Expected v2 extension');
+  }
+  return Array.from(int.factory({} as any));
+}
 
 describe('createExtensionBlueprint', () => {
   it('should allow creation of extension blueprints', () => {
@@ -383,5 +395,204 @@ describe('createExtensionBlueprint', () => {
     `);
 
     expect(true).toBe(true);
+  });
+
+  it('should allow merging of inputs', () => {
+    const blueprint = createExtensionBlueprint({
+      kind: 'test-extension',
+      attachTo: { id: 'test', input: 'default' },
+      inputs: {
+        test: createExtensionInput([coreExtensionData.routeRef], {
+          singleton: true,
+        }),
+      },
+      output: [coreExtensionData.reactElement.optional()],
+      factory(_params: { x?: string }, { inputs }) {
+        const ref: RouteRef = inputs.test.get(coreExtensionData.routeRef);
+
+        unused(ref);
+        return [];
+      },
+    });
+
+    blueprint.make({
+      inputs: {
+        test2: createExtensionInput([coreExtensionData.reactElement], {
+          singleton: true,
+        }),
+      },
+      factory(origFactory, { inputs }) {
+        const ref: RouteRef = inputs.test.get(coreExtensionData.routeRef);
+
+        const el: JSX.Element = inputs.test2.get(
+          coreExtensionData.reactElement,
+        );
+
+        unused(ref, el);
+
+        return origFactory({});
+      },
+    });
+
+    expect(true).toBe(true);
+  });
+
+  it('should not allow overriding inputs', () => {
+    const blueprint = createExtensionBlueprint({
+      kind: 'test-extension',
+      attachTo: { id: 'test', input: 'default' },
+      inputs: {
+        test: createExtensionInput([coreExtensionData.routeRef]),
+      },
+      output: [coreExtensionData.reactElement.optional()],
+      factory() {
+        return [];
+      },
+    });
+
+    blueprint.make({
+      inputs: {
+        // @ts-expect-error
+        test: createExtensionInput([]), // Overrides are not allowed
+      },
+      factory(origFactory) {
+        return origFactory({});
+      },
+    });
+
+    expect(true).toBe(true);
+  });
+
+  it('should replace the outputs when provided through make', () => {
+    const testDataRef1 = createExtensionDataRef<string>().with({ id: 'test1' });
+    const testDataRef2 = createExtensionDataRef<string>().with({ id: 'test2' });
+
+    const blueprint = createExtensionBlueprint({
+      kind: 'test-extension',
+      attachTo: { id: 'test', input: 'default' },
+      output: [testDataRef1],
+      factory() {
+        return [testDataRef1('foo')];
+      },
+    });
+
+    const ext = toInternalExtensionDefinition(
+      blueprint.make({
+        output: [testDataRef2],
+        factory(origFactory) {
+          const parent = origFactory({});
+          return [testDataRef2(`${parent.get(testDataRef1)}bar`)];
+        },
+      }),
+    );
+
+    expect(ext.output).toEqual([testDataRef2]);
+
+    expect(factoryOutput(ext)).toEqual([testDataRef2('foobar')]);
+  });
+
+  it('should allow returning of the parent data container', () => {
+    const testDataRef1 = createExtensionDataRef<string>().with({ id: 'test1' });
+    const testDataRef2 = createExtensionDataRef<string>().with({ id: 'test2' });
+
+    const blueprint = createExtensionBlueprint({
+      kind: 'test-extension',
+      attachTo: { id: 'test', input: 'default' },
+      output: [testDataRef1],
+      factory() {
+        return [testDataRef1('foo')];
+      },
+    });
+
+    expect(
+      factoryOutput(
+        blueprint.make({
+          output: [testDataRef1, testDataRef2],
+          *factory(origFactory) {
+            yield* origFactory({});
+            yield testDataRef2('bar');
+          },
+        }),
+      ),
+    ).toEqual([testDataRef1('foo'), testDataRef2('bar')]);
+
+    expect(
+      factoryOutput(
+        blueprint.make({
+          output: [testDataRef1, testDataRef2],
+          factory(origFactory) {
+            return [...origFactory({}), testDataRef2('bar')];
+          },
+        }),
+      ),
+    ).toEqual([testDataRef1('foo'), testDataRef2('bar')]);
+  });
+
+  it('should not allow returning parent output if outputs are overridden', () => {
+    const testDataRef1 = createExtensionDataRef<string>().with({ id: 'test1' });
+    const testDataRef2 = createExtensionDataRef<string>().with({ id: 'test2' });
+
+    const blueprint = createExtensionBlueprint({
+      kind: 'test-extension',
+      attachTo: { id: 'test', input: 'default' },
+      output: [testDataRef1.optional()],
+      factory() {
+        return [testDataRef1('foo')];
+      },
+    });
+
+    // @ts-expect-error
+    blueprint.make({
+      output: [testDataRef2.optional()],
+      *factory() {
+        yield testDataRef1('foo');
+        yield testDataRef2('bar');
+      },
+    });
+
+    expect(
+      factoryOutput(
+        blueprint.make({
+          output: [testDataRef2.optional()],
+          *factory() {
+            yield testDataRef2('bar');
+          },
+        }),
+      ),
+    ).toEqual([testDataRef2('bar')]);
+  });
+
+  it('should not rely on optional outputs when forwarding from parent', () => {
+    const testDataRef1 = createExtensionDataRef<string>().with({ id: 'test1' });
+    const testDataRef2 = createExtensionDataRef<string>().with({ id: 'test2' });
+
+    const blueprint = createExtensionBlueprint({
+      kind: 'test-extension',
+      attachTo: { id: 'test', input: 'default' },
+      output: [testDataRef1, testDataRef2.optional()],
+      factory() {
+        return [testDataRef1('foo')];
+      },
+    });
+
+    // @ts-expect-error
+    blueprint.make({
+      output: [testDataRef1, testDataRef2],
+      *factory(origFactory) {
+        yield* origFactory({});
+      },
+    });
+
+    expect(
+      factoryOutput(
+        blueprint.make({
+          output: [testDataRef1, testDataRef2],
+          *factory(origFactory) {
+            yield* origFactory({});
+            yield testDataRef2('bar');
+          },
+        }),
+      ),
+    ).toEqual([testDataRef1('foo'), testDataRef2('bar')]);
   });
 });
