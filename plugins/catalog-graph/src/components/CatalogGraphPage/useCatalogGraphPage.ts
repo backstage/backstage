@@ -27,12 +27,12 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { useLocation, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Direction } from '../EntityRelationsGraph';
 
 export type CatalogGraphPageValue = {
   rootEntityNames: CompoundEntityRef[];
-  setRootEntityNames: Dispatch<React.SetStateAction<CompoundEntityRef[]>>;
+  setRootEntityNames: (value: CompoundEntityRef[]) => void;
   maxDepth: number;
   setMaxDepth: Dispatch<React.SetStateAction<number>>;
   selectedRelations: string[] | undefined;
@@ -69,7 +69,8 @@ export function useCatalogGraphPage({
   };
 }): CatalogGraphPageValue {
   const location = useLocation();
-  const [_, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+
   const query = useMemo(
     () =>
       (qs.parse(location.search, { arrayLimit: 0, ignoreQueryPrefix: true }) ||
@@ -97,35 +98,28 @@ export function useCatalogGraphPage({
   );
 
   const setRootEntityNames = useCallback(
-    (value: React.SetStateAction<CompoundEntityRef[]>) => {
-      const prev = Array.isArray(query.rootEntityRefs)
-        ? query.rootEntityRefs
-        : [];
+    (value: CompoundEntityRef[]) => {
+      const areSame =
+        rootEntityNames.length === value.length &&
+        rootEntityNames.every(
+          (r, i) => stringifyEntityRef(r) === stringifyEntityRef(value[i]),
+        );
 
-      const hasChanged =
-        Array.isArray(value) &&
-        (value.length !== prev.length ||
-          value.some((r, i) => stringifyEntityRef(r) !== prev[i]));
-
-      if (!hasChanged) {
+      if (areSame) {
         return;
       }
 
-      setSearchParams(params => {
-        const rootEntityRefs = Array.isArray(value)
-          ? value.map(r => stringifyEntityRef(r))
-          : [];
+      const newSearch = qs.stringify(
+        {
+          ...query,
+          rootEntityRefs: value.map(r => stringifyEntityRef(r)),
+        },
+        { arrayFormat: 'brackets', addQueryPrefix: true },
+      );
 
-        params.delete('rootEntityRefs[]');
-
-        rootEntityRefs.forEach(r => {
-          params.set('rootEntityRefs[]', r);
-        });
-
-        return params;
-      });
+      navigate(newSearch);
     },
-    [query.rootEntityRefs, setSearchParams],
+    [rootEntityNames, navigate, query],
   );
 
   const [maxDepth, setMaxDepth] = useState<number>(() =>
@@ -187,6 +181,7 @@ export function useCatalogGraphPage({
   useEffect(() => {
     const newParams = qs.stringify(
       {
+        rootEntityRefs: rootEntityNames.map(stringifyEntityRef),
         maxDepth: isFinite(maxDepth) ? maxDepth : '∞',
         selectedKinds,
         selectedRelations,
@@ -199,18 +194,7 @@ export function useCatalogGraphPage({
       { arrayFormat: 'brackets', addQueryPrefix: true },
     );
 
-    const searchParams = new URLSearchParams(newParams);
-
-    setSearchParams(
-      params => {
-        searchParams.forEach((value, key) => {
-          params.set(key, value);
-        });
-
-        return params;
-      },
-      { replace: true },
-    );
+    navigate(newParams, { replace: true });
   }, [
     maxDepth,
     curve,
@@ -220,7 +204,8 @@ export function useCatalogGraphPage({
     mergeRelations,
     direction,
     showFilters,
-    setSearchParams,
+    rootEntityNames,
+    navigate,
   ]);
 
   return {
