@@ -56,6 +56,7 @@ describe('createPageExtension', () => {
       },
       factory: expect.any(Function),
       toString: expect.any(Function),
+      override: expect.any(Function),
     });
 
     expect(
@@ -78,6 +79,7 @@ describe('createPageExtension', () => {
       kind: 'page',
       attachTo: { id: 'other', input: 'place' },
       configSchema: expect.anything(),
+      override: expect.any(Function),
       disabled: true,
       inputs: {
         first: createExtensionInput({
@@ -115,6 +117,7 @@ describe('createPageExtension', () => {
       },
       factory: expect.any(Function),
       toString: expect.any(Function),
+      override: expect.any(Function),
     });
   });
 

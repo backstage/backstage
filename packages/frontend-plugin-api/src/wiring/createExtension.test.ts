@@ -15,7 +15,6 @@
  */
 
 import { createExtensionTester } from '@backstage/frontend-test-utils';
-import { coreExtensionData } from './coreExtensionData';
 import { createExtension } from './createExtension';
 import { createExtensionDataRef } from './createExtensionDataRef';
 import { createExtensionInput } from './createExtensionInput';
@@ -306,9 +305,7 @@ describe('createExtension', () => {
           baz: z => z.string().optional(),
         },
       },
-      output: {
-        foo: stringDataRef,
-      },
+      output: [stringDataRef],
       factory({ config }) {
         const a1: string = config.foo;
         const a2: string = config.bar;
@@ -322,12 +319,10 @@ describe('createExtension', () => {
         const c3: number = config.baz;
         unused(a1, a2, a3, c1, c2, c3);
 
-        return {
-          foo: 'bar',
-        };
+        return [stringDataRef('bar')];
       },
     });
-    expect(extension).toMatchObject({ version: 'v1', namespace: 'test' });
+    expect(extension).toMatchObject({ version: 'v2', namespace: 'test' });
     expect(String(extension)).toBe(
       'ExtensionDefinition{namespace=test,attachTo=root@default}',
     );
@@ -614,18 +609,7 @@ describe('createExtension', () => {
         },
       });
 
-      const override = testExtension.override({
-        output: [numberDataRef],
-        factory(_, { inputs }) {
-          return [
-            numberDataRef(inputs.test.get(stringDataRef).length),
-            stringDataRef('default'),
-          ];
-        },
-      });
-
-      // @ts-expect-error - should fail as the string output from previous is not provided
-      const override2 = testExtension.override({
+      const override1 = testExtension.override({
         output: [numberDataRef],
         factory(_, { inputs }) {
           return [numberDataRef(inputs.test.get(stringDataRef).length)];
@@ -633,14 +617,14 @@ describe('createExtension', () => {
       });
 
       // @ts-expect-error - this should fail because string output should be merged?
-      const override3 = testExtension.override({
+      const override2 = testExtension.override({
         output: [numberDataRef],
         factory(_, { inputs }) {
           return [stringDataRef(inputs.test.get(stringDataRef))];
         },
       });
 
-      unused(override, override2, override3);
+      unused(override1, override2);
 
       expect(true).toBe(true);
     });

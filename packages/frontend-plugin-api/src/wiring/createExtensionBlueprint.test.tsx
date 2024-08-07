@@ -69,6 +69,7 @@ describe('createExtensionBlueprint', () => {
       output: [coreExtensionData.reactElement],
       factory: expect.any(Function),
       toString: expect.any(Function),
+      override: expect.any(Function),
       version: 'v2',
     });
 
@@ -108,6 +109,7 @@ describe('createExtensionBlueprint', () => {
       output: [coreExtensionData.reactElement],
       factory: expect.any(Function),
       toString: expect.any(Function),
+      override: expect.any(Function),
       version: 'v2',
     });
 
@@ -389,6 +391,7 @@ describe('createExtensionBlueprint', () => {
         "output": [
           [Function],
         ],
+        "override": [Function],
         "toString": [Function],
         "version": "v2",
       }

@@ -171,7 +171,7 @@ export interface ExtensionBlueprint<
 }
 
 /** @internal */
-function createDataContainer<UData extends AnyExtensionDataRef>(
+export function createDataContainer<UData extends AnyExtensionDataRef>(
   values: Iterable<
     UData extends ExtensionDataRef<infer IData, infer IId>
       ? ExtensionDataValue<IData, IId>
@@ -241,10 +241,7 @@ class ExtensionBlueprintImpl<
     name?: string;
     attachTo?: { id: string; input: string };
     disabled?: boolean;
-    inputs?: TExtraInputs & {
-      [KName in keyof TInputs]?: `Error: Input '${KName &
-        string}' is already defined in parent definition`;
-    };
+    inputs?: TExtraInputs;
     output?: Array<UNewOutput>;
     params?: TParams;
     config?: {
@@ -363,9 +360,7 @@ class ExtensionBlueprintImpl<
         }
         throw new Error('Either params or factory must be provided');
       },
-    } as CreateExtensionOptions<
-      UOutput,
-      TInputs & TExtraInputs,
+    } as CreateExtensionOptions<UOutput, TInputs & TExtraInputs, TConfigSchema & TExtensionConfigSchema, UFactoryOutput>) as ExtensionDefinition<
       {
         [key in keyof TExtensionConfigSchema]: z.infer<
           ReturnType<TExtensionConfigSchema[key]>
@@ -383,10 +378,8 @@ class ExtensionBlueprintImpl<
             [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
           }
         >
-      >,
-      TConfigSchema,
-      UFactoryOutput
-    >);
+      >
+    >;
   }
 }
 
