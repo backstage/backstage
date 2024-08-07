@@ -2,4 +2,4 @@
 '@backstage/frontend-plugin-api': patch
 ---
 
-Fixing issue with `Blueprints` `inputs` merging
+Fixing issue with extension blueprints `inputs` merging.
