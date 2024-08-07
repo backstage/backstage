@@ -31,7 +31,7 @@ If your [`app-config.yaml`](https://github.com/backstage/backstage/blob/e0506af8
 Please note that the env value MUST be specified at build time
 
 :::note
-In case after a proper configuration, the events still arent being capture copy and paste this section in to your `packages/app/public/index.html` under the `<head>` tag.
+In case after a proper configuration, the events still are not being captured: Copy and paste this section in to your `packages/app/public/index.html` under the `<head>` tag.
 
 ```html
 <% if (config.has('app.datadogRum')) { %>
