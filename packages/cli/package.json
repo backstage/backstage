@@ -166,6 +166,9 @@
     "@backstage/dev-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@backstage/theme": "workspace:^",
+    "@rspack/core": "^0.7.5",
+    "@rspack/dev-server": "^0.7.5",
+    "@rspack/plugin-react-refresh": "^0.7.5",
     "@types/cross-spawn": "^6.0.2",
     "@types/diff": "^5.0.0",
     "@types/ejs": "^3.1.3",
@@ -191,12 +194,24 @@
     "vite-plugin-node-polyfills": "^0.22.0"
   },
   "peerDependencies": {
+    "@rspack/core": "^0.7.5",
+    "@rspack/dev-server": "^0.7.5",
+    "@rspack/plugin-react-refresh": "^0.7.5",
     "@vitejs/plugin-react": "^4.0.4",
     "vite": "^4.4.9",
     "vite-plugin-html": "^3.2.0",
     "vite-plugin-node-polyfills": "^0.22.0"
   },
   "peerDependenciesMeta": {
+    "@rspack/core": {
+      "optional": true
+    },
+    "@rspack/dev-server": {
+      "optional": true
+    },
+    "@rspack/plugin-react-refresh": {
+      "optional": true
+    },
     "@vitejs/plugin-react": {
       "optional": true
     },

@@ -26,10 +26,15 @@ type Transforms = {
 type TransformOptions = {
   isDev: boolean;
   isBackend?: boolean;
+  useRspack?: boolean;
 };
 
 export const transforms = (options: TransformOptions): Transforms => {
-  const { isDev, isBackend } = options;
+  const { isDev, isBackend, useRspack } = options;
+
+  const CssExtractRspackPlugin: typeof MiniCssExtractPlugin = useRspack
+    ? require('@rspack/core').CssExtractRspackPlugin
+    : MiniCssExtractPlugin;
 
   // This ensures that styles inserted from the style-loader and any
   // async style chunks are always given lower priority than JSS styles.
@@ -54,7 +59,9 @@ export const transforms = (options: TransformOptions): Transforms => {
       exclude: /node_modules/,
       use: [
         {
-          loader: require.resolve('swc-loader'),
+          loader: useRspack
+            ? 'builtin:swc-loader'
+            : require.resolve('swc-loader'),
           options: {
             jsc: {
               target: 'es2022',
@@ -82,7 +89,9 @@ export const transforms = (options: TransformOptions): Transforms => {
       exclude: /node_modules/,
       use: [
         {
-          loader: require.resolve('swc-loader'),
+          loader: useRspack
+            ? 'builtin:swc-loader'
+            : require.resolve('swc-loader'),
           options: {
             jsc: {
               target: 'es2022',
@@ -115,7 +124,9 @@ export const transforms = (options: TransformOptions): Transforms => {
       test: [/\.icon\.svg$/],
       use: [
         {
-          loader: require.resolve('swc-loader'),
+          loader: useRspack
+            ? 'builtin:swc-loader'
+            : require.resolve('swc-loader'),
           options: {
             jsc: {
               target: 'es2022',
@@ -179,7 +190,7 @@ export const transforms = (options: TransformOptions): Transforms => {
                 insert: insertBeforeJssStyles,
               },
             }
-          : MiniCssExtractPlugin.loader,
+          : CssExtractRspackPlugin.loader,
         {
           loader: require.resolve('css-loader'),
           options: {
@@ -194,7 +205,7 @@ export const transforms = (options: TransformOptions): Transforms => {
 
   if (!isDev) {
     plugins.push(
-      new MiniCssExtractPlugin({
+      new CssExtractRspackPlugin({
         filename: 'static/[name].[contenthash:8].css',
         chunkFilename: 'static/[name].[id].[contenthash:8].css',
         insert: insertBeforeJssStyles, // Only applies to async chunks

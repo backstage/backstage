@@ -37,6 +37,7 @@ export type BundlingOptions = {
   // Mode that the app is running in, 'protected' or 'public', default is 'public'
   appMode?: string;
   moduleFederation?: ModuleFederationOptions;
+  useRspack?: boolean;
 };
 
 export type ServeOptions = BundlingPathsOptions & {
@@ -57,6 +58,7 @@ export type BuildOptions = BundlingPathsOptions & {
   frontendAppConfigs: AppConfig[];
   fullConfig: Config;
   moduleFederation?: ModuleFederationOptions;
+  useRspack?: boolean;
 };
 
 export type BackendBundlingOptions = {
@@ -66,6 +68,7 @@ export type BackendBundlingOptions = {
   inspectEnabled: boolean;
   inspectBrkEnabled: boolean;
   require?: string;
+  useRspack?: boolean;
 };
 
 export type BackendServeOptions = BundlingPathsOptions & {

@@ -106,12 +106,15 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
     },
   });
 
+  const useRspack = !!process.env.EXPERIMENTAL_RSPACK;
+
   const commonConfigOptions = {
     ...options,
     checksEnabled: options.checksEnabled,
     isDev: true,
     baseUrl: url,
     frontendConfig,
+    useRspack,
     getFrontendAppConfigs: () => {
       return latestFrontendAppConfigs;
     },
@@ -163,6 +166,11 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
       root: paths.targetPath,
     });
   } else {
+    const bundler = useRspack ? require('@rspack/core') : webpack;
+    const DevServer: typeof WebpackDevServer = useRspack
+      ? require('@rspack/dev-server').RspackDevServer
+      : WebpackDevServer;
+
     const publicPaths = await resolveOptionalBundlingPaths({
       entry: 'src/index-public-experimental',
       dist: 'dist/public',
@@ -175,10 +183,10 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
       );
     }
     const compiler = publicPaths
-      ? webpack([config, await createConfig(publicPaths, commonConfigOptions)])
-      : webpack(config);
+      ? bundler([config, await createConfig(publicPaths, commonConfigOptions)])
+      : bundler(config);
 
-    webpackServer = new WebpackDevServer(
+    webpackServer = new DevServer(
       {
         hot: !process.env.CI,
         devMiddleware: {
