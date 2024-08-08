@@ -312,9 +312,9 @@ class ExtensionBlueprintImpl<
       >
     >
   > {
-    const optionsSchema =
-      typeof this.options.config?.schema === 'function'
-        ? this.options.config?.schema(args.params!)
+    const optionsSchema = // can remove this args.params check with the split apart of .make
+      typeof this.options.config?.schema === 'function' && args.params
+        ? this.options.config?.schema(args.params)
         : this.options.config?.schema;
 
     const schema = {
@@ -323,13 +323,13 @@ class ExtensionBlueprintImpl<
     } as TConfigSchema & TExtensionConfigSchema;
 
     const namespace =
-      typeof this.options.namespace === 'function'
-        ? this.options.namespace(args.params!)
+      typeof this.options.namespace === 'function' && args.params
+        ? this.options.namespace(args.params)
         : this.options.namespace;
 
     const name =
-      typeof this.options.name === 'function'
-        ? this.options.name(args.params!)
+      typeof this.options.name === 'function' && args.params
+        ? this.options.name(args.params)
         : this.options.name;
 
     return createExtension({

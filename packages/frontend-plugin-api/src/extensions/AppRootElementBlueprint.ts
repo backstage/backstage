@@ -13,19 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createExtensionBlueprint } from '../wiring';
-import { createApiExtension } from './createApiExtension';
-import { AnyApiFactory } from '@backstage/core-plugin-api';
+import { coreExtensionData, createExtensionBlueprint } from '../wiring';
 
-export const ApiBlueprint = createExtensionBlueprint({
-  kind: 'api',
-  attachTo: { id: 'app', input: 'apis' },
-  output: [createApiExtension.factoryDataRef],
-  dataRefs: {
-    factory: createApiExtension.factoryDataRef,
+export const AppRootElementBlueprint = createExtensionBlueprint({
+  kind: 'app-root-element',
+  attachTo: { id: 'app/root', input: 'elements' },
+  output: [coreExtensionData.reactElement],
+  *factory(params: { element: JSX.Element | (() => JSX.Element) }) {
+    yield coreExtensionData.reactElement(
+      typeof params.element === 'function' ? params.element() : params.element,
+    );
   },
-  *factory(params: { factory: AnyApiFactory }) {
-    yield createApiExtension.factoryDataRef(params.factory);
-  },
-  namespace: ({ factory }) => factory.api.id,
 });

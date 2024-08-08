@@ -30,15 +30,12 @@ export const SignInPageBlueprint = createExtensionBlueprint({
     {
       loader,
     }: {
-      loader: (opts: {
-        config: typeof config;
-        inputs: typeof inputs;
-      }) => Promise<ComponentType<SignInPageProps>>;
+      loader: () => Promise<ComponentType<SignInPageProps>>;
     },
-    { config, inputs, node },
+    { node },
   ) {
     const ExtensionComponent = lazy(() =>
-      loader({ config, inputs }).then(component => ({ default: component })),
+      loader().then(component => ({ default: component })),
     );
 
     yield createSignInPageExtension.componentDataRef(props => (

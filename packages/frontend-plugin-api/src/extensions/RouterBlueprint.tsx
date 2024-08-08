@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { ComponentType, PropsWithChildren } from 'react';
+import { ComponentType, PropsWithChildren } from 'react';
 import { createExtensionBlueprint } from '../wiring';
 import { createRouterExtension } from './createRouterExtension';
 
@@ -24,25 +24,7 @@ export const RouterBlueprint = createExtensionBlueprint({
   dataRefs: {
     component: createRouterExtension.componentDataRef,
   },
-  *factory(
-    {
-      Component,
-    }: {
-      Component: ComponentType<
-        PropsWithChildren<{
-          inputs: typeof inputs;
-          config: typeof config;
-        }>
-      >;
-    },
-    { config, inputs },
-  ) {
-    const Wrapper = (props: PropsWithChildren<{}>) => (
-      <Component inputs={inputs} config={config}>
-        {props.children}
-      </Component>
-    );
-
-    yield createRouterExtension.componentDataRef(Wrapper);
+  *factory({ Component }: { Component: ComponentType<PropsWithChildren<{}>> }) {
+    yield createRouterExtension.componentDataRef(Component);
   },
 });

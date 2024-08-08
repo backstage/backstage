@@ -32,7 +32,27 @@ describe('ApiBlueprint', () => {
       },
     });
 
-    expect(extension).toMatchInlineSnapshot();
+    expect(extension).toMatchInlineSnapshot(`
+      {
+        "$$type": "@backstage/ExtensionDefinition",
+        "attachTo": {
+          "id": "app",
+          "input": "apis",
+        },
+        "configSchema": undefined,
+        "disabled": false,
+        "factory": [Function],
+        "inputs": {},
+        "kind": "api",
+        "name": undefined,
+        "namespace": "test",
+        "output": [
+          [Function],
+        ],
+        "toString": [Function],
+        "version": "v2",
+      }
+    `);
   });
 
   it('should create an extension with custom factory', () => {
@@ -48,19 +68,62 @@ describe('ApiBlueprint', () => {
       inputs: {
         test: createExtensionInput([ApiBlueprint.dataRefs.factory]),
       },
+      namespace: api.id,
       factory(originalFactory, { config: _config, inputs: _inputs }) {
         return originalFactory({
-          api,
-          factory: () =>
-            createApiFactory({
-              api,
-              deps: {},
-              factory,
-            }),
+          factory: createApiFactory({
+            api,
+            deps: {},
+            factory,
+          }),
         });
       },
     });
 
-    expect(extension).toMatchInlineSnapshot();
+    expect(extension).toMatchInlineSnapshot(`
+      {
+        "$$type": "@backstage/ExtensionDefinition",
+        "attachTo": {
+          "id": "app",
+          "input": "apis",
+        },
+        "configSchema": {
+          "parse": [Function],
+          "schema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "test": {
+                "default": "test",
+                "type": "string",
+              },
+            },
+            "type": "object",
+          },
+        },
+        "disabled": false,
+        "factory": [Function],
+        "inputs": {
+          "test": {
+            "$$type": "@backstage/ExtensionInput",
+            "config": {
+              "optional": false,
+              "singleton": false,
+            },
+            "extensionData": [
+              [Function],
+            ],
+          },
+        },
+        "kind": "api",
+        "name": undefined,
+        "namespace": "test",
+        "output": [
+          [Function],
+        ],
+        "toString": [Function],
+        "version": "v2",
+      }
+    `);
   });
 });

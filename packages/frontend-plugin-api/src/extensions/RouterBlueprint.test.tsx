@@ -107,16 +107,18 @@ describe('RouterBlueprint', () => {
       inputs: {
         children: createExtensionInput([coreExtensionData.reactElement]),
       },
-      params: {
-        Component: ({ inputs, children, config }) => (
-          <MemoryRouter>
-            <div
-              data-testid={`test-router-${config.name}-${inputs.children.length}`}
-            >
-              {children}
-            </div>
-          </MemoryRouter>
-        ),
+      *factory(originalFactory, { inputs, config }) {
+        yield* originalFactory({
+          Component: ({ children }) => (
+            <MemoryRouter>
+              <div
+                data-testid={`test-router-${config.name}-${inputs.children.length}`}
+              >
+                {children}
+              </div>
+            </MemoryRouter>
+          ),
+        });
       },
     });
 
