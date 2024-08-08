@@ -24,10 +24,6 @@ export const optimization = (
 ): WebpackOptionsNormalized['optimization'] => {
   const { isDev, useRspack } = options;
 
-  const extralOptions = useRspack
-    ? {}
-    : { maxAsyncRequests: Infinity, maxInitialRequests: Infinity };
-
   const rspack = useRspack
     ? (require('@rspack/core') as typeof import('@rspack/core').rspack)
     : undefined;
@@ -82,7 +78,10 @@ export const optimization = (
           priority: 10,
           minSize: 100000,
           minChunks: 1,
-          ...extralOptions,
+          ...(!useRspack && {
+            maxAsyncRequests: Infinity,
+            maxInitialRequests: Infinity,
+          }),
         }, // filename is not included in type, but we need it
         // Group together the smallest modules
         vendor: {
