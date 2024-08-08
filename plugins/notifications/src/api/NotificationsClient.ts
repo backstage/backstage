@@ -23,6 +23,7 @@ import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
 import {
   Notification,
+  NotificationSettings,
   NotificationStatus,
 } from '@backstage/plugin-notifications-common';
 
@@ -89,6 +90,20 @@ export class NotificationsClient implements NotificationsApi {
     return await this.request<Notification[]>('update', {
       method: 'POST',
       body: JSON.stringify(options),
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  async getNotificationSettings(): Promise<NotificationSettings> {
+    return await this.request<NotificationSettings>('settings');
+  }
+
+  async updateNotificationSettings(
+    settings: NotificationSettings,
+  ): Promise<NotificationSettings> {
+    return await this.request<NotificationSettings>('settings', {
+      method: 'POST',
+      body: JSON.stringify(settings),
       headers: { 'Content-Type': 'application/json' },
     });
   }

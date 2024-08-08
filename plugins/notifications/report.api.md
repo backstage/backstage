@@ -12,6 +12,7 @@ import { FetchApi } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { Notification as Notification_2 } from '@backstage/plugin-notifications-common';
+import { NotificationSettings } from '@backstage/plugin-notifications-common';
 import { NotificationSeverity } from '@backstage/plugin-notifications-common';
 import { NotificationStatus } from '@backstage/plugin-notifications-common';
 import { default as React_2 } from 'react';
@@ -46,11 +47,17 @@ export interface NotificationsApi {
     options?: GetNotificationsOptions,
   ): Promise<GetNotificationsResponse>;
   // (undocumented)
+  getNotificationSettings(): Promise<NotificationSettings>;
+  // (undocumented)
   getStatus(): Promise<NotificationStatus>;
   // (undocumented)
   updateNotifications(
     options: UpdateNotificationsOptions,
   ): Promise<Notification_2[]>;
+  // (undocumented)
+  updateNotificationSettings(
+    settings: NotificationSettings,
+  ): Promise<NotificationSettings>;
 }
 
 // @public (undocumented)
@@ -66,11 +73,17 @@ export class NotificationsClient implements NotificationsApi {
     options?: GetNotificationsOptions,
   ): Promise<GetNotificationsResponse>;
   // (undocumented)
+  getNotificationSettings(): Promise<NotificationSettings>;
+  // (undocumented)
   getStatus(): Promise<NotificationStatus>;
   // (undocumented)
   updateNotifications(
     options: UpdateNotificationsOptions,
   ): Promise<Notification_2[]>;
+  // (undocumented)
+  updateNotificationSettings(
+    settings: NotificationSettings,
+  ): Promise<NotificationSettings>;
 }
 
 // @public (undocumented)
@@ -175,6 +188,11 @@ export function useNotificationsApi<T>(
       error?: undefined;
       value: T;
     };
+
+// @public (undocumented)
+export const UserNotificationSettingsCard: (props: {
+  originNames?: Record<string, string>;
+}) => React_2.JSX.Element;
 
 // (No @packageDocumentation comment for this package)
 ```
