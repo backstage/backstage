@@ -46,6 +46,7 @@ export async function command(opts: OptionValues): Promise<void> {
       });
     case 'web-library':
     case 'frontend-plugin':
+    case 'frontend-extension-bundle':
     case 'frontend-plugin-module':
       return startFrontend({ entry: 'dev/index', ...options });
     case 'frontend-dynamic-container' as PackageRole: // experimental

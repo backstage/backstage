@@ -200,6 +200,7 @@ function createConfigForRole(dir, role, extraConfig = {}) {
     case 'web-library':
     case 'frontend':
     case 'frontend-plugin':
+    case 'frontend-extension-bundle':
     case 'frontend-plugin-module':
     case 'frontend-dynamic-container':
       return createConfig(dir, {

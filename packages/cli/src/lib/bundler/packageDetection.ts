@@ -84,9 +84,11 @@ async function detectPackages(
         { paths: [targetPath] },
       ));
       if (
-        ['frontend-plugin', 'frontend-plugin-module'].includes(
-          depPackageJson.backstage?.role ?? '',
-        )
+        [
+          'frontend-plugin',
+          'frontend-extension-bundle',
+          'frontend-plugin-module',
+        ].includes(depPackageJson.backstage?.role ?? '')
       ) {
         // Include alpha entry point if available. If there's no default export it will be ignored
         const exp = depPackageJson.exports;

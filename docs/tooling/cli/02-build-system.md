@@ -93,18 +93,19 @@ defined in the `package.json` of each package like this:
 
 These are the available roles that are currently supported by the Backstage build system:
 
-| Role                   | Description                                  | Example                                      |
-| ---------------------- | -------------------------------------------- | -------------------------------------------- |
-| frontend               | Bundled frontend application                 | `packages/app`                               |
-| backend                | Bundled backend application                  | `packages/backend`                           |
-| cli                    | Package used as a command-line interface     | `@backstage/cli`, `@backstage/codemods`      |
-| web-library            | Web library for use by other packages        | `@backstage/plugin-catalog-react`            |
-| node-library           | Node.js library for use by other packages    | `@backstage/plugin-techdocs-node`            |
-| common-library         | Isomorphic library for use by other packages | `@backstage/plugin-permission-common`        |
-| frontend-plugin        | Backstage frontend plugin                    | `@backstage/plugin-scaffolder`               |
-| frontend-plugin-module | Backstage frontend plugin module             | `@backstage/plugin-analytics-module-ga`      |
-| backend-plugin         | Backstage backend plugin                     | `@backstage/plugin-auth-backend`             |
-| backend-plugin-module  | Backstage backend plugin module              | `@backstage/plugin-search-backend-module-pg` |
+| Role                      | Description                                  | Example                                      |
+| ------------------------- | -------------------------------------------- | -------------------------------------------- |
+| frontend                  | Bundled frontend application                 | `packages/app`                               |
+| backend                   | Bundled backend application                  | `packages/backend`                           |
+| cli                       | Package used as a command-line interface     | `@backstage/cli`, `@backstage/codemods`      |
+| web-library               | Web library for use by other packages        | `@backstage/plugin-catalog-react`            |
+| node-library              | Node.js library for use by other packages    | `@backstage/plugin-techdocs-node`            |
+| common-library            | Isomorphic library for use by other packages | `@backstage/plugin-permission-common`        |
+| frontend-plugin           | Backstage frontend plugin                    | `@backstage/plugin-scaffolder`               |
+| frontend-extension-bundle | Extensions for the Backstage frontend        | Typically only appears in adopter repos      |
+| frontend-plugin-module    | Backstage frontend plugin module             | `@backstage/plugin-analytics-module-ga`      |
+| backend-plugin            | Backstage backend plugin                     | `@backstage/plugin-auth-backend`             |
+| backend-plugin-module     | Backstage backend plugin module              | `@backstage/plugin-search-backend-module-pg` |
 
 Most of the steps that we cover below have an accompanying command that is intended to be used as a package script. The commands are all available under the `backstage-cli package` category, and many of the commands will behave differently depending on the role of the package. The commands are intended to be used like this:
 
