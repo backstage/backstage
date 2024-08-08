@@ -17,34 +17,46 @@
 import React from 'react';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 
+type HTMLDivProps = React.HTMLAttributes<HTMLDivElement>;
+
 const renderRow = (props: ListChildComponentProps) => {
   const { data, index, style } = props;
   return React.cloneElement(data[index], { style });
 };
+const OuterElementContext = React.createContext<HTMLDivProps>({});
+const OuterElementType = React.forwardRef<HTMLDivElement, HTMLDivProps>(
+  (props, ref) => {
+    const outerProps = React.useContext(OuterElementContext);
+    return <div ref={ref} {...props} {...outerProps} />;
+  },
+);
 
 export const VirtualizedListbox = React.forwardRef<
   HTMLDivElement,
-  { children?: React.ReactNode }
+  HTMLDivProps
 >((props, ref) => {
-  const itemData = React.Children.toArray(props.children);
+  const { children, ...rest } = props;
+  const itemData = React.Children.toArray(children);
   const itemCount = itemData.length;
 
   const itemSize = 36;
 
-  const itemsToShow = Math.min(10, itemCount);
-  const height = Math.max(itemSize, itemsToShow * itemSize - 0.5 * itemSize);
+  const height = itemSize * (Math.min(10, itemCount) + 0.5);
 
   return (
     <div ref={ref}>
-      <FixedSizeList
-        height={height}
-        itemData={itemData}
-        itemCount={itemCount}
-        itemSize={itemSize}
-        width="100%"
-      >
-        {renderRow}
-      </FixedSizeList>
+      <OuterElementContext.Provider value={rest}>
+        <FixedSizeList
+          height={height}
+          itemData={itemData}
+          itemCount={itemCount}
+          itemSize={itemSize}
+          outerElementType={OuterElementType}
+          width="100%"
+        >
+          {renderRow}
+        </FixedSizeList>
+      </OuterElementContext.Provider>
     </div>
   );
 });
