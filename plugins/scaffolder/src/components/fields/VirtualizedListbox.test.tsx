@@ -31,8 +31,8 @@ describe('<VirtualizedListbox />', () => {
       <div>
         <div>
           <div
-            class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
             aria-expanded="true"
+            class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
             role="combobox"
             style="position: relative; height: 18px; width: 100%; overflow: auto; will-change: transform; direction: ltr;"
           >
