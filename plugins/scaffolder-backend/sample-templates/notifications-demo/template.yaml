@@ -1,0 +1,69 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: notifications-demo
+  title: Test Notifications template
+  description: scaffolder v1beta3 template demo sending notification
+spec:
+  owner: backstage/techdocs-core
+  type: service
+  parameters:
+    - title: Notification
+      required:
+        - recipients
+        - title
+      properties:
+        recipients:
+          title: Recipients
+          type: string
+          description: Notification recipients
+          default: entity
+          enum:
+            - entity
+            - broadcast
+        entityRefs:
+          title: Entities
+          type: array
+          description: Entities to send the notification. Required if recipients is entity
+          ui:field: MultiEntityPicker
+          ui:options:
+            defaultNamespace: default
+        title:
+          title: Title
+          type: string
+          description: Notification title
+        description:
+          title: Description
+          type: string
+          description: Notification longer description
+        link:
+          title: Link
+          type: string
+          description: Notification link
+        severity:
+          title: Severity
+          type: string
+          description: Notification severity
+          default: normal
+          enum:
+            - low
+            - normal
+            - high
+            - critical
+        scope:
+          title: Scope
+          type: string
+          description: Notification scope
+
+  steps:
+    - id: send-notification
+      name: Send notification
+      action: notification:send
+      input:
+        recipients: ${{ parameters.recipients }}
+        entityRefs: ${{ parameters.entityRefs }}
+        title: ${{ parameters.title }}
+        description: ${{ parameters.description }}
+        link: ${{ parameters.link }}
+        severity: ${{ parameters.severity }}
+        scope: ${{ parameters.scope }}

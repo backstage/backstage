@@ -16,6 +16,7 @@
 import { createApiRef } from '@backstage/core-plugin-api';
 import {
   Notification,
+  NotificationSettings,
   NotificationSeverity,
   NotificationStatus,
 } from '@backstage/plugin-notifications-common';
@@ -64,4 +65,10 @@ export interface NotificationsApi {
   updateNotifications(
     options: UpdateNotificationsOptions,
   ): Promise<Notification[]>;
+
+  getNotificationSettings(): Promise<NotificationSettings>;
+
+  updateNotificationSettings(
+    settings: NotificationSettings,
+  ): Promise<NotificationSettings>;
 }
