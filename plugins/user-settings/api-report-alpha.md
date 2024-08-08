@@ -24,7 +24,9 @@ export const settingsNavItem: ExtensionDefinition<
   },
   {
     title?: string | undefined;
-  }
+  },
+  never,
+  never
 >;
 
 // @alpha (undocumented)

@@ -108,7 +108,7 @@ export function createCatalogFilterExtension<
   inputs?: TInputs;
   configSchema?: PortableSchema<TConfig>;
   loader: (options: { config: TConfig }) => Promise<JSX.Element>;
-}): ExtensionDefinition<TConfig & {}, TConfig & {}>;
+}): ExtensionDefinition<TConfig, TConfig, never, never>;
 
 // @alpha (undocumented)
 const _default: BackstagePlugin<

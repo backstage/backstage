@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { createExtensionTester } from '@backstage/frontend-test-utils';
 import { createExtension } from './createExtension';
 import { createExtensionDataRef } from './createExtensionDataRef';
 import { createExtensionInput } from './createExtensionInput';
@@ -304,9 +305,7 @@ describe('createExtension', () => {
           baz: z => z.string().optional(),
         },
       },
-      output: {
-        foo: stringDataRef,
-      },
+      output: [stringDataRef],
       factory({ config }) {
         const a1: string = config.foo;
         const a2: string = config.bar;
@@ -320,12 +319,10 @@ describe('createExtension', () => {
         const c3: number = config.baz;
         unused(a1, a2, a3, c1, c2, c3);
 
-        return {
-          foo: 'bar',
-        };
+        return [stringDataRef('bar')];
       },
     });
-    expect(extension).toMatchObject({ version: 'v1', namespace: 'test' });
+    expect(extension).toMatchObject({ version: 'v2', namespace: 'test' });
     expect(String(extension)).toBe(
       'ExtensionDefinition{namespace=test,attachTo=root@default}',
     );
@@ -560,5 +557,180 @@ describe('createExtension', () => {
         },
       }),
     ).toMatchObject({ version: 'v2' });
+  });
+
+  describe('overrides', () => {
+    it('should allow overriding of config and merging', () => {
+      const testExtension = createExtension({
+        namespace: 'test',
+        attachTo: { id: 'root', input: 'blob' },
+        output: [stringDataRef],
+        config: {
+          schema: {
+            foo: z => z.string().optional(),
+          },
+        },
+        factory() {
+          return [stringDataRef('default')];
+        },
+      });
+
+      testExtension.override({
+        config: {
+          schema: {
+            bar: z => z.string().optional(),
+          },
+        },
+        factory(_, { config }) {
+          return [stringDataRef(config.foo ?? config.bar ?? 'default')];
+        },
+      });
+
+      expect(true).toBe(true);
+    });
+
+    it('should allow overriding of outputs', () => {
+      const testExtension = createExtension({
+        namespace: 'test',
+        attachTo: { id: 'root', input: 'blob' },
+        output: [stringDataRef],
+        inputs: {
+          test: createExtensionInput([stringDataRef], {
+            singleton: true,
+          }),
+        },
+        config: {
+          schema: {
+            foo: z => z.string().optional(),
+          },
+        },
+        factory({ inputs }) {
+          return [stringDataRef(inputs.test.get(stringDataRef))];
+        },
+      });
+
+      const override1 = testExtension.override({
+        output: [numberDataRef],
+        factory(_, { inputs }) {
+          return [numberDataRef(inputs.test.get(stringDataRef).length)];
+        },
+      });
+
+      // @ts-expect-error - this should fail because string output should be merged?
+      const override2 = testExtension.override({
+        output: [numberDataRef],
+        factory(_, { inputs }) {
+          return [stringDataRef(inputs.test.get(stringDataRef))];
+        },
+      });
+
+      unused(override1, override2);
+
+      expect(true).toBe(true);
+    });
+
+    it('should allow overriding the factory function and calling the original factory', () => {
+      const testExtension = createExtension({
+        namespace: 'test',
+        attachTo: { id: 'root', input: 'blob' },
+        output: [stringDataRef],
+        config: {
+          schema: {
+            foo: z => z.string().optional(),
+          },
+        },
+        factory() {
+          return [stringDataRef('default')];
+        },
+      });
+
+      testExtension.override({
+        factory(originalFactory) {
+          const response = originalFactory();
+
+          const foo: string = response.get(stringDataRef);
+
+          // @ts-expect-error - fails because original factory does not return number
+          const number: boolean = response.get(numberDataRef);
+
+          return [stringDataRef(`foo-${foo}-override`)];
+        },
+      });
+
+      expect(true).toBe(true);
+    });
+
+    it('should allow overriding the returned values from the parent factory', () => {
+      const testExtension = createExtension({
+        kind: 'thing',
+        namespace: 'test',
+        attachTo: { id: 'root', input: 'default' },
+        output: [stringDataRef, numberDataRef],
+        config: {
+          schema: {
+            foo: z => z.string().default('boom'),
+          },
+        },
+        factory({ config }) {
+          return [stringDataRef(config.foo), numberDataRef(42)];
+        },
+      });
+
+      const overridden = testExtension.override({
+        output: [numberDataRef, stringDataRef],
+        *factory(originalFactory) {
+          const output = originalFactory();
+          yield* output;
+
+          yield numberDataRef(output.get(numberDataRef) + 1);
+        },
+      });
+
+      const tester = createExtensionTester(overridden);
+
+      expect(tester.data(numberDataRef)).toBe(43);
+    });
+
+    it('should work functionally with overrides', () => {
+      const testExtension = createExtension({
+        kind: 'thing',
+        namespace: 'test',
+        attachTo: { id: 'root', input: 'default' },
+        output: [stringDataRef],
+        config: {
+          schema: {
+            foo: z => z.string().default('boom'),
+          },
+        },
+        factory({ config }) {
+          return [stringDataRef(config.foo)];
+        },
+      });
+
+      const overriden = testExtension.override({
+        config: {
+          schema: {
+            bar: z => z.string().default('hello'),
+          },
+        },
+        factory(originalFactory, { config }) {
+          const response = originalFactory();
+
+          const foo: string = response.get(stringDataRef);
+
+          return [stringDataRef(`foo-${foo}-override-${config.bar}`)];
+        },
+      });
+
+      expect(createExtensionTester(overriden).data(stringDataRef)).toBe(
+        'foo-boom-override-hello',
+      );
+
+      expect(
+        createExtensionTester(overriden, {
+          config: { foo: 'hello', bar: 'world' },
+        }).data(stringDataRef),
+      ).toBe('foo-hello-override-world');
+    });
   });
 });

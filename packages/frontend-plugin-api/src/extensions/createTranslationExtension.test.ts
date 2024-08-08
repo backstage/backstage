@@ -46,6 +46,7 @@ describe('createTranslationExtension', () => {
       namespace: 'test',
       attachTo: { id: 'app', input: 'translations' },
       disabled: false,
+      override: expect.any(Function),
       inputs: {},
       output: {
         resource: createTranslationExtension.translationDataRef,
@@ -84,6 +85,7 @@ describe('createTranslationExtension', () => {
       namespace: 'test',
       attachTo: { id: 'app', input: 'translations' },
       disabled: false,
+      override: expect.any(Function),
       inputs: {},
       output: {
         resource: createTranslationExtension.translationDataRef,
@@ -120,6 +122,7 @@ describe('createTranslationExtension', () => {
       version: 'v1',
       kind: 'translation',
       namespace: 'test',
+      override: expect.any(Function),
       name: 'sv',
       attachTo: { id: 'app', input: 'translations' },
       disabled: false,

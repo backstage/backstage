@@ -42,6 +42,7 @@ describe('createAppRootWrapperExtension', () => {
       },
       factory: expect.any(Function),
       toString: expect.any(Function),
+      override: expect.any(Function),
     });
 
     createExtensionTester(
@@ -94,6 +95,7 @@ describe('createAppRootWrapperExtension', () => {
         component: expect.anything(),
       },
       factory: expect.any(Function),
+      override: expect.any(Function),
       toString: expect.any(Function),
     });
 

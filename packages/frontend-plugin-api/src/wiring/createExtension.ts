@@ -17,6 +17,7 @@
 import { AppNode } from '../apis';
 import { PortableSchema, createSchemaFromZod } from '../schema';
 import { Expand } from '../types';
+import { createDataContainer } from './createExtensionBlueprint';
 import {
   AnyExtensionDataRef,
   ExtensionDataRef,
@@ -127,7 +128,6 @@ export interface LegacyCreateExtensionOptions<
   TInputs extends AnyExtensionInputMap,
   TConfig,
   TConfigInput,
-  TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
 > {
   kind?: string;
   namespace?: string;
@@ -136,21 +136,10 @@ export interface LegacyCreateExtensionOptions<
   disabled?: boolean;
   inputs?: TInputs;
   output: TOutput;
-  /** @deprecated - use `config.schema` instead */
   configSchema?: PortableSchema<TConfig, TConfigInput>;
-  config?: {
-    schema: TConfigSchema;
-  };
   factory(context: {
     node: AppNode;
-    config: TConfig &
-      (string extends keyof TConfigSchema
-        ? {}
-        : {
-            [key in keyof TConfigSchema]: z.infer<
-              ReturnType<TConfigSchema[key]>
-            >;
-          });
+    config: TConfig;
     inputs: Expand<ResolvedExtensionInputs<TInputs>>;
   }): Expand<ExtensionDataValues<TOutput>>;
 }
@@ -192,8 +181,6 @@ export type CreateExtensionOptions<
       { optional: boolean; singleton: boolean }
     >;
   },
-  TConfig,
-  TConfigInput,
   TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
   UFactoryOutput extends ExtensionDataValue<any, any>,
 > = {
@@ -204,27 +191,30 @@ export type CreateExtensionOptions<
   disabled?: boolean;
   inputs?: TInputs;
   output: Array<UOutput>;
-  /** @deprecated - use `config.schema` instead */
-  configSchema?: PortableSchema<TConfig, TConfigInput>;
   config?: {
     schema: TConfigSchema;
   };
   factory(context: {
     node: AppNode;
-    config: TConfig &
-      (string extends keyof TConfigSchema
-        ? {}
-        : {
-            [key in keyof TConfigSchema]: z.infer<
-              ReturnType<TConfigSchema[key]>
-            >;
-          });
+    config: {
+      [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
+    };
     inputs: Expand<ResolvedExtensionInputs<TInputs>>;
   }): Iterable<UFactoryOutput>;
 } & VerifyExtensionFactoryOutput<UOutput, UFactoryOutput>;
 
 /** @public */
-export interface ExtensionDefinition<TConfig, TConfigInput = TConfig> {
+export interface ExtensionDefinition<
+  TConfig,
+  TConfigInput = TConfig,
+  UOutput extends AnyExtensionDataRef = AnyExtensionDataRef,
+  TInputs extends {
+    [inputName in string]: ExtensionInput<
+      AnyExtensionDataRef,
+      { optional: boolean; singleton: boolean }
+    >;
+  } = {},
+> {
   $$type: '@backstage/ExtensionDefinition';
   readonly kind?: string;
   readonly namespace?: string;
@@ -232,6 +222,70 @@ export interface ExtensionDefinition<TConfig, TConfigInput = TConfig> {
   readonly attachTo: { id: string; input: string };
   readonly disabled: boolean;
   readonly configSchema?: PortableSchema<TConfig, TConfigInput>;
+
+  override<
+    TExtensionConfigSchema extends {
+      [key in string]: (zImpl: typeof z) => z.ZodType;
+    },
+    UFactoryOutput extends ExtensionDataValue<any, any>,
+    UNewOutput extends AnyExtensionDataRef,
+    TExtraInputs extends {
+      [inputName in string]: ExtensionInput<
+        AnyExtensionDataRef,
+        { optional: boolean; singleton: boolean }
+      >;
+    },
+  >(
+    args: {
+      attachTo?: { id: string; input: string };
+      disabled?: boolean;
+      inputs?: TExtraInputs & {
+        [KName in keyof TInputs]?: `Error: Input '${KName &
+          string}' is already defined in parent definition`;
+      };
+      output?: Array<UNewOutput>;
+      config?: {
+        schema: TExtensionConfigSchema & {
+          [KName in keyof TConfig]?: `Error: Config key '${KName &
+            string}' is already defined in parent schema`;
+        };
+      };
+      factory(
+        originalFactory: (context?: {
+          config?: TConfig;
+          inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
+        }) => ExtensionDataContainer<UOutput>,
+        context: {
+          node: AppNode;
+          config: TConfig & {
+            [key in keyof TExtensionConfigSchema]: z.infer<
+              ReturnType<TExtensionConfigSchema[key]>
+            >;
+          };
+          inputs: Expand<ResolvedExtensionInputs<TInputs & TExtraInputs>>;
+        },
+      ): Iterable<UFactoryOutput>;
+    } & VerifyExtensionFactoryOutput<
+      AnyExtensionDataRef extends UNewOutput ? UOutput : UNewOutput,
+      UFactoryOutput
+    >,
+  ): ExtensionDefinition<
+    {
+      [key in keyof TExtensionConfigSchema]: z.infer<
+        ReturnType<TExtensionConfigSchema[key]>
+      >;
+    } & TConfig,
+    z.input<
+      z.ZodObject<{
+        [key in keyof TExtensionConfigSchema]: ReturnType<
+          TExtensionConfigSchema[key]
+        >;
+      }>
+    > &
+      TConfigInput,
+    AnyExtensionDataRef extends UNewOutput ? UOutput : UNewOutput,
+    TInputs & TExtraInputs
+  >;
 }
 
 /** @internal */
@@ -301,34 +355,26 @@ export function createExtension<
       { optional: boolean; singleton: boolean }
     >;
   },
-  TConfig,
-  TConfigInput,
   TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
   UFactoryOutput extends ExtensionDataValue<any, any>,
 >(
   options: CreateExtensionOptions<
     UOutput,
     TInputs,
-    TConfig,
-    TConfigInput,
     TConfigSchema,
     UFactoryOutput
   >,
 ): ExtensionDefinition<
-  TConfig &
-    (string extends keyof TConfigSchema
-      ? {}
-      : {
-          [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
-        }),
-  TConfigInput &
-    (string extends keyof TConfigSchema
-      ? {}
-      : z.input<
-          z.ZodObject<{
-            [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
-          }>
-        >)
+  {
+    [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
+  },
+  z.input<
+    z.ZodObject<{
+      [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
+    }>
+  >,
+  UOutput,
+  TInputs
 >;
 /**
  * @public
@@ -339,31 +385,14 @@ export function createExtension<
   TInputs extends AnyExtensionInputMap,
   TConfig,
   TConfigInput,
-  TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
 >(
   options: LegacyCreateExtensionOptions<
     TOutput,
     TInputs,
     TConfig,
-    TConfigInput,
-    TConfigSchema
+    TConfigInput
   >,
-): ExtensionDefinition<
-  TConfig &
-    (string extends keyof TConfigSchema
-      ? {}
-      : {
-          [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
-        }),
-  TConfigInput &
-    (string extends keyof TConfigSchema
-      ? {}
-      : z.input<
-          z.ZodObject<{
-            [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
-          }>
-        >)
->;
+): ExtensionDefinition<TConfig, TConfigInput, never, never>;
 export function createExtension<
   UOutput extends AnyExtensionDataRef,
   TInputs extends {
@@ -379,20 +408,12 @@ export function createExtension<
   UFactoryOutput extends ExtensionDataValue<any, any>,
 >(
   options:
-    | CreateExtensionOptions<
-        UOutput,
-        TInputs,
-        TConfig,
-        TConfigInput,
-        TConfigSchema,
-        UFactoryOutput
-      >
+    | CreateExtensionOptions<UOutput, TInputs, TConfigSchema, UFactoryOutput>
     | LegacyCreateExtensionOptions<
         AnyExtensionDataMap,
         TLegacyInputs,
         TConfig,
-        TConfigInput,
-        TConfigSchema
+        TConfigInput
       >,
 ): ExtensionDefinition<
   TConfig &
@@ -408,21 +429,29 @@ export function createExtension<
           z.ZodObject<{
             [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
           }>
-        >)
+        >),
+  UOutput,
+  TInputs
 > {
-  const newConfigSchema = options.config?.schema;
-  if (newConfigSchema && options.configSchema) {
+  if ('configSchema' in options && 'config' in options) {
     throw new Error(`Cannot provide both configSchema and config.schema`);
   }
-  const configSchema = newConfigSchema
-    ? createSchemaFromZod(innerZ =>
+  let configSchema: PortableSchema<any, any> | undefined;
+  if ('configSchema' in options) {
+    configSchema = options.configSchema;
+  }
+  if ('config' in options) {
+    const newConfigSchema = options.config?.schema;
+    configSchema =
+      newConfigSchema &&
+      createSchemaFromZod(innerZ =>
         innerZ.object(
           Object.fromEntries(
             Object.entries(newConfigSchema).map(([k, v]) => [k, v(innerZ)]),
           ),
         ),
-      )
-    : options.configSchema;
+      );
+  }
 
   return {
     $$type: '@backstage/ExtensionDefinition',
@@ -449,6 +478,141 @@ export function createExtension<
       }
       parts.push(`attachTo=${options.attachTo.id}@${options.attachTo.input}`);
       return `ExtensionDefinition{${parts.join(',')}}`;
+    },
+    override: <
+      TExtensionConfigSchema extends {
+        [key in string]: (zImpl: typeof z) => z.ZodType;
+      },
+      UOverrideFactoryOutput extends ExtensionDataValue<any, any>,
+      UNewOutput extends AnyExtensionDataRef,
+      TExtraInputs extends {
+        [inputName in string]: ExtensionInput<
+          AnyExtensionDataRef,
+          { optional: boolean; singleton: boolean }
+        >;
+      },
+    >(overrideOptions: {
+      attachTo?: { id: string; input: string };
+      disabled?: boolean;
+      inputs?: TExtraInputs;
+      output?: Array<UNewOutput>;
+      config?: {
+        schema: TExtensionConfigSchema;
+      };
+      factory(
+        originalFactory: (context?: {
+          config?: {
+            [key in keyof TConfigSchema]: z.infer<
+              ReturnType<TConfigSchema[key]>
+            >;
+          };
+          inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
+        }) => ExtensionDataContainer<UOutput>,
+        context: {
+          node: AppNode;
+          config: {
+            [key in keyof TExtensionConfigSchema]: z.infer<
+              ReturnType<TExtensionConfigSchema[key]>
+            >;
+          } & {
+            [key in keyof TConfigSchema]: z.infer<
+              ReturnType<TConfigSchema[key]>
+            >;
+          };
+          inputs: Expand<ResolvedExtensionInputs<TInputs & TExtraInputs>>;
+        },
+      ): Iterable<UOverrideFactoryOutput>;
+    }): ExtensionDefinition<
+      {
+        [key in keyof TExtensionConfigSchema]: z.infer<
+          ReturnType<TExtensionConfigSchema[key]>
+        >;
+      } & {
+        [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
+      },
+      z.input<
+        z.ZodObject<
+          {
+            [key in keyof TExtensionConfigSchema]: ReturnType<
+              TExtensionConfigSchema[key]
+            >;
+          } & {
+            [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
+          }
+        >
+      >,
+      AnyExtensionDataRef extends UNewOutput ? UOutput : UNewOutput,
+      TInputs & TExtraInputs
+    > => {
+      if (!Array.isArray(options.output)) {
+        throw new Error(
+          'Cannot override an extension that is not declared using the new format with outputs as an array',
+        );
+      }
+      const newOptions = options as CreateExtensionOptions<
+        UOutput,
+        TInputs,
+        TConfigSchema,
+        UFactoryOutput
+      >;
+      const overrideNewConfigSchema = overrideOptions.config?.schema;
+
+      const schema = {
+        ...newOptions.config?.schema,
+        ...overrideNewConfigSchema,
+      } as TConfigSchema & TExtensionConfigSchema;
+
+      return createExtension({
+        kind: newOptions.kind,
+        namespace: newOptions.namespace,
+        name: newOptions.name,
+        attachTo: overrideOptions.attachTo ?? newOptions.attachTo,
+        disabled: overrideOptions.disabled ?? newOptions.disabled,
+        inputs: { ...overrideOptions.inputs, ...newOptions.inputs },
+        output: overrideOptions.output ?? newOptions.output,
+        config: Object.keys(schema).length === 0 ? undefined : { schema },
+        factory: ({ node, config, inputs }) => {
+          if (!overrideOptions.factory) {
+            return newOptions.factory({
+              node,
+              config,
+              inputs: inputs as unknown as Expand<
+                ResolvedExtensionInputs<TInputs>
+              >,
+            });
+          }
+          const parentResult = overrideOptions.factory(
+            (innerContext?: {
+              config?: {
+                [key in keyof TConfigSchema]: z.infer<
+                  ReturnType<TConfigSchema[key]>
+                >;
+              };
+              inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
+            }): ExtensionDataContainer<UOutput> => {
+              return createDataContainer<UOutput>(
+                newOptions.factory({
+                  node,
+                  config: innerContext?.config ?? config,
+                  inputs: (innerContext?.inputs ?? inputs) as any, // TODO: Fix the way input values are overridden
+                }) as Iterable<any>,
+              );
+            },
+            {
+              node,
+              config,
+              inputs,
+            },
+          );
+
+          const deduplicatedResult = new Map<string, UOverrideFactoryOutput>();
+          for (const item of parentResult) {
+            deduplicatedResult.set(item.id, item);
+          }
+
+          return deduplicatedResult.values() as Iterable<UOverrideFactoryOutput>;
+        },
+      } as CreateExtensionOptions<AnyExtensionDataRef extends UNewOutput ? UOutput : UNewOutput, TInputs & TExtraInputs, TConfigSchema & TExtensionConfigSchema, UOverrideFactoryOutput>);
     },
   } as InternalExtensionDefinition<
     TConfig &

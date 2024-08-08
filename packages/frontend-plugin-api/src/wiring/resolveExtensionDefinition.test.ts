@@ -23,6 +23,7 @@ describe('resolveExtensionDefinition', () => {
     version: 'v2',
     attachTo: { id: '', input: '' },
     disabled: false,
+    override: () => ({} as ExtensionDefinition<unknown>),
   };
 
   it.each([
@@ -63,6 +64,7 @@ describe('old resolveExtensionDefinition', () => {
     version: 'v1',
     attachTo: { id: '', input: '' },
     disabled: false,
+    override: () => ({} as ExtensionDefinition<unknown>),
   };
 
   it.each([
