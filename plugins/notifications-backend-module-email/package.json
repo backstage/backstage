@@ -8,9 +8,7 @@
     "pluginPackage": "@backstage/plugin-notifications-backend"
   },
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.cjs.js",
-    "types": "dist/index.d.ts"
+    "access": "public"
   },
   "repository": {
     "type": "git",
