@@ -111,6 +111,7 @@ export function createPublishBitbucketCloudAction(options: {
     description?: string;
     defaultBranch?: string;
     repoVisibility?: 'private' | 'public';
+    gitCommitMessage?: string;
     sourcePath?: string;
     token?: string;
   }>({
@@ -140,6 +141,11 @@ export function createPublishBitbucketCloudAction(options: {
             title: 'Default Branch',
             type: 'string',
             description: `Sets the default branch on the repository. The default value is 'master'`,
+          },
+          gitCommitMessage: {
+            title: 'Git Commit Message',
+            type: 'string',
+            description: `Sets the commit message on the repository. The default value is 'initial commit'`,
           },
           sourcePath: {
             title: 'Source Path',
@@ -178,6 +184,7 @@ export function createPublishBitbucketCloudAction(options: {
         repoUrl,
         description,
         defaultBranch = 'master',
+        gitCommitMessage,
         repoVisibility = 'private',
       } = ctx.input;
 
@@ -256,9 +263,9 @@ export function createPublishBitbucketCloudAction(options: {
         auth,
         defaultBranch,
         logger: ctx.logger,
-        commitMessage: config.getOptionalString(
-          'scaffolder.defaultCommitMessage',
-        ),
+        commitMessage:
+          gitCommitMessage ||
+          config.getOptionalString('scaffolder.defaultCommitMessage'),
         gitAuthorInfo,
       });
 
