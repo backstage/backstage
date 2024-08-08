@@ -581,7 +581,7 @@ export function createExtension<
               >,
             });
           }
-          return overrideOptions.factory(
+          const parentResult = overrideOptions.factory(
             (innerContext?: {
               config?: {
                 [key in keyof TConfigSchema]: z.infer<
@@ -604,6 +604,13 @@ export function createExtension<
               inputs,
             },
           );
+
+          const deduplicatedResult = new Map<string, UOverrideFactoryOutput>();
+          for (const item of parentResult) {
+            deduplicatedResult.set(item.id, item);
+          }
+
+          return deduplicatedResult.values() as Iterable<UOverrideFactoryOutput>;
         },
       } as CreateExtensionOptions<AnyExtensionDataRef extends UNewOutput ? UOutput : UNewOutput, TInputs & TExtraInputs, TConfigSchema & TExtensionConfigSchema, UOverrideFactoryOutput>);
     },

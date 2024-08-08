@@ -11,12 +11,15 @@ const TestCard = EntityCardBlueprint.make({
 });
 
 TestCard.override({
-  attachTo: { id: 'something-else', input: 'overriden' },
+  // override attachment points
+  attachTo: { id: 'something-else', input: 'overridden' },
+  // extend the config schema
   config: {
     schema: {
       newConfig: z => z.string().optional(),
     }
   },
+  // override factory
   *factory(originalFactory, { inputs, config }){
     const originalOutput = originalFactory();
 

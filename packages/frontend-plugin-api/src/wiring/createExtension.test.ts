@@ -686,26 +686,6 @@ describe('createExtension', () => {
         },
       });
 
-      const overridden = testExtension.override({
-        output: [numberDataRef, stringDataRef],
-        *factory(originalFactory) {
-          const output = originalFactory();
-          yield* output.omit(numberDataRef);
-
-          yield numberDataRef(output.get(numberDataRef) + 1);
-        },
-      });
-
-      const overridden = testExtension.override({
-        output: [numberDataRef, stringDataRef],
-        *factory(originalFactory) {
-          const output = originalFactory();
-          yield* output;
-
-          yield numberDataRef(output.get(numberDataRef) + 1);
-        },
-      });
-
       const tester = createExtensionTester(overridden);
 
       expect(tester.data(numberDataRef)).toBe(43);
