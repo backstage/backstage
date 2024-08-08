@@ -38,16 +38,13 @@ export const PageBlueprint = createExtensionBlueprint({
       routeRef,
     }: {
       defaultPath?: string;
-      loader: (opts: {
-        config: typeof config;
-        inputs: typeof inputs;
-      }) => Promise<JSX.Element>;
+      loader: () => Promise<JSX.Element>;
       routeRef?: RouteRef;
     },
-    { config, inputs, node },
+    { config, node },
   ) {
     const ExtensionComponent = lazy(() =>
-      loader({ config, inputs }).then(element => ({ default: () => element })),
+      loader().then(element => ({ default: () => element })),
     );
 
     yield coreExtensionData.routePath(config.path ?? defaultPath!);
