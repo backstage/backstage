@@ -11,7 +11,8 @@ const _default: BackstagePlugin<
   {},
   {
     catalogIndex: ExternalRouteRef<undefined>;
-  }
+  },
+  {}
 >;
 export default _default;
 

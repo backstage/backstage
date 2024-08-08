@@ -18,7 +18,8 @@ const _default: BackstagePlugin<
       kind: string;
       namespace: string;
     }>;
-  }
+  },
+  {}
 >;
 export default _default;
 

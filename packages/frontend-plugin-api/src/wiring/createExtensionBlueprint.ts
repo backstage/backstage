@@ -36,6 +36,9 @@ import {
  * @public
  */
 export type CreateExtensionBlueprintOptions<
+  TKind extends string,
+  TNamespace extends string | undefined,
+  TName extends string | undefined,
   TParams,
   UOutput extends AnyExtensionDataRef,
   TInputs extends {
@@ -48,13 +51,13 @@ export type CreateExtensionBlueprintOptions<
   UFactoryOutput extends ExtensionDataValue<any, any>,
   TDataRefs extends { [name in string]: AnyExtensionDataRef },
 > = {
-  kind: string;
-  namespace?: string | ((params: TParams) => string);
+  kind: TKind;
+  namespace?: TNamespace | ((params: TParams) => TNamespace);
   attachTo: { id: string; input: string };
   disabled?: boolean;
   inputs?: TInputs;
   output: Array<UOutput>;
-  name?: string | ((params: TParams) => string);
+  name?: TName | ((params: TParams) => TName);
   config?: {
     schema: TConfigSchema | ((params: TParams) => TConfigSchema);
   };
@@ -76,6 +79,9 @@ export type CreateExtensionBlueprintOptions<
  * @public
  */
 export interface ExtensionBlueprint<
+  TKind extends string,
+  TNamespace extends string | undefined,
+  TName extends string | undefined,
   TParams,
   UOutput extends AnyExtensionDataRef,
   TInputs extends {
@@ -97,6 +103,8 @@ export interface ExtensionBlueprint<
    * optionally call the original factory with the same params.
    */
   make<
+    TNewNamespace extends string | undefined,
+    TNewName extends string | undefined,
     TExtensionConfigSchema extends {
       [key in string]: (zImpl: typeof z) => z.ZodType;
     },
@@ -110,8 +118,8 @@ export interface ExtensionBlueprint<
     },
   >(
     args: {
-      namespace?: string;
-      name?: string;
+      namespace?: TNewNamespace;
+      name?: TNewName;
       attachTo?: { id: string; input: string };
       disabled?: boolean;
       inputs?: TExtraInputs & {
@@ -166,7 +174,12 @@ export interface ExtensionBlueprint<
         >;
       }>
     > &
-      TConfigInput
+      TConfigInput,
+    AnyExtensionDataRef extends UNewOutput ? UOutput : UNewOutput,
+    TInputs & TExtraInputs,
+    TKind,
+    string | undefined extends TNewNamespace ? TNamespace : TNewNamespace,
+    string | undefined extends TNewName ? TName : TNewName
   >;
 }
 
@@ -198,6 +211,9 @@ export function createDataContainer<UData extends AnyExtensionDataRef>(
  * @internal
  */
 class ExtensionBlueprintImpl<
+  TKind extends string,
+  TNamespace extends string | undefined,
+  TName extends string | undefined,
   TParams,
   UOutput extends AnyExtensionDataRef,
   TInputs extends {
@@ -211,6 +227,9 @@ class ExtensionBlueprintImpl<
 > {
   constructor(
     private readonly options: CreateExtensionBlueprintOptions<
+      TKind,
+      TNamespace,
+      TName,
       TParams,
       UOutput,
       TInputs,
@@ -236,9 +255,11 @@ class ExtensionBlueprintImpl<
         { optional: boolean; singleton: boolean }
       >;
     },
+    TNewNamespace extends string | undefined = undefined,
+    TNewName extends string | undefined = undefined,
   >(args: {
-    namespace?: string;
-    name?: string;
+    namespace?: TNewNamespace;
+    name?: TNewName;
     attachTo?: { id: string; input: string };
     disabled?: boolean;
     inputs?: TExtraInputs;
@@ -360,26 +381,7 @@ class ExtensionBlueprintImpl<
         }
         throw new Error('Either params or factory must be provided');
       },
-    } as CreateExtensionOptions<UOutput, TInputs & TExtraInputs, TConfigSchema & TExtensionConfigSchema, UFactoryOutput>) as ExtensionDefinition<
-      {
-        [key in keyof TExtensionConfigSchema]: z.infer<
-          ReturnType<TExtensionConfigSchema[key]>
-        >;
-      } & {
-        [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
-      },
-      z.input<
-        z.ZodObject<
-          {
-            [key in keyof TExtensionConfigSchema]: ReturnType<
-              TExtensionConfigSchema[key]
-            >;
-          } & {
-            [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
-          }
-        >
-      >
-    >;
+    } as CreateExtensionOptions<TKind, string | undefined extends TNewNamespace ? TNamespace : TNewNamespace, string | undefined extends TNewName ? TName : TNewName, AnyExtensionDataRef extends UNewOutput ? UOutput : UNewOutput, TInputs & TExtraInputs, TConfigSchema & TExtensionConfigSchema, UFactoryOutput>);
   }
 }
 
@@ -400,9 +402,15 @@ export function createExtensionBlueprint<
   },
   TConfigSchema extends { [key in string]: (zImpl: typeof z) => z.ZodType },
   UFactoryOutput extends ExtensionDataValue<any, any>,
+  TKind extends string,
+  TNamespace extends string | undefined = undefined,
+  TName extends string | undefined = undefined,
   TDataRefs extends { [name in string]: AnyExtensionDataRef } = never,
 >(
   options: CreateExtensionBlueprintOptions<
+    TKind,
+    TNamespace,
+    TName,
     TParams,
     UOutput,
     TInputs,
@@ -411,6 +419,9 @@ export function createExtensionBlueprint<
     TDataRefs
   >,
 ): ExtensionBlueprint<
+  TKind,
+  TNamespace,
+  TName,
   TParams,
   UOutput,
   string extends keyof TInputs ? {} : TInputs,
@@ -427,6 +438,9 @@ export function createExtensionBlueprint<
   TDataRefs
 > {
   return new ExtensionBlueprintImpl(options) as ExtensionBlueprint<
+    TKind,
+    TNamespace,
+    TName,
     TParams,
     UOutput,
     string extends keyof TInputs ? {} : TInputs,
