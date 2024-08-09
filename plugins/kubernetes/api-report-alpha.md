@@ -11,6 +11,7 @@ const _default: BackstagePlugin<
   {
     kubernetes: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 export default _default;

@@ -14,7 +14,8 @@ const _default: BackstagePlugin<
   },
   {
     registerApi: ExternalRouteRef<undefined>;
-  }
+  },
+  {}
 >;
 export default _default;
 
