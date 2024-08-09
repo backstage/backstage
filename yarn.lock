@@ -6541,6 +6541,7 @@ __metadata:
     "@backstage/plugin-notifications-node": "workspace:^"
     "@backstage/plugin-signals-backend": "workspace:^"
     "@backstage/plugin-signals-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     "@types/express": ^4.17.6
     "@types/supertest": ^2.0.8
     express: ^4.17.1
@@ -6561,6 +6562,7 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
+    "@backstage/types": "workspace:^"
     "@material-ui/icons": ^4.9.1
   languageName: unknown
   linkType: soft
