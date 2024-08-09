@@ -42,6 +42,7 @@ async function createStore(databaseId: TestDatabaseId) {
 const idOnly = (notification: Notification) => notification.id;
 
 const user = 'user:default/john.doe';
+const otherUser = 'user:default/jane.doe';
 
 const id0 = '08e0871e-e60a-4f68-8110-5ae3513f992e';
 const id1 = '01e0871e-e60a-4f68-8110-5ae3513f992e';
@@ -140,7 +141,7 @@ const testNotification7: Notification = {
 };
 const otherUserNotification: Notification = {
   id: id0,
-  user: 'user:default/jane.doe',
+  user: otherUser,
   created: new Date(now),
   origin: 'plugin-test',
   payload: {
@@ -244,6 +245,34 @@ describe.each(databases.eachSupportedId())(
           read: undefined,
         });
         expect(notifications.map(idOnly)).toEqual([id2, id3, id1]);
+      });
+
+      it('should return correct broadcast notifications for different users', async () => {
+        await storage.saveNotification(testNotification1);
+        await storage.saveBroadcast(testNotification2);
+        await storage.saveNotification(testNotification3);
+        await storage.saveNotification(otherUserNotification);
+
+        await storage.markRead({ ids: [id1, id2], user });
+
+        const notifications = await storage.getNotifications({
+          user,
+        });
+        expect(notifications.map(idOnly)).toEqual([id2, id3, id1]);
+        expect(notifications[1].user).toBe(user);
+
+        let otherUserNotifications = await storage.getNotifications({
+          user: otherUser,
+        });
+        expect(otherUserNotifications.map(idOnly)).toEqual([id0, id2]);
+        expect(otherUserNotifications[1].user).toBeNull();
+
+        await storage.markRead({ ids: [id0, id2], user: otherUser });
+        otherUserNotifications = await storage.getNotifications({
+          user: otherUser,
+        });
+        expect(otherUserNotifications.map(idOnly)).toEqual([id0, id2]);
+        expect(otherUserNotifications[1].user).toBe(otherUser);
       });
 
       it('should allow searching for notifications', async () => {
@@ -570,6 +599,23 @@ describe.each(databases.eachSupportedId())(
         await storage.saveBroadcast(testNotification2);
         const notification = await storage.getNotification({ id: id2 });
         expect(notification?.id).toEqual(id2);
+      });
+
+      it('should consider user for broadcast by id', async () => {
+        await storage.saveBroadcast(testNotification1);
+
+        let notification = await storage.getNotification({ id: id1, user });
+        expect(notification?.id).toEqual(id1);
+        expect(notification?.user).toBeNull();
+        await storage.markRead({ ids: [id1], user });
+        notification = await storage.getNotification({ id: id1, user });
+        expect(notification?.user).toBe(user);
+
+        const otherNotification = await storage.getNotification({
+          id: id1,
+          user: otherUser,
+        });
+        expect(otherNotification?.user).toBeNull();
       });
     });
 
