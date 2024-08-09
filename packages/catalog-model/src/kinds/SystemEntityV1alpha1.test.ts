@@ -91,13 +91,13 @@ describe('SystemV1alpha1Validator', () => {
     await expect(validator.check(entity)).resolves.toBe(true);
   });
 
-  it('rejects empty type', async () => {
-    (entity as any).spec.type = '';
+  it('rejects wrong type', async () => {
+    (entity as any).spec.type = 7;
     await expect(validator.check(entity)).rejects.toThrow(/type/);
   });
 
-  it('rejects wrong type', async () => {
-    (entity as any).spec.type = 7;
+  it('rejects empty type', async () => {
+    (entity as any).spec.type = '';
     await expect(validator.check(entity)).rejects.toThrow(/type/);
   });
 });
