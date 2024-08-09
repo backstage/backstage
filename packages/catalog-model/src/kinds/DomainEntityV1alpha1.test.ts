@@ -95,4 +95,9 @@ describe('DomainV1alpha1Validator', () => {
     (entity as any).spec.type = '';
     await expect(validator.check(entity)).rejects.toThrow(/type/);
   });
+
+  it('rejects wrong type', async () => {
+    (entity as any).spec.type = 7;
+    await expect(validator.check(entity)).rejects.toThrow(/type/);
+  });
 });
