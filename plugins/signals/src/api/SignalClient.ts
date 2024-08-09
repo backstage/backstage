@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 import { SignalApi, SignalSubscriber } from '@backstage/plugin-signals-react';
-import { JsonObject } from '@backstage/types';
+import { JsonObject, Observable } from '@backstage/types';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 import { v4 as uuid } from 'uuid';
+import ObservableImpl from 'zen-observable';
 
 type Subscription = {
   channel: string;
@@ -34,6 +35,7 @@ export class SignalClient implements SignalApi {
   private subscriptions: Map<string, Subscription> = new Map();
   private messageQueue: string[] = [];
   private reconnectTo: any;
+  private readonly observables = new Map<string, Observable<any>>();
 
   static create(options: {
     identity: IdentityApi;
@@ -215,5 +217,30 @@ export class SignalClient implements SignalApi {
           this.reconnect();
         });
     }, this.reconnectTimeout);
+  }
+
+  observe$<TMessage extends JsonObject = JsonObject>(
+    channel: string,
+  ): Observable<TMessage> {
+    if (!this.observables.has(channel)) {
+      this.observables.set(
+        channel,
+        new ObservableImpl<TMessage>(subscriber => {
+          const signalSubscription = this.subscribe<TMessage>(
+            channel,
+            (msg: TMessage) => {
+              subscriber.next(msg);
+            },
+          );
+          return () => {
+            if (signalSubscription) {
+              signalSubscription.unsubscribe();
+            }
+          };
+        }),
+      );
+    }
+
+    return this.observables.get(channel) as Observable<TMessage>;
   }
 }

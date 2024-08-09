@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export * from './useSignal';
+export * from './useSignalsApi';
