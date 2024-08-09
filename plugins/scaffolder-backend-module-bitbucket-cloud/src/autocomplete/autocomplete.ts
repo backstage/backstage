@@ -24,7 +24,7 @@ export async function handleAutocompleteRequest({
 }: {
   resource: string;
   token: string;
-  context: Record<string, string>;
+  context: Record<string, string | undefined>;
 }): Promise<{ results: { title: string }[] }> {
   const client = BitbucketCloudClient.fromConfig({
     host: 'bitbucket.org',

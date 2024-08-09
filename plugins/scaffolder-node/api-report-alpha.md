@@ -19,10 +19,11 @@ export type AutocompleteHandler = ({
 }: {
   resource: string;
   token: string;
-  context: Record<string, string>;
+  context: Record<string, string | undefined>;
 }) => Promise<{
   results: {
     title: string;
+    context?: Record<string, unknown>;
   }[];
 }>;
 

@@ -184,10 +184,11 @@ export interface ScaffolderApi {
     token: string;
     provider: string;
     resource: string;
-    context?: Record<string, string>;
+    context?: Record<string, string | undefined>;
   }): Promise<{
     results: {
       title: string;
+      context?: Record<string, unknown>;
     }[];
   }>;
   cancelTask(taskId: string): Promise<void>;
