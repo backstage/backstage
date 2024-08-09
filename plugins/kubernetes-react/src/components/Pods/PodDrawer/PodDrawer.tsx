@@ -27,11 +27,13 @@ import { ContainerCard } from './ContainerCard';
 
 import { PodAndErrors } from '../types';
 import { KubernetesDrawer } from '../../KubernetesDrawer';
+import { PodDeleteButton } from '../PodDelete/PodDeleteButton';
 import { PendingPodContent } from './PendingPodContent';
 import { ErrorList } from '../ErrorList';
 import { usePodMetrics } from '../../../hooks/usePodMetrics';
 import { ResourceUtilization } from '../../ResourceUtilization';
 import { bytesToMiB, formatMillicores } from '../../../utils/resources';
+import { useIsPodDeleteEnabled, usePodDeleteButtonText } from '../../../hooks';
 
 const useDrawerContentStyles = makeStyles((_theme: Theme) =>
   createStyles({
@@ -76,6 +78,8 @@ export interface PodDrawerProps {
 export const PodDrawer = ({ podAndErrors, open }: PodDrawerProps) => {
   const classes = useDrawerContentStyles();
   const podMetrics = usePodMetrics(podAndErrors.cluster.name, podAndErrors.pod);
+  const isPodDeleteEnabled = useIsPodDeleteEnabled();
+  const usePodDeleteCustomButtonText = usePodDeleteButtonText();
 
   return (
     <KubernetesDrawer
@@ -95,6 +99,16 @@ export const PodDrawer = ({ podAndErrors, open }: PodDrawerProps) => {
       }
     >
       <div className={classes.content}>
+        {isPodDeleteEnabled && (
+          <PodDeleteButton
+            podScope={{
+              podName: podAndErrors.pod.metadata?.name ?? 'unknown',
+              podNamespace: podAndErrors.pod.metadata?.namespace ?? 'default',
+              cluster: podAndErrors.cluster,
+            }}
+            buttonText={usePodDeleteCustomButtonText}
+          />
+        )}
         {podMetrics && (
           <Grid container item xs={12}>
             <Grid item xs={12}>
