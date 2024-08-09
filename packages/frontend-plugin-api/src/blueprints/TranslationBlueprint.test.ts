@@ -56,7 +56,7 @@ describe('TranslationBlueprint', () => {
         "inputs": {},
         "kind": "translation",
         "name": "blob",
-        "namespace": "translationRefId",
+        "namespace": undefined,
         "output": [
           [Function],
         ],

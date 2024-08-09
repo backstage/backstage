@@ -15,10 +15,11 @@
  */
 import React, { ComponentType, lazy } from 'react';
 import { createExtensionBlueprint } from '../wiring';
-import { createSignInPageExtension } from './createSignInPageExtension';
+import { createSignInPageExtension } from '../extensions/createSignInPageExtension';
 import { SignInPageProps } from '@backstage/core-plugin-api';
 import { ExtensionBoundary } from '../components';
 
+/** @public */
 export const SignInPageBlueprint = createExtensionBlueprint({
   kind: 'sign-in-page',
   attachTo: { id: 'app/root', input: 'signInPage' },

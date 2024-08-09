@@ -18,6 +18,7 @@ import { RouteRef } from '../routing';
 import { coreExtensionData, createExtensionBlueprint } from '../wiring';
 import { ExtensionBoundary } from '../components';
 
+/** @public */
 export const PageBlueprint = createExtensionBlueprint({
   kind: 'page',
   attachTo: { id: 'app/routes', input: 'routes' },
@@ -37,7 +38,7 @@ export const PageBlueprint = createExtensionBlueprint({
       loader,
       routeRef,
     }: {
-      defaultPath?: string;
+      defaultPath: string;
       loader: () => Promise<JSX.Element>;
       routeRef?: RouteRef;
     },
@@ -47,7 +48,7 @@ export const PageBlueprint = createExtensionBlueprint({
       loader().then(element => ({ default: () => element })),
     );
 
-    yield coreExtensionData.routePath(config.path ?? defaultPath!);
+    yield coreExtensionData.routePath(config.path ?? defaultPath);
     yield coreExtensionData.reactElement(
       <ExtensionBoundary node={node}>
         <ExtensionComponent />

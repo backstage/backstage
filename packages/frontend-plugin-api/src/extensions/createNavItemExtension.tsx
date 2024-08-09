@@ -21,7 +21,9 @@ import { RouteRef } from '../routing';
 
 /**
  * Helper for creating extensions for a nav item.
+ *
  * @public
+ * @deprecated Use {@link NavItemBlueprint} instead.
  */
 export function createNavItemExtension(options: {
   namespace?: string;

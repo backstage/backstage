@@ -27,7 +27,8 @@ describe('ThemeBlueprint', () => {
   } as AppTheme;
 
   it('should create an extension with sensible defaults', () => {
-    expect(ThemeBlueprint.make({ params: { theme } })).toMatchInlineSnapshot(`
+    expect(ThemeBlueprint.make({ name: 'light', params: { theme } }))
+      .toMatchInlineSnapshot(`
       {
         "$$type": "@backstage/ExtensionDefinition",
         "attachTo": {

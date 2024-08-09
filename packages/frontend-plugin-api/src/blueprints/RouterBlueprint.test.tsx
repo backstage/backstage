@@ -97,7 +97,7 @@ describe('RouterBlueprint', () => {
   });
 
   it('should work with complex options and props', async () => {
-    const extension = RouterBlueprint.make({
+    const extension = RouterBlueprint.makeWithOverrides({
       namespace: 'test',
       name: 'test',
       config: {

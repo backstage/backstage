@@ -13,22 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { createExtensionBlueprint } from '../wiring';
-import { createTranslationExtension } from './createTranslationExtension';
-import { TranslationMessages, TranslationResource } from '../translation';
+import { createApiExtension } from '../extensions/createApiExtension';
+import { AnyApiFactory } from '@backstage/core-plugin-api';
 
-export const TranslationBlueprint = createExtensionBlueprint({
-  kind: 'translation',
-  namespace: ({ resource }) => resource.id,
-  attachTo: { id: 'app', input: 'translations' },
-  output: [createTranslationExtension.translationDataRef],
+/** @public */
+export const ApiBlueprint = createExtensionBlueprint({
+  kind: 'api',
+  attachTo: { id: 'app', input: 'apis' },
+  output: [createApiExtension.factoryDataRef],
   dataRefs: {
-    translation: createTranslationExtension.translationDataRef,
+    factory: createApiExtension.factoryDataRef,
   },
-  factory: ({
-    resource,
-  }: {
-    resource: TranslationResource | TranslationMessages;
-  }) => [createTranslationExtension.translationDataRef(resource)],
+  *factory(params: { factory: AnyApiFactory }) {
+    yield createApiExtension.factoryDataRef(params.factory);
+  },
 });

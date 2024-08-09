@@ -13,18 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ComponentType, PropsWithChildren } from 'react';
-import { createExtensionBlueprint } from '../wiring';
-import { createRouterExtension } from './createRouterExtension';
 
-export const RouterBlueprint = createExtensionBlueprint({
-  kind: 'app-router-component',
-  attachTo: { id: 'app/root', input: 'router' },
-  output: [createRouterExtension.componentDataRef],
+import { createExtensionBlueprint } from '../wiring';
+import { createNavLogoExtension } from '../extensions/createNavLogoExtension';
+
+/** @public */
+export const NavLogoBlueprint = createExtensionBlueprint({
+  kind: 'nav-logo',
+  attachTo: { id: 'app/nav', input: 'logos' },
+  output: [createNavLogoExtension.logoElementsDataRef],
   dataRefs: {
-    component: createRouterExtension.componentDataRef,
+    logoElements: createNavLogoExtension.logoElementsDataRef,
   },
-  *factory({ Component }: { Component: ComponentType<PropsWithChildren<{}>> }) {
-    yield createRouterExtension.componentDataRef(Component);
+  *factory({
+    logoIcon,
+    logoFull,
+  }: {
+    logoIcon: JSX.Element;
+    logoFull: JSX.Element;
+  }) {
+    yield createNavLogoExtension.logoElementsDataRef({
+      logoIcon,
+      logoFull,
+    });
   },
 });

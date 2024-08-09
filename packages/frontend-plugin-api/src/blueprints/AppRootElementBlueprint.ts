@@ -13,27 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { coreExtensionData, createExtensionBlueprint } from '../wiring';
 
-import { createExtensionBlueprint } from '../wiring';
-import { createNavLogoExtension } from './createNavLogoExtension';
-
-export const NavLogoBlueprint = createExtensionBlueprint({
-  kind: 'nav-logo',
-  attachTo: { id: 'app/nav', input: 'logos' },
-  output: [createNavLogoExtension.logoElementsDataRef],
-  dataRefs: {
-    logoElements: createNavLogoExtension.logoElementsDataRef,
-  },
-  *factory({
-    logoIcon,
-    logoFull,
-  }: {
-    logoIcon: JSX.Element;
-    logoFull: JSX.Element;
-  }) {
-    yield createNavLogoExtension.logoElementsDataRef({
-      logoIcon,
-      logoFull,
-    });
+/** @public */
+export const AppRootElementBlueprint = createExtensionBlueprint({
+  kind: 'app-root-element',
+  attachTo: { id: 'app/root', input: 'elements' },
+  output: [coreExtensionData.reactElement],
+  *factory(params: { element: JSX.Element | (() => JSX.Element) }) {
+    yield coreExtensionData.reactElement(
+      typeof params.element === 'function' ? params.element() : params.element,
+    );
   },
 });

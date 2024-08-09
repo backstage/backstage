@@ -17,8 +17,9 @@
 import { IconComponent } from '@backstage/core-plugin-api';
 import { RouteRef } from '../routing';
 import { createExtensionBlueprint } from '../wiring';
-import { createNavItemExtension } from './createNavItemExtension';
+import { createNavItemExtension } from '../extensions/createNavItemExtension';
 
+/** @public */
 export const NavItemBlueprint = createExtensionBlueprint({
   kind: 'nav-item',
   attachTo: { id: 'app/nav', input: 'items' },
@@ -30,6 +31,7 @@ export const NavItemBlueprint = createExtensionBlueprint({
     {
       icon,
       routeRef,
+      title,
     }: {
       title: string;
       icon: IconComponent;
@@ -38,14 +40,14 @@ export const NavItemBlueprint = createExtensionBlueprint({
     { config },
   ) => [
     createNavItemExtension.targetDataRef({
-      title: config.title,
+      title: config.title ?? title,
       icon,
       routeRef,
     }),
   ],
   config: {
-    schema: ({ title }) => ({
-      title: z => z.string().default(title),
-    }),
+    schema: {
+      title: z => z.string().optional(),
+    },
   },
 });

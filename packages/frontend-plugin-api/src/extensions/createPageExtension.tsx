@@ -31,6 +31,7 @@ import { ExtensionDefinition } from '../wiring/createExtension';
  * Helper for creating extensions for a routable React page component.
  *
  * @public
+ * @deprecated Use {@link PageBlueprint} instead.
  */
 export function createPageExtension<
   TConfig extends { path: string },

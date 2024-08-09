@@ -13,15 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { coreExtensionData, createExtensionBlueprint } from '../wiring';
+import { ComponentType, PropsWithChildren } from 'react';
+import { createExtensionBlueprint } from '../wiring';
+import { createRouterExtension } from '../extensions/createRouterExtension';
 
-export const AppRootElementBlueprint = createExtensionBlueprint({
-  kind: 'app-root-element',
-  attachTo: { id: 'app/root', input: 'elements' },
-  output: [coreExtensionData.reactElement],
-  *factory(params: { element: JSX.Element | (() => JSX.Element) }) {
-    yield coreExtensionData.reactElement(
-      typeof params.element === 'function' ? params.element() : params.element,
-    );
+/** @public */
+export const RouterBlueprint = createExtensionBlueprint({
+  kind: 'app-router-component',
+  attachTo: { id: 'app/root', input: 'router' },
+  output: [createRouterExtension.componentDataRef],
+  dataRefs: {
+    component: createRouterExtension.componentDataRef,
+  },
+  *factory({ Component }: { Component: ComponentType<PropsWithChildren<{}>> }) {
+    yield createRouterExtension.componentDataRef(Component);
   },
 });

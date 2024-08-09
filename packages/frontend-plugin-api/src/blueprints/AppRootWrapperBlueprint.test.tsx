@@ -78,7 +78,7 @@ describe('AppRootWrapperBlueprint', () => {
   });
 
   it('should render the complex component wrapper', async () => {
-    const extension = AppRootWrapperBlueprint.make({
+    const extension = AppRootWrapperBlueprint.makeWithOverrides({
       namespace: 'ns',
       name: 'test',
       config: {
@@ -94,6 +94,9 @@ describe('AppRootWrapperBlueprint', () => {
           Component: ({ children }) => (
             <div data-testid={`${config.name}-${inputs.children.length}`}>
               {children}
+              {inputs.children.flatMap(c =>
+                c.get(coreExtensionData.reactElement),
+              )}
             </div>
           ),
         });
@@ -119,9 +122,9 @@ describe('AppRootWrapperBlueprint', () => {
       .render();
 
     await waitFor(() => {
-      expect(getByText('Its Me')).toBeInTheDocument();
       expect(getByText('Hi')).toBeInTheDocument();
       expect(getByTestId('Robin-1')).toBeInTheDocument();
+      expect(getByText('Its Me')).toBeInTheDocument();
     });
   });
 });

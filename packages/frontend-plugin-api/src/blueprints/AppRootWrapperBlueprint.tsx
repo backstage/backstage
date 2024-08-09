@@ -17,8 +17,9 @@
 import React from 'react';
 import { ComponentType, PropsWithChildren } from 'react';
 import { createExtensionBlueprint } from '../wiring';
-import { createAppRootWrapperExtension } from './createAppRootWrapperExtension';
+import { createAppRootWrapperExtension } from '../extensions/createAppRootWrapperExtension';
 
+/** @public */
 export const AppRootWrapperBlueprint = createExtensionBlueprint({
   kind: 'app-root-wrapper',
   attachTo: { id: 'app/root', input: 'wrappers' },

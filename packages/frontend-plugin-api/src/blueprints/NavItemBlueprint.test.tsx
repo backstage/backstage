@@ -44,7 +44,6 @@ describe('NavItemBlueprint', () => {
             "additionalProperties": false,
             "properties": {
               "title": {
-                "default": "TEST",
                 "type": "string",
               },
             },

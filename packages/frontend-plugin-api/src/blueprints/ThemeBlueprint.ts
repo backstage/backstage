@@ -16,12 +16,12 @@
 
 import { AppTheme } from '@backstage/core-plugin-api';
 import { createExtensionBlueprint } from '../wiring';
-import { createThemeExtension } from './createThemeExtension';
+import { createThemeExtension } from '../extensions/createThemeExtension';
 
+/** @public */
 export const ThemeBlueprint = createExtensionBlueprint({
   kind: 'theme',
   namespace: 'app',
-  name: ({ theme }) => theme.id,
   attachTo: { id: 'app', input: 'themes' },
   output: [createThemeExtension.themeDataRef],
   dataRefs: {

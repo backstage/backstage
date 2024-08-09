@@ -106,7 +106,7 @@ describe('PageBlueprint', () => {
   });
 
   it('should allow defining additional inputs to the extension', async () => {
-    const myPage = PageBlueprint.make({
+    const myPage = PageBlueprint.makeWithOverrides({
       name: 'test-page',
       inputs: {
         cards: createExtensionInput([coreExtensionData.reactElement], {

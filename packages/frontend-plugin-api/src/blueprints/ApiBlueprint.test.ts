@@ -30,6 +30,7 @@ describe('ApiBlueprint', () => {
       params: {
         factory,
       },
+      namespace: 'test',
     });
 
     expect(extension).toMatchInlineSnapshot(`
@@ -60,7 +61,7 @@ describe('ApiBlueprint', () => {
     const api = createApiRef<{ foo: string }>({ id: 'test' });
     const factory = jest.fn(() => ({ foo: 'bar' }));
 
-    const extension = ApiBlueprint.make({
+    const extension = ApiBlueprint.makeWithOverrides({
       config: {
         schema: {
           test: z => z.string().default('test'),

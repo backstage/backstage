@@ -127,7 +127,7 @@ describe('createExtensionBlueprint', () => {
       },
     });
 
-    const extension = TestExtensionBlueprint.make({
+    const extension = TestExtensionBlueprint.makeWithOverrides({
       name: 'my-extension',
       factory(origFactory) {
         return origFactory({
@@ -185,11 +185,8 @@ describe('createExtensionBlueprint', () => {
       },
     });
 
-    const extension = TestExtensionBlueprint.make({
+    const extension = TestExtensionBlueprint.makeWithOverrides({
       name: 'my-extension',
-      params: {
-        text: 'Hello, world!',
-      },
       config: {
         schema: {
           something: z => z.string(),
@@ -236,7 +233,7 @@ describe('createExtensionBlueprint', () => {
       },
     });
 
-    TestExtensionBlueprint.make({
+    TestExtensionBlueprint.makeWithOverrides({
       name: 'my-extension',
       params: {
         text: 'Hello, world!',
@@ -266,11 +263,8 @@ describe('createExtensionBlueprint', () => {
       },
     });
 
-    const extension = TestExtensionBlueprint.make({
+    const extension = TestExtensionBlueprint.makeWithOverrides({
       name: 'my-extension',
-      params: {
-        text: 'Hello, world!',
-      },
       config: {
         schema: {
           something: z => z.string(),
@@ -341,65 +335,6 @@ describe('createExtensionBlueprint', () => {
     expect(true).toBe(true);
   });
 
-  it('should allow providing callback for properties to set with params', () => {
-    type TestParams = { test: string };
-
-    const Blueprint = createExtensionBlueprint({
-      kind: 'test-extension',
-      attachTo: { id: 'test', input: 'default' },
-      name: (params: TestParams) => `${params.test}-name`,
-      output: [coreExtensionData.reactElement],
-      namespace: (props: TestParams) => props.test,
-      config: {
-        schema: (props: TestParams) => ({
-          test: z => z.string().default(props.test),
-        }),
-      },
-      factory(params: TestParams) {
-        return [coreExtensionData.reactElement(<div>{params.test}</div>)];
-      },
-    });
-
-    expect(Blueprint.make({ params: { test: 'hello' } }))
-      .toMatchInlineSnapshot(`
-      {
-        "$$type": "@backstage/ExtensionDefinition",
-        "attachTo": {
-          "id": "test",
-          "input": "default",
-        },
-        "configSchema": {
-          "parse": [Function],
-          "schema": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "additionalProperties": false,
-            "properties": {
-              "test": {
-                "default": "hello",
-                "type": "string",
-              },
-            },
-            "type": "object",
-          },
-        },
-        "disabled": false,
-        "factory": [Function],
-        "inputs": {},
-        "kind": "test-extension",
-        "name": "hello-name",
-        "namespace": "hello",
-        "output": [
-          [Function],
-        ],
-        "override": [Function],
-        "toString": [Function],
-        "version": "v2",
-      }
-    `);
-
-    expect(true).toBe(true);
-  });
-
   it('should allow merging of inputs', () => {
     const blueprint = createExtensionBlueprint({
       kind: 'test-extension',
@@ -418,7 +353,7 @@ describe('createExtensionBlueprint', () => {
       },
     });
 
-    blueprint.make({
+    blueprint.makeWithOverrides({
       inputs: {
         test2: createExtensionInput([coreExtensionData.reactElement], {
           singleton: true,
@@ -453,7 +388,7 @@ describe('createExtensionBlueprint', () => {
       },
     });
 
-    blueprint.make({
+    blueprint.makeWithOverrides({
       inputs: {
         // @ts-expect-error
         test: createExtensionInput([]), // Overrides are not allowed
@@ -480,7 +415,7 @@ describe('createExtensionBlueprint', () => {
     });
 
     const ext = toInternalExtensionDefinition(
-      blueprint.make({
+      blueprint.makeWithOverrides({
         output: [testDataRef2],
         factory(origFactory) {
           const parent = origFactory({});
@@ -509,7 +444,7 @@ describe('createExtensionBlueprint', () => {
 
     expect(
       factoryOutput(
-        blueprint.make({
+        blueprint.makeWithOverrides({
           output: [testDataRef1, testDataRef2],
           *factory(origFactory) {
             yield* origFactory({});
@@ -521,7 +456,7 @@ describe('createExtensionBlueprint', () => {
 
     expect(
       factoryOutput(
-        blueprint.make({
+        blueprint.makeWithOverrides({
           output: [testDataRef1, testDataRef2],
           factory(origFactory) {
             return [...origFactory({}), testDataRef2('bar')];
@@ -544,9 +479,9 @@ describe('createExtensionBlueprint', () => {
       },
     });
 
-    // @ts-expect-error
-    blueprint.make({
+    blueprint.makeWithOverrides({
       output: [testDataRef2.optional()],
+      // @ts-expect-error
       *factory() {
         yield testDataRef1('foo');
         yield testDataRef2('bar');
@@ -555,7 +490,7 @@ describe('createExtensionBlueprint', () => {
 
     expect(
       factoryOutput(
-        blueprint.make({
+        blueprint.makeWithOverrides({
           output: [testDataRef2.optional()],
           *factory() {
             yield testDataRef2('bar');
@@ -578,9 +513,9 @@ describe('createExtensionBlueprint', () => {
       },
     });
 
-    // @ts-expect-error
-    blueprint.make({
+    blueprint.makeWithOverrides({
       output: [testDataRef1, testDataRef2],
+      // @ts-expect-error
       *factory(origFactory) {
         yield* origFactory({});
       },
@@ -588,7 +523,7 @@ describe('createExtensionBlueprint', () => {
 
     expect(
       factoryOutput(
-        blueprint.make({
+        blueprint.makeWithOverrides({
           output: [testDataRef1, testDataRef2],
           *factory(origFactory) {
             yield* origFactory({});
