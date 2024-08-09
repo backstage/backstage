@@ -18,7 +18,9 @@ import { createExtension, createExtensionDataRef } from '../wiring';
 
 /**
  * Helper for creating extensions for a nav logos.
+ *
  * @public
+ * @deprecated Use {@link NavLogoBlueprint} instead.
  */
 export function createNavLogoExtension(options: {
   name?: string;

@@ -173,7 +173,9 @@ export const OngoingTask = (props: {
   return (
     <Page themeId="website">
       <Header
-        pageTitleOverride={`Run of ${templateName}`}
+        pageTitleOverride={
+          templateName ? `Run of ${templateName}` : `Scaffolder Run`
+        }
         title={
           <div>
             Run of <code>{templateName}</code>

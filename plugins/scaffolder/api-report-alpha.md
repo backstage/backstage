@@ -30,16 +30,14 @@ const _default: BackstagePlugin<
     edit: SubRouteRef<undefined>;
   },
   {
-    registerComponent: ExternalRouteRef<undefined, true>;
-    viewTechDoc: ExternalRouteRef<
-      {
-        name: string;
-        kind: string;
-        namespace: string;
-      },
-      true
-    >;
-  }
+    registerComponent: ExternalRouteRef<undefined>;
+    viewTechDoc: ExternalRouteRef<{
+      name: string;
+      kind: string;
+      namespace: string;
+    }>;
+  },
+  {}
 >;
 export default _default;
 

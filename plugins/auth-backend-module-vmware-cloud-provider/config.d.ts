@@ -25,6 +25,13 @@ export interface Config {
           scope?: string;
           consoleEndpoint?: string;
           additionalScopes?: string | string[];
+          signIn?: {
+            resolvers: Array<
+              | { resolver: 'profileEmailMatchingUserEntityEmail' }
+              | { resolver: 'emailLocalPartMatchingUserEntityName' }
+              | { resolver: 'emailMatchingUserEntityProfileEmail' }
+            >;
+          };
         };
       };
     };

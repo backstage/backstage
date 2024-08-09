@@ -1,5 +1,35 @@
 # @backstage/plugin-permission-node
 
+## 0.8.1-next.2
+
+### Patch Changes
+
+- df784fe: The MetadataResponse type has been moved to @backstage/plugin-permission-common
+  to match the recent move of MetadataResponseSerializedRule, and should be
+  imported from there going forward. To avoid an immediate breaking change, this
+  type is still re-exported from this package, but is marked as deprecated and
+  will be removed in a future release.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.2
+  - @backstage/plugin-permission-common@0.8.1-next.1
+  - @backstage/backend-common@0.23.4-next.2
+  - @backstage/plugin-auth-node@0.5.0-next.2
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 0.8.1-next.1
+
+### Patch Changes
+
+- 5cd9878: The MetadataResponseSerializedRule type has been moved to @backstage/plugin-permission-common, and should be imported from there going forward. To avoid an immediate breaking change, this type is still re-exported from this package, but is marked as deprecated and will be removed in a future release.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.8.1-next.0
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/backend-common@0.23.4-next.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-auth-node@0.4.18-next.1
+
 ## 0.8.1-next.0
 
 ### Patch Changes

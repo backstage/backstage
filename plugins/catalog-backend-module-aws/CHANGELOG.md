@@ -1,5 +1,39 @@
 # @backstage/plugin-catalog-backend-module-aws
 
+## 0.3.18-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.2
+  - @backstage/backend-common@0.23.4-next.2
+  - @backstage/backend-tasks@0.5.28-next.2
+  - @backstage/plugin-catalog-node@1.12.5-next.2
+  - @backstage/plugin-catalog-common@1.0.26-next.1
+  - @backstage/plugin-kubernetes-common@0.8.2-next.1
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 0.3.18-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/backend-common@0.23.4-next.1
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/plugin-catalog-common@1.0.26-next.0
+  - @backstage/plugin-catalog-node@1.12.5-next.1
+  - @backstage/plugin-kubernetes-common@0.8.2-next.0
+  - @backstage/backend-tasks@0.5.28-next.1
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 0.3.18-next.0
 
 ### Patch Changes

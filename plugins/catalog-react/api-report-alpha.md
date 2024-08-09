@@ -18,18 +18,18 @@ import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 // @alpha (undocumented)
 export const catalogExtensionData: {
   entityContentTitle: ConfigurableExtensionDataRef<
-    'catalog.entity-content-title',
     string,
+    'catalog.entity-content-title',
     {}
   >;
   entityFilterFunction: ConfigurableExtensionDataRef<
-    'catalog.entity-filter-function',
     (entity: Entity) => boolean,
+    'catalog.entity-filter-function',
     {}
   >;
   entityFilterExpression: ConfigurableExtensionDataRef<
-    'catalog.entity-filter-expression',
     string,
+    'catalog.entity-filter-expression',
     {}
   >;
 };
@@ -115,7 +115,15 @@ export function createEntityCardExtension<
     config: TConfig;
     inputs: Expand<ResolvedExtensionInputs<TInputs>>;
   }) => Promise<JSX.Element>;
-}): ExtensionDefinition<TConfig & {}, TConfig & {}>;
+}): ExtensionDefinition<
+  TConfig,
+  TConfig,
+  never,
+  never,
+  string | undefined,
+  string | undefined,
+  string | undefined
+>;
 
 // @alpha (undocumented)
 export function createEntityContentExtension<
@@ -148,7 +156,12 @@ export function createEntityContentExtension<
     filter?: string | undefined;
     title?: string | undefined;
     path?: string | undefined;
-  }
+  },
+  never,
+  never,
+  string | undefined,
+  string | undefined,
+  string | undefined
 >;
 
 // @alpha

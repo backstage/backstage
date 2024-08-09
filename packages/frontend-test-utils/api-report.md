@@ -7,7 +7,10 @@
 
 import { AnalyticsApi } from '@backstage/frontend-plugin-api';
 import { AnalyticsEvent } from '@backstage/frontend-plugin-api';
+import { AppNode } from '@backstage/frontend-plugin-api';
+import { AppNodeInstance } from '@backstage/frontend-plugin-api';
 import { ErrorWithContext } from '@backstage/test-utils';
+import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { MockConfigApi } from '@backstage/test-utils';
@@ -37,6 +40,17 @@ export function createExtensionTester<TConfig>(
 export { ErrorWithContext };
 
 // @public (undocumented)
+export class ExtensionQuery {
+  constructor(node: AppNode);
+  // (undocumented)
+  data<T>(ref: ExtensionDataRef<T>): T | undefined;
+  // (undocumented)
+  get instance(): AppNodeInstance;
+  // (undocumented)
+  get node(): AppNode;
+}
+
+// @public (undocumented)
 export class ExtensionTester {
   // (undocumented)
   add<TConfig, TConfigInput>(
@@ -45,6 +59,10 @@ export class ExtensionTester {
       config?: TConfigInput;
     },
   ): ExtensionTester;
+  // (undocumented)
+  data<T>(ref: ExtensionDataRef<T>): T | undefined;
+  // (undocumented)
+  query(id: string | ExtensionDefinition<any, any>): ExtensionQuery;
   // (undocumented)
   render(options?: { config?: JsonObject }): RenderResult;
 }

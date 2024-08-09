@@ -53,8 +53,7 @@ type TargetRouteMap<
   ExternalRoutes extends { [name: string]: ExternalRouteRef },
 > = {
   [name in keyof ExternalRoutes]: ExternalRoutes[name] extends ExternalRouteRef<
-    infer Params,
-    any
+    infer Params
   >
     ? RouteRef<Params> | SubRouteRef<Params>
     : never;
@@ -72,7 +71,7 @@ export type CreateAppRouteBinder = <
   externalRoutes: TExternalRoutes,
   targetRoutes: PartialKeys<
     TargetRouteMap<TExternalRoutes>,
-    KeysWithType<TExternalRoutes, ExternalRouteRef<any, true>>
+    KeysWithType<TExternalRoutes, ExternalRouteRef<any>>
   >,
 ) => void;
 
@@ -94,11 +93,6 @@ export function resolveRouteBindings(
         const externalRoute = externalRoutes[key];
         if (!externalRoute) {
           throw new Error(`Key ${key} is not an existing external route`);
-        }
-        if (!value && !externalRoute.optional) {
-          throw new Error(
-            `External route ${key} is required but was undefined`,
-          );
         }
         if (value) {
           result.set(externalRoute, value);

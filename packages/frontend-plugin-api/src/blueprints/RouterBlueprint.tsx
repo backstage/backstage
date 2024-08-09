@@ -13,29 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { IconComponent } from '../icons';
-import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
-
-const iconsDataRef = createExtensionDataRef<{
-  [key in string]: IconComponent;
-}>().with({ id: 'core.icons' });
+import { ComponentType, PropsWithChildren } from 'react';
+import { createExtensionBlueprint } from '../wiring';
+import { createRouterExtension } from '../extensions/createRouterExtension';
 
 /** @public */
-export const IconBundleBlueprint = createExtensionBlueprint({
-  kind: 'icon-bundle',
-  namespace: 'app',
-  attachTo: { id: 'app', input: 'icons' },
-  output: {
-    icons: iconsDataRef,
-  },
-  config: {
-    schema: {
-      icons: z => z.string().default('blob'),
-      test: z => z.string(),
-    },
-  },
-  factory: (params: { icons: { [key in string]: IconComponent } }) => params,
+export const RouterBlueprint = createExtensionBlueprint({
+  kind: 'app-router-component',
+  attachTo: { id: 'app/root', input: 'router' },
+  output: [createRouterExtension.componentDataRef],
   dataRefs: {
-    icons: iconsDataRef,
+    component: createRouterExtension.componentDataRef,
+  },
+  *factory({ Component }: { Component: ComponentType<PropsWithChildren<{}>> }) {
+    yield createRouterExtension.componentDataRef(Component);
   },
 });

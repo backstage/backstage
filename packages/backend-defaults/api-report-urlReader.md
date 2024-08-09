@@ -22,6 +22,7 @@ import { HarnessIntegration } from '@backstage/integration';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { Readable } from 'stream';
 import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
+import { ServiceRef } from '@backstage/backend-plugin-api';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { UrlReaderServiceReadTreeOptions } from '@backstage/backend-plugin-api';
 import { UrlReaderServiceReadTreeResponse } from '@backstage/backend-plugin-api';
@@ -414,6 +415,13 @@ export type ReadUrlResponseFactoryFromStreamOptions = {
 };
 
 // @public
+export const urlReaderFactoriesServiceRef: ServiceRef<
+  ReaderFactory,
+  'plugin',
+  'multiton'
+>;
+
+// @public
 export type UrlReaderPredicateTuple = {
   predicate: (url: URL) => boolean;
   reader: UrlReaderService;
@@ -429,6 +437,7 @@ export class UrlReaders {
 export const urlReaderServiceFactory: ServiceFactoryCompat<
   UrlReaderService,
   'plugin',
+  'singleton',
   undefined
 >;
 

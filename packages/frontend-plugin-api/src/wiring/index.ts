@@ -17,21 +17,27 @@
 export { coreExtensionData } from './coreExtensionData';
 export {
   createExtension,
+  type ExtensionDataContainer,
   type ExtensionDefinition,
   type CreateExtensionOptions,
   type ExtensionDataValues,
   type ResolvedExtensionInput,
   type ResolvedExtensionInputs,
+  type LegacyCreateExtensionOptions,
   type AnyExtensionInputMap,
   type AnyExtensionDataMap,
 } from './createExtension';
 export {
   createExtensionInput,
   type ExtensionInput,
+  type LegacyExtensionInput,
 } from './createExtensionInput';
 export {
   createExtensionDataRef,
+  type AnyExtensionDataRef,
   type ExtensionDataRef,
+  type ExtensionDataRefToValue,
+  type ExtensionDataValue,
   type ConfigurableExtensionDataRef,
 } from './createExtensionDataRef';
 export { createPlugin, type PluginOptions } from './createPlugin';

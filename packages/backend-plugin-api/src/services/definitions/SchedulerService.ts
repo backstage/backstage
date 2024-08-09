@@ -96,7 +96,8 @@ export interface SchedulerServiceTaskScheduleDefinition {
         cron: string;
       }
     | Duration
-    | HumanDuration;
+    | HumanDuration
+    | { trigger: 'manual' };
 
   /**
    * The maximum amount of time that a single task invocation can take, before
@@ -193,7 +194,12 @@ export interface SchedulerServiceTaskScheduleDefinitionConfig {
         cron: string;
       }
     | string
-    | HumanDuration;
+    | HumanDuration
+    /**
+     * This task will only run when manually triggered with the `triggerTask` method; no automatic
+     * scheduling. This is useful for locking of global tasks that should not be run concurrently.
+     */
+    | { trigger: 'manual' };
 
   /**
    * The maximum amount of time that a single task invocation can take, before
@@ -361,13 +367,19 @@ function readDuration(config: Config, key: string): HumanDuration {
   return readDurationFromConfig(config, { key });
 }
 
-function readCronOrDuration(
+function readFrequency(
   config: Config,
   key: string,
-): { cron: string } | HumanDuration {
+): { cron: string } | HumanDuration | { trigger: 'manual' } {
   const value = config.get(key);
   if (typeof value === 'object' && (value as { cron?: string }).cron) {
     return value as { cron: string };
+  }
+  if (
+    typeof value === 'object' &&
+    (value as { trigger?: string }).trigger === 'manual'
+  ) {
+    return { trigger: 'manual' };
   }
 
   return readDuration(config, key);
@@ -383,7 +395,7 @@ function readCronOrDuration(
 export function readSchedulerServiceTaskScheduleDefinitionFromConfig(
   config: Config,
 ): SchedulerServiceTaskScheduleDefinition {
-  const frequency = readCronOrDuration(config, 'frequency');
+  const frequency = readFrequency(config, 'frequency');
   const timeout = readDuration(config, 'timeout');
 
   const initialDelay = config.has('initialDelay')

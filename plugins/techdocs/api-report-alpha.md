@@ -18,6 +18,7 @@ const _default: BackstagePlugin<
     }>;
     entityContent: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 export default _default;
@@ -37,7 +38,12 @@ export const techDocsSearchResultListItemExtension: ExtensionDefinition<
     asListItem: boolean;
     asLink: boolean;
     title?: string | undefined;
-  }
+  },
+  never,
+  never,
+  string | undefined,
+  string | undefined,
+  string | undefined
 >;
 
 // (No @packageDocumentation comment for this package)

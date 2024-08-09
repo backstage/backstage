@@ -36,7 +36,10 @@ import { ConfigReader } from '@backstage/config';
 import express from 'express';
 // Direct internal import to avoid duplication
 // eslint-disable-next-line @backstage/no-forbidden-package-imports
-import { InternalBackendFeature } from '@backstage/backend-plugin-api/src/wiring/types';
+import {
+  InternalBackendFeature,
+  InternalBackendRegistrations,
+} from '@backstage/backend-plugin-api/src/wiring/types';
 import { createHealthRouter } from '@backstage/backend-defaults/rootHttpRouter';
 
 /** @public */
@@ -94,7 +97,7 @@ function createPluginsForOrphanModules(features: Array<BackendFeature>) {
   const modulePluginIds = new Set<string>();
 
   for (const feature of features) {
-    if (isInternalBackendFeature(feature)) {
+    if (isInternalBackendRegistrations(feature)) {
       const registrations = feature.getRegistrations();
       for (const registration of registrations) {
         if (registration.type === 'plugin') {
@@ -137,18 +140,7 @@ function createExtensionPointTestModules(
   }
 
   const registrations = features.flatMap(feature => {
-    if (feature.$$type !== '@backstage/BackendFeature') {
-      throw new Error(
-        `Failed to add feature, invalid type '${feature.$$type}'`,
-      );
-    }
-
-    if (isInternalBackendFeature(feature)) {
-      if (feature.version !== 'v1') {
-        throw new Error(
-          `Failed to add feature, invalid version '${feature.version}'`,
-        );
-      }
+    if (isInternalBackendRegistrations(feature)) {
       return feature.getRegistrations();
     }
     return [];
@@ -361,10 +353,28 @@ function registerTestHooks() {
 
 registerTestHooks();
 
-function isInternalBackendFeature(
+function toInternalBackendFeature(
   feature: BackendFeature,
-): feature is InternalBackendFeature {
-  return (
-    typeof (feature as InternalBackendFeature).getRegistrations === 'function'
-  );
+): InternalBackendFeature {
+  if (feature.$$type !== '@backstage/BackendFeature') {
+    throw new Error(`Invalid BackendFeature, bad type '${feature.$$type}'`);
+  }
+  const internal = feature as InternalBackendFeature;
+  if (internal.version !== 'v1') {
+    throw new Error(
+      `Invalid BackendFeature, bad version '${internal.version}'`,
+    );
+  }
+  return internal;
+}
+
+function isInternalBackendRegistrations(
+  feature: BackendFeature,
+): feature is InternalBackendRegistrations {
+  const internal = toInternalBackendFeature(feature);
+  if (internal.featureType === 'registrations') {
+    return true;
+  }
+  // Backwards compatibility for v1 registrations that use duck typing
+  return 'getRegistrations' in internal;
 }

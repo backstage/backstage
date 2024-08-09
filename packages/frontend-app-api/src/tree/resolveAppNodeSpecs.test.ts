@@ -48,6 +48,7 @@ function makeExtDef(
     name,
     attachTo: { id: attachId, input: 'default' },
     disabled: status === 'disabled',
+    override: () => ({} as ExtensionDefinition<unknown>),
   } as ExtensionDefinition<unknown>;
 }
 

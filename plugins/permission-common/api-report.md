@@ -5,6 +5,7 @@
 ```ts
 import { Config } from '@backstage/config';
 import { JsonPrimitive } from '@backstage/types';
+import zodToJsonSchema from 'zod-to-json-schema';
 
 // @public
 export type AllOfCriteria<TQuery> = {
@@ -124,6 +125,20 @@ export function isResourcePermission<T extends string = string>(
 
 // @public
 export function isUpdatePermission(permission: Permission): boolean;
+
+// @public
+export type MetadataResponse = {
+  permissions?: Permission[];
+  rules: MetadataResponseSerializedRule[];
+};
+
+// @public
+export type MetadataResponseSerializedRule = {
+  name: string;
+  description: string;
+  resourceType: string;
+  paramsSchema?: ReturnType<typeof zodToJsonSchema>;
+};
 
 // @public
 export type NotCriteria<TQuery> = {

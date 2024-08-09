@@ -31,6 +31,7 @@ import { Expand } from '../types';
  * MemoryRouter in tests, or to add additional props to a BrowserRouter.
  *
  * @public
+ * @deprecated Use {@link RouterBlueprint} instead.
  */
 export function createRouterExtension<
   TConfig extends {},

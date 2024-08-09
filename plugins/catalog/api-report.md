@@ -371,6 +371,11 @@ export const EntityHasSubcomponentsCard: (
 ) => JSX.Element;
 
 // @public (undocumented)
+export const EntityHasSubdomainsCard: (
+  props: HasSubdomainsCardProps,
+) => JSX.Element;
+
+// @public (undocumented)
 export const EntityHasSystemsCard: (props: HasSystemsCardProps) => JSX.Element;
 
 // @public (undocumented)
@@ -543,6 +548,16 @@ export interface HasResourcesCardProps {
 
 // @public (undocumented)
 export interface HasSubcomponentsCardProps {
+  // (undocumented)
+  tableOptions?: TableOptions;
+  // (undocumented)
+  title?: string;
+  // (undocumented)
+  variant?: InfoCardVariants;
+}
+
+// @public (undocumented)
+export interface HasSubdomainsCardProps {
   // (undocumented)
   tableOptions?: TableOptions;
   // (undocumented)

@@ -110,6 +110,7 @@ export type GitlabProviderConfig = {
   orgEnabled?: boolean;
   schedule?: TaskScheduleDefinition;
   skipForkedRepos?: boolean;
+  excludeRepos?: string[];
 };
 
 // @public

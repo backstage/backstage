@@ -24,6 +24,11 @@ import {
   toInternalExtensionDefinition,
 } from './createExtension';
 import { PortableSchema } from '../schema';
+import { ExtensionInput } from './createExtensionInput';
+import {
+  AnyExtensionDataRef,
+  ExtensionDataValue,
+} from './createExtensionDataRef';
 
 /** @public */
 export interface Extension<TConfig, TConfigInput = TConfig> {
@@ -35,17 +40,42 @@ export interface Extension<TConfig, TConfigInput = TConfig> {
 }
 
 /** @internal */
-export interface InternalExtension<TConfig, TConfigInput>
-  extends Extension<TConfig, TConfigInput> {
-  readonly version: 'v1';
-  readonly inputs: AnyExtensionInputMap;
-  readonly output: AnyExtensionDataMap;
-  factory(options: {
-    node: AppNode;
-    config: TConfig;
-    inputs: ResolvedExtensionInputs<any>;
-  }): ExtensionDataValues<any>;
-}
+export type InternalExtension<TConfig, TConfigInput> = Extension<
+  TConfig,
+  TConfigInput
+> &
+  (
+    | {
+        readonly version: 'v1';
+        readonly inputs: AnyExtensionInputMap;
+        readonly output: AnyExtensionDataMap;
+        factory(options: {
+          node: AppNode;
+          config: TConfig;
+          inputs: ResolvedExtensionInputs<AnyExtensionInputMap>;
+        }): ExtensionDataValues<any>;
+      }
+    | {
+        readonly version: 'v2';
+        readonly inputs: {
+          [inputName in string]: ExtensionInput<
+            AnyExtensionDataRef,
+            { optional: boolean; singleton: boolean }
+          >;
+        };
+        readonly output: Array<AnyExtensionDataRef>;
+        factory(options: {
+          node: AppNode;
+          config: TConfig;
+          inputs: ResolvedExtensionInputs<{
+            [inputName in string]: ExtensionInput<
+              AnyExtensionDataRef,
+              { optional: boolean; singleton: boolean }
+            >;
+          }>;
+        }): Iterable<ExtensionDataValue<any, any>>;
+      }
+  );
 
 /** @internal */
 export function toInternalExtension<TConfig, TConfigInput>(
@@ -57,13 +87,42 @@ export function toInternalExtension<TConfig, TConfigInput>(
       `Invalid extension instance, bad type '${internal.$$type}'`,
     );
   }
-  if (internal.version !== 'v1') {
-    throw new Error(
-      `Invalid extension instance, bad version '${internal.version}'`,
-    );
+  const version = internal.version;
+  if (version !== 'v1' && version !== 'v2') {
+    throw new Error(`Invalid extension instance, bad version '${version}'`);
   }
   return internal;
 }
+
+/** @ignore */
+export type ResolveExtensionId<
+  TExtension extends ExtensionDefinition<any>,
+  TDefaultNamespace extends string | undefined,
+> = TExtension extends ExtensionDefinition<
+  any,
+  any,
+  any,
+  any,
+  infer IKind,
+  infer INamespace,
+  infer IName
+>
+  ? [string | undefined] extends [IKind | INamespace | IName]
+    ? never
+    : (
+        (
+          undefined extends TDefaultNamespace ? INamespace : TDefaultNamespace
+        ) extends infer ISelectedNamespace extends string
+          ? undefined extends IName
+            ? ISelectedNamespace
+            : `${ISelectedNamespace}/${IName}`
+          : IName
+      ) extends infer INamePart extends string
+    ? IKind extends string
+      ? `${IKind}:${INamePart}`
+      : INamePart
+    : never
+  : never;
 
 /** @internal */
 export function resolveExtensionDefinition<TConfig, TConfigInput>(
@@ -71,7 +130,13 @@ export function resolveExtensionDefinition<TConfig, TConfigInput>(
   context?: { namespace?: string },
 ): Extension<TConfig, TConfigInput> {
   const internalDefinition = toInternalExtensionDefinition(definition);
-  const { name, kind, namespace: _, ...rest } = internalDefinition;
+  const {
+    name,
+    kind,
+    namespace: _skip1,
+    override: _skip2,
+    ...rest
+  } = internalDefinition;
   const namespace = internalDefinition.namespace ?? context?.namespace;
 
   const namePart =
@@ -87,10 +152,10 @@ export function resolveExtensionDefinition<TConfig, TConfigInput>(
   return {
     ...rest,
     $$type: '@backstage/Extension',
-    version: 'v1',
+    version: internalDefinition.version,
     id,
     toString() {
       return `Extension{id=${id}}`;
     },
-  } as Extension<TConfig, TConfigInput>;
+  } as InternalExtension<TConfig, TConfigInput>;
 }

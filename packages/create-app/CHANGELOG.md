@@ -1,5 +1,29 @@
 # @backstage/create-app
 
+## 0.5.18-next.3
+
+### Patch Changes
+
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+
+## 0.5.18-next.2
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+
+## 0.5.18-next.1
+
+### Patch Changes
+
+- 6c1081c: Updated dockerfile and `app-config.production.yaml` to make it easier to get started with example data
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+
 ## 0.5.18-next.0
 
 ### Patch Changes

@@ -13,15 +13,13 @@ const _default: BackstagePlugin<
     catalogGraph: RouteRef<undefined>;
   },
   {
-    catalogEntity: ExternalRouteRef<
-      {
-        name: string;
-        kind: string;
-        namespace: string;
-      },
-      true
-    >;
-  }
+    catalogEntity: ExternalRouteRef<{
+      name: string;
+      kind: string;
+      namespace: string;
+    }>;
+  },
+  {}
 >;
 export default _default;
 
