@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { createApiRef } from '@backstage/core-plugin-api';
-import { JsonObject } from '@backstage/types';
+import { JsonObject, Observable } from '@backstage/types';
 
 /** @public */
 export const signalApiRef = createApiRef<SignalApi>({
@@ -32,4 +32,8 @@ export interface SignalApi {
     channel: string,
     onMessage: (message: TMessage) => void,
   ): SignalSubscriber;
+
+  observe$<TMessage extends JsonObject = JsonObject>(
+    channel: string,
+  ): Observable<TMessage>;
 }
