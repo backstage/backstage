@@ -4,6 +4,7 @@
 
 ```ts
 import { BackstagePlugin } from '@backstage/frontend-plugin-api';
+import { ComponentRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 
@@ -22,6 +23,11 @@ const _default: BackstagePlugin<
   {}
 >;
 export default _default;
+
+// Warning: (ae-missing-release-tag) "entityPageDocsEmptyStateRef" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const entityPageDocsEmptyStateRef: ComponentRef<{}>;
 
 // @alpha (undocumented)
 export const techDocsSearchResultListItemExtension: ExtensionDefinition<

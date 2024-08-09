@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren } from 'react';
+import React, { ComponentType, PropsWithChildren } from 'react';
 import { Route, Routes, useRoutes } from 'react-router-dom';
 
 import { Entity } from '@backstage/catalog-model';
 import { EntityPageDocs } from './EntityPageDocs';
 import { TechDocsIndexPage } from './home/components/TechDocsIndexPage';
 import { TechDocsReaderPage } from './reader/components/TechDocsReaderPage';
-import {
-  useEntity,
-  MissingAnnotationEmptyState,
-} from '@backstage/plugin-catalog-react';
+import { componentsApiRef, useApi } from '@backstage/frontend-plugin-api';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import {
   TECHDOCS_ANNOTATION,
   TECHDOCS_EXTERNAL_ANNOTATION,
 } from '@backstage/plugin-techdocs-common';
+import {
+  EntityPageDocsEmptyState,
+  entityPageDocsEmptyStateRef,
+} from './EntityPageDocsEmptyState';
 
 /**
  * Helper that takes in entity and returns true/false if TechDocs is available for the entity
@@ -56,13 +58,10 @@ export const Router = () => {
   );
 };
 
-/**
- * Responsible for registering route to view docs on Entity page
- *
- * @public
- */
-export const EmbeddedDocsRouter = (props: PropsWithChildren<{}>) => {
-  const { children } = props;
+const BaseEmbeddedDocsRouter = (
+  props: PropsWithChildren<{ emptyState: ComponentType }>,
+) => {
+  const { children, emptyState: EmptyStateComponent } = props;
   const { entity } = useEntity();
 
   // Using objects instead of <Route> elements, otherwise "outlet" will be null on sub-pages and add-ons won't render
@@ -84,8 +83,39 @@ export const EmbeddedDocsRouter = (props: PropsWithChildren<{}>) => {
     entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION];
 
   if (!projectId) {
-    return <MissingAnnotationEmptyState annotation={[TECHDOCS_ANNOTATION]} />;
+    return <EmptyStateComponent />;
   }
 
   return element;
+};
+
+/**
+ * Responsible for registering route to view docs on Entity page
+ *
+ * @public
+ */
+export const NewEmbeddedDocsRouter = (props: PropsWithChildren<{}>) => {
+  const componentsApi = useApi(componentsApiRef);
+  const EmptyStateComponent = componentsApi.getComponent(
+    entityPageDocsEmptyStateRef,
+  );
+
+  return (
+    <BaseEmbeddedDocsRouter emptyState={EmptyStateComponent}>
+      {props.children}
+    </BaseEmbeddedDocsRouter>
+  );
+};
+
+/**
+ * Responsible for registering route to view docs on Entity page
+ *
+ * @public
+ */
+export const EmbeddedDocsRouter = (props: PropsWithChildren<{}>) => {
+  return (
+    <BaseEmbeddedDocsRouter emptyState={EntityPageDocsEmptyState}>
+      {props.children}
+    </BaseEmbeddedDocsRouter>
+  );
 };

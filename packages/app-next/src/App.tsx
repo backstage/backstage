@@ -28,8 +28,11 @@ import {
   createExtension,
   createApiExtension,
   createExtensionOverrides,
+  createComponentExtension,
 } from '@backstage/frontend-plugin-api';
-import techdocsPlugin from '@backstage/plugin-techdocs/alpha';
+import techdocsPlugin, {
+  entityPageDocsEmptyStateRef,
+} from '@backstage/plugin-techdocs/alpha';
 import appVisualizerPlugin from '@backstage/plugin-app-visualizer';
 import { homePage } from './HomePage';
 import { convertLegacyApp } from '@backstage/core-compat-api';
@@ -98,6 +101,11 @@ const scmIntegrationApi = createApiExtension({
   }),
 });
 
+const techDocsEntityContentEmptyState = createComponentExtension({
+  ref: entityPageDocsEmptyStateRef,
+  loader: { lazy: async () => () => <div>No docs content found!</div> },
+});
+
 const collectedLegacyPlugins = convertLegacyApp(
   <FlatRoutes>
     <Route path="/catalog-import" element={<CatalogImportPage />} />
@@ -120,6 +128,7 @@ const app = createApp({
         scmAuthExtension,
         scmIntegrationApi,
         notFoundErrorPage,
+        techDocsEntityContentEmptyState,
       ],
     }),
   ],

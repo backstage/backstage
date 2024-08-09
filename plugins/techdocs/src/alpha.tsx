@@ -17,6 +17,7 @@
 import React from 'react';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import {
+  createComponentExtension,
   createPlugin,
   createSchemaFromZod,
   createApiExtension,
@@ -46,6 +47,13 @@ import {
   rootRouteRef,
 } from './routes';
 import { createEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
+import {
+  EntityPageDocsEmptyState,
+  entityPageDocsEmptyStateRef,
+} from './EntityPageDocsEmptyState';
+
+/** @alpha */
+export { entityPageDocsEmptyStateRef };
 
 /** @alpha */
 const techDocsStorageApi = createApiExtension({
@@ -135,6 +143,13 @@ const techDocsReaderPage = createPageExtension({
     ),
 });
 
+const techDocsEntityContentEmptyState = createComponentExtension({
+  ref: entityPageDocsEmptyStateRef,
+  loader: {
+    sync: () => EntityPageDocsEmptyState,
+  },
+});
+
 /**
  * Component responsible for rendering techdocs on entity pages
  *
@@ -144,7 +159,7 @@ const techDocsEntityContent = createEntityContentExtension({
   defaultPath: 'docs',
   defaultTitle: 'TechDocs',
   loader: () =>
-    import('./Router').then(m => compatWrapper(<m.EmbeddedDocsRouter />)),
+    import('./Router').then(m => compatWrapper(<m.NewEmbeddedDocsRouter />)),
 });
 
 /** @alpha */
@@ -164,6 +179,7 @@ export default createPlugin({
     techDocsPage,
     techDocsReaderPage,
     techDocsEntityContent,
+    techDocsEntityContentEmptyState,
     techDocsSearchResultListItemExtension,
   ],
   routes: convertLegacyRouteRefs({
