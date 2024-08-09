@@ -62,7 +62,7 @@ describe('catalogModuleBitbucketServerEntityProvider', () => {
     await startTestBackend({
       extensionPoints: [[catalogProcessingExtensionPoint, extensionPoint]],
       features: [
-        catalogModuleBitbucketServerEntityProvider,
+        catalogModuleBitbucketServerEntityProvider(),
         mockServices.rootConfig.factory({ data: config }),
         mockServices.logger.factory(),
         scheduler.factory,
