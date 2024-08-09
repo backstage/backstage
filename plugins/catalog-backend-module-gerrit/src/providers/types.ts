@@ -26,9 +26,10 @@ export type GerritProjectInfo = {
 export type GerritProjectQueryResult = Record<string, GerritProjectInfo>;
 
 export type GerritProviderConfig = {
+  id: string;
   host: string;
   query: string;
-  id: string;
   branch?: string;
+  catalogPath?: string;
   schedule?: TaskScheduleDefinition;
 };

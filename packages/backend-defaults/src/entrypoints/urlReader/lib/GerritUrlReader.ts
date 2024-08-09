@@ -20,6 +20,7 @@ import {
   UrlReaderServiceReadTreeResponse,
   UrlReaderServiceReadUrlOptions,
   UrlReaderServiceReadUrlResponse,
+  UrlReaderServiceSearchOptions,
   UrlReaderServiceSearchResponse,
 } from '@backstage/backend-plugin-api';
 import { Base64Decode } from 'base64-stream';
@@ -28,15 +29,18 @@ import { Readable } from 'stream';
 import {
   GerritIntegration,
   ScmIntegrations,
+  buildGerritGitilesUrl,
   buildGerritGitilesArchiveUrl,
   getGerritBranchApiUrl,
   getGerritFileContentsApiUrl,
+  getGitilesAuthenticationUrl,
   getGerritRequestOptions,
   parseGerritGitilesUrl,
   parseGerritJsonResponse,
 } from '@backstage/integration';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import { ReadTreeResponseFactory, ReaderFactory } from './types';
+import { Minimatch } from 'minimatch';
 
 /**
  * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for files in Gerrit.
@@ -135,6 +139,34 @@ export class GerritUrlReader implements UrlReaderService {
     url: string,
     options?: UrlReaderServiceReadTreeOptions,
   ): Promise<UrlReaderServiceReadTreeResponse> {
+    const branchInfo = await this.getBranchInfo(url);
+    if (options?.etag === branchInfo.revision) {
+      throw new NotModifiedError();
+    }
+
+    return this.readTreeFromGitiles(url, branchInfo.revision, options);
+  }
+
+  async search(
+    url: string,
+    options?: UrlReaderServiceSearchOptions,
+  ): Promise<UrlReaderServiceSearchResponse> {
+    const branchInfo = await this.getBranchInfo(url);
+    if (options?.etag === branchInfo.revision) {
+      throw new NotModifiedError();
+    }
+
+    const files = await this.searchFilesFromGitiles(url, options);
+
+    return { files, etag: branchInfo.revision };
+  }
+
+  toString() {
+    const { host, password } = this.integration.config;
+    return `gerrit{host=${host},authed=${Boolean(password)}}`;
+  }
+
+  private async getBranchInfo(url: string) {
     const apiUrl = getGerritBranchApiUrl(this.integration.config, url);
     let response: Response;
     try {
@@ -155,23 +187,10 @@ export class GerritUrlReader implements UrlReaderService {
         `${url} could not be read as ${apiUrl}, ${response.status} ${response.statusText}`,
       );
     }
-    const branchInfo = (await parseGerritJsonResponse(response as any)) as {
+
+    return (await parseGerritJsonResponse(response as any)) as {
       revision: string;
     };
-    if (options?.etag === branchInfo.revision) {
-      throw new NotModifiedError();
-    }
-
-    return this.readTreeFromGitiles(url, branchInfo.revision, options);
-  }
-
-  async search(): Promise<UrlReaderServiceSearchResponse> {
-    throw new Error('GerritReader does not implement search');
-  }
-
-  toString() {
-    const { host, password } = this.integration.config;
-    return `gerrit{host=${host},authed=${Boolean(password)}}`;
   }
 
   private async readTreeFromGitiles(
@@ -216,5 +235,85 @@ export class GerritUrlReader implements UrlReaderService {
       filter: options?.filter,
       stripFirstDirectory: false,
     });
+  }
+
+  private async searchFilesFromGitiles(
+    url: string,
+    options?: UrlReaderServiceReadTreeOptions,
+  ) {
+    const { branch, filePath, project } = parseGerritGitilesUrl(
+      this.integration.config,
+      url,
+    );
+
+    /** TODO: export something else from integrations */
+    const gitilesUrl = getGitilesAuthenticationUrl(this.integration.config);
+    const treeUrl = `${gitilesUrl}/${project}/+/refs/heads/${branch}/?format=JSON&recursive`;
+
+    const treeResponse = await fetch(treeUrl, {
+      ...getGerritRequestOptions(this.integration.config),
+      // TODO(freben): The signal cast is there because pre-3.x versions of
+      // node-fetch have a very slightly deviating AbortSignal type signature.
+      // The difference does not affect us in practice however. The cast can
+      // be removed after we support ESM for CLI dependencies and migrate to
+      // version 3 of node-fetch.
+      // https://github.com/backstage/backstage/issues/8242
+      signal: options?.signal as any,
+    });
+    if (treeResponse.status === 404) {
+      throw new NotFoundError(`Not found: ${gitilesUrl}`);
+    }
+    if (!treeResponse.ok) {
+      throw new Error(
+        `${url} could not be read as ${treeUrl}, ${treeResponse.status} ${treeResponse.statusText}`,
+      );
+    }
+
+    const res = (await parseGerritJsonResponse(treeResponse as any)) as {
+      id: string;
+      entries: { mode: number; type: string; id: string; name: string }[];
+    };
+
+    const matcher = new Minimatch(
+      decodeURIComponent(filePath).replace(/^\/+/, ''),
+    );
+
+    const matching = res.entries.filter(
+      item => item.type === 'blob' && item.name && matcher.match(item.name),
+    );
+
+    return matching.map(item => ({
+      url: buildGerritGitilesUrl(
+        this.integration.config,
+        project,
+        branch,
+        item.name,
+      ),
+      content: async () => {
+        const apiUrl = getGerritFileContentsApiUrl(
+          this.integration.config,
+          buildGerritGitilesUrl(
+            this.integration.config,
+            project,
+            branch,
+            item.name,
+          ),
+        );
+        const response = await fetch(apiUrl, {
+          method: 'GET',
+          ...getGerritRequestOptions(this.integration.config),
+          // TODO(freben): The signal cast is there because pre-3.x versions of
+          // node-fetch have a very slightly deviating AbortSignal type signature.
+          // The difference does not affect us in practice however. The cast can
+          // be removed after we support ESM for CLI dependencies and migrate to
+          // version 3 of node-fetch.
+          // https://github.com/backstage/backstage/issues/8242
+          signal: options?.signal as any,
+        });
+
+        const responseBody = await response.text();
+        return Buffer.from(responseBody, 'base64');
+      },
+    }));
   }
 }
