@@ -93,6 +93,29 @@ export class BackstageResolver implements Resolver {
   }
 
   /**
+   * Given a descriptor and a list of possible locators, return a filtered list
+   * containing only locators that satisfy the descriptor. Since each Backstage
+   * release version corresponds to a single version for each package, we just
+   * need to filter that array for locators with that exact version.
+   */
+  async getSatisfying(
+    descriptor: Descriptor,
+    _dependencies: Record<string, Package>,
+    locators: Array<Locator>,
+  ): Promise<{ locators: Locator[]; sorted: boolean }> {
+    const packageVersion = await getPackageVersion(descriptor);
+
+    return {
+      locators: locators.filter(
+        locator =>
+          structUtils.areIdentsEqual(descriptor, locator) &&
+          locator.reference === `npm:${packageVersion}`,
+      ),
+      sorted: true,
+    };
+  }
+
+  /**
    * This plugin does not need to support any locators itself, since the
    * `getCandidates` method will always convert `backstage:` versions into
    * `npm:` versions which can be handled as usual.
@@ -105,14 +128,6 @@ export class BackstageResolver implements Resolver {
    * dependencies.
    */
   getResolutionDependencies = () => ({});
-
-  /**
-   * Candidate versions produced by this resolver always use the `npm:`
-   *  protocol, so this function will never be called.
-   */
-  async getSatisfying(): Promise<{ locators: Locator[]; sorted: boolean }> {
-    throw new Error('Unreachable');
-  }
 
   /**
    * Once transformed into locators (through getCandidates), the versions are

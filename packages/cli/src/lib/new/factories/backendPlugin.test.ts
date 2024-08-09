@@ -78,6 +78,7 @@ describe('backendPlugin factory', () => {
         modified = true;
       },
       createTemporaryDirectory: () => fs.mkdtemp('test'),
+      license: 'Apache-2.0',
     });
 
     expect(modified).toBe(true);

@@ -83,7 +83,7 @@ export function createEntityCardExtension<
       id: 'entity-content:catalog/overview',
       input: 'cards',
     },
-    disabled: options.disabled ?? true,
+    disabled: options.disabled,
     output: {
       element: coreExtensionData.reactElement,
       filterFunction: catalogExtensionData.entityFilterFunction.optional(),
@@ -137,7 +137,7 @@ export function createEntityContentExtension<
       id: 'page:catalog/entity',
       input: 'contents',
     },
-    disabled: options.disabled ?? true,
+    disabled: options.disabled,
     output: {
       element: coreExtensionData.reactElement,
       path: coreExtensionData.routePath,

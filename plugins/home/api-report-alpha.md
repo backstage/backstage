@@ -7,13 +7,13 @@ import { BackstagePlugin } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
-const _default: BackstagePlugin<{}, {}>;
+const _default: BackstagePlugin<{}, {}, {}>;
 export default _default;
 
 // @alpha (undocumented)
 export const titleExtensionDataRef: ConfigurableExtensionDataRef<
-  'title',
   string,
+  'title',
   {}
 >;
 

@@ -68,6 +68,7 @@ export const DefaultTemplateOutputs = (props: {
               justifyContent="center"
               display="flex"
               gridGap={16}
+              flexWrap="wrap"
             >
               <TextOutputs
                 output={output}

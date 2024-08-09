@@ -20,7 +20,7 @@ techdocs:
     # spin up the techdocs-container docker image or to run mkdocs locally (assuming all the dependencies are taken care of).
     # You want to change this to 'local' if you are running Backstage using your own custom Docker setup and want to avoid running
     # into Docker in Docker situation. Read more here
-    # https://backstage.io/docs/features/techdocs/getting-started#disable-docker-in-docker-situation-optional
+    # https://backstage.io/docs/features/techdocs/getting-started/#disabling-docker-in-docker-situation-optional
 
     runIn: 'docker'
 

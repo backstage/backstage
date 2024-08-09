@@ -34,29 +34,29 @@ export async function handleAutocompleteRequest({
 
   switch (resource) {
     case 'workspaces': {
-      const result: string[] = [];
+      const results: { title: string }[] = [];
 
       for await (const page of client.listWorkspaces().iteratePages()) {
-        const slugs = [...page.values!].map(p => p.slug!);
-        result.push(...slugs);
+        const slugs = [...page.values!].map(p => ({ title: p.slug! }));
+        results.push(...slugs);
       }
 
-      return { results: result.map(title => ({ title })) };
+      return { results };
     }
     case 'projects': {
       if (!context.workspace)
         throw new InputError('Missing workspace context parameter');
 
-      const result: string[] = [];
+      const results: { title: string }[] = [];
 
       for await (const page of client
         .listProjectsByWorkspace(context.workspace)
         .iteratePages()) {
-        const keys = [...page.values!].map(p => p.key!);
-        result.push(...keys);
+        const keys = [...page.values!].map(p => ({ title: p.key! }));
+        results.push(...keys);
       }
 
-      return { results: result.map(title => ({ title })) };
+      return { results };
     }
     case 'repositories': {
       if (!context.workspace || !context.project)
@@ -64,18 +64,35 @@ export async function handleAutocompleteRequest({
           'Missing workspace and/or project context parameter',
         );
 
-      const result: string[] = [];
+      const results: { title: string }[] = [];
 
       for await (const page of client
         .listRepositoriesByWorkspace(context.workspace, {
           q: `project.key="${context.project}"`,
         })
         .iteratePages()) {
-        const slugs = [...page.values!].map(p => p.slug!);
-        result.push(...slugs);
+        const slugs = [...page.values!].map(p => ({ title: p.slug! }));
+        results.push(...slugs);
       }
 
-      return { results: result.map(title => ({ title })) };
+      return { results };
+    }
+    case 'branches': {
+      if (!context.workspace || !context.repository)
+        throw new InputError(
+          'Missing workspace and/or repository context parameter',
+        );
+
+      const results: { title: string }[] = [];
+
+      for await (const page of client
+        .listBranchesByRepository(context.repository, context.workspace)
+        .iteratePages()) {
+        const names = [...page.values!].map(p => ({ title: p.name! }));
+        results.push(...names);
+      }
+
+      return { results };
     }
     default:
       throw new InputError(`Invalid resource: ${resource}`);

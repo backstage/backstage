@@ -15,10 +15,10 @@
  */
 
 import {
+  createLegacyAuthAdapters,
   HostDiscovery,
   PluginDatabaseManager,
   UrlReader,
-  createLegacyAuthAdapters,
 } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { CatalogApi } from '@backstage/catalog-client';
@@ -35,15 +35,17 @@ import { ScmIntegrations } from '@backstage/integration';
 import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
 import {
   TaskSpec,
+  TemplateEntityStepV1beta3,
   TemplateEntityV1beta3,
   templateEntityV1beta3Validator,
   TemplateParametersV1beta3,
-  TemplateEntityStepV1beta3,
 } from '@backstage/plugin-scaffolder-common';
 import {
   RESOURCE_TYPE_SCAFFOLDER_ACTION,
+  RESOURCE_TYPE_SCAFFOLDER_TASK,
   RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
   scaffolderActionPermissions,
+  scaffolderTaskPermissions,
   scaffolderTemplatePermissions,
   taskCancelPermission,
   taskCreatePermission,
@@ -51,8 +53,6 @@ import {
   adminTaskReadPermission,
   templateParameterReadPermission,
   templateStepReadPermission,
-  scaffolderTaskPermissions,
-  RESOURCE_TYPE_SCAFFOLDER_TASK,
 } from '@backstage/plugin-scaffolder-common/alpha';
 import express from 'express';
 import Router from 'express-promise-router';
@@ -60,8 +60,9 @@ import { validate } from 'jsonschema';
 import { Logger } from 'winston';
 import { z } from 'zod';
 import {
-  TemplateAction,
   TaskBroker,
+  TaskStatus,
+  TemplateAction,
   TemplateFilter,
   TemplateGlobal,
   SerializedTask,
@@ -649,8 +650,17 @@ export async function createRouter(
         );
       }
 
+      const [statusQuery] = [req.query.status].flat();
+      if (
+        typeof statusQuery !== 'string' &&
+        typeof statusQuery !== 'undefined'
+      ) {
+        throw new InputError('status query parameter must be a string');
+      }
+
       const tasks = await taskBroker.list({
         createdBy: userEntityRef,
+        status: statusQuery ? (statusQuery as TaskStatus) : undefined,
       });
 
       res.status(200).json(tasks);

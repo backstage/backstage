@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { createExtensionDataRef } from './createExtensionDataRef';
+import {
+  ExtensionDataValue,
+  createExtensionDataRef,
+} from './createExtensionDataRef';
 
 describe('createExtensionDataRef', () => {
   it('can be created and read', () => {
@@ -33,5 +36,19 @@ describe('createExtensionDataRef', () => {
     const refOptional = ref.optional();
     expect(refOptional.id).toBe('foo');
     expect(String(refOptional)).toBe('ExtensionDataRef{id=foo,optional=true}');
+  });
+
+  it('can be used to encapsulate a value', () => {
+    const ref = createExtensionDataRef<string>().with({ id: 'foo' });
+    const val: ExtensionDataValue<string, 'foo'> = ref('hello');
+    expect(val).toEqual({
+      $$type: '@backstage/ExtensionDataValue',
+      id: 'foo',
+      value: 'hello',
+    });
+    // @ts-expect-error
+    ref(3);
+    // @ts-expect-error
+    ref();
   });
 });

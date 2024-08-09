@@ -24,7 +24,10 @@ import {
 import { AnyExtensionInputMap } from '../wiring/createExtension';
 import { Expand } from '../types';
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use {@link ApiBlueprint} instead.
+ */
 export function createApiExtension<
   TConfig extends {},
   TInputs extends AnyExtensionInputMap,

@@ -49,6 +49,7 @@ export {
   EntityHasComponentsCard,
   EntityHasResourcesCard,
   EntityHasSubcomponentsCard,
+  EntityHasSubdomainsCard,
   EntityHasSystemsCard,
   EntityLinksCard,
   EntityLabelsCard,
@@ -71,6 +72,7 @@ export type { EntityContextMenuClassKey } from './components/EntityContextMenu';
 export type { HasComponentsCardProps } from './components/HasComponentsCard';
 export type { HasResourcesCardProps } from './components/HasResourcesCard';
 export type { HasSubcomponentsCardProps } from './components/HasSubcomponentsCard';
+export type { HasSubdomainsCardProps } from './components/HasSubdomainsCard';
 export type { HasSystemsCardProps } from './components/HasSystemsCard';
 export type { RelatedEntitiesCardProps } from './components/RelatedEntitiesCard';
 export type { CatalogSearchResultListItemProps } from './components/CatalogSearchResultListItem';

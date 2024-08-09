@@ -37,6 +37,7 @@ import {
   CATALOG_FILTER_EXISTS,
 } from '@backstage/catalog-client';
 import { TechDocsDocument } from '@backstage/plugin-techdocs-node';
+import { TECHDOCS_ANNOTATION } from '@backstage/plugin-techdocs-common';
 
 interface MkSearchIndexDoc {
   title: string;
@@ -107,7 +108,7 @@ export class DefaultTechDocsCollator {
     ).getEntities(
       {
         filter: {
-          'metadata.annotations.backstage.io/techdocs-ref':
+          [`metadata.annotations.${TECHDOCS_ANNOTATION}`]:
             CATALOG_FILTER_EXISTS,
         },
         fields: [

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-puppetdb",
-  "version": "0.1.29-next.0",
+  "version": "0.1.29-next.2",
   "description": "A Backstage catalog backend module that helps integrate towards PuppetDB",
   "backstage": {
     "role": "backend-plugin-module",
@@ -63,7 +63,7 @@
     "@backstage/types": "workspace:^",
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "^2.7.0",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

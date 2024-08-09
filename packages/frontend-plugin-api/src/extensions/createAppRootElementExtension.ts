@@ -30,6 +30,7 @@ import {
  * the app layout. This is useful for example for shared popups and similar.
  *
  * @public
+ * @deprecated Use {@link AppRootElementBlueprint} instead.
  */
 export function createAppRootElementExtension<
   TConfig extends {},

@@ -65,7 +65,11 @@ export interface NotificationService {
 }
 
 // @public (undocumented)
-export const notificationService: ServiceRef<NotificationService, 'plugin'>;
+export const notificationService: ServiceRef<
+  NotificationService,
+  'plugin',
+  'singleton'
+>;
 
 // @public (undocumented)
 export type NotificationServiceOptions = {

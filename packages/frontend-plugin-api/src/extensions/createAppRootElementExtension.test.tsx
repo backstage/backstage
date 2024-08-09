@@ -41,6 +41,7 @@ describe('createAppRootElementExtension', () => {
       },
       factory: expect.any(Function),
       toString: expect.any(Function),
+      override: expect.any(Function),
     });
 
     createExtensionTester(extension).render();
@@ -88,6 +89,7 @@ describe('createAppRootElementExtension', () => {
       },
       factory: expect.any(Function),
       toString: expect.any(Function),
+      override: expect.any(Function),
     });
 
     createExtensionTester(extension, { config: { name: 'Robin' } })

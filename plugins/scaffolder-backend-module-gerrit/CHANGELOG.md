@@ -1,5 +1,28 @@
 # @backstage/plugin-scaffolder-backend-module-gerrit
 
+## 0.1.15-next.2
+
+### Patch Changes
+
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.2
+  - @backstage/plugin-scaffolder-node@0.4.9-next.2
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 0.1.15-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-scaffolder-node@0.4.9-next.1
+
 ## 0.1.15-next.0
 
 ### Patch Changes

@@ -27,6 +27,8 @@ export interface CreateContext {
   isMonoRepo: boolean;
   /** The default version to use for new packages */
   defaultVersion: string;
+  /** License to use for new packages */
+  license: string;
 
   /** Creates a temporary directory. This will always be deleted after creation is done. */
   createTemporaryDirectory(name: string): Promise<string>;

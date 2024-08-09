@@ -70,7 +70,7 @@ export async function loadCliConfig(options: Options) {
       : undefined,
     watch: Boolean(options.watch),
     rootDir: paths.targetRoot,
-    argv: options.args,
+    argv: options.args.flatMap(t => ['--config', paths.resolveTarget(t)]),
   });
 
   const appConfigs = await new Promise<AppConfig[]>((resolve, reject) => {

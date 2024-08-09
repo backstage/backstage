@@ -189,18 +189,12 @@ function OutputLink(props: {
 }) {
   const routeRef = props.node?.instance?.getData(coreExtensionData.routeRef);
 
-  let link: string | undefined = undefined;
-  try {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    link = useRouteRef(routeRef as RouteRef<undefined>)();
-  } catch {
-    /* ignore */
-  }
+  const link = useRouteRef(routeRef as RouteRef<undefined>);
 
   return (
     <Tooltip title={<Typography>{props.dataRef.id}</Typography>}>
       <Box className={props.className}>
-        {link ? <Link to={link}>link</Link> : null}
+        {link ? <Link to={link()}>link</Link> : null}
       </Box>
     </Tooltip>
   );

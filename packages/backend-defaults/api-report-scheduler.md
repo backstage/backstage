@@ -21,6 +21,7 @@ export class DefaultSchedulerService {
 export const schedulerServiceFactory: ServiceFactoryCompat<
   SchedulerService,
   'plugin',
+  'singleton',
   undefined
 >;
 
