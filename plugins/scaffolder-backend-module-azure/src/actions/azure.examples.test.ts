@@ -19,7 +19,10 @@ import { ConfigReader } from '@backstage/config';
 import { createPublishAzureAction } from './azure';
 import { ScmIntegrations } from '@backstage/integration';
 import { WebApi } from 'azure-devops-node-api';
-import { initRepoAndPush } from '@backstage/plugin-scaffolder-node';
+import {
+  getRepoSourceDirectory,
+  initRepoAndPush,
+} from '@backstage/plugin-scaffolder-node';
 import { examples } from './azure.examples';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
@@ -46,6 +49,10 @@ describe('publish:azure examples', () => {
       azure: [
         {
           host: 'dev.azure.com',
+          credentials: [{ personalAccessToken: 'tokenlols' }],
+        },
+        {
+          host: 'test.azure.com',
           credentials: [{ personalAccessToken: 'tokenlols' }],
         },
       ],
@@ -108,6 +115,174 @@ describe('publish:azure examples', () => {
       dir: mockContext.workspacePath,
       remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
       defaultBranch: 'main',
+      auth: { username: 'notempty', password: 'tokenlols' },
+      logger: mockContext.logger,
+      commitMessage: 'initial commit',
+      gitAuthorInfo: {},
+    });
+  });
+
+  it(`should ${examples[3].description}`, async () => {
+    mockGitClient.createRepository.mockResolvedValue({
+      remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+      webUrl: 'https://dev.azure.com/organization/project/_git/repo',
+      id: '709e891c-dee7-4f91-b963-534713c0737f',
+    });
+
+    let input;
+    try {
+      input = yaml.parse(examples[3].example).steps[0].input;
+    } catch (error) {
+      console.error('Failed to parse YAML:', error);
+    }
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        ...input,
+      },
+    });
+
+    expect(initRepoAndPush).toHaveBeenCalledWith({
+      dir: mockContext.workspacePath,
+      remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+      defaultBranch: 'master',
+      auth: { username: 'notempty', password: 'tokenlols' },
+      logger: mockContext.logger,
+      commitMessage: input.gitCommitMessage,
+      gitAuthorInfo: {},
+    });
+  });
+
+  it(`should ${examples[4].description}`, async () => {
+    mockGitClient.createRepository.mockResolvedValue({
+      remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+      webUrl: 'https://dev.azure.com/organization/project/_git/repo',
+      id: '709e891c-dee7-4f91-b963-534713c0737f',
+    });
+
+    let input;
+    try {
+      input = yaml.parse(examples[4].example).steps[0].input;
+    } catch (error) {
+      console.error('Failed to parse YAML:', error);
+    }
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        ...input,
+      },
+    });
+
+    expect(initRepoAndPush).toHaveBeenCalledWith({
+      dir: mockContext.workspacePath,
+      remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+      defaultBranch: 'master',
+      auth: { username: 'notempty', password: 'tokenlols' },
+      logger: mockContext.logger,
+      commitMessage: 'initial commit',
+      gitAuthorInfo: {
+        name: input.gitAuthorName,
+        email: input.gitAuthorEmail,
+      },
+    });
+  });
+
+  it(`should ${examples[5].description}`, async () => {
+    mockGitClient.createRepository.mockResolvedValue({
+      remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+      webUrl: 'https://dev.azure.com/organization/project/_git/repo',
+      id: '709e891c-dee7-4f91-b963-534713c0737f',
+    });
+
+    let input;
+    try {
+      input = yaml.parse(examples[5].example).steps[0].input;
+    } catch (error) {
+      console.error('Failed to parse YAML:', error);
+    }
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        ...input,
+      },
+    });
+
+    expect(initRepoAndPush).toHaveBeenCalledWith({
+      dir: getRepoSourceDirectory(mockContext.workspacePath, input.sourcePath),
+      remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+      defaultBranch: 'master',
+      auth: { username: 'notempty', password: 'tokenlols' },
+      logger: mockContext.logger,
+      commitMessage: 'initial commit',
+      gitAuthorInfo: {},
+    });
+  });
+
+  it(`should ${examples[6].description}`, async () => {
+    mockGitClient.createRepository.mockResolvedValue({
+      remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+      webUrl: 'https://dev.azure.com/organization/project/_git/repo',
+      id: '709e891c-dee7-4f91-b963-534713c0737f',
+    });
+
+    let input;
+    try {
+      input = yaml.parse(examples[6].example).steps[0].input;
+    } catch (error) {
+      console.error('Failed to parse YAML:', error);
+    }
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        ...input,
+      },
+    });
+
+    expect(initRepoAndPush).toHaveBeenCalledWith({
+      dir: mockContext.workspacePath,
+      remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+      defaultBranch: 'master',
+      auth: { username: 'notempty', password: input.token },
+      logger: mockContext.logger,
+      commitMessage: 'initial commit',
+      gitAuthorInfo: {},
+    });
+  });
+
+  it(`should ${examples[7].description}`, async () => {
+    mockGitClient.createRepository.mockResolvedValue({
+      remoteUrl: 'https://test.azure.com/organization/project/_git/repo',
+      webUrl: 'https://test.azure.com/organization/project/_git/repo',
+      id: '709e891c-dee7-4f91-b963-534713c0737f',
+    });
+
+    let input;
+    try {
+      input = yaml.parse(examples[7].example).steps[0].input;
+    } catch (error) {
+      console.error('Failed to parse YAML:', error);
+    }
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        ...input,
+      },
+    });
+
+    expect(initRepoAndPush).toHaveBeenCalledWith({
+      dir: mockContext.workspacePath,
+      remoteUrl: 'https://test.azure.com/organization/project/_git/repo',
+      defaultBranch: 'master',
       auth: { username: 'notempty', password: 'tokenlols' },
       logger: mockContext.logger,
       commitMessage: 'initial commit',
