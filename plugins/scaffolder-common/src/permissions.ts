@@ -17,7 +17,7 @@
 import { createPermission } from '@backstage/plugin-permission-common';
 
 /**
- * Permission resource type which corresponds to a scaffolder templates.
+ * Permission resource type which corresponds to scaffolder templates.
  *
  * @alpha
  */
@@ -29,6 +29,13 @@ export const RESOURCE_TYPE_SCAFFOLDER_TEMPLATE = 'scaffolder-template';
  * @alpha
  */
 export const RESOURCE_TYPE_SCAFFOLDER_ACTION = 'scaffolder-action';
+
+/**
+ * Permission resource type which corresponds to scaffolder tasks
+ *
+ * @alpha
+ */
+export const RESOURCE_TYPE_SCAFFOLDER_TASK = 'scaffolder-task';
 
 /**
  * This permission is used to authorize actions that involve executing
@@ -80,12 +87,25 @@ export const templateStepReadPermission = createPermission({
 
 /**
  * This permission is used to authorize actions that involve reading one or more tasks in the scaffolder,
- * and reading logs of tasks
+ * and reading logs of tasks.
  *
  * @alpha
  */
 export const taskReadPermission = createPermission({
   name: 'scaffolder.task.read',
+  attributes: {
+    action: 'read',
+  },
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_TASK,
+});
+
+/**
+ * This permission is used to authorize actions involving reading information about any task
+ *
+ * @alpha
+ */
+export const adminTaskReadPermission = createPermission({
+  name: 'scaffolder.task.admin.read',
   attributes: {
     action: 'read',
   },
@@ -111,6 +131,7 @@ export const taskCreatePermission = createPermission({
 export const taskCancelPermission = createPermission({
   name: 'scaffolder.task.cancel',
   attributes: {},
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_TASK,
 });
 
 /**
@@ -136,6 +157,7 @@ export const scaffolderTaskPermissions = [
   taskCancelPermission,
   taskCreatePermission,
   taskReadPermission,
+  adminTaskReadPermission,
 ];
 
 /**

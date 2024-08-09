@@ -72,14 +72,22 @@ const ListTaskPageContent = (props: MyTaskPageProps) => {
 
   if (error) {
     return (
-      <>
-        <ErrorPanel error={error} />
-        <EmptyState
-          missing="info"
-          title="No information to display"
-          description="There are no tasks or there was an issue communicating with backend."
-        />
-      </>
+      <CatalogFilterLayout>
+        <CatalogFilterLayout.Filters>
+          <OwnerListPicker
+            filter={ownerFilter}
+            onSelectOwner={id => setOwnerFilter(id)}
+          />
+        </CatalogFilterLayout.Filters>
+        <CatalogFilterLayout.Content>
+          <ErrorPanel error={error} />
+          <EmptyState
+            missing="info"
+            title="No information to display"
+            description="There are no tasks or there was an issue communicating with backend."
+          />
+        </CatalogFilterLayout.Content>
+      </CatalogFilterLayout>
     );
   }
 

@@ -41,6 +41,7 @@ import {
   taskCancelPermission,
   taskReadPermission,
   taskCreatePermission,
+  RESOURCE_TYPE_SCAFFOLDER_TASK,
 } from '@backstage/plugin-scaffolder-common/alpha';
 
 const useStyles = makeStyles(theme => ({
@@ -89,13 +90,14 @@ export const OngoingTask = (props: {
   const [logsVisible, setLogVisibleState] = useState(false);
   const [buttonBarVisible, setButtonBarVisibleState] = useState(true);
 
-  // Used dummy string value for `resourceRef` since `allowed` field will always return `false` if `resourceRef` is `undefined`
   const { allowed: canCancelTask } = usePermission({
     permission: taskCancelPermission,
+    resourceRef: RESOURCE_TYPE_SCAFFOLDER_TASK,
   });
 
   const { allowed: canReadTask } = usePermission({
     permission: taskReadPermission,
+    resourceRef: RESOURCE_TYPE_SCAFFOLDER_TASK,
   });
 
   const { allowed: canCreateTask } = usePermission({

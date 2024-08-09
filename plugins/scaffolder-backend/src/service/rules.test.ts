@@ -22,6 +22,7 @@ import {
   hasProperty,
   hasStringProperty,
   hasTag,
+  isTaskOwner,
 } from './rules';
 import { createConditionAuthorizer } from '@backstage/plugin-permission-node';
 import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
@@ -521,5 +522,25 @@ describe('hasStringProperty', () => {
         ).toEqual(true);
       },
     );
+  });
+});
+
+describe('isTaskOwner', () => {
+  describe('apply', () => {
+    const owner = 'user-id';
+    it('returns false when createdBy is not matched', () => {
+      expect(
+        isTaskOwner.apply(owner, {
+          createdBy: 'not-matched',
+        }),
+      ).toEqual(false);
+    });
+    it('returns true when createdBy matches', () => {
+      expect(
+        isTaskOwner.apply(owner, {
+          createdBy: 'user-id',
+        }),
+      ).toEqual(true);
+    });
   });
 });

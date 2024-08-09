@@ -48,9 +48,11 @@ import {
   taskCancelPermission,
   taskCreatePermission,
   taskReadPermission,
+  adminTaskReadPermission,
   templateParameterReadPermission,
   templateStepReadPermission,
   scaffolderTaskPermissions,
+  RESOURCE_TYPE_SCAFFOLDER_TASK,
 } from '@backstage/plugin-scaffolder-common/alpha';
 import express from 'express';
 import Router from 'express-promise-router';
@@ -62,6 +64,7 @@ import {
   TaskBroker,
   TemplateFilter,
   TemplateGlobal,
+  SerializedTask,
 } from '@backstage/plugin-scaffolder-node';
 import {
   createBuiltinActions,
@@ -78,7 +81,11 @@ import {
   createPermissionIntegrationRouter,
   PermissionRule,
 } from '@backstage/plugin-permission-node';
-import { scaffolderActionRules, scaffolderTemplateRules } from './rules';
+import {
+  scaffolderActionRules,
+  scaffolderTaskRules,
+  scaffolderTemplateRules,
+} from './rules';
 import { Duration } from 'luxon';
 import {
   AuthService,
@@ -93,12 +100,23 @@ import {
   IdentityApiGetIdentityRequest,
 } from '@backstage/plugin-auth-node';
 import { InternalTaskSecrets } from '../scaffolder/tasks/types';
-import { checkPermission } from '../util/checkPermissions';
+import {
+  checkBasicPermission,
+  checkTaskPermission,
+} from '../util/checkPermissions';
 import {
   AutocompleteHandler,
   WorkspaceProvider,
 } from '@backstage/plugin-scaffolder-node/alpha';
 
+/**
+ *
+ * @public
+ */
+export type ScaffolderPermissionRuleInput =
+  | TemplatePermissionRuleInput
+  | ActionPermissionRuleInput
+  | TaskPermissionRuleInput;
 /**
  *
  * @public
@@ -112,7 +130,7 @@ export type TemplatePermissionRuleInput<
   TParams
 >;
 function isTemplatePermissionRuleInput(
-  permissionRule: TemplatePermissionRuleInput | ActionPermissionRuleInput,
+  permissionRule: ScaffolderPermissionRuleInput,
 ): permissionRule is TemplatePermissionRuleInput {
   return permissionRule.resourceType === RESOURCE_TYPE_SCAFFOLDER_TEMPLATE;
 }
@@ -130,9 +148,22 @@ export type ActionPermissionRuleInput<
   TParams
 >;
 function isActionPermissionRuleInput(
-  permissionRule: TemplatePermissionRuleInput | ActionPermissionRuleInput,
+  permissionRule: ScaffolderPermissionRuleInput,
 ): permissionRule is ActionPermissionRuleInput {
   return permissionRule.resourceType === RESOURCE_TYPE_SCAFFOLDER_ACTION;
+}
+
+/**
+ *
+ * @public
+ */
+export type TaskPermissionRuleInput<
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> = PermissionRule<string, {}, typeof RESOURCE_TYPE_SCAFFOLDER_TASK, TParams>;
+function isTaskPermissionRuleInput(
+  permissionRule: ScaffolderPermissionRuleInput,
+): permissionRule is TaskPermissionRuleInput {
+  return permissionRule.resourceType === RESOURCE_TYPE_SCAFFOLDER_TASK;
 }
 
 /**
@@ -164,9 +195,7 @@ export interface RouterOptions {
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   additionalWorkspaceProviders?: Record<string, WorkspaceProvider>;
   permissions?: PermissionsService;
-  permissionRules?: Array<
-    TemplatePermissionRuleInput | ActionPermissionRuleInput
-  >;
+  permissionRules?: Array<ScaffolderPermissionRuleInput>;
   auth?: AuthService;
   httpAuth?: HttpAuthService;
   identity?: IdentityApi;
@@ -404,15 +433,21 @@ export async function createRouter(
   const actionRules: ActionPermissionRuleInput[] = Object.values(
     scaffolderActionRules,
   );
-
+  const taskRules: TaskPermissionRuleInput[] =
+    Object.values(scaffolderTaskRules);
   if (permissionRules) {
     templateRules.push(
       ...permissionRules.filter(isTemplatePermissionRuleInput),
     );
     actionRules.push(...permissionRules.filter(isActionPermissionRuleInput));
+    taskRules.push(...permissionRules.filter(isTaskPermissionRuleInput));
   }
 
-  const isAuthorized = createConditionAuthorizer(Object.values(templateRules));
+  const isTemplateAuthorized = createConditionAuthorizer(
+    Object.values(templateRules),
+  );
+
+  const isTaskAuthorized = createConditionAuthorizer(Object.values(taskRules));
 
   const permissionIntegrationRouter = createPermissionIntegrationRouter({
     resources: [
@@ -426,11 +461,26 @@ export async function createRouter(
         permissions: scaffolderActionPermissions,
         rules: actionRules,
       },
+      {
+        resourceType: RESOURCE_TYPE_SCAFFOLDER_TASK,
+        permissions: scaffolderTaskPermissions,
+        rules: taskRules,
+      },
     ],
     permissions: scaffolderTaskPermissions,
   });
 
   router.use(permissionIntegrationRouter);
+
+  async function getTaskById(taskId: string): Promise<SerializedTask> {
+    const task = await taskBroker.get(taskId);
+    if (!task) {
+      throw new NotFoundError(`Task with id ${taskId} does not exist`);
+    }
+    // Do not disclose secrets
+    delete task.secrets;
+    return task;
+  }
 
   router
     .get(
@@ -484,10 +534,11 @@ export async function createRouter(
       });
 
       const credentials = await httpAuth.credentials(req);
-      await checkPermission({
+      await checkBasicPermission({
         credentials,
         permissions: [taskCreatePermission],
         permissionService: permissions,
+        throwError: true,
       });
 
       const { token } = await auth.getPluginRequestToken({
@@ -567,10 +618,12 @@ export async function createRouter(
     })
     .get('/v2/tasks', async (req, res) => {
       const credentials = await httpAuth.credentials(req);
-      await checkPermission({
+
+      const isAdminUser = await checkBasicPermission({
         credentials,
-        permissions: [taskReadPermission],
+        permissions: [adminTaskReadPermission],
         permissionService: permissions,
+        throwError: false,
       });
 
       const [userEntityRef] = [req.query.createdBy].flat();
@@ -581,6 +634,15 @@ export async function createRouter(
         throw new InputError('createdBy query parameter must be a string');
       }
 
+      if (!isAdminUser) {
+        await checkTaskPermission({
+          credentials,
+          permission: taskReadPermission,
+          permissionService: permissions,
+          createdBy: userEntityRef,
+          isTaskAuthorized,
+        });
+      }
       if (!taskBroker.list) {
         throw new Error(
           'TaskBroker does not support listing tasks, please implement the list method on the TaskBroker.',
@@ -595,43 +657,64 @@ export async function createRouter(
     })
     .get('/v2/tasks/:taskId', async (req, res) => {
       const credentials = await httpAuth.credentials(req);
-      await checkPermission({
+      const isAdminUser = await checkBasicPermission({
         credentials,
-        permissions: [taskReadPermission],
+        permissions: [adminTaskReadPermission],
         permissionService: permissions,
+        throwError: false,
       });
 
       const { taskId } = req.params;
-      const task = await taskBroker.get(taskId);
-      if (!task) {
-        throw new NotFoundError(`Task with id ${taskId} does not exist`);
+      const task = await getTaskById(taskId);
+      if (!isAdminUser) {
+        await checkTaskPermission({
+          credentials,
+          permission: taskReadPermission,
+          permissionService: permissions,
+          createdBy: task.createdBy,
+          isTaskAuthorized,
+        });
       }
-      // Do not disclose secrets
-      delete task.secrets;
+
       res.status(200).json(task);
     })
     .post('/v2/tasks/:taskId/cancel', async (req, res) => {
       const credentials = await httpAuth.credentials(req);
-      // Requires both read and cancel permissions
-      await checkPermission({
+      const { taskId } = req.params;
+      const task = await getTaskById(taskId);
+
+      await checkTaskPermission({
         credentials,
-        permissions: [taskCancelPermission, taskReadPermission],
+        permission: taskCancelPermission,
         permissionService: permissions,
+        createdBy: task.createdBy,
+        isTaskAuthorized,
       });
 
-      const { taskId } = req.params;
       await taskBroker.cancel?.(taskId);
       res.status(200).json({ status: 'cancelled' });
     })
     .get('/v2/tasks/:taskId/eventstream', async (req, res) => {
       const credentials = await httpAuth.credentials(req);
-      await checkPermission({
+      const isAdminUser = await checkBasicPermission({
         credentials,
-        permissions: [taskReadPermission],
+        permissions: [adminTaskReadPermission],
         permissionService: permissions,
+        throwError: false,
       });
 
       const { taskId } = req.params;
+      if (!isAdminUser) {
+        const task = await getTaskById(taskId);
+        await checkTaskPermission({
+          credentials,
+          permission: taskReadPermission,
+          permissionService: permissions,
+          createdBy: task.createdBy,
+          isTaskAuthorized,
+        });
+      }
+
       const after =
         req.query.after !== undefined ? Number(req.query.after) : undefined;
 
@@ -680,13 +763,26 @@ export async function createRouter(
     })
     .get('/v2/tasks/:taskId/events', async (req, res) => {
       const credentials = await httpAuth.credentials(req);
-      await checkPermission({
+
+      const isAdminUser = await checkBasicPermission({
         credentials,
-        permissions: [taskReadPermission],
+        permissions: [adminTaskReadPermission],
         permissionService: permissions,
+        throwError: false,
       });
 
       const { taskId } = req.params;
+      const task = await getTaskById(taskId);
+      if (!isAdminUser) {
+        await checkTaskPermission({
+          credentials,
+          permission: taskReadPermission,
+          permissionService: permissions,
+          createdBy: task.createdBy,
+          isTaskAuthorized,
+        });
+      }
+
       const after = Number(req.query.after) || undefined;
 
       // cancel the request after 30 seconds. this aligns with the recommendations of RFC 6202.
@@ -717,10 +813,11 @@ export async function createRouter(
     })
     .post('/v2/dry-run', async (req, res) => {
       const credentials = await httpAuth.credentials(req);
-      await checkPermission({
+      await checkBasicPermission({
         credentials,
         permissions: [taskCreatePermission],
         permissionService: permissions,
+        throwError: true,
       });
 
       const bodySchema = z.object({
@@ -857,18 +954,18 @@ export async function createRouter(
     // Authorize parameters
     if (Array.isArray(template.spec.parameters)) {
       template.spec.parameters = template.spec.parameters.filter(step =>
-        isAuthorized(parameterDecision, step),
+        isTemplateAuthorized(parameterDecision, step),
       );
     } else if (
       template.spec.parameters &&
-      !isAuthorized(parameterDecision, template.spec.parameters)
+      !isTemplateAuthorized(parameterDecision, template.spec.parameters)
     ) {
       template.spec.parameters = undefined;
     }
 
     // Authorize steps
     template.spec.steps = template.spec.steps.filter(step =>
-      isAuthorized(stepDecision, step),
+      isTemplateAuthorized(stepDecision, step),
     );
 
     return template;
