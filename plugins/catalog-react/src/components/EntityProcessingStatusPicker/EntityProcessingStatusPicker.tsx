@@ -39,9 +39,7 @@ const useStyles = makeStyles(
     input: {},
     label: {},
   },
-  {
-    name: 'CatalogReactEntityProcessingStatusPickerPicker',
-  },
+  { name: 'CatalogReactEntityProcessingStatusPickerPicker' },
 );
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;

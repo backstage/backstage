@@ -61,6 +61,7 @@ import {
   FiltersContainerClassKey,
   TableClassKey,
   WarningPanelClassKey,
+  LinkClassKey,
 } from './components';
 
 import {
@@ -90,6 +91,10 @@ import {
   TabbedCardClassKey,
   BoldHeaderClassKey,
   CardTabClassKey,
+  SidebarSubmenuClassKey,
+  SidebarSubmenuItemClassKey,
+  StackDetailsClassKey,
+  BreadcrumbsCurrentPageClassKey,
 } from './layout';
 
 type BackstageComponentsNameToClassKey = {
@@ -140,10 +145,12 @@ type BackstageComponentsNameToClassKey = {
   BackstageBottomLink: BottomLinkClassKey;
   BackstageBreadcrumbsClickableText: BreadcrumbsClickableTextClassKey;
   BackstageBreadcrumbsStyledBox: BreadcrumbsStyledBoxClassKey;
+  BreadcrumbsCurrentPage: BreadcrumbsCurrentPageClassKey;
   BackstageContent: BackstageContentClassKey;
   BackstageContentHeader: ContentHeaderClassKey;
   BackstageErrorPage: ErrorPageClassKey;
   BackstageErrorPageMicDrop: MicDropClassKey;
+  BackstageErrorPageStackDetails: StackDetailsClassKey;
   BackstageHeader: HeaderClassKey;
   BackstageHeaderLabel: HeaderLabelClassKey;
   BackstageHeaderTabs: HeaderTabsClassKey;
@@ -157,12 +164,15 @@ type BackstageComponentsNameToClassKey = {
   BackstageSidebarSpacer: SidebarSpacerClassKey;
   BackstageSidebarDivider: SidebarDividerClassKey;
   BackstageSidebarItem: SidebarItemClassKey;
+  BackstageSidebarSubmenu: SidebarSubmenuClassKey;
+  BackstageSidebarSubmenuItem: SidebarSubmenuItemClassKey;
   BackstageSidebarPage: SidebarPageClassKey;
   BackstageCustomProvider: CustomProviderClassKey;
   BackstageSignInPage: SignInPageClassKey;
   BackstageTabbedCard: TabbedCardClassKey;
   BackstageTabbedCardBoldHeader: BoldHeaderClassKey;
   BackstageCardTab: CardTabClassKey;
+  Link: LinkClassKey;
 };
 
 /** @public */

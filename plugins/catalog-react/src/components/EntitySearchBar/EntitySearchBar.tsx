@@ -40,9 +40,7 @@ const useStyles = makeStyles(
     },
     input: {},
   }),
-  {
-    name: 'CatalogReactEntitySearchBar',
-  },
+  { name: 'CatalogReactEntitySearchBar' },
 );
 
 /**

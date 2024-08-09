@@ -54,6 +54,9 @@ export const GroupProfileCard: (props: {
 }) => React_2.JSX.Element;
 
 // @public (undocumented)
+export type MemberComponentClassKey = 'card' | 'avatar';
+
+// @public (undocumented)
 export const MembersListCard: (props: {
   memberDisplayTitle?: string;
   pageSize?: number;
@@ -62,6 +65,9 @@ export const MembersListCard: (props: {
   relationsType?: EntityRelationAggregation;
   relationAggregation?: EntityRelationAggregation;
 }) => React_2.JSX.Element;
+
+// @public (undocumented)
+export type MembersListCardClassKey = 'root' | 'cardContent' | 'memberList';
 
 // @public
 export const MyGroupsSidebarItem: (props: {

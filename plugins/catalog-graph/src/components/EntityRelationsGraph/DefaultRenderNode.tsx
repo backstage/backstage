@@ -23,6 +23,9 @@ import { EntityIcon } from './EntityIcon';
 import { EntityNodeData } from './types';
 import { DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 
+/** @public */
+export type CustomNodeClassKey = 'node' | 'text' | 'clickable';
+
 const useStyles = makeStyles(
   theme => ({
     node: {

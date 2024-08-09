@@ -46,6 +46,9 @@ import {
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { EntityRelationAggregation } from '../../types';
 
+/** @public */
+export type MemberComponentClassKey = 'card' | 'avatar';
+
 const useStyles = makeStyles(
   (theme: Theme) =>
     createStyles({
@@ -64,7 +67,7 @@ const useStyles = makeStyles(
         top: '-2rem',
       },
     }),
-  { name: 'MembersListCardComponent' },
+  { name: 'PluginOrgMemberComponent' },
 );
 
 const MemberComponent = (props: { member: UserEntity }) => {
@@ -117,21 +120,27 @@ const MemberComponent = (props: { member: UserEntity }) => {
   );
 };
 
-const useListStyles = makeStyles(theme => ({
-  root: {
-    height: '100%',
-  },
-  cardContent: {
-    overflow: 'auto',
-  },
-  memberList: {
-    display: 'grid',
-    gap: theme.spacing(1.5),
-    gridTemplateColumns: `repeat(auto-fit, minmax(auto, ${theme.spacing(
-      34,
-    )}px))`,
-  },
-}));
+/** @public */
+export type MembersListCardClassKey = 'root' | 'cardContent' | 'memberList';
+
+const useListStyles = makeStyles(
+  theme => ({
+    root: {
+      height: '100%',
+    },
+    cardContent: {
+      overflow: 'auto',
+    },
+    memberList: {
+      display: 'grid',
+      gap: theme.spacing(1.5),
+      gridTemplateColumns: `repeat(auto-fit, minmax(auto, ${theme.spacing(
+        34,
+      )}px))`,
+    },
+  }),
+  { name: 'PluginOrgMembersListCardComponent' },
+);
 
 /** @public */
 export const MembersListCard = (props: {

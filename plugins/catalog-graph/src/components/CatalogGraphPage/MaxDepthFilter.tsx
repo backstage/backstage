@@ -28,6 +28,9 @@ export type Props = {
   onChange: (value: number) => void;
 };
 
+/** @public */
+export type MaxDepthFilterClassKey = 'formControl';
+
 const useStyles = makeStyles(
   {
     formControl: {
