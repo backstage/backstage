@@ -30,6 +30,7 @@ import {
 } from '@backstage/plugin-scaffolder-react';
 import { act, fireEvent } from '@testing-library/react';
 import { rootRouteRef } from '../../routes';
+import { NotAllowedError } from '@backstage/errors';
 
 describe('<ListTasksPage />', () => {
   const catalogApi: jest.Mocked<CatalogApi> = {
@@ -48,6 +49,10 @@ describe('<ListTasksPage />', () => {
     getTemplateParameterSchema: jest.fn(),
     listTasks: jest.fn(),
   } as any;
+  beforeEach(() => {
+    jest.resetAllMocks();
+    jest.restoreAllMocks();
+  });
 
   it('should render the page', async () => {
     const entity: Entity = {
@@ -247,5 +252,83 @@ describe('<ListTasksPage />', () => {
     });
     expect(await findByText('One Template')).toBeInTheDocument();
     expect(await findByText('OtherUser')).toBeInTheDocument();
+  });
+  it('should throw an error for all tasks, but allow viewing owned tasks', async () => {
+    const entity: Entity = {
+      apiVersion: 'v1',
+      kind: 'User',
+      metadata: {
+        name: 'foo',
+      },
+      spec: {
+        profile: {
+          displayName: 'BackUser',
+        },
+      },
+    };
+    catalogApi.getEntityByRef.mockResolvedValue(entity);
+    scaffolderApiMock.listTasks
+      .mockResolvedValueOnce({
+        tasks: [
+          {
+            id: 'a-random-id',
+            spec: {
+              user: { ref: 'user:default/foo' },
+              templateInfo: {
+                entityRef: 'template:default/test',
+              },
+            } as any,
+            status: 'completed',
+            createdAt: '',
+            lastHeartbeatAt: '',
+          },
+        ],
+      })
+      .mockImplementationOnce(async () => {
+        throw new NotAllowedError();
+      });
+
+    scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
+      title: 'One Template',
+      steps: [],
+    });
+    const { getByText, findByText } = await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, catalogApi],
+          [identityApiRef, identityApi],
+          [scaffolderApiRef, scaffolderApiMock],
+        ]}
+      >
+        <ListTasksPage />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/root': rootRouteRef,
+        },
+      },
+    );
+
+    expect(scaffolderApiMock.listTasks).toHaveBeenNthCalledWith(1, {
+      filterByOwnership: 'owned',
+    });
+
+    expect(getByText('List template tasks')).toBeInTheDocument();
+    expect(getByText('All tasks that have been started')).toBeInTheDocument();
+    expect(getByText('Tasks')).toBeInTheDocument();
+    expect(await findByText('One Template')).toBeInTheDocument();
+    expect(await findByText('BackUser')).toBeInTheDocument();
+
+    await act(async () => {
+      const allTaskButton = getByText('All');
+      fireEvent.click(allTaskButton);
+    });
+    expect(scaffolderApiMock.listTasks).toHaveBeenNthCalledWith(2, {
+      filterByOwnership: 'all',
+    });
+
+    expect(await findByText('NotAllowedError')).toBeInTheDocument();
+    expect(await findByText('No information to display')).toBeInTheDocument();
   });
 });

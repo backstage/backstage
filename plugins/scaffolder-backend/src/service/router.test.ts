@@ -452,6 +452,87 @@ describe('createRouter', () => {
           ],
         });
       });
+      it('disallows users from seeing tasks they do not own', async () => {
+        // Admin Read Permission is not granted
+        jest
+          .spyOn(permissionApi, 'authorize')
+          .mockImplementationOnce(async () => [
+            {
+              result: AuthorizeResult.DENY,
+            },
+          ]);
+        jest
+          .spyOn(permissionApi, 'authorizeConditional')
+          .mockImplementationOnce(async () => [
+            {
+              conditions: {
+                resourceType: 'scaffolder-task',
+                rule: 'IS_TASK_OWNER',
+                params: { createdBy: 'user' },
+              },
+              pluginId: 'scaffolder',
+              resourceType: 'scaffolder-template',
+              result: AuthorizeResult.CONDITIONAL,
+            },
+          ]);
+        const response = await request(app).get(`/v2/tasks?createdBy=not-user`);
+        expect(taskBroker.list).not.toHaveBeenCalled();
+        expect(response.error).not.toBeFalsy();
+      });
+      it('allows admin users to see tasks they do not own', async () => {
+        // Admin Read Permission is granted
+        jest
+          .spyOn(permissionApi, 'authorize')
+          .mockImplementationOnce(async () => [
+            {
+              result: AuthorizeResult.ALLOW,
+            },
+          ]);
+        jest
+          .spyOn(permissionApi, 'authorizeConditional')
+          .mockImplementationOnce(async () => [
+            {
+              conditions: {
+                resourceType: 'scaffolder-task',
+                rule: 'IS_TASK_OWNER',
+                params: { createdBy: 'user' },
+              },
+              pluginId: 'scaffolder',
+              resourceType: 'scaffolder-template',
+              result: AuthorizeResult.CONDITIONAL,
+            },
+          ]);
+        (
+          taskBroker.list as jest.Mocked<Required<TaskBroker>>['list']
+        ).mockResolvedValue({
+          tasks: [
+            {
+              id: 'a-random-id',
+              spec: {} as any,
+              status: 'completed',
+              createdAt: '',
+              createdBy: 'user:default/not-user',
+            },
+          ],
+        });
+
+        const response = await request(app).get(`/v2/tasks?createdBy=not-user`);
+        expect(taskBroker.list).toHaveBeenCalledWith({
+          createdBy: 'not-user',
+        });
+        expect(response.status).toEqual(200);
+        expect(response.body).toStrictEqual({
+          tasks: [
+            {
+              id: 'a-random-id',
+              spec: {} as any,
+              status: 'completed',
+              createdAt: '',
+              createdBy: 'user:default/not-user',
+            },
+          ],
+        });
+      });
     });
 
     describe('GET /v2/tasks/:taskId', () => {
@@ -472,6 +553,44 @@ describe('createRouter', () => {
         expect(response.status).toEqual(200);
         expect(response.body.status).toBe('completed');
         expect(response.body.secrets).toBeUndefined();
+      });
+      it('disallows users from seeing tasks they do not own', async () => {
+        jest
+          .spyOn(permissionApi, 'authorize')
+          .mockImplementationOnce(async () => [
+            {
+              result: AuthorizeResult.DENY,
+            },
+          ]);
+        jest
+          .spyOn(permissionApi, 'authorizeConditional')
+          .mockImplementationOnce(async () => [
+            {
+              conditions: {
+                resourceType: 'scaffolder-task',
+                rule: 'IS_TASK_OWNER',
+                params: { createdBy: 'user' },
+              },
+              pluginId: 'scaffolder',
+              resourceType: 'scaffolder-template',
+              result: AuthorizeResult.CONDITIONAL,
+            },
+          ]);
+        (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+          id: 'a-random-id',
+          spec: {} as any,
+          status: 'completed',
+          createdAt: '',
+          secrets: {
+            backstageToken: token,
+            __initiatorCredentials: JSON.stringify(credentials),
+          },
+          createdBy: 'not-user',
+        });
+
+        const response = await request(app).get(`/v2/tasks/a-random-id`);
+        expect(taskBroker.get).toHaveBeenCalledWith('a-random-id');
+        expect(response.error).not.toBeFalsy();
       });
     });
 
@@ -632,6 +751,44 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
 
         expect(subscriber!.closed).toBe(true);
       });
+      it('disallows users from seeing events for tasks they do not own', async () => {
+        jest
+          .spyOn(permissionApi, 'authorize')
+          .mockImplementationOnce(async () => [
+            {
+              result: AuthorizeResult.DENY,
+            },
+          ]);
+        jest
+          .spyOn(permissionApi, 'authorizeConditional')
+          .mockImplementationOnce(async () => [
+            {
+              conditions: {
+                resourceType: 'scaffolder-task',
+                rule: 'IS_TASK_OWNER',
+                params: { createdBy: 'user' },
+              },
+              pluginId: 'scaffolder',
+              resourceType: 'scaffolder-template',
+              result: AuthorizeResult.CONDITIONAL,
+            },
+          ]);
+        (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+          id: 'a-random-id',
+          spec: {} as any,
+          status: 'completed',
+          createdAt: '',
+          secrets: {
+            backstageToken: token,
+            __initiatorCredentials: JSON.stringify(credentials),
+          },
+          createdBy: 'not-user',
+        });
+
+        const response = await request(app).get(`/v2/tasks/a-random-id/events`);
+        expect(taskBroker.get).toHaveBeenCalledWith('a-random-id');
+        expect(response.error).not.toBeFalsy();
+      });
     });
 
     describe('GET /v2/tasks/:taskId/events', () => {
@@ -736,6 +893,44 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
           after: 10,
         });
         expect(subscriber!.closed).toBe(true);
+      });
+      it('disallows users from seeing events for tasks they do not own', async () => {
+        jest
+          .spyOn(permissionApi, 'authorize')
+          .mockImplementationOnce(async () => [
+            {
+              result: AuthorizeResult.DENY,
+            },
+          ]);
+        jest
+          .spyOn(permissionApi, 'authorizeConditional')
+          .mockImplementationOnce(async () => [
+            {
+              conditions: {
+                resourceType: 'scaffolder-task',
+                rule: 'IS_TASK_OWNER',
+                params: { createdBy: 'user' },
+              },
+              pluginId: 'scaffolder',
+              resourceType: 'scaffolder-template',
+              result: AuthorizeResult.CONDITIONAL,
+            },
+          ]);
+        (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+          id: 'a-random-id',
+          spec: {} as any,
+          status: 'completed',
+          createdAt: '',
+          secrets: {
+            backstageToken: token,
+            __initiatorCredentials: JSON.stringify(credentials),
+          },
+          createdBy: 'not-user',
+        });
+
+        const response = await request(app).get(`/v2/tasks/a-random-id/events`);
+        expect(taskBroker.get).toHaveBeenCalledWith('a-random-id');
+        expect(response.error).not.toBeFalsy();
       });
     });
 
@@ -1294,6 +1489,87 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
           ],
         });
       });
+      it('disallows users from seeing tasks they do not own', async () => {
+        // Admin Read Permission is not granted
+        jest
+          .spyOn(permissionApi, 'authorize')
+          .mockImplementationOnce(async () => [
+            {
+              result: AuthorizeResult.DENY,
+            },
+          ]);
+        jest
+          .spyOn(permissionApi, 'authorizeConditional')
+          .mockImplementationOnce(async () => [
+            {
+              conditions: {
+                resourceType: 'scaffolder-task',
+                rule: 'IS_TASK_OWNER',
+                params: { createdBy: 'user' },
+              },
+              pluginId: 'scaffolder',
+              resourceType: 'scaffolder-template',
+              result: AuthorizeResult.CONDITIONAL,
+            },
+          ]);
+        const response = await request(app).get(`/v2/tasks?createdBy=not-user`);
+        expect(taskBroker.list).not.toHaveBeenCalled();
+        expect(response.error).not.toBeFalsy();
+      });
+      it('allows admin users to see tasks they do not own', async () => {
+        // Admin Read Permission is granted
+        jest
+          .spyOn(permissionApi, 'authorize')
+          .mockImplementationOnce(async () => [
+            {
+              result: AuthorizeResult.ALLOW,
+            },
+          ]);
+        jest
+          .spyOn(permissionApi, 'authorizeConditional')
+          .mockImplementationOnce(async () => [
+            {
+              conditions: {
+                resourceType: 'scaffolder-task',
+                rule: 'IS_TASK_OWNER',
+                params: { createdBy: 'user' },
+              },
+              pluginId: 'scaffolder',
+              resourceType: 'scaffolder-template',
+              result: AuthorizeResult.CONDITIONAL,
+            },
+          ]);
+        (
+          taskBroker.list as jest.Mocked<Required<TaskBroker>>['list']
+        ).mockResolvedValue({
+          tasks: [
+            {
+              id: 'a-random-id',
+              spec: {} as any,
+              status: 'completed',
+              createdAt: '',
+              createdBy: 'user:default/not-user',
+            },
+          ],
+        });
+
+        const response = await request(app).get(`/v2/tasks?createdBy=not-user`);
+        expect(taskBroker.list).toHaveBeenCalledWith({
+          createdBy: 'not-user',
+        });
+        expect(response.status).toEqual(200);
+        expect(response.body).toStrictEqual({
+          tasks: [
+            {
+              id: 'a-random-id',
+              spec: {} as any,
+              status: 'completed',
+              createdAt: '',
+              createdBy: 'user:default/not-user',
+            },
+          ],
+        });
+      });
     });
 
     describe('GET /v2/tasks/:taskId', () => {
@@ -1314,6 +1590,44 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         expect(response.status).toEqual(200);
         expect(response.body.status).toBe('completed');
         expect(response.body.secrets).toBeUndefined();
+      });
+      it('disallows users from seeing tasks they do not own', async () => {
+        jest
+          .spyOn(permissionApi, 'authorize')
+          .mockImplementationOnce(async () => [
+            {
+              result: AuthorizeResult.DENY,
+            },
+          ]);
+        jest
+          .spyOn(permissionApi, 'authorizeConditional')
+          .mockImplementationOnce(async () => [
+            {
+              conditions: {
+                resourceType: 'scaffolder-task',
+                rule: 'IS_TASK_OWNER',
+                params: { createdBy: 'user' },
+              },
+              pluginId: 'scaffolder',
+              resourceType: 'scaffolder-template',
+              result: AuthorizeResult.CONDITIONAL,
+            },
+          ]);
+        (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+          id: 'a-random-id',
+          spec: {} as any,
+          status: 'completed',
+          createdAt: '',
+          secrets: {
+            backstageToken: token,
+            __initiatorCredentials: JSON.stringify(credentials),
+          },
+          createdBy: 'not-user',
+        });
+
+        const response = await request(app).get(`/v2/tasks/a-random-id`);
+        expect(taskBroker.get).toHaveBeenCalledWith('a-random-id');
+        expect(response.error).not.toBeFalsy();
       });
     });
 
@@ -1578,6 +1892,44 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
           after: 10,
         });
         expect(subscriber!.closed).toBe(true);
+      });
+      it('disallows users from seeing events for tasks they do not own', async () => {
+        jest
+          .spyOn(permissionApi, 'authorize')
+          .mockImplementationOnce(async () => [
+            {
+              result: AuthorizeResult.DENY,
+            },
+          ]);
+        jest
+          .spyOn(permissionApi, 'authorizeConditional')
+          .mockImplementationOnce(async () => [
+            {
+              conditions: {
+                resourceType: 'scaffolder-task',
+                rule: 'IS_TASK_OWNER',
+                params: { createdBy: 'user' },
+              },
+              pluginId: 'scaffolder',
+              resourceType: 'scaffolder-template',
+              result: AuthorizeResult.CONDITIONAL,
+            },
+          ]);
+        (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+          id: 'a-random-id',
+          spec: {} as any,
+          status: 'completed',
+          createdAt: '',
+          secrets: {
+            backstageToken: token,
+            __initiatorCredentials: JSON.stringify(credentials),
+          },
+          createdBy: 'not-user',
+        });
+
+        const response = await request(app).get(`/v2/tasks/a-random-id/events`);
+        expect(taskBroker.get).toHaveBeenCalledWith('a-random-id');
+        expect(response.error).not.toBeFalsy();
       });
     });
 
