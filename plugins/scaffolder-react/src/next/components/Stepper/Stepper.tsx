@@ -243,6 +243,7 @@ export const Stepper = (stepperProps: StepperProps) => {
             uiSchema={mergedUiSchema}
             onSubmit={handleNext}
             fields={fields}
+            omitExtraData
             showErrorList="top"
             templates={{ ErrorListTemplate }}
             onChange={handleChange}
