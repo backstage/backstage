@@ -23,13 +23,15 @@ import {
   SchedulerServiceTaskRunner,
   SchedulerServiceTaskScheduleDefinition,
 } from '@backstage/backend-plugin-api';
-import { Counter, Histogram, metrics } from '@opentelemetry/api';
+import { Counter, Histogram, metrics, trace } from '@opentelemetry/api';
 import { Knex } from 'knex';
 import { Duration } from 'luxon';
 import { LocalTaskWorker } from './LocalTaskWorker';
 import { TaskWorker } from './TaskWorker';
 import { TaskSettingsV2 } from './types';
-import { validateId } from './util';
+import { TRACER_ID, validateId } from './util';
+
+const tracer = trace.getTracer(TRACER_ID);
 
 /**
  * Implements the actual task management.
@@ -85,7 +87,7 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
       const knex = await this.databaseFactory();
       const worker = new TaskWorker(
         task.id,
-        this.wrapInMetrics(task.fn, { labels: { taskId: task.id, scope } }),
+        this.instrumentedFunction(task, scope),
         knex,
         this.logger.child({ task: task.id }),
       );
@@ -93,7 +95,7 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
     } else {
       const worker = new LocalTaskWorker(
         task.id,
-        this.wrapInMetrics(task.fn, { labels: { taskId: task.id, scope } }),
+        this.instrumentedFunction(task, scope),
         this.logger.child({ task: task.id }),
       );
       worker.start(settings, { signal: task.signal });
@@ -121,20 +123,33 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
     return this.allScheduledTasks;
   }
 
-  private wrapInMetrics(
-    fn: SchedulerServiceTaskFunction,
-    opts: { labels: Record<string, string> },
+  private instrumentedFunction(
+    task: SchedulerServiceTaskInvocationDefinition,
+    scope: string,
   ): SchedulerServiceTaskFunction {
     return async abort => {
-      const labels = {
-        ...opts.labels,
+      const labels: Record<string, string> = {
+        taskId: task.id,
+        scope,
       };
       this.counter.add(1, { ...labels, result: 'started' });
 
       const startTime = process.hrtime();
 
       try {
-        await fn(abort);
+        await tracer.startActiveSpan(`task ${task.id}`, async span => {
+          try {
+            span.setAttributes(labels);
+            await task.fn(abort);
+          } catch (error) {
+            if (error instanceof Error) {
+              span.recordException(error);
+            }
+            throw error;
+          } finally {
+            span.end();
+          }
+        });
         labels.result = 'completed';
       } catch (ex) {
         labels.result = 'failed';
