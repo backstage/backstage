@@ -253,7 +253,7 @@ describe('<TechDocsReaderPage />', () => {
     expect(rendered.getByText('the page')).toBeInTheDocument();
   });
 
-  it('should apply overrideThemeOptions to the default theme', async () => {
+  it('should apply overrideThemeOptions', async () => {
     const overrideThemeOptions = {
       typography: { fontFamily: 'Comic Sans MS' },
     };
@@ -274,8 +274,8 @@ describe('<TechDocsReaderPage />', () => {
       },
     );
 
-    const article = rendered.getAllByText(mockTechDocsMetadata.site_name)[0];
+    const text = rendered.getAllByText(mockTechDocsMetadata.site_name)[0];
 
-    expect(article).toHaveStyle('fontFamily: Comic Sans MS');
+    expect(text).toHaveStyle('fontFamily: Comic Sans MS');
   });
 });
