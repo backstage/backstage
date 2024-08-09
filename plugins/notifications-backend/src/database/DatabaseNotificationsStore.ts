@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { PluginDatabaseManager } from '@backstage/backend-common';
-import { resolvePackagePath } from '@backstage/backend-plugin-api';
+import {
+  DatabaseService,
+  resolvePackagePath,
+} from '@backstage/backend-plugin-api';
 import {
   NotificationGetOptions,
   NotificationModifyOptions,
@@ -22,8 +24,9 @@ import {
 } from './NotificationsStore';
 import {
   Notification,
-  NotificationSeverity,
+  NotificationSettings,
   notificationSeverities,
+  NotificationSeverity,
 } from '@backstage/plugin-notifications-common';
 import { Knex } from 'knex';
 
@@ -68,7 +71,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     database,
     skipMigrations,
   }: {
-    database: PluginDatabaseManager;
+    database: DatabaseService;
     skipMigrations?: boolean;
   }): Promise<DatabaseNotificationsStore> {
     const client = await database.getClient();
@@ -105,6 +108,29 @@ export class DatabaseNotificationsStore implements NotificationsStore {
         icon: row.icon,
       },
     }));
+  };
+
+  private mapToNotificationSettings = (rows: any[]): NotificationSettings => {
+    return rows.reduce(
+      (acc, row) => {
+        let chan = acc.channels.find(
+          (channel: { id: string }) => channel.id === row.channel,
+        );
+        if (!chan) {
+          acc.channels.push({
+            id: row.channel,
+            origins: [],
+          });
+          chan = acc.channels[acc.channels.length - 1];
+        }
+        chan.origins.push({
+          id: row.origin,
+          enabled: Boolean(row.enabled),
+        });
+        return acc;
+      },
+      { channels: [] },
+    );
   };
 
   private mapNotificationToDbRow = (notification: Notification) => {
@@ -425,5 +451,57 @@ export class DatabaseNotificationsStore implements NotificationsStore {
 
   async markUnsaved(options: NotificationModifyOptions): Promise<void> {
     await this.markReadSaved(options.ids, options.user, undefined, null);
+  }
+
+  async getUserNotificationOrigins(options: {
+    user: string;
+  }): Promise<string[]> {
+    const rows: { origin: string }[] = await this.db('notification')
+      .where('user', options.user)
+      .select('origin')
+      .distinct();
+    return rows.map(row => row.origin);
+  }
+
+  async getNotificationSettings(options: {
+    user: string;
+    origin?: string;
+    channel?: string;
+  }): Promise<NotificationSettings> {
+    const settingsQuery = this.db('user_settings').where('user', options.user);
+    if (options.origin) {
+      settingsQuery.where('origin', options.origin);
+    }
+
+    if (options.channel) {
+      settingsQuery.where('channel', options.channel);
+    }
+    const settings = await settingsQuery.select();
+    return this.mapToNotificationSettings(settings);
+  }
+
+  async saveNotificationSettings(options: {
+    user: string;
+    settings: NotificationSettings;
+  }): Promise<void> {
+    const rows: {
+      user: string;
+      channel: string;
+      origin: string;
+      enabled: boolean;
+    }[] = [];
+    options.settings.channels.map(channel => {
+      channel.origins.map(origin => {
+        rows.push({
+          user: options.user,
+          channel: channel.id,
+          origin: origin.id,
+          enabled: origin.enabled,
+        });
+      });
+    });
+
+    await this.db('user_settings').where('user', options.user).delete();
+    await this.db('user_settings').insert(rows);
   }
 }
