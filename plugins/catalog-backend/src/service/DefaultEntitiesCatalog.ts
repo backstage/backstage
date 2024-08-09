@@ -35,6 +35,7 @@ import {
   EntityFacetsResponse,
   EntityOrder,
   EntityPagination,
+  FullTextFilter,
   QueryEntitiesRequest,
   QueryEntitiesResponse,
 } from '../catalog/types';
@@ -151,6 +152,12 @@ function isOrEntityFilter(
 function isNegationEntityFilter(
   filter: { not: EntityFilter } | EntityFilter,
 ): filter is { not: EntityFilter } {
+  return filter.hasOwnProperty('not');
+}
+
+function isNegationFullTextFilter(
+  filter: { not: FullTextFilter } | FullTextFilter,
+): filter is { not: FullTextFilter } {
   return filter.hasOwnProperty('not');
 }
 
@@ -386,34 +393,43 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     if (cursor.filter) {
       parseFilter(cursor.filter, dbQuery, db, false, 'search.entity_id');
     }
-
-    const normalizedFullTextFilterTerm = cursor.fullTextFilter?.term?.trim();
-    const textFilterFields = cursor.fullTextFilter?.fields ?? [sortField.field];
-    if (normalizedFullTextFilterTerm) {
-      if (
-        textFilterFields.length === 1 &&
-        textFilterFields[0] === sortField.field
-      ) {
-        // If there is one item, apply the like query to the top level query which is already
-        //   filtered based on the singular sortField.
-        dbQuery.andWhereRaw(
-          'value like ?',
-          `%${normalizedFullTextFilterTerm.toLocaleLowerCase('en-US')}%`,
-        );
+    if (cursor.fullTextFilter) {
+      let fullTextFilter: FullTextFilter;
+      let fullTextCompare: string;
+      if (isNegationFullTextFilter(cursor.fullTextFilter)) {
+        fullTextFilter = cursor.fullTextFilter.not;
+        fullTextCompare = 'value not like ?';
       } else {
-        const matchQuery = db<DbSearchRow>('search')
-          .select('search.entity_id')
-          .whereIn('key', textFilterFields)
-          .andWhere(function keyFilter() {
-            this.andWhereRaw(
-              'value like ?',
-              `%${normalizedFullTextFilterTerm.toLocaleLowerCase('en-US')}%`,
-            );
-          });
-        dbQuery.andWhere('search.entity_id', 'in', matchQuery);
+        fullTextFilter = cursor.fullTextFilter;
+        fullTextCompare = 'value like ?';
+      }
+      const normalizedFullTextFilterTerm = fullTextFilter.term.trim();
+      const textFilterFields = fullTextFilter.fields ?? [sortField.field];
+      if (normalizedFullTextFilterTerm) {
+        if (
+          textFilterFields.length === 1 &&
+          textFilterFields[0] === sortField.field
+        ) {
+          // If there is one item, apply the like query to the top level query which is already
+          //   filtered based on the singular sortField.
+          dbQuery.andWhereRaw(
+            fullTextCompare,
+            `%${normalizedFullTextFilterTerm.toLocaleLowerCase('en-US')}%`,
+          );
+        } else {
+          const matchQuery = db<DbSearchRow>('search')
+            .select('search.entity_id')
+            .whereIn('key', textFilterFields)
+            .andWhere(function keyFilter() {
+              this.andWhereRaw(
+                fullTextCompare,
+                `%${normalizedFullTextFilterTerm.toLocaleLowerCase('en-US')}%`,
+              );
+            });
+          dbQuery.andWhere('search.entity_id', 'in', matchQuery);
+        }
       }
     }
-
     const countQuery = dbQuery.clone();
 
     const isOrderingDescending = sortField.order === 'desc';
