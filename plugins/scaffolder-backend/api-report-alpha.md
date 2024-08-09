@@ -20,6 +20,12 @@ export const createScaffolderActionConditionalDecision: (
   conditions: PermissionCriteria<PermissionCondition<'scaffolder-action'>>,
 ) => ConditionalPolicyDecision;
 
+// @alpha (undocumented)
+export const createScaffolderTaskConditionalDecision: (
+  permission: ResourcePermission<'scaffolder-task'>,
+  conditions: PermissionCriteria<PermissionCondition<'scaffolder-task'>>,
+) => ConditionalPolicyDecision;
+
 // @alpha
 export const createScaffolderTemplateConditionalDecision: (
   permission: ResourcePermission<'scaffolder-template'>,
@@ -80,6 +86,18 @@ export const scaffolderActionConditions: Conditions<{
 // @alpha
 const scaffolderPlugin: BackendFeatureCompat;
 export default scaffolderPlugin;
+
+// @alpha
+export const scaffolderTaskConditions: Conditions<{
+  isTaskOwner: PermissionRule<
+    string,
+    {},
+    'scaffolder-task',
+    {
+      createdBy: string;
+    }
+  >;
+}>;
 
 // @alpha
 export const scaffolderTemplateConditions: Conditions<{

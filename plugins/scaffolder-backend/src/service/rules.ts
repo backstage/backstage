@@ -29,7 +29,6 @@ import {
 import { z } from 'zod';
 import { JsonObject, JsonPrimitive } from '@backstage/types';
 import { get } from 'lodash';
-import { SerializedTask } from '@backstage/plugin-scaffolder-node';
 
 export const createTemplatePermissionRule = makeCreatePermissionRule<
   TemplateEntityStepV1beta3 | TemplateParametersV1beta3,

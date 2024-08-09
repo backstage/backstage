@@ -477,6 +477,17 @@ describe('createRouter', () => {
 
     describe('GET /v2/tasks/:taskId/eventstream', () => {
       it('should return log messages', async () => {
+        (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+          id: 'a-random-id',
+          spec: {} as any,
+          status: 'completed',
+          createdAt: '',
+          secrets: {
+            backstageToken: token,
+            __initiatorCredentials: JSON.stringify(credentials),
+          },
+          createdBy: '',
+        });
         let subscriber: ZenObservable.SubscriptionObserver<any>;
         (
           taskBroker.event$ as jest.Mocked<TaskBroker>['event$']
@@ -556,6 +567,17 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       });
 
       it('should return log messages with after query', async () => {
+        (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+          id: 'a-random-id',
+          spec: {} as any,
+          status: 'completed',
+          createdAt: '',
+          secrets: {
+            backstageToken: token,
+            __initiatorCredentials: JSON.stringify(credentials),
+          },
+          createdBy: '',
+        });
         let subscriber: ZenObservable.SubscriptionObserver<any>;
         (
           taskBroker.event$ as jest.Mocked<TaskBroker>['event$']
@@ -614,6 +636,17 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
 
     describe('GET /v2/tasks/:taskId/events', () => {
       it('should return log messages', async () => {
+        (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+          id: 'a-random-id',
+          spec: {} as any,
+          status: 'completed',
+          createdAt: '',
+          secrets: {
+            backstageToken: token,
+            __initiatorCredentials: JSON.stringify(credentials),
+          },
+          createdBy: '',
+        });
         let subscriber: ZenObservable.SubscriptionObserver<any>;
         (
           taskBroker.event$ as jest.Mocked<TaskBroker>['event$']
@@ -669,6 +702,17 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       });
 
       it('should return log messages with after query', async () => {
+        (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+          id: 'a-random-id',
+          spec: {} as any,
+          status: 'completed',
+          createdAt: '',
+          secrets: {
+            backstageToken: token,
+            __initiatorCredentials: JSON.stringify(credentials),
+          },
+          createdBy: '',
+        });
         let subscriber: ZenObservable.SubscriptionObserver<any>;
         (
           taskBroker.event$ as jest.Mocked<TaskBroker>['event$']
@@ -1275,6 +1319,17 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
 
     describe('GET /v2/tasks/:taskId/eventstream', () => {
       it('should return log messages', async () => {
+        (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+          id: 'a-random-id',
+          spec: {} as any,
+          status: 'completed',
+          createdAt: '',
+          secrets: {
+            backstageToken: token,
+            __initiatorCredentials: JSON.stringify(credentials),
+          },
+          createdBy: '',
+        });
         let subscriber: ZenObservable.SubscriptionObserver<any>;
         (
           taskBroker.event$ as jest.Mocked<TaskBroker>['event$']
@@ -1354,6 +1409,17 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       });
 
       it('should return log messages with after query', async () => {
+        (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+          id: 'a-random-id',
+          spec: {} as any,
+          status: 'completed',
+          createdAt: '',
+          secrets: {
+            backstageToken: token,
+            __initiatorCredentials: JSON.stringify(credentials),
+          },
+          createdBy: '',
+        });
         let subscriber: ZenObservable.SubscriptionObserver<any>;
         (
           taskBroker.event$ as jest.Mocked<TaskBroker>['event$']
@@ -1412,6 +1478,17 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
 
     describe('GET /v2/tasks/:taskId/events', () => {
       it('should return log messages', async () => {
+        (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+          id: 'a-random-id',
+          spec: {} as any,
+          status: 'completed',
+          createdAt: '',
+          secrets: {
+            backstageToken: token,
+            __initiatorCredentials: JSON.stringify(credentials),
+          },
+          createdBy: '',
+        });
         let subscriber: ZenObservable.SubscriptionObserver<any>;
         (
           taskBroker.event$ as jest.Mocked<TaskBroker>['event$']
@@ -1467,6 +1544,17 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       });
 
       it('should return log messages with after query', async () => {
+        (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+          id: 'a-random-id',
+          spec: {} as any,
+          status: 'completed',
+          createdAt: '',
+          secrets: {
+            backstageToken: token,
+            __initiatorCredentials: JSON.stringify(credentials),
+          },
+          createdBy: '',
+        });
         let subscriber: ZenObservable.SubscriptionObserver<any>;
         (
           taskBroker.event$ as jest.Mocked<TaskBroker>['event$']
