@@ -134,11 +134,25 @@ describe('VisitsStorageApi.create', () => {
     let visitsToSave: Array<Omit<Visit, 'id' | 'hits' | 'timestamp'>>;
     let baseDate: number;
 
+    const fillVisitsApi = () => {
+      baseDate = Date.now();
+      // Chaining items to ensure the right setSystemTime
+      return visitsToSave.reduce(
+        (acc, visit, index) =>
+          acc.then(() => {
+            jest.setSystemTime(baseDate + 360_000 * index);
+            return api.save({ visit });
+          }),
+        Promise.resolve({}),
+      );
+    };
+
     beforeEach(() => {
       api = VisitsStorageApi.create({
         storageApi: MockStorageApi.create(),
         identityApi: mockIdentityApi,
       });
+
       visitsToSave = [
         {
           pathname: '/catalog/default/component/playback-order-1',
@@ -156,16 +170,8 @@ describe('VisitsStorageApi.create', () => {
           name: 'Playback Order Odd',
         },
       ];
-      baseDate = Date.now();
-      // Chaining items to ensure the right setSystemTime
-      return visitsToSave.reduce(
-        (acc, visit, index) =>
-          acc.then(() => {
-            jest.setSystemTime(baseDate + 360_000 * index);
-            return api.save({ visit });
-          }),
-        Promise.resolve({}),
-      );
+
+      return fillVisitsApi();
     });
 
     it('retrieves visits', async () => {
@@ -334,6 +340,28 @@ describe('VisitsStorageApi.create', () => {
       });
       expect(visits).toHaveLength(1);
       expect(visits).toEqual([expect.objectContaining(visitsToSave[0])]);
+    });
+
+    it('retrieves a limited set of visits according to given limit', async () => {
+      const visits = await api.list({
+        limit: 2,
+      });
+      expect(visitsToSave.length).toBeGreaterThan(2);
+      expect(visits.length).toEqual(2);
+    });
+
+    it('retrieves a default set of 8 visits', async () => {
+      visitsToSave = Array.from({ length: 9 }, (_, index) => ({
+        pathname: `/catalog/default/component/playback-order-${index}`,
+        entityRef: `component:default/playback-order-${index}`,
+        name: `Playback Order ${index}`,
+      }));
+
+      await fillVisitsApi();
+
+      const visits = await api.list();
+      expect(visitsToSave.length).toBeGreaterThan(8);
+      expect(visits.length).toEqual(8);
     });
   });
 });
