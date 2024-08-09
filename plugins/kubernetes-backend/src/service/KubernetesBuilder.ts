@@ -67,6 +67,7 @@ import {
   ServiceLocatorMethod,
 } from '../types/types';
 import {
+  ALL_OBJECTS,
   DEFAULT_OBJECTS,
   KubernetesFanOutHandler,
 } from './KubernetesFanOutHandler';
@@ -521,7 +522,7 @@ export class KubernetesBuilder {
     let objectTypesToFetch;
 
     if (objectTypesToFetchStrings) {
-      objectTypesToFetch = DEFAULT_OBJECTS.filter(obj =>
+      objectTypesToFetch = ALL_OBJECTS.filter(obj =>
         objectTypesToFetchStrings.includes(obj.objectType),
       );
     }
