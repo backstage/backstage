@@ -19,7 +19,6 @@ import { MemoryRouter, Link } from 'react-router-dom';
 import { RenderResult, render } from '@testing-library/react';
 import { createSpecializedApp } from '@backstage/frontend-app-api';
 import {
-  ExtensionDataValue,
   AppNode,
   AppTree,
   Extension,
@@ -169,9 +168,7 @@ export class ExtensionTester {
             : [...internal.output, coreExtensionData.routePath],
           factory: params => {
             const parentOutput = Array.from(
-              internal.factory(params as any) as Iterable<
-                ExtensionDataValue<any, any>
-              >,
+              internal.factory(params as any),
             ).filter(val => val.id !== coreExtensionData.routePath.id);
 
             return [...parentOutput, coreExtensionData.routePath('/')];
