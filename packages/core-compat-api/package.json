@@ -45,7 +45,7 @@
     "@backstage/frontend-test-utils": "workspace:^",
     "@backstage/plugin-catalog": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "@oriflame/backstage-plugin-score-card": "^0.8.0",
+    "@oriflame/backstage-plugin-score-card": "^0.9.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^15.0.0"
   },
