@@ -8,6 +8,10 @@
 
 import { createBackend } from '@backstage/backend-defaults';
 
+// Remove before merging:
+console.info('Adding extensive debug logging, do not merge');
+process.on('warning', e => console.info(e.stack));
+
 const backend = createBackend();
 
 backend.add(import('@backstage/plugin-app-backend/alpha'));
@@ -50,5 +54,9 @@ backend.add(import('@backstage/plugin-search-backend-module-techdocs/alpha'));
 
 // kubernetes
 backend.add(import('@backstage/plugin-kubernetes-backend/alpha'));
+
+// notifications and signals
+backend.add(import('@backstage/plugin-signals-backend'));
+backend.add(import('@backstage/plugin-notifications-backend'));
 
 backend.start();
