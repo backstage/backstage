@@ -432,6 +432,7 @@ export class KubernetesBuilder {
             name: cd.name,
             title: cd.title,
             dashboardUrl: cd.dashboardUrl,
+            dashboardParameters: cd.dashboardParameters,
             authProvider,
             ...(oidcTokenProvider && { oidcTokenProvider }),
             ...(auth && Object.keys(auth).length !== 0 && { auth }),
