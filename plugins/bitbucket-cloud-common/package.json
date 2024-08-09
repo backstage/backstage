@@ -42,11 +42,13 @@
   },
   "dependencies": {
     "@backstage/integration": "workspace:^",
-    "cross-fetch": "^4.0.0"
+    "cross-fetch": "^4.0.0",
+    "node-fetch": "^2.6.7"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@openapitools/openapi-generator-cli": "^2.4.26",
+    "@types/node-fetch": "^2.5.12",
     "msw": "^1.0.0",
     "ts-morph": "^22.0.0"
   }
