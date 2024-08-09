@@ -59,6 +59,7 @@ import {
 import { ConfigLocationEntityProvider } from '../modules/core/ConfigLocationEntityProvider';
 import { DefaultLocationStore } from '../modules/core/DefaultLocationStore';
 import { RepoLocationAnalyzer } from '../ingestion/LocationAnalyzer';
+import { AuthorizedLocationAnalyzer } from './AuthorizedLocationAnalyzer';
 import {
   jsonPlaceholderResolver,
   textPlaceholderResolver,
@@ -76,6 +77,7 @@ import { DefaultCatalogProcessingEngine } from '../processing/DefaultCatalogProc
 import { DefaultLocationService } from './DefaultLocationService';
 import { DefaultEntitiesCatalog } from './DefaultEntitiesCatalog';
 import { DefaultCatalogProcessingOrchestrator } from '../processing/DefaultCatalogProcessingOrchestrator';
+import { AuthorizedCatalogProcessingOrchestrator } from './AuthorizedCatalogProcessingOrchestrator';
 import { DefaultStitcher } from '../stitching/DefaultStitcher';
 import { createRouter } from './createRouter';
 import { DefaultRefreshService } from './DefaultRefreshService';
@@ -510,15 +512,7 @@ export class CatalogBuilder {
     });
     const integrations = ScmIntegrations.fromConfig(config);
     const rulesEnforcer = DefaultCatalogRulesEnforcer.fromConfig(config);
-    const orchestrator = new DefaultCatalogProcessingOrchestrator({
-      processors,
-      integrations,
-      rulesEnforcer,
-      logger,
-      parser,
-      policy,
-      legacySingleProcessorValidation: this.legacySingleProcessorValidation,
-    });
+
     const unauthorizedEntitiesCatalog = new DefaultEntitiesCatalog({
       database: dbClient,
       logger,
@@ -534,6 +528,19 @@ export class CatalogBuilder {
       );
       permissionsService = toPermissionEvaluator(permissions);
     }
+
+    const orchestrator = new AuthorizedCatalogProcessingOrchestrator(
+      new DefaultCatalogProcessingOrchestrator({
+        processors,
+        integrations,
+        rulesEnforcer,
+        logger,
+        parser,
+        policy,
+        legacySingleProcessorValidation: this.legacySingleProcessorValidation,
+      }),
+      permissionsService,
+    );
 
     const entitiesCatalog = new AuthorizedEntitiesCatalog(
       unauthorizedEntitiesCatalog,
@@ -594,7 +601,10 @@ export class CatalogBuilder {
 
     const locationAnalyzer =
       this.locationAnalyzer ??
-      new RepoLocationAnalyzer(logger, integrations, this.locationAnalyzers);
+      new AuthorizedLocationAnalyzer(
+        new RepoLocationAnalyzer(logger, integrations, this.locationAnalyzers),
+        permissionsService,
+      );
     const locationService = new AuthorizedLocationService(
       new DefaultLocationService(locationStore, orchestrator, {
         allowedLocationTypes: this.allowedLocationType,

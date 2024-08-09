@@ -22,6 +22,7 @@ import {
 } from '@backstage/plugin-catalog-common';
 import { JsonValue } from '@backstage/types';
 import { CatalogProcessorEmit } from '../api';
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 
 /**
  * Entities that are not yet processed.
@@ -66,6 +67,7 @@ export type LocationAnalyzer = {
    */
   analyzeLocation(
     location: AnalyzeLocationRequest,
+    credentials: BackstageCredentials,
   ): Promise<AnalyzeLocationResponse>;
 };
 
