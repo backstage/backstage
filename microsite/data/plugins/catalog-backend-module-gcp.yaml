@@ -1,0 +1,16 @@
+---
+title: GCP Entity Providers
+author: BackToStage
+authorUrl: https://backtostage.app/?utm_source=backstage.io&utm_medium=marketplace&utm_campaign=catalog-backend-module-gcp
+category: Catalog
+description: Import your Infrastructure from GCP into Backstage as Resource Entities
+documentation: https://github.com/backtostage/backstage-plugins/blob/main/plugins/catalog-backend-module-gcp/README.md
+iconUrl: https://avatars1.githubusercontent.com/u/2810941?s=280&v=4
+npmPackageName: '@backtostage/plugin-catalog-backend-module-gcp'
+tags:
+  - cloud
+  - project
+  - resources
+  - gcp
+  - cloudsql
+addedDate: '2024-08-01'
