@@ -1150,6 +1150,9 @@ export const spec = {
             $ref: '#/components/parameters/limit',
           },
           {
+            $ref: '#/components/parameters/offset',
+          },
+          {
             $ref: '#/components/parameters/orderField',
           },
           {

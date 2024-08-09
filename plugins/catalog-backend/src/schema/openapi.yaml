@@ -885,6 +885,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/fields'
         - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/offset'
         - $ref: '#/components/parameters/orderField'
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/filter'

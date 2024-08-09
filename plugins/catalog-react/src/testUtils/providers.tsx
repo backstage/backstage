@@ -73,6 +73,11 @@ export function MockEntityListContextProvider<
       error: value?.error,
       totalItems:
         value?.totalItems ?? (value?.entities ?? defaultValues.entities).length,
+      limit: value?.limit ?? 20,
+      offset: value?.offset,
+      setLimit: value?.setLimit ?? (() => {}),
+      setOffset: value?.setOffset,
+      paginationMode: value?.paginationMode ?? 'none',
     }),
     [value, defaultValues, filters, updateFilters],
   );
