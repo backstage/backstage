@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-events-backend-module-azure",
-  "version": "0.2.9-next.2",
+  "version": "0.2.9-next.3",
   "backstage": {
     "role": "backend-plugin-module",
     "pluginId": "events",

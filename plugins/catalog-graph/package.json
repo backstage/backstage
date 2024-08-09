@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-graph",
-  "version": "0.4.8-next.3",
+  "version": "0.4.8-next.4",
   "backstage": {
     "role": "frontend-plugin",
     "pluginId": "catalog-graph",

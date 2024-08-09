@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-techdocs-backend",
-  "version": "1.10.10-next.2",
+  "version": "1.10.10-next.3",
   "description": "The Backstage backend plugin that renders technical documentation for your components",
   "backstage": {
     "role": "backend-plugin",

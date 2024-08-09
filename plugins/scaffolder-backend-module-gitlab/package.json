@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-backend-module-gitlab",
-  "version": "0.4.5-next.2",
+  "version": "0.4.5-next.3",
   "backstage": {
     "role": "backend-plugin-module",
     "pluginId": "scaffolder",

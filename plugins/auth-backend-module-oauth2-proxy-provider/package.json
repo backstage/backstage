@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend-module-oauth2-proxy-provider",
-  "version": "0.1.16-next.2",
+  "version": "0.1.16-next.3",
   "description": "The oauth2-proxy-provider backend module for the auth plugin.",
   "backstage": {
     "role": "backend-plugin-module",

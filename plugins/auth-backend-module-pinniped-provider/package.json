@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend-module-pinniped-provider",
-  "version": "0.1.17-next.2",
+  "version": "0.1.17-next.3",
   "description": "The pinniped-provider backend module for the auth plugin.",
   "backstage": {
     "role": "backend-plugin-module",
