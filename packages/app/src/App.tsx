@@ -83,34 +83,6 @@ import { customDevToolsPage } from './components/devtools/CustomDevToolsPage';
 import { DevToolsPage } from '@backstage/plugin-devtools';
 import { CatalogUnprocessedEntitiesPage } from '@backstage/plugin-catalog-unprocessed-entities';
 import { NotificationsPage } from '@backstage/plugin-notifications';
-import {
-  createBaseThemeOptions,
-  createUnifiedTheme,
-  UnifiedThemeProvider,
-  palettes,
-} from '@backstage/theme';
-import { ThemeOptions } from '@material-ui/core';
-import LightIcon from '@material-ui/icons/WbSunny';
-
-export const myTheme = createUnifiedTheme({
-  ...createBaseThemeOptions({
-    palette: {
-      ...palettes.light,
-      background: {
-        default: 'green',
-      },
-    },
-  }),
-  components: {
-    BackstageContent: {
-      styleOverrides: {
-        root: {
-          background: 'blue',
-        },
-      },
-    },
-  },
-});
 
 const app = createApp({
   apis,
@@ -126,17 +98,6 @@ const app = createApp({
       pluginId: '',
     },
   ],
-  themes: [
-    {
-      id: 'my-theme',
-      title: 'My Custom Theme',
-      variant: 'light',
-      icon: <LightIcon />,
-      Provider: ({ children }) => (
-        <UnifiedThemeProvider theme={myTheme} children={children} />
-      ),
-    },
-  ],
   components: {
     SignInPage: props => {
       return (
@@ -150,14 +111,6 @@ const app = createApp({
     },
   },
 });
-
-const overrideThemeOptions: Partial<ThemeOptions> = {
-  palette: {
-    background: {
-      default: 'blue',
-    },
-  },
-};
 
 const routes = (
   <FlatRoutes>
@@ -210,9 +163,7 @@ const routes = (
     <Route path="/docs" element={<TechDocsIndexPage />} />
     <Route
       path="/docs/:namespace/:kind/:name/*"
-      element={
-        <TechDocsReaderPage overrideThemeOptions={overrideThemeOptions} />
-      }
+      element={<TechDocsReaderPage />}
     >
       {techDocsPage}
       <TechDocsAddons>
