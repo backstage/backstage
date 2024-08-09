@@ -67,18 +67,45 @@ export function parseGerritGitilesUrl(
   }
   const project = trimStart(parts.slice(0, projectEndIndex).join('/'), '/');
 
-  const branchIndex = parts.indexOf('heads');
-  if (branchIndex <= 0) {
-    throw new Error(`Unable to parse branch from url: ${url}`);
-  }
-  const branch = parts[branchIndex + 1];
-  const filePath = parts.slice(branchIndex + 2).join('/');
+  let branch: string;
+  let filePath: string;
 
-  return {
-    branch,
-    filePath: filePath === '' ? '/' : filePath,
-    project,
-  };
+  // Parse a `refs/heads/` branch (eg, master)
+  if (
+    parts
+      .slice(projectEndIndex + 1)
+      .join('/')
+      .startsWith('refs/heads/')
+  ) {
+    branch = parts[projectEndIndex + 3];
+    filePath = parts.slice(projectEndIndex + 4).join('/');
+
+    return {
+      branch,
+      filePath: filePath === '' ? '/' : filePath,
+      project,
+    };
+  }
+
+  // Parse a change URL like /+/refs/changes/20/884120/1/README.md
+  if (
+    parts
+      .slice(projectEndIndex + 1, projectEndIndex + 6)
+      .join('/')
+      .match(new RegExp('^refs/changes/[0-9]{2}/[0-9]+/[0-9]+'))
+  ) {
+    // Keep 'refs/changes/20/884120/1' as the branch
+    branch = parts.slice(projectEndIndex + 1, projectEndIndex + 6).join('/');
+    filePath = parts.slice(projectEndIndex + 6).join('/');
+
+    return {
+      branch,
+      filePath: filePath === '' ? '/' : filePath,
+      project,
+    };
+  }
+
+  throw new Error(`Unable to parse branch from url: ${url}`);
 }
 
 /**
@@ -96,9 +123,11 @@ export function buildGerritGitilesUrl(
   branch: string,
   filePath: string,
 ): string {
-  return `${
-    config.gitilesBaseUrl
-  }/${project}/+/refs/heads/${branch}/${trimStart(filePath, '/')}`;
+  const ref = branch.startsWith('refs/') ? branch : `refs/heads/${branch}`;
+  return `${config.gitilesBaseUrl}/${project}/+/${ref}/${trimStart(
+    filePath,
+    '/',
+  )}`;
 }
 
 /**
@@ -219,6 +248,18 @@ export function getGerritFileContentsApiUrl(
   url: string,
 ) {
   const { branch, filePath, project } = parseGerritGitilesUrl(config, url);
+
+  if (branch.startsWith('refs/changes/')) {
+    // branch should look like refs/changes/CD/ABCD/EF
+    const parts = branch.split('/');
+    const change = parts[3];
+    const revision = parts[4];
+    return `${config.baseUrl}${getAuthenticationPrefix(
+      config,
+    )}changes/${change}/revisions/${revision}/files/${encodeURIComponent(
+      filePath,
+    )}/content`;
+  }
 
   return `${config.baseUrl}${getAuthenticationPrefix(
     config,
