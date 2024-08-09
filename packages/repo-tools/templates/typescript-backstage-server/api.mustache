@@ -1,0 +1,24 @@
+{{>licenseInfo}}
+import type {
+    {{#operations}}
+    {{#operation}}
+    {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}},
+    {{/operation}}
+    {{/operations}}
+} from '{{clientImport}}';
+
+
+{{#operations}}
+
+/**
+ * {{{description}}}{{^description}}no description{{/description}}
+ */
+
+export type EndpointMap = {
+    {{#operation}}
+    
+    '#{{#lambda.lowercase}}{{httpMethod}}{{/lambda.lowercase}}|{{path}}': {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}},
+    
+    {{/operation}}
+}
+{{/operations}}

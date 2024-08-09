@@ -46,15 +46,15 @@ import {
   locationInput,
   validateRequestBody,
 } from './util';
-import { createOpenApiRouter } from '../schema/openapi.generated';
+import { createOpenApiRouter } from '../schema/openapi';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { parseEntityPaginationParams } from './request/parseEntityPaginationParams';
+import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
 import {
   AuthService,
   HttpAuthService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
-import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
 
 /**
  * Options used by {@link createRouter}.

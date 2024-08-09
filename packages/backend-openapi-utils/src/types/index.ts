@@ -20,3 +20,4 @@ export * from './immutable';
 export * from './params';
 export * from './requests';
 export * from './responses';
+export * from './generated';
