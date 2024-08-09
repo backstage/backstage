@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 import { useCallback, useState } from 'react';
-import { rootRouteRef } from '../routes';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
-import { useNavigate } from 'react-router-dom';
 import { notificationsApiRef } from '../api';
+import { rootRouteRef } from '../routes';
 
 /** @internal */
 export function useWebNotifications(enabled: boolean) {
   const [webNotificationPermission, setWebNotificationPermission] =
     useState('default');
-  const notificationsRoute = useRouteRef(rootRouteRef);
+  const notificationsRoute = useRouteRef(rootRouteRef)();
   const notificationsApi = useApi(notificationsApiRef);
-  const navigate = useNavigate();
 
   const requestUserPermission = useCallback(() => {
     if (
@@ -64,14 +62,14 @@ export function useWebNotifications(enabled: boolean) {
             read: true,
           });
         } else {
-          navigate(notificationsRoute());
+          window.open(notificationsRoute);
         }
         notification.close();
       };
 
       return notification;
     },
-    [webNotificationPermission, notificationsApi, navigate, notificationsRoute],
+    [webNotificationPermission, notificationsApi, notificationsRoute],
   );
 
   return { sendWebNotification, requestUserPermission };
