@@ -19,7 +19,13 @@ import { ComponentType, PropsWithChildren } from 'react';
 import { createExtensionBlueprint } from '../wiring';
 import { createAppRootWrapperExtension } from '../extensions/createAppRootWrapperExtension';
 
-/** @public */
+/**
+ * Creates a extensions that render a React wrapper at the app root, enclosing
+ * the app layout. This is useful for example for adding global React contexts
+ * and similar.
+ *
+ * @public
+ */
 export const AppRootWrapperBlueprint = createExtensionBlueprint({
   kind: 'app-root-wrapper',
   attachTo: { id: 'app/root', input: 'wrappers' },

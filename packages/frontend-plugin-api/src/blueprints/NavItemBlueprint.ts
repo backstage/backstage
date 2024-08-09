@@ -19,7 +19,11 @@ import { RouteRef } from '../routing';
 import { createExtensionBlueprint } from '../wiring';
 import { createNavItemExtension } from '../extensions/createNavItemExtension';
 
-/** @public */
+/**
+ * Creates extensions that make up the items of the nav bar.
+ *
+ * @public
+ */
 export const NavItemBlueprint = createExtensionBlueprint({
   kind: 'nav-item',
   attachTo: { id: 'app/nav', input: 'items' },

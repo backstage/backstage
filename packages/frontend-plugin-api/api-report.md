@@ -189,7 +189,7 @@ export type AnyRoutes = {
   [name in string]: RouteRef | SubRouteRef;
 };
 
-// @public (undocumented)
+// @public
 export const ApiBlueprint: ExtensionBlueprint<
   'api',
   undefined,
@@ -261,7 +261,7 @@ export interface AppNodeSpec {
   readonly source?: BackstagePlugin;
 }
 
-// @public (undocumented)
+// @public
 export const AppRootElementBlueprint: ExtensionBlueprint<
   'app-root-element',
   undefined,
@@ -276,7 +276,7 @@ export const AppRootElementBlueprint: ExtensionBlueprint<
   never
 >;
 
-// @public (undocumented)
+// @public
 export const AppRootWrapperBlueprint: ExtensionBlueprint<
   'app-root-wrapper',
   undefined,
@@ -1696,7 +1696,7 @@ export interface LegacyExtensionInput<
 
 export { microsoftAuthApiRef };
 
-// @public (undocumented)
+// @public
 export const NavItemBlueprint: ExtensionBlueprint<
   'nav-item',
   undefined,
@@ -1731,7 +1731,7 @@ export const NavItemBlueprint: ExtensionBlueprint<
   }
 >;
 
-// @public (undocumented)
+// @public
 export const NavLogoBlueprint: ExtensionBlueprint<
   'nav-logo',
   undefined,
@@ -1781,7 +1781,7 @@ export { oneloginAuthApiRef };
 
 export { OpenIdConnectApi };
 
-// @public (undocumented)
+// @public
 export const PageBlueprint: ExtensionBlueprint<
   'page',
   undefined,
@@ -1938,7 +1938,7 @@ export { SessionApi };
 
 export { SessionState };
 
-// @public (undocumented)
+// @public
 export const SignInPageBlueprint: ExtensionBlueprint<
   'sign-in-page',
   undefined,
@@ -1981,7 +1981,7 @@ export interface SubRouteRef<
   readonly T: TParams;
 }
 
-// @public (undocumented)
+// @public
 export const ThemeBlueprint: ExtensionBlueprint<
   'theme',
   'app',
@@ -1998,7 +1998,7 @@ export const ThemeBlueprint: ExtensionBlueprint<
   }
 >;
 
-// @public (undocumented)
+// @public
 export const TranslationBlueprint: ExtensionBlueprint<
   'translation',
   undefined,

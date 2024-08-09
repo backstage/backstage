@@ -18,7 +18,11 @@ import { AppTheme } from '@backstage/core-plugin-api';
 import { createExtensionBlueprint } from '../wiring';
 import { createThemeExtension } from '../extensions/createThemeExtension';
 
-/** @public */
+/**
+ * Creates an extension that adds/replaces an app theme.
+ *
+ * @public
+ */
 export const ThemeBlueprint = createExtensionBlueprint({
   kind: 'theme',
   namespace: 'app',

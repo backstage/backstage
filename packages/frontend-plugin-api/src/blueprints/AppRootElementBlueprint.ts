@@ -15,7 +15,12 @@
  */
 import { coreExtensionData, createExtensionBlueprint } from '../wiring';
 
-/** @public */
+/**
+ * Creates extensions that render a React element at the app root, outside of
+ * the app layout. This is useful for example for shared popups and similar.
+ *
+ * @public
+ */
 export const AppRootElementBlueprint = createExtensionBlueprint({
   kind: 'app-root-element',
   attachTo: { id: 'app/root', input: 'elements' },

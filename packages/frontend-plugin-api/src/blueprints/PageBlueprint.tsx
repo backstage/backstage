@@ -18,7 +18,11 @@ import { RouteRef } from '../routing';
 import { coreExtensionData, createExtensionBlueprint } from '../wiring';
 import { ExtensionBoundary } from '../components';
 
-/** @public */
+/**
+ * Createx extensions that are routable React page components.
+ *
+ * @public
+ */
 export const PageBlueprint = createExtensionBlueprint({
   kind: 'page',
   attachTo: { id: 'app/routes', input: 'routes' },

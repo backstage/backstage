@@ -19,7 +19,11 @@ import { createSignInPageExtension } from '../extensions/createSignInPageExtensi
 import { SignInPageProps } from '@backstage/core-plugin-api';
 import { ExtensionBoundary } from '../components';
 
-/** @public */
+/**
+ * Creates an extension that replaces the sign in page.
+ *
+ * @public
+ */
 export const SignInPageBlueprint = createExtensionBlueprint({
   kind: 'sign-in-page',
   attachTo: { id: 'app/root', input: 'signInPage' },

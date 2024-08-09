@@ -13,11 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { createExtensionBlueprint } from '../wiring';
 import { createApiExtension } from '../extensions/createApiExtension';
 import { AnyApiFactory } from '@backstage/core-plugin-api';
 
-/** @public */
+/**
+ * Creates utility API extensions.
+ *
+ * @public
+ */
 export const ApiBlueprint = createExtensionBlueprint({
   kind: 'api',
   attachTo: { id: 'app', input: 'apis' },

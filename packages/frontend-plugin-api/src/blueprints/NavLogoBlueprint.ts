@@ -17,7 +17,11 @@
 import { createExtensionBlueprint } from '../wiring';
 import { createNavLogoExtension } from '../extensions/createNavLogoExtension';
 
-/** @public */
+/**
+ * Creates an extension that replaces the logo in the nav bar with your own.
+ *
+ * @public
+ */
 export const NavLogoBlueprint = createExtensionBlueprint({
   kind: 'nav-logo',
   attachTo: { id: 'app/nav', input: 'logos' },

@@ -18,7 +18,11 @@ import { createExtensionBlueprint } from '../wiring';
 import { createTranslationExtension } from '../extensions/createTranslationExtension';
 import { TranslationMessages, TranslationResource } from '../translation';
 
-/** @public */
+/**
+ * Creates an extension that adds translations to your app.
+ *
+ * @public
+ */
 export const TranslationBlueprint = createExtensionBlueprint({
   kind: 'translation',
   attachTo: { id: 'app', input: 'translations' },
