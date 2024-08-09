@@ -23,7 +23,7 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { Button } from '@backstage/core-components';
 
-export function CustomNotFoundErrorPage() {
+function CustomNotFoundErrorPage() {
   return (
     <Box
       component="article"
@@ -51,7 +51,7 @@ export function CustomNotFoundErrorPage() {
   );
 }
 
-export default createComponentExtension({
+export const NotFoundErrorPage = createComponentExtension({
   ref: coreComponentRefs.notFoundErrorPage,
   loader: { sync: () => CustomNotFoundErrorPage },
 });

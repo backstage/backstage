@@ -29,6 +29,11 @@ import {
 import { Content, Header, Page } from '@backstage/core-components';
 import React from 'react';
 import HomeIcon from '@material-ui/icons/Home';
+import {
+  coreExtensionData,
+  createExtension,
+} from '@backstage/frontend-plugin-api';
+import { titleExtensionDataRef } from '@backstage/plugin-home/alpha';
 
 const clockConfigs: ClockConfig[] = [
   {
@@ -111,3 +116,15 @@ export const homePage = (
     </Content>
   </Page>
 );
+
+export const HomePage = createExtension({
+  name: 'myhomepage',
+  attachTo: { id: 'page:home', input: 'props' },
+  output: {
+    children: coreExtensionData.reactElement,
+    title: titleExtensionDataRef,
+  },
+  factory() {
+    return { children: homePage, title: 'just a title' };
+  },
+});
