@@ -40,10 +40,10 @@ import {
   GeneratorOptions,
   GeneratorRunInType,
   GeneratorRunOptions,
+  TechdocsContainerRunner,
 } from './types';
 import { ForwardedError } from '@backstage/errors';
 import { DockerContainerRunner } from './DockerContainerRunner';
-import { ContainerRunner } from '@backstage/backend-common';
 
 /**
  * Generates documentation files
@@ -56,7 +56,7 @@ export class TechdocsGenerator implements GeneratorBase {
    */
   public static readonly defaultDockerImage = 'spotify/techdocs:v1.2.4';
   private readonly logger: Logger;
-  private readonly containerRunner?: ContainerRunner;
+  private readonly containerRunner?: TechdocsContainerRunner;
   private readonly options: GeneratorConfig;
   private readonly scmIntegrations: ScmIntegrationRegistry;
 
@@ -78,7 +78,7 @@ export class TechdocsGenerator implements GeneratorBase {
 
   constructor(options: {
     logger: Logger;
-    containerRunner?: ContainerRunner;
+    containerRunner?: TechdocsContainerRunner;
     config: Config;
     scmIntegrations: ScmIntegrationRegistry;
   }) {
