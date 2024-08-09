@@ -184,6 +184,7 @@
     "@types/svgo": "^2.6.2",
     "@types/tar": "^6.1.1",
     "@types/terser-webpack-plugin": "^5.0.4",
+    "@types/webpack-sources": "^3.2.3",
     "@types/yarnpkg__lockfile": "^1.1.4",
     "@vitejs/plugin-react": "^4.0.4",
     "del": "^7.0.0",
