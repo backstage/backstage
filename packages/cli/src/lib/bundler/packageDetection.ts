@@ -86,7 +86,7 @@ async function detectPackages(
       if (
         [
           'frontend-plugin',
-          'frontend-extension-bundle',
+          'frontend-extensions-bundle',
           'frontend-plugin-module',
         ].includes(depPackageJson.backstage?.role ?? '')
       ) {

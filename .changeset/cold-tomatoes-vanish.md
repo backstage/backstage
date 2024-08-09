@@ -4,4 +4,4 @@
 '@backstage/eslint-plugin': patch
 ---
 
-Added support for the `frontend-extension-bundle` role, which is used in conjunction with the new frontend system to ship extensions to your apps.
+Added support for the `frontend-extensions-bundle` role, which is used in conjunction with the new frontend system to ship extensions to your apps.

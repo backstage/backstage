@@ -28,7 +28,7 @@ async function main() {
     if (
       pkgRole === 'frontend-plugin' ||
       pkgRole === 'web-library' ||
-      pkgRole === 'frontend-extension-bundle'
+      pkgRole === 'frontend-extensions-bundle'
     ) {
       const depKeys = Object.keys(pkg.packageJson.dependencies);
       if (depKeys.findIndex(d => d.includes('@material-ui')) !== -1) {
