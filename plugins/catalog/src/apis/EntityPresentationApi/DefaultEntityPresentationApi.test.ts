@@ -161,6 +161,15 @@ describe('DefaultEntityPresentationApi', () => {
     expect(catalogApi.getEntitiesByRefs).toHaveBeenCalledWith(
       expect.objectContaining({
         entityRefs: ['component:default/test'],
+        fields: [
+          'kind',
+          'metadata.name',
+          'metadata.namespace',
+          'metadata.title',
+          'metadata.description',
+          'spec.profile.displayName',
+          'spec.type',
+        ],
       }),
     );
   });
