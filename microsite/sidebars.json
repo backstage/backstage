@@ -134,6 +134,7 @@
           "features/search/concepts",
           "features/search/architecture",
           "features/search/search-engines",
+          "features/search/collators",
           "features/search/how-to-guides"
         ]
       },
