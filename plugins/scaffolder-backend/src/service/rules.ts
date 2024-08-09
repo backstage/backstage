@@ -18,6 +18,7 @@ import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
 import {
   RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
   RESOURCE_TYPE_SCAFFOLDER_ACTION,
+  RESOURCE_TYPE_SCAFFOLDER_TASK,
 } from '@backstage/plugin-scaffolder-common/alpha';
 
 import {
@@ -129,6 +130,29 @@ function buildHasProperty<Schema extends z.ZodType<JsonPrimitive>>({
   });
 }
 
+export const createTaskPermissionRule = makeCreatePermissionRule<
+  string,
+  {},
+  typeof RESOURCE_TYPE_SCAFFOLDER_TASK
+>();
+
+export const isTaskOwner = createTaskPermissionRule({
+  name: 'IS_TASK_OWNER',
+  description: 'Allows tasks to be accessed by their creator',
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_TASK,
+  paramsSchema: z.object({
+    createdBy: z.string().describe('Creator of the scaffolder task'),
+  }),
+  apply: (taskOwner, { createdBy }) => {
+    if (!taskOwner) {
+      return false;
+    }
+    return taskOwner === createdBy;
+  },
+  toQuery: () => ({}),
+});
+
+export const scaffolderTaskRules = { isTaskOwner };
 export const scaffolderTemplateRules = { hasTag };
 export const scaffolderActionRules = {
   hasActionId,

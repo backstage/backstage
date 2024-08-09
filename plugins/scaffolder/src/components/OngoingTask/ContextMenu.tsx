@@ -35,6 +35,7 @@ import {
   taskCancelPermission,
   taskReadPermission,
   taskCreatePermission,
+  RESOURCE_TYPE_SCAFFOLDER_TASK,
 } from '@backstage/plugin-scaffolder-common/alpha';
 
 type ContextMenuProps = {
@@ -79,10 +80,12 @@ export const ContextMenu = (props: ContextMenuProps) => {
 
   const { allowed: canCancelTask } = usePermission({
     permission: taskCancelPermission,
+    resourceRef: RESOURCE_TYPE_SCAFFOLDER_TASK,
   });
 
   const { allowed: canReadTask } = usePermission({
     permission: taskReadPermission,
+    resourceRef: RESOURCE_TYPE_SCAFFOLDER_TASK,
   });
 
   const { allowed: canCreateTask } = usePermission({
