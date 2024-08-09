@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend-module-azure-easyauth-provider",
-  "version": "0.1.6-next.2",
+  "version": "0.1.6-next.3",
   "description": "The azure-easyauth-provider backend module for the auth plugin.",
   "backstage": {
     "role": "backend-plugin-module",

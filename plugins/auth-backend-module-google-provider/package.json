@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend-module-google-provider",
-  "version": "0.1.20-next.2",
+  "version": "0.1.20-next.3",
   "description": "A Google auth provider module for the Backstage auth backend",
   "backstage": {
     "role": "backend-plugin-module",
