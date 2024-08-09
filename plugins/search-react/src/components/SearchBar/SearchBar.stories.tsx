@@ -18,7 +18,7 @@ import React, { ComponentType, PropsWithChildren } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { TestApiProvider } from '@backstage/test-utils';
+import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 
 import { searchApiRef, MockSearchApi } from '../../api';
 import { SearchContextProvider } from '../../context';
@@ -28,18 +28,22 @@ import { SearchBar } from './SearchBar';
 export default {
   title: 'Plugins/Search/SearchBar',
   component: SearchBar,
+  loaders: [
+    async () => ({ component: (await import('./SearchBar')).SearchBar }),
+  ],
   decorators: [
-    (Story: ComponentType<PropsWithChildren<{}>>) => (
-      <TestApiProvider apis={[[searchApiRef, new MockSearchApi()]]}>
-        <SearchContextProvider>
-          <Grid container direction="row">
-            <Grid item xs={12}>
-              <Story />
+    (Story: ComponentType<PropsWithChildren<{}>>) =>
+      wrapInTestApp(
+        <TestApiProvider apis={[[searchApiRef, new MockSearchApi()]]}>
+          <SearchContextProvider>
+            <Grid container direction="row">
+              <Grid item xs={12}>
+                <Story />
+              </Grid>
             </Grid>
-          </Grid>
-        </SearchContextProvider>
-      </TestApiProvider>
-    ),
+          </SearchContextProvider>
+        </TestApiProvider>,
+      ),
   ],
 };
 
