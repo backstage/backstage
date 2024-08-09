@@ -361,6 +361,16 @@ export class FileReaderProcessor implements CatalogProcessor_2 {
   ): Promise<boolean>;
 }
 
+// @public
+export function getDefaultProcessors(
+  deps: Pick<CatalogEnvironment, 'logger' | 'config' | 'reader'>,
+): (
+  | CodeOwnersProcessor
+  | AnnotateLocationEntityProcessor
+  | FileReaderProcessor
+  | UrlReaderProcessor
+)[];
+
 // @public @deprecated (undocumented)
 export type LocationAnalyzer = LocationAnalyzer_2;
 
@@ -390,6 +400,11 @@ export const locationSpecToLocationEntity: typeof locationSpecToLocationEntity_2
 
 // @public @deprecated (undocumented)
 export const locationSpecToMetadataName: typeof locationSpecToMetadataName_2;
+
+// @public (undocumented)
+export type NamespaceTransformer = (
+  processingResult: CatalogProcessorEntityResult_2,
+) => string;
 
 // @public (undocumented)
 export function parseEntityYaml(
@@ -465,9 +480,15 @@ export function transformLegacyPolicyToProcessor(
 
 // @public (undocumented)
 export class UrlReaderProcessor implements CatalogProcessor_2 {
-  constructor(options: { reader: UrlReader; logger: LoggerService });
+  constructor(options: {
+    reader: UrlReader;
+    logger: LoggerService;
+    namespaceTransformer?: NamespaceTransformer;
+  });
   // (undocumented)
   getProcessorName(): string;
+  // (undocumented)
+  namespaceTransformer: NamespaceTransformer;
   // (undocumented)
   readLocation(
     location: LocationSpec_2,

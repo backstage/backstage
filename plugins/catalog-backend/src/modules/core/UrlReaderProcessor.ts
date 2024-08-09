@@ -15,9 +15,10 @@
  */
 
 import { UrlReader } from '@backstage/backend-common';
-import { Entity } from '@backstage/catalog-model';
+import { DEFAULT_NAMESPACE, Entity } from '@backstage/catalog-model';
 import { assertError } from '@backstage/errors';
 import limiterFactory from 'p-limit';
+import { merge } from 'lodash';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import parseGitUrl from 'git-url-parse';
 import {
@@ -44,13 +45,26 @@ type CacheItem = {
 };
 
 /** @public */
+export type NamespaceTransformer = (
+  processingResult: CatalogProcessorEntityResult,
+) => string;
+
+/** @public */
 export class UrlReaderProcessor implements CatalogProcessor {
+  namespaceTransformer: NamespaceTransformer;
   constructor(
     private readonly options: {
       reader: UrlReader;
       logger: LoggerService;
+      namespaceTransformer?: NamespaceTransformer;
     },
-  ) {}
+  ) {
+    if (options.namespaceTransformer) {
+      this.namespaceTransformer = options.namespaceTransformer;
+    } else {
+      this.namespaceTransformer = () => DEFAULT_NAMESPACE;
+    }
+  }
 
   getProcessorName() {
     return 'url-reader';
@@ -81,8 +95,12 @@ export class UrlReaderProcessor implements CatalogProcessor {
           data: item.data,
           location: { type: location.type, target: item.url },
         })) {
-          parseResults.push(parseResult);
-          emit(parseResult);
+          const finalParseResult =
+            parseResult.type === 'entity'
+              ? this.transformNamespace(parseResult)
+              : parseResult;
+          parseResults.push(finalParseResult);
+          emit(finalParseResult);
         }
       }
 
@@ -116,6 +134,22 @@ export class UrlReaderProcessor implements CatalogProcessor {
     }
 
     return true;
+  }
+
+  private transformNamespace(
+    parseResult: CatalogProcessorEntityResult,
+  ): CatalogProcessorEntityResult {
+    const namespace = this.namespaceTransformer(parseResult);
+    const entity = merge(
+      {
+        metadata: {
+          namespace,
+        },
+      },
+      parseResult.entity,
+    );
+
+    return merge(parseResult, { entity });
   }
 
   private async doRead(

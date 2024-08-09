@@ -18,4 +18,4 @@ export type {
   CatalogEnvironment,
   CatalogPermissionRuleInput,
 } from './CatalogBuilder';
-export { CatalogBuilder } from './CatalogBuilder';
+export { CatalogBuilder, getDefaultProcessors } from './CatalogBuilder';

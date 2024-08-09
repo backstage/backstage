@@ -61,12 +61,19 @@ class CatalogProcessingExtensionPointImpl
   implements CatalogProcessingExtensionPoint
 {
   #processors = new Array<CatalogProcessor>();
+  #defaultProcessors = new Array<CatalogProcessor>();
   #entityProviders = new Array<EntityProvider>();
   #placeholderResolvers: Record<string, PlaceholderResolver> = {};
   #onProcessingErrorHandler?: (event: {
     unprocessedEntity: Entity;
     errors: Error[];
   }) => Promise<void> | void;
+
+  replaceDefaultProcessors(
+    ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
+  ): void {
+    this.#defaultProcessors.push(...processors.flat());
+  }
 
   addProcessor(
     ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
@@ -95,6 +102,10 @@ class CatalogProcessingExtensionPointImpl
     }) => Promise<void> | void,
   ) {
     this.#onProcessingErrorHandler = handler;
+  }
+
+  get defaultProcessors() {
+    return this.#defaultProcessors;
   }
 
   get processors() {
@@ -263,11 +274,13 @@ export const catalogPlugin = createBackendPlugin({
         });
 
         builder.setEventBroker(events);
-
         if (processingExtensions.onProcessingErrorHandler) {
           builder.subscribe({
             onProcessingError: processingExtensions.onProcessingErrorHandler,
           });
+        }
+        if (processingExtensions.defaultProcessors.length > 0) {
+          builder.replaceProcessors(processingExtensions.defaultProcessors);
         }
         builder.addProcessor(...processingExtensions.processors);
         builder.addEntityProvider(...processingExtensions.entityProviders);
