@@ -13,6 +13,7 @@ const _default: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 export default _default;
@@ -26,7 +27,10 @@ export const settingsNavItem: ExtensionDefinition<
     title?: string | undefined;
   },
   never,
-  never
+  never,
+  string | undefined,
+  string | undefined,
+  string | undefined
 >;
 
 // @alpha (undocumented)

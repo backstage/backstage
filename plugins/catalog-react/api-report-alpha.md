@@ -115,7 +115,15 @@ export function createEntityCardExtension<
     config: TConfig;
     inputs: Expand<ResolvedExtensionInputs<TInputs>>;
   }) => Promise<JSX.Element>;
-}): ExtensionDefinition<TConfig, TConfig, never, never>;
+}): ExtensionDefinition<
+  TConfig,
+  TConfig,
+  never,
+  never,
+  string | undefined,
+  string | undefined,
+  string | undefined
+>;
 
 // @alpha (undocumented)
 export function createEntityContentExtension<
@@ -150,7 +158,10 @@ export function createEntityContentExtension<
     path?: string | undefined;
   },
   never,
-  never
+  never,
+  string | undefined,
+  string | undefined,
+  string | undefined
 >;
 
 // @alpha

@@ -13,12 +13,21 @@ const _default: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 export default _default;
 
 // @alpha (undocumented)
-export const searchApi: ExtensionDefinition<{}, {}, never, never>;
+export const searchApi: ExtensionDefinition<
+  {},
+  {},
+  never,
+  never,
+  string | undefined,
+  string | undefined,
+  string | undefined
+>;
 
 // @alpha (undocumented)
 export const searchNavItem: ExtensionDefinition<
@@ -29,7 +38,10 @@ export const searchNavItem: ExtensionDefinition<
     title?: string | undefined;
   },
   never,
-  never
+  never,
+  string | undefined,
+  string | undefined,
+  string | undefined
 >;
 
 // @alpha (undocumented)
@@ -43,7 +55,10 @@ export const searchPage: ExtensionDefinition<
     noTrack: boolean;
   },
   AnyExtensionDataRef,
-  {}
+  {},
+  string | undefined,
+  string | undefined,
+  string | undefined
 >;
 
 // (No @packageDocumentation comment for this package)

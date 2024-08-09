@@ -108,7 +108,15 @@ export function createCatalogFilterExtension<
   inputs?: TInputs;
   configSchema?: PortableSchema<TConfig>;
   loader: (options: { config: TConfig }) => Promise<JSX.Element>;
-}): ExtensionDefinition<TConfig, TConfig, never, never>;
+}): ExtensionDefinition<
+  TConfig,
+  TConfig,
+  never,
+  never,
+  string | undefined,
+  string | undefined,
+  string | undefined
+>;
 
 // @alpha (undocumented)
 const _default: BackstagePlugin<
@@ -132,7 +140,8 @@ const _default: BackstagePlugin<
       templateName: string;
     }>;
     unregisterRedirect: ExternalRouteRef<undefined>;
-  }
+  },
+  {}
 >;
 export default _default;
 

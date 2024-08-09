@@ -25,7 +25,15 @@ export function createSearchResultListItemExtension<
   },
 >(
   options: SearchResultItemExtensionOptions<TConfig>,
-): ExtensionDefinition<TConfig, TConfig, never, never>;
+): ExtensionDefinition<
+  TConfig,
+  TConfig,
+  never,
+  never,
+  string | undefined,
+  string | undefined,
+  string | undefined
+>;
 
 // @alpha (undocumented)
 export namespace createSearchResultListItemExtension {

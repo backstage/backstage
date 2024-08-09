@@ -275,17 +275,22 @@ export { BackstageIdentityResponse };
 
 // @public (undocumented)
 export interface BackstagePlugin<
-  Routes extends AnyRoutes = AnyRoutes,
-  ExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
+  TRoutes extends AnyRoutes = AnyRoutes,
+  TExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
+  TExtensionMap extends {
+    [id in string]: ExtensionDefinition<any, any>;
+  } = {},
 > {
   // (undocumented)
   readonly $$type: '@backstage/BackstagePlugin';
   // (undocumented)
-  readonly externalRoutes: ExternalRoutes;
+  readonly externalRoutes: TExternalRoutes;
+  // (undocumented)
+  getExtension<TId extends keyof TExtensionMap>(id: TId): TExtensionMap[TId];
   // (undocumented)
   readonly id: string;
   // (undocumented)
-  readonly routes: Routes;
+  readonly routes: TRoutes;
 }
 
 export { BackstageUserIdentity };
@@ -396,7 +401,15 @@ export function createApiExtension<
     configSchema?: PortableSchema<TConfig>;
     inputs?: TInputs;
   },
-): ExtensionDefinition<TConfig, TConfig, never, never>;
+): ExtensionDefinition<
+  TConfig,
+  TConfig,
+  never,
+  never,
+  string | undefined,
+  string | undefined,
+  string | undefined
+>;
 
 // @public (undocumented)
 export namespace createApiExtension {
@@ -492,7 +505,15 @@ export function createComponentExtension<
           inputs: Expand<ResolvedExtensionInputs<TInputs>>;
         }) => ComponentType<TProps>;
       };
-}): ExtensionDefinition<TConfig, TConfig, never, never>;
+}): ExtensionDefinition<
+  TConfig,
+  TConfig,
+  never,
+  never,
+  string | undefined,
+  string | undefined,
+  string | undefined
+>;
 
 // @public (undocumented)
 export namespace createComponentExtension {
@@ -528,8 +549,14 @@ export function createExtension<
     [key: string]: (zImpl: typeof z) => z.ZodType;
   },
   UFactoryOutput extends ExtensionDataValue<any, any>,
+  const TKind extends string | undefined = undefined,
+  const TNamespace extends string | undefined = undefined,
+  const TName extends string | undefined = undefined,
 >(
   options: CreateExtensionOptions<
+    TKind,
+    TNamespace,
+    TName,
     UOutput,
     TInputs,
     TConfigSchema,
@@ -545,7 +572,10 @@ export function createExtension<
     }>
   >,
   UOutput,
-  TInputs
+  TInputs,
+  string | undefined extends TKind ? undefined : TKind,
+  string | undefined extends TNamespace ? undefined : TNamespace,
+  string | undefined extends TName ? undefined : TName
 >;
 
 // @public @deprecated (undocumented)
@@ -580,11 +610,17 @@ export function createExtensionBlueprint<
     [key in string]: (zImpl: typeof z) => z.ZodType;
   },
   UFactoryOutput extends ExtensionDataValue<any, any>,
+  TKind extends string,
+  TNamespace extends string | undefined = undefined,
+  TName extends string | undefined = undefined,
   TDataRefs extends {
     [name in string]: AnyExtensionDataRef;
   } = never,
 >(
   options: CreateExtensionBlueprintOptions<
+    TKind,
+    TNamespace,
+    TName,
     TParams,
     UOutput,
     TInputs,
@@ -593,6 +629,9 @@ export function createExtensionBlueprint<
     TDataRefs
   >,
 ): ExtensionBlueprint<
+  TKind,
+  TNamespace,
+  TName,
   TParams,
   UOutput,
   string extends keyof TInputs ? {} : TInputs,
@@ -613,6 +652,9 @@ export function createExtensionBlueprint<
 
 // @public (undocumented)
 export type CreateExtensionBlueprintOptions<
+  TKind extends string,
+  TNamespace extends string | undefined,
+  TName extends string | undefined,
   TParams,
   UOutput extends AnyExtensionDataRef,
   TInputs extends {
@@ -632,8 +674,8 @@ export type CreateExtensionBlueprintOptions<
     [name in string]: AnyExtensionDataRef;
   },
 > = {
-  kind: string;
-  namespace?: string | ((params: TParams) => string);
+  kind: TKind;
+  namespace?: TNamespace | ((params: TParams) => TNamespace);
   attachTo: {
     id: string;
     input: string;
@@ -641,7 +683,7 @@ export type CreateExtensionBlueprintOptions<
   disabled?: boolean;
   inputs?: TInputs;
   output: Array<UOutput>;
-  name?: string | ((params: TParams) => string);
+  name?: TName | ((params: TParams) => TName);
   config?: {
     schema: TConfigSchema | ((params: TParams) => TConfigSchema);
   };
@@ -714,6 +756,9 @@ export function createExtensionInput<
 
 // @public (undocumented)
 export type CreateExtensionOptions<
+  TKind extends string | undefined,
+  TNamespace extends string | undefined,
+  TName extends string | undefined,
   UOutput extends AnyExtensionDataRef,
   TInputs extends {
     [inputName in string]: ExtensionInput<
@@ -729,9 +774,9 @@ export type CreateExtensionOptions<
   },
   UFactoryOutput extends ExtensionDataValue<any, any>,
 > = {
-  kind?: string;
-  namespace?: string;
-  name?: string;
+  kind?: TKind;
+  namespace?: TNamespace;
+  name?: TName;
   attachTo: {
     id: string;
     input: string;
@@ -794,7 +839,10 @@ export function createNavItemExtension(options: {
     title?: string | undefined;
   },
   never,
-  never
+  never,
+  string | undefined,
+  string | undefined,
+  string | undefined
 >;
 
 // @public (undocumented)
@@ -817,7 +865,15 @@ export function createNavLogoExtension(options: {
   namespace?: string;
   logoIcon: JSX.Element;
   logoFull: JSX.Element;
-}): ExtensionDefinition<unknown, unknown, never, never>;
+}): ExtensionDefinition<
+  unknown,
+  unknown,
+  never,
+  never,
+  string | undefined,
+  string | undefined,
+  string | undefined
+>;
 
 // @public (undocumented)
 export namespace createNavLogoExtension {
@@ -865,11 +921,22 @@ export function createPageExtension<
 
 // @public (undocumented)
 export function createPlugin<
-  Routes extends AnyRoutes = {},
-  ExternalRoutes extends AnyExternalRoutes = {},
+  TId extends string,
+  TRoutes extends AnyRoutes = {},
+  TExternalRoutes extends AnyExternalRoutes = {},
+  TExtensions extends readonly ExtensionDefinition<any, any>[] = [],
 >(
-  options: PluginOptions<Routes, ExternalRoutes>,
-): BackstagePlugin<Routes, ExternalRoutes>;
+  options: PluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>,
+): BackstagePlugin<
+  TRoutes,
+  TExternalRoutes,
+  {
+    [KExtension in TExtensions[number] as ResolveExtensionId<
+      KExtension,
+      TId
+    >]: KExtension;
+  }
+>;
 
 // @public
 export function createRouteRef<
@@ -972,7 +1039,15 @@ export function createSubRouteRef<
 // @public (undocumented)
 export function createThemeExtension(
   theme: AppTheme,
-): ExtensionDefinition<unknown, unknown, never, never>;
+): ExtensionDefinition<
+  unknown,
+  unknown,
+  never,
+  never,
+  string | undefined,
+  string | undefined,
+  string | undefined
+>;
 
 // @public (undocumented)
 export namespace createThemeExtension {
@@ -988,7 +1063,15 @@ export namespace createThemeExtension {
 export function createTranslationExtension(options: {
   name?: string;
   resource: TranslationResource | TranslationMessages;
-}): ExtensionDefinition<unknown, unknown, never, never>;
+}): ExtensionDefinition<
+  unknown,
+  unknown,
+  never,
+  never,
+  string | undefined,
+  string | undefined,
+  string | undefined
+>;
 
 // @public (undocumented)
 export namespace createTranslationExtension {
@@ -1044,6 +1127,9 @@ export interface Extension<TConfig, TConfigInput = TConfig> {
 
 // @public (undocumented)
 export interface ExtensionBlueprint<
+  TKind extends string,
+  TNamespace extends string | undefined,
+  TName extends string | undefined,
   TParams,
   UOutput extends AnyExtensionDataRef,
   TInputs extends {
@@ -1068,6 +1154,8 @@ export interface ExtensionBlueprint<
   // (undocumented)
   dataRefs: TDataRefs;
   make<
+    TNewNamespace extends string | undefined,
+    TNewName extends string | undefined,
     TExtensionConfigSchema extends {
       [key in string]: (zImpl: typeof z) => z.ZodType;
     },
@@ -1084,8 +1172,8 @@ export interface ExtensionBlueprint<
     },
   >(
     args: {
-      namespace?: string;
-      name?: string;
+      namespace?: TNewNamespace;
+      name?: TNewName;
       attachTo?: {
         id: string;
         input: string;
@@ -1143,7 +1231,12 @@ export interface ExtensionBlueprint<
         >;
       }>
     > &
-      TConfigInput
+      TConfigInput,
+    AnyExtensionDataRef extends UNewOutput ? UOutput : UNewOutput,
+    TInputs & TExtraInputs,
+    TKind,
+    string | undefined extends TNewNamespace ? TNamespace : TNewNamespace,
+    string | undefined extends TNewName ? TName : TNewName
   >;
 }
 
@@ -1239,6 +1332,9 @@ export interface ExtensionDefinition<
       }
     >;
   } = {},
+  TKind extends string | undefined = string | undefined,
+  TNamespace extends string | undefined = string | undefined,
+  TName extends string | undefined = string | undefined,
 > {
   // (undocumented)
   $$type: '@backstage/ExtensionDefinition';
@@ -1252,11 +1348,11 @@ export interface ExtensionDefinition<
   // (undocumented)
   readonly disabled: boolean;
   // (undocumented)
-  readonly kind?: string;
+  readonly kind?: TKind;
   // (undocumented)
-  readonly name?: string;
+  readonly name?: TName;
   // (undocumented)
-  readonly namespace?: string;
+  readonly namespace?: TNamespace;
   // (undocumented)
   override<
     TExtensionConfigSchema extends {
@@ -1325,7 +1421,10 @@ export interface ExtensionDefinition<
     > &
       TConfigInput,
     AnyExtensionDataRef extends UNewOutput ? UOutput : UNewOutput,
-    TInputs & TExtraInputs
+    TInputs & TExtraInputs,
+    TKind,
+    TNamespace,
+    TName
   >;
 }
 
@@ -1405,6 +1504,9 @@ export { googleAuthApiRef };
 
 // @public (undocumented)
 export const IconBundleBlueprint: ExtensionBlueprint<
+  'icon-bundle',
+  'app',
+  undefined,
   {
     icons: {
       [x: string]: IconComponent;
@@ -1536,19 +1638,21 @@ export { PendingOAuthRequest };
 
 // @public (undocumented)
 export interface PluginOptions<
-  Routes extends AnyRoutes,
-  ExternalRoutes extends AnyExternalRoutes,
+  TId extends string,
+  TRoutes extends AnyRoutes,
+  TExternalRoutes extends AnyExternalRoutes,
+  TExtensions extends readonly ExtensionDefinition<any, any>[],
 > {
   // (undocumented)
-  extensions?: ExtensionDefinition<any, any>[];
+  extensions?: TExtensions;
   // (undocumented)
-  externalRoutes?: ExternalRoutes;
+  externalRoutes?: TExternalRoutes;
   // (undocumented)
   featureFlags?: FeatureFlagConfig[];
   // (undocumented)
-  id: string;
+  id: TId;
   // (undocumented)
-  routes?: Routes;
+  routes?: TRoutes;
 }
 
 // @public (undocumented)
