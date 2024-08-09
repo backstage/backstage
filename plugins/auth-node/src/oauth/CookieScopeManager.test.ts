@@ -19,8 +19,8 @@ import {
   OAuthAuthenticator,
   OAuthAuthenticatorResult,
   OAuthAuthenticatorScopeOptions,
+  OAuthCookieManager,
 } from './types';
-import { OAuthCookieManager } from './OAuthCookieManager';
 import { OAuthState } from './state';
 import { CookieScopeManager } from './CookieScopeManager';
 import { ConfigReader } from '@backstage/config';

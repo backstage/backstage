@@ -16,6 +16,7 @@
 
 import { Request, Response } from 'express';
 import { CookieConfigurer } from '../types';
+import { OAuthCookieManager } from './types';
 
 const THOUSAND_DAYS_MS = 1000 * 24 * 60 * 60 * 1000;
 const TEN_MINUTES_MS = 600 * 1000;
@@ -47,8 +48,8 @@ const defaultCookieConfigurer: CookieConfigurer = ({
   return { domain, path, secure, sameSite };
 };
 
-/** @internal */
-export class OAuthCookieManager {
+/** @public */
+export class DefaultOAuthCookieManager implements OAuthCookieManager {
   private readonly cookieConfigurer: CookieConfigurer;
   private readonly nonceCookie: string;
   private readonly refreshTokenCookie: string;
@@ -85,35 +86,35 @@ export class OAuthCookieManager {
     };
   }
 
-  setNonce(res: Response, nonce: string, origin?: string) {
+  setNonce(res: Response, nonce: string, origin?: string): void {
     res.cookie(this.nonceCookie, nonce, {
       maxAge: TEN_MINUTES_MS,
       ...this.getConfig(origin, '/handler'),
     });
   }
 
-  setRefreshToken(res: Response, refreshToken: string, origin?: string) {
+  setRefreshToken(res: Response, refreshToken: string, origin?: string): void {
     res.cookie(this.refreshTokenCookie, refreshToken, {
       maxAge: THOUSAND_DAYS_MS,
       ...this.getConfig(origin),
     });
   }
 
-  removeRefreshToken(res: Response, origin?: string) {
+  removeRefreshToken(res: Response, origin?: string): void {
     res.cookie(this.refreshTokenCookie, '', {
       maxAge: 0,
       ...this.getConfig(origin),
     });
   }
 
-  removeGrantedScopes(res: Response, origin?: string) {
+  removeGrantedScopes(res: Response, origin?: string): void {
     res.cookie(this.grantedScopeCookie, '', {
       maxAge: 0,
       ...this.getConfig(origin),
     });
   }
 
-  setGrantedScopes(res: Response, scope: string, origin?: string) {
+  setGrantedScopes(res: Response, scope: string, origin?: string): void {
     res.cookie(this.grantedScopeCookie, scope, {
       maxAge: THOUSAND_DAYS_MS,
       ...this.getConfig(origin),

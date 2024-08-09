@@ -15,8 +15,8 @@
  */
 
 import { Config } from '@backstage/config';
-import { Request } from 'express';
-import { ProfileTransform } from '../types';
+import { Response, Request } from 'express';
+import { CookieConfigurer, ProfileTransform } from '../types';
 
 /** @public */
 export interface OAuthSession {
@@ -98,6 +98,27 @@ export interface OAuthAuthenticator<TContext, TProfile> {
   ): Promise<OAuthAuthenticatorResult<TProfile>>;
   logout?(input: OAuthAuthenticatorLogoutInput, ctx: TContext): Promise<void>;
 }
+
+/** @public */
+export interface OAuthCookieManager {
+  setNonce(res: Response, nonce: string, origin?: string): void;
+  setRefreshToken(res: Response, refreshToken: string, origin?: string): void;
+  setGrantedScopes(res: Response, scope: string, origin?: string): void;
+  removeRefreshToken(res: Response, origin?: string): void;
+  removeGrantedScopes(res: Response, origin?: string): void;
+  getNonce(req: Request): string | undefined;
+  getRefreshToken(req: Request): string | undefined;
+  getGrantedScopes(req: Request): string | undefined;
+}
+
+/** @public */
+export type OAuthCookieManagerFactory = (options: {
+  cookieConfigurer?: CookieConfigurer;
+  providerId: string;
+  defaultAppOrigin: string;
+  baseUrl: string;
+  callbackUrl: string;
+}) => OAuthCookieManager;
 
 /** @public */
 export function createOAuthAuthenticator<TContext, TProfile>(

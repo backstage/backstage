@@ -30,7 +30,7 @@ import {
 } from './state';
 import { sendWebMessageResponse } from '../flow';
 import { prepareBackstageIdentityResponse } from '../identity';
-import { OAuthCookieManager } from './OAuthCookieManager';
+import { DefaultOAuthCookieManager } from './DefaultOAuthCookieManager';
 import {
   AuthProviderRouteHandlers,
   AuthResolverContext,
@@ -39,9 +39,23 @@ import {
   ProfileTransform,
   SignInResolver,
 } from '../types';
-import { OAuthAuthenticator, OAuthAuthenticatorResult } from './types';
+import {
+  OAuthAuthenticator,
+  OAuthAuthenticatorResult,
+  OAuthCookieManagerFactory,
+} from './types';
 import { Config } from '@backstage/config';
 import { CookieScopeManager } from './CookieScopeManager';
+
+const defaultOAuthCookieManagerFactory: OAuthCookieManagerFactory = (options: {
+  providerId: string;
+  defaultAppOrigin: string;
+  baseUrl: string;
+  callbackUrl: string;
+  cookieConfigurer?: CookieConfigurer;
+}) => {
+  return new DefaultOAuthCookieManager(options);
+};
 
 /** @public */
 export interface OAuthRouteHandlersOptions<TProfile> {
@@ -57,6 +71,7 @@ export interface OAuthRouteHandlersOptions<TProfile> {
   profileTransform?: ProfileTransform<OAuthAuthenticatorResult<TProfile>>;
   cookieConfigurer?: CookieConfigurer;
   signInResolver?: SignInResolver<OAuthAuthenticatorResult<TProfile>>;
+  oAuthCookieManagerFactory?: OAuthCookieManagerFactory;
 }
 
 /** @internal */
@@ -104,7 +119,9 @@ export function createOAuthRouteHandlers<TProfile>(
   const profileTransform =
     options.profileTransform ?? authenticator.defaultProfileTransform;
   const authenticatorCtx = authenticator.initialize({ config, callbackUrl });
-  const cookieManager = new OAuthCookieManager({
+  const cookieManagerFactory =
+    options.oAuthCookieManagerFactory ?? defaultOAuthCookieManagerFactory;
+  const cookieManager = cookieManagerFactory({
     baseUrl,
     callbackUrl,
     defaultAppOrigin,
