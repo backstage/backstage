@@ -140,8 +140,9 @@ export class MiddlewareFactory {
     const logger = this.#logger.child({
       type: 'incomingRequest',
     });
-
-    return morgan('combined', {
+    const customMorganFormat =
+      '[:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"';
+    return morgan(customMorganFormat, {
       stream: {
         write(message: string) {
           logger.info(message.trimEnd());
