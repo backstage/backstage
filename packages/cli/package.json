@@ -52,7 +52,7 @@
     "@backstage/integration": "workspace:^",
     "@backstage/release-manifests": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@manypkg/get-packages": "^1.1.3",
+    "@manypkg/get-packages": "^2.0.0",
     "@module-federation/enhanced": "^0.1.19",
     "@octokit/graphql": "^5.0.0",
     "@octokit/graphql-schema": "^13.7.0",

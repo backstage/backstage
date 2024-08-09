@@ -93,7 +93,7 @@
   },
   "dependencies": {
     "@backstage/errors": "workspace:^",
-    "@manypkg/get-packages": "^1.1.3",
+    "@manypkg/get-packages": "^2.0.0",
     "@types/global-agent": "^2.1.3",
     "@useoptic/optic": "^0.50.10"
   },
