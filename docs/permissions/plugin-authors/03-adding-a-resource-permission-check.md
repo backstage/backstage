@@ -4,7 +4,7 @@ title: 3. Adding a resource permission check
 description: Explains how to add a resource permission check to a Backstage plugin
 ---
 
-When performing updates (or other operations) on specific [resources](../../references/glossary.md#resource-permission-plugin), the permissions framework allows for the decision to be based on characteristics of the resource itself. This means that it's possible to write policies that (for example) allow the operation for users that own a resource, and deny the operation otherwise.
+When performing updates (or other operations) on specific [resources](../../references/glossary.md#resource-permission-plugin), the permissions framework allows for the decision to be based on characteristics of the resource itself. This means that it's possible to write policies that (for example) allow the operation for users that own a resource and deny the operation otherwise.
 
 ## Creating the update permission
 
@@ -157,7 +157,7 @@ Let's skip the `toQuery` function for now, we'll come back to that in the next s
 
 Now, let's create the new endpoint by editing `plugins/todo-list-backend/src/service/router.ts`. This uses the `createPermissionIntegrationRouter` helper to add the APIs needed by the permission framework to your plugin. You'll need to supply:
 
-- `getResources`: a function that accepts an array of `resourceRefs` in the same format you expect to be passed to `authorize`, and returns an array of the corresponding resources.
+- `getResources`: a function that accepts an array of `resourceRefs` in the same format you expect to be passed to `authorize` and returns an array of the corresponding resources.
 - `resourceType`: the same value used in the permission rule above.
 - `permissions`: the list of permissions that your plugin accepts.
 - `rules`: an array of all the permission rules you want to support in conditional decisions.
