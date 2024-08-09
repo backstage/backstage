@@ -52,9 +52,14 @@ describe('github:pages', () => {
   let githubCredentialsProvider: GithubCredentialsProvider;
   let action: TemplateAction<any>;
 
-  const input = yaml.parse(examples[0].example).steps[0].input;
   const mockContext = createMockActionContext({
-    input,
+    input: {
+      repoUrl: 'github.com?repo=repo&owner=owner',
+      buildType: 'workflow',
+      sourceBranch: 'main',
+      sourcePath: '/',
+      token: 'gph_YourGitHubToken',
+    },
   });
 
   beforeEach(() => {
@@ -68,8 +73,20 @@ describe('github:pages', () => {
 
   afterEach(jest.resetAllMocks);
 
-  it('should work with example input', async () => {
-    await action.handler(mockContext);
+  it(`Should ${examples[0].description}`, async () => {
+    let input;
+    try {
+      input = yaml.parse(examples[0].example).steps[0].input;
+    } catch (error) {
+      console.error('Failed to parse YAML:', error);
+    }
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        ...input,
+      },
+    });
 
     expect(mockOctokit.request).toHaveBeenCalledWith(
       'POST /repos/{owner}/{repo}/pages',
@@ -80,6 +97,345 @@ describe('github:pages', () => {
         source: {
           branch: 'main',
           path: '/',
+        },
+        headers: {
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+      },
+    );
+  });
+  it(`Should ${examples[1].description}`, async () => {
+    let input;
+    try {
+      input = yaml.parse(examples[1].example).steps[0].input;
+    } catch (error) {
+      console.error('Failed to parse YAML:', error);
+    }
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        ...input,
+      },
+    });
+
+    expect(mockOctokit.request).toHaveBeenCalledWith(
+      'POST /repos/{owner}/{repo}/pages',
+      {
+        owner: 'customOwner',
+        repo: 'customPathRepo',
+        build_type: 'workflow',
+        source: {
+          branch: 'main',
+          path: '/docs',
+        },
+        headers: {
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+      },
+    );
+  });
+
+  it(`Should ${examples[2].description}`, async () => {
+    let input;
+    try {
+      input = yaml.parse(examples[2].example).steps[0].input;
+    } catch (error) {
+      console.error('Failed to parse YAML:', error);
+    }
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        ...input,
+      },
+    });
+    expect(mockOctokit.request).toHaveBeenCalledWith(
+      'POST /repos/{owner}/{repo}/pages',
+      {
+        owner: 'legacyOwner',
+        repo: 'legacyRepo',
+        build_type: 'legacy',
+        source: {
+          branch: 'main',
+          path: '/',
+        },
+        headers: {
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+      },
+    );
+  });
+
+  it(`Should ${examples[3].description}`, async () => {
+    let input;
+    try {
+      input = yaml.parse(examples[3].example).steps[0].input;
+    } catch (error) {
+      console.error('Failed to parse YAML:', error);
+    }
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        ...input,
+      },
+    });
+    expect(mockOctokit.request).toHaveBeenCalledWith(
+      'POST /repos/{owner}/{repo}/pages',
+      {
+        owner: 'branchOwner',
+        repo: 'customBranchRepo',
+        build_type: 'workflow',
+        source: {
+          branch: 'develop',
+          path: '/',
+        },
+        headers: {
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+      },
+    );
+  });
+  it(`Should ${examples[4].description}`, async () => {
+    let input;
+    try {
+      input = yaml.parse(examples[4].example).steps[0].input;
+    } catch (error) {
+      console.error('Failed to parse YAML:', error);
+    }
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        ...input,
+      },
+    });
+    expect(mockOctokit.request).toHaveBeenCalledWith(
+      'POST /repos/{owner}/{repo}/pages',
+      {
+        owner: 'customOwner',
+        repo: 'fullCustomRepo',
+        build_type: 'workflow',
+        source: {
+          branch: 'main',
+          path: '/docs',
+        },
+        headers: {
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+      },
+    );
+  });
+
+  it(`Should ${examples[5].description}`, async () => {
+    let input;
+    try {
+      input = yaml.parse(examples[5].example).steps[0].input;
+    } catch (error) {
+      console.error('Failed to parse YAML:', error);
+    }
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        ...input,
+      },
+    });
+    expect(mockOctokit.request).toHaveBeenCalledWith(
+      'POST /repos/{owner}/{repo}/pages',
+      {
+        owner: 'minimalOwner',
+        repo: 'minimalRepo',
+        build_type: 'workflow',
+        source: {
+          branch: 'main',
+          path: '/',
+        },
+        headers: {
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+      },
+    );
+  });
+  it(`Should ${examples[6].description}`, async () => {
+    let input;
+    try {
+      input = yaml.parse(examples[6].example).steps[0].input;
+    } catch (error) {
+      console.error('Failed to parse YAML:', error);
+    }
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        ...input,
+      },
+    });
+    expect(mockOctokit.request).toHaveBeenCalledWith(
+      'POST /repos/{owner}/{repo}/pages',
+      {
+        owner: 'customOwner',
+        repo: 'customBuildPathRepo',
+        build_type: 'legacy',
+        source: {
+          branch: 'main',
+          path: '/custom-path',
+        },
+        headers: {
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+      },
+    );
+  });
+
+  it(`Should ${examples[7].description}`, async () => {
+    let input;
+    try {
+      input = yaml.parse(examples[7].example).steps[0].input;
+    } catch (error) {
+      console.error('Failed to parse YAML:', error);
+    }
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        ...input,
+      },
+    });
+    expect(mockOctokit.request).toHaveBeenCalledWith(
+      'POST /repos/{owner}/{repo}/pages',
+      {
+        owner: 'branchPathOwner',
+        repo: 'customBranchPathRepo',
+        build_type: 'workflow',
+        source: {
+          branch: 'feature-branch',
+          path: '/project-docs',
+        },
+        headers: {
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+      },
+    );
+  });
+
+  it(`Should ${examples[8].description}`, async () => {
+    let input;
+    try {
+      input = yaml.parse(examples[8].example).steps[0].input;
+    } catch (error) {
+      console.error('Failed to parse YAML:', error);
+    }
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        ...input,
+      },
+    });
+    expect(mockOctokit.request).toHaveBeenCalledWith(
+      'POST /repos/{owner}/{repo}/pages',
+      {
+        owner: 'customOwnerName',
+        repo: 'customRepoName',
+        build_type: 'workflow',
+        source: {
+          branch: 'main',
+          path: '/',
+        },
+        headers: {
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+      },
+    );
+  });
+
+  it(`Should ${examples[9].description}`, async () => {
+    let input;
+    try {
+      input = yaml.parse(examples[9].example).steps[0].input;
+    } catch (error) {
+      console.error('Failed to parse YAML:', error);
+    }
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        ...input,
+      },
+    });
+    expect(mockOctokit.request).toHaveBeenCalledWith(
+      'POST /repos/{owner}/{repo}/pages',
+      {
+        owner: 'tokenOwner',
+        repo: 'customTokenRepo',
+        build_type: 'workflow',
+        source: {
+          branch: 'main',
+          path: '/site',
+        },
+        headers: {
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+      },
+    );
+  });
+
+  it(`Should ${examples[10].description}`, async () => {
+    let input;
+    try {
+      input = yaml.parse(examples[10].example).steps[0].input;
+    } catch (error) {
+      console.error('Failed to parse YAML:', error);
+    }
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        ...input,
+      },
+    });
+    expect(mockOctokit.request).toHaveBeenCalledWith(
+      'POST /repos/{owner}/{repo}/pages',
+      {
+        owner: 'tokenOwner',
+        repo: 'specificTokenRepo',
+        build_type: 'workflow',
+        source: {
+          branch: 'main',
+          path: '/',
+        },
+        headers: {
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+      },
+    );
+  });
+
+  it(`Should ${examples[11].description}`, async () => {
+    let input;
+    try {
+      input = yaml.parse(examples[11].example).steps[0].input;
+    } catch (error) {
+      console.error('Failed to parse YAML:', error);
+    }
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        ...input,
+      },
+    });
+    expect(mockOctokit.request).toHaveBeenCalledWith(
+      'POST /repos/{owner}/{repo}/pages',
+      {
+        owner: 'docsOwner',
+        repo: 'docSiteRepo',
+        build_type: 'workflow',
+        source: {
+          branch: 'docs-branch',
+          path: '/docs-site',
         },
         headers: {
           'X-GitHub-Api-Version': '2022-11-28',
