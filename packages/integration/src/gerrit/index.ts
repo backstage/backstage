@@ -27,6 +27,7 @@ export {
   getGerritRequestOptions,
   parseGerritJsonResponse,
   parseGerritGitilesUrl,
+  parseGitilesUrlRef,
 } from './core';
 
 export type { GerritIntegrationConfig } from './config';

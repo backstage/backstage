@@ -26,6 +26,7 @@ import {
   getGerritCloneRepoUrl,
   getGerritRequestOptions,
   parseGerritJsonResponse,
+  parseGitilesUrlRef,
   parseGerritGitilesUrl,
   getGerritFileContentsApiUrl,
 } from './core';
@@ -148,8 +149,129 @@ describe('gerrit core', () => {
       ).toBeUndefined();
     });
   });
-
-  describe('parseGitilesUrl', () => {
+  describe('parseGitilesUrlRef', () => {
+    const config: GerritIntegrationConfig = {
+      host: 'gerrit.com',
+      gitilesBaseUrl: 'https://gerrit.googlesource.com',
+    };
+    it('can parse a gitiles urls that points to specific sha.', () => {
+      const gitUrl = parseGitilesUrlRef(
+        config,
+        'https://gerrit.googlesource.com/modules/cached-refdb/+/157f862803d45b9d269f0e390f88aece1ded51e8/Jenkinsfile',
+      );
+      expect(gitUrl).toEqual({
+        basePath:
+          'https://gerrit.googlesource.com/modules/cached-refdb/+/157f862803d45b9d269f0e390f88aece1ded51e8',
+        path: 'Jenkinsfile',
+        project: 'modules/cached-refdb',
+        ref: '157f862803d45b9d269f0e390f88aece1ded51e8',
+        refType: 'sha',
+      });
+    });
+    it('can parse gitiles urls that points to tags.', () => {
+      const gitUrl = parseGitilesUrlRef(
+        config,
+        'https://gerrit.googlesource.com/modules/events-broker/+/refs/tags/v3.5.6/src/main/java/com/gerritforge/gerrit/eventbroker/BrokerApi.java',
+      );
+      expect(gitUrl).toEqual({
+        basePath:
+          'https://gerrit.googlesource.com/modules/events-broker/+/refs/tags/v3.5.6',
+        path: 'src/main/java/com/gerritforge/gerrit/eventbroker/BrokerApi.java',
+        project: 'modules/events-broker',
+        ref: 'v3.5.6',
+        refType: 'tag',
+      });
+    });
+    it('can parse gitiles urls that points to HEAD.', () => {
+      const gitUrl = parseGitilesUrlRef(
+        config,
+        'https://gerrit.googlesource.com/modules/events-broker/+/HEAD/src/main/java/com/gerritforge/gerrit/eventbroker/BrokerApi.java',
+      );
+      expect(gitUrl).toEqual({
+        basePath:
+          'https://gerrit.googlesource.com/modules/events-broker/+/HEAD',
+        path: 'src/main/java/com/gerritforge/gerrit/eventbroker/BrokerApi.java',
+        project: 'modules/events-broker',
+        ref: 'HEAD',
+        refType: 'head',
+      });
+    });
+    it('can parse gitiles urls that points to HEAD without path.', () => {
+      const gitUrl = parseGitilesUrlRef(
+        config,
+        'https://gerrit.googlesource.com/modules/events-broker/+/HEAD',
+      );
+      expect(gitUrl).toEqual({
+        basePath:
+          'https://gerrit.googlesource.com/modules/events-broker/+/HEAD',
+        path: '/',
+        project: 'modules/events-broker',
+        ref: 'HEAD',
+        refType: 'head',
+      });
+    });
+    it('can parse gitiles urls that points to branches.', () => {
+      const gitUrl = parseGitilesUrlRef(
+        config,
+        'https://gerrit.googlesource.com/modules/events-broker/+/refs/heads/master/src/main/java/com/gerritforge/gerrit/eventbroker/BrokerApiModule.java',
+      );
+      expect(gitUrl).toEqual({
+        basePath:
+          'https://gerrit.googlesource.com/modules/events-broker/+/refs/heads/master',
+        path: 'src/main/java/com/gerritforge/gerrit/eventbroker/BrokerApiModule.java',
+        project: 'modules/events-broker',
+        ref: 'master',
+        refType: 'branch',
+      });
+    });
+    it('can parse gitiles urls that points directly to a branch without a path.', () => {
+      const gitUrl = parseGitilesUrlRef(
+        config,
+        'https://gerrit.googlesource.com/modules/events-broker/+/refs/heads/master',
+      );
+      expect(gitUrl).toEqual({
+        basePath:
+          'https://gerrit.googlesource.com/modules/events-broker/+/refs/heads/master',
+        path: '/',
+        project: 'modules/events-broker',
+        ref: 'master',
+        refType: 'branch',
+      });
+    });
+    it('can parse gitiles urls that points to the repo root.', () => {
+      const gitUrl = parseGitilesUrlRef(
+        config,
+        'https://gerrit.googlesource.com/modules/events-broker/+/refs/heads/master/',
+      );
+      expect(gitUrl).toEqual({
+        basePath:
+          'https://gerrit.googlesource.com/modules/events-broker/+/refs/heads/master',
+        path: '/',
+        project: 'modules/events-broker',
+        ref: 'master',
+        refType: 'branch',
+      });
+    });
+    it('can parse a valid authenticated gitiles url.', () => {
+      const gitilesConfig: GerritIntegrationConfig = {
+        host: 'gerrit.com',
+        gitilesBaseUrl: 'https://gerrit.com/gitiles',
+      };
+      const gitUrl = parseGitilesUrlRef(
+        gitilesConfig,
+        'https://gerrit.com/a/gitiles/web/project/+/refs/heads/master/README.md',
+      );
+      expect(gitUrl).toEqual({
+        basePath:
+          'https://gerrit.com/a/gitiles/web/project/+/refs/heads/master',
+        path: 'README.md',
+        project: 'web/project',
+        ref: 'master',
+        refType: 'branch',
+      });
+    });
+  });
+  describe('parseGerritGitilesUrl', () => {
     it('can parse a valid gitiles urls.', () => {
       const config: GerritIntegrationConfig = {
         host: 'gerrit.com',

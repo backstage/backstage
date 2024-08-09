@@ -767,6 +767,18 @@ export function parseGiteaUrl(
 };
 
 // @public
+export function parseGitilesUrlRef(
+  config: GerritIntegrationConfig,
+  url: string,
+): {
+  project: string;
+  path: string;
+  ref: string;
+  refType: 'sha' | 'branch' | 'tag' | 'head';
+  basePath: string;
+};
+
+// @public
 export function parseHarnessUrl(
   config: HarnessIntegrationConfig,
   url: string,
