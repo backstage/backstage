@@ -165,6 +165,11 @@ export type EntityRelation = {
   type: string;
 
   /**
+   * The target of this relation.
+   */
+  target?: string;
+
+  /**
    * The entity ref of the target of this relation.
    */
   targetRef: string;
