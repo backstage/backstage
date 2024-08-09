@@ -7813,6 +7813,7 @@ __metadata:
     msw: ^1.0.0
     react-use: ^17.2.4
     uuid: ^9.0.0
+    zen-observable: ^0.10.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
   languageName: unknown

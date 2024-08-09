@@ -13,24 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { signalApiRef } from '../api';
-import { useApiHolder } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSignalsApi } from './useSignalsApi';
 
 /** @public */
 export const useSignal = <TMessage extends JsonObject = JsonObject>(
   channel: string,
 ): { lastSignal: TMessage | null; isSignalsAvailable: boolean } => {
-  const apiHolder = useApiHolder();
-  // Use apiHolder instead useApi in case signalApi is not available in the
-  // backstage instance this is used
-  const signals = apiHolder.get(signalApiRef);
+  const { signalsApi, isSignalsAvailable } = useSignalsApi();
   const [lastSignal, setLastSignal] = useState<TMessage | null>(null);
   useEffect(() => {
     let unsub: null | (() => void) = null;
-    if (signals) {
-      const { unsubscribe } = signals.subscribe<TMessage>(
+    if (signalsApi) {
+      const { unsubscribe } = signalsApi.subscribe<TMessage>(
         channel,
         (msg: TMessage) => {
           setLastSignal(msg);
@@ -39,14 +35,11 @@ export const useSignal = <TMessage extends JsonObject = JsonObject>(
       unsub = unsubscribe;
     }
     return () => {
-      if (signals && unsub) {
+      if (signalsApi && unsub) {
         unsub();
       }
     };
-  }, [signals, channel]);
-
-  // Can be used to fallback (for example to long polling) if signals are not available in the system
-  const isSignalsAvailable = useMemo(() => !!signals, [signals]);
+  }, [signalsApi, channel]);
 
   return { lastSignal, isSignalsAvailable };
 };

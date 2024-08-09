@@ -5,9 +5,14 @@
 ```ts
 import { ApiRef } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
+import { Observable } from '@backstage/types';
 
 // @public (undocumented)
 export interface SignalApi {
+  // (undocumented)
+  observe$<TMessage extends JsonObject = JsonObject>(
+    channel: string,
+  ): Observable<TMessage>;
   // (undocumented)
   subscribe<TMessage extends JsonObject = JsonObject>(
     channel: string,
@@ -29,6 +34,12 @@ export const useSignal: <TMessage extends JsonObject = JsonObject>(
   channel: string,
 ) => {
   lastSignal: TMessage | null;
+  isSignalsAvailable: boolean;
+};
+
+// @public (undocumented)
+export const useSignalsApi: () => {
+  signalsApi: SignalApi | undefined;
   isSignalsAvailable: boolean;
 };
 

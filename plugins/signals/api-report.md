@@ -7,6 +7,7 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
+import { Observable } from '@backstage/types';
 import { SignalApi } from '@backstage/plugin-signals-react';
 import { SignalSubscriber } from '@backstage/plugin-signals-react';
 
@@ -23,6 +24,10 @@ export class SignalClient implements SignalApi {
   static readonly DEFAULT_CONNECT_TIMEOUT_MS: number;
   // (undocumented)
   static readonly DEFAULT_RECONNECT_TIMEOUT_MS: number;
+  // (undocumented)
+  observe$<TMessage extends JsonObject = JsonObject>(
+    channel: string,
+  ): Observable<TMessage>;
   // (undocumented)
   subscribe<TMessage extends JsonObject = JsonObject>(
     channel: string,
