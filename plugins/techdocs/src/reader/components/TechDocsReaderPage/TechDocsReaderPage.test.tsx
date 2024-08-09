@@ -252,4 +252,30 @@ describe('<TechDocsReaderPage />', () => {
 
     expect(rendered.getByText('the page')).toBeInTheDocument();
   });
+
+  it('should apply overrideThemeOptions to the default theme', async () => {
+    const overrideThemeOptions = {
+      typography: { fontFamily: 'Comic Sans MS' },
+    };
+
+    const rendered = await renderInTestApp(
+      <Wrapper>
+        <TechDocsReaderPage
+          entityRef={{
+            name: 'test-name',
+            namespace: 'test-namespace',
+            kind: 'test',
+          }}
+          overrideThemeOptions={overrideThemeOptions}
+        />
+      </Wrapper>,
+      {
+        mountedRoutes,
+      },
+    );
+
+    const article = rendered.getAllByText(mockTechDocsMetadata.site_name)[0];
+
+    expect(article).toHaveStyle('fontFamily: Comic Sans MS');
+  });
 });
