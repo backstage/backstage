@@ -36,6 +36,8 @@ import {
 } from '@backstage/plugin-scaffolder-react';
 import { TemplateEditorForm } from './TemplateEditorForm';
 import { TemplateEditorTextArea } from './TemplateEditorTextArea';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../translation';
 
 const EXAMPLE_TEMPLATE_PARAMS_YAML = `# Edit the template parameters below to see how they will render in the scaffolder form UI
 parameters:
@@ -119,6 +121,7 @@ export const TemplateFormPreviewer = ({
   layouts?: LayoutOptions[];
 }) => {
   const classes = useStyles();
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const alertApi = useApi(alertApiRef);
   const catalogApi = useApi(catalogApiRef);
   const [selectedTemplate, setSelectedTemplate] = useState('');
@@ -176,11 +179,11 @@ export const TemplateFormPreviewer = ({
         <div className={classes.controls}>
           <FormControl variant="outlined" size="small" fullWidth>
             <InputLabel id="select-template-label">
-              Load Existing Template
+              {t('templateEditorPage.templateFormPreviewer.title')}
             </InputLabel>
             <Select
               value={selectedTemplate}
-              label="Load Existing Template"
+              label={t('templateEditorPage.templateFormPreviewer.title')}
               labelId="select-template-label"
               onChange={e => handleSelectChange(e.target.value)}
             >

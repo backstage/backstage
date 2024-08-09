@@ -28,12 +28,18 @@ import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { NotFoundError } from '@backstage/errors';
 import useAsync from 'react-use/esm/useAsync';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../../translation';
 
 export { MyGroupsPickerSchema };
 
 export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const {
-    schema: { title, description },
+    schema: {
+      title = t('fields.myGroupsPicker.title'),
+      description = t('fields.myGroupsPicker.description'),
+    },
     required,
     rawErrors,
     onChange,

@@ -36,6 +36,8 @@ import {
   taskReadPermission,
   taskCreatePermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../translation';
 
 type ContextMenuProps = {
   cancelEnabled?: boolean;
@@ -69,6 +71,7 @@ export const ContextMenu = (props: ContextMenuProps) => {
   const scaffolderApi = useApi(scaffolderApiRef);
   const analytics = useAnalytics();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
+  const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const [{ status: cancelStatus }, { execute: cancel }] = useAsync(async () => {
     if (taskId) {
@@ -118,14 +121,24 @@ export const ContextMenu = (props: ContextMenuProps) => {
             <ListItemIcon>
               <Toc fontSize="small" />
             </ListItemIcon>
-            <ListItemText primary={logsVisible ? 'Hide Logs' : 'Show Logs'} />
+            <ListItemText
+              primary={
+                logsVisible
+                  ? t('ongoingTask.contextMenu.hideLogs')
+                  : t('ongoingTask.contextMenu.showLogs')
+              }
+            />
           </MenuItem>
           <MenuItem onClick={() => onToggleButtonBar?.(!buttonBarVisible)}>
             <ListItemIcon>
               <ControlPointIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText
-              primary={buttonBarVisible ? 'Hide Button Bar' : 'Show Button Bar'}
+              primary={
+                buttonBarVisible
+                  ? t('ongoingTask.contextMenu.hideButtonBar')
+                  : t('ongoingTask.contextMenu.showButtonBar')
+              }
             />
           </MenuItem>
           <MenuItem
@@ -136,7 +149,7 @@ export const ContextMenu = (props: ContextMenuProps) => {
             <ListItemIcon>
               <Retry fontSize="small" />
             </ListItemIcon>
-            <ListItemText primary="Start Over" />
+            <ListItemText primary={t('ongoingTask.contextMenu.startOver')} />
           </MenuItem>
           <MenuItem
             onClick={cancel}
@@ -150,7 +163,7 @@ export const ContextMenu = (props: ContextMenuProps) => {
             <ListItemIcon>
               <Cancel fontSize="small" />
             </ListItemIcon>
-            <ListItemText primary="Cancel" />
+            <ListItemText primary={t('ongoingTask.contextMenu.cancel')} />
           </MenuItem>
         </MenuList>
       </Popover>

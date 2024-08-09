@@ -28,6 +28,8 @@ import DownloadIcon from '@material-ui/icons/GetApp';
 import React from 'react';
 import { useDryRun } from '../DryRunContext';
 import { downloadBlob } from '../../../lib/download';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../../translation';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -49,6 +51,7 @@ const useStyles = makeStyles(theme => ({
 export function DryRunResultsList() {
   const classes = useStyles();
   const dryRun = useDryRun();
+  const { t } = useTranslationRef(scaffolderTranslationRef);
 
   return (
     <List className={classes.root} dense>
@@ -77,12 +80,18 @@ export function DryRunResultsList() {
             >
               {failed ? <CancelIcon /> : <CheckIcon />}
             </ListItemIcon>
-            <ListItemText primary={`Result ${result.id}`} />
+            <ListItemText
+              primary={t('templateEditorPage.dryRunResultsList.title', {
+                resultId: `${result.id}`,
+              })}
+            />
             <ListItemSecondaryAction>
               <IconButton
                 edge="end"
                 aria-label="download"
-                title="Download as .zip"
+                title={t(
+                  'templateEditorPage.dryRunResultsList.downloadButtonTitle',
+                )}
                 disabled={isLoading}
                 onClick={() => downloadResult()}
               >
@@ -91,7 +100,9 @@ export function DryRunResultsList() {
               <IconButton
                 edge="end"
                 aria-label="delete"
-                title="Delete result"
+                title={t(
+                  'templateEditorPage.dryRunResultsList.deleteButtonTitle',
+                )}
                 onClick={() => dryRun.deleteResult(result.id)}
               >
                 <DeleteIcon />

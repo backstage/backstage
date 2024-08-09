@@ -31,6 +31,8 @@ import { DateTime, Interval } from 'luxon';
 import useInterval from 'react-use/esm/useInterval';
 import humanizeDuration from 'humanize-duration';
 import classNames from 'classnames';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../../translation';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -148,6 +150,7 @@ export const TaskStatusStepper = memo(
   }) => {
     const { steps, currentStepId, onUserStepChange } = props;
     const classes = useStyles(props);
+    const { t } = useTranslationRef(scaffolderTranslationRef);
 
     return (
       <div className={classes.root}>
@@ -178,7 +181,11 @@ export const TaskStatusStepper = memo(
                     <div className={classes.labelWrapper}>
                       <Typography variant="subtitle2">{step.name}</Typography>
                       {isSkipped ? (
-                        <Typography variant="caption">Skipped</Typography>
+                        <Typography variant="caption">
+                          {t(
+                            'templateEditorPage.taskStatusStepper.skippedStepTitle',
+                          )}
+                        </Typography>
                       ) : (
                         <StepTimeTicker step={step} />
                       )}
