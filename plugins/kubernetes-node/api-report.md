@@ -146,7 +146,11 @@ export interface KubernetesObjectsByEntity {
   // (undocumented)
   auth: KubernetesRequestAuth;
   // (undocumented)
+  customResources?: CustomResourceMatcher[];
+  // (undocumented)
   entity: Entity;
+  // (undocumented)
+  objectTypesToFetch?: ObjectToFetch[];
 }
 
 // @public (undocumented)

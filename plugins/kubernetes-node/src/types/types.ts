@@ -52,6 +52,8 @@ export interface KubernetesObjectsProvider {
 export interface KubernetesObjectsByEntity {
   entity: Entity;
   auth: KubernetesRequestAuth;
+  objectTypesToFetch?: ObjectToFetch[];
+  customResources?: CustomResourceMatcher[];
 }
 /**
  *

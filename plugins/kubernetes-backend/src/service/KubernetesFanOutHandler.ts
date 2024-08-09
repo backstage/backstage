@@ -233,7 +233,12 @@ export class KubernetesFanOutHandler implements KubernetesObjectsProvider {
   }
 
   async getKubernetesObjectsByEntity(
-    { entity, auth }: KubernetesObjectsByEntity,
+    {
+      entity,
+      auth,
+      objectTypesToFetch,
+      customResources,
+    }: KubernetesObjectsByEntity,
     options: { credentials: BackstageCredentials },
   ): Promise<ObjectsByEntityResponse> {
     return this.fanOutRequests(
@@ -242,7 +247,10 @@ export class KubernetesFanOutHandler implements KubernetesObjectsProvider {
       {
         credentials: options.credentials,
       },
-      this.objectTypesToFetch,
+      objectTypesToFetch === undefined
+        ? this.objectTypesToFetch
+        : new Set(objectTypesToFetch),
+      customResources,
     );
   }
 

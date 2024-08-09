@@ -399,6 +399,8 @@ export class KubernetesBuilder {
           {
             entity: requestBody.entity,
             auth: requestBody.auth || {},
+            objectTypesToFetch: requestBody.objectTypesToFetch,
+            customResources: requestBody.customResources,
           },
           { credentials: await httpAuth.credentials(req) },
         );

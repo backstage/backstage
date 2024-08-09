@@ -32,6 +32,7 @@ import {
   V1StatefulSet,
 } from '@kubernetes/client-node';
 import { Entity } from '@backstage/catalog-model';
+import type { ObjectToFetch } from '@backstage/plugin-kubernetes-node';
 
 /** @public */
 export type KubernetesRequestAuth = {
@@ -62,6 +63,8 @@ export interface CustomObjectsByEntityRequest {
 export interface KubernetesRequestBody {
   auth?: KubernetesRequestAuth;
   entity: Entity;
+  objectTypesToFetch?: ObjectToFetch[];
+  customResources?: CustomResourceMatcher[];
 }
 
 /** @public */
