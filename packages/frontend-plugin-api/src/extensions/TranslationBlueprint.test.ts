@@ -60,6 +60,7 @@ describe('TranslationBlueprint', () => {
         "output": [
           [Function],
         ],
+        "override": [Function],
         "toString": [Function],
         "version": "v2",
       }

@@ -23,7 +23,6 @@ import {
   createExtension,
   createExtensionInput,
 } from '../wiring';
-import { each } from 'lodash';
 
 describe('AppRootWrapperBlueprint', () => {
   it('should return an extension with sensible defaults', () => {
@@ -38,7 +37,7 @@ describe('AppRootWrapperBlueprint', () => {
         "$$type": "@backstage/ExtensionDefinition",
         "attachTo": {
           "id": "app/root",
-          "input": "elements",
+          "input": "wrappers",
         },
         "configSchema": undefined,
         "disabled": false,
@@ -50,6 +49,7 @@ describe('AppRootWrapperBlueprint', () => {
         "output": [
           [Function],
         ],
+        "override": [Function],
         "toString": [Function],
         "version": "v2",
       }

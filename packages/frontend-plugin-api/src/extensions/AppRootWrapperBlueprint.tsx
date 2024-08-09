@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { ComponentType, PropsWithChildren } from 'react';
 import { createExtensionBlueprint } from '../wiring';
@@ -20,7 +21,7 @@ import { createAppRootWrapperExtension } from './createAppRootWrapperExtension';
 
 export const AppRootWrapperBlueprint = createExtensionBlueprint({
   kind: 'app-root-wrapper',
-  attachTo: { id: 'app/root', input: 'elements' },
+  attachTo: { id: 'app/root', input: 'wrappers' },
   output: [createAppRootWrapperExtension.componentDataRef],
   dataRefs: {
     component: createAppRootWrapperExtension.componentDataRef,

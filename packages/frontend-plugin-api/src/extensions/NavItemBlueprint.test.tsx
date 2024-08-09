@@ -60,6 +60,7 @@ describe('NavItemBlueprint', () => {
         "output": [
           [Function],
         ],
+        "override": [Function],
         "toString": [Function],
         "version": "v2",
       }

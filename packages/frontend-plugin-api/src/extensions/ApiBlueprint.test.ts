@@ -49,6 +49,7 @@ describe('ApiBlueprint', () => {
         "output": [
           [Function],
         ],
+        "override": [Function],
         "toString": [Function],
         "version": "v2",
       }
@@ -121,6 +122,7 @@ describe('ApiBlueprint', () => {
         "output": [
           [Function],
         ],
+        "override": [Function],
         "toString": [Function],
         "version": "v2",
       }

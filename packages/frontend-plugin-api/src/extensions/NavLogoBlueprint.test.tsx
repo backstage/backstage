@@ -43,6 +43,7 @@ describe('NavLogoBlueprint', () => {
         "output": [
           [Function],
         ],
+        "override": [Function],
         "toString": [Function],
         "version": "v2",
       }

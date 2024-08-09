@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { SignInPageBlueprint } from './SignInPageBlueprint';
 import { createExtensionTester } from '@backstage/frontend-test-utils';
-import { waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
+import { coreExtensionData, createExtension } from '../wiring';
 
 describe('SignInPageBlueprint', () => {
   it('should create an extension with sensible defaults', () => {
@@ -41,6 +43,7 @@ describe('SignInPageBlueprint', () => {
         "output": [
           [Function],
         ],
+        "override": [Function],
         "toString": [Function],
         "version": "v2",
       }
@@ -51,17 +54,29 @@ describe('SignInPageBlueprint', () => {
     const MockSignInPage = () => <div data-testid="mock-sign-in" />;
 
     const extension = SignInPageBlueprint.make({
+      name: 'test',
       params: { loader: async () => () => <MockSignInPage /> },
     });
 
     const tester = createExtensionTester(extension);
+
     expect(tester.data(SignInPageBlueprint.dataRefs.component)).toBeDefined();
 
-    const { getByTestId } = tester.render();
+    createExtensionTester(
+      createExtension({
+        name: 'dummy',
+        attachTo: { id: 'ignored', input: 'ignored' },
+        output: {
+          element: coreExtensionData.reactElement,
+        },
+        factory: () => ({ element: <div /> }),
+      }),
+    )
+      .add(extension)
+      .render();
 
-    // todo(blam): need a better way to test this, currently fails.
     await waitFor(() => {
-      expect(getByTestId('mock-sign-in')).toBeInTheDocument();
+      expect(screen.getByTestId('mock-sign-in')).toBeInTheDocument();
     });
   });
 });

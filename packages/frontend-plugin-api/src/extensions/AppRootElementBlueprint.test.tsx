@@ -40,6 +40,7 @@ describe('AppRootElementBlueprint', () => {
         "output": [
           [Function],
         ],
+        "override": [Function],
         "toString": [Function],
         "version": "v2",
       }
