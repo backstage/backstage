@@ -35,6 +35,8 @@ type Response =
       error: Error;
     };
 
+type ResponseHandler = (response: Response) => void;
+
 const requestType = '@backstage/cli/channel/request';
 const responseType = '@backstage/cli/channel/response';
 
@@ -48,19 +50,38 @@ const IPC_TIMEOUT_MS = 5000;
 export class BackstageIpcClient {
   #messageId = 0;
   #sendMessage: SendMessage;
+  #handlers: Map<number, ResponseHandler> = new Map();
 
   /**
    * Creates a new client if we're in a child process with IPC and BACKSTAGE_CLI_CHANNEL is set.
    */
   static create(): BackstageIpcClient | undefined {
     const sendMessage = process.send?.bind(process);
-    return sendMessage && process.env.BACKSTAGE_CLI_CHANNEL
-      ? new BackstageIpcClient(sendMessage)
-      : undefined;
+    const client =
+      sendMessage && process.env.BACKSTAGE_CLI_CHANNEL
+        ? new BackstageIpcClient(sendMessage)
+        : undefined;
+
+    if (client) {
+      process.on('message', (message, _sendHandle) =>
+        client.handleMessage(message, _sendHandle),
+      );
+    }
+
+    return client;
   }
 
   constructor(sendMessage: SendMessage) {
     this.#sendMessage = sendMessage;
+  }
+
+  private handleMessage(message: unknown, _sendHandle: unknown) {
+    const isResponse = (msg: unknown): msg is Response =>
+      (msg as Response)?.type === responseType;
+
+    if (isResponse(message)) {
+      this.#handlers.get(message.id)?.(message);
+    }
   }
 
   /**
@@ -82,17 +103,10 @@ export class BackstageIpcClient {
 
       let timeout: NodeJS.Timeout | undefined = undefined;
 
-      const messageHandler = (response: Response) => {
-        if (response?.type !== responseType) {
-          return;
-        }
-        if (response.id !== id) {
-          return;
-        }
-
+      const responseHandler: ResponseHandler = (response: Response) => {
         clearTimeout(timeout);
         timeout = undefined;
-        process.removeListener('message', messageHandler);
+        this.#handlers.delete(id);
 
         if ('error' in response) {
           const error = new Error(response.error.message);
@@ -107,12 +121,11 @@ export class BackstageIpcClient {
 
       timeout = setTimeout(() => {
         reject(new Error(`IPC request '${method}' with ID ${id} timed out`));
-        process.removeListener('message', messageHandler);
+        this.#handlers.delete(id);
       }, IPC_TIMEOUT_MS);
       timeout.unref();
 
-      process.addListener('message', messageHandler as () => void);
-
+      this.#handlers.set(id, responseHandler);
       this.#sendMessage(request, (e: Error) => {
         if (e) {
           reject(e);
