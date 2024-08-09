@@ -186,13 +186,13 @@
     "del": "^7.0.0",
     "msw": "^1.0.0",
     "nodemon": "^3.0.1",
-    "vite": "^4.4.9",
+    "vite": "^5.0.0",
     "vite-plugin-html": "^3.2.0",
     "vite-plugin-node-polyfills": "^0.22.0"
   },
   "peerDependencies": {
     "@vitejs/plugin-react": "^4.0.4",
-    "vite": "^4.4.9",
+    "vite": "^5.0.0",
     "vite-plugin-html": "^3.2.0",
     "vite-plugin-node-polyfills": "^0.22.0"
   },
