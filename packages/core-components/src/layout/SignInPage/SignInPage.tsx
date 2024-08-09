@@ -19,13 +19,14 @@ import {
   configApiRef,
   SignInPageProps,
   useApi,
+  authErrorApiRef,
 } from '@backstage/core-plugin-api';
 import { UserIdentity } from './UserIdentity';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import React, { useState } from 'react';
-import { useMountEffect } from '@react-hookz/web';
+import { useAsync, useMountEffect } from '@react-hookz/web';
 import { Progress } from '../../components/Progress';
 import { Content } from '../Content/Content';
 import { ContentHeader } from '../ContentHeader/ContentHeader';
@@ -37,6 +38,7 @@ import { GridItem, useStyles } from './styles';
 import { IdentityProviders, SignInProviderConfig } from './types';
 import { coreComponentsTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { useSearchParams } from 'react-router-dom';
 
 type MultiSignInPageProps = SignInPageProps & {
   providers: IdentityProviders;
@@ -97,6 +99,7 @@ export const SingleSignInPage = ({
   const classes = useStyles();
   const authApi = useApi(provider.apiRef);
   const configApi = useApi(configApiRef);
+  const authErrorApi = useApi(authErrorApiRef);
   const { t } = useTranslationRef(coreComponentsTranslationRef);
 
   const [error, setError] = useState<Error>();
@@ -105,6 +108,11 @@ export const SingleSignInPage = ({
   // showLoginPage is used to prevent a glitch-like experience where the sign-in page is
   // displayed for a split second when the user is already logged-in.
   const [showLoginPage, setShowLoginPage] = useState<boolean>(false);
+
+  // User was redirected back to sign in page with error from auth redirect flow
+  const [searchParams, _setSearchParams] = useSearchParams();
+  const errorParam = searchParams.get('error');
+  const hasErrorSearchParam = errorParam !== 'false' && errorParam !== null;
 
   type LoginOpts = { checkExisting?: boolean; showPopup?: boolean };
   const login = async ({ checkExisting, showPopup }: LoginOpts) => {
@@ -118,7 +126,7 @@ export const SingleSignInPage = ({
       }
 
       // If no session exists, show the sign-in page
-      if (!identityResponse && (showPopup || auto)) {
+      if (!identityResponse && (showPopup || auto) && !hasErrorSearchParam) {
         // Unless auto is set to true, this step should not happen.
         // When user intentionally clicks the Sign In button, autoShowPopup is set to true
         setShowLoginPage(true);
@@ -152,7 +160,19 @@ export const SingleSignInPage = ({
     }
   };
 
-  useMountEffect(() => login({ checkExisting: true }));
+  const [_, { execute: checkAuthErrors }] = useAsync(async () => {
+    if (hasErrorSearchParam) {
+      const errorResponse = await authErrorApi.getSignInAuthError();
+      if (errorResponse) {
+        setError(errorResponse);
+      }
+    }
+  });
+
+  useMountEffect(() => {
+    checkAuthErrors();
+    login({ checkExisting: true });
+  });
 
   return showLoginPage ? (
     <Page themeId="home">

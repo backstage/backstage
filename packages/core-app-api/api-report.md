@@ -16,6 +16,7 @@ import { AppConfig } from '@backstage/config';
 import { AppTheme } from '@backstage/core-plugin-api';
 import { AppThemeApi } from '@backstage/core-plugin-api';
 import { atlassianAuthApiRef } from '@backstage/core-plugin-api';
+import { AuthErrorApi } from '@backstage/core-plugin-api';
 import { AuthProviderInfo } from '@backstage/core-plugin-api';
 import { AuthRequestOptions } from '@backstage/core-plugin-api';
 import { BackstageIdentityApi } from '@backstage/core-plugin-api';
@@ -633,6 +634,14 @@ export class SamlAuth
   signIn(): Promise<void>;
   // (undocumented)
   signOut(): Promise<void>;
+}
+
+// @public
+export class SignInAuthErrorApi implements AuthErrorApi {
+  // (undocumented)
+  static create(options: { discovery: DiscoveryApi }): SignInAuthErrorApi;
+  // (undocumented)
+  getSignInAuthError(): Promise<Error | undefined>;
 }
 
 // @public
