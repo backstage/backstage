@@ -16,9 +16,15 @@
 
 import React from 'react';
 import { coreExtensionData } from './coreExtensionData';
-import { createExtensionBlueprint } from './createExtensionBlueprint';
+import {
+  createDataContainer,
+  createExtensionBlueprint,
+} from './createExtensionBlueprint';
 import { createExtensionTester } from '@backstage/frontend-test-utils';
-import { createExtensionDataRef } from './createExtensionDataRef';
+import {
+  ExtensionDataValue,
+  createExtensionDataRef,
+} from './createExtensionDataRef';
 import { createExtensionInput } from './createExtensionInput';
 import { RouteRef } from '../routing';
 import {
@@ -28,12 +34,15 @@ import {
 
 function unused(..._any: any[]) {}
 
-function factoryOutput(ext: ExtensionDefinition<any, any>) {
+function factoryOutput(
+  ext: ExtensionDefinition<any, any>,
+  inputs: unknown = undefined,
+) {
   const int = toInternalExtensionDefinition(ext);
   if (int.version !== 'v2') {
     throw new Error('Expected v2 extension');
   }
-  return Array.from(int.factory({} as any));
+  return Array.from(int.factory({ inputs } as any));
 }
 
 describe('createExtensionBlueprint', () => {
@@ -333,6 +342,235 @@ describe('createExtensionBlueprint', () => {
     });
 
     expect(true).toBe(true);
+  });
+
+  it('should be able to override inputs when calling original factory', () => {
+    const outputRef = createExtensionDataRef<unknown>().with({ id: 'output' });
+    const testDataRef1 = createExtensionDataRef<string>().with({ id: 'test1' });
+    const testDataRef2 = createExtensionDataRef<string>().with({ id: 'test2' });
+
+    const Blueprint = createExtensionBlueprint({
+      kind: 'test-extension',
+      attachTo: { id: 'test', input: 'default' },
+      inputs: {
+        opt: createExtensionInput([testDataRef1.optional()], {
+          singleton: true,
+          optional: true,
+        }),
+        single: createExtensionInput([testDataRef1, testDataRef2.optional()], {
+          singleton: true,
+        }),
+        multi: createExtensionInput([testDataRef1]),
+      },
+      output: [outputRef],
+      factory(_, { inputs }) {
+        return [
+          outputRef({
+            opt: inputs.opt?.get(testDataRef1) ?? 'none',
+            single: inputs.single.get(testDataRef1),
+            singleOpt: inputs.single.get(testDataRef2) ?? 'none',
+            multi: inputs.multi.map(i => i.get(testDataRef1)).join(','),
+          }),
+        ];
+      },
+    });
+
+    const mockInput = (node: string, ...data: ExtensionDataValue<any, any>[]) =>
+      Object.assign(createDataContainer(data), {
+        node,
+      });
+    const mockParentInputs = {
+      opt: mockInput('node-opt', testDataRef1('orig-opt')),
+      single: mockInput('node-single', testDataRef1('orig-single')),
+      multi: [
+        mockInput('node-multi1', testDataRef1('orig-multi1')),
+        mockInput('node-multi2', testDataRef1('orig-multi2')),
+      ],
+    };
+
+    // All values provided
+    expect(
+      factoryOutput(
+        Blueprint.makeWithOverrides({
+          factory(origFactory) {
+            return origFactory(
+              {},
+              {
+                inputs: {
+                  opt: [testDataRef1('opt')],
+                  single: [testDataRef1('single'), testDataRef2('singleOpt')],
+                  multi: [[testDataRef1('multi1')], [testDataRef1('multi2')]],
+                },
+              },
+            );
+          },
+        }),
+        mockParentInputs,
+      ),
+    ).toEqual([
+      outputRef({
+        opt: 'opt',
+        single: 'single',
+        singleOpt: 'singleOpt',
+        multi: 'multi1,multi2',
+      }),
+    ]);
+
+    // Minimal values provided
+    expect(
+      factoryOutput(
+        Blueprint.makeWithOverrides({
+          factory(origFactory) {
+            return origFactory(
+              {},
+              {
+                inputs: {
+                  single: [testDataRef1('single')],
+                  multi: [[testDataRef1('multi1')], [testDataRef1('multi2')]],
+                },
+              },
+            );
+          },
+        }),
+        mockParentInputs,
+      ),
+    ).toEqual([
+      outputRef({
+        opt: 'none',
+        single: 'single',
+        singleOpt: 'none',
+        multi: 'multi1,multi2',
+      }),
+    ]);
+
+    // Not enough values provided, checked at runtime
+    expect(() =>
+      factoryOutput(
+        Blueprint.makeWithOverrides({
+          factory(origFactory) {
+            return origFactory(
+              {},
+              {
+                inputs: {
+                  single: [],
+                  multi: [],
+                },
+              },
+            );
+          },
+        }),
+        mockParentInputs,
+      ),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid override provided for input 'multi', when overriding the input data the length must match the original input data"`,
+    );
+
+    // Wrong value provided
+    expect(() =>
+      factoryOutput(
+        Blueprint.makeWithOverrides({
+          factory(origFactory) {
+            return origFactory(
+              {},
+              {
+                inputs: {
+                  // @ts-expect-error
+                  opt: [testDataRef2('opt')],
+                  // @ts-expect-error
+                  single: [testDataRef1('single'), outputRef({})],
+                  multi: [
+                    // @ts-expect-error
+                    [testDataRef2('multi1')],
+                  ],
+                },
+              },
+            );
+          },
+        }),
+        mockParentInputs,
+      ),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid override provided for input 'multi', when overriding the input data the length must match the original input data"`,
+    );
+
+    // Forwarding entire inputs object
+    expect(
+      factoryOutput(
+        Blueprint.makeWithOverrides({
+          factory(origFactory, { inputs }) {
+            return origFactory({}, { inputs });
+          },
+        }),
+        mockParentInputs,
+      ),
+    ).toEqual([
+      outputRef({
+        opt: 'orig-opt',
+        single: 'orig-single',
+        singleOpt: 'none',
+        multi: 'orig-multi1,orig-multi2',
+      }),
+    ]);
+
+    // Forwarding individual outputs
+    expect(
+      factoryOutput(
+        Blueprint.makeWithOverrides({
+          factory(origFactory, { inputs }) {
+            return origFactory(
+              {},
+              {
+                inputs: {
+                  opt: inputs.opt,
+                  single: inputs.single,
+                  multi: inputs.multi,
+                },
+              },
+            );
+          },
+        }),
+        mockParentInputs,
+      ),
+    ).toEqual([
+      outputRef({
+        opt: 'orig-opt',
+        single: 'orig-single',
+        singleOpt: 'none',
+        multi: 'orig-multi1,orig-multi2',
+      }),
+    ]);
+
+    // Overriding based on original input
+    expect(
+      factoryOutput(
+        Blueprint.makeWithOverrides({
+          factory(origFactory, { inputs }) {
+            return origFactory(
+              {},
+              {
+                inputs: {
+                  single: [
+                    testDataRef1(`override-${inputs.single.get(testDataRef1)}`),
+                    testDataRef2('new-singleOpt'),
+                  ],
+                  multi: inputs.multi.map(i => [
+                    testDataRef1(`override-${i.get(testDataRef1)}`),
+                  ]),
+                },
+              },
+            );
+          },
+        }),
+        mockParentInputs,
+      ),
+    ).toEqual([
+      outputRef({
+        opt: 'none',
+        single: 'override-orig-single',
+        singleOpt: 'new-singleOpt',
+        multi: 'override-orig-multi1,override-orig-multi2',
+      }),
+    ]);
   });
 
   it('should allow merging of inputs', () => {

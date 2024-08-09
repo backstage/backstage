@@ -20,6 +20,7 @@ import {
   CreateExtensionOptions,
   ExtensionDataContainer,
   ExtensionDefinition,
+  ResolvedExtensionInput,
   ResolvedExtensionInputs,
   VerifyExtensionFactoryOutput,
   createExtension,
@@ -29,6 +30,7 @@ import { ExtensionInput } from './createExtensionInput';
 import {
   AnyExtensionDataRef,
   ExtensionDataRef,
+  ExtensionDataRefToValue,
   ExtensionDataValue,
 } from './createExtensionDataRef';
 
@@ -74,6 +76,61 @@ export type CreateExtensionBlueprintOptions<
 
   dataRefs?: TDataRefs;
 } & VerifyExtensionFactoryOutput<UOutput, UFactoryOutput>;
+
+/** @ignore */
+type ResolveInputValueOverrides<
+  TInputs extends {
+    [inputName in string]: ExtensionInput<
+      AnyExtensionDataRef,
+      { optional: boolean; singleton: boolean }
+    >;
+  } = {
+    [inputName in string]: ExtensionInput<
+      AnyExtensionDataRef,
+      { optional: boolean; singleton: boolean }
+    >;
+  },
+> = Expand<
+  {
+    [KName in keyof TInputs as TInputs[KName] extends ExtensionInput<
+      any,
+      {
+        optional: infer IOptional extends boolean;
+        singleton: boolean;
+      }
+    >
+      ? IOptional extends true
+        ? never
+        : KName
+      : never]: TInputs[KName] extends ExtensionInput<
+      infer IDataRefs,
+      { optional: boolean; singleton: infer ISingleton extends boolean }
+    >
+      ? ISingleton extends true
+        ? Iterable<ExtensionDataRefToValue<IDataRefs>>
+        : Array<Iterable<ExtensionDataRefToValue<IDataRefs>>>
+      : never;
+  } & {
+    [KName in keyof TInputs as TInputs[KName] extends ExtensionInput<
+      any,
+      {
+        optional: infer IOptional extends boolean;
+        singleton: boolean;
+      }
+    >
+      ? IOptional extends true
+        ? KName
+        : never
+      : never]?: TInputs[KName] extends ExtensionInput<
+      infer IDataRefs,
+      { optional: boolean; singleton: infer ISingleton extends boolean }
+    >
+      ? ISingleton extends true
+        ? Iterable<ExtensionDataRefToValue<IDataRefs>>
+        : Array<Iterable<ExtensionDataRefToValue<IDataRefs>>>
+      : never;
+  }
+>;
 
 /**
  * @public
@@ -156,7 +213,7 @@ export interface ExtensionBlueprint<
         params: TParams,
         context?: {
           config?: TConfig;
-          inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
+          inputs?: ResolveInputValueOverrides<TInputs>;
         },
       ) => ExtensionDataContainer<UOutput>,
       context: {
@@ -288,7 +345,7 @@ class ExtensionBlueprintImpl<
               ReturnType<TConfigSchema[key]>
             >;
           };
-          inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
+          inputs?: ResolveInputValueOverrides<TInputs>;
         },
       ) => ExtensionDataContainer<UOutput>,
       context: {
@@ -347,14 +404,83 @@ class ExtensionBlueprintImpl<
                   ReturnType<TConfigSchema[key]>
                 >;
               };
-              inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
+              inputs?: ResolveInputValueOverrides;
             },
           ): ExtensionDataContainer<UOutput> => {
+            const overrideInputs = innerContext?.inputs;
+            const declaredInputs = this.options.inputs;
+
+            let forwardedInputs = inputs;
+            if (overrideInputs && declaredInputs) {
+              const newInputs = {} as {
+                [KName in keyof TInputs]?:
+                  | ({ node: AppNode } & ExtensionDataContainer<any>)
+                  | Array<{ node: AppNode } & ExtensionDataContainer<any>>;
+              };
+              forwardedInputs = newInputs as typeof inputs;
+
+              for (const name in declaredInputs) {
+                if (!Object.hasOwn(declaredInputs, name)) {
+                  continue;
+                }
+                const declaredInput = declaredInputs[name];
+                const providedData = overrideInputs[name];
+                if (declaredInput.config.singleton) {
+                  // We know the passed in input will match the declared inputs, so this case is safe
+                  const originalInput = (
+                    inputs as Record<
+                      string,
+                      { node: AppNode } & ExtensionDataContainer<any>
+                    >
+                  )[name];
+                  if (providedData) {
+                    const providedContainer = createDataContainer(
+                      providedData as Iterable<ExtensionDataValue<any, any>>,
+                    );
+                    if (!originalInput) {
+                      throw new Error(
+                        `A data override was provided for input '${name}', but no original input was present.`,
+                      );
+                    }
+                    newInputs[name] = Object.assign(providedContainer, {
+                      name: (originalInput as ResolvedExtensionInput<any>).node,
+                    }) as any;
+                  }
+                } else {
+                  // We know the passed in input will match the declared inputs, so this case is safe
+                  const originalInput = (
+                    inputs as Record<
+                      string,
+                      Array<{ node: AppNode } & ExtensionDataContainer<any>>
+                    >
+                  )[name];
+                  if (!Array.isArray(providedData)) {
+                    throw new Error(
+                      `Invalid override provided for input '${name}', expected an array`,
+                    );
+                  }
+                  if (originalInput.length !== providedData.length) {
+                    throw new Error(
+                      `Invalid override provided for input '${name}', when overriding the input data the length must match the original input data`,
+                    );
+                  }
+                  newInputs[name] = providedData.map((data, i) => {
+                    const providedContainer = createDataContainer(
+                      data as Iterable<ExtensionDataValue<any, any>>,
+                    );
+                    return Object.assign(providedContainer, {
+                      name: (originalInput[i] as ResolvedExtensionInput<any>)
+                        .node,
+                    }) as any;
+                  });
+                }
+              }
+            }
             return createDataContainer<UOutput>(
               this.options.factory(innerParams, {
                 node,
                 config: innerContext?.config ?? config,
-                inputs: (innerContext?.inputs ?? inputs) as any, // TODO: Fix the way input values are overridden
+                inputs: forwardedInputs as any, // TODO: Might be able to improve this once legacy inputs are gone
               }),
             );
           },
