@@ -149,6 +149,8 @@ describe('createPlugin', () => {
     expect(plugin).toBeDefined();
 
     expect(plugin.getExtension('test/1')).toBe(Extension1);
+    // @ts-expect-error
+    expect(plugin.getExtension('nonexistent')).toBeUndefined();
 
     await renderWithEffects(
       createTestAppRoot({
