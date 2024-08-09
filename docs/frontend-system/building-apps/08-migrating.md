@@ -570,3 +570,32 @@ createApp({
   // ...
 });
 ```
+
+### Migration Status
+
+The following table list out all the frontend plugins in the Backstage repo and their current migration status.
+
+:::note Note
+
+For plugins in the [Community Plugins repo](https://github.com/backstage/community-plugins) these details can be found in the [New Frontend System Support](https://github.com/backstage/community-plugins/blob/main/docs/compatibility/new-frontend-system.md) documentation.
+
+:::
+
+| package                                        | role            | migrated | alpha | readme                                                                                                      |
+| ---------------------------------------------- | --------------- | -------- | ----- | ----------------------------------------------------------------------------------------------------------- |
+| @backstage/plugin-api-docs                     | frontend-plugin | true     | true  | [README](https://github.com/backstage/backstage/blob/master/plugins/api-docs/README.md)                     |
+| @backstage/plugin-app-visualizer               | frontend-plugin | true     |       | [README](https://github.com/backstage/backstage/blob/master/plugins/app-visualizer/README.md)               |
+| @backstage/plugin-catalog                      | frontend-plugin | true     | true  | [README](https://github.com/backstage/backstage/blob/master/plugins/catalog/README.md)                      |
+| @backstage/plugin-catalog-graph                | frontend-plugin | true     | true  | [README](https://github.com/backstage/backstage/blob/master/plugins/catalog-graph/README.md)                |
+| @backstage/plugin-catalog-import               | frontend-plugin | true     | true  | [README](https://github.com/backstage/backstage/blob/master/plugins/catalog-import/README.md)               |
+| @backstage/plugin-catalog-unprocessed-entities | frontend-plugin |          |       | [README](https://github.com/backstage/backstage/blob/master/plugins/catalog-unprocessed-entities/README.md) |
+| @backstage/plugin-devtools                     | frontend-plugin | true     | true  | [README](https://github.com/backstage/backstage/blob/master/plugins/devtools/README.md)                     |
+| @internal/plugin-todo-list                     | frontend-plugin |          |       | [README](https://github.com/backstage/backstage/blob/master/plugins/example-todo-list/README.md)            |
+| @backstage/plugin-home                         | frontend-plugin | true     | true  | [README](https://github.com/backstage/backstage/blob/master/plugins/home/README.md)                         |
+| @backstage/plugin-kubernetes                   | frontend-plugin | true     | true  | [README](https://github.com/backstage/backstage/blob/master/plugins/kubernetes/README.md)                   |
+| @backstage/plugin-notifications                | frontend-plugin |          |       | [README](https://github.com/backstage/backstage/blob/master/plugins/notifications/README.md)                |
+| @backstage/plugin-org                          | frontend-plugin | true     | true  | [README](https://github.com/backstage/backstage/blob/master/plugins/org/README.md)                          |
+| @backstage/plugin-scaffolder                   | frontend-plugin | true     | true  | [README](https://github.com/backstage/backstage/blob/master/plugins/scaffolder/README.md)                   |
+| @backstage/plugin-search                       | frontend-plugin | true     | true  | [README](https://github.com/backstage/backstage/blob/master/plugins/search/README.md)                       |
+| @backstage/plugin-techdocs                     | frontend-plugin | true     | true  | [README](https://github.com/backstage/backstage/blob/master/plugins/techdocs/README.md)                     |
+| @backstage/plugin-user-settings                | frontend-plugin | true     | true  | [README](https://github.com/backstage/backstage/blob/master/plugins/user-settings/README.md)                |
