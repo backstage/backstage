@@ -58,6 +58,8 @@ function registerPackageCommand(program: Command) {
     .description(
       'Additional properties that can be passed to @openapitools/openapi-generator-cli',
     )
+    .option('--watch')
+    .description('Watch the OpenAPI spec for changes and regenerate on save.')
     .action(
       lazy(() =>
         import('./package/schema/openapi/generate').then(m => m.command),
