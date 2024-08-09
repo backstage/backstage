@@ -84,4 +84,12 @@ export type EntitiesSearchFilter = {
    * always case insensitive.
    */
   values?: string[];
+
+  /**
+   * Match on patterns.
+   *
+   * Match on values to any of the given patterns. Patterns should use
+   * standard SQL pattern string expressions. Matches are always case insensitive.
+   */
+  patterns?: string[];
 };
