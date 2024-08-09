@@ -50,6 +50,10 @@ export const OwnedEntityPickerFieldSchema = makeFieldSchemaFromZod(
       .or(entityQueryFilterExpressionSchema)
       .optional()
       .describe('List of key-value filter expression for entities'),
+    via: z
+      .array(z.string())
+      .optional()
+      .describe('List of entity kinds via which ownership is claimed.'),
   }),
 );
 

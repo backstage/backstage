@@ -120,6 +120,7 @@
     "@types/react-resizable": "^3.0.8",
     "@types/react-window": "^1.8.8",
     "msw": "^1.0.0",
+    "ramda": "^0.30.1",
     "swr": "^2.0.0"
   },
   "peerDependencies": {

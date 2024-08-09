@@ -34,6 +34,8 @@ import {
   actionsRouteRef,
   rootRouteRef,
   scaffolderListTaskRouteRef,
+  templateFiltersRouteRef,
+  templateGlobalsRouteRef,
 } from '../../routes';
 
 type Selection =
@@ -60,12 +62,16 @@ export function TemplateEditorPage(props: TemplateEditorPageProps) {
   const actionsLink = useRouteRef(actionsRouteRef);
   const tasksLink = useRouteRef(scaffolderListTaskRouteRef);
   const createLink = useRouteRef(rootRouteRef);
+  const templateFiltersLink = useRouteRef(templateFiltersRouteRef);
+  const templateGlobalsLink = useRouteRef(templateGlobalsRouteRef);
 
   const scaffolderPageContextMenuProps = {
     onEditorClicked: undefined,
     onActionsClicked: () => navigate(actionsLink()),
     onTasksClicked: () => navigate(tasksLink()),
     onCreateClicked: () => navigate(createLink()),
+    onTemplateFiltersClicked: () => navigate(templateFiltersLink()),
+    onTemplateGlobalsClicked: () => navigate(templateGlobalsLink()),
   };
 
   let content: JSX.Element | null = null;

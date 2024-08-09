@@ -15,11 +15,53 @@
  */
 
 import { JsonValue } from '@backstage/types';
+import { Schema } from 'jsonschema';
 
 /** @public */
 export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
 
 /** @public */
+export type TemplateFilterSchema = {
+  input?: Schema;
+  arguments?: Schema[];
+  output?: Schema;
+};
+
+/** @public */
+export type TemplateFilterMetadata = {
+  description?: string;
+  schema?: TemplateFilterSchema;
+  examples?: { description?: string; example: string; notes?: string }[];
+};
+
+/** @public */
 export type TemplateGlobal =
   | ((...args: JsonValue[]) => JsonValue | undefined)
   | JsonValue;
+
+/** @public */
+export type TemplateGlobalValueMetadata = {
+  description?: string;
+  value: JsonValue;
+};
+
+/** @public */
+export type TemplateGlobalFunctionSchema = {
+  arguments?: Schema[];
+  output?: Schema;
+};
+
+/** @public */
+export type TemplateGlobalFunctionMetadata = {
+  description?: string;
+  schema?: TemplateGlobalFunctionSchema;
+  examples?: { description?: string; example: string; notes?: string }[];
+};
+
+/** @public */
+export type TemplateGlobalElement = { name: string } & (
+  | TemplateGlobalValueMetadata
+  | (TemplateGlobalFunctionMetadata & {
+      fn: Exclude<TemplateGlobal, JsonValue>;
+    })
+);

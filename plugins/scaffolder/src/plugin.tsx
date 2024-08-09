@@ -68,6 +68,8 @@ import {
   scaffolderListTaskRouteRef,
   actionsRouteRef,
   editRouteRef,
+  templateFiltersRouteRef,
+  templateGlobalsRouteRef,
 } from './routes';
 import {
   MyGroupsPicker,
@@ -107,6 +109,8 @@ export const scaffolderPlugin = createPlugin({
     actions: actionsRouteRef,
     listTasks: scaffolderListTaskRouteRef,
     edit: editRouteRef,
+    templateFilters: templateFiltersRouteRef,
+    templateGlobals: templateGlobalsRouteRef,
   },
   externalRoutes: {
     registerComponent: registerComponentRouteRef,

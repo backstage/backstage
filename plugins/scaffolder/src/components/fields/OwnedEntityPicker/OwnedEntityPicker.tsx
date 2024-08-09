@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { RELATION_OWNED_BY } from '@backstage/catalog-model';
+import { RELATION_OWNED_BY, parseEntityRef } from '@backstage/catalog-model';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -39,10 +39,13 @@ export const OwnedEntityPicker = (props: OwnedEntityPickerProps) => {
     required,
   } = props;
 
+  const ownedVia = uiSchema['ui:options']?.via ?? ['user', 'group'];
   const identityApi = useApi(identityApiRef);
   const { loading, value: identityRefs } = useAsync(async () => {
     const identity = await identityApi.getBackstageIdentity();
-    return identity.ownershipEntityRefs;
+    return identity.ownershipEntityRefs.filter(ref =>
+      ownedVia.includes(parseEntityRef(ref).kind),
+    );
   });
 
   if (loading)
