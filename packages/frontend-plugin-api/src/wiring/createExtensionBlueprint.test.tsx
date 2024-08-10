@@ -443,17 +443,17 @@ describe('createExtensionBlueprint', () => {
       }),
     ]);
 
-    // Not enough values provided, checked at runtime
+    // Mismatched input override length
     expect(() =>
       factoryOutput(
         Blueprint.makeWithOverrides({
-          factory(origFactory) {
+          factory(origFactory, { inputs }) {
             return origFactory(
               {},
               {
                 inputs: {
-                  single: [],
-                  multi: [],
+                  ...inputs,
+                  multi: [[testDataRef1('multi1')]],
                 },
               },
             );
@@ -463,6 +463,28 @@ describe('createExtensionBlueprint', () => {
       ),
     ).toThrowErrorMatchingInlineSnapshot(
       `"Invalid override provided for input 'multi', when overriding the input data the length must match the original input data"`,
+    );
+
+    // Required input not provided
+    expect(() =>
+      factoryOutput(
+        Blueprint.makeWithOverrides({
+          factory(origFactory, { inputs }) {
+            return origFactory(
+              {},
+              {
+                inputs: {
+                  ...inputs,
+                  single: [testDataRef2('singleOpt')],
+                },
+              },
+            );
+          },
+        }),
+        mockParentInputs,
+      ),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Missing required data values for 'test1'"`,
     );
 
     // Wrong value provided
@@ -490,7 +512,7 @@ describe('createExtensionBlueprint', () => {
         mockParentInputs,
       ),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid override provided for input 'multi', when overriding the input data the length must match the original input data"`,
+      `"Invalid data value provided, 'test2' was not declared"`,
     );
 
     // Forwarding entire inputs object

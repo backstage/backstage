@@ -259,11 +259,32 @@ export function createDataContainer<UData extends AnyExtensionDataRef>(
       ? ExtensionDataValue<IData, IId>
       : never
   >,
+  declaredRefs?: ExtensionDataRef<any, any, any>[],
 ): ExtensionDataContainer<UData> {
   const container = new Map<string, ExtensionDataValue<any, any>>();
+  const verifyRefs =
+    declaredRefs && new Map(declaredRefs.map(ref => [ref.id, ref]));
 
   for (const output of values) {
+    if (verifyRefs) {
+      if (!verifyRefs.delete(output.id)) {
+        throw new Error(
+          `Invalid data value provided, '${output.id}' was not declared`,
+        );
+      }
+    }
     container.set(output.id, output);
+  }
+
+  const remainingRefs =
+    verifyRefs &&
+    Array.from(verifyRefs.values()).filter(ref => !ref.config.optional);
+  if (remainingRefs && remainingRefs.length > 0) {
+    throw new Error(
+      `Missing required data values for '${remainingRefs
+        .map(ref => ref.id)
+        .join(', ')}'`,
+    );
   }
 
   return {
@@ -436,6 +457,7 @@ class ExtensionBlueprintImpl<
                   if (providedData) {
                     const providedContainer = createDataContainer(
                       providedData as Iterable<ExtensionDataValue<any, any>>,
+                      declaredInput.extensionData,
                     );
                     if (!originalInput) {
                       throw new Error(
@@ -467,6 +489,7 @@ class ExtensionBlueprintImpl<
                   newInputs[name] = providedData.map((data, i) => {
                     const providedContainer = createDataContainer(
                       data as Iterable<ExtensionDataValue<any, any>>,
+                      declaredInput.extensionData,
                     );
                     return Object.assign(providedContainer, {
                       name: (originalInput[i] as ResolvedExtensionInput<any>)
