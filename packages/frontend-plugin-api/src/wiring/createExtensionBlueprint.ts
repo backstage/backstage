@@ -505,6 +505,7 @@ class ExtensionBlueprintImpl<
                 config: innerContext?.config ?? config,
                 inputs: forwardedInputs as any, // TODO: Might be able to improve this once legacy inputs are gone
               }),
+              this.options.output,
             );
           },
           {

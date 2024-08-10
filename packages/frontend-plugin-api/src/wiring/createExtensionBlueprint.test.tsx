@@ -689,6 +689,43 @@ describe('createExtensionBlueprint', () => {
     expect(factoryOutput(ext)).toEqual([testDataRef2('foobar')]);
   });
 
+  it('should reject invalid output from original factory', () => {
+    const testDataRef1 = createExtensionDataRef<string>().with({ id: 'test1' });
+    const testDataRef2 = createExtensionDataRef<string>().with({ id: 'test2' });
+
+    expect(() =>
+      factoryOutput(
+        // @ts-expect-error
+        createExtensionBlueprint({
+          kind: 'test-extension',
+          attachTo: { id: 'test', input: 'default' },
+          output: [testDataRef1],
+          factory() {
+            return [testDataRef2('foo')];
+          },
+        }).makeWithOverrides({ factory: orig => orig({}) }),
+      ),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid data value provided, 'test2' was not declared"`,
+    );
+
+    expect(() =>
+      factoryOutput(
+        // @ts-expect-error
+        createExtensionBlueprint({
+          kind: 'test-extension',
+          attachTo: { id: 'test', input: 'default' },
+          output: [testDataRef1],
+          factory() {
+            return [];
+          },
+        }).makeWithOverrides({ factory: orig => orig({}) }),
+      ),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Missing required data values for 'test1'"`,
+    );
+  });
+
   it('should allow returning of the parent data container', () => {
     const testDataRef1 = createExtensionDataRef<string>().with({ id: 'test1' });
     const testDataRef2 = createExtensionDataRef<string>().with({ id: 'test2' });
