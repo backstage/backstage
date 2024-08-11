@@ -969,7 +969,7 @@ describe('createExtension', () => {
           .add(multi2Ext)
           .data(outputRef),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Failed to instantiate extension 'subject', Invalid override provided for input 'multi', when overriding the input data the length must match the original input data"`,
+        `"Failed to instantiate extension 'subject', override data provided for input 'multi' must match the length of the original inputs"`,
       );
 
       // Required input not provided
@@ -992,7 +992,7 @@ describe('createExtension', () => {
           .add(multi2Ext)
           .data(outputRef),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Failed to instantiate extension 'subject', Missing required data values for 'test1'"`,
+        `"Failed to instantiate extension 'subject', missing required extension data value(s) 'test1'"`,
       );
 
       // Wrong value provided
@@ -1021,7 +1021,7 @@ describe('createExtension', () => {
           .add(multi2Ext)
           .data(outputRef),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Failed to instantiate extension 'subject', Invalid data value provided, 'test2' was not declared"`,
+        `"Failed to instantiate extension 'subject', extension data 'test2' was provided but not declared"`,
       );
     });
   });

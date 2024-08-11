@@ -269,7 +269,7 @@ export function createDataContainer<UData extends AnyExtensionDataRef>(
     if (verifyRefs) {
       if (!verifyRefs.delete(output.id)) {
         throw new Error(
-          `Invalid data value provided, '${output.id}' was not declared`,
+          `extension data '${output.id}' was provided but not declared`,
         );
       }
     }
@@ -281,7 +281,7 @@ export function createDataContainer<UData extends AnyExtensionDataRef>(
     Array.from(verifyRefs.values()).filter(ref => !ref.config.optional);
   if (remainingRefs && remainingRefs.length > 0) {
     throw new Error(
-      `Missing required data values for '${remainingRefs
+      `missing required extension data value(s) '${remainingRefs
         .map(ref => ref.id)
         .join(', ')}'`,
     );
@@ -339,7 +339,7 @@ export function resolveInputOverrides(
         );
         if (!originalInput) {
           throw new Error(
-            `A data override was provided for input '${name}', but no original input was present.`,
+            `attempted to override data of input '${name}' but it is not present in the original inputs`,
           );
         }
         newInputs[name] = Object.assign(providedContainer, {
@@ -350,12 +350,12 @@ export function resolveInputOverrides(
       const originalInput = expectArray(inputs[name]);
       if (!Array.isArray(providedData)) {
         throw new Error(
-          `Invalid override provided for input '${name}', expected an array`,
+          `override data provided for input '${name}' must be an array`,
         );
       }
       if (originalInput.length !== providedData.length) {
         throw new Error(
-          `Invalid override provided for input '${name}', when overriding the input data the length must match the original input data`,
+          `override data provided for input '${name}' must match the length of the original inputs`,
         );
       }
       newInputs[name] = providedData.map((data, i) => {
