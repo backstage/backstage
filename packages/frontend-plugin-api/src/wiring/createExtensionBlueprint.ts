@@ -78,7 +78,7 @@ export type CreateExtensionBlueprintOptions<
 } & VerifyExtensionFactoryOutput<UOutput, UFactoryOutput>;
 
 /** @ignore */
-type ResolveInputValueOverrides<
+export type ResolveInputValueOverrides<
   TInputs extends {
     [inputName in string]: ExtensionInput<
       AnyExtensionDataRef,
