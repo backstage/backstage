@@ -297,6 +297,81 @@ export function createDataContainer<UData extends AnyExtensionDataRef>(
   } as ExtensionDataContainer<UData>;
 }
 
+function expectArray<T>(value: T | T[]): T[] {
+  return value as T[];
+}
+function expectItem<T>(value: T | T[]): T {
+  return value as T;
+}
+
+/** @internal */
+export function resolveInputOverrides(
+  declaredInputs?: {
+    [inputName in string]: ExtensionInput<
+      AnyExtensionDataRef,
+      { optional: boolean; singleton: boolean }
+    >;
+  },
+  inputs?: {
+    [KName in string]?:
+      | ({ node: AppNode } & ExtensionDataContainer<any>)
+      | Array<{ node: AppNode } & ExtensionDataContainer<any>>;
+  },
+  inputOverrides?: ResolveInputValueOverrides,
+) {
+  if (!declaredInputs || !inputs || !inputOverrides) {
+    return inputs;
+  }
+
+  const newInputs: typeof inputs = {};
+  for (const name in declaredInputs) {
+    if (!Object.hasOwn(declaredInputs, name)) {
+      continue;
+    }
+    const declaredInput = declaredInputs[name];
+    const providedData = inputOverrides[name];
+    if (declaredInput.config.singleton) {
+      const originalInput = expectItem(inputs[name]);
+      if (providedData) {
+        const providedContainer = createDataContainer(
+          providedData as Iterable<ExtensionDataValue<any, any>>,
+          declaredInput.extensionData,
+        );
+        if (!originalInput) {
+          throw new Error(
+            `A data override was provided for input '${name}', but no original input was present.`,
+          );
+        }
+        newInputs[name] = Object.assign(providedContainer, {
+          name: (originalInput as ResolvedExtensionInput<any>).node,
+        }) as any;
+      }
+    } else {
+      const originalInput = expectArray(inputs[name]);
+      if (!Array.isArray(providedData)) {
+        throw new Error(
+          `Invalid override provided for input '${name}', expected an array`,
+        );
+      }
+      if (originalInput.length !== providedData.length) {
+        throw new Error(
+          `Invalid override provided for input '${name}', when overriding the input data the length must match the original input data`,
+        );
+      }
+      newInputs[name] = providedData.map((data, i) => {
+        const providedContainer = createDataContainer(
+          data as Iterable<ExtensionDataValue<any, any>>,
+          declaredInput.extensionData,
+        );
+        return Object.assign(providedContainer, {
+          name: (originalInput[i] as ResolvedExtensionInput<any>).node,
+        }) as any;
+      });
+    }
+  }
+  return newInputs;
+}
+
 /**
  * @internal
  */
@@ -428,82 +503,15 @@ class ExtensionBlueprintImpl<
               inputs?: ResolveInputValueOverrides;
             },
           ): ExtensionDataContainer<UOutput> => {
-            const overrideInputs = innerContext?.inputs;
-            const declaredInputs = this.options.inputs;
-
-            let forwardedInputs = inputs;
-            if (overrideInputs && declaredInputs) {
-              const newInputs = {} as {
-                [KName in keyof TInputs]?:
-                  | ({ node: AppNode } & ExtensionDataContainer<any>)
-                  | Array<{ node: AppNode } & ExtensionDataContainer<any>>;
-              };
-              forwardedInputs = newInputs as typeof inputs;
-
-              for (const name in declaredInputs) {
-                if (!Object.hasOwn(declaredInputs, name)) {
-                  continue;
-                }
-                const declaredInput = declaredInputs[name];
-                const providedData = overrideInputs[name];
-                if (declaredInput.config.singleton) {
-                  // We know the passed in input will match the declared inputs, so this case is safe
-                  const originalInput = (
-                    inputs as Record<
-                      string,
-                      { node: AppNode } & ExtensionDataContainer<any>
-                    >
-                  )[name];
-                  if (providedData) {
-                    const providedContainer = createDataContainer(
-                      providedData as Iterable<ExtensionDataValue<any, any>>,
-                      declaredInput.extensionData,
-                    );
-                    if (!originalInput) {
-                      throw new Error(
-                        `A data override was provided for input '${name}', but no original input was present.`,
-                      );
-                    }
-                    newInputs[name] = Object.assign(providedContainer, {
-                      name: (originalInput as ResolvedExtensionInput<any>).node,
-                    }) as any;
-                  }
-                } else {
-                  // We know the passed in input will match the declared inputs, so this case is safe
-                  const originalInput = (
-                    inputs as Record<
-                      string,
-                      Array<{ node: AppNode } & ExtensionDataContainer<any>>
-                    >
-                  )[name];
-                  if (!Array.isArray(providedData)) {
-                    throw new Error(
-                      `Invalid override provided for input '${name}', expected an array`,
-                    );
-                  }
-                  if (originalInput.length !== providedData.length) {
-                    throw new Error(
-                      `Invalid override provided for input '${name}', when overriding the input data the length must match the original input data`,
-                    );
-                  }
-                  newInputs[name] = providedData.map((data, i) => {
-                    const providedContainer = createDataContainer(
-                      data as Iterable<ExtensionDataValue<any, any>>,
-                      declaredInput.extensionData,
-                    );
-                    return Object.assign(providedContainer, {
-                      name: (originalInput[i] as ResolvedExtensionInput<any>)
-                        .node,
-                    }) as any;
-                  });
-                }
-              }
-            }
             return createDataContainer<UOutput>(
               this.options.factory(innerParams, {
                 node,
                 config: innerContext?.config ?? config,
-                inputs: forwardedInputs as any, // TODO: Might be able to improve this once legacy inputs are gone
+                inputs: resolveInputOverrides(
+                  this.options.inputs,
+                  inputs,
+                  innerContext?.inputs,
+                ) as any, // TODO: Might be able to improve this once legacy inputs are gone
               }),
               this.options.output,
             );
