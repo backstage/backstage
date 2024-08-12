@@ -77,7 +77,7 @@ export type CreateExtensionBlueprintOptions<
   dataRefs?: TDataRefs;
 } & VerifyExtensionFactoryOutput<UOutput, UFactoryOutput>;
 
-/** @ignore */
+/** @public */
 export type ResolveInputValueOverrides<
   TInputs extends {
     [inputName in string]: ExtensionInput<
