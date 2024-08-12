@@ -20,7 +20,7 @@ import { Expand } from '../types';
 import {
   ResolveInputValueOverrides,
   resolveInputOverrides,
-} from './createExtensionBlueprint';
+} from './resolveInputOverrides';
 import {
   ExtensionDataContainer,
   createExtensionDataContainer,
