@@ -22,6 +22,7 @@ import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Tab, { TabProps } from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import React, {
+  CSSProperties,
   PropsWithChildren,
   ReactElement,
   ReactNode,
@@ -61,6 +62,7 @@ const BoldHeader = withStyles(
 type Props = {
   /** @deprecated Use errorBoundaryProps instead */
   slackChannel?: string;
+  style?: CSSProperties;
   errorBoundaryProps?: ErrorBoundaryProps;
   children?: ReactElement<TabProps>[];
   onChange?: (event: React.ChangeEvent<{}>, value: number | string) => void;
@@ -78,6 +80,7 @@ export function TabbedCard(props: PropsWithChildren<Props>) {
     deepLink,
     value,
     onChange,
+    style,
   } = props;
   const tabsClasses = useTabsStyles();
   const [selectedIndex, selectIndex] = useState(0);
@@ -110,7 +113,7 @@ export function TabbedCard(props: PropsWithChildren<Props>) {
     errorBoundaryProps || (slackChannel ? { slackChannel } : {});
 
   return (
-    <Card>
+    <Card role="presentation" style={style}>
       <ErrorBoundary {...errProps}>
         {title && <BoldHeader title={title} />}
         <Tabs

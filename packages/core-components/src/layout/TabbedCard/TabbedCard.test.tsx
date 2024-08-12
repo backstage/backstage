@@ -118,4 +118,14 @@ describe('<TabbedCard />', () => {
     await user.click(rendered.getByText('Test 2'));
     expect(mockOnChange).toHaveBeenCalledTimes(1);
   });
+
+  it('renders with a passed in style', async () => {
+    const tabbedCard = render(
+      <TabbedCard style={{ height: '50px' }} title={minProps.title}>
+        <CardTab label="Test 1">Test Content</CardTab>
+        <CardTab label="Test 2">Test Content</CardTab>
+      </TabbedCard>,
+    );
+    expect(tabbedCard.getByRole('presentation').style.height).toBe('50px');
+  });
 });
