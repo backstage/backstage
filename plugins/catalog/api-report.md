@@ -338,7 +338,24 @@ export interface DependsOnResourcesCardProps {
 export const EntityAboutCard: (props: AboutCardProps) => JSX.Element;
 
 // @public (undocumented)
+export function EntityContextMenu(
+  props: EntityContextMenuProps,
+): React_2.JSX.Element;
+
+// @public (undocumented)
 export type EntityContextMenuClassKey = 'button';
+
+// @public (undocumented)
+export interface EntityContextMenuProps {
+  // Warning: (ae-forgotten-export) The symbol "UnregisterEntityOptions" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  UNSTABLE_contextMenuOptions?: UnregisterEntityOptions;
+  // Warning: (ae-forgotten-export) The symbol "ExtraContextMenuItem" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
+}
 
 // @public (undocumented)
 export const EntityDependencyOfComponentsCard: (
@@ -379,6 +396,9 @@ export const EntityHasSubdomainsCard: (
 export const EntityHasSystemsCard: (props: HasSystemsCardProps) => JSX.Element;
 
 // @public (undocumented)
+export function EntityLabels(props: { entity: Entity }): React_2.JSX.Element;
+
+// @public (undocumented)
 export const EntityLabelsCard: (props: EntityLabelsCardProps) => JSX_2.Element;
 
 // @public (undocumented)
@@ -400,15 +420,17 @@ export interface EntityLayoutProps {
   // (undocumented)
   children?: React_2.ReactNode;
   // (undocumented)
+  header?: JSX.Element;
+  // (undocumented)
   NotFoundComponent?: React_2.ReactNode;
   // Warning: (ae-forgotten-export) The symbol "EntityContextMenuOptions" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)
   UNSTABLE_contextMenuOptions?: EntityContextMenuOptions;
-  // Warning: (ae-forgotten-export) The symbol "ExtraContextMenuItem" needs to be exported by the entry point index.d.ts
+  // Warning: (ae-forgotten-export) The symbol "ExtraContextMenuItem_2" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)
-  UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
+  UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem_2[];
 }
 
 // @public (undocumented)
@@ -424,6 +446,12 @@ export type EntityLayoutRouteProps = {
     }
   >;
 };
+
+// @public (undocumented)
+export function EntityLayoutTitle(props: {
+  title: string;
+  entity: Entity | undefined;
+}): React_2.JSX.Element;
 
 // @public (undocumented)
 export const EntityLinksCard: (props: EntityLinksCardProps) => JSX_2.Element;
@@ -573,6 +601,17 @@ export interface HasSystemsCardProps {
   // (undocumented)
   variant?: InfoCardVariants;
 }
+
+// @public (undocumented)
+export function headerProps(
+  paramKind: string | undefined,
+  paramNamespace: string | undefined,
+  paramName: string | undefined,
+  entity: Entity | undefined,
+): {
+  headerTitle: string;
+  headerType: string;
+};
 
 // @public
 export function isApiType(

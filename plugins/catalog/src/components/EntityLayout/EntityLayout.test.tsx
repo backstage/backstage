@@ -272,4 +272,26 @@ describe('EntityLayout', () => {
     expect(linkParent).toBeInTheDocument();
     expect(linkParent?.tagName).toBe('P');
   });
+
+  it('renders given header when provided', async () => {
+    await renderInTestApp(
+      <ApiProvider apis={mockApis}>
+        <EntityProvider entity={mockEntity}>
+          <EntityLayout header={<div>custom-header</div>}>
+            <EntityLayout.Route path="/" title="tabbed-test-title">
+              <div>tabbed-test-content</div>
+            </EntityLayout.Route>
+          </EntityLayout>
+        </EntityProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
+        },
+      },
+    );
+
+    expect(screen.getByText('custom-header')).toBeInTheDocument();
+  });
 });

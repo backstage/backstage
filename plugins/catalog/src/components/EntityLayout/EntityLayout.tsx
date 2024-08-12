@@ -66,7 +66,8 @@ const Route: (props: EntityLayoutRouteProps) => null = () => null;
 attachComponentData(Route, dataKey, true);
 attachComponentData(Route, 'core.gatherMountPoints', true); // This causes all mount points that are discovered within this route to use the path of the route itself
 
-function EntityLayoutTitle(props: {
+/** @public */
+export function EntityLayoutTitle(props: {
   title: string;
   entity: Entity | undefined;
 }) {
@@ -86,7 +87,8 @@ function EntityLayoutTitle(props: {
   );
 }
 
-function headerProps(
+/** @public */
+export function headerProps(
   paramKind: string | undefined,
   paramNamespace: string | undefined,
   paramName: string | undefined,
@@ -111,7 +113,8 @@ function headerProps(
   };
 }
 
-function EntityLabels(props: { entity: Entity }) {
+/** @public */
+export function EntityLabels(props: { entity: Entity }) {
   const { entity } = props;
   const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
   const { t } = useTranslationRef(catalogTranslationRef);
@@ -162,6 +165,7 @@ export interface EntityLayoutProps {
   UNSTABLE_contextMenuOptions?: EntityContextMenuOptions;
   children?: React.ReactNode;
   NotFoundComponent?: React.ReactNode;
+  header?: JSX.Element;
 }
 
 /**
@@ -187,6 +191,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
     UNSTABLE_contextMenuOptions,
     children,
     NotFoundComponent,
+    header,
   } = props;
   const { kind, namespace, name } = useRouteRefParams(entityRouteRef);
   const { entity, loading, error } = useAsyncEntity();
@@ -230,21 +235,23 @@ export const EntityLayout = (props: EntityLayoutProps) => {
 
   return (
     <Page themeId={entity?.spec?.type?.toString() ?? 'home'}>
-      <Header
-        title={<EntityLayoutTitle title={headerTitle} entity={entity!} />}
-        pageTitleOverride={headerTitle}
-        type={headerType}
-      >
-        {entity && (
-          <>
-            <EntityLabels entity={entity} />
-            <EntityContextMenu
-              UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
-              UNSTABLE_contextMenuOptions={UNSTABLE_contextMenuOptions}
-            />
-          </>
-        )}
-      </Header>
+      {header || (
+        <Header
+          title={<EntityLayoutTitle title={headerTitle} entity={entity!} />}
+          pageTitleOverride={headerTitle}
+          type={headerType}
+        >
+          {entity && (
+            <>
+              <EntityLabels entity={entity} />
+              <EntityContextMenu
+                UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
+                UNSTABLE_contextMenuOptions={UNSTABLE_contextMenuOptions}
+              />
+            </>
+          )}
+        </Header>
+      )}
 
       {loading && <Progress />}
 

@@ -65,11 +65,13 @@ interface ExtraContextMenuItem {
   onClick: () => void;
 }
 
-interface EntityContextMenuProps {
+/** @public */
+export interface EntityContextMenuProps {
   UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
   UNSTABLE_contextMenuOptions?: UnregisterEntityOptions;
 }
 
+/** @public */
 export function EntityContextMenu(props: EntityContextMenuProps) {
   const { UNSTABLE_extraContextMenuItems, UNSTABLE_contextMenuOptions } = props;
   const { t } = useTranslationRef(catalogTranslationRef);
