@@ -110,14 +110,15 @@ We can extend the `/parameter-schema` endpoint to accept a `formData` context qu
 export interface ScaffolderApi {
   getTemplateParameterSchema(
     templateRef: string,
-+    formData?: string,
++    formData?: JsonObject,
   ): Promise<TemplateParameterSchema>;
 }
 ```
 
 ```diff
  router
-    .get(
+-    .get(
++    .post(
       '/v2/templates/:namespace/:kind/:name/parameter-schema',
       async (req, res) => {
         const credentials = await httpAuth.credentials(req);
@@ -144,7 +145,7 @@ export interface ScaffolderApi {
 +          renderTemplateString(
 +            parameter,
 +            {
-+              parameters: req.query.formData,
++              parameters: req.body.formData,
 +            },
 +            secureTemplater,
 +            logger,
