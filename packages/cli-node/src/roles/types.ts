@@ -27,6 +27,7 @@ export type PackageRole =
   | 'node-library'
   | 'common-library'
   | 'frontend-plugin'
+  | 'frontend-extensions'
   | 'frontend-plugin-module'
   | 'backend-plugin'
   | 'backend-plugin-module';

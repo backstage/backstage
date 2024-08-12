@@ -111,7 +111,7 @@ export const NotificationsSidebarItem = (props?: {
   const notificationsApi = useApi(notificationsApiRef);
   const alertApi = useApi(alertApiRef);
   const [unreadCount, setUnreadCount] = React.useState(0);
-  const notificationsRoute = useRouteRef(rootRouteRef);
+  const notificationsRoute = useRouteRef(rootRouteRef)();
   // TODO: Do we want to add long polling in case signals are not available
   const { lastSignal } = useSignal<NotificationSignal>('notifications');
   const { sendWebNotification, requestUserPermission } = useWebNotifications(
@@ -126,7 +126,7 @@ export const NotificationsSidebarItem = (props?: {
         <>
           <IconButton
             component={Link}
-            to={notification.payload.link ?? notificationsRoute()}
+            to={notification.payload.link ?? notificationsRoute}
             onClick={() => {
               if (notification.payload.link) {
                 notificationsApi
@@ -189,7 +189,6 @@ export const NotificationsSidebarItem = (props?: {
       ) {
         return;
       }
-
       notificationsApi
         .getNotification(signal.notification_id)
         .then(notification => {
@@ -211,6 +210,7 @@ export const NotificationsSidebarItem = (props?: {
                 ? `${notification.payload.title.substring(0, 50)}...`
                 : notification.payload.title;
             enqueueSnackbar(snackBarText, {
+              key: notification.id,
               variant: notification.payload.severity,
               anchorOrigin: { vertical: 'bottom', horizontal: 'right' },
               action,
@@ -273,7 +273,7 @@ export const NotificationsSidebarItem = (props?: {
         />
       )}
       <SidebarItem
-        to={notificationsRoute()}
+        to={notificationsRoute}
         onClick={() => {
           requestUserPermission();
         }}
