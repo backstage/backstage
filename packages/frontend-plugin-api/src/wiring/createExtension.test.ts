@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { createExtensionTester } from '@backstage/frontend-test-utils';
 import { createExtension } from './createExtension';
 import { createExtensionDataRef } from './createExtensionDataRef';
 import { createExtensionInput } from './createExtensionInput';
@@ -304,9 +305,7 @@ describe('createExtension', () => {
           baz: z => z.string().optional(),
         },
       },
-      output: {
-        foo: stringDataRef,
-      },
+      output: [stringDataRef],
       factory({ config }) {
         const a1: string = config.foo;
         const a2: string = config.bar;
@@ -320,12 +319,10 @@ describe('createExtension', () => {
         const c3: number = config.baz;
         unused(a1, a2, a3, c1, c2, c3);
 
-        return {
-          foo: 'bar',
-        };
+        return [stringDataRef('bar')];
       },
     });
-    expect(extension).toMatchObject({ version: 'v1', namespace: 'test' });
+    expect(extension).toMatchObject({ version: 'v2', namespace: 'test' });
     expect(String(extension)).toBe(
       'ExtensionDefinition{namespace=test,attachTo=root@default}',
     );
@@ -560,5 +557,472 @@ describe('createExtension', () => {
         },
       }),
     ).toMatchObject({ version: 'v2' });
+  });
+
+  describe('overrides', () => {
+    it('should allow overriding of config and merging', () => {
+      const testExtension = createExtension({
+        namespace: 'test',
+        attachTo: { id: 'root', input: 'blob' },
+        output: [stringDataRef],
+        config: {
+          schema: {
+            foo: z => z.string().optional(),
+          },
+        },
+        factory() {
+          return [stringDataRef('default')];
+        },
+      });
+
+      testExtension.override({
+        config: {
+          schema: {
+            bar: z => z.string().optional(),
+          },
+        },
+        factory(_, { config }) {
+          return [stringDataRef(config.foo ?? config.bar ?? 'default')];
+        },
+      });
+
+      expect(true).toBe(true);
+    });
+
+    it('should allow overriding of outputs', () => {
+      const testExtension = createExtension({
+        namespace: 'test',
+        attachTo: { id: 'root', input: 'blob' },
+        output: [stringDataRef],
+        inputs: {
+          test: createExtensionInput([stringDataRef], {
+            singleton: true,
+          }),
+        },
+        config: {
+          schema: {
+            foo: z => z.string().optional(),
+          },
+        },
+        factory({ inputs }) {
+          return [stringDataRef(inputs.test.get(stringDataRef))];
+        },
+      });
+
+      const override1 = testExtension.override({
+        output: [numberDataRef],
+        factory(_, { inputs }) {
+          return [numberDataRef(inputs.test.get(stringDataRef).length)];
+        },
+      });
+
+      // @ts-expect-error - this should fail because string output should be merged?
+      const override2 = testExtension.override({
+        output: [numberDataRef],
+        factory(_, { inputs }) {
+          return [stringDataRef(inputs.test.get(stringDataRef))];
+        },
+      });
+
+      unused(override1, override2);
+
+      expect(true).toBe(true);
+    });
+
+    it('should allow overriding the factory function and calling the original factory', () => {
+      const testExtension = createExtension({
+        namespace: 'test',
+        attachTo: { id: 'root', input: 'blob' },
+        output: [stringDataRef],
+        config: {
+          schema: {
+            foo: z => z.string().optional(),
+          },
+        },
+        factory() {
+          return [stringDataRef('default')];
+        },
+      });
+
+      testExtension.override({
+        factory(originalFactory) {
+          const response = originalFactory();
+
+          const foo: string = response.get(stringDataRef);
+
+          // @ts-expect-error - fails because original factory does not return number
+          const number: boolean = response.get(numberDataRef);
+
+          return [stringDataRef(`foo-${foo}-override`)];
+        },
+      });
+
+      expect(true).toBe(true);
+    });
+
+    it('should allow overriding the returned values from the parent factory', () => {
+      const testExtension = createExtension({
+        kind: 'thing',
+        namespace: 'test',
+        attachTo: { id: 'root', input: 'default' },
+        output: [stringDataRef, numberDataRef],
+        config: {
+          schema: {
+            foo: z => z.string().default('boom'),
+          },
+        },
+        factory({ config }) {
+          return [stringDataRef(config.foo), numberDataRef(42)];
+        },
+      });
+
+      const overridden = testExtension.override({
+        output: [numberDataRef, stringDataRef],
+        *factory(originalFactory) {
+          const output = originalFactory();
+          yield* output;
+
+          yield numberDataRef(output.get(numberDataRef) + 1);
+        },
+      });
+
+      const tester = createExtensionTester(overridden);
+
+      expect(tester.data(numberDataRef)).toBe(43);
+    });
+
+    it('should work functionally with overrides', () => {
+      const testExtension = createExtension({
+        kind: 'thing',
+        namespace: 'test',
+        attachTo: { id: 'root', input: 'default' },
+        output: [stringDataRef],
+        config: {
+          schema: {
+            foo: z => z.string().default('boom'),
+          },
+        },
+        factory({ config }) {
+          return [stringDataRef(config.foo)];
+        },
+      });
+
+      const overriden = testExtension.override({
+        config: {
+          schema: {
+            bar: z => z.string().default('hello'),
+          },
+        },
+        factory(originalFactory, { config }) {
+          const response = originalFactory();
+
+          const foo: string = response.get(stringDataRef);
+
+          return [stringDataRef(`foo-${foo}-override-${config.bar}`)];
+        },
+      });
+
+      expect(createExtensionTester(overriden).data(stringDataRef)).toBe(
+        'foo-boom-override-hello',
+      );
+
+      expect(
+        createExtensionTester(overriden, {
+          config: { foo: 'hello', bar: 'world' },
+        }).data(stringDataRef),
+      ).toBe('foo-hello-override-world');
+    });
+
+    it('should be able to override input values', () => {
+      const outputRef = createExtensionDataRef<unknown>().with({
+        id: 'output',
+      });
+      const testDataRef1 = createExtensionDataRef<string>().with({
+        id: 'test1',
+      });
+      const testDataRef2 = createExtensionDataRef<string>().with({
+        id: 'test2',
+      });
+
+      const subject = createExtension({
+        name: 'subject',
+        attachTo: { id: 'ignored', input: 'ignored' },
+        inputs: {
+          opt: createExtensionInput([testDataRef1.optional()], {
+            singleton: true,
+            optional: true,
+          }),
+          single: createExtensionInput(
+            [testDataRef1, testDataRef2.optional()],
+            {
+              singleton: true,
+            },
+          ),
+          multi: createExtensionInput([testDataRef1]),
+        },
+        output: [outputRef],
+        factory({ inputs }) {
+          return [
+            outputRef({
+              opt: inputs.opt?.get(testDataRef1) ?? 'none',
+              single: inputs.single.get(testDataRef1),
+              singleOpt: inputs.single.get(testDataRef2) ?? 'none',
+              multi: inputs.multi.map(i => i.get(testDataRef1)).join(','),
+            }),
+          ];
+        },
+      });
+
+      const optExt = createExtension({
+        name: 'opt',
+        attachTo: { id: 'subject', input: 'opt' },
+        output: [testDataRef1],
+        factory: () => [testDataRef1('orig-opt')],
+      });
+
+      const singleExt = createExtension({
+        name: 'single',
+        attachTo: { id: 'subject', input: 'single' },
+        output: [testDataRef1, testDataRef2.optional()],
+        factory: () => [testDataRef1('orig-single')],
+      });
+
+      const multi1Ext = createExtension({
+        name: 'multi1',
+        attachTo: { id: 'subject', input: 'multi' },
+        output: [testDataRef1],
+        factory: () => [testDataRef1('orig-multi1')],
+      });
+
+      const multi2Ext = createExtension({
+        name: 'multi2',
+        attachTo: { id: 'subject', input: 'multi' },
+        output: [testDataRef1],
+        factory: () => [testDataRef1('orig-multi2')],
+      });
+
+      expect(
+        createExtensionTester(subject)
+          .add(optExt)
+          .add(singleExt)
+          .add(multi1Ext)
+          .add(multi2Ext)
+          .data(outputRef),
+      ).toEqual({
+        opt: 'orig-opt',
+        single: 'orig-single',
+        singleOpt: 'none',
+        multi: 'orig-multi1,orig-multi2',
+      });
+
+      // All values provided
+      expect(
+        createExtensionTester(
+          subject.override({
+            factory(originalFactory) {
+              return originalFactory({
+                inputs: {
+                  opt: [testDataRef1('opt')],
+                  single: [testDataRef1('single'), testDataRef2('singleOpt')],
+                  multi: [[testDataRef1('multi1')], [testDataRef1('multi2')]],
+                },
+              });
+            },
+          }),
+        )
+          .add(optExt)
+          .add(singleExt)
+          .add(multi1Ext)
+          .add(multi2Ext)
+          .data(outputRef),
+      ).toEqual({
+        opt: 'opt',
+        single: 'single',
+        singleOpt: 'singleOpt',
+        multi: 'multi1,multi2',
+      });
+
+      // Minimal values provided
+      expect(
+        createExtensionTester(
+          subject.override({
+            factory(originalFactory) {
+              return originalFactory({
+                inputs: {
+                  single: [testDataRef1('single')],
+                  multi: [],
+                },
+              });
+            },
+          }),
+        )
+          .add(optExt)
+          .add(singleExt)
+          .add(multi1Ext)
+          .add(multi2Ext)
+          .data(outputRef),
+      ).toEqual({
+        opt: 'none',
+        single: 'single',
+        singleOpt: 'none',
+        multi: '',
+      });
+
+      // Forward inputs directly
+      expect(
+        createExtensionTester(
+          subject.override({
+            factory(originalFactory, { inputs }) {
+              return originalFactory({
+                inputs,
+              });
+            },
+          }),
+        )
+          .add(optExt)
+          .add(singleExt)
+          .add(multi1Ext)
+          .add(multi2Ext)
+          .data(outputRef),
+      ).toEqual({
+        opt: 'orig-opt',
+        single: 'orig-single',
+        singleOpt: 'none',
+        multi: 'orig-multi1,orig-multi2',
+      });
+
+      // Forward inputs separately
+      expect(
+        createExtensionTester(
+          subject.override({
+            factory(originalFactory, { inputs }) {
+              return originalFactory({
+                inputs: {
+                  opt: inputs.opt,
+                  single: inputs.single,
+                  multi: inputs.multi,
+                },
+              });
+            },
+          }),
+        )
+          .add(optExt)
+          .add(singleExt)
+          .add(multi1Ext)
+          .add(multi2Ext)
+          .data(outputRef),
+      ).toEqual({
+        opt: 'orig-opt',
+        single: 'orig-single',
+        singleOpt: 'none',
+        multi: 'orig-multi1,orig-multi2',
+      });
+
+      // Overriding based on original input
+      expect(
+        createExtensionTester(
+          subject.override({
+            factory(originalFactory, { inputs }) {
+              return originalFactory({
+                inputs: {
+                  single: [
+                    testDataRef1(`override-${inputs.single.get(testDataRef1)}`),
+                    testDataRef2('new-singleOpt'),
+                  ],
+                  multi: inputs.multi.map(i => [
+                    testDataRef1(`override-${i.get(testDataRef1)}`),
+                  ]),
+                },
+              });
+            },
+          }),
+        )
+          .add(optExt)
+          .add(singleExt)
+          .add(multi1Ext)
+          .add(multi2Ext)
+          .data(outputRef),
+      ).toEqual({
+        opt: 'none',
+        single: 'override-orig-single',
+        singleOpt: 'new-singleOpt',
+        multi: 'override-orig-multi1,override-orig-multi2',
+      });
+
+      // Mismatched input override length
+      expect(() =>
+        createExtensionTester(
+          subject.override({
+            factory(originalFactory, { inputs }) {
+              return originalFactory({
+                inputs: {
+                  ...inputs,
+                  multi: [[testDataRef1('multi1')]],
+                },
+              });
+            },
+          }),
+        )
+          .add(optExt)
+          .add(singleExt)
+          .add(multi1Ext)
+          .add(multi2Ext)
+          .data(outputRef),
+      ).toThrowErrorMatchingInlineSnapshot(
+        `"Failed to instantiate extension 'subject', override data provided for input 'multi' must match the length of the original inputs"`,
+      );
+
+      // Required input not provided
+      expect(() =>
+        createExtensionTester(
+          subject.override({
+            factory(originalFactory, { inputs }) {
+              return originalFactory({
+                inputs: {
+                  ...inputs,
+                  single: [testDataRef2('singleOpt')],
+                },
+              });
+            },
+          }),
+        )
+          .add(optExt)
+          .add(singleExt)
+          .add(multi1Ext)
+          .add(multi2Ext)
+          .data(outputRef),
+      ).toThrowErrorMatchingInlineSnapshot(
+        `"Failed to instantiate extension 'subject', missing required extension data value(s) 'test1'"`,
+      );
+
+      // Wrong value provided
+      expect(() =>
+        createExtensionTester(
+          subject.override({
+            factory(originalFactory) {
+              return originalFactory({
+                inputs: {
+                  // @ts-expect-error
+                  opt: [testDataRef2('opt')],
+                  // @ts-expect-error
+                  single: [testDataRef1('single'), outputRef({})],
+                  multi: [
+                    // @ts-expect-error
+                    [testDataRef2('multi1')],
+                  ],
+                },
+              });
+            },
+          }),
+        )
+          .add(optExt)
+          .add(singleExt)
+          .add(multi1Ext)
+          .add(multi2Ext)
+          .data(outputRef),
+      ).toThrowErrorMatchingInlineSnapshot(
+        `"Failed to instantiate extension 'subject', extension data 'test2' was provided but not declared"`,
+      );
+    });
   });
 });

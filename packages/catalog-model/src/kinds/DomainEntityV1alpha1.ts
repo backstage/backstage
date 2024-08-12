@@ -33,6 +33,7 @@ export interface DomainEntityV1alpha1 extends Entity {
   spec: {
     owner: string;
     subdomainOf?: string;
+    type?: string;
   };
 }
 

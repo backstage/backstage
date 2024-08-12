@@ -68,7 +68,7 @@ function makeNode<TConfig, TConfigInput>(
 
 function makeInstanceWithId<TConfig, TConfigInput>(
   extension: Extension<TConfig, TConfigInput>,
-  config?: TConfig,
+  config?: TConfigInput,
 ): AppNode {
   const node = makeNode(extension, { config });
   return {
@@ -640,12 +640,12 @@ describe('instantiateAppNodeTree', () => {
         name: 'test',
         attachTo: { id: 'ignored', input: 'ignored' },
         output: [testDataRef, otherDataRef.optional()],
-        configSchema: createSchemaFromZod(z =>
-          z.object({
-            output: z.string().default('test'),
-            other: z.number().optional(),
-          }),
-        ),
+        config: {
+          schema: {
+            output: z => z.string().default('test'),
+            other: z => z.number().optional(),
+          },
+        },
         factory({ config }) {
           return [
             testDataRef(config.output),

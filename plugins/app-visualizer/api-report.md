@@ -6,7 +6,7 @@
 import { BackstagePlugin } from '@backstage/frontend-plugin-api';
 
 // @public (undocumented)
-const visualizerPlugin: BackstagePlugin<{}, {}>;
+const visualizerPlugin: BackstagePlugin<{}, {}, {}>;
 export default visualizerPlugin;
 
 // (No @packageDocumentation comment for this package)

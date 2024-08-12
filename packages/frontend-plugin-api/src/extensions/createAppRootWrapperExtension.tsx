@@ -31,6 +31,7 @@ import { Expand } from '../types';
  * and similar.
  *
  * @public
+ * @deprecated Use {@link AppRootWrapperBlueprint} instead.
  */
 export function createAppRootWrapperExtension<
   TConfig extends {},

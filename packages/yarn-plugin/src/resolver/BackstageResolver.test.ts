@@ -207,4 +207,87 @@ describe('BackstageResolver', () => {
       expect(getManifestByVersionMock).toHaveBeenCalledTimes(2);
     });
   });
+
+  describe('getSatisfying', () => {
+    it('filters out locators for other packages', async () => {
+      await expect(
+        backstageResolver.getSatisfying(
+          structUtils.makeDescriptor(
+            structUtils.makeIdent('backstage', 'core'),
+            'backstage:1.23.45',
+          ),
+          {},
+          [
+            structUtils.makeLocator(
+              structUtils.makeIdent('backstage', 'foo'),
+              'npm:1.2.3',
+            ),
+            structUtils.makeLocator(
+              structUtils.makeIdent('backstage', 'core'),
+              'npm:6.7.8',
+            ),
+            structUtils.makeLocator(
+              structUtils.makeIdent('backstage', 'bar'),
+              'npm:1.2.3',
+            ),
+          ],
+        ),
+      ).resolves.toEqual({
+        locators: [
+          structUtils.makeLocator(
+            structUtils.makeIdent('backstage', 'core'),
+            'npm:6.7.8',
+          ),
+        ],
+        sorted: true,
+      });
+    });
+
+    it('filters out locators for other package versions', async () => {
+      await expect(
+        backstageResolver.getSatisfying(
+          structUtils.makeDescriptor(
+            structUtils.makeIdent('backstage', 'core'),
+            'backstage:1.23.45',
+          ),
+          {},
+          [
+            structUtils.makeLocator(
+              structUtils.makeIdent('backstage', 'core'),
+              'npm:5.6.7',
+            ),
+            structUtils.makeLocator(
+              structUtils.makeIdent('backstage', 'core'),
+              'npm:6.7.8',
+            ),
+            structUtils.makeLocator(
+              structUtils.makeIdent('backstage', 'bar'),
+              'npm:7.8.9',
+            ),
+          ],
+        ),
+      ).resolves.toEqual({
+        locators: [
+          structUtils.makeLocator(
+            structUtils.makeIdent('backstage', 'core'),
+            'npm:6.7.8',
+          ),
+        ],
+        sorted: true,
+      });
+    });
+
+    it('throws for non `backstage:` descriptors', async () => {
+      await expect(
+        backstageResolver.getSatisfying(
+          structUtils.makeDescriptor(
+            structUtils.makeIdent('backstage', 'core'),
+            'npm:1.2.3',
+          ),
+          {},
+          [],
+        ),
+      ).rejects.toThrow(/unexpected npm: range/i);
+    });
+  });
 });

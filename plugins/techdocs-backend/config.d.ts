@@ -68,22 +68,14 @@ export interface Config {
     /**
      * Techdocs publisher information
      */
-    publisher?:
-      | {
-          type:
-            | 'local'
-            | 'googleGcs'
-            | 'awsS3'
-            | 'azureBlobStorage'
-            | 'openStackSwift';
-
-          local?: {
-            /**
-             * Directory to store generated static files.
-             */
-            publishDirectory?: string;
-          };
-        }
+    publisher?: {
+      local?: {
+        /**
+         * Directory to store generated static files.
+         */
+        publishDirectory?: string;
+      };
+    } & (
       | {
           type: 'awsS3';
 
@@ -132,6 +124,11 @@ export interface Config {
              * (Required) Cloud Storage Bucket Name
              */
             bucketName: string;
+            /**
+             * (Optional) Location in storage bucket to save files
+             * If not set, the default location will be the root of the storage bucket
+             */
+            bucketRootPath?: string;
             /**
              * (Optional) AWS Region.
              * If not set, AWS_REGION environment variable or aws config file will be used.
@@ -261,7 +258,8 @@ export interface Config {
              */
             projectId?: string;
           };
-        };
+        }
+    );
 
     /**
      * @example http://localhost:7007/api/techdocs

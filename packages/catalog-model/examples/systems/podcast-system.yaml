@@ -6,3 +6,4 @@ metadata:
 spec:
   owner: team-b
   domain: playback
+  type: feature-set

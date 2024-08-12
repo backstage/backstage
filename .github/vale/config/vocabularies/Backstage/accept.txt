@@ -245,6 +245,7 @@ Monorepo
 monorepos
 msgraph
 msw
+multiton
 mutex
 mutexes
 mysql
