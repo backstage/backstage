@@ -5,5 +5,5 @@ metadata:
   title: '@internal/app-next-example-extensions'
 spec:
   lifecycle: experimental
-  type: backstage-frontend-extensions-bundle
+  type: backstage-frontend-extensions
   owner: maintainers

@@ -54,7 +54,7 @@ const packageRoleInfos: PackageRoleInfo[] = [
     output: ['types', 'esm'],
   },
   {
-    role: 'frontend-extensions-bundle',
+    role: 'frontend-extensions',
     platform: 'web',
     output: ['types', 'esm'],
   },

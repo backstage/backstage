@@ -48,7 +48,7 @@ function getExpectedDepType(
     case 'common-library':
     case 'web-library':
     case 'frontend-plugin':
-    case 'frontend-extensions-bundle':
+    case 'frontend-extensions':
     case 'frontend-plugin-module':
     case 'node-library':
     case 'backend-plugin':
