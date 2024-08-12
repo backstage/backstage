@@ -90,7 +90,7 @@ describe('ContainerCard', () => {
     );
     expect(screen.getByText('some-name')).toBeInTheDocument();
     expect(screen.getByText('gcr.io/some-proj/some-image')).toBeInTheDocument();
-    expect(screen.getAllByText('❌')).toHaveLength(6);
+    expect(screen.getAllByText('❌')).toHaveLength(5);
     expect(screen.queryByText('✅')).toBeNull();
   });
 

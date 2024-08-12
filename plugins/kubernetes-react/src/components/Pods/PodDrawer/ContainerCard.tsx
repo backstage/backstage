@@ -41,6 +41,16 @@ const getContainerHealthChecks = (
       'no restarts': containerStatus.restartCount === 0,
     };
   }
+  if (containerSpec && containerSpec?.livenessProbe !== undefined) {
+    return {
+      'not waiting to start': containerStatus.state?.waiting === undefined,
+      started: !!containerStatus.started,
+      ready: containerStatus.ready,
+      'no restarts': containerStatus.restartCount === 0,
+      'readiness probe set': containerSpec?.readinessProbe !== undefined,
+      'liveness probe set': containerSpec?.livenessProbe !== undefined,
+    };
+  }
   return {
     'not waiting to start': containerStatus.state?.waiting === undefined,
     started: !!containerStatus.started,
@@ -48,8 +58,6 @@ const getContainerHealthChecks = (
     'no restarts': containerStatus.restartCount === 0,
     'readiness probe set':
       containerSpec && containerSpec?.readinessProbe !== undefined,
-    'liveness probe set':
-      containerSpec && containerSpec?.livenessProbe !== undefined,
   };
 };
 
