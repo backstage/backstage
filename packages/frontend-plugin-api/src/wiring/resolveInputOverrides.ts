@@ -129,7 +129,7 @@ export function resolveInputOverrides(
           );
         }
         newInputs[name] = Object.assign(providedContainer, {
-          name: (originalInput as ResolvedExtensionInput<any>).node,
+          node: (originalInput as ResolvedExtensionInput<any>).node,
         }) as any;
       }
     } else {
@@ -139,23 +139,40 @@ export function resolveInputOverrides(
           `override data provided for input '${name}' must be an array`,
         );
       }
-      if (
-        originalInput.length !== providedData.length &&
-        providedData.length > 0
-      ) {
-        throw new Error(
-          `override data provided for input '${name}' must match the length of the original inputs`,
-        );
+
+      // Regular inputs can be overridden in two different ways:
+      // 1) Forward a subset of the original inputs in a new order
+      // 2) Provide new data for each original input
+
+      // First check if all inputs are being removed
+      if (providedData.length === 0) {
+        newInputs[name] = [];
+      } else {
+        // Check how many of the provided data items have a node property, i.e. is a forwarded input
+        const withNodesCount = providedData.filter(d => 'node' in d).length;
+        if (withNodesCount === 0) {
+          if (originalInput.length !== providedData.length) {
+            throw new Error(
+              `override data provided for input '${name}' must match the length of the original inputs`,
+            );
+          }
+          newInputs[name] = providedData.map((data, i) => {
+            const providedContainer = createExtensionDataContainer(
+              data as Iterable<ExtensionDataValue<any, any>>,
+              declaredInput.extensionData,
+            );
+            return Object.assign(providedContainer, {
+              node: (originalInput[i] as ResolvedExtensionInput<any>).node,
+            }) as any;
+          });
+        } else if (withNodesCount === providedData.length) {
+          newInputs[name] = providedData as any;
+        } else {
+          throw new Error(
+            `override data for input '${name}' may not mix forwarded inputs with data overrides`,
+          );
+        }
       }
-      newInputs[name] = providedData.map((data, i) => {
-        const providedContainer = createExtensionDataContainer(
-          data as Iterable<ExtensionDataValue<any, any>>,
-          declaredInput.extensionData,
-        );
-        return Object.assign(providedContainer, {
-          name: (originalInput[i] as ResolvedExtensionInput<any>).node,
-        }) as any;
-      });
     }
   }
   return newInputs;
