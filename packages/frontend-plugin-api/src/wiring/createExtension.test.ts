@@ -850,7 +850,7 @@ describe('createExtension', () => {
               return originalFactory({
                 inputs: {
                   single: [testDataRef1('single')],
-                  multi: [[testDataRef1('multi1')], [testDataRef1('multi2')]],
+                  multi: [],
                 },
               });
             },
@@ -865,7 +865,7 @@ describe('createExtension', () => {
         opt: 'none',
         single: 'single',
         singleOpt: 'none',
-        multi: 'multi1,multi2',
+        multi: '',
       });
 
       // Forward inputs directly

@@ -426,7 +426,7 @@ describe('createExtensionBlueprint', () => {
               {
                 inputs: {
                   single: [testDataRef1('single')],
-                  multi: [[testDataRef1('multi1')], [testDataRef1('multi2')]],
+                  multi: [],
                 },
               },
             );
@@ -439,7 +439,7 @@ describe('createExtensionBlueprint', () => {
         opt: 'none',
         single: 'single',
         singleOpt: 'none',
-        multi: 'multi1,multi2',
+        multi: '',
       }),
     ]);
 

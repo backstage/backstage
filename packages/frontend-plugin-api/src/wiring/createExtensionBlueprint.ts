@@ -353,7 +353,10 @@ export function resolveInputOverrides(
           `override data provided for input '${name}' must be an array`,
         );
       }
-      if (originalInput.length !== providedData.length) {
+      if (
+        originalInput.length !== providedData.length &&
+        providedData.length > 0
+      ) {
         throw new Error(
           `override data provided for input '${name}' must match the length of the original inputs`,
         );
