@@ -19,12 +19,14 @@ import { PortableSchema, createSchemaFromZod } from '../schema';
 import { Expand } from '../types';
 import {
   ResolveInputValueOverrides,
-  createDataContainer,
   resolveInputOverrides,
 } from './createExtensionBlueprint';
 import {
+  ExtensionDataContainer,
+  createExtensionDataContainer,
+} from './createExtensionDataContainer';
+import {
   AnyExtensionDataRef,
-  ExtensionDataRef,
   ExtensionDataValue,
 } from './createExtensionDataRef';
 import { ExtensionInput, LegacyExtensionInput } from './createExtensionInput';
@@ -67,28 +69,6 @@ export type ExtensionDataValues<TExtensionData extends AnyExtensionDataMap> = {
     ? DataName
     : never]?: TExtensionData[DataName]['T'];
 };
-
-/** @public */
-export type ExtensionDataContainer<UExtensionData extends AnyExtensionDataRef> =
-  Iterable<
-    UExtensionData extends ExtensionDataRef<
-      infer IData,
-      infer IId,
-      infer IConfig
-    >
-      ? IConfig['optional'] extends true
-        ? never
-        : ExtensionDataValue<IData, IId>
-      : never
-  > & {
-    get<TId extends UExtensionData['id']>(
-      ref: ExtensionDataRef<any, TId, any>,
-    ): UExtensionData extends ExtensionDataRef<infer IData, TId, infer IConfig>
-      ? IConfig['optional'] extends true
-        ? IData | undefined
-        : IData
-      : never;
-  };
 
 /**
  * Convert a single extension input into a matching resolved input.
@@ -669,7 +649,7 @@ export function createExtension<
               };
               inputs?: ResolveInputValueOverrides<TInputs>;
             }): ExtensionDataContainer<UOutput> => {
-              return createDataContainer<UOutput>(
+              return createExtensionDataContainer<UOutput>(
                 newOptions.factory({
                   node,
                   config: innerContext?.config ?? config,

@@ -18,7 +18,6 @@ import { AppNode } from '../apis';
 import { Expand } from '../types';
 import {
   CreateExtensionOptions,
-  ExtensionDataContainer,
   ExtensionDefinition,
   ResolvedExtensionInput,
   ResolvedExtensionInputs,
@@ -29,10 +28,13 @@ import { z } from 'zod';
 import { ExtensionInput } from './createExtensionInput';
 import {
   AnyExtensionDataRef,
-  ExtensionDataRef,
   ExtensionDataRefToValue,
   ExtensionDataValue,
 } from './createExtensionDataRef';
+import {
+  ExtensionDataContainer,
+  createExtensionDataContainer,
+} from './createExtensionDataContainer';
 
 /**
  * @public
@@ -252,51 +254,6 @@ export interface ExtensionBlueprint<
   >;
 }
 
-/** @internal */
-export function createDataContainer<UData extends AnyExtensionDataRef>(
-  values: Iterable<
-    UData extends ExtensionDataRef<infer IData, infer IId>
-      ? ExtensionDataValue<IData, IId>
-      : never
-  >,
-  declaredRefs?: ExtensionDataRef<any, any, any>[],
-): ExtensionDataContainer<UData> {
-  const container = new Map<string, ExtensionDataValue<any, any>>();
-  const verifyRefs =
-    declaredRefs && new Map(declaredRefs.map(ref => [ref.id, ref]));
-
-  for (const output of values) {
-    if (verifyRefs) {
-      if (!verifyRefs.delete(output.id)) {
-        throw new Error(
-          `extension data '${output.id}' was provided but not declared`,
-        );
-      }
-    }
-    container.set(output.id, output);
-  }
-
-  const remainingRefs =
-    verifyRefs &&
-    Array.from(verifyRefs.values()).filter(ref => !ref.config.optional);
-  if (remainingRefs && remainingRefs.length > 0) {
-    throw new Error(
-      `missing required extension data value(s) '${remainingRefs
-        .map(ref => ref.id)
-        .join(', ')}'`,
-    );
-  }
-
-  return {
-    get(ref) {
-      return container.get(ref.id)?.value;
-    },
-    [Symbol.iterator]() {
-      return container.values();
-    },
-  } as ExtensionDataContainer<UData>;
-}
-
 function expectArray<T>(value: T | T[]): T[] {
   return value as T[];
 }
@@ -333,7 +290,7 @@ export function resolveInputOverrides(
     if (declaredInput.config.singleton) {
       const originalInput = expectItem(inputs[name]);
       if (providedData) {
-        const providedContainer = createDataContainer(
+        const providedContainer = createExtensionDataContainer(
           providedData as Iterable<ExtensionDataValue<any, any>>,
           declaredInput.extensionData,
         );
@@ -362,7 +319,7 @@ export function resolveInputOverrides(
         );
       }
       newInputs[name] = providedData.map((data, i) => {
-        const providedContainer = createDataContainer(
+        const providedContainer = createExtensionDataContainer(
           data as Iterable<ExtensionDataValue<any, any>>,
           declaredInput.extensionData,
         );
@@ -506,7 +463,7 @@ class ExtensionBlueprintImpl<
               inputs?: ResolveInputValueOverrides;
             },
           ): ExtensionDataContainer<UOutput> => {
-            return createDataContainer<UOutput>(
+            return createExtensionDataContainer<UOutput>(
               this.options.factory(innerParams, {
                 node,
                 config: innerContext?.config ?? config,
