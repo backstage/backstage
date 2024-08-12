@@ -16,10 +16,7 @@
 
 import React from 'react';
 import { coreExtensionData } from './coreExtensionData';
-import {
-  createDataContainer,
-  createExtensionBlueprint,
-} from './createExtensionBlueprint';
+import { createExtensionBlueprint } from './createExtensionBlueprint';
 import { createExtensionTester } from '@backstage/frontend-test-utils';
 import {
   ExtensionDataValue,
@@ -31,6 +28,7 @@ import {
   ExtensionDefinition,
   toInternalExtensionDefinition,
 } from './createExtension';
+import { createExtensionDataContainer } from './createExtensionDataContainer';
 
 function unused(..._any: any[]) {}
 
@@ -376,7 +374,7 @@ describe('createExtensionBlueprint', () => {
     });
 
     const mockInput = (node: string, ...data: ExtensionDataValue<any, any>[]) =>
-      Object.assign(createDataContainer(data), {
+      Object.assign(createExtensionDataContainer(data), {
         node,
       });
     const mockParentInputs = {
