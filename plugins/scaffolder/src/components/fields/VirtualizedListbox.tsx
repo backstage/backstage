@@ -22,6 +22,7 @@ const renderRow = (props: ListChildComponentProps) => {
   return React.cloneElement(data[index], { style });
 };
 
+// Context needed to keep Autocomplete working correctly : https://v4.mui.com/components/autocomplete/#virtualization
 const OuterElementContext = React.createContext({});
 
 const OuterElementType = React.forwardRef<HTMLDivElement>((props, ref) => {
