@@ -78,7 +78,7 @@ export function createPlugin<
   for (const def of options.extensions ?? []) {
     const ext = resolveExtensionDefinition(def, { namespace: options.id });
     extensions.push(ext);
-    extensionDefinitionsById.set(ext.id, def);
+    extensionDefinitionsById.set(ext.id, { ...def, namespace: options.id });
   }
 
   if (extensions.length !== extensionDefinitionsById.size) {
@@ -109,6 +109,23 @@ export function createPlugin<
     },
     toString() {
       return `Plugin{id=${options.id}}`;
+    },
+    withOverrides(overrides) {
+      const overrideExtensionIds = new Set(
+        overrides.extensions.map(
+          e => resolveExtensionDefinition(e, { namespace: options.id }).id,
+        ),
+      );
+      const nonOverridenExtensions = (options.extensions ?? []).filter(
+        e =>
+          !overrideExtensionIds.has(
+            resolveExtensionDefinition(e, { namespace: options.id }).id,
+          ),
+      );
+      return createPlugin({
+        ...options,
+        extensions: [...nonOverridenExtensions, ...overrides.extensions],
+      });
     },
   } as InternalBackstagePlugin<TRoutes, TExternalRoutes>;
 }
