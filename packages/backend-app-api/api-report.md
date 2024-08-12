@@ -49,6 +49,7 @@ import { UserInfoService } from '@backstage/backend-plugin-api';
 export const authServiceFactory: ServiceFactoryCompat<
   AuthService,
   'plugin',
+  'singleton',
   undefined
 >;
 
@@ -80,6 +81,7 @@ export interface Backend {
 export const cacheServiceFactory: ServiceFactoryCompat<
   CacheService,
   'plugin',
+  'singleton',
   undefined
 >;
 
@@ -113,6 +115,7 @@ export interface CreateSpecializedBackendOptions {
 export const databaseServiceFactory: ServiceFactoryCompat<
   DatabaseService,
   'plugin',
+  'singleton',
   undefined
 >;
 
@@ -135,6 +138,7 @@ export type DefaultRootHttpRouterOptions = DefaultRootHttpRouterOptions_2;
 export const discoveryServiceFactory: ServiceFactoryCompat<
   DiscoveryService,
   'plugin',
+  'singleton',
   undefined
 >;
 
@@ -161,6 +165,7 @@ export class HostDiscovery implements DiscoveryService {
 export const httpAuthServiceFactory: ServiceFactoryCompat<
   HttpAuthService,
   'plugin',
+  'singleton',
   undefined
 >;
 
@@ -168,6 +173,7 @@ export const httpAuthServiceFactory: ServiceFactoryCompat<
 export const httpRouterServiceFactory: ServiceFactoryCompat<
   HttpRouterService,
   'plugin',
+  'singleton',
   undefined
 >;
 
@@ -191,6 +197,7 @@ export type IdentityFactoryOptions = {
 export const identityServiceFactory: ServiceFactoryCompat<
   IdentityService,
   'plugin',
+  'singleton',
   IdentityFactoryOptions
 >;
 
@@ -203,6 +210,7 @@ export type LifecycleMiddlewareOptions = LifecycleMiddlewareOptions_2;
 export const lifecycleServiceFactory: ServiceFactoryCompat<
   LifecycleService,
   'plugin',
+  'singleton',
   undefined
 >;
 
@@ -220,6 +228,7 @@ export function loadBackendConfig(options: {
 export const loggerServiceFactory: ServiceFactoryCompat<
   LoggerService,
   'plugin',
+  'singleton',
   undefined
 >;
 
@@ -248,6 +257,7 @@ export type MiddlewareFactoryOptions = MiddlewareFactoryOptions_2;
 export const permissionsServiceFactory: ServiceFactoryCompat<
   PermissionsService,
   'plugin',
+  'singleton',
   undefined
 >;
 
@@ -278,6 +288,7 @@ export interface RootConfigFactoryOptions {
 export const rootConfigServiceFactory: ServiceFactoryCompat<
   RootConfigService,
   'root',
+  'singleton',
   RootConfigFactoryOptions
 >;
 
@@ -294,13 +305,14 @@ export type RootHttpRouterFactoryOptions = RootHttpRouterFactoryOptions_2;
 // @public @deprecated (undocumented)
 export const rootHttpRouterServiceFactory: ((
   options?: RootHttpRouterFactoryOptions_2 | undefined,
-) => ServiceFactory<RootHttpRouterService, 'root'>) &
-  ServiceFactory<RootHttpRouterService, 'root'>;
+) => ServiceFactory<RootHttpRouterService, 'root', 'singleton'>) &
+  ServiceFactory<RootHttpRouterService, 'root', 'singleton'>;
 
 // @public @deprecated
 export const rootLifecycleServiceFactory: ServiceFactoryCompat<
   RootLifecycleService,
   'root',
+  'singleton',
   undefined
 >;
 
@@ -308,6 +320,7 @@ export const rootLifecycleServiceFactory: ServiceFactoryCompat<
 export const rootLoggerServiceFactory: ServiceFactoryCompat<
   RootLoggerService,
   'root',
+  'singleton',
   undefined
 >;
 
@@ -315,6 +328,7 @@ export const rootLoggerServiceFactory: ServiceFactoryCompat<
 export const schedulerServiceFactory: ServiceFactoryCompat<
   SchedulerService,
   'plugin',
+  'singleton',
   undefined
 >;
 
@@ -322,6 +336,7 @@ export const schedulerServiceFactory: ServiceFactoryCompat<
 export const tokenManagerServiceFactory: ServiceFactoryCompat<
   TokenManagerService,
   'plugin',
+  'singleton',
   undefined
 >;
 
@@ -329,6 +344,7 @@ export const tokenManagerServiceFactory: ServiceFactoryCompat<
 export const urlReaderServiceFactory: ServiceFactoryCompat<
   UrlReaderService,
   'plugin',
+  'singleton',
   undefined
 >;
 
@@ -336,6 +352,7 @@ export const urlReaderServiceFactory: ServiceFactoryCompat<
 export const userInfoServiceFactory: ServiceFactoryCompat<
   UserInfoService,
   'plugin',
+  'singleton',
   undefined
 >;
 

@@ -17,6 +17,7 @@ import { DefinitivePolicyDecision } from '@backstage/plugin-permission-common';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import express from 'express';
 import { IdentifiedPermissionMessage } from '@backstage/plugin-permission-common';
+import { MetadataResponse as MetadataResponse_2 } from '@backstage/plugin-permission-common';
 import { MetadataResponseSerializedRule as MetadataResponseSerializedRule_2 } from '@backstage/plugin-permission-common';
 import { NotCriteria } from '@backstage/plugin-permission-common';
 import { Permission } from '@backstage/plugin-permission-common';
@@ -188,11 +189,8 @@ export const makeCreatePermissionRule: <
   rule: PermissionRule<TResource, TQuery, TResourceType, TParams>,
 ) => PermissionRule<TResource, TQuery, TResourceType, TParams>;
 
-// @public
-export type MetadataResponse = {
-  permissions?: Permission[];
-  rules: MetadataResponseSerializedRule[];
-};
+// @public @deprecated
+export type MetadataResponse = MetadataResponse_2;
 
 // @public @deprecated
 export type MetadataResponseSerializedRule = MetadataResponseSerializedRule_2;

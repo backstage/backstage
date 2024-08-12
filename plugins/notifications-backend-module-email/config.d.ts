@@ -79,6 +79,10 @@ export interface Config {
                * Newline style, defaults to 'unix'
                */
               newline?: 'unix' | 'windows';
+            }
+          | {
+              /** Only for debugging, disables the actual sending of emails */
+              transport: 'stream';
             };
         /**
          * Sender email address
@@ -132,6 +136,14 @@ export interface Config {
            */
           excludedTopics?: string[];
         };
+        /**
+         * White list of addresses to send email to
+         */
+        allowlistEmailAddresses?: string[];
+        /**
+         * Black list of addresses to not send email to
+         */
+        denylistEmailAddresses?: string[];
       };
     };
   };

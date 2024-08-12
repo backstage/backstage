@@ -17,7 +17,8 @@ The following example is how you can override the root logger service to add add
 
 ```ts
 import { coreServices } from '@backstage/backend-plugin-api';
-import { WinstonLogger } from '@backstage/backend-app-api';
+import { WinstonLogger } from '@backstage/backend-defaults/rootLogger';
+import { createConfigSecretEnumerator } from '@backstage/backend-defaults/rootConfig';
 
 const backend = createBackend();
 
@@ -42,6 +43,12 @@ backend.add(
             : WinstonLogger.colorFormat(),
         transports: [new transports.Console()],
       });
+
+      const secretEnumerator = await createConfigSecretEnumerator({
+        logger,
+      });
+      logger.addRedactions(secretEnumerator(config));
+      config.subscribe?.(() => logger.addRedactions(secretEnumerator(config)));
 
       return logger;
     },

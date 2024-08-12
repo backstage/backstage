@@ -46,6 +46,7 @@ import {
   useStylesTransformer,
 } from '../../transformers';
 import { useNavigateUrl } from './useNavigateUrl';
+import { handleMetaRedirects } from '../../transformers/handleMetaRedirects';
 
 const MOBILE_MEDIA_QUERY = 'screen and (max-width: 76.1875em)';
 
@@ -186,6 +187,7 @@ export const useTechDocsReaderDom = (
   const postRender = useCallback(
     async (transformedElement: Element) =>
       transformer(transformedElement, [
+        handleMetaRedirects(navigate, entityRef.name),
         scrollIntoNavigation(),
         copyToClipboard(theme),
         addLinkClickListener({
@@ -243,7 +245,7 @@ export const useTechDocsReaderDom = (
           onLoaded: () => {},
         }),
       ]),
-    [theme, navigate, analytics],
+    [theme, navigate, analytics, entityRef.name],
   );
 
   useEffect(() => {

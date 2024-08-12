@@ -127,6 +127,12 @@ export function isResourcePermission<T extends string = string>(
 export function isUpdatePermission(permission: Permission): boolean;
 
 // @public
+export type MetadataResponse = {
+  permissions?: Permission[];
+  rules: MetadataResponseSerializedRule[];
+};
+
+// @public
 export type MetadataResponseSerializedRule = {
   name: string;
   description: string;

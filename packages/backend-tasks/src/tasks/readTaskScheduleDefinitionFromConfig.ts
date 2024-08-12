@@ -32,13 +32,19 @@ function readDuration(config: Config, key: string): HumanDuration {
   return readDurationFromConfig(config, { key });
 }
 
-function readCronOrDuration(
+function readFrequency(
   config: Config,
   key: string,
-): { cron: string } | Duration | HumanDuration {
+): { cron: string } | Duration | HumanDuration | { trigger: 'manual' } {
   const value = config.get(key);
   if (typeof value === 'object' && (value as { cron?: string }).cron) {
     return value as { cron: string };
+  }
+  if (
+    typeof value === 'object' &&
+    (value as { trigger?: string }).trigger === 'manual'
+  ) {
+    return { trigger: 'manual' };
   }
 
   return readDuration(config, key);
@@ -56,7 +62,7 @@ function readCronOrDuration(
 export function readTaskScheduleDefinitionFromConfig(
   config: Config,
 ): TaskScheduleDefinition {
-  const frequency = readCronOrDuration(config, 'frequency');
+  const frequency = readFrequency(config, 'frequency');
   const timeout = readDuration(config, 'timeout');
 
   const initialDelay = config.has('initialDelay')

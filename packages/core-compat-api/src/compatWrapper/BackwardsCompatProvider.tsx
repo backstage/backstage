@@ -50,7 +50,9 @@ const legacyPluginStore = getOrCreateGlobalSingleton(
   () => new WeakMap<NewBackstagePlugin, LegacyBackstagePlugin>(),
 );
 
-function toLegacyPlugin(plugin: NewBackstagePlugin): LegacyBackstagePlugin {
+export function toLegacyPlugin(
+  plugin: NewBackstagePlugin,
+): LegacyBackstagePlugin {
   let legacy = legacyPluginStore.get(plugin);
   if (legacy) {
     return legacy;

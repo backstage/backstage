@@ -143,6 +143,10 @@ export const catalogTranslationRef = createTranslationRef({
       title: 'Has subcomponents',
       emptyMessage: 'No subcomponent is part of this component',
     },
+    hasSubdomainsCard: {
+      title: 'Has subdomains',
+      emptyMessage: 'No subdomain is part of this domain',
+    },
     hasSystemsCard: {
       title: 'Has systems',
       emptyMessage: 'No system is part of this domain',

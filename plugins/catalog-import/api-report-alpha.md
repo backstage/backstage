@@ -11,6 +11,7 @@ const _default: BackstagePlugin<
   {
     importPage: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 export default _default;
