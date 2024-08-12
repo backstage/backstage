@@ -17,7 +17,11 @@
 import { AppNode } from '../apis';
 import { PortableSchema, createSchemaFromZod } from '../schema';
 import { Expand } from '../types';
-import { createDataContainer } from './createExtensionBlueprint';
+import {
+  ResolveInputValueOverrides,
+  createDataContainer,
+  resolveInputOverrides,
+} from './createExtensionBlueprint';
 import {
   AnyExtensionDataRef,
   ExtensionDataRef,
@@ -259,7 +263,7 @@ export interface ExtensionDefinition<
       factory(
         originalFactory: (context?: {
           config?: TConfig;
-          inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
+          inputs?: ResolveInputValueOverrides<TInputs>;
         }) => ExtensionDataContainer<UOutput>,
         context: {
           node: AppNode;
@@ -558,7 +562,7 @@ export function createExtension<
               ReturnType<TConfigSchema[key]>
             >;
           };
-          inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
+          inputs?: ResolveInputValueOverrides<TInputs>;
         }) => ExtensionDataContainer<UOutput>,
         context: {
           node: AppNode;
@@ -646,14 +650,19 @@ export function createExtension<
                   ReturnType<TConfigSchema[key]>
                 >;
               };
-              inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
+              inputs?: ResolveInputValueOverrides<TInputs>;
             }): ExtensionDataContainer<UOutput> => {
               return createDataContainer<UOutput>(
                 newOptions.factory({
                   node,
                   config: innerContext?.config ?? config,
-                  inputs: (innerContext?.inputs ?? inputs) as any, // TODO: Fix the way input values are overridden
+                  inputs: resolveInputOverrides(
+                    newOptions.inputs,
+                    inputs,
+                    innerContext?.inputs,
+                  ) as any, // TODO: Might be able to improve this once legacy inputs are gone
                 }) as Iterable<any>,
+                newOptions.output,
               );
             },
             {

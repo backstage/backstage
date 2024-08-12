@@ -1281,7 +1281,7 @@ export interface ExtensionBlueprint<
         params: TParams,
         context?: {
           config?: TConfig;
-          inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
+          inputs?: ResolveInputValueOverrides<TInputs>;
         },
       ) => ExtensionDataContainer<UOutput>,
       context: {
@@ -1470,7 +1470,7 @@ export interface ExtensionDefinition<
       factory(
         originalFactory: (context?: {
           config?: TConfig;
-          inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
+          inputs?: ResolveInputValueOverrides<TInputs>;
         }) => ExtensionDataContainer<UOutput>,
         context: {
           node: AppNode;
@@ -1867,6 +1867,73 @@ export type ResolvedExtensionInputs<
     ? Expand<ResolvedExtensionInput<TInputs[InputName]>>
     : Expand<ResolvedExtensionInput<TInputs[InputName]> | undefined>;
 };
+
+// @public (undocumented)
+export type ResolveInputValueOverrides<
+  TInputs extends {
+    [inputName in string]: ExtensionInput<
+      AnyExtensionDataRef,
+      {
+        optional: boolean;
+        singleton: boolean;
+      }
+    >;
+  } = {
+    [inputName in string]: ExtensionInput<
+      AnyExtensionDataRef,
+      {
+        optional: boolean;
+        singleton: boolean;
+      }
+    >;
+  },
+> = Expand<
+  {
+    [KName in keyof TInputs as TInputs[KName] extends ExtensionInput<
+      any,
+      {
+        optional: infer IOptional extends boolean;
+        singleton: boolean;
+      }
+    >
+      ? IOptional extends true
+        ? never
+        : KName
+      : never]: TInputs[KName] extends ExtensionInput<
+      infer IDataRefs,
+      {
+        optional: boolean;
+        singleton: infer ISingleton extends boolean;
+      }
+    >
+      ? ISingleton extends true
+        ? Iterable<ExtensionDataRefToValue<IDataRefs>>
+        : Array<Iterable<ExtensionDataRefToValue<IDataRefs>>>
+      : never;
+  } & {
+    [KName in keyof TInputs as TInputs[KName] extends ExtensionInput<
+      any,
+      {
+        optional: infer IOptional extends boolean;
+        singleton: boolean;
+      }
+    >
+      ? IOptional extends true
+        ? KName
+        : never
+      : never]?: TInputs[KName] extends ExtensionInput<
+      infer IDataRefs,
+      {
+        optional: boolean;
+        singleton: infer ISingleton extends boolean;
+      }
+    >
+      ? ISingleton extends true
+        ? Iterable<ExtensionDataRefToValue<IDataRefs>>
+        : Array<Iterable<ExtensionDataRefToValue<IDataRefs>>>
+      : never;
+  }
+>;
 
 // @public
 export type RouteFunc<TParams extends AnyRouteRefParams> = (

@@ -20,6 +20,7 @@ import {
   CreateExtensionOptions,
   ExtensionDataContainer,
   ExtensionDefinition,
+  ResolvedExtensionInput,
   ResolvedExtensionInputs,
   VerifyExtensionFactoryOutput,
   createExtension,
@@ -29,6 +30,7 @@ import { ExtensionInput } from './createExtensionInput';
 import {
   AnyExtensionDataRef,
   ExtensionDataRef,
+  ExtensionDataRefToValue,
   ExtensionDataValue,
 } from './createExtensionDataRef';
 
@@ -74,6 +76,61 @@ export type CreateExtensionBlueprintOptions<
 
   dataRefs?: TDataRefs;
 } & VerifyExtensionFactoryOutput<UOutput, UFactoryOutput>;
+
+/** @public */
+export type ResolveInputValueOverrides<
+  TInputs extends {
+    [inputName in string]: ExtensionInput<
+      AnyExtensionDataRef,
+      { optional: boolean; singleton: boolean }
+    >;
+  } = {
+    [inputName in string]: ExtensionInput<
+      AnyExtensionDataRef,
+      { optional: boolean; singleton: boolean }
+    >;
+  },
+> = Expand<
+  {
+    [KName in keyof TInputs as TInputs[KName] extends ExtensionInput<
+      any,
+      {
+        optional: infer IOptional extends boolean;
+        singleton: boolean;
+      }
+    >
+      ? IOptional extends true
+        ? never
+        : KName
+      : never]: TInputs[KName] extends ExtensionInput<
+      infer IDataRefs,
+      { optional: boolean; singleton: infer ISingleton extends boolean }
+    >
+      ? ISingleton extends true
+        ? Iterable<ExtensionDataRefToValue<IDataRefs>>
+        : Array<Iterable<ExtensionDataRefToValue<IDataRefs>>>
+      : never;
+  } & {
+    [KName in keyof TInputs as TInputs[KName] extends ExtensionInput<
+      any,
+      {
+        optional: infer IOptional extends boolean;
+        singleton: boolean;
+      }
+    >
+      ? IOptional extends true
+        ? KName
+        : never
+      : never]?: TInputs[KName] extends ExtensionInput<
+      infer IDataRefs,
+      { optional: boolean; singleton: infer ISingleton extends boolean }
+    >
+      ? ISingleton extends true
+        ? Iterable<ExtensionDataRefToValue<IDataRefs>>
+        : Array<Iterable<ExtensionDataRefToValue<IDataRefs>>>
+      : never;
+  }
+>;
 
 /**
  * @public
@@ -156,7 +213,7 @@ export interface ExtensionBlueprint<
         params: TParams,
         context?: {
           config?: TConfig;
-          inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
+          inputs?: ResolveInputValueOverrides<TInputs>;
         },
       ) => ExtensionDataContainer<UOutput>,
       context: {
@@ -202,11 +259,32 @@ export function createDataContainer<UData extends AnyExtensionDataRef>(
       ? ExtensionDataValue<IData, IId>
       : never
   >,
+  declaredRefs?: ExtensionDataRef<any, any, any>[],
 ): ExtensionDataContainer<UData> {
   const container = new Map<string, ExtensionDataValue<any, any>>();
+  const verifyRefs =
+    declaredRefs && new Map(declaredRefs.map(ref => [ref.id, ref]));
 
   for (const output of values) {
+    if (verifyRefs) {
+      if (!verifyRefs.delete(output.id)) {
+        throw new Error(
+          `extension data '${output.id}' was provided but not declared`,
+        );
+      }
+    }
     container.set(output.id, output);
+  }
+
+  const remainingRefs =
+    verifyRefs &&
+    Array.from(verifyRefs.values()).filter(ref => !ref.config.optional);
+  if (remainingRefs && remainingRefs.length > 0) {
+    throw new Error(
+      `missing required extension data value(s) '${remainingRefs
+        .map(ref => ref.id)
+        .join(', ')}'`,
+    );
   }
 
   return {
@@ -217,6 +295,84 @@ export function createDataContainer<UData extends AnyExtensionDataRef>(
       return container.values();
     },
   } as ExtensionDataContainer<UData>;
+}
+
+function expectArray<T>(value: T | T[]): T[] {
+  return value as T[];
+}
+function expectItem<T>(value: T | T[]): T {
+  return value as T;
+}
+
+/** @internal */
+export function resolveInputOverrides(
+  declaredInputs?: {
+    [inputName in string]: ExtensionInput<
+      AnyExtensionDataRef,
+      { optional: boolean; singleton: boolean }
+    >;
+  },
+  inputs?: {
+    [KName in string]?:
+      | ({ node: AppNode } & ExtensionDataContainer<any>)
+      | Array<{ node: AppNode } & ExtensionDataContainer<any>>;
+  },
+  inputOverrides?: ResolveInputValueOverrides,
+) {
+  if (!declaredInputs || !inputs || !inputOverrides) {
+    return inputs;
+  }
+
+  const newInputs: typeof inputs = {};
+  for (const name in declaredInputs) {
+    if (!Object.hasOwn(declaredInputs, name)) {
+      continue;
+    }
+    const declaredInput = declaredInputs[name];
+    const providedData = inputOverrides[name];
+    if (declaredInput.config.singleton) {
+      const originalInput = expectItem(inputs[name]);
+      if (providedData) {
+        const providedContainer = createDataContainer(
+          providedData as Iterable<ExtensionDataValue<any, any>>,
+          declaredInput.extensionData,
+        );
+        if (!originalInput) {
+          throw new Error(
+            `attempted to override data of input '${name}' but it is not present in the original inputs`,
+          );
+        }
+        newInputs[name] = Object.assign(providedContainer, {
+          name: (originalInput as ResolvedExtensionInput<any>).node,
+        }) as any;
+      }
+    } else {
+      const originalInput = expectArray(inputs[name]);
+      if (!Array.isArray(providedData)) {
+        throw new Error(
+          `override data provided for input '${name}' must be an array`,
+        );
+      }
+      if (
+        originalInput.length !== providedData.length &&
+        providedData.length > 0
+      ) {
+        throw new Error(
+          `override data provided for input '${name}' must match the length of the original inputs`,
+        );
+      }
+      newInputs[name] = providedData.map((data, i) => {
+        const providedContainer = createDataContainer(
+          data as Iterable<ExtensionDataValue<any, any>>,
+          declaredInput.extensionData,
+        );
+        return Object.assign(providedContainer, {
+          name: (originalInput[i] as ResolvedExtensionInput<any>).node,
+        }) as any;
+      });
+    }
+  }
+  return newInputs;
 }
 
 /**
@@ -288,7 +444,7 @@ class ExtensionBlueprintImpl<
               ReturnType<TConfigSchema[key]>
             >;
           };
-          inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
+          inputs?: ResolveInputValueOverrides<TInputs>;
         },
       ) => ExtensionDataContainer<UOutput>,
       context: {
@@ -347,15 +503,20 @@ class ExtensionBlueprintImpl<
                   ReturnType<TConfigSchema[key]>
                 >;
               };
-              inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
+              inputs?: ResolveInputValueOverrides;
             },
           ): ExtensionDataContainer<UOutput> => {
             return createDataContainer<UOutput>(
               this.options.factory(innerParams, {
                 node,
                 config: innerContext?.config ?? config,
-                inputs: (innerContext?.inputs ?? inputs) as any, // TODO: Fix the way input values are overridden
+                inputs: resolveInputOverrides(
+                  this.options.inputs,
+                  inputs,
+                  innerContext?.inputs,
+                ) as any, // TODO: Might be able to improve this once legacy inputs are gone
               }),
+              this.options.output,
             );
           },
           {
