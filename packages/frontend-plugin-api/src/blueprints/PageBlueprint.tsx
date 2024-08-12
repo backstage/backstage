@@ -64,3 +64,68 @@ export const PageBlueprint = createExtensionBlueprint({
     }
   },
 });
+
+const homePage = PageBlueprint.make({
+  params: {
+    defaultPath: '/home',
+    loader: async () => <h1>Home</h1>,
+  },
+});
+
+const homePlugin = createPlugin({
+  id: 'asd',
+  extensions: [homePage],
+});
+
+// overrides-package locally
+
+/* 
+
+# TODO
+- [ ] Decorate getExtension(...) extension definitions with a namespace
+- [ ] Implement plugin.override([...])
+
+*/
+
+// import plugin from '@backstage/plugin-home';
+
+// export const exp1 = plugin.override([
+//   plugin.getExtension('page:home').override({
+//     *factory(originalFactory) {
+//       yield* originalFactory();
+//       yield coreExtensionData.routePath('/backstage');
+//       // return [...originalFactory(), coreExtensionData.routePath('/backstage')];
+//       // return originalFactory({
+//       //   defaultPath: '/backstage',
+//       // });
+//     },
+//   }),
+//   PageBlueprint.make({
+//     name: 'home',
+//     params: {
+//       defaultPath: '/home',
+//       loader: async () => <h1>Home</h1>,
+//     },
+//   })
+// ]);
+
+// // kind:namespace/name
+// // entity-card:github/issues
+// // entity-card:github/pull-requests
+// // page:catalog
+
+// export const exp2 = createExtensionOverrides({
+//   extensions: [
+//     homePlugin.getExtension('page:home').override({
+//       // namespace: 'home',
+//       *factory(originalFactory) {
+//         yield* originalFactory();
+//         yield coreExtensionData.routePath('/backstage');
+//         // return [...originalFactory(), coreExtensionData.routePath('/backstage')];
+//         // return originalFactory({
+//         //   defaultPath: '/backstage',
+//         // });
+//       },
+//     })
+//   ]
+// })
