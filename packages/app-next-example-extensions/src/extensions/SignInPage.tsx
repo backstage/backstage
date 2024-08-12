@@ -17,6 +17,9 @@
 import React from 'react';
 import { createSignInPageExtension } from '@backstage/frontend-plugin-api';
 
+/**
+ * @public
+ */
 export const SignInPage = createSignInPageExtension({
   name: 'guest',
   loader: () =>
