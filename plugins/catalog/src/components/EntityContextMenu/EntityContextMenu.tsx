@@ -27,7 +27,7 @@ import BugReportIcon from '@material-ui/icons/BugReport';
 import MoreVert from '@material-ui/icons/MoreVert';
 import FileCopyTwoToneIcon from '@material-ui/icons/FileCopyTwoTone';
 import React, { useEffect, useState } from 'react';
-import { IconComponent } from '@backstage/core-plugin-api';
+import { IconComponent, useRouteRef } from '@backstage/core-plugin-api';
 import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
 import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common/alpha';
 import { UnregisterEntity, UnregisterEntityOptions } from './UnregisterEntity';
@@ -35,6 +35,13 @@ import { useApi, alertApiRef } from '@backstage/core-plugin-api';
 import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 import { catalogTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import {
+  InspectEntityDialog,
+  UnregisterEntityDialog,
+  useAsyncEntity,
+} from '@backstage/plugin-catalog-react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { rootRouteRef, unregisterRedirectRouteRef } from '../../routes';
 
 /** @public */
 export type EntityContextMenuClassKey = 'button';
@@ -61,17 +68,10 @@ interface ExtraContextMenuItem {
 interface EntityContextMenuProps {
   UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
   UNSTABLE_contextMenuOptions?: UnregisterEntityOptions;
-  onUnregisterEntity: () => void;
-  onInspectEntity: () => void;
 }
 
 export function EntityContextMenu(props: EntityContextMenuProps) {
-  const {
-    UNSTABLE_extraContextMenuItems,
-    UNSTABLE_contextMenuOptions,
-    onUnregisterEntity,
-    onInspectEntity,
-  } = props;
+  const { UNSTABLE_extraContextMenuItems, UNSTABLE_contextMenuOptions } = props;
   const { t } = useTranslationRef(catalogTranslationRef);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
   const classes = useStyles();
@@ -118,6 +118,31 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
     <Divider key="the divider is here!" />,
   ];
 
+  const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
+  const [inspectionDialogOpen, setInspectionDialogOpen] = useState(false);
+
+  const navigate = useNavigate();
+  const catalogRoute = useRouteRef(rootRouteRef);
+  const unregisterRedirectRoute = useRouteRef(unregisterRedirectRouteRef);
+  const location = useLocation();
+  const { entity } = useAsyncEntity();
+
+  const cleanUpAfterRemoval = async () => {
+    setConfirmationDialogOpen(false);
+    setInspectionDialogOpen(false);
+    navigate(
+      unregisterRedirectRoute ? unregisterRedirectRoute() : catalogRoute(),
+    );
+  };
+
+  // Make sure to close the dialog if the user clicks links in it that navigate
+  // to another entity.
+  useEffect(() => {
+    setConfirmationDialogOpen(false);
+    setInspectionDialogOpen(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname]);
+
   return (
     <>
       <Tooltip title={t('entityContextMenu.moreButtonTitle')} arrow>
@@ -148,13 +173,13 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
           <UnregisterEntity
             unregisterEntityOptions={UNSTABLE_contextMenuOptions}
             isUnregisterAllowed={isAllowed}
-            onUnregisterEntity={onUnregisterEntity}
+            onUnregisterEntity={() => setConfirmationDialogOpen(true)}
             onClose={onClose}
           />
           <MenuItem
             onClick={() => {
               onClose();
-              onInspectEntity();
+              setInspectionDialogOpen(true);
             }}
           >
             <ListItemIcon>
@@ -175,6 +200,18 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
           </MenuItem>
         </MenuList>
       </Popover>
+
+      <UnregisterEntityDialog
+        open={confirmationDialogOpen}
+        entity={entity!}
+        onConfirm={cleanUpAfterRemoval}
+        onClose={() => setConfirmationDialogOpen(false)}
+      />
+      <InspectEntityDialog
+        open={inspectionDialogOpen}
+        entity={entity!}
+        onClose={() => setInspectionDialogOpen(false)}
+      />
     </>
   );
 }

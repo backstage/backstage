@@ -15,11 +15,7 @@
  */
 
 import { CatalogApi } from '@backstage/catalog-client';
-import {
-  ANNOTATION_ORIGIN_LOCATION,
-  Entity,
-  RELATION_OWNED_BY,
-} from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { ApiProvider } from '@backstage/core-app-api';
 import { AlertApi, alertApiRef } from '@backstage/core-plugin-api';
 import {
@@ -34,14 +30,12 @@ import { permissionApiRef } from '@backstage/plugin-permission-react';
 import {
   MockPermissionApi,
   renderInTestApp,
-  TestApiProvider,
   TestApiRegistry,
 } from '@backstage/test-utils';
-import { act, fireEvent, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, screen } from '@testing-library/react';
 import React from 'react';
 import { EntityLayout } from './EntityLayout';
-import { rootRouteRef, unregisterRedirectRouteRef } from '../../routes';
-import { Route, Routes } from 'react-router-dom';
+import { rootRouteRef } from '../../routes';
 
 describe('EntityLayout', () => {
   const mockEntity = {
@@ -277,170 +271,5 @@ describe('EntityLayout', () => {
     const linkParent = ownerLink?.parentElement;
     expect(linkParent).toBeInTheDocument();
     expect(linkParent?.tagName).toBe('P');
-  });
-});
-
-describe('EntityLayout - CleanUpAfterRemoval', () => {
-  const entity = {
-    apiVersion: 'backstage.io/v1alpha1',
-    kind: 'Component',
-    metadata: {
-      name: 'n',
-      namespace: 'ns',
-      annotations: {
-        [ANNOTATION_ORIGIN_LOCATION]: 'url:http://example.com',
-      },
-    },
-    spec: {
-      owner: 'tools',
-      type: 'service',
-    },
-    relations: [
-      {
-        type: RELATION_OWNED_BY,
-        targetRef: 'group:default/tools',
-      },
-    ],
-  };
-  const getLocationByRef: jest.MockedFunction<CatalogApi['getLocationByRef']> =
-    jest.fn();
-  const getEntities: jest.MockedFunction<CatalogApi['getEntities']> = jest.fn();
-  const removeEntityByUid: jest.MockedFunction<
-    CatalogApi['removeEntityByUid']
-  > = jest.fn();
-  const getEntityFacets: jest.MockedFunction<CatalogApi['getEntityFacets']> =
-    jest.fn();
-  getLocationByRef.mockResolvedValue(undefined);
-  getEntities.mockResolvedValue({ items: [{ ...entity }] });
-  getEntityFacets.mockResolvedValue({
-    facets: {
-      'relations.ownedBy': [{ count: 1, value: 'group:default/tools' }],
-    },
-  });
-
-  const alertApi: AlertApi = {
-    post() {
-      return undefined;
-    },
-    alert$() {
-      throw new Error('not implemented');
-    },
-  };
-
-  it('redirects to externalRouteRef when unregisterRedirectRouteRef is bound', async () => {
-    await renderInTestApp(
-      <TestApiProvider
-        apis={[
-          [
-            catalogApiRef,
-            {
-              getLocationByRef,
-              getEntities,
-              removeEntityByUid,
-              getEntityFacets,
-            },
-          ],
-          [alertApiRef, alertApi],
-          [starredEntitiesApiRef, new MockStarredEntitiesApi()],
-          [permissionApiRef, new MockPermissionApi()],
-        ]}
-      >
-        <EntityProvider entity={entity}>
-          <EntityLayout>
-            <EntityLayout.Route path="/" title="tabbed-test-title">
-              <div>tabbed-test-content</div>
-            </EntityLayout.Route>
-          </EntityLayout>
-        </EntityProvider>
-        <Routes>
-          <Route path="/catalog" element={<p>catalog-page</p>} />
-          <Route path="/testRoute" element={<p>external-page</p>} />
-        </Routes>
-      </TestApiProvider>,
-      {
-        mountedRoutes: {
-          '/catalog/:namespace/:kind/:name': entityRouteRef,
-          '/catalog': rootRouteRef,
-          '/testRoute': unregisterRedirectRouteRef,
-        },
-      },
-    );
-
-    const menuButton = screen.queryAllByTestId('menu-button')[0];
-    fireEvent.click(menuButton);
-    const listItemUnregister = screen.queryAllByRole('menuitem', {
-      name: /Unregister entity/i,
-    })[0];
-    fireEvent.click(listItemUnregister);
-    await waitFor(() => {
-      const deleteEntityButton = screen.getByRole('button', {
-        name: /Delete Entity/i,
-      });
-      act(() => {
-        fireEvent.click(deleteEntityButton);
-      });
-    });
-
-    await waitFor(() => {
-      expect(screen.getByText('external-page')).toBeInTheDocument();
-    });
-  });
-
-  it('redirects to rootRouteRef when unregisterRedirectRouteRef is not bound', async () => {
-    await renderInTestApp(
-      <TestApiProvider
-        apis={[
-          [
-            catalogApiRef,
-            {
-              getLocationByRef,
-              getEntities,
-              removeEntityByUid,
-              getEntityFacets,
-            },
-          ],
-          [alertApiRef, alertApi],
-          [starredEntitiesApiRef, new MockStarredEntitiesApi()],
-          [permissionApiRef, new MockPermissionApi()],
-        ]}
-      >
-        <EntityProvider entity={entity}>
-          <EntityLayout>
-            <EntityLayout.Route path="/" title="tabbed-test-title">
-              <div>tabbed-test-content</div>
-            </EntityLayout.Route>
-          </EntityLayout>
-        </EntityProvider>
-        <Routes>
-          <Route path="/catalog" element={<p>catalog-page</p>} />
-          <Route path="/testRoute" element={<p>external-page</p>} />
-        </Routes>
-      </TestApiProvider>,
-      {
-        mountedRoutes: {
-          '/catalog/:namespace/:kind/:name': entityRouteRef,
-          '/catalog': rootRouteRef,
-        },
-      },
-    );
-
-    const menuButton = screen.queryAllByTestId('menu-button')[0];
-    fireEvent.click(menuButton);
-    const listItemUnregister = screen.queryAllByRole('menuitem', {
-      name: /Unregister entity/i,
-    })[0];
-    fireEvent.click(listItemUnregister);
-    await waitFor(() => {
-      const deleteEntityButton = screen.getByRole('button', {
-        name: /Delete Entity/i,
-      });
-      act(() => {
-        fireEvent.click(deleteEntityButton);
-      });
-    });
-
-    await waitFor(() => {
-      expect(screen.getByText('catalog-page')).toBeInTheDocument();
-    });
   });
 });

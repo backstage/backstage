@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import { EntityProvider } from '@backstage/plugin-catalog-react';
+import {
+  CatalogApi,
+  catalogApiRef,
+  EntityProvider,
+  entityRouteRef,
+  MockStarredEntitiesApi,
+  starredEntitiesApiRef,
+} from '@backstage/plugin-catalog-react';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import {
   MockPermissionApi,
@@ -22,32 +29,40 @@ import {
   TestApiProvider,
 } from '@backstage/test-utils';
 import SearchIcon from '@material-ui/icons/Search';
-import { fireEvent, screen } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
 import { EntityContextMenu } from './EntityContextMenu';
+import { rootRouteRef, unregisterRedirectRouteRef } from '../../routes';
+import { AlertApi, alertApiRef } from '@backstage/core-plugin-api';
+import { Route, Routes } from 'react-router-dom';
 
 const mockPermissionApi = new MockPermissionApi();
 
 function render(children: React.ReactNode) {
   return renderInTestApp(
-    <TestApiProvider apis={[[permissionApiRef, mockPermissionApi]]}>
+    <TestApiProvider
+      apis={[
+        [catalogApiRef, {}], // UnregisterEntityDialog uses catalogApi
+        [permissionApiRef, mockPermissionApi],
+      ]}
+    >
       <EntityProvider
         entity={{ apiVersion: 'a', kind: 'b', metadata: { name: 'c' } }}
         children={children}
       />
     </TestApiProvider>,
+    {
+      mountedRoutes: {
+        '/catalog/:namespace/:kind/:name': entityRouteRef,
+        '/catalog': rootRouteRef,
+      },
+    },
   );
 }
 
 describe('ComponentContextMenu', () => {
-  it('should call onUnregisterEntity on button click', async () => {
-    const mockCallback = jest.fn();
-    await render(
-      <EntityContextMenu
-        onUnregisterEntity={mockCallback}
-        onInspectEntity={() => {}}
-      />,
-    );
+  it('should display UnregisterEntityDialog on button click', async () => {
+    await render(<EntityContextMenu />);
 
     const button = await screen.findByTestId('menu-button');
     expect(button).toBeInTheDocument();
@@ -57,17 +72,14 @@ describe('ComponentContextMenu', () => {
     expect(unregister).toBeInTheDocument();
     fireEvent.click(unregister);
 
-    expect(mockCallback).toHaveBeenCalled();
+    const dialog = await screen.findByRole('dialog');
+    expect(dialog).toBeInTheDocument();
   });
 
   it('check Unregister entity button is disabled', async () => {
-    const mockCallback = jest.fn();
-
     await render(
       <EntityContextMenu
         UNSTABLE_contextMenuOptions={{ disableUnregister: 'disable' }}
-        onUnregisterEntity={mockCallback}
-        onInspectEntity={() => {}}
       />,
     );
 
@@ -84,15 +96,8 @@ describe('ComponentContextMenu', () => {
     expect(unregisterMenuListItem).toHaveAttribute('aria-disabled');
   });
 
-  it('should call onInspectEntity on button click', async () => {
-    const mockCallback = jest.fn();
-
-    await render(
-      <EntityContextMenu
-        onUnregisterEntity={() => {}}
-        onInspectEntity={mockCallback}
-      />,
-    );
+  it('should display InspectEntityDialog on button click', async () => {
+    await render(<EntityContextMenu />);
 
     const button = await screen.findByTestId('menu-button');
     expect(button).toBeInTheDocument();
@@ -102,7 +107,8 @@ describe('ComponentContextMenu', () => {
     expect(unregister).toBeInTheDocument();
     fireEvent.click(unregister);
 
-    expect(mockCallback).toHaveBeenCalled();
+    const dialog = await screen.findByRole('dialog');
+    expect(dialog).toBeInTheDocument();
   });
 
   it('supports extra items', async () => {
@@ -113,11 +119,7 @@ describe('ComponentContextMenu', () => {
     };
 
     await render(
-      <EntityContextMenu
-        onUnregisterEntity={jest.fn()}
-        onInspectEntity={jest.fn()}
-        UNSTABLE_extraContextMenuItems={[extra]}
-      />,
+      <EntityContextMenu UNSTABLE_extraContextMenuItems={[extra]} />,
     );
 
     const button = await screen.findByTestId('menu-button');
@@ -129,5 +131,154 @@ describe('ComponentContextMenu', () => {
     fireEvent.click(item);
 
     expect(extra.onClick).toHaveBeenCalled();
+  });
+});
+
+describe('EntityLayout - CleanUpAfterRemoval', () => {
+  const entity = {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Component',
+    metadata: {
+      name: 'n',
+      namespace: 'ns',
+    },
+    spec: {
+      owner: 'tools',
+      type: 'service',
+    },
+  };
+  const getLocationByRef: jest.MockedFunction<CatalogApi['getLocationByRef']> =
+    jest.fn();
+  const getEntities: jest.MockedFunction<CatalogApi['getEntities']> = jest.fn();
+  const removeEntityByUid: jest.MockedFunction<
+    CatalogApi['removeEntityByUid']
+  > = jest.fn();
+  const getEntityFacets: jest.MockedFunction<CatalogApi['getEntityFacets']> =
+    jest.fn();
+  getLocationByRef.mockResolvedValue(undefined);
+  getEntities.mockResolvedValue({ items: [{ ...entity }] });
+  getEntityFacets.mockResolvedValue({
+    facets: {
+      'relations.ownedBy': [{ count: 1, value: 'group:default/tools' }],
+    },
+  });
+
+  const alertApi: AlertApi = {
+    post() {
+      return undefined;
+    },
+    alert$() {
+      throw new Error('not implemented');
+    },
+  };
+
+  it('redirects to externalRouteRef when unregisterRedirectRouteRef is bound', async () => {
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [
+            catalogApiRef,
+            {
+              getLocationByRef,
+              getEntities,
+              removeEntityByUid,
+              getEntityFacets,
+            },
+          ],
+          [alertApiRef, alertApi],
+          [starredEntitiesApiRef, new MockStarredEntitiesApi()],
+          [permissionApiRef, new MockPermissionApi()],
+        ]}
+      >
+        <EntityProvider entity={entity}>
+          <EntityContextMenu />
+        </EntityProvider>
+        <Routes>
+          <Route path="/" element={<p>root-page</p>} />
+          <Route path="/catalog" element={<p>catalog-page</p>} />
+          <Route path="/testRoute" element={<p>external-page</p>} />
+        </Routes>
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
+          '/testRoute': unregisterRedirectRouteRef,
+        },
+      },
+    );
+
+    const menuButton = screen.queryAllByTestId('menu-button')[0];
+    fireEvent.click(menuButton);
+    const listItemUnregister = screen.queryAllByRole('menuitem', {
+      name: /Unregister entity/i,
+    })[0];
+    fireEvent.click(listItemUnregister);
+    await waitFor(() => {
+      const deleteEntityButton = screen.getByRole('button', {
+        name: /Delete Entity/i,
+      });
+      act(() => {
+        fireEvent.click(deleteEntityButton);
+      });
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('external-page')).toBeInTheDocument();
+    });
+  });
+
+  it('redirects to rootRouteRef when unregisterRedirectRouteRef is not bound', async () => {
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [
+            catalogApiRef,
+            {
+              getLocationByRef,
+              getEntities,
+              removeEntityByUid,
+              getEntityFacets,
+            },
+          ],
+          [alertApiRef, alertApi],
+          [starredEntitiesApiRef, new MockStarredEntitiesApi()],
+          [permissionApiRef, new MockPermissionApi()],
+        ]}
+      >
+        <EntityProvider entity={entity}>
+          <EntityContextMenu />
+        </EntityProvider>
+        <Routes>
+          <Route path="/" element={<p>root-page</p>} />
+          <Route path="/catalog" element={<p>catalog-page</p>} />
+        </Routes>
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
+        },
+      },
+    );
+
+    const menuButton = screen.queryAllByTestId('menu-button')[0];
+    fireEvent.click(menuButton);
+    const listItemUnregister = screen.queryAllByRole('menuitem', {
+      name: /Unregister entity/i,
+    })[0];
+    fireEvent.click(listItemUnregister);
+    await waitFor(() => {
+      const deleteEntityButton = screen.getByRole('button', {
+        name: /Delete Entity/i,
+      });
+      act(() => {
+        fireEvent.click(deleteEntityButton);
+      });
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('catalog-page')).toBeInTheDocument();
+    });
   });
 });
