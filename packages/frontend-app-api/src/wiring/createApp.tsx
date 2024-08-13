@@ -30,10 +30,6 @@ import {
   RouteResolutionApi,
   routeResolutionApiRef,
 } from '@backstage/frontend-plugin-api';
-import { App } from '../extensions/App';
-import { AppRoutes } from '../extensions/AppRoutes';
-import { AppLayout } from '../extensions/AppLayout';
-import { AppNav } from '../extensions/AppNav';
 import {
   AnyApiFactory,
   ApiHolder,
@@ -77,11 +73,7 @@ import { I18nextTranslationApi } from '../../../core-app-api/src/apis/implementa
 import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { apis as defaultApis } from '../../../app-defaults/src/defaults';
-import { DarkTheme, LightTheme } from '../extensions/themes';
-import {
-  oauthRequestDialogAppRootElement,
-  alertDisplayAppRootElement,
-} from '../extensions/elements';
+
 import { extractRouteInfoFromAppNode } from '../routing/extractRouteInfoFromAppNode';
 import {
   appLanguageApiRef,
@@ -92,13 +84,8 @@ import { RouteResolver } from '../routing/RouteResolver';
 import { resolveRouteBindings } from '../routing/resolveRouteBindings';
 import { collectRouteIds } from '../routing/collectRouteIds';
 import { createAppTree } from '../tree';
-import {
-  DefaultProgressComponent,
-  DefaultErrorBoundaryComponent,
-  DefaultNotFoundErrorPageComponent,
-} from '../extensions/components';
 import { InternalAppContext } from './InternalAppContext';
-import { AppRoot } from '../extensions/AppRoot';
+
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalBackstagePlugin } from '../../../frontend-plugin-api/src/wiring/createPlugin';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -112,21 +99,9 @@ import { getBasePath } from '../routing/getBasePath';
 
 const DefaultApis = defaultApis.map(factory => createApiExtension({ factory }));
 
-export const builtinExtensions = [
-  App,
-  AppRoot,
-  AppRoutes,
-  AppNav,
-  AppLayout,
-  DefaultProgressComponent,
-  DefaultErrorBoundaryComponent,
-  DefaultNotFoundErrorPageComponent,
-  LightTheme,
-  DarkTheme,
-  oauthRequestDialogAppRootElement,
-  alertDisplayAppRootElement,
-  ...DefaultApis,
-].map(def => resolveExtensionDefinition(def));
+export const builtinExtensions = [...DefaultApis].map(def =>
+  resolveExtensionDefinition(def),
+);
 
 function deduplicateFeatures(
   allFeatures: FrontendFeature[],
