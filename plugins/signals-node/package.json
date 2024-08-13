@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-signals-node",
-  "version": "0.1.9-next.2",
+  "version": "0.1.9-next.3",
   "description": "Node.js library for the signals plugin",
   "backstage": {
     "role": "node-library",

@@ -1,5 +1,19 @@
 # @backstage/plugin-auth-backend-module-cloudflare-access-provider
 
+## 0.2.0-next.3
+
+### Minor Changes
+
+- 75d026a: Support for Cloudflare Custom Headers and Custom Cookie Auth Name
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.3
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-auth-node@0.5.0-next.3
+
 ## 0.1.6-next.2
 
 ### Patch Changes

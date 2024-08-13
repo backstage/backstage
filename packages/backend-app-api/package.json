@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-app-api",
-  "version": "0.8.1-next.2",
+  "version": "0.8.1-next.3",
   "description": "Core API used by Backstage backend apps",
   "backstage": {
     "role": "node-library"

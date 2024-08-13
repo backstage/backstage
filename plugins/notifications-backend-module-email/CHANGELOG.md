@@ -1,5 +1,21 @@
 # @backstage/plugin-notifications-backend-module-email
 
+## 0.2.0-next.3
+
+### Patch Changes
+
+- 83faf24: Notification email processor supports allowing or denying specific email addresses from receiving notifications
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.3
+  - @backstage/backend-common@0.23.4-next.3
+  - @backstage/catalog-model@1.6.0-next.0
+  - @backstage/catalog-client@1.6.6-next.0
+  - @backstage/config@1.2.0
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+  - @backstage/plugin-notifications-common@0.0.5
+  - @backstage/plugin-notifications-node@0.2.4-next.3
+
 ## 0.2.0-next.2
 
 ### Patch Changes

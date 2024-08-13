@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend-module-gitlab-provider",
-  "version": "0.1.20-next.2",
+  "version": "0.1.20-next.3",
   "description": "The gitlab-provider backend module for the auth plugin.",
   "backstage": {
     "role": "backend-plugin-module",
