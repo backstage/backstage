@@ -16,7 +16,7 @@
 
 import { KubernetesAuthProvidersApi } from '../kubernetes-auth-provider';
 import { KubernetesBackendClient } from './KubernetesBackendClient';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { UrlPatternDiscovery } from '@backstage/core-app-api';
 import { setupServer } from 'msw/node';
 import { MockFetchApi, registerMswTestHooks } from '@backstage/test-utils';
@@ -89,7 +89,7 @@ describe('KubernetesBackendClient', () => {
   it('hits the /clusters API', async () => {
     identityApi.getCredentials.mockResolvedValue({ token: 'idToken' });
     worker.use(
-      rest.get('http://localhost:1234/api/kubernetes/clusters', (_, res, ctx) =>
+      http.get('http://localhost:1234/api/kubernetes/clusters', (_, res, ctx) =>
         res(ctx.json({ items: [{ name: 'cluster-a', authProvider: 'aws' }] })),
       ),
     );
@@ -104,7 +104,7 @@ describe('KubernetesBackendClient', () => {
   it('/clusters API throws a 404 Error', async () => {
     identityApi.getCredentials.mockResolvedValue({ token: 'idToken' });
     worker.use(
-      rest.get('http://localhost:1234/api/kubernetes/clusters', (_, res, ctx) =>
+      http.get('http://localhost:1234/api/kubernetes/clusters', (_, res, ctx) =>
         res(ctx.status(404)),
       ),
     );
@@ -117,7 +117,7 @@ describe('KubernetesBackendClient', () => {
   it('/clusters API throws a 500 Error', async () => {
     identityApi.getCredentials.mockResolvedValue({ token: 'idToken' });
     worker.use(
-      rest.get('http://localhost:1234/api/kubernetes/clusters', (_, res, ctx) =>
+      http.get('http://localhost:1234/api/kubernetes/clusters', (_, res, ctx) =>
         res(ctx.status(500)),
       ),
     );
@@ -130,7 +130,7 @@ describe('KubernetesBackendClient', () => {
   it('hits the /resources/custom/query API', async () => {
     identityApi.getCredentials.mockResolvedValue({ token: 'idToken' });
     worker.use(
-      rest.post(
+      http.post(
         'http://localhost:1234/api/kubernetes/resources/custom/query',
         (_, res, ctx) => res(ctx.json(mockResponse)),
       ),
@@ -163,7 +163,7 @@ describe('KubernetesBackendClient', () => {
   it('/resources/custom/query API throws a 404 error', async () => {
     identityApi.getCredentials.mockResolvedValue({ token: 'idToken' });
     worker.use(
-      rest.post(
+      http.post(
         'http://localhost:1234/api/kubernetes/resources/custom/query',
         (_, res, ctx) => res(ctx.status(404)),
       ),
@@ -197,7 +197,7 @@ describe('KubernetesBackendClient', () => {
   it('/resources/custom/query API throws a 500 error', async () => {
     identityApi.getCredentials.mockResolvedValue({ token: 'idToken' });
     worker.use(
-      rest.post(
+      http.post(
         'http://localhost:1234/api/kubernetes/resources/custom/query',
         (_, res, ctx) => res(ctx.status(500)),
       ),
@@ -231,7 +231,7 @@ describe('KubernetesBackendClient', () => {
   it('hits the /services/{entityName} API', async () => {
     identityApi.getCredentials.mockResolvedValue({ token: 'idToken' });
     worker.use(
-      rest.post(
+      http.post(
         'http://localhost:1234/api/kubernetes/services/test-name',
         (_, res, ctx) => res(ctx.json(mockResponse)),
       ),
@@ -256,7 +256,7 @@ describe('KubernetesBackendClient', () => {
   it('services/{entityName} API throws a 404 error', async () => {
     identityApi.getCredentials.mockResolvedValue({ token: 'idToken' });
     worker.use(
-      rest.post(
+      http.post(
         'http://localhost:1234/api/kubernetes/services/test-name',
         (_, res, ctx) => res(ctx.status(404)),
       ),
@@ -282,7 +282,7 @@ describe('KubernetesBackendClient', () => {
   it('services/{entityName} API throws a 500 error', async () => {
     identityApi.getCredentials.mockResolvedValue({ token: 'idToken' });
     worker.use(
-      rest.post(
+      http.post(
         'http://localhost:1234/api/kubernetes/services/test-name',
         (_, res, ctx) => res(ctx.status(500)),
       ),
@@ -308,7 +308,7 @@ describe('KubernetesBackendClient', () => {
   it('hits the /resources/workloads/query API', async () => {
     identityApi.getCredentials.mockResolvedValue({ token: 'idToken' });
     worker.use(
-      rest.post(
+      http.post(
         'http://localhost:1234/api/kubernetes/resources/workloads/query',
         (_, res, ctx) => res(ctx.json(mockResponse)),
       ),
@@ -334,7 +334,7 @@ describe('KubernetesBackendClient', () => {
   it('/resources/workloads/query API throws a 404 error', async () => {
     identityApi.getCredentials.mockResolvedValue({ token: 'idToken' });
     worker.use(
-      rest.post(
+      http.post(
         'http://localhost:1234/api/kubernetes/resources/workloads/query',
         (_, res, ctx) => res(ctx.status(404)),
       ),
@@ -361,7 +361,7 @@ describe('KubernetesBackendClient', () => {
   it('/resources/workloads/query API throws a 500 error', async () => {
     identityApi.getCredentials.mockResolvedValue({ token: 'idToken' });
     worker.use(
-      rest.post(
+      http.post(
         'http://localhost:1234/api/kubernetes/resources/workloads/query',
         (_, res, ctx) => res(ctx.status(500)),
       ),
@@ -388,7 +388,7 @@ describe('KubernetesBackendClient', () => {
   describe('proxy', () => {
     beforeEach(() => {
       worker.use(
-        rest.get(
+        http.get(
           'http://localhost:1234/api/kubernetes/clusters',
           (_, res, ctx) =>
             res(
@@ -401,7 +401,7 @@ describe('KubernetesBackendClient', () => {
 
     it('hits the /proxy API with oidc as protocol and okta as auth provider', async () => {
       worker.use(
-        rest.get(
+        http.get(
           'http://localhost:1234/api/kubernetes/clusters',
           (_, res, ctx) =>
             res(
@@ -428,7 +428,7 @@ describe('KubernetesBackendClient', () => {
         },
       };
       worker.use(
-        rest.get(
+        http.get(
           'http://localhost:1234/api/kubernetes/proxy/api/v1/namespaces',
           (req, res, ctx) =>
             res(
@@ -457,7 +457,7 @@ describe('KubernetesBackendClient', () => {
     it('hits the /proxy API with serviceAccount as auth provider', async () => {
       identityApi.getCredentials.mockResolvedValue({ token: 'idToken' });
       worker.use(
-        rest.get(
+        http.get(
           'http://localhost:1234/api/kubernetes/clusters',
           (_, res, ctx) =>
             res(
@@ -481,7 +481,7 @@ describe('KubernetesBackendClient', () => {
         },
       };
       worker.use(
-        rest.get(
+        http.get(
           'http://localhost:1234/api/kubernetes/proxy/api/v1/namespaces',
           (req, res, ctx) =>
             res(
@@ -507,7 +507,7 @@ describe('KubernetesBackendClient', () => {
 
     it('ignores oidcTokenProvider for non-oidc auth provider', async () => {
       worker.use(
-        rest.get(
+        http.get(
           'http://localhost:1234/api/kubernetes/clusters',
           (_, res, ctx) =>
             res(
@@ -522,7 +522,7 @@ describe('KubernetesBackendClient', () => {
               }),
             ),
         ),
-        rest.get(
+        http.get(
           'http://localhost:1234/api/kubernetes/proxy/api/v1/namespaces',
           (_, res, ctx) => res(ctx.json([])),
         ),
@@ -552,7 +552,7 @@ describe('KubernetesBackendClient', () => {
         },
       };
       worker.use(
-        rest.get(
+        http.get(
           'http://localhost:1234/api/kubernetes/proxy/api/v1/namespaces',
           (req, res, ctx) =>
             res(
@@ -578,7 +578,7 @@ describe('KubernetesBackendClient', () => {
         token: 'k8-token',
       });
       worker.use(
-        rest.get(
+        http.get(
           'http://localhost:1234/api/kubernetes/proxy/api/v1/namespaces',
           (_, res, ctx) => res(ctx.status(404)),
         ),
@@ -616,7 +616,7 @@ describe('KubernetesBackendClient', () => {
         },
       };
       worker.use(
-        rest.get(
+        http.get(
           'http://localhost:1234/api/kubernetes/proxy/api/v1/namespaces',
           (req, res, ctx) =>
             res(
@@ -646,7 +646,7 @@ describe('KubernetesBackendClient', () => {
         },
       };
       worker.use(
-        rest.get(
+        http.get(
           'http://localhost:1234/api/kubernetes/proxy/api/v1/namespaces/new-ns',
           (req, res, ctx) =>
             res(

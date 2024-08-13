@@ -15,7 +15,7 @@
  */
 
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import { codeSearch, CodeSearchResponse } from './azure';
 import {
@@ -57,7 +57,7 @@ describe('azure', () => {
       const response: CodeSearchResponse = { count: 0, results: [] };
 
       server.use(
-        rest.post(
+        http.post(
           `https://almsearch.dev.azure.com/shopify/_apis/search/codesearchresults`,
           (req, res, ctx) => {
             expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
@@ -123,7 +123,7 @@ describe('azure', () => {
     };
 
     server.use(
-      rest.post(
+      http.post(
         `https://almsearch.dev.azure.com/shopify/_apis/search/codesearchresults`,
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
@@ -178,7 +178,7 @@ describe('azure', () => {
     };
 
     server.use(
-      rest.post(
+      http.post(
         `https://almsearch.dev.azure.com/shopify/_apis/search/codesearchresults`,
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
@@ -235,7 +235,7 @@ describe('azure', () => {
     };
 
     server.use(
-      rest.post(
+      http.post(
         `https://almsearch.dev.azure.com/shopify/_apis/search/codesearchresults`,
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
@@ -295,7 +295,7 @@ describe('azure', () => {
     };
 
     server.use(
-      rest.post(
+      http.post(
         `https://azuredevops.mycompany.com/shopify/_apis/search/codesearchresults`,
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
@@ -349,7 +349,7 @@ describe('azure', () => {
     };
 
     server.use(
-      rest.post(
+      http.post(
         `https://almsearch.dev.azure.com/shopify/_apis/search/codesearchresults`,
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');

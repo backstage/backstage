@@ -25,7 +25,7 @@ import {
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import path from 'path';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
@@ -110,7 +110,7 @@ describe('GithubUrlReader', () => {
       });
 
       worker.use(
-        rest.get(
+        http.get(
           'https://ghe.github.com/api/v3/repos/backstage/mock/tree/contents/',
           (req, res, ctx) => {
             expect(req.headers.get('authorization')).toBe(
@@ -151,7 +151,7 @@ describe('GithubUrlReader', () => {
       });
 
       worker.use(
-        rest.get(
+        http.get(
           'https://ghe.github.com/api/v3/repos/backstage/mock/tree/contents/',
           (req, res, ctx) => {
             expect(req.headers.get('authorization')).toBe(
@@ -187,7 +187,7 @@ describe('GithubUrlReader', () => {
       });
 
       worker.use(
-        rest.get(
+        http.get(
           'https://ghe.github.com/api/v3/repos/backstage/mock/tree/contents/',
           (req, res, ctx) => {
             expect(req.headers.get('authorization')).toBe(
@@ -218,7 +218,7 @@ describe('GithubUrlReader', () => {
       expect.assertions(1);
 
       worker.use(
-        rest.get(
+        http.get(
           'https://ghe.github.com/api/v3/repos/backstage/mock/tree/contents/',
           (_req, res, ctx) => {
             return res(
@@ -248,7 +248,7 @@ describe('GithubUrlReader', () => {
       });
 
       worker.use(
-        rest.get(
+        http.get(
           'https://ghe.github.com/api/v3/repos/backstage/mock/tree/contents/',
           (_req, res, ctx) => {
             return res(
@@ -282,7 +282,7 @@ describe('GithubUrlReader', () => {
       });
 
       worker.use(
-        rest.get(
+        http.get(
           'https://ghe.github.com/api/v3/repos/backstage/mock/tree/contents/',
           (req, res, ctx) => {
             expect(req.headers.get('authorization')).toBe(
@@ -341,14 +341,14 @@ describe('GithubUrlReader', () => {
 
     beforeEach(() => {
       worker.use(
-        rest.get('https://api.github.com/repos/backstage/mock', (_, res, ctx) =>
+        http.get('https://api.github.com/repos/backstage/mock', (_, res, ctx) =>
           res(
             ctx.status(200),
             ctx.set('Content-Type', 'application/json'),
             ctx.json(reposGithubApiResponse),
           ),
         ),
-        rest.get(
+        http.get(
           'https://api.github.com/repos/backstage/mock/commits/main/status',
           (req, res, ctx) => {
             if (req.url.searchParams.get('per_page') === '0') {
@@ -362,7 +362,7 @@ describe('GithubUrlReader', () => {
             return res(ctx.status(500));
           },
         ),
-        rest.get(
+        http.get(
           'https://api.github.com/repos/backstage/mock/tarball/etag123abc',
           (_, res, ctx) =>
             res(
@@ -375,11 +375,11 @@ describe('GithubUrlReader', () => {
               ctx.body(repoBuffer),
             ),
         ),
-        rest.get(
+        http.get(
           'https://api.github.com/repos/backstage/mock/commits/branchDoesNotExist/status',
           (_, res, ctx) => res(ctx.status(404)),
         ),
-        rest.get(
+        http.get(
           'https://ghe.github.com/api/v3/repos/backstage/mock/tarball/etag123abc',
           (_, res, ctx) =>
             res(
@@ -392,7 +392,7 @@ describe('GithubUrlReader', () => {
               ctx.body(repoBuffer),
             ),
         ),
-        rest.get(
+        http.get(
           'https://ghe.github.com/api/v3/repos/backstage/mock',
           (_, res, ctx) =>
             res(
@@ -401,7 +401,7 @@ describe('GithubUrlReader', () => {
               ctx.json(reposGheApiResponse),
             ),
         ),
-        rest.get(
+        http.get(
           'https://ghe.github.com/api/v3/repos/backstage/mock/commits/main/status',
           (req, res, ctx) => {
             if (req.url.searchParams.get('per_page') === '0') {
@@ -463,7 +463,7 @@ describe('GithubUrlReader', () => {
       });
 
       worker.use(
-        rest.get(
+        http.get(
           'https://ghe.github.com/api/v3/repos/backstage/mock/tarball/etag123abc',
           (req, res, ctx) => {
             expect(req.headers.get('authorization')).toBe(
@@ -502,7 +502,7 @@ describe('GithubUrlReader', () => {
       });
 
       worker.use(
-        rest.get(
+        http.get(
           'https://ghe.github.com/api/v3/repos/backstage/mock/tarball/etag123abc',
           (req, res, ctx) => {
             expect(req.headers.get('authorization')).toBe(
@@ -680,7 +680,7 @@ describe('GithubUrlReader', () => {
     // Tarballs
     beforeEach(() => {
       worker.use(
-        rest.get(
+        http.get(
           'https://api.github.com/repos/backstage/mock/tarball/etag123abc',
           (_, res, ctx) =>
             res(
@@ -693,7 +693,7 @@ describe('GithubUrlReader', () => {
               ctx.body(repoBuffer),
             ),
         ),
-        rest.get(
+        http.get(
           'https://ghe.github.com/api/v3/repos/backstage/mock/tarball/etag123abc',
           (_, res, ctx) =>
             res(
@@ -736,14 +736,14 @@ describe('GithubUrlReader', () => {
       } as Partial<GhRepoResponse>;
 
       worker.use(
-        rest.get('https://api.github.com/repos/backstage/mock', (_, res, ctx) =>
+        http.get('https://api.github.com/repos/backstage/mock', (_, res, ctx) =>
           res(
             ctx.status(200),
             ctx.set('Content-Type', 'application/json'),
             ctx.json(githubResponse),
           ),
         ),
-        rest.get(
+        http.get(
           'https://ghe.github.com/api/v3/repos/backstage/mock',
           (_, res, ctx) =>
             res(
@@ -788,7 +788,7 @@ describe('GithubUrlReader', () => {
       } as Partial<GhCombinedCommitStatusResponse>;
 
       worker.use(
-        rest.get(
+        http.get(
           'https://api.github.com/repos/backstage/mock/commits/main/status',
           (req, res, ctx) => {
             if (req.url.searchParams.get('per_page') === '0') {
@@ -802,7 +802,7 @@ describe('GithubUrlReader', () => {
             return res(ctx.status(500));
           },
         ),
-        rest.get(
+        http.get(
           'https://ghe.github.com/api/v3/repos/backstage/mock/commits/main/status',
           (req, res, ctx) => {
             if (req.url.searchParams.get('per_page') === '0') {
@@ -816,7 +816,7 @@ describe('GithubUrlReader', () => {
             return res(ctx.status(500));
           },
         ),
-        rest.get(
+        http.get(
           'https://api.github.com/repos/backstage/mock/commits/branchDoesNotExist/status',
           (_, res, ctx) => res(ctx.status(404)),
         ),
@@ -834,7 +834,7 @@ describe('GithubUrlReader', () => {
       } as Partial<GhBlobResponse>;
 
       worker.use(
-        rest.get(
+        http.get(
           'https://api.github.com/repos/backstage/mock/git/blobs/1',
           (_, res, ctx) =>
             res(
@@ -843,7 +843,7 @@ describe('GithubUrlReader', () => {
               ctx.json(blob1Response),
             ),
         ),
-        rest.get(
+        http.get(
           'https://api.github.com/repos/backstage/mock/git/blobs/3',
           (_, res, ctx) =>
             res(
@@ -852,7 +852,7 @@ describe('GithubUrlReader', () => {
               ctx.json(blob3Response),
             ),
         ),
-        rest.get(
+        http.get(
           'https://ghe.github.com/api/v3/repos/backstage/mock/git/blobs/1',
           (_, res, ctx) =>
             res(
@@ -861,7 +861,7 @@ describe('GithubUrlReader', () => {
               ctx.json(blob1Response),
             ),
         ),
-        rest.get(
+        http.get(
           'https://ghe.github.com/api/v3/repos/backstage/mock/git/blobs/3',
           (_, res, ctx) =>
             res(
@@ -916,7 +916,7 @@ describe('GithubUrlReader', () => {
     // eslint-disable-next-line jest/expect-expect
     it('succeeds on github when going via repo listing', async () => {
       worker.use(
-        rest.get(
+        http.get(
           'https://api.github.com/repos/backstage/mock/git/trees/etag123abc',
           (_, res, ctx) =>
             res(
@@ -935,7 +935,7 @@ describe('GithubUrlReader', () => {
     // eslint-disable-next-line jest/expect-expect
     it('succeeds on github when going via readTree', async () => {
       worker.use(
-        rest.get(
+        http.get(
           'https://api.github.com/repos/backstage/mock/git/trees/etag123abc',
           (_, res, ctx) =>
             res(
@@ -954,7 +954,7 @@ describe('GithubUrlReader', () => {
     // eslint-disable-next-line jest/expect-expect
     it('succeeds on ghe when going via repo listing', async () => {
       worker.use(
-        rest.get(
+        http.get(
           'https://ghe.github.com/api/v3/repos/backstage/mock/git/trees/etag123abc',
           (_, res, ctx) =>
             res(
@@ -974,7 +974,7 @@ describe('GithubUrlReader', () => {
       expect.assertions(1);
 
       worker.use(
-        rest.get(
+        http.get(
           'https://ghe.github.com/api/v3/repos/backstage/mock/git/trees/etag123abc',
           (req, res, ctx) => {
             expect(req.headers.get('authorization')).toBe(
@@ -1001,7 +1001,7 @@ describe('GithubUrlReader', () => {
     // eslint-disable-next-line jest/expect-expect
     it('succeeds on ghe when going via readTree', async () => {
       worker.use(
-        rest.get(
+        http.get(
           'https://ghe.github.com/api/v3/repos/backstage/mock/git/trees/etag123abc',
           (_, res, ctx) =>
             res(

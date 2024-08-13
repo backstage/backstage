@@ -15,7 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import { CatalogClient } from './CatalogClient';
 import {
@@ -70,7 +70,7 @@ describe('CatalogClient', () => {
 
     beforeEach(() => {
       server.use(
-        rest.get(`${mockBaseUrl}/entities`, (_, res, ctx) => {
+        http.get(`${mockBaseUrl}/entities`, (_, res, ctx) => {
           return res(ctx.json(defaultServiceResponse));
         }),
       );
@@ -85,7 +85,7 @@ describe('CatalogClient', () => {
       expect.assertions(2);
 
       server.use(
-        rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
+        http.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
           const queryParams = new URLSearchParams(req.url.search);
           expect(queryParams.getAll('filter')).toEqual([
             'a=1,b=2,b=3,ö==',
@@ -122,7 +122,7 @@ describe('CatalogClient', () => {
       expect.assertions(2);
 
       server.use(
-        rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
+        http.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
           const queryParams = new URLSearchParams(req.url.search);
           expect(queryParams.getAll('filter')).toEqual(['a=1,b=2,b=3,ö==,c']);
           return res(ctx.json([]));
@@ -151,7 +151,7 @@ describe('CatalogClient', () => {
           res(ctx.json({ items: [], totalItems: 0 })),
         );
 
-      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+      server.use(http.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
       const response = await client.queryEntities(
         {
@@ -180,7 +180,7 @@ describe('CatalogClient', () => {
       expect.assertions(2);
 
       server.use(
-        rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
+        http.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
           const queryParams = new URLSearchParams(req.url.search);
           expect(queryParams.getAll('fields')).toEqual(['a.b,ö']);
           return res(ctx.json([]));
@@ -199,7 +199,7 @@ describe('CatalogClient', () => {
 
     it('handles field filtered entities', async () => {
       server.use(
-        rest.get(`${mockBaseUrl}/entities`, (_req, res, ctx) => {
+        http.get(`${mockBaseUrl}/entities`, (_req, res, ctx) => {
           return res(ctx.json([{ apiVersion: '1' }, { apiVersion: '2' }]));
         }),
       );
@@ -221,7 +221,7 @@ describe('CatalogClient', () => {
       expect.assertions(2);
 
       server.use(
-        rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
+        http.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
           expect(req.url.search).toBe('?limit=2&offset=1&after=%3D');
           return res(ctx.json([]));
         }),
@@ -243,7 +243,7 @@ describe('CatalogClient', () => {
       ];
 
       server.use(
-        rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
+        http.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
           const queryParams = new URLSearchParams(req.url.search);
           expect(queryParams.getAll('order')).toEqual([
             'asc:kind',
@@ -278,7 +278,7 @@ describe('CatalogClient', () => {
         },
       };
       server.use(
-        rest.post(`${mockBaseUrl}/entities/by-refs`, async (req, res, ctx) => {
+        http.post(`${mockBaseUrl}/entities/by-refs`, async (req, res, ctx) => {
           expect(req.url.search).toBe('?filter=kind%3DAPI%2Ckind%3DComponent');
           await expect(req.json()).resolves.toEqual({
             entityRefs: ['k:n/a', 'k:n/b'],
@@ -332,7 +332,7 @@ describe('CatalogClient', () => {
 
     beforeEach(() => {
       server.use(
-        rest.get(`${mockBaseUrl}/entities/by-query`, (_, res, ctx) => {
+        http.get(`${mockBaseUrl}/entities/by-query`, (_, res, ctx) => {
           return res(ctx.json(defaultResponse));
         }),
       );
@@ -353,7 +353,7 @@ describe('CatalogClient', () => {
           res(ctx.json({ items: [], totalItems: 0 })),
         );
 
-      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+      server.use(http.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
       const response = await client.queryEntities(
         {
@@ -394,7 +394,7 @@ describe('CatalogClient', () => {
           res(ctx.json({ items: [], totalItems: 0 })),
         );
 
-      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+      server.use(http.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
       const response = await client.queryEntities(
         {
@@ -425,7 +425,7 @@ describe('CatalogClient', () => {
           res(ctx.json({ items: [], totalItems: 0 })),
         );
 
-      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+      server.use(http.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
       await client.queryEntities({
         fields: ['a', 'b'],
@@ -458,7 +458,7 @@ describe('CatalogClient', () => {
           res(ctx.json({ items: [], totalItems: 0 })),
         );
 
-      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+      server.use(http.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
       await client.queryEntities({
         fields: ['a', 'b'],
@@ -505,7 +505,7 @@ describe('CatalogClient', () => {
         ),
       );
 
-      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+      server.use(http.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
       const response = await client.queryEntities({
         limit: 2,
@@ -539,13 +539,13 @@ describe('CatalogClient', () => {
 
     beforeEach(() => {
       server.use(
-        rest.get(
+        http.get(
           `${mockBaseUrl}/entities/by-name/customkind/default/exists`,
           (_, res, ctx) => {
             return res(ctx.json(existingEntity));
           },
         ),
-        rest.get(
+        http.get(
           `${mockBaseUrl}/entities/by-name/customkind/default/missing`,
           (_, res, ctx) => {
             return res(ctx.status(404));
@@ -590,7 +590,7 @@ describe('CatalogClient', () => {
 
     beforeEach(() => {
       server.use(
-        rest.get(`${mockBaseUrl}/locations/42`, (_, res, ctx) => {
+        http.get(`${mockBaseUrl}/locations/42`, (_, res, ctx) => {
           return res(ctx.json(defaultResponse));
         }),
       );
@@ -605,7 +605,7 @@ describe('CatalogClient', () => {
       expect.assertions(1);
 
       server.use(
-        rest.get(`${mockBaseUrl}/locations/42`, (req, res, ctx) => {
+        http.get(`${mockBaseUrl}/locations/42`, (req, res, ctx) => {
           expect(req.headers.get('authorization')).toBe(`Bearer ${token}`);
           return res(ctx.json(defaultResponse));
         }),
@@ -618,7 +618,7 @@ describe('CatalogClient', () => {
       expect.assertions(1);
 
       server.use(
-        rest.get(`${mockBaseUrl}/locations/42`, (req, res, ctx) => {
+        http.get(`${mockBaseUrl}/locations/42`, (req, res, ctx) => {
           expect(req.headers.get('authorization')).toBeNull();
           return res(ctx.json(defaultResponse));
         }),
@@ -639,7 +639,7 @@ describe('CatalogClient', () => {
 
     beforeEach(() => {
       server.use(
-        rest.get(`${mockBaseUrl}/locations/by-entity/c/ns/n`, (_, res, ctx) => {
+        http.get(`${mockBaseUrl}/locations/by-entity/c/ns/n`, (_, res, ctx) => {
           return res(ctx.json(defaultResponse));
         }),
       );
@@ -657,7 +657,7 @@ describe('CatalogClient', () => {
       expect.assertions(1);
 
       server.use(
-        rest.get(
+        http.get(
           `${mockBaseUrl}/locations/by-entity/c/ns/n`,
           (req, res, ctx) => {
             expect(req.headers.get('authorization')).toBe(`Bearer ${token}`);
@@ -676,7 +676,7 @@ describe('CatalogClient', () => {
       expect.assertions(1);
 
       server.use(
-        rest.get(
+        http.get(
           `${mockBaseUrl}/locations/by-entity/c/ns/n`,
           (req, res, ctx) => {
             expect(req.headers.get('authorization')).toBeNull();
@@ -696,7 +696,7 @@ describe('CatalogClient', () => {
   describe('validateEntity', () => {
     it('returns valid false when validation fails', async () => {
       server.use(
-        rest.post(`${mockBaseUrl}/validate-entity`, (_req, res, ctx) => {
+        http.post(`${mockBaseUrl}/validate-entity`, (_req, res, ctx) => {
           return res(
             ctx.status(400),
             ctx.json({
@@ -733,7 +733,7 @@ describe('CatalogClient', () => {
 
     it('returns valid true when validation fails', async () => {
       server.use(
-        rest.post(`${mockBaseUrl}/validate-entity`, (_req, res, ctx) => {
+        http.post(`${mockBaseUrl}/validate-entity`, (_req, res, ctx) => {
           return res(ctx.status(200), ctx.text(''));
         }),
       );
@@ -756,7 +756,7 @@ describe('CatalogClient', () => {
 
     it('throws unexpected error', async () => {
       server.use(
-        rest.post(`${mockBaseUrl}/validate-entity`, (_req, res, ctx) => {
+        http.post(`${mockBaseUrl}/validate-entity`, (_req, res, ctx) => {
           return res(ctx.status(500), ctx.json({}));
         }),
       );

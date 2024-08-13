@@ -24,7 +24,7 @@ import {
   mockServices,
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import { Readable } from 'stream';
 import { DefaultTechDocsCollatorFactory } from './DefaultTechDocsCollatorFactory';
@@ -113,11 +113,11 @@ describe('DefaultTechDocsCollatorFactory', () => {
       collator = await factory.getCollator();
 
       worker.use(
-        rest.get(
+        http.get(
           'http://test-backend/static/docs/default/Component/test-entity-with-docs/search/search_index.json',
           (_, res, ctx) => res(ctx.status(200), ctx.json(mockSearchDocIndex)),
         ),
-        rest.get('http://test-backend/entities', (req, res, ctx) => {
+        http.get('http://test-backend/entities', (req, res, ctx) => {
           // Imitate offset/limit pagination.
           const offset = parseInt(
             req.url.searchParams.get('offset') || '0',

@@ -27,7 +27,7 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
 });
 
 import { createPublishBitbucketServerPullRequestAction } from './bitbucketServerPullRequest';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { ScmIntegrations } from '@backstage/integration';
@@ -200,7 +200,7 @@ describe('publish:bitbucketServer:pull-request', () => {
   it(`should ${examples[0].description}`, async () => {
     expect.assertions(3);
     server.use(
-      rest.get(
+      http.get(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos/repo/branches',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
@@ -211,7 +211,7 @@ describe('publish:bitbucketServer:pull-request', () => {
           );
         },
       ),
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos/repo/pull-requests',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
@@ -236,7 +236,7 @@ describe('publish:bitbucketServer:pull-request', () => {
   it(`should ${examples[1].description}`, async () => {
     expect.assertions(6);
     server.use(
-      rest.get(
+      http.get(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos/repo/branches',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
@@ -247,7 +247,7 @@ describe('publish:bitbucketServer:pull-request', () => {
           );
         },
       ),
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos/repo/pull-requests',
         (req, res, ctx) => {
           const requestBody = req.body as {
@@ -282,7 +282,7 @@ describe('publish:bitbucketServer:pull-request', () => {
   it(`should ${examples[2].description}`, async () => {
     expect.assertions(6);
     server.use(
-      rest.get(
+      http.get(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos/repo/branches',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
@@ -293,7 +293,7 @@ describe('publish:bitbucketServer:pull-request', () => {
           );
         },
       ),
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos/repo/pull-requests',
         (req, res, ctx) => {
           const requestBody = req.body as {
@@ -328,7 +328,7 @@ describe('publish:bitbucketServer:pull-request', () => {
   it(`should ${examples[3].description}`, async () => {
     expect.assertions(3);
     server.use(
-      rest.get(
+      http.get(
         'https://no-credentials.bitbucket.com/rest/api/1.0/projects/project/repos/repo/branches',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe(
@@ -341,7 +341,7 @@ describe('publish:bitbucketServer:pull-request', () => {
           );
         },
       ),
-      rest.post(
+      http.post(
         'https://no-credentials.bitbucket.com/rest/api/1.0/projects/project/repos/repo/pull-requests',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe(
@@ -368,7 +368,7 @@ describe('publish:bitbucketServer:pull-request', () => {
   it(`should ${examples[4].description}`, async () => {
     expect.assertions(7);
     server.use(
-      rest.get(
+      http.get(
         'https://no-credentials.bitbucket.com/rest/api/1.0/projects/project/repos/repo/branches',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe(
@@ -381,7 +381,7 @@ describe('publish:bitbucketServer:pull-request', () => {
           );
         },
       ),
-      rest.post(
+      http.post(
         'https://no-credentials.bitbucket.com/rest/api/1.0/projects/project/repos/repo/pull-requests',
         (req, res, ctx) => {
           const requestBody = req.body as {

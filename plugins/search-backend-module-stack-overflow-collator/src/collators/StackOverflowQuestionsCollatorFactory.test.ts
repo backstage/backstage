@@ -25,7 +25,7 @@ import { TestPipeline } from '@backstage/plugin-search-backend-node';
 import { ConfigReader } from '@backstage/config';
 import { Readable } from 'stream';
 import { setupServer } from 'msw/node';
-import { rest } from 'msw';
+import { http } from 'msw';
 
 const logger = mockServices.logger.mock();
 
@@ -108,7 +108,7 @@ describe('StackOverflowQuestionsCollatorFactory', () => {
 
     it('fetches from the configured endpoint', async () => {
       worker.use(
-        rest.get('http://stack.overflow.local/questions', (_, res, ctx) =>
+        http.get('http://stack.overflow.local/questions', (_, res, ctx) =>
           res(ctx.status(200), ctx.json(mockQuestion)),
         ),
       );
@@ -125,7 +125,7 @@ describe('StackOverflowQuestionsCollatorFactory', () => {
 
     it('fetches from the overridden endpoint', async () => {
       worker.use(
-        rest.get('http://stack.overflow.override/questions', (_, res, ctx) =>
+        http.get('http://stack.overflow.override/questions', (_, res, ctx) =>
           res(ctx.status(200), ctx.json(mockOverrideQuestion)),
         ),
       );
@@ -144,7 +144,7 @@ describe('StackOverflowQuestionsCollatorFactory', () => {
 
     it('uses API key when provided', async () => {
       worker.use(
-        rest.get('http://stack.overflow.override/questions', (req, res, ctx) =>
+        http.get('http://stack.overflow.override/questions', (req, res, ctx) =>
           req.url.searchParams.get('key') === 'abcdefg'
             ? res(ctx.status(200), ctx.json(mockOverrideQuestion))
             : res(ctx.status(401), ctx.json({})),
@@ -166,7 +166,7 @@ describe('StackOverflowQuestionsCollatorFactory', () => {
 
     it('uses teamName when provided', async () => {
       worker.use(
-        rest.get('http://stack.overflow.override/questions', (req, res, ctx) =>
+        http.get('http://stack.overflow.override/questions', (req, res, ctx) =>
           req.url.searchParams.get('team') === 'abcdefg'
             ? res(ctx.status(200), ctx.json(mockOverrideQuestion))
             : res(ctx.status(401), ctx.json({})),

@@ -17,7 +17,7 @@
 import { AppConfig } from '@backstage/config';
 import { loadConfig } from './loader';
 import fs from 'fs-extra';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
@@ -73,7 +73,7 @@ describe('loadConfig', () => {
   });
 
   const server = setupServer();
-  const initialLoaderHandler = rest.get(
+  const initialLoaderHandler = http.get(
     `https://some.domain.io/app-config.yaml`,
     (_req, res, ctx) => {
       return res(
@@ -88,7 +88,7 @@ describe('loadConfig', () => {
     },
   );
 
-  const reloadHandler = rest.get(
+  const reloadHandler = http.get(
     `https://some.domain.io/app-config.yaml`,
     (_req, res, ctx) => {
       return res(

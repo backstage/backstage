@@ -17,7 +17,7 @@
 import { AddressInfo } from 'net';
 import { Server } from 'http';
 import express, { Router, RequestHandler } from 'express';
-import { RestContext, rest } from 'msw';
+import { RestContext, http } from 'msw';
 import { setupServer, SetupServer } from 'msw/node';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import {
@@ -80,7 +80,7 @@ describe('PermissionIntegrationClient', () => {
       server = setupServer();
       server.listen({ onUnhandledRequest: 'error' });
       server.use(
-        rest.post(
+        http.post(
           `${mockBaseUrl}/plugin-1/.well-known/backstage/permissions/apply-conditions`,
           mockApplyConditionsHandler,
         ),

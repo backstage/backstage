@@ -33,7 +33,7 @@ import {
 } from '@backstage/plugin-catalog-node';
 import { Events } from '@backstage/plugin-bitbucket-cloud-common';
 import { DefaultEventsService } from '@backstage/plugin-events-node';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import {
   ANNOTATION_BITBUCKET_CLOUD_REPO_URL,
@@ -279,7 +279,7 @@ describe('BitbucketCloudEntityProvider', () => {
     );
 
     server.use(
-      rest.get(
+      http.get(
         `https://api.bitbucket.org/2.0/workspaces/test-ws/search/code`,
         (_req, res, ctx) => {
           const response = {
@@ -469,7 +469,7 @@ describe('BitbucketCloudEntityProvider', () => {
     })[0];
 
     server.use(
-      rest.get(
+      http.get(
         `https://api.bitbucket.org/2.0/workspaces/test-ws/search/code`,
         (req, res, ctx) => {
           const query = req.url.searchParams.get('search_query');

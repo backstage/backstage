@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { rest } from 'msw';
+import { http } from 'msw';
 import {
   AzurePrOptions,
   AzurePrResult,
@@ -29,7 +29,7 @@ import { setupServer } from 'msw/node';
 import { registerMswTestHooks } from '@backstage/test-utils';
 
 function mockRepoEndpoint() {
-  return rest.get(
+  return http.get(
     'https://dev.azure.com/acme/project/_apis/git/repositories/:path',
     (req, res, ctx) => {
       const { path } = req.params;
@@ -56,7 +56,7 @@ function mockRepoEndpoint() {
 }
 
 function mockRefsEndpoint() {
-  return rest.get(
+  return http.get(
     'https://dev.azure.com/acme/project/_apis/git/repositories/:repo/refs',
     (req, res, ctx) => {
       const filter = req.url.searchParams.get('filter');
@@ -86,7 +86,7 @@ function mockRefsEndpoint() {
 }
 
 function mockPushEndpoint() {
-  return rest.post(
+  return http.post(
     'https://dev.azure.com/acme/project/_apis/git/repositories/:repo/pushes',
     (req, res, ctx) => {
       const { repo } = req.params;
@@ -125,7 +125,7 @@ function mockPushEndpoint() {
 }
 
 function mockPrEndpoint() {
-  return rest.post(
+  return http.post(
     'https://dev.azure.com/acme/project/_apis/git/repositories/:repo/pullrequests',
     (req, res, ctx) => {
       const { repo } = req.params;

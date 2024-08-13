@@ -17,7 +17,7 @@
 import request from 'supertest';
 import { decodeOAuthState } from '@backstage/plugin-auth-node';
 import { setupServer } from 'msw/node';
-import { rest } from 'msw';
+import { http } from 'msw';
 import {
   mockServices,
   registerMswTestHooks,
@@ -61,7 +61,7 @@ describe('authModuleOidcProvider', () => {
     jest.clearAllMocks();
 
     mswServer.use(
-      rest.get(
+      http.get(
         'https://oidc.test/.well-known/openid-configuration',
         (_req, res, ctx) =>
           res(
@@ -70,7 +70,7 @@ describe('authModuleOidcProvider', () => {
             ctx.json(issuerMetadata),
           ),
       ),
-      rest.get(
+      http.get(
         'https://oidc.test/oauth2/authorize',
         async (req, _res, _ctx) => {
           nonce =
@@ -78,7 +78,7 @@ describe('authModuleOidcProvider', () => {
             'nonceGeneratedByAuthServer';
         },
       ),
-      rest.get('https://oidc.test/oauth2/authorize', async (req, res, ctx) => {
+      http.get('https://oidc.test/oauth2/authorize', async (req, res, ctx) => {
         const callbackUrl = new URL(req.url.searchParams.get('redirect_uri')!);
         callbackUrl.searchParams.set('code', 'authorization_code');
         callbackUrl.searchParams.set(
@@ -91,10 +91,10 @@ describe('authModuleOidcProvider', () => {
           ctx.set('Location', callbackUrl.toString()),
         );
       }),
-      rest.get('https://oidc.test/jwks.json', async (_req, res, ctx) =>
+      http.get('https://oidc.test/jwks.json', async (_req, res, ctx) =>
         res(ctx.status(200), ctx.json({ keys: [{ ...publicKey }] })),
       ),
-      rest.post('https://oidc.test/oauth2/token', async (req, res, ctx) => {
+      http.post('https://oidc.test/oauth2/token', async (req, res, ctx) => {
         const keyPair = await generateKeyPair('RS256');
         const privateKey = await exportJWK(keyPair.privateKey);
         publicKey = await exportJWK(keyPair.publicKey);
@@ -124,7 +124,7 @@ describe('authModuleOidcProvider', () => {
             : ctx.status(401),
         );
       }),
-      rest.get(
+      http.get(
         'https://oidc.test/idp/userinfo.openid',
         async (_req, res, ctx) =>
           res(
@@ -169,7 +169,7 @@ describe('authModuleOidcProvider', () => {
     backstageServer = backend.server;
     const port = backend.server.port();
     appUrl = `http://localhost:${port}`;
-    mswServer.use(rest.all(`http://*:${port}/*`, req => req.passthrough()));
+    mswServer.use(http.all(`http://*:${port}/*`, req => req.passthrough()));
   });
 
   afterEach(() => {

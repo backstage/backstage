@@ -23,7 +23,7 @@ import {
   SignJWT,
 } from 'jose';
 import { cloneDeep } from 'lodash';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import { v4 as uuid } from 'uuid';
 
@@ -115,7 +115,7 @@ describe('IdentityClient', () => {
   describe('identity client configuration', () => {
     beforeEach(() => {
       server.use(
-        rest.get(
+        http.get(
           `${mockBaseUrl}/.well-known/jwks.json`,
           async (_, res, ctx) => {
             const keys = await factory.listPublicKeys();
@@ -176,7 +176,7 @@ describe('IdentityClient', () => {
   describe('authenticate', () => {
     beforeEach(() => {
       server.use(
-        rest.get(
+        http.get(
           `${mockBaseUrl}/.well-known/jwks.json`,
           async (_, res, ctx) => {
             const keys = await factory.listPublicKeys();
@@ -320,7 +320,7 @@ describe('IdentityClient', () => {
       // Only return the key from a single token
       const singleKey = cloneDeep(await factory.listPublicKeys());
       server.use(
-        rest.get(
+        http.get(
           `${mockBaseUrl}/.well-known/jwks.json`,
           async (_, res, ctx) => {
             return res(ctx.json(singleKey));
@@ -336,7 +336,7 @@ describe('IdentityClient', () => {
       };
       let calledUpdatedEndpoint = false;
       server.use(
-        rest.get(`${updatedURL}/.well-known/jwks.json`, async (_, res, ctx) => {
+        http.get(`${updatedURL}/.well-known/jwks.json`, async (_, res, ctx) => {
           const keys = await factory.listPublicKeys();
           calledUpdatedEndpoint = true;
           return res(ctx.json(keys));

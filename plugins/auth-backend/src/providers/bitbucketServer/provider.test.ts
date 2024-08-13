@@ -23,7 +23,7 @@ import {
 } from './provider';
 import { setupServer } from 'msw/node';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { AuthResolverContext } from '@backstage/plugin-auth-node';
 
 jest.mock('../../lib/passport/PassportStrategyHelper', () => {
@@ -58,7 +58,7 @@ const mockHost = 'bitbucket.org';
 const mockBaseUrl = `https://${mockHost}`;
 
 const whoAmIHandler = (options?: { fail?: boolean; value?: string }) =>
-  rest.get(
+  http.get(
     `${mockBaseUrl}/plugins/servlet/applinks/whoami`,
     (_req, res, ctx) => {
       if (options?.fail) {
@@ -78,7 +78,7 @@ const getUserHandler = (options?: {
   noDisplayName?: boolean;
   noUserName?: boolean;
 }) =>
-  rest.get(
+  http.get(
     `${mockBaseUrl}/rest/api/latest/users/${passportProfile.username}`,
     (_req, res, ctx) => {
       if (options?.fail) {

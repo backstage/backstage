@@ -26,7 +26,7 @@ import {
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { setupServer } from 'msw/node';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { ConfigReader } from '@backstage/config';
 import { TECHDOCS_ANNOTATION } from '@backstage/plugin-techdocs-common';
 
@@ -109,11 +109,11 @@ describe('TechDocs Collator', () => {
       });
 
       worker.use(
-        rest.get(
+        http.get(
           'http://test-backend/static/docs/default/Component/test-entity-with-docs/search/search_index.json',
           (_, res, ctx) => res(ctx.status(200), ctx.json(mockSearchDocIndex)),
         ),
-        rest.get('http://test-backend/entities', (_, res, ctx) =>
+        http.get('http://test-backend/entities', (_, res, ctx) =>
           res(ctx.status(200), ctx.json(expectedEntities)),
         ),
       );
@@ -167,11 +167,11 @@ describe('TechDocs Collator', () => {
       });
 
       worker.use(
-        rest.get(
+        http.get(
           'http://test-backend/static/docs/default/component/test-entity-with-docs/search/search_index.json',
           (_, res, ctx) => res(ctx.status(200), ctx.json(mockSearchDocIndex)),
         ),
-        rest.get('http://test-backend/entities', (_, res, ctx) =>
+        http.get('http://test-backend/entities', (_, res, ctx) =>
           res(ctx.status(200), ctx.json(expectedEntities)),
         ),
       );

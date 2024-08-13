@@ -39,7 +39,7 @@ import {
   mockServices,
 } from '@backstage/backend-test-utils';
 import { setupServer } from 'msw/node';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { ConfigReader } from '@backstage/config';
 
 const server = setupServer();
@@ -67,7 +67,7 @@ describe('GithubLocationAnalyzer', () => {
 
   beforeEach(() => {
     server.use(
-      rest.post('http://localhost:7007/locations', async (_, res, ctx) => {
+      http.post('http://localhost:7007/locations', async (_, res, ctx) => {
         return res(
           ctx.status(201),
           ctx.json({

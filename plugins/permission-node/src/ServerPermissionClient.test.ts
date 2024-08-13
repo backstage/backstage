@@ -29,7 +29,7 @@ import {
 } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { setupServer } from 'msw/node';
-import { RestContext, rest } from 'msw';
+import { RestContext, http } from 'msw';
 
 const server = setupServer();
 
@@ -76,7 +76,7 @@ describe('ServerPermissionClient', () => {
         return res(json({ items: responses }));
       });
 
-      server.use(rest.post(`${mockBaseUrl}/authorize`, mockAuthorizeHandler));
+      server.use(http.post(`${mockBaseUrl}/authorize`, mockAuthorizeHandler));
     });
 
     it('should bypass the permission backend if permissions are disabled', async () => {
@@ -150,7 +150,7 @@ describe('ServerPermissionClient', () => {
         return res(json({ items: responses }));
       });
 
-      server.use(rest.post(`${mockBaseUrl}/authorize`, mockAuthorizeHandler));
+      server.use(http.post(`${mockBaseUrl}/authorize`, mockAuthorizeHandler));
     });
 
     it('should bypass the permission backend if permissions are disabled', async () => {

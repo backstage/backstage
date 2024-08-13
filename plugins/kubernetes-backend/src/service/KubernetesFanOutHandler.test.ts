@@ -24,7 +24,7 @@ import {
 import { KubernetesCredential } from '../auth/types';
 import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import {
   mockServices,
@@ -1134,16 +1134,16 @@ describe('KubernetesFanOutHandler', () => {
         const pods = [{ metadata: { name: 'pod-name' } }];
         const services = [{ metadata: { name: 'service-name' } }];
         worker.use(
-          rest.get('https://works/api/v1/pods', (_, res, ctx) =>
+          http.get('https://works/api/v1/pods', (_, res, ctx) =>
             res(ctx.json({ items: pods })),
           ),
-          rest.get('https://works/api/v1/services', (_, res, ctx) =>
+          http.get('https://works/api/v1/services', (_, res, ctx) =>
             res(ctx.json({ items: services })),
           ),
-          rest.get('https://fails/api/v1/pods', (_, res) =>
+          http.get('https://fails/api/v1/pods', (_, res) =>
             res.networkError('socket error'),
           ),
-          rest.get('https://fails/api/v1/services', (_, res, ctx) =>
+          http.get('https://fails/api/v1/services', (_, res, ctx) =>
             res(ctx.json({ items: services })),
           ),
         );

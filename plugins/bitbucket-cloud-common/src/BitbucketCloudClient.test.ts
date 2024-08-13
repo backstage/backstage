@@ -15,7 +15,7 @@
  */
 
 import { BitbucketCloudIntegrationConfig } from '@backstage/integration';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import { BitbucketCloudClient } from './BitbucketCloudClient';
 import { Models } from './models';
@@ -37,7 +37,7 @@ describe('BitbucketCloudClient', () => {
 
   it('searchCode', async () => {
     server.use(
-      rest.get(
+      http.get(
         `https://api.bitbucket.org/2.0/workspaces/ws/search/code`,
         (req, res, ctx) => {
           if (
@@ -81,7 +81,7 @@ describe('BitbucketCloudClient', () => {
 
   it('listRepositoriesByWorkspace', async () => {
     server.use(
-      rest.get(
+      http.get(
         'https://api.bitbucket.org/2.0/repositories/ws',
         (_, res, ctx) => {
           const response = {
@@ -110,7 +110,7 @@ describe('BitbucketCloudClient', () => {
 
   it('listProjectsByWorkspace', async () => {
     server.use(
-      rest.get(
+      http.get(
         'https://api.bitbucket.org/2.0/workspaces/ws/projects',
         (_, res, ctx) => {
           const response = {
@@ -139,7 +139,7 @@ describe('BitbucketCloudClient', () => {
 
   it('listWorkspaces', async () => {
     server.use(
-      rest.get('https://api.bitbucket.org/2.0/workspaces', (_, res, ctx) => {
+      http.get('https://api.bitbucket.org/2.0/workspaces', (_, res, ctx) => {
         const response = {
           values: [
             {
@@ -165,7 +165,7 @@ describe('BitbucketCloudClient', () => {
 
   it('listBranchesByRepository', async () => {
     server.use(
-      rest.get(
+      http.get(
         'https://api.bitbucket.org/2.0/repositories/workspace1/repo1/refs/branches',
         (_, res, ctx) => {
           const response = {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import { registerMswTestHooks } from '../../msw';
 import { MockFetchApi } from './MockFetchApi';
@@ -25,7 +25,7 @@ describe('MockFetchApi', () => {
 
   it('works with default constructor', async () => {
     worker.use(
-      rest.get('http://example.com/data.json', (_, res, ctx) =>
+      http.get('http://example.com/data.json', (_, res, ctx) =>
         res(ctx.status(200), ctx.json({ a: 'foo' })),
       ),
     );

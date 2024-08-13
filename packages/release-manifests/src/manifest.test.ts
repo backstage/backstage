@@ -15,7 +15,7 @@
  */
 
 import { setupServer } from 'msw/node';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { registerMswTestHooks } from '@backstage/test-utils';
 import {
   getManifestByReleaseLine,
@@ -30,7 +30,7 @@ describe('Release Manifests', () => {
   describe('getManifestByVersion', () => {
     it('should return a list of packages in a release', async () => {
       worker.use(
-        rest.get('*/v1/releases/0.0.0/manifest.json', (_, res, ctx) =>
+        http.get('*/v1/releases/0.0.0/manifest.json', (_, res, ctx) =>
           res(
             ctx.status(200),
             ctx.json({
@@ -38,7 +38,7 @@ describe('Release Manifests', () => {
             }),
           ),
         ),
-        rest.get('*/v1/releases/999.0.1/manifest.json', (_, res, ctx) =>
+        http.get('*/v1/releases/999.0.1/manifest.json', (_, res, ctx) =>
           res(ctx.status(404), ctx.json({})),
         ),
       );
@@ -60,7 +60,7 @@ describe('Release Manifests', () => {
   describe('getManifestByReleaseLine', () => {
     it('should return a list of packages in a release', async () => {
       worker.use(
-        rest.get(
+        http.get(
           'https://versions.backstage.io/v1/tags/main/manifest.json',
           (_, res, ctx) =>
             res(
@@ -70,7 +70,7 @@ describe('Release Manifests', () => {
               }),
             ),
         ),
-        rest.get(
+        http.get(
           'https://versions.backstage.io/v1/tags/foo/manifest.json',
           (_, res, ctx) => res(ctx.status(404), ctx.json({})),
         ),

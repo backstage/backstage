@@ -16,7 +16,7 @@
 
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { BitbucketServerIntegrationConfig } from '@backstage/integration';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import {
   BitbucketServerClient,
@@ -54,7 +54,7 @@ describe('BitbucketServerClient', () => {
 
   it('listProjects', async () => {
     server.use(
-      rest.get(`${config.apiBaseUrl}/projects`, (req, res, ctx) => {
+      http.get(`${config.apiBaseUrl}/projects`, (req, res, ctx) => {
         if (
           req.headers.get('authorization') !== 'Basic dGVzdC11c2VyOnRlc3QtcHc='
         ) {
@@ -91,7 +91,7 @@ describe('BitbucketServerClient', () => {
 
   it('listRepositories', async () => {
     server.use(
-      rest.get(
+      http.get(
         `${config.apiBaseUrl}/projects/test-project/repos`,
         (req, res, ctx) => {
           if (
@@ -152,7 +152,7 @@ describe('BitbucketServerClient', () => {
 
   it('getFile', async () => {
     server.use(
-      rest.get(
+      http.get(
         `https://${config.host}/projects/test-project/repos/test-repo/raw/catalog-info.yaml`,
         (req, res, ctx) => {
           if (
@@ -177,7 +177,7 @@ describe('BitbucketServerClient', () => {
 
   it('getRepository', async () => {
     server.use(
-      rest.get(
+      http.get(
         `${config.apiBaseUrl}/projects/test-project/repos/test-repo`,
         (req, res, ctx) => {
           if (

@@ -26,7 +26,7 @@ import { setupServer } from 'msw/node';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { JWK, SignJWT, exportJWK, generateKeyPair } from 'jose';
-import { rest } from 'msw';
+import { http } from 'msw';
 import express from 'express';
 import { DateTime } from 'luxon';
 
@@ -89,7 +89,7 @@ describe('pinnipedAuthenticator', () => {
     jest.restoreAllMocks();
 
     mswServer.use(
-      rest.get(
+      http.get(
         'https://federationDomain.test/.well-known/openid-configuration',
         (_req, res, ctx) =>
           res(
@@ -98,10 +98,10 @@ describe('pinnipedAuthenticator', () => {
             ctx.json(issuerMetadata),
           ),
       ),
-      rest.get('https://pinniped.test/jwks.json', async (_req, res, ctx) =>
+      http.get('https://pinniped.test/jwks.json', async (_req, res, ctx) =>
         res(ctx.status(200), ctx.json({ keys: [{ ...publicKey }] })),
       ),
-      rest.post('https://pinniped.test/oauth2/token', async (req, res, ctx) => {
+      http.post('https://pinniped.test/oauth2/token', async (req, res, ctx) => {
         const formBody = new URLSearchParams(await req.text());
         const isGrantTypeTokenExchange =
           formBody.get('grant_type') ===
@@ -288,7 +288,7 @@ describe('pinnipedAuthenticator', () => {
 
     it('refreshes oidc metadata after a failed fetch', async () => {
       mswServer.use(
-        rest.get(
+        http.get(
           'https://federationDomain.test/.well-known/openid-configuration',
           (_req, res, _ctx) => res.networkError('Timeout'),
         ),
@@ -305,7 +305,7 @@ describe('pinnipedAuthenticator', () => {
         });
 
       mswServer.use(
-        rest.get(
+        http.get(
           'https://federationDomain.test/.well-known/openid-configuration',
           (_req, res, ctx) =>
             res(
@@ -329,7 +329,7 @@ describe('pinnipedAuthenticator', () => {
       let supervisorCalls: number = 1;
 
       mswServer.use(
-        rest.get(
+        http.get(
           'https://federationDomain.test/.well-known/openid-configuration',
           (_req, res, ctx) => {
             supervisorCalls += 1;
@@ -355,7 +355,7 @@ describe('pinnipedAuthenticator', () => {
       jest.spyOn(DateTime, 'local').mockImplementation(() => fixedTime);
 
       mswServer.use(
-        rest.get(
+        http.get(
           'https://federationDomain.test/.well-known/openid-configuration',
           (_req, res, ctx) => {
             supervisorCalls += 1;
@@ -455,7 +455,7 @@ describe('pinnipedAuthenticator', () => {
 
     it('fails on network error during token exchange', async () => {
       mswServer.use(
-        rest.post(
+        http.post(
           'https://pinniped.test/oauth2/token',
           async (req, res, ctx) => {
             const formBody = new URLSearchParams(await req.text());
@@ -471,7 +471,7 @@ describe('pinnipedAuthenticator', () => {
                 'urn:ietf:params:oauth:token-type:jwt';
 
             mswServer.use(
-              rest.post(
+              http.post(
                 'https://pinniped.test/oauth2/token',
                 async (_req, response, _ctx) =>
                   response.networkError('Connection timed out'),
@@ -561,7 +561,7 @@ describe('pinnipedAuthenticator', () => {
 
     it('refreshes oidc metadata after a failed fetch', async () => {
       mswServer.use(
-        rest.get(
+        http.get(
           'https://federationDomain.test/.well-known/openid-configuration',
           (_req, res, _ctx) => res.networkError('Timeout'),
         ),
@@ -578,7 +578,7 @@ describe('pinnipedAuthenticator', () => {
         });
 
       mswServer.use(
-        rest.get(
+        http.get(
           'https://federationDomain.test/.well-known/openid-configuration',
           (_req, res, ctx) =>
             res(
@@ -600,7 +600,7 @@ describe('pinnipedAuthenticator', () => {
       let supervisorCalls: number = 1;
 
       mswServer.use(
-        rest.get(
+        http.get(
           'https://federationDomain.test/.well-known/openid-configuration',
           (_req, res, ctx) => {
             supervisorCalls += 1;
@@ -641,7 +641,7 @@ describe('pinnipedAuthenticator', () => {
       jest.spyOn(DateTime, 'local').mockImplementation(() => fixedTime);
 
       mswServer.use(
-        rest.get(
+        http.get(
           'https://federationDomain.test/.well-known/openid-configuration',
           (_req, res, ctx) => {
             supervisorCalls += 1;
@@ -730,7 +730,7 @@ describe('pinnipedAuthenticator', () => {
 
     it('refreshes oidc metadata after a failed fetch', async () => {
       mswServer.use(
-        rest.get(
+        http.get(
           'https://federationDomain.test/.well-known/openid-configuration',
           (_req, res, _ctx) => res.networkError('Timeout'),
         ),
@@ -747,7 +747,7 @@ describe('pinnipedAuthenticator', () => {
         });
 
       mswServer.use(
-        rest.get(
+        http.get(
           'https://federationDomain.test/.well-known/openid-configuration',
           (_req, res, ctx) =>
             res(
@@ -769,7 +769,7 @@ describe('pinnipedAuthenticator', () => {
       let supervisorCalls: number = 1;
 
       mswServer.use(
-        rest.get(
+        http.get(
           'https://federationDomain.test/.well-known/openid-configuration',
           (_req, res, ctx) => {
             supervisorCalls += 1;
@@ -794,7 +794,7 @@ describe('pinnipedAuthenticator', () => {
       jest.spyOn(DateTime, 'local').mockImplementation(() => fixedTime);
 
       mswServer.use(
-        rest.get(
+        http.get(
           'https://federationDomain.test/.well-known/openid-configuration',
           (_req, res, ctx) => {
             supervisorCalls += 1;

@@ -21,7 +21,7 @@ import {
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import path from 'path';
 import { GitlabUrlReader } from './GitlabUrlReader';
@@ -77,10 +77,10 @@ describe('GitlabUrlReader', () => {
   describe('read', () => {
     beforeEach(() => {
       worker.use(
-        rest.get('*/api/v4/projects/:name', (_, res, ctx) =>
+        http.get('*/api/v4/projects/:name', (_, res, ctx) =>
           res(ctx.status(200), ctx.json({ id: 12345 })),
         ),
-        rest.get('*', (req, res, ctx) =>
+        http.get('*', (req, res, ctx) =>
           res(
             ctx.status(200),
             ctx.json({
@@ -179,10 +179,10 @@ describe('GitlabUrlReader', () => {
 
     it('should throw NotModified on HTTP 304 from etag', async () => {
       worker.use(
-        rest.get('*/api/v4/projects/:name', (_, res, ctx) =>
+        http.get('*/api/v4/projects/:name', (_, res, ctx) =>
           res(ctx.status(200), ctx.json({ id: 12345 })),
         ),
-        rest.get('*', (req, res, ctx) => {
+        http.get('*', (req, res, ctx) => {
           expect(req.headers.get('If-None-Match')).toBe('999');
           return res(ctx.status(304));
         }),
@@ -200,10 +200,10 @@ describe('GitlabUrlReader', () => {
 
     it('should throw NotModified on HTTP 304 from lastModifiedAt', async () => {
       worker.use(
-        rest.get('*/api/v4/projects/:name', (_, res, ctx) =>
+        http.get('*/api/v4/projects/:name', (_, res, ctx) =>
           res(ctx.status(200), ctx.json({ id: 12345 })),
         ),
-        rest.get('*', (req, res, ctx) => {
+        http.get('*', (req, res, ctx) => {
           expect(req.headers.get('If-Modified-Since')).toBe(
             new Date('2019 12 31 23:59:59 GMT').toUTCString(),
           );
@@ -223,10 +223,10 @@ describe('GitlabUrlReader', () => {
 
     it('should return etag and last-modified in response', async () => {
       worker.use(
-        rest.get('*/api/v4/projects/:name', (_, res, ctx) =>
+        http.get('*/api/v4/projects/:name', (_, res, ctx) =>
           res(ctx.status(200), ctx.json({ id: 12345 })),
         ),
-        rest.get('*', (_req, res, ctx) => {
+        http.get('*', (_req, res, ctx) => {
           return res(
             ctx.status(200),
             ctx.set('ETag', '999'),
@@ -279,7 +279,7 @@ describe('GitlabUrlReader', () => {
 
     beforeEach(() => {
       worker.use(
-        rest.get(
+        http.get(
           'https://gitlab.com/api/v4/projects/backstage%2Fmock/repository/archive',
           (_, res, ctx) =>
             res(
@@ -292,7 +292,7 @@ describe('GitlabUrlReader', () => {
               ctx.body(archiveBuffer),
             ),
         ),
-        rest.get(
+        http.get(
           'https://gitlab.com/api/v4/projects/backstage%2Fmock',
           (_, res, ctx) =>
             res(
@@ -301,7 +301,7 @@ describe('GitlabUrlReader', () => {
               ctx.json(projectGitlabApiResponse),
             ),
         ),
-        rest.get(
+        http.get(
           'https://gitlab.com/api/v4/projects/backstage%2Fmock/repository/commits',
           (req, res, ctx) => {
             const refName = req.url.searchParams.get('ref_name');
@@ -326,7 +326,7 @@ describe('GitlabUrlReader', () => {
             return res();
           },
         ),
-        rest.get(
+        http.get(
           'https://gitlab.mycompany.com/api/v4/projects/backstage%2Fmock',
           (_, res, ctx) =>
             res(
@@ -335,7 +335,7 @@ describe('GitlabUrlReader', () => {
               ctx.json(projectGitlabApiResponse),
             ),
         ),
-        rest.get(
+        http.get(
           'https://gitlab.mycompany.com/api/v4/projects/backstage%2Fmock/repository/commits',
           (req, res, ctx) => {
             const refName = req.url.searchParams.get('ref_name');
@@ -357,7 +357,7 @@ describe('GitlabUrlReader', () => {
             return res();
           },
         ),
-        rest.get(
+        http.get(
           'https://gitlab.mycompany.com/api/v4/projects/backstage%2Fmock/repository/archive',
           (_, res, ctx) =>
             res(
@@ -405,7 +405,7 @@ describe('GitlabUrlReader', () => {
 
     it('returns the wanted files from hosted gitlab', async () => {
       worker.use(
-        rest.get(
+        http.get(
           'https://gitlab.mycompany.com/backstage/mock/-/archive/main.tar.gz',
           (_, res, ctx) =>
             res(
@@ -571,7 +571,7 @@ describe('GitlabUrlReader', () => {
 
     beforeEach(() => {
       worker.use(
-        rest.get(
+        http.get(
           'https://gitlab.com/api/v4/projects/backstage%2Fmock/repository/archive',
           (req, res, ctx) => {
             const filepath = req.url.searchParams.get('path');
@@ -592,7 +592,7 @@ describe('GitlabUrlReader', () => {
             );
           },
         ),
-        rest.get(
+        http.get(
           'https://gitlab.com/api/v4/projects/backstage%2Fmock',
           (_, res, ctx) =>
             res(
@@ -601,7 +601,7 @@ describe('GitlabUrlReader', () => {
               ctx.json(projectGitlabApiResponse),
             ),
         ),
-        rest.get(
+        http.get(
           'https://gitlab.com/api/v4/projects/backstage%2Fmock/repository/commits',
           (req, res, ctx) => {
             const refName = req.url.searchParams.get('ref_name');
@@ -668,7 +668,7 @@ describe('GitlabUrlReader', () => {
   describe('getGitlabFetchUrl', () => {
     beforeEach(() => {
       worker.use(
-        rest.get(
+        http.get(
           '*/api/v4/projects/group%2Fsubgroup%2Fproject',
           (_, res, ctx) => res(ctx.status(200), ctx.json({ id: 12345 })),
         ),
@@ -704,13 +704,13 @@ describe('GitlabUrlReader', () => {
   describe('getGitlabArtifactFetchUrl', () => {
     beforeEach(() => {
       worker.use(
-        rest.get(
+        http.get(
           '*/api/v4/projects/group%2Fsubgroup%2Fproject',
           (_, res, ctx) => res(ctx.status(200), ctx.json({ id: 12345 })),
         ),
       );
       worker.use(
-        rest.get(
+        http.get(
           '*/api/v4/projects/groupA%2Fsubgroup%2Fproject',
           (_, res, ctx) => res(ctx.status(404)),
         ),
@@ -750,7 +750,7 @@ describe('GitlabUrlReader', () => {
   describe('resolveProjectToId', () => {
     it('should resolve the project path to a valid project id', async () => {
       worker.use(
-        rest.get('*/api/v4/projects/some%2Fproject', (req, res, ctx) => {
+        http.get('*/api/v4/projects/some%2Fproject', (req, res, ctx) => {
           // the private-token header must be included on API calls
           expect(req.headers.get('private-token')).toBe('gl-dummy-token');
           return res(ctx.status(200), ctx.json({ id: 12345 }));

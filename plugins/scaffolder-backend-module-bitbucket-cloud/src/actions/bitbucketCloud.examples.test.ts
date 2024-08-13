@@ -27,7 +27,7 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
 });
 
 import { createPublishBitbucketCloudAction } from './bitbucketCloud';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { ScmIntegrations } from '@backstage/integration';
@@ -74,7 +74,7 @@ describe('publish:bitbucketCloud', () => {
 
   it('should call initAndPush with the correct values', async () => {
     server.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo',
         (_, res, ctx) =>
           res(
@@ -118,7 +118,7 @@ describe('publish:bitbucketCloud', () => {
 
   it('should call initAndPush with the correct default branch', async () => {
     server.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo',
         (_, res, ctx) =>
           res(
@@ -162,7 +162,7 @@ describe('publish:bitbucketCloud', () => {
 
   it('should call initAndPush with the specified source path', async () => {
     server.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo',
         (_, res, ctx) =>
           res(
@@ -205,7 +205,7 @@ describe('publish:bitbucketCloud', () => {
 
   it('should call initAndPush with the authentication token', async () => {
     server.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo',
         (_, res, ctx) =>
           res(
@@ -248,7 +248,7 @@ describe('publish:bitbucketCloud', () => {
 
   it('should call initAndPush with all available custom inputs', async () => {
     server.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo',
         (_, res, ctx) =>
           res(

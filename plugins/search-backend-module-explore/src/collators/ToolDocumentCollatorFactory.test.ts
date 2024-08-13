@@ -23,7 +23,7 @@ import {
   mockServices,
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import { Readable } from 'stream';
 import { ToolDocumentCollatorFactory } from './ToolDocumentCollatorFactory';
@@ -89,7 +89,7 @@ describe('ToolDocumentCollatorFactory', () => {
       collator = await factory.getCollator();
 
       worker.use(
-        rest.get('http://test-backend/api/explore/tools', (_, res, ctx) =>
+        http.get('http://test-backend/api/explore/tools', (_, res, ctx) =>
           res(ctx.status(200), ctx.json(mockTools)),
         ),
       );

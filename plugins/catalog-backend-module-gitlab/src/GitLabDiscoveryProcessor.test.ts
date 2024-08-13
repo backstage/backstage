@@ -20,7 +20,7 @@ import {
 } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { LocationSpec } from '@backstage/plugin-catalog-node';
-import { rest, RestRequest } from 'msw';
+import { http, RestRequest } from 'msw';
 import { setupServer } from 'msw/node';
 import { GitLabDiscoveryProcessor, parseUrl } from './GitLabDiscoveryProcessor';
 import { GitLabProject } from './lib';
@@ -66,7 +66,7 @@ function setupFakeServer(
   assertion?: (r: RestRequest) => any,
 ) {
   server.use(
-    rest.get(url, (req, res, ctx) => {
+    http.get(url, (req, res, ctx) => {
       // Send the request to the assertion to give the test an opportunity to inspect the parameters.
       if (assertion !== undefined) {
         assertion(req);
@@ -101,7 +101,7 @@ function setupFakeServer(
         ctx.json(filteredData),
       );
     }),
-    rest.head(
+    http.head(
       `${API_URL}/projects/:project_path/repository/files/:file_path`,
       (req, res, ctx) => {
         if (req.headers.get('private-token') !== 'test-token') {

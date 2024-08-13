@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import { registerMswTestHooks } from '../helpers';
 import { BitbucketCloudIntegrationConfig } from './config';
@@ -107,7 +107,7 @@ describe('bitbucketCloud core', () => {
         },
       };
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.org/2.0/repositories/backstage/mock',
           (_, res, ctx) =>
             res(

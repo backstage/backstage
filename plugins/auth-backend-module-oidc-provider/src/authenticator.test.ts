@@ -26,7 +26,7 @@ import { setupServer } from 'msw/node';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { JWK, SignJWT, exportJWK, generateKeyPair } from 'jose';
-import { rest } from 'msw';
+import { http } from 'msw';
 import express from 'express';
 
 describe('oidcAuthenticator', () => {
@@ -68,7 +68,7 @@ describe('oidcAuthenticator', () => {
 
   beforeEach(() => {
     mswServer.use(
-      rest.get(
+      http.get(
         'https://oidc.test/.well-known/openid-configuration',
         (_req, res, ctx) =>
           res(
@@ -77,10 +77,10 @@ describe('oidcAuthenticator', () => {
             ctx.json(issuerMetadata),
           ),
       ),
-      rest.get('https://oidc.test/jwks.json', async (_req, res, ctx) =>
+      http.get('https://oidc.test/jwks.json', async (_req, res, ctx) =>
         res(ctx.status(200), ctx.json({ keys: [{ ...publicKey }] })),
       ),
-      rest.get(
+      http.get(
         'https://oidc.test/oauth2/authorize',
         async (req, _res, _ctx) => {
           nonce =
@@ -88,7 +88,7 @@ describe('oidcAuthenticator', () => {
             'nonceGeneratedByAuthServer';
         },
       ),
-      rest.post('https://oidc.test/oauth2/token', async (req, res, ctx) => {
+      http.post('https://oidc.test/oauth2/token', async (req, res, ctx) => {
         const formBody = new URLSearchParams(await req.text());
         if (
           formBody.get('grant_type') === 'refresh_token' &&
@@ -125,7 +125,7 @@ describe('oidcAuthenticator', () => {
             : ctx.status(401),
         );
       }),
-      rest.get(
+      http.get(
         'https://oidc.test/idp/userinfo.openid',
         async (_req, res, ctx) =>
           res(
@@ -140,7 +140,7 @@ describe('oidcAuthenticator', () => {
             }),
           ),
       ),
-      rest.post(
+      http.post(
         'https://oidc.test/oauth2/revoke_token',
         async (req, res, ctx) => {
           const formBody = new URLSearchParams(await req.text());
@@ -495,7 +495,7 @@ describe('oidcAuthenticator', () => {
 
       // override .well-known endpoint response, set revocation_endpoint to undefined
       mswServer.use(
-        rest.get(
+        http.get(
           'https://oidc.test/.well-known/openid-configuration',
           (_req, res, ctx) =>
             res(

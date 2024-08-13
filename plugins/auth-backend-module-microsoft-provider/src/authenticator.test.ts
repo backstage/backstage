@@ -25,7 +25,7 @@ import {
   PassportOAuthAuthenticatorHelper,
 } from '@backstage/plugin-auth-node';
 import express from 'express';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import { FakeMicrosoftAPI } from './__testUtils__/fake';
 import { microsoftAuthenticator } from './authenticator';
@@ -54,7 +54,7 @@ describe('microsoftAuthenticator', () => {
     jest.clearAllMocks();
 
     server.use(
-      rest.post(
+      http.post(
         'https://login.microsoftonline.com/tenantId/oauth2/v2.0/token',
         async (req, res, ctx) => {
           return res(
@@ -67,7 +67,7 @@ describe('microsoftAuthenticator', () => {
           );
         },
       ),
-      rest.get('https://graph.microsoft.com/v1.0/me/', (req, res, ctx) => {
+      http.get('https://graph.microsoft.com/v1.0/me/', (req, res, ctx) => {
         if (
           !microsoftApi.tokenHasScope(
             req.headers.get('authorization')!.replace(/^Bearer /, ''),
@@ -86,7 +86,7 @@ describe('microsoftAuthenticator', () => {
           }),
         );
       }),
-      rest.get(
+      http.get(
         'https://graph.microsoft.com/v1.0/me/photos/*',
         async (req, res, ctx) => {
           if (
@@ -212,7 +212,7 @@ describe('microsoftAuthenticator', () => {
 
     it('omits photo data when fetching it fails', async () => {
       server.use(
-        rest.get('https://graph.microsoft.com/v1.0/me/photos/*', (_, res) =>
+        http.get('https://graph.microsoft.com/v1.0/me/photos/*', (_, res) =>
           res.networkError('remote hung up'),
         ),
       );

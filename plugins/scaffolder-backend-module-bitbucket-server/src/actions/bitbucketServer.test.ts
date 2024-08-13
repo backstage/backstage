@@ -27,7 +27,7 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
 });
 
 import { createPublishBitbucketServerAction } from './bitbucketServer';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { ScmIntegrations } from '@backstage/integration';
@@ -123,7 +123,7 @@ describe('publish:bitbucketServer', () => {
   it('should call the correct APIs with token', async () => {
     expect.assertions(2);
     server.use(
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
@@ -167,7 +167,7 @@ describe('publish:bitbucketServer', () => {
   it('should call the correct APIs with basic auth', async () => {
     expect.assertions(2);
     server.use(
-      rest.post(
+      http.post(
         'https://basic-auth.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe(
@@ -214,7 +214,7 @@ describe('publish:bitbucketServer', () => {
     expect.assertions(2);
     const token = 'user-token';
     server.use(
-      rest.post(
+      http.post(
         'https://no-credentials.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe(`Bearer ${token}`);
@@ -275,7 +275,7 @@ describe('publish:bitbucketServer', () => {
     it('should call the correct APIs to enable LFS if requested and the host is hosted bitbucket', async () => {
       expect.assertions(1);
       server.use(
-        rest.post(
+        http.post(
           'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
           (_, res, ctx) => {
             return res(
@@ -285,7 +285,7 @@ describe('publish:bitbucketServer', () => {
             );
           },
         ),
-        rest.put(
+        http.put(
           'https://hosted.bitbucket.com/rest/git-lfs/admin/projects/project/repos/repo/enabled',
           (req, res, ctx) => {
             expect(req.headers.get('Authorization')).toBe('Bearer thing');
@@ -306,7 +306,7 @@ describe('publish:bitbucketServer', () => {
 
     it('should report an error if enabling LFS fails', async () => {
       server.use(
-        rest.post(
+        http.post(
           'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
           (_, res, ctx) => {
             return res(
@@ -316,7 +316,7 @@ describe('publish:bitbucketServer', () => {
             );
           },
         ),
-        rest.put(
+        http.put(
           'https://hosted.bitbucket.com/rest/git-lfs/admin/projects/project/repos/repo/enabled',
           (_, res, ctx) => {
             return res(ctx.status(500));
@@ -339,7 +339,7 @@ describe('publish:bitbucketServer', () => {
 
   it('should call initAndPush with the correct values with token', async () => {
     server.use(
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
@@ -389,7 +389,7 @@ describe('publish:bitbucketServer', () => {
 
   it('should call initAndPush with the correct values with basic auth', async () => {
     server.use(
-      rest.post(
+      http.post(
         'https://basic-auth.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe(
@@ -447,7 +447,7 @@ describe('publish:bitbucketServer', () => {
 
   it('should call initAndPush with the correct default branch', async () => {
     server.use(
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
@@ -531,7 +531,7 @@ describe('publish:bitbucketServer', () => {
     });
 
     server.use(
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
@@ -603,7 +603,7 @@ describe('publish:bitbucketServer', () => {
     });
 
     server.use(
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
@@ -650,7 +650,7 @@ describe('publish:bitbucketServer', () => {
 
   it('should call outputs with the correct urls', async () => {
     server.use(
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
@@ -696,7 +696,7 @@ describe('publish:bitbucketServer', () => {
 
   it('should call outputs with the correct urls with correct default branch', async () => {
     server.use(
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');

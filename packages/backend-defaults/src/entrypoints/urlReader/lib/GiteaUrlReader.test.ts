@@ -21,7 +21,7 @@ import {
 import { ConfigReader } from '@backstage/config';
 import { GiteaIntegration, readGiteaConfig } from '@backstage/integration';
 import { JsonObject } from '@backstage/types';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import { UrlReaderPredicateTuple } from './types';
 import { DefaultReadTreeResponseFactory } from './tree';
@@ -123,7 +123,7 @@ describe('GiteaUrlReader', () => {
 
     it('should be able to read file contents as buffer', async () => {
       worker.use(
-        rest.get(
+        http.get(
           'https://gitea.com/api/v1/repos/owner/project/contents/LICENSE',
           (req, res, ctx) => {
             // Test utils prefers matching URL directly but it is part of Gitea's API
@@ -148,7 +148,7 @@ describe('GiteaUrlReader', () => {
 
     it('should be able to read file contents as stream', async () => {
       worker.use(
-        rest.get(
+        http.get(
           'https://gitea.com/api/v1/repos/owner/project/contents/LICENSE',
           (req, res, ctx) => {
             if (req.url.searchParams.get('ref') === 'branch2') {
@@ -172,7 +172,7 @@ describe('GiteaUrlReader', () => {
 
     it('should raise NotFoundError on 404.', async () => {
       worker.use(
-        rest.get(
+        http.get(
           'https://gitea.com/api/v1/repos/owner/project/contents/LICENSE',
           (_, res, ctx) => {
             return res(ctx.status(404, 'File not found.'));
@@ -189,7 +189,7 @@ describe('GiteaUrlReader', () => {
 
     it('should throw an error on non 404 errors.', async () => {
       worker.use(
-        rest.get(
+        http.get(
           'https://gitea.com/api/v1/repos/owner/project/contents/LICENSE',
           (_, res, ctx) => {
             return res(ctx.status(500, 'Error!!!'));
@@ -208,7 +208,7 @@ describe('GiteaUrlReader', () => {
 
     it('should throw NotModified if server responds with 304 from etag', async () => {
       worker.use(
-        rest.get(
+        http.get(
           'https://gitea.com/api/v1/repos/owner/project/contents/LICENSE',
           (_, res, ctx) => {
             return res(ctx.set('ETag', 'foo'), ctx.status(304, 'Error!!!'));
@@ -228,7 +228,7 @@ describe('GiteaUrlReader', () => {
 
     it('should throw NotModified if server responds with 304 from lastModifiedAfter', async () => {
       worker.use(
-        rest.get(
+        http.get(
           'https://gitea.com/api/v1/repos/owner/project/contents/LICENSE',
           (_, res, ctx) => {
             return res(
@@ -262,7 +262,7 @@ describe('GiteaUrlReader', () => {
 
     beforeEach(() => {
       worker.use(
-        rest.get(
+        http.get(
           'https://gitea.com/api/v1/repos/owner/project/git/commits/branch2',
           (_, res, ctx) => {
             return res(
@@ -277,7 +277,7 @@ describe('GiteaUrlReader', () => {
 
     it('should be able to get archive', async () => {
       worker.use(
-        rest.get(
+        http.get(
           'https://gitea.com/api/v1/repos/owner/project/archive/branch2.tar.gz',
           (_, res, ctx) => {
             return res(
@@ -315,7 +315,7 @@ describe('GiteaUrlReader', () => {
 
     it('should return not found', async () => {
       worker.use(
-        rest.get(
+        http.get(
           'https://gitea.com/api/v1/repos/owner/project/git/commits/branch3',
           (_, res, ctx) => {
             return res(ctx.status(404));

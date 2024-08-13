@@ -15,7 +15,7 @@
  */
 
 import { registerMswTestHooks } from '@backstage/test-utils';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import { NotificationPayload } from '@backstage/plugin-notifications-common';
 import {
@@ -55,7 +55,7 @@ describe('DefaultNotificationService', () => {
       };
 
       server.use(
-        rest.post('http://example.com', async (req, res, ctx) => {
+        http.post('http://example.com', async (req, res, ctx) => {
           const json = await req.json();
           expect(json).toEqual(body);
           expect(req.headers.get('Authorization')).toBe(
@@ -77,7 +77,7 @@ describe('DefaultNotificationService', () => {
       };
 
       server.use(
-        rest.post('http://example.com', async (req, res, ctx) => {
+        http.post('http://example.com', async (req, res, ctx) => {
           const json = await req.json();
           expect(json).toEqual(body);
           expect(req.headers.get('Authorization')).toBe(

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import { createBitbucketPipelinesRunAction } from './bitbucketCloudPipelinesRun';
 import yaml from 'yaml';
@@ -57,7 +57,7 @@ describe('bitbucket:pipelines:run', () => {
   it('should trigger a pipeline for a branch', async () => {
     expect.assertions(2);
     worker.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/test-workspace/test-repo-slug/pipelines',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Basic dTpw');
@@ -85,7 +85,7 @@ describe('bitbucket:pipelines:run', () => {
   it('should trigger a pipeline for a commit on a branch', async () => {
     expect.assertions(2);
     worker.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/test-workspace/test-repo-slug/pipelines',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Basic dTpw');
@@ -117,7 +117,7 @@ describe('bitbucket:pipelines:run', () => {
   it('should trigger a specific pipeline definition for a commit', async () => {
     expect.assertions(2);
     worker.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/test-workspace/test-repo-slug/pipelines',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Basic dTpw');
@@ -151,7 +151,7 @@ describe('bitbucket:pipelines:run', () => {
   it('should trigger a specific pipeline definition for a commit on a branch or tag', async () => {
     expect.assertions(2);
     worker.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/test-workspace/test-repo-slug/pipelines',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Basic dTpw');
@@ -187,7 +187,7 @@ describe('bitbucket:pipelines:run', () => {
   it('should trigger a custom pipeline with variables', async () => {
     expect.assertions(2);
     worker.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/test-workspace/test-repo-slug/pipelines',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Basic dTpw');
@@ -226,7 +226,7 @@ describe('bitbucket:pipelines:run', () => {
   it('should trigger a pull request pipeline', async () => {
     expect.assertions(2);
     worker.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/test-workspace/test-repo-slug/pipelines',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Basic dTpw');

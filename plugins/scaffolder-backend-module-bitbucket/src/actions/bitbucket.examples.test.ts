@@ -27,7 +27,7 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
 });
 
 import { createPublishBitbucketAction } from './bitbucket';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { ScmIntegrations } from '@backstage/integration';
@@ -75,7 +75,7 @@ describe('publish:bitbucket', () => {
 
   it('should call initAndPush with the correct values', async () => {
     server.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo',
         (_, res, ctx) =>
           res(
@@ -116,7 +116,7 @@ describe('publish:bitbucket', () => {
 
   it('should call initAndPush with the correct default branch', async () => {
     server.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo',
         (_, res, ctx) =>
           res(
@@ -157,7 +157,7 @@ describe('publish:bitbucket', () => {
 
   it('should call initAndPush with the specified source path', async () => {
     server.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo',
         (_, res, ctx) =>
           res(
@@ -197,7 +197,7 @@ describe('publish:bitbucket', () => {
 
   it('should call initAndPush with the authentication token', async () => {
     server.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo',
         (_, res, ctx) =>
           res(
@@ -240,7 +240,7 @@ describe('publish:bitbucket', () => {
 
   it('should call initAndPush with the custom commit message', async () => {
     server.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo',
         (_, res, ctx) =>
           res(
@@ -281,7 +281,7 @@ describe('publish:bitbucket', () => {
 
   it('should call initAndPush with the custom author name and email for the commit.', async () => {
     server.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo',
         (_, res, ctx) =>
           res(
@@ -340,7 +340,7 @@ describe('publish:bitbucket', () => {
     it('should call the correct APIs to enable LFS if requested and the host is hosted bitbucket', async () => {
       expect.assertions(1);
       server.use(
-        rest.post(
+        http.post(
           'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
           (_, res, ctx) => {
             return res(
@@ -350,7 +350,7 @@ describe('publish:bitbucket', () => {
             );
           },
         ),
-        rest.put(
+        http.put(
           'https://hosted.bitbucket.com/rest/git-lfs/admin/projects/project/repos/repo/enabled',
           (req, res, ctx) => {
             expect(req.headers.get('Authorization')).toBe('Bearer thing');

@@ -15,7 +15,7 @@
  */
 
 import { MockFetchApi, registerMswTestHooks } from '@backstage/test-utils';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import { NotificationsClient } from './NotificationsClient';
 import { Notification } from '@backstage/plugin-notifications-common';
@@ -48,7 +48,7 @@ describe('NotificationsClient', () => {
 
     it('should fetch notifications from correct endpoint', async () => {
       server.use(
-        rest.get(`${mockBaseUrl}/`, (_, res, ctx) =>
+        http.get(`${mockBaseUrl}/`, (_, res, ctx) =>
           res(ctx.json(expectedResp)),
         ),
       );
@@ -58,7 +58,7 @@ describe('NotificationsClient', () => {
 
     it('should fetch notifications with options', async () => {
       server.use(
-        rest.get(`${mockBaseUrl}/`, (req, res, ctx) => {
+        http.get(`${mockBaseUrl}/`, (req, res, ctx) => {
           expect(req.url.search).toBe(
             '?limit=10&offset=0&search=find+me&read=true&createdAfter=1970-01-01T00%3A00%3A00.005Z',
           );
@@ -77,7 +77,7 @@ describe('NotificationsClient', () => {
 
     it('should omit unselected fetch options', async () => {
       server.use(
-        rest.get(`${mockBaseUrl}/`, (req, res, ctx) => {
+        http.get(`${mockBaseUrl}/`, (req, res, ctx) => {
           expect(req.url.search).toBe('?limit=10');
           return res(ctx.json(expectedResp));
         }),
@@ -91,7 +91,7 @@ describe('NotificationsClient', () => {
 
     it('should fetch single notification', async () => {
       server.use(
-        rest.get(`${mockBaseUrl}/:id`, (req, res, ctx) => {
+        http.get(`${mockBaseUrl}/:id`, (req, res, ctx) => {
           expect(req.params.id).toBe('acdaa8ca-262b-43c1-b74b-de06e5f3b3c7');
           return res(ctx.json(testNotification));
         }),
@@ -105,7 +105,7 @@ describe('NotificationsClient', () => {
 
     it('should fetch status from correct endpoint', async () => {
       server.use(
-        rest.get(`${mockBaseUrl}/status`, (_, res, ctx) =>
+        http.get(`${mockBaseUrl}/status`, (_, res, ctx) =>
           res(ctx.json({ read: 1, unread: 1 })),
         ),
       );
@@ -115,7 +115,7 @@ describe('NotificationsClient', () => {
 
     it('should update notifications', async () => {
       server.use(
-        rest.post(`${mockBaseUrl}/update`, async (req, res, ctx) => {
+        http.post(`${mockBaseUrl}/update`, async (req, res, ctx) => {
           expect(await req.json()).toEqual({
             ids: ['acdaa8ca-262b-43c1-b74b-de06e5f3b3c7'],
           });

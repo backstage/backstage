@@ -59,7 +59,7 @@ import { ScmAuthApi } from '@backstage/integration-react';
 import { CatalogApi } from '@backstage/plugin-catalog-react';
 import { MockFetchApi, registerMswTestHooks } from '@backstage/test-utils';
 import { Octokit } from '@octokit/rest';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import { CatalogImportClient } from './CatalogImportClient';
 import {
@@ -310,7 +310,7 @@ describe('CatalogImportClient', () => {
         },
       });
       server.use(
-        rest.post(`${mockBaseUrl}/analyze-location`, (req, res, ctx) => {
+        http.post(`${mockBaseUrl}/analyze-location`, (req, res, ctx) => {
           expect(req.body).toEqual({
             location: {
               target: 'https://github.com/backstage/backstage',
@@ -411,7 +411,7 @@ describe('CatalogImportClient', () => {
       });
 
       server.use(
-        rest.post(`${mockBaseUrl}/analyze-location`, (req, res, ctx) => {
+        http.post(`${mockBaseUrl}/analyze-location`, (req, res, ctx) => {
           expect(req.body).toEqual({
             location: {
               target: 'https://github.com/backstage/backstage',
@@ -482,7 +482,7 @@ describe('CatalogImportClient', () => {
       );
 
       server.use(
-        rest.post(`${mockBaseUrl}/analyze-location`, (req, res, ctx) => {
+        http.post(`${mockBaseUrl}/analyze-location`, (req, res, ctx) => {
           expect(req.body).toEqual({
             location: {
               target: 'https://github.com/acme-corp/our-awesome-api',

@@ -26,7 +26,7 @@ import {
 import { ConfigReader } from '@backstage/config';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import fs from 'fs-extra';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import path from 'path';
 import { GerritEntityProvider } from './GerritEntityProvider';
@@ -99,7 +99,7 @@ describe('GerritEntityProvider', () => {
     const expected = getJsonFixture('expectedProviderEntities.json');
 
     server.use(
-      rest.get('https://g.com/gerrit/projects/', (_, res, ctx) =>
+      http.get('https://g.com/gerrit/projects/', (_, res, ctx) =>
         res(
           ctx.status(200),
           ctx.set('Content-Type', 'application/json'),
@@ -134,7 +134,7 @@ describe('GerritEntityProvider', () => {
     })[0];
 
     server.use(
-      rest.get('https://g.com/gerrit/projects/', (_, res, ctx) =>
+      http.get('https://g.com/gerrit/projects/', (_, res, ctx) =>
         res(ctx.status(500, 'Error!.')),
       ),
     );
@@ -278,7 +278,7 @@ describe('GerritEntityProvider', () => {
     const expected = getJsonFixture('expectedProviderEntities.json');
 
     server.use(
-      rest.get('https://g.com/gerrit/projects/', (_, res, ctx) =>
+      http.get('https://g.com/gerrit/projects/', (_, res, ctx) =>
         res(
           ctx.status(200),
           ctx.set('Content-Type', 'application/json'),

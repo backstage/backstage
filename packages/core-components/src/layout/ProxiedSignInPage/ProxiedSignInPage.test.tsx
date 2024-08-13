@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import {
   TestApiProvider,
@@ -51,7 +51,7 @@ describe('ProxiedSignInPage', () => {
 
   it('should sign in a user', async () => {
     worker.use(
-      rest.get('http://example.com/api/auth/test/refresh', (_, res, ctx) =>
+      http.get('http://example.com/api/auth/test/refresh', (_, res, ctx) =>
         res(
           ctx.status(200),
           ctx.set('Content-Type', 'application/json'),
@@ -83,7 +83,7 @@ describe('ProxiedSignInPage', () => {
 
   it('should forward error', async () => {
     worker.use(
-      rest.get('http://example.com/api/auth/test/refresh', (_, res, ctx) =>
+      http.get('http://example.com/api/auth/test/refresh', (_, res, ctx) =>
         res(
           ctx.status(401),
           ctx.set('Content-Type', 'application/json'),

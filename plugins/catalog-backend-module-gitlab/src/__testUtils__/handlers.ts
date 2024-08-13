@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { graphql, rest } from 'msw';
+import { graphql, http } from 'msw';
 import {
   all_groups_response,
   all_projects_response,
@@ -38,16 +38,16 @@ const httpHandlers = [
    */
 
   // fetch all projects in an instance
-  rest.get(`${apiBaseUrl}/projects`, (_, res, ctx) => {
+  http.get(`${apiBaseUrl}/projects`, (_, res, ctx) => {
     return res(ctx.set('x-next-page', ''), ctx.json(all_projects_response));
   }),
 
-  rest.get(`${apiBaseUrl}/projects/42`, (_, res, ctx) => {
+  http.get(`${apiBaseUrl}/projects/42`, (_, res, ctx) => {
     return res(ctx.status(500), ctx.json({ error: 'Internal Server Error' }));
   }),
 
   // testing non existing file
-  rest.get(
+  http.get(
     `${apiBaseUrl}/projects/test-group%2Ftest-repo1/repository/files/catalog-info.yaml`,
     (_, res, ctx) => {
       return res(ctx.status(400), ctx.json({ error: 'Not found' }));
@@ -58,22 +58,22 @@ const httpHandlers = [
    * Group REST endpoint mocks
    */
 
-  rest.get(`${apiBaseUrl}/groups`, (_req, res, ctx) => {
+  http.get(`${apiBaseUrl}/groups`, (_req, res, ctx) => {
     return res(ctx.set('x-next-page', ''), ctx.json(all_groups_response));
   }),
 
-  rest.get(`${apiBaseUrl}/groups/42`, (_, res, ctx) => {
+  http.get(`${apiBaseUrl}/groups/42`, (_, res, ctx) => {
     return res(ctx.status(500), ctx.json({ error: 'Internal Server Error' }));
   }),
-  rest.get(`${apiBaseUrl}/groups/group1/members/all`, (_req, res, ctx) => {
+  http.get(`${apiBaseUrl}/groups/group1/members/all`, (_req, res, ctx) => {
     return res(ctx.json(all_self_hosted_group1_members));
   }),
 
-  rest.get(`${apiBaseUrlSaas}/groups/group1/members/all`, (_req, res, ctx) => {
+  http.get(`${apiBaseUrlSaas}/groups/group1/members/all`, (_req, res, ctx) => {
     return res(ctx.json(all_saas_users_response));
   }),
 
-  rest.get(
+  http.get(
     `${apiBaseUrlSaas}/groups/subgroup1/members/all`,
     (_req, res, ctx) => {
       return res(ctx.json(subgroup_saas_users_response)); // To-DO change
@@ -84,15 +84,15 @@ const httpHandlers = [
    * Users REST endpoint mocks
    */
 
-  rest.get(`${apiBaseUrl}/users`, (_req, res, ctx) => {
+  http.get(`${apiBaseUrl}/users`, (_req, res, ctx) => {
     return res(ctx.set('x-next-page', ''), ctx.json(all_users_response));
   }),
 
-  rest.get(`${apiBaseUrl}/users/${userID}`, (_, res, ctx) => {
+  http.get(`${apiBaseUrl}/users/${userID}`, (_, res, ctx) => {
     return res(ctx.json(all_users_response.find(user => user.id === userID)));
   }),
 
-  rest.get(`${apiBaseUrl}/users/42`, (_, res, ctx) => {
+  http.get(`${apiBaseUrl}/users/42`, (_, res, ctx) => {
     return res(ctx.status(500), ctx.json({ error: 'Internal Server Error' }));
   }),
 
@@ -101,7 +101,7 @@ const httpHandlers = [
    */
 
   // mock a 4 page response
-  rest.get(`${apiBaseUrl}${paged_endpoint}`, (req, res, ctx) => {
+  http.get(`${apiBaseUrl}${paged_endpoint}`, (req, res, ctx) => {
     const page = req.url.searchParams.get('page');
     const currentPage = page ? Number(page) : 1;
     const fakePageCount = 4;
@@ -116,11 +116,11 @@ const httpHandlers = [
     );
   }),
 
-  rest.get(`${apiBaseUrl}${unhealthy_endpoint}`, (_, res, ctx) => {
+  http.get(`${apiBaseUrl}${unhealthy_endpoint}`, (_, res, ctx) => {
     return res(ctx.status(400), ctx.json({ error: 'some error' }));
   }),
 
-  rest.get(`${apiBaseUrl}${some_endpoint}`, (req, res, ctx) => {
+  http.get(`${apiBaseUrl}${some_endpoint}`, (req, res, ctx) => {
     return res(ctx.json([{ endpoint: req.url.toString() }]));
   }),
 ];
@@ -128,13 +128,13 @@ const httpHandlers = [
 // dynamic handlers
 
 const httpGroupFindByIdDynamic = all_groups_response.map(group => {
-  return rest.get(`${apiBaseUrl}/groups/${group.id}`, (_, res, ctx) => {
+  return http.get(`${apiBaseUrl}/groups/${group.id}`, (_, res, ctx) => {
     return res(ctx.json(all_groups_response.find(g => g.id === group.id)));
   });
 });
 
 const httpGroupListDescendantProjectsById = all_groups_response.map(group => {
-  return rest.get(
+  return http.get(
     `${apiBaseUrl}/groups/${group.id}/projects`,
     (_, res, ctx) => {
       const projectsInGroup = all_projects_response.filter(p =>
@@ -147,7 +147,7 @@ const httpGroupListDescendantProjectsById = all_groups_response.map(group => {
 });
 
 const httpGroupListDescendantProjectsByName = all_groups_response.map(group => {
-  return rest.get(
+  return http.get(
     `${apiBaseUrl}/groups/${group.name}/projects`,
     (_, res, ctx) => {
       const projectsInGroup = all_projects_response.filter(p =>
@@ -159,12 +159,12 @@ const httpGroupListDescendantProjectsByName = all_groups_response.map(group => {
   );
 });
 const httpGroupFindByNameDynamic = all_groups_response.map(group => {
-  return rest.get(`${apiBaseUrl}/groups/${group.name}`, (_, res, ctx) => {
+  return http.get(`${apiBaseUrl}/groups/${group.name}`, (_, res, ctx) => {
     return res(ctx.json(all_groups_response.find(g => g.name === group.name)));
   });
 });
 const httpProjectFindByIdDynamic = all_projects_response.map(project => {
-  return rest.get(`${apiBaseUrl}/projects/${project.id}`, (_, res, ctx) => {
+  return http.get(`${apiBaseUrl}/projects/${project.id}`, (_, res, ctx) => {
     return res(ctx.json(all_projects_response.find(p => p.id === project.id)));
   });
 });
@@ -173,7 +173,7 @@ const httpProjectCatalogDynamic = all_projects_response.map(project => {
     ? project.path_with_namespace!.replace(/\//g, '%2F')
     : `${project.path_with_namespace}%2F${project.name}`;
 
-  return rest.head(
+  return http.head(
     `${apiBaseUrl}/projects/${path}/repository/files/catalog-info.yaml`,
     (req, res, ctx) => {
       const branch = req.url.searchParams.get('ref');

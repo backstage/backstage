@@ -25,7 +25,7 @@ import {
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import path from 'path';
 import { NotModifiedError } from '@backstage/errors';
@@ -109,7 +109,7 @@ describe('BitbucketUrlReader', () => {
   describe('readUrl', () => {
     it('should be able to readUrl via buffer without ETag', async () => {
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.org/2.0/repositories/backstage-verification/test-template/src/master/template.yaml',
           (req, res, ctx) => {
             expect(req.headers.get('If-None-Match')).toBeNull();
@@ -131,7 +131,7 @@ describe('BitbucketUrlReader', () => {
 
     it('should be able to readUrl via stream without ETag', async () => {
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.org/2.0/repositories/backstage-verification/test-template/src/master/template.yaml',
           (req, res, ctx) => {
             expect(req.headers.get('If-None-Match')).toBeNull();
@@ -153,7 +153,7 @@ describe('BitbucketUrlReader', () => {
 
     it('should be able to readUrl with matching ETag', async () => {
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.org/2.0/repositories/backstage-verification/test-template/src/master/template.yaml',
           (req, res, ctx) => {
             expect(req.headers.get('If-None-Match')).toBe(
@@ -174,7 +174,7 @@ describe('BitbucketUrlReader', () => {
 
     it('should be able to readUrl without matching ETag', async () => {
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.org/2.0/repositories/backstage-verification/test-template/src/master/template.yaml',
           (req, res, ctx) => {
             expect(req.headers.get('If-None-Match')).toBe(
@@ -200,7 +200,7 @@ describe('BitbucketUrlReader', () => {
 
     it('should be able to readUrl via buffer without If-Modified-Since', async () => {
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.org/2.0/repositories/backstage-verification/test-template/src/master/template.yaml',
           (req, res, ctx) => {
             expect(req.headers.get('If-None-Match')).toBeNull();
@@ -227,7 +227,7 @@ describe('BitbucketUrlReader', () => {
 
     it('should be throw not modified when If-Modified-Since returns a 304', async () => {
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.org/2.0/repositories/backstage-verification/test-template/src/master/template.yaml',
           (req, res, ctx) => {
             expect(req.headers.get('If-Modified-Since')).toBe(
@@ -248,7 +248,7 @@ describe('BitbucketUrlReader', () => {
 
     it('should be able to readUrl when If-Modified-Since is before Last-Modified', async () => {
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.org/2.0/repositories/backstage-verification/test-template/src/master/template.yaml',
           (req, res, ctx) => {
             expect(req.headers.get('If-Modified-Since')).toBe(
@@ -300,7 +300,7 @@ describe('BitbucketUrlReader', () => {
 
     beforeEach(() => {
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.org/2.0/repositories/backstage/mock',
           (_, res, ctx) =>
             res(
@@ -313,7 +313,7 @@ describe('BitbucketUrlReader', () => {
               }),
             ),
         ),
-        rest.get(
+        http.get(
           'https://bitbucket.org/backstage/mock/get/master.tar.gz',
           (_, res, ctx) =>
             res(
@@ -326,7 +326,7 @@ describe('BitbucketUrlReader', () => {
               ctx.body(repoBuffer),
             ),
         ),
-        rest.get(
+        http.get(
           'https://api.bitbucket.org/2.0/repositories/backstage/mock/commits/master',
           (_, res, ctx) =>
             res(
@@ -336,7 +336,7 @@ describe('BitbucketUrlReader', () => {
               }),
             ),
         ),
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive',
           (_, res, ctx) =>
             res(
@@ -349,7 +349,7 @@ describe('BitbucketUrlReader', () => {
               ctx.body(privateBitbucketRepoBuffer),
             ),
         ),
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/commits',
           (_, res, ctx) =>
             res(
@@ -467,7 +467,7 @@ describe('BitbucketUrlReader', () => {
 
     beforeEach(() => {
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.org/2.0/repositories/backstage/mock',
           (_, res, ctx) =>
             res(
@@ -480,7 +480,7 @@ describe('BitbucketUrlReader', () => {
               }),
             ),
         ),
-        rest.get(
+        http.get(
           'https://bitbucket.org/backstage/mock/get/master.tar.gz',
           (_, res, ctx) =>
             res(
@@ -493,7 +493,7 @@ describe('BitbucketUrlReader', () => {
               ctx.body(repoBuffer),
             ),
         ),
-        rest.get(
+        http.get(
           'https://api.bitbucket.org/2.0/repositories/backstage/mock/commits/master',
           (_, res, ctx) =>
             res(
@@ -551,7 +551,7 @@ describe('BitbucketUrlReader', () => {
 
     beforeEach(() => {
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive',
           (_, res, ctx) =>
             res(
@@ -564,7 +564,7 @@ describe('BitbucketUrlReader', () => {
               ctx.body(privateBitbucketRepoBuffer),
             ),
         ),
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/commits',
           (_, res, ctx) =>
             res(

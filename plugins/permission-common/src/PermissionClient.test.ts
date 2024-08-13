@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { RestContext, rest } from 'msw';
+import { RestContext, http } from 'msw';
 import { setupServer } from 'msw/node';
 import { ConfigReader } from '@backstage/config';
 import { PermissionClient } from './PermissionClient';
@@ -70,7 +70,7 @@ describe('PermissionClient', () => {
     });
 
     beforeEach(() => {
-      server.use(rest.post(`${mockBaseUrl}/authorize`, mockAuthorizeHandler));
+      server.use(http.post(`${mockBaseUrl}/authorize`, mockAuthorizeHandler));
     });
 
     afterEach(() => {
@@ -238,7 +238,7 @@ describe('PermissionClient', () => {
 
     beforeEach(() => {
       server.use(
-        rest.post(`${mockBaseUrl}/authorize`, mockPolicyDecisionHandler),
+        http.post(`${mockBaseUrl}/authorize`, mockPolicyDecisionHandler),
       );
     });
 

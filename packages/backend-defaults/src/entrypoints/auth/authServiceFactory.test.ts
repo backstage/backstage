@@ -27,7 +27,7 @@ import {
   BackstageServicePrincipal,
   BackstageUserPrincipal,
 } from '@backstage/backend-plugin-api';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import { InternalBackstageCredentials } from './types';
 import { toInternalBackstageCredentials } from './helpers';
@@ -76,7 +76,7 @@ describe('authServiceFactory', () => {
 
   it('should authenticate issued tokens with legacy auth', async () => {
     server.use(
-      rest.get(
+      http.get(
         'http://localhost:7007/api/catalog/.backstage/auth/v1/jwks.json',
         (_req, res, ctx) => res(ctx.status(404)),
       ),
@@ -121,12 +121,12 @@ describe('authServiceFactory', () => {
     const catalogAuth = await tester.getSubject('catalog');
 
     server.use(
-      rest.get(
+      http.get(
         'http://localhost:7007/api/catalog/.backstage/auth/v1/jwks.json',
         async (_req, res, ctx) =>
           res(ctx.json(await catalogAuth.listPublicServiceKeys())),
       ),
-      rest.get(
+      http.get(
         'http://localhost:7007/api/search/.backstage/auth/v1/jwks.json',
         async (_req, res, ctx) =>
           res(ctx.json(await searchAuth.listPublicServiceKeys())),
@@ -153,7 +153,7 @@ describe('authServiceFactory', () => {
 
   it('should forward user token if target plugin does not support new auth service', async () => {
     server.use(
-      rest.get(
+      http.get(
         'http://localhost:7007/api/permission/.backstage/auth/v1/jwks.json',
         (_req, res, ctx) => res(ctx.status(404)),
       ),
@@ -184,7 +184,7 @@ describe('authServiceFactory', () => {
 
   it('should issue a new service token with token manager if target plugin does not support new auth service', async () => {
     server.use(
-      rest.get(
+      http.get(
         'http://localhost:7007/api/permission/.backstage/auth/v1/jwks.json',
         (_req, res, ctx) => res(ctx.status(404)),
       ),
@@ -230,7 +230,7 @@ describe('authServiceFactory', () => {
      }
     */
     server.use(
-      rest.get(
+      http.get(
         'http://localhost:7007/api/auth/.well-known/jwks.json',
         (_req, res, ctx) =>
           res(
@@ -334,7 +334,7 @@ describe('authServiceFactory', () => {
      }
     */
     server.use(
-      rest.get(
+      http.get(
         'http://localhost:7007/api/auth/.well-known/jwks.json',
         (_req, res, ctx) =>
           res(
@@ -352,22 +352,22 @@ describe('authServiceFactory', () => {
             }),
           ),
       ),
-      rest.get(
+      http.get(
         'http://localhost:7007/api/catalog/.backstage/auth/v1/jwks.json',
         async (_req, res, ctx) =>
           res(ctx.json(await catalogAuth.listPublicServiceKeys())),
       ),
-      rest.get(
+      http.get(
         'http://localhost:7007/api/search/.backstage/auth/v1/jwks.json',
         async (_req, res, ctx) =>
           res(ctx.json(await searchAuth.listPublicServiceKeys())),
       ),
-      rest.get(
+      http.get(
         'http://localhost:7007/api/permission/.backstage/auth/v1/jwks.json',
         async (_req, res, ctx) =>
           res(ctx.json(await permissionAuth.listPublicServiceKeys())),
       ),
-      rest.get(
+      http.get(
         'http://localhost:7007/api/kubernetes/.backstage/auth/v1/jwks.json',
         (_req, res, ctx) => res(ctx.status(404)),
       ),

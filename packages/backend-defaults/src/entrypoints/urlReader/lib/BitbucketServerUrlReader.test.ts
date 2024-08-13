@@ -24,7 +24,7 @@ import {
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import path from 'path';
 import { NotModifiedError } from '@backstage/errors';
@@ -60,7 +60,7 @@ describe('BitbucketServerUrlReader', () => {
 
     beforeEach(() => {
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive',
           (_, res, ctx) =>
             res(
@@ -73,7 +73,7 @@ describe('BitbucketServerUrlReader', () => {
               ctx.body(repoBuffer),
             ),
         ),
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/branches',
           (_, res, ctx) =>
             res(
@@ -93,7 +93,7 @@ describe('BitbucketServerUrlReader', () => {
               }),
             ),
         ),
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/branches/default',
           (_, res, ctx) =>
             res(
@@ -108,7 +108,7 @@ describe('BitbucketServerUrlReader', () => {
               }),
             ),
         ),
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/default-branch',
           (_, res, ctx) => res(ctx.status(404)),
         ),
@@ -146,7 +146,7 @@ describe('BitbucketServerUrlReader', () => {
 
     beforeEach(() => {
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive',
           (_, res, ctx) =>
             res(
@@ -159,7 +159,7 @@ describe('BitbucketServerUrlReader', () => {
               ctx.body(repoBuffer),
             ),
         ),
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/branches',
           (_, res, ctx) =>
             res(
@@ -205,7 +205,7 @@ describe('BitbucketServerUrlReader', () => {
 
     beforeEach(() => {
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive',
           (_, res, ctx) =>
             res(
@@ -218,7 +218,7 @@ describe('BitbucketServerUrlReader', () => {
               ctx.body(repoBuffer),
             ),
         ),
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/branches',
           (_, res, ctx) =>
             res(

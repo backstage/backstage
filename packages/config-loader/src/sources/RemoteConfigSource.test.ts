@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { rest } from 'msw';
+import { http } from 'msw';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { setupServer } from 'msw/node';
 import { RemoteConfigSource } from './RemoteConfigSource';
@@ -26,7 +26,7 @@ describe('RemoteConfigSource', () => {
 
   it('should load config from a remote URL', async () => {
     worker.use(
-      rest.get('http://localhost/config.yaml', (_req, res, ctx) =>
+      http.get('http://localhost/config.yaml', (_req, res, ctx) =>
         res(
           ctx.body(`
 app:
@@ -61,7 +61,7 @@ app:
 
   it('should load and parse config from a remote URL', async () => {
     worker.use(
-      rest.get('http://localhost/config.json', (_req, res, ctx) =>
+      http.get('http://localhost/config.json', (_req, res, ctx) =>
         res(
           ctx.body(
             JSON.stringify({
@@ -102,7 +102,7 @@ app:
     let fetched = false;
 
     worker.use(
-      rest.get('http://localhost/config.yaml', (_req, res, ctx) => {
+      http.get('http://localhost/config.yaml', (_req, res, ctx) => {
         if (!fetched) {
           fetched = true;
           return res(ctx.body('x: 1'));

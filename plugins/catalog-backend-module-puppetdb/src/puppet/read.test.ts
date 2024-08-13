@@ -21,7 +21,7 @@ import {
 } from '../providers';
 import { DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import { ANNOTATION_PUPPET_CERTNAME, ENDPOINT_FACTSETS } from './constants';
 
@@ -41,7 +41,7 @@ describe('readPuppetNodes', () => {
 
     beforeEach(async () => {
       worker.use(
-        rest.get(`${config.baseUrl}/${ENDPOINT_FACTSETS}`, (_req, res, ctx) => {
+        http.get(`${config.baseUrl}/${ENDPOINT_FACTSETS}`, (_req, res, ctx) => {
           return res(
             ctx.status(200),
             ctx.set('Content-Type', 'application/json'),
@@ -196,7 +196,7 @@ describe('readPuppetNodes', () => {
     describe('where no results are matched', () => {
       beforeEach(async () => {
         worker.use(
-          rest.get(
+          http.get(
             `${config.baseUrl}/${ENDPOINT_FACTSETS}`,
             (_req, res, ctx) => {
               return res(
@@ -218,7 +218,7 @@ describe('readPuppetNodes', () => {
     describe('where results are matched', () => {
       beforeEach(async () => {
         worker.use(
-          rest.get(
+          http.get(
             `${config.baseUrl}/${ENDPOINT_FACTSETS}`,
             (_req, res, ctx) => {
               return res(

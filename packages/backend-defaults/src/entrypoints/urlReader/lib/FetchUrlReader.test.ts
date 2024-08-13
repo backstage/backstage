@@ -20,7 +20,7 @@ import {
   mockServices,
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import { FetchUrlReader } from './FetchUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
@@ -38,7 +38,7 @@ describe('FetchUrlReader', () => {
 
   beforeEach(() => {
     worker.use(
-      rest.get('https://backstage.io/some-resource', (req, res, ctx) => {
+      http.get('https://backstage.io/some-resource', (req, res, ctx) => {
         if (req.headers.get('if-none-match') === 'foo') {
           return res(
             ctx.status(304),
@@ -72,13 +72,13 @@ describe('FetchUrlReader', () => {
     );
 
     worker.use(
-      rest.get('https://backstage.io/not-exists', (_req, res, ctx) => {
+      http.get('https://backstage.io/not-exists', (_req, res, ctx) => {
         return res(ctx.status(404));
       }),
     );
 
     worker.use(
-      rest.get('https://backstage.io/error', (_req, res, ctx) => {
+      http.get('https://backstage.io/error', (_req, res, ctx) => {
         return res(ctx.status(500), ctx.body('An internal error occurred'));
       }),
     );
@@ -229,7 +229,7 @@ describe('FetchUrlReader', () => {
       expect.assertions(1);
 
       worker.use(
-        rest.get(
+        http.get(
           'https://backstage.io/requires-authentication',
           (req, res, ctx) => {
             expect(req.headers.get('authorization')).toBe('Bearer mytoken');

@@ -27,7 +27,7 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
 });
 
 import { createPublishBitbucketServerAction } from './bitbucketServer';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { ScmIntegrations } from '@backstage/integration';
@@ -80,7 +80,7 @@ describe('publish:bitbucketServer', () => {
   it(`should ${examples[0].description}`, async () => {
     expect.assertions(3);
     server.use(
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
@@ -134,7 +134,7 @@ describe('publish:bitbucketServer', () => {
   it(`should ${examples[1].description}`, async () => {
     expect.assertions(3);
     server.use(
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe(
@@ -202,7 +202,7 @@ describe('publish:bitbucketServer', () => {
   it(`should ${examples[2].description}`, async () => {
     expect.assertions(3);
     server.use(
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe(
@@ -271,7 +271,7 @@ describe('publish:bitbucketServer', () => {
     expect.assertions(3);
 
     const handlers = [
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe(
@@ -304,7 +304,7 @@ describe('publish:bitbucketServer', () => {
           );
         },
       ),
-      rest.put(
+      http.put(
         'https://hosted.bitbucket.com/rest/git-lfs/admin/projects/project/repos/repo/enabled',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
@@ -368,7 +368,7 @@ describe('publish:bitbucketServer', () => {
     expect.assertions(3);
 
     const handlers = [
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe(
@@ -401,7 +401,7 @@ describe('publish:bitbucketServer', () => {
           );
         },
       ),
-      rest.put(
+      http.put(
         'https://hosted.bitbucket.com/rest/git-lfs/admin/projects/project/repos/repo/enabled',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
@@ -464,7 +464,7 @@ describe('publish:bitbucketServer', () => {
     expect.assertions(3);
 
     const handlers = [
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe(`Bearer thing`);
@@ -494,7 +494,7 @@ describe('publish:bitbucketServer', () => {
           );
         },
       ),
-      rest.put(
+      http.put(
         'https://hosted.bitbucket.com/rest/git-lfs/admin/projects/project/repos/repo/enabled',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
@@ -558,7 +558,7 @@ describe('publish:bitbucketServer', () => {
     expect.assertions(5);
 
     const handlers = [
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
@@ -591,7 +591,7 @@ describe('publish:bitbucketServer', () => {
           );
         },
       ),
-      rest.put(
+      http.put(
         'https://hosted.bitbucket.com/rest/git-lfs/admin/projects/project/repos/repo/enabled',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
@@ -654,7 +654,7 @@ describe('publish:bitbucketServer', () => {
     expect.assertions(3);
 
     const handlers = [
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer custom-token');
@@ -687,7 +687,7 @@ describe('publish:bitbucketServer', () => {
           );
         },
       ),
-      rest.put(
+      http.put(
         'https://hosted.bitbucket.com/rest/git-lfs/admin/projects/project/repos/repo/enabled',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
@@ -747,7 +747,7 @@ describe('publish:bitbucketServer', () => {
     expect.assertions(3);
 
     const handlers = [
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
@@ -780,7 +780,7 @@ describe('publish:bitbucketServer', () => {
           );
         },
       ),
-      rest.put(
+      http.put(
         'https://hosted.bitbucket.com/rest/git-lfs/admin/projects/project/repos/repo/enabled',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
@@ -840,7 +840,7 @@ describe('publish:bitbucketServer', () => {
     expect.assertions(3);
 
     const handlers = [
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
@@ -873,7 +873,7 @@ describe('publish:bitbucketServer', () => {
           );
         },
       ),
-      rest.put(
+      http.put(
         'https://hosted.bitbucket.com/rest/git-lfs/admin/projects/project/repos/repo/enabled',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
@@ -933,7 +933,7 @@ describe('publish:bitbucketServer', () => {
     expect.assertions(5);
 
     const handlers = [
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer custom-token');
@@ -968,7 +968,7 @@ describe('publish:bitbucketServer', () => {
           );
         },
       ),
-      rest.put(
+      http.put(
         'https://hosted.bitbucket.com/rest/git-lfs/admin/projects/project/repos/repo/enabled',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer custom-token');
@@ -1028,7 +1028,7 @@ describe('publish:bitbucketServer', () => {
     expect.assertions(3);
 
     const handlers = [
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
@@ -1062,7 +1062,7 @@ describe('publish:bitbucketServer', () => {
           );
         },
       ),
-      rest.put(
+      http.put(
         'https://hosted.bitbucket.com/rest/git-lfs/admin/projects/project/repos/repo/enabled',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer custom-token');
@@ -1124,7 +1124,7 @@ describe('publish:bitbucketServer', () => {
     expect.assertions(3);
 
     const handlers = [
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
@@ -1159,7 +1159,7 @@ describe('publish:bitbucketServer', () => {
           );
         },
       ),
-      rest.put(
+      http.put(
         'https://hosted.bitbucket.com/rest/git-lfs/admin/projects/project/repos/repo/enabled',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer custom-token');
@@ -1221,7 +1221,7 @@ describe('publish:bitbucketServer', () => {
     expect.assertions(3);
 
     const handlers = [
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe(
@@ -1257,7 +1257,7 @@ describe('publish:bitbucketServer', () => {
           );
         },
       ),
-      rest.put(
+      http.put(
         'https://hosted.bitbucket.com/rest/git-lfs/admin/projects/project/repos/repo/enabled',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer custom-token');
@@ -1319,7 +1319,7 @@ describe('publish:bitbucketServer', () => {
     expect.assertions(3);
 
     const handlers = [
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
@@ -1353,7 +1353,7 @@ describe('publish:bitbucketServer', () => {
           );
         },
       ),
-      rest.put(
+      http.put(
         'https://hosted.bitbucket.com/rest/git-lfs/admin/projects/project/repos/repo/enabled',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer custom-token');
@@ -1415,7 +1415,7 @@ describe('publish:bitbucketServer', () => {
     expect.assertions(5);
 
     const handlers = [
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
@@ -1449,7 +1449,7 @@ describe('publish:bitbucketServer', () => {
           );
         },
       ),
-      rest.put(
+      http.put(
         'https://hosted.bitbucket.com/rest/git-lfs/admin/projects/project/repos/repo/enabled',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');

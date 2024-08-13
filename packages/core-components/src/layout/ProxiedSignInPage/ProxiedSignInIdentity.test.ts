@@ -15,7 +15,7 @@
  */
 
 import { registerMswTestHooks } from '@backstage/test-utils';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import {
   DEFAULTS,
@@ -105,7 +105,7 @@ describe('ProxiedSignInIdentity', () => {
       }
       worker.events.on('request:match', serverCalled);
       worker.use(
-        rest.get('http://example.com/api/auth/foo/refresh', (_, res, ctx) =>
+        http.get('http://example.com/api/auth/foo/refresh', (_, res, ctx) =>
           res(
             ctx.status(200),
             ctx.set('Content-Type', 'application/json'),
@@ -187,7 +187,7 @@ describe('ProxiedSignInIdentity', () => {
 
       worker.events.on('request:match', serverCalled);
       worker.use(
-        rest.get('http://example.com/api/auth/foo/refresh', (_, res, ctx) =>
+        http.get('http://example.com/api/auth/foo/refresh', (_, res, ctx) =>
           res(
             ctx.status(200),
             ctx.set('Content-Type', 'application/json'),
@@ -227,7 +227,7 @@ describe('ProxiedSignInIdentity', () => {
 
       worker.events.on('request:match', serverCalled);
       worker.use(
-        rest.get('http://example.com/api/auth/foo/refresh', (_, res, ctx) =>
+        http.get('http://example.com/api/auth/foo/refresh', (_, res, ctx) =>
           res(
             ctx.status(200),
             ctx.set('Content-Type', 'application/json'),
@@ -265,7 +265,7 @@ describe('ProxiedSignInIdentity', () => {
 
       worker.events.on('request:match', serverCalled);
       worker.use(
-        rest.get('http://example.com/api/auth/foo/refresh', (_, res, ctx) =>
+        http.get('http://example.com/api/auth/foo/refresh', (_, res, ctx) =>
           res(
             ctx.status(200),
             ctx.set('Content-Type', 'application/json'),

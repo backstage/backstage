@@ -33,7 +33,7 @@ import {
   createMockDirectory,
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 
 jest.spyOn(Task, 'log').mockReturnValue(undefined);
@@ -429,7 +429,7 @@ describe('tasks', () => {
 
     it('should fetch the yarn.lock seed file', async () => {
       worker.use(
-        rest.get(
+        http.get(
           'https://raw.githubusercontent.com/backstage/backstage/master/packages/create-app/seed-yarn.lock',
           (_, res, ctx) =>
             res(
@@ -465,7 +465,7 @@ describe('tasks', () => {
 
     it('should fail gracefully', async () => {
       worker.use(
-        rest.get(
+        http.get(
           'https://raw.githubusercontent.com/backstage/backstage/master/packages/create-app/seed-yarn.lock',
           (_, res, ctx) => res(ctx.status(404)),
         ),
@@ -480,7 +480,7 @@ describe('tasks', () => {
 
     it('should time out if it takes too long to fetch', async () => {
       worker.use(
-        rest.get(
+        http.get(
           'https://raw.githubusercontent.com/backstage/backstage/master/packages/create-app/seed-yarn.lock',
           (_, res, ctx) => res(ctx.delay(5000)),
         ),

@@ -22,7 +22,7 @@ import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { TestPipeline } from '@backstage/plugin-search-backend-node';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import { Readable } from 'stream';
 import { DefaultCatalogCollatorFactory } from './DefaultCatalogCollatorFactory';
@@ -78,7 +78,7 @@ describe('DefaultCatalogCollatorFactory', () => {
 
   beforeEach(() => {
     server.use(
-      rest.get('http://localhost:7007/entities', (req, res, ctx) => {
+      http.get('http://localhost:7007/entities', (req, res, ctx) => {
         if (req.url.searchParams.has('filter')) {
           const filter = req.url.searchParams.get('filter');
           if (filter === 'kind=Foo,kind=Bar') {

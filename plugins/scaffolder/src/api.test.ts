@@ -17,7 +17,7 @@
 import { ConfigReader } from '@backstage/core-app-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { MockFetchApi, registerMswTestHooks } from '@backstage/test-utils';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import { ScaffolderClient } from './api';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
@@ -153,7 +153,7 @@ describe('api', () => {
 
       it('should work', async () => {
         server.use(
-          rest.get(
+          http.get(
             `${mockBaseUrl}/v2/tasks/:taskId/events`,
             (req, res, ctx) => {
               const { taskId } = req.params;
@@ -221,7 +221,7 @@ describe('api', () => {
         expect.assertions(3);
 
         server.use(
-          rest.get(
+          http.get(
             `${mockBaseUrl}/v2/tasks/:taskId/events`,
             (req, res, ctx) => {
               const { taskId } = req.params;
@@ -278,7 +278,7 @@ describe('api', () => {
         const called = jest.fn();
 
         server.use(
-          rest.get(
+          http.get(
             `${mockBaseUrl}/v2/tasks/:taskId/events`,
             (_req, res, ctx) => {
               called();
@@ -327,7 +327,7 @@ describe('api', () => {
   describe('listTasks', () => {
     it('should list all tasks', async () => {
       server.use(
-        rest.get(`${mockBaseUrl}/v2/tasks`, (req, res, ctx) => {
+        http.get(`${mockBaseUrl}/v2/tasks`, (req, res, ctx) => {
           const createdBy = req.url.searchParams.get('createdBy');
 
           if (createdBy) {
@@ -358,7 +358,7 @@ describe('api', () => {
     });
     it('should list task using the current user as owner', async () => {
       server.use(
-        rest.get(`${mockBaseUrl}/v2/tasks`, (req, res, ctx) => {
+        http.get(`${mockBaseUrl}/v2/tasks`, (req, res, ctx) => {
           const createdBy = req.url.searchParams.get('createdBy');
 
           if (createdBy) {

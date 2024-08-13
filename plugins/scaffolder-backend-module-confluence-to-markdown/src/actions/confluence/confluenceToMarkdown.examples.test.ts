@@ -22,7 +22,7 @@ import {
   mockServices,
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import { examples } from './confluenceToMarkdown.examples';
 import yaml from 'yaml';
@@ -121,14 +121,14 @@ describe('confluence:transform:markdown examples', () => {
     };
 
     worker.use(
-      rest.get(`${baseUrl}/rest/api/content`, (_, res, ctx) =>
+      http.get(`${baseUrl}/rest/api/content`, (_, res, ctx) =>
         res(ctx.status(200, 'OK'), ctx.json(responseBody)),
       ),
-      rest.get(
+      http.get(
         `${baseUrl}/rest/api/content/4444444/child/attachment`,
         (_, res, ctx) => res(ctx.status(200, 'OK'), ctx.json(responseBodyTwo)),
       ),
-      rest.get(
+      http.get(
         `${baseUrl}/download/attachments/4444444/testing.pdf`,
         (_, res, ctx) => res(ctx.status(200, 'OK'), ctx.body('hello')),
       ),

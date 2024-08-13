@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import fetch from 'cross-fetch';
 import { registerMswTestHooks } from '../helpers';
@@ -311,7 +311,7 @@ describe('gerrit core', () => {
       const responseBody = ")]}'[]";
       const apiUrl = 'https://gerrit.com/projects/';
       worker.use(
-        rest.get(apiUrl, (_, res, ctx) =>
+        http.get(apiUrl, (_, res, ctx) =>
           res(
             ctx.status(200),
             ctx.set('Content-Type', 'application/json'),
@@ -327,7 +327,7 @@ describe('gerrit core', () => {
       const responseBody = '[]';
       const apiUrl = 'https://gerrit.com/projects/';
       worker.use(
-        rest.get(apiUrl, (_, res, ctx) =>
+        http.get(apiUrl, (_, res, ctx) =>
           res(
             ctx.status(200),
             ctx.set('Content-Type', 'application/json'),
@@ -344,7 +344,7 @@ describe('gerrit core', () => {
       const responseBody = ")]}']{}[";
       const apiUrl = 'https://gerrit.com/projects/';
       worker.use(
-        rest.get(apiUrl, (_, res, ctx) =>
+        http.get(apiUrl, (_, res, ctx) =>
           res(
             ctx.status(200),
             ctx.set('Content-Type', 'application/json'),

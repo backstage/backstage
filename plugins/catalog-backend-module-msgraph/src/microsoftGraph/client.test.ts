@@ -16,7 +16,7 @@
 
 import { TokenCredential } from '@azure/identity';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import { MicrosoftGraphClient } from './client';
 
@@ -42,7 +42,7 @@ describe('MicrosoftGraphClient', () => {
 
   it('should perform raw request', async () => {
     worker.use(
-      rest.get('https://other.example.com/', (_, res, ctx) =>
+      http.get('https://other.example.com/', (_, res, ctx) =>
         res(ctx.status(200), ctx.json({ value: 'example' })),
       ),
     );
@@ -59,7 +59,7 @@ describe('MicrosoftGraphClient', () => {
 
   it('should perform simple api request', async () => {
     worker.use(
-      rest.get('https://example.com/users', (_, res, ctx) =>
+      http.get('https://example.com/users', (_, res, ctx) =>
         res(ctx.status(200), ctx.json({ value: 'example' })),
       ),
     );
@@ -72,7 +72,7 @@ describe('MicrosoftGraphClient', () => {
 
   it('should perform api request with filter, select, expand and top', async () => {
     worker.use(
-      rest.get('https://example.com/users', (req, res, ctx) =>
+      http.get('https://example.com/users', (req, res, ctx) =>
         res(ctx.status(200), ctx.json({ queryString: req.url.search })),
       ),
     );
@@ -93,7 +93,7 @@ describe('MicrosoftGraphClient', () => {
 
   it('should perform collection request for a single page', async () => {
     worker.use(
-      rest.get('https://example.com/users', (_, res, ctx) =>
+      http.get('https://example.com/users', (_, res, ctx) =>
         res(
           ctx.status(200),
           ctx.json({
@@ -112,7 +112,7 @@ describe('MicrosoftGraphClient', () => {
 
   it('should perform collection request for multiple pages', async () => {
     worker.use(
-      rest.get('https://example.com/users', (_, res, ctx) =>
+      http.get('https://example.com/users', (_, res, ctx) =>
         res(
           ctx.status(200),
           ctx.json({
@@ -123,7 +123,7 @@ describe('MicrosoftGraphClient', () => {
       ),
     );
     worker.use(
-      rest.get('https://example.com/users2', (_, res, ctx) =>
+      http.get('https://example.com/users2', (_, res, ctx) =>
         res(ctx.status(200), ctx.json({ value: ['second'] })),
       ),
     );
@@ -137,7 +137,7 @@ describe('MicrosoftGraphClient', () => {
 
   it('should load user profile photo with max size of 120', async () => {
     worker.use(
-      rest.get('https://example.com/users/user-id/photos', (_, res, ctx) =>
+      http.get('https://example.com/users/user-id/photos', (_, res, ctx) =>
         res(
           ctx.status(200),
           ctx.json({
@@ -156,7 +156,7 @@ describe('MicrosoftGraphClient', () => {
       ),
     );
     worker.use(
-      rest.get(
+      http.get(
         'https://example.com/users/user-id/photos/120/*',
         (_, res, ctx) => res(ctx.status(200), ctx.text('911')),
       ),
@@ -169,7 +169,7 @@ describe('MicrosoftGraphClient', () => {
 
   it('should not fail if user has no profile photo', async () => {
     worker.use(
-      rest.get('https://example.com/users/user-id/photos', (_, res, ctx) =>
+      http.get('https://example.com/users/user-id/photos', (_, res, ctx) =>
         res(ctx.status(404)),
       ),
     );
@@ -181,7 +181,7 @@ describe('MicrosoftGraphClient', () => {
 
   it('should load user profile photo', async () => {
     worker.use(
-      rest.get('https://example.com/users/user-id/photo/*', (_, res, ctx) =>
+      http.get('https://example.com/users/user-id/photo/*', (_, res, ctx) =>
         res(ctx.status(200), ctx.text('911')),
       ),
     );
@@ -193,7 +193,7 @@ describe('MicrosoftGraphClient', () => {
 
   it('should load user profile photo for size 120', async () => {
     worker.use(
-      rest.get(
+      http.get(
         'https://example.com/users/user-id/photos/120/*',
         (_, res, ctx) => res(ctx.status(200), ctx.text('911')),
       ),
@@ -206,7 +206,7 @@ describe('MicrosoftGraphClient', () => {
 
   it('should load users', async () => {
     worker.use(
-      rest.get('https://example.com/users', (_, res, ctx) =>
+      http.get('https://example.com/users', (_, res, ctx) =>
         res(
           ctx.status(200),
           ctx.json({
@@ -223,7 +223,7 @@ describe('MicrosoftGraphClient', () => {
 
   it('should load group profile photo with max size of 120', async () => {
     worker.use(
-      rest.get('https://example.com/groups/group-id/photos', (_, res, ctx) =>
+      http.get('https://example.com/groups/group-id/photos', (_, res, ctx) =>
         res(
           ctx.status(200),
           ctx.json({
@@ -238,7 +238,7 @@ describe('MicrosoftGraphClient', () => {
       ),
     );
     worker.use(
-      rest.get(
+      http.get(
         'https://example.com/groups/group-id/photos/120/*',
         (_, res, ctx) => res(ctx.status(200), ctx.text('911')),
       ),
@@ -251,7 +251,7 @@ describe('MicrosoftGraphClient', () => {
 
   it('should load group profile photo', async () => {
     worker.use(
-      rest.get('https://example.com/groups/group-id/photo/*', (_, res, ctx) =>
+      http.get('https://example.com/groups/group-id/photo/*', (_, res, ctx) =>
         res(ctx.status(200), ctx.text('911')),
       ),
     );
@@ -263,7 +263,7 @@ describe('MicrosoftGraphClient', () => {
 
   it('should load groups', async () => {
     worker.use(
-      rest.get('https://example.com/groups', (_, res, ctx) =>
+      http.get('https://example.com/groups', (_, res, ctx) =>
         res(
           ctx.status(200),
           ctx.json({
@@ -280,7 +280,7 @@ describe('MicrosoftGraphClient', () => {
 
   it('should load group members', async () => {
     worker.use(
-      rest.get('https://example.com/groups/group-id/members', (_, res, ctx) =>
+      http.get('https://example.com/groups/group-id/members', (_, res, ctx) =>
         res(
           ctx.status(200),
           ctx.json({
@@ -305,7 +305,7 @@ describe('MicrosoftGraphClient', () => {
 
   it('should load user group members', async () => {
     worker.use(
-      rest.get(
+      http.get(
         'https://example.com/groups/group-id/members/microsoft.graph.user',
         (_, res, ctx) =>
           res(
@@ -326,7 +326,7 @@ describe('MicrosoftGraphClient', () => {
 
   it('should load organization', async () => {
     worker.use(
-      rest.get('https://example.com/organization/tentant-id', (_, res, ctx) =>
+      http.get('https://example.com/organization/tentant-id', (_, res, ctx) =>
         res(
           ctx.status(200),
           ctx.json({

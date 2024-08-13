@@ -28,7 +28,7 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
 
 import path from 'path';
 import { createPublishGerritAction } from './gerrit';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { ScmIntegrations } from '@backstage/integration';
@@ -91,7 +91,7 @@ describe('publish:gerrit', () => {
   it('can correctly create a new project', async () => {
     expect.assertions(5);
     server.use(
-      rest.put('https://gerrithost.org/a/projects/repo', (req, res, ctx) => {
+      http.put('https://gerrithost.org/a/projects/repo', (req, res, ctx) => {
         expect(req.headers.get('Authorization')).toBe(
           'Basic Z2Vycml0dXNlcjp1c2VydG9rZW4=',
         );
@@ -141,7 +141,7 @@ describe('publish:gerrit', () => {
   it('can correctly create a new project with a specific sourcePath', async () => {
     expect.assertions(5);
     server.use(
-      rest.put('https://gerrithost.org/a/projects/repo', (req, res, ctx) => {
+      http.put('https://gerrithost.org/a/projects/repo', (req, res, ctx) => {
         expect(req.headers.get('Authorization')).toBe(
           'Basic Z2Vycml0dXNlcjp1c2VydG9rZW4=',
         );
@@ -192,7 +192,7 @@ describe('publish:gerrit', () => {
   it('can correctly create a new project without specifying owner', async () => {
     expect.assertions(5);
     server.use(
-      rest.put('https://gerrithost.org/a/projects/repo', (req, res, ctx) => {
+      http.put('https://gerrithost.org/a/projects/repo', (req, res, ctx) => {
         expect(req.headers.get('Authorization')).toBe(
           'Basic Z2Vycml0dXNlcjp1c2VydG9rZW4=',
         );
@@ -243,7 +243,7 @@ describe('publish:gerrit', () => {
   it('can correctly create a new project with main as default branch', async () => {
     expect.assertions(5);
     server.use(
-      rest.put('https://gerrithost.org/a/projects/repo', (req, res, ctx) => {
+      http.put('https://gerrithost.org/a/projects/repo', (req, res, ctx) => {
         expect(req.headers.get('Authorization')).toBe(
           'Basic Z2Vycml0dXNlcjp1c2VydG9rZW4=',
         );

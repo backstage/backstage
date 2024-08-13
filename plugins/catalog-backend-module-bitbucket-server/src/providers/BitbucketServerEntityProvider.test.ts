@@ -25,7 +25,7 @@ import {
 } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import { BitbucketServerEntityProvider } from './BitbucketServerEntityProvider';
 import { BitbucketServerPagedResponse } from '../lib';
@@ -62,7 +62,7 @@ const server = setupServer();
 function setupStubs(projects: Project[], baseUrl: string) {
   // Stub projects
   server.use(
-    rest.get(`${baseUrl}/rest/api/1.0/projects`, (_, res, ctx) => {
+    http.get(`${baseUrl}/rest/api/1.0/projects`, (_, res, ctx) => {
       return res(
         ctx.json(
           pagedResponse(
@@ -78,7 +78,7 @@ function setupStubs(projects: Project[], baseUrl: string) {
   for (const project of projects) {
     // Stub list repositories
     server.use(
-      rest.get(
+      http.get(
         `${baseUrl}/rest/api/1.0/projects/${project.key}/repos`,
         (_, res, ctx) => {
           const response = [];

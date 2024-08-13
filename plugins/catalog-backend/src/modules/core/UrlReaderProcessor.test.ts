@@ -20,7 +20,7 @@ import {
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import {
   CatalogProcessorCache,
@@ -60,7 +60,7 @@ describe('UrlReaderProcessor', () => {
     };
 
     server.use(
-      rest.get(`${mockApiOrigin}/component.yaml`, (_, res, ctx) =>
+      http.get(`${mockApiOrigin}/component.yaml`, (_, res, ctx) =>
         res(
           ctx.set({ ETag: 'my-etag' }),
           ctx.json({
@@ -112,7 +112,7 @@ describe('UrlReaderProcessor', () => {
       }),
     });
     server.use(
-      rest.get(`${mockApiOrigin}/component.yaml`, (_, res, ctx) =>
+      http.get(`${mockApiOrigin}/component.yaml`, (_, res, ctx) =>
         res(ctx.status(304)),
       ),
     );
@@ -166,7 +166,7 @@ describe('UrlReaderProcessor', () => {
     };
 
     server.use(
-      rest.get(`${mockApiOrigin}/component-notfound.yaml`, (_, res, ctx) => {
+      http.get(`${mockApiOrigin}/component-notfound.yaml`, (_, res, ctx) => {
         return res(ctx.status(404));
       }),
     );

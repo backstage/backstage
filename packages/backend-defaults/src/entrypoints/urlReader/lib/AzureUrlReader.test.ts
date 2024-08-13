@@ -29,7 +29,7 @@ import {
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import path from 'path';
 import { NotModifiedError } from '@backstage/errors';
@@ -81,7 +81,7 @@ describe('AzureUrlReader', () => {
   describe('read', () => {
     beforeEach(() => {
       worker.use(
-        rest.get('*', (req, res, ctx) =>
+        http.get('*', (req, res, ctx) =>
           res(
             ctx.status(200),
             ctx.json({
@@ -208,7 +208,7 @@ describe('AzureUrlReader', () => {
 
     beforeEach(() => {
       worker.use(
-        rest.get(
+        http.get(
           'https://dev.azure.com/organization/project/_apis/git/repositories/repository/items',
           (_, res, ctx) =>
             res(
@@ -217,7 +217,7 @@ describe('AzureUrlReader', () => {
               ctx.body(repoBuffer),
             ),
         ),
-        rest.get(
+        http.get(
           // https://docs.microsoft.com/en-us/rest/api/azure/devops/git/commits/get%20commits?view=azure-devops-rest-6.0#on-a-branch
           'https://dev.azure.com/organization/project/_apis/git/repositories/repository/commits',
           (_, res, ctx) =>
@@ -318,7 +318,7 @@ describe('AzureUrlReader', () => {
 
     beforeEach(() => {
       worker.use(
-        rest.get(
+        http.get(
           'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items',
           (_, res, ctx) =>
             res(
@@ -327,7 +327,7 @@ describe('AzureUrlReader', () => {
               ctx.body(repoBuffer),
             ),
         ),
-        rest.get(
+        http.get(
           // https://docs.microsoft.com/en-us/rest/api/azure/devops/git/commits/get%20commits?view=azure-devops-rest-6.0#on-a-branch
           'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/commits',
           (_, res, ctx) =>

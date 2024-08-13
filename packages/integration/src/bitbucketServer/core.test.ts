@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import { registerMswTestHooks } from '../helpers';
 import { BitbucketServerIntegrationConfig } from './config';
@@ -108,7 +108,7 @@ describe('bitbucketServer core', () => {
         displayId: 'main',
       };
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/default-branch',
           (_, res, ctx) =>
             res(
@@ -151,7 +151,7 @@ describe('bitbucketServer core', () => {
         displayId: 'main',
       };
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/default-branch',
           (_, res, ctx) =>
             res(
@@ -196,7 +196,7 @@ describe('bitbucketServer core', () => {
         displayId: 'main',
       };
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/default-branch',
           (_, res, ctx) =>
             res(
@@ -222,7 +222,7 @@ describe('bitbucketServer core', () => {
         displayId: 'main',
       };
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/default-branch',
           (_, res, ctx) =>
             res(
@@ -231,7 +231,7 @@ describe('bitbucketServer core', () => {
               ctx.json(defaultBranchResponse),
             ),
         ),
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/branches/default',
           (_, res, ctx) =>
             res(

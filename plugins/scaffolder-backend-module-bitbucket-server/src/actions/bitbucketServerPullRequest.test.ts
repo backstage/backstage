@@ -27,7 +27,7 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
 });
 
 import { createPublishBitbucketServerPullRequestAction } from './bitbucketServerPullRequest';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { ScmIntegrations } from '@backstage/integration';
@@ -188,7 +188,7 @@ describe('publish:bitbucketServer:pull-request', () => {
     },
   };
   const handlers = [
-    rest.get(
+    http.get(
       'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos/repo/branches',
       (_, res, ctx) => {
         return res(
@@ -198,7 +198,7 @@ describe('publish:bitbucketServer:pull-request', () => {
         );
       },
     ),
-    rest.get(
+    http.get(
       'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos/repo/default-branch',
       (_, res, ctx) => {
         return res(
@@ -208,7 +208,7 @@ describe('publish:bitbucketServer:pull-request', () => {
         );
       },
     ),
-    rest.post(
+    http.post(
       'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos/repo/pull-requests',
       (_, res, ctx) => {
         return res(
@@ -278,7 +278,7 @@ describe('publish:bitbucketServer:pull-request', () => {
   it('should call the correct APIs with token', async () => {
     expect.assertions(3);
     server.use(
-      rest.get(
+      http.get(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos/repo/branches',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
@@ -289,7 +289,7 @@ describe('publish:bitbucketServer:pull-request', () => {
           );
         },
       ),
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos/repo/pull-requests',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
@@ -314,7 +314,7 @@ describe('publish:bitbucketServer:pull-request', () => {
   it('should call the correct APIs with basic auth', async () => {
     expect.assertions(3);
     server.use(
-      rest.get(
+      http.get(
         'https://basic-auth.bitbucket.com/rest/api/1.0/projects/project/repos/repo/branches',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe(
@@ -327,7 +327,7 @@ describe('publish:bitbucketServer:pull-request', () => {
           );
         },
       ),
-      rest.post(
+      http.post(
         'https://basic-auth.bitbucket.com/rest/api/1.0/projects/project/repos/repo/pull-requests',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe(
@@ -355,7 +355,7 @@ describe('publish:bitbucketServer:pull-request', () => {
     expect.assertions(3);
     const token = 'user-token';
     server.use(
-      rest.get(
+      http.get(
         'https://no-credentials.bitbucket.com/rest/api/1.0/projects/project/repos/repo/branches',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe(`Bearer ${token}`);
@@ -366,7 +366,7 @@ describe('publish:bitbucketServer:pull-request', () => {
           );
         },
       ),
-      rest.post(
+      http.post(
         'https://no-credentials.bitbucket.com/rest/api/1.0/projects/project/repos/repo/pull-requests',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe(`Bearer ${token}`);

@@ -26,7 +26,7 @@ import {
 } from '@backstage/plugin-auth-node';
 import express from 'express';
 import { JWK, SignJWT, exportJWK, generateKeyPair } from 'jose';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import { oidc } from './provider';
 
@@ -74,7 +74,7 @@ describe('oidc.create', () => {
 
   beforeEach(() => {
     server.use(
-      rest.get(
+      http.get(
         'https://oidc.test/.well-known/openid-configuration',
         (_req, res, ctx) =>
           res(
@@ -86,13 +86,13 @@ describe('oidc.create', () => {
             }),
           ),
       ),
-      rest.post('https://oidc.test/oauth2/token', (_req, res, ctx) =>
+      http.post('https://oidc.test/oauth2/token', (_req, res, ctx) =>
         res(ctx.json(tokenset)),
       ),
-      rest.get('https://oidc.test/jwks.json', async (_req, res, ctx) =>
+      http.get('https://oidc.test/jwks.json', async (_req, res, ctx) =>
         res(ctx.json({ keys: [{ ...publicKey }] })),
       ),
-      rest.get(
+      http.get(
         'https://oidc.test/idp/userinfo.openid',
         async (_req, res, ctx) => res(ctx.json(userinfo)),
       ),

@@ -21,7 +21,7 @@ import bump, { bumpBackstageJsonVersion, createVersionFinder } from './bump';
 import { registerMswTestHooks, withLogCollector } from '@backstage/test-utils';
 import { YarnInfoInspectData } from '../../lib/versioning/packages';
 import { setupServer } from 'msw/node';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { NotFoundError } from '@backstage/errors';
 import {
   MockDirectory,
@@ -174,7 +174,7 @@ describe('bump', () => {
 
     jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
     worker.use(
-      rest.get(
+      http.get(
         'https://versions.backstage.io/v1/tags/main/manifest.json',
         (_, res, ctx) =>
           res(
@@ -267,7 +267,7 @@ describe('bump', () => {
 
     jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
     worker.use(
-      rest.get(
+      http.get(
         'https://versions.backstage.io/v1/tags/main/manifest.json',
         (_, res, ctx) =>
           res(
@@ -363,7 +363,7 @@ describe('bump', () => {
 
     jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
     worker.use(
-      rest.get(
+      http.get(
         'https://versions.backstage.io/v1/tags/main/manifest.json',
         (_, res, ctx) =>
           res(
@@ -466,7 +466,7 @@ describe('bump', () => {
 
     jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
     worker.use(
-      rest.get(
+      http.get(
         'https://versions.backstage.io/v1/releases/999.0.1/manifest.json',
         (_, res, ctx) => res(ctx.status(404), ctx.json({})),
       ),
@@ -535,7 +535,7 @@ describe('bump', () => {
 
     jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
     worker.use(
-      rest.get(
+      http.get(
         'https://versions.backstage.io/v1/tags/main/manifest.json',
         (_, res, ctx) =>
           res(
@@ -555,7 +555,7 @@ describe('bump', () => {
             }),
           ),
       ),
-      rest.get(
+      http.get(
         'https://versions.backstage.io/v1/tags/next/manifest.json',
         (_, res, ctx) =>
           res(
@@ -642,7 +642,7 @@ describe('bump', () => {
 
     jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
     worker.use(
-      rest.get(
+      http.get(
         'https://versions.backstage.io/v1/tags/main/manifest.json',
         (_, res, ctx) =>
           res(
@@ -751,7 +751,7 @@ describe('bump', () => {
     mockFetchPackageInfo.mockRejectedValue(new NotFoundError('Nope'));
     jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
     worker.use(
-      rest.get(
+      http.get(
         'https://versions.backstage.io/v1/tags/main/manifest.json',
         (_, res, ctx) =>
           res(

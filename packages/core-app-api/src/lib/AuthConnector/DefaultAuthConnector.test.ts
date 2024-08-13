@@ -20,7 +20,7 @@ import * as loginPopup from '../loginPopup';
 import { UrlPatternDiscovery } from '../../apis';
 import { registerMswTestHooks } from '@backstage/test-utils';
 import { setupServer } from 'msw/node';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { ConfigReader } from '@backstage/config';
 import { ConfigApi } from '@backstage/core-plugin-api';
 
@@ -61,7 +61,7 @@ describe('DefaultAuthConnector', () => {
 
   it('should refresh a session with scope', async () => {
     server.use(
-      rest.get('*', (req, res, ctx) =>
+      http.get('*', (req, res, ctx) =>
         res(
           ctx.json({
             idToken: 'mock-id-token',
@@ -84,7 +84,7 @@ describe('DefaultAuthConnector', () => {
 
   it('should handle failure to refresh session', async () => {
     server.use(
-      rest.get('*', (_req, res, ctx) =>
+      http.get('*', (_req, res, ctx) =>
         res(ctx.status(500, 'Error: Network NOPE')),
       ),
     );
@@ -96,7 +96,7 @@ describe('DefaultAuthConnector', () => {
   });
 
   it('should handle failure response when refreshing session', async () => {
-    server.use(rest.get('*', (_req, res, ctx) => res(ctx.status(401, 'NOPE'))));
+    server.use(http.get('*', (_req, res, ctx) => res(ctx.status(401, 'NOPE'))));
 
     const connector = new DefaultAuthConnector(defaultOptions);
     await expect(connector.refreshSession()).rejects.toThrow(

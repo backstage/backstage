@@ -20,7 +20,7 @@ import {
   getRepoSourceDirectory,
   initRepoAndPush,
 } from '@backstage/plugin-scaffolder-node';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { setupServer } from 'msw/node';
@@ -68,7 +68,7 @@ describe('publish:gitea', () => {
 
   it(`should ${examples[0].description}`, async () => {
     server.use(
-      rest.get('https://gitea.com/api/v1/orgs/org1', (_req, res, ctx) => {
+      http.get('https://gitea.com/api/v1/orgs/org1', (_req, res, ctx) => {
         return res(
           ctx.status(200),
           ctx.set('Content-Type', 'application/json'),
@@ -81,7 +81,7 @@ describe('publish:gitea', () => {
           }),
         );
       }),
-      rest.get(
+      http.get(
         'https://gitea.com/org1/repo/src/branch/main',
         (_req, res, ctx) => {
           return res(
@@ -91,7 +91,7 @@ describe('publish:gitea', () => {
           );
         },
       ),
-      rest.post('https://gitea.com/api/v1/orgs/org1/repos', (req, res, ctx) => {
+      http.post('https://gitea.com/api/v1/orgs/org1/repos', (req, res, ctx) => {
         // Basic auth must match the user and password defined part of the config
         expect(req.headers.get('Authorization')).toBe(
           'basic c2FtcGxlX3VzZXI6cGFzc3dvcmRfdG9rZW4=',
@@ -141,7 +141,7 @@ describe('publish:gitea', () => {
 
   it(`should ${examples[1].description}`, async () => {
     server.use(
-      rest.get('https://gitea.com/api/v1/orgs/org1', (_req, res, ctx) => {
+      http.get('https://gitea.com/api/v1/orgs/org1', (_req, res, ctx) => {
         return res(
           ctx.status(200),
           ctx.set('Content-Type', 'application/json'),
@@ -154,7 +154,7 @@ describe('publish:gitea', () => {
           }),
         );
       }),
-      rest.get(
+      http.get(
         'https://gitea.com/org1/repo/src/branch/main',
         (_req, res, ctx) => {
           return res(
@@ -164,7 +164,7 @@ describe('publish:gitea', () => {
           );
         },
       ),
-      rest.post('https://gitea.com/api/v1/orgs/org1/repos', (req, res, ctx) => {
+      http.post('https://gitea.com/api/v1/orgs/org1/repos', (req, res, ctx) => {
         // Basic auth must match the user and password defined part of the config
         expect(req.headers.get('Authorization')).toBe(
           'basic c2FtcGxlX3VzZXI6cGFzc3dvcmRfdG9rZW4=',
@@ -214,7 +214,7 @@ describe('publish:gitea', () => {
 
   it(`should ${examples[2].description}`, async () => {
     server.use(
-      rest.get('https://gitea.com/api/v1/orgs/org1', (_req, res, ctx) => {
+      http.get('https://gitea.com/api/v1/orgs/org1', (_req, res, ctx) => {
         return res(
           ctx.status(200),
           ctx.set('Content-Type', 'application/json'),
@@ -227,7 +227,7 @@ describe('publish:gitea', () => {
           }),
         );
       }),
-      rest.get(
+      http.get(
         'https://gitea.com/org1/repo/src/branch/main',
         (_req, res, ctx) => {
           return res(
@@ -237,7 +237,7 @@ describe('publish:gitea', () => {
           );
         },
       ),
-      rest.post('https://gitea.com/api/v1/orgs/org1/repos', (req, res, ctx) => {
+      http.post('https://gitea.com/api/v1/orgs/org1/repos', (req, res, ctx) => {
         // Basic auth must match the user and password defined part of the config
         expect(req.headers.get('Authorization')).toBe(
           'basic c2FtcGxlX3VzZXI6cGFzc3dvcmRfdG9rZW4=',
@@ -287,7 +287,7 @@ describe('publish:gitea', () => {
 
   it(`should ${examples[3].description}`, async () => {
     server.use(
-      rest.get('https://gitea.com/api/v1/orgs/org1', (_req, res, ctx) => {
+      http.get('https://gitea.com/api/v1/orgs/org1', (_req, res, ctx) => {
         return res(
           ctx.status(200),
           ctx.set('Content-Type', 'application/json'),
@@ -300,7 +300,7 @@ describe('publish:gitea', () => {
           }),
         );
       }),
-      rest.get(
+      http.get(
         'https://gitea.com/org1/repo/src/branch/staging',
         (_req, res, ctx) => {
           return res(
@@ -310,7 +310,7 @@ describe('publish:gitea', () => {
           );
         },
       ),
-      rest.post('https://gitea.com/api/v1/orgs/org1/repos', (req, res, ctx) => {
+      http.post('https://gitea.com/api/v1/orgs/org1/repos', (req, res, ctx) => {
         // Basic auth must match the user and password defined part of the config
         expect(req.headers.get('Authorization')).toBe(
           'basic c2FtcGxlX3VzZXI6cGFzc3dvcmRfdG9rZW4=',
@@ -360,7 +360,7 @@ describe('publish:gitea', () => {
 
   it(`should ${examples[4].description}`, async () => {
     server.use(
-      rest.get('https://gitea.com/api/v1/orgs/org1', (_req, res, ctx) => {
+      http.get('https://gitea.com/api/v1/orgs/org1', (_req, res, ctx) => {
         return res(
           ctx.status(200),
           ctx.set('Content-Type', 'application/json'),
@@ -373,7 +373,7 @@ describe('publish:gitea', () => {
           }),
         );
       }),
-      rest.get(
+      http.get(
         'https://gitea.com/org1/repo/src/branch/main',
         (_req, res, ctx) => {
           return res(
@@ -383,7 +383,7 @@ describe('publish:gitea', () => {
           );
         },
       ),
-      rest.post('https://gitea.com/api/v1/orgs/org1/repos', (req, res, ctx) => {
+      http.post('https://gitea.com/api/v1/orgs/org1/repos', (req, res, ctx) => {
         // Basic auth must match the user and password defined part of the config
         expect(req.headers.get('Authorization')).toBe(
           'basic c2FtcGxlX3VzZXI6cGFzc3dvcmRfdG9rZW4=',
@@ -435,7 +435,7 @@ describe('publish:gitea', () => {
 
   it(`should ${examples[5].description}`, async () => {
     server.use(
-      rest.get('https://gitea.com/api/v1/orgs/org1', (_req, res, ctx) => {
+      http.get('https://gitea.com/api/v1/orgs/org1', (_req, res, ctx) => {
         return res(
           ctx.status(200),
           ctx.set('Content-Type', 'application/json'),
@@ -448,7 +448,7 @@ describe('publish:gitea', () => {
           }),
         );
       }),
-      rest.get(
+      http.get(
         'https://gitea.com/org1/repo/src/branch/main',
         (_req, res, ctx) => {
           return res(
@@ -458,7 +458,7 @@ describe('publish:gitea', () => {
           );
         },
       ),
-      rest.post('https://gitea.com/api/v1/orgs/org1/repos', (req, res, ctx) => {
+      http.post('https://gitea.com/api/v1/orgs/org1/repos', (req, res, ctx) => {
         // Basic auth must match the user and password defined part of the config
         expect(req.headers.get('Authorization')).toBe(
           'basic c2FtcGxlX3VzZXI6cGFzc3dvcmRfdG9rZW4=',
@@ -508,7 +508,7 @@ describe('publish:gitea', () => {
 
   it(`should ${examples[6].description}`, async () => {
     server.use(
-      rest.get('https://gitea.com/api/v1/orgs/org1', (_req, res, ctx) => {
+      http.get('https://gitea.com/api/v1/orgs/org1', (_req, res, ctx) => {
         return res(
           ctx.status(200),
           ctx.set('Content-Type', 'application/json'),
@@ -521,7 +521,7 @@ describe('publish:gitea', () => {
           }),
         );
       }),
-      rest.get(
+      http.get(
         'https://gitea.com/org1/repo/src/branch/main',
         (_req, res, ctx) => {
           return res(
@@ -531,7 +531,7 @@ describe('publish:gitea', () => {
           );
         },
       ),
-      rest.post('https://gitea.com/api/v1/orgs/org1/repos', (req, res, ctx) => {
+      http.post('https://gitea.com/api/v1/orgs/org1/repos', (req, res, ctx) => {
         // Basic auth must match the user and password defined part of the config
         expect(req.headers.get('Authorization')).toBe(
           'basic c2FtcGxlX3VzZXI6cGFzc3dvcmRfdG9rZW4=',
@@ -581,7 +581,7 @@ describe('publish:gitea', () => {
 
   it(`should ${examples[7].description}`, async () => {
     server.use(
-      rest.get('https://gitea.com/api/v1/orgs/org1', (_req, res, ctx) => {
+      http.get('https://gitea.com/api/v1/orgs/org1', (_req, res, ctx) => {
         return res(
           ctx.status(200),
           ctx.set('Content-Type', 'application/json'),
@@ -594,7 +594,7 @@ describe('publish:gitea', () => {
           }),
         );
       }),
-      rest.get(
+      http.get(
         'https://gitea.com/org1/repo/src/branch/main',
         (_req, res, ctx) => {
           return res(
@@ -604,7 +604,7 @@ describe('publish:gitea', () => {
           );
         },
       ),
-      rest.post('https://gitea.com/api/v1/orgs/org1/repos', (req, res, ctx) => {
+      http.post('https://gitea.com/api/v1/orgs/org1/repos', (req, res, ctx) => {
         // Basic auth must match the user and password defined part of the config
         expect(req.headers.get('Authorization')).toBe(
           'basic c2FtcGxlX3VzZXI6cGFzc3dvcmRfdG9rZW4=',
@@ -654,7 +654,7 @@ describe('publish:gitea', () => {
 
   it(`should ${examples[8].description}`, async () => {
     server.use(
-      rest.get('https://gitea.com/api/v1/orgs/org1', (_req, res, ctx) => {
+      http.get('https://gitea.com/api/v1/orgs/org1', (_req, res, ctx) => {
         return res(
           ctx.status(200),
           ctx.set('Content-Type', 'application/json'),
@@ -667,7 +667,7 @@ describe('publish:gitea', () => {
           }),
         );
       }),
-      rest.get(
+      http.get(
         'https://gitea.com/org1/repo/src/branch/staging',
         (_req, res, ctx) => {
           return res(
@@ -677,7 +677,7 @@ describe('publish:gitea', () => {
           );
         },
       ),
-      rest.post('https://gitea.com/api/v1/orgs/org1/repos', (req, res, ctx) => {
+      http.post('https://gitea.com/api/v1/orgs/org1/repos', (req, res, ctx) => {
         // Basic auth must match the user and password defined part of the config
         expect(req.headers.get('Authorization')).toBe(
           'basic c2FtcGxlX3VzZXI6cGFzc3dvcmRfdG9rZW4=',
@@ -729,7 +729,7 @@ describe('publish:gitea', () => {
 
   it(`should ${examples[0].description}`, async () => {
     server.use(
-      rest.get('https://gitea.com/api/v1/orgs/org1', (_req, res, ctx) => {
+      http.get('https://gitea.com/api/v1/orgs/org1', (_req, res, ctx) => {
         return res(
           ctx.status(200),
           ctx.set('Content-Type', 'application/json'),
@@ -742,7 +742,7 @@ describe('publish:gitea', () => {
           }),
         );
       }),
-      rest.get(
+      http.get(
         'https://gitea.com/org1/repo/src/branch/main',
         (_req, res, ctx) => {
           return res(
@@ -752,7 +752,7 @@ describe('publish:gitea', () => {
           );
         },
       ),
-      rest.post('https://gitea.com/api/v1/orgs/org1/repos', (req, res, ctx) => {
+      http.post('https://gitea.com/api/v1/orgs/org1/repos', (req, res, ctx) => {
         // Basic auth must match the user and password defined part of the config
         expect(req.headers.get('Authorization')).toBe(
           'basic c2FtcGxlX3VzZXI6cGFzc3dvcmRfdG9rZW4=',

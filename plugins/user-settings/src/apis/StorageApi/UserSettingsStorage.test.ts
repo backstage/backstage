@@ -22,7 +22,7 @@ import {
   StorageApi,
 } from '@backstage/core-plugin-api';
 import { MockFetchApi, registerMswTestHooks } from '@backstage/test-utils';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { setupServer } from 'msw/node';
 import { UserSettingsStorage } from './UserSettingsStorage';
 
@@ -85,7 +85,7 @@ describe('Persistent Storage API', () => {
     const storage = createPersistentStorage();
 
     server.use(
-      rest.get(
+      http.get(
         `${mockBaseUrl}/buckets/:bucket/keys/:key`,
         async (_req, res, ctx) => {
           return res(ctx.json({ value: 'a' }));
@@ -106,7 +106,7 @@ describe('Persistent Storage API', () => {
     const dummyValue = 'a';
 
     server.use(
-      rest.put(
+      http.put(
         `${mockBaseUrl}/buckets/:bucket/keys/:key`,
         async (req, res, ctx) => {
           const body = await req.json();
@@ -130,7 +130,7 @@ describe('Persistent Storage API', () => {
     };
 
     server.use(
-      rest.put(
+      http.put(
         `${mockBaseUrl}/buckets/:bucket/keys/:key`,
         async (req, res, ctx) => {
           const body = await req.json();
@@ -180,7 +180,7 @@ describe('Persistent Storage API', () => {
     const mockData = { hello: 'im a great new value' };
 
     server.use(
-      rest.put(
+      http.put(
         `${mockBaseUrl}/buckets/:bucket/keys/:key`,
         async (req, res, ctx) => {
           const body = await req.json();
@@ -223,7 +223,7 @@ describe('Persistent Storage API', () => {
     const selectedKeyNextHandler = jest.fn();
 
     server.use(
-      rest.delete(
+      http.delete(
         `${mockBaseUrl}/buckets/:bucket/keys/:key`,
         async (_req, res, ctx) => {
           return res(ctx.status(204));
@@ -260,7 +260,7 @@ describe('Persistent Storage API', () => {
     const selectedKeyNextHandler = jest.fn();
 
     server.use(
-      rest.put(
+      http.put(
         `${mockBaseUrl}/buckets/:bucket/keys/:key`,
         async (req, res, ctx) => {
           const { bucket, key } = req.params;
@@ -272,7 +272,7 @@ describe('Persistent Storage API', () => {
           return res(ctx.json({ value }));
         },
       ),
-      rest.get(
+      http.get(
         `${mockBaseUrl}/buckets/:bucket/keys/:key`,
         async (req, res, ctx) => {
           const { bucket, key } = req.params;
@@ -323,7 +323,7 @@ describe('Persistent Storage API', () => {
     });
 
     server.use(
-      rest.get(
+      http.get(
         `${mockBaseUrl}/buckets/:bucket/keys/:key`,
         async (req, res, ctx) => {
           const { bucket, key } = req.params;
@@ -360,7 +360,7 @@ describe('Persistent Storage API', () => {
     const data = { foo: 'bar', baz: [{ foo: 'bar' }] };
 
     server.use(
-      rest.get(
+      http.get(
         `${mockBaseUrl}/buckets/:bucket/keys/:key`,
         async (_req, res, ctx) => {
           return res(ctx.json({ value: data }));
