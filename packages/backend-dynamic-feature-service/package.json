@@ -1,7 +1,7 @@
 {
   "name": "@backstage/backend-dynamic-feature-service",
   "description": "Backstage dynamic feature service",
-  "version": "0.2.16-next.2",
+  "version": "0.2.16-next.3",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "publishConfig": {

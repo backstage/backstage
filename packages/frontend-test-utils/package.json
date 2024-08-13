@@ -1,6 +1,6 @@
 {
   "name": "@backstage/frontend-test-utils",
-  "version": "0.1.12-next.2",
+  "version": "0.1.12-next.3",
   "backstage": {
     "role": "web-library"
   },

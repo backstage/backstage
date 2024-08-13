@@ -1,5 +1,18 @@
 # @backstage/backend-plugin-api
 
+## 0.8.0-next.3
+
+### Patch Changes
+
+- ddde5fe: Fixed a type issue where plugin and modules depending on multiton services would not receive the correct type.
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.5.0-next.3
+  - @backstage/plugin-permission-common@0.8.1-next.1
+
 ## 0.8.0-next.2
 
 ### Minor Changes

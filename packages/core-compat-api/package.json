@@ -1,6 +1,6 @@
 {
   "name": "@backstage/core-compat-api",
-  "version": "0.2.8-next.2",
+  "version": "0.2.8-next.3",
   "backstage": {
     "role": "web-library"
   },

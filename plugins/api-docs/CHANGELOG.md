@@ -1,5 +1,21 @@
 # @backstage/plugin-api-docs
 
+## 0.11.8-next.3
+
+### Patch Changes
+
+- 6582799: Add `tableOptions` to all tables and additionally `title` to API tables.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.7.0-next.3
+  - @backstage/plugin-catalog@1.22.0-next.3
+  - @backstage/catalog-model@1.6.0-next.0
+  - @backstage/core-compat-api@0.2.8-next.3
+  - @backstage/plugin-catalog-react@1.12.3-next.3
+  - @backstage/core-components@0.14.10-next.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/plugin-catalog-common@1.0.26-next.2
+  - @backstage/plugin-permission-react@0.4.25-next.1
+
 ## 0.11.8-next.2
 
 ### Patch Changes
