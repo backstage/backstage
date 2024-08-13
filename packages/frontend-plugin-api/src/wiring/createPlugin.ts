@@ -111,20 +111,20 @@ export function createPlugin<
       return `Plugin{id=${options.id}}`;
     },
     withOverrides(overrides) {
-      const overrideExtensionIds = new Set(
+      const overriddenExtensionIds = new Set(
         overrides.extensions.map(
           e => resolveExtensionDefinition(e, { namespace: options.id }).id,
         ),
       );
-      const nonOverridenExtensions = (options.extensions ?? []).filter(
+      const nonOverriddenExtensions = (options.extensions ?? []).filter(
         e =>
-          !overrideExtensionIds.has(
+          !overriddenExtensionIds.has(
             resolveExtensionDefinition(e, { namespace: options.id }).id,
           ),
       );
       return createPlugin({
         ...options,
-        extensions: [...nonOverridenExtensions, ...overrides.extensions],
+        extensions: [...nonOverriddenExtensions, ...overrides.extensions],
       });
     },
   } as InternalBackstagePlugin<TRoutes, TExternalRoutes>;
