@@ -51,6 +51,6 @@
     "@backstage/cli": "workspace:^",
     "@backstage/config": "workspace:^",
     "express": "^4.18.2",
-    "msw": "^2.0.8"
+    "msw": "^2.3.1"
   }
 }
