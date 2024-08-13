@@ -356,6 +356,10 @@ export interface BackstagePlugin<
   readonly id: string;
   // (undocumented)
   readonly routes: TRoutes;
+  // (undocumented)
+  withOverrides(options: {
+    extensions: Array<ExtensionDefinition<any, any>>;
+  }): BackstagePlugin<TRoutes, TExternalRoutes, TExtensionMap>;
 }
 
 export { BackstageUserIdentity };
