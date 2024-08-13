@@ -43,7 +43,7 @@ import { Logs, MockedLogger, LogContent } from '../__testUtils__/testUtils';
 import { PluginScanner } from '../scanner/plugin-scanner';
 import { findPaths } from '@backstage/cli-common';
 import { createMockDirectory } from '@backstage/backend-test-utils';
-import { rootLifecycleServiceFactory } from '@backstage/backend-defaults';
+import { rootLifecycleServiceFactory } from '@backstage/backend-defaults/rootLifecycle';
 
 describe('backend-dynamic-feature-service', () => {
   const mockDir = createMockDirectory();
