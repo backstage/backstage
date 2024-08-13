@@ -273,14 +273,40 @@ describe('createPlugin', () => {
   });
 
   describe('overrides', () => {
+    it('should return a plugin instance with the correct namespace', () => {
+      const plugin = createPlugin({
+        id: 'test',
+        extensions: [Extension1, Extension2],
+      });
+
+      expect(plugin.getExtension('test/1')).toMatchInlineSnapshot(`
+        {
+          "$$type": "@backstage/ExtensionDefinition",
+          "attachTo": {
+            "id": "test/output",
+            "input": "names",
+          },
+          "configSchema": undefined,
+          "disabled": false,
+          "factory": [Function],
+          "inputs": {},
+          "kind": undefined,
+          "name": "1",
+          "namespace": "test",
+          "output": [
+            [Function],
+          ],
+          "override": [Function],
+          "toString": [Function],
+          "version": "v2",
+        }
+      `);
+    });
+
     it('should allow overriding extensions that have a matching ID, while keeping old extensions that do not have overlapping IDs', async () => {
       const plugin = createPlugin({
         id: 'test',
         extensions: [Extension1, Extension2, outputExtension],
-      });
-
-      expect(plugin.getExtension('test/1')).toMatchObject({
-        namespace: 'test',
       });
 
       await renderWithEffects(
