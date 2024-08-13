@@ -17,10 +17,16 @@
 import { AppNode } from '../apis';
 import { PortableSchema, createSchemaFromZod } from '../schema';
 import { Expand } from '../types';
-import { createDataContainer } from './createExtensionBlueprint';
+import {
+  ResolveInputValueOverrides,
+  resolveInputOverrides,
+} from './resolveInputOverrides';
+import {
+  ExtensionDataContainer,
+  createExtensionDataContainer,
+} from './createExtensionDataContainer';
 import {
   AnyExtensionDataRef,
-  ExtensionDataRef,
   ExtensionDataValue,
 } from './createExtensionDataRef';
 import { ExtensionInput, LegacyExtensionInput } from './createExtensionInput';
@@ -63,28 +69,6 @@ export type ExtensionDataValues<TExtensionData extends AnyExtensionDataMap> = {
     ? DataName
     : never]?: TExtensionData[DataName]['T'];
 };
-
-/** @public */
-export type ExtensionDataContainer<UExtensionData extends AnyExtensionDataRef> =
-  Iterable<
-    UExtensionData extends ExtensionDataRef<
-      infer IData,
-      infer IId,
-      infer IConfig
-    >
-      ? IConfig['optional'] extends true
-        ? never
-        : ExtensionDataValue<IData, IId>
-      : never
-  > & {
-    get<TId extends UExtensionData['id']>(
-      ref: ExtensionDataRef<any, TId, any>,
-    ): UExtensionData extends ExtensionDataRef<infer IData, TId, infer IConfig>
-      ? IConfig['optional'] extends true
-        ? IData | undefined
-        : IData
-      : never;
-  };
 
 /**
  * Convert a single extension input into a matching resolved input.
@@ -144,6 +128,29 @@ export interface LegacyCreateExtensionOptions<
   }): Expand<ExtensionDataValues<TOutput>>;
 }
 
+type ToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
+  k: infer I,
+) => void
+  ? I
+  : never;
+
+type PopUnion<U> = ToIntersection<
+  U extends any ? () => U : never
+> extends () => infer R
+  ? [rest: Exclude<U, R>, next: R]
+  : undefined;
+
+/** @ignore */
+type JoinStringUnion<
+  U,
+  TDiv extends string = ', ',
+  TResult extends string = '',
+> = PopUnion<U> extends [infer IRest extends string, infer INext extends string]
+  ? TResult extends ''
+    ? JoinStringUnion<IRest, TDiv, INext>
+    : JoinStringUnion<IRest, TDiv, `${TResult}${TDiv}${INext}`>
+  : TResult;
+
 /** @ignore */
 export type VerifyExtensionFactoryOutput<
   UDeclaredOutput extends AnyExtensionDataRef,
@@ -158,18 +165,12 @@ export type VerifyExtensionFactoryOutput<
   ? [IRequiredOutputIds] extends [UFactoryOutput['id']]
     ? [UFactoryOutput['id']] extends [UDeclaredOutput['id']]
       ? {}
-      : {
-          'Error: The extension factory has undeclared output(s)': Exclude<
-            UFactoryOutput['id'],
-            UDeclaredOutput['id']
-          >;
-        }
-    : {
-        'Error: The extension factory is missing the following output(s)': Exclude<
-          IRequiredOutputIds,
-          UFactoryOutput['id']
-        >;
-      }
+      : `Error: The extension factory has undeclared output(s): ${JoinStringUnion<
+          Exclude<UFactoryOutput['id'], UDeclaredOutput['id']>
+        >}`
+    : `Error: The extension factory is missing the following output(s): ${JoinStringUnion<
+        Exclude<IRequiredOutputIds, UFactoryOutput['id']>
+      >}`
   : never;
 
 /** @public */
@@ -259,7 +260,7 @@ export interface ExtensionDefinition<
       factory(
         originalFactory: (context?: {
           config?: TConfig;
-          inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
+          inputs?: ResolveInputValueOverrides<TInputs>;
         }) => ExtensionDataContainer<UOutput>,
         context: {
           node: AppNode;
@@ -558,7 +559,7 @@ export function createExtension<
               ReturnType<TConfigSchema[key]>
             >;
           };
-          inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
+          inputs?: ResolveInputValueOverrides<TInputs>;
         }) => ExtensionDataContainer<UOutput>,
         context: {
           node: AppNode;
@@ -646,14 +647,19 @@ export function createExtension<
                   ReturnType<TConfigSchema[key]>
                 >;
               };
-              inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
+              inputs?: ResolveInputValueOverrides<TInputs>;
             }): ExtensionDataContainer<UOutput> => {
-              return createDataContainer<UOutput>(
+              return createExtensionDataContainer<UOutput>(
                 newOptions.factory({
                   node,
                   config: innerContext?.config ?? config,
-                  inputs: (innerContext?.inputs ?? inputs) as any, // TODO: Fix the way input values are overridden
+                  inputs: resolveInputOverrides(
+                    newOptions.inputs,
+                    inputs,
+                    innerContext?.inputs,
+                  ) as any, // TODO: Might be able to improve this once legacy inputs are gone
                 }) as Iterable<any>,
+                newOptions.output,
               );
             },
             {

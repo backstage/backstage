@@ -54,6 +54,7 @@ function getRoleConfig(role) {
     case 'web-library':
     case 'common-library':
     case 'frontend-plugin':
+    case 'frontend-extensions':
     case 'frontend-plugin-module':
       return { testEnvironment: require.resolve('jest-environment-jsdom') };
     case 'cli':

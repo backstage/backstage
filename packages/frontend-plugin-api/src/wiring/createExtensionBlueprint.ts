@@ -18,7 +18,6 @@ import { AppNode } from '../apis';
 import { Expand } from '../types';
 import {
   CreateExtensionOptions,
-  ExtensionDataContainer,
   ExtensionDefinition,
   ResolvedExtensionInputs,
   VerifyExtensionFactoryOutput,
@@ -28,9 +27,16 @@ import { z } from 'zod';
 import { ExtensionInput } from './createExtensionInput';
 import {
   AnyExtensionDataRef,
-  ExtensionDataRef,
   ExtensionDataValue,
 } from './createExtensionDataRef';
+import {
+  ExtensionDataContainer,
+  createExtensionDataContainer,
+} from './createExtensionDataContainer';
+import {
+  ResolveInputValueOverrides,
+  resolveInputOverrides,
+} from './resolveInputOverrides';
 
 /**
  * @public
@@ -156,7 +162,7 @@ export interface ExtensionBlueprint<
         params: TParams,
         context?: {
           config?: TConfig;
-          inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
+          inputs?: ResolveInputValueOverrides<TInputs>;
         },
       ) => ExtensionDataContainer<UOutput>,
       context: {
@@ -193,30 +199,6 @@ export interface ExtensionBlueprint<
     string | undefined extends TNewNamespace ? TNamespace : TNewNamespace,
     string | undefined extends TNewName ? TName : TNewName
   >;
-}
-
-/** @internal */
-export function createDataContainer<UData extends AnyExtensionDataRef>(
-  values: Iterable<
-    UData extends ExtensionDataRef<infer IData, infer IId>
-      ? ExtensionDataValue<IData, IId>
-      : never
-  >,
-): ExtensionDataContainer<UData> {
-  const container = new Map<string, ExtensionDataValue<any, any>>();
-
-  for (const output of values) {
-    container.set(output.id, output);
-  }
-
-  return {
-    get(ref) {
-      return container.get(ref.id)?.value;
-    },
-    [Symbol.iterator]() {
-      return container.values();
-    },
-  } as ExtensionDataContainer<UData>;
 }
 
 /**
@@ -288,7 +270,7 @@ class ExtensionBlueprintImpl<
               ReturnType<TConfigSchema[key]>
             >;
           };
-          inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
+          inputs?: ResolveInputValueOverrides<TInputs>;
         },
       ) => ExtensionDataContainer<UOutput>,
       context: {
@@ -347,15 +329,20 @@ class ExtensionBlueprintImpl<
                   ReturnType<TConfigSchema[key]>
                 >;
               };
-              inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
+              inputs?: ResolveInputValueOverrides;
             },
           ): ExtensionDataContainer<UOutput> => {
-            return createDataContainer<UOutput>(
+            return createExtensionDataContainer<UOutput>(
               this.options.factory(innerParams, {
                 node,
                 config: innerContext?.config ?? config,
-                inputs: (innerContext?.inputs ?? inputs) as any, // TODO: Fix the way input values are overridden
+                inputs: resolveInputOverrides(
+                  this.options.inputs,
+                  inputs,
+                  innerContext?.inputs,
+                ) as any, // TODO: Might be able to improve this once legacy inputs are gone
               }),
+              this.options.output,
             );
           },
           {
