@@ -10222,34 +10222,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@internal/app-next-example-extensions@workspace:^, @internal/app-next-example-extensions@workspace:packages/app-next-example-extensions":
-  version: 0.0.0-use.local
-  resolution: "@internal/app-next-example-extensions@workspace:packages/app-next-example-extensions"
-  dependencies:
-    "@backstage/cli": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
-    "@backstage/core-components": "workspace:^"
-    "@backstage/dev-utils": "workspace:^"
-    "@backstage/frontend-plugin-api": "workspace:^"
-    "@backstage/integration-react": "workspace:^"
-    "@backstage/plugin-home": "workspace:^"
-    "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
-    "@material-ui/core": ^4.9.13
-    "@material-ui/icons": ^4.9.1
-    "@material-ui/lab": ^4.0.0-alpha.61
-    "@testing-library/jest-dom": ^6.0.0
-    "@testing-library/react": ^15.0.0
-    "@testing-library/user-event": ^14.0.0
-    msw: ^1.0.0
-    react-use: ^17.2.4
-  peerDependencies:
-    react: ^16.13.1 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
-    react-router-dom: 6.0.0-beta.0 || ^6.3.0
-  languageName: unknown
-  linkType: soft
-
 "@internal/plugin-todo-list-backend@workspace:plugins/example-todo-list-backend":
   version: 0.0.0-use.local
   resolution: "@internal/plugin-todo-list-backend@workspace:plugins/example-todo-list-backend"
@@ -26970,7 +26942,6 @@ __metadata:
     "@backstage/plugin-user-settings": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
-    "@internal/app-next-example-extensions": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61

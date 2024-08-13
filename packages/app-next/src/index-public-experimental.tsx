@@ -18,7 +18,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { CookieAuthRedirect } from '@backstage/plugin-auth-react';
 import { createApp } from '@backstage/frontend-app-api';
-import { SignInPage } from '@internal/app-next-example-extensions';
+import { signInPageOverrides } from './overrides/SignInPage';
 import {
   coreExtensionData,
   createExtension,
@@ -39,8 +39,9 @@ const authRedirectExtension = createExtension({
 
 const app = createApp({
   features: [
+    signInPageOverrides,
     createExtensionOverrides({
-      extensions: [SignInPage, authRedirectExtension],
+      extensions: [authRedirectExtension],
     }),
   ],
 });

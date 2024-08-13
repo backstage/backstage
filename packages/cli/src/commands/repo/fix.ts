@@ -246,8 +246,6 @@ function guessPluginId(role: PackageRole, pkgName: string): string | undefined {
     case 'frontend':
     case 'frontend-plugin':
       return pkgName.match(/plugin-(.*)/)?.[1];
-    case 'frontend-extensions':
-      return undefined;
     case 'frontend-plugin-module':
       return pkgName.match(/plugin-(.*)-module-/)?.[1];
     case 'backend-plugin':
@@ -366,7 +364,6 @@ export function fixPluginPackages(
       role === 'common-library' ||
       role === 'web-library' ||
       role === 'node-library' ||
-      role === 'frontend-extensions' ||
       role === 'frontend-plugin-module' // TODO(Rugvip): Remove this once frontend modules are required to have a plugin ID
     ) {
       return;
