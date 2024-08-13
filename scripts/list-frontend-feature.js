@@ -42,7 +42,6 @@ async function main(args) {
       frontendFeatureReport.readme = `[README](${pkg.packageJson.repository.url}/blob/master/${pkg.packageJson.repository.directory}/README.md)`;
       const apiReportPath = join(pkg.dir, 'api-report.md');
       const apiReport = (await fs.readFile(apiReportPath)).toString();
-      // console.log(apiReport)
       if (
         apiReport.includes(
           "import { BackstagePlugin } from '@backstage/frontend-plugin-api';",
