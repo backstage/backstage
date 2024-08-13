@@ -2,12 +2,12 @@
 '@backstage/frontend-plugin-api': patch
 ---
 
-Support overriding of plugin extensions using the new `plugin.override` method.
+Support overriding of plugin extensions using the new `plugin.withOverrides` method.
 
 ```tsx
 import homePlugin from '@backstage/plugin-home';
 
-export default homePlugin.override({
+export default homePlugin.withOverrides({
   extensions: [
     homePage.getExtension('page:home').override({
       *factory(originalFactory) {
