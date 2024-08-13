@@ -49,57 +49,6 @@ import { instantiateAppNodeTree } from '../../../frontend-app-api/src/tree/insta
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { readAppExtensionsConfig } from '../../../frontend-app-api/src/tree/readAppExtensionsConfig';
 
-const NavItem = (props: {
-  routeRef: RouteRef<undefined>;
-  title: string;
-  icon: IconComponent;
-}) => {
-  const { routeRef, title, icon: Icon } = props;
-  const link = useRouteRef(routeRef);
-  if (!link) {
-    return null;
-  }
-  return (
-    <li>
-      <Link to={link()}>
-        <Icon /> {title}
-      </Link>
-    </li>
-  );
-};
-
-const TestAppNavExtension = createExtension({
-  namespace: 'app',
-  name: 'nav',
-  attachTo: { id: 'app/layout', input: 'nav' },
-  inputs: {
-    items: createExtensionInput({
-      target: createNavItemExtension.targetDataRef,
-    }),
-  },
-  output: {
-    element: coreExtensionData.reactElement,
-  },
-  factory({ inputs }) {
-    return {
-      element: (
-        <nav>
-          <ul>
-            {inputs.items.map((item, index) => (
-              <NavItem
-                key={index}
-                icon={item.output.target.icon}
-                title={item.output.target.title}
-                routeRef={item.output.target.routeRef}
-              />
-            ))}
-          </ul>
-        </nav>
-      ),
-    };
-  },
-});
-
 /** @public */
 export class ExtensionQuery {
   #node: AppNode;
@@ -245,6 +194,25 @@ export class ExtensionTester {
     return new ExtensionQuery(node);
   }
 
+  element(): JSX.Element {
+    const tree = this.#resolveTree();
+
+    const element = new ExtensionQuery(tree.root).data(
+      coreExtensionData.reactElement,
+    );
+
+    if (!element) {
+      throw new Error(
+        'No element found. Make sure the extension has a `coreExtensionData.reactElement` output, or use the `.get(myComponentDataRef)` method to get the component',
+      );
+    }
+
+    return element;
+  }
+
+  /**
+   * @deprecated Switch to using `renderInTestApp` directly and using `.element()` or `.get(myComponentDataRef)` to get the component you would like to wrap up
+   */
   render(options?: { config?: JsonObject }): RenderResult {
     const { config = {} } = options ?? {};
 
@@ -260,7 +228,6 @@ export class ExtensionTester {
         createExtensionOverrides({
           extensions: [
             ...this.#extensions.map(extension => extension.definition),
-            TestAppNavExtension,
             createRouterExtension({
               namespace: 'test',
               Component: ({ children }) => (

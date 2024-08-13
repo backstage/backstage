@@ -16,9 +16,11 @@
 
 import React from 'react';
 import { SignInPageBlueprint } from './SignInPageBlueprint';
-import { createExtensionTester } from '@backstage/frontend-test-utils';
+import {
+  createExtensionTester,
+  renderInTestApp,
+} from '@backstage/frontend-test-utils';
 import { screen, waitFor } from '@testing-library/react';
-import { coreExtensionData, createExtension } from '../wiring';
 
 describe('SignInPageBlueprint', () => {
   it('should create an extension with sensible defaults', () => {
@@ -60,20 +62,11 @@ describe('SignInPageBlueprint', () => {
 
     const tester = createExtensionTester(extension);
 
-    expect(tester.data(SignInPageBlueprint.dataRefs.component)).toBeDefined();
+    const Element = tester.data(SignInPageBlueprint.dataRefs.component)!;
 
-    createExtensionTester(
-      createExtension({
-        name: 'dummy',
-        attachTo: { id: 'ignored', input: 'ignored' },
-        output: {
-          element: coreExtensionData.reactElement,
-        },
-        factory: () => ({ element: <div /> }),
-      }),
-    )
-      .add(extension)
-      .render();
+    expect(Element).toBeDefined();
+
+    renderInTestApp(<Element onSignInSuccess={() => {}} />);
 
     await waitFor(() => {
       expect(screen.getByTestId('mock-sign-in')).toBeInTheDocument();

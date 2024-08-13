@@ -16,11 +16,24 @@
 
 import React from 'react';
 import {
+  ExtensionDefinition,
+  IconComponent,
   RouteRef,
   coreExtensionData,
   createExtension,
+  createExtensionInput,
+  createExtensionOverrides,
+  createNavItemExtension,
+  createRouterExtension,
+  useRouteRef,
 } from '@backstage/frontend-plugin-api';
-import { createExtensionTester } from './createExtensionTester';
+import { Link, MemoryRouter } from 'react-router-dom';
+import { createSpecializedApp } from '@backstage/frontend-app-api';
+import { render } from '@testing-library/react';
+import { resolveExtensionDefinition } from '@backstage/frontend-plugin-api/src/wiring/resolveExtensionDefinition';
+import { resolve } from 'path';
+import { ConfigReader } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 
 /**
  * Options to customize the behavior of the test app.
@@ -44,7 +57,63 @@ export type TestAppOptions = {
    * ```
    */
   mountedRoutes?: { [path: string]: RouteRef };
+
+  /**
+   * Additional configuration passed to the app when rendering elements inside it.
+   */
+  config?: JsonObject;
 };
+
+const NavItem = (props: {
+  routeRef: RouteRef<undefined>;
+  title: string;
+  icon: IconComponent;
+}) => {
+  const { routeRef, title, icon: Icon } = props;
+  const link = useRouteRef(routeRef);
+  if (!link) {
+    return null;
+  }
+  return (
+    <li>
+      <Link to={link()}>
+        <Icon /> {title}
+      </Link>
+    </li>
+  );
+};
+
+const TestAppNavExtension = createExtension({
+  namespace: 'app',
+  name: 'nav',
+  attachTo: { id: 'app/layout', input: 'nav' },
+  inputs: {
+    items: createExtensionInput({
+      target: createNavItemExtension.targetDataRef,
+    }),
+  },
+  output: {
+    element: coreExtensionData.reactElement,
+  },
+  factory({ inputs }) {
+    return {
+      element: (
+        <nav>
+          <ul>
+            {inputs.items.map((item, index) => (
+              <NavItem
+                key={index}
+                icon={item.output.target.icon}
+                title={item.output.target.title}
+                routeRef={item.output.target.routeRef}
+              />
+            ))}
+          </ul>
+        </nav>
+      ),
+    };
+  },
+});
 
 /**
  * @public
@@ -54,20 +123,28 @@ export function renderInTestApp(
   element: JSX.Element,
   options?: TestAppOptions,
 ) {
-  const extension = createExtension({
-    namespace: 'test',
-    attachTo: { id: 'app', input: 'root' },
-    output: {
-      element: coreExtensionData.reactElement,
-    },
-    factory: () => ({ element }),
-  });
-  const tester = createExtensionTester(extension);
+  const extensions: Array<ExtensionDefinition<any, any>> = [
+    createExtension({
+      namespace: 'test',
+      attachTo: { id: 'app/routes', input: 'routes' },
+      output: [coreExtensionData.reactElement, coreExtensionData.routePath],
+      factory: () => {
+        return [
+          coreExtensionData.reactElement(element),
+          coreExtensionData.routePath('/'),
+        ];
+      },
+    }),
+    createRouterExtension({
+      namespace: 'test',
+      Component: ({ children }) => <MemoryRouter>{children}</MemoryRouter>,
+    }),
+  ];
 
   if (options?.mountedRoutes) {
     for (const [path, routeRef] of Object.entries(options.mountedRoutes)) {
       // TODO(Rugvip): add support for external route refs
-      tester.add(
+      extensions.push(
         createExtension({
           kind: 'test-route',
           name: path,
@@ -84,5 +161,17 @@ export function renderInTestApp(
       );
     }
   }
-  return tester.render();
+
+  const app = createSpecializedApp({
+    features: [
+      createExtensionOverrides({
+        extensions,
+      }),
+    ],
+    config: ConfigReader.fromConfigs([
+      { context: 'render-config', data: options?.config ?? {} },
+    ]),
+  });
+
+  return render(app.createRoot());
 }
