@@ -6,52 +6,25 @@
 /// <reference types="node" />
 
 import type { AppConfig } from '@backstage/config';
-import { AuthService } from '@backstage/backend-plugin-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { CacheService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { ConfigSchema } from '@backstage/config-loader';
 import { CorsOptions } from 'cors';
-import { DatabaseService } from '@backstage/backend-plugin-api';
-import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { ErrorRequestHandler } from 'express';
-import { Express as Express_2 } from 'express';
 import { Format } from 'logform';
-import { Handler } from 'express';
 import { HelmetOptions } from 'helmet';
 import * as http from 'http';
-import { HttpAuthService } from '@backstage/backend-plugin-api';
-import { HttpRouterService } from '@backstage/backend-plugin-api';
-import { HumanDuration } from '@backstage/types';
 import { IdentityService } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
-import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoadConfigOptionsRemote } from '@backstage/config-loader';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { PermissionsService } from '@backstage/backend-plugin-api';
-import { RemoteConfigSourceOptions } from '@backstage/config-loader';
 import { RequestHandler } from 'express';
-import { RequestListener } from 'http';
 import { RootConfigService } from '@backstage/backend-plugin-api';
-import { RootHttpRouterService } from '@backstage/backend-plugin-api';
-import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
-import { SchedulerService } from '@backstage/backend-plugin-api';
-import type { Server } from 'node:http';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
 import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { transport } from 'winston';
-import { UrlReaderService } from '@backstage/backend-plugin-api';
-import { UserInfoService } from '@backstage/backend-plugin-api';
-
-// @public @deprecated (undocumented)
-export const authServiceFactory: ServiceFactoryCompat<
-  AuthService,
-  'plugin',
-  'singleton',
-  undefined
->;
 
 // @public (undocumented)
 export interface Backend {
@@ -77,28 +50,10 @@ export interface Backend {
   stop(): Promise<void>;
 }
 
-// @public @deprecated (undocumented)
-export const cacheServiceFactory: ServiceFactoryCompat<
-  CacheService,
-  'plugin',
-  'singleton',
-  undefined
->;
-
 // Warning: (ae-forgotten-export) The symbol "createConfigSecretEnumerator_2" needs to be exported by the entry point index.d.ts
 //
 // @public @deprecated (undocumented)
 export const createConfigSecretEnumerator: typeof createConfigSecretEnumerator_2;
-
-// Warning: (ae-forgotten-export) The symbol "createHttpServer_2" needs to be exported by the entry point index.d.ts
-//
-// @public @deprecated (undocumented)
-export const createHttpServer: typeof createHttpServer_2;
-
-// Warning: (ae-forgotten-export) The symbol "createLifecycleMiddleware_2" needs to be exported by the entry point index.d.ts
-//
-// @public @deprecated
-export const createLifecycleMiddleware: typeof createLifecycleMiddleware_2;
 
 // @public (undocumented)
 export function createSpecializedBackend(
@@ -111,71 +66,10 @@ export interface CreateSpecializedBackendOptions {
   defaultServiceFactories: ServiceFactory[];
 }
 
-// @public @deprecated (undocumented)
-export const databaseServiceFactory: ServiceFactoryCompat<
-  DatabaseService,
-  'plugin',
-  'singleton',
-  undefined
->;
-
-// @public @deprecated
-export class DefaultRootHttpRouter implements RootHttpRouterService {
-  // (undocumented)
-  static create(options?: DefaultRootHttpRouterOptions): DefaultRootHttpRouter;
-  // (undocumented)
-  handler(): Handler;
-  // (undocumented)
-  use(path: string, handler: Handler): void;
-}
-
-// Warning: (ae-forgotten-export) The symbol "DefaultRootHttpRouterOptions_2" needs to be exported by the entry point index.d.ts
-//
-// @public @deprecated
-export type DefaultRootHttpRouterOptions = DefaultRootHttpRouterOptions_2;
-
-// @public @deprecated (undocumented)
-export const discoveryServiceFactory: ServiceFactoryCompat<
-  DiscoveryService,
-  'plugin',
-  'singleton',
-  undefined
->;
-
 // Warning: (ae-forgotten-export) The symbol "ExtendedHttpServer_2" needs to be exported by the entry point index.d.ts
 //
 // @public @deprecated (undocumented)
 export type ExtendedHttpServer = ExtendedHttpServer_2;
-
-// @public @deprecated
-export class HostDiscovery implements DiscoveryService {
-  static fromConfig(
-    config: Config,
-    options?: {
-      basePath?: string;
-    },
-  ): HostDiscovery;
-  // (undocumented)
-  getBaseUrl(pluginId: string): Promise<string>;
-  // (undocumented)
-  getExternalBaseUrl(pluginId: string): Promise<string>;
-}
-
-// @public @deprecated (undocumented)
-export const httpAuthServiceFactory: ServiceFactoryCompat<
-  HttpAuthService,
-  'plugin',
-  'singleton',
-  undefined
->;
-
-// @public @deprecated
-export const httpRouterServiceFactory: ServiceFactoryCompat<
-  HttpRouterService,
-  'plugin',
-  'singleton',
-  undefined
->;
 
 // Warning: (ae-forgotten-export) The symbol "HttpServerCertificateOptions_2" needs to be exported by the entry point index.d.ts
 //
@@ -201,19 +95,6 @@ export const identityServiceFactory: ServiceFactoryCompat<
   IdentityFactoryOptions
 >;
 
-// Warning: (ae-forgotten-export) The symbol "LifecycleMiddlewareOptions_2" needs to be exported by the entry point index.d.ts
-//
-// @public @deprecated
-export type LifecycleMiddlewareOptions = LifecycleMiddlewareOptions_2;
-
-// @public @deprecated
-export const lifecycleServiceFactory: ServiceFactoryCompat<
-  LifecycleService,
-  'plugin',
-  'singleton',
-  undefined
->;
-
 // @public @deprecated
 export function loadBackendConfig(options: {
   remote?: LoadConfigOptionsRemote;
@@ -223,14 +104,6 @@ export function loadBackendConfig(options: {
 }): Promise<{
   config: Config;
 }>;
-
-// @public @deprecated
-export const loggerServiceFactory: ServiceFactoryCompat<
-  LoggerService,
-  'plugin',
-  'singleton',
-  undefined
->;
 
 // @public @deprecated (undocumented)
 export class MiddlewareFactory {
@@ -253,14 +126,6 @@ export type MiddlewareFactoryErrorOptions = MiddlewareFactoryErrorOptions_2;
 // @public @deprecated (undocumented)
 export type MiddlewareFactoryOptions = MiddlewareFactoryOptions_2;
 
-// @public @deprecated (undocumented)
-export const permissionsServiceFactory: ServiceFactoryCompat<
-  PermissionsService,
-  'plugin',
-  'singleton',
-  undefined
->;
-
 // Warning: (ae-forgotten-export) The symbol "readCorsOptions_2" needs to be exported by the entry point index.d.ts
 //
 // @public @deprecated (undocumented)
@@ -277,80 +142,8 @@ export const readHelmetOptions: typeof readHelmetOptions_2;
 export const readHttpServerOptions: typeof readHttpServerOptions_2;
 
 // @public @deprecated (undocumented)
-export interface RootConfigFactoryOptions {
-  argv?: string[];
-  remote?: Pick<RemoteConfigSourceOptions, 'reloadInterval'>;
-  // (undocumented)
-  watch?: boolean;
-}
-
-// @public @deprecated (undocumented)
-export const rootConfigServiceFactory: ServiceFactoryCompat<
-  RootConfigService,
-  'root',
-  'singleton',
-  RootConfigFactoryOptions
->;
-
-// Warning: (ae-forgotten-export) The symbol "RootHttpRouterConfigureContext_2" needs to be exported by the entry point index.d.ts
-//
-// @public @deprecated (undocumented)
-export type RootHttpRouterConfigureContext = RootHttpRouterConfigureContext_2;
-
-// Warning: (ae-forgotten-export) The symbol "RootHttpRouterFactoryOptions_2" needs to be exported by the entry point index.d.ts
-//
-// @public @deprecated
-export type RootHttpRouterFactoryOptions = RootHttpRouterFactoryOptions_2;
-
-// @public @deprecated (undocumented)
-export const rootHttpRouterServiceFactory: ((
-  options?: RootHttpRouterFactoryOptions_2 | undefined,
-) => ServiceFactory<RootHttpRouterService, 'root', 'singleton'>) &
-  ServiceFactory<RootHttpRouterService, 'root', 'singleton'>;
-
-// @public @deprecated
-export const rootLifecycleServiceFactory: ServiceFactoryCompat<
-  RootLifecycleService,
-  'root',
-  'singleton',
-  undefined
->;
-
-// @public @deprecated
-export const rootLoggerServiceFactory: ServiceFactoryCompat<
-  RootLoggerService,
-  'root',
-  'singleton',
-  undefined
->;
-
-// @public @deprecated (undocumented)
-export const schedulerServiceFactory: ServiceFactoryCompat<
-  SchedulerService,
-  'plugin',
-  'singleton',
-  undefined
->;
-
-// @public @deprecated (undocumented)
 export const tokenManagerServiceFactory: ServiceFactoryCompat<
   TokenManagerService,
-  'plugin',
-  'singleton',
-  undefined
->;
-
-// @public @deprecated (undocumented)
-export const urlReaderServiceFactory: ServiceFactoryCompat<
-  UrlReaderService,
-  'plugin',
-  'singleton',
-  undefined
->;
-
-// @public @deprecated (undocumented)
-export const userInfoServiceFactory: ServiceFactoryCompat<
-  UserInfoService,
   'plugin',
   'singleton',
   undefined

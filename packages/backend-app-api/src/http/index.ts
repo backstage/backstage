@@ -34,11 +34,7 @@ import {
  * @deprecated Please import from `@backstage/backend-defaults/rootHttpRouter` instead.
  */
 export const readHttpServerOptions = _readHttpServerOptions;
-/**
- * @public
- * @deprecated Please import from `@backstage/backend-defaults/rootHttpRouter` instead.
- */
-export const createHttpServer = _createHttpServer;
+
 /**
  * @public
  * @deprecated Please import from `@backstage/backend-defaults/rootHttpRouter` instead.

@@ -18,10 +18,7 @@ import {
   Backend,
   createSpecializedBackend,
   MiddlewareFactory,
-  createHttpServer,
   ExtendedHttpServer,
-  HostDiscovery,
-  DefaultRootHttpRouter,
 } from '@backstage/backend-app-api';
 import {
   createServiceFactory,
@@ -40,7 +37,12 @@ import {
   InternalBackendFeature,
   InternalBackendRegistrations,
 } from '@backstage/backend-plugin-api/src/wiring/types';
-import { createHealthRouter } from '@backstage/backend-defaults/rootHttpRouter';
+import {
+  DefaultRootHttpRouter,
+  createHealthRouter,
+  createHttpServer,
+} from '@backstage/backend-defaults/rootHttpRouter';
+import { HostDiscovery } from '@backstage/backend-defaults/discovery';
 
 /** @public */
 export interface TestBackendOptions<TExtensionPoints extends any[]> {
