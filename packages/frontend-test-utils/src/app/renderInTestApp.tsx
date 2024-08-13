@@ -23,7 +23,6 @@ import { JsonObject } from '@backstage/types';
 import {
   createExtension,
   createExtensionOverrides,
-  createRouterExtension,
   ExtensionDefinition,
   coreExtensionData,
   RouteRef,
@@ -31,6 +30,7 @@ import {
   createExtensionInput,
   IconComponent,
   createNavItemExtension,
+  RouterBlueprint,
 } from '@backstage/frontend-plugin-api';
 
 /**
@@ -86,30 +86,32 @@ const TestAppNavExtension = createExtension({
   name: 'nav',
   attachTo: { id: 'app/layout', input: 'nav' },
   inputs: {
-    items: createExtensionInput({
-      target: createNavItemExtension.targetDataRef,
-    }),
+    items: createExtensionInput([createNavItemExtension.targetDataRef]),
   },
-  output: {
-    element: coreExtensionData.reactElement,
-  },
+  output: [coreExtensionData.reactElement],
   factory({ inputs }) {
-    return {
-      element: (
+    return [
+      coreExtensionData.reactElement(
         <nav>
           <ul>
-            {inputs.items.map((item, index) => (
-              <NavItem
-                key={index}
-                icon={item.output.target.icon}
-                title={item.output.target.title}
-                routeRef={item.output.target.routeRef}
-              />
-            ))}
+            {inputs.items.map((item, index) => {
+              const { icon, title, routeRef } = item.get(
+                createNavItemExtension.targetDataRef,
+              );
+
+              return (
+                <NavItem
+                  key={index}
+                  icon={icon}
+                  title={title}
+                  routeRef={routeRef}
+                />
+              );
+            })}
           </ul>
-        </nav>
+        </nav>,
       ),
-    };
+    ];
   },
 });
 
@@ -118,35 +120,29 @@ const TestAppNavExtension = createExtension({
  * Renders the given element in a test app, for use in unit tests.
  */
 export function renderInTestApp(
-  element: JSX.Element | { extensions: ExtensionDefinition<any, any>[] },
+  element: JSX.Element,
   options?: TestAppOptions,
 ) {
-  const extensions: Array<ExtensionDefinition<any, any>> =
-    'extensions' in element
-      ? element.extensions
-      : [
-          createExtension({
-            namespace: 'test',
-            attachTo: { id: 'app/routes', input: 'routes' },
-            output: [
-              coreExtensionData.reactElement,
-              coreExtensionData.routePath,
-            ],
-            factory: () => {
-              return [
-                coreExtensionData.reactElement(element),
-                coreExtensionData.routePath('/'),
-              ];
-            },
-          }),
-          createRouterExtension({
-            namespace: 'test',
-            Component: ({ children }) => (
-              <MemoryRouter>{children}</MemoryRouter>
-            ),
-          }),
-          TestAppNavExtension,
+  const extensions: Array<ExtensionDefinition<any, any>> = [
+    createExtension({
+      namespace: 'test',
+      attachTo: { id: 'app/routes', input: 'routes' },
+      output: [coreExtensionData.reactElement, coreExtensionData.routePath],
+      factory: () => {
+        return [
+          coreExtensionData.reactElement(element),
+          coreExtensionData.routePath('/'),
         ];
+      },
+    }),
+    RouterBlueprint.make({
+      namespace: 'test',
+      params: {
+        Component: ({ children }) => <MemoryRouter>{children}</MemoryRouter>,
+      },
+    }),
+    TestAppNavExtension,
+  ];
 
   if (options?.mountedRoutes) {
     for (const [path, routeRef] of Object.entries(options.mountedRoutes)) {

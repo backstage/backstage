@@ -27,6 +27,7 @@ import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TestApiProvider } from '@backstage/test-utils';
 import { TestApiProviderProps } from '@backstage/test-utils';
 import { TestApiRegistry } from '@backstage/test-utils';
+import { testingLibraryDomTypesQueries } from '@testing-library/dom/types/queries';
 import { withLogCollector } from '@backstage/test-utils';
 
 // @public (undocumented)
@@ -62,8 +63,10 @@ export class ExtensionTester {
   // (undocumented)
   data<T>(ref: ExtensionDataRef<T>): T | undefined;
   // (undocumented)
-  query(id: string | ExtensionDefinition<any, any>): ExtensionQuery;
+  element(): JSX.Element;
   // (undocumented)
+  query(id: string | ExtensionDefinition<any, any>): ExtensionQuery;
+  // @deprecated (undocumented)
   render(options?: { config?: JsonObject }): RenderResult;
 }
 
@@ -97,7 +100,7 @@ export { registerMswTestHooks };
 export function renderInTestApp(
   element: JSX.Element,
   options?: TestAppOptions,
-): RenderResult;
+): RenderResult<testingLibraryDomTypesQueries, HTMLElement, HTMLElement>;
 
 // @public @deprecated (undocumented)
 export function setupRequestMockHandlers(worker: {
@@ -117,6 +120,7 @@ export type TestAppOptions = {
   mountedRoutes?: {
     [path: string]: RouteRef;
   };
+  config?: JsonObject;
 };
 
 export { withLogCollector };
