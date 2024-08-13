@@ -15,25 +15,23 @@
  */
 
 import React from 'react';
-import {
-  ExtensionDefinition,
-  IconComponent,
-  RouteRef,
-  coreExtensionData,
-  createExtension,
-  createExtensionInput,
-  createExtensionOverrides,
-  createNavItemExtension,
-  createRouterExtension,
-  useRouteRef,
-} from '@backstage/frontend-plugin-api';
 import { Link, MemoryRouter } from 'react-router-dom';
 import { createSpecializedApp } from '@backstage/frontend-app-api';
 import { render } from '@testing-library/react';
-import { resolveExtensionDefinition } from '@backstage/frontend-plugin-api/src/wiring/resolveExtensionDefinition';
-import { resolve } from 'path';
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
+import {
+  createExtension,
+  createExtensionOverrides,
+  createRouterExtension,
+  ExtensionDefinition,
+  coreExtensionData,
+  RouteRef,
+  useRouteRef,
+  createExtensionInput,
+  IconComponent,
+  createNavItemExtension,
+} from '@backstage/frontend-plugin-api';
 
 /**
  * Options to customize the behavior of the test app.
@@ -120,26 +118,35 @@ const TestAppNavExtension = createExtension({
  * Renders the given element in a test app, for use in unit tests.
  */
 export function renderInTestApp(
-  element: JSX.Element,
+  element: JSX.Element | { extensions: ExtensionDefinition<any, any>[] },
   options?: TestAppOptions,
 ) {
-  const extensions: Array<ExtensionDefinition<any, any>> = [
-    createExtension({
-      namespace: 'test',
-      attachTo: { id: 'app/routes', input: 'routes' },
-      output: [coreExtensionData.reactElement, coreExtensionData.routePath],
-      factory: () => {
-        return [
-          coreExtensionData.reactElement(element),
-          coreExtensionData.routePath('/'),
+  const extensions: Array<ExtensionDefinition<any, any>> =
+    'extensions' in element
+      ? element.extensions
+      : [
+          createExtension({
+            namespace: 'test',
+            attachTo: { id: 'app/routes', input: 'routes' },
+            output: [
+              coreExtensionData.reactElement,
+              coreExtensionData.routePath,
+            ],
+            factory: () => {
+              return [
+                coreExtensionData.reactElement(element),
+                coreExtensionData.routePath('/'),
+              ];
+            },
+          }),
+          createRouterExtension({
+            namespace: 'test',
+            Component: ({ children }) => (
+              <MemoryRouter>{children}</MemoryRouter>
+            ),
+          }),
+          TestAppNavExtension,
         ];
-      },
-    }),
-    createRouterExtension({
-      namespace: 'test',
-      Component: ({ children }) => <MemoryRouter>{children}</MemoryRouter>,
-    }),
-  ];
 
   if (options?.mountedRoutes) {
     for (const [path, routeRef] of Object.entries(options.mountedRoutes)) {

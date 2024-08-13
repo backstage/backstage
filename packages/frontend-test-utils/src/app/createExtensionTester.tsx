@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { MemoryRouter, Link } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import { RenderResult, render } from '@testing-library/react';
 import { createSpecializedApp } from '@backstage/frontend-app-api';
 import {
@@ -24,15 +24,10 @@ import {
   Extension,
   ExtensionDataRef,
   ExtensionDefinition,
-  IconComponent,
-  RouteRef,
   coreExtensionData,
   createExtension,
-  createExtensionInput,
   createExtensionOverrides,
-  createNavItemExtension,
   createRouterExtension,
-  useRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { Config, ConfigReader } from '@backstage/config';
 import { JsonArray, JsonObject, JsonValue } from '@backstage/types';
@@ -215,14 +210,12 @@ export class ExtensionTester {
    */
   render(options?: { config?: JsonObject }): RenderResult {
     const { config = {} } = options ?? {};
-
     const [subject] = this.#extensions;
     if (!subject) {
       throw new Error(
         'No subject found. At least one extension should be added to the tester.',
       );
     }
-
     const app = createSpecializedApp({
       features: [
         createExtensionOverrides({
@@ -239,7 +232,6 @@ export class ExtensionTester {
       ],
       config: this.#getConfig(config),
     });
-
     return render(app.createRoot());
   }
 
