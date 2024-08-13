@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
+import React from 'react';
+import { SignInPage } from '@backstage/core-components';
 import {
-  configApiRef,
-  createApiExtension,
-  createApiFactory,
+  createExtensionOverrides,
+  createSignInPageExtension,
 } from '@backstage/frontend-plugin-api';
-import {
-  ScmIntegrationsApi,
-  scmIntegrationsApiRef,
-} from '@backstage/integration-react';
 
-export const ScmIntegrationApi = createApiExtension({
-  factory: createApiFactory({
-    api: scmIntegrationsApiRef,
-    deps: { configApi: configApiRef },
-    factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
-  }),
+const signInPage = createSignInPageExtension({
+  name: 'guest',
+  loader: async () => props => <SignInPage {...props} providers={['guest']} />,
+});
+
+export const signInPageOverrides = createExtensionOverrides({
+  extensions: [signInPage],
 });

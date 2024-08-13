@@ -41,12 +41,7 @@ const roleRules = [
   },
   {
     sourceRole: ['backend-plugin', 'node-library', 'backend-plugin-module'],
-    targetRole: [
-      'frontend-plugin',
-      'web-library',
-      'frontend-plugin-module',
-      'frontend-extensions',
-    ],
+    targetRole: ['frontend-plugin', 'web-library'],
     message: `Package SOURCE_NAME with backend role SOURCE_ROLE has a dependency on package TARGET_NAME with frontend role TARGET_ROLE, which is not permitted`,
   },
   {
@@ -54,8 +49,6 @@ const roleRules = [
     targetRole: [
       'frontend-plugin',
       'web-library',
-      'frontend-plugin-module',
-      'frontend-extensions',
       'backend-plugin',
       'node-library',
       'backend-plugin-module',
@@ -64,11 +57,7 @@ const roleRules = [
   },
   {
     sourceRole: ['frontend-plugin', 'web-library'],
-    targetRole: [
-      'frontend-plugin',
-      'frontend-plugin-module',
-      'frontend-extensions',
-    ],
+    targetRole: 'frontend-plugin',
     except: [
       // TODO(freben): Address these
       '@backstage/plugin-api-docs',

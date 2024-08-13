@@ -49,7 +49,6 @@
     "@backstage/plugin-techdocs-react": "workspace:^",
     "@backstage/plugin-user-settings": "workspace:^",
     "@backstage/theme": "workspace:^",
-    "@internal/app-next-example-extensions": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",

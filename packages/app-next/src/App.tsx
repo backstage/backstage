@@ -17,16 +17,33 @@
 import React from 'react';
 import { createApp } from '@backstage/frontend-app-api';
 import { pagesPlugin } from './examples/pagesPlugin';
+import notFoundErrorPage from './examples/notFoundErrorPageExtension';
 import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
-import homePlugin from '@backstage/plugin-home/alpha';
+import homePlugin, {
+  titleExtensionDataRef,
+} from '@backstage/plugin-home/alpha';
+
+import {
+  coreExtensionData,
+  createExtension,
+  createApiExtension,
+  createExtensionOverrides,
+} from '@backstage/frontend-plugin-api';
 import techdocsPlugin from '@backstage/plugin-techdocs/alpha';
 import appVisualizerPlugin from '@backstage/plugin-app-visualizer';
+import { homePage } from './HomePage';
 import { convertLegacyApp } from '@backstage/core-compat-api';
 import { FlatRoutes } from '@backstage/core-app-api';
 import { Route } from 'react-router';
 import { CatalogImportPage } from '@backstage/plugin-catalog-import';
+import { createApiFactory, configApiRef } from '@backstage/core-plugin-api';
+import {
+  ScmAuth,
+  ScmIntegrationsApi,
+  scmIntegrationsApiRef,
+} from '@backstage/integration-react';
 import kubernetesPlugin from '@backstage/plugin-kubernetes/alpha';
-import extensions from '@internal/app-next-example-extensions';
+import { signInPageOverrides } from './overrides/SignInPage';
 
 /*
 
@@ -57,6 +74,30 @@ TODO:
 
 /* app.tsx */
 
+const homePageExtension = createExtension({
+  name: 'myhomepage',
+  attachTo: { id: 'page:home', input: 'props' },
+  output: {
+    children: coreExtensionData.reactElement,
+    title: titleExtensionDataRef,
+  },
+  factory() {
+    return { children: homePage, title: 'just a title' };
+  },
+});
+
+const scmAuthExtension = createApiExtension({
+  factory: ScmAuth.createDefaultApiFactory(),
+});
+
+const scmIntegrationApi = createApiExtension({
+  factory: createApiFactory({
+    api: scmIntegrationsApiRef,
+    deps: { configApi: configApiRef },
+    factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
+  }),
+});
+
 const collectedLegacyPlugins = convertLegacyApp(
   <FlatRoutes>
     <Route path="/catalog-import" element={<CatalogImportPage />} />
@@ -71,8 +112,16 @@ const app = createApp({
     homePlugin,
     appVisualizerPlugin,
     kubernetesPlugin,
-    extensions,
+    signInPageOverrides,
     ...collectedLegacyPlugins,
+    createExtensionOverrides({
+      extensions: [
+        homePageExtension,
+        scmAuthExtension,
+        scmIntegrationApi,
+        notFoundErrorPage,
+      ],
+    }),
   ],
   /* Handled through config instead */
   // bindRoutes({ bind }) {
