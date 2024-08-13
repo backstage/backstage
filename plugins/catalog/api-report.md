@@ -33,6 +33,7 @@ import { SearchResultListItemExtensionProps } from '@backstage/plugin-search-rea
 import { StarredEntitiesApi } from '@backstage/plugin-catalog-react';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
+import { SystemEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core-components';
 import { TableOptions } from '@backstage/core-components';
 import { TableProps } from '@backstage/core-components';
@@ -305,6 +306,10 @@ export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
 // @public (undocumented)
 export interface DependencyOfComponentsCardProps {
   // (undocumented)
+  columns?: TableColumn<ComponentEntity>[];
+  // (undocumented)
+  tableOptions?: TableOptions;
+  // (undocumented)
   title?: string;
   // (undocumented)
   variant?: InfoCardVariants;
@@ -522,6 +527,10 @@ export function hasCatalogProcessingErrors(
 // @public (undocumented)
 export interface HasComponentsCardProps {
   // (undocumented)
+  columns?: TableColumn<ComponentEntity>[];
+  // (undocumented)
+  tableOptions?: TableOptions;
+  // (undocumented)
   title?: string;
   // (undocumented)
   variant?: InfoCardVariants;
@@ -541,6 +550,10 @@ export function hasRelationWarnings(
 // @public (undocumented)
 export interface HasResourcesCardProps {
   // (undocumented)
+  columns?: TableColumn<ResourceEntity>[];
+  // (undocumented)
+  tableOptions?: TableOptions;
+  // (undocumented)
   title?: string;
   // (undocumented)
   variant?: InfoCardVariants;
@@ -548,6 +561,8 @@ export interface HasResourcesCardProps {
 
 // @public (undocumented)
 export interface HasSubcomponentsCardProps {
+  // (undocumented)
+  columns?: TableColumn<ComponentEntity>[];
   // (undocumented)
   tableOptions?: TableOptions;
   // (undocumented)
@@ -568,6 +583,10 @@ export interface HasSubdomainsCardProps {
 
 // @public (undocumented)
 export interface HasSystemsCardProps {
+  // (undocumented)
+  columns?: TableColumn<SystemEntity>[];
+  // (undocumented)
+  tableOptions?: TableOptions;
   // (undocumented)
   title?: string;
   // (undocumented)
