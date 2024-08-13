@@ -1,5 +1,13 @@
 # @backstage/create-app
 
+## 0.5.18-next.4
+
+### Patch Changes
+
+- bfeba46: Included permission config and enabled it out of the box
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+
 ## 0.5.18-next.3
 
 ### Patch Changes

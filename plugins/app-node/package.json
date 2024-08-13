@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-app-node",
-  "version": "0.1.23-next.2",
+  "version": "0.1.23-next.3",
   "description": "Node.js library for the app plugin",
   "backstage": {
     "role": "node-library",

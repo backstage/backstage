@@ -17,22 +17,26 @@
 import React from 'react';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 
+type HTMLDivProps = React.HTMLAttributes<HTMLDivElement>;
+
 const renderRow = (props: ListChildComponentProps) => {
   const { data, index, style } = props;
   return React.cloneElement(data[index], { style });
 };
 
 // Context needed to keep Autocomplete working correctly : https://v4.mui.com/components/autocomplete/#Virtualize.tsx
-const OuterElementContext = React.createContext({});
+const OuterElementContext = React.createContext<HTMLDivProps>({});
 
-const OuterElementType = React.forwardRef<HTMLDivElement>((props, ref) => {
-  const outerProps = React.useContext(OuterElementContext);
-  return <div ref={ref} {...props} {...outerProps} />;
-});
+const OuterElementType = React.forwardRef<HTMLDivElement, HTMLDivProps>(
+  (props, ref) => {
+    const outerProps = React.useContext(OuterElementContext);
+    return <div ref={ref} {...props} {...outerProps} />;
+  },
+);
 
 export const VirtualizedListbox = React.forwardRef<
   HTMLDivElement,
-  { children?: React.ReactNode }
+  HTMLDivProps
 >((props, ref) => {
   const { children, ...other } = props;
   const itemData = React.Children.toArray(children);
@@ -40,7 +44,7 @@ export const VirtualizedListbox = React.forwardRef<
 
   const itemSize = 36;
 
-  const itemsToShow = Math.min(10, itemCount);
+  const itemsToShow = Math.min(10, itemCount) + 0.5;
   const height = itemsToShow * itemSize;
 
   return (

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-api-docs",
-  "version": "0.11.8-next.2",
+  "version": "0.11.8-next.3",
   "description": "A Backstage plugin that helps represent API entities in the frontend",
   "backstage": {
     "role": "frontend-plugin",

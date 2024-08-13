@@ -1,5 +1,65 @@
 # @backstage/frontend-plugin-api
 
+## 0.7.0-next.3
+
+### Patch Changes
+
+- 6f72c2b: Fixing issue with extension blueprints `inputs` merging.
+- 99abb6b: Support overriding of plugin extensions using the new `plugin.withOverrides` method.
+
+  ```tsx
+  import homePlugin from '@backstage/plugin-home';
+
+  export default homePlugin.withOverrides({
+    extensions: [
+      homePage.getExtension('page:home').override({
+        *factory(originalFactory) {
+          yield* originalFactory();
+          yield coreExtensionData.reactElement(<h1>My custom home page</h1>);
+        },
+      }),
+    ],
+  });
+  ```
+
+- a65cfc8: Add support for accessing extensions definitions provided by a plugin via `plugin.getExtension(...)`. For this to work the extensions must be defined using the v2 format, typically using an extension blueprint.
+- 34f1b2a: Support merging of `inputs` in extension blueprints, but stop merging `output`. In addition, the original factory in extension blueprints now returns a data container that both provides access to the returned data, but can also be forwarded as output.
+- 2d21599: Added support for being able to override extension definitions.
+
+  ```tsx
+  const TestCard = EntityCardBlueprint.make({
+    ...
+  });
+
+  TestCard.override({
+    // override attachment points
+    attachTo: { id: 'something-else', input: 'overridden' },
+    // extend the config schema
+    config: {
+      schema: {
+        newConfig: z => z.string().optional(),
+      }
+    },
+    // override factory
+    *factory(originalFactory, { inputs, config }){
+      const originalOutput = originalFactory();
+
+      yield coreExentsionData.reactElement(
+        <Wrapping>
+          {originalOutput.get(coreExentsionData.reactElement)}
+        </Wrapping>
+      );
+    }
+  });
+
+  ```
+
+- Updated dependencies
+  - @backstage/core-components@0.14.10-next.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
 ## 0.7.0-next.2
 
 ### Minor Changes

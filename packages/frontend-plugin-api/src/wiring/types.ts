@@ -51,6 +51,9 @@ export interface BackstagePlugin<
   readonly routes: TRoutes;
   readonly externalRoutes: TExternalRoutes;
   getExtension<TId extends keyof TExtensionMap>(id: TId): TExtensionMap[TId];
+  withOverrides(options: {
+    extensions: Array<ExtensionDefinition<any, any>>;
+  }): BackstagePlugin<TRoutes, TExternalRoutes, TExtensionMap>;
 }
 
 /** @public */

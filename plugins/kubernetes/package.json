@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-kubernetes",
-  "version": "0.11.13-next.2",
+  "version": "0.11.13-next.3",
   "description": "A Backstage plugin that integrates towards Kubernetes",
   "backstage": {
     "role": "frontend-plugin",
