@@ -17,7 +17,7 @@
 import React from 'react';
 import { Link, MemoryRouter } from 'react-router-dom';
 import { createSpecializedApp } from '@backstage/frontend-app-api';
-import { render } from '@testing-library/react';
+import { RenderResult, render } from '@testing-library/react';
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 import {
@@ -81,7 +81,7 @@ const NavItem = (props: {
   );
 };
 
-const TestAppNavExtension = createExtension({
+export const TestAppNavExtension = createExtension({
   namespace: 'app',
   name: 'nav',
   attachTo: { id: 'app/layout', input: 'nav' },
@@ -122,7 +122,7 @@ const TestAppNavExtension = createExtension({
 export function renderInTestApp(
   element: JSX.Element,
   options?: TestAppOptions,
-) {
+): RenderResult {
   const extensions: Array<ExtensionDefinition<any, any>> = [
     createExtension({
       namespace: 'test',

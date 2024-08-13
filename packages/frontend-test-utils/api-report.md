@@ -27,7 +27,6 @@ import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TestApiProvider } from '@backstage/test-utils';
 import { TestApiProviderProps } from '@backstage/test-utils';
 import { TestApiRegistry } from '@backstage/test-utils';
-import { testingLibraryDomTypesQueries } from '@testing-library/dom/types/queries';
 import { withLogCollector } from '@backstage/test-utils';
 
 // @public (undocumented)
@@ -100,7 +99,7 @@ export { registerMswTestHooks };
 export function renderInTestApp(
   element: JSX.Element,
   options?: TestAppOptions,
-): RenderResult<testingLibraryDomTypesQueries, HTMLElement, HTMLElement>;
+): RenderResult;
 
 // @public @deprecated (undocumented)
 export function setupRequestMockHandlers(worker: {

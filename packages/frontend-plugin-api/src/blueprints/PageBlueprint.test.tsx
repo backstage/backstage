@@ -16,7 +16,10 @@
 import React from 'react';
 import { createRouteRef } from '../routing';
 import { PageBlueprint } from './PageBlueprint';
-import { createExtensionTester } from '@backstage/frontend-test-utils';
+import {
+  createExtensionTester,
+  renderInTestApp,
+} from '@backstage/frontend-test-utils';
 import {
   coreExtensionData,
   createExtensionBlueprint,
@@ -144,7 +147,7 @@ describe('PageBlueprint', () => {
       CardBlueprint.make({ name: 'card', params: {} }),
     );
 
-    const { getByTestId, getByText } = tester.render();
+    const { getByTestId, getByText } = renderInTestApp(tester.element());
 
     await waitFor(() => expect(getByTestId('card')).toBeInTheDocument());
     await waitFor(() =>

@@ -43,6 +43,7 @@ import { resolveAppNodeSpecs } from '../../../frontend-app-api/src/tree/resolveA
 import { instantiateAppNodeTree } from '../../../frontend-app-api/src/tree/instantiateAppNodeTree';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { readAppExtensionsConfig } from '../../../frontend-app-api/src/tree/readAppExtensionsConfig';
+import { TestAppNavExtension } from './renderInTestApp';
 
 /** @public */
 export class ExtensionQuery {
@@ -227,6 +228,7 @@ export class ExtensionTester {
                 <MemoryRouter>{children}</MemoryRouter>
               ),
             }),
+            TestAppNavExtension,
           ],
         }),
       ],
