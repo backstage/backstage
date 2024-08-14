@@ -55,9 +55,6 @@ export interface CreateMockDirectoryOptions {
   mockOsTmpDir?: boolean;
 }
 
-// @public @deprecated (undocumented)
-export function isDockerDisabledForTests(): boolean;
-
 // @public (undocumented)
 export namespace mockCredentials {
   export function limitedUser(
@@ -142,9 +139,6 @@ export interface MockDirectoryContentOptions {
   path?: string;
   shouldReadAsText?: boolean | ((path: string, buffer: Buffer) => boolean);
 }
-
-// @public @deprecated (undocumented)
-export type MockDirectoryOptions = CreateMockDirectoryOptions;
 
 // @public (undocumented)
 export namespace mockServices {
@@ -475,10 +469,6 @@ export class ServiceFactoryTester<
     subject: ServiceFactory<TService, TScope, TInstances>,
     options?: ServiceFactoryTesterOptions,
   ): ServiceFactoryTester<TService, TScope, TInstances>;
-  // @deprecated
-  get(
-    ...args: 'root' extends TScope ? [] : [pluginId?: string]
-  ): Promise<TInstances extends 'multiton' ? TService[] : TService>;
   getService<
     TGetService,
     TGetScope extends 'root' | 'plugin',
@@ -507,13 +497,6 @@ export type ServiceMock<TService> = {
     ? TService[Key] & jest.MockInstance<Return, Args>
     : TService[Key];
 };
-
-// @public @deprecated (undocumented)
-export function setupRequestMockHandlers(worker: {
-  listen: (t: any) => void;
-  close: () => void;
-  resetHandlers: () => void;
-}): void;
 
 // @public (undocumented)
 export function startTestBackend<TExtensionPoints extends any[]>(
