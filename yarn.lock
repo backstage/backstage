@@ -6332,6 +6332,7 @@ __metadata:
     "@azure/identity": ^4.0.0
     "@backstage/backend-app-api": "workspace:^"
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-defaults": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
@@ -6431,6 +6432,7 @@ __metadata:
   dependencies:
     "@backstage/backend-app-api": "workspace:^"
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-defaults": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
@@ -7179,6 +7181,7 @@ __metadata:
   dependencies:
     "@backstage/backend-app-api": "workspace:^"
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-defaults": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-tasks": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"

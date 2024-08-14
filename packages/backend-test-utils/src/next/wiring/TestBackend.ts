@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Backend,
-  createSpecializedBackend,
-  MiddlewareFactory,
-  ExtendedHttpServer,
-} from '@backstage/backend-app-api';
+import { Backend, createSpecializedBackend } from '@backstage/backend-app-api';
 import {
   createServiceFactory,
   BackendFeature,
@@ -39,6 +34,8 @@ import {
 } from '@backstage/backend-plugin-api/src/wiring/types';
 import {
   DefaultRootHttpRouter,
+  ExtendedHttpServer,
+  MiddlewareFactory,
   createHealthRouter,
   createHttpServer,
 } from '@backstage/backend-defaults/rootHttpRouter';
