@@ -18,7 +18,6 @@ import {
   createLegacyAuthAdapters,
   HostDiscovery,
   PluginDatabaseManager,
-  UrlReader,
 } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { CatalogApi } from '@backstage/catalog-client';
@@ -88,6 +87,7 @@ import {
   HttpAuthService,
   LifecycleService,
   PermissionsService,
+  UrlReaderService,
 } from '@backstage/backend-plugin-api';
 import {
   IdentityApi,
@@ -144,7 +144,7 @@ function isActionPermissionRuleInput(
 export interface RouterOptions {
   logger: Logger;
   config: Config;
-  reader: UrlReader;
+  reader: UrlReaderService;
   lifecycle?: LifecycleService;
   database: PluginDatabaseManager;
   catalogClient: CatalogApi;
