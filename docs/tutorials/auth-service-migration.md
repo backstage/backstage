@@ -24,6 +24,8 @@ backend:
     dangerouslyDisableDefaultAuthPolicy: true
 ```
 
+Please note that this functionality will be removed in a future release, and you should migrate to using the new auth services as soon as possible or you would have to support your own service for issuing tokens.
+
 In short, this will allow requests through to plugins in your backend, even if they do not include any credentials. The requests will still be treated as unauthenticated however, which not all plugin endpoints may accept. For more information on the impact of this configuration, see the [auth service documentation](../backend-system/core-services/auth.md).
 
 ### Migrating the backend
