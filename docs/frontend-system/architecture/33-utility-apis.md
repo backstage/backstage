@@ -10,7 +10,7 @@ description: Utility APIs
 
 ## Overview
 
-Utility APIs are pieces of standalone functionality, interfaces that can be requested by plugins to use. They are defined by a TypeScript interface as well as a reference (an "API ref") used to access its implementation. They can be provided both by plugins and the core framework, and are themselves [extensions](../architecture/03-extensions.md) that can have inputs, be replaced, and be declaratively configured in your app-config.
+Utility APIs are pieces of standalone functionality, interfaces that can be requested by plugins to use. They are defined by a TypeScript interface as well as a reference (an "API ref") used to access its implementation. They can be provided both by plugins and the core framework, and are themselves [extensions](../architecture/20-extensions.md) that can have inputs, be replaced, and be declaratively configured in your app-config.
 
 A common example of a utility API is a client interface to interact with the backend part of a plugin, such as the catalog client. Any frontend plugin can then request an implementation of that interface to make requests through.
 

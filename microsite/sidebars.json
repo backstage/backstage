@@ -452,13 +452,13 @@
         "items": [
           "frontend-system/architecture/index",
           "frontend-system/architecture/app",
-          "frontend-system/architecture/extensions",
           "frontend-system/architecture/plugins",
+          "frontend-system/architecture/extensions",
           "frontend-system/architecture/extension-overrides",
+          "frontend-system/architecture/references",
           "frontend-system/architecture/utility-apis",
           "frontend-system/architecture/routes",
-          "frontend-system/architecture/naming-patterns",
-          "frontend-system/architecture/references"
+          "frontend-system/architecture/naming-patterns"
         ]
       },
       {

@@ -89,7 +89,7 @@ Note that it can still be a good idea to split your overrides out into separate 
 To override an extension that is provided by a plugin, you need to provide a new extension that has the same ID as the existing extension. That is, all kind, namespace, and name options must match the extension you want to replace. This means that you typically need to provide an explicit `namespace` when overriding extensions from a plugin.
 
 :::info
-We recommend that plugin developers share the extension IDs in their plugin documentation, but usually you can infer the ID by following the [naming patterns](./08-naming-patterns.md) documentation.
+We recommend that plugin developers share the extension IDs in their plugin documentation, but usually you can infer the ID by following the [naming patterns](./50-naming-patterns.md) documentation.
 :::
 
 ### Example

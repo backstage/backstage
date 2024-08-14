@@ -8,9 +8,9 @@ description: Building frontend plugins using the new frontend system
 
 > **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
 
-This section covers how to build your own frontend [plugins](../architecture/04-plugins.md) and
-[overrides](../architecture/05-extension-overrides.md). They are sometimes collectively referred to as
-frontend _features_, and what you install to build up a Backstage frontend [app](../architecture/02-app.md).
+This section covers how to build your own frontend [plugins](../architecture/15-plugins.md) and
+[overrides](../architecture/25-extension-overrides.md). They are sometimes collectively referred to as
+frontend _features_, and what you install to build up a Backstage frontend [app](../architecture/10-app.md).
 
 ## Creating a new plugin
 
@@ -43,13 +43,13 @@ export { examplePlugin as default } from './plugin';
 
 Note that we export the plugin as the default export of our package from `src/index.ts`. This is important, as it is how users of our plugin are able to seamlessly install the plugin package in a Backstage app without having to reference the plugin instance through code.
 
-The plugin ID should be a lowercase dash-separated string, while the plugin instance variable should be the camel case version of the ID with a `Plugin` suffix. For more details on naming patterns within the frontend system, see [the article on naming patterns](../architecture/08-naming-patterns.md). By sticking to these naming patterns you ensure that users of your plugin more easily recognize the exports and features provided by your plugin.
+The plugin ID should be a lowercase dash-separated string, while the plugin instance variable should be the camel case version of the ID with a `Plugin` suffix. For more details on naming patterns within the frontend system, see [the article on naming patterns](../architecture/50-naming-patterns.md). By sticking to these naming patterns you ensure that users of your plugin more easily recognize the exports and features provided by your plugin.
 
 ## Adding extensions
 
-The plugin that we created above is empty, and doesn't provide any actual functionality. To add functionality to a plugin you need to create and provide it with one or more [extensions](../architecture/03-extensions.md). Let's continue by adding a standalone page to our plugin, as well as a navigation item that allows users to navigate to the page.
+The plugin that we created above is empty, and doesn't provide any actual functionality. To add functionality to a plugin you need to create and provide it with one or more [extensions](../architecture/20-extensions.md). Let's continue by adding a standalone page to our plugin, as well as a navigation item that allows users to navigate to the page.
 
-To create a new extension you typically use pre-defined [extension creators](../architecture/03-extensions.md#extension-creators), provided either by the framework itself or by other plugins. In this case we'll need to use `createPageExtension` and `createNavItemExtension`, both from `@backstage/frontend-plugin-api`. We will also need to [create a route reference](../architecture/07-routes.md#creating-a-route-reference) to use as a reference for out page, allowing us to dynamically create URLs that link to our page.
+To create a new extension you typically use pre-defined [extension creators](../architecture/20-extensions.md#extension-creators), provided either by the framework itself or by other plugins. In this case we'll need to use `createPageExtension` and `createNavItemExtension`, both from `@backstage/frontend-plugin-api`. We will also need to [create a route reference](../architecture/36-routes.md#creating-a-route-reference) to use as a reference for out page, allowing us to dynamically create URLs that link to our page.
 
 ```tsx title="in src/routes.ts"
 import { createRouteRef } from '@backstage/frontend-plugin-api';
@@ -106,7 +106,7 @@ export const examplePlugin = createPlugin({
 
 What we've built here is a very common type of plugin. It's a top-level tool that provides a single page, along with a method for navigating to that page. The implementation of the page component, in this case the highlighted `ExamplePage`, can be arbitrarily complex. It can be anything from a single simple information page, to a full-blown application with multiple sub-pages.
 
-We have also provided external access to our route reference by passing it to the plugin `routes` option. This makes it possible for app integrators to bind an external link from a different plugin to our plugin page. You can read more about how this works in the [External Route References](../architecture/07-routes.md#external-route-references) section.
+We have also provided external access to our route reference by passing it to the plugin `routes` option. This makes it possible for app integrators to bind an external link from a different plugin to our plugin page. You can read more about how this works in the [External Route References](../architecture/36-routes.md#external-route-references) section.
 
 ## Utility APIs
 

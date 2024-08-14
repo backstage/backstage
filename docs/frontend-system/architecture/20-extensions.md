@@ -8,7 +8,7 @@ description: Frontend extensions
 
 > **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
 
-As mentioned in the [previous section](./02-app.md), Backstage apps are built up from a tree of extensions. This section will go into more detail about what extensions are, how to create and use them, and how to create your own extensibility patterns.
+As mentioned in the [previous section](./10-app.md), Backstage apps are built up from a tree of extensions. This section will go into more detail about what extensions are, how to create and use them, and how to create your own extensibility patterns.
 
 ## Extension Structure
 
@@ -317,7 +317,7 @@ The `id` of the extension is then build out of `namespace`, `name` & `kind` like
 id: kind:namespace/name
 ```
 
-For more information on naming of extension refer to the [naming patterns documentation](./08-naming-patterns.md).
+For more information on naming of extension refer to the [naming patterns documentation](./50-naming-patterns.md).
 
 ### Extension Creators in libraries
 

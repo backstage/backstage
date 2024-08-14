@@ -66,7 +66,7 @@ Linking routes from different plugins requires this configuration. You can do th
 
 ### Enable feature discovery
 
-Use this setting to enable experimental feature discovery when building your app with `@backstage/cli`. With this configuration your application tries to discover and install package extensions automatically, check [here](../architecture/02-app.md#feature-discovery) for more details.
+Use this setting to enable experimental feature discovery when building your app with `@backstage/cli`. With this configuration your application tries to discover and install package extensions automatically, check [here](../architecture/10-app.md#feature-discovery) for more details.
 
 :::warning
 Remember that package extensions that are not auto-discovered must be manually added to the application when creating an app. See [features](#install-features-manually) for more details.
@@ -99,7 +99,7 @@ export default app.createRoot();
 ```
 
 :::info
-You can also pass overrides to the features array, for more details, please read the [extension overrides](../architecture/05-extension-overrides.md) documentation.
+You can also pass overrides to the features array, for more details, please read the [extension overrides](../architecture/25-extension-overrides.md) documentation.
 :::
 
 ### Using an async features loader
