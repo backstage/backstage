@@ -12,8 +12,8 @@ import {
 
 const tester = createExtensionTester(extension);
 
-const { getByTestId } = renderInTestApp(tester.element());
+const { getByTestId } = renderInTestApp(tester.reactElement());
 
 // or if you're not using `coreExtensionData.reactElement` as the output ref
-const { getByTestId } = renderInTestApp(tester.data(myComponentRef));
+const { getByTestId } = renderInTestApp(tester.get(myComponentRef));
 ```
