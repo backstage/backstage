@@ -19,6 +19,7 @@ ENV PATH=/venv/bin:$PATH
 
 RUN /home/nonroot/venv/bin/pip install mkdocs-techdocs-core==1.3.3
 
+# Build Node environment in a separate builder stage
 FROM cgr.dev/chainguard/wolfi-base:latest as node-builder
 
 ENV PYTHON_VERSION 3.12=~3.12
