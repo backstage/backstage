@@ -18,3 +18,4 @@
 // which hooks are public API and should be exported from the package.
 
 export * from './useCookieAuthRefresh';
+export * from './useSignInAuthError';

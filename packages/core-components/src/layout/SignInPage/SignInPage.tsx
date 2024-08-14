@@ -19,14 +19,13 @@ import {
   configApiRef,
   SignInPageProps,
   useApi,
-  authErrorApiRef,
 } from '@backstage/core-plugin-api';
 import { UserIdentity } from './UserIdentity';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import React, { useState } from 'react';
-import { useAsync, useMountEffect } from '@react-hookz/web';
+import React, { useEffect, useState } from 'react';
+import { useMountEffect } from '@react-hookz/web';
 import { Progress } from '../../components/Progress';
 import { Content } from '../Content/Content';
 import { ContentHeader } from '../ContentHeader/ContentHeader';
@@ -39,6 +38,7 @@ import { IdentityProviders, SignInProviderConfig } from './types';
 import { coreComponentsTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { useSearchParams } from 'react-router-dom';
+import { useSignInAuthError } from '@backstage/plugin-auth-react';
 
 type MultiSignInPageProps = SignInPageProps & {
   providers: IdentityProviders;
@@ -99,7 +99,7 @@ export const SingleSignInPage = ({
   const classes = useStyles();
   const authApi = useApi(provider.apiRef);
   const configApi = useApi(configApiRef);
-  const authErrorApi = useApi(authErrorApiRef);
+  const { error: signInError, checkAuthError } = useSignInAuthError();
   const { t } = useTranslationRef(coreComponentsTranslationRef);
 
   const [error, setError] = useState<Error>();
@@ -160,19 +160,18 @@ export const SingleSignInPage = ({
     }
   };
 
-  const [_, { execute: checkAuthErrors }] = useAsync(async () => {
-    if (hasErrorSearchParam) {
-      const errorResponse = await authErrorApi.getSignInAuthError();
-      if (errorResponse) {
-        setError(errorResponse);
-      }
-    }
-  });
-
   useMountEffect(() => {
-    checkAuthErrors();
+    if (hasErrorSearchParam) {
+      checkAuthError();
+    }
     login({ checkExisting: true });
   });
+
+  useEffect(() => {
+    if (signInError) {
+      setError(signInError);
+    }
+  }, [signInError]);
 
   return showLoginPage ? (
     <Page themeId="home">

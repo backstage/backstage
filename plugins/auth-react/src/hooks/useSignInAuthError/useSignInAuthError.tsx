@@ -14,25 +14,20 @@
  * limitations under the License.
  */
 
-import { DiscoveryApi, AuthErrorApi } from '@backstage/core-plugin-api';
+import { discoveryApiRef, useApi } from '@backstage/core-plugin-api';
+import { useAsync } from '@react-hookz/web';
 import { deserializeError } from '@backstage/errors';
 
-/**
- * The default implementation of the AuthErrorApi, which simply calls auth error endpoint.
- * @public
- */
-export class SignInAuthErrorApi implements AuthErrorApi {
-  private constructor(private readonly discoveryApi: DiscoveryApi) {}
+export function useSignInAuthError(): {
+  error: Error | undefined;
+  checkAuthError: () => void;
+} {
+  const discoveryApi = useApi(discoveryApiRef);
 
-  static create(options: { discovery: DiscoveryApi }) {
-    const { discovery } = options;
-    return new SignInAuthErrorApi(discovery);
-  }
+  const [state, { execute: checkAuthError }] = useAsync(async () => {
+    const baseUrl = await discoveryApi.getBaseUrl('auth');
 
-  async getSignInAuthError(): Promise<Error | undefined> {
-    const baseUrl = await this.discoveryApi.getBaseUrl('auth');
-
-    // use native fetch instead of depending on fetchApi because
+    // use native fetch instead of fetchApi because
     // we are not signed in and are calling an unauthenticated endpoint
     const response = await fetch(`${baseUrl}/.backstage/error`, {
       credentials: 'include',
@@ -40,5 +35,7 @@ export class SignInAuthErrorApi implements AuthErrorApi {
     const data = await response.json();
 
     return data ? deserializeError(data) : undefined;
-  }
+  });
+
+  return { error: state.result, checkAuthError };
 }

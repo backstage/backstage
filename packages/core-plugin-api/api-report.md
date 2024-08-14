@@ -195,14 +195,6 @@ export function attachComponentData<P>(
 ): void;
 
 // @public
-export type AuthErrorApi = {
-  getSignInAuthError(): Promise<Error | undefined>;
-};
-
-// @public
-export const authErrorApiRef: ApiRef<AuthErrorApi>;
-
-// @public
 export type AuthProviderInfo = {
   id: string;
   title: string;

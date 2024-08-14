@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-import React, { useLayoutEffect, useState, useMemo, useCallback } from 'react';
+import React, {
+  useLayoutEffect,
+  useState,
+  useMemo,
+  useCallback,
+  useEffect,
+} from 'react';
 import {
   SignInPageProps,
   useApi,
   useApiHolder,
   errorApiRef,
   IdentityApi,
-  authErrorApiRef,
 } from '@backstage/core-plugin-api';
 import {
   IdentityProviders,
@@ -33,7 +38,8 @@ import { guestProvider } from './guestProvider';
 import { customProvider } from './customProvider';
 import { IdentityApiSignOutProxy } from './IdentityApiSignOutProxy';
 import { useSearchParams } from 'react-router-dom';
-import { useMountEffect, useAsync } from '@react-hookz/web';
+import { useMountEffect } from '@react-hookz/web';
+import { useSignInAuthError } from '@backstage/plugin-auth-react';
 
 const PROVIDER_STORAGE_KEY = '@backstage/core:SignInPage:provider';
 
@@ -89,7 +95,7 @@ export const useSignInProviders = (
 ) => {
   const errorApi = useApi(errorApiRef);
   const apiHolder = useApiHolder();
-  const authErrorApi = useApi(authErrorApiRef);
+  const { error: signInError, checkAuthError } = useSignInAuthError();
   const [loading, setLoading] = useState(true);
 
   // User was redirected back to sign in page with error from auth redirect flow
@@ -97,16 +103,13 @@ export const useSignInProviders = (
   const errorParam = searchParams.get('error');
   const hasErrorSearchParam = errorParam !== 'false' && errorParam !== null;
 
-  const [_, { execute: checkAuthErrors }] = useAsync(async () => {
-    if (hasErrorSearchParam) {
-      const errorResponse = await authErrorApi.getSignInAuthError();
-      if (errorResponse) {
-        errorApi.post(errorResponse);
-      }
-    }
-  });
+  useMountEffect(() => hasErrorSearchParam && checkAuthError());
 
-  useMountEffect(checkAuthErrors);
+  useEffect(() => {
+    if (signInError) {
+      errorApi.post(signInError);
+    }
+  }, [errorApi, signInError]);
 
   // This decorates the result with sign out logic from this hook
   const handleWrappedResult = useCallback(

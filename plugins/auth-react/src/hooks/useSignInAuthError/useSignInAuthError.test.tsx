@@ -14,29 +14,20 @@
  * limitations under the License.
  */
 
-import { DiscoveryApi } from '@backstage/core-plugin-api';
+import React from 'react';
+import { act, renderHook } from '@testing-library/react';
+import { discoveryApiRef } from '@backstage/core-plugin-api';
+import { TestApiProvider } from '@backstage/test-utils';
+import { useSignInAuthError } from './useSignInAuthError';
 import { serializeError } from '@backstage/errors';
-import { SignInAuthErrorApi } from './SignInAuthErrorApi';
 
-describe('SignInAuthErrorApi', () => {
-  const mockDiscoveryApi = {
-    getBaseUrl: jest.fn(),
-  } as unknown as jest.Mocked<DiscoveryApi>;
+describe('useCookieAuthRefresh', () => {
+  const discoveryApiMock = {
+    getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7000/api/auth'),
+  };
 
   beforeEach(() => {
-    jest.resetAllMocks();
-  });
-
-  it('should create an instance of SignInAuthErrorApi', async () => {
-    const api = SignInAuthErrorApi.create({
-      discovery: mockDiscoveryApi,
-    });
-
-    mockDiscoveryApi.getBaseUrl.mockResolvedValue(
-      'http://localhost:7007/api/auth',
-    );
-
-    expect(api).toBeInstanceOf(SignInAuthErrorApi);
+    jest.clearAllMocks();
   });
 
   it('should return an error when the cookie returns an error object', async () => {
@@ -45,50 +36,63 @@ describe('SignInAuthErrorApi', () => {
       message: 'This is a test error',
     };
     const serializedError = serializeError(errorObject);
-    mockDiscoveryApi.getBaseUrl.mockResolvedValue(
-      'http://localhost:7000/api/auth',
-    );
 
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,
       json: jest.fn().mockResolvedValue(serializedError),
     } as unknown as Response);
 
-    const api = SignInAuthErrorApi.create({ discovery: mockDiscoveryApi });
-    const error = await api.getSignInAuthError();
+    const { result } = renderHook(() => useSignInAuthError(), {
+      wrapper: ({ children }) => (
+        <TestApiProvider apis={[[discoveryApiRef, discoveryApiMock]]}>
+          {children}
+        </TestApiProvider>
+      ),
+    });
 
-    expect(mockDiscoveryApi.getBaseUrl).toHaveBeenCalledWith('auth');
+    await act(async () => {
+      result.current.checkAuthError();
+    });
+
+    expect(discoveryApiMock.getBaseUrl).toHaveBeenCalledWith('auth');
     expect(fetch).toHaveBeenCalledWith(
       'http://localhost:7000/api/auth/.backstage/error',
       {
         credentials: 'include',
       },
     );
-    expect(error).toBeInstanceOf(Error);
-    expect((error as Error).name).toEqual(errorObject.name);
-    expect((error as Error).message).toEqual(errorObject.message);
+    expect(result.current.error).toBeInstanceOf(Error);
+    expect((result.current.error as Error).name).toEqual(errorObject.name);
+    expect((result.current.error as Error).message).toEqual(
+      errorObject.message,
+    );
   });
 
   it('should return undefined when the backend does not return an error object', async () => {
-    mockDiscoveryApi.getBaseUrl.mockResolvedValue(
-      'http://localhost:7000/api/auth',
-    );
-
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,
       json: jest.fn().mockResolvedValue(undefined),
     } as unknown as Response);
 
-    const api = SignInAuthErrorApi.create({ discovery: mockDiscoveryApi });
-    const error = await api.getSignInAuthError();
+    const { result } = renderHook(() => useSignInAuthError(), {
+      wrapper: ({ children }) => (
+        <TestApiProvider apis={[[discoveryApiRef, discoveryApiMock]]}>
+          {children}
+        </TestApiProvider>
+      ),
+    });
 
-    expect(mockDiscoveryApi.getBaseUrl).toHaveBeenCalledWith('auth');
+    await act(async () => {
+      result.current.checkAuthError();
+    });
+
+    expect(discoveryApiMock.getBaseUrl).toHaveBeenCalledWith('auth');
     expect(fetch).toHaveBeenCalledWith(
       'http://localhost:7000/api/auth/.backstage/error',
       {
         credentials: 'include',
       },
     );
-    expect(error).toBeUndefined();
+    expect(result.current.error).toBeUndefined();
   });
 });

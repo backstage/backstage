@@ -35,7 +35,6 @@ import {
   createFetchApi,
   FetchMiddlewares,
   VMwareCloudAuth,
-  SignInAuthErrorApi,
 } from '@backstage/core-app-api';
 
 import {
@@ -59,7 +58,6 @@ import {
   bitbucketServerAuthApiRef,
   atlassianAuthApiRef,
   vmwareCloudAuthApiRef,
-  authErrorApiRef,
 } from '@backstage/core-plugin-api';
 import {
   permissionApiRef,
@@ -288,12 +286,5 @@ export const apis = [
     },
     factory: ({ config, discovery, identity }) =>
       IdentityPermissionApi.create({ config, discovery, identity }),
-  }),
-  createApiFactory({
-    api: authErrorApiRef,
-    deps: {
-      discovery: discoveryApiRef,
-    },
-    factory: ({ discovery }) => SignInAuthErrorApi.create({ discovery }),
   }),
 ];

@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { SignInAuthErrorApi } from './SignInAuthErrorApi';
+export { useSignInAuthError } from './useSignInAuthError';
