@@ -7,13 +7,12 @@
 
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { ContainerRunner } from '@backstage/backend-common';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { IndexableDocument } from '@backstage/plugin-search-common';
-import { Logger } from 'winston';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import * as winston from 'winston';
@@ -48,8 +47,8 @@ export type GeneratorBuilder = {
 
 // @public
 export type GeneratorOptions = {
-  logger: Logger;
-  containerRunner?: ContainerRunner;
+  logger: LoggerService;
+  containerRunner?: TechDocsContainerRunner;
 };
 
 // @public
@@ -58,7 +57,7 @@ export type GeneratorRunOptions = {
   outputDir: string;
   parsedLocationAnnotation?: ParsedLocationAnnotation;
   etag?: string;
-  logger: Logger;
+  logger: LoggerService;
   logStream?: Writable;
   siteOptions?: {
     name?: string;
@@ -71,8 +70,8 @@ export class Generators implements GeneratorBuilder {
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger;
-      containerRunner?: ContainerRunner;
+      logger: LoggerService;
+      containerRunner?: TechDocsContainerRunner;
       customGenerator?: TechdocsGenerator;
     },
   ): Promise<GeneratorBuilder>;
@@ -86,7 +85,7 @@ export const getDocFilesFromRepository: (
   entity: Entity,
   opts?: {
     etag?: string;
-    logger?: Logger;
+    logger?: LoggerService;
   },
 ) => Promise<PreparerResponse>;
 
@@ -156,13 +155,13 @@ export type PreparerBuilder = {
 
 // @public
 export type PreparerConfig = {
-  logger: Logger;
+  logger: LoggerService;
   reader: UrlReaderService;
 };
 
 // @public
 export type PreparerOptions = {
-  logger?: Logger;
+  logger?: LoggerService;
   etag?: ETag;
 };
 
@@ -214,8 +213,8 @@ export type PublisherBuilder = {
 
 // @public
 export type PublisherFactory = {
-  logger: Logger;
-  discovery: PluginEndpointDiscovery;
+  logger: LoggerService;
+  discovery: DiscoveryService;
   customPublisher?: PublisherBase | undefined;
 };
 
@@ -262,6 +261,32 @@ export interface TechdocsBuildsExtensionPoint {
 export const techdocsBuildsExtensionPoint: ExtensionPoint<TechdocsBuildsExtensionPoint>;
 
 // @public
+export interface TechDocsContainerRunner {
+  runContainer(opts: {
+    imageName: string;
+    command?: string | string[];
+    args: string[];
+    logStream?: Writable;
+    mountDirs?: Record<string, string>;
+    workingDir?: string;
+    envVars?: Record<string, string>;
+    pullImage?: boolean;
+    defaultUser?: boolean;
+    pullOptions?: {
+      authconfig?: {
+        username?: string;
+        password?: string;
+        auth?: string;
+        email?: string;
+        serveraddress?: string;
+        [key: string]: unknown;
+      };
+      [key: string]: unknown;
+    };
+  }): Promise<void>;
+}
+
+// @public
 export interface TechDocsDocument extends IndexableDocument {
   kind: string;
   lifecycle: string;
@@ -274,8 +299,8 @@ export interface TechDocsDocument extends IndexableDocument {
 // @public
 export class TechdocsGenerator implements GeneratorBase {
   constructor(options: {
-    logger: Logger;
-    containerRunner?: ContainerRunner;
+    logger: LoggerService;
+    containerRunner?: TechDocsContainerRunner;
     config: Config;
     scmIntegrations: ScmIntegrationRegistry;
   });

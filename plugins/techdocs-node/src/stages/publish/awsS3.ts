@@ -42,7 +42,6 @@ import JSON5 from 'json5';
 import createLimiter from 'p-limit';
 import path from 'path';
 import { Readable } from 'stream';
-import { Logger } from 'winston';
 import {
   bulkStorageOperation,
   getCloudPathForLocalPath,
@@ -60,6 +59,7 @@ import {
   ReadinessResponse,
   TechDocsMetadata,
 } from './types';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 const streamToBuffer = (stream: Readable): Promise<Buffer> => {
   return new Promise((resolve, reject) => {
@@ -80,7 +80,7 @@ export class AwsS3Publish implements PublisherBase {
   private readonly storageClient: S3Client;
   private readonly bucketName: string;
   private readonly legacyPathCasing: boolean;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly bucketRootPath: string;
   private readonly sse?: 'aws:kms' | 'AES256';
 
@@ -88,7 +88,7 @@ export class AwsS3Publish implements PublisherBase {
     storageClient: S3Client;
     bucketName: string;
     legacyPathCasing: boolean;
-    logger: Logger;
+    logger: LoggerService;
     bucketRootPath: string;
     sse?: 'aws:kms' | 'AES256';
   }) {
@@ -102,7 +102,7 @@ export class AwsS3Publish implements PublisherBase {
 
   static async fromConfig(
     config: Config,
-    logger: Logger,
+    logger: LoggerService,
   ): Promise<PublisherBase> {
     let bucketName = '';
     try {
@@ -524,7 +524,7 @@ export class AwsS3Publish implements PublisherBase {
           }
 
           try {
-            this.logger.verbose(`Migrating ${file}`);
+            this.logger.debug(`Migrating ${file}`);
             await this.storageClient.send(
               new CopyObjectCommand({
                 Bucket: this.bucketName,

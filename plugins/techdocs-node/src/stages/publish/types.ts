@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { Logger } from 'winston';
+import { Writable } from 'stream';
 import express from 'express';
 import { Config } from '@backstage/config';
+import { DiscoveryService, LoggerService } from '@backstage/backend-plugin-api';
+import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 
 /**
  * Options for building publishers
  * @public
  */
 export type PublisherFactory = {
-  logger: Logger;
-  discovery: PluginEndpointDiscovery;
+  logger: LoggerService;
+  discovery: DiscoveryService;
   customPublisher?: PublisherBase | undefined;
 };
 
@@ -168,3 +168,36 @@ export type PublisherBuilder = {
   register(type: PublisherType, publisher: PublisherBase): void;
   get(config: Config): PublisherBase;
 };
+
+/**
+ * Handles the running of containers, on behalf of others.
+ *
+ * @public
+ */
+export interface TechDocsContainerRunner {
+  /**
+   * Runs a container image to completion.
+   */
+  runContainer(opts: {
+    imageName: string;
+    command?: string | string[];
+    args: string[];
+    logStream?: Writable;
+    mountDirs?: Record<string, string>;
+    workingDir?: string;
+    envVars?: Record<string, string>;
+    pullImage?: boolean;
+    defaultUser?: boolean;
+    pullOptions?: {
+      authconfig?: {
+        username?: string;
+        password?: string;
+        auth?: string;
+        email?: string;
+        serveraddress?: string;
+        [key: string]: unknown;
+      };
+      [key: string]: unknown;
+    };
+  }): Promise<void>;
+}

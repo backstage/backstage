@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
@@ -224,8 +223,8 @@ const getEntityRootDir = (entity: Entity) => {
   return mockDir.resolve(namespace || DEFAULT_NAMESPACE, kind, name);
 };
 
-const logger = loggerToWinstonLogger(mockServices.logger.mock());
-jest.spyOn(logger, 'error').mockReturnValue(logger);
+const logger = mockServices.logger.mock();
+jest.spyOn(logger, 'error');
 
 const createPublisherFromConfig = ({
   accountName = 'accountName',

@@ -16,9 +16,9 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { Writable } from 'stream';
-import { Logger } from 'winston';
 import { ParsedLocationAnnotation } from '../../helpers';
-import { ContainerRunner } from '@backstage/backend-common';
+import { LoggerService } from '@backstage/backend-plugin-api';
+import { TechDocsContainerRunner } from '../publish/types';
 
 // Determines where the generator will be run
 export type GeneratorRunInType = 'docker' | 'local';
@@ -28,12 +28,12 @@ export type GeneratorRunInType = 'docker' | 'local';
  * @public
  */
 export type GeneratorOptions = {
-  logger: Logger;
+  logger: LoggerService;
   /**
    * @deprecated containerRunner is now instantiated in
    * the generator and this option will be removed in the future
    */
-  containerRunner?: ContainerRunner;
+  containerRunner?: TechDocsContainerRunner;
 };
 
 /**
@@ -65,7 +65,7 @@ export type GeneratorRunOptions = {
   outputDir: string;
   parsedLocationAnnotation?: ParsedLocationAnnotation;
   etag?: string;
-  logger: Logger;
+  logger: LoggerService;
   logStream?: Writable;
   siteOptions?: { name?: string };
   runAsDefaultUser?: boolean;
