@@ -71,6 +71,7 @@ nav:
           - Concepts: 'features/search/concepts.md'
           - Search Architecture: 'features/search/architecture.md'
           - Search Engines: 'features/search/search-engines.md'
+          - Collators: 'features/search/collators.md'
           - HOW TO guides: 'features/search/how-to-guides.md'
       - TechDocs:
           - Overview: 'features/techdocs/README.md'
