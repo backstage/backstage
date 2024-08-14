@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
@@ -24,7 +23,7 @@ import {
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { CatalogProcessor } from '@backstage/plugin-catalog-node';
 import { findCodeOwnerByTarget } from './lib';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import { LoggerService, UrlReaderService } from '@backstage/backend-plugin-api';
 
 const ALLOWED_KINDS = ['API', 'Component', 'Domain', 'Resource', 'System'];
 const ALLOWED_LOCATION_TYPES = ['url'];
@@ -33,11 +32,11 @@ const ALLOWED_LOCATION_TYPES = ['url'];
 export class CodeOwnersProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;
   private readonly logger: LoggerService;
-  private readonly reader: UrlReader;
+  private readonly reader: UrlReaderService;
 
   static fromConfig(
     config: Config,
-    options: { logger: LoggerService; reader: UrlReader },
+    options: { logger: LoggerService; reader: UrlReaderService },
   ) {
     const integrations = ScmIntegrations.fromConfig(config);
 
@@ -50,7 +49,7 @@ export class CodeOwnersProcessor implements CatalogProcessor {
   constructor(options: {
     integrations: ScmIntegrationRegistry;
     logger: LoggerService;
-    reader: UrlReader;
+    reader: UrlReaderService;
   }) {
     this.integrations = options.integrations;
     this.logger = options.logger;

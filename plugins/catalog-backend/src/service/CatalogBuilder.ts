@@ -18,7 +18,6 @@ import {
   createLegacyAuthAdapters,
   HostDiscovery,
   PluginDatabaseManager,
-  UrlReader,
 } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import {
@@ -112,6 +111,7 @@ import {
   HttpAuthService,
   LoggerService,
   PermissionsService,
+  UrlReaderService,
 } from '@backstage/backend-plugin-api';
 
 /**
@@ -128,7 +128,7 @@ export type CatalogEnvironment = {
   logger: LoggerService;
   database: PluginDatabaseManager;
   config: Config;
-  reader: UrlReader;
+  reader: UrlReaderService;
   permissions: PermissionsService | PermissionAuthorizer;
   scheduler?: PluginTaskScheduler;
   discovery?: DiscoveryService;

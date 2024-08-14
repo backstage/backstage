@@ -18,7 +18,6 @@ import {
   DatabaseManager,
   loggerToWinstonLogger,
   PluginDatabaseManager,
-  UrlReaders,
 } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ConfigReader } from '@backstage/config';
@@ -48,6 +47,7 @@ import {
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import { AutocompleteHandler } from '@backstage/plugin-scaffolder-node/alpha';
 import { MiddlewareFactory } from '@backstage/backend-app-api';
+import { UrlReaders } from '@backstage/backend-defaults/urlReader';
 
 const mockAccess = jest.fn();
 

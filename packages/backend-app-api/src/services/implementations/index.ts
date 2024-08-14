@@ -23,6 +23,4 @@ export * from './lifecycle';
 export * from './permissions';
 export * from './rootLifecycle';
 export * from './tokenManager';
-export * from './urlReader';
-
 export * from './deprecated';

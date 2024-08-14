@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  PluginDatabaseManager,
-  UrlReader,
-} from '@backstage/backend-common';
+import type { PluginDatabaseManager } from '@backstage/backend-common';
 import type {
   PluginTaskScheduler,
   TaskFunction,
@@ -32,7 +29,7 @@ import type { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import type { DurationObjectUnits } from 'luxon';
 import type { Logger } from 'winston';
 import { IncrementalIngestionDatabaseManager } from './database/IncrementalIngestionDatabaseManager';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import { LoggerService, UrlReaderService } from '@backstage/backend-plugin-api';
 
 /**
  * Ingest entities into the catalog in bite-sized chunks.
@@ -192,7 +189,7 @@ export type PluginEnvironment = {
   database: PluginDatabaseManager;
   scheduler: PluginTaskScheduler;
   config: Config;
-  reader: UrlReader;
+  reader: UrlReaderService;
   permissions: PermissionEvaluator;
 };
 

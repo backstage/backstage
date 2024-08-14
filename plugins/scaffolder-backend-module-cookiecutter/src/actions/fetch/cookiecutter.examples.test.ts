@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { UrlReader, ContainerRunner } from '@backstage/backend-common';
+import { ContainerRunner } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 import { ScmIntegrations } from '@backstage/integration';
@@ -25,6 +25,7 @@ import type { ActionContext } from '@backstage/plugin-scaffolder-node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { examples } from './cookiecutter.examples';
 import yaml from 'yaml';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 const executeShellCommand = jest.fn();
 const commandExists = jest.fn();
@@ -71,7 +72,7 @@ describe('fetch:cookiecutter', () => {
     runContainer: jest.fn(),
   };
 
-  const mockReader: UrlReader = {
+  const mockReader: UrlReaderService = {
     readUrl: jest.fn(),
     readTree: jest.fn(),
     search: jest.fn(),
