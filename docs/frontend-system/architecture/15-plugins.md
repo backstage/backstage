@@ -55,3 +55,36 @@ This is a list of feature flag declarations that your plugin provides to the app
 ## Installing a Plugin in an App
 
 A plugin instance is considered an frontend feature and can be installed directly in any Backstage frontend app. See the [app documentation](./10-app.md) for more information about the different ways in which you can install new features in an app.
+
+## Overriding a Plugin
+
+A plugin might not always behave exactly the way you want. It could be that you want to remove particular extensions, decorate them a bit, replace them with your own, or simply add new ones. Regardless of your exact use-case, you can use the `plugin.withOverrides` method to create a new copy of the plugin with the desired changes. When doing so you can also access the original extensions provided by the plugin, and use the [extension override](./25-extension-overrides.md) API to make changes to individual extensions:
+
+```tsx
+import plugin from '@backstage/plugin-catalog';
+
+export default plugin.withOverrides({
+  // These overrides are merged with the original extensions
+  extensions: [
+    // Override the catalog nav item to use a custom icon
+    plugin.getExtension('nav-item:catalog').override({
+      factory: origFactory => [
+        NavItemBlueprint.dataRefs.target({
+          ...origFactory().get(NavItemBlueprint.dataRefs.target),
+          icon: CustomCatalogIcon,
+        }),
+      ],
+    }),
+    // Override the catalog index page with a completely custom implementation
+    PageBlueprint.make({
+      params: {
+        defaultPath: '/catalog',
+        routeRef: plugin.routes.catalogIndex,
+        loader: () => import('./CustomCatalogIndexPage').then(m => <m.Page />),
+      },
+    }),
+  ],
+});
+```
+
+You can keep the plugin override in your app package, but it can often be a good idea to separate it out into its own package, especially if you the overrides are complex or you want distinct ownership of the override. For example, if you are overriding the `@backstage/plugin-catalog` plugin, you might create a new package called `@internal/plugin-catalog` at `plugins/catalog` in your workspace, which exports the overridden plugin instance.
