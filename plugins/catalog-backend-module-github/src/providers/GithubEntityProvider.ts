@@ -331,7 +331,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     }
 
     const repoName = event.repository.name;
-    const repoUrl = event.repository.url;
+    const repoUrl = event.repository.html_url;
     this.logger.debug(`handle github:push event for ${repoName} - ${repoUrl}`);
 
     const branch =
@@ -356,13 +356,13 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     // so we will process the change based in this data
     // https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#push
     const added = this.collectDeferredEntitiesFromCommit(
-      event.repository.url,
+      repoUrl,
       branch,
       event.commits,
       (commit: Commit) => [...commit.added],
     );
     const removed = this.collectDeferredEntitiesFromCommit(
-      event.repository.url,
+      repoUrl,
       branch,
       event.commits,
       (commit: Commit) => [...commit.removed],
@@ -381,14 +381,12 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
         keys: [
           ...new Set([
             ...modified.map(
-              filePath =>
-                `url:${event.repository.url}/tree/${branch}/${filePath}`,
+              filePath => `url:${repoUrl}/tree/${branch}/${filePath}`,
             ),
             ...modified.map(
-              filePath =>
-                `url:${event.repository.url}/blob/${branch}/${filePath}`,
+              filePath => `url:${repoUrl}/blob/${branch}/${filePath}`,
             ),
-            `url:${event.repository.url}/tree/${branch}/${catalogPath}`,
+            `url:${repoUrl}/tree/${branch}/${catalogPath}`,
           ]),
         ],
       });
@@ -527,7 +525,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   private async onRepoRenamed(event: RepositoryRenamedEvent) {
     const repository = this.createRepoFromEvent(event);
     const oldRepoName = event.changes.repository.name.from;
-    const urlParts = event.repository.url.split('/');
+    const urlParts = repository.url.split('/');
     urlParts[urlParts.length - 1] = oldRepoName;
     const oldRepoUrl = urlParts.join('/');
     const oldRepository: Repository = {
@@ -632,7 +630,10 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
 
   private createRepoFromEvent(event: RepositoryEvent | PushEvent): Repository {
     return {
-      url: event.repository.url,
+      // $.repository.url can be a value like
+      // "https://api.github.com/repos/{org}/{repo}"
+      // or "https://github.com/{org}/{repo}"
+      url: event.repository.html_url,
       name: event.repository.name,
       defaultBranchRef: event.repository.default_branch,
       repositoryTopics: event.repository.topics,

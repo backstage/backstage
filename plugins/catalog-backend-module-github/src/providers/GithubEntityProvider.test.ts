@@ -665,7 +665,7 @@ describe('GithubEntityProvider', () => {
       event: EventParams<PushEvent | RepositoryEvent>,
       options?: { branch?: string; catalogFilePath?: string },
     ): DeferredEntity[] => {
-      const url = `${event.eventPayload.repository.url}/blob/${
+      const url = `${event.eventPayload.repository.html_url}/blob/${
         options?.branch ?? 'main'
       }/${options?.catalogFilePath ?? 'catalog-info.yaml'}`;
       return createExpectedEntitiesForUrl(url);
@@ -687,6 +687,7 @@ describe('GithubEntityProvider', () => {
           name: 'test-repo',
           organization,
           topics: [],
+          html_url: `https://github.com/${organization}/test-repo`,
           url: `https://github.com/${organization}/test-repo`,
         } as Partial<PushEvent['repository']>;
 
@@ -963,7 +964,8 @@ describe('GithubEntityProvider', () => {
       ): EventParams<RepositoryEvent> => {
         const repo = {
           name: 'test-repo',
-          url: 'https://github.com/test-org/test-repo',
+          html_url: 'https://github.com/test-org/test-repo',
+          url: 'https://api.github.com/repos/test-org/test-repo',
           default_branch: 'main',
           master_branch: 'main',
           topics: [],
