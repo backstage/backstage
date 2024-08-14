@@ -11,6 +11,7 @@
 
 # syntax = docker/dockerfile:1.4
 
+# Build Python environment in a separate builder stage
 FROM cgr.dev/chainguard/python:latest-dev as python-builder
 
 RUN --mount=type=cache,target=/home/nonroot/.cache/pip,uid=65532,gid=65532 \
