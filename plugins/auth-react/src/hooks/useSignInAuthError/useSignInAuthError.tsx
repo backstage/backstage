@@ -18,6 +18,10 @@ import { discoveryApiRef, useApi } from '@backstage/core-plugin-api';
 import { useAsync } from '@react-hookz/web';
 import { deserializeError } from '@backstage/errors';
 
+/**
+ * @public
+ * A hook that will fetch any sign in auth error in redirect auth flow
+ */
 export function useSignInAuthError(): {
   error: Error | undefined;
   checkAuthError: () => void;
