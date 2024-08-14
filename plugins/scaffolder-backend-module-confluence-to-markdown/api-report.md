@@ -8,7 +8,7 @@ import { Config } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
-import { UrlReader } from '@backstage/backend-common';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 // @public
 const confluenceToMarkdownModule: BackendFeatureCompat;
@@ -16,7 +16,7 @@ export default confluenceToMarkdownModule;
 
 // @public (undocumented)
 export const createConfluenceToMarkdownAction: (options: {
-  reader: UrlReader;
+  reader: UrlReaderService;
   integrations: ScmIntegrations;
   config: Config;
 }) => TemplateAction<
