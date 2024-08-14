@@ -37,7 +37,7 @@ import {
 } from '@backstage/core-plugin-api';
 
 import {
-  createPlugin,
+  createFrontendPlugin,
   createApiExtension,
   createPageExtension,
   createExtensionInput,
@@ -237,7 +237,7 @@ export const searchNavItem = createNavItemExtension({
 });
 
 /** @alpha */
-export default createPlugin({
+export default createFrontendPlugin({
   id: 'search',
   extensions: [searchApi, searchPage, searchNavItem],
   routes: convertLegacyRouteRefs({

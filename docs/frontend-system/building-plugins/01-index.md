@@ -24,14 +24,14 @@ The created plugin will currently be templated for use in the legacy frontend sy
 
 ## The plugin instance
 
-The starting point of a frontend plugin is the `createPlugin` function, which accepts a single options object as its only parameter. It is imported from `@backstage/frontend-plugin-api`, which is where you will find most of the common APIs for building plugins.
+The starting point of a frontend plugin is the `createFrontendPlugin` function, which accepts a single options object as its only parameter. It is imported from `@backstage/frontend-plugin-api`, which is where you will find most of the common APIs for building plugins.
 
 This is how to create a minimal plugin:
 
 ```tsx title="in src/plugin.ts"
-import { createPlugin } from '@backstage/frontend-plugin-api';
+import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 
-export const examplePlugin = createPlugin({
+export const examplePlugin = createFrontendPlugin({
   id: 'example',
   extensions: [],
 });
@@ -63,7 +63,7 @@ export const rootRouteRef = createRouteRef();
 
 ```tsx title="in src/plugin.ts"
 import {
-  createPlugin,
+  createFrontendPlugin,
   createPageExtension,
   createNavItemExtension,
 } from '@backstage/frontend-plugin-api';
@@ -92,7 +92,7 @@ const exampleNavItem = createNavItemExtension({
 });
 
 // The same plugin as above, now with the extensions added
-export const examplePlugin = createPlugin({
+export const examplePlugin = createFrontendPlugin({
   id: 'example',
   extensions: [examplePage, exampleNavItem],
   // We can also make routes available to other plugins.
@@ -168,7 +168,7 @@ const exampleApi = createApiExtension({
 
 /* Omitted definitions for examplePage, exampleNavItem, and rootRouteRef. */
 
-export const examplePlugin = createPlugin({
+export const examplePlugin = createFrontendPlugin({
   id: 'example',
   extensions: [
     // highlight-add-next-line
@@ -202,7 +202,7 @@ const exampleEntityContent = createEntityContentExtension({
     )),
 });
 
-export const examplePlugin = createPlugin({
+export const examplePlugin = createFrontendPlugin({
   id: 'example',
   extensions: [
     // highlight-add-next-line

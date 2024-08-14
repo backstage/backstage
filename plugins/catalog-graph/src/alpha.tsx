@@ -17,7 +17,7 @@
 import React from 'react';
 import {
   createPageExtension,
-  createPlugin,
+  createFrontendPlugin,
   createSchemaFromZod,
 } from '@backstage/frontend-plugin-api';
 import {
@@ -96,7 +96,7 @@ const CatalogGraphPage = createPageExtension({
     ),
 });
 
-export default createPlugin({
+export default createFrontendPlugin({
   id: 'catalog-graph',
   routes: {
     catalogGraph: convertLegacyRouteRef(catalogGraphRouteRef),

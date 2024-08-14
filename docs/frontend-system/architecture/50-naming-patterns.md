@@ -23,7 +23,7 @@ Example:
 
 ```ts
 // This declaration is only for internal usage in tests. This could also be a direct default export.
-export const userSettingsPlugin = createPlugin({
+export const userSettingsPlugin = createFrontendPlugin({
   id: 'user-settings',
   ...
 })
@@ -67,7 +67,7 @@ const catalogSearchResultListItem = SearchResultListItemBlueprint.make({
 });
 
 // Note that the extensions themselves are not exported, only the plugin instance
-export const catalogPlugin = createPlugin({
+export const catalogPlugin = createFrontendPlugin({
   id: 'catalog',
   extensions: [catalogEntityPage, catalogSearchResultListItem /* ... */],
 });

@@ -27,7 +27,7 @@ import {
 import {
   createApiExtension,
   createPageExtension,
-  createPlugin,
+  createFrontendPlugin,
 } from '@backstage/frontend-plugin-api';
 import {
   scmAuthApiRef,
@@ -80,7 +80,7 @@ const catalogImportApi = createApiExtension({
 });
 
 /** @alpha */
-export default createPlugin({
+export default createFrontendPlugin({
   id: 'catalog-import',
   extensions: [catalogImportApi, catalogImportPage],
   routes: {

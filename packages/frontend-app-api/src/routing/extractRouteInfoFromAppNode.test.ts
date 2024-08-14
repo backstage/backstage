@@ -25,7 +25,7 @@ import {
   coreExtensionData,
   createExtension,
   createExtensionInput,
-  createPlugin,
+  createFrontendPlugin,
   createRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { MockConfigApi } from '@backstage/test-utils';
@@ -71,7 +71,7 @@ function createTestExtension(options: {
 }
 
 function routeInfoFromExtensions(extensions: ExtensionDefinition<any, any>[]) {
-  const plugin = createPlugin({
+  const plugin = createFrontendPlugin({
     id: 'test',
     extensions,
   });

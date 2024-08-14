@@ -20,7 +20,7 @@ import {
   createApiFactory,
   createNavItemExtension,
   createPageExtension,
-  createPlugin,
+  createFrontendPlugin,
   discoveryApiRef,
   fetchApiRef,
 } from '@backstage/frontend-plugin-api';
@@ -64,7 +64,7 @@ export const devToolsNavItem = createNavItemExtension({
 });
 
 /** @alpha */
-export default createPlugin({
+export default createFrontendPlugin({
   id: 'devtools',
   routes: {
     root: convertLegacyRouteRef(rootRouteRef),

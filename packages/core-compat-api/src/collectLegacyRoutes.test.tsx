@@ -31,7 +31,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { collectLegacyRoutes } from './collectLegacyRoutes';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalBackstagePlugin } from '../../frontend-plugin-api/src/wiring/createPlugin';
+import { toInternalBackstagePlugin } from '../../frontend-plugin-api/src/wiring/createFrontendPlugin';
 import {
   createPlugin,
   createRoutableExtension,

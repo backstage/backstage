@@ -42,7 +42,7 @@ The code snippet in the previous section does not indicate which plugin the rout
 ```tsx title="plugins/catalog/src/plugin.tsx"
 import React from 'react';
 import {
-  createPlugin,
+  createFrontendPlugin,
   createPageExtension,
 } from '@backstage/frontend-plugin-api';
 import { indexRouteRef } from './routes';
@@ -55,7 +55,7 @@ const catalogIndexPage = createPageExtension({
   loader: () => import('./components').then(m => <m.IndexPage />),
 });
 
-export default createPlugin({
+export default createFrontendPlugin({
   id: 'catalog',
   // highlight-start
   routes: {
@@ -196,7 +196,7 @@ Now the only thing left is to provide the page and external route via a plugin:
 ```tsx title="plugins/catalog/src/plugin.tsx"
 import React from 'react';
 import {
-  createPlugin,
+  createFrontendPlugin,
   createPageExtension,
   useRouteRef,
 } from '@backstage/frontend-plugin-api';
@@ -208,7 +208,7 @@ const catalogIndexPage = createPageExtension({
   loader: () => import('./components').then(m => <m.IndexPage />),
 });
 
-export default createPlugin({
+export default createFrontendPlugin({
   id: 'catalog',
   routes: {
     index: indexRouteRef,
@@ -404,7 +404,7 @@ Finally, see how a plugin can provide subroutes:
 ```tsx title="plugins/catalog/src/plugin.tsx"
 import React from 'react';
 import {
-  createPlugin,
+  createFrontendPlugin,
   createPageExtension,
 } from '@backstage/frontend-plugin-api';
 import { indexRouteRef, detailsSubRouteRef } from './routes';
@@ -415,7 +415,7 @@ const catalogIndexPage = createPageExtension({
   loader: () => import('./components').then(m => <m.IndexPage />),
 });
 
-export default createPlugin({
+export default createFrontendPlugin({
   id: 'catalog',
   routes: {
     index: indexRouteRef,

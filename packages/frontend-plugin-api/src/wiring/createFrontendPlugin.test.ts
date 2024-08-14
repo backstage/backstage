@@ -18,7 +18,7 @@ import React from 'react';
 import { createApp } from '@backstage/frontend-app-api';
 import { screen } from '@testing-library/react';
 import { createSchemaFromZod } from '../schema/createSchemaFromZod';
-import { createPlugin } from './createPlugin';
+import { createFrontendPlugin } from './createFrontendPlugin';
 import { JsonObject } from '@backstage/types';
 import { createExtension } from './createExtension';
 import { createExtensionDataRef } from './createExtensionDataRef';
@@ -133,16 +133,16 @@ function createTestAppRoot({
   }).createRoot();
 }
 
-describe('createPlugin', () => {
+describe('createFrontendPlugin', () => {
   it('should create an empty plugin', () => {
-    const plugin = createPlugin({ id: 'test' });
+    const plugin = createFrontendPlugin({ id: 'test' });
 
     expect(plugin).toBeDefined();
     expect(String(plugin)).toBe('Plugin{id=test}');
   });
 
   it('should create a plugin with extension instances', async () => {
-    const plugin = createPlugin({
+    const plugin = createFrontendPlugin({
       id: 'test',
       extensions: [Extension1, Extension2, outputExtension],
     });
@@ -186,7 +186,7 @@ describe('createPlugin', () => {
   });
 
   it('should create a plugin with nested extension instances', async () => {
-    const plugin = createPlugin({
+    const plugin = createFrontendPlugin({
       id: 'test',
       extensions: [Extension1, Extension2, Extension3, Child, outputExtension],
     });
@@ -218,7 +218,7 @@ describe('createPlugin', () => {
   });
 
   it('should create a plugin with nested extension instances and multiple children', async () => {
-    const plugin = createPlugin({
+    const plugin = createFrontendPlugin({
       id: 'test',
       extensions: [
         Extension1,
@@ -251,14 +251,14 @@ describe('createPlugin', () => {
 
   it('should throw on duplicate extensions', async () => {
     expect(() =>
-      createPlugin({
+      createFrontendPlugin({
         id: 'test',
         extensions: [Extension1, Extension1],
       }),
     ).toThrow("Plugin 'test' provided duplicate extensions: test/1");
 
     expect(() =>
-      createPlugin({
+      createFrontendPlugin({
         id: 'test',
         extensions: [
           Extension1,
@@ -274,7 +274,7 @@ describe('createPlugin', () => {
 
   describe('overrides', () => {
     it('should return a plugin instance with the correct namespace', () => {
-      const plugin = createPlugin({
+      const plugin = createFrontendPlugin({
         id: 'test',
         extensions: [Extension1, Extension2],
       });
@@ -304,7 +304,7 @@ describe('createPlugin', () => {
     });
 
     it('should allow overriding extensions that have a matching ID, while keeping old extensions that do not have overlapping IDs', async () => {
-      const plugin = createPlugin({
+      const plugin = createFrontendPlugin({
         id: 'test',
         extensions: [Extension1, Extension2, outputExtension],
       });

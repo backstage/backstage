@@ -18,7 +18,7 @@ import {
   compatWrapper,
   convertLegacyRouteRefs,
 } from '@backstage/core-compat-api';
-import { createPlugin } from '@backstage/frontend-plugin-api';
+import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 import React from 'react';
 import { catalogIndexRouteRef } from './routes';
 import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
@@ -64,7 +64,7 @@ const EntityUserProfileCard = createEntityCardExtension({
 });
 
 /** @alpha */
-export default createPlugin({
+export default createFrontendPlugin({
   id: 'org',
   extensions: [
     EntityGroupProfileCard,

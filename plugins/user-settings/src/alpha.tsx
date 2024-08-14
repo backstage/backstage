@@ -18,7 +18,7 @@ import {
   createExtensionInput,
   createNavItemExtension,
   createPageExtension,
-  createPlugin,
+  createFrontendPlugin,
 } from '@backstage/frontend-plugin-api';
 import {
   convertLegacyRouteRef,
@@ -63,7 +63,7 @@ export const settingsNavItem = createNavItemExtension({
 /**
  * @alpha
  */
-export default createPlugin({
+export default createFrontendPlugin({
   id: 'user-settings',
   extensions: [userSettingsPage, settingsNavItem],
   routes: convertLegacyRouteRefs({

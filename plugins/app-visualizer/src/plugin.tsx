@@ -17,7 +17,7 @@
 import {
   createNavItemExtension,
   createPageExtension,
-  createPlugin,
+  createFrontendPlugin,
   createRouteRef,
 } from '@backstage/frontend-plugin-api';
 import VisualizerIcon from '@material-ui/icons/Visibility';
@@ -39,7 +39,7 @@ export const appVisualizerNavItem = createNavItemExtension({
 });
 
 /** @public */
-export const visualizerPlugin = createPlugin({
+export const visualizerPlugin = createFrontendPlugin({
   id: 'app-visualizer',
   extensions: [appVisualizerPage, appVisualizerNavItem],
 });

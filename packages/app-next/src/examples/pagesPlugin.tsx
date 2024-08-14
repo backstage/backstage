@@ -18,7 +18,7 @@ import React from 'react';
 import { Link } from '@backstage/core-components';
 import {
   createPageExtension,
-  createPlugin,
+  createFrontendPlugin,
   createRouteRef,
   createExternalRouteRef,
   useRouteRef,
@@ -125,7 +125,7 @@ const ExternalPage = createPageExtension({
   },
 });
 
-export const pagesPlugin = createPlugin({
+export const pagesPlugin = createFrontendPlugin({
   id: 'pages',
   // routes: {
   //   index: indexRouteRef,

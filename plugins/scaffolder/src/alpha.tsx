@@ -20,7 +20,7 @@ import {
   createApiFactory,
   createNavItemExtension,
   createPageExtension,
-  createPlugin,
+  createFrontendPlugin,
   discoveryApiRef,
   fetchApiRef,
   identityApiRef,
@@ -84,7 +84,7 @@ const scaffolderNavItem = createNavItemExtension({
 });
 
 /** @alpha */
-export default createPlugin({
+export default createFrontendPlugin({
   id: 'scaffolder',
   routes: convertLegacyRouteRefs({
     root: rootRouteRef,

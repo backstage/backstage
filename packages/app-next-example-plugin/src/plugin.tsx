@@ -17,7 +17,7 @@
 import React from 'react';
 import {
   createPageExtension,
-  createPlugin,
+  createFrontendPlugin,
 } from '@backstage/frontend-plugin-api';
 
 export const ExamplePage = createPageExtension({
@@ -26,7 +26,7 @@ export const ExamplePage = createPageExtension({
 });
 
 /** @public */
-export const examplePlugin = createPlugin({
+export const examplePlugin = createFrontendPlugin({
   id: 'example',
   extensions: [ExamplePage],
 });

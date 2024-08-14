@@ -207,7 +207,7 @@ createApp({
 Can be converted to the following plugin configuration:
 
 ```tsx
-createPlugin({
+createFrontendPlugin({
   id: 'tech-radar',
   // ...
   featureFlags: [{ name: 'tech-radar' }],

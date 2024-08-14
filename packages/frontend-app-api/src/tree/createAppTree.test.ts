@@ -17,7 +17,7 @@
 import {
   createExtension,
   createExtensionOverrides,
-  createPlugin,
+  createFrontendPlugin,
 } from '@backstage/frontend-plugin-api';
 import { MockConfigApi } from '@backstage/test-utils';
 import { createAppTree } from './createAppTree';
@@ -41,7 +41,7 @@ describe('createAppTree', () => {
       },
     });
     const features = [
-      createPlugin({
+      createFrontendPlugin({
         id: 'plugin',
         extensions: [],
       }),

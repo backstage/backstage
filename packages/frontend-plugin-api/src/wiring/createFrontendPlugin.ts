@@ -52,7 +52,7 @@ export interface InternalBackstagePlugin<
 }
 
 /** @public */
-export function createPlugin<
+export function createFrontendPlugin<
   TId extends string,
   TRoutes extends AnyRoutes = {},
   TExternalRoutes extends AnyExternalRoutes = {},
@@ -122,7 +122,7 @@ export function createPlugin<
             resolveExtensionDefinition(e, { namespace: options.id }).id,
           ),
       );
-      return createPlugin({
+      return createFrontendPlugin({
         ...options,
         extensions: [...nonOverriddenExtensions, ...overrides.extensions],
       });
@@ -145,3 +145,9 @@ export function toInternalBackstagePlugin(
   }
   return internal;
 }
+
+/**
+ * @public
+ * @deprecated Use {@link createFrontendPlugin} instead.
+ */
+export const createPlugin = createFrontendPlugin;

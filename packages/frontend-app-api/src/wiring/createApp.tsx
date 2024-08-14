@@ -100,7 +100,7 @@ import {
 import { InternalAppContext } from './InternalAppContext';
 import { AppRoot } from '../extensions/AppRoot';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalBackstagePlugin } from '../../../frontend-plugin-api/src/wiring/createPlugin';
+import { toInternalBackstagePlugin } from '../../../frontend-plugin-api/src/wiring/createFrontendPlugin';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalExtensionOverrides } from '../../../frontend-plugin-api/src/wiring/createExtensionOverrides';
 import { DefaultComponentsApi } from '../apis/implementations/ComponentsApi';
