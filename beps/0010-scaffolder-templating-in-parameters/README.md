@@ -104,7 +104,11 @@ and make progress.
 
 The proposal is to be able to decorate the template schema server side with a context and use that to drive the form rendering client side.
 
-We can extend the `/parameter-schema` endpoint to accept a `formData` context query parameter which will be a JSON object of the current `formData` state.
+We can extend the `/parameter-schema` endpoint to accept a `formData` context query parameter which will be a JSON object of the current `formData` state. This in turn allows the scaffolder frontend to repeatedly call the endpoint to get the updated rendered parameter schema. We'll need to turn the endpoint into a `POST` endpoint to accept the form data, but will retain the `GET` version for backwards compatibility.
+
+## Design Details
+
+### Example implementation of the `/parameter-schema` endpoint
 
 ```diff
 export interface ScaffolderApi {
@@ -155,7 +159,7 @@ export interface ScaffolderApi {
 
 You can see a quick implementation of this in this [branch](https://github.com/backstage/backstage/compare/master...blam/templating-in-parameters)
 
-## Design Details
+### Workaround for the `default` field
 
 There's a slight issue with the implementation of the `react-jsonschema-form`, which makes things like live updating on things like the `default` field slightly more difficult.
 Currently, on first render, the default value is populated and then stored in the `formData` object or the current state, and the default value is never re-evaluated again at a later stage.
@@ -166,7 +170,7 @@ as the form would need to be re-rendered, and for performance reasons, we don't 
 We could fix this, by implementing custom logic for when the `parameter-schema` is updated, if the updated field is in a `default: *` field, then we replace the previous value with the new value in the `formData` automatically.
 This is a pretty ugly workaround, but maybe the only option we have. Also at this point, pretty unsure if this affects any other parts of the `JSONSchema`, and we would also have to implement it for those fields if they exist.
 
-Perhaps we just accept this as a limitation, and document it as such.
+### Templated error messages
 
 Templating for `errorMessages` has been solved by using the `ajv-errors` library https://github.com/backstage/backstage/pull/25624, you can see more about [`backrefs` and pointers here](https://ajv.js.org/packages/ajv-errors.html). Any other template strings that will be passed through the underlying components and to be left untemplated should be encapsulated with options instead of passing through raw strings. The below example illustrates an `entityAndName` format, which under the hood, might do something like `${{ parameters.entity }} - ${{ parameters.name }}`, but this implementation never leaks out to the templating language.
 
@@ -206,8 +210,14 @@ not need to be as detailed as the proposal, but should include enough
 information to express the idea and why it was not acceptable.
 -->
 
-#### Templating client side
+### Templating client side
 
 - This could lead to confusion as `filters` such as `parseRepoUrl` and `pick` and any custom filters which you define in the backend would not be available in the client side.
 
 - Also with the limitations of the `default` value being updated only on first render and never re-evaluated, there's no performance benefit of doing things client side anymore.
+
+### Accept limitation of the `default` field
+
+Rather than using a workaround to support re-evaluating the `default` field, we could instead accept it as a limitation, and document it as such.
+
+This is not desirable, as it is likely a very common use-case to want to template the `default` field, leading to a poor template creation experience.
