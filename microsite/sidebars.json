@@ -454,6 +454,7 @@
           "frontend-system/architecture/app",
           "frontend-system/architecture/plugins",
           "frontend-system/architecture/extensions",
+          "frontend-system/architecture/extension-blueprints",
           "frontend-system/architecture/extension-overrides",
           "frontend-system/architecture/references",
           "frontend-system/architecture/utility-apis",
