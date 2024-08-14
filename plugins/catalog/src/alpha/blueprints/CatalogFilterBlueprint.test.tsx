@@ -71,7 +71,9 @@ describe('CatalogFilterBlueprint', () => {
             <div data-testid="test">
               config: {config.test}
               <div data-testid="contents">
-                {inputs.mock.map(i => i.get(coreExtensionData.reactElement))}
+                {inputs.mock.map((i, k) => (
+                  <div key={k}>{i.get(coreExtensionData.reactElement)}</div>
+                ))}
               </div>
             </div>
           ),
