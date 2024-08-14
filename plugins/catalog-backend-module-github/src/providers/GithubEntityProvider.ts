@@ -323,9 +323,9 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   }
 
   private async onPush(event: PushEvent) {
-    if (this.config.organization !== event.repository.organization) {
+    if (this.config.organization !== event.organization?.login) {
       this.logger.debug(
-        `skipping push event from organization ${event.repository.organization}`,
+        `skipping push event from organization ${event.organization?.login}`,
       );
       return;
     }
@@ -408,9 +408,9 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   }
 
   private async onRepoChange(event: RepositoryEvent) {
-    if (this.config.organization !== event.repository.organization) {
+    if (this.config.organization !== event.organization?.login) {
       this.logger.debug(
-        `skipping repository event from organization ${event.repository.organization}`,
+        `skipping repository event from organization ${event.organization?.login}`,
       );
       return;
     }

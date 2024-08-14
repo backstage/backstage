@@ -702,6 +702,9 @@ describe('GithubEntityProvider', () => {
         const event = {
           ref: options?.ref ?? 'refs/heads/main',
           repository: repo as PushEvent['repository'],
+          organization: {
+            login: organization,
+          },
           created: true,
           deleted: false,
           forced: false,
@@ -963,7 +966,6 @@ describe('GithubEntityProvider', () => {
           url: 'https://github.com/test-org/test-repo',
           default_branch: 'main',
           master_branch: 'main',
-          organization: 'test-org',
           topics: [],
           archived: action === 'archived',
           private: action !== 'publicized',
@@ -972,6 +974,9 @@ describe('GithubEntityProvider', () => {
         const event = {
           action,
           repository: repo as RepositoryEvent['repository'],
+          organization: {
+            login: 'test-org',
+          },
         } as RepositoryEvent;
 
         if (action === 'renamed') {
@@ -1285,7 +1290,7 @@ describe('GithubEntityProvider', () => {
           const event = createRepoEvent(
             'renamed',
           ) as EventParams<RepositoryRenamedEvent>;
-          const urlOldRepo = `https://github.com/${event.eventPayload.repository.organization}/${event.eventPayload.changes.repository.name.from}/blob/main/catalog-info.yaml`;
+          const urlOldRepo = `https://github.com/${event.eventPayload.organization?.login}/${event.eventPayload.changes.repository.name.from}/blob/main/catalog-info.yaml`;
           const expectedEntitiesRemoved =
             createExpectedEntitiesForUrl(urlOldRepo);
 
@@ -1314,7 +1319,7 @@ describe('GithubEntityProvider', () => {
           const event = createRepoEvent(
             'renamed',
           ) as EventParams<RepositoryRenamedEvent>;
-          const urlOldRepo = `https://github.com/${event.eventPayload.repository.organization}/${event.eventPayload.changes.repository.name.from}/blob/main/catalog-info.yaml`;
+          const urlOldRepo = `https://github.com/${event.eventPayload.organization?.login}/${event.eventPayload.changes.repository.name.from}/blob/main/catalog-info.yaml`;
           const expectedEntitiesRemoved =
             createExpectedEntitiesForUrl(urlOldRepo);
           const expectedEntitiesAdded = createExpectedEntitiesForEvent(event);
