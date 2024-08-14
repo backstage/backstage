@@ -294,7 +294,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
 
   /** {@inheritdoc @backstage/plugin-events-node#EventSubscriber.onEvent} */
   async onEvent(params: EventParams): Promise<void> {
-    this.logger.debug(`Received event from ${params.topic}`);
+    this.logger.debug(`Received event for topic ${params.topic}`);
     if (EVENT_TOPICS.some(topic => topic === params.topic)) {
       if (!this.connection) {
         throw new Error('Not initialized');
