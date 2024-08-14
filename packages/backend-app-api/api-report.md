@@ -24,14 +24,6 @@ export interface Backend {
           default: BackendFeature;
         }>,
   ): void;
-  // @deprecated (undocumented)
-  add(
-    feature:
-      | (() => BackendFeature)
-      | Promise<{
-          default: () => BackendFeature;
-        }>,
-  ): void;
   // (undocumented)
   start(): Promise<void>;
   // (undocumented)
