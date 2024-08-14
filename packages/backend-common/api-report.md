@@ -49,12 +49,21 @@ import { PluginMetadataService } from '@backstage/backend-plugin-api';
 import { PushResult } from 'isomorphic-git';
 import { Readable } from 'stream';
 import { ReadCommitResult } from 'isomorphic-git';
+import { ReadTreeOptions as ReadTreeOptions_2 } from '@backstage/backend-plugin-api';
+import { ReadTreeResponse as ReadTreeResponse_2 } from '@backstage/backend-plugin-api';
+import { ReadTreeResponseDirOptions as ReadTreeResponseDirOptions_2 } from '@backstage/backend-plugin-api';
+import { ReadTreeResponseFile as ReadTreeResponseFile_2 } from '@backstage/backend-plugin-api';
+import { ReadUrlOptions as ReadUrlOptions_2 } from '@backstage/backend-plugin-api';
+import { ReadUrlResponse as ReadUrlResponse_2 } from '@backstage/backend-plugin-api';
 import { RequestHandler } from 'express';
 import { resolvePackagePath as resolvePackagePath_2 } from '@backstage/backend-plugin-api';
 import { resolveSafeChildPath as resolveSafeChildPath_2 } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { Router } from 'express';
 import { SchedulerService } from '@backstage/backend-plugin-api';
+import { SearchOptions as SearchOptions_2 } from '@backstage/backend-plugin-api';
+import { SearchResponse as SearchResponse_2 } from '@backstage/backend-plugin-api';
+import { SearchResponseFile as SearchResponseFile_2 } from '@backstage/backend-plugin-api';
 import { Server } from 'http';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 import { TokenManagerService } from '@backstage/backend-plugin-api';
@@ -502,6 +511,15 @@ export interface PullOptions {
 // @public @deprecated (undocumented)
 export type ReaderFactory = ReaderFactory_2;
 
+// @public @deprecated (undocumented)
+export type ReadTreeOptions = ReadTreeOptions_2;
+
+// @public @deprecated (undocumented)
+export type ReadTreeResponse = ReadTreeResponse_2;
+
+// @public @deprecated (undocumented)
+export type ReadTreeResponseDirOptions = ReadTreeResponseDirOptions_2;
+
 // Warning: (ae-forgotten-export) The symbol "ReadTreeResponseFactory_2" needs to be exported by the entry point index.d.ts
 //
 // @public @deprecated (undocumented)
@@ -511,6 +529,15 @@ export type ReadTreeResponseFactory = ReadTreeResponseFactory_2;
 //
 // @public @deprecated (undocumented)
 export type ReadTreeResponseFactoryOptions = ReadTreeResponseFactoryOptions_2;
+
+// @public @deprecated (undocumented)
+export type ReadTreeResponseFile = ReadTreeResponseFile_2;
+
+// @public @deprecated (undocumented)
+export type ReadUrlOptions = ReadUrlOptions_2;
+
+// @public @deprecated (undocumented)
+export type ReadUrlResponse = ReadUrlResponse_2;
 
 // Warning: (ae-forgotten-export) The symbol "ReadUrlResponseFactory_2" needs to be exported by the entry point index.d.ts
 //
@@ -555,6 +582,15 @@ export type RunContainerOptions = {
   defaultUser?: boolean;
   pullOptions?: PullOptions;
 };
+
+// @public @deprecated (undocumented)
+export type SearchOptions = SearchOptions_2;
+
+// @public @deprecated (undocumented)
+export type SearchResponse = SearchResponse_2;
+
+// @public @deprecated (undocumented)
+export type SearchResponseFile = SearchResponseFile_2;
 
 // @public @deprecated
 export class ServerTokenManager implements TokenManager {

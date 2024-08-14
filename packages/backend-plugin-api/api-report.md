@@ -553,6 +553,25 @@ export function readSchedulerServiceTaskScheduleDefinitionFromConfig(
   config: Config,
 ): SchedulerServiceTaskScheduleDefinition;
 
+// @public @deprecated (undocumented)
+export type ReadTreeOptions = UrlReaderServiceReadTreeOptions;
+
+// @public @deprecated (undocumented)
+export type ReadTreeResponse = UrlReaderServiceReadTreeResponse;
+
+// @public @deprecated (undocumented)
+export type ReadTreeResponseDirOptions =
+  UrlReaderServiceReadTreeResponseDirOptions;
+
+// @public @deprecated (undocumented)
+export type ReadTreeResponseFile = UrlReaderServiceReadTreeResponseFile;
+
+// @public @deprecated (undocumented)
+export type ReadUrlOptions = UrlReaderServiceReadUrlOptions;
+
+// @public @deprecated (undocumented)
+export type ReadUrlResponse = UrlReaderServiceReadUrlResponse;
+
 // @public
 export function resolvePackagePath(name: string, ...paths: string[]): string;
 
@@ -687,6 +706,15 @@ export interface SchedulerServiceTaskScheduleDefinitionConfig {
   scope?: 'global' | 'local';
   timeout: string | HumanDuration;
 }
+
+// @public @deprecated (undocumented)
+export type SearchOptions = UrlReaderServiceSearchOptions;
+
+// @public @deprecated (undocumented)
+export type SearchResponse = UrlReaderServiceSearchResponse;
+
+// @public @deprecated (undocumented)
+export type SearchResponseFile = UrlReaderServiceSearchResponseFile;
 
 // @public (undocumented)
 export interface ServiceFactory<

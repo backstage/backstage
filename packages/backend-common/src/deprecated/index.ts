@@ -85,6 +85,15 @@ import {
   resolvePackagePath as _resolvePackagePath,
   resolveSafeChildPath as _resolveSafeChildPath,
   isChildPath as _isChildPath,
+  ReadTreeOptions as _ReadTreeOptions,
+  ReadTreeResponse as _ReadTreeResponse,
+  ReadTreeResponseFile as _ReadTreeResponseFile,
+  ReadTreeResponseDirOptions as _ReadTreeResponseDirOptions,
+  ReadUrlOptions as _ReadUrlOptions,
+  ReadUrlResponse as _ReadUrlResponse,
+  SearchOptions as _SearchOptions,
+  SearchResponse as _SearchResponse,
+  SearchResponseFile as _SearchResponseFile,
   UrlReaderService as _UrlReaderService,
   LifecycleService,
   PluginMetadataService,
@@ -402,6 +411,60 @@ export type ReadUrlResponseFactoryFromStreamOptions =
  * @deprecated Import from `@backstage/backend-defaults/urlReader` instead
  */
 export type UrlReaderPredicateTuple = _UrlReaderPredicateTuple;
+
+/**
+ * @public
+ * @deprecated Use `UrlReaderServiceReadTreeOptions` from `@backstage/backend-plugin-api` instead
+ */
+export type ReadTreeOptions = _ReadTreeOptions;
+
+/**
+ * @public
+ * @deprecated Use `UrlReaderServiceReadTreeResponse` from `@backstage/backend-plugin-api` instead
+ */
+export type ReadTreeResponse = _ReadTreeResponse;
+
+/**
+ * @public
+ * @deprecated Use `UrlReaderServiceReadTreeResponseFile` from `@backstage/backend-plugin-api` instead
+ */
+export type ReadTreeResponseFile = _ReadTreeResponseFile;
+
+/**
+ * @public
+ * @deprecated Use `UrlReaderServiceReadTreeResponseDirOptions` from `@backstage/backend-plugin-api` instead
+ */
+export type ReadTreeResponseDirOptions = _ReadTreeResponseDirOptions;
+
+/**
+ * @public
+ * @deprecated Use `UrlReaderServiceReadUrlOptions` from `@backstage/backend-plugin-api` instead
+ */
+export type ReadUrlOptions = _ReadUrlOptions;
+
+/**
+ * @public
+ * @deprecated Use `UrlReaderServiceReadUrlResponse` from `@backstage/backend-plugin-api` instead
+ */
+export type ReadUrlResponse = _ReadUrlResponse;
+
+/**
+ * @public
+ * @deprecated Use `UrlReaderServiceSearchOptions` from `@backstage/backend-plugin-api` instead
+ */
+export type SearchOptions = _SearchOptions;
+
+/**
+ * @public
+ * @deprecated Use `UrlReaderServiceSearchResponse` from `@backstage/backend-plugin-api` instead
+ */
+export type SearchResponse = _SearchResponse;
+
+/**
+ * @public
+ * @deprecated Use `UrlReaderServiceSearchResponseFile` from `@backstage/backend-plugin-api` instead
+ */
+export type SearchResponseFile = _SearchResponseFile;
 
 /**
  * @public
