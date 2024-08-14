@@ -2,6 +2,9 @@
   "name": "@backstage/backend-dynamic-feature-service",
   "version": "0.2.16-next.3",
   "description": "Backstage dynamic feature service",
+  "backstage": {
+    "role": "node-library"
+  },
   "publishConfig": {
     "access": "public"
   },
