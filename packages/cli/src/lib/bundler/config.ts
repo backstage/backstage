@@ -424,7 +424,12 @@ export async function createConfig(
         : {}),
     },
     experiments: {
-      lazyCompilation: yn(process.env.EXPERIMENTAL_LAZY_COMPILATION),
+      lazyCompilation:
+        !useRspack && yn(process.env.EXPERIMENTAL_LAZY_COMPILATION),
+      ...(useRspack && {
+        // We're still using `style-loader` for custom `insert` option
+        css: false,
+      }),
     },
     plugins,
     ...(withCache && {
@@ -433,12 +438,6 @@ export async function createConfig(
         buildDependencies: {
           config: [__filename],
         },
-      },
-    }),
-    ...(useRspack && {
-      // We're still using `style-loader` for custom `insert` option
-      experiments: {
-        css: false,
       },
     }),
   };
