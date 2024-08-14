@@ -207,12 +207,17 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
   private async getRecipientEmails(
     notification: Notification,
     options: NotificationSendOptions,
-  ) {
+  ): Promise<string[]> {
     let emails: string[];
-    if (options.recipients.type === 'broadcast' || notification.user === null) {
+    if (options.recipients.type === 'broadcast') {
       emails = await this.getBroadcastEmails();
-    } else {
+    } else if (options.recipients.type === 'entity' && !!notification.user) {
       emails = await this.getUserEmail(notification.user);
+    } else {
+      this.logger.info(
+        `Unknown notification type ${options.recipients.type} or missing user.`,
+      );
+      return [];
     }
 
     if (this.allowlistEmailAddresses) {
@@ -337,6 +342,8 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       );
       return;
     }
+
+    this.logger.debug(`Sending notification emails to: ${emails.join(',')}`);
 
     if (!this.templateRenderer) {
       await this.sendPlainEmail(notification, emails);
