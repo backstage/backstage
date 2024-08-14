@@ -4,6 +4,7 @@
 '@backstage/plugin-kubernetes-backend': patch
 '@backstage/plugin-scaffolder-backend': patch
 '@backstage/plugin-proxy-backend': patch
+'@backstage/backend-dynamic-feature-service': patch
 ---
 
 Update internal imports
