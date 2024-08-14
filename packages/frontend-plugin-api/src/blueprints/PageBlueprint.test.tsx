@@ -101,7 +101,7 @@ describe('PageBlueprint', () => {
     // TODO(blam): test for the routePath output doesn't work, due to the the way the test harness works
     // expect(tester.data(coreExtensionData.routePath)).toBe('/test');
 
-    expect(tester.data(coreExtensionData.routeRef)).toBe(mockRouteRef);
+    expect(tester.get(coreExtensionData.routeRef)).toBe(mockRouteRef);
 
     const { getByTestId } = tester.render();
 
@@ -147,7 +147,7 @@ describe('PageBlueprint', () => {
       CardBlueprint.make({ name: 'card', params: {} }),
     );
 
-    const { getByTestId, getByText } = renderInTestApp(tester.element());
+    const { getByTestId, getByText } = renderInTestApp(tester.reactElement());
 
     await waitFor(() => expect(getByTestId('card')).toBeInTheDocument());
     await waitFor(() =>

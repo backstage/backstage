@@ -62,7 +62,7 @@ describe('SignInPageBlueprint', () => {
 
     const tester = createExtensionTester(extension);
 
-    const Element = tester.data(SignInPageBlueprint.dataRefs.component)!;
+    const Element = tester.get(SignInPageBlueprint.dataRefs.component)!;
 
     expect(Element).toBeDefined();
 

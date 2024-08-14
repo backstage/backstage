@@ -688,7 +688,7 @@ describe('createExtension', () => {
 
       const tester = createExtensionTester(overridden);
 
-      expect(tester.data(numberDataRef)).toBe(43);
+      expect(tester.get(numberDataRef)).toBe(43);
     });
 
     it('should work functionally with overrides', () => {
@@ -722,14 +722,14 @@ describe('createExtension', () => {
         },
       });
 
-      expect(createExtensionTester(overriden).data(stringDataRef)).toBe(
+      expect(createExtensionTester(overriden).get(stringDataRef)).toBe(
         'foo-boom-override-hello',
       );
 
       expect(
         createExtensionTester(overriden, {
           config: { foo: 'hello', bar: 'world' },
-        }).data(stringDataRef),
+        }).get(stringDataRef),
       ).toBe('foo-hello-override-world');
     });
 
@@ -809,7 +809,7 @@ describe('createExtension', () => {
           .add(singleExt)
           .add(multi1Ext)
           .add(multi2Ext)
-          .data(outputRef),
+          .get(outputRef),
       ).toEqual({
         opt: 'orig-opt',
         single: 'orig-single',
@@ -836,7 +836,7 @@ describe('createExtension', () => {
           .add(singleExt)
           .add(multi1Ext)
           .add(multi2Ext)
-          .data(outputRef),
+          .get(outputRef),
       ).toEqual({
         opt: 'opt',
         single: 'single',
@@ -862,7 +862,7 @@ describe('createExtension', () => {
           .add(singleExt)
           .add(multi1Ext)
           .add(multi2Ext)
-          .data(outputRef),
+          .get(outputRef),
       ).toEqual({
         opt: 'none',
         single: 'single',
@@ -885,7 +885,7 @@ describe('createExtension', () => {
           .add(singleExt)
           .add(multi1Ext)
           .add(multi2Ext)
-          .data(outputRef),
+          .get(outputRef),
       ).toEqual({
         opt: 'orig-opt',
         single: 'orig-single',
@@ -912,7 +912,7 @@ describe('createExtension', () => {
           .add(singleExt)
           .add(multi1Ext)
           .add(multi2Ext)
-          .data(outputRef),
+          .get(outputRef),
       ).toEqual({
         opt: 'orig-opt',
         single: 'orig-single',
@@ -939,7 +939,7 @@ describe('createExtension', () => {
           .add(singleExt)
           .add(multi1Ext)
           .add(multi2Ext)
-          .data(outputRef),
+          .get(outputRef),
       ).toEqual({
         opt: 'orig-opt',
         single: 'orig-single',
@@ -966,7 +966,7 @@ describe('createExtension', () => {
           .add(singleExt)
           .add(multi1Ext)
           .add(multi2Ext)
-          .data(outputRef),
+          .get(outputRef),
       ).toEqual({
         opt: 'orig-opt',
         single: 'orig-single',
@@ -997,7 +997,7 @@ describe('createExtension', () => {
           .add(singleExt)
           .add(multi1Ext)
           .add(multi2Ext)
-          .data(outputRef),
+          .get(outputRef),
       ).toEqual({
         opt: 'none',
         single: 'override-orig-single',
@@ -1023,7 +1023,7 @@ describe('createExtension', () => {
           .add(singleExt)
           .add(multi1Ext)
           .add(multi2Ext)
-          .data(outputRef),
+          .get(outputRef),
       ).toThrowErrorMatchingInlineSnapshot(
         `"Failed to instantiate extension 'subject', override data provided for input 'multi' must match the length of the original inputs"`,
       );
@@ -1046,7 +1046,7 @@ describe('createExtension', () => {
           .add(singleExt)
           .add(multi1Ext)
           .add(multi2Ext)
-          .data(outputRef),
+          .get(outputRef),
       ).toThrowErrorMatchingInlineSnapshot(
         `"Failed to instantiate extension 'subject', override data for input 'multi' may not mix forwarded inputs with data overrides"`,
       );
@@ -1069,7 +1069,7 @@ describe('createExtension', () => {
           .add(singleExt)
           .add(multi1Ext)
           .add(multi2Ext)
-          .data(outputRef),
+          .get(outputRef),
       ).toThrowErrorMatchingInlineSnapshot(
         `"Failed to instantiate extension 'subject', missing required extension data value(s) 'test1'"`,
       );
@@ -1098,7 +1098,7 @@ describe('createExtension', () => {
           .add(singleExt)
           .add(multi1Ext)
           .add(multi2Ext)
-          .data(outputRef),
+          .get(outputRef),
       ).toThrowErrorMatchingInlineSnapshot(
         `"Failed to instantiate extension 'subject', extension data 'test2' was provided but not declared"`,
       );

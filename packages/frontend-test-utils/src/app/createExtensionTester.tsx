@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Link } from 'react-router-dom';
 import { RenderResult, render } from '@testing-library/react';
 import { createSpecializedApp } from '@backstage/frontend-app-api';
 import {
@@ -24,10 +24,15 @@ import {
   Extension,
   ExtensionDataRef,
   ExtensionDefinition,
+  IconComponent,
+  RouteRef,
   coreExtensionData,
   createExtension,
+  createExtensionInput,
   createExtensionOverrides,
+  createNavItemExtension,
   createRouterExtension,
+  useRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { Config, ConfigReader } from '@backstage/config';
 import { JsonArray, JsonObject, JsonValue } from '@backstage/types';
@@ -43,7 +48,57 @@ import { resolveAppNodeSpecs } from '../../../frontend-app-api/src/tree/resolveA
 import { instantiateAppNodeTree } from '../../../frontend-app-api/src/tree/instantiateAppNodeTree';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { readAppExtensionsConfig } from '../../../frontend-app-api/src/tree/readAppExtensionsConfig';
-import { TestAppNavExtension } from './renderInTestApp';
+
+const NavItem = (props: {
+  routeRef: RouteRef<undefined>;
+  title: string;
+  icon: IconComponent;
+}) => {
+  const { routeRef, title, icon: Icon } = props;
+  const link = useRouteRef(routeRef);
+  if (!link) {
+    return null;
+  }
+  return (
+    <li>
+      <Link to={link()}>
+        <Icon /> {title}
+      </Link>
+    </li>
+  );
+};
+
+const TestAppNavExtension = createExtension({
+  namespace: 'app',
+  name: 'nav',
+  attachTo: { id: 'app/layout', input: 'nav' },
+  inputs: {
+    items: createExtensionInput({
+      target: createNavItemExtension.targetDataRef,
+    }),
+  },
+  output: {
+    element: coreExtensionData.reactElement,
+  },
+  factory({ inputs }) {
+    return {
+      element: (
+        <nav>
+          <ul>
+            {inputs.items.map((item, index) => (
+              <NavItem
+                key={index}
+                icon={item.output.target.icon}
+                title={item.output.target.title}
+                routeRef={item.output.target.routeRef}
+              />
+            ))}
+          </ul>
+        </nav>
+      ),
+    };
+  },
+});
 
 /** @public */
 export class ExtensionQuery {
@@ -69,7 +124,7 @@ export class ExtensionQuery {
     return instance;
   }
 
-  data<T>(ref: ExtensionDataRef<T>): T | undefined {
+  get<T>(ref: ExtensionDataRef<T>): T | undefined {
     return this.instance.getData(ref);
   }
 }
@@ -164,10 +219,10 @@ export class ExtensionTester {
     return this;
   }
 
-  data<T>(ref: ExtensionDataRef<T>): T | undefined {
+  get<T>(ref: ExtensionDataRef<T>): T | undefined {
     const tree = this.#resolveTree();
 
-    return new ExtensionQuery(tree.root).data(ref);
+    return new ExtensionQuery(tree.root).get(ref);
   }
 
   query(id: string | ExtensionDefinition<any, any>): ExtensionQuery {
@@ -190,16 +245,16 @@ export class ExtensionTester {
     return new ExtensionQuery(node);
   }
 
-  element(): JSX.Element {
+  reactElement(): JSX.Element {
     const tree = this.#resolveTree();
 
-    const element = new ExtensionQuery(tree.root).data(
+    const element = new ExtensionQuery(tree.root).get(
       coreExtensionData.reactElement,
     );
 
     if (!element) {
       throw new Error(
-        'No element found. Make sure the extension has a `coreExtensionData.reactElement` output, or use the `.get(myComponentDataRef)` method to get the component',
+        'No element found. Make sure the extension has a `coreExtensionData.reactElement` output, or use the `.get(...)` to access output data directly instead',
       );
     }
 
@@ -207,33 +262,36 @@ export class ExtensionTester {
   }
 
   /**
-   * @deprecated Switch to using `renderInTestApp` directly and using `.element()` or `.get(myComponentDataRef)` to get the component you would like to wrap up
+   * @deprecated Switch to using `renderInTestApp` directly and using `.reactElement()` or `.get(...)` to get the component you w
    */
   render(options?: { config?: JsonObject }): RenderResult {
     const { config = {} } = options ?? {};
+
     const [subject] = this.#extensions;
     if (!subject) {
       throw new Error(
         'No subject found. At least one extension should be added to the tester.',
       );
     }
+
     const app = createSpecializedApp({
       features: [
         createExtensionOverrides({
           extensions: [
             ...this.#extensions.map(extension => extension.definition),
+            TestAppNavExtension,
             createRouterExtension({
               namespace: 'test',
               Component: ({ children }) => (
                 <MemoryRouter>{children}</MemoryRouter>
               ),
             }),
-            TestAppNavExtension,
           ],
         }),
       ],
       config: this.#getConfig(config),
     });
+
     return render(app.createRoot());
   }
 

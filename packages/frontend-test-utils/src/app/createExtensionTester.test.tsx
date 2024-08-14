@@ -246,7 +246,7 @@ describe('createExtensionTester', () => {
 
     const tester = createExtensionTester(extension);
 
-    expect(tester.data(stringDataRef)).toBe('test-text');
+    expect(tester.get(stringDataRef)).toBe('test-text');
   });
 
   it('should throw an error if trying to access an instance not provided to the tester', () => {
@@ -328,8 +328,8 @@ describe('createExtensionTester', () => {
 
     const tester = createExtensionTester(extension).add(extension2);
 
-    expect(tester.query(extension).data(stringDataRef)).toBe('nest-test-text');
-    expect(tester.query(extension2).data(stringDataRef)).toBe('test-text');
+    expect(tester.query(extension).get(stringDataRef)).toBe('nest-test-text');
+    expect(tester.query(extension2).get(stringDataRef)).toBe('test-text');
     // @ts-expect-error
     expect(tester.query(extension).input('input').data(stringDataRef)).toBe(
       'nest-test-text',
@@ -362,6 +362,6 @@ describe('createExtensionTester', () => {
       inputs: { input: 'test-text' },
     });
 
-    expect(tester.query(extension).data(stringDataRef)).toBe('nest-test-text');
+    expect(tester.query(extension).get(stringDataRef)).toBe('nest-test-text');
   });
 });
