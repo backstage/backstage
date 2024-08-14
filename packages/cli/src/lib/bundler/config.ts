@@ -191,7 +191,7 @@ export async function createConfig(
   // to remove this eventually!
   plugins.push(
     new bundler.ProvidePlugin({
-      process: require.resolve('process/browser'),,
+      process: require.resolve('process/browser'),
       Buffer: ['buffer', 'Buffer'],
     }),
   );
