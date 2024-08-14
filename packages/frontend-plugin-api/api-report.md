@@ -407,7 +407,7 @@ export interface ConfigurableExtensionDataRef<
   optional(): ConfigurableExtensionDataRef<
     TData,
     TId,
-    TData & {
+    TConfig & {
       optional: true;
     }
   >;
@@ -1800,7 +1800,7 @@ export const PageBlueprint: ExtensionBlueprint<
   | ConfigurableExtensionDataRef<
       RouteRef<AnyRouteRefParams>,
       'core.routing.ref',
-      RouteRef<AnyRouteRefParams> & {
+      {
         optional: true;
       }
     >,
