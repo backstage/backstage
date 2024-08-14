@@ -20,6 +20,5 @@
  * @packageDocumentation
  */
 
-export * from './logging';
 export * from './wiring';
 export * from './services/implementations';

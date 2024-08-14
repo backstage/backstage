@@ -4,15 +4,10 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { Format } from 'logform';
 import { IdentityService } from '@backstage/backend-plugin-api';
-import { JsonObject } from '@backstage/types';
-import { LoggerService } from '@backstage/backend-plugin-api';
-import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
 import { TokenManagerService } from '@backstage/backend-plugin-api';
-import { transport } from 'winston';
 
 // @public (undocumented)
 export interface Backend {
@@ -62,31 +57,4 @@ export const tokenManagerServiceFactory: ServiceFactoryCompat<
   'singleton',
   undefined
 >;
-
-// @public @deprecated
-export class WinstonLogger implements RootLoggerService {
-  // (undocumented)
-  addRedactions(redactions: Iterable<string>): void;
-  // (undocumented)
-  child(meta: JsonObject): LoggerService;
-  static colorFormat(): Format;
-  static create(options: WinstonLoggerOptions): WinstonLogger;
-  // (undocumented)
-  debug(message: string, meta?: JsonObject): void;
-  // (undocumented)
-  error(message: string, meta?: JsonObject): void;
-  // (undocumented)
-  info(message: string, meta?: JsonObject): void;
-  static redacter(): {
-    format: Format;
-    add: (redactions: Iterable<string>) => void;
-  };
-  // (undocumented)
-  warn(message: string, meta?: JsonObject): void;
-}
-
-// Warning: (ae-forgotten-export) The symbol "WinstonLoggerOptions_2" needs to be exported by the entry point index.d.ts
-//
-// @public @deprecated (undocumented)
-export type WinstonLoggerOptions = WinstonLoggerOptions_2;
 ```

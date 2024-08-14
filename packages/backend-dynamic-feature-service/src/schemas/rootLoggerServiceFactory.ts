@@ -18,7 +18,7 @@ import {
   createServiceFactory,
   coreServices,
 } from '@backstage/backend-plugin-api';
-import { WinstonLogger } from '@backstage/backend-app-api';
+import { WinstonLogger } from '@backstage/backend-defaults/rootLogger';
 import { transports, format } from 'winston';
 import { createConfigSecretEnumerator } from '@backstage/backend-common';
 import { loadConfigSchema } from '@backstage/config-loader';
