@@ -33,7 +33,7 @@ import React from 'react';
 import { AboutField } from './AboutField';
 import { LinksGridList } from '../EntityLinksCard/LinksGridList';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { catalogTranslationRef } from '../../translation';
+import { catalogTranslationRef } from '../../alpha/translation';
 
 const useStyles = makeStyles({
   description: {

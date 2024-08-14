@@ -90,6 +90,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
+    "@backstage/frontend-test-utils": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/dom": "^10.0.0",

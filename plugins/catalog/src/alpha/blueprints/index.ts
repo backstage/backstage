@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,8 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export * from './alpha/index';
-export { default } from './alpha/index';
-export { catalogTranslationRef } from './translation';
-export * from './translation';
+export { CatalogFilterBlueprint } from './CatalogFilterBlueprint';
