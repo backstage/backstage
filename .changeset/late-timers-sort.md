@@ -2,7 +2,7 @@
 '@backstage/backend-test-utils': minor
 ---
 
-Removed these deprecated helpers:
+**BREAKING**: Removed these deprecated helpers:
 
 - `setupRequestMockHandlers` Use `CreateMockDirectoryOptions` instead.
 - `CreateMockDirectoryOptions` Use `registerMswTestHooks` instead.
