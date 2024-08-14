@@ -8,7 +8,7 @@ description: Frontend extensions
 
 > **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
 
-As mentioned in the [previous section](./02-app.md), Backstage apps are built up from a tree of extensions. This section will go into more detail about what extensions are, how to create and use them, and how to create your own extensibility patterns.
+As mentioned in the [previous section](./10-app.md), Backstage apps are built up from a tree of extensions. This section will go into more detail about what extensions are, how to create and use them, and how to create your own extensibility patterns.
 
 ## Extension Structure
 
@@ -293,38 +293,6 @@ app:
           title: 'Backstage'
 ```
 
-## Extension Creators
-
-With creating an extension by using `createExtension(...)` you have the advantage that the extension can be anything in your Backstage application. We realised that this comes with the trade-off of having to repeat boilerplate code for similar building blocks. Here extension creators come into play for covering common building blocks in Backstage like pages using `createPageExtension`, themes using the `createThemeExtension` or items for the navigation using `createNavItemExtension`.
-
-If we follow the example from above all items of the navigation have similarities, like they all want to be attached to the same extension with the same input as well as rendering the same navigation item component. Therefore `createExtension` can be abstracted for this use case to `createNavItemExtension` and if we add the extension to the app it will end up in the right place & looks like we expect a navigation item to look.
-
-```tsx
-export const HomeNavIcon = createNavItemExtension({
-  routeRef: routeRefForTheHomePage,
-  title: 'Home',
-  icon: HomeIcon,
-});
-```
-
-### Extension Kind
-
-With the example `HomeNavIcon` will end up on the extension input `items` of the extensions with the id `app/nav`. It raises the question what the `id` of the `HomeNavIcon` itself is. The extension creator for the navigation item has a defined `kind`, which by convention matches the own name. So in this example `createNavItemExtension` sets the kind to `nav-item`.
-
-The `id` of the extension is then build out of `namespace`, `name` & `kind` like the following - where `namespace` & `name` are optional properties that can be passed to the extension creator:
-
-```
-id: kind:namespace/name
-```
-
-For more information on naming of extension refer to the [naming patterns documentation](./08-naming-patterns.md).
-
-### Extension Creators in libraries
-
-Extension creators should be exported from frontend library packages (e.g. `*-react`) rather than plugin packages.
-
-If an extension is only for in-house tweaks, it's okay to put it in the plugin package. But if you want other open source plugins to use it, or you already have a `-react` package, always put extension creators in the `-react` package.
-
 ## Extension Boundary
 
 The `ExtensionBoundary` wraps extensions with several React contexts for different purposes
@@ -370,3 +338,7 @@ export function createSomeExtension<
   });
 }
 ```
+
+### Extension Creators (Deprecated)
+
+Previous iterations of the frontend system used an "extension creator" pattern, where `createExtension` was wrapped up in a function for creating specific extension kinds. This pattern was similar to [blueprints](./23-extension-blueprints.md), but much harder to implement and maintain. It has been deprecated in favor of the new blueprints API. For example, `createPageExtension` was the extension creator equivalent of `PageBlueprint`.

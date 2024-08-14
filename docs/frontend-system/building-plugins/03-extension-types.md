@@ -8,7 +8,7 @@ description: Extension types provided by the frontend system and core features
 
 > **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
 
-This section covers many of the [extension types](../architecture/03-extensions.md#extension-creators) available at your disposal when building Backstage frontend plugins.
+This section covers many of the [extension types](../architecture/20-extensions.md#extension-creators) available at your disposal when building Backstage frontend plugins.
 
 ## Built-in extension types
 

@@ -23,7 +23,7 @@ import { createApp } from '@backstage/frontend-app-api';
 
 This immediate switch will lead to a lot of breakages that we need to fix.
 
-Let's start by addressing the change to `app.createRoot(...)`, which no longer accepts any arguments. This represents a fundamental change that the new frontend system introduces. In the old system the app element tree that you passed to `app.createRoot(...)` was the primary way that you installed and configured plugins and features in your app. In the new system this is instead replaced by extensions that are wired together into an extension tree. Much more responsibility has now been shifted to plugins, for example you no longer have to manually provide the route path for each plugin page, but instead only configure it if you want to override the default. For more information on how the new system works, see the [architecture](../architecture/01-index.md) section.
+Let's start by addressing the change to `app.createRoot(...)`, which no longer accepts any arguments. This represents a fundamental change that the new frontend system introduces. In the old system the app element tree that you passed to `app.createRoot(...)` was the primary way that you installed and configured plugins and features in your app. In the new system this is instead replaced by extensions that are wired together into an extension tree. Much more responsibility has now been shifted to plugins, for example you no longer have to manually provide the route path for each plugin page, but instead only configure it if you want to override the default. For more information on how the new system works, see the [architecture](../architecture/00-index.md) section.
 
 Given that the app element tree is most of what builds up the app, it's likely also going to be the majority of the migration effort. In order to make the migration as smooth as possible we have provided a helper that lets you convert an existing app element tree into plugins that you can install in a new app. This in turn allows for a gradual migration of individual plugins, rather than needing to migrate the entire app structure at once.
 
@@ -95,7 +95,7 @@ At this point the contents of your app should be past the initial migration stag
 
 ## Migrating `createApp` Options
 
-Many of the `createApp` options have been migrated to use extensions instead. Each will have their own [extension creator](../architecture/03-extensions.md#extension-creators) that you use to create a custom extension. To add these standalone extensions to the app they need to be passed to `createExtensionOverrides`, which bundles them into a _feature_ that you can install in the app. See the [standalone extensions](../architecture/05-extension-overrides.md#create-standalone-extensions) section for more information.
+Many of the `createApp` options have been migrated to use extensions instead. Each will have their own [extension creator](../architecture/20-extensions.md#extension-creators) that you use to create a custom extension. To add these standalone extensions to the app they need to be passed to `createExtensionOverrides`, which bundles them into a _feature_ that you can install in the app. See the [standalone extensions](../architecture/25-extension-overrides.md#create-standalone-extensions) section for more information.
 
 For example, assuming you have a `lightTheme` extension that you want to add to your app, you can use the following:
 
@@ -176,7 +176,7 @@ createApp({
 });
 ```
 
-Plugins don't even have to be imported manually after installing their package if [features discovery](../architecture/02-app.md#feature-discovery) is enabled.
+Plugins don't even have to be imported manually after installing their package if [features discovery](../architecture/10-app.md#feature-discovery) is enabled.
 
 ```yaml title="in app-config.yaml"
 app:
@@ -219,7 +219,7 @@ createPlugin({
 
 Many app components are now installed as extensions instead using `createComponentExtension`. See the section on [configuring app components](./01-index.md#configure-your-app) for more information.
 
-The `Router` component is now a built-in extension that you can [override](../architecture/05-extension-overrides.md) using `createRouterExtension`.
+The `Router` component is now a built-in extension that you can [override](../architecture/25-extension-overrides.md) using `createRouterExtension`.
 
 The Sign-in page is now installed as an extension using the `createSignInPageExtension` instead.
 
@@ -341,7 +341,7 @@ const app = createApp({
 
 ### `bindRoutes`
 
-Route bindings can still be done using this option, but you now also have the ability to bind routes using static configuration instead. See the section on [binding routes](../architecture/07-routes.md#binding-external-route-references) for more information.
+Route bindings can still be done using this option, but you now also have the ability to bind routes using static configuration instead. See the section on [binding routes](../architecture/36-routes.md#binding-external-route-references) for more information.
 
 Note that if you are binding routes from a legacy plugin that was converted using `convertLegacyApp`, you will need to use the `convertLegacyRouteRefs` and/or `convertLegacyRouteRef` to convert the routes to be compatible with the new system.
 
@@ -470,7 +470,7 @@ const routes = (
 );
 ```
 
-If you are using [app feature discovery](../architecture/02-app.md#feature-discovery) the installation step is simple, it's already done! The new version of the scaffolder plugin was already discovered and present in the app, it was simply disabled because the plugin created from the legacy route had higher priority. If you do not use feature discovery, you will instead need to manually install the new scaffolder plugin in your app through the `features` option of `createApp`.
+If you are using [app feature discovery](../architecture/10-app.md#feature-discovery) the installation step is simple, it's already done! The new version of the scaffolder plugin was already discovered and present in the app, it was simply disabled because the plugin created from the legacy route had higher priority. If you do not use feature discovery, you will instead need to manually install the new scaffolder plugin in your app through the `features` option of `createApp`.
 
 Continue this process for each of your legacy routes until you have migrated all of them. For any plugin with additional extensions installed as children of the `Route`, refer to the plugin READMEs for more detailed instructions. For the entity pages, refer to the [separate section](#entity-pages).
 
@@ -482,7 +482,7 @@ The entity pages are typically defined in `packages/app/src/components/catalog` 
 
 New apps feature a built-in sidebar extension (`app/nav`) that will render all nav item extensions provided by plugins. This is a placeholder implementation and not intended as a long-term solution. In the future we will aim to provide a more flexible sidebar extension that allows for more customization out of the box.
 
-Because the built-in sidebar is quite limited you may want to override the sidebar with your own custom implementation. To do so, use `createExtension` directly and refer to the [original sidebar implementation](https://github.com/backstage/backstage/blob/master/packages/frontend-app-api/src/extensions/AppNav.tsx). The following is an example of how to take your existing sidebar from the `Root` component that you typically find in `packages/app/src/components/Root.tsx`, and use it in an [extension override](../architecture/05-extension-overrides.md):
+Because the built-in sidebar is quite limited you may want to override the sidebar with your own custom implementation. To do so, use `createExtension` directly and refer to the [original sidebar implementation](https://github.com/backstage/backstage/blob/master/packages/frontend-app-api/src/extensions/AppNav.tsx). The following is an example of how to take your existing sidebar from the `Root` component that you typically find in `packages/app/src/components/Root.tsx`, and use it in an [extension override](../architecture/25-extension-overrides.md):
 
 ```tsx
 const nav = createExtension({
