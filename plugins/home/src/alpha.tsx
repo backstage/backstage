@@ -21,7 +21,7 @@ import {
   createExtensionDataRef,
   createExtensionInput,
   createPageExtension,
-  createPlugin,
+  createFrontendPlugin,
   createRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { compatWrapper } from '@backstage/core-compat-api';
@@ -65,7 +65,7 @@ const homePage = createPageExtension({
 /**
  * @alpha
  */
-export default createPlugin({
+export default createFrontendPlugin({
   id: 'home',
   extensions: [homePage],
 });

@@ -22,7 +22,7 @@ import {
   createApiFactory,
   createNavItemExtension,
   createPageExtension,
-  createPlugin,
+  createFrontendPlugin,
   createSchemaFromZod,
 } from '@backstage/frontend-plugin-api';
 
@@ -203,7 +203,7 @@ const apiDocsApisEntityContent = createEntityContentExtension({
     ),
 });
 
-export default createPlugin({
+export default createFrontendPlugin({
   id: 'api-docs',
   routes: {
     root: convertLegacyRouteRef(rootRoute),

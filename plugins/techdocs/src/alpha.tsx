@@ -17,7 +17,7 @@
 import React from 'react';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import {
-  createPlugin,
+  createFrontendPlugin,
   createSchemaFromZod,
   createApiExtension,
   createPageExtension,
@@ -155,7 +155,7 @@ const techDocsNavItem = createNavItemExtension({
 });
 
 /** @alpha */
-export default createPlugin({
+export default createFrontendPlugin({
   id: 'techdocs',
   extensions: [
     techDocsClientApi,

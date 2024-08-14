@@ -28,7 +28,7 @@ import {
   createExtension,
   createExtensionInput,
   createPageExtension,
-  createPlugin,
+  createFrontendPlugin,
 } from '@backstage/frontend-plugin-api';
 import React, { Children, ReactNode, isValidElement } from 'react';
 import { Route, Routes } from 'react-router-dom';
@@ -253,7 +253,7 @@ export function collectLegacyRoutes(
   );
 
   return Array.from(pluginExtensions).map(([plugin, extensions]) =>
-    createPlugin({
+    createFrontendPlugin({
       id: plugin.getId(),
       extensions: [
         ...extensions,

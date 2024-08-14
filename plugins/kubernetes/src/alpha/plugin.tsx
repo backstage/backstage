@@ -15,7 +15,7 @@
  */
 
 import { convertLegacyRouteRefs } from '@backstage/core-compat-api';
-import { createPlugin } from '@backstage/frontend-plugin-api';
+import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { kubernetesPage } from './pages';
 import { entityKubernetesContent } from './entityContents';
 import { rootCatalogKubernetesRouteRef } from '../plugin';
@@ -26,7 +26,7 @@ import {
   kubernetesProxyApi,
 } from './apis';
 
-export default createPlugin({
+export default createFrontendPlugin({
   id: 'kubernetes',
   extensions: [
     kubernetesPage,

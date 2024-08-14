@@ -893,6 +893,25 @@ export function createExternalRouteRef<
       }
 >;
 
+// @public (undocumented)
+export function createFrontendPlugin<
+  TId extends string,
+  TRoutes extends AnyRoutes = {},
+  TExternalRoutes extends AnyExternalRoutes = {},
+  TExtensions extends readonly ExtensionDefinition<any, any>[] = [],
+>(
+  options: PluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>,
+): BackstagePlugin<
+  TRoutes,
+  TExternalRoutes,
+  {
+    [KExtension in TExtensions[number] as ResolveExtensionId<
+      KExtension,
+      TId
+    >]: KExtension;
+  }
+>;
+
 // @public @deprecated
 export function createNavItemExtension(options: {
   namespace?: string;
@@ -988,24 +1007,8 @@ export function createPageExtension<
   },
 ): ExtensionDefinition<TConfig>;
 
-// @public (undocumented)
-export function createPlugin<
-  TId extends string,
-  TRoutes extends AnyRoutes = {},
-  TExternalRoutes extends AnyExternalRoutes = {},
-  TExtensions extends readonly ExtensionDefinition<any, any>[] = [],
->(
-  options: PluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>,
-): BackstagePlugin<
-  TRoutes,
-  TExternalRoutes,
-  {
-    [KExtension in TExtensions[number] as ResolveExtensionId<
-      KExtension,
-      TId
-    >]: KExtension;
-  }
->;
+// @public @deprecated (undocumented)
+export const createPlugin: typeof createFrontendPlugin;
 
 // @public
 export function createRouteRef<

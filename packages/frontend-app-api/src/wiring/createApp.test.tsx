@@ -21,7 +21,7 @@ import {
   createExtension,
   createExtensionOverrides,
   createPageExtension,
-  createPlugin,
+  createFrontendPlugin,
   createThemeExtension,
 } from '@backstage/frontend-plugin-api';
 import { screen, waitFor } from '@testing-library/react';
@@ -44,7 +44,7 @@ describe('createApp', () => {
         }),
       }),
       features: [
-        createPlugin({
+        createFrontendPlugin({
           id: 'test',
           extensions: [
             createThemeExtension({
@@ -68,7 +68,7 @@ describe('createApp', () => {
     const app = createApp({
       configLoader: async () => ({ config: new MockConfigApi({}) }),
       features: [
-        createPlugin({
+        createFrontendPlugin({
           id: duplicatedFeatureId,
           extensions: [
             createPageExtension({
@@ -77,7 +77,7 @@ describe('createApp', () => {
             }),
           ],
         }),
-        createPlugin({
+        createFrontendPlugin({
           id: duplicatedFeatureId,
           extensions: [
             createPageExtension({
@@ -107,7 +107,7 @@ describe('createApp', () => {
       async load({ config }) {
         return {
           features: [
-            createPlugin({
+            createFrontendPlugin({
               id: 'test',
               extensions: [
                 createPageExtension({
@@ -163,7 +163,7 @@ describe('createApp', () => {
     const app = createApp({
       configLoader: async () => ({ config: new MockConfigApi({}) }),
       features: [
-        createPlugin({
+        createFrontendPlugin({
           id: 'test',
           featureFlags: [{ name: 'test-1' }],
           extensions: [
@@ -218,7 +218,7 @@ describe('createApp', () => {
     const app = createApp({
       configLoader: async () => ({ config: new MockConfigApi({}) }),
       features: [
-        createPlugin({
+        createFrontendPlugin({
           id: 'my-plugin',
           extensions: [
             createPageExtension({

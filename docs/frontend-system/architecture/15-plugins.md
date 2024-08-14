@@ -25,7 +25,7 @@ How to create a simple plugin
  -->
 
 ```ts
-export const myPlugin = createPlugin({
+export const myPlugin = createFrontendPlugin({
   id: 'my-plugin',
 });
 ```
@@ -48,7 +48,7 @@ link to relevant docs
 
 <!--
 
- - Example of how this option is used in `createPlugin`
+ - Example of how this option is used in `createFrontendPlugin`
 
 link to relevant docs
 
@@ -58,7 +58,7 @@ link to relevant docs
 
 <!--
 
- - Example of how this option is used in `createPlugin`
+ - Example of how this option is used in `createFrontendPlugin`
 
 link to relevant docs
 
@@ -68,7 +68,7 @@ link to relevant docs
 
 <!--
 
- - Example of how this option is used in `createPlugin`
+ - Example of how this option is used in `createFrontendPlugin`
 
 link to relevant docs
 
@@ -78,7 +78,7 @@ link to relevant docs
 
 <!--
 
- - Example of how this option is used in `createPlugin`
+ - Example of how this option is used in `createFrontendPlugin`
 
 link to relevant docs
 

@@ -16,7 +16,7 @@
 
 import {
   createExtensionOverrides,
-  createPlugin,
+  createFrontendPlugin,
   Extension,
   ExtensionDefinition,
 } from '@backstage/frontend-plugin-api';
@@ -98,7 +98,10 @@ describe('resolveAppNodeSpecs', () => {
 
   it('should override attachment points', () => {
     const b = makeExt('b');
-    const pluginA = createPlugin({ id: 'test', extensions: [makeExtDef('a')] });
+    const pluginA = createFrontendPlugin({
+      id: 'test',
+      extensions: [makeExtDef('a')],
+    });
     expect(
       resolveAppNodeSpecs({
         features: [pluginA],
@@ -130,7 +133,7 @@ describe('resolveAppNodeSpecs', () => {
   it('should fully override configuration and duplicate', () => {
     const a = makeExt('test/a');
     const b = makeExt('test/b');
-    const plugin = createPlugin({
+    const plugin = createFrontendPlugin({
       id: 'test',
       extensions: [makeExtDef('a'), makeExtDef('b')],
     });
@@ -178,7 +181,7 @@ describe('resolveAppNodeSpecs', () => {
     const b = makeExt('b', 'disabled');
     expect(
       resolveAppNodeSpecs({
-        features: [createPlugin({ id: 'empty', extensions: [] })],
+        features: [createFrontendPlugin({ id: 'empty', extensions: [] })],
         builtinExtensions: [a, b],
         parameters: [
           {
@@ -217,7 +220,7 @@ describe('resolveAppNodeSpecs', () => {
     const g = makeExt('g', 'disabled');
     expect(
       resolveAppNodeSpecs({
-        features: [createPlugin({ id: 'empty', extensions: [] })],
+        features: [createFrontendPlugin({ id: 'empty', extensions: [] })],
         builtinExtensions: [a, b, c, d, e, f, g],
         parameters: [
           { id: 'e', disabled: false },
@@ -272,7 +275,7 @@ describe('resolveAppNodeSpecs', () => {
   });
 
   it('should apply extension overrides', () => {
-    const plugin = createPlugin({
+    const plugin = createFrontendPlugin({
       id: 'test',
       extensions: [makeExtDef('a'), makeExtDef('b')],
     });
@@ -323,7 +326,7 @@ describe('resolveAppNodeSpecs', () => {
   it('should use order from configuration when rather than overrides', () => {
     const result = resolveAppNodeSpecs({
       features: [
-        createPlugin({
+        createFrontendPlugin({
           id: 'test',
           extensions: [
             makeExtDef('a', 'disabled'),
@@ -357,7 +360,10 @@ describe('resolveAppNodeSpecs', () => {
     expect(() =>
       resolveAppNodeSpecs({
         features: [
-          createPlugin({ id: 'test', extensions: [makeExtDef('forbidden')] }),
+          createFrontendPlugin({
+            id: 'test',
+            extensions: [makeExtDef('forbidden')],
+          }),
         ],
         builtinExtensions: [],
         parameters: [],

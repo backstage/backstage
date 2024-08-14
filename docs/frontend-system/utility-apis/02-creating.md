@@ -47,7 +47,7 @@ The plugin itself now wants to provide this API and its default implementation, 
 import {
   createApiExtension,
   createApiFactory,
-  createPlugin,
+  createFrontendPlugin,
   storageApiRef,
   StorageApi,
 } from '@backstage/frontend-plugin-api';
@@ -76,7 +76,7 @@ const exampleWorkApi = createApiExtension({
  * The Example plugin.
  * @public
  */
-export default createPlugin({
+export default createFrontendPlugin({
   id: 'example',
   extensions: [exampleWorkApi],
 });
