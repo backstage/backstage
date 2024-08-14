@@ -36,7 +36,7 @@ export * from '../translation';
 
 /**
  * @alpha
- * @deprecated use `dataRefs` on the blueprints instead
+ * @deprecated use `dataRefs` property on either {@link EntityCardBlueprint} or {@link EntityContentBlueprint} instead
  */
 export const catalogExtensionData = {
   entityContentTitle: createExtensionDataRef<string>().with({

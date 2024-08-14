@@ -15,39 +15,25 @@
  */
 
 import React, { lazy } from 'react';
-
-import { ListItemProps } from '@material-ui/core/ListItem';
-
 import {
   ExtensionBoundary,
   PortableSchema,
   createExtension,
-  createExtensionDataRef,
   createSchemaFromZod,
 } from '@backstage/frontend-plugin-api';
-import { SearchDocument, SearchResult } from '@backstage/plugin-search-common';
-
 import { SearchResultListItemExtension } from './extensions';
+import {
+  SearchResultItemExtensionComponent,
+  SearchResultItemExtensionPredicate,
+  searchResultListItemDataRef,
+} from './blueprints/types';
 
-/** @alpha */
-export type BaseSearchResultListItemProps<T = {}> = T & {
-  rank?: number;
-  result?: SearchDocument;
-} & Omit<ListItemProps, 'button'>;
+export * from './blueprints';
 
-/** @alpha */
-export type SearchResultItemExtensionComponent = <
-  P extends BaseSearchResultListItemProps,
->(
-  props: P,
-) => JSX.Element | null;
-
-/** @alpha */
-export type SearchResultItemExtensionPredicate = (
-  result: SearchResult,
-) => boolean;
-
-/** @alpha */
+/**
+ * @alpha
+ * @deprecated Use {@link SearchResultListItemBlueprint} instead
+ */
 export type SearchResultItemExtensionOptions<
   TConfig extends { noTrack?: boolean },
 > = {
@@ -80,7 +66,12 @@ export type SearchResultItemExtensionOptions<
   predicate?: SearchResultItemExtensionPredicate;
 };
 
-/** @alpha */
+/**
+ * Creates items for the search result list.
+ *
+ * @alpha
+ * @deprecated Use {@link SearchResultListItemBlueprint} instead
+ */
 export function createSearchResultListItemExtension<
   TConfig extends { noTrack?: boolean },
 >(options: SearchResultItemExtensionOptions<TConfig>) {
@@ -132,10 +123,10 @@ export function createSearchResultListItemExtension<
   });
 }
 
-/** @alpha */
+/**
+ * @alpha
+ * @deprecated Use {@link SearchResultListItemBlueprint} instead
+ */
 export namespace createSearchResultListItemExtension {
-  export const itemDataRef = createExtensionDataRef<{
-    predicate?: SearchResultItemExtensionPredicate;
-    component: SearchResultItemExtensionComponent;
-  }>().with({ id: 'search.search-result-list-item.item' });
+  export const itemDataRef = searchResultListItemDataRef;
 }
