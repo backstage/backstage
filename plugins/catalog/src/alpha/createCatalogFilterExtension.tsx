@@ -25,7 +25,7 @@ import {
 
 /**
  * @alpha
- * @deprecated Use {@link CatalogFilterExtensionBlueprint} instead
+ * @deprecated Use {@link CatalogFilterBlueprint} instead
  */
 export function createCatalogFilterExtension<
   TInputs extends AnyExtensionInputMap,

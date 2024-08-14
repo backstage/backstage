@@ -120,8 +120,6 @@ export const catalogTranslationRef: TranslationRef<
   }
 >;
 
-// Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/plugin-catalog" does not have an export "CatalogFilterExtensionBlueprint"
-//
 // @alpha @deprecated (undocumented)
 export function createCatalogFilterExtension<
   TInputs extends AnyExtensionInputMap,
