@@ -540,7 +540,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     const matchingTargets = this.matchesFilters([repository]);
     if (matchingTargets.length === 0) {
       this.logger.debug(
-        `skipping repository transferred event for repository ${repository.name} because it didn't match provider filters`,
+        `skipping repository renamed event for repository ${repository.name} because it didn't match provider filters`,
       );
       return;
     }
@@ -587,7 +587,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     const matchingTargets = this.matchesFilters([repository]);
     if (matchingTargets.length === 0) {
       this.logger.debug(
-        `skipping repository transferred event for repository ${repository.name} because it didn't match provider filters`,
+        `skipping repository unarchived event for repository ${repository.name} because it didn't match provider filters`,
       );
       return;
     }
