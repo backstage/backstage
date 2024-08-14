@@ -28,13 +28,16 @@ import {
 import React, { lazy } from 'react';
 import { Entity } from '@backstage/catalog-model';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { Expand } from '../../../packages/frontend-plugin-api/src/types';
+import { Expand } from '../../../../packages/frontend-plugin-api/src/types';
 
-export { useEntityPermission } from './hooks/useEntityPermission';
-export { isOwnerOf } from './utils';
-export * from './translation';
+export { useEntityPermission } from '../hooks/useEntityPermission';
+export { isOwnerOf } from '../utils';
+export * from '../translation';
 
-/** @alpha */
+/**
+ * @alpha
+ * @deprecated use `dataRefs` on the blueprints instead
+ */
 export const catalogExtensionData = {
   entityContentTitle: createExtensionDataRef<string>().with({
     id: 'catalog.entity-content-title',
@@ -48,7 +51,10 @@ export const catalogExtensionData = {
 };
 
 // TODO: Figure out how to merge with provided config schema
-/** @alpha */
+/**
+ * @alpha
+ * @deprecated use {@link EntityCardBlueprint} instead
+ */
 export function createEntityCardExtension<
   TConfig extends { filter?: string },
   TInputs extends AnyExtensionInputMap,
@@ -110,7 +116,10 @@ export function createEntityCardExtension<
   });
 }
 
-/** @alpha */
+/**
+ * @alpha
+ * @deprecated use {@link EntityContentBlueprint} instead
+ */
 export function createEntityContentExtension<
   TInputs extends AnyExtensionInputMap,
 >(options: {

@@ -29,7 +29,7 @@
   "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
-    "./alpha": "./src/alpha.tsx",
+    "./alpha": "./src/alpha/index.ts",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
@@ -37,7 +37,7 @@
   "typesVersions": {
     "*": {
       "alpha": [
-        "src/alpha.tsx"
+        "src/alpha/index.ts"
       ],
       "package.json": [
         "package.json"
@@ -85,6 +85,7 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
+    "@backstage/frontend-test-utils": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
     "@backstage/plugin-scaffolder-common": "workspace:^",
     "@backstage/test-utils": "workspace:^",
