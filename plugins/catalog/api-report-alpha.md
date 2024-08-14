@@ -175,14 +175,14 @@ const _default: BackstagePlugin<
       | ConfigurableExtensionDataRef<
           (entity: Entity) => boolean,
           'catalog.entity-filter-function',
-          ((entity: Entity) => boolean) & {
+          {
             optional: true;
           }
         >
       | ConfigurableExtensionDataRef<
           string,
           'catalog.entity-filter-expression',
-          string & {
+          {
             optional: true;
           }
         >,
@@ -202,14 +202,14 @@ const _default: BackstagePlugin<
       | ConfigurableExtensionDataRef<
           (entity: Entity) => boolean,
           'catalog.entity-filter-function',
-          ((entity: Entity) => boolean) & {
+          {
             optional: true;
           }
         >
       | ConfigurableExtensionDataRef<
           string,
           'catalog.entity-filter-expression',
-          string & {
+          {
             optional: true;
           }
         >,
@@ -229,14 +229,14 @@ const _default: BackstagePlugin<
       | ConfigurableExtensionDataRef<
           (entity: Entity) => boolean,
           'catalog.entity-filter-function',
-          ((entity: Entity) => boolean) & {
+          {
             optional: true;
           }
         >
       | ConfigurableExtensionDataRef<
           string,
           'catalog.entity-filter-expression',
-          string & {
+          {
             optional: true;
           }
         >,
@@ -256,14 +256,14 @@ const _default: BackstagePlugin<
       | ConfigurableExtensionDataRef<
           (entity: Entity) => boolean,
           'catalog.entity-filter-function',
-          ((entity: Entity) => boolean) & {
+          {
             optional: true;
           }
         >
       | ConfigurableExtensionDataRef<
           string,
           'catalog.entity-filter-expression',
-          string & {
+          {
             optional: true;
           }
         >,
@@ -283,14 +283,14 @@ const _default: BackstagePlugin<
       | ConfigurableExtensionDataRef<
           (entity: Entity) => boolean,
           'catalog.entity-filter-function',
-          ((entity: Entity) => boolean) & {
+          {
             optional: true;
           }
         >
       | ConfigurableExtensionDataRef<
           string,
           'catalog.entity-filter-expression',
-          string & {
+          {
             optional: true;
           }
         >,
@@ -310,14 +310,14 @@ const _default: BackstagePlugin<
       | ConfigurableExtensionDataRef<
           (entity: Entity) => boolean,
           'catalog.entity-filter-function',
-          ((entity: Entity) => boolean) & {
+          {
             optional: true;
           }
         >
       | ConfigurableExtensionDataRef<
           string,
           'catalog.entity-filter-expression',
-          string & {
+          {
             optional: true;
           }
         >,
@@ -337,14 +337,14 @@ const _default: BackstagePlugin<
       | ConfigurableExtensionDataRef<
           (entity: Entity) => boolean,
           'catalog.entity-filter-function',
-          ((entity: Entity) => boolean) & {
+          {
             optional: true;
           }
         >
       | ConfigurableExtensionDataRef<
           string,
           'catalog.entity-filter-expression',
-          string & {
+          {
             optional: true;
           }
         >,
@@ -364,14 +364,14 @@ const _default: BackstagePlugin<
       | ConfigurableExtensionDataRef<
           (entity: Entity) => boolean,
           'catalog.entity-filter-function',
-          ((entity: Entity) => boolean) & {
+          {
             optional: true;
           }
         >
       | ConfigurableExtensionDataRef<
           string,
           'catalog.entity-filter-expression',
-          string & {
+          {
             optional: true;
           }
         >,
@@ -391,14 +391,14 @@ const _default: BackstagePlugin<
       | ConfigurableExtensionDataRef<
           (entity: Entity) => boolean,
           'catalog.entity-filter-function',
-          ((entity: Entity) => boolean) & {
+          {
             optional: true;
           }
         >
       | ConfigurableExtensionDataRef<
           string,
           'catalog.entity-filter-expression',
-          string & {
+          {
             optional: true;
           }
         >,
@@ -418,14 +418,14 @@ const _default: BackstagePlugin<
       | ConfigurableExtensionDataRef<
           (entity: Entity) => boolean,
           'catalog.entity-filter-function',
-          ((entity: Entity) => boolean) & {
+          {
             optional: true;
           }
         >
       | ConfigurableExtensionDataRef<
           string,
           'catalog.entity-filter-expression',
-          string & {
+          {
             optional: true;
           }
         >,
@@ -454,7 +454,7 @@ const _default: BackstagePlugin<
       | ConfigurableExtensionDataRef<
           RouteRef<AnyRouteRefParams>,
           'core.routing.ref',
-          RouteRef<AnyRouteRefParams> & {
+          {
             optional: true;
           }
         >
@@ -462,14 +462,14 @@ const _default: BackstagePlugin<
       | ConfigurableExtensionDataRef<
           (entity: Entity) => boolean,
           'catalog.entity-filter-function',
-          ((entity: Entity) => boolean) & {
+          {
             optional: true;
           }
         >
       | ConfigurableExtensionDataRef<
           string,
           'catalog.entity-filter-expression',
-          string & {
+          {
             optional: true;
           }
         >,
@@ -479,14 +479,14 @@ const _default: BackstagePlugin<
           | ConfigurableExtensionDataRef<
               (entity: Entity) => boolean,
               'catalog.entity-filter-function',
-              ((entity: Entity) => boolean) & {
+              {
                 optional: true;
               }
             >
           | ConfigurableExtensionDataRef<
               string,
               'catalog.entity-filter-expression',
-              string & {
+              {
                 optional: true;
               }
             >,

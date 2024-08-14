@@ -180,14 +180,14 @@ export const EntityCardBlueprint: ExtensionBlueprint<
   | ConfigurableExtensionDataRef<
       (entity: Entity) => boolean,
       'catalog.entity-filter-function',
-      ((entity: Entity) => boolean) & {
+      {
         optional: true;
       }
     >
   | ConfigurableExtensionDataRef<
       string,
       'catalog.entity-filter-expression',
-      string & {
+      {
         optional: true;
       }
     >,
@@ -229,7 +229,7 @@ export const EntityContentBlueprint: ExtensionBlueprint<
   | ConfigurableExtensionDataRef<
       RouteRef<AnyRouteRefParams>,
       'core.routing.ref',
-      RouteRef<AnyRouteRefParams> & {
+      {
         optional: true;
       }
     >
@@ -237,14 +237,14 @@ export const EntityContentBlueprint: ExtensionBlueprint<
   | ConfigurableExtensionDataRef<
       (entity: Entity) => boolean,
       'catalog.entity-filter-function',
-      ((entity: Entity) => boolean) & {
+      {
         optional: true;
       }
     >
   | ConfigurableExtensionDataRef<
       string,
       'catalog.entity-filter-expression',
-      string & {
+      {
         optional: true;
       }
     >,
