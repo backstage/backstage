@@ -50,6 +50,7 @@ RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
 RUN --mount=type=cache,target=/home/nonroot/.yarn/berry/cache,sharing=locked,uid=65532,gid=65532 \
     yarn workspaces focus --all --production && yarn cache clean --all
 
+# Final stage to build the application image
 FROM cgr.dev/chainguard/wolfi-base:latest
 
 ENV PYTHON_VERSION 3.12=~3.12
