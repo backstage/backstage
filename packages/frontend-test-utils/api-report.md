@@ -43,7 +43,7 @@ export { ErrorWithContext };
 export class ExtensionQuery {
   constructor(node: AppNode);
   // (undocumented)
-  data<T>(ref: ExtensionDataRef<T>): T | undefined;
+  get<T>(ref: ExtensionDataRef<T>): T | undefined;
   // (undocumented)
   get instance(): AppNodeInstance;
   // (undocumented)
@@ -60,11 +60,11 @@ export class ExtensionTester {
     },
   ): ExtensionTester;
   // (undocumented)
-  data<T>(ref: ExtensionDataRef<T>): T | undefined;
-  // (undocumented)
-  element(): JSX.Element;
+  get<T>(ref: ExtensionDataRef<T>): T | undefined;
   // (undocumented)
   query(id: string | ExtensionDefinition<any, any>): ExtensionQuery;
+  // (undocumented)
+  reactElement(): JSX.Element;
   // @deprecated (undocumented)
   render(options?: { config?: JsonObject }): RenderResult;
 }
