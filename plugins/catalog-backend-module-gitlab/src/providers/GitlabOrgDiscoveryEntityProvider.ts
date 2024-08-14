@@ -779,11 +779,13 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
   }
 
   private getRelations(config: any) {
-    return [
-      'DIRECT',
-      ...(config.allowInherited ? ['INHERITED'] : []),
-      ...(config.allowSharedFromGroups ? ['SHARED_FROM_GROUPS'] : []),
-      ...(config.allowDescendants ? ['DESCENDANTS'] : []),
-    ];
+    if (Array.isArray(config.relations)) {
+      // filter out duplicates
+      const relationsSet = new Set(['DIRECT', ...config.relations]);
+      return Array.from(relationsSet);
+    }
+
+    // TODO: remove this fallback in the next major version by ensuring the method returns only `['DIRECT']` if no `relations` array is provided.
+    return ['DIRECT', ...(config.allowInherited ? ['INHERITED'] : [])];
   }
 }

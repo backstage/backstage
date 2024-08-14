@@ -184,19 +184,40 @@ export type GitlabProviderConfig = {
   groupPattern: RegExp;
 
   /**
-   * If true, the provider will also add members of inherited groups (ascendant) to the ingested groups. See: https://docs.gitlab.com/ee/api/graphql/reference/#groupmemberrelation
-   */
+   * If true, the provider will also add inherited (ascendant) users to the ingested groups.
+   * See: https://docs.gitlab.com/ee/api/graphql/reference/#groupmemberrelation
+   *
+   * @deprecated Use the `relations` array to configure group membership relations instead.
+   **/
   allowInherited?: boolean;
 
   /**
-   * If true, the provider will also add members of descendant groups to the ingested groups. See: https://docs.gitlab.com/ee/api/graphql/reference/#groupmemberrelation
+   * Specifies the types of group membership relations that should be included when ingesting data.
+   *
+   * The following values are valid:
+   * - 'DIRECT': Direct members of the group. This is the default relation and is always included.
+   * - 'INHERITED': Members inherited from parent (ascendant) groups.
+   * - 'DESCENDANTS': Members from child (descendant) groups.
+   * - 'SHARED_FROM_GROUPS': Members shared from other groups.
+   *
+   * See: https://docs.gitlab.com/ee/api/graphql/reference/#groupmemberrelation
+   *
+   * If the `relations` array is provided in the app-config.yaml, it should contain any combination of the above values.
+   * The 'DIRECT' relation is automatically included and cannot be excluded, even if not specified.
+   * Example configuration:
+   *
+   * ```yaml
+   * catalog:
+   *   providers:
+   *     gitlab:
+   *       development:
+   *         relations:
+   *           - INHERITED
+   *           - DESCENDANTS
+   *           - SHARED_FROM_GROUPS
+   * ```
    */
-  allowDescendants?: boolean;
-
-  /**
-   * If true, the provider will also add members of invited groups to the ingested groups. See: https://docs.gitlab.com/ee/api/graphql/reference/#groupmemberrelation
-   */
-  allowSharedFromGroups?: boolean;
+  relations?: string[];
 
   orgEnabled?: boolean;
   schedule?: TaskScheduleDefinition;

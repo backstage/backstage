@@ -106,8 +106,7 @@ export type GitlabProviderConfig = {
   userPattern: RegExp;
   groupPattern: RegExp;
   allowInherited?: boolean;
-  allowDescendants?: boolean;
-  allowSharedFromGroups?: boolean;
+  relations: string[];
   orgEnabled?: boolean;
   schedule?: TaskScheduleDefinition;
   skipForkedRepos?: boolean;
