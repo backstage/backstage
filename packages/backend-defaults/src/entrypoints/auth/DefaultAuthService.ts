@@ -169,7 +169,7 @@ export class DefaultAuthService implements AuthService {
         }
         // If the target plugin does not support the new auth service, fall back to using old token format
         this.logger.warn(
-          'tokenManager is DEPRECATED, please migrate to the new auth service, see https://backstage.io/docs/tutorials/auth-service-migration for more information',
+          `DEPRECATION WARNING: A call to the '${targetPluginId}' plugin had to fall back to using deprecated auth via the token manager service. Please migrate all plugins to the new auth service, see https://backstage.io/docs/tutorials/auth-service-migration for more information`,
         );
         return this.tokenManager.getToken().catch(error => {
           throw new ForwardedError(
