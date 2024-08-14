@@ -27,8 +27,9 @@ import {
 import {
   SearchResultListItemExtension,
   SearchResultListItemExtensionProps,
-} from '../extensions';
+} from '../../extensions';
 
+/** @alpha */
 export interface SearchResultListItemBlueprintParams {
   /**
    * The extension component.
@@ -43,6 +44,10 @@ export interface SearchResultListItemBlueprintParams {
   predicate?: SearchResultItemExtensionPredicate;
 }
 
+/**
+ * @alpha
+ * Creates SearchResultListItem extensions
+ */
 export const SearchResultListItemBlueprint = createExtensionBlueprint({
   kind: 'search-result-list-item',
   attachTo: {

@@ -21,14 +21,12 @@ import {
   createExtension,
   createSchemaFromZod,
 } from '@backstage/frontend-plugin-api';
-import { SearchResultListItemExtension } from './extensions';
 import {
   SearchResultItemExtensionComponent,
   SearchResultItemExtensionPredicate,
-  searchResultListItemDataRef,
-} from './blueprints/types';
-
-export * from './blueprints';
+} from './blueprints';
+import { SearchResultListItemExtension } from '../extensions';
+import { searchResultListItemDataRef } from './blueprints/types';
 
 /**
  * @alpha
@@ -128,5 +126,8 @@ export function createSearchResultListItemExtension<
  * @deprecated Use {@link SearchResultListItemBlueprint} instead
  */
 export namespace createSearchResultListItemExtension {
+  /**
+   * @deprecated Use {@link SearchResultListItemBlueprint#dataRefs.item}  instead
+   */
   export const itemDataRef = searchResultListItemDataRef;
 }

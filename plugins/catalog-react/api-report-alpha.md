@@ -6,16 +6,19 @@
 /// <reference types="react" />
 
 import { AnyExtensionInputMap } from '@backstage/frontend-plugin-api';
+import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { PortableSchema } from '@backstage/frontend-plugin-api';
+import { default as React_2 } from 'react';
 import { ResolvedExtensionInputs } from '@backstage/frontend-plugin-api';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export const catalogExtensionData: {
   entityContentTitle: ConfigurableExtensionDataRef<
     string,
@@ -92,7 +95,7 @@ export const catalogReactTranslationRef: TranslationRef<
   }
 >;
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export function createEntityCardExtension<
   TConfig extends {
     filter?: string;
@@ -125,7 +128,7 @@ export function createEntityCardExtension<
   string | undefined
 >;
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export function createEntityContentExtension<
   TInputs extends AnyExtensionInputMap,
 >(options: {
@@ -162,6 +165,117 @@ export function createEntityContentExtension<
   string | undefined,
   string | undefined,
   string | undefined
+>;
+
+// @alpha
+export const EntityCardBlueprint: ExtensionBlueprint<
+  'entity-card',
+  undefined,
+  undefined,
+  {
+    loader: () => Promise<JSX.Element>;
+    filter?: string | ((entity: Entity) => boolean) | undefined;
+  },
+  | ConfigurableExtensionDataRef<React_2.JSX.Element, 'core.reactElement', {}>
+  | ConfigurableExtensionDataRef<
+      (entity: Entity) => boolean,
+      'catalog.entity-filter-function',
+      ((entity: Entity) => boolean) & {
+        optional: true;
+      }
+    >
+  | ConfigurableExtensionDataRef<
+      string,
+      'catalog.entity-filter-expression',
+      string & {
+        optional: true;
+      }
+    >,
+  {},
+  {
+    filter: string | undefined;
+  },
+  {
+    filter?: string | undefined;
+  },
+  {
+    filterFunction: ConfigurableExtensionDataRef<
+      (entity: Entity) => boolean,
+      'catalog.entity-filter-function',
+      {}
+    >;
+    filterExpression: ConfigurableExtensionDataRef<
+      string,
+      'catalog.entity-filter-expression',
+      {}
+    >;
+  }
+>;
+
+// @alpha
+export const EntityContentBlueprint: ExtensionBlueprint<
+  'entity-content',
+  undefined,
+  undefined,
+  {
+    loader: () => Promise<JSX.Element>;
+    defaultPath: string;
+    defaultTitle: string;
+    routeRef?: RouteRef<AnyRouteRefParams> | undefined;
+    filter?: string | ((entity: Entity) => boolean) | undefined;
+  },
+  | ConfigurableExtensionDataRef<React_2.JSX.Element, 'core.reactElement', {}>
+  | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+  | ConfigurableExtensionDataRef<
+      RouteRef<AnyRouteRefParams>,
+      'core.routing.ref',
+      RouteRef<AnyRouteRefParams> & {
+        optional: true;
+      }
+    >
+  | ConfigurableExtensionDataRef<string, 'catalog.entity-content-title', {}>
+  | ConfigurableExtensionDataRef<
+      (entity: Entity) => boolean,
+      'catalog.entity-filter-function',
+      ((entity: Entity) => boolean) & {
+        optional: true;
+      }
+    >
+  | ConfigurableExtensionDataRef<
+      string,
+      'catalog.entity-filter-expression',
+      string & {
+        optional: true;
+      }
+    >,
+  {},
+  {
+    path: string | undefined;
+    title: string | undefined;
+    filter: string | undefined;
+  },
+  {
+    filter?: string | undefined;
+    title?: string | undefined;
+    path?: string | undefined;
+  },
+  {
+    title: ConfigurableExtensionDataRef<
+      string,
+      'catalog.entity-content-title',
+      {}
+    >;
+    filterFunction: ConfigurableExtensionDataRef<
+      (entity: Entity) => boolean,
+      'catalog.entity-filter-function',
+      {}
+    >;
+    filterExpression: ConfigurableExtensionDataRef<
+      string,
+      'catalog.entity-filter-expression',
+      {}
+    >;
+  }
 >;
 
 // @alpha
