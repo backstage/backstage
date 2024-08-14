@@ -16,7 +16,7 @@ import type { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import type { PluginDatabaseManager } from '@backstage/backend-common';
 import type { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Router } from 'express';
-import type { UrlReader } from '@backstage/backend-common';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 // @public
 export type EntityIteratorResult<T> =
@@ -91,7 +91,7 @@ export type PluginEnvironment = {
   database: PluginDatabaseManager;
   scheduler: PluginTaskScheduler;
   config: Config;
-  reader: UrlReader;
+  reader: UrlReaderService;
   permissions: PermissionEvaluator;
 };
 ```

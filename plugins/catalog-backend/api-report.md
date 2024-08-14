@@ -63,7 +63,7 @@ import { Router } from 'express';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmLocationAnalyzer as ScmLocationAnalyzer_2 } from '@backstage/plugin-catalog-node';
 import { TokenManager } from '@backstage/backend-common';
-import { UrlReader } from '@backstage/backend-common';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { Validators } from '@backstage/catalog-model';
 
 // @public @deprecated
@@ -197,7 +197,7 @@ export type CatalogEnvironment = {
   logger: LoggerService;
   database: PluginDatabaseManager;
   config: Config;
-  reader: UrlReader;
+  reader: UrlReaderService;
   permissions: PermissionsService | PermissionAuthorizer;
   scheduler?: PluginTaskScheduler;
   discovery?: DiscoveryService;
@@ -254,14 +254,14 @@ export class CodeOwnersProcessor implements CatalogProcessor_2 {
   constructor(options: {
     integrations: ScmIntegrationRegistry;
     logger: LoggerService;
-    reader: UrlReader;
+    reader: UrlReaderService;
   });
   // (undocumented)
   static fromConfig(
     config: Config,
     options: {
       logger: LoggerService;
-      reader: UrlReader;
+      reader: UrlReaderService;
     },
   ): CodeOwnersProcessor;
   // (undocumented)
@@ -413,7 +413,7 @@ export class PlaceholderProcessor implements CatalogProcessor_2 {
 // @public (undocumented)
 export type PlaceholderProcessorOptions = {
   resolvers: Record<string, PlaceholderResolver_2>;
-  reader: UrlReader;
+  reader: UrlReaderService;
   integrations: ScmIntegrationRegistry;
 };
 
@@ -465,7 +465,7 @@ export function transformLegacyPolicyToProcessor(
 
 // @public (undocumented)
 export class UrlReaderProcessor implements CatalogProcessor_2 {
-  constructor(options: { reader: UrlReader; logger: LoggerService });
+  constructor(options: { reader: UrlReaderService; logger: LoggerService });
   // (undocumented)
   getProcessorName(): string;
   // (undocumented)

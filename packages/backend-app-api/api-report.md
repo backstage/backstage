@@ -42,7 +42,6 @@ import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
 import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { transport } from 'winston';
-import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { UserInfoService } from '@backstage/backend-plugin-api';
 
 // @public @deprecated (undocumented)
@@ -335,14 +334,6 @@ export const schedulerServiceFactory: ServiceFactoryCompat<
 // @public @deprecated (undocumented)
 export const tokenManagerServiceFactory: ServiceFactoryCompat<
   TokenManagerService,
-  'plugin',
-  'singleton',
-  undefined
->;
-
-// @public @deprecated (undocumented)
-export const urlReaderServiceFactory: ServiceFactoryCompat<
-  UrlReaderService,
   'plugin',
   'singleton',
   undefined
