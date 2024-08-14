@@ -68,14 +68,20 @@ export interface Config {
     /**
      * Techdocs publisher information
      */
-    publisher?: {
-      local?: {
-        /**
-         * Directory to store generated static files.
-         */
-        publishDirectory?: string;
-      };
-    } & (
+    publisher?:
+      | {
+          type: 'local';
+
+          /**
+           *  Optional when 'type' is set to local
+           */
+          local?: {
+            /**
+             * (Optional) Directory to store generated static files.
+             */
+            publishDirectory?: string;
+          };
+        }
       | {
           type: 'awsS3';
 
@@ -258,8 +264,7 @@ export interface Config {
              */
             projectId?: string;
           };
-        }
-    );
+        };
 
     /**
      * @example http://localhost:7007/api/techdocs
