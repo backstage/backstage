@@ -14,11 +14,11 @@
 # Build Python environment in a separate builder stage
 FROM cgr.dev/chainguard/python:latest-dev as python-builder
 
-RUN --mount=type=cache,target=/home/nonroot/.cache/pip,uid=65532,gid=65532 \
-    python3 -m venv /home/nonroot/venv
 ENV PATH=/venv/bin:$PATH
 
-RUN /home/nonroot/venv/bin/pip install mkdocs-techdocs-core==1.3.3
+RUN --mount=type=cache,target=/home/nonroot/.cache/pip,uid=65532,gid=65532 \
+    python3 -m venv /home/nonroot/venv && \
+    /home/nonroot/venv/bin/pip install mkdocs-techdocs-core==1.3.3
 
 # Build Node environment in a separate builder stage
 FROM cgr.dev/chainguard/wolfi-base:latest as node-builder
