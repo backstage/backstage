@@ -57,7 +57,7 @@ const testPlugin = createBackendPlugin({
       async init() {},
     });
   },
-})();
+});
 
 describe('BackendInitializer', () => {
   it('should initialize root scoped services', async () => {

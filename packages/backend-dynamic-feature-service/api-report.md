@@ -4,7 +4,6 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { BackendFeatureCompat } from '@backstage/backend-plugin-api';
 import { BackstagePackageJson } from '@backstage/cli-node';
 import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
 import { Config } from '@backstage/config';
@@ -122,7 +121,7 @@ export const dynamicPluginsFeatureDiscoveryServiceFactory: ServiceFactoryCompat<
 >;
 
 // @public (undocumented)
-export const dynamicPluginsFrontendSchemas: BackendFeatureCompat;
+export const dynamicPluginsFrontendSchemas: BackendFeature;
 
 // @public (undocumented)
 export const dynamicPluginsRootLoggerServiceFactory: ServiceFactoryCompat<
