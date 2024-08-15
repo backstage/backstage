@@ -139,11 +139,9 @@ const extension = createExtension({
   // ...
   output: [coreExtensionData.reactElement.optional()],
   factory() {
-    return [
-      coreExtensionData.reactElement.optional()(
-        Math.random() < 0.5 ? <img src="./assets/logo.png" /> : undefined,
-      ),
-    ];
+    return Math.random() > 0.5
+      ? [coreExtensionData.reactElement(<div>Hello World</div>)]
+      : [];
   },
 });
 ```
@@ -327,18 +325,12 @@ The `ExtensionBoundary` can be used like the following in an extension:
 const routableExtension = createExtension({
   // ...
   factory({ config, inputs, node }) {
-    const ExtensionComponent = lazy(() =>
-      options
-        .loader({ config, inputs })
-        .then(element => ({ default: () => element })),
-    );
-
     return [
       coreExtensionData.path(config.path),
-      coreExtensionData.routeRef(options.routeRef),
+      coreExtensionData.routeRef(myRouteRef),
       coreExtensionData.reactElement(
         <ExtensionBoundary node={node}>
-          <ExtensionComponent />
+          <MyExtensionComponent />
         </ExtensionBoundary>,
       ),
     ];
