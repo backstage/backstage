@@ -8,6 +8,7 @@
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
+import { LeveledLogMethod } from 'winston';
 import { Logger } from 'winston';
 import { Observable } from '@backstage/types';
 import { Schema } from 'jsonschema';
@@ -191,7 +192,8 @@ export type ExecuteShellCommandOptions = {
   command: string;
   args: string[];
   options?: SpawnOptionsWithoutStdio;
-  logStream?: Writable;
+  logger?: Logger;
+  logLevel?: LeveledLogMethod;
 };
 
 // @public
