@@ -79,6 +79,29 @@ const myOverrideExtension = myExtension.override({
 
 Note the `yield*` expression, which forwards all values from the provided iterable to the generator, in this case the original factory output.
 
+## Overriding declared outputs
+
+When overriding an extension out can provide a new output declaration. This **replaces** any existing output declaration, which means that you want to forward any of the original output you will need to declare it again. The following example shows how to override an extension and replace the output declaration:
+
+```tsx
+// Original extension
+const exampleExtension = createExtension({
+  name: 'example',
+  output: [coreExtensionData.reactElement],
+  factory: () => [coreExtensionData.reactElement(<h1>Example</h1>)],
+});
+
+// Override extension, with additional outputs
+const overrideExtension = exampleExtension.override({
+  output: [coreExtensionData.reactElement, coreExtensionData.routePath],
+  factory(originalFactory) {
+    return [...originalFactory(), coreExtensionData.routePath('/example')];
+  },
+});
+```
+
+When overriding the output declaration you don't need to include the original outputs. Just remember that you will no longer be able to directly forward the output from the original factory, and will still need to adhere to the contract of the input that the extension is attached to.
+
 ## Override App Extensions
 
 In order to override an app extension, you must create a new extension and add it to the list of overridden features. The steps are: create your extension overrides and use them in Backstage.
