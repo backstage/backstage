@@ -72,3 +72,11 @@ createExtension({
 Note the changes to the `inputs` and `output` declarations, as well as how these are used in the factory. Both the `inputs` and `output` now declare their expected data using an array, without names tied to each piece of data. The `get` method on the input object is used to access the input data, and accept a data reference matching the data that was declared for that input.
 
 The biggest change in practice is how the extension factories output their data. Instead of returning an object with the data values, you instead use each extension data reference to encapsulate a value and return a collection of these encapsulated values from the factory.
+
+### Blueprints instead of extension creators
+
+The "extension creator" pattern where `createExtension` was wrapped up in a function for creating specific kind of extensions has been replaced by [extension blueprints](./23-extension-blueprints.md). Extension creators were hard to implement and to maintain, with blueprints providing a much more consistent and powerful API surface for both plugin builders and integrators. For example, `createPageExtension` was the extension creator equivalent of `PageBlueprint`.
+
+Replace all existing usages of extension creators in your plugin or app with the corresponding blueprint. For a given extension creator `create<Kind>Extension`, the blueprint equivalent is `<Kind>Blueprint`. There might be slight differences in the API between the two, but most often you just need to move the kind-specific options of the extension creator to be passed as parameters to the blueprint. Note that if your extension declared any additional inputs or config you'll need to use the [`.makeWithOverrides`](./23-extension-blueprints.md#creating-an-extension-from-a-blueprint-with-overrides) method of the blueprint.
+
+If your plugin exports and extension creators, these should be migrated to blueprints instead.
