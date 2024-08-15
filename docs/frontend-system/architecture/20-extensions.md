@@ -20,7 +20,7 @@ Each extensions has a number of different properties that define how it behaves 
 
 The ID of an extension is used to uniquely identity it, and it should ideally be unique across the entire Backstage ecosystem. For each frontend app instance there can only be a single extension for any given ID. Installing multiple extensions with the same ID will either result in an error or one of the extensions will override the others. The ID is also used to reference the extensions from other extensions, in configuration, and in other places such as developer tools and analytics.
 
-When creating an extension do not provide the ID directly. Instead, you indirectly or directly provide the kind, namespace, and name parts that make up the ID. The kind is always provided by the [extension blueprint](./23-extension-blueprints.md), the only exception is if you use [`createExtension`](#creating-an-extensions) directly. Any extension that is provided by a plugin will by default have its namespace set to the plugin ID, so you generally only need to provide an explicit namespace if you want to override an existing extension. The name is also optional, and primarily used to distinguish between multiple extensions of the same kind and namespace. If a plugin doesn't need to distinguish between different extensions of the same kind, the name can be omitted.
+When creating an extension you do not provide the ID directly. Instead, you indirectly or directly provide the kind, namespace, and name parts that make up the ID. The kind is always provided by the [extension blueprint](./23-extension-blueprints.md), the only exception is if you use [`createExtension`](#creating-an-extensions) directly. Any extension that is provided by a plugin will by default have its namespace set to the plugin ID, so you generally only need to provide an explicit namespace if you want to override an existing extension. The name is also optional, and primarily used to distinguish between multiple extensions of the same kind and namespace. If a plugin doesn't need to distinguish between different extensions of the same kind, the name can be omitted.
 
 The extension ID will be constructed using the pattern `[<kind>:][<namespace>][/][<name>]`, where the separating `/` is only present if both a namespace and name are defined.
 
@@ -73,7 +73,7 @@ const extension = createExtension({
 });
 ```
 
-Note that while the `createExtension` is public API and used in many places, it is not typically what you use when building plugins and features. Instead there are many [extension blueprints](./23-extension-blueprints.md) exported by both the core APIs and plugins that make it easier to create extensions for more specific usages.
+Note that while the `createExtension` function is public API and used in many places, it is not typically what you use when building plugins and features. Instead there are many [extension blueprints](./23-extension-blueprints.md) exported by both the core APIs and plugins that make it easier to create extensions for more specific usages.
 
 ## Extension data
 
@@ -104,7 +104,7 @@ const extension = createExtension({
 
 ### Extension data uniqueness
 
-Note that you are **not** allowed to repeat the same data reference in the outputs, or return multiple values for the same reference. Multiple outputs for the same reference will conflict with each other and cause an error. If you want to output multiple values of the same TypeScript type you should create separate references for each value. That in turn means that overly generic extension data references a bad idea, for example a generic "string" type. Instead create separate references for each type of data that you want to share.
+Note that you are **not** allowed to repeat the same data reference in the outputs, or return multiple values for the same reference. Multiple outputs for the same reference will conflict with each other and cause an error. If you want to output multiple values of the same TypeScript type you should create separate references for each value. That in turn means that overly generic extension data references are a bad idea, for example a generic "string" type. Instead create separate references for each type of data that you want to share.
 
 ```tsx
 const extension = createExtension({
@@ -282,7 +282,7 @@ app:
 
 ## Extension factory as a generator function
 
-In all examples so far we have defined the extension factory as a regular function that returns its output in an array. However, the only requirement is that the factory function returns an iterable of extension data value. This means that you can also define the factory function as a generator function, which allows you to yield values one by one. This is particularly useful if you want to conditionally output values.
+In all examples so far we have defined the extension factory as a regular function that returns its output in an array. However, the only requirement is that the factory function returns any iterable of extension data values. This means that you can also define the factory function as a generator function, which allows you to yield values one by one. This is particularly useful if you want to conditionally output values.
 
 For example, this is how we could define an extension where its output depends on the configuration:
 
