@@ -338,7 +338,3 @@ export function createSomeExtension<
   });
 }
 ```
-
-### Extension Creators (Deprecated)
-
-Previous iterations of the frontend system used an "extension creator" pattern, where `createExtension` was wrapped up in a function for creating specific extension kinds. This pattern was similar to [blueprints](./23-extension-blueprints.md), but much harder to implement and maintain. It has been deprecated in favor of the new blueprints API. For example, `createPageExtension` was the extension creator equivalent of `PageBlueprint`.
