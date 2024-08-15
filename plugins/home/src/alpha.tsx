@@ -20,7 +20,7 @@ import {
   coreExtensionData,
   createExtensionDataRef,
   createExtensionInput,
-  createPageExtension,
+  PageBlueprint,
   createFrontendPlugin,
   createRouteRef,
 } from '@backstage/frontend-plugin-api';
@@ -35,31 +35,34 @@ export const titleExtensionDataRef = createExtensionDataRef<string>().with({
   id: 'title',
 });
 
-const homePage = createPageExtension({
-  defaultPath: '/home',
-  routeRef: rootRouteRef,
+const homePage = PageBlueprint.makeWithOverrides({
   inputs: {
     props: createExtensionInput(
-      {
-        children: coreExtensionData.reactElement.optional(),
-        title: titleExtensionDataRef.optional(),
-      },
-
+      [
+        coreExtensionData.reactElement.optional(),
+        titleExtensionDataRef.optional(),
+      ],
       {
         singleton: true,
         optional: true,
       },
     ),
   },
-  loader: ({ inputs }) =>
-    import('./components/').then(m =>
-      compatWrapper(
-        <m.HomepageCompositionRoot
-          children={inputs.props?.output.children}
-          title={inputs.props?.output.title}
-        />,
-      ),
-    ),
+  factory: (originalFactory, { inputs }) => {
+    return originalFactory({
+      defaultPath: '/home',
+      routeRef: rootRouteRef,
+      loader: () =>
+        import('./components/').then(m =>
+          compatWrapper(
+            <m.HomepageCompositionRoot
+              children={inputs.props?.get(coreExtensionData.reactElement)}
+              title={inputs.props?.get(titleExtensionDataRef)}
+            />,
+          ),
+        ),
+    });
+  },
 });
 
 /**

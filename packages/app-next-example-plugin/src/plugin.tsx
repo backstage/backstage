@@ -16,13 +16,15 @@
 
 import React from 'react';
 import {
-  createPageExtension,
+  PageBlueprint,
   createFrontendPlugin,
 } from '@backstage/frontend-plugin-api';
 
-export const ExamplePage = createPageExtension({
-  defaultPath: '/example',
-  loader: () => import('./Component').then(m => <m.Component />),
+export const ExamplePage = PageBlueprint.make({
+  params: {
+    defaultPath: '/example',
+    loader: () => import('./Component').then(m => <m.Component />),
+  },
 });
 
 /** @public */
