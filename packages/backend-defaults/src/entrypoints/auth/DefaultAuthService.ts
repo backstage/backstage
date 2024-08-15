@@ -22,6 +22,7 @@ import {
   BackstagePrincipalTypes,
   BackstageServicePrincipal,
   BackstageUserPrincipal,
+  LoggerService,
 } from '@backstage/backend-plugin-api';
 import { AuthenticationError, ForwardedError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
@@ -47,6 +48,7 @@ export class DefaultAuthService implements AuthService {
     private readonly pluginId: string,
     private readonly disableDefaultAuthPolicy: boolean,
     private readonly pluginKeySource: PluginKeySource,
+    private readonly logger: LoggerService,
   ) {}
 
   async authenticate(
@@ -166,6 +168,9 @@ export class DefaultAuthService implements AuthService {
           });
         }
         // If the target plugin does not support the new auth service, fall back to using old token format
+        this.logger.warn(
+          `DEPRECATION WARNING: A call to the '${targetPluginId}' plugin had to fall back to using deprecated auth via the token manager service. Please migrate all plugins to the new auth service, see https://backstage.io/docs/tutorials/auth-service-migration for more information`,
+        );
         return this.tokenManager.getToken().catch(error => {
           throw new ForwardedError(
             `Unable to generate legacy token for communication with the '${targetPluginId}' plugin. ` +

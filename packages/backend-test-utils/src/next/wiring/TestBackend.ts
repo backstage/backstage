@@ -14,15 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Backend,
-  createSpecializedBackend,
-  MiddlewareFactory,
-  createHttpServer,
-  ExtendedHttpServer,
-  HostDiscovery,
-  DefaultRootHttpRouter,
-} from '@backstage/backend-app-api';
+import { Backend, createSpecializedBackend } from '@backstage/backend-app-api';
 import {
   createServiceFactory,
   BackendFeature,
@@ -40,7 +32,14 @@ import {
   InternalBackendFeature,
   InternalBackendRegistrations,
 } from '@backstage/backend-plugin-api/src/wiring/types';
-import { createHealthRouter } from '@backstage/backend-defaults/rootHttpRouter';
+import {
+  DefaultRootHttpRouter,
+  ExtendedHttpServer,
+  MiddlewareFactory,
+  createHealthRouter,
+  createHttpServer,
+} from '@backstage/backend-defaults/rootHttpRouter';
+import { HostDiscovery } from '@backstage/backend-defaults/discovery';
 
 /** @public */
 export interface TestBackendOptions<TExtensionPoints extends any[]> {

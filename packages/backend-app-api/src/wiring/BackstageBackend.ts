@@ -25,12 +25,7 @@ export class BackstageBackend implements Backend {
     this.#initializer = new BackendInitializer(defaultServiceFactories);
   }
 
-  add(
-    feature:
-      | BackendFeature
-      | (() => BackendFeature)
-      | Promise<{ default: BackendFeature | (() => BackendFeature) }>,
-  ): void {
+  add(feature: BackendFeature | Promise<{ default: BackendFeature }>): void {
     if (isPromise(feature)) {
       this.#initializer.add(feature.then(f => unwrapFeature(f.default)));
     } else {
@@ -57,15 +52,8 @@ function isPromise<T>(value: unknown | Promise<T>): value is Promise<T> {
 }
 
 function unwrapFeature(
-  feature:
-    | BackendFeature
-    | (() => BackendFeature)
-    | { default: BackendFeature | (() => BackendFeature) },
+  feature: BackendFeature | { default: BackendFeature },
 ): BackendFeature {
-  if (typeof feature === 'function') {
-    return feature();
-  }
-
   if ('$$type' in feature) {
     return feature;
   }
@@ -75,10 +63,7 @@ function unwrapFeature(
   // when importing using a dynamic import.
   // TODO: This is a broader issue than just this piece of code, and should move away from CommonJS.
   if ('default' in feature) {
-    const defaultFeature = feature.default;
-    return typeof defaultFeature === 'function'
-      ? defaultFeature()
-      : defaultFeature;
+    return feature.default;
   }
 
   return feature;

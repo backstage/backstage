@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
+import { LoggerService } from '@backstage/backend-plugin-api';
+import { AppConfig, Config } from '@backstage/config';
+import { setRootLoggerRedactionList } from '../logging/createRootLogger';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { createConfigSecretEnumerator as _createConfigSecretEnumerator } from '../../../backend-defaults/src/entrypoints/rootConfig/createConfigSecretEnumerator';
+import { createConfigSecretEnumerator as _createConfigSecretEnumerator } from '../../../../backend-defaults/src/entrypoints/rootConfig/createConfigSecretEnumerator';
 
 import { resolve as resolvePath } from 'path';
 import parseArgs from 'minimist';
@@ -26,13 +29,12 @@ import {
   LoadConfigOptionsRemote,
 } from '@backstage/config-loader';
 import { ConfigReader } from '@backstage/config';
-import type { Config, AppConfig } from '@backstage/config';
 import { ObservableConfigProxy } from './ObservableConfigProxy';
-import { isValidUrl } from '../lib/urls';
+import { isValidUrl } from './urls';
 
 /**
  * @public
- * @deprecated Please import from `@backstage/backend-defaults/rootConfig` instead.
+ * @deprecated Please migrate to the new backend system and use `coreServices.rootConfig` instead, or the {@link @backstage/config-loader#ConfigSources} facilities if required.
  */
 export const createConfigSecretEnumerator = _createConfigSecretEnumerator;
 
@@ -45,6 +47,27 @@ export const createConfigSecretEnumerator = _createConfigSecretEnumerator;
  * @deprecated Please migrate to the new backend system and use `coreServices.rootConfig` instead, or the {@link @backstage/config-loader#ConfigSources} facilities if required.
  */
 export async function loadBackendConfig(options: {
+  logger: LoggerService;
+  // process.argv or any other overrides
+  remote?: LoadConfigOptionsRemote;
+  additionalConfigs?: AppConfig[];
+  argv: string[];
+  watch?: boolean;
+}): Promise<Config> {
+  const secretEnumerator = await createConfigSecretEnumerator({
+    logger: options.logger,
+  });
+  const { config } = await newLoadBackendConfig(options);
+
+  setRootLoggerRedactionList(secretEnumerator(config));
+  config.subscribe?.(() =>
+    setRootLoggerRedactionList(secretEnumerator(config)),
+  );
+
+  return config;
+}
+
+async function newLoadBackendConfig(options: {
   remote?: LoadConfigOptionsRemote;
   argv: string[];
   additionalConfigs?: AppConfig[];

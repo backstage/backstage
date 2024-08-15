@@ -15,8 +15,8 @@
  */
 
 import { loadConfigSchema } from '@backstage/config-loader';
-import { createConfigSecretEnumerator } from './config';
 import { mockServices } from '@backstage/backend-test-utils';
+import { createConfigSecretEnumerator } from './config';
 
 describe('createConfigSecretEnumerator', () => {
   it('should enumerate secrets', async () => {

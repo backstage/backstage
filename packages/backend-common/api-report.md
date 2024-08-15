@@ -21,6 +21,7 @@ import { CacheService } from '@backstage/backend-plugin-api';
 import { CacheServiceOptions } from '@backstage/backend-plugin-api';
 import { CacheServiceSetOptions } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
+import { ConfigSchema } from '@backstage/config-loader';
 import cors from 'cors';
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
@@ -141,6 +142,11 @@ export const coloredFormat: winston.Logform.Format;
 export interface ContainerRunner {
   runContainer(opts: RunContainerOptions): Promise<void>;
 }
+
+// Warning: (ae-forgotten-export) The symbol "createConfigSecretEnumerator_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export const createConfigSecretEnumerator: typeof createConfigSecretEnumerator_2;
 
 // @public @deprecated
 export function createLegacyAuthAdapters<

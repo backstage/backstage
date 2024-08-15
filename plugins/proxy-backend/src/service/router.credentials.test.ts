@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  authServiceFactory,
-  httpAuthServiceFactory,
-} from '@backstage/backend-app-api';
+import { authServiceFactory } from '@backstage/backend-defaults/auth';
+import { httpAuthServiceFactory } from '@backstage/backend-defaults/httpAuth';
 import {
   mockServices,
   registerMswTestHooks,

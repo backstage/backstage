@@ -19,7 +19,7 @@ import { CacheService } from '@backstage/backend-plugin-api';
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { EventsService } from '@backstage/plugin-events-node';
-import { ExtendedHttpServer } from '@backstage/backend-app-api';
+import { ExtendedHttpServer } from '@backstage/backend-defaults/rootHttpRouter';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
