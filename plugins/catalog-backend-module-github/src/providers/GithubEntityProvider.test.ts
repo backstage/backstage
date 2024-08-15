@@ -665,7 +665,7 @@ describe('GithubEntityProvider', () => {
       event: EventParams<PushEvent | RepositoryEvent>,
       options?: { branch?: string; catalogFilePath?: string },
     ): DeferredEntity[] => {
-      const url = `${event.eventPayload.repository.url}/blob/${
+      const url = `${event.eventPayload.repository.html_url}/blob/${
         options?.branch ?? 'main'
       }/${options?.catalogFilePath ?? 'catalog-info.yaml'}`;
       return createExpectedEntitiesForUrl(url);
@@ -687,6 +687,7 @@ describe('GithubEntityProvider', () => {
           name: 'test-repo',
           organization,
           topics: [],
+          html_url: `https://github.com/${organization}/test-repo`,
           url: `https://github.com/${organization}/test-repo`,
         } as Partial<PushEvent['repository']>;
 
@@ -702,6 +703,9 @@ describe('GithubEntityProvider', () => {
         const event = {
           ref: options?.ref ?? 'refs/heads/main',
           repository: repo as PushEvent['repository'],
+          organization: {
+            login: organization,
+          },
           created: true,
           deleted: false,
           forced: false,
@@ -960,10 +964,10 @@ describe('GithubEntityProvider', () => {
       ): EventParams<RepositoryEvent> => {
         const repo = {
           name: 'test-repo',
-          url: 'https://github.com/test-org/test-repo',
+          html_url: 'https://github.com/test-org/test-repo',
+          url: 'https://api.github.com/repos/test-org/test-repo',
           default_branch: 'main',
           master_branch: 'main',
-          organization: 'test-org',
           topics: [],
           archived: action === 'archived',
           private: action !== 'publicized',
@@ -972,6 +976,9 @@ describe('GithubEntityProvider', () => {
         const event = {
           action,
           repository: repo as RepositoryEvent['repository'],
+          organization: {
+            login: 'test-org',
+          },
         } as RepositoryEvent;
 
         if (action === 'renamed') {
@@ -1285,7 +1292,7 @@ describe('GithubEntityProvider', () => {
           const event = createRepoEvent(
             'renamed',
           ) as EventParams<RepositoryRenamedEvent>;
-          const urlOldRepo = `https://github.com/${event.eventPayload.repository.organization}/${event.eventPayload.changes.repository.name.from}/blob/main/catalog-info.yaml`;
+          const urlOldRepo = `https://github.com/${event.eventPayload.organization?.login}/${event.eventPayload.changes.repository.name.from}/blob/main/catalog-info.yaml`;
           const expectedEntitiesRemoved =
             createExpectedEntitiesForUrl(urlOldRepo);
 
@@ -1314,7 +1321,7 @@ describe('GithubEntityProvider', () => {
           const event = createRepoEvent(
             'renamed',
           ) as EventParams<RepositoryRenamedEvent>;
-          const urlOldRepo = `https://github.com/${event.eventPayload.repository.organization}/${event.eventPayload.changes.repository.name.from}/blob/main/catalog-info.yaml`;
+          const urlOldRepo = `https://github.com/${event.eventPayload.organization?.login}/${event.eventPayload.changes.repository.name.from}/blob/main/catalog-info.yaml`;
           const expectedEntitiesRemoved =
             createExpectedEntitiesForUrl(urlOldRepo);
           const expectedEntitiesAdded = createExpectedEntitiesForEvent(event);
