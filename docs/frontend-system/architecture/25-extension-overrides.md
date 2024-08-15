@@ -10,9 +10,25 @@ description: Frontend extension overrides
 
 ## Introduction
 
-An extension override is a building block of the frontend system that allows you to programmatically override app or plugin extensions anywhere in your application. Since the entire application is built mostly out of extensions from the bottom up, this is a powerful feature. You can use it for example to provide your own app root layout, to replace the implementation of a Utility API with a custom one, to override how the catalog page renders itself, and much more.
+An important customization point in the frontend system is the ability to override existing extensions. It can be used for anything from slight tweaks to the extension logic, to completely replacing an extension with a custom implementation. While extensions are encouraged to make themselves configurable, there are many situations where you need to override an extension to achieve the desired behavior. The ability to override extensions should be kept in mind when building plugins, and can be a powerful tool to allow for deeper customizations without the need to re-implement large parts of the plugin.
 
-In general, most features should have a good level of customization built into them, so that users do not have to leverage extension overrides to achieve common goals. A well written feature often has [configuration](../../conf/) settings, or uses extension inputs for extensibility where applicable. An example of this is the search plugin, which allows you to provide result renderers as inputs rather than replacing the result page wholesale just to tweak how results are shown. Adopters should take advantage of those when possible, and only use extension overrides when it's necessary to entirely replace the extension. Check the respective extension documentation for guidance.
+In general, most features should have a good level of customization built into them, so that users do not have to leverage extension overrides to achieve common goals. A well written feature often has [configuration](../../conf/) settings, or uses extension inputs for extensibility where applicable. An example of this is the search plugin, which allows you to provide result renderers as inputs rather than replacing the result page wholesale just to tweak how results are shown. Adopters should take advantage of those when possible in order to reduce the need and size of extension overrides.
+
+## Overriding an extension
+
+Every extension created with `createExtension` comes with an `override` method, including those created from an [extension blueprint](./23-extension-blueprints.md). The `override` method **creates a new extension**, it does not mutate the existing extensions. This new extension in created in such a way that if it is installed adjacent to the existing extension, it will take precedence and override the existing extension. While the `override` method does create new extension instances, it is not intended to be used as a way to create multiple new extensions from a base template, for that use-case you will want to use an [extension blueprint](./23-extension-blueprints.md) instead.
+
+The following is an example of calling the `.override(...)` method on an extension:
+
+```tsx
+const myOverrideExtension = myExtension.override({
+  factory(originalFactory) {
+    return originalFactory();
+  },
+});
+```
+
+This override is a no-op, it does not change the behavior of the extension, but simply forwards the outputs from the original extension factory. If you are familiar with [extension blueprints](./23-extension-blueprints.md), you will recognize this factory override pattern where we get access to the original factory function. In fact the only difference is that we do not need to pass any parameters to the original factory. The first parameter is now instead the optional factory context overrides, more on that as we dive into each override pattern in the following sections.
 
 ## Override App Extensions
 
