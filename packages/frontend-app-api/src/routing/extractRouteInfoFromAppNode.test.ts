@@ -63,7 +63,7 @@ function createTestExtension(options: {
         yield coreExtensionData.routePath(options.path);
       }
 
-      if (options.routeRef !== undefined) {
+      if (options.routeRef) {
         yield coreExtensionData.routeRef(options.routeRef);
       }
 

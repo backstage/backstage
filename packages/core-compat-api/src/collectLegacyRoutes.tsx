@@ -90,7 +90,7 @@ function makeRoutingShimExtension(options: {
       coreExtensionData.routeRef.optional(),
     ],
     *factory() {
-      if (routePath) {
+      if (routePath !== undefined) {
         yield coreExtensionData.routePath(routePath);
       }
 

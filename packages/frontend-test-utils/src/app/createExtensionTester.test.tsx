@@ -395,9 +395,7 @@ describe('createExtensionTester', () => {
 
     const tester = createExtensionTester(extension).add(extension2);
 
-    // @ts-expect-error
     expect(tester.query(extension).get(stringDataRef)).toBe('nest-test-text');
-    // @ts-expect-error
     expect(tester.query(extension2).get(stringDataRef)).toBe('test-text');
     // @ts-expect-error
     expect(tester.query(extension).input('input').data(stringDataRef)).toBe(
@@ -426,7 +424,6 @@ describe('createExtensionTester', () => {
       inputs: { input: 'test-text' },
     });
 
-    // @ts-expect-error
     expect(tester.query(extension).get(stringDataRef)).toBe('nest-test-text');
   });
 });
