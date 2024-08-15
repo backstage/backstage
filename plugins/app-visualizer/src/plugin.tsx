@@ -15,27 +15,33 @@
  */
 
 import {
-  createNavItemExtension,
-  createPageExtension,
   createFrontendPlugin,
   createRouteRef,
+  NavItemBlueprint,
+  PageBlueprint,
 } from '@backstage/frontend-plugin-api';
 import VisualizerIcon from '@material-ui/icons/Visibility';
 import React from 'react';
 
 const rootRouteRef = createRouteRef();
 
-const appVisualizerPage = createPageExtension({
-  defaultPath: '/visualizer',
-  routeRef: rootRouteRef,
-  loader: () =>
-    import('./components/AppVisualizerPage').then(m => <m.AppVisualizerPage />),
+const appVisualizerPage = PageBlueprint.make({
+  params: {
+    defaultPath: '/visualizer',
+    routeRef: rootRouteRef,
+    loader: () =>
+      import('./components/AppVisualizerPage').then(m => (
+        <m.AppVisualizerPage />
+      )),
+  },
 });
 
-export const appVisualizerNavItem = createNavItemExtension({
-  title: 'Visualizer',
-  icon: VisualizerIcon,
-  routeRef: rootRouteRef,
+export const appVisualizerNavItem = NavItemBlueprint.make({
+  params: {
+    title: 'Visualizer',
+    icon: VisualizerIcon,
+    routeRef: rootRouteRef,
+  },
 });
 
 /** @public */

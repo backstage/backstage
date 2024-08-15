@@ -20,9 +20,9 @@ import {
   ExtensionDataRef,
   RouteRef,
   coreExtensionData,
-  createApiExtension,
-  createNavItemExtension,
-  createThemeExtension,
+  ApiBlueprint,
+  NavItemBlueprint,
+  ThemeBlueprint,
   useRouteRef,
 } from '@backstage/frontend-plugin-api';
 import Box from '@material-ui/core/Box';
@@ -66,9 +66,9 @@ const getOutputColor = createOutputColorGenerator(
     [coreExtensionData.reactElement.id]: colors.green[500],
     [coreExtensionData.routePath.id]: colors.yellow[500],
     [coreExtensionData.routeRef.id]: colors.purple[500],
-    [createApiExtension.factoryDataRef.id]: colors.blue[500],
-    [createThemeExtension.themeDataRef.id]: colors.lime[500],
-    [createNavItemExtension.targetDataRef.id]: colors.orange[500],
+    [ApiBlueprint.dataRefs.factory.id]: colors.blue[500],
+    [ThemeBlueprint.dataRefs.theme.id]: colors.lime[500],
+    [NavItemBlueprint.dataRefs.target.id]: colors.orange[500],
   },
 
   [
@@ -323,11 +323,11 @@ function Extension(props: { node: AppNode; depth: number }) {
 
 const legendMap = {
   'React Element': coreExtensionData.reactElement,
-  'Utility API': createApiExtension.factoryDataRef,
+  'Utility API': ApiBlueprint.dataRefs.factory,
   'Route Path': coreExtensionData.routePath,
   'Route Ref': coreExtensionData.routeRef,
-  'Nav Target': createNavItemExtension.targetDataRef,
-  Theme: createThemeExtension.themeDataRef,
+  'Nav Target': NavItemBlueprint.dataRefs.target,
+  Theme: ThemeBlueprint.dataRefs.theme,
 };
 
 function Legend() {
