@@ -18,11 +18,11 @@ Each extensions has a number of different properties that define how it behaves 
 
 ### ID
 
-<!--
-Update this to be 3 different sections: name, kind and namespace
--->
-
 The ID of an extension is used to uniquely identity it, and it should ideally be unique across the entire Backstage ecosystem. For each frontend app instance there can only be a single extension for any given ID. Installing multiple extensions with the same ID will either result in an error or one of the extensions will override the others. The ID is also used to reference the extensions from other extensions, in configuration, and in other places such as developer tools and analytics.
+
+When creating an extension do not provide the ID directly. Instead, you indirectly or directly provide the kind, namespace, and name parts that make up the ID. The kind is always provided by the [extension blueprint](./23-extension-blueprints.md), the only exception is if you use [`createExtension`](#creating-an-extensions) directly. Any extension that is provided by a plugin will by default have its namespace set to the plugin ID, so you generally only need to provide an explicit namespace if you want to override an existing extension. The name is also optional, and primarily used to distinguish between multiple extensions of the same kind and namespace. If a plugin doesn't need to distinguish between different extensions of the same kind, the name can be omitted.
+
+The extension ID will be constructed using the pattern `[<kind>:][<namespace>][/][<name>]`, where the separating `/` is only present if both a namespace and name are defined.
 
 ### Output
 
@@ -32,7 +32,7 @@ The output of an extension is the data that it provides to its parent extension,
 
 The inputs of an extension define the data that it received from its children. Each extension can have multiple different inputs identified by an input name. These inputs each have their own set of data that they expect, which is defined as a collection of extension data references. An extension will only have access to the data that it has explicitly requested from each input.
 
-### Attachment Point
+### Attachment point
 
 The attachment point of an extension decides where in the app extension tree it will be located. It is defined by the ID of the parent extension, as well as the name of the input to attach to. Through the attachment point the extension will share its own output as inputs to the parent extension. An extension can only be attached to an input that matches its own output, it is an error to try to attach an extension to an input the requires data that the extension does not provide in its output.
 
@@ -44,7 +44,7 @@ Each extension in the app can be disabled, meaning it will not be instantiated a
 
 The ordering of extensions is sometimes very important, as it may for example affect in which order they show up in the UI. When an extension is toggled from disabled to enabled through configuration it resets the ordering of the extension, pushing it to the end of the list. It is generally recommended to leave extensions as disabled by default if their order is important, allowing for the order in which their are enabled in the configuration to determine their order in the app.
 
-### Configuration & Configuration Schema
+### Configuration & configuration schema
 
 Each extension can define a configuration schema that describes the configuration that it accepts. This schema is used to validate the configuration provided by integrators, but also to fill in default configuration values. The configuration itself is provided by integrators in order to customize the extension. It is not possible to provide a default configuration of an extension, this must instead be done through defaults in the configuration schema. This allows for a simpler configuration logic where multiple configurations of the same extension completely replace each other rather than being merged.
 
@@ -54,7 +54,7 @@ The extension factory is the implementation of the extension itself. It is a fun
 
 Extension factories should be lean and not do any heavy lifting or async work, as they are called during the initialization of the app. For example, if you need to do an expensive computation to generate your output, then prefer outputting a callback that does the computation instead. This allows the parent extension to defer the computation for later so that you avoid blocking the app startup.
 
-## Creating an Extensions
+## Creating an extension
 
 Extensions are created using the `createExtension` function from `@backstage/frontend-plugin-api`. At minimum you need to provide an ID, attachment point, output definition, and a factory function. The following example shows the creation of a minimal extension:
 
@@ -64,28 +64,22 @@ const extension = createExtension({
   // This is the attachment point, `id` is the ID of the parent extension,
   // while `input` is the name of the input to attach to.
   attachTo: { id: 'my-parent', input: 'content' },
-  // The output map defines the outputs of the extension. The object keys
-  // are only used internally to map the outputs of the factory and do
-  // not need to match the keys of the input.
-  output: {
-    element: coreExtensionData.reactElement,
-  },
+  // The output option defines the allowed and required outputs of the extension factory.
+  output: [coreExtensionData.reactElement],
   // This factory is called to instantiate the extensions and produce its output.
   factory() {
-    return {
-      element: <div>Hello World</div>,
-    };
+    return [coreExtensionData.reactElement(<div>Hello World</div>)];
   },
 });
 ```
 
-Note that while the `createExtension` is public API and used in many places, it is not typically what you use when building plugins and features. Instead there are many extension creator functions exported by both the core APIs and plugins that make it easier to create extensions for more specific usages.
+Note that while the `createExtension` is public API and used in many places, it is not typically what you use when building plugins and features. Instead there are many [extension blueprints](./23-extension-blueprints.md) exported by both the core APIs and plugins that make it easier to create extensions for more specific usages.
 
-## Extension Data
+## Extension data
 
 Communication between extensions happens in one direction, from one child extension through the attachment point to its parent. The child extension outputs data which is then passed as inputs to the parent extension. This data is called Extension Data, where the shape of each individual piece of data is described by an Extension Data Reference. These references are created separately from the extensions themselves, and can be shared across multiple different kinds of extensions. Each reference consists of an ID and a TypeScript type that the data needs to conform to, and represents one type of data that can be shared between extensions.
 
-### Extension Data References
+### Extension data references
 
 To create a new extension data reference to represent a type of shared extension data you use the `createExtensionDataRef` function. When defining a new reference you need to provide an ID and a TypeScript type, for example:
 
@@ -101,59 +95,55 @@ The `ExtensionDataRef` can then be used to describe an output property of the ex
 ```tsx
 const extension = createExtension({
   // ...
-  output: {
-    element: reactElementExtensionDataRef,
-  },
+  output: [reactElementExtensionDataRef],
   factory() {
-    return {
-      element: <div>Hello World</div>,
-    };
+    return [reactElementExtensionDataRef(<div>Hello World</div>)];
   },
 });
 ```
 
-### Extension Data Uniqueness
+### Extension data uniqueness
 
-Note that the key used in the output map, in this case `element`, is only used internally within the definition of the extension itself. That actual identifier for the data when consumed by other extensions is the ID of the reference, in this case [`core.reactElement`](https://github.com/backstage/backstage/blob/916da47e8abdb880877daa18881eb8fdbb33e70a/packages/frontend-plugin-api/src/wiring/coreExtensionData.ts#L23). This means that you can not output multiple different values for the same extension data reference, as they would conflict with each other. That in turn makes overly generic extension data references a bad idea, for example a generic "string" type. Instead create separate references for each type of data that you want to share.
+Note that you are **not** allowed to repeat the same data reference in the outputs, or return multiple values for the same reference. Multiple outputs for the same reference will conflict with each other and cause an error. If you want to output multiple values of the same TypeScript type you should create separate references for each value. That in turn means that overly generic extension data references a bad idea, for example a generic "string" type. Instead create separate references for each type of data that you want to share.
 
 ```tsx
 const extension = createExtension({
   // ...
-  output: {
-    // ❌ Bad example - outputting values of same type
-    element1: reactElementExtensionDataRef,
-    element2: reactElementExtensionDataRef,
-  },
+  output: [
+    // ❌ Bad example - duplicate output declaration
+    reactElementExtensionDataRef,
+    reactElementExtensionDataRef,
+  ],
   factory() {
-    return {
-      element1: <div>Hello World</div>,
-      element2: <div>Hello World</div>,
-    };
+    return [
+      // ❌ Bad example - duplicate output values
+      reactElementExtensionDataRef(<div>Hello</div>),
+      reactElementExtensionDataRef(<div>World</div>),
+    ];
   },
 });
 ```
 
-### Core Extension Data
+### Core extension data
 
 We provide default `coreExtensionData`, which provides commonly used `ExtensionDataRef`s - e.g. for `React.JSX.Element` and `RouteRef`. They can be used when creating your own extension. For example, the React Element extension data that we defined above is already provided as `coreExtensionData.reactElement`.
 
 For a full list and explanations of all types of core extension data, see the [core extension data reference](../building-plugins/04-built-in-data-refs.md).
 
-### Optional Extension Data
+### Optional extension data
 
 By default all extension data is required, meaning that the extension factory must provide a value for each output. However, it is possible to make extension data optional by calling the `.optional()` method. This makes it optional for the factory function to return a value as part of its output. When calling the `.optional()` method you create a new copy of the extension data reference, it does not mutate the existing reference.
 
 ```tsx
 const extension = createExtension({
   // ...
-  output: {
-    element: coreExtensionData.reactElement.optional(),
-  },
+  output: [coreExtensionData.reactElement.optional()],
   factory() {
-    return {
-      element:
+    return [
+      coreExtensionData.reactElement.optional()(
         Math.random() < 0.5 ? <img src="./assets/logo.png" /> : undefined,
-    };
+      ),
+    ];
   },
 });
 ```
@@ -167,17 +157,19 @@ const navigationExtension = createExtension({
   // ...
   inputs: {
     // [1]: Input
-    logo: createExtensionInput(
-      {
-        element: coreExtensionData.reactElement,
-      },
-      { singleton: true, optional: true },
-    ),
+    logo: createExtensionInput([coreExtensionData.reactElement], {
+      singleton: true,
+      optional: true,
+    }),
   },
   factory({ inputs }) {
     return {
       element: (
-        <nav>{inputs.logo.output?.element ?? <span>Backstage</span>}</nav>
+        <nav>
+          {inputs.logo?.get(coreExtensionData.reactElement) ?? (
+            <span>Backstage</span>
+          )}
+        </nav>
       ),
     };
   },
@@ -193,10 +185,9 @@ So how can we now attach the output to the parent extension's input? If we think
 const navigationItemExtension = createExtension({
   // ...
   attachTo: { id: 'app/nav', input: 'items' },
+  output: [coreExtensionData.reactElement],
   factory() {
-    return {
-      element: <Link to="/home">Home</Link>,
-    };
+    return [coreExtensionData.reactElement(<Link to="/home">Home</Link>)];
   },
 });
 
@@ -205,26 +196,22 @@ const navigationExtension = createExtension({
   // [2]: Extension `id` will be `app/nav` following the extension naming pattern
   namespace: 'app',
   name: 'nav',
-  output: {
-    element: coreExtensionData.reactElement,
-  },
+  output: [coreExtensionData.reactElement],
   inputs: {
-    items: createExtensionInput({
-      element: coreExtensionData.reactElement,
-    }),
+    items: createExtensionInput([coreExtensionData.reactElement]),
   },
   factory({ inputs }) {
-    return {
-      element: (
+    return [
+      coreExtensionData.reactElement(
         <nav>
           <ul>
             {inputs.items.map(item => {
-              return <li>{item.output.element}</li>;
+              return <li>{item.get(coreExtensionData.reactElement)}</li>;
             })}
           </ul>
-        </nav>
+        </nav>,
       ),
-    };
+    ];
   },
   // ...
 });
@@ -232,27 +219,27 @@ const navigationExtension = createExtension({
 
 In this case the extension input `items` is an array, where each individual item is an extension that attached itself to the extension inputs of this `id`.
 
-With the `inputs` not only the `output` of an extensions item is passed to the extension, but also the `node`. However, it is discouraged to consume the `node` here unless needed. If we are looking at the `factory` function from the example above we could access the `node` like the following:
+In addition to being able to access data passed through the input, you also have access to the underlying app `node`. This can be useful if you for example want to get the ID of the attached extension. However, avoid using the `node` unless needed, it is generally better to stick to only consuming the provided data. If we are looking at the `factory` function from the example above we could access the `node` like the following:
 
 ```tsx
   // ...
   factory({ inputs }) {
-    return {
-      element: (
+    return [
+      coreExtensionData.reactElement(
         <nav>
           <ul>
-            {inputs.items.map(({output, node}) => {
-              const _node: AppNode = node;
-              return <li>{output.element}</li>;
+            {inputs.items.map((item) => {
+              const _node: AppNode = item.node;
+              return <li>{item.get(coreExtensionData.reactElement)}</li>;
             })}
           </ul>
         </nav>
       ),
-    };
+    ];
   },
 ```
 
-## Extension Configuration
+## Extension configuration
 
 With the `app-config.yaml` there is already the option to pass configuration to plugins or the app to e.g. define the `baseURL` of your app. For extensions this concept would be limiting as an extension can be independent of the plugin & initiated several times. Therefore we created a possibility to configure each extension individually through config. The extension config schema is created using the [`zod`](https://zod.dev/) library, which in addition to TypeScript type checking also provides runtime validation and coercion. If we continue with the example of the `navigationExtension` and now want it to contain a configurable title, we could make it available like the following:
 
@@ -262,20 +249,20 @@ const navigationExtension = createExtension({
   namespace: 'app',
   name: 'nav',
   // [3]: Extension `id` will be `app/nav` following the extension naming pattern
-  configSchema: createSchemaFromZod(z =>
-    z.object({
-      title: z.string().default('Sidebar Title'),
-    }),
-  ),
+  config: {
+    schema: {
+      title: z => z.string().default('Sidebar Title'),
+    },
+  },
   factory({ config }) {
-    return {
-      element: (
+    return [
+      coreExtensionData.reactElement(
         <nav>
           <span>{config.title}</span>
           <ul>{/* ... */}</ul>
-        </nav>
+        </nav>,
       ),
-    };
+    ];
   },
   // ...
 });
@@ -293,15 +280,40 @@ app:
           title: 'Backstage'
 ```
 
-## Extension Boundary
+## Extension factory as a generator function
+
+In all examples so far we have defined the extension factory as a regular function that returns its output in an array. However, the only requirement is that the factory function returns an iterable of extension data value. This means that you can also define the factory function as a generator function, which allows you to yield values one by one. This is particularly useful if you want to conditionally output values.
+
+For example, this is how we could define an extension where its output depends on the configuration:
+
+```tsx
+const exampleExtension = createExtension({
+  // ...
+  config: {
+    schema: {
+      disableIcon: z.boolean().default(false),
+    },
+  },
+  output: [coreExtensionData.reactElement, iconDataRef.optional()],
+  *factory({ config }) {
+    yield coreExtensionData.reactElement(<div>Hello World</div>);
+
+    if (!config.disableIcon) {
+      yield iconDataRef(<ExampleIcon />);
+    }
+  },
+});
+```
+
+## Extension boundary
 
 The `ExtensionBoundary` wraps extensions with several React contexts for different purposes
 
 ### Suspense
 
-All React elements rendered by extension creators should be wrapped in the extension boundary. With `Suspense` the extension can than load resources asynchronously with having a loading fallback. It also allows to lazy load the whole extension similar to how plugins are currently lazy loaded in Backstage.
+Most React elements rendered by extensions should be wrapped in the extension boundary. With `Suspense` the extension can than load resources asynchronously with having a loading fallback. It also allows to lazy load the whole extension similar to how plugins are currently lazy loaded in Backstage.
 
-### Error Boundary
+### Error boundary
 
 Similar to plugins the `ErrorBoundary` for extension allows to pass in a fallback component in case there is an uncaught error inside of the component. With this the error can be isolated & it would prevent the rest of the plugin to crash.
 
@@ -309,32 +321,27 @@ Similar to plugins the `ErrorBoundary` for extension allows to pass in a fallbac
 
 Analytics information are provided through the `AnalyticsContext`, which will give `extensionId` & `pluginId` as context to analytics event fired inside of the extension. Additionally `RouteTracker` will capture an analytics event for routable extension to inform which extension metadata gets associated with a navigation event when the route navigated to is a gathered `mountPoint`. Whether an extension is routable is inferred from its outputs, but you can also explicitly control this behavior by passing the `routable` prop to `ExtensionBoundary`.
 
-The `ExtensionBoundary` can be used like the following in an extension creator:
+The `ExtensionBoundary` can be used like the following in an extension:
 
 ```tsx
-export function createSomeExtension<
-  TConfig extends {},
-  TInputs extends AnyExtensionInputMap,
->(options): ExtensionDefinition<TConfig> {
-  return createExtension({
-    // ...
-    factory({ config, inputs, node }) {
-      const ExtensionComponent = lazy(() =>
-        options
-          .loader({ config, inputs })
-          .then(element => ({ default: () => element })),
-      );
+const routableExtension = createExtension({
+  // ...
+  factory({ config, inputs, node }) {
+    const ExtensionComponent = lazy(() =>
+      options
+        .loader({ config, inputs })
+        .then(element => ({ default: () => element })),
+    );
 
-      return {
-        path: config.path,
-        routeRef: options.routeRef,
-        element: (
-          <ExtensionBoundary node={node}>
-            <ExtensionComponent />
-          </ExtensionBoundary>
-        ),
-      };
-    },
-  });
-}
+    return [
+      coreExtensionData.path(config.path),
+      coreExtensionData.routeRef(options.routeRef),
+      coreExtensionData.reactElement(
+        <ExtensionBoundary node={node}>
+          <ExtensionComponent />
+        </ExtensionBoundary>,
+      ),
+    ];
+  },
+});
 ```
