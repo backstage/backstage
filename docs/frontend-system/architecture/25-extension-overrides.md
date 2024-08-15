@@ -136,6 +136,40 @@ const myOverrideExtension = myExtension.override({
 });
 ```
 
+## Overriding configuration schema
+
+Overriding the configuration schema works very similar to overriding the declared inputs. You can define new configuration fields that will be merged with the existing ones, but you can not re-declare existing fields. The following example shows how to override an extension and add a new configuration field:
+
+```tsx
+// Original extension
+const exampleExtension = createExtension({
+  name: 'example',
+  config: {
+    schema: {
+      layout: z => z.enum(['grid', 'list']).optional(),
+    },
+  },
+  output: [coreExtensionData.reactElement],
+  factory: ({ config }) => [
+    coreExtensionData.reactElement(<MyExtension layout={config.layout} />),
+  ],
+});
+
+const overrideExtension = exampleExtension.override({
+  config: {
+    schema: {
+      additionalField: z => z.string().optional(),
+    },
+  },
+  factory(originalFactory, { config }) {
+    console.log(
+      `additionalField=${config.additionalField} layout=${config.layout}`,
+    );
+    return originalFactory();
+  },
+});
+```
+
 ## Override App Extensions
 
 In order to override an app extension, you must create a new extension and add it to the list of overridden features. The steps are: create your extension overrides and use them in Backstage.
