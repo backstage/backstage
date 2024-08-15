@@ -10,19 +10,20 @@ description: Frontend plugins
 
 ## Introduction
 
-Frontend plugins are a foundational building block in Backstage and the frontend system. They are used to encapsulate and provide functionality for a Backstage app, such as new pages, navigational elements, APIs, as well as extensions and features for other plugins, such entity page cards and content for the Software Catalog, or result list items for the search plugin.
+Frontend plugins are a foundational building block in Backstage and the frontend system. They are used to encapsulate and provide functionality for a Backstage app, such as new pages, navigational elements, and APIs; as well as extensions and features for other plugins, such as entity page cards and content for the Software Catalog, or result list items for the search plugin.
 
-Each plugin is typically shipped in a separate NPM package, whether that's a published package, or just in the local workspace. The plugins instance should always the `default` export of the package, either via the main entry-point or the `/alpha` sub-path export. Each plugin package is limited to exporting a single plugin instance. In a local workspace you could use a different structure if preferred, but this is considered a non-standard layout and should be avoided in published packages.
+Each plugin is typically shipped in a separate NPM package, whether that's a published package, or just in the local workspace. The plugin instance should always the `default` export of the package, either via the main entry-point or the `/alpha` sub-path export. Each plugin package is limited to exporting a single plugin instance. In a local workspace you could use a different structure if preferred, but this is considered a non-standard layout and should be avoided in published packages.
 
 ## Creating a Plugin
 
 Frontend plugin instances are created with the `createFrontendPlugin` function, which is provided by the `@backstage/frontend-plugin-api` package. It takes a single options object that provides all of the necessary configuration for the plugin. In particular you will want to provide [extensions](./20-extensions.md) for your plugin, as that is the way that you can provide new functionality to the app.
 
-```ts
+```tsx
 // This creates a new extension, see "Extension Blueprints" documentation for more details
 const myPage = PageBlueprint.make({
   params: {
     defaultPath: '/my-page',
+    loader: () => import('./MyPage').then(m => <m.MyPage />),
   },
 });
 
@@ -34,7 +35,7 @@ export default createFrontendPlugin({
 
 ### `pluginId` option
 
-Each plugin needs an ID, which is used to uniquely identity the plugin within an entity Backstage system. The ID does not have to be globally unique across all of the NPM ecosystem, although you generally want to strive for that. It is not possible to install multiple plugins with the same ID in a single Backstage app.
+Each plugin needs an ID, which is used to uniquely identify the plugin within an entire Backstage system. The ID does not have to be globally unique across all of the NPM ecosystem, although you generally want to strive for that. It is not possible to install multiple plugins with the same ID in a single Backstage app.
 
 The plugin ID should generally be part of the of the package name and use kebab-case. See both the [frontend naming patterns section](./50-naming-patterns.md), as well as the [package metadata section](../../tooling/package-metadata.md#name) for more information.
 
@@ -42,11 +43,11 @@ The plugin ID should generally be part of the of the package name and use kebab-
 
 These are the [extensions](./20-extensions.md) that the plugin provides to the app. Note that you should not export any of these extensions separately from the plugin package, as they can already by accessed via the `getExtension` method of the plugin instance using the extension ID.
 
-The extensions that you provide to a plugin will have their `namespace` set to the plugin ID by default. For example, if you create an extensions using the `PageBlueprint` without any particular naming options and install that via a plugin with the ID `my-plugin`, the final extension ID will be `page:my-plugin`. You can read more about how this works in the [extension structure documentation](./20-extensions.md#extension-structure).
+The extensions that you provide to a plugin will have their `namespace` set to the plugin ID by default. For example, if you create an extension using the `PageBlueprint` without any particular naming options and install that via a plugin with the ID `my-plugin`, the final extension ID will be `page:my-plugin`. You can read more about how this works in the [extension structure documentation](./20-extensions.md#extension-structure).
 
 ### `routes` and `externalRoutes` options
 
-These are the routes that the plugin exposes to the app. The `routes` option declares all of the target routes that your plugin provides, i.e. routes that other plugins and link to. The `externalRoutes` option instead declares all the outgoing routes, i.e. routes that your plugins links to, which you can bind to the `routes` of other plugins. See the [routes documentation](./36-routes.md) for more information how to set up cross-plugin navigation.
+These are the routes that the plugin exposes to the app. The `routes` option declares all of the target routes that your plugin provides, i.e. routes that other plugins link to. The `externalRoutes` option instead declares all the outgoing routes, i.e. routes that your plugins links to, which you can bind to the `routes` of other plugins. See the [routes documentation](./36-routes.md) for more information how to set up cross-plugin navigation.
 
 ### `featureFlags` option
 
@@ -54,7 +55,7 @@ This is a list of feature flag declarations that your plugin provides to the app
 
 ## Installing a Plugin in an App
 
-A plugin instance is considered an frontend feature and can be installed directly in any Backstage frontend app. See the [app documentation](./10-app.md) for more information about the different ways in which you can install new features in an app.
+A plugin instance is considered a frontend feature and can be installed directly in any Backstage frontend app. See the [app documentation](./10-app.md) for more information about the different ways in which you can install new features in an app.
 
 ## Overriding a Plugin
 
@@ -87,4 +88,4 @@ export default plugin.withOverrides({
 });
 ```
 
-You can keep the plugin override in your app package, but it can often be a good idea to separate it out into its own package, especially if you the overrides are complex or you want distinct ownership of the override. For example, if you are overriding the `@backstage/plugin-catalog` plugin, you might create a new package called `@internal/plugin-catalog` at `plugins/catalog` in your workspace, which exports the overridden plugin instance.
+You can keep the plugin override in your app package, but it can often be a good idea to separate it out into its own package, especially if the overrides are complex or you want distinct ownership of the override. For example, if you are overriding the `@backstage/plugin-catalog` plugin, you might create a new package called `@internal/plugin-catalog` at `plugins/catalog` in your workspace, which exports the overridden plugin instance.
