@@ -42,14 +42,14 @@ const _default: BackstagePlugin<
       undefined,
       undefined
     >;
-    'api:api-docs': ExtensionDefinition<
+    'api:api-docs/config': ExtensionDefinition<
       {},
       {},
       ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
       {},
       'api',
-      'api-docs',
-      undefined
+      undefined,
+      'config'
     >;
     'page:api-docs': ExtensionDefinition<
       {
