@@ -2,7 +2,7 @@
 '@backstage/backend-plugin-api': minor
 ---
 
-Delete deprecated url reader exports:
+**BREAKING** Deleted the following deprecated `UrlReader` exports
 
 - ReadUrlOptions: Use `UrlReaderServiceReadUrlOptions` instead;
 - ReadUrlResponse: Use `UrlReaderServiceReadUrlResponse` instead;

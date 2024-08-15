@@ -2,7 +2,7 @@
 '@backstage/backend-common': minor
 ---
 
-Removed the following `Url Reader` deprecated exports:
+**BREAKING**: Removed the following `Url Reader` deprecated exports:
 
 - UrlReader: Use `UrlReaderService` from `@backstage/backend-plugin-api` instead;
 - AzureUrlReader: Import from `@backstage/backend-defaults/urlReader` instead;
