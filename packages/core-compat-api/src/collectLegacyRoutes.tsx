@@ -29,6 +29,8 @@ import {
   createExtensionInput,
   createPageExtension,
   createFrontendPlugin,
+  ApiBlueprint,
+  PageBlueprint,
 } from '@backstage/frontend-plugin-api';
 import React, { Children, ReactNode, isValidElement } from 'react';
 import { Route, Routes } from 'react-router-dom';
@@ -80,19 +82,24 @@ function makeRoutingShimExtension(options: {
     name,
     attachTo: { id: parentExtensionId, input: 'childRoutingShims' },
     inputs: {
-      childRoutingShims: createExtensionInput({
-        routePath: coreExtensionData.routePath.optional(),
-        routeRef: coreExtensionData.routeRef.optional(),
-      }),
+      childRoutingShims: createExtensionInput([
+        coreExtensionData.routePath.optional(),
+        coreExtensionData.routeRef.optional(),
+      ]),
     },
-    output: {
-      routePath: coreExtensionData.routePath.optional(),
-      routeRef: coreExtensionData.routeRef.optional(),
+    output: [
+      coreExtensionData.routePath.optional(),
+      coreExtensionData.routeRef.optional(),
+    ],
+    *factory() {
+      if (routePath) {
+        yield coreExtensionData.routePath(routePath);
+      }
+
+      if (routeRef) {
+        yield coreExtensionData.routeRef(convertLegacyRouteRef(routeRef));
+      }
     },
-    factory: () => ({
-      routePath,
-      routeRef: routeRef ? convertLegacyRouteRef(routeRef) : undefined,
-    }),
   });
 }
 
@@ -214,28 +221,33 @@ export function collectLegacyRoutes(
       }`;
 
       extensions.push(
-        createPageExtension({
+        PageBlueprint.makeWithOverrides({
           name: pageExtensionName,
-          defaultPath: path[0] === '/' ? path.slice(1) : path,
-          routeRef: routeRef ? convertLegacyRouteRef(routeRef) : undefined,
           inputs: {
-            childRoutingShims: createExtensionInput({
-              routePath: coreExtensionData.routePath.optional(),
-              routeRef: coreExtensionData.routeRef.optional(),
-            }),
+            childRoutingShims: createExtensionInput([
+              coreExtensionData.routePath.optional(),
+              coreExtensionData.routeRef.optional(),
+            ]),
           },
-          loader: async () =>
-            compatWrapper(
-              route.props.children ? (
-                <Routes>
-                  <Route path="*" element={routeElement}>
-                    <Route path="*" element={route.props.children} />
-                  </Route>
-                </Routes>
-              ) : (
-                routeElement
-              ),
-            ),
+          factory(originalFactory, { inputs: _inputs }) {
+            // todo(blam): why do we not use the inputs here?
+            return originalFactory({
+              defaultPath: path[0] === '/' ? path.slice(1) : path,
+              routeRef: routeRef ? convertLegacyRouteRef(routeRef) : undefined,
+              loader: async () =>
+                compatWrapper(
+                  route.props.children ? (
+                    <Routes>
+                      <Route path="*" element={routeElement}>
+                        <Route path="*" element={route.props.children} />
+                      </Route>
+                    </Routes>
+                  ) : (
+                    routeElement
+                  ),
+                ),
+            });
+          },
         }),
       );
 
@@ -258,7 +270,7 @@ export function collectLegacyRoutes(
       extensions: [
         ...extensions,
         ...Array.from(plugin.getApis()).map(factory =>
-          createApiExtension({ factory }),
+          ApiBlueprint.make({ namespace: factory.api.id, params: { factory } }),
         ),
       ],
       routes: convertLegacyRouteRefs(plugin.routes ?? {}),
