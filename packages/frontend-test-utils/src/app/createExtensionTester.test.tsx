@@ -26,7 +26,6 @@ import {
   createExtension,
   createExtensionDataRef,
   createExtensionInput,
-  createSchemaFromZod,
   useAnalytics,
   useApi,
 } from '@backstage/frontend-plugin-api';
