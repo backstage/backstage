@@ -16,7 +16,7 @@
 
 import {
   DynamicPluginManager,
-  dynamicPluginsServiceFactory,
+  dynamicPluginsServiceFactoryWithOptions,
 } from './plugin-manager';
 import {
   BackendFeature,
@@ -637,7 +637,7 @@ describe('backend-dynamic-feature-service', () => {
 
       const backend = createSpecializedBackend({
         defaultServiceFactories: [
-          rootLifecycleServiceFactory(),
+          rootLifecycleServiceFactory,
           createServiceFactory({
             service: coreServices.rootConfig,
             deps: {},
@@ -670,7 +670,7 @@ describe('backend-dynamic-feature-service', () => {
               return rootLogger;
             },
           }),
-          dynamicPluginsServiceFactory({
+          dynamicPluginsServiceFactoryWithOptions({
             moduleLoader: _ => mockedModuleLoader,
           }),
         ],

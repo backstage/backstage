@@ -9,7 +9,7 @@
 import { AppConfig } from '@backstage/config';
 import { AuthCallback } from 'isomorphic-git';
 import { AuthService } from '@backstage/backend-plugin-api';
-import { BackendFeatureCompat } from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CacheService } from '@backstage/backend-plugin-api';
 import { CacheServiceOptions } from '@backstage/backend-plugin-api';
 import { CacheServiceSetOptions } from '@backstage/backend-plugin-api';
@@ -348,7 +348,7 @@ export const legacyPlugin: (
       >
     >;
   }>,
-) => BackendFeatureCompat;
+) => BackendFeature;
 
 // Warning: (ae-forgotten-export) The symbol "LegacyRootDatabaseService_2" needs to be exported by the entry point index.d.ts
 //
@@ -386,7 +386,7 @@ export function makeLegacyPlugin<
   createRouterImport: Promise<{
     default: LegacyCreateRouter<TransformedEnv<TEnv, TEnvTransforms>>;
   }>,
-) => BackendFeatureCompat;
+) => BackendFeature;
 
 // @public @deprecated
 export function notFoundHandler(): RequestHandler;

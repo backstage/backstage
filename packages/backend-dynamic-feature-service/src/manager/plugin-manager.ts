@@ -232,8 +232,10 @@ export interface DynamicPluginsFactoryOptions {
 /**
  * @public
  */
-export const dynamicPluginsServiceFactory = createServiceFactory(
-  (options?: DynamicPluginsFactoryOptions) => ({
+export const dynamicPluginsServiceFactoryWithOptions = (
+  options?: DynamicPluginsFactoryOptions,
+) =>
+  createServiceFactory({
     service: dynamicPluginsServiceRef,
     deps: {
       config: coreServices.rootConfig,
@@ -247,8 +249,13 @@ export const dynamicPluginsServiceFactory = createServiceFactory(
         moduleLoader: options?.moduleLoader?.(logger),
       });
     },
-  }),
-);
+  });
+
+/**
+ * @public
+ */
+export const dynamicPluginsServiceFactory =
+  dynamicPluginsServiceFactoryWithOptions();
 
 class DynamicPluginsEnabledFeatureDiscoveryService
   implements FeatureDiscoveryService

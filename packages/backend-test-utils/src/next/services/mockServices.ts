@@ -77,8 +77,7 @@ function simpleFactoryWithOptions<
 >(
   ref: ServiceRef<TService, TScope>,
   factory: (...options: TOptions) => TService,
-): ServiceFactory<TService, TScope> &
-  ((...options: TOptions) => ServiceFactory<TService, TScope>) {
+): (...options: TOptions) => ServiceFactory<TService, TScope> {
   const factoryWithOptions = (...options: TOptions) =>
     createServiceFactory({
       service: ref as ServiceRef<TService, any>,
@@ -86,7 +85,7 @@ function simpleFactoryWithOptions<
       async factory() {
         return factory(...options);
       },
-    })();
+    });
   return Object.assign(
     factoryWithOptions,
     factoryWithOptions(...([undefined] as unknown as TOptions)),
@@ -126,7 +125,7 @@ function simpleMock<TService>(
         service: ref,
         deps: {},
         factory: () => mock,
-      })(),
+      }),
     }) as ServiceMock<TService>;
   };
 }
@@ -181,11 +180,12 @@ export namespace mockServices {
     };
   }
   export namespace tokenManager {
-    export const factory = createServiceFactory({
-      service: coreServices.tokenManager,
-      deps: {},
-      factory: () => tokenManager(),
-    });
+    export const factory = () =>
+      createServiceFactory({
+        service: coreServices.tokenManager,
+        deps: {},
+        factory: () => tokenManager(),
+      });
     export const mock = simpleMock(coreServices.tokenManager, () => ({
       authenticate: jest.fn(),
       getToken: jest.fn(),
@@ -196,11 +196,12 @@ export namespace mockServices {
     return new MockIdentityService();
   }
   export namespace identity {
-    export const factory = createServiceFactory({
-      service: coreServices.identity,
-      deps: {},
-      factory: () => identity(),
-    });
+    export const factory = () =>
+      createServiceFactory({
+        service: coreServices.identity,
+        deps: {},
+        factory: () => identity(),
+      });
     export const mock = simpleMock(coreServices.identity, () => ({
       getIdentity: jest.fn(),
     }));
@@ -216,24 +217,25 @@ export namespace mockServices {
     });
   }
   export namespace auth {
-    export const factory = createServiceFactory({
-      service: coreServices.auth,
-      deps: {
-        plugin: coreServices.pluginMetadata,
-        config: coreServices.rootConfig,
-      },
-      factory({ plugin, config }) {
-        const disableDefaultAuthPolicy = Boolean(
-          config.getOptionalBoolean(
-            'backend.auth.dangerouslyDisableDefaultAuthPolicy',
-          ),
-        );
-        return new MockAuthService({
-          pluginId: plugin.getId(),
-          disableDefaultAuthPolicy,
-        });
-      },
-    });
+    export const factory = () =>
+      createServiceFactory({
+        service: coreServices.auth,
+        deps: {
+          plugin: coreServices.pluginMetadata,
+          config: coreServices.rootConfig,
+        },
+        factory({ plugin, config }) {
+          const disableDefaultAuthPolicy = Boolean(
+            config.getOptionalBoolean(
+              'backend.auth.dangerouslyDisableDefaultAuthPolicy',
+            ),
+          );
+          return new MockAuthService({
+            pluginId: plugin.getId(),
+            disableDefaultAuthPolicy,
+          });
+        },
+      });
     export const mock = simpleMock(coreServices.auth, () => ({
       authenticate: jest.fn(),
       getNoneCredentials: jest.fn(),
@@ -257,7 +259,7 @@ export namespace mockServices {
     );
   }
   export namespace discovery {
-    export const factory = discoveryServiceFactory;
+    export const factory = () => discoveryServiceFactory;
     export const mock = simpleMock(coreServices.discovery, () => ({
       getBaseUrl: jest.fn(),
       getExternalBaseUrl: jest.fn(),
@@ -288,7 +290,14 @@ export namespace mockServices {
     );
   }
   export namespace httpAuth {
-    const factoryWithOptions = (options?: {
+    /**
+     * Creates a mock service factory for the `HttpAuthService`.
+     *
+     * By default all requests without credentials are treated as requests from
+     * the default mock user principal. This behavior can be configured with the
+     * `defaultCredentials` option.
+     */
+    export const factory = (options?: {
       defaultCredentials?: BackstageCredentials;
     }) =>
       createServiceFactory({
@@ -299,18 +308,7 @@ export namespace mockServices {
             plugin.getId(),
             options?.defaultCredentials ?? mockCredentials.user(),
           ),
-      })();
-    /**
-     * Creates a mock service factory for the `HttpAuthService`.
-     *
-     * By default all requests without credentials are treated as requests from
-     * the default mock user principal. This behavior can be configured with the
-     * `defaultCredentials` option.
-     */
-    export const factory = Object.assign(
-      factoryWithOptions,
-      factoryWithOptions(),
-    );
+      });
     export const mock = simpleMock(coreServices.httpAuth, () => ({
       credentials: jest.fn(),
       issueUserCookie: jest.fn(),
@@ -336,13 +334,14 @@ export namespace mockServices {
      * By default it extracts the user's entity ref from a user principal and
      * returns that as the only ownership entity ref.
      */
-    export const factory = createServiceFactory({
-      service: coreServices.userInfo,
-      deps: {},
-      factory() {
-        return new MockUserInfoService();
-      },
-    });
+    export const factory = () =>
+      createServiceFactory({
+        service: coreServices.userInfo,
+        deps: {},
+        factory() {
+          return new MockUserInfoService();
+        },
+      });
     export const mock = simpleMock(coreServices.userInfo, () => ({
       getUserInfo: jest.fn(),
     }));
@@ -352,7 +351,7 @@ export namespace mockServices {
   //               some may need a bit more refactoring for it to be simpler to
   //               re-implement functioning mock versions here.
   export namespace cache {
-    export const factory = cacheServiceFactory;
+    export const factory = () => cacheServiceFactory;
     export const mock = simpleMock(coreServices.cache, () => ({
       delete: jest.fn(),
       get: jest.fn(),
@@ -362,14 +361,14 @@ export namespace mockServices {
   }
 
   export namespace database {
-    export const factory = databaseServiceFactory;
+    export const factory = () => databaseServiceFactory;
     export const mock = simpleMock(coreServices.database, () => ({
       getClient: jest.fn(),
     }));
   }
 
   export namespace rootHealth {
-    export const factory = rootHealthServiceFactory;
+    export const factory = () => rootHealthServiceFactory;
     export const mock = simpleMock(coreServices.rootHealth, () => ({
       getLiveness: jest.fn(),
       getReadiness: jest.fn(),
@@ -377,7 +376,7 @@ export namespace mockServices {
   }
 
   export namespace httpRouter {
-    export const factory = httpRouterServiceFactory;
+    export const factory = () => httpRouterServiceFactory;
     export const mock = simpleMock(coreServices.httpRouter, () => ({
       use: jest.fn(),
       addAuthPolicy: jest.fn(),
@@ -385,14 +384,14 @@ export namespace mockServices {
   }
 
   export namespace rootHttpRouter {
-    export const factory = rootHttpRouterServiceFactory;
+    export const factory = () => rootHttpRouterServiceFactory;
     export const mock = simpleMock(coreServices.rootHttpRouter, () => ({
       use: jest.fn(),
     }));
   }
 
   export namespace lifecycle {
-    export const factory = lifecycleServiceFactory;
+    export const factory = () => lifecycleServiceFactory;
     export const mock = simpleMock(coreServices.lifecycle, () => ({
       addShutdownHook: jest.fn(),
       addStartupHook: jest.fn(),
@@ -400,15 +399,14 @@ export namespace mockServices {
   }
 
   export namespace logger {
-    export const factory = loggerServiceFactory;
-
+    export const factory = () => loggerServiceFactory;
     export const mock = simpleMock(coreServices.logger, () =>
       createLoggerMock(),
     );
   }
 
   export namespace permissions {
-    export const factory = permissionsServiceFactory;
+    export const factory = () => permissionsServiceFactory;
     export const mock = simpleMock(coreServices.permissions, () => ({
       authorize: jest.fn(),
       authorizeConditional: jest.fn(),
@@ -416,7 +414,7 @@ export namespace mockServices {
   }
 
   export namespace rootLifecycle {
-    export const factory = rootLifecycleServiceFactory;
+    export const factory = () => rootLifecycleServiceFactory;
     export const mock = simpleMock(coreServices.rootLifecycle, () => ({
       addShutdownHook: jest.fn(),
       addStartupHook: jest.fn(),
@@ -424,7 +422,7 @@ export namespace mockServices {
   }
 
   export namespace scheduler {
-    export const factory = schedulerServiceFactory;
+    export const factory = () => schedulerServiceFactory;
     export const mock = simpleMock(coreServices.scheduler, () => ({
       createScheduledTaskRunner: jest.fn(),
       getScheduledTasks: jest.fn(),
@@ -434,7 +432,7 @@ export namespace mockServices {
   }
 
   export namespace urlReader {
-    export const factory = urlReaderServiceFactory;
+    export const factory = () => urlReaderServiceFactory;
     export const mock = simpleMock(coreServices.urlReader, () => ({
       readTree: jest.fn(),
       readUrl: jest.fn(),
@@ -443,7 +441,7 @@ export namespace mockServices {
   }
 
   export namespace events {
-    export const factory = eventsServiceFactory;
+    export const factory = () => eventsServiceFactory;
     export const mock = simpleMock(eventsServiceRef, () => ({
       publish: jest.fn(),
       subscribe: jest.fn(),

@@ -7,15 +7,14 @@ import { Format } from 'logform';
 import { JsonObject } from '@backstage/types';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
-import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
+import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { transport } from 'winston';
 
 // @public
-export const rootLoggerServiceFactory: ServiceFactoryCompat<
+export const rootLoggerServiceFactory: ServiceFactory<
   RootLoggerService,
   'root',
-  'singleton',
-  undefined
+  'singleton'
 >;
 
 // @public

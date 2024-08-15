@@ -39,14 +39,14 @@ class MockLogger {
 }
 
 const baseFactories = [
-  lifecycleServiceFactory(),
-  rootLifecycleServiceFactory(),
+  lifecycleServiceFactory,
+  rootLifecycleServiceFactory,
   createServiceFactory({
     service: coreServices.rootLogger,
     deps: {},
     factory: () => new MockLogger(),
-  })(),
-  loggerServiceFactory(),
+  }),
+  loggerServiceFactory,
 ];
 
 const testPlugin = createBackendPlugin({
@@ -84,18 +84,18 @@ describe('BackendInitializer', () => {
         initialization: 'always',
         deps: {},
         factory: factory1,
-      })(),
+      }),
       createServiceFactory({
         service: ref2,
         deps: {},
         factory: factory2,
-      })(),
+      }),
       createServiceFactory({
         service: ref3,
         initialization: 'lazy',
         deps: {},
         factory: factory3,
-      })(),
+      }),
     ];
 
     const init = new BackendInitializer(services);
@@ -249,18 +249,18 @@ describe('BackendInitializer', () => {
         initialization: 'always',
         deps: {},
         factory: factory1,
-      })(),
+      }),
       createServiceFactory({
         service: ref2,
         deps: {},
         factory: factory2,
-      })(),
+      }),
       createServiceFactory({
         service: ref3,
         initialization: 'lazy',
         deps: {},
         factory: factory3,
-      })(),
+      }),
     ];
 
     const init = new BackendInitializer(services);
@@ -505,12 +505,12 @@ describe('BackendInitializer', () => {
     const extA = createExtensionPoint<string>({ id: 'a' });
     const extB = createExtensionPoint<string>({ id: 'b' });
     const init = new BackendInitializer([
-      rootLifecycleServiceFactory(),
+      rootLifecycleServiceFactory,
       createServiceFactory({
         service: coreServices.rootLogger,
         deps: {},
         factory: () => new MockLogger(),
-      })(),
+      }),
     ]);
     init.add(testPlugin);
     init.add(

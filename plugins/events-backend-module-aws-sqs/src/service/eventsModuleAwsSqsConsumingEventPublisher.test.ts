@@ -35,7 +35,7 @@ describe('eventsModuleAwsSqsConsumingEventPublisher', () => {
 
     await startTestBackend({
       features: [
-        eventsServiceFactory(),
+        eventsServiceFactory,
         eventsModuleAwsSqsConsumingEventPublisher,
         mockServices.rootConfig.factory({
           data: {
