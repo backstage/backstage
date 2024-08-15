@@ -24,18 +24,15 @@ The `reactElement` data reference can be used for defining the extension input/o
 
 ```tsx
 import {
+  createExtension,
   coreExtensionData,
-  createExtensionInput,
-  createPageExtension,
 } from '@backstage/frontend-plugin-api';
 
-const homePage = createPageExtension({
-  defaultPath: '/home',
-  routeRef: rootRouteRef,
-  inputs: {
-    props: createExtensionInput({
-      children: coreExtensionData.reactElement.optional(),
-    }),
+const examplePage = createExtension({
+  name: 'example',
+  output: [coreExtensionData.reactElement],
+  factor() {
+    return [coreExtensionData.reactElement(<h1>Example</h1>)];
   },
 });
 ```
