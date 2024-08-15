@@ -259,157 +259,49 @@ const overrideExtension = exampleExtension.override({
 });
 ```
 
-## Override App Extensions
+## Installing override extension in an app
 
-In order to override an app extension, you must create a new extension and add it to the list of overridden features. The steps are: create your extension overrides and use them in Backstage.
+To install extension overrides in a Backstage app you should use `plugin.withOverrides` whenever you are overriding or adding extensions to for a plugin. See the section on [overriding a plugin](./15-plugins.md#overriding-a-plugin) for more information.
 
-### Example
+There is also a `createExtensionOverrides` function that can be used to install a collection of standalone extensions in an app. This method will be replaced with a different mechanism in the future, but for now remains the only way to override the built-in extensions in the app or to package extensions for a plugin package separate from the plugin itself.
 
-In the example below, we create a file that exports custom extensions for the app's `light` and `dark` themes:
+Note that while using either of these options you don't necessarily need to use the extension `.override(...)` method to create the overrides. You can also create new extensions with `createExtension` or a blueprint that are either completely net-new extensions, or override an existing extension by using the same `kind`, `namespace` and `name` to produce the same extension ID.
 
-```tsx title="packages/app/src/themes.tsx"
-import {
-  createThemeExtension,
-  createExtensionOverrides,
-} from '@backstage/frontend-plugin-api';
-import { apertureThemes } from './themes';
-import { ApertureLightIcon, ApertureDarkIcon } from './icons';
+### Creating a standalone extension bundle
 
-// Creating a light theme extension
-const apertureLightTheme = createThemeExtension({
-  // highlight-start
-  namespace: 'app',
-  name: 'light',
-  // highlight-end
-  title: 'Aperture Light Theme',
-  variant: 'light',
-  icon: <ApertureLightIcon />,
-  Provider: ({ children }) => (
-    <UnifiedThemeProvider theme={apertureThemes.light} children={children} />
-  ),
-});
+The following example shows how to create a standalone extension bundle that overrides the search page from the search plugin:
 
-// Creating a dark theme extension
-const apertureDarkTheme = createThemeExtension({
-  // highlight-start
-  namespace: 'app',
-  name: 'dark',
-  // highlight-end
-  title: 'Aperture Dark Theme',
-  variant: 'dark',
-  icon: <ApertureDarkIcon />,
-  Provider: ({ children }) => (
-    <UnifiedThemeProvider theme={apertureThemes.dark} children={children} />
-  ),
-});
-
-// Creating an extension overrides preset
-export default createExtensionOverrides({
-  extensions: [apertureLightTheme, apertureDarkTheme],
-});
-```
-
-Note that we declare `namespace` as `'app'` while creating the themes, so the system knows we are overriding app extensions. Additionally, to specifically override the `light` and `dark` theme extensions, we set the `name` option to `light` and `dark`. Therefore, to override app theme extensions, we ensure that the extension `namespace` and `name` match those of the default app theme extension definitions.
-
-Now we are able to use the overrides in a Backstage app:
-
-```tsx title="packages/app/src/App.tsx"
-import { createApp } from '@backstage/frontend-app-api';
-import themeOverrides from './themes';
-
-const app = createApp({
-  // highlight-next-line
- features: [themeOverrides],
-});
-
-export default app.createRoot().
-```
-
-If the plugin you want to change is internal to your company or you just want to replace one of the application's core extensions, you can decide to store the overrides code directly in the app package or extract them to a separate package.
-
-Note that it can still be a good idea to split your overrides out into separate packages in large projects. But it's up to you to decide how to group the extensions into extension overrides.
-
-## Override Plugin Extensions
-
-To override an extension that is provided by a plugin, you need to provide a new extension that has the same ID as the existing extension. That is, all kind, namespace, and name options must match the extension you want to replace. This means that you typically need to provide an explicit `namespace` when overriding extensions from a plugin.
-
-:::info
-We recommend that plugin developers share the extension IDs in their plugin documentation, but usually you can infer the ID by following the [naming patterns](./50-naming-patterns.md) documentation.
-:::
-
-### Example
-
-Imagine you have a plugin with the ID `'search'`, and the plugin provides a page extension that you want to fully override with your own custom component. To do so, you need to create your page extension with an explicit `namespace` option that matches that of the plugin that you want to override, in this case `'search'`. If the existing extension also has an explicit `name` you'd need to set the `name` of your override extension to the same value as well.
-
-```tsx title="packages/app/src/search.tsx"
+```tsx
 import {
   createPageExtension,
   createExtensionOverrides,
 } from '@backstage/frontend-plugin-api';
 
-// Creating a custom search page extension
-const customSearchPage = createPageExtension({
-  // highlight-next-line
+const customSearchPage = PageBlueprint({
+  // Since this is a standalone extension we need to provide the namespace to match the search plugin
   namespace: 'search',
-  // Omitting name since it is the index plugin page
-  defaultPath: '/search',
-  loader: () => import('./SearchPage').then(m => m.<SearchPage/>),
+  params: {
+    defaultPath: '/search',
+    loader: () =>
+      import('./CustomSearchPage').then(m => <m.CustomSearchPage />),
+  },
 });
 
 export default createExtensionOverrides({
-  extensions: [customSearchPage]
+  extensions: [customSearchPage],
 });
 ```
 
-Don't forget to configure your overrides in the `createApp` function:
+Assuming the above code resides in the `@internal/search-page` package, you can install it in your app like this:
 
 ```tsx title="packages/app/src/App.tsx"
 import { createApp } from '@backstage/frontend-app-api';
-import searchOverrides from './search';
+import searchPageOverride from '@internal/search-page';
 
 const app = createApp({
   // highlight-next-line
-  features: [searchOverrides],
+  features: [searchPageOverride],
 });
 
 export default app.createRoot();
 ```
-
-Now let's talk about the last override case, orphan extensions.
-
-## Create Standalone Extensions
-
-Sometimes you just need to quickly create a new extension and not overwrite an app extension or plugin. You can also use overrides to create extensions, but remember that if you want to make this extension available for installation by other users, we recommend providing it via a plugin in a separate package.
-
-### Example
-
-Imagine you want to create a page that is currently only used by your application, like an Institutional page, for example. You can use overrides to extend the Backstage app to render it. To do so, simply create a page extension and pass it to the app as an override:
-
-```tsx title="packages/app/src/App.tsx"
-import { createApp } from '@backstage/frontend-app-api';
-import {
-  createPageExtension,
-  createExtensionOverrides,
-} from '@backstage/frontend-plugin-api';
-
-const app = createApp({
-  features: [
-    createExtensionOverrides({
-      extensions: [
-        // highlight-start
-        createPageExtension({
-          name: 'institutional',
-          defaultPath: '/institutional',
-          loader: () =>
-            import('./institutional').then(m => <m.InstitutionalPage />),
-        }),
-        // highlight-end
-      ],
-    }),
-  ],
-});
-
-export default app.createRoot();
-```
-
-Note that we are omitting `namespace` when creating the page extension. When we omit `namespace`, we are telling the system the new extension is standalone and not an application or plugin extension!
