@@ -15,7 +15,8 @@
  */
 
 import { spawn, SpawnOptionsWithoutStdio } from 'child_process';
-import { PassThrough, Writable } from 'stream';
+import { Writable } from 'stream';
+import { LeveledLogMethod, Logger } from 'winston';
 
 /**
  * Options for {@link executeShellCommand}.
@@ -29,8 +30,10 @@ export type ExecuteShellCommandOptions = {
   args: string[];
   /** options to pass to spawn */
   options?: SpawnOptionsWithoutStdio;
-  /** stream to capture stdout and stderr output */
-  logStream?: Writable;
+  /** logger to capture stdout and stderr output */
+  logger?: Logger;
+  /** log level to use for logging output */
+  logLevel?: LeveledLogMethod;
 };
 
 /**
@@ -45,8 +48,23 @@ export async function executeShellCommand(
     command,
     args,
     options: spawnOptions,
-    logStream = new PassThrough(),
+    logger,
+    logLevel = 'verbose',
   } = options;
+
+  // Writable stream that logs stdout and stderr using the winston logger and user specified log level
+  const logStream = new Writable({
+    defaultEncoding: 'utf8',
+    write(chunk, encoding, next) {
+      const message = Buffer.isBuffer(chunk)
+        ? chunk.toString('utf8').trim()
+        : chunk.toString(encoding || 'utf8').trim();
+      if (message && logger) {
+        (logger[logLevel as keyof Logger] || logger.verbose)(message);
+      }
+      next();
+    },
+  });
 
   await new Promise<void>((resolve, reject) => {
     const process = spawn(command, args, spawnOptions);
