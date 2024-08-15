@@ -28,14 +28,14 @@ jest.mock('./railsNewRunner', () => {
 });
 
 import { ContainerRunner, UrlReader } from '@backstage/backend-common';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
-import { resolve as resolvePath } from 'path';
-import { createFetchRailsAction } from './index';
 import { fetchContents } from '@backstage/plugin-scaffolder-node';
-import { createMockDirectory } from '@backstage/backend-test-utils';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
+import { resolve as resolvePath } from 'path';
 import { Writable } from 'stream';
+import { createFetchRailsAction } from './index';
 
 describe('fetch:rails', () => {
   const mockDir = createMockDirectory();
@@ -102,10 +102,12 @@ describe('fetch:rails', () => {
 
   it('should execute the rails templater with the correct values', async () => {
     await action.handler(mockContext);
-
     expect(mockRailsTemplater.run).toHaveBeenCalledWith({
       workspacePath: mockContext.workspacePath,
       logStream: expect.any(Writable),
+      logger: expect.objectContaining({
+        verbose: expect.any(Function),
+      }),
       values: mockContext.input.values,
     });
   });
@@ -122,6 +124,9 @@ describe('fetch:rails', () => {
     expect(mockRailsTemplater.run).toHaveBeenCalledWith({
       workspacePath: mockContext.workspacePath,
       logStream: expect.any(Writable),
+      logger: expect.objectContaining({
+        verbose: expect.any(Function),
+      }),
       values: {
         ...mockContext.input.values,
         imageName: 'foo/rails-custom-image',

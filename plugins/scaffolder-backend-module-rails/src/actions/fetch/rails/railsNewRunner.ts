@@ -15,16 +15,17 @@
  */
 
 import { ContainerRunner } from '@backstage/backend-common';
+import { executeShellCommand } from '@backstage/plugin-scaffolder-node';
+import { JsonObject } from '@backstage/types';
+import commandExists from 'command-exists';
 import fs from 'fs-extra';
 import path from 'path';
-import { executeShellCommand } from '@backstage/plugin-scaffolder-node';
-import commandExists from 'command-exists';
+import { Writable } from 'stream';
+import { LeveledLogMethod, Logger } from 'winston';
 import {
   railsArgumentResolver,
   RailsRunOptions,
 } from './railsArgumentResolver';
-import { JsonObject } from '@backstage/types';
-import { Writable } from 'stream';
 
 export class RailsNewRunner {
   private readonly containerRunner?: ContainerRunner;
@@ -37,10 +38,14 @@ export class RailsNewRunner {
     workspacePath,
     values,
     logStream,
+    logger,
+    logLevel = logger.verbose,
   }: {
     workspacePath: string;
     values: JsonObject;
     logStream: Writable;
+    logger: Logger;
+    logLevel?: LeveledLogMethod;
   }): Promise<void> {
     const intermediateDir = path.join(workspacePath, 'intermediate');
     await fs.ensureDir(intermediateDir);
@@ -71,7 +76,8 @@ export class RailsNewRunner {
           `${intermediateDir}${path.sep}${name}`,
           ...arrayExtraArguments,
         ],
-        logStream,
+        logger,
+        logLevel,
       });
     } else {
       if (!imageName) {

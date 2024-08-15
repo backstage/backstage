@@ -16,18 +16,19 @@
 
 import { ContainerRunner, UrlReader } from '@backstage/backend-common';
 import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
-import { JsonObject, JsonValue } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
+import {
+  createTemplateAction,
+  executeShellCommand,
+  fetchContents,
+} from '@backstage/plugin-scaffolder-node';
+import { JsonObject, JsonValue } from '@backstage/types';
 import commandExists from 'command-exists';
 import fs from 'fs-extra';
 import path, { resolve as resolvePath } from 'path';
 import { PassThrough, Writable } from 'stream';
-import {
-  createTemplateAction,
-  fetchContents,
-  executeShellCommand,
-} from '@backstage/plugin-scaffolder-node';
+import { LeveledLogMethod, Logger } from 'winston';
 import { examples } from './cookiecutter.examples';
 
 export class CookiecutterRunner {
@@ -55,6 +56,8 @@ export class CookiecutterRunner {
     workspacePath,
     values,
     logStream,
+    logger,
+    logLevel = logger.verbose,
     imageName,
     templateDir,
     templateContentsDir,
@@ -62,6 +65,8 @@ export class CookiecutterRunner {
     workspacePath: string;
     values: JsonObject;
     logStream: Writable;
+    logger: Logger;
+    logLevel?: LeveledLogMethod;
     imageName?: string;
     templateDir: string;
     templateContentsDir: string;
@@ -96,7 +101,8 @@ export class CookiecutterRunner {
       await executeShellCommand({
         command: 'cookiecutter',
         args: ['--no-input', '-o', intermediateDir, templateDir, '--verbose'],
-        logStream,
+        logger,
+        logLevel,
       });
     } else {
       if (this.containerRunner === undefined) {
@@ -253,6 +259,7 @@ export function createFetchCookiecutterAction(options: {
       await cookiecutter.run({
         workspacePath: workDir,
         logStream,
+        logger: ctx.logger,
         values: values,
         imageName: ctx.input.imageName,
         templateDir: templateDir,

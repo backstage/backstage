@@ -15,19 +15,19 @@
  */
 
 import { ContainerRunner, UrlReader } from '@backstage/backend-common';
-import { JsonObject } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
-import fs from 'fs-extra';
 import {
   createTemplateAction,
   fetchContents,
 } from '@backstage/plugin-scaffolder-node';
+import { JsonObject } from '@backstage/types';
+import fs from 'fs-extra';
 
 import { resolve as resolvePath } from 'path';
-import { RailsNewRunner } from './railsNewRunner';
 import { PassThrough } from 'stream';
 import { examples } from './index.examples';
+import { RailsNewRunner } from './railsNewRunner';
 
 /**
  * Creates the `fetch:rails` Scaffolder action.
@@ -227,6 +227,7 @@ export function createFetchRailsAction(options: {
       await templateRunner.run({
         workspacePath: workDir,
         logStream,
+        logger: ctx.logger,
         values: { ...ctx.input.values, imageName },
       });
 
