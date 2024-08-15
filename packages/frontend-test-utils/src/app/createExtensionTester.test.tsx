@@ -240,8 +240,8 @@ describe('createExtensionTester', () => {
     const extension = createExtension({
       namespace: 'test',
       attachTo: { id: 'ignored', input: 'ignored' },
-      output: { text: stringDataRef },
-      factory: () => ({ text: 'test-text' }),
+      output: [stringDataRef],
+      factory: () => [stringDataRef('test-text')],
     });
 
     const tester = createExtensionTester(extension);
@@ -297,6 +297,76 @@ describe('createExtensionTester', () => {
     );
   });
 
+  it('should not allow getting extension data for an output that was not defined in the extension', () => {
+    const internalRef = createExtensionDataRef<number>().with({
+      id: 'test.internal',
+    });
+
+    const internalRef2 = createExtensionDataRef<number>().with({
+      id: 'test.internal2',
+    });
+
+    const extension = createExtension({
+      namespace: 'test',
+      name: 'e1',
+      attachTo: { id: 'ignored', input: 'ignored' },
+      output: [stringDataRef, internalRef.optional()],
+      factory: () => [stringDataRef('test-text')],
+    });
+
+    const tester = createExtensionTester(extension);
+
+    const test: string = tester.get(stringDataRef);
+
+    // @ts-expect-error - internalRef is optional
+    const test2: number = tester.get(internalRef);
+
+    // @ts-expect-error - internalRef2 is not defined in the extension
+    const test3: number = tester.get(internalRef2);
+
+    expect([test, test2, test3]).toBeDefined();
+  });
+
+  it('should support getting outputs from a query response', () => {
+    const internalRef = createExtensionDataRef<number>().with({
+      id: 'test.internal',
+    });
+
+    const internalRef2 = createExtensionDataRef<number>().with({
+      id: 'test.internal2',
+    });
+
+    const extension = createExtension({
+      namespace: 'test',
+      name: 'e1',
+      attachTo: { id: 'ignored', input: 'ignored' },
+      output: [coreExtensionData.reactElement],
+      factory: () => [coreExtensionData.reactElement(<div>bob</div>)],
+    });
+
+    const extraExtension = createExtension({
+      namespace: 'test',
+      name: 'e1',
+      attachTo: { id: 'ignored', input: 'ignored' },
+      output: [stringDataRef, internalRef.optional()],
+      factory: () => [stringDataRef('test-text')],
+    });
+
+    const tester = createExtensionTester(extension)
+      .add(extraExtension)
+      .query(extraExtension);
+
+    const test: string = tester.get(stringDataRef);
+
+    // @ts-expect-error - internalRef is optional
+    const test2: number = tester.get(internalRef);
+
+    // @ts-expect-error - internalRef2 is not defined in the extension
+    const test3: number = tester.get(internalRef2);
+
+    expect([test, test2, test3]).toBeDefined();
+  });
+
   // TODO: this should be implemented
   // eslint-disable-next-line jest/no-disabled-tests
   it.skip('should allow querying an extension and getting outputs', () => {
@@ -328,7 +398,9 @@ describe('createExtensionTester', () => {
 
     const tester = createExtensionTester(extension).add(extension2);
 
+    // @ts-expect-error
     expect(tester.query(extension).get(stringDataRef)).toBe('nest-test-text');
+    // @ts-expect-error
     expect(tester.query(extension2).get(stringDataRef)).toBe('test-text');
     // @ts-expect-error
     expect(tester.query(extension).input('input').data(stringDataRef)).toBe(
@@ -362,6 +434,7 @@ describe('createExtensionTester', () => {
       inputs: { input: 'test-text' },
     });
 
+    // @ts-expect-error
     expect(tester.query(extension).get(stringDataRef)).toBe('nest-test-text');
   });
 });

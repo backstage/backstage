@@ -19,6 +19,7 @@ import { MemoryRouter, Link } from 'react-router-dom';
 import { RenderResult, render } from '@testing-library/react';
 import { createSpecializedApp } from '@backstage/frontend-app-api';
 import {
+  AnyExtensionDataRef,
   AppNode,
   AppTree,
   Extension,
@@ -101,7 +102,7 @@ const TestAppNavExtension = createExtension({
 });
 
 /** @public */
-export class ExtensionQuery {
+export class ExtensionQuery<UOutput extends AnyExtensionDataRef> {
   #node: AppNode;
 
   constructor(node: AppNode) {
@@ -124,18 +125,24 @@ export class ExtensionQuery {
     return instance;
   }
 
-  get<T>(ref: ExtensionDataRef<T>): T | undefined {
+  get<TId extends UOutput['id']>(
+    ref: ExtensionDataRef<any, TId, any>,
+  ): UOutput extends ExtensionDataRef<infer IData, TId, infer IConfig>
+    ? IConfig['optional'] extends true
+      ? IData | undefined
+      : IData
+    : never {
     return this.instance.getData(ref);
   }
 }
 
 /** @public */
-export class ExtensionTester {
+export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
   /** @internal */
-  static forSubject<TConfig, TConfigInput>(
+  static forSubject<TConfig, TConfigInput, UOutput extends AnyExtensionDataRef>(
     subject: ExtensionDefinition<TConfig, TConfigInput>,
     options?: { config?: TConfigInput },
-  ): ExtensionTester {
+  ): ExtensionTester<UOutput> {
     const tester = new ExtensionTester();
     const internal = toInternalExtensionDefinition(subject);
 
@@ -192,7 +199,7 @@ export class ExtensionTester {
   add<TConfig, TConfigInput>(
     extension: ExtensionDefinition<TConfig, TConfigInput>,
     options?: { config?: TConfigInput },
-  ): ExtensionTester {
+  ): ExtensionTester<UOutput> {
     if (this.#tree) {
       throw new Error(
         'Cannot add more extensions accessing the extension tree',
@@ -219,17 +226,24 @@ export class ExtensionTester {
     return this;
   }
 
-  get<T>(ref: ExtensionDataRef<T>): T | undefined {
+  get<TId extends UOutput['id']>(
+    ref: ExtensionDataRef<any, TId, any>,
+  ): UOutput extends ExtensionDataRef<infer IData, TId, infer IConfig>
+    ? IConfig['optional'] extends true
+      ? IData | undefined
+      : IData
+    : never {
     const tree = this.#resolveTree();
 
     return new ExtensionQuery(tree.root).get(ref);
   }
 
-  query(id: string | ExtensionDefinition<any, any>): ExtensionQuery {
+  query<UQueryExtensionOutput extends AnyExtensionDataRef>(
+    extension: ExtensionDefinition<any, any, UQueryExtensionOutput>,
+  ): ExtensionQuery<UQueryExtensionOutput> {
     const tree = this.#resolveTree();
 
-    const actualId =
-      typeof id === 'string' ? id : resolveExtensionDefinition(id).id;
+    const actualId = resolveExtensionDefinition(extension).id;
 
     const node = tree.nodes.get(actualId);
 
@@ -355,9 +369,13 @@ export class ExtensionTester {
 }
 
 /** @public */
-export function createExtensionTester<TConfig>(
-  subject: ExtensionDefinition<TConfig>,
-  options?: { config?: TConfig },
-): ExtensionTester {
+export function createExtensionTester<
+  TConfig,
+  TConfigInput,
+  UOutput extends AnyExtensionDataRef,
+>(
+  subject: ExtensionDefinition<TConfig, TConfigInput, UOutput>,
+  options?: { config?: TConfigInput },
+): ExtensionTester<UOutput> {
   return ExtensionTester.forSubject(subject, options);
 }
