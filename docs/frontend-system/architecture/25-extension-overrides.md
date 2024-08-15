@@ -277,7 +277,7 @@ import {
   createExtensionOverrides,
 } from '@backstage/frontend-plugin-api';
 
-const customSearchPage = PageBlueprint({
+const customSearchPage = PageBlueprint.make({
   // Since this is a standalone extension we need to provide the namespace to match the search plugin
   namespace: 'search',
   params: {
