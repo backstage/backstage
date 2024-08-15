@@ -141,7 +141,34 @@ const myOverrideExtension = myExtension.override({
 Overriding the configuration schema works very similar to overriding the declared inputs. You can define new configuration fields that will be merged with the existing ones, but you can not re-declare existing fields. The following example shows how to override an extension and add a new configuration field:
 
 ```tsx
-// Original extension
+const exampleExtension = createExtension({
+  config: {
+    schema: {
+      foo: z => z.string(),
+    },
+  },
+  // ...
+});
+
+const overrideExtension = exampleExtension.override({
+  config: {
+    schema: {
+      bar: z => z.string(),
+    },
+  },
+  factory(originalFactory, { config }) {
+    //
+    console.log(`foo=${config.foo} bar=${config.bar}`);
+    return originalFactory();
+  },
+});
+```
+
+## Overriding original factory config context
+
+In all examples so far we have called the `originalFactory` callback without any arguments. It is however possible to override parts of the factory context for the original factory using the first parameter of the original factory. This can be useful if you want to override the provided configuration or change the inputs in some way. Note that if you are implementing a `factory` for a blueprint, the override factory context will instead be the second parameter of the original factory function. The following is an example of how to override the configuration for the original factory:
+
+```tsx
 const exampleExtension = createExtension({
   name: 'example',
   config: {
@@ -151,21 +178,83 @@ const exampleExtension = createExtension({
   },
   output: [coreExtensionData.reactElement],
   factory: ({ config }) => [
-    coreExtensionData.reactElement(<MyExtension layout={config.layout} />),
+    coreExtensionData.reactElement(
+      <MyExtension layout={config.layout ?? 'list'} />,
+    ),
   ],
 });
 
 const overrideExtension = exampleExtension.override({
-  config: {
-    schema: {
-      additionalField: z => z.string().optional(),
-    },
-  },
   factory(originalFactory, { config }) {
-    console.log(
-      `additionalField=${config.additionalField} layout=${config.layout}`,
-    );
-    return originalFactory();
+    return originalFactory({
+      config: {
+        // Switch default layout from 'list' to 'grid'
+        layout: config.layout ?? 'grid',
+      },
+    });
+  },
+});
+```
+
+As can be seen in the above example we can provide a new configuration object in the `originalFactory` call using the `config` property. When providing the `config` property we will completely override the original configuration object that would otherwise have been provided to the original factory. Note that this object must adhere to the output type of the configuration schema, which might not be intuitive. It's due to the configuration having already been processed and validated by Zod at this point, which means that things like defaults in the schema will not be applied again.
+
+## Overriding original factory inputs context
+
+In addition to the configuration, you are also able to override the inputs provided to the original factory. Just like when overriding configuration you will completely replace the original inputs with the new ones, but you are able to forward the inputs that you are receiving to the override factory.
+
+You can override each input in one of two ways, which can not be combined. You can forward (or not forward) the original input, optionally filtering out individual items or reordering them. Or you can provide new values for the input, which will replace the original input. When providing new values you must forward all existing inputs and the inputs can not be reordered, and when forwarding the existing inputs you can not provide new values.
+
+The following example shows how to override the values provided for each input item:
+
+```tsx
+const exampleExtension = createExtension({
+  inputs: {
+    items: createExtensionInput([coreExtensionData.reactElement]),
+  },
+  // ...
+});
+
+const overrideExtension = exampleExtension.override({
+  factory(originalFactory, { inputs }) {
+    return originalFactory({
+      inputs: {
+        items: inputs.items.map(i => [
+          coreExtensionData.reactElement(
+            <ItemWrapper>{i.get(coreExtensionData.reactElement)}</ItemWrapper>,
+          ),
+        ]),
+      },
+    });
+  },
+});
+```
+
+In contrast, the following example shows how to forward the original inputs, but in a different order:
+
+```tsx
+const exampleExtension = createExtension({
+  inputs: {
+    content: createExtensionInput([coreExtensionData.reactElement], {
+      singleton: true,
+      optional: true,
+    }),
+    items: createExtensionInput([coreExtensionData.reactElement]),
+  },
+  // ...
+});
+
+const overrideExtension = exampleExtension.override({
+  factory(originalFactory, { inputs }) {
+    return originalFactory({
+      inputs: {
+        // We can also skip forwarding the original input, if we want to remove it
+        content: inputs.content,
+        // Sort items input by their extension ID
+        items: inputs.items.toSorted((a, b) =>
+          a.node.spec.id.localCompare(b.node.spec.id),
+        ),
+      },
+    });
   },
 });
 ```
