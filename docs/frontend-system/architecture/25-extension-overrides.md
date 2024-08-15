@@ -102,6 +102,40 @@ const overrideExtension = exampleExtension.override({
 
 When overriding the output declaration you don't need to include the original outputs. Just remember that you will no longer be able to directly forward the output from the original factory, and will still need to adhere to the contract of the input that the extension is attached to.
 
+## Overriding declared inputs
+
+When overriding an extension you can also provide new input declarations. You can define any number of new inputs, but you are **not** able to override the existing inputs declared by the original extension. The new inputs will be merged with the existing ones, giving the override factory access to both. The following example shows how to override an extension and add a new input declaration:
+
+```tsx
+const myOverrideExtension = myExtension.override({
+  inputs: {
+    myOverrideInput: createExtensionInput([coreExtensionData.reactElement]),
+  },
+  factory(originalFactory, { inputs }) {
+    const originalOutput = originalFactory();
+    const originalElement = originalOutput.get(coreExtensionData.reactElement);
+
+    return [
+      ...originalOutput,
+      coreExtensionData.reactElement(
+        <div>
+          <h1>Original element</h1>
+          {originalElement}
+          <h1>Additional inputs</h1>
+          <ul>
+            {inputs.myOverrideInput.map(i => (
+              <li key={i.node.spec.id}>
+                {i.get(coreExtensionData.reactElement)}
+              </li>
+            ))}
+          </ul>
+        </div>,
+      ),
+    ];
+  },
+});
+```
+
 ## Override App Extensions
 
 In order to override an app extension, you must create a new extension and add it to the list of overridden features. The steps are: create your extension overrides and use them in Backstage.
