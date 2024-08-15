@@ -17,13 +17,16 @@
 import React from 'react';
 import { SignInPage } from '@backstage/core-components';
 import {
+  SignInPageBlueprint,
   createExtensionOverrides,
-  createSignInPageExtension,
 } from '@backstage/frontend-plugin-api';
 
-const signInPage = createSignInPageExtension({
+const signInPage = SignInPageBlueprint.make({
   name: 'guest',
-  loader: async () => props => <SignInPage {...props} providers={['guest']} />,
+  params: {
+    loader: async () => props =>
+      <SignInPage {...props} providers={['guest']} />,
+  },
 });
 
 export const signInPageOverrides = createExtensionOverrides({
