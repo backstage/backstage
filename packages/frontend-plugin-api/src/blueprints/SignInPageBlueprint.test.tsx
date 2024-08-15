@@ -62,11 +62,9 @@ describe('SignInPageBlueprint', () => {
 
     const tester = createExtensionTester(extension);
 
-    const Element = tester.get(SignInPageBlueprint.dataRefs.component);
+    const Component = tester.get(SignInPageBlueprint.dataRefs.component);
 
-    expect(Element).toBeDefined();
-
-    renderInTestApp(<Element onSignInSuccess={() => {}} />);
+    renderInTestApp(<Component onSignInSuccess={() => {}} />);
 
     await waitFor(() => {
       expect(screen.getByTestId('mock-sign-in')).toBeInTheDocument();

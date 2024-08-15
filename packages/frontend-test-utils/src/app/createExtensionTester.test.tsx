@@ -339,6 +339,9 @@ describe('createExtensionTester', () => {
     const extension = createExtension({
       namespace: 'test',
       name: 'e1',
+      inputs: {
+        ignored: createExtensionInput([stringDataRef]),
+      },
       attachTo: { id: 'ignored', input: 'ignored' },
       output: [coreExtensionData.reactElement],
       factory: () => [coreExtensionData.reactElement(<div>bob</div>)],
@@ -346,8 +349,8 @@ describe('createExtensionTester', () => {
 
     const extraExtension = createExtension({
       namespace: 'test',
-      name: 'e1',
-      attachTo: { id: 'ignored', input: 'ignored' },
+      name: 'e2',
+      attachTo: { id: 'test/e1', input: 'ignored' },
       output: [stringDataRef, internalRef.optional()],
       factory: () => [stringDataRef('test-text')],
     });
