@@ -5,9 +5,11 @@
 ```ts
 /// <reference types="react" />
 
+import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { BackstagePlugin } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { Entity } from '@backstage/catalog-model';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
@@ -39,6 +41,73 @@ const _default: BackstagePlugin<
       'page',
       undefined,
       undefined
+    >;
+    'entity-content:kubernetes/kubernetes': ExtensionDefinition<
+      {
+        path: string | undefined;
+        title: string | undefined;
+        filter: string | undefined;
+      },
+      {
+        filter?: string | undefined;
+        title?: string | undefined;
+        path?: string | undefined;
+      },
+      | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+      | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+      | ConfigurableExtensionDataRef<
+          RouteRef<AnyRouteRefParams>,
+          'core.routing.ref',
+          {
+            optional: true;
+          }
+        >
+      | ConfigurableExtensionDataRef<string, 'catalog.entity-content-title', {}>
+      | ConfigurableExtensionDataRef<
+          (entity: Entity) => boolean,
+          'catalog.entity-filter-function',
+          {
+            optional: true;
+          }
+        >
+      | ConfigurableExtensionDataRef<
+          string,
+          'catalog.entity-filter-expression',
+          {
+            optional: true;
+          }
+        >,
+      {},
+      'entity-content',
+      undefined,
+      'kubernetes'
+    >;
+    'api:kubernetes/proxy': ExtensionDefinition<
+      {},
+      {},
+      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
+      {},
+      'api',
+      undefined,
+      'proxy'
+    >;
+    'api:kubernetes/auth-providers': ExtensionDefinition<
+      {},
+      {},
+      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
+      {},
+      'api',
+      undefined,
+      'auth-providers'
+    >;
+    'api:kubernetes/cluster-link-formatter': ExtensionDefinition<
+      {},
+      {},
+      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
+      {},
+      'api',
+      undefined,
+      'cluster-link-formatter'
     >;
   }
 >;

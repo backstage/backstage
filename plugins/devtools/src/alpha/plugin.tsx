@@ -16,13 +16,13 @@
 
 import React from 'react';
 import {
-  createApiExtension,
   createApiFactory,
-  createNavItemExtension,
-  createPageExtension,
   createFrontendPlugin,
   discoveryApiRef,
   fetchApiRef,
+  ApiBlueprint,
+  PageBlueprint,
+  NavItemBlueprint,
 } from '@backstage/frontend-plugin-api';
 
 import { devToolsApiRef, DevToolsClient } from '../api';
@@ -34,33 +34,39 @@ import BuildIcon from '@material-ui/icons/Build';
 import { rootRouteRef } from '../routes';
 
 /** @alpha */
-export const devToolsApi = createApiExtension({
-  factory: createApiFactory({
-    api: devToolsApiRef,
-    deps: {
-      discoveryApi: discoveryApiRef,
-      fetchApi: fetchApiRef,
-    },
-    factory: ({ discoveryApi, fetchApi }) =>
-      new DevToolsClient({ discoveryApi, fetchApi }),
-  }),
+export const devToolsApi = ApiBlueprint.make({
+  params: {
+    factory: createApiFactory({
+      api: devToolsApiRef,
+      deps: {
+        discoveryApi: discoveryApiRef,
+        fetchApi: fetchApiRef,
+      },
+      factory: ({ discoveryApi, fetchApi }) =>
+        new DevToolsClient({ discoveryApi, fetchApi }),
+    }),
+  },
 });
 
 /** @alpha */
-export const devToolsPage = createPageExtension({
-  defaultPath: '/devtools',
-  routeRef: convertLegacyRouteRef(rootRouteRef),
-  loader: () =>
-    import('../components/DevToolsPage').then(m =>
-      compatWrapper(<m.DevToolsPage />),
-    ),
+export const devToolsPage = PageBlueprint.make({
+  params: {
+    defaultPath: '/devtools',
+    routeRef: convertLegacyRouteRef(rootRouteRef),
+    loader: () =>
+      import('../components/DevToolsPage').then(m =>
+        compatWrapper(<m.DevToolsPage />),
+      ),
+  },
 });
 
 /** @alpha */
-export const devToolsNavItem = createNavItemExtension({
-  title: 'DevTools',
-  routeRef: convertLegacyRouteRef(rootRouteRef),
-  icon: BuildIcon,
+export const devToolsNavItem = NavItemBlueprint.make({
+  params: {
+    title: 'DevTools',
+    routeRef: convertLegacyRouteRef(rootRouteRef),
+    icon: BuildIcon,
+  },
 });
 
 /** @alpha */
