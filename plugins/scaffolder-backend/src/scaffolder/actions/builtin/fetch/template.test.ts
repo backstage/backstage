@@ -80,7 +80,7 @@ describe('fetch:template', () => {
       workspace: {},
     });
     action = createFetchTemplateAction({
-      reader: Symbol('UrlReaderService') as unknown as UrlReaderService,
+      reader: Symbol('UrlReader') as unknown as UrlReaderService,
       integrations: Symbol('Integrations') as unknown as ScmIntegrations,
     });
   });
