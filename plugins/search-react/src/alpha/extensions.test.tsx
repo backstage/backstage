@@ -23,10 +23,8 @@ import { createExtensionTester } from '@backstage/frontend-test-utils';
 import { SearchResult } from '@backstage/plugin-search-common';
 import { screen } from '@testing-library/react';
 import React from 'react';
-import {
-  BaseSearchResultListItemProps,
-  createSearchResultListItemExtension,
-} from './alpha';
+import { createSearchResultListItemExtension } from './extensions';
+import { BaseSearchResultListItemProps } from './blueprints';
 
 describe('createSearchResultListItemExtension', () => {
   it('Should use the correct result component', async () => {

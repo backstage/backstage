@@ -28,7 +28,7 @@
   "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
-    "./alpha": "./src/alpha.tsx",
+    "./alpha": "./src/alpha/index.ts",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
@@ -36,7 +36,7 @@
   "typesVersions": {
     "*": {
       "alpha": [
-        "src/alpha.tsx"
+        "src/alpha/index.ts"
       ],
       "package.json": [
         "package.json"

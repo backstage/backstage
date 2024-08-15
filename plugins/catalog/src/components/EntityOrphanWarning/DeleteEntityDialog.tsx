@@ -23,7 +23,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import React, { useState } from 'react';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { assertError } from '@backstage/errors';
-import { catalogTranslationRef } from '../../translation';
+import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 interface DeleteEntityDialogProps {

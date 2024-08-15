@@ -42,7 +42,7 @@ import {
   systemEntityColumns,
   systemEntityHelpLink,
 } from './presets';
-import { catalogTranslationRef } from '../../translation';
+import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */

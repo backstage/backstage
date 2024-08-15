@@ -33,7 +33,7 @@ import {
 import React, { ReactNode } from 'react';
 import { createComponentRouteRef } from '../../routes';
 import { CatalogTable, CatalogTableRow } from '../CatalogTable';
-import { catalogTranslationRef } from '../../translation';
+import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 import { CatalogTableColumnsFunc } from '../CatalogTable/types';

@@ -15,96 +15,116 @@
  */
 
 import React from 'react';
-import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
+import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { compatWrapper } from '@backstage/core-compat-api';
 
-export const catalogAboutEntityCard = createEntityCardExtension({
+export const catalogAboutEntityCard = EntityCardBlueprint.make({
   name: 'about',
-  loader: async () =>
-    import('../components/AboutCard').then(m =>
-      compatWrapper(<m.AboutCard variant="gridItem" />),
-    ),
+  params: {
+    loader: async () =>
+      import('../components/AboutCard').then(m =>
+        compatWrapper(<m.AboutCard variant="gridItem" />),
+      ),
+  },
 });
 
-export const catalogLinksEntityCard = createEntityCardExtension({
+export const catalogLinksEntityCard = EntityCardBlueprint.make({
   name: 'links',
-  filter: 'has:links',
-  loader: async () =>
-    import('../components/EntityLinksCard').then(m =>
-      compatWrapper(<m.EntityLinksCard variant="gridItem" />),
-    ),
+  params: {
+    filter: 'has:links',
+    loader: async () =>
+      import('../components/EntityLinksCard').then(m =>
+        compatWrapper(<m.EntityLinksCard variant="gridItem" />),
+      ),
+  },
 });
 
-export const catalogLabelsEntityCard = createEntityCardExtension({
+export const catalogLabelsEntityCard = EntityCardBlueprint.make({
   name: 'labels',
-  filter: 'has:labels',
-  loader: async () =>
-    import('../components/EntityLabelsCard').then(m =>
-      compatWrapper(<m.EntityLabelsCard variant="gridItem" />),
-    ),
+  params: {
+    filter: 'has:labels',
+    loader: async () =>
+      import('../components/EntityLabelsCard').then(m =>
+        compatWrapper(<m.EntityLabelsCard variant="gridItem" />),
+      ),
+  },
 });
 
-export const catalogDependsOnComponentsEntityCard = createEntityCardExtension({
+export const catalogDependsOnComponentsEntityCard = EntityCardBlueprint.make({
   name: 'depends-on-components',
-  filter: 'kind:component',
-  loader: async () =>
-    import('../components/DependsOnComponentsCard').then(m =>
-      compatWrapper(<m.DependsOnComponentsCard variant="gridItem" />),
-    ),
+  params: {
+    filter: 'kind:component',
+    loader: async () =>
+      import('../components/DependsOnComponentsCard').then(m =>
+        compatWrapper(<m.DependsOnComponentsCard variant="gridItem" />),
+      ),
+  },
 });
 
-export const catalogDependsOnResourcesEntityCard = createEntityCardExtension({
+export const catalogDependsOnResourcesEntityCard = EntityCardBlueprint.make({
   name: 'depends-on-resources',
-  filter: 'kind:component',
-  loader: async () =>
-    import('../components/DependsOnResourcesCard').then(m =>
-      compatWrapper(<m.DependsOnResourcesCard variant="gridItem" />),
-    ),
+  params: {
+    filter: 'kind:component',
+    loader: async () =>
+      import('../components/DependsOnResourcesCard').then(m =>
+        compatWrapper(<m.DependsOnResourcesCard variant="gridItem" />),
+      ),
+  },
 });
 
-export const catalogHasComponentsEntityCard = createEntityCardExtension({
+export const catalogHasComponentsEntityCard = EntityCardBlueprint.make({
   name: 'has-components',
-  filter: 'kind:system',
-  loader: async () =>
-    import('../components/HasComponentsCard').then(m =>
-      compatWrapper(<m.HasComponentsCard variant="gridItem" />),
-    ),
+  params: {
+    filter: 'kind:system',
+    loader: async () =>
+      import('../components/HasComponentsCard').then(m =>
+        compatWrapper(<m.HasComponentsCard variant="gridItem" />),
+      ),
+  },
 });
 
-export const catalogHasResourcesEntityCard = createEntityCardExtension({
+export const catalogHasResourcesEntityCard = EntityCardBlueprint.make({
   name: 'has-resources',
-  filter: 'kind:system',
-  loader: async () =>
-    import('../components/HasResourcesCard').then(m =>
-      compatWrapper(<m.HasResourcesCard variant="gridItem" />),
-    ),
+  params: {
+    filter: 'kind:system',
+    loader: async () =>
+      import('../components/HasResourcesCard').then(m =>
+        compatWrapper(<m.HasResourcesCard variant="gridItem" />),
+      ),
+  },
 });
 
-export const catalogHasSubcomponentsEntityCard = createEntityCardExtension({
+export const catalogHasSubcomponentsEntityCard = EntityCardBlueprint.make({
   name: 'has-subcomponents',
-  filter: 'kind:component',
-  loader: async () =>
-    import('../components/HasSubcomponentsCard').then(m =>
-      compatWrapper(<m.HasSubcomponentsCard variant="gridItem" />),
-    ),
+  params: {
+    filter: 'kind:component',
+    loader: async () =>
+      import('../components/HasSubcomponentsCard').then(m =>
+        compatWrapper(<m.HasSubcomponentsCard variant="gridItem" />),
+      ),
+  },
 });
 
-export const catalogHasSubdomainsEntityCard = createEntityCardExtension({
+export const catalogHasSubdomainsEntityCard = EntityCardBlueprint.make({
   name: 'has-subdomains',
-  filter: 'kind:domain',
-  loader: async () =>
-    import('../components/HasSubdomainsCard').then(m =>
-      compatWrapper(<m.HasSubdomainsCard variant="gridItem" />),
-    ),
+  params: {
+    filter: 'kind:domain',
+    loader: async () =>
+      import('../components/HasSubdomainsCard').then(m =>
+        compatWrapper(<m.HasSubdomainsCard variant="gridItem" />),
+      ),
+  },
 });
 
-export const catalogHasSystemsEntityCard = createEntityCardExtension({
+export const catalogHasSystemsEntityCard = EntityCardBlueprint.make({
   name: 'has-systems',
-  filter: 'kind:domain',
-  loader: async () =>
-    import('../components/HasSystemsCard').then(m =>
-      compatWrapper(<m.HasSystemsCard variant="gridItem" />),
-    ),
+  params: {
+    filter: 'kind:domain',
+    loader: async () =>
+      import('../components/HasSystemsCard').then(m =>
+        compatWrapper(<m.HasSystemsCard variant="gridItem" />),
+      ),
+  },
 });
 
 export default [
