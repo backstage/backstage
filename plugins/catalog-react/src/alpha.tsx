@@ -202,3 +202,5 @@ function mergeFilters(inputs: {
   }
   return {};
 }
+
+export { catalogReactTranslationRef } from './translation';
