@@ -70,7 +70,7 @@ describe('collectLegacyRoutes', () => {
             id: 'page:score-card',
             attachTo: { id: 'app/routes', input: 'routes' },
             disabled: false,
-            defaultConfig: { path: 'score-board' },
+            defaultConfig: {},
           },
           {
             id: 'api:plugin.scoringdata.service',
@@ -86,7 +86,7 @@ describe('collectLegacyRoutes', () => {
             id: 'page:stackstorm',
             attachTo: { id: 'app/routes', input: 'routes' },
             disabled: false,
-            defaultConfig: { path: 'stackstorm' },
+            defaultConfig: {},
           },
           {
             id: 'api:plugin.stackstorm.service',
@@ -102,13 +102,13 @@ describe('collectLegacyRoutes', () => {
             id: 'page:puppetDb',
             attachTo: { id: 'app/routes', input: 'routes' },
             disabled: false,
-            defaultConfig: { path: 'puppetdb' },
+            defaultConfig: {},
           },
           {
             id: 'page:puppetDb/1',
             attachTo: { id: 'app/routes', input: 'routes' },
             disabled: false,
-            defaultConfig: { path: 'puppetdb' },
+            defaultConfig: {},
           },
           {
             id: 'api:plugin.puppetdb.service',
@@ -173,12 +173,12 @@ describe('collectLegacyRoutes', () => {
             id: 'page:catalog',
             attachTo: { id: 'app/routes', input: 'routes' },
             disabled: false,
-            defaultConfig: { path: 'catalog' },
+            defaultConfig: {},
           },
           {
             id: 'page:catalog/1',
             attachTo: { id: 'app/routes', input: 'routes' },
-            defaultConfig: { path: 'catalog/:namespace/:kind/:name' },
+            defaultConfig: {},
             disabled: false,
           },
           {

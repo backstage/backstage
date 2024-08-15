@@ -26,7 +26,6 @@ import {
   createExtension,
   createExtensionDataRef,
   createExtensionInput,
-  createSchemaFromZod,
   useAnalytics,
   useApi,
 } from '@backstage/frontend-plugin-api';
@@ -41,8 +40,8 @@ describe('createExtensionTester', () => {
   const defaultDefinition = {
     namespace: 'test',
     attachTo: { id: 'ignored', input: 'ignored' },
-    output: { element: coreExtensionData.reactElement },
-    factory: () => ({ element: <div>test</div> }),
+    output: [coreExtensionData.reactElement],
+    factory: () => [coreExtensionData.reactElement(<div>test</div>)],
   };
 
   it('should render a simple extension', async () => {
@@ -77,23 +76,23 @@ describe('createExtensionTester', () => {
   it('should render multiple extensions', async () => {
     const indexPageExtension = createExtension({
       ...defaultDefinition,
-      factory: () => ({
-        element: (
+      factory: () => [
+        coreExtensionData.reactElement(
           <div>
             Index page <Link to="/details">See details</Link>
-          </div>
+          </div>,
         ),
-      }),
+      ],
     });
     const detailsPageExtension = createExtension({
       ...defaultDefinition,
       name: 'details',
       attachTo: { id: 'app/routes', input: 'routes' },
-      output: {
-        path: coreExtensionData.routePath,
-        element: coreExtensionData.reactElement,
-      },
-      factory: () => ({ path: '/details', element: <div>Details page</div> }),
+      output: [coreExtensionData.routePath, coreExtensionData.reactElement],
+      factory: () => [
+        coreExtensionData.routePath('/details'),
+        coreExtensionData.reactElement(<div>Details page</div>),
+      ],
     });
 
     const tester = createExtensionTester(indexPageExtension);
@@ -112,9 +111,11 @@ describe('createExtensionTester', () => {
   it('should accepts a custom config', async () => {
     const indexPageExtension = createExtension({
       ...defaultDefinition,
-      configSchema: createSchemaFromZod(z =>
-        z.object({ title: z.string().optional() }),
-      ),
+      config: {
+        schema: {
+          title: z => z.string().optional(),
+        },
+      },
       factory: ({ config }) => {
         const Component = () => {
           const configApi = useApi(configApiRef);
@@ -127,9 +128,8 @@ describe('createExtensionTester', () => {
             </div>
           );
         };
-        return {
-          element: <Component />,
-        };
+
+        return [coreExtensionData.reactElement(<Component />)];
       },
     });
 
@@ -137,17 +137,18 @@ describe('createExtensionTester', () => {
       ...defaultDefinition,
       name: 'details',
       attachTo: { id: 'app/routes', input: 'routes' },
-      configSchema: createSchemaFromZod(z =>
-        z.object({ title: z.string().optional() }),
-      ),
-      output: {
-        path: coreExtensionData.routePath,
-        element: coreExtensionData.reactElement,
+      config: {
+        schema: {
+          title: z => z.string().optional(),
+        },
       },
-      factory: ({ config }) => ({
-        path: '/details',
-        element: <div>{config.title ?? 'Details page'}</div>,
-      }),
+      output: [coreExtensionData.routePath, coreExtensionData.reactElement],
+      factory: ({ config }) => [
+        coreExtensionData.routePath('/details'),
+        coreExtensionData.reactElement(
+          <div>{config.title ?? 'Details page'}</div>,
+        ),
+      ],
     });
 
     const tester = createExtensionTester(indexPageExtension, {
@@ -209,9 +210,7 @@ describe('createExtensionTester', () => {
           );
         };
 
-        return {
-          element: <Component />,
-        };
+        return [coreExtensionData.reactElement(<Component />)];
       },
     });
 
@@ -254,16 +253,16 @@ describe('createExtensionTester', () => {
       namespace: 'test',
       name: 'e1',
       attachTo: { id: 'ignored', input: 'ignored' },
-      output: { text: stringDataRef },
-      factory: () => ({ text: 'test-text' }),
+      output: [stringDataRef],
+      factory: () => [stringDataRef('test-text')],
     });
 
     const extension2 = createExtension({
       namespace: 'test',
       name: 'e2',
       attachTo: { id: 'ignored', input: 'ignored' },
-      output: { text: stringDataRef },
-      factory: () => ({ text: 'test-text' }),
+      output: [stringDataRef],
+      factory: () => [stringDataRef('test-text')],
     });
 
     const tester = createExtensionTester(extension);
@@ -278,16 +277,16 @@ describe('createExtensionTester', () => {
       namespace: 'test',
       name: 'e1',
       attachTo: { id: 'ignored', input: 'ignored' },
-      output: { text: stringDataRef },
-      factory: () => ({ text: 'test-text' }),
+      output: [stringDataRef],
+      factory: () => [stringDataRef('test-text')],
     });
 
     const extension2 = createExtension({
       namespace: 'test',
       name: 'e2',
       attachTo: { id: 'ignored', input: 'ignored' },
-      output: { text: stringDataRef },
-      factory: () => ({ text: 'test-text' }),
+      output: [stringDataRef],
+      factory: () => [stringDataRef('test-text')],
     });
 
     const tester = createExtensionTester(extension).add(extension2);
@@ -377,33 +376,26 @@ describe('createExtensionTester', () => {
       namespace: 'test',
       name: 'e1',
       attachTo: { id: 'ignored', input: 'ignored' },
-      output: { text: stringDataRef },
+      output: [stringDataRef],
       inputs: {
-        input: createExtensionInput(
-          {
-            output: stringDataRef,
-          },
-          { singleton: true },
-        ),
+        input: createExtensionInput([stringDataRef], { singleton: true }),
       },
-      factory: ({ inputs }) => ({
-        text: `nest-${inputs.input.output.output}`,
-      }),
+      factory: ({ inputs }) => [
+        stringDataRef(`nest-${inputs.input.get(stringDataRef)}`),
+      ],
     });
 
     const extension2 = createExtension({
       namespace: 'test',
       name: 'e2',
       attachTo: { id: 'test/e1', input: 'blob' },
-      output: { text: stringDataRef },
-      factory: () => ({ text: 'test-text' }),
+      output: [stringDataRef],
+      factory: () => [stringDataRef('test-text')],
     });
 
     const tester = createExtensionTester(extension).add(extension2);
 
-    // @ts-expect-error
     expect(tester.query(extension).get(stringDataRef)).toBe('nest-test-text');
-    // @ts-expect-error
     expect(tester.query(extension2).get(stringDataRef)).toBe('test-text');
     // @ts-expect-error
     expect(tester.query(extension).input('input').data(stringDataRef)).toBe(
@@ -418,18 +410,13 @@ describe('createExtensionTester', () => {
       namespace: 'test',
       name: 'e1',
       attachTo: { id: 'ignored', input: 'ignored' },
-      output: { text: stringDataRef },
+      output: [stringDataRef],
       inputs: {
-        input: createExtensionInput(
-          {
-            output: stringDataRef,
-          },
-          { singleton: true },
-        ),
+        input: createExtensionInput([stringDataRef], { singleton: true }),
       },
-      factory: ({ inputs }) => ({
-        text: `nest-${inputs.input.output.output}`,
-      }),
+      factory: ({ inputs }) => [
+        stringDataRef(`nest-${inputs.input.get(stringDataRef)}`),
+      ],
     });
 
     const tester = createExtensionTester(extension, {
@@ -437,7 +424,6 @@ describe('createExtensionTester', () => {
       inputs: { input: 'test-text' },
     });
 
-    // @ts-expect-error
     expect(tester.query(extension).get(stringDataRef)).toBe('nest-test-text');
   });
 });

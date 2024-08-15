@@ -152,14 +152,16 @@ export function renderInTestApp(
           kind: 'test-route',
           name: path,
           attachTo: { id: 'app/root', input: 'elements' },
-          output: {
-            element: coreExtensionData.reactElement,
-            path: coreExtensionData.routePath,
-            routeRef: coreExtensionData.routeRef,
-          },
-          factory() {
-            return { element: <React.Fragment />, path, routeRef };
-          },
+          output: [
+            coreExtensionData.reactElement,
+            coreExtensionData.routePath,
+            coreExtensionData.routeRef,
+          ],
+          factory: () => [
+            coreExtensionData.reactElement(<React.Fragment />),
+            coreExtensionData.routePath(path),
+            coreExtensionData.routeRef(routeRef),
+          ],
         }),
       );
     }

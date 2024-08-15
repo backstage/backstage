@@ -25,8 +25,8 @@ import { createAppTree } from './createAppTree';
 const extBase = {
   id: 'test',
   attachTo: { id: 'app', input: 'root' },
-  output: {},
-  factory: () => ({}),
+  output: [],
+  factory: () => [],
 };
 
 describe('createAppTree', () => {
@@ -60,8 +60,8 @@ describe('createAppTree', () => {
             name: 'app',
             attachTo: { id: 'app/routes', input: 'route' },
             inputs: {},
-            output: {},
-            factory: () => ({}),
+            output: [],
+            factory: () => [],
           }),
         ],
       }),
