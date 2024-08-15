@@ -86,3 +86,19 @@ If your plugin exports and extension creators, these should be migrated to bluep
 The `createExtensionTester` from the `@backstage/frontend-test-utils` package has been reworked to better support testing of extensions. The new API allows access to extension output directly using the new `.get(ref)` method, and also provides access to all tested extensions through the new `.query(id/extension)` method.
 
 The `.render()` method that used to render the test subject in a test app has been deprecated. The extension tester no longer constructs a full app tree, but instead only instantiates the tree for the extensions under test. If you want to test the rendering of an extension that outputs in an app, you can instead use the `renderInTestApp` utility in combination with the new `.reactElement()` method of the extension tester: `renderInTestApp(tester.reactElement())`.
+
+### Extension data references update
+
+The way that extension data references are declared has been changed to allow for type inference of the ID. This requires the declaration to be split into two separate function calls, one to supply the type and the other to infer any options. For example, a reference that was previously declared like this:
+
+```ts
+export const myExtension = createExtensionDataRef<MyType>('my-plugin.my-data');
+```
+
+Should be updated to the following:
+
+```ts
+export const myExtension = createExtensionDataRef<MyType>().with({
+  id: 'my-plugin.my-data',
+});
+```
