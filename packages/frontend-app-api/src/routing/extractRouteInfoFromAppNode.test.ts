@@ -59,10 +59,11 @@ function createTestExtension(options: {
       children: createExtensionInput([coreExtensionData.reactElement]),
     },
     *factory() {
-      if (options.path) {
+      if (options.path !== undefined) {
         yield coreExtensionData.routePath(options.path);
       }
-      if (options.routeRef) {
+
+      if (options.routeRef !== undefined) {
         yield coreExtensionData.routeRef(options.routeRef);
       }
 
