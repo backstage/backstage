@@ -33,6 +33,8 @@ import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common/
 import { UnregisterEntity, UnregisterEntityOptions } from './UnregisterEntity';
 import { useApi, alertApiRef } from '@backstage/core-plugin-api';
 import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
+import { catalogTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export type EntityContextMenuClassKey = 'button';
@@ -70,6 +72,7 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
     onUnregisterEntity,
     onInspectEntity,
   } = props;
+  const { t } = useTranslationRef(catalogTranslationRef);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
   const classes = useStyles();
   const unregisterPermission = useEntityPermission(
@@ -90,12 +93,12 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
   useEffect(() => {
     if (!copyState.error && copyState.value) {
       alertApi.post({
-        message: 'Copied!',
+        message: t('entityContextMenu.copiedMessage'),
         severity: 'info',
         display: 'transient',
       });
     }
-  }, [copyState, alertApi]);
+  }, [copyState, alertApi, t]);
 
   const extraItems = UNSTABLE_extraContextMenuItems && [
     ...UNSTABLE_extraContextMenuItems.map(item => (
@@ -117,7 +120,7 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
 
   return (
     <>
-      <Tooltip title="More" arrow>
+      <Tooltip title={t('entityContextMenu.moreButtonTitle')} arrow>
         <IconButton
           aria-label="more"
           aria-controls="long-menu"
@@ -157,7 +160,7 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
             <ListItemIcon>
               <BugReportIcon fontSize="small" />
             </ListItemIcon>
-            <ListItemText primary="Inspect entity" />
+            <ListItemText primary={t('entityContextMenu.inspectMenuTitle')} />
           </MenuItem>
           <MenuItem
             onClick={() => {
@@ -168,7 +171,7 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
             <ListItemIcon>
               <FileCopyTwoToneIcon fontSize="small" />
             </ListItemIcon>
-            <ListItemText primary="Copy entity URL" />
+            <ListItemText primary={t('entityContextMenu.copyURLMenuTitle')} />
           </MenuItem>
         </MenuList>
       </Popover>

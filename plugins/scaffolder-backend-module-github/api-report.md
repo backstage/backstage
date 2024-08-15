@@ -77,6 +77,7 @@ export function createGithubEnvironmentAction(options: {
         }
       | undefined;
     customBranchPolicyNames?: string[] | undefined;
+    customTagPolicyNames?: string[] | undefined;
     environmentVariables?:
       | {
           [key: string]: string;
@@ -101,6 +102,21 @@ export function createGithubIssuesLabelAction(options: {
     repoUrl: string;
     number: number;
     labels: string[];
+    token?: string | undefined;
+  },
+  JsonObject
+>;
+
+// @public
+export function createGithubPagesEnableAction(options: {
+  integrations: ScmIntegrationRegistry;
+  githubCredentialsProvider?: GithubCredentialsProvider;
+}): TemplateAction<
+  {
+    repoUrl: string;
+    buildType?: 'legacy' | 'workflow' | undefined;
+    sourceBranch?: string | undefined;
+    sourcePath?: '/' | '/docs' | undefined;
     token?: string | undefined;
   },
   JsonObject
@@ -256,6 +272,7 @@ export function createGithubRepoPushAction(options: {
     sourcePath?: string | undefined;
     token?: string | undefined;
     requiredCommitSigning?: boolean | undefined;
+    requireLastPushApproval?: boolean | undefined;
   },
   JsonObject
 >;
@@ -328,6 +345,7 @@ export function createPublishGithubAction(options: {
     requiredStatusCheckContexts?: string[] | undefined;
     requireBranchesToBeUpToDate?: boolean | undefined;
     requiredConversationResolution?: boolean | undefined;
+    requireLastPushApproval?: boolean | undefined;
     repoVisibility?: 'internal' | 'private' | 'public' | undefined;
     collaborators?:
       | (

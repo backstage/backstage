@@ -17,6 +17,7 @@
 import { ExtensionDefinition } from './createExtension';
 import {
   Extension,
+  ResolveExtensionId,
   resolveExtensionDefinition,
 } from './resolveExtensionDefinition';
 import {
@@ -28,21 +29,23 @@ import {
 
 /** @public */
 export interface PluginOptions<
-  Routes extends AnyRoutes,
-  ExternalRoutes extends AnyExternalRoutes,
+  TId extends string,
+  TRoutes extends AnyRoutes,
+  TExternalRoutes extends AnyExternalRoutes,
+  TExtensions extends readonly ExtensionDefinition<any, any>[],
 > {
-  id: string;
-  routes?: Routes;
-  externalRoutes?: ExternalRoutes;
-  extensions?: ExtensionDefinition<unknown>[];
+  id: TId;
+  routes?: TRoutes;
+  externalRoutes?: TExternalRoutes;
+  extensions?: TExtensions;
   featureFlags?: FeatureFlagConfig[];
 }
 
 /** @public */
 export interface InternalBackstagePlugin<
-  Routes extends AnyRoutes = AnyRoutes,
-  ExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
-> extends BackstagePlugin<Routes, ExternalRoutes> {
+  TRoutes extends AnyRoutes = AnyRoutes,
+  TExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
+> extends BackstagePlugin<TRoutes, TExternalRoutes> {
   readonly version: 'v1';
   readonly extensions: Extension<unknown>[];
   readonly featureFlags: FeatureFlagConfig[];
@@ -50,17 +53,36 @@ export interface InternalBackstagePlugin<
 
 /** @public */
 export function createPlugin<
-  Routes extends AnyRoutes = {},
-  ExternalRoutes extends AnyExternalRoutes = {},
+  TId extends string,
+  TRoutes extends AnyRoutes = {},
+  TExternalRoutes extends AnyExternalRoutes = {},
+  TExtensions extends readonly ExtensionDefinition<any, any>[] = [],
 >(
-  options: PluginOptions<Routes, ExternalRoutes>,
-): BackstagePlugin<Routes, ExternalRoutes> {
-  const extensions = (options.extensions ?? []).map(def =>
-    resolveExtensionDefinition(def, { namespace: options.id }),
-  );
+  options: PluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>,
+): BackstagePlugin<
+  TRoutes,
+  TExternalRoutes,
+  {
+    [KExtension in TExtensions[number] as ResolveExtensionId<
+      KExtension,
+      TId
+    >]: KExtension;
+  }
+> {
+  const extensions = new Array<Extension<unknown>>();
+  const extensionDefinitionsById = new Map<
+    string,
+    ExtensionDefinition<unknown>
+  >();
 
-  const extensionIds = extensions.map(e => e.id);
-  if (extensionIds.length !== new Set(extensionIds).size) {
+  for (const def of options.extensions ?? []) {
+    const ext = resolveExtensionDefinition(def, { namespace: options.id });
+    extensions.push(ext);
+    extensionDefinitionsById.set(ext.id, def);
+  }
+
+  if (extensions.length !== extensionDefinitionsById.size) {
+    const extensionIds = extensions.map(e => e.id);
     const duplicates = Array.from(
       new Set(
         extensionIds.filter((id, index) => extensionIds.indexOf(id) !== index),
@@ -78,14 +100,17 @@ export function createPlugin<
     $$type: '@backstage/BackstagePlugin',
     version: 'v1',
     id: options.id,
-    routes: options.routes ?? ({} as Routes),
-    externalRoutes: options.externalRoutes ?? ({} as ExternalRoutes),
+    routes: options.routes ?? ({} as TRoutes),
+    externalRoutes: options.externalRoutes ?? ({} as TExternalRoutes),
     featureFlags: options.featureFlags ?? [],
     extensions,
+    getExtension(id) {
+      return extensionDefinitionsById.get(id);
+    },
     toString() {
       return `Plugin{id=${options.id}}`;
     },
-  } as InternalBackstagePlugin<Routes, ExternalRoutes>;
+  } as InternalBackstagePlugin<TRoutes, TExternalRoutes>;
 }
 
 /** @internal */

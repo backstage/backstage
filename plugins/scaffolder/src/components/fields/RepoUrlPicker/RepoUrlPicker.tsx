@@ -49,6 +49,9 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
   const [state, setState] = useState<RepoUrlPickerState>(
     parseRepoPickerUrl(formData),
   );
+  const [credentialsHost, setCredentialsHost] = useState<string | undefined>(
+    undefined,
+  );
   const integrationApi = useApi(scmIntegrationsApiRef);
   const scmAuthApi = useApi(scmAuthApiRef);
   const { secrets, setSecrets } = useTemplateSecrets();
@@ -128,8 +131,11 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
         return;
       }
 
-      // don't show login prompt if secret value is already in state
-      if (secrets[requestUserCredentials.secretsKey]) {
+      // don't show login prompt if secret value is already in state for selected host
+      if (
+        secrets[requestUserCredentials.secretsKey] &&
+        credentialsHost === state.host
+      ) {
         return;
       }
 
@@ -147,6 +153,7 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
       // set the secret using the key provided in the ui:options for use
       // in the templating the manifest with ${{ secrets[secretsKey] }}
       setSecrets({ [requestUserCredentials.secretsKey]: token });
+      setCredentialsHost(state.host);
     },
     500,
     [state, uiSchema],
@@ -203,6 +210,10 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
           rawErrors={rawErrors}
           state={state}
           onChange={updateLocalState}
+          accessToken={
+            uiSchema?.['ui:options']?.requestUserCredentials?.secretsKey &&
+            secrets[uiSchema['ui:options'].requestUserCredentials.secretsKey]
+          }
         />
       )}
       {hostType === 'azure' && (
@@ -228,6 +239,7 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
           setState(prevState => ({ ...prevState, repoName: repo }))
         }
         rawErrors={rawErrors}
+        availableRepos={state.availableRepos}
       />
     </>
   );

@@ -17,7 +17,10 @@
 import { createExtension, createExtensionDataRef } from '../wiring';
 import { AppTheme } from '@backstage/core-plugin-api';
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use {@link ThemeBlueprint} instead.
+ */
 export function createThemeExtension(theme: AppTheme) {
   return createExtension({
     kind: 'theme',
@@ -31,8 +34,12 @@ export function createThemeExtension(theme: AppTheme) {
   });
 }
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use {@link ThemeBlueprint} instead.
+ */
 export namespace createThemeExtension {
-  export const themeDataRef =
-    createExtensionDataRef<AppTheme>('core.theme.theme');
+  export const themeDataRef = createExtensionDataRef<AppTheme>().with({
+    id: 'core.theme.theme',
+  });
 }

@@ -24,7 +24,10 @@ import {
 import { AnyExtensionInputMap } from '../wiring/createExtension';
 import { Expand } from '../types';
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use {@link ApiBlueprint} instead.
+ */
 export function createApiExtension<
   TConfig extends {},
   TInputs extends AnyExtensionInputMap,
@@ -72,6 +75,7 @@ export function createApiExtension<
 
 /** @public */
 export namespace createApiExtension {
-  export const factoryDataRef =
-    createExtensionDataRef<AnyApiFactory>('core.api.factory');
+  export const factoryDataRef = createExtensionDataRef<AnyApiFactory>().with({
+    id: 'core.api.factory',
+  });
 }

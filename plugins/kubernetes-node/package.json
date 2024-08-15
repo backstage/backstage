@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-kubernetes-node",
-  "version": "0.1.13",
+  "version": "0.1.17-next.2",
   "description": "Node.js library for the kubernetes plugin",
   "backstage": {
     "role": "node-library",
@@ -43,7 +43,7 @@
     "@backstage/plugin-kubernetes-common": "workspace:^",
     "@backstage/types": "workspace:^",
     "@kubernetes/client-node": "^0.20.0",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "^2.7.0",
     "winston": "^3.2.1"
   },
   "devDependencies": {

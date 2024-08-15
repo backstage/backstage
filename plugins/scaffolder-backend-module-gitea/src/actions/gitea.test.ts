@@ -18,7 +18,7 @@ import { ConfigReader } from '@backstage/config';
 import { createPublishGiteaAction } from './gitea';
 import { initRepoAndPush } from '@backstage/plugin-scaffolder-node';
 import { rest } from 'msw';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { setupServer } from 'msw/node';
 
@@ -62,7 +62,7 @@ describe('publish:gitea', () => {
   });
 
   const server = setupServer();
-  setupRequestMockHandlers(server);
+  registerMswTestHooks(server);
 
   beforeEach(() => {
     jest.resetAllMocks();

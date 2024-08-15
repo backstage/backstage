@@ -31,6 +31,7 @@ import { Expand } from '../types';
  * and similar.
  *
  * @public
+ * @deprecated Use {@link AppRootWrapperBlueprint} instead.
  */
 export function createAppRootWrapperExtension<
   TConfig extends {},
@@ -77,8 +78,7 @@ export function createAppRootWrapperExtension<
 
 /** @public */
 export namespace createAppRootWrapperExtension {
-  export const componentDataRef =
-    createExtensionDataRef<ComponentType<PropsWithChildren<{}>>>(
-      'app.root.wrapper',
-    );
+  export const componentDataRef = createExtensionDataRef<
+    ComponentType<PropsWithChildren<{}>>
+  >().with({ id: 'app.root.wrapper' });
 }

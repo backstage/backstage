@@ -396,21 +396,17 @@ Recently, the Backstage maintainers [announced the new Backend System](https://b
 In "packages/backend/index.ts", install the search plugin [1], the search engine [2], and the search collators/decorators modules [3]:
 
 ```ts
-import { searchPlugin } from '@backstage/plugin-search-backend/alpha';
-import { searchModuleElasticsearchEngine } from '@backstage/plugin-search-backend-module-elasticsearch/alpha';
-import { searchModuleCatalogCollator } from '@backstage/plugin-search-backend-module-catalog/alpha';
-import { searchModuleTechDocsCollator } from '@backstage/plugin-search-backend-module-techdocs/alpha';
-import { searchModuleExploreCollator } from '@backstage/plugin-search-backend-module-explore/alpha';
-
 const backend = createBackend();
 // [1] adding the search plugin to the backend
-backend.add(searchPlugin());
+backend.add(import('@backstage/plugin-search-backend/alpha'));
 // [2] (optional) the default search engine is Lunr, if you want to extend the search backend with another search engine.
-backend.add(searchModuleElasticsearchEngine());
+backend.add(
+  import('@backstage/plugin-search-backend-module-elasticsearch/alpha'),
+);
 // [3] extending search with collator modules to start index documents, take in optional schedule parameters.
-backend.add(searchModuleCatalogCollator());
-backend.add(searchModuleTechDocsCollator());
-backend.add(searchModuleExploreCollator());
+backend.add(import('@backstage/plugin-search-backend-module-catalog/alpha'));
+backend.add(import('@backstage/plugin-search-backend-module-techdocs/alpha'));
+backend.add(import('@backstage/plugin-search-backend-module-explore/alpha'));
 
 backend.start();
 ```

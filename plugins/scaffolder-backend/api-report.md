@@ -7,6 +7,7 @@
 
 import { ActionContext as ActionContext_2 } from '@backstage/plugin-scaffolder-node';
 import { AuthService } from '@backstage/backend-plugin-api';
+import { AutocompleteHandler } from '@backstage/plugin-scaffolder-node/alpha';
 import * as azure from '@backstage/plugin-scaffolder-backend-module-azure';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import * as bitbucket from '@backstage/plugin-scaffolder-backend-module-bitbucket';
@@ -63,6 +64,7 @@ import { TemplateFilter as TemplateFilter_2 } from '@backstage/plugin-scaffolder
 import { TemplateGlobal as TemplateGlobal_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { UrlReader } from '@backstage/backend-common';
+import { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
 import { ZodType } from 'zod';
 import { ZodTypeDef } from 'zod';
 
@@ -310,7 +312,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
     sourcePath?: string | undefined;
     targetPath?: string | undefined;
     token?: string | undefined;
-    commitAction?: 'update' | 'delete' | 'create' | undefined;
+    commitAction?: 'auto' | 'update' | 'delete' | 'create' | undefined;
     projectid?: string | undefined;
     removeSourceBranch?: boolean | undefined;
     assignee?: string | undefined;
@@ -425,7 +427,7 @@ export class DatabaseTaskStore implements TaskStore {
   // (undocumented)
   heartbeatTask(taskId: string): Promise<void>;
   // (undocumented)
-  list(options: { createdBy?: string }): Promise<{
+  list(options: { createdBy?: string; status?: TaskStatus_2 }): Promise<{
     tasks: SerializedTask_2[];
   }>;
   // (undocumented)
@@ -476,7 +478,11 @@ export interface RouterOptions {
   // (undocumented)
   additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
   // (undocumented)
+  additionalWorkspaceProviders?: Record<string, WorkspaceProvider>;
+  // (undocumented)
   auth?: AuthService;
+  // (undocumented)
+  autocompleteHandlers?: Record<string, AutocompleteHandler>;
   // (undocumented)
   catalogClient: CatalogApi;
   concurrentTasksLimit?: number;
@@ -556,6 +562,7 @@ export class TaskManager implements TaskContext_2 {
     logger: Logger,
     auth?: AuthService,
     config?: Config,
+    additionalWorkspaceProviders?: Record<string, WorkspaceProvider>,
   ): TaskManager;
   // (undocumented)
   get createdBy(): string | undefined;
@@ -639,7 +646,7 @@ export interface TaskStore {
   // (undocumented)
   heartbeatTask(taskId: string): Promise<void>;
   // (undocumented)
-  list?(options: { createdBy?: string }): Promise<{
+  list?(options: { createdBy?: string; status?: TaskStatus }): Promise<{
     tasks: SerializedTask[];
   }>;
   // (undocumented)

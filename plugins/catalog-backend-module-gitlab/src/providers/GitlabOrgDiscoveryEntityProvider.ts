@@ -356,7 +356,23 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     let groups;
     let users;
 
-    if (this.gitLabClient.isSelfManaged()) {
+    // Self-hosted: Fetch the users either from the defined group (restrictUsersToGroup) or fetch all users from the GitLab instance
+    // SaaS: Fetch the users from the defined group (restrictUsersToGroup) or fetch all users from the root group.
+    if (this.gitLabClient.isSelfManaged() && this.config.restrictUsersToGroup) {
+      groups = (await this.gitLabClient.listDescendantGroups(this.config.group))
+        .items;
+      users = paginated<GitLabUser>(
+        options =>
+          this.gitLabClient.listGroupMembers(this.config.group, options), // calls /groups/<groupId>/members
+        {
+          page: 1,
+          per_page: 100,
+        },
+      );
+    } else if (
+      this.gitLabClient.isSelfManaged() &&
+      !this.config.restrictUsersToGroup
+    ) {
       groups = paginated<GitLabGroup>(
         options => this.gitLabClient.listGroups(options),
         {
@@ -365,19 +381,19 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
           all_available: true,
         },
       );
-
       users = paginated<GitLabUser>(
-        options => this.gitLabClient.listUsers(options),
-        {
-          page: 1,
-          per_page: 100,
-          active: true,
-        },
+        options => this.gitLabClient.listUsers(options), // calls /users?
+        { page: 1, per_page: 100, active: true },
       );
-    } else {
+    }
+    // SaaS: Fetch the users from the defined group (restrictUsersToGroup) or fetch all users from the root group.
+    else {
       groups = (await this.gitLabClient.listDescendantGroups(this.config.group))
         .items;
-      const rootGroup = this.config.group.split('/')[0];
+      const rootGroupSplit = this.config.group.split('/');
+      const rootGroup = this.config.restrictUsersToGroup
+        ? rootGroupSplit[rootGroupSplit.length - 1]
+        : rootGroupSplit[0];
       users = paginated<GitLabUser>(
         options => this.gitLabClient.listSaaSUsers(rootGroup, options),
         {

@@ -254,6 +254,39 @@ export namespace Models {
   }
 
   /**
+   * A paginated list of projects.
+   * @public
+   */
+  export interface PaginatedProjects extends Paginated<Project> {
+    /**
+     * The values of the current page.
+     */
+    values?: Set<Project>;
+  }
+
+  /**
+   * A paginated list of workspaces.
+   * @public
+   */
+  export interface PaginatedWorkspaces extends Paginated<Workspace> {
+    /**
+     * The values of the current page.
+     */
+    values?: Set<Workspace>;
+  }
+
+  /**
+   * A paginated list of branches.
+   * @public
+   */
+  export interface PaginatedBranches extends Paginated<Branch> {
+    /**
+     * The values of the current page.
+     */
+    values?: Set<Branch>;
+  }
+
+  /**
    * Object describing a user's role on resources like commits or pull requests.
    * @public
    */

@@ -62,12 +62,13 @@ describe('pluginCommon factory', () => {
         modified = true;
       },
       createTemporaryDirectory: () => fs.mkdtemp('test'),
+      license: 'Apache-2.0',
     });
 
     expect(modified).toBe(true);
 
     expectLogsToMatch(output, [
-      'Creating backend plugin backstage-plugin-test-common',
+      'Creating common plugin package backstage-plugin-test-common',
       'Checking Prerequisites:',
       `availability  plugins${sep}test-common`,
       'creating      temp dir',

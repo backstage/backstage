@@ -26,6 +26,25 @@ parameters:
         ui:help: 'Hint: additional description...'
 ```
 
+#### Custom validation error message
+
+```yaml
+parameters:
+  - title: Fill in some steps
+    properties:
+      name:
+        title: Simple text input
+        type: string
+        description: Description about input
+        maxLength: 8
+        pattern: '^([a-zA-Z][a-zA-Z0-9]*)(-[a-zA-Z0-9]+)*$'
+        ui:autofocus: true
+        ui:help: 'Hint: additional description...'
+    errorMessage:
+      properties:
+        name: '1-8 alphanumeric tokens (first starts with letter) delimited by -'
+```
+
 ### Multi line text input
 
 ```yaml
@@ -255,4 +274,56 @@ spec:
       action: fetch:template
       input:
         url: ${{ '/root' if parameters.path !== true else parameters.path }}
+```
+
+## Use placeholders to reference remote files
+
+:::note
+
+Testing of this functionality is not yet supported using _create/edit_. In addition, this functionality only works for remote files and not local files. You also cannot nest files.
+
+:::
+
+### template.yaml
+
+```yaml
+spec:
+  parameters:
+    - $yaml: https://github.com/example/path/to/example.yaml
+    - title: Fill in some steps
+      properties:
+        path:
+          title: path
+          type: string
+
+  steps:
+    - $yaml: https://github.com//example/path/to/action.yaml
+
+    - id: fetch
+      name: Fetch template
+      action: fetch:template
+      input:
+        url: ${{ parameters.path if parameters.path else '/root' }}
+```
+
+### example.yaml
+
+```yaml
+title: Provide simple information
+required:
+  - url
+properties:
+  url:
+    title: url
+    type: string
+```
+
+### action.yaml
+
+```yaml
+id: publish
+name: Publish files
+action: publish:github
+input:
+  repoUrl: ${{ parameters.url }}
 ```

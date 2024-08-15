@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-kubernetes-backend",
-  "version": "0.18.0",
+  "version": "0.18.4-next.2",
   "description": "A Backstage backend plugin that integrates towards Kubernetes",
   "backstage": {
     "role": "backend-plugin",
@@ -92,7 +92,7 @@
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",
     "morgan": "^1.10.0",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "^2.7.0",
     "stream-buffers": "^3.0.2",
     "winston": "^3.2.1",
     "yn": "^4.0.0"

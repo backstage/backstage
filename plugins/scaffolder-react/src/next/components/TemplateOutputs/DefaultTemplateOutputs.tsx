@@ -56,22 +56,32 @@ export const DefaultTemplateOutputs = (props: {
     return null;
   }
 
+  const emptyOutput = Object.keys(output).length === 0;
+
   return (
     <>
-      <Box paddingBottom={2}>
-        <Paper>
-          <Box padding={2} justifyContent="center" display="flex" gridGap={16}>
-            <TextOutputs
-              output={output}
-              index={textOutputIndex}
-              setIndex={setTextOutputIndex}
-            />
-            <LinkOutputs output={output} />
-          </Box>
-        </Paper>
-      </Box>
+      {!emptyOutput ? (
+        <Box paddingBottom={2} data-testid="output-box">
+          <Paper>
+            <Box
+              padding={2}
+              justifyContent="center"
+              display="flex"
+              gridGap={16}
+              flexWrap="wrap"
+            >
+              <TextOutputs
+                output={output}
+                index={textOutputIndex}
+                setIndex={setTextOutputIndex}
+              />
+              <LinkOutputs output={output} />
+            </Box>
+          </Paper>
+        </Box>
+      ) : null}
       {textOutput ? (
-        <Box paddingBottom={2}>
+        <Box paddingBottom={2} data-testid="text-output-box">
           <InfoCard
             title={textOutput.title ?? 'Text Output'}
             noPadding

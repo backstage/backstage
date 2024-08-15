@@ -18,18 +18,33 @@ const _default: BackstagePlugin<
     }>;
     entityContent: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 export default _default;
 
 // @alpha (undocumented)
-export const techDocsSearchResultListItemExtension: ExtensionDefinition<{
-  lineClamp: number;
-  noTrack: boolean;
-  asListItem: boolean;
-  asLink: boolean;
-  title?: string | undefined;
-}>;
+export const techDocsSearchResultListItemExtension: ExtensionDefinition<
+  {
+    lineClamp: number;
+    noTrack: boolean;
+    asListItem: boolean;
+    asLink: boolean;
+    title?: string | undefined;
+  },
+  {
+    lineClamp: number;
+    noTrack: boolean;
+    asListItem: boolean;
+    asLink: boolean;
+    title?: string | undefined;
+  },
+  never,
+  never,
+  string | undefined,
+  string | undefined,
+  string | undefined
+>;
 
 // (No @packageDocumentation comment for this package)
 ```

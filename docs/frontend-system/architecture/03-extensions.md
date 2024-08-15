@@ -91,7 +91,9 @@ To create a new extension data reference to represent a type of shared extension
 
 ```ts
 export const reactElementExtensionDataRef =
-  createExtensionDataRef<React.JSX.Element>('my-plugin.reactElement');
+  createExtensionDataRef<React.JSX.Element>().with({
+    id: 'my-plugin.reactElement',
+  });
 ```
 
 The `ExtensionDataRef` can then be used to describe an output property of the extension. This will enforce typing on the return value of the extension factory:
@@ -337,7 +339,7 @@ Similar to plugins the `ErrorBoundary` for extension allows to pass in a fallbac
 
 ### Analytics
 
-Analytics information are provided through the `AnalyticsContext`, which will give `extensionId` & `pluginId` as context to analytics event fired inside of the extension. Additionally `RouteTracker` will capture an analytics event for routable extension to inform which extension metadata gets associated with a navigation event when the route navigated to is a gathered `mountPoint`.
+Analytics information are provided through the `AnalyticsContext`, which will give `extensionId` & `pluginId` as context to analytics event fired inside of the extension. Additionally `RouteTracker` will capture an analytics event for routable extension to inform which extension metadata gets associated with a navigation event when the route navigated to is a gathered `mountPoint`. Whether an extension is routable is inferred from its outputs, but you can also explicitly control this behavior by passing the `routable` prop to `ExtensionBoundary`.
 
 The `ExtensionBoundary` can be used like the following in an extension creator:
 
@@ -359,7 +361,7 @@ export function createSomeExtension<
         path: config.path,
         routeRef: options.routeRef,
         element: (
-          <ExtensionBoundary node={node} routable>
+          <ExtensionBoundary node={node}>
             <ExtensionComponent />
           </ExtensionBoundary>
         ),

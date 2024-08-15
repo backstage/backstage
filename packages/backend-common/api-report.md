@@ -129,7 +129,7 @@ export class CacheManager extends CacheManager_2 {}
 // @public @deprecated (undocumented)
 export type CacheManagerOptions = CacheManagerOptions_2;
 
-// @public
+// @public @deprecated
 export function cacheToPluginCacheManager(cache: CacheService): {
   getClient(options?: CacheServiceOptions): CacheService;
 };
@@ -142,7 +142,7 @@ export interface ContainerRunner {
   runContainer(opts: RunContainerOptions): Promise<void>;
 }
 
-// @public
+// @public @deprecated
 export function createLegacyAuthAdapters<
   TOptions extends {
     auth?: AuthService;
@@ -184,7 +184,7 @@ export function createRootLogger(
 // @public @deprecated
 export function createServiceBuilder(_module: NodeModule): ServiceBuilder;
 
-// @public
+// @public @deprecated
 export function createStatusCheckRouter(options: {
   logger: LoggerService;
   path?: string;
@@ -401,10 +401,10 @@ export type KubernetesContainerRunnerOptions = {
   timeoutMs?: number;
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type LegacyCreateRouter<TEnv> = (deps: TEnv) => Promise<RequestHandler>;
 
-// @public
+// @public @deprecated
 export const legacyPlugin: (
   name: string,
   createRouterImport: Promise<{
@@ -447,13 +447,13 @@ export function loadBackendConfig(options: {
   watch?: boolean;
 }): Promise<Config>;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function loggerToWinstonLogger(
   logger: LoggerService,
   opts?: TransportStreamOptions,
 ): Logger;
 
-// @public
+// @public @deprecated
 export function makeLegacyPlugin<
   TEnv extends Record<string, unknown>,
   TEnvTransforms extends {
@@ -645,15 +645,15 @@ export type StaticAuthOptions = {
   logger?: LoggerService;
 };
 
-// @public
+// @public @deprecated
 export type StatusCheck = () => Promise<any>;
 
-// @public
+// @public @deprecated
 export function statusCheckHandler(
   options?: StatusCheckHandlerOptions,
 ): Promise<RequestHandler>;
 
-// @public
+// @public @deprecated
 export interface StatusCheckHandlerOptions {
   statusCheck?: StatusCheck;
 }

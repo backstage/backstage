@@ -12,10 +12,25 @@ export class BitbucketCloudClient {
     config: BitbucketCloudIntegrationConfig,
   ): BitbucketCloudClient;
   // (undocumented)
+  listBranchesByRepository(
+    repository: string,
+    workspace: string,
+    options?: FilterAndSortOptions & PartialResponseOptions,
+  ): WithPagination<Models.PaginatedBranches, Models.Branch>;
+  // (undocumented)
+  listProjectsByWorkspace(
+    workspace: string,
+    options?: FilterAndSortOptions & PartialResponseOptions,
+  ): WithPagination<Models.PaginatedProjects, Models.Project>;
+  // (undocumented)
   listRepositoriesByWorkspace(
     workspace: string,
     options?: FilterAndSortOptions & PartialResponseOptions,
   ): WithPagination<Models.PaginatedRepositories, Models.Repository>;
+  // (undocumented)
+  listWorkspaces(
+    options?: FilterAndSortOptions & PartialResponseOptions,
+  ): WithPagination<Models.PaginatedWorkspaces, Models.Workspace>;
   // (undocumented)
   searchCode(
     workspace: string,
@@ -200,8 +215,17 @@ export namespace Models {
     size?: number;
     values?: Array<TResultItem> | Set<TResultItem>;
   }
+  export interface PaginatedBranches extends Paginated<Branch> {
+    values?: Set<Branch>;
+  }
+  export interface PaginatedProjects extends Paginated<Project> {
+    values?: Set<Project>;
+  }
   export interface PaginatedRepositories extends Paginated<Repository> {
     values?: Set<Repository>;
+  }
+  export interface PaginatedWorkspaces extends Paginated<Workspace> {
+    values?: Set<Workspace>;
   }
   export interface Participant extends ModelObject {
     // (undocumented)

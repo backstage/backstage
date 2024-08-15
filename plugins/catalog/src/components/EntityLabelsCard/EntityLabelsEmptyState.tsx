@@ -19,6 +19,8 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { CodeSnippet } from '@backstage/core-components';
+import { catalogTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 const ENTITY_YAML = `metadata:
   name: example
@@ -39,12 +41,12 @@ const useStyles = makeStyles(
 
 export function EntityLabelsEmptyState() {
   const classes = useStyles();
+  const { t } = useTranslationRef(catalogTranslationRef);
 
   return (
     <>
       <Typography variant="body1">
-        No labels defined for this entity. You can add labels to your entity
-        YAML as shown in the highlighted example below:
+        {t('entityLabelsCard.emptyDescription')}
       </Typography>
       <div className={classes.code}>
         <CodeSnippet
@@ -61,7 +63,7 @@ export function EntityLabelsEmptyState() {
         target="_blank"
         href="https://backstage.io/docs/features/software-catalog/descriptor-format#labels-optional"
       >
-        Read more
+        {t('entityLabelsCard.readMoreButtonTitle')}
       </Button>
     </>
   );

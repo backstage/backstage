@@ -30,6 +30,7 @@ import { SignInPageProps } from '@backstage/core-plugin-api';
 /**
  *
  * @public
+ * @deprecated Use {@link SignInPageBlueprint} instead.
  */
 export function createSignInPageExtension<
   TConfig extends {},
@@ -79,5 +80,5 @@ export function createSignInPageExtension<
 export namespace createSignInPageExtension {
   export const componentDataRef = createExtensionDataRef<
     ComponentType<SignInPageProps>
-  >('core.sign-in-page.component');
+  >().with({ id: 'core.sign-in-page.component' });
 }

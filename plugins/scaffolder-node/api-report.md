@@ -315,7 +315,7 @@ export interface TaskBroker {
   // (undocumented)
   get(taskId: string): Promise<SerializedTask>;
   // (undocumented)
-  list?(options?: { createdBy?: string }): Promise<{
+  list?(options?: { createdBy?: string; status?: TaskStatus }): Promise<{
     tasks: SerializedTask[];
   }>;
   // (undocumented)

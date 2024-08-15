@@ -46,7 +46,7 @@ export const pluginCommon = createFactory<Options>({
     });
 
     Task.log();
-    Task.log(`Creating backend plugin ${chalk.cyan(name)}`);
+    Task.log(`Creating common plugin package ${chalk.cyan(name)}`);
 
     const targetDir = ctx.isMonoRepo
       ? paths.resolveTargetRoot('plugins', suffix)
@@ -61,6 +61,7 @@ export const pluginCommon = createFactory<Options>({
         privatePackage: ctx.private,
         npmRegistry: ctx.npmRegistry,
         pluginVersion: ctx.defaultVersion,
+        license: ctx.license,
       },
     });
 

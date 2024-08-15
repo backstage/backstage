@@ -69,6 +69,52 @@ export class BitbucketCloudClient {
     );
   }
 
+  listProjectsByWorkspace(
+    workspace: string,
+    options?: FilterAndSortOptions & PartialResponseOptions,
+  ): WithPagination<Models.PaginatedProjects, Models.Project> {
+    const workspaceEnc = encodeURIComponent(workspace);
+
+    return new WithPagination(
+      paginationOptions =>
+        this.createUrl(`/workspaces/${workspaceEnc}/projects`, {
+          ...paginationOptions,
+          ...options,
+        }),
+      url => this.getTypeMapped(url),
+    );
+  }
+
+  listWorkspaces(
+    options?: FilterAndSortOptions & PartialResponseOptions,
+  ): WithPagination<Models.PaginatedWorkspaces, Models.Workspace> {
+    return new WithPagination(
+      paginationOptions =>
+        this.createUrl('/workspaces', { ...paginationOptions, ...options }),
+      url => this.getTypeMapped(url),
+    );
+  }
+
+  listBranchesByRepository(
+    repository: string,
+    workspace: string,
+    options?: FilterAndSortOptions & PartialResponseOptions,
+  ): WithPagination<Models.PaginatedBranches, Models.Branch> {
+    const workspaceEnc = encodeURIComponent(workspace);
+
+    return new WithPagination(
+      paginationOptions =>
+        this.createUrl(
+          `/repositories/${workspaceEnc}/${repository}/refs/branches`,
+          {
+            ...paginationOptions,
+            ...options,
+          },
+        ),
+      url => this.getTypeMapped(url),
+    );
+  }
+
   private createUrl(endpoint: string, options?: RequestOptions): URL {
     const request = new URL(this.config.apiBaseUrl + endpoint);
     for (const key in options) {
@@ -113,6 +159,8 @@ export class BitbucketCloudClient {
         'utf8',
       );
       headers.Authorization = `Basic ${buffer.toString('base64')}`;
+    } else if (this.config.token) {
+      headers.Authorization = `Bearer ${this.config.token}`;
     }
 
     return headers;

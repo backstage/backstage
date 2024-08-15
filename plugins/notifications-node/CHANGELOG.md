@@ -1,5 +1,79 @@
 # @backstage/plugin-notifications-node
 
+## 0.2.4-next.2
+
+### Patch Changes
+
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.2
+  - @backstage/backend-common@0.23.4-next.2
+  - @backstage/plugin-signals-node@0.1.9-next.2
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/plugin-notifications-common@0.0.5
+
+## 0.2.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/backend-common@0.23.4-next.1
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/plugin-notifications-common@0.0.5
+  - @backstage/plugin-signals-node@0.1.9-next.1
+
+## 0.2.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.23.4-next.0
+  - @backstage/backend-plugin-api@0.7.1-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/plugin-notifications-common@0.0.5
+  - @backstage/plugin-signals-node@0.1.9-next.0
+
+## 0.2.3
+
+### Patch Changes
+
+- 4e4ef2b: Move notification processor filter parsing to common package
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/backend-common@0.23.3
+  - @backstage/plugin-notifications-common@0.0.5
+  - @backstage/plugin-signals-node@0.1.8
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+
+## 0.2.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.23.3-next.1
+  - @backstage/backend-plugin-api@0.6.22-next.1
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/plugin-notifications-common@0.0.4
+  - @backstage/plugin-signals-node@0.1.8-next.1
+
+## 0.2.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.21-next.0
+  - @backstage/backend-common@0.23.2-next.0
+  - @backstage/plugin-signals-node@0.1.7-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/plugin-notifications-common@0.0.4
+
 ## 0.2.0
 
 ### Minor Changes

@@ -136,7 +136,7 @@ export function createPublishAzureAction(options: {
         gitAuthorEmail,
       } = ctx.input;
 
-      const { owner, repo, host, organization } = parseRepoUrl(
+      const { project, repo, host, organization } = parseRepoUrl(
         repoUrl,
         integrations,
       );
@@ -166,11 +166,14 @@ export function createPublishAzureAction(options: {
       const webApi = new WebApi(url, authHandler);
       const client = await webApi.getGitApi();
       const createOptions: GitRepositoryCreateOptions = { name: repo };
-      const returnedRepo = await client.createRepository(createOptions, owner);
+      const returnedRepo = await client.createRepository(
+        createOptions,
+        project,
+      );
 
       if (!returnedRepo) {
         throw new InputError(
-          `Unable to create the repository with Organization ${organization}, Project ${owner} and Repo ${repo}.
+          `Unable to create the repository with Organization ${organization}, Project ${project} and Repo ${repo}.
           Please make sure that both the Org and Project are typed corrected and exist.`,
         );
       }

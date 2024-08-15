@@ -30,6 +30,7 @@ import { lifecycleServiceFactory } from '@backstage/backend-defaults/lifecycle';
 import { loggerServiceFactory } from '@backstage/backend-defaults/logger';
 import { permissionsServiceFactory } from '@backstage/backend-defaults/permissions';
 import { rootConfigServiceFactory } from '@backstage/backend-defaults/rootConfig';
+import { rootHealthServiceFactory } from '@backstage/backend-defaults/rootHealth';
 import { rootHttpRouterServiceFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import { rootLifecycleServiceFactory } from '@backstage/backend-defaults/rootLifecycle';
 import { rootLoggerServiceFactory } from '@backstage/backend-defaults/rootLogger';
@@ -39,25 +40,26 @@ import { userInfoServiceFactory } from '@backstage/backend-defaults/userInfo';
 import { eventsServiceFactory } from '@backstage/plugin-events-node';
 
 export const defaultServiceFactories = [
-  authServiceFactory(),
-  cacheServiceFactory(),
-  rootConfigServiceFactory(),
-  databaseServiceFactory(),
-  discoveryServiceFactory(),
-  httpAuthServiceFactory(),
-  httpRouterServiceFactory(),
-  identityServiceFactory(),
-  lifecycleServiceFactory(),
-  loggerServiceFactory(),
-  permissionsServiceFactory(),
-  rootHttpRouterServiceFactory(),
-  rootLifecycleServiceFactory(),
-  rootLoggerServiceFactory(),
-  schedulerServiceFactory(),
-  tokenManagerServiceFactory(),
-  userInfoServiceFactory(),
-  urlReaderServiceFactory(),
-  eventsServiceFactory(),
+  authServiceFactory,
+  cacheServiceFactory,
+  rootConfigServiceFactory,
+  databaseServiceFactory,
+  discoveryServiceFactory,
+  httpAuthServiceFactory,
+  httpRouterServiceFactory,
+  identityServiceFactory,
+  lifecycleServiceFactory,
+  loggerServiceFactory,
+  permissionsServiceFactory,
+  rootHealthServiceFactory,
+  rootHttpRouterServiceFactory,
+  rootLifecycleServiceFactory,
+  rootLoggerServiceFactory,
+  schedulerServiceFactory,
+  tokenManagerServiceFactory,
+  userInfoServiceFactory,
+  urlReaderServiceFactory,
+  eventsServiceFactory,
 ];
 
 /**

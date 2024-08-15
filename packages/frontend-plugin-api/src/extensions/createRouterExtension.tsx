@@ -31,6 +31,7 @@ import { Expand } from '../types';
  * MemoryRouter in tests, or to add additional props to a BrowserRouter.
  *
  * @public
+ * @deprecated Use {@link RouterBlueprint} instead.
  */
 export function createRouterExtension<
   TConfig extends {},
@@ -77,8 +78,7 @@ export function createRouterExtension<
 
 /** @public */
 export namespace createRouterExtension {
-  export const componentDataRef =
-    createExtensionDataRef<ComponentType<PropsWithChildren<{}>>>(
-      'app.router.wrapper',
-    );
+  export const componentDataRef = createExtensionDataRef<
+    ComponentType<PropsWithChildren<{}>>
+  >().with({ id: 'app.router.wrapper' });
 }

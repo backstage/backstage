@@ -95,13 +95,4 @@ describe('<HeaderTabs />', () => {
     await user.click(rendered.getByText('Docs'));
     expect(mockOnChange).toHaveBeenCalledTimes(1);
   });
-
-  it('should render 2 nav tabs', async () => {
-    const rendered = await renderInTestApp(<HeaderTabs tabs={mockTabs} />);
-    const tabs = rendered.queryAllByTestId(id => id.startsWith('header-tab'));
-    expect(tabs).toHaveLength(2);
-    tabs.forEach(tab => {
-      expect(tab.tagName.toLocaleLowerCase('en-US')).toBe('a');
-    });
-  });
 });

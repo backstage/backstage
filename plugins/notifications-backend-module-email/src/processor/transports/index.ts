@@ -16,3 +16,4 @@
 export { createSmtpTransport } from './smtp';
 export { createSesTransport } from './ses';
 export { createSendmailTransport } from './sendmail';
+export { createStreamTransport } from './stream';

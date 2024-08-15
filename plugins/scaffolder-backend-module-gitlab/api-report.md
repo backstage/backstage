@@ -193,7 +193,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
     sourcePath?: string | undefined;
     targetPath?: string | undefined;
     token?: string | undefined;
-    commitAction?: 'update' | 'delete' | 'create' | undefined;
+    commitAction?: 'auto' | 'update' | 'delete' | 'create' | undefined;
     projectid?: string | undefined;
     removeSourceBranch?: boolean | undefined;
     assignee?: string | undefined;
@@ -211,6 +211,7 @@ export const createTriggerGitlabPipelineAction: (options: {
     projectId: number;
     tokenDescription: string;
     token?: string | undefined;
+    variables?: Record<string, string> | undefined;
   },
   {
     pipelineUrl: string;

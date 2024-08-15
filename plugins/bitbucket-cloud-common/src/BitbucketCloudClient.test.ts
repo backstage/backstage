@@ -107,4 +107,88 @@ describe('BitbucketCloudClient', () => {
     expect(results).toHaveLength(1);
     expect(results[0].slug).toEqual('repo1');
   });
+
+  it('listProjectsByWorkspace', async () => {
+    server.use(
+      rest.get(
+        'https://api.bitbucket.org/2.0/workspaces/ws/projects',
+        (_, res, ctx) => {
+          const response = {
+            values: [
+              {
+                type: 'project',
+                slug: 'project1',
+              } as Models.Project,
+            ],
+          };
+          return res(ctx.json(response));
+        },
+      ),
+    );
+
+    const pagination = client.listProjectsByWorkspace('ws');
+
+    const results = [];
+    for await (const result of pagination.iterateResults()) {
+      results.push(result);
+    }
+
+    expect(results).toHaveLength(1);
+    expect(results[0].slug).toEqual('project1');
+  });
+
+  it('listWorkspaces', async () => {
+    server.use(
+      rest.get('https://api.bitbucket.org/2.0/workspaces', (_, res, ctx) => {
+        const response = {
+          values: [
+            {
+              type: 'workspace',
+              slug: 'workspace1',
+            } as Models.Workspace,
+          ],
+        };
+        return res(ctx.json(response));
+      }),
+    );
+
+    const pagination = client.listWorkspaces();
+
+    const results = [];
+    for await (const result of pagination.iterateResults()) {
+      results.push(result);
+    }
+
+    expect(results).toHaveLength(1);
+    expect(results[0].slug).toEqual('workspace1');
+  });
+
+  it('listBranchesByRepository', async () => {
+    server.use(
+      rest.get(
+        'https://api.bitbucket.org/2.0/repositories/workspace1/repo1/refs/branches',
+        (_, res, ctx) => {
+          const response = {
+            values: [
+              {
+                type: 'branch',
+                name: 'branch1',
+              } as Models.Branch,
+            ],
+          };
+          return res(ctx.json(response));
+        },
+      ),
+    );
+
+    const pagination = client.listBranchesByRepository('repo1', 'workspace1');
+
+    const results = [];
+    for await (const result of pagination.iterateResults()) {
+      results.push(result);
+    }
+
+    expect(results).toHaveLength(1);
+    expect(results[0].name).toEqual('branch1');
+  });
 });

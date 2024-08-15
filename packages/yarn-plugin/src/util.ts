@@ -16,10 +16,16 @@
 
 import { ppath, xfs } from '@yarnpkg/fslib';
 import { valid as semverValid } from 'semver';
-import { getManifestByVersion } from '@backstage/release-manifests';
+import { memoize } from 'lodash';
+import { getManifestByVersion as getManifestByVersionBase } from '@backstage/release-manifests';
 import { BACKSTAGE_JSON, findPaths } from '@backstage/cli-common';
 import { Descriptor, structUtils } from '@yarnpkg/core';
 import { PROTOCOL } from './constants';
+
+const getManifestByVersion = memoize(
+  getManifestByVersionBase,
+  ({ version }) => version,
+);
 
 export const getCurrentBackstageVersion = () => {
   const workspaceRoot = ppath.resolve(findPaths(ppath.cwd()).targetRoot);

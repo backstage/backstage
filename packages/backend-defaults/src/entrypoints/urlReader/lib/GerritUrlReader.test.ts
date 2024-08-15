@@ -17,7 +17,7 @@
 import {
   createMockDirectory,
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { NotModifiedError, NotFoundError } from '@backstage/errors';
@@ -92,7 +92,7 @@ const createReader = (config: JsonObject): UrlReaderPredicateTuple[] => {
 // eslint-disable-next-line jest/no-disabled-tests
 describe.skip('GerritUrlReader', () => {
   const worker = setupServer();
-  setupRequestMockHandlers(worker);
+  registerMswTestHooks(worker);
 
   beforeEach(() => {
     mockDir.clear();

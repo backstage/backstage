@@ -15,7 +15,6 @@
  */
 import {
   NotificationProcessor,
-  NotificationProcessorFilters,
   NotificationSendOptions,
 } from '@backstage/plugin-notifications-node';
 import {
@@ -30,14 +29,15 @@ import {
   CatalogClient,
 } from '@backstage/catalog-client';
 import {
+  getProcessorFiltersFromConfig,
   Notification,
-  notificationSeverities,
-  NotificationSeverity,
+  NotificationProcessorFilters,
 } from '@backstage/plugin-notifications-common';
 import {
   createSendmailTransport,
   createSesTransport,
   createSmtpTransport,
+  createStreamTransport,
 } from './transports';
 import { UserEntity } from '@backstage/catalog-model';
 import { compact } from 'lodash';
@@ -57,6 +57,8 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
   private readonly throttleInterval: number;
   private readonly frontendBaseUrl: string;
   private readonly filter: NotificationProcessorFilters;
+  private readonly allowlistEmailAddresses?: string[];
+  private readonly denylistEmailAddresses?: string[];
 
   constructor(
     private readonly logger: LoggerService,
@@ -86,30 +88,13 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       ? durationToMilliseconds(readDurationFromConfig(cacheConfig))
       : 3_600_000;
     this.frontendBaseUrl = config.getString('app.baseUrl');
-    this.filter = {};
-    const minSeverity = emailProcessorConfig.getOptionalString(
-      'filter.minSeverity',
-    ) as NotificationSeverity;
-    if (minSeverity) {
-      if (notificationSeverities.includes(minSeverity)) {
-        this.filter.minSeverity = minSeverity;
-      } else {
-        throw new Error(`Invalid minSeverity: ${minSeverity}`);
-      }
-    }
-    const maxSeverity = emailProcessorConfig.getOptionalString(
-      'filter.maxSeverity',
-    ) as NotificationSeverity;
-    if (maxSeverity) {
-      if (notificationSeverities.includes(maxSeverity)) {
-        this.filter.maxSeverity = maxSeverity;
-      } else {
-        throw new Error(`Invalid maxSeverity: ${maxSeverity}`);
-      }
-    }
-    this.filter.excludedTopics = emailProcessorConfig.getOptionalStringArray(
-      'filter.excludedTopics',
+    this.allowlistEmailAddresses = emailProcessorConfig.getOptionalStringArray(
+      'allowlistEmailAddresses',
     );
+    this.denylistEmailAddresses = emailProcessorConfig.getOptionalStringArray(
+      'denylistEmailAddresses',
+    );
+    this.filter = getProcessorFiltersFromConfig(emailProcessorConfig);
   }
 
   private async getTransporter() {
@@ -129,6 +114,8 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       );
     } else if (transport === 'sendmail') {
       this.transporter = createSendmailTransport(this.transportConfig);
+    } else if (transport === 'stream') {
+      this.transporter = createStreamTransport();
     } else {
       throw new Error(`Unsupported transport: ${transport}`);
     }
@@ -221,14 +208,30 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
     notification: Notification,
     options: NotificationSendOptions,
   ) {
+    let emails: string[];
     if (options.recipients.type === 'broadcast' || notification.user === null) {
-      return await this.getBroadcastEmails();
+      emails = await this.getBroadcastEmails();
+    } else {
+      emails = await this.getUserEmail(notification.user);
     }
-    return await this.getUserEmail(notification.user);
+
+    if (this.allowlistEmailAddresses) {
+      emails = emails.filter(email =>
+        this.allowlistEmailAddresses?.includes(email),
+      );
+    }
+
+    if (this.denylistEmailAddresses) {
+      emails = emails.filter(
+        email => !this.denylistEmailAddresses?.includes(email),
+      );
+    }
+    return emails;
   }
 
   private async sendMail(options: Mail.Options) {
     try {
+      this.logger.debug(`Sending notification email to ${options.to}`);
       await this.transporter.sendMail(options);
     } catch (e) {
       this.logger.error(`Failed to send email to ${options.to}: ${e}`);
@@ -304,10 +307,10 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
     const mailOptions = {
       from: this.sender,
       subject:
-        this.templateRenderer?.getSubject?.(notification) ??
+        (await this.templateRenderer?.getSubject?.(notification)) ??
         notification.payload.title,
-      html: this.templateRenderer?.getHtml?.(notification),
-      text: this.templateRenderer?.getText?.(notification),
+      html: await this.templateRenderer?.getHtml?.(notification),
+      text: await this.templateRenderer?.getText?.(notification),
       replyTo: this.replyTo,
     };
 

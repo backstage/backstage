@@ -18,7 +18,9 @@ import { createExtension, createExtensionDataRef } from '../wiring';
 
 /**
  * Helper for creating extensions for a nav logos.
+ *
  * @public
+ * @deprecated Use {@link NavLogoBlueprint} instead.
  */
 export function createNavLogoExtension(options: {
   name?: string;
@@ -51,5 +53,5 @@ export namespace createNavLogoExtension {
   export const logoElementsDataRef = createExtensionDataRef<{
     logoIcon?: JSX.Element;
     logoFull?: JSX.Element;
-  }>('core.nav-logo.logo-elements');
+  }>().with({ id: 'core.nav-logo.logo-elements' });
 }

@@ -13,14 +13,25 @@ const _default: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
+  {},
   {}
 >;
 export default _default;
 
 // @alpha (undocumented)
-export const settingsNavItem: ExtensionDefinition<{
-  title: string;
-}>;
+export const settingsNavItem: ExtensionDefinition<
+  {
+    title: string;
+  },
+  {
+    title?: string | undefined;
+  },
+  never,
+  never,
+  string | undefined,
+  string | undefined,
+  string | undefined
+>;
 
 // @alpha (undocumented)
 export const userSettingsTranslationRef: TranslationRef<
