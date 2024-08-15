@@ -841,3 +841,8 @@ metadata:
   annotations:
     backstage.io/techdocs-entity: system:default/example
 ```
+
+## How to resolve broken links in your documentation site
+
+TechDocs supports using the [mkdocs-redirects](https://github.com/mkdocs/mkdocs-redirects/tree/master) plugin to create a redirect map for any TechDoc site. This allows broken links from renamed or deleted pages in your site to be redirected to their specified replacement.
+TechDocs will notify the user that the page they are trying to access is no longer maintained. Then, they will be redirected. External site redirects are not supported. If an external redirect is provided, the user will instead be redirected to the index page of the documentation site.
