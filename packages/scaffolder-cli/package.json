@@ -1,0 +1,171 @@
+{
+  "name": "@scaffolder/cli",
+  "version": "0.1.0-next.0",
+  "description": "CLI for local development of Software templates",
+  "backstage": {
+    "role": "cli"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "backstage",
+    "scaffolder"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/cli"
+  },
+  "license": "Apache-2.0",
+  "main": "dist/index.cjs.js",
+  "bin": "bin/scaffolder-cli",
+  "files": [
+    "asset-types",
+    "templates",
+    "config",
+    "bin",
+    "dist/**/*.js"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "start": "nodemon --",
+    "test": "backstage-cli package test"
+  },
+  "nodemonConfig": {
+    "exec": "bin/scaffolder-cli",
+    "ext": "ts",
+    "watch": "./src"
+  },
+  "dependencies": {
+    "@backstage/errors": "workspace:^",
+    "@backstage/plugin-scaffolder-react": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "@scaffolder/cli": "0.1.0-next.0",
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "eslint": "^8.6.0",
+    "eslint-config-prettier": "^9.0.0",
+    "fs-extra": "^11.2.0",
+    "js-yaml": "^4.1.0",
+    "node-fetch": "^2.7.0",
+    "semver": "^7.5.3",
+    "yaml": "^2.0.0",
+    "yml-loader": "^2.1.0"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
+    "@types/js-yaml": "^3.12.5",
+    "@types/node": "^16.7.13",
+    "chalk": "^4.0.0",
+    "nodemon": "^2.0.15",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.4.4"
+  },
+  "configSchema": {
+    "$schema": "https://backstage.io/schema/config-v1",
+    "title": "@scaffolder/cli",
+    "type": "object",
+    "properties": {
+      "app": {
+        "type": "object",
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "visibility": "frontend"
+          },
+          "title": {
+            "type": "string",
+            "visibility": "frontend"
+          },
+          "datadogRum": {
+            "type": "object",
+            "description": "Datadog RUM events configuration",
+            "properties": {
+              "env": {
+                "type": "string",
+                "visibility": "frontend",
+                "description": "Environment for Datadog RUM events"
+              },
+              "clientToken": {
+                "type": "string",
+                "visibility": "frontend",
+                "description": "clientToken for Datadog RUM events"
+              },
+              "applicationId": {
+                "type": "string",
+                "visibility": "frontend",
+                "description": "applicationId for Datadog RUM events"
+              },
+              "site": {
+                "type": "string",
+                "visibility": "frontend",
+                "description": "site for Datadog RUM events"
+              },
+              "sessionSampleRate": {
+                "type": "number",
+                "visibility": "frontend",
+                "description": "sample rate of Datadog RUM events"
+              },
+              "sessionReplaySampleRate": {
+                "type": "number",
+                "visibility": "frontend",
+                "description": "sample rate of session replays based upon already sampled Datadog RUM events"
+              }
+            },
+            "required": [
+              "clientToken",
+              "applicationId"
+            ]
+          },
+          "listen": {
+            "type": "object",
+            "description": "Listening configuration for local development",
+            "properties": {
+              "host": {
+                "type": "string",
+                "visibility": "frontend",
+                "description": "The host that the frontend should be bound to. Only used for local development."
+              },
+              "port": {
+                "type": "number",
+                "visibility": "frontend",
+                "description": "The port that the frontend should be bound to. Only used for local development."
+              }
+            }
+          },
+          "https": {
+            "type": "object",
+            "description": "Only used for local development. The https object is passed to webpack in order to enable using https on localhost.",
+            "properties": {
+              "certificate": {
+                "type": "object",
+                "description": "Parent object containing certificate and the private key",
+                "required": [
+                  "key",
+                  "cert"
+                ],
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "visibility": "secret",
+                    "description": "Https Certificate private key. Use $file to load in a file"
+                  },
+                  "cert": {
+                    "type": "string",
+                    "visibility": "secret",
+                    "description": "Https Certificate. Use $file to load in a file"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
