@@ -1363,6 +1363,15 @@ export function ExtensionBoundary(
 ): React_2.JSX.Element;
 
 // @public (undocumented)
+export namespace ExtensionBoundary {
+  // (undocumented)
+  export function lazy(
+    appNode: AppNode,
+    lazyElement: () => Promise<JSX.Element>,
+  ): JSX.Element;
+}
+
+// @public (undocumented)
 export interface ExtensionBoundaryProps {
   // (undocumented)
   children: ReactNode;
@@ -1840,7 +1849,7 @@ export const PageBlueprint: ExtensionBlueprint<
     loader: () => Promise<JSX.Element>;
     routeRef?: RouteRef<AnyRouteRefParams> | undefined;
   },
-  | ConfigurableExtensionDataRef<React_2.JSX.Element, 'core.reactElement', {}>
+  | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
   | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
   | ConfigurableExtensionDataRef<
       RouteRef<AnyRouteRefParams>,
