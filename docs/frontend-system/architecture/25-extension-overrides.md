@@ -30,6 +30,55 @@ const myOverrideExtension = myExtension.override({
 
 This override is a no-op, it does not change the behavior of the extension, but simply forwards the outputs from the original extension factory. If you are familiar with [extension blueprints](./23-extension-blueprints.md), you will recognize this factory override pattern where we get access to the original factory function. In fact the only difference is that we do not need to pass any parameters to the original factory. The first parameter is now instead the optional factory context overrides, more on that as we dive into each override pattern in the following sections.
 
+## Overriding original factory outputs
+
+When overriding an extension you can choose to forward the existing outputs, or replace them with your own. The override factory has an exception to the rule that extension factories can only return a single value for each declared output. It will instead always use the **last** value provided for each extension data reference. This makes it possible to forward the outputs from the original factory, but also provide your own, for example:
+
+```tsx
+const myOverrideExtension = myExtension.override({
+  factory(originalFactory) {
+    return [
+      ...originalFactory(),
+      coreExtensionData.reactElement(<h1>Hello Override</h1>),
+    ];
+  },
+});
+```
+
+You can also access individual data values from the original factory, in order to decorate the output:
+
+```tsx
+const myOverrideExtension = myExtension.override({
+  factory(originalFactory) {
+    const originalOutput = originalFactory();
+    const originalElement = originalOutput.get(coreExtensionData.reactElement);
+
+    return [
+      ...originalOutput,
+      coreExtensionData.reactElement(
+        <details>
+          <summary>Show original element</summary>
+          {originalElement}
+        </details>,
+      ),
+    ];
+  },
+});
+```
+
+Just as [extension factories can be declared as a generator function](./20-extensions.md#extension-factory-as-a-generator-function), so can the override factory. Using a generator function, the first example above can be written as follows:
+
+```tsx
+const myOverrideExtension = myExtension.override({
+  *factory(originalFactory) {
+    yield* originalFactory();
+    yield coreExtensionData.reactElement(<h1>Hello Override</h1>);
+  },
+});
+```
+
+Note the `yield*` expression, which forwards all values from the provided iterable to the generator, in this case the original factory output.
+
 ## Override App Extensions
 
 In order to override an app extension, you must create a new extension and add it to the list of overridden features. The steps are: create your extension overrides and use them in Backstage.
