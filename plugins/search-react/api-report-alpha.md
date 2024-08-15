@@ -31,9 +31,11 @@ export function createSearchResultListItemExtension<
   TConfig,
   never,
   never,
-  string | undefined,
-  string | undefined,
-  string | undefined
+  {
+    kind?: string | undefined;
+    namespace?: string | undefined;
+    name?: string | undefined;
+  }
 >;
 
 // @alpha @deprecated (undocumented)
@@ -82,9 +84,11 @@ export type SearchResultItemExtensionPredicate = (
 
 // @alpha
 export const SearchResultListItemBlueprint: ExtensionBlueprint<
-  'search-result-list-item',
-  undefined,
-  undefined,
+  {
+    kind: 'search-result-list-item';
+    namespace: undefined;
+    name: undefined;
+  },
   SearchResultListItemBlueprintParams,
   ConfigurableExtensionDataRef<
     {

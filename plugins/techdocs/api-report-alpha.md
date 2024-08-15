@@ -43,18 +43,22 @@ const _default: BackstagePlugin<
         {}
       >,
       {},
-      'nav-item',
-      undefined,
-      undefined
+      {
+        kind: 'nav-item';
+        namespace: undefined;
+        name: undefined;
+      }
     >;
     'api:techdocs/storage': ExtensionDefinition<
       {},
       {},
       ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
       {},
-      'api',
-      undefined,
-      'storage'
+      {
+        kind: 'api';
+        namespace: undefined;
+        name: 'storage';
+      }
     >;
     'search-result-list-item:techdocs': ExtensionDefinition<
       {
@@ -90,9 +94,11 @@ const _default: BackstagePlugin<
           }
         >;
       },
-      'search-result-list-item',
-      undefined,
-      undefined
+      {
+        kind: 'search-result-list-item';
+        namespace: undefined;
+        name: undefined;
+      }
     >;
     'page:techdocs/reader': ExtensionDefinition<
       {
@@ -115,9 +121,11 @@ const _default: BackstagePlugin<
           }
         >,
       {},
-      'page',
-      undefined,
-      'reader'
+      {
+        kind: 'page';
+        namespace: undefined;
+        name: 'reader';
+      }
     >;
     'entity-content:techdocs': ExtensionDefinition<
       {
@@ -159,9 +167,11 @@ const _default: BackstagePlugin<
           }
         >,
       {},
-      'entity-content',
-      undefined,
-      undefined
+      {
+        kind: 'entity-content';
+        namespace: undefined;
+        name: undefined;
+      }
     >;
   }
 >;
@@ -202,9 +212,11 @@ export const techDocsSearchResultListItemExtension: ExtensionDefinition<
       }
     >;
   },
-  'search-result-list-item',
-  undefined,
-  undefined
+  {
+    kind: 'search-result-list-item';
+    namespace: undefined;
+    name: undefined;
+  }
 >;
 
 // (No @packageDocumentation comment for this package)

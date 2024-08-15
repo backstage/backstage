@@ -108,7 +108,13 @@ describe('ResolveExtensionId', () => {
       TKind extends string | undefined,
       TNamespace extends string | undefined,
       TName extends string | undefined,
-    > = ExtensionDefinition<any, any, any, any, TKind, TNamespace, TName>;
+    > = ExtensionDefinition<
+      any,
+      any,
+      any,
+      any,
+      { kind: TKind; namespace: TNamespace; name: TName }
+    >;
 
     const id1: 'k:ns' = {} as ResolveExtensionId<
       NamedExtension<'k', 'ns', undefined>,

@@ -62,9 +62,11 @@ const _default: BackstagePlugin<
           }
         >;
       },
-      'page',
-      undefined,
-      undefined
+      {
+        kind: 'page';
+        namespace: undefined;
+        name: undefined;
+      }
     >;
   }
 >;

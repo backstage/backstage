@@ -27,9 +27,11 @@ const _default: BackstagePlugin<
       {},
       ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
       {},
-      'api',
-      undefined,
-      undefined
+      {
+        kind: 'api';
+        namespace: undefined;
+        name: undefined;
+      }
     >;
     'nav-item:search': ExtensionDefinition<
       {},
@@ -44,9 +46,11 @@ const _default: BackstagePlugin<
         {}
       >,
       {},
-      'nav-item',
-      undefined,
-      undefined
+      {
+        kind: 'nav-item';
+        namespace: undefined;
+        name: undefined;
+      }
     >;
     'page:search': ExtensionDefinition<
       {
@@ -88,9 +92,11 @@ const _default: BackstagePlugin<
           }
         >;
       },
-      'page',
-      undefined,
-      undefined
+      {
+        kind: 'page';
+        namespace: undefined;
+        name: undefined;
+      }
     >;
   }
 >;
@@ -102,9 +108,11 @@ export const searchApi: ExtensionDefinition<
   {},
   ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
   {},
-  'api',
-  undefined,
-  undefined
+  {
+    kind: 'api';
+    namespace: undefined;
+    name: undefined;
+  }
 >;
 
 // @alpha (undocumented)
@@ -121,9 +129,11 @@ export const searchNavItem: ExtensionDefinition<
     {}
   >,
   {},
-  'nav-item',
-  undefined,
-  undefined
+  {
+    kind: 'nav-item';
+    namespace: undefined;
+    name: undefined;
+  }
 >;
 
 // @alpha (undocumented)
@@ -163,9 +173,11 @@ export const searchPage: ExtensionDefinition<
       }
     >;
   },
-  'page',
-  undefined,
-  undefined
+  {
+    kind: 'page';
+    namespace: undefined;
+    name: undefined;
+  }
 >;
 
 // (No @packageDocumentation comment for this package)

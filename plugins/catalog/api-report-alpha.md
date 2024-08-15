@@ -27,9 +27,11 @@ import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
 // @alpha
 export const CatalogFilterBlueprint: ExtensionBlueprint<
-  'catalog-filter',
-  undefined,
-  undefined,
+  {
+    kind: 'catalog-filter';
+    namespace: undefined;
+    name: undefined;
+  },
   {
     loader: () => Promise<JSX.Element>;
   },
@@ -140,9 +142,11 @@ export function createCatalogFilterExtension<
   TConfig,
   never,
   never,
-  string | undefined,
-  string | undefined,
-  string | undefined
+  {
+    kind?: string | undefined;
+    namespace?: string | undefined;
+    name?: string | undefined;
+  }
 >;
 
 // @alpha (undocumented)
@@ -182,27 +186,33 @@ const _default: BackstagePlugin<
         {}
       >,
       {},
-      'nav-item',
-      undefined,
-      undefined
+      {
+        kind: 'nav-item';
+        namespace: undefined;
+        name: undefined;
+      }
     >;
     'api:catalog/starred-entities': ExtensionDefinition<
       {},
       {},
       ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
       {},
-      'api',
-      undefined,
-      'starred-entities'
+      {
+        kind: 'api';
+        namespace: undefined;
+        name: 'starred-entities';
+      }
     >;
     'api:catalog/entity-presentation': ExtensionDefinition<
       {},
       {},
       ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
       {},
-      'api',
-      undefined,
-      'entity-presentation'
+      {
+        kind: 'api';
+        namespace: undefined;
+        name: 'entity-presentation';
+      }
     >;
     'entity-card:catalog/about': ExtensionDefinition<
       {
@@ -227,9 +237,11 @@ const _default: BackstagePlugin<
           }
         >,
       {},
-      'entity-card',
-      undefined,
-      'about'
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'about';
+      }
     >;
     'entity-card:catalog/links': ExtensionDefinition<
       {
@@ -254,9 +266,11 @@ const _default: BackstagePlugin<
           }
         >,
       {},
-      'entity-card',
-      undefined,
-      'links'
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'links';
+      }
     >;
     'entity-card:catalog/labels': ExtensionDefinition<
       {
@@ -281,9 +295,11 @@ const _default: BackstagePlugin<
           }
         >,
       {},
-      'entity-card',
-      undefined,
-      'labels'
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'labels';
+      }
     >;
     'entity-card:catalog/depends-on-components': ExtensionDefinition<
       {
@@ -308,9 +324,11 @@ const _default: BackstagePlugin<
           }
         >,
       {},
-      'entity-card',
-      undefined,
-      'depends-on-components'
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'depends-on-components';
+      }
     >;
     'entity-card:catalog/depends-on-resources': ExtensionDefinition<
       {
@@ -335,9 +353,11 @@ const _default: BackstagePlugin<
           }
         >,
       {},
-      'entity-card',
-      undefined,
-      'depends-on-resources'
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'depends-on-resources';
+      }
     >;
     'entity-card:catalog/has-components': ExtensionDefinition<
       {
@@ -362,9 +382,11 @@ const _default: BackstagePlugin<
           }
         >,
       {},
-      'entity-card',
-      undefined,
-      'has-components'
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'has-components';
+      }
     >;
     'entity-card:catalog/has-resources': ExtensionDefinition<
       {
@@ -389,9 +411,11 @@ const _default: BackstagePlugin<
           }
         >,
       {},
-      'entity-card',
-      undefined,
-      'has-resources'
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'has-resources';
+      }
     >;
     'entity-card:catalog/has-subcomponents': ExtensionDefinition<
       {
@@ -416,9 +440,11 @@ const _default: BackstagePlugin<
           }
         >,
       {},
-      'entity-card',
-      undefined,
-      'has-subcomponents'
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'has-subcomponents';
+      }
     >;
     'entity-card:catalog/has-subdomains': ExtensionDefinition<
       {
@@ -443,9 +469,11 @@ const _default: BackstagePlugin<
           }
         >,
       {},
-      'entity-card',
-      undefined,
-      'has-subdomains'
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'has-subdomains';
+      }
     >;
     'entity-card:catalog/has-systems': ExtensionDefinition<
       {
@@ -470,9 +498,11 @@ const _default: BackstagePlugin<
           }
         >,
       {},
-      'entity-card',
-      undefined,
-      'has-systems'
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'has-systems';
+      }
     >;
     'entity-content:catalog/overview': ExtensionDefinition<
       {
@@ -536,18 +566,22 @@ const _default: BackstagePlugin<
           }
         >;
       },
-      'entity-content',
-      undefined,
-      'overview'
+      {
+        kind: 'entity-content';
+        namespace: undefined;
+        name: 'overview';
+      }
     >;
     'catalog-filter:catalog/tag': ExtensionDefinition<
       {},
       {},
       ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
       {},
-      'catalog-filter',
-      undefined,
-      'tag'
+      {
+        kind: 'catalog-filter';
+        namespace: undefined;
+        name: 'tag';
+      }
     >;
     'catalog-filter:catalog/kind': ExtensionDefinition<
       {
@@ -566,18 +600,22 @@ const _default: BackstagePlugin<
           }
         >;
       },
-      'catalog-filter',
-      undefined,
-      'kind'
+      {
+        kind: 'catalog-filter';
+        namespace: undefined;
+        name: 'kind';
+      }
     >;
     'catalog-filter:catalog/type': ExtensionDefinition<
       {},
       {},
       ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
       {},
-      'catalog-filter',
-      undefined,
-      'type'
+      {
+        kind: 'catalog-filter';
+        namespace: undefined;
+        name: 'type';
+      }
     >;
     'catalog-filter:catalog/mode': ExtensionDefinition<
       {
@@ -596,36 +634,44 @@ const _default: BackstagePlugin<
           }
         >;
       },
-      'catalog-filter',
-      undefined,
-      'mode'
+      {
+        kind: 'catalog-filter';
+        namespace: undefined;
+        name: 'mode';
+      }
     >;
     'catalog-filter:catalog/namespace': ExtensionDefinition<
       {},
       {},
       ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
       {},
-      'catalog-filter',
-      undefined,
-      'namespace'
+      {
+        kind: 'catalog-filter';
+        namespace: undefined;
+        name: 'namespace';
+      }
     >;
     'catalog-filter:catalog/lifecycle': ExtensionDefinition<
       {},
       {},
       ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
       {},
-      'catalog-filter',
-      undefined,
-      'lifecycle'
+      {
+        kind: 'catalog-filter';
+        namespace: undefined;
+        name: 'lifecycle';
+      }
     >;
     'catalog-filter:catalog/processing-status': ExtensionDefinition<
       {},
       {},
       ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
       {},
-      'catalog-filter',
-      undefined,
-      'processing-status'
+      {
+        kind: 'catalog-filter';
+        namespace: undefined;
+        name: 'processing-status';
+      }
     >;
     'catalog-filter:catalog/list': ExtensionDefinition<
       {
@@ -644,9 +690,11 @@ const _default: BackstagePlugin<
           }
         >;
       },
-      'catalog-filter',
-      undefined,
-      'list'
+      {
+        kind: 'catalog-filter';
+        namespace: undefined;
+        name: 'list';
+      }
     >;
     'page:catalog': ExtensionDefinition<
       {
@@ -677,9 +725,11 @@ const _default: BackstagePlugin<
           }
         >;
       },
-      'page',
-      undefined,
-      undefined
+      {
+        kind: 'page';
+        namespace: undefined;
+        name: undefined;
+      }
     >;
     'page:catalog/entity': ExtensionDefinition<
       {
@@ -737,9 +787,11 @@ const _default: BackstagePlugin<
           }
         >;
       },
-      'page',
-      undefined,
-      'entity'
+      {
+        kind: 'page';
+        namespace: undefined;
+        name: 'entity';
+      }
     >;
     'search-result-list-item:catalog': ExtensionDefinition<
       {
@@ -757,9 +809,11 @@ const _default: BackstagePlugin<
         {}
       >,
       {},
-      'search-result-list-item',
-      undefined,
-      undefined
+      {
+        kind: 'search-result-list-item';
+        namespace: undefined;
+        name: undefined;
+      }
     >;
   }
 >;
