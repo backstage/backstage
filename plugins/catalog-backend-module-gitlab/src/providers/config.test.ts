@@ -184,6 +184,7 @@ describe('config', () => {
         userPattern: /[\s\S]*/,
         orgEnabled: false,
         allowInherited: false,
+        relations: [],
         schedule: undefined,
         restrictUsersToGroup: false,
         skipForkedRepos: false,
