@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import { createSchemaFromZod } from '@backstage/frontend-plugin-api';
 import { CatalogFilterBlueprint } from './blueprints';
 
 const catalogTagCatalogFilter = CatalogFilterBlueprint.make({

@@ -25,7 +25,7 @@ import {
 } from '@backstage/core-compat-api';
 import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { catalogGraphRouteRef, catalogEntityRouteRef } from './routes';
-import { Direction } from './components';
+import { Direction } from '@backstage/plugin-catalog-graph';
 
 const CatalogGraphEntityCard = EntityCardBlueprint.makeWithOverrides({
   name: 'relations',

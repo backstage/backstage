@@ -21,10 +21,7 @@ import {
   storageApiRef,
 } from '@backstage/core-plugin-api';
 import { CatalogClient } from '@backstage/catalog-client';
-import {
-  ApiBlueprint,
-  createApiExtension,
-} from '@backstage/frontend-plugin-api';
+import { ApiBlueprint } from '@backstage/frontend-plugin-api';
 import {
   catalogApiRef,
   entityPresentationApiRef,
