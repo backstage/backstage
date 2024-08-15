@@ -3473,7 +3473,7 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@manypkg/get-packages": ^1.1.3
+    "@manypkg/get-packages": ^2.0.0
     "@types/compression": ^1.7.0
     "@types/http-errors": ^2.0.0
     "@types/minimist": ^1.2.0
@@ -3535,7 +3535,7 @@ __metadata:
     "@keyv/memcache": ^1.3.5
     "@keyv/redis": ^2.5.3
     "@kubernetes/client-node": 0.20.0
-    "@manypkg/get-packages": ^1.1.3
+    "@manypkg/get-packages": ^2.0.0
     "@octokit/rest": ^19.0.3
     "@types/archiver": ^6.0.0
     "@types/base64-stream": ^1.0.2
@@ -3636,7 +3636,7 @@ __metadata:
     "@google-cloud/storage": ^7.0.0
     "@keyv/memcache": ^1.3.5
     "@keyv/redis": ^2.5.3
-    "@manypkg/get-packages": ^1.1.3
+    "@manypkg/get-packages": ^2.0.0
     "@octokit/rest": ^19.0.3
     "@opentelemetry/api": ^1.3.0
     "@types/cors": ^2.8.6
@@ -3730,7 +3730,7 @@ __metadata:
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@manypkg/get-packages": ^1.1.3
+    "@manypkg/get-packages": ^2.0.0
     "@types/express": ^4.17.6
     chokidar: ^3.5.3
     express: ^4.17.1
@@ -3879,7 +3879,7 @@ __metadata:
     "@backstage/cli-common": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@manypkg/get-packages": ^1.1.3
+    "@manypkg/get-packages": ^2.0.0
     "@yarnpkg/parsers": ^3.0.0
     fs-extra: ^11.2.0
     semver: ^7.5.3
@@ -3910,7 +3910,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@manypkg/get-packages": ^1.1.3
+    "@manypkg/get-packages": ^2.0.0
     "@module-federation/enhanced": ^0.6.0
     "@octokit/graphql": ^5.0.0
     "@octokit/graphql-schema": ^13.7.0
@@ -4466,7 +4466,7 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/cli-node": "workspace:^"
-    "@manypkg/get-packages": ^1.1.3
+    "@manypkg/get-packages": ^2.0.0
     "@types/fs-extra": ^11.0.0
     fs-extra: ^11.0.0
   peerDependencies:
@@ -4492,7 +4492,7 @@ __metadata:
   resolution: "@backstage/eslint-plugin@workspace:packages/eslint-plugin"
   dependencies:
     "@backstage/cli": "workspace:^"
-    "@manypkg/get-packages": ^1.1.3
+    "@manypkg/get-packages": ^2.0.0
     "@types/estree": ^1.0.5
     eslint: ^8.33.0
     minimatch: ^9.0.0
@@ -6139,7 +6139,7 @@ __metadata:
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@manypkg/get-packages": ^1.1.3
+    "@manypkg/get-packages": ^2.0.0
     "@types/express": "*"
     "@types/ping": ^0.4.1
     "@types/supertest": ^2.0.8
@@ -8132,7 +8132,7 @@ __metadata:
     "@backstage/config-loader": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@manypkg/get-packages": ^1.1.3
+    "@manypkg/get-packages": ^2.0.0
     "@microsoft/api-documenter": ^7.22.33
     "@microsoft/api-extractor": ^7.36.4
     "@openapitools/openapi-generator-cli": ^2.7.0
@@ -10685,6 +10685,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@manypkg/find-root@npm:^2.2.2":
+  version: 2.2.3
+  resolution: "@manypkg/find-root@npm:2.2.3"
+  dependencies:
+    "@manypkg/tools": ^1.1.2
+  checksum: b0e6e530bda0019ea098fc88903c703b64f0eee3e568eb7e82258b1b487c330c76648bd27569835fcc61cf60d15d257a2779ac0051d1bc8a682f0fb629b989ef
+  languageName: node
+  linkType: hard
+
 "@manypkg/get-packages@npm:^1.1.3":
   version: 1.1.3
   resolution: "@manypkg/get-packages@npm:1.1.3"
@@ -10696,6 +10705,27 @@ __metadata:
     globby: ^11.0.0
     read-yaml-file: ^1.1.0
   checksum: f5a756e5a659e0e1c33f48852d56826d170d5b10a3cdea89ce4fcaa77678d8799aa4004b30e1985c87b73dbc390b95bb6411b78336dd1e0db87c08c74b5c0e74
+  languageName: node
+  linkType: hard
+
+"@manypkg/get-packages@npm:^2.0.0":
+  version: 2.2.2
+  resolution: "@manypkg/get-packages@npm:2.2.2"
+  dependencies:
+    "@manypkg/find-root": ^2.2.2
+    "@manypkg/tools": ^1.1.1
+  checksum: 42d9ab549b6670c7c9e6e6b9742ccd1bab1a8d060b801fd7c467f9fd4dcdc5ef947d8b09821a38299cd7d69e0ddba71b5efe3158c4df650e8add5551e0625801
+  languageName: node
+  linkType: hard
+
+"@manypkg/tools@npm:^1.1.1, @manypkg/tools@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "@manypkg/tools@npm:1.1.2"
+  dependencies:
+    fast-glob: ^3.3.2
+    jju: ^1.4.0
+    js-yaml: ^4.1.0
+  checksum: 9f12b332f35163ff06cb2810cb15dacdce9986f846abfde240daa09e5ed0931ea288d573cc05a5987a40e3909b426f78d523d7edfe4a4e3b72f3c28dc9cef943
   languageName: node
   linkType: hard
 
@@ -31098,7 +31128,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jju@npm:~1.4.0":
+"jju@npm:^1.4.0, jju@npm:~1.4.0":
   version: 1.4.0
   resolution: "jju@npm:1.4.0"
   checksum: 3790481bd2b7827dd6336e6e3dc2dcc6d425679ba7ebde7b679f61dceb4457ea0cda330972494de608571f4973c6dfb5f70fab6f3c5037dbab19ac449a60424f
@@ -39603,7 +39633,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/repo-tools": "workspace:*"
     "@changesets/cli": ^2.14.0
-    "@manypkg/get-packages": ^1.1.3
+    "@manypkg/get-packages": ^2.0.0
     "@octokit/rest": ^19.0.3
     "@playwright/test": ^1.32.3
     "@spotify/eslint-plugin": ^15.0.0

@@ -34,7 +34,7 @@
     "@backstage/cli-common": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@manypkg/get-packages": "^1.1.3",
+    "@manypkg/get-packages": "^2.0.0",
     "@yarnpkg/parsers": "^3.0.0",
     "fs-extra": "^11.2.0",
     "semver": "^7.5.3",

@@ -49,7 +49,7 @@
     "@backstage/cli-node": "workspace:^",
     "@backstage/config-loader": "workspace:^",
     "@backstage/errors": "workspace:^",
-    "@manypkg/get-packages": "^1.1.3",
+    "@manypkg/get-packages": "^2.0.0",
     "@microsoft/api-documenter": "^7.22.33",
     "@microsoft/api-extractor": "^7.36.4",
     "@openapitools/openapi-generator-cli": "^2.7.0",
