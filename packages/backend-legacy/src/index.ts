@@ -32,7 +32,6 @@ import {
   loadBackendConfig,
   notFoundHandler,
   ServerTokenManager,
-  UrlReaders,
   useHotMemoize,
 } from '@backstage/backend-common';
 import { TaskScheduler } from '@backstage/backend-tasks';
@@ -57,6 +56,7 @@ import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
 import { DefaultEventBroker } from '@backstage/plugin-events-backend';
 import { DefaultEventsService } from '@backstage/plugin-events-node';
 import { DefaultSignalsService } from '@backstage/plugin-signals-node';
+import { UrlReaders } from '@backstage/backend-defaults/urlReader';
 
 function makeCreateEnv(config: Config) {
   const root = getRootLogger();
