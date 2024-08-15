@@ -21,24 +21,34 @@ import {
 } from '@backstage/theme';
 import DarkIcon from '@material-ui/icons/Brightness2';
 import LightIcon from '@material-ui/icons/WbSunny';
-import { createThemeExtension } from '@backstage/frontend-plugin-api';
+import { ThemeBlueprint } from '@backstage/frontend-plugin-api';
 
-export const LightTheme = createThemeExtension({
-  id: 'light',
-  title: 'Light Theme',
-  variant: 'light',
-  icon: <LightIcon />,
-  Provider: ({ children }) => (
-    <UnifiedThemeProvider theme={builtinThemes.light} children={children} />
-  ),
+export const LightTheme = ThemeBlueprint.make({
+  name: 'light',
+  params: {
+    theme: {
+      id: 'light',
+      title: 'Light Theme',
+      variant: 'light',
+      icon: <LightIcon />,
+      Provider: ({ children }) => (
+        <UnifiedThemeProvider theme={builtinThemes.light} children={children} />
+      ),
+    },
+  },
 });
 
-export const DarkTheme = createThemeExtension({
-  id: 'dark',
-  title: 'Dark Theme',
-  variant: 'dark',
-  icon: <DarkIcon />,
-  Provider: ({ children }) => (
-    <UnifiedThemeProvider theme={builtinThemes.dark} children={children} />
-  ),
+export const DarkTheme = ThemeBlueprint.make({
+  name: 'dark',
+  params: {
+    theme: {
+      id: 'dark',
+      title: 'Dark Theme',
+      variant: 'dark',
+      icon: <DarkIcon />,
+      Provider: ({ children }) => (
+        <UnifiedThemeProvider theme={builtinThemes.dark} children={children} />
+      ),
+    },
+  },
 });

@@ -20,9 +20,9 @@ import {
   coreExtensionData,
   createExtension,
   createExtensionOverrides,
-  createPageExtension,
+  PageBlueprint,
   createFrontendPlugin,
-  createThemeExtension,
+  ThemeBlueprint,
 } from '@backstage/frontend-plugin-api';
 import { screen, waitFor } from '@testing-library/react';
 import { CreateAppFeatureLoader, createApp } from './createApp';
@@ -47,11 +47,16 @@ describe('createApp', () => {
         createFrontendPlugin({
           id: 'test',
           extensions: [
-            createThemeExtension({
-              id: 'derp',
-              title: 'Derp',
-              variant: 'dark',
-              Provider: () => <div>Derp</div>,
+            ThemeBlueprint.make({
+              name: 'derp',
+              params: {
+                theme: {
+                  id: 'derp',
+                  title: 'Derp',
+                  variant: 'dark',
+                  Provider: () => <div>Derp</div>,
+                },
+              },
             }),
           ],
         }),
@@ -71,18 +76,22 @@ describe('createApp', () => {
         createFrontendPlugin({
           id: duplicatedFeatureId,
           extensions: [
-            createPageExtension({
-              defaultPath: '/',
-              loader: async () => <div>First Page</div>,
+            PageBlueprint.make({
+              params: {
+                defaultPath: '/',
+                loader: async () => <div>First Page</div>,
+              },
             }),
           ],
         }),
         createFrontendPlugin({
           id: duplicatedFeatureId,
           extensions: [
-            createPageExtension({
-              defaultPath: '/',
-              loader: async () => <div>Last Page</div>,
+            PageBlueprint.make({
+              params: {
+                defaultPath: '/',
+                loader: async () => <div>Last Page</div>,
+              },
             }),
           ],
         }),
@@ -110,9 +119,11 @@ describe('createApp', () => {
             createFrontendPlugin({
               id: 'test',
               extensions: [
-                createPageExtension({
-                  defaultPath: '/',
-                  loader: async () => <div>{config.getString('key')}</div>,
+                PageBlueprint.make({
+                  params: {
+                    defaultPath: '/',
+                    loader: async () => <div>{config.getString('key')}</div>,
+                  },
                 }),
               ],
             }),
@@ -170,7 +181,7 @@ describe('createApp', () => {
             createExtension({
               name: 'first',
               attachTo: { id: 'app', input: 'root' },
-              output: { element: coreExtensionData.reactElement },
+              output: [coreExtensionData.reactElement],
               factory() {
                 const Component = () => {
                   const flagsApi = useApi(featureFlagsApiRef);
@@ -184,7 +195,7 @@ describe('createApp', () => {
                     </div>
                   );
                 };
-                return { element: <Component /> };
+                return [coreExtensionData.reactElement(<Component />)];
               },
             }),
           ],
@@ -197,8 +208,8 @@ describe('createApp', () => {
               name: 'root',
               attachTo: { id: 'app', input: 'root' },
               disabled: true,
-              output: {},
-              factory: () => ({}),
+              output: [],
+              factory: () => [],
             }),
           ],
         }),
@@ -221,14 +232,16 @@ describe('createApp', () => {
         createFrontendPlugin({
           id: 'my-plugin',
           extensions: [
-            createPageExtension({
-              defaultPath: '/',
-              loader: async () => {
-                const Component = () => {
-                  appTreeApi = useApi(appTreeApiRef);
-                  return <div>My Plugin Page</div>;
-                };
-                return <Component />;
+            PageBlueprint.make({
+              params: {
+                defaultPath: '/',
+                loader: async () => {
+                  const Component = () => {
+                    appTreeApi = useApi(appTreeApiRef);
+                    return <div>My Plugin Page</div>;
+                  };
+                  return <Component />;
+                },
               },
             }),
           ],
@@ -250,7 +263,7 @@ describe('createApp', () => {
                 content [
                   <app/routes out=[core.reactElement]>
                     routes [
-                      <page:my-plugin out=[core.routing.path, core.routing.ref, core.reactElement] />
+                      <page:my-plugin out=[core.routing.path, core.reactElement] />
                     ]
                   </app/routes>
                 ]

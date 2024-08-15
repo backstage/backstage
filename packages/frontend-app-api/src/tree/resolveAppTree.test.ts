@@ -23,8 +23,8 @@ const extension = resolveExtensionDefinition(
   createExtension({
     name: 'test',
     attachTo: { id: 'nonexistent', input: 'nonexistent' },
-    output: {},
-    factory: () => ({}),
+    output: [],
+    factory: () => [],
   }),
 ) as Extension<unknown, unknown>;
 
