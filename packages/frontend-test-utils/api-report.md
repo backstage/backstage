@@ -7,6 +7,7 @@
 
 import { AnalyticsApi } from '@backstage/frontend-plugin-api';
 import { AnalyticsEvent } from '@backstage/frontend-plugin-api';
+import { AnyExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { AppNode } from '@backstage/frontend-plugin-api';
 import { AppNodeInstance } from '@backstage/frontend-plugin-api';
 import { ErrorWithContext } from '@backstage/test-utils';
@@ -30,20 +31,30 @@ import { TestApiRegistry } from '@backstage/test-utils';
 import { withLogCollector } from '@backstage/test-utils';
 
 // @public (undocumented)
-export function createExtensionTester<TConfig>(
-  subject: ExtensionDefinition<TConfig>,
+export function createExtensionTester<
+  TConfig,
+  TConfigInput,
+  UOutput extends AnyExtensionDataRef,
+>(
+  subject: ExtensionDefinition<TConfig, TConfigInput, UOutput>,
   options?: {
-    config?: TConfig;
+    config?: TConfigInput;
   },
-): ExtensionTester;
+): ExtensionTester<UOutput>;
 
 export { ErrorWithContext };
 
 // @public (undocumented)
-export class ExtensionQuery {
+export class ExtensionQuery<UOutput extends AnyExtensionDataRef> {
   constructor(node: AppNode);
   // (undocumented)
-  get<T>(ref: ExtensionDataRef<T>): T | undefined;
+  get<TId extends UOutput['id']>(
+    ref: ExtensionDataRef<any, TId, any>,
+  ): UOutput extends ExtensionDataRef<infer IData, TId, infer IConfig>
+    ? IConfig['optional'] extends true
+      ? IData | undefined
+      : IData
+    : never;
   // (undocumented)
   get instance(): AppNodeInstance;
   // (undocumented)
@@ -51,18 +62,26 @@ export class ExtensionQuery {
 }
 
 // @public (undocumented)
-export class ExtensionTester {
+export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
   // (undocumented)
   add<TConfig, TConfigInput>(
     extension: ExtensionDefinition<TConfig, TConfigInput>,
     options?: {
       config?: TConfigInput;
     },
-  ): ExtensionTester;
+  ): ExtensionTester<UOutput>;
   // (undocumented)
-  get<T>(ref: ExtensionDataRef<T>): T | undefined;
+  get<TId extends UOutput['id']>(
+    ref: ExtensionDataRef<any, TId, any>,
+  ): UOutput extends ExtensionDataRef<infer IData, TId, infer IConfig>
+    ? IConfig['optional'] extends true
+      ? IData | undefined
+      : IData
+    : never;
   // (undocumented)
-  query(id: string | ExtensionDefinition<any, any>): ExtensionQuery;
+  query<UQueryExtensionOutput extends AnyExtensionDataRef>(
+    extension: ExtensionDefinition<any, any, UQueryExtensionOutput>,
+  ): ExtensionQuery<UQueryExtensionOutput>;
   // (undocumented)
   reactElement(): JSX.Element;
   // @deprecated (undocumented)

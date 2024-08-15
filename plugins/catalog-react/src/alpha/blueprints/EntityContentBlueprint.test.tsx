@@ -122,10 +122,10 @@ describe('EntityContentBlueprint', () => {
     const tester = createExtensionTester(extension);
 
     // todo(blam): route paths are always set to / in the createExtensionTester. This will work eventually.
-    // expect(tester.data(coreExtensionData.routePath)).toBe('/test');
+    // expect(tester.get(coreExtensionData.routePath)).toBe('/test');
 
-    expect(tester.data(coreExtensionData.routeRef)).toBe(mockRouteRef);
-    expect(tester.data(EntityContentBlueprint.dataRefs.title)).toBe('Test');
+    expect(tester.get(coreExtensionData.routeRef)).toBe(mockRouteRef);
+    expect(tester.get(EntityContentBlueprint.dataRefs.title)).toBe('Test');
   });
 
   it('should emit the correct filter output', () => {
@@ -142,7 +142,7 @@ describe('EntityContentBlueprint', () => {
             filter: 'test',
           },
         }),
-      ).data(EntityContentBlueprint.dataRefs.filterExpression),
+      ).get(EntityContentBlueprint.dataRefs.filterExpression),
     ).toBe('test');
 
     expect(
@@ -156,7 +156,7 @@ describe('EntityContentBlueprint', () => {
           },
         }),
         { config: { filter: 'test' } },
-      ).data(EntityContentBlueprint.dataRefs.filterExpression),
+      ).get(EntityContentBlueprint.dataRefs.filterExpression),
     ).toBe('test');
 
     expect(
@@ -170,7 +170,7 @@ describe('EntityContentBlueprint', () => {
             loader: async () => <div>Test!</div>,
           },
         }),
-      ).data(EntityContentBlueprint.dataRefs.filterFunction),
+      ).get(EntityContentBlueprint.dataRefs.filterFunction),
     ).toBe(mockFilter);
   });
 
