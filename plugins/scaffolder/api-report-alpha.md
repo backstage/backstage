@@ -198,7 +198,7 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'ongoingTask.showLogsButtonTitle': 'Show Logs';
     readonly 'templateTypePicker.title': 'Categories';
     readonly 'templateEditorPage.title': 'Template Editor';
-    readonly 'templateEditorPage.subTitle': 'Edit, preview, and try out templates and template forms';
+    readonly 'templateEditorPage.subtitle': 'Edit, preview, and try out templates and template forms';
     readonly 'templateEditorPage.dryRunResults.title': 'Dry-run results';
     readonly 'templateEditorPage.dryRunResultsList.title': 'Result {{resultId}}';
     readonly 'templateEditorPage.dryRunResultsList.deleteButtonTitle': 'Delete result';
@@ -218,7 +218,7 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templateEditorPage.templateEditorIntro.title': 'Get started by choosing one of the options below';
     readonly 'templateEditorPage.templateEditorIntro.loadLocal.title': 'Load Template Directory';
     readonly 'templateEditorPage.templateEditorIntro.loadLocal.description': 'Load a local template directory, allowing you to both edit and try executing your own template.';
-    readonly 'templateEditorPage.templateEditorIntro.loadLocal.unSupportsLoadTooltip': 'Only supported in some Chromium-based browsers';
+    readonly 'templateEditorPage.templateEditorIntro.loadLocal.unsupportedTooltip': 'Only supported in some Chromium-based browsers';
     readonly 'templateEditorPage.templateEditorIntro.formEditor.title': 'Edit Template Form';
     readonly 'templateEditorPage.templateEditorIntro.formEditor.description': 'Preview and edit a template form, either using a sample template or by loading a template from the catalog.';
     readonly 'templateEditorPage.templateEditorIntro.fieldExplorer.title': 'Custom Field Explorer';

@@ -191,7 +191,7 @@ export const scaffolderTranslationRef = createTranslationRef({
     },
     templateEditorPage: {
       title: 'Template Editor',
-      subTitle: 'Edit, preview, and try out templates and template forms',
+      subtitle: 'Edit, preview, and try out templates and template forms',
       dryRunResults: {
         title: 'Dry-run results',
       },
@@ -232,8 +232,7 @@ export const scaffolderTranslationRef = createTranslationRef({
           title: 'Load Template Directory',
           description:
             'Load a local template directory, allowing you to both edit and try executing your own template.',
-          unSupportsLoadTooltip:
-            'Only supported in some Chromium-based browsers',
+          unsupportedTooltip: 'Only supported in some Chromium-based browsers',
         },
         formEditor: {
           title: 'Edit Template Form',

@@ -83,7 +83,7 @@ export function TemplateEditorIntro(props: EditorIntroProps) {
           <Tooltip
             placement="top"
             title={t(
-              'templateEditorPage.templateEditorIntro.loadLocal.unSupportsLoadTooltip',
+              'templateEditorPage.templateEditorIntro.loadLocal.unsupportedTooltip',
             )}
           >
             <InfoOutlinedIcon />

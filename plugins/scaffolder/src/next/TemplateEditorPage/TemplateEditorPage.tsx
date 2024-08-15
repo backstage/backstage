@@ -121,7 +121,7 @@ export function TemplateEditorPage(props: TemplateEditorPageProps) {
     <Page themeId="home">
       <Header
         title={t('templateEditorPage.title')}
-        subtitle={t('templateEditorPage.subTitle')}
+        subtitle={t('templateEditorPage.subtitle')}
       >
         <ScaffolderPageContextMenu {...scaffolderPageContextMenuProps} />
       </Header>
