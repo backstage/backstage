@@ -55,7 +55,7 @@ const apiDocsNavItem = NavItemBlueprint.make({
 });
 
 const apiDocsConfigApi = ApiBlueprint.make({
-  namespace: 'api-docs',
+  name: 'config',
   params: {
     factory: createApiFactory({
       api: apiDocsConfigRef,
