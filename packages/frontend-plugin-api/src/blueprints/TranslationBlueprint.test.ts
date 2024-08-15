@@ -76,7 +76,7 @@ describe('TranslationBlueprint', () => {
     });
 
     expect(
-      createExtensionTester(extension).data(
+      createExtensionTester(extension).get(
         TranslationBlueprint.dataRefs.translation,
       ),
     ).toBe(messages);

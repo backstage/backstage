@@ -64,7 +64,7 @@ describe('NavLogoBlueprint', () => {
 
     const tester = createExtensionTester(extension);
 
-    expect(tester.data(NavLogoBlueprint.dataRefs.logoElements)).toEqual({
+    expect(tester.get(NavLogoBlueprint.dataRefs.logoElements)).toEqual({
       logoFull,
       logoIcon,
     });

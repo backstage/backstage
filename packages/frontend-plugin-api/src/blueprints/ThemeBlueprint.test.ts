@@ -56,7 +56,7 @@ describe('ThemeBlueprint', () => {
     const extension = ThemeBlueprint.make({ params: { theme } });
 
     expect(
-      createExtensionTester(extension).data(ThemeBlueprint.dataRefs.theme),
+      createExtensionTester(extension).get(ThemeBlueprint.dataRefs.theme),
     ).toEqual(theme);
   });
 });

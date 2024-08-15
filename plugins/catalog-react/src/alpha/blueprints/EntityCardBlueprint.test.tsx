@@ -100,7 +100,7 @@ describe('EntityCardBlueprint', () => {
             filter: 'test',
           },
         }),
-      ).data(EntityCardBlueprint.dataRefs.filterExpression),
+      ).get(EntityCardBlueprint.dataRefs.filterExpression),
     ).toBe('test');
 
     expect(
@@ -112,7 +112,7 @@ describe('EntityCardBlueprint', () => {
           },
         }),
         { config: { filter: 'test' } },
-      ).data(EntityCardBlueprint.dataRefs.filterExpression),
+      ).get(EntityCardBlueprint.dataRefs.filterExpression),
     ).toBe('test');
 
     expect(
@@ -124,7 +124,7 @@ describe('EntityCardBlueprint', () => {
             loader: async () => <div>Test!</div>,
           },
         }),
-      ).data(EntityCardBlueprint.dataRefs.filterFunction),
+      ).get(EntityCardBlueprint.dataRefs.filterFunction),
     ).toBe(mockFilter);
   });
 

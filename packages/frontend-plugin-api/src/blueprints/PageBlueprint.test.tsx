@@ -16,7 +16,10 @@
 import React from 'react';
 import { createRouteRef } from '../routing';
 import { PageBlueprint } from './PageBlueprint';
-import { createExtensionTester } from '@backstage/frontend-test-utils';
+import {
+  createExtensionTester,
+  renderInTestApp,
+} from '@backstage/frontend-test-utils';
 import {
   coreExtensionData,
   createExtensionBlueprint,
@@ -98,7 +101,7 @@ describe('PageBlueprint', () => {
     // TODO(blam): test for the routePath output doesn't work, due to the the way the test harness works
     // expect(tester.data(coreExtensionData.routePath)).toBe('/test');
 
-    expect(tester.data(coreExtensionData.routeRef)).toBe(mockRouteRef);
+    expect(tester.get(coreExtensionData.routeRef)).toBe(mockRouteRef);
 
     const { getByTestId } = tester.render();
 
@@ -144,7 +147,7 @@ describe('PageBlueprint', () => {
       CardBlueprint.make({ name: 'card', params: {} }),
     );
 
-    const { getByTestId, getByText } = tester.render();
+    const { getByTestId, getByText } = renderInTestApp(tester.reactElement());
 
     await waitFor(() => expect(getByTestId('card')).toBeInTheDocument());
     await waitFor(() =>
