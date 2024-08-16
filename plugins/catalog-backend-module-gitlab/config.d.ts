@@ -68,6 +68,11 @@ export interface Config {
            * Should be in the format group/subgroup/repo, with no leading or trailing slashes.
            */
           excludeRepos?: string[];
+
+          /**
+           * Sleep in milliseconds between each call to Gitlab to reduce load
+           */
+          sleepBetweenMs?: number;
         };
       };
     };

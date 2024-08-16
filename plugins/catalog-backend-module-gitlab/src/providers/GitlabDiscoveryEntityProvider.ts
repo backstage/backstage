@@ -179,7 +179,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
 
           try {
             await this.refresh(logger);
-          } catch (error) {
+          } catch (error: any) {
             logger.error(
               `${this.getProviderName()} refresh failed, ${error}`,
               error,
@@ -221,6 +221,15 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       if (await this.shouldProcessProject(project, this.gitLabClient)) {
         res.scanned++;
         res.matches.push(project);
+      }
+
+      if (
+        this.config.sleepBetweenMs !== undefined &&
+        this.config.sleepBetweenMs > 0
+      ) {
+        await new Promise(resolve =>
+          setTimeout(resolve, this.config.sleepBetweenMs),
+        );
       }
     }
 

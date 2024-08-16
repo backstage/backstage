@@ -21,6 +21,7 @@ import {
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { GitlabDiscoveryEntityProvider } from '../providers';
+import { createRouter } from '../service/router';
 
 /**
  * Registers the GitlabDiscoveryEntityProvider with the catalog processing extension point.
@@ -39,15 +40,19 @@ export const catalogModuleGitlabDiscoveryEntityProvider = createBackendModule({
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
         events: eventsServiceRef,
+        httpRouter: coreServices.httpRouter,
       },
-      async init({ config, catalog, logger, scheduler, events }) {
-        const gitlabDiscoveryEntityProvider =
+      async init({ config, catalog, logger, scheduler, events, httpRouter }) {
+        const providers: GitlabDiscoveryEntityProvider[] =
           GitlabDiscoveryEntityProvider.fromConfig(config, {
             logger,
             events,
             scheduler,
           });
-        catalog.addEntityProvider(gitlabDiscoveryEntityProvider);
+
+        catalog.addEntityProvider(providers);
+
+        await createRouter({ httpRouter, logger, config, providers });
       },
     });
   },

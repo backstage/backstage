@@ -31,6 +31,7 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
   const host = config.getString('host');
   const branch = config.getOptionalString('branch');
   const fallbackBranch = config.getOptionalString('fallbackBranch') ?? 'master';
+  const sleepBetweenMs = config.getOptionalNumber('sleepBetweenMs');
   const catalogFile =
     config.getOptionalString('entityFilename') ?? 'catalog-info.yaml';
   const projectPattern = new RegExp(
@@ -72,6 +73,7 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
     skipForkedRepos,
     excludeRepos,
     restrictUsersToGroup,
+    sleepBetweenMs,
   };
 }
 

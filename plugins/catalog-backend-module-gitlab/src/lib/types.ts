@@ -206,6 +206,11 @@ export type GitlabProviderConfig = {
    * Paths should not start or end with a slash.
    */
   excludeRepos?: string[];
+
+  /**
+   * Sleep in milliseconds between each call to Gitlab to reduce load
+   */
+  sleepBetweenMs?: number;
 };
 
 /**
