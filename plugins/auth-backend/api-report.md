@@ -20,6 +20,7 @@ import { ClientAuthResponse } from '@backstage/plugin-auth-node';
 import { cloudflareAccessSignInResolvers } from '@backstage/plugin-auth-backend-module-cloudflare-access-provider';
 import { Config } from '@backstage/config';
 import { CookieConfigurer as CookieConfigurer_2 } from '@backstage/plugin-auth-node';
+import { DatabaseService } from '@backstage/backend-plugin-api';
 import { decodeOAuthState } from '@backstage/plugin-auth-node';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { encodeOAuthState } from '@backstage/plugin-auth-node';
@@ -33,14 +34,13 @@ import { OAuth2ProxyResult as OAuth2ProxyResult_2 } from '@backstage/plugin-auth
 import { OAuthEnvironmentHandler as OAuthEnvironmentHandler_2 } from '@backstage/plugin-auth-node';
 import { OAuthState as OAuthState_2 } from '@backstage/plugin-auth-node';
 import { OidcAuthResult as OidcAuthResult_2 } from '@backstage/plugin-auth-backend-module-oidc-provider';
-import { PluginDatabaseManager } from '@backstage/backend-common';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { prepareBackstageIdentityResponse as prepareBackstageIdentityResponse_2 } from '@backstage/plugin-auth-node';
 import { Profile } from 'passport';
 import { ProfileInfo as ProfileInfo_2 } from '@backstage/plugin-auth-node';
 import { SignInInfo as SignInInfo_2 } from '@backstage/plugin-auth-node';
 import { SignInResolver as SignInResolver_2 } from '@backstage/plugin-auth-node';
 import { TokenManager } from '@backstage/backend-common';
+import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { TokenParams as TokenParams_2 } from '@backstage/plugin-auth-node';
 import { UserEntity } from '@backstage/catalog-model';
 import { WebMessageResponse as WebMessageResponse_2 } from '@backstage/plugin-auth-node';
@@ -193,7 +193,7 @@ export function createAuthProviderIntegration<
 // @public (undocumented)
 export function createOriginFilter(config: Config): (origin: string) => boolean;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public
@@ -647,7 +647,7 @@ export const providers: Readonly<{
 // @public @deprecated (undocumented)
 export const readState: typeof decodeOAuthState;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export interface RouterOptions {
   // (undocumented)
   auth?: AuthService;
@@ -656,11 +656,11 @@ export interface RouterOptions {
   // (undocumented)
   config: Config;
   // (undocumented)
-  database: PluginDatabaseManager;
+  database: DatabaseService;
   // (undocumented)
   disableDefaultProviderFactories?: boolean;
   // (undocumented)
-  discovery: PluginEndpointDiscovery;
+  discovery: DiscoveryService;
   // (undocumented)
   httpAuth?: HttpAuthService;
   // (undocumented)
@@ -672,7 +672,7 @@ export interface RouterOptions {
   // (undocumented)
   tokenFactoryAlgorithm?: string;
   // (undocumented)
-  tokenManager: TokenManager;
+  tokenManager: TokenManagerService;
 }
 
 // @public (undocumented)

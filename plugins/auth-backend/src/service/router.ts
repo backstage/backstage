@@ -19,17 +19,15 @@ import Router from 'express-promise-router';
 import cookieParser from 'cookie-parser';
 import {
   AuthService,
+  DatabaseService,
+  DiscoveryService,
   HttpAuthService,
   LoggerService,
+  TokenManagerService,
 } from '@backstage/backend-plugin-api';
 import { defaultAuthProviderFactories } from '../providers';
 import { AuthOwnershipResolver } from '@backstage/plugin-auth-node';
-import {
-  createLegacyAuthAdapters,
-  PluginDatabaseManager,
-  PluginEndpointDiscovery,
-  TokenManager,
-} from '@backstage/backend-common';
+import { createLegacyAuthAdapters } from '@backstage/backend-common';
 import { NotFoundError } from '@backstage/errors';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
@@ -49,13 +47,16 @@ import { StaticKeyStore } from '../identity/StaticKeyStore';
 import { Config } from '@backstage/config';
 import { bindProviderRouters, ProviderFactories } from '../providers/router';
 
-/** @public */
+/**
+ * @public
+ * @deprecated Please migrate to the new backend system as this will be removed in the future.
+ */
 export interface RouterOptions {
   logger: LoggerService;
-  database: PluginDatabaseManager;
+  database: DatabaseService;
   config: Config;
-  discovery: PluginEndpointDiscovery;
-  tokenManager: TokenManager;
+  discovery: DiscoveryService;
+  tokenManager: TokenManagerService;
   auth?: AuthService;
   httpAuth?: HttpAuthService;
   tokenFactoryAlgorithm?: string;
@@ -65,7 +66,10 @@ export interface RouterOptions {
   ownershipResolver?: AuthOwnershipResolver;
 }
 
-/** @public */
+/**
+ * @public
+ * @deprecated Please migrate to the new backend system as this will be removed in the future.
+ */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
