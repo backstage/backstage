@@ -16,8 +16,9 @@
 
 import { IconComponent } from '@backstage/core-plugin-api';
 import { createSchemaFromZod } from '../schema/createSchemaFromZod';
-import { createExtension, createExtensionDataRef } from '../wiring';
+import { createExtension } from '../wiring';
 import { RouteRef } from '../routing';
+import { NavItemBlueprint } from '../blueprints/NavItemBlueprint';
 
 /**
  * Helper for creating extensions for a nav item.
@@ -44,7 +45,7 @@ export function createNavItemExtension(options: {
       }),
     ),
     output: {
-      navTarget: createNavItemExtension.targetDataRef,
+      navTarget: NavItemBlueprint.dataRefs.target,
     },
     factory: ({ config }) => ({
       navTarget: {
@@ -56,12 +57,13 @@ export function createNavItemExtension(options: {
   });
 }
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use {@link NavItemBlueprint} instead.
+ */
 export namespace createNavItemExtension {
-  // TODO(Rugvip): Should this be broken apart into separate refs? title/icon/routeRef
-  export const targetDataRef = createExtensionDataRef<{
-    title: string;
-    icon: IconComponent;
-    routeRef: RouteRef<undefined>;
-  }>().with({ id: 'core.nav-item.target' });
+  /**
+   * @deprecated Use {@link NavItemBlueprint} instead.
+   */
+  export const targetDataRef = NavItemBlueprint.dataRefs.target;
 }

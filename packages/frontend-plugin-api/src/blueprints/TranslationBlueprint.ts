@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import { createExtensionBlueprint } from '../wiring';
-import { createTranslationExtension } from '../extensions/createTranslationExtension';
+import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
 import { TranslationMessages, TranslationResource } from '../translation';
+
+const translationDataRef = createExtensionDataRef<
+  TranslationResource | TranslationMessages
+>().with({ id: 'core.translation.translation' });
 
 /**
  * Creates an extension that adds translations to your app.
@@ -26,13 +29,13 @@ import { TranslationMessages, TranslationResource } from '../translation';
 export const TranslationBlueprint = createExtensionBlueprint({
   kind: 'translation',
   attachTo: { id: 'app', input: 'translations' },
-  output: [createTranslationExtension.translationDataRef],
+  output: [translationDataRef],
   dataRefs: {
-    translation: createTranslationExtension.translationDataRef,
+    translation: translationDataRef,
   },
   factory: ({
     resource,
   }: {
     resource: TranslationResource | TranslationMessages;
-  }) => [createTranslationExtension.translationDataRef(resource)],
+  }) => [translationDataRef(resource)],
 });

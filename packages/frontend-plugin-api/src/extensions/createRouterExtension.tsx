@@ -22,8 +22,8 @@ import {
   ResolvedExtensionInputs,
   createExtension,
 } from '../wiring/createExtension';
-import { createExtensionDataRef } from '../wiring/createExtensionDataRef';
 import { Expand } from '../types';
+import { RouterBlueprint } from '../blueprints/RouterBlueprint';
 
 /**
  * Creates an extension that replaces the router implementation at the app root.
@@ -59,7 +59,7 @@ export function createRouterExtension<
     disabled: options.disabled,
     inputs: options.inputs,
     output: {
-      component: createRouterExtension.componentDataRef,
+      component: RouterBlueprint.dataRefs.component,
     },
     factory({ inputs, config }) {
       const Component = (props: PropsWithChildren<{}>) => {
@@ -76,9 +76,13 @@ export function createRouterExtension<
   });
 }
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use {@link RouterBlueprint} instead.
+ */
 export namespace createRouterExtension {
-  export const componentDataRef = createExtensionDataRef<
-    ComponentType<PropsWithChildren<{}>>
-  >().with({ id: 'app.router.wrapper' });
+  /**
+   * @deprecated Use {@link RouterBlueprint} instead.
+   */
+  export const componentDataRef = RouterBlueprint.dataRefs.component;
 }

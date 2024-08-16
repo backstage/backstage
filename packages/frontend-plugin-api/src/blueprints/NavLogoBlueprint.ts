@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-import { createExtensionBlueprint } from '../wiring';
-import { createNavLogoExtension } from '../extensions/createNavLogoExtension';
+import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
+
+const logoElementsDataRef = createExtensionDataRef<{
+  logoIcon?: JSX.Element;
+  logoFull?: JSX.Element;
+}>().with({ id: 'core.nav-logo.logo-elements' });
 
 /**
  * Creates an extension that replaces the logo in the nav bar with your own.
@@ -25,9 +29,9 @@ import { createNavLogoExtension } from '../extensions/createNavLogoExtension';
 export const NavLogoBlueprint = createExtensionBlueprint({
   kind: 'nav-logo',
   attachTo: { id: 'app/nav', input: 'logos' },
-  output: [createNavLogoExtension.logoElementsDataRef],
+  output: [logoElementsDataRef],
   dataRefs: {
-    logoElements: createNavLogoExtension.logoElementsDataRef,
+    logoElements: logoElementsDataRef,
   },
   *factory({
     logoIcon,
@@ -36,7 +40,7 @@ export const NavLogoBlueprint = createExtensionBlueprint({
     logoIcon: JSX.Element;
     logoFull: JSX.Element;
   }) {
-    yield createNavLogoExtension.logoElementsDataRef({
+    yield logoElementsDataRef({
       logoIcon,
       logoFull,
     });

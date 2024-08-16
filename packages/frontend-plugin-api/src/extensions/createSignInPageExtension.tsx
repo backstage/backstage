@@ -21,11 +21,11 @@ import {
   createExtension,
   ResolvedExtensionInputs,
   AnyExtensionInputMap,
-  createExtensionDataRef,
   ExtensionDefinition,
 } from '../wiring';
 import { Expand } from '../types';
 import { SignInPageProps } from '@backstage/core-plugin-api';
+import { SignInPageBlueprint } from '../blueprints';
 
 /**
  *
@@ -76,9 +76,13 @@ export function createSignInPageExtension<
   });
 }
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use {@link SignInPageBlueprint} instead.
+ */
 export namespace createSignInPageExtension {
-  export const componentDataRef = createExtensionDataRef<
-    ComponentType<SignInPageProps>
-  >().with({ id: 'core.sign-in-page.component' });
+  /**
+   * @deprecated Use {@link SignInPageBlueprint} instead.
+   */
+  export const componentDataRef = SignInPageBlueprint.dataRefs.component;
 }

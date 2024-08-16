@@ -488,9 +488,9 @@ export function createApiExtension<
   }
 >;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export namespace createApiExtension {
-  const // (undocumented)
+  const // @deprecated (undocumented)
     factoryDataRef: ConfigurableExtensionDataRef<
       AnyApiFactory,
       'core.api.factory',
@@ -546,9 +546,9 @@ export function createAppRootWrapperExtension<
   >;
 }): ExtensionDefinition<TConfig>;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export namespace createAppRootWrapperExtension {
-  const // (undocumented)
+  const // @deprecated (undocumented)
     componentDataRef: ConfigurableExtensionDataRef<
       React_2.ComponentType<{
         children?: React_2.ReactNode;
@@ -949,9 +949,9 @@ export function createNavItemExtension(options: {
   }
 >;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export namespace createNavItemExtension {
-  const // (undocumented)
+  const // @deprecated (undocumented)
     targetDataRef: ConfigurableExtensionDataRef<
       {
         title: string;
@@ -981,9 +981,9 @@ export function createNavLogoExtension(options: {
   }
 >;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export namespace createNavLogoExtension {
-  const // (undocumented)
+  const // @deprecated (undocumented)
     logoElementsDataRef: ConfigurableExtensionDataRef<
       {
         logoIcon?: JSX.Element | undefined;
@@ -1070,9 +1070,9 @@ export function createRouterExtension<
   >;
 }): ExtensionDefinition<TConfig>;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export namespace createRouterExtension {
-  const // (undocumented)
+  const // @deprecated (undocumented)
     componentDataRef: ConfigurableExtensionDataRef<
       React_2.ComponentType<{
         children?: React_2.ReactNode;
@@ -1107,9 +1107,9 @@ export function createSignInPageExtension<
   }) => Promise<ComponentType<SignInPageProps>>;
 }): ExtensionDefinition<TConfig>;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export namespace createSignInPageExtension {
-  const // (undocumented)
+  const // @deprecated (undocumented)
     componentDataRef: ConfigurableExtensionDataRef<
       React_2.ComponentType<SignInPageProps>,
       'core.sign-in-page.component',
