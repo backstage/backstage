@@ -37,12 +37,12 @@ import CloseIcon from '@material-ui/icons/Close';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { rootRouteRef } from '../../plugin';
+import { rootRouteRef, SearchResultChildrenProvider } from '../../plugin';
 
 /**
  * @public
  */
-export interface SearchModalChildrenProps {
+export interface SearchModalChildrenProps extends SearchResultChildrenProvider {
   /**
    * A function that should be invoked when navigating away from the modal.
    */
@@ -52,7 +52,7 @@ export interface SearchModalChildrenProps {
 /**
  * @public
  */
-export interface SearchModalProps {
+export interface SearchModalProps extends SearchResultChildrenProvider {
   /**
    * If true, it renders the modal.
    */
@@ -100,7 +100,10 @@ const useStyles = makeStyles(theme => ({
   viewResultsLink: { verticalAlign: '0.5em' },
 }));
 
-export const Modal = ({ toggleModal }: SearchModalChildrenProps) => {
+export const Modal = ({
+  toggleModal,
+  searchResultChildren,
+}: SearchModalChildrenProps) => {
   const classes = useStyles();
   const navigate = useNavigate();
   const { transitions } = useTheme();
@@ -163,7 +166,9 @@ export const Modal = ({ toggleModal }: SearchModalChildrenProps) => {
         <SearchResult
           onClick={handleSearchResultClick}
           onKeyDown={handleSearchResultClick}
-        />
+        >
+          {searchResultChildren}
+        </SearchResult>
       </DialogContent>
       <DialogActions className={classes.dialogActionsContainer}>
         <Grid container direction="row">
@@ -180,7 +185,13 @@ export const Modal = ({ toggleModal }: SearchModalChildrenProps) => {
  * @public
  */
 export const SearchModal = (props: SearchModalProps) => {
-  const { open = true, hidden, toggleModal, children } = props;
+  const {
+    open = true,
+    hidden,
+    toggleModal,
+    children,
+    searchResultChildren,
+  } = props;
 
   const classes = useStyles();
 
@@ -199,8 +210,15 @@ export const SearchModal = (props: SearchModalProps) => {
     >
       {open && (
         <SearchContextProvider inheritParentContextIfAvailable>
-          {(children && children({ toggleModal })) ?? (
-            <Modal toggleModal={toggleModal} />
+          {(children &&
+            children({
+              toggleModal,
+              searchResultChildren: searchResultChildren || [],
+            })) ?? (
+            <Modal
+              toggleModal={toggleModal}
+              searchResultChildren={searchResultChildren || []}
+            />
           )}
         </SearchContextProvider>
       )}

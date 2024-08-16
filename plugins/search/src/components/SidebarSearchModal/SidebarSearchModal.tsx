@@ -23,13 +23,14 @@ import {
   SearchModalProvider,
   useSearchModal,
 } from '../SearchModal';
+import { SearchResultChildrenProvider } from '../../plugin';
 
 /**
  * Props for {@link SidebarSearchModal}.
  *
  * @public
  */
-export type SidebarSearchModalProps = {
+export type SidebarSearchModalProps = SearchResultChildrenProvider & {
   icon?: IconComponent;
   children?: (props: SearchModalChildrenProps) => JSX.Element;
 };
@@ -49,6 +50,7 @@ const SidebarSearchModalContent = (props: SidebarSearchModalProps) => {
       <SearchModal
         {...state}
         toggleModal={toggleModal}
+        searchResultChildren={props.searchResultChildren}
         children={props.children}
       />
     </>
