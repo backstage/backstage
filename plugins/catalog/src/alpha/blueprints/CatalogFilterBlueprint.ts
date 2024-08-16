@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React, { lazy } from 'react';
 import {
   ExtensionBoundary,
   coreExtensionData,
@@ -30,14 +29,9 @@ export const CatalogFilterBlueprint = createExtensionBlueprint({
   attachTo: { id: 'page:catalog', input: 'filters' },
   output: [coreExtensionData.reactElement],
   factory(params: { loader: () => Promise<JSX.Element> }, { node }) {
-    const ExtensionComponent = lazy(() =>
-      params.loader().then(element => ({ default: () => element })),
-    );
     return [
       coreExtensionData.reactElement(
-        <ExtensionBoundary node={node}>
-          <ExtensionComponent />
-        </ExtensionBoundary>,
+        ExtensionBoundary.lazy(node, params.loader),
       ),
     ];
   },

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { lazy } from 'react';
+
 import {
   ExtensionBoundary,
   coreExtensionData,
@@ -54,15 +54,7 @@ export const EntityCardBlueprint = createExtensionBlueprint({
     },
     { node, config },
   ) {
-    const ExtensionComponent = lazy(() =>
-      loader().then(element => ({ default: () => element })),
-    );
-
-    yield coreExtensionData.reactElement(
-      <ExtensionBoundary node={node}>
-        <ExtensionComponent />
-      </ExtensionBoundary>,
-    );
+    yield coreExtensionData.reactElement(ExtensionBoundary.lazy(node, loader));
 
     if (config.filter) {
       yield catalogExtensionData.entityFilterExpression(config.filter);

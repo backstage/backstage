@@ -50,7 +50,6 @@ export const PageBlueprint = createExtensionBlueprint({
   ) {
     yield coreExtensionData.routePath(config.path ?? defaultPath);
     yield coreExtensionData.reactElement(ExtensionBoundary.lazy(node, loader));
-
     if (routeRef) {
       yield coreExtensionData.routeRef(routeRef);
     }

@@ -19,7 +19,6 @@ import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { PortableSchema } from '@backstage/frontend-plugin-api';
-import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
@@ -35,7 +34,7 @@ export const CatalogFilterBlueprint: ExtensionBlueprint<
   {
     loader: () => Promise<JSX.Element>;
   },
-  ConfigurableExtensionDataRef<React_2.JSX.Element, 'core.reactElement', {}>,
+  ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
   {},
   {},
   {},

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { lazy } from 'react';
+
 import {
   coreExtensionData,
   createExtensionBlueprint,
@@ -70,15 +70,7 @@ export const EntityContentBlueprint = createExtensionBlueprint({
     const path = config.path ?? defaultPath;
     const title = config.title ?? defaultTitle;
 
-    const ExtensionComponent = lazy(() =>
-      loader().then(element => ({ default: () => element })),
-    );
-
-    yield coreExtensionData.reactElement(
-      <ExtensionBoundary node={node}>
-        <ExtensionComponent />
-      </ExtensionBoundary>,
-    );
+    yield coreExtensionData.reactElement(ExtensionBoundary.lazy(node, loader));
 
     yield coreExtensionData.routePath(path);
 
