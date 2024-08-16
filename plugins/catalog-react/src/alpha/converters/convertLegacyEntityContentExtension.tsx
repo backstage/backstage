@@ -71,6 +71,7 @@ export function convertLegacyEntityContentExtension(
       name = undefined;
     }
   }
+  name = name && kebabCase(name);
 
   return EntityContentBlueprint.make({
     name: overrides?.name ?? name,

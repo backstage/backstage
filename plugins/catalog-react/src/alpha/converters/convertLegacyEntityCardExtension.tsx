@@ -19,6 +19,7 @@ import { BackstagePlugin, getComponentData } from '@backstage/core-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import React, { ComponentType } from 'react';
 import { EntityCardBlueprint } from '../blueprints';
+import kebabCase from 'lodash/kebabCase';
 
 /** @alpha */
 export function convertLegacyEntityCardExtension(
@@ -40,7 +41,7 @@ export function convertLegacyEntityCardExtension(
   const plugin = getComponentData<BackstagePlugin>(element, 'core.plugin');
   const pluginId = plugin?.getId();
 
-  const match = extName.match(/^Entity(.*)Content$/);
+  const match = extName.match(/^Entity(.*)Card$/);
   const infix = match?.[1] ?? extName;
 
   let name: string | undefined = infix;
@@ -55,6 +56,7 @@ export function convertLegacyEntityCardExtension(
       name = undefined;
     }
   }
+  name = name && kebabCase(name);
 
   return EntityCardBlueprint.make({
     name: overrides?.name ?? name,
