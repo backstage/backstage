@@ -20,7 +20,6 @@
  * @packageDocumentation
  */
 
-export * from './deprecated';
 export * from './cache';
 export * from './database';
 export * from './msw';

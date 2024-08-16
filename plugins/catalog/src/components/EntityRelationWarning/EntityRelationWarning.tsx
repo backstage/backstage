@@ -26,7 +26,7 @@ import useAsync from 'react-use/esm/useAsync';
 import Box from '@material-ui/core/Box';
 import { ResponseErrorPanel } from '@backstage/core-components';
 import { useApi, ApiHolder } from '@backstage/core-plugin-api';
-import { catalogTranslationRef } from '../../translation';
+import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 async function getRelationWarnings(entity: Entity, catalogApi: CatalogApi) {

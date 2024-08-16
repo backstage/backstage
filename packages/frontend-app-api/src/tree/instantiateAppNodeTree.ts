@@ -92,6 +92,16 @@ function resolveInputDataContainer(
     get(ref) {
       return dataMap.get(ref.id);
     },
+    *[Symbol.iterator]() {
+      for (const [id, value] of dataMap) {
+        // TODO: Would be better to be able to create a new instance using the ref here instead
+        yield {
+          $$type: '@backstage/ExtensionDataValue',
+          id,
+          value,
+        };
+      }
+    },
   } as { node: AppNode } & ExtensionDataContainer<AnyExtensionDataRef>;
 }
 

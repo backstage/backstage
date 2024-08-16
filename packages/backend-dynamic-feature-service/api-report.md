@@ -33,7 +33,7 @@ import { ServiceRef } from '@backstage/backend-plugin-api';
 import { TaskRunner } from '@backstage/backend-tasks';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { TokenManager } from '@backstage/backend-common';
-import { UrlReader } from '@backstage/backend-common';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
 export interface BackendDynamicPlugin extends BaseDynamicPlugin {
@@ -117,6 +117,7 @@ export interface DynamicPluginsFactoryOptions {
 export const dynamicPluginsFeatureDiscoveryServiceFactory: ServiceFactoryCompat<
   FeatureDiscoveryService,
   'root',
+  'singleton',
   undefined
 >;
 
@@ -127,6 +128,7 @@ export const dynamicPluginsFrontendSchemas: BackendFeatureCompat;
 export const dynamicPluginsRootLoggerServiceFactory: ServiceFactoryCompat<
   RootLoggerService,
   'root',
+  'singleton',
   undefined
 >;
 
@@ -147,6 +149,7 @@ export interface DynamicPluginsSchemasService {
 export const dynamicPluginsSchemasServiceFactory: ServiceFactoryCompat<
   DynamicPluginsSchemasService,
   'root',
+  'singleton',
   DynamicPluginsSchemasOptions
 >;
 
@@ -154,13 +157,15 @@ export const dynamicPluginsSchemasServiceFactory: ServiceFactoryCompat<
 export const dynamicPluginsServiceFactory: ServiceFactoryCompat<
   DynamicPluginProvider,
   'root',
+  'singleton',
   DynamicPluginsFactoryOptions
 >;
 
 // @public (undocumented)
 export const dynamicPluginsServiceRef: ServiceRef<
   DynamicPluginProvider,
-  'root'
+  'root',
+  'singleton'
 >;
 
 // @public (undocumented)
@@ -216,7 +221,7 @@ export type LegacyPluginEnvironment = {
   cache: PluginCacheManager;
   database: PluginDatabaseManager;
   config: Config;
-  reader: UrlReader;
+  reader: UrlReaderService;
   discovery: PluginEndpointDiscovery;
   tokenManager: TokenManager;
   permissions: PermissionEvaluator;

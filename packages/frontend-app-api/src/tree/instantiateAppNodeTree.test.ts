@@ -68,7 +68,7 @@ function makeNode<TConfig, TConfigInput>(
 
 function makeInstanceWithId<TConfig, TConfigInput>(
   extension: Extension<TConfig, TConfigInput>,
-  config?: TConfig,
+  config?: TConfigInput,
 ): AppNode {
   const node = makeNode(extension, { config });
   return {
@@ -640,12 +640,12 @@ describe('instantiateAppNodeTree', () => {
         name: 'test',
         attachTo: { id: 'ignored', input: 'ignored' },
         output: [testDataRef, otherDataRef.optional()],
-        configSchema: createSchemaFromZod(z =>
-          z.object({
-            output: z.string().default('test'),
-            other: z.number().optional(),
-          }),
-        ),
+        config: {
+          schema: {
+            output: z => z.string().default('test'),
+            other: z => z.number().optional(),
+          },
+        },
         factory({ config }) {
           return [
             testDataRef(config.output),
@@ -914,7 +914,7 @@ describe('instantiateAppNodeTree', () => {
                   namespace: 'app',
                   name: 'test',
                   attachTo: { id: 'ignored', input: 'ignored' },
-                  output: [],
+                  output: [testDataRef],
                   factory() {
                     const error = new Error('NOPE');
                     error.name = 'NopeError';
@@ -981,11 +981,12 @@ describe('instantiateAppNodeTree', () => {
           createAppNodeInstance({
             node: makeNode(
               resolveExtensionDefinition(
+                // @ts-expect-error
                 createExtension({
                   namespace: 'app',
                   name: 'test',
                   attachTo: { id: 'ignored', input: 'ignored' },
-                  output: [],
+                  output: [], // Output not declared
                   factory({}) {
                     return [testDataRef('test')] as any;
                   },

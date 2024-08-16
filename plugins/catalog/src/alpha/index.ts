@@ -16,3 +16,6 @@
 
 export { default } from './plugin';
 export { createCatalogFilterExtension } from './createCatalogFilterExtension';
+
+export * from './blueprints';
+export * from './translation';

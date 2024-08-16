@@ -1,5 +1,41 @@
 # @backstage/plugin-notifications-backend
 
+## 0.3.4-next.3
+
+### Patch Changes
+
+- 7a05f50: Allow using notifications without users in the catalog
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.3
+  - @backstage/backend-common@0.23.4-next.3
+  - @backstage/catalog-model@1.6.0-next.0
+  - @backstage/catalog-client@1.6.6-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-auth-node@0.5.0-next.3
+  - @backstage/plugin-events-node@0.3.9-next.3
+  - @backstage/plugin-notifications-common@0.0.5
+  - @backstage/plugin-notifications-node@0.2.4-next.3
+  - @backstage/plugin-signals-node@0.1.9-next.3
+
+## 0.3.4-next.2
+
+### Patch Changes
+
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.2
+  - @backstage/plugin-notifications-node@0.2.4-next.2
+  - @backstage/backend-common@0.23.4-next.2
+  - @backstage/plugin-auth-node@0.5.0-next.2
+  - @backstage/plugin-events-node@0.3.9-next.2
+  - @backstage/plugin-signals-node@0.1.9-next.2
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-notifications-common@0.0.5
+
 ## 0.3.4-next.1
 
 ### Patch Changes

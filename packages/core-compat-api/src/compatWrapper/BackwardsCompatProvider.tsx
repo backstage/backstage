@@ -21,7 +21,7 @@ import { AppContextProvider } from '../../../core-app-api/src/app/AppContext';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { RouteResolver } from '../../../core-plugin-api/src/routing/useRouteRef';
 import {
-  createPlugin as createNewPlugin,
+  createFrontendPlugin as createNewPlugin,
   BackstagePlugin as NewBackstagePlugin,
   appTreeApiRef,
   componentsApiRef,
@@ -50,7 +50,9 @@ const legacyPluginStore = getOrCreateGlobalSingleton(
   () => new WeakMap<NewBackstagePlugin, LegacyBackstagePlugin>(),
 );
 
-function toLegacyPlugin(plugin: NewBackstagePlugin): LegacyBackstagePlugin {
+export function toLegacyPlugin(
+  plugin: NewBackstagePlugin,
+): LegacyBackstagePlugin {
   let legacy = legacyPluginStore.get(plugin);
   if (legacy) {
     return legacy;

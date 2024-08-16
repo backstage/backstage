@@ -62,7 +62,7 @@ describe('convertLegacyApp', () => {
             id: 'page:score-card',
             attachTo: { id: 'app/routes', input: 'routes' },
             disabled: false,
-            defaultConfig: { path: 'score-board' },
+            defaultConfig: {},
           },
           {
             id: 'api:plugin.scoringdata.service',
@@ -78,7 +78,7 @@ describe('convertLegacyApp', () => {
             id: 'page:stackstorm',
             attachTo: { id: 'app/routes', input: 'routes' },
             disabled: false,
-            defaultConfig: { path: 'stackstorm' },
+            defaultConfig: {},
           },
           {
             id: 'api:plugin.stackstorm.service',
@@ -94,13 +94,13 @@ describe('convertLegacyApp', () => {
             id: 'page:puppetDb',
             attachTo: { id: 'app/routes', input: 'routes' },
             disabled: false,
-            defaultConfig: { path: 'puppetdb' },
+            defaultConfig: {},
           },
           {
             id: 'page:puppetDb/1',
             attachTo: { id: 'app/routes', input: 'routes' },
             disabled: false,
-            defaultConfig: { path: 'puppetdb' },
+            defaultConfig: {},
           },
           {
             id: 'api:plugin.puppetdb.service',

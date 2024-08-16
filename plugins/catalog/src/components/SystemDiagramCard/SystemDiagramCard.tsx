@@ -46,7 +46,7 @@ import {
 } from '@backstage/core-components';
 
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
-import { catalogTranslationRef } from '../../translation';
+import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */

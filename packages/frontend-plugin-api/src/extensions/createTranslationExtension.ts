@@ -17,7 +17,10 @@
 import { TranslationMessages, TranslationResource } from '../translation';
 import { createExtension, createExtensionDataRef } from '../wiring';
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use {@link TranslationBlueprint} instead.
+ */
 export function createTranslationExtension(options: {
   name?: string;
   resource: TranslationResource | TranslationMessages;
@@ -34,7 +37,10 @@ export function createTranslationExtension(options: {
   });
 }
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use {@link TranslationBlueprint} instead.
+ */
 export namespace createTranslationExtension {
   export const translationDataRef = createExtensionDataRef<
     TranslationResource | TranslationMessages

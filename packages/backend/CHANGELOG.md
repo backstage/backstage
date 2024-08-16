@@ -1,5 +1,79 @@
 # example-backend
 
+## 0.0.29-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-github@0.4.1-next.3
+  - @backstage/plugin-notifications-backend@0.3.4-next.3
+  - @backstage/backend-plugin-api@0.8.0-next.3
+  - @backstage/plugin-techdocs-backend@1.10.10-next.3
+  - @backstage/backend-defaults@0.4.2-next.3
+  - @backstage/catalog-model@1.6.0-next.0
+  - @backstage/plugin-scaffolder-backend@1.23.1-next.3
+  - @backstage/backend-tasks@0.5.28-next.3
+  - @backstage/plugin-app-backend@0.3.72-next.3
+  - @backstage/plugin-auth-backend@0.22.10-next.3
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.20-next.3
+  - @backstage/plugin-auth-backend-module-guest-provider@0.1.9-next.3
+  - @backstage/plugin-auth-node@0.5.0-next.3
+  - @backstage/plugin-catalog-backend@1.24.1-next.3
+  - @backstage/plugin-catalog-backend-module-backstage-openapi@0.2.6-next.3
+  - @backstage/plugin-catalog-backend-module-openapi@0.1.41-next.3
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.21-next.3
+  - @backstage/plugin-catalog-backend-module-unprocessed@0.4.10-next.3
+  - @backstage/plugin-devtools-backend@0.3.9-next.3
+  - @backstage/plugin-kubernetes-backend@0.18.4-next.3
+  - @backstage/plugin-permission-backend@0.5.47-next.3
+  - @backstage/plugin-permission-backend-module-allow-all-policy@0.1.20-next.3
+  - @backstage/plugin-permission-common@0.8.1-next.1
+  - @backstage/plugin-permission-node@0.8.1-next.3
+  - @backstage/plugin-proxy-backend@0.5.4-next.3
+  - @backstage/plugin-search-backend@1.5.15-next.3
+  - @backstage/plugin-search-backend-module-catalog@0.1.29-next.3
+  - @backstage/plugin-search-backend-module-explore@0.1.29-next.3
+  - @backstage/plugin-search-backend-module-techdocs@0.1.28-next.3
+  - @backstage/plugin-search-backend-node@1.2.28-next.3
+  - @backstage/plugin-signals-backend@0.1.9-next.3
+
+## 0.0.29-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.4.2-next.2
+  - @backstage/backend-plugin-api@0.8.0-next.2
+  - @backstage/plugin-scaffolder-backend@1.23.1-next.2
+  - @backstage/plugin-permission-common@0.8.1-next.1
+  - @backstage/plugin-search-backend-module-techdocs@0.1.28-next.2
+  - @backstage/plugin-search-backend-module-explore@0.1.29-next.2
+  - @backstage/plugin-notifications-backend@0.3.4-next.2
+  - @backstage/plugin-kubernetes-backend@0.18.4-next.2
+  - @backstage/plugin-permission-backend@0.5.47-next.2
+  - @backstage/plugin-devtools-backend@0.3.9-next.2
+  - @backstage/plugin-techdocs-backend@1.10.10-next.2
+  - @backstage/plugin-catalog-backend@1.24.1-next.2
+  - @backstage/plugin-signals-backend@0.1.9-next.2
+  - @backstage/plugin-proxy-backend@0.5.4-next.2
+  - @backstage/plugin-auth-backend@0.22.10-next.2
+  - @backstage/plugin-app-backend@0.3.72-next.2
+  - @backstage/plugin-auth-node@0.5.0-next.2
+  - @backstage/plugin-permission-node@0.8.1-next.2
+  - @backstage/plugin-search-backend-node@1.2.28-next.2
+  - @backstage/plugin-search-backend@1.5.15-next.2
+  - @backstage/backend-tasks@0.5.28-next.2
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.20-next.2
+  - @backstage/plugin-auth-backend-module-guest-provider@0.1.9-next.2
+  - @backstage/plugin-catalog-backend-module-backstage-openapi@0.2.6-next.2
+  - @backstage/plugin-catalog-backend-module-openapi@0.1.41-next.2
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.21-next.2
+  - @backstage/plugin-catalog-backend-module-unprocessed@0.4.10-next.2
+  - @backstage/plugin-permission-backend-module-allow-all-policy@0.1.20-next.2
+  - @backstage/plugin-scaffolder-backend-module-github@0.4.1-next.2
+  - @backstage/plugin-search-backend-module-catalog@0.1.29-next.2
+  - @backstage/catalog-model@1.5.0
+
 ## 0.0.29-next.1
 
 ### Patch Changes

@@ -94,13 +94,49 @@ export function toInternalExtension<TConfig, TConfigInput>(
   return internal;
 }
 
+/** @ignore */
+export type ResolveExtensionId<
+  TExtension extends ExtensionDefinition<any>,
+  TDefaultNamespace extends string | undefined,
+> = TExtension extends ExtensionDefinition<
+  any,
+  any,
+  any,
+  any,
+  infer IKind,
+  infer INamespace,
+  infer IName
+>
+  ? [string | undefined] extends [IKind | INamespace | IName]
+    ? never
+    : (
+        (
+          undefined extends TDefaultNamespace ? INamespace : TDefaultNamespace
+        ) extends infer ISelectedNamespace extends string
+          ? undefined extends IName
+            ? ISelectedNamespace
+            : `${ISelectedNamespace}/${IName}`
+          : IName
+      ) extends infer INamePart extends string
+    ? IKind extends string
+      ? `${IKind}:${INamePart}`
+      : INamePart
+    : never
+  : never;
+
 /** @internal */
 export function resolveExtensionDefinition<TConfig, TConfigInput>(
   definition: ExtensionDefinition<TConfig, TConfigInput>,
   context?: { namespace?: string },
 ): Extension<TConfig, TConfigInput> {
   const internalDefinition = toInternalExtensionDefinition(definition);
-  const { name, kind, namespace: _, ...rest } = internalDefinition;
+  const {
+    name,
+    kind,
+    namespace: _skip1,
+    override: _skip2,
+    ...rest
+  } = internalDefinition;
   const namespace = internalDefinition.namespace ?? context?.namespace;
 
   const namePart =

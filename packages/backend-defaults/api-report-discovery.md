@@ -11,6 +11,7 @@ import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
 export const discoveryServiceFactory: ServiceFactoryCompat<
   DiscoveryService,
   'plugin',
+  'singleton',
   undefined
 >;
 

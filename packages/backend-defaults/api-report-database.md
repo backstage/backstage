@@ -35,6 +35,7 @@ export type DatabaseManagerOptions = {
 export const databaseServiceFactory: ServiceFactoryCompat<
   DatabaseService,
   'plugin',
+  'singleton',
   undefined
 >;
 

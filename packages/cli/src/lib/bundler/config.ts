@@ -180,7 +180,7 @@ export async function createConfig(
   // to remove this eventually!
   plugins.push(
     new ProvidePlugin({
-      process: 'process/browser',
+      process: require.resolve('process/browser'),
       Buffer: ['buffer', 'Buffer'],
     }),
   );

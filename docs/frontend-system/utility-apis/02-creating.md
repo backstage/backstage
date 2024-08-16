@@ -47,7 +47,7 @@ The plugin itself now wants to provide this API and its default implementation, 
 import {
   createApiExtension,
   createApiFactory,
-  createPlugin,
+  createFrontendPlugin,
   storageApiRef,
   StorageApi,
 } from '@backstage/frontend-plugin-api';
@@ -76,7 +76,7 @@ const exampleWorkApi = createApiExtension({
  * The Example plugin.
  * @public
  */
-export default createPlugin({
+export default createFrontendPlugin({
   id: 'example',
   extensions: [exampleWorkApi],
 });
@@ -86,7 +86,7 @@ For illustration we make a skeleton implementation class and the API extension a
 
 The code also illustrates how the API factory declares a dependency on another utility API - the core storage API in this case. An instance of that utility API is then provided to the factory function.
 
-The resulting extension ID of the work API will be the kind `api:` followed by the plugin ID as the namespace, in this case ending up as `api:plugin.example.work`. Check out [the naming patterns doc](../architecture/08-naming-patterns.md) for more information on how this works. You can now use this ID to refer to the API in app-config and elsewhere.
+The resulting extension ID of the work API will be the kind `api:` followed by the plugin ID as the namespace, in this case ending up as `api:plugin.example.work`. Check out [the naming patterns doc](../architecture/50-naming-patterns.md) for more information on how this works. You can now use this ID to refer to the API in app-config and elsewhere.
 
 ## Adding configurability
 

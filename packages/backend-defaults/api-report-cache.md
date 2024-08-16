@@ -28,6 +28,7 @@ export type CacheManagerOptions = {
 export const cacheServiceFactory: ServiceFactoryCompat<
   CacheService,
   'plugin',
+  'singleton',
   undefined
 >;
 

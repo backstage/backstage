@@ -20,7 +20,7 @@ import { SearchQuery } from '@backstage/plugin-search-common';
 import { TaskFunction } from '@backstage/backend-tasks';
 import { TaskRunner } from '@backstage/backend-tasks';
 import { Transform } from 'stream';
-import { UrlReader } from '@backstage/backend-common';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { Writable } from 'stream';
 
 // @public
@@ -138,7 +138,7 @@ export class NewlineDelimitedJsonCollatorFactory
 export type NewlineDelimitedJsonCollatorFactoryOptions = {
   type: string;
   searchPattern: string;
-  reader: UrlReader;
+  reader: UrlReaderService;
   logger: LoggerService;
   visibilityPermission?: Permission;
 };

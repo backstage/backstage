@@ -50,6 +50,7 @@ describe('createRouterExtension', () => {
         component: expect.anything(),
       },
       factory: expect.any(Function),
+      override: expect.any(Function),
       toString: expect.any(Function),
     });
 
@@ -119,6 +120,7 @@ describe('createRouterExtension', () => {
         component: expect.anything(),
       },
       factory: expect.any(Function),
+      override: expect.any(Function),
       toString: expect.any(Function),
     });
 

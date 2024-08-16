@@ -73,9 +73,12 @@ const SidebarNavItem = (
   props: (typeof createNavItemExtension.targetDataRef)['T'],
 ) => {
   const { icon: Icon, title, routeRef } = props;
-  const to = useRouteRef(routeRef)();
+  const link = useRouteRef(routeRef);
+  if (!link) {
+    return null;
+  }
   // TODO: Support opening modal, for example, the search one
-  return <SidebarItem to={to} icon={Icon} text={title} />;
+  return <SidebarItem to={link()} icon={Icon} text={title} />;
 };
 
 export const AppNav = createExtension({
@@ -83,33 +86,27 @@ export const AppNav = createExtension({
   name: 'nav',
   attachTo: { id: 'app/layout', input: 'nav' },
   inputs: {
-    items: createExtensionInput({
-      target: createNavItemExtension.targetDataRef,
+    items: createExtensionInput([createNavItemExtension.targetDataRef]),
+    logos: createExtensionInput([createNavLogoExtension.logoElementsDataRef], {
+      singleton: true,
+      optional: true,
     }),
-    logos: createExtensionInput(
-      {
-        elements: createNavLogoExtension.logoElementsDataRef,
-      },
-      {
-        singleton: true,
-        optional: true,
-      },
+  },
+  output: [coreExtensionData.reactElement],
+  factory: ({ inputs }) => [
+    coreExtensionData.reactElement(
+      <Sidebar>
+        <SidebarLogo
+          {...inputs.logos?.get(createNavLogoExtension.logoElementsDataRef)}
+        />
+        <SidebarDivider />
+        {inputs.items.map((item, index) => (
+          <SidebarNavItem
+            {...item.get(createNavItemExtension.targetDataRef)}
+            key={index}
+          />
+        ))}
+      </Sidebar>,
     ),
-  },
-  output: {
-    element: coreExtensionData.reactElement,
-  },
-  factory({ inputs }) {
-    return {
-      element: (
-        <Sidebar>
-          <SidebarLogo {...inputs.logos?.output.elements} />
-          <SidebarDivider />
-          {inputs.items.map((item, index) => (
-            <SidebarNavItem {...item.output.target} key={index} />
-          ))}
-        </Sidebar>
-      ),
-    };
-  },
+  ],
 });

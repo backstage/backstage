@@ -35,20 +35,25 @@ const getContainerHealthChecks = (
   containerSpec: IContainer,
   containerStatus: IContainerStatus,
 ): { [key: string]: boolean } => {
-  if (containerStatus.state?.terminated?.reason === 'Completed') {
-    return {
-      'not waiting to start': containerStatus.state?.waiting === undefined,
-      'no restarts': containerStatus.restartCount === 0,
-    };
-  }
-  return {
+  const healthCheck = {
     'not waiting to start': containerStatus.state?.waiting === undefined,
-    started: !!containerStatus.started,
-    ready: containerStatus.ready,
     'no restarts': containerStatus.restartCount === 0,
-    'readiness probe set':
-      containerSpec && containerSpec?.readinessProbe !== undefined,
   };
+  if (containerStatus.state?.terminated?.reason === 'Completed') {
+    return healthCheck;
+  }
+  Object.assign(
+    healthCheck,
+    { started: !!containerStatus.started },
+    { ready: containerStatus.ready },
+    { 'readiness probe set': containerSpec?.readinessProbe !== undefined },
+  );
+  if (containerSpec && containerSpec?.livenessProbe !== undefined) {
+    Object.assign(healthCheck, {
+      'liveness probe set': containerSpec.livenessProbe,
+    });
+  }
+  return healthCheck;
 };
 
 const getCurrentState = (containerStatus: IContainerStatus): string => {

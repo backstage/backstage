@@ -25,4 +25,3 @@ export { createSignInPageExtension } from './createSignInPageExtension';
 export { createThemeExtension } from './createThemeExtension';
 export { createComponentExtension } from './createComponentExtension';
 export { createTranslationExtension } from './createTranslationExtension';
-export { IconBundleBlueprint } from './IconBundleBlueprint';

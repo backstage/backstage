@@ -26,8 +26,8 @@ import homePlugin, {
 import {
   coreExtensionData,
   createExtension,
-  createApiExtension,
   createExtensionOverrides,
+  ApiBlueprint,
 } from '@backstage/frontend-plugin-api';
 import techdocsPlugin from '@backstage/plugin-techdocs/alpha';
 import appVisualizerPlugin from '@backstage/plugin-app-visualizer';
@@ -40,6 +40,7 @@ import { createApiFactory, configApiRef } from '@backstage/core-plugin-api';
 import {
   ScmAuth,
   ScmIntegrationsApi,
+  scmAuthApiRef,
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
 import kubernetesPlugin from '@backstage/plugin-kubernetes/alpha';
@@ -77,25 +78,31 @@ TODO:
 const homePageExtension = createExtension({
   name: 'myhomepage',
   attachTo: { id: 'page:home', input: 'props' },
-  output: {
-    children: coreExtensionData.reactElement,
-    title: titleExtensionDataRef,
-  },
+  output: [coreExtensionData.reactElement, titleExtensionDataRef],
   factory() {
-    return { children: homePage, title: 'just a title' };
+    return [
+      coreExtensionData.reactElement(homePage),
+      titleExtensionDataRef('just a title'),
+    ];
   },
 });
 
-const scmAuthExtension = createApiExtension({
-  factory: ScmAuth.createDefaultApiFactory(),
+const scmAuthExtension = ApiBlueprint.make({
+  namespace: scmAuthApiRef.id,
+  params: {
+    factory: ScmAuth.createDefaultApiFactory(),
+  },
 });
 
-const scmIntegrationApi = createApiExtension({
-  factory: createApiFactory({
-    api: scmIntegrationsApiRef,
-    deps: { configApi: configApiRef },
-    factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
-  }),
+const scmIntegrationApi = ApiBlueprint.make({
+  namespace: scmIntegrationsApiRef.id,
+  params: {
+    factory: createApiFactory({
+      api: scmIntegrationsApiRef,
+      deps: { configApi: configApiRef },
+      factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
+    }),
+  },
 });
 
 const collectedLegacyPlugins = convertLegacyApp(

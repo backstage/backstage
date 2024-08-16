@@ -30,6 +30,7 @@ import { SignInPageProps } from '@backstage/core-plugin-api';
 /**
  *
  * @public
+ * @deprecated Use {@link SignInPageBlueprint} instead.
  */
 export function createSignInPageExtension<
   TConfig extends {},

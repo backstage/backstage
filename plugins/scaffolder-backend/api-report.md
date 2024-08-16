@@ -63,7 +63,7 @@ import { TemplateEntityStepV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateFilter as TemplateFilter_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateGlobal as TemplateGlobal_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { UrlReader } from '@backstage/backend-common';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
 import { ZodType } from 'zod';
 import { ZodTypeDef } from 'zod';
@@ -95,7 +95,7 @@ export interface CreateBuiltInActionsOptions {
   catalogClient: CatalogApi;
   config: Config;
   integrations: ScmIntegrations;
-  reader: UrlReader;
+  reader: UrlReaderService;
 }
 
 // @public
@@ -154,7 +154,7 @@ export function createFetchCatalogEntityAction(options: {
 
 // @public
 export function createFetchPlainAction(options: {
-  reader: UrlReader;
+  reader: UrlReaderService;
   integrations: ScmIntegrations;
 }): TemplateAction_2<
   {
@@ -167,7 +167,7 @@ export function createFetchPlainAction(options: {
 
 // @public
 export function createFetchPlainFileAction(options: {
-  reader: UrlReader;
+  reader: UrlReaderService;
   integrations: ScmIntegrations;
 }): TemplateAction_2<
   {
@@ -180,7 +180,7 @@ export function createFetchPlainFileAction(options: {
 
 // @public
 export function createFetchTemplateAction(options: {
-  reader: UrlReader;
+  reader: UrlReaderService;
   integrations: ScmIntegrations;
   additionalTemplateFilters?: Record<string, TemplateFilter_2>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
@@ -427,7 +427,7 @@ export class DatabaseTaskStore implements TaskStore {
   // (undocumented)
   heartbeatTask(taskId: string): Promise<void>;
   // (undocumented)
-  list(options: { createdBy?: string }): Promise<{
+  list(options: { createdBy?: string; status?: TaskStatus_2 }): Promise<{
     tasks: SerializedTask_2[];
   }>;
   // (undocumented)
@@ -507,7 +507,7 @@ export interface RouterOptions {
   // (undocumented)
   permissions?: PermissionsService;
   // (undocumented)
-  reader: UrlReader;
+  reader: UrlReaderService;
   // (undocumented)
   scheduler?: PluginTaskScheduler;
   // (undocumented)
@@ -646,7 +646,7 @@ export interface TaskStore {
   // (undocumented)
   heartbeatTask(taskId: string): Promise<void>;
   // (undocumented)
-  list?(options: { createdBy?: string }): Promise<{
+  list?(options: { createdBy?: string; status?: TaskStatus }): Promise<{
     tasks: SerializedTask[];
   }>;
   // (undocumented)

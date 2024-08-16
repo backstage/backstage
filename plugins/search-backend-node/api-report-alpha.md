@@ -46,7 +46,11 @@ export type SearchIndexServiceInitOptions = {
 };
 
 // @alpha
-export const searchIndexServiceRef: ServiceRef<SearchIndexService, 'plugin'>;
+export const searchIndexServiceRef: ServiceRef<
+  SearchIndexService,
+  'plugin',
+  'singleton'
+>;
 
 // (No @packageDocumentation comment for this package)
 ```

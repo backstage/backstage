@@ -29,15 +29,13 @@ export const AppRoutes = createExtension({
   name: 'routes',
   attachTo: { id: 'app/layout', input: 'content' },
   inputs: {
-    routes: createExtensionInput({
-      path: coreExtensionData.routePath,
-      ref: coreExtensionData.routeRef.optional(),
-      element: coreExtensionData.reactElement,
-    }),
+    routes: createExtensionInput([
+      coreExtensionData.routePath,
+      coreExtensionData.routeRef.optional(),
+      coreExtensionData.reactElement,
+    ]),
   },
-  output: {
-    element: coreExtensionData.reactElement,
-  },
+  output: [coreExtensionData.reactElement],
   factory({ inputs }) {
     const Routes = () => {
       const NotFoundErrorPage = useComponentRef(
@@ -46,8 +44,8 @@ export const AppRoutes = createExtension({
 
       const element = useRoutes([
         ...inputs.routes.map(route => ({
-          path: `${route.output.path}/*`,
-          element: route.output.element,
+          path: `${route.get(coreExtensionData.routePath)}/*`,
+          element: route.get(coreExtensionData.reactElement),
         })),
         {
           path: '*',
@@ -58,8 +56,6 @@ export const AppRoutes = createExtension({
       return element;
     };
 
-    return {
-      element: <Routes />,
-    };
+    return [coreExtensionData.reactElement(<Routes />)];
   },
 });

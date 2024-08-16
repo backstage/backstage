@@ -19,7 +19,7 @@ import { MemoryRouter, Link } from 'react-router-dom';
 import { RenderResult, render } from '@testing-library/react';
 import { createSpecializedApp } from '@backstage/frontend-app-api';
 import {
-  ExtensionDataValue,
+  AnyExtensionDataRef,
   AppNode,
   AppTree,
   Extension,
@@ -56,10 +56,13 @@ const NavItem = (props: {
   icon: IconComponent;
 }) => {
   const { routeRef, title, icon: Icon } = props;
-  const to = useRouteRef(routeRef)();
+  const link = useRouteRef(routeRef);
+  if (!link) {
+    return null;
+  }
   return (
     <li>
-      <Link to={to}>
+      <Link to={link()}>
         <Icon /> {title}
       </Link>
     </li>
@@ -99,7 +102,7 @@ const TestAppNavExtension = createExtension({
 });
 
 /** @public */
-export class ExtensionQuery {
+export class ExtensionQuery<UOutput extends AnyExtensionDataRef> {
   #node: AppNode;
 
   constructor(node: AppNode) {
@@ -122,18 +125,24 @@ export class ExtensionQuery {
     return instance;
   }
 
-  data<T>(ref: ExtensionDataRef<T>): T | undefined {
+  get<TId extends UOutput['id']>(
+    ref: ExtensionDataRef<any, TId, any>,
+  ): UOutput extends ExtensionDataRef<infer IData, TId, infer IConfig>
+    ? IConfig['optional'] extends true
+      ? IData | undefined
+      : IData
+    : never {
     return this.instance.getData(ref);
   }
 }
 
 /** @public */
-export class ExtensionTester {
+export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
   /** @internal */
-  static forSubject<TConfig, TConfigInput>(
+  static forSubject<TConfig, TConfigInput, UOutput extends AnyExtensionDataRef>(
     subject: ExtensionDefinition<TConfig, TConfigInput>,
     options?: { config?: TConfigInput },
-  ): ExtensionTester {
+  ): ExtensionTester<UOutput> {
     const tester = new ExtensionTester();
     const internal = toInternalExtensionDefinition(subject);
 
@@ -166,9 +175,7 @@ export class ExtensionTester {
             : [...internal.output, coreExtensionData.routePath],
           factory: params => {
             const parentOutput = Array.from(
-              internal.factory(params) as Iterable<
-                ExtensionDataValue<any, any>
-              >,
+              internal.factory(params as any),
             ).filter(val => val.id !== coreExtensionData.routePath.id);
 
             return [...parentOutput, coreExtensionData.routePath('/')];
@@ -192,7 +199,7 @@ export class ExtensionTester {
   add<TConfig, TConfigInput>(
     extension: ExtensionDefinition<TConfig, TConfigInput>,
     options?: { config?: TConfigInput },
-  ): ExtensionTester {
+  ): ExtensionTester<UOutput> {
     if (this.#tree) {
       throw new Error(
         'Cannot add more extensions accessing the extension tree',
@@ -219,17 +226,24 @@ export class ExtensionTester {
     return this;
   }
 
-  data<T>(ref: ExtensionDataRef<T>): T | undefined {
+  get<TId extends UOutput['id']>(
+    ref: ExtensionDataRef<any, TId, any>,
+  ): UOutput extends ExtensionDataRef<infer IData, TId, infer IConfig>
+    ? IConfig['optional'] extends true
+      ? IData | undefined
+      : IData
+    : never {
     const tree = this.#resolveTree();
 
-    return new ExtensionQuery(tree.root).data(ref);
+    return new ExtensionQuery(tree.root).get(ref);
   }
 
-  query(id: string | ExtensionDefinition<any, any>): ExtensionQuery {
+  query<UQueryExtensionOutput extends AnyExtensionDataRef>(
+    extension: ExtensionDefinition<any, any, UQueryExtensionOutput>,
+  ): ExtensionQuery<UQueryExtensionOutput> {
     const tree = this.#resolveTree();
 
-    const actualId =
-      typeof id === 'string' ? id : resolveExtensionDefinition(id).id;
+    const actualId = resolveExtensionDefinition(extension).id;
 
     const node = tree.nodes.get(actualId);
 
@@ -245,6 +259,25 @@ export class ExtensionTester {
     return new ExtensionQuery(node);
   }
 
+  reactElement(): JSX.Element {
+    const tree = this.#resolveTree();
+
+    const element = new ExtensionQuery(tree.root).get(
+      coreExtensionData.reactElement,
+    );
+
+    if (!element) {
+      throw new Error(
+        'No element found. Make sure the extension has a `coreExtensionData.reactElement` output, or use the `.get(...)` to access output data directly instead',
+      );
+    }
+
+    return element;
+  }
+
+  /**
+   * @deprecated Switch to using `renderInTestApp` directly and using `.reactElement()` or `.get(...)` to get the component you w
+   */
   render(options?: { config?: JsonObject }): RenderResult {
     const { config = {} } = options ?? {};
 
@@ -336,9 +369,13 @@ export class ExtensionTester {
 }
 
 /** @public */
-export function createExtensionTester<TConfig>(
-  subject: ExtensionDefinition<TConfig>,
-  options?: { config?: TConfig },
-): ExtensionTester {
+export function createExtensionTester<
+  TConfig,
+  TConfigInput,
+  UOutput extends AnyExtensionDataRef,
+>(
+  subject: ExtensionDefinition<TConfig, TConfigInput, UOutput>,
+  options?: { config?: TConfigInput },
+): ExtensionTester<UOutput> {
   return ExtensionTester.forSubject(subject, options);
 }

@@ -17,7 +17,6 @@
 export { coreExtensionData } from './coreExtensionData';
 export {
   createExtension,
-  type ExtensionDataContainer,
   type ExtensionDefinition,
   type CreateExtensionOptions,
   type ExtensionDataValues,
@@ -32,6 +31,7 @@ export {
   type ExtensionInput,
   type LegacyExtensionInput,
 } from './createExtensionInput';
+export { type ExtensionDataContainer } from './createExtensionDataContainer';
 export {
   createExtensionDataRef,
   type AnyExtensionDataRef,
@@ -40,7 +40,11 @@ export {
   type ExtensionDataValue,
   type ConfigurableExtensionDataRef,
 } from './createExtensionDataRef';
-export { createPlugin, type PluginOptions } from './createPlugin';
+export {
+  createPlugin,
+  createFrontendPlugin,
+  type PluginOptions,
+} from './createFrontendPlugin';
 export {
   createExtensionOverrides,
   type ExtensionOverridesOptions,
@@ -59,3 +63,4 @@ export {
   type ExtensionBlueprint,
   createExtensionBlueprint,
 } from './createExtensionBlueprint';
+export { type ResolveInputValueOverrides } from './resolveInputOverrides';

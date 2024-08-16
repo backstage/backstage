@@ -15,9 +15,9 @@ The main concept is that routes, components, apis are now extensions. You can us
 In the legacy frontend system a plugin was defined in its own `plugin.ts` file as following:
 
 ```ts title="my-plugin/src/plugin.ts"
-  import { createPlugin } from '@backstage/core-plugin-api';
+  import { createFrontendPlugin } from '@backstage/core-plugin-api';
 
-  export const myPlugin = createPlugin({
+  export const myPlugin = createFrontendPlugin({
     id: 'my-plugin',
     apis: [],
     routes: {
@@ -29,13 +29,13 @@ In the legacy frontend system a plugin was defined in its own `plugin.ts` file a
   });
 ```
 
-In order to migrate the actual definition of the plugin you need to recreate the plugin using the new `createPlugin` utility exported by `@backstage/frontend-plugin-api`.
-The new `createPlugin` function doesn't accept apis anymore as apis are now extensions.
+In order to migrate the actual definition of the plugin you need to recreate the plugin using the new `createFrontendPlugin` utility exported by `@backstage/frontend-plugin-api`.
+The new `createFrontendPlugin` function doesn't accept apis anymore as apis are now extensions.
 
 ```ts title="my-plugin/src/alpha.ts"
-  import { createPlugin } from '@backstage/frontend-plugin-api';
+  import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 
-  export default createPlugin({
+  export default createFrontendPlugin({
     id: 'my-plugin',
     // bind all the extensions to the plugin
     /* highlight-next-line */
@@ -118,9 +118,9 @@ const fooPage = createPageExtension({
 then add the `fooPage` extension to the plugin:
 
 ```ts title="my-plugin/src/alpha.ts"
-  import { createPlugin } from '@backstage/frontend-plugin-api';
+  import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 
-  export default createPlugin({
+  export default createFrontendPlugin({
     id: 'my-plugin',
     // bind all the extensions to the plugin
     /* highlight-remove-next-line */
@@ -207,9 +207,9 @@ const exampleWorkApi = createApiExtension({
 Finally, let's add the `exampleWorkApi` extension to the plugin:
 
 ```ts title="my-plugin/src/alpha.ts"
-  import { createPlugin } from '@backstage/frontend-plugin-api';
+  import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 
-  export default createPlugin({
+  export default createFrontendPlugin({
     id: 'my-plugin',
     // bind all the extensions to the plugin
     /* highlight-remove-next-line */
