@@ -10,161 +10,298 @@ description: Frontend extension overrides
 
 ## Introduction
 
-An extension override is a building block of the frontend system that allows you to programmatically override app or plugin extensions anywhere in your application. Since the entire application is built mostly out of extensions from the bottom up, this is a powerful feature. You can use it for example to provide your own app root layout, to replace the implementation of a Utility API with a custom one, to override how the catalog page renders itself, and much more.
+An important customization point in the frontend system is the ability to override existing extensions. It can be used for anything from slight tweaks to the extension logic, to completely replacing an extension with a custom implementation. While extensions are encouraged to make themselves configurable, there are many situations where you need to override an extension to achieve the desired behavior. The ability to override extensions should be kept in mind when building plugins, and can be a powerful tool to allow for deeper customizations without the need to re-implement large parts of the plugin.
 
-In general, most features should have a good level of customization built into them, so that users do not have to leverage extension overrides to achieve common goals. A well written feature often has [configuration](../../conf/) settings, or uses extension inputs for extensibility where applicable. An example of this is the search plugin, which allows you to provide result renderers as inputs rather than replacing the result page wholesale just to tweak how results are shown. Adopters should take advantage of those when possible, and only use extension overrides when it's necessary to entirely replace the extension. Check the respective extension documentation for guidance.
+In general, most features should have a good level of customization built into them, so that users do not have to leverage extension overrides to achieve common goals. A well written feature often has [configuration](../../conf/) settings, or uses extension inputs for extensibility where applicable. An example of this is the search plugin, which allows you to provide result renderers as inputs rather than replacing the result page wholesale just to tweak how results are shown. Adopters should take advantage of those when possible in order to reduce the need and size of extension overrides.
 
-## Override App Extensions
+## Overriding an extension
 
-In order to override an app extension, you must create a new extension and add it to the list of overridden features. The steps are: create your extension overrides and use them in Backstage.
+Every extension created with `createExtension` comes with an `override` method, including those created from an [extension blueprint](./23-extension-blueprints.md). The `override` method **creates a new extension**, it does not mutate the existing extension. This new extension in created in such a way that if it is installed adjacent to the existing extension, it will take precedence and override the existing extension. While the `override` method does create new extension instances, it is not intended to be used as a way to create multiple new extensions from a base template, for that use-case you will want to use an [extension blueprint](./23-extension-blueprints.md) instead.
 
-### Example
+The following is an example of calling the `.override(...)` method on an extension:
 
-In the example below, we create a file that exports custom extensions for the app's `light` and `dark` themes:
-
-```tsx title="packages/app/src/themes.tsx"
-import {
-  createThemeExtension,
-  createExtensionOverrides,
-} from '@backstage/frontend-plugin-api';
-import { apertureThemes } from './themes';
-import { ApertureLightIcon, ApertureDarkIcon } from './icons';
-
-// Creating a light theme extension
-const apertureLightTheme = createThemeExtension({
-  // highlight-start
-  namespace: 'app',
-  name: 'light',
-  // highlight-end
-  title: 'Aperture Light Theme',
-  variant: 'light',
-  icon: <ApertureLightIcon />,
-  Provider: ({ children }) => (
-    <UnifiedThemeProvider theme={apertureThemes.light} children={children} />
-  ),
-});
-
-// Creating a dark theme extension
-const apertureDarkTheme = createThemeExtension({
-  // highlight-start
-  namespace: 'app',
-  name: 'dark',
-  // highlight-end
-  title: 'Aperture Dark Theme',
-  variant: 'dark',
-  icon: <ApertureDarkIcon />,
-  Provider: ({ children }) => (
-    <UnifiedThemeProvider theme={apertureThemes.dark} children={children} />
-  ),
-});
-
-// Creating an extension overrides preset
-export default createExtensionOverrides({
-  extensions: [apertureLightTheme, apertureDarkTheme],
+```tsx
+const myOverrideExtension = myExtension.override({
+  factory(originalFactory) {
+    return originalFactory();
+  },
 });
 ```
 
-Note that we declare `namespace` as `'app'` while creating the themes, so the system knows we are overriding app extensions. Additionally, to specifically override the `light` and `dark` theme extensions, we set the `name` option to `light` and `dark`. Therefore, to override app theme extensions, we ensure that the extension `namespace` and `name` match those of the default app theme extension definitions.
+This override is a no-op, it does not change the behavior of the extension, but simply forwards the outputs from the original extension factory. If you are familiar with [extension blueprints](./23-extension-blueprints.md), you will recognize this factory override pattern where we get access to the original factory function. In fact the only difference is that we do not need to pass any parameters to the original factory. The first parameter is now instead the optional factory context overrides, more on that as we dive into each override pattern in the following sections.
 
-Now we are able to use the overrides in a Backstage app:
+## Overriding original factory outputs
 
-```tsx title="packages/app/src/App.tsx"
-import { createApp } from '@backstage/frontend-app-api';
-import themeOverrides from './themes';
+When overriding an extension you can choose to forward the existing outputs, or replace them with your own. The override factory has an exception to the rule that extension factories can only return a single value for each declared output. It will instead always use the **last** value provided for each extension data reference. This makes it possible to forward the outputs from the original factory, but also provide your own, for example:
 
-const app = createApp({
-  // highlight-next-line
- features: [themeOverrides],
-});
-
-export default app.createRoot().
-```
-
-If the plugin you want to change is internal to your company or you just want to replace one of the application's core extensions, you can decide to store the overrides code directly in the app package or extract them to a separate package.
-
-Note that it can still be a good idea to split your overrides out into separate packages in large projects. But it's up to you to decide how to group the extensions into extension overrides.
-
-## Override Plugin Extensions
-
-To override an extension that is provided by a plugin, you need to provide a new extension that has the same ID as the existing extension. That is, all kind, namespace, and name options must match the extension you want to replace. This means that you typically need to provide an explicit `namespace` when overriding extensions from a plugin.
-
-:::info
-We recommend that plugin developers share the extension IDs in their plugin documentation, but usually you can infer the ID by following the [naming patterns](./50-naming-patterns.md) documentation.
-:::
-
-### Example
-
-Imagine you have a plugin with the ID `'search'`, and the plugin provides a page extension that you want to fully override with your own custom component. To do so, you need to create your page extension with an explicit `namespace` option that matches that of the plugin that you want to override, in this case `'search'`. If the existing extension also has an explicit `name` you'd need to set the `name` of your override extension to the same value as well.
-
-```tsx title="packages/app/src/search.tsx"
-import {
-  createPageExtension,
-  createExtensionOverrides,
-} from '@backstage/frontend-plugin-api';
-
-// Creating a custom search page extension
-const customSearchPage = createPageExtension({
-  // highlight-next-line
-  namespace: 'search',
-  // Omitting name since it is the index plugin page
-  defaultPath: '/search',
-  loader: () => import('./SearchPage').then(m => m.<SearchPage/>),
-});
-
-export default createExtensionOverrides({
-  extensions: [customSearchPage]
+```tsx
+const myOverrideExtension = myExtension.override({
+  factory(originalFactory) {
+    return [
+      ...originalFactory(),
+      coreExtensionData.reactElement(<h1>Hello Override</h1>),
+    ];
+  },
 });
 ```
 
-Don't forget to configure your overrides in the `createApp` function:
+You can also access individual data values from the original factory, in order to decorate the output:
 
-```tsx title="packages/app/src/App.tsx"
-import { createApp } from '@backstage/frontend-app-api';
-import searchOverrides from './search';
+```tsx
+const myOverrideExtension = myExtension.override({
+  factory(originalFactory) {
+    const originalOutput = originalFactory();
+    const originalElement = originalOutput.get(coreExtensionData.reactElement);
 
-const app = createApp({
-  // highlight-next-line
-  features: [searchOverrides],
+    return [
+      ...originalOutput,
+      coreExtensionData.reactElement(
+        <details>
+          <summary>Show original element</summary>
+          {originalElement}
+        </details>,
+      ),
+    ];
+  },
 });
-
-export default app.createRoot();
 ```
 
-Now let's talk about the last override case, orphan extensions.
+Just as [extension factories can be declared as a generator function](./20-extensions.md#extension-factory-as-a-generator-function), so can the override factory. Using a generator function, the first example above can be written as follows:
 
-## Create Standalone Extensions
+```tsx
+const myOverrideExtension = myExtension.override({
+  *factory(originalFactory) {
+    yield* originalFactory();
+    yield coreExtensionData.reactElement(<h1>Hello Override</h1>);
+  },
+});
+```
 
-Sometimes you just need to quickly create a new extension and not overwrite an app extension or plugin. You can also use overrides to create extensions, but remember that if you want to make this extension available for installation by other users, we recommend providing it via a plugin in a separate package.
+Note the `yield*` expression, which forwards all values from the provided iterable to the generator, in this case the original factory output.
 
-### Example
+## Overriding declared outputs
 
-Imagine you want to create a page that is currently only used by your application, like an Institutional page, for example. You can use overrides to extend the Backstage app to render it. To do so, simply create a page extension and pass it to the app as an override:
+When overriding an extension you can provide a new output declaration. This **replaces** any existing output declaration, which means that if you want to forward any of the original output you will need to declare it again. The following example shows how to override an extension and replace the output declaration:
 
-```tsx title="packages/app/src/App.tsx"
-import { createApp } from '@backstage/frontend-app-api';
-import {
-  createPageExtension,
-  createExtensionOverrides,
-} from '@backstage/frontend-plugin-api';
+```tsx
+// Original extension
+const exampleExtension = createExtension({
+  name: 'example',
+  output: [coreExtensionData.reactElement],
+  factory: () => [coreExtensionData.reactElement(<h1>Example</h1>)],
+});
 
-const app = createApp({
-  features: [
-    createExtensionOverrides({
-      extensions: [
-        // highlight-start
-        createPageExtension({
-          name: 'institutional',
-          defaultPath: '/institutional',
-          loader: () =>
-            import('./institutional').then(m => <m.InstitutionalPage />),
-        }),
-        // highlight-end
-      ],
-    }),
+// Override extension, with additional outputs
+const overrideExtension = exampleExtension.override({
+  output: [coreExtensionData.reactElement, coreExtensionData.routePath],
+  factory(originalFactory) {
+    return [...originalFactory(), coreExtensionData.routePath('/example')];
+  },
+});
+```
+
+When overriding the output declaration you don't need to include the original outputs. Just remember that you will no longer be able to directly forward the output from the original factory, and will still need to adhere to the contract of the input that the extension is attached to.
+
+## Overriding declared inputs
+
+When overriding an extension you can also provide new input declarations. You can define any number of new inputs, but you are **not** able to override the existing inputs declared by the original extension. The new inputs will be merged with the existing ones, giving the override factory access to both. The following example shows how to override an extension and add a new input declaration:
+
+```tsx
+const myOverrideExtension = myExtension.override({
+  inputs: {
+    myOverrideInput: createExtensionInput([coreExtensionData.reactElement]),
+  },
+  factory(originalFactory, { inputs }) {
+    const originalOutput = originalFactory();
+    const originalElement = originalOutput.get(coreExtensionData.reactElement);
+
+    return [
+      ...originalOutput,
+      coreExtensionData.reactElement(
+        <div>
+          <h1>Original element</h1>
+          {originalElement}
+          <h1>Additional inputs</h1>
+          <ul>
+            {inputs.myOverrideInput.map(i => (
+              <li key={i.node.spec.id}>
+                {i.get(coreExtensionData.reactElement)}
+              </li>
+            ))}
+          </ul>
+        </div>,
+      ),
+    ];
+  },
+});
+```
+
+## Overriding configuration schema
+
+Overriding the configuration schema works very similarly to overriding the declared inputs. You can define new configuration fields that will be merged with the existing ones, but you can not re-declare existing fields. The following example shows how to override an extension and add a new configuration field:
+
+```tsx
+const exampleExtension = createExtension({
+  config: {
+    schema: {
+      foo: z => z.string(),
+    },
+  },
+  // ...
+});
+
+const overrideExtension = exampleExtension.override({
+  config: {
+    schema: {
+      bar: z => z.string(),
+    },
+  },
+  factory(originalFactory, { config }) {
+    //
+    console.log(`foo=${config.foo} bar=${config.bar}`);
+    return originalFactory();
+  },
+});
+```
+
+## Overriding original factory config context
+
+In all examples so far we have called the `originalFactory` callback without any arguments. It is however possible to override parts of the factory context for the original factory using the first parameter of the original factory. This can be useful if you want to override the provided configuration or change the inputs in some way. Note that if you are implementing a `factory` for a blueprint, the override factory context will instead be the second parameter of the original factory function. The following is an example of how to override the configuration for the original factory:
+
+```tsx
+const exampleExtension = createExtension({
+  name: 'example',
+  config: {
+    schema: {
+      layout: z => z.enum(['grid', 'list']).optional(),
+    },
+  },
+  output: [coreExtensionData.reactElement],
+  factory: ({ config }) => [
+    coreExtensionData.reactElement(
+      <MyExtension layout={config.layout ?? 'list'} />,
+    ),
   ],
 });
 
-export default app.createRoot();
+const overrideExtension = exampleExtension.override({
+  factory(originalFactory, { config }) {
+    return originalFactory({
+      config: {
+        // Switch default layout from 'list' to 'grid'
+        layout: config.layout ?? 'grid',
+      },
+    });
+  },
+});
 ```
 
-Note that we are omitting `namespace` when creating the page extension. When we omit `namespace`, we are telling the system the new extension is standalone and not an application or plugin extension!
+As can be seen in the above example we can provide a new configuration object in the `originalFactory` call using the `config` property. When providing the `config` property we will completely override the original configuration object that would otherwise have been provided to the original factory. Note that this object must adhere to the output type of the configuration schema, which might not be intuitive. It's due to the configuration having already been processed and validated by Zod at this point, which means that things like defaults in the schema will not be applied again.
+
+## Overriding original factory inputs context
+
+In addition to the configuration, you are also able to override the inputs provided to the original factory. Just like when overriding configuration you will completely replace the original inputs with the new ones, but you are able to forward the inputs that you are receiving to the override factory.
+
+You can override each input in one of two ways, which can not be combined. You can forward (or not forward) the original input, optionally filtering out individual items or reordering them. Or you can provide new values for the input, which will replace the original input. When providing new values you must forward all existing inputs and the inputs can not be reordered, and when forwarding the existing inputs you can not provide new values.
+
+The following example shows how to override the values provided for each input item:
+
+```tsx
+const exampleExtension = createExtension({
+  inputs: {
+    items: createExtensionInput([coreExtensionData.reactElement]),
+  },
+  // ...
+});
+
+const overrideExtension = exampleExtension.override({
+  factory(originalFactory, { inputs }) {
+    return originalFactory({
+      inputs: {
+        items: inputs.items.map(i => [
+          coreExtensionData.reactElement(
+            <ItemWrapper>{i.get(coreExtensionData.reactElement)}</ItemWrapper>,
+          ),
+        ]),
+      },
+    });
+  },
+});
+```
+
+In contrast, the following example shows how to forward the original inputs, but in a different order:
+
+```tsx
+const exampleExtension = createExtension({
+  inputs: {
+    content: createExtensionInput([coreExtensionData.reactElement], {
+      singleton: true,
+      optional: true,
+    }),
+    items: createExtensionInput([coreExtensionData.reactElement]),
+  },
+  // ...
+});
+
+const overrideExtension = exampleExtension.override({
+  factory(originalFactory, { inputs }) {
+    return originalFactory({
+      inputs: {
+        // We can also skip forwarding the original input, if we want to remove it
+        content: inputs.content,
+        // Sort items input by their extension ID
+        items: inputs.items.toSorted((a, b) =>
+          a.node.spec.id.localeCompare(b.node.spec.id),
+        ),
+      },
+    });
+  },
+});
+```
+
+## Installing override extension in an app
+
+To install extension overrides in a Backstage app you should use `plugin.withOverrides` whenever you are overriding or adding extensions for a plugin. See the section on [overriding a plugin](./15-plugins.md#overriding-a-plugin) for more information.
+
+There is also a `createExtensionOverrides` function that can be used to install a collection of standalone extensions in an app. This method will be replaced with a different mechanism in the future, but for now remains the only way to override the built-in extensions in the app or to package extensions for a plugin package separate from the plugin itself.
+
+Note that while using either of these options you don't necessarily need to use the extension `.override(...)` method to create the overrides. You can also create new extensions with `createExtension` or a blueprint that are either completely net-new extensions, or override an existing extension by using the same `kind`, `namespace` and `name` to produce the same extension ID.
+
+### Creating a standalone extension bundle
+
+The following example shows how to create a standalone extension bundle that overrides the search page from the search plugin:
+
+```tsx
+import {
+  createPageExtension,
+  createExtensionOverrides,
+} from '@backstage/frontend-plugin-api';
+
+const customSearchPage = PageBlueprint.make({
+  // Since this is a standalone extension we need to provide the namespace to match the search plugin
+  namespace: 'search',
+  params: {
+    defaultPath: '/search',
+    loader: () =>
+      import('./CustomSearchPage').then(m => <m.CustomSearchPage />),
+  },
+});
+
+export default createExtensionOverrides({
+  extensions: [customSearchPage],
+});
+```
+
+Assuming the above code resides in the `@internal/search-page` package, you can install it in your app like this:
+
+```tsx title="packages/app/src/App.tsx"
+import { createApp } from '@backstage/frontend-app-api';
+import searchPageOverride from '@internal/search-page';
+
+const app = createApp({
+  // highlight-next-line
+  features: [searchPageOverride],
+});
+
+export default app.createRoot();
+```
