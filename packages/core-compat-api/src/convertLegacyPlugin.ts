@@ -16,6 +16,7 @@
 
 import { BackstagePlugin as LegacyBackstagePlugin } from '@backstage/core-plugin-api';
 import {
+  ApiBlueprint,
   ExtensionDefinition,
   BackstagePlugin as NewBackstagePlugin,
   createFrontendPlugin,
@@ -27,11 +28,14 @@ export function convertLegacyPlugin(
   legacyPlugin: LegacyBackstagePlugin,
   options: { extensions: ExtensionDefinition<any, any>[] },
 ): NewBackstagePlugin {
+  const apiExtensions = Array.from(legacyPlugin.getApis()).map(factory =>
+    ApiBlueprint.make({ name: factory.api.id, params: { factory } }),
+  );
   return createFrontendPlugin({
     id: legacyPlugin.getId(),
     featureFlags: [...legacyPlugin.getFeatureFlags()],
     routes: convertLegacyRouteRefs(legacyPlugin.routes ?? {}),
     externalRoutes: convertLegacyRouteRefs(legacyPlugin.externalRoutes ?? {}),
-    extensions: options.extensions,
+    extensions: [...apiExtensions, ...options.extensions],
   });
 }
