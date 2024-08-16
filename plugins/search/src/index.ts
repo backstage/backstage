@@ -43,6 +43,7 @@ export type {
 export { SidebarSearch } from './components/SidebarSearch';
 export type { SidebarSearchProps } from './components/SidebarSearch';
 export type { SidebarSearchModalProps } from './components/SidebarSearchModal';
+export type { SearchResultChildrenProvider } from './plugin';
 
 export {
   HomePageSearchBar,

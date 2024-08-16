@@ -27,16 +27,10 @@ import {
 } from '@backstage/core-plugin-api';
 import { ReactNode } from 'react';
 import { SearchResultSet } from '@backstage/plugin-search-common';
+import { SidebarSearchModalProps } from './components/SidebarSearchModal';
 
 /**
- * This type allows us to pass children to the <SearchResult> component via the <SideBarSearchModal />.
- *
- * This allows us to customize the search result items displayed in the SidebarSearchModal, like so:
- *
- *     <SidebarSearchModal searchResultChildren={[
- *       <MyCustomSearchResultListItem />,
- *       <TechDocsSearchResultListItem icon={<DocsIcon />} />
- *     ]} />
+ * @public
  */
 export type SearchResultChildrenProvider = {
   searchResultChildren?:
@@ -82,7 +76,7 @@ export const SearchPage = searchPlugin.provide(
  * @public
  */
 export const SidebarSearchModal = searchPlugin.provide<
-  (props: SearchResultChildrenProvider) => JSX.Element | null
+  (props: SidebarSearchModalProps) => JSX.Element | null
 >(
   createComponentExtension({
     name: 'SidebarSearchModal',
