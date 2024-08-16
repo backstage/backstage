@@ -15,44 +15,31 @@
  */
 
 import {
-  BackstagePlugin as LegacyBackstagePlugin,
   getComponentData,
   RouteRef as LegacyRouteRef,
 } from '@backstage/core-plugin-api';
 import {
   ExtensionDefinition,
-  BackstagePlugin as NewBackstagePlugin,
-  createPageExtension,
-  createPlugin,
+  PageBlueprint,
 } from '@backstage/frontend-plugin-api';
 import kebabCase from 'lodash/kebabCase';
-import {
-  convertLegacyRouteRef,
-  convertLegacyRouteRefs,
-} from './convertLegacyRouteRef';
+import { convertLegacyRouteRef } from './convertLegacyRouteRef';
 import { ComponentType } from 'react';
 import React from 'react';
 import { compatWrapper } from './compatWrapper';
 
-/** @internal */
-export function convertLegacyExtension(
+/** @public */
+export function convertLegacyPageExtension(
   LegacyExtension: ComponentType<{}>,
-  legacyPlugin: LegacyBackstagePlugin,
-): ExtensionDefinition<any, any> {
+  overrides?: {
+    name?: string;
+    defaultPath?: string;
+  },
+): ExtensionDefinition<any> {
   const element = <LegacyExtension />;
 
-  const plugin = getComponentData<LegacyBackstagePlugin>(
-    element,
-    'core.plugin',
-  );
-  if (legacyPlugin !== plugin) {
-    throw new Error(
-      `The extension does not belong to the same plugin, got ${plugin?.getId()}`,
-    );
-  }
-
-  const name = getComponentData<string>(element, 'core.extensionName');
-  if (!name) {
+  const extName = getComponentData<string>(element, 'core.extensionName');
+  if (!extName) {
     throw new Error('Extension has no name');
   }
 
@@ -61,25 +48,17 @@ export function convertLegacyExtension(
     'core.mountPoint',
   );
 
-  if (name.endsWith('Page')) {
-    return createPageExtension({
-      defaultPath: kebabCase(name.slice(0, -'Page'.length)),
+  const name = extName.endsWith('Page')
+    ? extName.slice(0, -'Page'.length)
+    : extName;
+  const kebabName = kebabCase(name);
+
+  return PageBlueprint.make({
+    name: overrides?.name ?? kebabName,
+    params: {
+      defaultPath: overrides?.defaultPath ?? `/${kebabName}`,
       routeRef: mountPoint && convertLegacyRouteRef(mountPoint),
       loader: () => Promise.resolve(compatWrapper(element)),
-    });
-  }
-}
-
-/** @public */
-export function convertLegacyPlugin(
-  legacyPlugin: LegacyBackstagePlugin,
-  options: { extensions: ExtensionDefinition<any, any>[] },
-): NewBackstagePlugin {
-  return createPlugin({
-    id: legacyPlugin.getId(),
-    featureFlags: [...legacyPlugin.getFeatureFlags()],
-    routes: convertLegacyRouteRefs(legacyPlugin.routes ?? {}),
-    externalRoutes: convertLegacyRouteRefs(legacyPlugin.externalRoutes ?? {}),
-    extensions: options.extensions,
+    },
   });
 }
