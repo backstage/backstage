@@ -144,46 +144,7 @@ export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
     options?: { config?: TConfigInput },
   ): ExtensionTester<UOutput> {
     const tester = new ExtensionTester();
-    const internal = toInternalExtensionDefinition(subject);
-
-    // attaching to app/routes to render as index route
-    if (internal.version === 'v1') {
-      tester.add(
-        createExtension({
-          ...internal,
-          attachTo: { id: 'app/routes', input: 'routes' },
-          output: {
-            ...internal.output,
-            path: coreExtensionData.routePath,
-          },
-          factory: params => ({
-            ...internal.factory(params as any),
-            path: '/',
-          }),
-        }),
-        options as TConfigInput & {},
-      );
-    } else if (internal.version === 'v2') {
-      tester.add(
-        createExtension({
-          ...internal,
-          attachTo: { id: 'app/routes', input: 'routes' },
-          output: internal.output.find(
-            ref => ref.id === coreExtensionData.routePath.id,
-          )
-            ? internal.output
-            : [...internal.output, coreExtensionData.routePath],
-          factory: params => {
-            const parentOutput = Array.from(
-              internal.factory(params as any),
-            ).filter(val => val.id !== coreExtensionData.routePath.id);
-
-            return [...parentOutput, coreExtensionData.routePath('/')];
-          },
-        }),
-        options as TConfigInput & {},
-      );
-    }
+    tester.add(subject, options as TConfigInput & {});
     return tester;
   }
 
@@ -288,11 +249,49 @@ export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
       );
     }
 
+    const subjectInternal = toInternalExtensionDefinition(subject.definition);
+    let subjectOverride;
+    // attaching to app/routes to render as index route
+    if (subjectInternal.version === 'v1') {
+      subjectOverride = createExtension({
+        ...subjectInternal,
+        attachTo: { id: 'app/routes', input: 'routes' },
+        output: {
+          ...subjectInternal.output,
+          path: coreExtensionData.routePath,
+        },
+        factory: params => ({
+          ...subjectInternal.factory(params as any),
+          path: '/',
+        }),
+      });
+    } else if (subjectInternal.version === 'v2') {
+      subjectOverride = createExtension({
+        ...subjectInternal,
+        attachTo: { id: 'app/routes', input: 'routes' },
+        output: subjectInternal.output.find(
+          ref => ref.id === coreExtensionData.routePath.id,
+        )
+          ? subjectInternal.output
+          : [...subjectInternal.output, coreExtensionData.routePath],
+        factory: params => {
+          const parentOutput = Array.from(
+            subjectInternal.factory(params as any),
+          ).filter(val => val.id !== coreExtensionData.routePath.id);
+
+          return [...parentOutput, coreExtensionData.routePath('/')];
+        },
+      });
+    } else {
+      throw new Error('Unsupported extension version');
+    }
+
     const app = createSpecializedApp({
       features: [
         createExtensionOverrides({
           extensions: [
-            ...this.#extensions.map(extension => extension.definition),
+            subjectOverride,
+            ...this.#extensions.slice(1).map(extension => extension.definition),
             TestAppNavExtension,
             createRouterExtension({
               namespace: 'test',
