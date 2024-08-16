@@ -29,7 +29,7 @@ export function convertLegacyPlugin(
   options: { extensions: ExtensionDefinition<any, any>[] },
 ): NewBackstagePlugin {
   const apiExtensions = Array.from(legacyPlugin.getApis()).map(factory =>
-    ApiBlueprint.make({ name: factory.api.id, params: { factory } }),
+    ApiBlueprint.make({ namespace: factory.api.id, params: { factory } }),
   );
   return createFrontendPlugin({
     id: legacyPlugin.getId(),
