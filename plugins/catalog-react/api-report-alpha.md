@@ -11,8 +11,8 @@ import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
+import { JSX as JSX_2 } from 'react';
 import { PortableSchema } from '@backstage/frontend-plugin-api';
-import { default as React_2 } from 'react';
 import { ResolvedExtensionInputs } from '@backstage/frontend-plugin-api';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/frontend-plugin-api';
@@ -182,7 +182,7 @@ export const EntityCardBlueprint: ExtensionBlueprint<
     loader: () => Promise<JSX.Element>;
     filter?: string | ((entity: Entity) => boolean) | undefined;
   },
-  | ConfigurableExtensionDataRef<React_2.JSX.Element, 'core.reactElement', {}>
+  | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
   | ConfigurableExtensionDataRef<
       (entity: Entity) => boolean,
       'catalog.entity-filter-function',
@@ -232,7 +232,7 @@ export const EntityContentBlueprint: ExtensionBlueprint<
     routeRef?: RouteRef<AnyRouteRefParams> | undefined;
     filter?: string | ((entity: Entity) => boolean) | undefined;
   },
-  | ConfigurableExtensionDataRef<React_2.JSX.Element, 'core.reactElement', {}>
+  | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
   | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
   | ConfigurableExtensionDataRef<
       RouteRef<AnyRouteRefParams>,
