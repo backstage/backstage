@@ -29,7 +29,6 @@ import { createCounterMetric, createSummaryMetric } from '../util/metrics';
 import { CatalogProcessingOrchestrator, EntityProcessingResult } from './types';
 import { Stitcher, stitchingStrategyFromConfig } from '../stitching/types';
 import { startTaskPipeline } from './TaskPipeline';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import {
   addEntityAttributes,
@@ -39,7 +38,7 @@ import {
 import { deleteOrphanedEntities } from '../database/operations/util/deleteOrphanedEntities';
 import { EventBroker, EventsService } from '@backstage/plugin-events-node';
 import { CATALOG_ERRORS_TOPIC } from '../constants';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import { LoggerService, SchedulerService } from '@backstage/backend-plugin-api';
 
 const CACHE_TTL = 5;
 
@@ -55,7 +54,7 @@ export type ProgressTracker = ReturnType<typeof progressTracker>;
 // is just one.
 export class DefaultCatalogProcessingEngine {
   private readonly config: Config;
-  private readonly scheduler?: PluginTaskScheduler;
+  private readonly scheduler?: SchedulerService;
   private readonly logger: LoggerService;
   private readonly knex: Knex;
   private readonly processingDatabase: ProcessingDatabase;
@@ -75,7 +74,7 @@ export class DefaultCatalogProcessingEngine {
 
   constructor(options: {
     config: Config;
-    scheduler?: PluginTaskScheduler;
+    scheduler?: SchedulerService;
     logger: LoggerService;
     knex: Knex;
     processingDatabase: ProcessingDatabase;

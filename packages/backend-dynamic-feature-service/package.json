@@ -49,7 +49,6 @@
     "@backstage/backend-common": "workspace:^",
     "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
-    "@backstage/backend-tasks": "workspace:^",
     "@backstage/cli-common": "workspace:^",
     "@backstage/cli-node": "workspace:^",
     "@backstage/config": "workspace:^",

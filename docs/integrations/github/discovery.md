@@ -83,7 +83,7 @@ catalog:
         filters:
           branch: 'main' # string
           repository: '.*' # Regex
-        schedule: # same options as in TaskScheduleDefinition
+        schedule: # same options as in SchedulerServiceTaskScheduleDefinition
           # supports cron, ISO duration, "human duration" as used in code
           frequency: { minutes: 30 }
           # supports ISO duration, "human duration" as used in code
@@ -203,7 +203,7 @@ schedule:
   timeout: { minutes: 3 }
 ```
 
-More information about scheduling can be found on the [TaskScheduleDefinition](https://backstage.io/docs/reference/backend-tasks.taskscheduledefinition) page.
+More information about scheduling can be found on the [SchedulerServiceTaskScheduleDefinition](https://backstage.io/docs/reference/backend-plugin-api.schedulerservicetaskscheduledefinition) page.
 
 Alternatively, or additionally, you can configure [github-apps](github-apps.md) authentication
 which carries a much higher rate limit at GitHub.

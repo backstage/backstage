@@ -146,7 +146,7 @@ catalog:
         filters: # optional
           projectKey: '^apis-.*$' # optional; RegExp
           repoSlug: '^service-.*$' # optional; RegExp
-        schedule: # same options as in TaskScheduleDefinition
+        schedule: # same options as in SchedulerServiceTaskScheduleDefinition
           # supports cron, ISO duration, "human duration" as used in code
           frequency: { minutes: 30 }
           # supports ISO duration, "human duration" as used in code

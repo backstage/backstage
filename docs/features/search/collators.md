@@ -41,7 +41,7 @@ The default schedule for the Catalog Collator is to run every 10 minutes, you ca
 search:
   collators:
     catalog:
-      schedule: # same options as in TaskScheduleDefinition
+      schedule: # same options as in SchedulerServiceTaskScheduleDefinition
         # supports cron, ISO duration, "human duration" as used in code
         initialDelay: { seconds: 90 }
         # supports cron, ISO duration, "human duration" as used in code
@@ -85,7 +85,7 @@ The default schedule for the TechDocs Collator is to run every 10 minutes, you c
 search:
   collators:
     techdocs:
-      schedule: # same options as in TaskScheduleDefinition
+      schedule: # same options as in SchedulerServiceTaskScheduleDefinition
         # supports cron, ISO duration, "human duration" as used in code
         initialDelay: { seconds: 90 }
         # supports cron, ISO duration, "human duration" as used in code

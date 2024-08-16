@@ -58,9 +58,9 @@ import { PlaceholderResolverParams as PlaceholderResolverParams_2 } from '@backs
 import { PlaceholderResolverRead as PlaceholderResolverRead_2 } from '@backstage/plugin-catalog-node';
 import { PlaceholderResolverResolveUrl as PlaceholderResolverResolveUrl_2 } from '@backstage/plugin-catalog-node';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { Router } from 'express';
+import { SchedulerService } from '@backstage/backend-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmLocationAnalyzer as ScmLocationAnalyzer_2 } from '@backstage/plugin-catalog-node';
 import { TokenManager } from '@backstage/backend-common';
@@ -200,7 +200,7 @@ export type CatalogEnvironment = {
   config: RootConfigService;
   reader: UrlReaderService;
   permissions: PermissionsService | PermissionAuthorizer;
-  scheduler?: PluginTaskScheduler;
+  scheduler?: SchedulerService;
   discovery?: DiscoveryService;
   auth?: AuthService;
   httpAuth?: HttpAuthService;

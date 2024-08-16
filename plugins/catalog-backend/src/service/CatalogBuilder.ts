@@ -18,7 +18,6 @@ import {
   createLegacyAuthAdapters,
   HostDiscovery,
 } from '@backstage/backend-common';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import {
   DefaultNamespaceEntityPolicy,
   Entity,
@@ -113,6 +112,7 @@ import {
   PermissionsService,
   RootConfigService,
   UrlReaderService,
+  SchedulerService,
 } from '@backstage/backend-plugin-api';
 
 /**
@@ -134,7 +134,7 @@ export type CatalogEnvironment = {
   config: RootConfigService;
   reader: UrlReaderService;
   permissions: PermissionsService | PermissionAuthorizer;
-  scheduler?: PluginTaskScheduler;
+  scheduler?: SchedulerService;
   discovery?: DiscoveryService;
   auth?: AuthService;
   httpAuth?: HttpAuthService;

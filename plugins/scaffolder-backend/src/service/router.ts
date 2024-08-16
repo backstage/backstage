@@ -19,7 +19,6 @@ import {
   HostDiscovery,
   PluginDatabaseManager,
 } from '@backstage/backend-common';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
   CompoundEntityRef,
@@ -88,6 +87,7 @@ import {
   LifecycleService,
   PermissionsService,
   UrlReaderService,
+  SchedulerService,
 } from '@backstage/backend-plugin-api';
 import {
   IdentityApi,
@@ -148,7 +148,7 @@ export interface RouterOptions {
   lifecycle?: LifecycleService;
   database: PluginDatabaseManager;
   catalogClient: CatalogApi;
-  scheduler?: PluginTaskScheduler;
+  scheduler?: SchedulerService;
   actions?: TemplateAction<any, any>[];
   /**
    * @deprecated taskWorkers is deprecated in favor of concurrentTasksLimit option with a single TaskWorker

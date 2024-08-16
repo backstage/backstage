@@ -14,8 +14,8 @@ import { EventSubscriber } from '@backstage/plugin-events-node';
 import type { Logger } from 'winston';
 import type { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import type { PluginDatabaseManager } from '@backstage/backend-common';
-import type { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Router } from 'express';
+import { SchedulerService } from '@backstage/backend-plugin-api';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 // @public
@@ -89,7 +89,7 @@ export interface IncrementalEntityProviderOptions {
 export type PluginEnvironment = {
   logger: Logger;
   database: PluginDatabaseManager;
-  scheduler: PluginTaskScheduler;
+  scheduler: SchedulerService;
   config: Config;
   reader: UrlReaderService;
   permissions: PermissionEvaluator;

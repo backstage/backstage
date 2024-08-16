@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { TaskInvocationDefinition, TaskRunner } from '@backstage/backend-tasks';
+import {
+  SchedulerServiceTaskRunner,
+  SchedulerServiceTaskInvocationDefinition,
+} from '@backstage/backend-plugin-api';
 import {
   DocumentCollatorFactory,
   DocumentDecoratorFactory,
@@ -54,12 +57,14 @@ class DifferentlyTypedDocumentDecoratorFactory extends TestDocumentDecoratorFact
 describe('IndexBuilder', () => {
   let testSearchEngine: SearchEngine;
   let testIndexBuilder: IndexBuilder;
-  let testScheduledTaskRunner: TaskRunner;
+  let testScheduledTaskRunner: SchedulerServiceTaskRunner;
 
   beforeEach(() => {
     const logger = mockServices.logger.mock();
     testScheduledTaskRunner = {
-      run: async (task: TaskInvocationDefinition & { fn: () => void }) => {
+      run: async (
+        task: SchedulerServiceTaskInvocationDefinition & { fn: () => void },
+      ) => {
         task.fn();
       },
     };

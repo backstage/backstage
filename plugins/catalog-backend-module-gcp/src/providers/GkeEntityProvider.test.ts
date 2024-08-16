@@ -15,7 +15,7 @@
  */
 
 import { GkeEntityProvider } from './GkeEntityProvider';
-import { TaskRunner } from '@backstage/backend-tasks';
+import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
 import * as container from '@google-cloud/container';
 import { ConfigReader } from '@backstage/config';
 
@@ -30,7 +30,7 @@ describe('GkeEntityProvider', () => {
   const taskRunner = {
     createScheduleFn: jest.fn(),
     run: jest.fn(),
-  } as TaskRunner;
+  } as SchedulerServiceTaskRunner;
   const schedulerMock = {
     createScheduledTaskRunner: jest.fn(),
   } as any;

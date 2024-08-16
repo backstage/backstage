@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { readTaskScheduleDefinitionFromConfig } from '@backstage/backend-tasks';
+import { readSchedulerServiceTaskScheduleDefinitionFromConfig } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { GitlabProviderConfig } from '../lib';
 
@@ -51,7 +51,9 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
     config.getOptionalStringArray('excludeRepos') ?? [];
 
   const schedule = config.has('schedule')
-    ? readTaskScheduleDefinitionFromConfig(config.getConfig('schedule'))
+    ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
+        config.getConfig('schedule'),
+      )
     : undefined;
   const restrictUsersToGroup =
     config.getOptionalBoolean('restrictUsersToGroup') ?? false;

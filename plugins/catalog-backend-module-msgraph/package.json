@@ -53,7 +53,6 @@
   "dependencies": {
     "@azure/identity": "^4.0.0",
     "@backstage/backend-plugin-api": "workspace:^",
-    "@backstage/backend-tasks": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
