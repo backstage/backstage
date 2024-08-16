@@ -14,6 +14,5 @@
  * limitations under the License.
  */
 
-export * from './blueprints';
-export * from './extensions';
-export * from './converters';
+export { convertLegacyEntityCardExtension } from './convertLegacyEntityCardExtension';
+export { convertLegacyEntityContentExtension } from './convertLegacyEntityContentExtension';
