@@ -37,6 +37,7 @@ import { OidcAuthResult as OidcAuthResult_2 } from '@backstage/plugin-auth-backe
 import { prepareBackstageIdentityResponse as prepareBackstageIdentityResponse_2 } from '@backstage/plugin-auth-node';
 import { Profile } from 'passport';
 import { ProfileInfo as ProfileInfo_2 } from '@backstage/plugin-auth-node';
+import { RootConfigService } from '@backstage/backend-plugin-api';
 import { SignInInfo as SignInInfo_2 } from '@backstage/plugin-auth-node';
 import { SignInResolver as SignInResolver_2 } from '@backstage/plugin-auth-node';
 import { TokenManager } from '@backstage/backend-common';
@@ -654,7 +655,7 @@ export interface RouterOptions {
   // (undocumented)
   catalogApi?: CatalogApi;
   // (undocumented)
-  config: Config;
+  config: RootConfigService;
   // (undocumented)
   database: DatabaseService;
   // (undocumented)

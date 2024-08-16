@@ -23,6 +23,7 @@ import {
   DiscoveryService,
   HttpAuthService,
   LoggerService,
+  RootConfigService,
   TokenManagerService,
 } from '@backstage/backend-plugin-api';
 import { defaultAuthProviderFactories } from '../providers';
@@ -44,7 +45,6 @@ import { readBackstageTokenExpiration } from './readBackstageTokenExpiration';
 import { TokenIssuer } from '../identity/types';
 import { StaticTokenIssuer } from '../identity/StaticTokenIssuer';
 import { StaticKeyStore } from '../identity/StaticKeyStore';
-import { Config } from '@backstage/config';
 import { bindProviderRouters, ProviderFactories } from '../providers/router';
 
 /**
@@ -54,7 +54,7 @@ import { bindProviderRouters, ProviderFactories } from '../providers/router';
 export interface RouterOptions {
   logger: LoggerService;
   database: DatabaseService;
-  config: Config;
+  config: RootConfigService;
   discovery: DiscoveryService;
   tokenManager: TokenManagerService;
   auth?: AuthService;
