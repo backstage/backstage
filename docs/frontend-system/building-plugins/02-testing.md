@@ -145,7 +145,7 @@ describe('Index page', async () => {
 });
 ```
 
-When testing multiple extensions you may sometimes want to access the output of other extensions than the main test subject. You can use the `.query(ext)` method to query a different extension that has been added to the tester, either via its ID or passing the extension directly.
+When testing multiple extensions you may sometimes want to access the output of other extensions than the main test subject. You can use the `.query(ext)` method to query a different extension that has been added to the tester, by passing the extension used with the `createExtensionTester(...).add(ext)`
 
 ### Setting configuration
 
