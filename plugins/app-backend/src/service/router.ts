@@ -18,8 +18,9 @@ import { notFoundHandler } from '@backstage/backend-common';
 import {
   DatabaseService,
   resolvePackagePath,
+  RootConfigService,
 } from '@backstage/backend-plugin-api';
-import { AppConfig, Config } from '@backstage/config';
+import { AppConfig } from '@backstage/config';
 import helmet from 'helmet';
 import express from 'express';
 import Router from 'express-promise-router';
@@ -52,7 +53,7 @@ type Mime = { lookup(arg0: string): string };
  * @deprecated Please migrate to the new backend system as this will be removed in the future.
  */
 export interface RouterOptions {
-  config: Config;
+  config: RootConfigService;
   logger: LoggerService;
   auth?: AuthService;
   httpAuth?: HttpAuthService;
