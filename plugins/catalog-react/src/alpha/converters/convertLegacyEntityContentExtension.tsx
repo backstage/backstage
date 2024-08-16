@@ -19,6 +19,7 @@ import {
   convertLegacyRouteRef,
 } from '@backstage/core-compat-api';
 import {
+  BackstagePlugin,
   getComponentData,
   RouteRef as LegacyRouteRef,
 } from '@backstage/core-plugin-api';
@@ -52,16 +53,31 @@ export function convertLegacyEntityContentExtension(
     'core.mountPoint',
   );
 
+  const plugin = getComponentData<BackstagePlugin>(element, 'core.plugin');
+  const pluginId = plugin?.getId();
+
   const match = extName.match(/^Entity(.*)Content$/);
-  const name = match?.[1] ?? extName;
-  const kebabName = kebabCase(name);
+  const infix = match?.[1] ?? extName;
+
+  let name: string | undefined = infix;
+  if (
+    pluginId &&
+    name
+      .toLocaleLowerCase('en-US')
+      .startsWith(pluginId.toLocaleLowerCase('en-US'))
+  ) {
+    name = name.slice(pluginId.length);
+    if (!name) {
+      name = undefined;
+    }
+  }
 
   return EntityContentBlueprint.make({
-    name: overrides?.name ?? kebabName,
+    name: overrides?.name ?? name,
     params: {
       filter: overrides?.filter,
-      defaultPath: overrides?.defaultPath ?? `/${kebabName}`,
-      defaultTitle: overrides?.defaultTitle ?? startCase(name),
+      defaultPath: overrides?.defaultPath ?? `/${kebabCase(infix)}`,
+      defaultTitle: overrides?.defaultTitle ?? startCase(infix),
       routeRef: mountPoint && convertLegacyRouteRef(mountPoint),
       loader: async () => compatWrapper(element),
     },

@@ -15,9 +15,8 @@
  */
 
 import { compatWrapper } from '@backstage/core-compat-api';
-import { getComponentData } from '@backstage/core-plugin-api';
+import { BackstagePlugin, getComponentData } from '@backstage/core-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
-import kebabCase from 'lodash/kebabCase';
 import React, { ComponentType } from 'react';
 import { EntityCardBlueprint } from '../blueprints';
 
@@ -38,12 +37,27 @@ export function convertLegacyEntityCardExtension(
     throw new Error('Extension has no name');
   }
 
-  const match = extName.match(/^Entity(.*)Card$/);
-  const name = match?.[1] ?? extName;
-  const kebabName = kebabCase(name);
+  const plugin = getComponentData<BackstagePlugin>(element, 'core.plugin');
+  const pluginId = plugin?.getId();
+
+  const match = extName.match(/^Entity(.*)Content$/);
+  const infix = match?.[1] ?? extName;
+
+  let name: string | undefined = infix;
+  if (
+    pluginId &&
+    name
+      .toLocaleLowerCase('en-US')
+      .startsWith(pluginId.toLocaleLowerCase('en-US'))
+  ) {
+    name = name.slice(pluginId.length);
+    if (!name) {
+      name = undefined;
+    }
+  }
 
   return EntityCardBlueprint.make({
-    name: overrides?.name ?? kebabName,
+    name: overrides?.name ?? name,
     params: {
       filter: overrides?.filter,
       loader: async () => compatWrapper(element),
