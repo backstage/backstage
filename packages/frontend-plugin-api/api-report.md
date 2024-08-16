@@ -191,9 +191,11 @@ export type AnyRoutes = {
 
 // @public
 export const ApiBlueprint: ExtensionBlueprint<
-  'api',
-  undefined,
-  undefined,
+  {
+    kind: 'api';
+    namespace: undefined;
+    name: undefined;
+  },
   {
     factory: AnyApiFactory;
   },
@@ -263,9 +265,11 @@ export interface AppNodeSpec {
 
 // @public
 export const AppRootElementBlueprint: ExtensionBlueprint<
-  'app-root-element',
-  undefined,
-  undefined,
+  {
+    kind: 'app-root-element';
+    namespace: undefined;
+    name: undefined;
+  },
   {
     element: JSX.Element | (() => JSX.Element);
   },
@@ -278,9 +282,11 @@ export const AppRootElementBlueprint: ExtensionBlueprint<
 
 // @public
 export const AppRootWrapperBlueprint: ExtensionBlueprint<
-  'app-root-wrapper',
-  undefined,
-  undefined,
+  {
+    kind: 'app-root-wrapper';
+    namespace: undefined;
+    name: undefined;
+  },
   {
     Component: ComponentType<PropsWithChildren<{}>>;
   },
@@ -475,9 +481,11 @@ export function createApiExtension<
   TConfig,
   never,
   never,
-  string | undefined,
-  string | undefined,
-  string | undefined
+  {
+    kind?: string | undefined;
+    namespace?: string | undefined;
+    name?: string | undefined;
+  }
 >;
 
 // @public (undocumented)
@@ -579,9 +587,11 @@ export function createComponentExtension<
   TConfig,
   never,
   never,
-  string | undefined,
-  string | undefined,
-  string | undefined
+  {
+    kind?: string | undefined;
+    namespace?: string | undefined;
+    name?: string | undefined;
+  }
 >;
 
 // @public (undocumented)
@@ -642,9 +652,11 @@ export function createExtension<
   >,
   UOutput,
   TInputs,
-  string | undefined extends TKind ? undefined : TKind,
-  string | undefined extends TNamespace ? undefined : TNamespace,
-  string | undefined extends TName ? undefined : TName
+  {
+    kind: string | undefined extends TKind ? undefined : TKind;
+    namespace: string | undefined extends TNamespace ? undefined : TNamespace;
+    name: string | undefined extends TName ? undefined : TName;
+  }
 >;
 
 // @public @deprecated (undocumented)
@@ -698,9 +710,11 @@ export function createExtensionBlueprint<
     TDataRefs
   >,
 ): ExtensionBlueprint<
-  TKind,
-  TNamespace,
-  TName,
+  {
+    kind: TKind;
+    namespace: TNamespace;
+    name: TName;
+  },
   TParams,
   UOutput,
   string extends keyof TInputs ? {} : TInputs,
@@ -928,9 +942,11 @@ export function createNavItemExtension(options: {
   },
   never,
   never,
-  string | undefined,
-  string | undefined,
-  string | undefined
+  {
+    kind?: string | undefined;
+    namespace?: string | undefined;
+    name?: string | undefined;
+  }
 >;
 
 // @public (undocumented)
@@ -958,9 +974,11 @@ export function createNavLogoExtension(options: {
   unknown,
   never,
   never,
-  string | undefined,
-  string | undefined,
-  string | undefined
+  {
+    kind?: string | undefined;
+    namespace?: string | undefined;
+    name?: string | undefined;
+  }
 >;
 
 // @public (undocumented)
@@ -1109,16 +1127,16 @@ export function createSubRouteRef<
 }): MakeSubRouteRef<PathParams<Path>, ParentParams>;
 
 // @public @deprecated (undocumented)
-export function createThemeExtension(
-  theme: AppTheme,
-): ExtensionDefinition<
+export function createThemeExtension(theme: AppTheme): ExtensionDefinition<
   unknown,
   unknown,
   never,
   never,
-  string | undefined,
-  string | undefined,
-  string | undefined
+  {
+    kind?: string | undefined;
+    namespace?: string | undefined;
+    name?: string | undefined;
+  }
 >;
 
 // @public @deprecated (undocumented)
@@ -1140,9 +1158,11 @@ export function createTranslationExtension(options: {
   unknown,
   never,
   never,
-  string | undefined,
-  string | undefined,
-  string | undefined
+  {
+    kind?: string | undefined;
+    namespace?: string | undefined;
+    name?: string | undefined;
+  }
 >;
 
 // @public @deprecated (undocumented)
@@ -1199,9 +1219,11 @@ export interface Extension<TConfig, TConfigInput = TConfig> {
 
 // @public (undocumented)
 export interface ExtensionBlueprint<
-  TKind extends string,
-  TNamespace extends string | undefined,
-  TName extends string | undefined,
+  TIdParts extends {
+    kind: string;
+    namespace?: string;
+    name?: string;
+  },
   TParams,
   UOutput extends AnyExtensionDataRef,
   TInputs extends {
@@ -1243,9 +1265,13 @@ export interface ExtensionBlueprint<
     TConfigInput,
     UOutput,
     TInputs,
-    TKind,
-    string | undefined extends TNewNamespace ? TNamespace : TNewNamespace,
-    string | undefined extends TNewName ? TName : TNewName
+    {
+      kind: TIdParts['kind'];
+      namespace: string | undefined extends TNewNamespace
+        ? TIdParts['namespace']
+        : TNewNamespace;
+      name: string | undefined extends TNewName ? TIdParts['name'] : TNewName;
+    }
   >;
   makeWithOverrides<
     TNewNamespace extends string | undefined,
@@ -1321,9 +1347,13 @@ export interface ExtensionBlueprint<
       TConfigInput,
     AnyExtensionDataRef extends UNewOutput ? UOutput : UNewOutput,
     TInputs & TExtraInputs,
-    TKind,
-    string | undefined extends TNewNamespace ? TNamespace : TNewNamespace,
-    string | undefined extends TNewName ? TName : TNewName
+    {
+      kind: TIdParts['kind'];
+      namespace: string | undefined extends TNewNamespace
+        ? TIdParts['namespace']
+        : TNewNamespace;
+      name: string | undefined extends TNewName ? TIdParts['name'] : TNewName;
+    }
   >;
 }
 
@@ -1419,9 +1449,15 @@ export interface ExtensionDefinition<
       }
     >;
   } = {},
-  TKind extends string | undefined = string | undefined,
-  TNamespace extends string | undefined = string | undefined,
-  TName extends string | undefined = string | undefined,
+  TIdParts extends {
+    kind?: string;
+    namespace?: string;
+    name?: string;
+  } = {
+    kind?: string;
+    namespace?: string;
+    name?: string;
+  },
 > {
   // (undocumented)
   $$type: '@backstage/ExtensionDefinition';
@@ -1435,11 +1471,11 @@ export interface ExtensionDefinition<
   // (undocumented)
   readonly disabled: boolean;
   // (undocumented)
-  readonly kind?: TKind;
+  readonly kind?: TIdParts['kind'];
   // (undocumented)
-  readonly name?: TName;
+  readonly name?: TIdParts['name'];
   // (undocumented)
-  readonly namespace?: TNamespace;
+  readonly namespace?: TIdParts['namespace'];
   // (undocumented)
   override<
     TExtensionConfigSchema extends {
@@ -1509,9 +1545,7 @@ export interface ExtensionDefinition<
       TConfigInput,
     AnyExtensionDataRef extends UNewOutput ? UOutput : UNewOutput,
     TInputs & TExtraInputs,
-    TKind,
-    TNamespace,
-    TName
+    TIdParts
   >;
 }
 
@@ -1591,9 +1625,11 @@ export { googleAuthApiRef };
 
 // @public (undocumented)
 export const IconBundleBlueprint: ExtensionBlueprint<
-  'icon-bundle',
-  'app',
-  undefined,
+  {
+    kind: 'icon-bundle';
+    namespace: 'app';
+    name: undefined;
+  },
   {
     icons: {
       [x: string]: IconComponent;
@@ -1705,9 +1741,11 @@ export { microsoftAuthApiRef };
 
 // @public
 export const NavItemBlueprint: ExtensionBlueprint<
-  'nav-item',
-  undefined,
-  undefined,
+  {
+    kind: 'nav-item';
+    namespace: undefined;
+    name: undefined;
+  },
   {
     title: string;
     icon: IconComponent_2;
@@ -1740,9 +1778,11 @@ export const NavItemBlueprint: ExtensionBlueprint<
 
 // @public
 export const NavLogoBlueprint: ExtensionBlueprint<
-  'nav-logo',
-  undefined,
-  undefined,
+  {
+    kind: 'nav-logo';
+    namespace: undefined;
+    name: undefined;
+  },
   {
     logoIcon: JSX.Element;
     logoFull: JSX.Element;
@@ -1790,9 +1830,11 @@ export { OpenIdConnectApi };
 
 // @public
 export const PageBlueprint: ExtensionBlueprint<
-  'page',
-  undefined,
-  undefined,
+  {
+    kind: 'page';
+    namespace: undefined;
+    name: undefined;
+  },
   {
     defaultPath: string;
     loader: () => Promise<JSX.Element>;
@@ -1951,9 +1993,11 @@ export type RouteFunc<TParams extends AnyRouteRefParams> = (
 
 // @public (undocumented)
 export const RouterBlueprint: ExtensionBlueprint<
-  'app-router-component',
-  undefined,
-  undefined,
+  {
+    kind: 'app-router-component';
+    namespace: undefined;
+    name: undefined;
+  },
   {
     Component: ComponentType<PropsWithChildren<{}>>;
   },
@@ -2014,9 +2058,11 @@ export { SessionState };
 
 // @public
 export const SignInPageBlueprint: ExtensionBlueprint<
-  'sign-in-page',
-  undefined,
-  undefined,
+  {
+    kind: 'sign-in-page';
+    namespace: undefined;
+    name: undefined;
+  },
   {
     loader: () => Promise<ComponentType<SignInPageProps>>;
   },
@@ -2057,9 +2103,11 @@ export interface SubRouteRef<
 
 // @public
 export const ThemeBlueprint: ExtensionBlueprint<
-  'theme',
-  'app',
-  undefined,
+  {
+    kind: 'theme';
+    namespace: 'app';
+    name: undefined;
+  },
   {
     theme: AppTheme;
   },
@@ -2074,9 +2122,11 @@ export const ThemeBlueprint: ExtensionBlueprint<
 
 // @public
 export const TranslationBlueprint: ExtensionBlueprint<
-  'translation',
-  undefined,
-  undefined,
+  {
+    kind: 'translation';
+    namespace: undefined;
+    name: undefined;
+  },
   {
     resource: TranslationResource | TranslationMessages;
   },

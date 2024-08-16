@@ -24,9 +24,11 @@ const _default: BackstagePlugin<
       {},
       ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
       {},
-      'api',
-      undefined,
-      undefined
+      {
+        kind: 'api';
+        namespace: undefined;
+        name: undefined;
+      }
     >;
     'page:devtools': ExtensionDefinition<
       {
@@ -49,9 +51,11 @@ const _default: BackstagePlugin<
           }
         >,
       {},
-      'page',
-      undefined,
-      undefined
+      {
+        kind: 'page';
+        namespace: undefined;
+        name: undefined;
+      }
     >;
     'nav-item:devtools': ExtensionDefinition<
       {},
@@ -66,9 +70,11 @@ const _default: BackstagePlugin<
         {}
       >,
       {},
-      'nav-item',
-      undefined,
-      undefined
+      {
+        kind: 'nav-item';
+        namespace: undefined;
+        name: undefined;
+      }
     >;
   }
 >;

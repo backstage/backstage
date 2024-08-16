@@ -23,9 +23,11 @@ const _default: BackstagePlugin<
       {},
       ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
       {},
-      'api',
-      undefined,
-      undefined
+      {
+        kind: 'api';
+        namespace: undefined;
+        name: undefined;
+      }
     >;
     'page:catalog-import': ExtensionDefinition<
       {
@@ -48,9 +50,11 @@ const _default: BackstagePlugin<
           }
         >,
       {},
-      'page',
-      undefined,
-      undefined
+      {
+        kind: 'page';
+        namespace: undefined;
+        name: undefined;
+      }
     >;
   }
 >;

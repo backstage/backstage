@@ -85,9 +85,11 @@ export type CreateExtensionBlueprintOptions<
  * @public
  */
 export interface ExtensionBlueprint<
-  TKind extends string,
-  TNamespace extends string | undefined,
-  TName extends string | undefined,
+  TIdParts extends {
+    kind: string;
+    namespace?: string;
+    name?: string;
+  },
   TParams,
   UOutput extends AnyExtensionDataRef,
   TInputs extends {
@@ -116,9 +118,13 @@ export interface ExtensionBlueprint<
     TConfigInput,
     UOutput,
     TInputs,
-    TKind,
-    string | undefined extends TNewNamespace ? TNamespace : TNewNamespace,
-    string | undefined extends TNewName ? TName : TNewName
+    {
+      kind: TIdParts['kind'];
+      namespace: string | undefined extends TNewNamespace
+        ? TIdParts['namespace']
+        : TNewNamespace;
+      name: string | undefined extends TNewName ? TIdParts['name'] : TNewName;
+    }
   >;
 
   /**
@@ -195,9 +201,13 @@ export interface ExtensionBlueprint<
       TConfigInput,
     AnyExtensionDataRef extends UNewOutput ? UOutput : UNewOutput,
     TInputs & TExtraInputs,
-    TKind,
-    string | undefined extends TNewNamespace ? TNamespace : TNewNamespace,
-    string | undefined extends TNewName ? TName : TNewName
+    {
+      kind: TIdParts['kind'];
+      namespace: string | undefined extends TNewNamespace
+        ? TIdParts['namespace']
+        : TNewNamespace;
+      name: string | undefined extends TNewName ? TIdParts['name'] : TNewName;
+    }
   >;
 }
 
@@ -422,9 +432,11 @@ export function createExtensionBlueprint<
     TDataRefs
   >,
 ): ExtensionBlueprint<
-  TKind,
-  TNamespace,
-  TName,
+  {
+    kind: TKind;
+    namespace: TNamespace;
+    name: TName;
+  },
   TParams,
   UOutput,
   string extends keyof TInputs ? {} : TInputs,
@@ -441,9 +453,11 @@ export function createExtensionBlueprint<
   TDataRefs
 > {
   return new ExtensionBlueprintImpl(options) as ExtensionBlueprint<
-    TKind,
-    TNamespace,
-    TName,
+    {
+      kind: TKind;
+      namespace: TNamespace;
+      name: TName;
+    },
     TParams,
     UOutput,
     string extends keyof TInputs ? {} : TInputs,

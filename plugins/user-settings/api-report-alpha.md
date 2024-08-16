@@ -33,9 +33,11 @@ const _default: BackstagePlugin<
         {}
       >,
       {},
-      'nav-item',
-      undefined,
-      undefined
+      {
+        kind: 'nav-item';
+        namespace: undefined;
+        name: undefined;
+      }
     >;
     'page:user-settings': ExtensionDefinition<
       {
@@ -74,9 +76,11 @@ const _default: BackstagePlugin<
           }
         >;
       },
-      'page',
-      undefined,
-      undefined
+      {
+        kind: 'page';
+        namespace: undefined;
+        name: undefined;
+      }
     >;
   }
 >;
@@ -96,9 +100,11 @@ export const settingsNavItem: ExtensionDefinition<
     {}
   >,
   {},
-  'nav-item',
-  undefined,
-  undefined
+  {
+    kind: 'nav-item';
+    namespace: undefined;
+    name: undefined;
+  }
 >;
 
 // @alpha (undocumented)

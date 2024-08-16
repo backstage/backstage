@@ -38,9 +38,11 @@ const _default: BackstagePlugin<
           }
         >,
       {},
-      'page',
-      undefined,
-      undefined
+      {
+        kind: 'page';
+        namespace: undefined;
+        name: undefined;
+      }
     >;
     'entity-content:kubernetes/kubernetes': ExtensionDefinition<
       {
@@ -78,36 +80,44 @@ const _default: BackstagePlugin<
           }
         >,
       {},
-      'entity-content',
-      undefined,
-      'kubernetes'
+      {
+        kind: 'entity-content';
+        namespace: undefined;
+        name: 'kubernetes';
+      }
     >;
     'api:kubernetes/proxy': ExtensionDefinition<
       {},
       {},
       ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
       {},
-      'api',
-      undefined,
-      'proxy'
+      {
+        kind: 'api';
+        namespace: undefined;
+        name: 'proxy';
+      }
     >;
     'api:kubernetes/auth-providers': ExtensionDefinition<
       {},
       {},
       ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
       {},
-      'api',
-      undefined,
-      'auth-providers'
+      {
+        kind: 'api';
+        namespace: undefined;
+        name: 'auth-providers';
+      }
     >;
     'api:kubernetes/cluster-link-formatter': ExtensionDefinition<
       {},
       {},
       ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
       {},
-      'api',
-      undefined,
-      'cluster-link-formatter'
+      {
+        kind: 'api';
+        namespace: undefined;
+        name: 'cluster-link-formatter';
+      }
     >;
   }
 >;

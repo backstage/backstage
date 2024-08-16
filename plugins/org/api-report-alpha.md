@@ -44,9 +44,11 @@ const _default: BackstagePlugin<
           }
         >,
       {},
-      'entity-card',
-      undefined,
-      'group-profile'
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'group-profile';
+      }
     >;
     'entity-card:org/members-list': ExtensionDefinition<
       {
@@ -75,9 +77,11 @@ const _default: BackstagePlugin<
           }
         >,
       {},
-      'entity-card',
-      undefined,
-      'members-list'
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'members-list';
+      }
     >;
     'entity-card:org/ownership': ExtensionDefinition<
       {
@@ -106,9 +110,11 @@ const _default: BackstagePlugin<
           }
         >,
       {},
-      'entity-card',
-      undefined,
-      'ownership'
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'ownership';
+      }
     >;
     'entity-card:org/user-profile': ExtensionDefinition<
       {
@@ -137,9 +143,11 @@ const _default: BackstagePlugin<
           }
         >,
       {},
-      'entity-card',
-      undefined,
-      'user-profile'
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'user-profile';
+      }
     >;
   }
 >;

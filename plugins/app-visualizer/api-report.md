@@ -37,9 +37,11 @@ const visualizerPlugin: BackstagePlugin<
           }
         >,
       {},
-      'page',
-      undefined,
-      undefined
+      {
+        kind: 'page';
+        namespace: undefined;
+        name: undefined;
+      }
     >;
     'nav-item:app-visualizer': ExtensionDefinition<
       {},
@@ -54,9 +56,11 @@ const visualizerPlugin: BackstagePlugin<
         {}
       >,
       {},
-      'nav-item',
-      undefined,
-      undefined
+      {
+        kind: 'nav-item';
+        namespace: undefined;
+        name: undefined;
+      }
     >;
   }
 >;

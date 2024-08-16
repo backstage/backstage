@@ -38,18 +38,22 @@ const _default: BackstagePlugin<
         {}
       >,
       {},
-      'nav-item',
-      undefined,
-      undefined
+      {
+        kind: 'nav-item';
+        namespace: undefined;
+        name: undefined;
+      }
     >;
     'api:api-docs/config': ExtensionDefinition<
       {},
       {},
       ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
       {},
-      'api',
-      undefined,
-      'config'
+      {
+        kind: 'api';
+        namespace: undefined;
+        name: 'config';
+      }
     >;
     'page:api-docs': ExtensionDefinition<
       {
@@ -84,9 +88,11 @@ const _default: BackstagePlugin<
           }
         >;
       },
-      'page',
-      undefined,
-      undefined
+      {
+        kind: 'page';
+        namespace: undefined;
+        name: undefined;
+      }
     >;
     'entity-card:api-docs/has-apis': ExtensionDefinition<
       {
@@ -115,9 +121,11 @@ const _default: BackstagePlugin<
           }
         >,
       {},
-      'entity-card',
-      undefined,
-      'has-apis'
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'has-apis';
+      }
     >;
     'entity-card:api-docs/definition': ExtensionDefinition<
       {
@@ -146,9 +154,11 @@ const _default: BackstagePlugin<
           }
         >,
       {},
-      'entity-card',
-      undefined,
-      'definition'
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'definition';
+      }
     >;
     'entity-card:api-docs/consumed-apis': ExtensionDefinition<
       {
@@ -177,9 +187,11 @@ const _default: BackstagePlugin<
           }
         >,
       {},
-      'entity-card',
-      undefined,
-      'consumed-apis'
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'consumed-apis';
+      }
     >;
     'entity-card:api-docs/provided-apis': ExtensionDefinition<
       {
@@ -208,9 +220,11 @@ const _default: BackstagePlugin<
           }
         >,
       {},
-      'entity-card',
-      undefined,
-      'provided-apis'
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'provided-apis';
+      }
     >;
     'entity-card:api-docs/consuming-components': ExtensionDefinition<
       {
@@ -239,9 +253,11 @@ const _default: BackstagePlugin<
           }
         >,
       {},
-      'entity-card',
-      undefined,
-      'consuming-components'
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'consuming-components';
+      }
     >;
     'entity-card:api-docs/providing-components': ExtensionDefinition<
       {
@@ -270,9 +286,11 @@ const _default: BackstagePlugin<
           }
         >,
       {},
-      'entity-card',
-      undefined,
-      'providing-components'
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'providing-components';
+      }
     >;
     'entity-content:api-docs/definition': ExtensionDefinition<
       {
@@ -314,9 +332,11 @@ const _default: BackstagePlugin<
           }
         >,
       {},
-      'entity-content',
-      undefined,
-      'definition'
+      {
+        kind: 'entity-content';
+        namespace: undefined;
+        name: 'definition';
+      }
     >;
     'entity-content:api-docs/apis': ExtensionDefinition<
       {
@@ -358,9 +378,11 @@ const _default: BackstagePlugin<
           }
         >,
       {},
-      'entity-content',
-      undefined,
-      'apis'
+      {
+        kind: 'entity-content';
+        namespace: undefined;
+        name: 'apis';
+      }
     >;
   }
 >;

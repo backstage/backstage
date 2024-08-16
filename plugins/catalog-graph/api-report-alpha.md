@@ -87,9 +87,11 @@ const _default: BackstagePlugin<
           }
         >;
       },
-      'entity-card',
-      undefined,
-      'relations'
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'relations';
+      }
     >;
     'page:catalog-graph': ExtensionDefinition<
       {
@@ -148,9 +150,11 @@ const _default: BackstagePlugin<
           }
         >;
       },
-      'page',
-      undefined,
-      undefined
+      {
+        kind: 'page';
+        namespace: undefined;
+        name: undefined;
+      }
     >;
   }
 >;

@@ -218,14 +218,20 @@ export interface ExtensionDefinition<
       { optional: boolean; singleton: boolean }
     >;
   } = {},
-  TKind extends string | undefined = string | undefined,
-  TNamespace extends string | undefined = string | undefined,
-  TName extends string | undefined = string | undefined,
+  TIdParts extends {
+    kind?: string;
+    namespace?: string;
+    name?: string;
+  } = {
+    kind?: string;
+    namespace?: string;
+    name?: string;
+  },
 > {
   $$type: '@backstage/ExtensionDefinition';
-  readonly kind?: TKind;
-  readonly namespace?: TNamespace;
-  readonly name?: TName;
+  readonly kind?: TIdParts['kind'];
+  readonly namespace?: TIdParts['namespace'];
+  readonly name?: TIdParts['name'];
   readonly attachTo: { id: string; input: string };
   readonly disabled: boolean;
   readonly configSchema?: PortableSchema<TConfig, TConfigInput>;
@@ -292,9 +298,7 @@ export interface ExtensionDefinition<
       TConfigInput,
     AnyExtensionDataRef extends UNewOutput ? UOutput : UNewOutput,
     TInputs & TExtraInputs,
-    TKind,
-    TNamespace,
-    TName
+    TIdParts
   >;
 }
 
@@ -309,18 +313,16 @@ export type InternalExtensionDefinition<
       { optional: boolean; singleton: boolean }
     >;
   } = {},
-  TKind extends string | undefined = string | undefined,
-  TNamespace extends string | undefined = string | undefined,
-  TName extends string | undefined = string | undefined,
-> = ExtensionDefinition<
-  TConfig,
-  TConfigInput,
-  UOutput,
-  TInputs,
-  TKind,
-  TNamespace,
-  TName
-> &
+  TIdParts extends {
+    kind?: string;
+    namespace?: string;
+    name?: string;
+  } = {
+    kind?: string;
+    namespace?: string;
+    name?: string;
+  },
+> = ExtensionDefinition<TConfig, TConfigInput, UOutput, TInputs, TIdParts> &
   (
     | {
         readonly version: 'v1';
@@ -411,9 +413,11 @@ export function createExtension<
   >,
   UOutput,
   TInputs,
-  string | undefined extends TKind ? undefined : TKind,
-  string | undefined extends TNamespace ? undefined : TNamespace,
-  string | undefined extends TName ? undefined : TName
+  {
+    kind: string | undefined extends TKind ? undefined : TKind;
+    namespace: string | undefined extends TNamespace ? undefined : TNamespace;
+    name: string | undefined extends TName ? undefined : TName;
+  }
 >;
 /**
  * @public
@@ -482,9 +486,11 @@ export function createExtension<
         >),
   UOutput,
   TInputs,
-  TKind,
-  TNamespace,
-  TName
+  {
+    kind: TKind;
+    namespace: TNamespace;
+    name: TName;
+  }
 > {
   if ('configSchema' in options && 'config' in options) {
     throw new Error(`Cannot provide both configSchema and config.schema`);
@@ -596,9 +602,11 @@ export function createExtension<
       >,
       AnyExtensionDataRef extends UNewOutput ? UOutput : UNewOutput,
       TInputs & TExtraInputs,
-      TKind,
-      TNamespace,
-      TName
+      {
+        kind: TKind;
+        namespace: TNamespace;
+        name: TName;
+      }
     > => {
       if (!Array.isArray(options.output)) {
         throw new Error(
@@ -697,8 +705,10 @@ export function createExtension<
           >),
     UOutput,
     TInputs,
-    TKind,
-    TNamespace,
-    TName
+    {
+      kind: TKind;
+      namespace: TNamespace;
+      name: TName;
+    }
   >;
 }

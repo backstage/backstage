@@ -123,9 +123,11 @@ export function createEntityCardExtension<
   TConfig,
   never,
   never,
-  string | undefined,
-  string | undefined,
-  string | undefined
+  {
+    kind?: string | undefined;
+    namespace?: string | undefined;
+    name?: string | undefined;
+  }
 >;
 
 // @alpha @deprecated (undocumented)
@@ -162,16 +164,20 @@ export function createEntityContentExtension<
   },
   never,
   never,
-  string | undefined,
-  string | undefined,
-  string | undefined
+  {
+    kind?: string | undefined;
+    namespace?: string | undefined;
+    name?: string | undefined;
+  }
 >;
 
 // @alpha
 export const EntityCardBlueprint: ExtensionBlueprint<
-  'entity-card',
-  undefined,
-  undefined,
+  {
+    kind: 'entity-card';
+    namespace: undefined;
+    name: undefined;
+  },
   {
     loader: () => Promise<JSX.Element>;
     filter?: string | ((entity: Entity) => boolean) | undefined;
@@ -214,9 +220,11 @@ export const EntityCardBlueprint: ExtensionBlueprint<
 
 // @alpha
 export const EntityContentBlueprint: ExtensionBlueprint<
-  'entity-content',
-  undefined,
-  undefined,
+  {
+    kind: 'entity-content';
+    namespace: undefined;
+    name: undefined;
+  },
   {
     loader: () => Promise<JSX.Element>;
     defaultPath: string;
