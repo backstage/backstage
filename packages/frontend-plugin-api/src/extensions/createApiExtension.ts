@@ -16,13 +16,10 @@
 
 import { AnyApiFactory, AnyApiRef } from '@backstage/core-plugin-api';
 import { PortableSchema } from '../schema';
-import {
-  ResolvedExtensionInputs,
-  createExtension,
-  createExtensionDataRef,
-} from '../wiring';
+import { ResolvedExtensionInputs, createExtension } from '../wiring';
 import { AnyExtensionInputMap } from '../wiring/createExtension';
 import { Expand } from '../types';
+import { ApiBlueprint } from '../blueprints/ApiBlueprint';
 
 /**
  * @public
@@ -62,7 +59,7 @@ export function createApiExtension<
     inputs: extensionInputs,
     configSchema,
     output: {
-      api: createApiExtension.factoryDataRef,
+      api: ApiBlueprint.dataRefs.factory,
     },
     factory({ config, inputs }) {
       if (typeof factory === 'function') {
@@ -73,9 +70,13 @@ export function createApiExtension<
   });
 }
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use {@link ApiBlueprint} instead.
+ */
 export namespace createApiExtension {
-  export const factoryDataRef = createExtensionDataRef<AnyApiFactory>().with({
-    id: 'core.api.factory',
-  });
+  /**
+   * @deprecated Use {@link ApiBlueprint} instead.
+   */
+  export const factoryDataRef = ApiBlueprint.dataRefs.factory;
 }

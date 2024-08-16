@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { createExtension, createExtensionDataRef } from '../wiring';
+import { ThemeBlueprint } from '../blueprints/ThemeBlueprint';
+import { createExtension } from '../wiring';
 import { AppTheme } from '@backstage/core-plugin-api';
 
 /**
@@ -28,7 +29,7 @@ export function createThemeExtension(theme: AppTheme) {
     name: theme.id,
     attachTo: { id: 'app', input: 'themes' },
     output: {
-      theme: createThemeExtension.themeDataRef,
+      theme: ThemeBlueprint.dataRefs.theme,
     },
     factory: () => ({ theme }),
   });
@@ -39,7 +40,5 @@ export function createThemeExtension(theme: AppTheme) {
  * @deprecated Use {@link ThemeBlueprint} instead.
  */
 export namespace createThemeExtension {
-  export const themeDataRef = createExtensionDataRef<AppTheme>().with({
-    id: 'core.theme.theme',
-  });
+  export const themeDataRef = ThemeBlueprint.dataRefs.theme;
 }

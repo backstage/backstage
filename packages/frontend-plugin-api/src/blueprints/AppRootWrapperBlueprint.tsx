@@ -16,8 +16,11 @@
 
 import React from 'react';
 import { ComponentType, PropsWithChildren } from 'react';
-import { createExtensionBlueprint } from '../wiring';
-import { createAppRootWrapperExtension } from '../extensions/createAppRootWrapperExtension';
+import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
+
+const componentDataRef = createExtensionDataRef<
+  ComponentType<PropsWithChildren<{}>>
+>().with({ id: 'app.root.wrapper' });
 
 /**
  * Creates a extensions that render a React wrapper at the app root, enclosing
@@ -29,9 +32,9 @@ import { createAppRootWrapperExtension } from '../extensions/createAppRootWrappe
 export const AppRootWrapperBlueprint = createExtensionBlueprint({
   kind: 'app-root-wrapper',
   attachTo: { id: 'app/root', input: 'wrappers' },
-  output: [createAppRootWrapperExtension.componentDataRef],
+  output: [componentDataRef],
   dataRefs: {
-    component: createAppRootWrapperExtension.componentDataRef,
+    component: componentDataRef,
   },
   *factory(params: { Component: ComponentType<PropsWithChildren<{}>> }) {
     // todo(blam): not sure that this wrapping is even necessary anymore.
@@ -39,6 +42,6 @@ export const AppRootWrapperBlueprint = createExtensionBlueprint({
       return <params.Component>{props.children}</params.Component>;
     };
 
-    yield createAppRootWrapperExtension.componentDataRef(Component);
+    yield componentDataRef(Component);
   },
 });

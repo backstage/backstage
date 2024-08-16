@@ -13,11 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React, { ComponentType, lazy } from 'react';
-import { createExtensionBlueprint } from '../wiring';
-import { createSignInPageExtension } from '../extensions/createSignInPageExtension';
+import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
 import { SignInPageProps } from '@backstage/core-plugin-api';
 import { ExtensionBoundary } from '../components';
+
+const componentDataRef = createExtensionDataRef<
+  ComponentType<SignInPageProps>
+>().with({ id: 'core.sign-in-page.component' });
 
 /**
  * Creates an extension that replaces the sign in page.
@@ -27,9 +31,9 @@ import { ExtensionBoundary } from '../components';
 export const SignInPageBlueprint = createExtensionBlueprint({
   kind: 'sign-in-page',
   attachTo: { id: 'app/root', input: 'signInPage' },
-  output: [createSignInPageExtension.componentDataRef],
+  output: [componentDataRef],
   dataRefs: {
-    component: createSignInPageExtension.componentDataRef,
+    component: componentDataRef,
   },
   *factory(
     {
@@ -43,7 +47,7 @@ export const SignInPageBlueprint = createExtensionBlueprint({
       loader().then(component => ({ default: component })),
     );
 
-    yield createSignInPageExtension.componentDataRef(props => (
+    yield componentDataRef(props => (
       <ExtensionBoundary node={node} routable>
         <ExtensionComponent {...props} />
       </ExtensionBoundary>
