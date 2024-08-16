@@ -7,6 +7,7 @@
 
 import { AnyExtensionInputMap } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
+import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
@@ -94,6 +95,30 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'userListPicker.personalFilter.starredLabel': 'Starred';
   }
 >;
+
+// @alpha (undocumented)
+export function convertLegacyEntityCardExtension(
+  LegacyExtension: ComponentType<{}>,
+  overrides?: {
+    name?: string;
+    filter?:
+      | typeof EntityCardBlueprint.dataRefs.filterFunction.T
+      | typeof EntityCardBlueprint.dataRefs.filterExpression.T;
+  },
+): ExtensionDefinition<any>;
+
+// @alpha (undocumented)
+export function convertLegacyEntityContentExtension(
+  LegacyExtension: ComponentType<{}>,
+  overrides?: {
+    name?: string;
+    filter?:
+      | typeof EntityContentBlueprint.dataRefs.filterFunction.T
+      | typeof EntityContentBlueprint.dataRefs.filterExpression.T;
+    defaultPath?: string;
+    defaultTitle?: string;
+  },
+): ExtensionDefinition<any>;
 
 // @alpha @deprecated (undocumented)
 export function createEntityCardExtension<
