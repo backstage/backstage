@@ -29,7 +29,12 @@ import {
   createExtensionOverrides,
   ApiBlueprint,
 } from '@backstage/frontend-plugin-api';
-import techdocsPlugin from '@backstage/plugin-techdocs/alpha';
+import {
+  techdocsPlugin,
+  TechDocsIndexPage,
+  TechDocsReaderPage,
+  EntityTechdocsContent,
+} from '@backstage/plugin-techdocs';
 import appVisualizerPlugin from '@backstage/plugin-app-visualizer';
 import { homePage } from './HomePage';
 import { convertLegacyApp } from '@backstage/core-compat-api';
@@ -45,6 +50,9 @@ import {
 } from '@backstage/integration-react';
 import kubernetesPlugin from '@backstage/plugin-kubernetes/alpha';
 import { signInPageOverrides } from './overrides/SignInPage';
+import { convertLegacyPlugin } from '@backstage/core-compat-api';
+import { convertLegacyPageExtension } from '@backstage/core-compat-api';
+import { convertLegacyEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
 
 /*
 
@@ -74,6 +82,17 @@ TODO:
 /* graphiql package */
 
 /* app.tsx */
+
+const convertedTechdocsPlugin = convertLegacyPlugin(techdocsPlugin, {
+  extensions: [
+    // TODO: We likely also need a way to convert an entire <Route> tree similar to collectLegacyRoutes
+    convertLegacyPageExtension(TechDocsIndexPage),
+    convertLegacyPageExtension(TechDocsReaderPage, {
+      defaultPath: '/docs/:namespace/:kind/:name/*',
+    }),
+    convertLegacyEntityContentExtension(EntityTechdocsContent),
+  ],
+});
 
 const homePageExtension = createExtension({
   name: 'myhomepage',
@@ -114,7 +133,7 @@ const collectedLegacyPlugins = convertLegacyApp(
 const app = createApp({
   features: [
     pagesPlugin,
-    techdocsPlugin,
+    convertedTechdocsPlugin,
     userSettingsPlugin,
     homePlugin,
     appVisualizerPlugin,
