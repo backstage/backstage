@@ -16,7 +16,7 @@ In general, most features should have a good level of customization built into 
 
 ## Overriding an extension
 
-Every extension created with `createExtension` comes with an `override` method, including those created from an [extension blueprint](./23-extension-blueprints.md). The `override` method **creates a new extension**, it does not mutate the existing extensions. This new extension in created in such a way that if it is installed adjacent to the existing extension, it will take precedence and override the existing extension. While the `override` method does create new extension instances, it is not intended to be used as a way to create multiple new extensions from a base template, for that use-case you will want to use an [extension blueprint](./23-extension-blueprints.md) instead.
+Every extension created with `createExtension` comes with an `override` method, including those created from an [extension blueprint](./23-extension-blueprints.md). The `override` method **creates a new extension**, it does not mutate the existing extension. This new extension in created in such a way that if it is installed adjacent to the existing extension, it will take precedence and override the existing extension. While the `override` method does create new extension instances, it is not intended to be used as a way to create multiple new extensions from a base template, for that use-case you will want to use an [extension blueprint](./23-extension-blueprints.md) instead.
 
 The following is an example of calling the `.override(...)` method on an extension:
 
@@ -81,7 +81,7 @@ Note the `yield*` expression, which forwards all values from the provided iterab
 
 ## Overriding declared outputs
 
-When overriding an extension you can provide a new output declaration. This **replaces** any existing output declaration, which means that you want to forward any of the original output you will need to declare it again. The following example shows how to override an extension and replace the output declaration:
+When overriding an extension you can provide a new output declaration. This **replaces** any existing output declaration, which means that if you want to forward any of the original output you will need to declare it again. The following example shows how to override an extension and replace the output declaration:
 
 ```tsx
 // Original extension
@@ -138,7 +138,7 @@ const myOverrideExtension = myExtension.override({
 
 ## Overriding configuration schema
 
-Overriding the configuration schema works very similar to overriding the declared inputs. You can define new configuration fields that will be merged with the existing ones, but you can not re-declare existing fields. The following example shows how to override an extension and add a new configuration field:
+Overriding the configuration schema works very similarly to overriding the declared inputs. You can define new configuration fields that will be merged with the existing ones, but you can not re-declare existing fields. The following example shows how to override an extension and add a new configuration field:
 
 ```tsx
 const exampleExtension = createExtension({
@@ -251,7 +251,7 @@ const overrideExtension = exampleExtension.override({
         content: inputs.content,
         // Sort items input by their extension ID
         items: inputs.items.toSorted((a, b) =>
-          a.node.spec.id.localCompare(b.node.spec.id),
+          a.node.spec.id.localeCompare(b.node.spec.id),
         ),
       },
     });
@@ -261,7 +261,7 @@ const overrideExtension = exampleExtension.override({
 
 ## Installing override extension in an app
 
-To install extension overrides in a Backstage app you should use `plugin.withOverrides` whenever you are overriding or adding extensions to for a plugin. See the section on [overriding a plugin](./15-plugins.md#overriding-a-plugin) for more information.
+To install extension overrides in a Backstage app you should use `plugin.withOverrides` whenever you are overriding or adding extensions for a plugin. See the section on [overriding a plugin](./15-plugins.md#overriding-a-plugin) for more information.
 
 There is also a `createExtensionOverrides` function that can be used to install a collection of standalone extensions in an app. This method will be replaced with a different mechanism in the future, but for now remains the only way to override the built-in extensions in the app or to package extensions for a plugin package separate from the plugin itself.
 
