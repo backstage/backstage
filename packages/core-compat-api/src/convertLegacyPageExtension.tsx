@@ -58,7 +58,7 @@ export function convertLegacyPageExtension(
     params: {
       defaultPath: overrides?.defaultPath ?? `/${kebabName}`,
       routeRef: mountPoint && convertLegacyRouteRef(mountPoint),
-      loader: () => Promise.resolve(compatWrapper(element)),
+      loader: async () => compatWrapper(element),
     },
   });
 }
