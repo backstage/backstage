@@ -95,7 +95,7 @@ At this point the contents of your app should be past the initial migration stag
 
 ## Migrating `createApp` Options
 
-Many of the `createApp` options have been migrated to use extensions instead. Each will have their own [extension creator](../architecture/20-extensions.md#extension-creators) that you use to create a custom extension. To add these standalone extensions to the app they need to be passed to `createExtensionOverrides`, which bundles them into a _feature_ that you can install in the app. See the [standalone extensions](../architecture/25-extension-overrides.md#create-standalone-extensions) section for more information.
+Many of the `createApp` options have been migrated to use extensions instead. Each will have their own [extension blueprint](../architecture/23-extension-blueprints.md) that you use to create a custom extension. To add these standalone extensions to the app they need to be passed to `createExtensionOverrides`, which bundles them into a _feature_ that you can install in the app. See the [standalone extensions](../architecture/25-extension-overrides.md#creating-a-standalone-extension-bundle) section for more information.
 
 For example, assuming you have a `lightTheme` extension that you want to add to your app, you can use the following:
 
@@ -115,7 +115,7 @@ You can then also add any additional extensions that you may need to create as p
 
 ### `apis`
 
-[Utility API](../utility-apis/01-index.md) factories are now installed as extensions instead. Pass the existing factory to `createApiExtension` and install it in the app. For more information, see the section on [configuring Utility APIs](../utility-apis/04-configuring.md).
+[Utility API](../utility-apis/01-index.md) factories are now installed as extensions instead. Pass the existing factory to `ApiBlueprint` and install it in the app. For more information, see the section on [configuring Utility APIs](../utility-apis/04-configuring.md).
 
 For example, the following `apis` configuration:
 
@@ -134,12 +134,15 @@ const app = createApp({
 Can be converted to the following extension:
 
 ```ts
-const scmIntegrationsApi = createApiExtension({
-  factory: createApiFactory({
-    api: scmIntegrationsApiRef,
-    deps: { configApi: configApiRef },
-    factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
-  }),
+const scmIntegrationsApi = ApiBlueprint.make({
+  name: 'scm-integrations',
+  params: {
+    factory: createApiFactory({
+      api: scmIntegrationsApiRef,
+      deps: { configApi: configApiRef },
+      factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
+    }),
+  },
 });
 ```
 
@@ -221,7 +224,7 @@ Many app components are now installed as extensions instead using `createCompone
 
 The `Router` component is now a built-in extension that you can [override](../architecture/25-extension-overrides.md) using `createRouterExtension`.
 
-The Sign-in page is now installed as an extension using the `createSignInPageExtension` instead.
+The Sign-in page is now installed as an extension, created using the `SignInPageBlueprint` instead.
 
 For example, the following sign-in page configuration:
 
@@ -246,25 +249,27 @@ const app = createApp({
 Can be converted to the following extension:
 
 ```tsx
-const signInPage = createSignInPageExtension({
-  loader: async () => props =>
-    (
-      <SignInPage
-        {...props}
-        provider={{
-          id: 'github-auth-provider',
-          title: 'GitHub',
-          message: 'Sign in using GitHub',
-          apiRef: githubAuthApiRef,
-        }}
-      />
-    ),
+const signInPage = SignInPageBlueprint.make({
+  params: {
+    loader: async () => props =>
+      (
+        <SignInPage
+          {...props}
+          provider={{
+            id: 'github-auth-provider',
+            title: 'GitHub',
+            message: 'Sign in using GitHub',
+            apiRef: githubAuthApiRef,
+          }}
+        />
+      ),
+  },
 });
 ```
 
 ### `themes`
 
-Themes are now installed as extensions, using `createThemeExtension`.
+Themes are now installed as extensions, created using `ThemeBlueprint`.
 
 For example, the following theme configuration:
 
@@ -287,14 +292,19 @@ const app = createApp({
 Can be converted to the following extension:
 
 ```tsx
-const lightTheme = createThemeExtension({
-  id: 'light',
-  title: 'Light Theme',
-  variant: 'light',
-  icon: <LightIcon />,
-  Provider: ({ children }) => (
-    <UnifiedThemeProvider theme={builtinThemes.light} children={children} />
-  ),
+const lightTheme = ThemeBlueprint.make({
+  name: 'light',
+  params: {
+    theme: {
+      id: 'light',
+      title: 'Light Theme',
+      variant: 'light',
+      icon: <LightIcon />,
+      Provider: ({ children }) => (
+        <UnifiedThemeProvider theme={builtinThemes.light} children={children} />
+      ),
+    },
+  },
 });
 ```
 
@@ -360,7 +370,7 @@ const app = createApp({
 
 ### `__experimentalTranslations`
 
-Translations are now installed as extensions, using `createTranslationExtension`.
+Translations are now installed as extensions, created using `TranslationBlueprint`.
 
 For example, the following translations configuration:
 
@@ -383,11 +393,14 @@ createApp({
 Can be converted to the following extension:
 
 ```tsx
-createTranslationExtension({
-  resource: createTranslationMessages({
-    ref: catalogTranslationRef,
-    catalog_page_create_button_title: 'Create Software',
-  }),
+TranslationBlueprint.make({
+  name: 'catalog-overrides',
+  params: {
+    resource: createTranslationMessages({
+      ref: catalogTranslationRef,
+      catalog_page_create_button_title: 'Create Software',
+    }),
+  },
 });
 ```
 
@@ -489,17 +502,15 @@ const nav = createExtension({
   namespace: 'app',
   name: 'nav',
   attachTo: { id: 'app/layout', input: 'nav' },
-  output: {
-    element: coreExtensionData.reactElement,
-  },
+  output: [coreExtensionData.reactElement],
   factory({ inputs }) {
-    return {
-      element: (
+    return [
+      coreExtensionData.reactElement(
         <Sidebar>
           {/* Sidebar contents from packages/app/src/components/Root.tsx go here */}
-        </Sidebar>
+        </Sidebar>,
       ),
-    };
+    ];
   },
 });
 ```
@@ -548,7 +559,7 @@ export default app.createRoot(
 );
 ```
 
-Any app root wrapper needs to be migrated to be an extension, using `createAppRootWrapperExtension`. Note that if you have multiple wrappers they must be completely independent of each other, i.e. the order in which they the appear in the React tree should not matter. If that is not the case then you should group them into a single wrapper.
+Any app root wrapper needs to be migrated to be an extension, created using `AppRootWrapperBlueprint`. Note that if you have multiple wrappers they must be completely independent of each other, i.e. the order in which they the appear in the React tree should not matter. If that is not the case then you should group them into a single wrapper.
 
 Here is an example converting the `CustomAppBarrier` into extension:
 
@@ -558,11 +569,13 @@ createApp({
   features: [
     createExtensionOverrides({
       extensions: [
-        createAppRootWrapperExtension({
-          name: 'CustomAppBarrier',
-          // Whenever your component uses legacy core packages, wrap it with "compatWrapper"
-          // e.g. props => compatWrapper(<CustomAppBarrier {...props} />)
-          Component: CustomAppBarrier,
+        AppRootWrapperBlueprint.make({
+          name: 'custom-app-barrier',
+          params: {
+            // Whenever your component uses legacy core packages, wrap it with "compatWrapper"
+            // e.g. props => compatWrapper(<CustomAppBarrier {...props} />)
+            Component: CustomAppBarrier,
+          },
         }),
       ],
     }),

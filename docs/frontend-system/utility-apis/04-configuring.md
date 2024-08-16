@@ -49,13 +49,13 @@ class CustomWorkImpl implements WorkApi {
 
 const myOverrides = createExtensionOverrides({
   extensions: [
-    createApiExtension({
-      api: workApiRef,
-      factory: () =>
-        createApiFactory({
+    ApiBlueprint.make({
+      params: {
+        factory: createApiFactory({
           api: workApiRef,
           factory: () => new CustomWorkImpl(),
         }),
+      },
     }),
   ],
 });

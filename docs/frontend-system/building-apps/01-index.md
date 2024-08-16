@@ -78,7 +78,7 @@ It is possible to enable, disable and configure extensions individually in the `
 
 ### Customize or override built-in extensions
 
-Previously you would customize the application route, components, apis, sidebar, etc. through the code in `App.tsx`. Now we want you to write less code and install more extensions to customize your Backstage instance. See [here](../building-plugins/03-extension-types.md) which types of extensions are available for you to customize your application.
+Previously you would customize the application routes, components, apis, sidebar, etc. through the code in `App.tsx`. Now we want to allow the same thing to be achieved while writing less code and instead installing more extensions to customize your Backstage instance. See the [extension blueprints](../building-plugins/03-common-extension-blueprints.md) section for a list of common extension kinds that are available for you to customize and extend your application.
 
 ## Use code to customize the app at a more granular level
 
