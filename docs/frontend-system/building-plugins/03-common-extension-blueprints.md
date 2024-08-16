@@ -1,7 +1,7 @@
 ---
-id: extension-blueprints
-title: Frontend System Extension Blueprints
-sidebar_label: Extension Blueprints
+id: common-extension-blueprints
+title: Common Extension Blueprints
+sidebar_label: Common Extension Blueprints
 # prettier-ignore
 description: Extension blueprints provided by the frontend system and core features
 ---
@@ -22,7 +22,7 @@ An API extension is used to add or override [Utility API factories](../utility-a
 
 Components extensions are used to override the component associated with a component reference throughout the app. This uses an extension creator function rather than a blueprint, but will likely be migrated to a blueprint in the future.
 
-### NavItem - [Reference](../../reference/frontend-plugin-api.navitemblueprint)
+### NavItem - [Reference](../../reference/frontend-plugin-api.navitemblueprint.md)
 
 Navigation item extensions are used to provide menu items that link to different parts of the app. By default nav items are attached to the app nav extension, which by default is rendered as the left sidebar in the app.
 
@@ -38,7 +38,7 @@ Sign-in page extension have a single purpose - to implement a custom sign-in pag
 
 Theme extensions provide custom themes for the app. They are always attached to the app extension and you can have any number of themes extensions installed in an app at once, letting the user choose which theme to use.
 
-### Icons - [Reference](../../reference/frontend-plugin-api.ndleblueprint.md)
+### Icons - [Reference](../../reference/frontend-plugin-api.iconbundleblueprint.md)
 
 Icon bundle extensions provide the ability to replace or provide new icons to the app. You can use the above blueprint to make new extension instances which can be installed into the app.
 

@@ -469,7 +469,7 @@
         "items": [
           "frontend-system/building-plugins/index",
           "frontend-system/building-plugins/testing",
-          "frontend-system/building-plugins/extension-blueprints",
+          "frontend-system/building-plugins/common-extension-blueprints",
           "frontend-system/building-plugins/built-in-data-refs",
           "frontend-system/building-plugins/migrating"
         ]

@@ -135,7 +135,7 @@ Then add the `fooPage` extension to the plugin:
 
 ## Migrating Components
 
-The equivalent utility to replace components created with `createComponentExtension` depends on the context within which the component is used, typically indicated by the naming pattern of the export. Many of these can be migrated to one of the [existing blueprints](03-extension-blueprints.md), but in rare cases it may be necessary to use [`createExtension`](../architecture/20-extensions.md#creating-an-extension) directly.
+The equivalent utility to replace components created with `createComponentExtension` depends on the context within which the component is used, typically indicated by the naming pattern of the export. Many of these can be migrated to one of the [existing blueprints](03-common-extension-blueprints.md), but in rare cases it may be necessary to use [`createExtension`](../architecture/20-extensions.md#creating-an-extension) directly.
 
 ## Migrating APIs
 
