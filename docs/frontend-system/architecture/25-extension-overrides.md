@@ -81,7 +81,7 @@ Note the `yield*` expression, which forwards all values from the provided iterab
 
 ## Overriding declared outputs
 
-When overriding an extension out can provide a new output declaration. This **replaces** any existing output declaration, which means that you want to forward any of the original output you will need to declare it again. The following example shows how to override an extension and replace the output declaration:
+When overriding an extension you can provide a new output declaration. This **replaces** any existing output declaration, which means that you want to forward any of the original output you will need to declare it again. The following example shows how to override an extension and replace the output declaration:
 
 ```tsx
 // Original extension
