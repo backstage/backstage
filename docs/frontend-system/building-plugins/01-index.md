@@ -49,7 +49,7 @@ The plugin ID should be a lowercase dash-separated string, while the plugin inst
 
 The plugin that we created above is empty, and doesn't provide any actual functionality. To add functionality to a plugin you need to create and provide it with one or more [extensions](../architecture/20-extensions.md). Let's continue by adding a standalone page to our plugin, as well as a navigation item that allows users to navigate to the page.
 
-To create a new extension you typically use pre-defined [extension blueprints](../architecture/23-extension-blueprints.md), provided either by the framework itself or by other plugins. In this case we'll use `PageBlueprint` and `NavItemBlueprint`, both from `@backstage/frontend-plugin-api`. We will also need to [create a route reference](../architecture/36-routes.md#creating-a-route-reference) to use as a reference for out page, allowing us to dynamically create URLs that link to our page.
+To create a new extension you typically use pre-defined [extension blueprints](../architecture/23-extension-blueprints.md), provided either by the framework itself or by other plugins. In this case we'll use `PageBlueprint` and `NavItemBlueprint`, both from `@backstage/frontend-plugin-api`. We will also need to [create a route reference](../architecture/36-routes.md#creating-a-route-reference) to use as a reference for our page, allowing us to dynamically create URLs that link to our page.
 
 ```tsx title="in src/routes.ts"
 import { createRouteRef } from '@backstage/frontend-plugin-api';
