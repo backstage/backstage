@@ -5,7 +5,12 @@
   "backstage": {
     "role": "backend-plugin-module",
     "pluginId": "scaffolder",
-    "pluginPackage": "@backstage/plugin-scaffolder-backend"
+    "pluginPackage": "@backstage/plugin-scaffolder-backend",
+    "features": [
+      {
+        "type": "@backstage/BackendFeature"
+      }
+    ]
   },
   "publishConfig": {
     "access": "public"

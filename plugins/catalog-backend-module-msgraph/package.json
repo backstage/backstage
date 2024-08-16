@@ -5,7 +5,13 @@
   "backstage": {
     "role": "backend-plugin-module",
     "pluginId": "catalog",
-    "pluginPackage": "@backstage/plugin-catalog-backend"
+    "pluginPackage": "@backstage/plugin-catalog-backend",
+    "features": [
+      {
+        "type": "@backstage/BackendFeature",
+        "path": "./alpha"
+      }
+    ]
   },
   "publishConfig": {
     "access": "public"

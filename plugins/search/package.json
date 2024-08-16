@@ -11,6 +11,12 @@
       "@backstage/plugin-search-backend-node",
       "@backstage/plugin-search-common",
       "@backstage/plugin-search-react"
+    ],
+    "features": [
+      {
+        "type": "@backstage/FrontendPlugin",
+        "path": "./alpha"
+      }
     ]
   },
   "publishConfig": {

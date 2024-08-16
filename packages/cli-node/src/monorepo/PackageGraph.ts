@@ -23,6 +23,64 @@ import { Lockfile } from './Lockfile';
 import { JsonValue } from '@backstage/types';
 
 /**
+ * All Backstage system features
+ *
+ * @public
+ */
+export const packageFeatureTypes = [
+  '@backstage/BackendFeature',
+  '@backstage/BackendFeatureFactory',
+  '@backstage/BackstageCredentials',
+  '@backstage/BackstagePlugin',
+  '@backstage/Extension',
+  '@backstage/ExtensionDataRef',
+  '@backstage/ExtensionDataValue',
+  '@backstage/ExtensionDefinition',
+  '@backstage/ExtensionInput',
+  '@backstage/ExtensionOverrides',
+  '@backstage/ExtensionPoint',
+  '@backstage/ExternalRouteRef',
+  '@backstage/FrontendPlugin',
+  '@backstage/FrontendModule',
+  '@backstage/RouteRef',
+  '@backstage/ServiceRef',
+  '@backstage/SubRouteRef',
+  '@backstage/TranslationMessages',
+  '@backstage/TranslationRef',
+  '@backstage/TranslationResource',
+] as const;
+
+/**
+ * Checks if a string is a valid package feature type.
+ *
+ * @public
+ */
+export const isValidPackageFeatureType = (
+  value: string,
+): value is BackstagePackageFeatureType => {
+  return packageFeatureTypes.includes(value as any);
+};
+
+/**
+ * The type of a Backstage system feature
+ *
+ * @public
+ */
+export type BackstagePackageFeatureType = (typeof packageFeatureTypes)[number];
+
+/**
+ * Metadata relating to an exported Backstage system component
+ *
+ * @public
+ */
+export type BackstagePackageFeature = {
+  // The export path, if omitted then it is the default package export
+  path?: string;
+  // The type of the export
+  type: BackstagePackageFeatureType;
+};
+
+/**
  * Known fields in Backstage package.json files.
  *
  * @public
@@ -70,6 +128,11 @@ export interface BackstagePackageJson {
      * All packages that are part of the plugin. Must always and only be set for plugin packages and plugin library packages.
      */
     pluginPackages?: string[];
+
+    /**
+     * The Backstage system components exported from this package
+     */
+    features?: BackstagePackageFeature[];
   };
 
   exports?: JsonValue;

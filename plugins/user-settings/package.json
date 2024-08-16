@@ -9,6 +9,12 @@
       "@backstage/plugin-user-settings",
       "@backstage/plugin-user-settings-backend",
       "@backstage/plugin-user-settings-common"
+    ],
+    "features": [
+      {
+        "type": "@backstage/FrontendPlugin",
+        "path": "./alpha"
+      }
     ]
   },
   "publishConfig": {

@@ -7,6 +7,12 @@
     "pluginId": "proxy",
     "pluginPackages": [
       "@backstage/plugin-proxy-backend"
+    ],
+    "features": [
+      {
+        "type": "@backstage/BackendFeature",
+        "path": "./alpha"
+      }
     ]
   },
   "publishConfig": {

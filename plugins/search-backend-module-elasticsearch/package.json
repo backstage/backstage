@@ -5,7 +5,13 @@
   "backstage": {
     "role": "backend-plugin-module",
     "pluginId": "search",
-    "pluginPackage": "@backstage/plugin-search-backend"
+    "pluginPackage": "@backstage/plugin-search-backend",
+    "features": [
+      {
+        "type": "@backstage/BackendFeature",
+        "path": "./alpha"
+      }
+    ]
   },
   "publishConfig": {
     "access": "public"

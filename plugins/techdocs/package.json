@@ -11,6 +11,12 @@
       "@backstage/plugin-techdocs-common",
       "@backstage/plugin-techdocs-node",
       "@backstage/plugin-techdocs-react"
+    ],
+    "features": [
+      {
+        "type": "@backstage/FrontendPlugin",
+        "path": "./alpha"
+      }
     ]
   },
   "publishConfig": {

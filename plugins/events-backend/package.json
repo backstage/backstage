@@ -8,6 +8,12 @@
       "@backstage/plugin-events-backend",
       "@backstage/plugin-events-backend-test-utils",
       "@backstage/plugin-events-node"
+    ],
+    "features": [
+      {
+        "type": "@backstage/BackendFeature",
+        "path": "./alpha"
+      }
     ]
   },
   "publishConfig": {

@@ -4,7 +4,13 @@
   "backstage": {
     "role": "backend-plugin-module",
     "pluginId": "events",
-    "pluginPackage": "@backstage/plugin-events-backend"
+    "pluginPackage": "@backstage/plugin-events-backend",
+    "features": [
+      {
+        "type": "@backstage/BackendFeature",
+        "path": "./alpha"
+      }
+    ]
   },
   "publishConfig": {
     "access": "public"

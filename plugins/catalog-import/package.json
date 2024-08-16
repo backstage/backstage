@@ -7,6 +7,12 @@
     "pluginId": "catalog-import",
     "pluginPackages": [
       "@backstage/plugin-catalog-import"
+    ],
+    "features": [
+      {
+        "type": "@backstage/FrontendPlugin",
+        "path": "./alpha"
+      }
     ]
   },
   "publishConfig": {

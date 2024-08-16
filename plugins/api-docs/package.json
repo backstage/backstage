@@ -7,6 +7,12 @@
     "pluginId": "api-docs",
     "pluginPackages": [
       "@backstage/plugin-api-docs"
+    ],
+    "features": [
+      {
+        "type": "@backstage/FrontendPlugin",
+        "path": "./alpha"
+      }
     ]
   },
   "publishConfig": {
