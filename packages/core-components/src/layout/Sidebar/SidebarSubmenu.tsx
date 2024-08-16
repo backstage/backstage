@@ -43,11 +43,12 @@ const useStyles = makeStyles<
       flexFlow: 'column nowrap',
       alignItems: 'flex-start',
       position: 'fixed',
+      opacity: 0,
       [theme.breakpoints.up('sm')]: {
         marginLeft: props.left,
-        transition: theme.transitions.create('margin-left', {
+        transition: theme.transitions.create(['margin-left', 'opacity'], {
           easing: theme.transitions.easing.sharp,
-          duration: theme.transitions.duration.shortest,
+          duration: props.submenuConfig.defaultOpenDelayMs,
         }),
       },
       top: 0,
@@ -68,6 +69,8 @@ const useStyles = makeStyles<
       },
     }),
     drawerOpen: props => ({
+      marginLeft: props.left,
+      opacity: 1,
       width: props.submenuConfig.drawerWidthOpen,
       [theme.breakpoints.down('xs')]: {
         width: '100%',
