@@ -731,7 +731,7 @@ its components, such as `owner`, repository `name`, and more.
     extra: ${{ parameters.repoUrl | parseRepoUrl }}
 ```
 
-- **Input**: `github.com?repo=backstage&org=backstage`
+- **Input**: `github.com?repo=backstage&owner=backstage`
 - **Output**: [RepoSpec](https://github.com/backstage/backstage/blob/v1.17.2/plugins/scaffolder-backend/src/scaffolder/actions/builtin/publish/util.ts#L39)
 
 ### parseEntityRef
@@ -798,7 +798,7 @@ The `projectSlug` filter generates a project slug from a repository URL
     extra: ${{ parameters.repoUrl | projectSlug }}
 ```
 
-- **Input**: `github.com?repo=backstage&org=backstage`
+- **Input**: `github.com?repo=backstage&owner=backstage`
 - **Output**: `backstage/backstage`
 
 ## Custom Filters and Globals

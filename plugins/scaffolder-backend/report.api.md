@@ -16,6 +16,8 @@ import * as bitbucketCloud from '@backstage/plugin-scaffolder-backend-module-bit
 import * as bitbucketServer from '@backstage/plugin-scaffolder-backend-module-bitbucket-server';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
+import { CreatedTemplateFilter } from '@backstage/plugin-scaffolder-node';
+import { CreatedTemplateGlobal } from '@backstage/plugin-scaffolder-node';
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { Duration } from 'luxon';
@@ -534,9 +536,13 @@ export interface RouterOptions {
   // (undocumented)
   actions?: TemplateAction_2<any, any>[];
   // (undocumented)
-  additionalTemplateFilters?: Record<string, TemplateFilter_2>;
+  additionalTemplateFilters?:
+    | Record<string, TemplateFilter_2>
+    | CreatedTemplateFilter[];
   // (undocumented)
-  additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
+  additionalTemplateGlobals?:
+    | Record<string, TemplateGlobal_2>
+    | CreatedTemplateGlobal[];
   // (undocumented)
   additionalWorkspaceProviders?: Record<string, WorkspaceProvider>;
   // (undocumented)
