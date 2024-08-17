@@ -26,6 +26,14 @@ Settings for local development:
 - Homepage URL: `http://localhost:3000`
 - Authorization callback URL: `http://localhost:7007/api/auth/github/handler/frame`
 
+### Difference between GitHub Apps and GitHub OAuth Apps
+
+GitHub Apps handle OAuth scope at the app installation level, meaning that the
+`scope` parameter for the call to `getAccessToken` in the frontend has no
+effect. When calling `getAccessToken` in open source plugins, one should still
+include the appropriate scope, but also document in the plugin README what
+scopes are required for GitHub Apps.
+
 ## Configuration
 
 The provider configuration can then be added to your `app-config.yaml` under the
@@ -79,16 +87,25 @@ The resolvers will be tried in order, but will only be skipped if they throw a `
 
 If these resolvers do not fit your needs you can build a custom resolver, this is covered in the [Building Custom Resolvers](../identity-resolver.md#building-custom-resolvers) section of the Sign-in Identities and Resolvers documentation.
 
+## Backend Installation
+
+To add the provider to the backend we will first need to install the package by running this command:
+
+```bash title="from your Backstage root directory"
+yarn --cwd packages/backend add @backstage/plugin-auth-backend-module-github-provider
+```
+
+Then we will need to add this line:
+
+```ts title="in packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-auth-backend'));
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-auth-backend-module-github-provider'));
+/* highlight-add-end */
+```
+
 ## Adding the provider to the Backstage frontend
 
 To add the provider to the frontend, add the `githubAuthApi` reference and
 `SignInPage` component as shown in
-[Adding the provider to the sign-in page](../index.md#adding-the-provider-to-the-sign-in-page).
-
-## Difference between GitHub Apps and GitHub OAuth Apps
-
-GitHub Apps handle OAuth scope at the app installation level, meaning that the
-`scope` parameter for the call to `getAccessToken` in the frontend has no
-effect. When calling `getAccessToken` in open source plugins, one should still
-include the appropriate scope, but also document in the plugin README what
-scopes are required for GitHub Apps.
+[Adding the provider to the sign-in page](../index.md#sign-in-configuration).

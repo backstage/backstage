@@ -15,10 +15,9 @@
  */
 
 import {
+  createLegacyAuthAdapters,
   HostDiscovery,
   PluginDatabaseManager,
-  UrlReader,
-  createLegacyAuthAdapters,
 } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { CatalogApi } from '@backstage/catalog-client';
@@ -35,22 +34,22 @@ import { ScmIntegrations } from '@backstage/integration';
 import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
 import {
   TaskSpec,
+  TemplateEntityStepV1beta3,
   TemplateEntityV1beta3,
   templateEntityV1beta3Validator,
   TemplateParametersV1beta3,
-  TemplateEntityStepV1beta3,
 } from '@backstage/plugin-scaffolder-common';
 import {
   RESOURCE_TYPE_SCAFFOLDER_ACTION,
   RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
   scaffolderActionPermissions,
+  scaffolderTaskPermissions,
   scaffolderTemplatePermissions,
   taskCancelPermission,
   taskCreatePermission,
   taskReadPermission,
   templateParameterReadPermission,
   templateStepReadPermission,
-  scaffolderTaskPermissions,
 } from '@backstage/plugin-scaffolder-common/alpha';
 import express from 'express';
 import Router from 'express-promise-router';
@@ -58,8 +57,9 @@ import { validate } from 'jsonschema';
 import { Logger } from 'winston';
 import { z } from 'zod';
 import {
-  TemplateAction,
   TaskBroker,
+  TaskStatus,
+  TemplateAction,
   TemplateFilter,
   TemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
@@ -87,6 +87,7 @@ import {
   HttpAuthService,
   LifecycleService,
   PermissionsService,
+  UrlReaderService,
 } from '@backstage/backend-plugin-api';
 import {
   IdentityApi,
@@ -94,6 +95,10 @@ import {
 } from '@backstage/plugin-auth-node';
 import { InternalTaskSecrets } from '../scaffolder/tasks/types';
 import { checkPermission } from '../util/checkPermissions';
+import {
+  AutocompleteHandler,
+  WorkspaceProvider,
+} from '@backstage/plugin-scaffolder-node/alpha';
 
 /**
  *
@@ -139,7 +144,7 @@ function isActionPermissionRuleInput(
 export interface RouterOptions {
   logger: Logger;
   config: Config;
-  reader: UrlReader;
+  reader: UrlReaderService;
   lifecycle?: LifecycleService;
   database: PluginDatabaseManager;
   catalogClient: CatalogApi;
@@ -158,6 +163,7 @@ export interface RouterOptions {
   taskBroker?: TaskBroker;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+  additionalWorkspaceProviders?: Record<string, WorkspaceProvider>;
   permissions?: PermissionsService;
   permissionRules?: Array<
     TemplatePermissionRuleInput | ActionPermissionRuleInput
@@ -166,6 +172,8 @@ export interface RouterOptions {
   httpAuth?: HttpAuthService;
   identity?: IdentityApi;
   discovery?: DiscoveryService;
+
+  autocompleteHandlers?: Record<string, AutocompleteHandler>;
 }
 
 function isSupportedTemplate(entity: TemplateEntityV1beta3) {
@@ -269,10 +277,12 @@ export async function createRouter(
     scheduler,
     additionalTemplateFilters,
     additionalTemplateGlobals,
+    additionalWorkspaceProviders,
     permissions,
     permissionRules,
     discovery = HostDiscovery.fromConfig(config),
     identity = buildDefaultIdentityClient(options),
+    autocompleteHandlers = {},
   } = options;
 
   const { auth, httpAuth } = createLegacyAuthAdapters({
@@ -293,7 +303,13 @@ export async function createRouter(
   let taskBroker: TaskBroker;
   if (!options.taskBroker) {
     const databaseTaskStore = await DatabaseTaskStore.create({ database });
-    taskBroker = new StorageTaskBroker(databaseTaskStore, logger, config, auth);
+    taskBroker = new StorageTaskBroker(
+      databaseTaskStore,
+      logger,
+      config,
+      auth,
+      additionalWorkspaceProviders,
+    );
 
     if (scheduler && databaseTaskStore.listStaleTasks) {
       await scheduler.scheduleTask({
@@ -572,8 +588,17 @@ export async function createRouter(
         );
       }
 
+      const [statusQuery] = [req.query.status].flat();
+      if (
+        typeof statusQuery !== 'string' &&
+        typeof statusQuery !== 'undefined'
+      ) {
+        throw new InputError('status query parameter must be a string');
+      }
+
       const tasks = await taskBroker.list({
         createdBy: userEntityRef,
+        status: statusQuery ? (statusQuery as TaskStatus) : undefined,
       });
 
       res.status(200).json(tasks);
@@ -730,6 +755,14 @@ export async function createRouter(
         targetPluginId: 'catalog',
       });
 
+      const userEntityRef = auth.isPrincipal(credentials, 'user')
+        ? credentials.principal.userEntityRef
+        : undefined;
+
+      const userEntity = userEntityRef
+        ? await catalogClient.getEntityByRef(userEntityRef, { token })
+        : undefined;
+
       for (const parameters of [template.spec.parameters ?? []].flat()) {
         const result = validate(body.values, parameters);
         if (!result.valid) {
@@ -750,6 +783,10 @@ export async function createRouter(
           steps,
           output: template.spec.output ?? {},
           parameters: body.values as JsonObject,
+          user: {
+            entity: userEntity as UserEntity,
+            ref: userEntityRef,
+          },
         },
         directoryContents: (body.directoryContents ?? []).map(file => ({
           path: file.path,
@@ -771,6 +808,24 @@ export async function createRouter(
           base64Content: file.content.toString('base64'),
         })),
       });
+    })
+    .post('/v2/autocomplete/:provider/:resource', async (req, res) => {
+      const { token, context } = req.body;
+      const { provider, resource } = req.params;
+
+      if (!token) throw new InputError('Missing token query parameter');
+
+      if (!autocompleteHandlers[provider]) {
+        throw new InputError(`Unsupported provider: ${provider}`);
+      }
+
+      const { results } = await autocompleteHandlers[provider]({
+        resource,
+        token,
+        context,
+      });
+
+      res.status(200).json({ results });
     });
 
   const app = express();

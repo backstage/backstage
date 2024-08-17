@@ -92,5 +92,5 @@ export namespace createComponentExtension {
   export const componentDataRef = createExtensionDataRef<{
     ref: ComponentRef;
     impl: ComponentType;
-  }>('core.component.component');
+  }>().with({ id: 'core.component.component' });
 }

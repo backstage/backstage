@@ -1,5 +1,76 @@
 # @backstage/plugin-kubernetes-node
 
+## 0.1.17-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.3
+  - @backstage/catalog-model@1.6.0-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.8.2-next.2
+
+## 0.1.17-next.2
+
+### Patch Changes
+
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.2
+  - @backstage/plugin-kubernetes-common@0.8.2-next.1
+  - @backstage/catalog-model@1.5.0
+  - @backstage/types@1.1.1
+
+## 0.1.17-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/plugin-kubernetes-common@0.8.2-next.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/types@1.1.1
+
+## 0.1.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.1-next.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.8.1
+
+## 0.1.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/plugin-kubernetes-common@0.8.1
+  - @backstage/catalog-model@1.5.0
+  - @backstage/types@1.1.1
+
+## 0.1.16-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.22-next.1
+  - @backstage/catalog-model@1.5.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.8.0
+
+## 0.1.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.21-next.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.8.0
+
 ## 0.1.13
 
 ### Patch Changes

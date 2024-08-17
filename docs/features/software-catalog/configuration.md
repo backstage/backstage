@@ -47,7 +47,7 @@ action is logged for further investigation.
 ### Local File (`type: file`) Configurations
 
 In addition to url locations, you can use the `file` location type to bring in content from the local file system. You should only use this for local development, test setups, and example data, not for production data.
-You are also not able to use placeholders in them like `$text`. You can however reference other files relative to the current file. See the full [catalog example data set here](https://github.com/backstage/backstage/tree/master/packages/catalog-model/examples) for an extensive example.
+You are also not able to use placeholders in them like `$text`, `$json` or `$yaml`. You can however reference other files relative to the current file. See the full [catalog example data set here](https://github.com/backstage/backstage/tree/master/packages/catalog-model/examples) for an extensive example.
 
 Here is an example pulling in the `all.yaml` file from the examples folder. Note the use of `../../` to go up two levels from the current execution path of the backend. This is typically `packages/backend/`.
 
@@ -57,6 +57,20 @@ catalog:
     - type: file
       target: ../../examples/all.yaml
 ```
+
+:::note
+There might be cases where you need to test some `file` configurations in a Docker container. In a case like this, as the backend is serving the frontend in a default setup, the path would be from the root. Also, you need to **make sure to copy your files into your container**.
+
+Using the example above that would look like this:
+
+```yaml
+catalog:
+  locations:
+    - type: file
+      target: ./examples/all.yaml
+```
+
+:::
 
 ### Integration Processors
 
@@ -177,3 +191,104 @@ here.
 Setting this value too low risks exhausting rate limits on external systems that
 are queried by processors, such as version control systems housing catalog-info
 files.
+
+## Subscribing to Catalog Errors
+
+Catalog errors are published to the [events plugin](https://github.com/backstage/backstage/tree/master/plugins/events-node): `@backstage/plugin-events-node`. You can subscribe to events and respond to errors, for example you may wish to log them.
+
+The first step is to add the events backend plugin to your Backstage application. Navigate to your Backstage application directory and add the plugin package.
+
+```ts title="From your Backstage root directory"
+yarn --cwd packages/backend add @backstage/plugin-events-backend
+```
+
+Now you can install the events backend plugin in your backend.
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-events-backend/alpha'));
+```
+
+### Logging Errors
+
+If you want to log catalog errors you can install the `@backstage/plugin-catalog-backend-module-logs` module.
+
+Install the catalog logs module.
+
+```ts title="From your Backstage root directory"
+yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-logs
+```
+
+Add the module to your backend.
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend-module-logs'));
+```
+
+This will log errors with a level of `warn`.
+
+You should now see logs as the catalog emits events. Example:
+
+```
+[1] 2024-06-07T00:00:28.787Z events warn Policy check failed for user:default/guest; caused by Error: Malformed envelope, /metadata/tags must be array entity=user:default/guest location=file:/Users/foobar/code/backstage-demo-instance/examples/org.yaml
+```
+
+### Custom Error Handling
+
+If you wish to handle catalog errors with specific logic different from logging the errors the following should help you get started. For example, you may wish to send a notification or create a ticket for someone to investigate.
+
+Create a backend module that subscribes to the catalog error events. The topic is `experimental.catalog.errors`.
+
+```ts title="packages/backend/src/index.ts"
+import { CATALOG_ERRORS_TOPIC } from '@backstage/plugin-catalog-backend';
+import {
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
+import { eventsServiceRef, EventParams } from '@backstage/plugin-events-node';
+
+interface EventsPayload {
+  entity: string;
+  location?: string;
+  errors: Error[];
+}
+
+interface EventsParamsWithPayload extends EventParams {
+  eventPayload: EventsPayload;
+}
+
+const eventsModuleCatalogErrors = createBackendModule({
+  pluginId: 'events',
+  moduleId: 'catalog-errors',
+  register(env) {
+    env.registerInit({
+      deps: {
+        events: eventsServiceRef,
+        logger: coreServices.logger,
+      },
+      async init({ events, logger }) {
+        events.subscribe({
+          id: 'catalog',
+          topics: [CATALOG_ERRORS_TOPIC],
+          async onEvent(params: EventParams): Promise<void> {
+            const event = params as EventsParamsWithPayload;
+            const { entity, location, errors } = event.eventPayload;
+            // Add custom logic here for responding to errors
+            for (const error of errors) {
+              logger.warn(error.message, {
+                entity,
+                location,
+              });
+            }
+          },
+        });
+      },
+    });
+  },
+});
+```
+
+Now install your module.
+
+```ts title="packages/backend/src/index.ts"
+backend.add(eventsModuleCatalogErrors);
+```

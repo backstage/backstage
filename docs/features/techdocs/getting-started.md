@@ -21,8 +21,7 @@ The first step is to add the TechDocs plugin to your Backstage application.
 Navigate to your new Backstage application directory. And then to your
 `packages/app` directory, and install the `@backstage/plugin-techdocs` package.
 
-```bash
-# From your Backstage root directory
+```bash title="From your Backstage root directory"
 yarn --cwd packages/app add @backstage/plugin-techdocs
 ```
 
@@ -106,8 +105,7 @@ That's it! Now, we need the TechDocs Backend plugin for the frontend to work.
 Navigate to `packages/backend` of your Backstage app, and install the
 `@backstage/plugin-techdocs-backend` package.
 
-```bash
-# From your Backstage root directory
+```bash title="From your Backstage root directory"
 yarn --cwd packages/backend add @backstage/plugin-techdocs-backend
 ```
 
@@ -142,7 +140,6 @@ export default async function createPlugin(
   // Generators are used for generating documentation sites.
   const generators = await Generators.fromConfig(env.config, {
     logger: env.logger,
-    containerRunner,
   });
 
   // Publisher is used for
@@ -200,8 +197,7 @@ To install TechDocs when using the New Backend system you will need to do the fo
 
 Navigate to `packages/backend` of your Backstage app, and install the `@backstage/plugin-techdocs-backend` package.
 
-```bash
-# From your Backstage root directory
+```bash title="From your Backstage root directory"
 yarn --cwd packages/backend add @backstage/plugin-techdocs-backend
 ```
 

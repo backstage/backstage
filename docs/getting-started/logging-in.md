@@ -20,6 +20,8 @@ Run your Backstage app with `yarn dev`. Navigate to `http://localhost:3000`.
 
 If you're not already logged in, you should see a login screen like this,
 
+![Screenshot of the login screen](../assets/getting-started/login-screen.png)
+
 To login, you should choose the "Github" provider and click the "Sign in" button. This will redirect you to a Github OAuth page. Verify that the scopes mentioned on that page match the setup you did in [the authentication tutorial](./config/authentication.md). Once you click "Confirm", you will be brought back to the Backstage interface and signed in!
 
 If you are already logged in, you will be automatically brought to your Backstage instance.

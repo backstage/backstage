@@ -22,8 +22,8 @@ import {
   ResolvedExtensionInputs,
   createExtension,
 } from '../wiring/createExtension';
-import { createExtensionDataRef } from '../wiring/createExtensionDataRef';
 import { Expand } from '../types';
+import { AppRootWrapperBlueprint } from '../blueprints/AppRootWrapperBlueprint';
 
 /**
  * Creates an extension that renders a React wrapper at the app root, enclosing
@@ -31,6 +31,7 @@ import { Expand } from '../types';
  * and similar.
  *
  * @public
+ * @deprecated Use {@link AppRootWrapperBlueprint} instead.
  */
 export function createAppRootWrapperExtension<
   TConfig extends {},
@@ -58,7 +59,7 @@ export function createAppRootWrapperExtension<
     disabled: options.disabled,
     inputs: options.inputs,
     output: {
-      component: createAppRootWrapperExtension.componentDataRef,
+      component: AppRootWrapperBlueprint.dataRefs.component,
     },
     factory({ inputs, config }) {
       const Component = (props: PropsWithChildren<{}>) => {
@@ -75,10 +76,13 @@ export function createAppRootWrapperExtension<
   });
 }
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use {@link AppRootWrapperBlueprint} instead.
+ */
 export namespace createAppRootWrapperExtension {
-  export const componentDataRef =
-    createExtensionDataRef<ComponentType<PropsWithChildren<{}>>>(
-      'app.root.wrapper',
-    );
+  /**
+   * @deprecated Use {@link AppRootWrapperBlueprint} instead.
+   */
+  export const componentDataRef = AppRootWrapperBlueprint.dataRefs.component;
 }

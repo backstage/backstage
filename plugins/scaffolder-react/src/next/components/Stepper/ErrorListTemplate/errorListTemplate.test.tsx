@@ -19,25 +19,88 @@ import { renderInTestApp } from '@backstage/test-utils';
 import { ErrorListProps } from '@rjsf/utils';
 
 describe('Error List Template', () => {
-  const errorList = {
-    errors: [
-      {
-        stack: 'Test error 1',
-      },
-      {
-        stack: 'Test error 2',
-      },
-    ],
-    errorSchema: {},
-  } as Partial<ErrorListProps> as ErrorListProps;
+  describe('should render the error messages', () => {
+    it('no properties', async () => {
+      const errorList = {
+        errors: [
+          {
+            stack: 'Test error 1',
+          },
+          {
+            stack: 'Test error 2',
+          },
+        ],
+        errorSchema: {},
+      } as Partial<ErrorListProps> as ErrorListProps;
 
-  it('should render the error messages', async () => {
-    const { getByText } = await renderInTestApp(
-      <ErrorListTemplate {...errorList} />,
-    );
+      const { getByText } = await renderInTestApp(
+        <ErrorListTemplate {...errorList} />,
+      );
 
-    for (const error of errorList.errors) {
-      expect(getByText(error.stack)).toBeInTheDocument();
-    }
+      for (const error of errorList.errors) {
+        expect(getByText(error.stack)).toBeInTheDocument();
+      }
+    });
+
+    it('properties no title', async () => {
+      const errorList = {
+        errors: [
+          {
+            property: '.foo',
+            stack: 'Test error 1',
+            message: 'Test error 1',
+          },
+          {
+            property: '.anExampleTitle',
+            stack: 'Test error 2',
+            message: 'Test error 2',
+          },
+        ],
+        errorSchema: {},
+        schema: {},
+      } as Partial<ErrorListProps> as ErrorListProps;
+
+      const { getByText } = await renderInTestApp(
+        <ErrorListTemplate {...errorList} />,
+      );
+
+      expect(getByText("'Foo' Test error 1")).toBeInTheDocument();
+      expect(getByText("'An Example Title' Test error 2")).toBeInTheDocument();
+    });
+
+    it('properties with title', async () => {
+      const errorList = {
+        errors: [
+          {
+            property: '.foo',
+            stack: 'Test error 1',
+            message: 'Test error 1',
+          },
+          {
+            property: '.bar',
+            stack: 'Test error 2',
+            message: 'Test error 2',
+          },
+        ],
+        errorSchema: {},
+        schema: {
+          properties: {
+            foo: {
+              title: 'Hello',
+            },
+            bar: {
+              title: 'Example Title',
+            },
+          },
+        },
+      } as Partial<ErrorListProps> as ErrorListProps;
+
+      const { getByText } = await renderInTestApp(
+        <ErrorListTemplate {...errorList} />,
+      );
+
+      expect(getByText("'Hello' Test error 1")).toBeInTheDocument();
+      expect(getByText("'Example Title' Test error 2")).toBeInTheDocument();
+    });
   });
 });

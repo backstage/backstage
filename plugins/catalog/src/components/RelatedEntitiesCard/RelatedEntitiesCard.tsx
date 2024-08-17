@@ -31,6 +31,19 @@ import {
   TableColumn,
   TableOptions,
 } from '@backstage/core-components';
+import {
+  asComponentEntities,
+  asResourceEntities,
+  asSystemEntities,
+  componentEntityColumns,
+  componentEntityHelpLink,
+  resourceEntityColumns,
+  resourceEntityHelpLink,
+  systemEntityColumns,
+  systemEntityHelpLink,
+} from './presets';
+import { catalogTranslationRef } from '../../alpha/translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export type RelatedEntitiesCardProps<T extends Entity> = {
@@ -57,9 +70,9 @@ export type RelatedEntitiesCardProps<T extends Entity> = {
  *
  * @public
  */
-export function RelatedEntitiesCard<T extends Entity>(
+export const RelatedEntitiesCard = <T extends Entity>(
   props: RelatedEntitiesCardProps<T>,
-) {
+) => {
   const {
     variant = 'gridItem',
     title,
@@ -72,6 +85,7 @@ export function RelatedEntitiesCard<T extends Entity>(
     tableOptions = {},
   } = props;
 
+  const { t } = useTranslationRef(catalogTranslationRef);
   const { entity } = useEntity();
   const { entities, loading, error } = useRelatedEntities(entity, {
     type: relationType,
@@ -102,7 +116,9 @@ export function RelatedEntitiesCard<T extends Entity>(
         <div style={{ textAlign: 'center' }}>
           <Typography variant="body1">{emptyMessage}</Typography>
           <Typography variant="body2">
-            <Link to={emptyHelpLink}>Learn how to change this.</Link>
+            <Link to={emptyHelpLink}>
+              {t('relatedEntitiesCard.emptyHelpLinkTitle')}
+            </Link>
           </Typography>
         </div>
       }
@@ -111,4 +127,14 @@ export function RelatedEntitiesCard<T extends Entity>(
       tableOptions={tableOptions}
     />
   );
-}
+};
+
+RelatedEntitiesCard.componentEntityColumns = componentEntityColumns;
+RelatedEntitiesCard.componentEntityHelpLink = componentEntityHelpLink;
+RelatedEntitiesCard.asComponentEntities = asComponentEntities;
+RelatedEntitiesCard.resourceEntityColumns = resourceEntityColumns;
+RelatedEntitiesCard.resourceEntityHelpLink = resourceEntityHelpLink;
+RelatedEntitiesCard.asResourceEntities = asResourceEntities;
+RelatedEntitiesCard.systemEntityColumns = systemEntityColumns;
+RelatedEntitiesCard.systemEntityHelpLink = systemEntityHelpLink;
+RelatedEntitiesCard.asSystemEntities = asSystemEntities;

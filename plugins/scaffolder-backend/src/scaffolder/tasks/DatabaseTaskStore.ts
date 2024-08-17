@@ -22,25 +22,28 @@ import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
 import {
   TaskStore,
-  TaskStoreEmitOptions,
-  TaskStoreListEventsOptions,
   TaskStoreCreateTaskOptions,
   TaskStoreCreateTaskResult,
-  TaskStoreShutDownTaskOptions,
+  TaskStoreEmitOptions,
+  TaskStoreListEventsOptions,
   TaskStoreRecoverTaskOptions,
+  TaskStoreShutDownTaskOptions,
 } from './types';
 import {
-  SerializedTaskEvent,
   SerializedTask,
-  TaskStatus,
+  SerializedTaskEvent,
   TaskEventType,
   TaskSecrets,
+  TaskStatus,
 } from '@backstage/plugin-scaffolder-node';
 import { DateTime, Duration } from 'luxon';
 import { TaskRecovery, TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { trimEventsTillLastRecovery } from './taskRecoveryHelper';
 import { intervalFromNowTill } from './dbUtil';
-import { restoreWorkspace, serializeWorkspace } from './serializer';
+import {
+  restoreWorkspace,
+  serializeWorkspace,
+} from '@backstage/plugin-scaffolder-node/alpha';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-scaffolder-backend',
@@ -179,6 +182,7 @@ export class DatabaseTaskStore implements TaskStore {
 
   async list(options: {
     createdBy?: string;
+    status?: TaskStatus;
   }): Promise<{ tasks: SerializedTask[] }> {
     const queryBuilder = this.db<RawDbTaskRow>('tasks');
 
@@ -186,6 +190,10 @@ export class DatabaseTaskStore implements TaskStore {
       queryBuilder.where({
         created_by: options.createdBy,
       });
+    }
+
+    if (options.status) {
+      queryBuilder.where({ status: options.status });
     }
 
     const results = await queryBuilder.orderBy('created_at', 'desc').select();
@@ -517,7 +525,10 @@ export class DatabaseTaskStore implements TaskStore {
       .where({ id: options.taskId })
       .select('workspace');
 
-    await restoreWorkspace(options.targetPath, result.workspace);
+    await restoreWorkspace({
+      path: options.targetPath,
+      buffer: result.workspace,
+    });
   }
 
   async cleanWorkspace({ taskId }: { taskId: string }): Promise<void> {
@@ -534,7 +545,7 @@ export class DatabaseTaskStore implements TaskStore {
       await this.db<RawDbTaskRow>('tasks')
         .where({ id: options.taskId })
         .update({
-          workspace: await serializeWorkspace(options.path),
+          workspace: (await serializeWorkspace(options)).contents,
         });
     }
   }

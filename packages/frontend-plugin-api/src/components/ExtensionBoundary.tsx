@@ -19,6 +19,7 @@ import React, {
   ReactNode,
   Suspense,
   useEffect,
+  lazy as reactLazy,
 } from 'react';
 import { AnalyticsContext, useAnalytics } from '@backstage/core-plugin-api';
 import { ErrorBoundary } from './ErrorBoundary';
@@ -26,6 +27,7 @@ import { ErrorBoundary } from './ErrorBoundary';
 import { routableExtensionRenderedEvent } from '../../../core-plugin-api/src/analytics/Tracker';
 import { AppNode, useComponentRef } from '../apis';
 import { coreComponentRefs } from './coreComponentRefs';
+import { coreExtensionData } from '../wiring';
 
 type RouteTrackerProps = PropsWithChildren<{
   disableTracking?: boolean;
@@ -50,6 +52,11 @@ const RouteTracker = (props: RouteTrackerProps) => {
 /** @public */
 export interface ExtensionBoundaryProps {
   node: AppNode;
+  /**
+   * This explicitly marks the extension as routable for the purpose of
+   * capturing analytics events. If not provided, the extension boundary will be
+   * marked as routable if it outputs a routePath.
+   */
   routable?: boolean;
   children: ReactNode;
 }
@@ -57,6 +64,10 @@ export interface ExtensionBoundaryProps {
 /** @public */
 export function ExtensionBoundary(props: ExtensionBoundaryProps) {
   const { node, routable, children } = props;
+
+  const doesOutputRoutePath = Boolean(
+    node.instance?.getData(coreExtensionData.routePath),
+  );
 
   const plugin = node.spec.source;
   const Progress = useComponentRef(coreComponentRefs.progress);
@@ -72,9 +83,28 @@ export function ExtensionBoundary(props: ExtensionBoundaryProps) {
     <Suspense fallback={<Progress />}>
       <ErrorBoundary plugin={plugin} Fallback={fallback}>
         <AnalyticsContext attributes={attributes}>
-          <RouteTracker disableTracking={!routable}>{children}</RouteTracker>
+          <RouteTracker disableTracking={!(routable ?? doesOutputRoutePath)}>
+            {children}
+          </RouteTracker>
         </AnalyticsContext>
       </ErrorBoundary>
     </Suspense>
   );
+}
+
+/** @public */
+export namespace ExtensionBoundary {
+  export function lazy(
+    appNode: AppNode,
+    lazyElement: () => Promise<JSX.Element>,
+  ): JSX.Element {
+    const ExtensionComponent = reactLazy(() =>
+      lazyElement().then(element => ({ default: () => element })),
+    );
+    return (
+      <ExtensionBoundary node={appNode}>
+        <ExtensionComponent />
+      </ExtensionBoundary>
+    );
+  }
 }

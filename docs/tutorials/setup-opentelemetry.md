@@ -33,6 +33,7 @@ const {
 } = require('@opentelemetry/auto-instrumentations-node');
 const { PrometheusExporter } = require('@opentelemetry/exporter-prometheus');
 
+// By default exports the metrics on localhost:9464/metrics
 const prometheus = new PrometheusExporter();
 const sdk = new NodeSDK({
   // You can add a traceExporter field here too
@@ -81,6 +82,28 @@ CMD ["node", "--require", "./instrumentation.js", "packages/backend", "--config"
 ```
 
 If you need to disable/configure some OpenTelemetry feature there are lots of [environment variables](https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/) which you can tweak.
+
+### Available Metrics
+
+The following metrics are available:
+
+- `catalog_entities_count`: Total amount of entities in the catalog
+- `catalog_registered_locations_count`: Total amount of registered locations in the catalog
+- `catalog_relations_count`: Total amount of relations between entities
+- `catalog.processed.entities.count`: Amount of entities processed
+- `catalog.processing.duration`: Time spent executing the full processing flow
+- `catalog.processors.duration`: Time spent executing catalog processors
+- `catalog.processing.queue.delay`: The amount of delay between being scheduled for processing, and the start of actually being processed
+- `catalog.stitched.entities.count`: Amount of entities stitched
+- `catalog.stitching.duration`: Time spent executing the full stitching flow
+- `catalog.stitching.queue.length`: Number of entities currently in the stitching queue
+- `catalog.stitching.queue.delay`: The amount of delay between being scheduled for stitching, and the start of actually being stitched
+- `scaffolder.task.count`: Count of task runs
+- `scaffolder.task.duration`: Duration of a task run
+- `scaffolder.step.count`: Count of step runs
+- `scaffolder.step.duration`: Duration of a step runs
+- `backend_tasks.task.runs.count`: Total number of times a task has been run
+- `backend_tasks.task.runs.duration`: Histogram of task run durations
 
 ## References
 

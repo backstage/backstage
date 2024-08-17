@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-import { createSearchResultListItemExtension } from '@backstage/plugin-search-react/alpha';
+import { SearchResultListItemBlueprint } from '@backstage/plugin-search-react/alpha';
 
-export const catalogSearchResultListItem = createSearchResultListItemExtension({
-  predicate: result => result.type === 'software-catalog',
-  component: () =>
-    import('../components/CatalogSearchResultListItem').then(
-      m => m.CatalogSearchResultListItem,
-    ),
+export const catalogSearchResultListItem = SearchResultListItemBlueprint.make({
+  params: {
+    predicate: result => result.type === 'software-catalog',
+    component: () =>
+      import('../components/CatalogSearchResultListItem').then(
+        m => m.CatalogSearchResultListItem,
+      ),
+  },
 });
 
 export default [catalogSearchResultListItem];

@@ -121,6 +121,7 @@ describe('github:environment:create', () => {
       },
     });
   });
+
   it('should work specify deploymentBranchPolicy custom', async () => {
     await action.handler({
       ...mockContext,
@@ -153,6 +154,7 @@ describe('github:environment:create', () => {
       repo: 'repository',
       environment_name: 'envname',
       name: 'main',
+      type: 'branch',
     });
     expect(
       mockOctokit.rest.repos.createDeploymentBranchPolicy,
@@ -161,6 +163,52 @@ describe('github:environment:create', () => {
       repo: 'repository',
       environment_name: 'envname',
       name: '*.*.*',
+      type: 'branch',
+    });
+  });
+
+  it('should work specify deploymentTagPolicy custom', async () => {
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        deploymentBranchPolicy: {
+          protected_branches: false,
+          custom_branch_policies: true,
+        },
+        customTagPolicyNames: ['main', '*.*.*'],
+      },
+    });
+
+    expect(
+      mockOctokit.rest.repos.createOrUpdateEnvironment,
+    ).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repository',
+      environment_name: 'envname',
+      deployment_branch_policy: {
+        protected_branches: false,
+        custom_branch_policies: true,
+      },
+    });
+
+    expect(
+      mockOctokit.rest.repos.createDeploymentBranchPolicy,
+    ).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repository',
+      environment_name: 'envname',
+      name: 'main',
+      type: 'tag',
+    });
+    expect(
+      mockOctokit.rest.repos.createDeploymentBranchPolicy,
+    ).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repository',
+      environment_name: 'envname',
+      name: '*.*.*',
+      type: 'tag',
     });
   });
 
@@ -192,6 +240,8 @@ describe('github:environment:create', () => {
       mockOctokit.rest.actions.createEnvironmentVariable,
     ).toHaveBeenCalledWith({
       repository_id: 'repoid',
+      owner: 'owner',
+      repo: 'repository',
       environment_name: 'envname',
       name: 'key1',
       value: 'val1',
@@ -200,6 +250,8 @@ describe('github:environment:create', () => {
       mockOctokit.rest.actions.createEnvironmentVariable,
     ).toHaveBeenCalledWith({
       repository_id: 'repoid',
+      owner: 'owner',
+      repo: 'repository',
       environment_name: 'envname',
       name: 'key2',
       value: 'val2',
@@ -234,6 +286,8 @@ describe('github:environment:create', () => {
       mockOctokit.rest.actions.createOrUpdateEnvironmentSecret,
     ).toHaveBeenCalledWith({
       repository_id: 'repoid',
+      owner: 'owner',
+      repo: 'repository',
       environment_name: 'envname',
       secret_name: 'key1',
       key_id: 'keyid',
@@ -243,10 +297,23 @@ describe('github:environment:create', () => {
       mockOctokit.rest.actions.createOrUpdateEnvironmentSecret,
     ).toHaveBeenCalledWith({
       repository_id: 'repoid',
+      owner: 'owner',
+      repo: 'repository',
       environment_name: 'envname',
       secret_name: 'key2',
       key_id: 'keyid',
       encrypted_value: expect.any(String),
+    });
+    expect(
+      mockOctokit.rest.actions.getEnvironmentPublicKey,
+    ).toHaveBeenCalledTimes(1);
+    expect(
+      mockOctokit.rest.actions.getEnvironmentPublicKey,
+    ).toHaveBeenCalledWith({
+      repository_id: 'repoid',
+      owner: 'owner',
+      repo: 'repository',
+      environment_name: 'envname',
     });
   });
 });

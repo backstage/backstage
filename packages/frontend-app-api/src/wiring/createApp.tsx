@@ -17,17 +17,18 @@
 import React, { JSX, ReactNode } from 'react';
 import { ConfigReader } from '@backstage/config';
 import {
+  ApiBlueprint,
   AppTree,
   appTreeApiRef,
   componentsApiRef,
   coreExtensionData,
-  createApiExtension,
-  createThemeExtension,
-  createTranslationExtension,
   FrontendFeature,
+  IconBundleBlueprint,
   iconsApiRef,
   RouteResolutionApi,
   routeResolutionApiRef,
+  ThemeBlueprint,
+  TranslationBlueprint,
 } from '@backstage/frontend-plugin-api';
 import { App } from '../extensions/App';
 import { AppRoutes } from '../extensions/AppRoutes';
@@ -99,7 +100,7 @@ import {
 import { InternalAppContext } from './InternalAppContext';
 import { AppRoot } from '../extensions/AppRoot';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalBackstagePlugin } from '../../../frontend-plugin-api/src/wiring/createPlugin';
+import { toInternalBackstagePlugin } from '../../../frontend-plugin-api/src/wiring/createFrontendPlugin';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalExtensionOverrides } from '../../../frontend-plugin-api/src/wiring/createExtensionOverrides';
 import { DefaultComponentsApi } from '../apis/implementations/ComponentsApi';
@@ -109,7 +110,9 @@ import { stringifyError } from '@backstage/errors';
 import { icons as defaultIcons } from '../../../app-defaults/src/defaults';
 import { getBasePath } from '../routing/getBasePath';
 
-const DefaultApis = defaultApis.map(factory => createApiExtension({ factory }));
+const DefaultApis = defaultApis.map(factory =>
+  ApiBlueprint.make({ namespace: factory.api.id, params: { factory } }),
+);
 
 export const builtinExtensions = [
   App,
@@ -171,6 +174,7 @@ export interface CreateAppFeatureLoader {
 
 /** @public */
 export function createApp(options?: {
+  /** @deprecated - Please use {@link @backstage/frontend-plugin-api#IconBundleBlueprint} to make new icon bundles which can be installed in the app seperately */
   icons?: { [key in string]: IconComponent };
   features?: (FrontendFeature | CreateAppFeatureLoader)[];
   configLoader?: () => Promise<{ config: ConfigApi }>;
@@ -246,6 +250,7 @@ export function createApp(options?: {
  * @public
  */
 export function createSpecializedApp(options?: {
+  /** @deprecated - Please use {@link @backstage/frontend-plugin-api#IconBundleBlueprint} to make new icon bundles which can be installed in the app seperately */
   icons?: { [key in string]: IconComponent };
   features?: FrontendFeature[];
   config?: ConfigApi;
@@ -354,24 +359,27 @@ function createApiHolder(
   const pluginApis =
     tree.root.edges.attachments
       .get('apis')
-      ?.map(e => e.instance?.getData(createApiExtension.factoryDataRef))
+      ?.map(e => e.instance?.getData(ApiBlueprint.dataRefs.factory))
       .filter((x): x is AnyApiFactory => !!x) ?? [];
 
   const themeExtensions =
     tree.root.edges.attachments
       .get('themes')
-      ?.map(e => e.instance?.getData(createThemeExtension.themeDataRef))
+      ?.map(e => e.instance?.getData(ThemeBlueprint.dataRefs.theme))
       .filter((x): x is AppTheme => !!x) ?? [];
 
   const translationResources =
     tree.root.edges.attachments
       .get('translations')
-      ?.map(e =>
-        e.instance?.getData(createTranslationExtension.translationDataRef),
-      )
+      ?.map(e => e.instance?.getData(TranslationBlueprint.dataRefs.translation))
       .filter(
-        (x): x is typeof createTranslationExtension.translationDataRef.T => !!x,
+        (x): x is typeof TranslationBlueprint.dataRefs.translation.T => !!x,
       ) ?? [];
+
+  const extensionIcons = tree.root.edges.attachments
+    .get('icons')
+    ?.map(e => e.instance?.getData(IconBundleBlueprint.dataRefs.icons))
+    .reduce((acc, bundle) => ({ ...acc, ...bundle }), {});
 
   for (const factory of pluginApis) {
     factoryRegistry.register('default', factory);
@@ -413,7 +421,8 @@ function createApiHolder(
   factoryRegistry.register('static', {
     api: iconsApiRef,
     deps: {},
-    factory: () => new DefaultIconsApi({ ...defaultIcons, ...icons }),
+    factory: () =>
+      new DefaultIconsApi({ ...defaultIcons, ...extensionIcons, ...icons }),
   });
 
   factoryRegistry.register('static', {

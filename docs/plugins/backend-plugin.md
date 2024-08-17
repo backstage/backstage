@@ -71,8 +71,7 @@ Backstage application / backend exposes it.
 To actually attach and run the plugin router, you will make some modifications
 to your backend.
 
-```bash
-# From your Backstage root directory
+```bash title="From your Backstage root directory"
 yarn --cwd packages/backend add @internal/plugin-carmen-backend@^0.1.0 # Change this to match the plugin's package.json
 ```
 
@@ -281,14 +280,14 @@ export async function createRouter(
       allow: ['user'],
     });
 
-    const userInfo = await userInfo.getUserInfo(credentials);
+    const user = await userInfo.getUserInfo(credentials);
 
     res.json({
       // The catalog entity ref of the user.
-      userEntityRef: userInfo.userEntityRef,
+      userEntityRef: user.userEntityRef,
 
       // The list of entities that this user or any teams this user is a part of owns.
-      ownershipEntityRefs: userInfo.ownershipEntityRefs,
+      ownershipEntityRefs: user.ownershipEntityRefs,
     });
   });
 

@@ -25,6 +25,7 @@ import { AwsS3Publish } from './awsS3';
 import { AzureBlobStoragePublish } from './azureBlobStorage';
 import { OpenStackSwiftPublish } from './openStackSwift';
 import { mockServices } from '@backstage/backend-test-utils';
+import { PublisherBase } from './types';
 
 const logger = loggerToWinstonLogger(mockServices.logger.mock());
 const discovery: jest.Mocked<PluginEndpointDiscovery> = {
@@ -183,5 +184,21 @@ describe('Publisher', () => {
       discovery,
     });
     expect(publisher).toBeInstanceOf(OpenStackSwiftPublish);
+  });
+
+  it('registers a custom publisher if provided', async () => {
+    const mockConfig = new ConfigReader({});
+
+    const customPublisher = {
+      publish: jest.fn(),
+    } as unknown as PublisherBase;
+
+    const publisher = await Publisher.fromConfig(mockConfig, {
+      logger,
+      discovery,
+      customPublisher,
+    });
+
+    expect(publisher).toBe(customPublisher);
   });
 });

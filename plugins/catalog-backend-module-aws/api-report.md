@@ -17,7 +17,7 @@ import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { TaskRunner } from '@backstage/backend-tasks';
-import { UrlReader } from '@backstage/backend-common';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 // @public
 export const ANNOTATION_AWS_ACCOUNT_ID: string;
@@ -75,7 +75,7 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
 
 // @public @deprecated
 export class AwsS3DiscoveryProcessor implements CatalogProcessor {
-  constructor(reader: UrlReader);
+  constructor(reader: UrlReaderService);
   // (undocumented)
   getProcessorName(): string;
   // (undocumented)
@@ -105,6 +105,9 @@ export class AwsS3EntityProvider implements EntityProvider {
   // (undocumented)
   refresh(logger: LoggerService): Promise<void>;
 }
+
+// @public
+export const defaultEksClusterEntityTransformer: EksClusterEntityTransformer;
 
 // @public
 export type EksClusterEntityTransformer = (

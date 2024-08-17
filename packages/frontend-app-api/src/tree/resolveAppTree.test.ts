@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createExtension } from '@backstage/frontend-plugin-api';
+import { createExtension, Extension } from '@backstage/frontend-plugin-api';
 import { resolveAppTree } from './resolveAppTree';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
@@ -23,10 +23,10 @@ const extension = resolveExtensionDefinition(
   createExtension({
     name: 'test',
     attachTo: { id: 'nonexistent', input: 'nonexistent' },
-    output: {},
-    factory: () => ({}),
+    output: [],
+    factory: () => [],
   }),
-);
+) as Extension<unknown, unknown>;
 
 const baseSpec = {
   extension,

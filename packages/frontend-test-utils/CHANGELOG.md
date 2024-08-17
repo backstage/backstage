@@ -1,5 +1,127 @@
 # @backstage/frontend-test-utils
 
+## 0.1.12-next.3
+
+### Patch Changes
+
+- 2d21599: Added support for being able to override extension definitions.
+
+  ```tsx
+  const TestCard = EntityCardBlueprint.make({
+    ...
+  });
+
+  TestCard.override({
+    // override attachment points
+    attachTo: { id: 'something-else', input: 'overridden' },
+    // extend the config schema
+    config: {
+      schema: {
+        newConfig: z => z.string().optional(),
+      }
+    },
+    // override factory
+    *factory(originalFactory, { inputs, config }){
+      const originalOutput = originalFactory();
+
+      yield coreExentsionData.reactElement(
+        <Wrapping>
+          {originalOutput.get(coreExentsionData.reactElement)}
+        </Wrapping>
+      );
+    }
+  });
+
+  ```
+
+- 264e10f: Deprecate existing `ExtensionCreators` in favour of their new Blueprint counterparts.
+- 264e10f: Refactor `.make` method on Blueprints into two different methods, `.make` and `.makeWithOverrides`.
+
+  When using `createExtensionBlueprint` you can define parameters for the factory function, if you wish to take advantage of these parameters you should use `.make` when creating an extension instance of a Blueprint. If you wish to override more things other than the standard `attachTo`, `name`, `namespace` then you should use `.makeWithOverrides` instead.
+
+  `.make` is reserved for simple creation of extension instances from Blueprints using higher level parameters, whereas `.makeWithOverrides` is lower level and you have more control over the final extension.
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.7.0-next.3
+  - @backstage/frontend-app-api@0.7.5-next.3
+  - @backstage/config@1.2.0
+  - @backstage/test-utils@1.5.10-next.2
+  - @backstage/types@1.1.1
+
+## 0.1.12-next.2
+
+### Patch Changes
+
+- 8209449: Added new APIs for testing extensions
+- 72754db: Updated usage of `useRouteRef`, which can now always return `undefined`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.7.0-next.2
+  - @backstage/frontend-app-api@0.7.5-next.2
+  - @backstage/test-utils@1.5.10-next.2
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
+## 0.1.12-next.1
+
+### Patch Changes
+
+- 3be9aeb: Added support for v2 extensions, which declare their inputs and outputs without using a data map.
+- 6349099: Added config input type to the extensions
+- Updated dependencies
+  - @backstage/frontend-app-api@0.7.5-next.1
+  - @backstage/frontend-plugin-api@0.6.8-next.1
+  - @backstage/test-utils@1.5.10-next.1
+  - @backstage/types@1.1.1
+
+## 0.1.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.8-next.0
+  - @backstage/frontend-app-api@0.7.4-next.0
+  - @backstage/test-utils@1.5.9-next.0
+  - @backstage/types@1.1.1
+
+## 0.1.10
+
+### Patch Changes
+
+- 95a3a0b: Rename frontend and backend `setupRequestMockHandlers` methods to `registerMswTestHooks`.
+- Updated dependencies
+  - @backstage/frontend-app-api@0.7.3
+  - @backstage/test-utils@1.5.8
+  - @backstage/frontend-plugin-api@0.6.7
+  - @backstage/types@1.1.1
+
+## 0.1.10-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-app-api@0.7.3-next.2
+  - @backstage/frontend-plugin-api@0.6.7-next.1
+
+## 0.1.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-app-api@0.7.3-next.1
+  - @backstage/test-utils@1.5.8-next.1
+  - @backstage/frontend-plugin-api@0.6.7-next.0
+  - @backstage/types@1.1.1
+
+## 0.1.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-app-api@0.7.2-next.0
+  - @backstage/frontend-plugin-api@0.6.7-next.0
+  - @backstage/test-utils@1.5.7-next.0
+  - @backstage/types@1.1.1
+
 ## 0.1.8
 
 ### Patch Changes

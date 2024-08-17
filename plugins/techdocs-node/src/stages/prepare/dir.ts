@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { UrlReader } from '@backstage/backend-common';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
@@ -22,6 +22,7 @@ import {
   ScmIntegrationRegistry,
   ScmIntegrations,
 } from '@backstage/integration';
+import { TECHDOCS_ANNOTATION } from '@backstage/plugin-techdocs-common';
 import { Logger } from 'winston';
 import { parseReferenceAnnotation, transformDirLocation } from '../../helpers';
 import {
@@ -37,7 +38,7 @@ import {
  */
 export class DirectoryPreparer implements PreparerBase {
   private readonly scmIntegrations: ScmIntegrationRegistry;
-  private readonly reader: UrlReader;
+  private readonly reader: UrlReaderService;
 
   /**
    * Returns a directory preparer instance
@@ -54,7 +55,7 @@ export class DirectoryPreparer implements PreparerBase {
   private constructor(
     config: Config,
     _logger: Logger | null,
-    reader: UrlReader,
+    reader: UrlReaderService,
   ) {
     this.reader = reader;
     this.scmIntegrations = ScmIntegrations.fromConfig(config);
@@ -70,10 +71,7 @@ export class DirectoryPreparer implements PreparerBase {
     entity: Entity,
     options?: PreparerOptions,
   ): Promise<PreparerResponse> {
-    const annotation = parseReferenceAnnotation(
-      'backstage.io/techdocs-ref',
-      entity,
-    );
+    const annotation = parseReferenceAnnotation(TECHDOCS_ANNOTATION, entity);
     const { type, target } = transformDirLocation(
       entity,
       annotation,

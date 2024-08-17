@@ -20,7 +20,7 @@ techdocs:
     # spin up the techdocs-container docker image or to run mkdocs locally (assuming all the dependencies are taken care of).
     # You want to change this to 'local' if you are running Backstage using your own custom Docker setup and want to avoid running
     # into Docker in Docker situation. Read more here
-    # https://backstage.io/docs/features/techdocs/getting-started#disable-docker-in-docker-situation-optional
+    # https://backstage.io/docs/features/techdocs/getting-started/#disabling-docker-in-docker-situation-optional
 
     runIn: 'docker'
 
@@ -203,7 +203,7 @@ techdocs:
 
     # (Optional) The time (in milliseconds) that the TechDocs backend will wait
     # for a cache service to respond before continuing on as though the cached
-    # object was not found (e.g. when the cache sercice is unavailable). The
+    # object was not found (e.g. when the cache service is unavailable). The
     # default value is 1000
     readTimeout: 500
 ```

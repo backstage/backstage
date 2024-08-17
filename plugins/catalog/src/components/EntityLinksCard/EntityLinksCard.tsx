@@ -22,6 +22,8 @@ import { LinksGridList } from './LinksGridList';
 import { ColumnBreakpoints } from './types';
 import { IconComponent, useApp } from '@backstage/core-plugin-api';
 import { InfoCard, InfoCardVariants } from '@backstage/core-components';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { catalogTranslationRef } from '../../alpha/translation';
 
 /** @public */
 export interface EntityLinksCardProps {
@@ -33,6 +35,7 @@ export const EntityLinksCard = (props: EntityLinksCardProps) => {
   const { cols = undefined, variant } = props;
   const { entity } = useEntity();
   const app = useApp();
+  const { t } = useTranslationRef(catalogTranslationRef);
 
   const iconResolver = (key?: string): IconComponent =>
     key ? app.getSystemIcon(key) ?? LanguageIcon : LanguageIcon;
@@ -40,7 +43,7 @@ export const EntityLinksCard = (props: EntityLinksCardProps) => {
   const links = entity?.metadata?.links;
 
   return (
-    <InfoCard title="Links" variant={variant}>
+    <InfoCard title={t('entityLinksCard.title')} variant={variant}>
       {!links || links.length === 0 ? (
         <EntityLinksEmptyState />
       ) : (

@@ -1,5 +1,13 @@
 # @backstage/plugin-notifications-common
 
+## 0.0.5
+
+### Patch Changes
+
+- 4e4ef2b: Move notification processor filter parsing to common package
+- Updated dependencies
+  - @backstage/config@1.2.0
+
 ## 0.0.4
 
 ### Patch Changes

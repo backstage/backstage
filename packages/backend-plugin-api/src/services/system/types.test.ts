@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { createServiceFactory, createServiceRef } from './types';
+import {
+  InternalServiceFactory,
+  createServiceFactory,
+  createServiceRef,
+} from './types';
 
 const ref = createServiceRef<string>({ id: 'x' });
 const rootDep = createServiceRef<number>({ id: 'y', scope: 'root' });
@@ -36,6 +40,10 @@ describe('createServiceFactory', () => {
       },
     });
     expect(metaFactory).toEqual(expect.any(Function));
+    expect(metaFactory().$$type).toBe('@backstage/BackendFeature');
+    expect((metaFactory() as InternalServiceFactory).featureType).toBe(
+      'service',
+    );
     expect(metaFactory().service).toBe(ref);
 
     // @ts-expect-error
@@ -322,6 +330,24 @@ describe('createServiceFactory', () => {
     metaFactory(null);
     metaFactory(undefined);
     metaFactory();
+  });
+
+  it('should support old service refs without a multiton field', () => {
+    const oldPluginDep = pluginDep as Omit<typeof pluginDep, 'multiton'>; // Old refs don't have a multiton field
+    const metaFactory = createServiceFactory({
+      service: ref,
+      deps: {
+        plugin: oldPluginDep,
+      },
+      async factory({ plugin }) {
+        const plugin1: boolean = plugin;
+        // @ts-expect-error
+        const plugin2: number = plugin;
+        unused(plugin1, plugin2);
+        return 'x';
+      },
+    });
+    expect(metaFactory).toEqual(expect.any(Function));
   });
 
   it('should only allow objects as options', () => {

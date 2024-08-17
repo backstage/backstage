@@ -24,7 +24,7 @@ Be careful when disabling built-in extensions, as there may be other extensions 
 
 ## Override built-in extensions
 
-You can override any built-in extension whenever their customizations, whether through configuration or input, do not meet a use case for your Backstage instance. Check out [this](../architecture/05-extension-overrides.md) documentation on how to override application extensions.
+You can override any built-in extension whenever their customizations, whether through configuration or input, do not meet a use case for your Backstage instance. Check out [this](../architecture/25-extension-overrides.md) documentation on how to override application extensions.
 
 :::warning
 Be aware there could be some implementation requirements to properly override an built-in extension, such as using same apis and do not remove inputs or configurations otherwise you can cause a side effect in other parts of the system that expects same minimal behavior.
@@ -45,6 +45,7 @@ This extension is the first extension attached to the extension tree. It is resp
 | themes       | The app themes list.       | [createThemeExtension.themeDataRef](https://backstage.io/docs/reference/frontend-plugin-api.createthemeextension.themedataref)                         | false    | See [default themes](#default-theme-extensions).          | [createThemeExtension](https://backstage.io/docs/reference/frontend-plugin-api.createthemeextension)             |
 | components   | The app components list.   | [createComponentExtension.componentDataRef](https://backstage.io/docs/reference/frontend-plugin-api.createcomponentextension.componentdataref)         | false    | See [default components](#default-components-extensions). | [createComponentExtension](https://backstage.io/docs/reference/frontend-plugin-api.createcomponentextension)     |
 | translations | The app translations list. | [createTranslationExtension.translationDataRef](https://backstage.io/docs/reference/frontend-plugin-api.createtranslationextension.translationdataref) | false    | -                                                         | [createTranslationExtension](https://backstage.io/docs/reference/frontend-plugin-api.createtranslationextension) |
+| icons        | The app icons list.        | [IconBundleBlueprint.dataRefs.icons](https://backstage.io/docs/reference/frontend-plugin-api.iconbundleblueprint.dataRefs.icons)                       | true     | -                                                         | [IconBundleBlueprint](https://backstage.io/docs/reference/frontend-plugin-api.iconbundleblueprint)               |
 
 #### Default theme extensions
 

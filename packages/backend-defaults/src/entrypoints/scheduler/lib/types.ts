@@ -40,6 +40,10 @@ function isValidCronFormat(c: string | undefined): boolean {
   }
 }
 
+function isValidTrigger(t: string): boolean {
+  return t === 'manual';
+}
+
 export const taskSettingsV1Schema = z.object({
   version: z.literal(1),
   initialDelayDuration: z
@@ -68,6 +72,11 @@ export const taskSettingsV2Schema = z.object({
   cadence: z
     .string()
     .refine(isValidCronFormat, { message: 'Invalid cron' })
+    .or(
+      z.string().refine(isValidTrigger, {
+        message: "Invalid trigger, expecting 'manual'",
+      }),
+    )
     .or(
       z.string().refine(isValidOptionalDurationString, {
         message: 'Invalid duration, expecting ISO Period',

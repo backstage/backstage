@@ -16,11 +16,11 @@ import { GroupTransformer as GroupTransformer_2 } from '@backstage/plugin-catalo
 import { JsonValue } from '@backstage/types';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { SchedulerService } from '@backstage/backend-plugin-api';
+import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
+import { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugin-api';
 import { SearchEntry } from 'ldapjs';
 import { SearchOptions } from 'ldapjs';
-import { TaskRunner } from '@backstage/backend-tasks';
-import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 import { UserEntity } from '@backstage/catalog-model';
 import { UserTransformer as UserTransformer_2 } from '@backstage/plugin-catalog-backend-module-ldap';
 
@@ -135,7 +135,7 @@ export interface LdapOrgEntityProviderLegacyOptions {
   groupTransformer?: GroupTransformer;
   id: string;
   logger: LoggerService;
-  schedule: 'manual' | TaskRunner;
+  schedule: 'manual' | SchedulerServiceTaskRunner;
   target: string;
   userTransformer?: UserTransformer;
 }
@@ -145,8 +145,8 @@ export type LdapOrgEntityProviderOptions =
   | LdapOrgEntityProviderLegacyOptions
   | {
       logger: LoggerService;
-      schedule?: 'manual' | TaskRunner;
-      scheduler?: PluginTaskScheduler;
+      schedule?: 'manual' | SchedulerServiceTaskRunner;
+      scheduler?: SchedulerService;
       userTransformer?: UserTransformer | Record<string, UserTransformer>;
       groupTransformer?: GroupTransformer | Record<string, GroupTransformer>;
     };
@@ -197,9 +197,9 @@ export type LdapProviderConfig = {
   target: string;
   tls?: TLSConfig;
   bind?: BindConfig;
-  users: UserConfig;
-  groups: GroupConfig;
-  schedule?: TaskScheduleDefinition;
+  users: UserConfig[];
+  groups: GroupConfig[];
+  schedule?: SchedulerServiceTaskScheduleDefinition;
 };
 
 // @public
@@ -223,8 +223,8 @@ export function readLdapLegacyConfig(config: Config): LdapProviderConfig[];
 // @public
 export function readLdapOrg(
   client: LdapClient,
-  userConfig: UserConfig,
-  groupConfig: GroupConfig,
+  userConfig: UserConfig[],
+  groupConfig: GroupConfig[],
   options: {
     groupTransformer?: GroupTransformer;
     userTransformer?: UserTransformer;

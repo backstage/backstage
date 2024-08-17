@@ -20,6 +20,7 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
+import { ResizableBox } from 'react-resizable';
 import {
   ScaffolderTaskOutput,
   scaffolderApiRef,
@@ -172,7 +173,9 @@ export const OngoingTask = (props: {
   return (
     <Page themeId="website">
       <Header
-        pageTitleOverride={`Run of ${templateName}`}
+        pageTitleOverride={
+          templateName ? `Run of ${templateName}` : `Scaffolder Run`
+        }
         title={
           <div>
             Run of <code>{templateName}</code>
@@ -253,13 +256,13 @@ export const OngoingTask = (props: {
         ) : null}
 
         {logsVisible ? (
-          <Box paddingBottom={2} height="100%">
+          <ResizableBox height={240} minConstraints={[0, 160]} axis="y">
             <Paper style={{ height: '100%' }}>
               <Box padding={2} height="100%">
                 <TaskLogStream logs={taskStream.stepLogs} />
               </Box>
             </Paper>
-          </Box>
+          </ResizableBox>
         ) : null}
       </Content>
     </Page>

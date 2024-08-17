@@ -18,7 +18,6 @@ import {
   DatabaseManager,
   loggerToWinstonLogger,
   PluginDatabaseManager,
-  UrlReaders,
 } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ConfigReader } from '@backstage/config';
@@ -46,6 +45,9 @@ import {
   PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
+import { AutocompleteHandler } from '@backstage/plugin-scaffolder-node/alpha';
+import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
+import { UrlReaders } from '@backstage/backend-defaults/urlReader';
 
 const mockAccess = jest.fn();
 
@@ -430,10 +432,11 @@ describe('createRouter', () => {
         });
 
         const response = await request(app).get(
-          `/v2/tasks?createdBy=user:default/foo`,
+          `/v2/tasks?createdBy=user:default/foo&status=completed`,
         );
         expect(taskBroker.list).toHaveBeenCalledWith({
           createdBy: 'user:default/foo',
+          status: 'completed',
         });
 
         expect(response.status).toEqual(200);
@@ -689,6 +692,34 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
           after: 10,
         });
         expect(subscriber!.closed).toBe(true);
+      });
+    });
+
+    describe('POST /v2/dry-run', () => {
+      it('should get user entity', async () => {
+        const mockToken = mockCredentials.user.token();
+        const mockTemplate = getMockTemplate();
+
+        const catalogSpy = jest.spyOn(catalogClient, 'getEntityByRef');
+
+        await request(app)
+          .post('/v2/dry-run')
+          .set('Authorization', `Bearer ${mockToken}`)
+          .send({
+            template: mockTemplate,
+            values: {
+              requiredParameter1: 'required-value-1',
+              requiredParameter2: 'required-value-2',
+            },
+            directoryContents: [],
+          });
+
+        expect(catalogSpy).toHaveBeenCalledTimes(1);
+
+        expect(catalogSpy).toHaveBeenCalledWith(
+          'user:default/mock',
+          expect.anything(),
+        );
       });
     });
   });
@@ -1459,6 +1490,76 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
           after: 10,
         });
         expect(subscriber!.closed).toBe(true);
+      });
+    });
+
+    describe('GET /v2/autocomplete/:provider/:resource', () => {
+      let handleAutocompleteRequest: AutocompleteHandler;
+
+      beforeEach(async () => {
+        handleAutocompleteRequest = jest.fn().mockResolvedValue({
+          results: [{ title: 'blob' }],
+        });
+
+        const logger = mockServices.logger.mock();
+        const middleware = MiddlewareFactory.create({ config, logger });
+        const router = await createRouter({
+          logger: loggerToWinstonLogger(mockServices.logger.mock()),
+          config: new ConfigReader({}),
+          database: createDatabase(),
+          catalogClient,
+          reader: mockUrlReader,
+          taskBroker,
+          permissions: permissionApi,
+          auth,
+          httpAuth,
+          discovery,
+          autocompleteHandlers: {
+            'test-provider': handleAutocompleteRequest,
+          },
+        });
+
+        app = express().use(router).use(middleware.error());
+      });
+
+      it('should throw an error when the provider is not registered', async () => {
+        const response = await request(app)
+          .post('/v2/autocomplete/unknown-provider/resource')
+          .send({
+            token: 'token',
+            context: {},
+          });
+
+        expect(response.status).toEqual(400);
+        expect(response.body).toEqual(
+          expect.objectContaining({
+            error: {
+              message: 'Unsupported provider: unknown-provider',
+              name: 'InputError',
+            },
+          }),
+        );
+      });
+
+      it('should call the autocomplete handler', async () => {
+        const context = { mock: 'context' };
+        const mockToken = 'mocktoken';
+
+        const response = await request(app)
+          .post('/v2/autocomplete/test-provider/resource')
+          .send({
+            token: mockToken,
+            context,
+          });
+
+        expect(response.status).toEqual(200);
+
+        expect(response.body).toEqual({ results: [{ title: 'blob' }] });
+        expect(handleAutocompleteRequest).toHaveBeenCalledWith({
+          token: mockToken,
+          context,
+          resource: 'resource',
+        });
       });
     });
   });

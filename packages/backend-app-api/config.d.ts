@@ -287,6 +287,7 @@ export interface Config {
           }
       >;
     };
+    packages?: 'all' | { include?: string[]; exclude?: string[] };
   };
 
   /** Discovery options. */

@@ -36,49 +36,8 @@ import {
   type LegacyRootDatabaseService as _LegacyRootDatabaseService,
 } from '../../../backend-defaults/src/entrypoints/database/DatabaseManager';
 
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { AzureUrlReader as _AzureUrlReader } from '../../../backend-defaults/src/entrypoints/urlReader/lib/AzureUrlReader';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { BitbucketCloudUrlReader as _BitbucketCloudUrlReader } from '../../../backend-defaults/src/entrypoints/urlReader/lib/BitbucketCloudUrlReader';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { BitbucketUrlReader as _BitbucketUrlReader } from '../../../backend-defaults/src/entrypoints/urlReader/lib/BitbucketUrlReader';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { BitbucketServerUrlReader as _BitbucketServerUrlReader } from '../../../backend-defaults/src/entrypoints/urlReader/lib/BitbucketServerUrlReader';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { GerritUrlReader as _GerritUrlReader } from '../../../backend-defaults/src/entrypoints/urlReader/lib/GerritUrlReader';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { GithubUrlReader as _GithubUrlReader } from '../../../backend-defaults/src/entrypoints/urlReader/lib/GithubUrlReader';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { GitlabUrlReader as _GitlabUrlReader } from '../../../backend-defaults/src/entrypoints/urlReader/lib/GitlabUrlReader';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { GiteaUrlReader as _GiteaUrlReader } from '../../../backend-defaults/src/entrypoints/urlReader/lib/GiteaUrlReader';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { HarnessUrlReader as _HarnessUrlReader } from '../../../backend-defaults/src/entrypoints/urlReader/lib/HarnessUrlReader';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { AwsS3UrlReader as _AwsS3UrlReader } from '../../../backend-defaults/src/entrypoints/urlReader/lib/AwsS3UrlReader';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { FetchUrlReader as _FetchUrlReader } from '../../../backend-defaults/src/entrypoints/urlReader/lib/FetchUrlReader';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { UrlReaders as _UrlReaders } from '../../../backend-defaults/src/entrypoints/urlReader/lib/UrlReaders';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { ReadUrlResponseFactory as _ReadUrlResponseFactory } from '../../../backend-defaults/src/entrypoints/urlReader/lib/ReadUrlResponseFactory';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import type { UrlReadersOptions as _UrlReadersOptions } from '../../../backend-defaults/src/entrypoints/urlReader/lib/UrlReaders';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import type { FromReadableArrayOptions as _FromReadableArrayOptions } from '../../../backend-defaults/src/entrypoints/urlReader/lib/types';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import type {
-  ReaderFactory as _ReaderFactory,
-  ReadTreeResponseFactory as _ReadTreeResponseFactory,
-  ReadTreeResponseFactoryOptions as _ReadTreeResponseFactoryOptions,
-  ReadUrlResponseFactoryFromStreamOptions as _ReadUrlResponseFactoryFromStreamOptions,
-  UrlReaderPredicateTuple as _UrlReaderPredicateTuple,
-} from '../../../backend-defaults/src/entrypoints/urlReader/lib/types';
-
 import {
   DiscoveryService,
-  LifecycleService,
-  PluginMetadataService,
   CacheService,
   CacheServiceOptions,
   CacheServiceSetOptions,
@@ -87,16 +46,8 @@ import {
   resolvePackagePath as _resolvePackagePath,
   resolveSafeChildPath as _resolveSafeChildPath,
   isChildPath as _isChildPath,
-  ReadTreeOptions as _ReadTreeOptions,
-  ReadTreeResponse as _ReadTreeResponse,
-  ReadTreeResponseFile as _ReadTreeResponseFile,
-  ReadTreeResponseDirOptions as _ReadTreeResponseDirOptions,
-  ReadUrlOptions as _ReadUrlOptions,
-  ReadUrlResponse as _ReadUrlResponse,
-  SearchOptions as _SearchOptions,
-  SearchResponse as _SearchResponse,
-  SearchResponseFile as _SearchResponseFile,
-  UrlReaderService as _UrlReaderService,
+  LifecycleService,
+  PluginMetadataService,
 } from '@backstage/backend-plugin-api';
 
 export * from './hot';
@@ -125,7 +76,45 @@ export type PluginEndpointDiscovery = DiscoveryService;
  * @public
  * @deprecated Please import from `@backstage/backend-defaults/discovery` instead.
  */
-export const HostDiscovery = _HostDiscovery;
+export class HostDiscovery implements DiscoveryService {
+  /**
+   * Creates a new HostDiscovery discovery instance by reading
+   * from the `backend` config section, specifically the `.baseUrl` for
+   * discovering the external URL, and the `.listen` and `.https` config
+   * for the internal one.
+   *
+   * Can be overridden in config by providing a target and corresponding plugins in `discovery.endpoints`.
+   * eg.
+   * ```yaml
+   * discovery:
+   *  endpoints:
+   *    - target: https://internal.example.com/internal-catalog
+   *      plugins: [catalog]
+   *    - target: https://internal.example.com/secure/api/{{pluginId}}
+   *      plugins: [auth, permission]
+   *    - target:
+   *        internal: https://internal.example.com/search
+   *        external: https://example.com/search
+   *      plugins: [search]
+   * ```
+   *
+   * The basePath defaults to `/api`, meaning the default full internal
+   * path for the `catalog` plugin will be `http://localhost:7007/api/catalog`.
+   */
+  static fromConfig(config: Config, options?: { basePath?: string }) {
+    return new HostDiscovery(_HostDiscovery.fromConfig(config, options));
+  }
+
+  private constructor(private readonly impl: _HostDiscovery) {}
+
+  async getBaseUrl(pluginId: string): Promise<string> {
+    return this.impl.getBaseUrl(pluginId);
+  }
+
+  async getExternalBaseUrl(pluginId: string): Promise<string> {
+    return this.impl.getExternalBaseUrl(pluginId);
+  }
+}
 
 /**
  * SingleHostDiscovery is a basic PluginEndpointDiscovery implementation
@@ -138,13 +127,13 @@ export const HostDiscovery = _HostDiscovery;
  * @public
  * @deprecated Use `HostDiscovery` from `@backstage/backend-defaults/discovery` instead
  */
-export const SingleHostDiscovery = _HostDiscovery;
+export { HostDiscovery as SingleHostDiscovery };
 
 /**
  * @public
  * @deprecated Use `CacheManager` from the `@backstage/backend-defaults` package instead
  */
-export const CacheManager = _CacheManager;
+export class CacheManager extends _CacheManager {}
 
 /**
  * @public
@@ -252,184 +241,3 @@ export const resolveSafeChildPath = _resolveSafeChildPath;
  * Please use the `isChildPath` function from the `@backstage/cli-common` package instead.
  */
 export const isChildPath = _isChildPath;
-
-/**
- * @public
- * @deprecated Import from `@backstage/backend-defaults/urlReader` instead
- */
-export const AzureUrlReader = _AzureUrlReader;
-
-/**
- * @public
- * @deprecated Import from `@backstage/backend-defaults/urlReader` instead
- */
-export const BitbucketCloudUrlReader = _BitbucketCloudUrlReader;
-
-/**
- * @public
- * @deprecated Import from `@backstage/backend-defaults/urlReader` instead
- */
-export const BitbucketUrlReader = _BitbucketUrlReader;
-
-/**
- * @public
- * @deprecated Import from `@backstage/backend-defaults/urlReader` instead
- */
-export const BitbucketServerUrlReader = _BitbucketServerUrlReader;
-
-/**
- * @public
- * @deprecated Import from `@backstage/backend-defaults/urlReader` instead
- */
-export const GerritUrlReader = _GerritUrlReader;
-
-/**
- * @public
- * @deprecated Import from `@backstage/backend-defaults/urlReader` instead
- */
-export const GithubUrlReader = _GithubUrlReader;
-
-/**
- * @public
- * @deprecated Import from `@backstage/backend-defaults/urlReader` instead
- */
-export const GitlabUrlReader = _GitlabUrlReader;
-
-/**
- * @public
- * @deprecated Import from `@backstage/backend-defaults/urlReader` instead
- */
-export const GiteaUrlReader = _GiteaUrlReader;
-
-/**
- * @public
- * @deprecated Import from `@backstage/backend-defaults/urlReader` instead
- */
-export const HarnessUrlReader = _HarnessUrlReader;
-
-/**
- * @public
- * @deprecated Import from `@backstage/backend-defaults/urlReader` instead
- */
-export const AwsS3UrlReader = _AwsS3UrlReader;
-
-/**
- * @public
- * @deprecated Import from `@backstage/backend-defaults/urlReader` instead
- */
-export const FetchUrlReader = _FetchUrlReader;
-
-/**
- * @public
- * @deprecated Import from `@backstage/backend-defaults/urlReader` instead
- */
-export const UrlReaders = _UrlReaders;
-
-/**
- * @public
- * @deprecated Import from `@backstage/backend-defaults/urlReader` instead
- */
-export const ReadUrlResponseFactory = _ReadUrlResponseFactory;
-
-/**
- * @public
- * @deprecated Import from `@backstage/backend-defaults/urlReader` instead
- */
-export type UrlReadersOptions = _UrlReadersOptions;
-
-/**
- * @public
- * @deprecated Import from `@backstage/backend-defaults/urlReader` instead
- */
-export type FromReadableArrayOptions = _FromReadableArrayOptions;
-
-/**
- * @public
- * @deprecated Import from `@backstage/backend-defaults/urlReader` instead
- */
-export type ReaderFactory = _ReaderFactory;
-
-/**
- * @public
- * @deprecated Import from `@backstage/backend-defaults/urlReader` instead
- */
-export type ReadTreeResponseFactory = _ReadTreeResponseFactory;
-
-/**
- * @public
- * @deprecated Import from `@backstage/backend-defaults/urlReader` instead
- */
-export type ReadTreeResponseFactoryOptions = _ReadTreeResponseFactoryOptions;
-
-/**
- * @public
- * @deprecated Import from `@backstage/backend-defaults/urlReader` instead
- */
-export type ReadUrlResponseFactoryFromStreamOptions =
-  _ReadUrlResponseFactoryFromStreamOptions;
-
-/**
- * @public
- * @deprecated Import from `@backstage/backend-defaults/urlReader` instead
- */
-export type UrlReaderPredicateTuple = _UrlReaderPredicateTuple;
-
-/**
- * @public
- * @deprecated Use `UrlReaderServiceReadTreeOptions` from `@backstage/backend-plugin-api` instead
- */
-export type ReadTreeOptions = _ReadTreeOptions;
-
-/**
- * @public
- * @deprecated Use `UrlReaderServiceReadTreeResponse` from `@backstage/backend-plugin-api` instead
- */
-export type ReadTreeResponse = _ReadTreeResponse;
-
-/**
- * @public
- * @deprecated Use `UrlReaderServiceReadTreeResponseFile` from `@backstage/backend-plugin-api` instead
- */
-export type ReadTreeResponseFile = _ReadTreeResponseFile;
-
-/**
- * @public
- * @deprecated Use `UrlReaderServiceReadTreeResponseDirOptions` from `@backstage/backend-plugin-api` instead
- */
-export type ReadTreeResponseDirOptions = _ReadTreeResponseDirOptions;
-
-/**
- * @public
- * @deprecated Use `UrlReaderServiceReadUrlOptions` from `@backstage/backend-plugin-api` instead
- */
-export type ReadUrlOptions = _ReadUrlOptions;
-
-/**
- * @public
- * @deprecated Use `UrlReaderServiceReadUrlResponse` from `@backstage/backend-plugin-api` instead
- */
-export type ReadUrlResponse = _ReadUrlResponse;
-
-/**
- * @public
- * @deprecated Use `UrlReaderServiceSearchOptions` from `@backstage/backend-plugin-api` instead
- */
-export type SearchOptions = _SearchOptions;
-
-/**
- * @public
- * @deprecated Use `UrlReaderServiceSearchResponse` from `@backstage/backend-plugin-api` instead
- */
-export type SearchResponse = _SearchResponse;
-
-/**
- * @public
- * @deprecated Use `UrlReaderServiceSearchResponseFile` from `@backstage/backend-plugin-api` instead
- */
-export type SearchResponseFile = _SearchResponseFile;
-
-/**
- * @public
- * @deprecated Use `UrlReaderService` from `@backstage/backend-plugin-api` instead
- */
-export type UrlReader = _UrlReaderService;

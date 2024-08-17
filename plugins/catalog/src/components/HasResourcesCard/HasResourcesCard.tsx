@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-import { RELATION_HAS_PART } from '@backstage/catalog-model';
-import { InfoCardVariants } from '@backstage/core-components';
+import { RELATION_HAS_PART, ResourceEntity } from '@backstage/catalog-model';
+import {
+  InfoCardVariants,
+  TableColumn,
+  TableOptions,
+} from '@backstage/core-components';
 import React from 'react';
 import {
   asResourceEntities,
@@ -23,25 +27,36 @@ import {
   resourceEntityColumns,
   resourceEntityHelpLink,
 } from '../RelatedEntitiesCard';
+import { catalogTranslationRef } from '../../alpha/translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export interface HasResourcesCardProps {
   variant?: InfoCardVariants;
   title?: string;
+  columns?: TableColumn<ResourceEntity>[];
+  tableOptions?: TableOptions;
 }
 
 export function HasResourcesCard(props: HasResourcesCardProps) {
-  const { variant = 'gridItem', title = 'Has resources' } = props;
+  const { t } = useTranslationRef(catalogTranslationRef);
+  const {
+    variant = 'gridItem',
+    title = t('hasResourcesCard.title'),
+    columns = resourceEntityColumns,
+    tableOptions = {},
+  } = props;
   return (
     <RelatedEntitiesCard
       variant={variant}
       title={title}
       entityKind="Resource"
       relationType={RELATION_HAS_PART}
-      columns={resourceEntityColumns}
+      columns={columns}
       asRenderableEntities={asResourceEntities}
-      emptyMessage="No resource is part of this system"
+      emptyMessage={t('hasResourcesCard.emptyMessage')}
       emptyHelpLink={resourceEntityHelpLink}
+      tableOptions={tableOptions}
     />
   );
 }

@@ -128,7 +128,7 @@ export interface FieldExtensionUiSchema<TFieldReturnValue, TUiOptions>
 // @public
 export type FormProps = Pick<
   FormProps_2,
-  'transformErrors' | 'noHtml5Validate'
+  'transformErrors' | 'noHtml5Validate' | 'uiSchema' | 'formContext'
 >;
 
 // @public
@@ -179,6 +179,17 @@ export type ReviewStepProps = {
 
 // @public
 export interface ScaffolderApi {
+  // (undocumented)
+  autocomplete?(options: {
+    token: string;
+    provider: string;
+    resource: string;
+    context?: Record<string, string>;
+  }): Promise<{
+    results: {
+      title: string;
+    }[];
+  }>;
   cancelTask(taskId: string): Promise<void>;
   // (undocumented)
   dryRun?(options: ScaffolderDryRunOptions): Promise<ScaffolderDryRunResponse>;

@@ -46,23 +46,25 @@ Your utility APIs can depend on other utility APIs in their factories. You do th
 ```tsx
 import {
   configApiRef,
-  createApiExtension,
+  ApiBlueprint,
   createApiFactory,
   discoveryApiRef,
 } from '@backstage/frontend-plugin-api';
 import { MyApiImpl } from './MyApiImpl';
 
-const myApi = createApiExtension({
-  factory: createApiFactory({
-    api: myApiRef,
-    deps: {
-      configApi: configApiRef,
-      discoveryApi: discoveryApiRef,
-    },
-    factory: ({ configApi, discoveryApi }) => {
-      return new MyApiImpl({ configApi, discoveryApi });
-    },
-  }),
+const myApi = ApiBlueprint.make({
+  params: {
+    factory: createApiFactory({
+      api: myApiRef,
+      deps: {
+        configApi: configApiRef,
+        discoveryApi: discoveryApiRef,
+      },
+      factory: ({ configApi, discoveryApi }) => {
+        return new MyApiImpl({ configApi, discoveryApi });
+      },
+    }),
+  },
 });
 ```
 

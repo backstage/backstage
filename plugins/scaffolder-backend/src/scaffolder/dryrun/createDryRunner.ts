@@ -38,12 +38,17 @@ import {
   BackstageCredentials,
   resolveSafeChildPath,
 } from '@backstage/backend-plugin-api';
+import type { UserEntity } from '@backstage/catalog-model';
 
 interface DryRunInput {
   spec: TaskSpec;
   secrets?: TaskSecrets;
   directoryContents: SerializedFile[];
   credentials: BackstageCredentials;
+  user?: {
+    entity?: UserEntity;
+    ref?: string;
+  };
 }
 
 interface DryRunResult {

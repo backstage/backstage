@@ -23,10 +23,13 @@ import {
   createExtension,
 } from '@backstage/frontend-plugin-api';
 
-/** @alpha */
+/**
+ * @alpha
+ * @deprecated Use {@link CatalogFilterBlueprint} instead
+ */
 export function createCatalogFilterExtension<
   TInputs extends AnyExtensionInputMap,
-  TConfig = never,
+  TConfig,
 >(options: {
   namespace?: string;
   name?: string;

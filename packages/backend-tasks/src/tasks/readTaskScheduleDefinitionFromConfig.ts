@@ -19,26 +19,32 @@ import { HumanDuration } from '@backstage/types';
 import { TaskScheduleDefinition } from './types';
 import { Duration } from 'luxon';
 
-function readDuration(config: Config, key: string): Duration | HumanDuration {
+function readDuration(config: Config, key: string): HumanDuration {
   if (typeof config.get(key) === 'string') {
     const value = config.getString(key);
     const duration = Duration.fromISO(value);
     if (!duration.isValid) {
       throw new Error(`Invalid duration: ${value}`);
     }
-    return duration;
+    return duration.toObject();
   }
 
   return readDurationFromConfig(config, { key });
 }
 
-function readCronOrDuration(
+function readFrequency(
   config: Config,
   key: string,
-): { cron: string } | Duration | HumanDuration {
+): { cron: string } | Duration | HumanDuration | { trigger: 'manual' } {
   const value = config.get(key);
   if (typeof value === 'object' && (value as { cron?: string }).cron) {
     return value as { cron: string };
+  }
+  if (
+    typeof value === 'object' &&
+    (value as { trigger?: string }).trigger === 'manual'
+  ) {
+    return { trigger: 'manual' };
   }
 
   return readDuration(config, key);
@@ -56,7 +62,7 @@ function readCronOrDuration(
 export function readTaskScheduleDefinitionFromConfig(
   config: Config,
 ): TaskScheduleDefinition {
-  const frequency = readCronOrDuration(config, 'frequency');
+  const frequency = readFrequency(config, 'frequency');
   const timeout = readDuration(config, 'timeout');
 
   const initialDelay = config.has('initialDelay')

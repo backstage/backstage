@@ -25,7 +25,7 @@ import { instantiateAppNodeTree } from './instantiateAppNodeTree';
 /** @internal */
 export interface CreateAppTreeOptions {
   features: FrontendFeature[];
-  builtinExtensions: Extension<unknown>[];
+  builtinExtensions: Extension<any, any>[];
   config: Config;
 }
 

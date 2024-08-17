@@ -20,13 +20,14 @@ import { JsonObject, JsonValue, Observable } from '@backstage/types';
 import { Logger } from 'winston';
 import ObservableImpl from 'zen-observable';
 import {
-  TaskSecrets,
   SerializedTask,
   SerializedTaskEvent,
   TaskBroker,
   TaskBrokerDispatchOptions,
   TaskCompletionState,
   TaskContext,
+  TaskSecrets,
+  TaskStatus,
 } from '@backstage/plugin-scaffolder-node';
 import { InternalTaskSecrets, TaskStore } from './types';
 import { readDuration } from './helper';
@@ -34,6 +35,8 @@ import {
   AuthService,
   BackstageCredentials,
 } from '@backstage/backend-plugin-api';
+import { DefaultWorkspaceService, WorkspaceService } from './WorkspaceService';
+import { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
 
 type TaskState = {
   checkpoints: {
@@ -65,14 +68,22 @@ export class TaskManager implements TaskContext {
     logger: Logger,
     auth?: AuthService,
     config?: Config,
+    additionalWorkspaceProviders?: Record<string, WorkspaceProvider>,
   ) {
+    const workspaceService = DefaultWorkspaceService.create(
+      task,
+      storage,
+      additionalWorkspaceProviders,
+      config,
+    );
+
     const agent = new TaskManager(
       task,
       storage,
       abortSignal,
       logger,
+      workspaceService,
       auth,
-      config,
     );
     agent.startTimeout();
     return agent;
@@ -84,8 +95,8 @@ export class TaskManager implements TaskContext {
     private readonly storage: TaskStore,
     private readonly signal: AbortSignal,
     private readonly logger: Logger,
+    private readonly workspaceService: WorkspaceService,
     private readonly auth?: AuthService,
-    private readonly config?: Config,
   ) {}
 
   get spec() {
@@ -112,9 +123,7 @@ export class TaskManager implements TaskContext {
     taskId: string;
     targetPath: string;
   }): Promise<void> {
-    if (this.isWorkspaceSerializationEnabled()) {
-      this.storage.rehydrateWorkspace?.(options);
-    }
+    await this.workspaceService.rehydrateWorkspace(options);
   }
 
   get done() {
@@ -163,18 +172,11 @@ export class TaskManager implements TaskContext {
   }
 
   async serializeWorkspace?(options: { path: string }): Promise<void> {
-    if (this.isWorkspaceSerializationEnabled()) {
-      await this.storage.serializeWorkspace?.({
-        path: options.path,
-        taskId: this.task.taskId,
-      });
-    }
+    await this.workspaceService.serializeWorkspace(options);
   }
 
   async cleanWorkspace?(): Promise<void> {
-    if (this.isWorkspaceSerializationEnabled()) {
-      await this.storage.cleanWorkspace?.({ taskId: this.task.taskId });
-    }
+    await this.workspaceService.cleanWorkspace();
   }
 
   async complete(
@@ -209,14 +211,6 @@ export class TaskManager implements TaskContext {
         );
       }
     }, 1000);
-  }
-
-  private isWorkspaceSerializationEnabled(): boolean {
-    return (
-      this.config?.getOptionalBoolean(
-        'scaffolder.EXPERIMENTAL_workspaceSerialization',
-      ) ?? false
-    );
   }
 
   async getInitiatorCredentials(): Promise<BackstageCredentials> {
@@ -278,17 +272,25 @@ export class StorageTaskBroker implements TaskBroker {
     private readonly logger: Logger,
     private readonly config?: Config,
     private readonly auth?: AuthService,
+    private readonly additionalWorkspaceProviders?: Record<
+      string,
+      WorkspaceProvider
+    >,
   ) {}
 
   async list(options?: {
     createdBy?: string;
+    status?: TaskStatus;
   }): Promise<{ tasks: SerializedTask[] }> {
     if (!this.storage.list) {
       throw new Error(
         'TaskStore does not implement the list method. Please implement the list method to be able to list tasks',
       );
     }
-    return await this.storage.list({ createdBy: options?.createdBy });
+    return await this.storage.list({
+      createdBy: options?.createdBy,
+      status: options?.status,
+    });
   }
 
   private deferredDispatch = defer();
@@ -366,6 +368,7 @@ export class StorageTaskBroker implements TaskBroker {
           this.logger,
           this.auth,
           this.config,
+          this.additionalWorkspaceProviders,
         );
       }
 

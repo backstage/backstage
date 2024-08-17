@@ -15,7 +15,6 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { Duration } from 'luxon';
 import { readGitlabConfigs } from './config';
 
 describe('config', () => {
@@ -61,6 +60,8 @@ describe('config', () => {
         allowInherited: false,
         schedule: undefined,
         skipForkedRepos: false,
+        excludeRepos: [],
+        restrictUsersToGroup: false,
       }),
     );
   });
@@ -99,6 +100,8 @@ describe('config', () => {
         allowInherited: false,
         schedule: undefined,
         skipForkedRepos: false,
+        excludeRepos: [],
+        restrictUsersToGroup: false,
       }),
     );
   });
@@ -137,7 +140,51 @@ describe('config', () => {
         orgEnabled: false,
         allowInherited: false,
         schedule: undefined,
+        restrictUsersToGroup: false,
+        excludeRepos: [],
         skipForkedRepos: true,
+      }),
+    );
+  });
+
+  it('valid config with excludeRepos', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          gitlab: {
+            test: {
+              group: 'group',
+              host: 'host',
+              branch: 'not-master',
+              fallbackBranch: 'main',
+              entityFilename: 'custom-file.yaml',
+              skipForkedRepos: false,
+              excludeRepos: ['foo/bar', 'quz/qux'],
+            },
+          },
+        },
+      },
+    });
+
+    const result = readGitlabConfigs(config);
+    expect(result).toHaveLength(1);
+    result.forEach(r =>
+      expect(r).toStrictEqual({
+        id: 'test',
+        group: 'group',
+        branch: 'not-master',
+        fallbackBranch: 'main',
+        host: 'host',
+        catalogFile: 'custom-file.yaml',
+        projectPattern: /[\s\S]*/,
+        groupPattern: /[\s\S]*/,
+        userPattern: /[\s\S]*/,
+        orgEnabled: false,
+        allowInherited: false,
+        schedule: undefined,
+        restrictUsersToGroup: false,
+        skipForkedRepos: false,
+        excludeRepos: ['foo/bar', 'quz/qux'],
       }),
     );
   });
@@ -178,8 +225,10 @@ describe('config', () => {
         orgEnabled: false,
         allowInherited: false,
         skipForkedRepos: false,
+        restrictUsersToGroup: false,
+        excludeRepos: [],
         schedule: {
-          frequency: Duration.fromISO('PT30M'),
+          frequency: { minutes: 30 },
           timeout: {
             minutes: 3,
           },

@@ -19,7 +19,7 @@ import {
 } from './StackOverflowQuestionsCollatorFactory';
 import {
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { TestPipeline } from '@backstage/plugin-search-backend-node';
 import { ConfigReader } from '@backstage/config';
@@ -95,7 +95,7 @@ describe('StackOverflowQuestionsCollatorFactory', () => {
 
   describe('getCollator', () => {
     const worker = setupServer();
-    setupRequestMockHandlers(worker);
+    registerMswTestHooks(worker);
 
     it('returns a readable stream', async () => {
       const factory = StackOverflowQuestionsCollatorFactory.fromConfig(
