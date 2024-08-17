@@ -1,9 +1,7 @@
 ---
-
 id: index
 title: Introduction to Plugins
 description: Learn about integrating various infrastructure and software development tools into Backstage through plugins.
-
 ---
 
 Backstage orchestrates a cohesive single-page application by seamlessly integrating various plugins.
@@ -58,10 +56,12 @@ This is for those ready to explore complex challenges and enhance their plugins 
 ## Additional Resources and Further Reading
 
 - **Real-world Implementations and Lessons**
+
   - Case studies and examples from the community.
   - Best practices derived from mature implementations.
 
 - **Resource Compendium**
+
   - [Backstage Glossary](https://backstage.io/docs/references/glossary) of key terms.
   - Recommended readings and tools for advanced developers.
 
