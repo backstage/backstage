@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: scaffolder
   version: '1'
-  description: The Backstage backend plugin that provides the Backstage scaffolder
+  description: The Backstage backend plugin that helps you create new things
   license:
     name: Apache-2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
@@ -10,3 +10,155 @@ info:
 servers:
   - url: /
 components:
+  examples: {}
+  headers: {}
+  parameters:
+    kind:
+      name: kind
+      in: path
+      required: true
+      allowReserved: true
+      schema:
+        type: string
+    namespace:
+      name: namespace
+      in: path
+      required: true
+      allowReserved: true
+      schema:
+        type: string
+    name:
+      name: name
+      in: path
+      required: true
+      allowReserved: true
+      schema:
+        type: string
+  requestBodies: {}
+  responses:
+    ErrorResponse:
+      description: An error response from the backend.
+      content:
+        application/json; charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            name:
+              type: string
+            message:
+              type: string
+            stack:
+              type: string
+            code:
+              type: string
+          required:
+            - name
+            - message
+        request:
+          type: object
+          properties:
+            method:
+              type: string
+            url:
+              type: string
+          required:
+            - method
+            - url
+        response:
+          type: object
+          properties:
+            statusCode:
+              type: number
+          required:
+            - statusCode
+      required:
+        - error
+        - response
+      additionalProperties: {}
+    JsonObject:
+      type: object
+      properties: {}
+      description: A type representing all allowed JSON object values.
+      additionalProperties: {}
+    TemplateParameterSchema:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        presentation:
+          $ref: '#/components/schemas/TemplatePresentationV1beta3'
+        steps:
+          type: array
+          items:
+            type: object
+            properties:
+              title:
+                type: string
+              description:
+                type: string
+              schema:
+                $ref: '#/components/schemas/JsonObject'
+            required:
+              - title
+              - schema
+      required:
+        - title
+        - steps
+      description: |-
+        The shape of each entry of parameters which gets rendered
+        as a separate step in the wizard input
+    TemplatePresentationV1beta3:
+      type: object
+      properties:
+        buttonLabels:
+          type: object
+          properties:
+            backButtonText:
+              type: string
+              description: The text for the button which leads to the previous template page
+            createButtonText:
+              type: string
+              description: The text for the button which starts the execution of the template
+            reviewButtonText:
+              type: string
+              description: The text for the button which opens template's review/summary
+          description: Overrides default buttons' text
+          additionalProperties: false
+      description: The presentation of the template.
+      additionalProperties: {}
+  securitySchemes:
+    JWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+paths:
+  /v2/templates/{namespace}/{kind}/{name}/parameter-schema:
+    get:
+      operationId: GetTemplateParameterSchema
+      description: Get template parameter schema.
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateParameterSchema'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+      security:
+        - {}
+        - JWT: []
+      parameters:
+        - $ref: '#/components/parameters/namespace'
+        - $ref: '#/components/parameters/kind'
+        - $ref: '#/components/parameters/name'
