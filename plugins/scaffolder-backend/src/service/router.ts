@@ -73,6 +73,8 @@ import {
   templateStepReadPermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
 import {
+  CreatedTemplateFilter,
+  CreatedTemplateGlobal,
   TaskBroker,
   TaskStatus,
   TemplateAction,
@@ -110,6 +112,14 @@ import {
   parseStringsParam,
 } from './helpers';
 import { scaffolderActionRules, scaffolderTemplateRules } from './rules';
+import {
+  templateFilterImpls,
+  templateFilterMetadata,
+  templateGlobalFunctionMetadata,
+  templateGlobalValueMetadata,
+  templateGlobals,
+} from '../util/templating';
+import filters from '../lib/templating/filters';
 
 /**
  *
@@ -173,8 +183,12 @@ export interface RouterOptions {
    */
   concurrentTasksLimit?: number;
   taskBroker?: TaskBroker;
-  additionalTemplateFilters?: Record<string, TemplateFilter>;
-  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+  additionalTemplateFilters?:
+    | Record<string, TemplateFilter>
+    | CreatedTemplateFilter[];
+  additionalTemplateGlobals?:
+    | Record<string, TemplateGlobal>
+    | CreatedTemplateGlobal[];
   additionalWorkspaceProviders?: Record<string, WorkspaceProvider>;
   permissions?: PermissionsService;
   permissionRules?: Array<
@@ -364,6 +378,11 @@ export async function createRouter(
 
   const actionRegistry = new TemplateActionRegistry();
 
+  const templateExtensions = {
+    additionalTemplateFilters: templateFilterImpls(additionalTemplateFilters),
+    additionalTemplateGlobals: templateGlobals(additionalTemplateGlobals),
+  };
+
   const workers: TaskWorker[] = [];
   if (concurrentTasksLimit !== 0) {
     const gracefulShutdown = config.getOptionalBoolean(
@@ -378,11 +397,10 @@ export async function createRouter(
         logger,
         auditor,
         workingDirectory,
-        additionalTemplateFilters,
-        additionalTemplateGlobals,
         concurrentTasksLimit,
         permissions,
         gracefulShutdown,
+        ...templateExtensions,
       });
       workers.push(worker);
     }
@@ -395,9 +413,8 @@ export async function createRouter(
         catalogClient,
         reader,
         config,
-        additionalTemplateFilters,
-        additionalTemplateGlobals,
         auth,
+        ...templateExtensions,
       });
 
   actionsToRegister.forEach(action => actionRegistry.register(action));
@@ -421,9 +438,8 @@ export async function createRouter(
     logger,
     auditor,
     workingDirectory,
-    additionalTemplateFilters,
-    additionalTemplateGlobals,
     permissions,
+    ...templateExtensions,
   });
 
   const templateRules: TemplatePermissionRuleInput[] = Object.values(
@@ -1096,6 +1112,18 @@ export async function createRouter(
       });
 
       res.status(200).json({ results });
+    })
+    .get('/v2/template-extensions', async (_req, res) => {
+      res.status(200).json({
+        filters: {
+          ...templateFilterMetadata(filters({ integrations })),
+          ...templateFilterMetadata(additionalTemplateFilters),
+        },
+        globals: {
+          functions: templateGlobalFunctionMetadata(additionalTemplateGlobals),
+          values: templateGlobalValueMetadata(additionalTemplateGlobals),
+        },
+      });
     });
 
   const app = express();

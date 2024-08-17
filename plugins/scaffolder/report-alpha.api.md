@@ -357,6 +357,27 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'ongoingTask.hideLogsButtonTitle': 'Hide Logs';
     readonly 'ongoingTask.showLogsButtonTitle': 'Show Logs';
     readonly 'templateEditorForm.stepper.emptyText': 'There are no spec parameters in the template to preview.';
+    readonly 'renderSchema.undefined': 'No schema defined';
+    readonly 'renderSchema.tableCell.type': 'Type';
+    readonly 'renderSchema.tableCell.name': 'Name';
+    readonly 'renderSchema.tableCell.title': 'Title';
+    readonly 'renderSchema.tableCell.description': 'Description';
+    readonly 'templateExtensions.title': 'Template extensions';
+    readonly 'templateExtensions.subtitle': 'This is the collection of available template extensions';
+    readonly 'templateExtensions.emptyState.title': 'No information to display';
+    readonly 'templateExtensions.emptyState.description': 'There are no template extensions available or there was an issue communicating with the backend.';
+    readonly 'templateExtensions.filters.title': 'Template filters';
+    readonly 'templateExtensions.filters.schema.input': 'Input';
+    readonly 'templateExtensions.filters.schema.output': 'Output';
+    readonly 'templateExtensions.filters.schema.arguments': 'Arguments';
+    readonly 'templateExtensions.filters.examples': 'Examples';
+    readonly 'templateExtensions.filters.metadataAbsent': 'Filter metadata unavailable';
+    readonly 'templateExtensions.pageTitle': 'Template extensions';
+    readonly 'templateExtensions.globals.values.title': 'Template global values';
+    readonly 'templateExtensions.globals.functions.title': 'Template global functions';
+    readonly 'templateExtensions.globals.functions.schema.output': 'Output';
+    readonly 'templateExtensions.globals.functions.schema.arguments': 'Arguments';
+    readonly 'templateExtensions.globals.functions.examples': 'Examples';
     readonly 'templateTypePicker.title': 'Categories';
     readonly 'templateIntroPage.title': 'Manage Templates';
     readonly 'templateIntroPage.subtitle': 'Edit, preview, and try out templates, forms, and custom fields';
@@ -412,6 +433,7 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templateWizardPage.pageContextMenu.editConfigurationTitle': 'Edit Configuration';
     readonly 'templateEditorToolbar.customFieldExplorerTooltip': 'Custom Fields Explorer';
     readonly 'templateEditorToolbar.installedActionsDocumentationTooltip': 'Installed Actions Documentation';
+    readonly 'templateEditorToolbar.templateExtensionsDocumentationTooltip': 'Template Extensions Documentation';
     readonly 'templateEditorToolbar.addToCatalogButton': 'Publish';
     readonly 'templateEditorToolbar.addToCatalogDialogTitle': 'Publish changes';
     readonly 'templateEditorToolbar.addToCatalogDialogContent.stepsIntroduction': 'Follow the instructions below to create or update a template:';
@@ -437,6 +459,8 @@ export type TemplateListPageProps = {
     editor?: boolean;
     actions?: boolean;
     tasks?: boolean;
+    templateFilters?: boolean;
+    templateGlobals?: boolean;
   };
   headerOptions?: {
     pageTitleOverride?: string;

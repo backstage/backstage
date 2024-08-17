@@ -5,6 +5,8 @@
 ```ts
 /// <reference types="node" />
 
+import { CreatedTemplateFilter } from '@backstage/plugin-scaffolder-node';
+import { CreatedTemplateGlobal } from '@backstage/plugin-scaffolder-node';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { TaskBroker } from '@backstage/plugin-scaffolder-node';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
@@ -69,9 +71,13 @@ export const scaffolderTaskBrokerExtensionPoint: ExtensionPoint<ScaffolderTaskBr
 // @alpha
 export interface ScaffolderTemplatingExtensionPoint {
   // (undocumented)
-  addTemplateFilters(filters: Record<string, TemplateFilter>): void;
+  addTemplateFilters(
+    filters: Record<string, TemplateFilter> | CreatedTemplateFilter[],
+  ): void;
   // (undocumented)
-  addTemplateGlobals(filters: Record<string, TemplateGlobal>): void;
+  addTemplateGlobals(
+    globals: Record<string, TemplateGlobal> | CreatedTemplateGlobal[],
+  ): void;
 }
 
 // @alpha

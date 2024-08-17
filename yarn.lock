@@ -7777,6 +7777,7 @@ __metadata:
     yaml: ^2.0.0
     zen-observable: ^0.10.0
     zod: ^3.22.4
+    zod-to-json-schema: ^3.20.4
   languageName: unknown
   linkType: soft
 
@@ -7834,6 +7835,7 @@ __metadata:
     globby: ^11.0.0
     isomorphic-git: ^1.23.0
     jsonschema: ^1.2.6
+    lodash: ^4.17.21
     p-limit: ^3.1.0
     tar: ^6.1.12
     winston: ^3.2.1

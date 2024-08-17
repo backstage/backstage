@@ -150,6 +150,56 @@ export function createBranch(options: {
   logger?: Logger | undefined;
 }): Promise<void>;
 
+// @public (undocumented)
+export type CreatedTemplateFilter<
+  S extends TemplateFilterSchema | undefined = undefined,
+  F extends S extends TemplateFilterSchema
+    ? TemplateFilterFunction<S>
+    : (
+        arg: JsonValue,
+        ...rest: JsonValue[]
+      ) => JsonValue | undefined = S extends TemplateFilterSchema
+    ? TemplateFilterFunction<S>
+    : (arg: JsonValue, ...rest: JsonValue[]) => JsonValue | undefined,
+> = {
+  id: string;
+  description?: string;
+  examples?: TemplateFilterExample[];
+  schema?: S;
+  filter: F;
+};
+
+// @public (undocumented)
+export type CreatedTemplateGlobal =
+  | CreatedTemplateGlobalValue<any>
+  | CreatedTemplateGlobalFunction<any, any>;
+
+// @public (undocumented)
+export type CreatedTemplateGlobalFunction<
+  S extends TemplateGlobalFunctionSchema | undefined = undefined,
+  F extends S extends TemplateGlobalFunctionSchema
+    ? SchemaCompliantTemplateGlobalFunction<S>
+    : (
+        arg: JsonValue,
+        ...rest: JsonValue[]
+      ) => JsonValue = S extends TemplateGlobalFunctionSchema
+    ? SchemaCompliantTemplateGlobalFunction<S>
+    : (...args: JsonValue[]) => JsonValue,
+> = {
+  id: string;
+  description?: string;
+  examples?: TemplateGlobalFunctionExample[];
+  schema?: S;
+  fn: F;
+};
+
+// @public (undocumented)
+export type CreatedTemplateGlobalValue<T extends JsonValue = JsonValue> = {
+  id: string;
+  value: T;
+  description?: string;
+};
+
 // @public
 export const createTemplateAction: <
   TInputParams extends JsonObject = JsonObject,
@@ -178,6 +228,20 @@ export const createTemplateAction: <
     TOutputSchema
   >,
 ) => TemplateAction<TActionInput, TActionOutput>;
+
+// @public
+export const createTemplateFilter: <TF extends CreatedTemplateFilter<any, any>>(
+  filter: TF,
+) => TF;
+
+// @public
+export const createTemplateGlobal: <
+  T extends
+    | CreatedTemplateGlobalValue<any>
+    | CreatedTemplateGlobalFunction<any, any>,
+>(
+  t: T,
+) => T;
 
 // @public
 export function deserializeDirectoryContents(
@@ -260,6 +324,22 @@ export const parseRepoUrl: (
   workspace?: string | undefined;
   project?: string | undefined;
 };
+
+// @public (undocumented)
+export type SchemaCompliantTemplateGlobalFunction<
+  T extends TemplateGlobalFunctionSchema,
+> = z.ZodFunction<
+  z.ZodTuple<
+    [
+      ...(T['arguments'] extends (zImpl: typeof z) => z.ZodTuple<infer Items>
+        ? Items
+        : [ReturnType<NonNullable<T['arguments']>>]),
+    ]
+  >,
+  T['output'] extends (zImpl: typeof z) => z.ZodType
+    ? ReturnType<T['output']>
+    : z.ZodUnknown
+>;
 
 // @public (undocumented)
 export interface SerializedFile {
@@ -482,10 +562,117 @@ export type TemplateExample = {
 };
 
 // @public (undocumented)
-export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
+export type TemplateFilter = (
+  arg: JsonValue,
+  ...rest: JsonValue[]
+) => JsonValue | undefined;
 
 // @public (undocumented)
-export type TemplateGlobal =
-  | ((...args: JsonValue[]) => JsonValue | undefined)
-  | JsonValue;
+export type TemplateFilterExample = {
+  description?: string;
+  example: string;
+  notes?: string;
+};
+
+// @public (undocumented)
+export type TemplateFilterFunction<T extends TemplateFilterSchema> =
+  z.ZodFunction<
+    z.ZodTuple<
+      [
+        T['input'] extends (zImpl: typeof z) => z.ZodType
+          ? ReturnType<T['input']>
+          : z.ZodAny,
+        ...(T['arguments'] extends (zImpl: typeof z) => z.ZodTuple<infer Items>
+          ? Items
+          : [ReturnType<NonNullable<T['arguments']>>]),
+      ]
+    >,
+    T['output'] extends (zImpl: typeof z) => z.ZodType
+      ? ReturnType<T['output']>
+      : z.ZodUnknown
+  >;
+
+// @public (undocumented)
+export type TemplateFilterSchema = {
+  [K in 'input' | 'arguments' | 'output']?: (zImpl: typeof z) => z.ZodType;
+};
+
+// @public (undocumented)
+export type TemplateGlobal = TemplateGlobalFunction | JsonValue;
+
+// @public (undocumented)
+export type TemplateGlobalFunction<
+  Args extends JsonValue[] = JsonValue[],
+  Output extends JsonValue | undefined = JsonValue | undefined,
+> = (...args: Args) => Output;
+
+// @public (undocumented)
+export type TemplateGlobalFunctionExample = {
+  description?: string;
+  example: string;
+  notes?: string;
+};
+
+// @public (undocumented)
+export type TemplateGlobalFunctionSchema = {
+  [K in 'arguments' | 'output']?: (zImpl: typeof z) => z.ZodType;
+};
+
+// Warnings were encountered during analysis:
+//
+// src/actions/createTemplateAction.d.ts:6:1 - (ae-undocumented) Missing documentation for "TemplateExample".
+// src/actions/createTemplateAction.d.ts:11:1 - (ae-undocumented) Missing documentation for "TemplateActionOptions".
+// src/actions/gitHelpers.d.ts:5:1 - (ae-undocumented) Missing documentation for "initRepoAndPush".
+// src/actions/gitHelpers.d.ts:27:1 - (ae-undocumented) Missing documentation for "commitAndPushRepo".
+// src/actions/gitHelpers.d.ts:49:1 - (ae-undocumented) Missing documentation for "cloneRepo".
+// src/actions/gitHelpers.d.ts:66:1 - (ae-undocumented) Missing documentation for "createBranch".
+// src/actions/gitHelpers.d.ts:80:1 - (ae-undocumented) Missing documentation for "addFiles".
+// src/actions/gitHelpers.d.ts:94:1 - (ae-undocumented) Missing documentation for "commitAndPushBranch".
+// src/actions/types.d.ts:60:1 - (ae-undocumented) Missing documentation for "TemplateAction".
+// src/actions/util.d.ts:5:22 - (ae-undocumented) Missing documentation for "getRepoSourceDirectory".
+// src/actions/util.d.ts:9:22 - (ae-undocumented) Missing documentation for "parseRepoUrl".
+// src/files/serializeDirectoryContents.d.ts:6:1 - (ae-undocumented) Missing documentation for "serializeDirectoryContents".
+// src/files/types.d.ts:6:1 - (ae-undocumented) Missing documentation for "SerializedFile".
+// src/files/types.d.ts:7:5 - (ae-undocumented) Missing documentation for "path".
+// src/files/types.d.ts:8:5 - (ae-undocumented) Missing documentation for "content".
+// src/files/types.d.ts:9:5 - (ae-undocumented) Missing documentation for "executable".
+// src/files/types.d.ts:10:5 - (ae-undocumented) Missing documentation for "symlink".
+// src/filters/types.d.ts:4:1 - (ae-undocumented) Missing documentation for "TemplateFilter".
+// src/filters/types.d.ts:6:1 - (ae-undocumented) Missing documentation for "TemplateFilterSchema".
+// src/filters/types.d.ts:10:1 - (ae-undocumented) Missing documentation for "TemplateFilterExample".
+// src/filters/types.d.ts:16:1 - (ae-undocumented) Missing documentation for "TemplateFilterFunction".
+// src/filters/types.d.ts:21:1 - (ae-undocumented) Missing documentation for "CreatedTemplateFilter".
+// src/globals/types.d.ts:4:1 - (ae-undocumented) Missing documentation for "TemplateGlobalFunction".
+// src/globals/types.d.ts:6:1 - (ae-undocumented) Missing documentation for "TemplateGlobal".
+// src/globals/types.d.ts:8:1 - (ae-undocumented) Missing documentation for "CreatedTemplateGlobalValue".
+// src/globals/types.d.ts:14:1 - (ae-undocumented) Missing documentation for "TemplateGlobalFunctionSchema".
+// src/globals/types.d.ts:18:1 - (ae-undocumented) Missing documentation for "SchemaCompliantTemplateGlobalFunction".
+// src/globals/types.d.ts:22:1 - (ae-undocumented) Missing documentation for "TemplateGlobalFunctionExample".
+// src/globals/types.d.ts:28:1 - (ae-undocumented) Missing documentation for "CreatedTemplateGlobalFunction".
+// src/globals/types.d.ts:36:1 - (ae-undocumented) Missing documentation for "CreatedTemplateGlobal".
+// src/tasks/types.d.ts:83:5 - (ae-undocumented) Missing documentation for "cancelSignal".
+// src/tasks/types.d.ts:84:5 - (ae-undocumented) Missing documentation for "spec".
+// src/tasks/types.d.ts:85:5 - (ae-undocumented) Missing documentation for "secrets".
+// src/tasks/types.d.ts:86:5 - (ae-undocumented) Missing documentation for "createdBy".
+// src/tasks/types.d.ts:87:5 - (ae-undocumented) Missing documentation for "done".
+// src/tasks/types.d.ts:88:5 - (ae-undocumented) Missing documentation for "isDryRun".
+// src/tasks/types.d.ts:89:5 - (ae-undocumented) Missing documentation for "complete".
+// src/tasks/types.d.ts:90:5 - (ae-undocumented) Missing documentation for "emitLog".
+// src/tasks/types.d.ts:91:5 - (ae-undocumented) Missing documentation for "getTaskState".
+// src/tasks/types.d.ts:94:5 - (ae-undocumented) Missing documentation for "updateCheckpoint".
+// src/tasks/types.d.ts:103:5 - (ae-undocumented) Missing documentation for "serializeWorkspace".
+// src/tasks/types.d.ts:106:5 - (ae-undocumented) Missing documentation for "cleanWorkspace".
+// src/tasks/types.d.ts:107:5 - (ae-undocumented) Missing documentation for "rehydrateWorkspace".
+// src/tasks/types.d.ts:111:5 - (ae-undocumented) Missing documentation for "getWorkspaceName".
+// src/tasks/types.d.ts:112:5 - (ae-undocumented) Missing documentation for "getInitiatorCredentials".
+// src/tasks/types.d.ts:120:5 - (ae-undocumented) Missing documentation for "cancel".
+// src/tasks/types.d.ts:121:5 - (ae-undocumented) Missing documentation for "retry".
+// src/tasks/types.d.ts:122:5 - (ae-undocumented) Missing documentation for "claim".
+// src/tasks/types.d.ts:123:5 - (ae-undocumented) Missing documentation for "recoverTasks".
+// src/tasks/types.d.ts:124:5 - (ae-undocumented) Missing documentation for "dispatch".
+// src/tasks/types.d.ts:125:5 - (ae-undocumented) Missing documentation for "vacuumTasks".
+// src/tasks/types.d.ts:128:5 - (ae-undocumented) Missing documentation for "event$".
+// src/tasks/types.d.ts:134:5 - (ae-undocumented) Missing documentation for "get".
+// src/tasks/types.d.ts:135:5 - (ae-undocumented) Missing documentation for "list".
+// src/tasks/types.d.ts:155:5 - (ae-undocumented) Missing documentation for "list".
 ```

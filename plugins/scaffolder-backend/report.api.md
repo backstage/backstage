@@ -13,6 +13,8 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
+import { CreatedTemplateFilter } from '@backstage/plugin-scaffolder-node';
+import { CreatedTemplateGlobal } from '@backstage/plugin-scaffolder-node';
 import { createGithubActionsDispatchAction as createGithubActionsDispatchAction_2 } from '@backstage/plugin-scaffolder-backend-module-github';
 import { createGithubDeployKeyAction as createGithubDeployKeyAction_2 } from '@backstage/plugin-scaffolder-backend-module-github';
 import { createGithubEnvironmentAction as createGithubEnvironmentAction_2 } from '@backstage/plugin-scaffolder-backend-module-github';
@@ -549,9 +551,13 @@ export interface RouterOptions {
   // (undocumented)
   actions?: TemplateAction_2<any, any>[];
   // (undocumented)
-  additionalTemplateFilters?: Record<string, TemplateFilter_2>;
+  additionalTemplateFilters?:
+    | Record<string, TemplateFilter_2>
+    | CreatedTemplateFilter[];
   // (undocumented)
-  additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
+  additionalTemplateGlobals?:
+    | Record<string, TemplateGlobal_2>
+    | CreatedTemplateGlobal[];
   // (undocumented)
   additionalWorkspaceProviders?: Record<string, WorkspaceProvider>;
   // (undocumented)

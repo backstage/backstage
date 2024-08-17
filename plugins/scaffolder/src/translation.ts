@@ -192,6 +192,48 @@ export const scaffolderTranslationRef = createTranslationRef({
         emptyText: 'There are no spec parameters in the template to preview.',
       },
     },
+    renderSchema: {
+      tableCell: {
+        name: 'Name',
+        title: 'Title',
+        description: 'Description',
+        type: 'Type',
+      },
+      undefined: 'No schema defined',
+    },
+    templateExtensions: {
+      title: 'Template extensions',
+      pageTitle: 'Template extensions',
+      subtitle: 'This is the collection of available template extensions',
+      emptyState: {
+        title: 'No information to display',
+        description:
+          'There are no template extensions available or there was an issue communicating with the backend.',
+      },
+      filters: {
+        title: 'Template filters',
+        metadataAbsent: 'Filter metadata unavailable',
+        schema: {
+          input: 'Input',
+          arguments: 'Arguments',
+          output: 'Output',
+        },
+        examples: 'Examples',
+      },
+      globals: {
+        functions: {
+          title: 'Template global functions',
+          schema: {
+            arguments: 'Arguments',
+            output: 'Output',
+          },
+          examples: 'Examples',
+        },
+        values: {
+          title: 'Template global values',
+        },
+      },
+    },
     templateTypePicker: {
       title: 'Categories',
     },

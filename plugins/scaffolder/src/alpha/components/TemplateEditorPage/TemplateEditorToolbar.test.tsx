@@ -38,6 +38,7 @@ describe('TemplateEditorToolbar', () => {
     streamLogs: jest.fn(),
     listActions: jest.fn(),
     listTasks: jest.fn(),
+    listTemplateExtensions: jest.fn(),
     autocomplete: jest.fn(),
   };
 

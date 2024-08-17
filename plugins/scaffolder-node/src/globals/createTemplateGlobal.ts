@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
-import { JsonValue } from '@backstage/types';
+import {
+  CreatedTemplateGlobalFunction,
+  CreatedTemplateGlobalValue,
+} from './types';
 
-/** @public */
-export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
-
-/** @public */
-export type TemplateGlobal =
-  | ((...args: JsonValue[]) => JsonValue | undefined)
-  | JsonValue;
+/**
+ * This function is used to created new template globals in type-safe manner.
+ * @param t - CreatedTemplateGlobalValue | CreatedTemplateGlobalFunction
+ * @returns t
+ * @public
+ */
+export const createTemplateGlobal = <
+  T extends
+    | CreatedTemplateGlobalValue<any>
+    | CreatedTemplateGlobalFunction<any, any>,
+>(
+  t: T,
+): T => t;
