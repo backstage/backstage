@@ -27,6 +27,7 @@ import { useConfirm } from 'material-ui-confirm';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import {
   Link,
+  MarkdownContent,
   Table,
   TableColumn,
   TableProps,
@@ -232,9 +233,10 @@ export const NotificationsTable = ({
                     )}
                   </Typography>
                   {notification.payload.description ? (
-                    <Typography variant="body2" className={classes.description}>
-                      {notification.payload.description}
-                    </Typography>
+                    <MarkdownContent
+                      className={classes.description}
+                      content={notification.payload.description}
+                    />
                   ) : null}
                   <Typography variant="caption">
                     {notification.origin && (
