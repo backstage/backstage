@@ -54,6 +54,5 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "wait-for-expect": "^3.0.2"
-  },
-  "deprecated": true
+  }
 }
