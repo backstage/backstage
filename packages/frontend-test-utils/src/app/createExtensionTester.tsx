@@ -26,13 +26,13 @@ import {
   ExtensionDataRef,
   ExtensionDefinition,
   IconComponent,
+  NavItemBlueprint,
   RouteRef,
+  RouterBlueprint,
   coreExtensionData,
   createExtension,
   createExtensionInput,
   createExtensionOverrides,
-  createNavItemExtension,
-  createRouterExtension,
   useRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { Config, ConfigReader } from '@backstage/config';
@@ -74,30 +74,29 @@ const TestAppNavExtension = createExtension({
   name: 'nav',
   attachTo: { id: 'app/layout', input: 'nav' },
   inputs: {
-    items: createExtensionInput({
-      target: createNavItemExtension.targetDataRef,
-    }),
+    items: createExtensionInput([NavItemBlueprint.dataRefs.target]),
   },
-  output: {
-    element: coreExtensionData.reactElement,
-  },
+  output: [coreExtensionData.reactElement],
   factory({ inputs }) {
-    return {
-      element: (
+    return [
+      coreExtensionData.reactElement(
         <nav>
           <ul>
-            {inputs.items.map((item, index) => (
-              <NavItem
-                key={index}
-                icon={item.output.target.icon}
-                title={item.output.target.title}
-                routeRef={item.output.target.routeRef}
-              />
-            ))}
+            {inputs.items.map((item, index) => {
+              const target = item.get(NavItemBlueprint.dataRefs.target);
+              return (
+                <NavItem
+                  key={index}
+                  icon={target.icon}
+                  title={target.title}
+                  routeRef={target.routeRef}
+                />
+              );
+            })}
           </ul>
-        </nav>
+        </nav>,
       ),
-    };
+    ];
   },
 });
 
@@ -253,18 +252,7 @@ export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
     let subjectOverride;
     // attaching to app/routes to render as index route
     if (subjectInternal.version === 'v1') {
-      subjectOverride = createExtension({
-        ...subjectInternal,
-        attachTo: { id: 'app/routes', input: 'routes' },
-        output: {
-          ...subjectInternal.output,
-          path: coreExtensionData.routePath,
-        },
-        factory: params => ({
-          ...subjectInternal.factory(params as any),
-          path: '/',
-        }),
-      });
+      throw new Error('The extension tester does not support v1 extensions');
     } else if (subjectInternal.version === 'v2') {
       subjectOverride = createExtension({
         ...subjectInternal,
@@ -282,6 +270,7 @@ export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
           return [...parentOutput, coreExtensionData.routePath('/')];
         },
       });
+      (subjectOverride as any).configSchema = subjectInternal.configSchema;
     } else {
       throw new Error('Unsupported extension version');
     }
@@ -293,11 +282,13 @@ export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
             subjectOverride,
             ...this.#extensions.slice(1).map(extension => extension.definition),
             TestAppNavExtension,
-            createRouterExtension({
+            RouterBlueprint.make({
               namespace: 'test',
-              Component: ({ children }) => (
-                <MemoryRouter>{children}</MemoryRouter>
-              ),
+              params: {
+                Component: ({ children }) => (
+                  <MemoryRouter>{children}</MemoryRouter>
+                ),
+              },
             }),
           ],
         }),
