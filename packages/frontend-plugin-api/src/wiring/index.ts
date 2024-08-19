@@ -19,17 +19,12 @@ export {
   createExtension,
   type ExtensionDefinition,
   type CreateExtensionOptions,
-  type ExtensionDataValues,
   type ResolvedExtensionInput,
   type ResolvedExtensionInputs,
-  type LegacyCreateExtensionOptions,
-  type AnyExtensionInputMap,
-  type AnyExtensionDataMap,
 } from './createExtension';
 export {
   createExtensionInput,
   type ExtensionInput,
-  type LegacyExtensionInput,
 } from './createExtensionInput';
 export { type ExtensionDataContainer } from './createExtensionDataContainer';
 export {
