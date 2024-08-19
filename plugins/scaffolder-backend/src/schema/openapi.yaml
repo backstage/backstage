@@ -43,6 +43,38 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
   schemas:
+    Action:
+      type: object
+      properties:
+        id:
+          type: string
+        description:
+          type: string
+        examples:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActionExample'
+        schema:
+          type: object
+          properties:
+            input:
+              $ref: '#/components/schemas/JsonObject'
+            output:
+              $ref: '#/components/schemas/JsonObject'
+      required:
+        - id
+      description: The response shape for a single action in the `listActions` call to the `scaffolder-backend`
+    ActionExample:
+      type: object
+      properties:
+        description:
+          type: string
+        example:
+          type: string
+      required:
+        - description
+        - example
+      description: A single action example
     Error:
       type: object
       properties:
@@ -86,6 +118,11 @@ components:
       properties: {}
       description: A type representing all allowed JSON object values.
       additionalProperties: {}
+    ListActionsResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/Action'
+      description: The response shape for the `listActions` call to the `scaffolder-backend`
     TemplateParameterSchema:
       type: object
       properties:
@@ -162,3 +199,19 @@ paths:
         - $ref: '#/components/parameters/namespace'
         - $ref: '#/components/parameters/kind'
         - $ref: '#/components/parameters/name'
+
+  /v2/actions:
+    get:
+      operationId: ListActions
+      description: Returns a list of all installed actions.
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListActionsResponse'
+      security:
+        - {}
+        - JWT: []
+      parameters: []
