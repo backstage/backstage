@@ -8,7 +8,7 @@ Plugins in Backstage centralize and simplify access to tools, reducing the time 
 
 ## Customizable and Extensible Platform
 
-Backstage's plugin architecture is designed to be highly flexible, enabling the integration of nearly any infrastructure or software development tool. This extensibility allows organizations to tailor Backstage to meet their specific needs, integrating internal tools, third-party services, and other custom functionalities seamlessly【93†source】【94†source】. For detailed guidelines on plugin development, refer to the [Backstage Plugin Development documentation](https://backstage.io/docs/plugins/plugin-development/).
+Backstage's plugin architecture is designed to be highly flexible, enabling the integration of nearly any infrastructure or software development tool. This extensibility allows organizations to tailor Backstage to meet their specific needs, integrating internal tools, third-party services, and other custom functionalities seamlessly. For detailed guidelines on plugin development, refer to the [Backstage Plugin Development documentation](https://backstage.io/docs/plugins/plugin-development/).
 
 ## Improved Collaboration and Knowledge Sharing
 
