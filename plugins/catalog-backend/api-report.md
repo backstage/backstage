@@ -26,6 +26,7 @@ import { CatalogProcessorRefreshKeysResult as CatalogProcessorRefreshKeysResult_
 import { CatalogProcessorRelationResult as CatalogProcessorRelationResult_2 } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorResult as CatalogProcessorResult_2 } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
+import { DatabaseService } from '@backstage/backend-plugin-api';
 import { DefaultCatalogCollatorFactory as DefaultCatalogCollatorFactory_2 } from '@backstage/plugin-search-backend-module-catalog';
 import { DefaultCatalogCollatorFactoryOptions as DefaultCatalogCollatorFactoryOptions_2 } from '@backstage/plugin-search-backend-module-catalog';
 import { DeferredEntity as DeferredEntity_2 } from '@backstage/plugin-catalog-node';
@@ -56,9 +57,9 @@ import { PlaceholderResolver as PlaceholderResolver_2 } from '@backstage/plugin-
 import { PlaceholderResolverParams as PlaceholderResolverParams_2 } from '@backstage/plugin-catalog-node';
 import { PlaceholderResolverRead as PlaceholderResolverRead_2 } from '@backstage/plugin-catalog-node';
 import { PlaceholderResolverResolveUrl as PlaceholderResolverResolveUrl_2 } from '@backstage/plugin-catalog-node';
-import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { RootConfigService } from '@backstage/backend-plugin-api';
 import { Router } from 'express';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmLocationAnalyzer as ScmLocationAnalyzer_2 } from '@backstage/plugin-catalog-node';
@@ -137,7 +138,7 @@ export const CATALOG_CONFLICTS_TOPIC = 'experimental.catalog.conflict';
 // @public (undocumented)
 export const CATALOG_ERRORS_TOPIC = 'experimental.catalog.errors';
 
-// @public
+// @public @deprecated
 export class CatalogBuilder {
   addEntityPolicy(
     ...policies: Array<EntityPolicy | Array<EntityPolicy>>
@@ -192,11 +193,11 @@ export class CatalogBuilder {
 export type CatalogCollatorEntityTransformer =
   CatalogCollatorEntityTransformer_2;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type CatalogEnvironment = {
   logger: LoggerService;
-  database: PluginDatabaseManager;
-  config: Config;
+  database: DatabaseService;
+  config: RootConfigService;
   reader: UrlReaderService;
   permissions: PermissionsService | PermissionAuthorizer;
   scheduler?: PluginTaskScheduler;

@@ -60,6 +60,7 @@ import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
  * Options used by {@link createRouter}.
  *
  * @public
+ * @deprecated Please migrate to the new backend system as this will be removed in the future.
  */
 export interface RouterOptions {
   entitiesCatalog?: EntitiesCatalog;
@@ -77,8 +78,6 @@ export interface RouterOptions {
 
 /**
  * Creates a catalog router.
- *
- * @public
  */
 export async function createRouter(
   options: RouterOptions,
