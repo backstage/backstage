@@ -114,6 +114,28 @@ describe('TemplateListPage', () => {
     expect(getByText('Categories')).toBeInTheDocument();
   });
 
+  it('should render the EntityOwnerPicker', async () => {
+    const { getByText } = await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, mockCatalogApi],
+          [
+            starredEntitiesApiRef,
+            new DefaultStarredEntitiesApi({
+              storageApi: MockStorageApi.create(),
+            }),
+          ],
+          [permissionApiRef, {}],
+        ]}
+      >
+        <TemplateListPage />
+      </TestApiProvider>,
+      { mountedRoutes: { '/': rootRouteRef } },
+    );
+
+    expect(getByText('Owner')).toBeInTheDocument();
+  });
+
   // eslint-disable-next-line jest/no-disabled-tests
   it.skip('should render the EntityTag picker', async () => {
     const { getByText } = await renderInTestApp(

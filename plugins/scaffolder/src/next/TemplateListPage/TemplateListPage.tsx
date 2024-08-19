@@ -34,6 +34,7 @@ import {
   EntityTagPicker,
   CatalogFilterLayout,
   UserListPicker,
+  EntityOwnerPicker,
 } from '@backstage/plugin-catalog-react';
 import {
   ScaffolderPageContextMenu,
@@ -189,6 +190,7 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
               />
               <TemplateCategoryPicker />
               <EntityTagPicker />
+              <EntityOwnerPicker />
             </CatalogFilterLayout.Filters>
             <CatalogFilterLayout.Content>
               <TemplateGroups
