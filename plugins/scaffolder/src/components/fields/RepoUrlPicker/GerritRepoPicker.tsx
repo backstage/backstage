@@ -16,8 +16,7 @@
 import React from 'react';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
+import TextField from '@material-ui/core/TextField';
 import { BaseRepoUrlPickerProps } from './types';
 
 export const GerritRepoPicker = (props: BaseRepoUrlPickerProps) => {
@@ -26,9 +25,9 @@ export const GerritRepoPicker = (props: BaseRepoUrlPickerProps) => {
   return (
     <>
       <FormControl margin="normal" error={rawErrors?.length > 0 && !workspace}>
-        <InputLabel htmlFor="ownerInput">Owner</InputLabel>
-        <Input
+        <TextField
           id="ownerInput"
+          label="Owner"
           onChange={e => onChange({ owner: e.target.value })}
           value={owner}
         />
@@ -39,9 +38,9 @@ export const GerritRepoPicker = (props: BaseRepoUrlPickerProps) => {
         required
         error={rawErrors?.length > 0 && !workspace}
       >
-        <InputLabel htmlFor="parentInput">Parent</InputLabel>
-        <Input
+        <TextField
           id="parentInput"
+          label="Parent"
           onChange={e => onChange({ workspace: e.target.value })}
           value={workspace}
         />

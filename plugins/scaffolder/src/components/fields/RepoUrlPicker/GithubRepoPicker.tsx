@@ -16,8 +16,7 @@
 import React from 'react';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
+import TextField from '@material-ui/core/TextField';
 import { Select, SelectItem } from '@backstage/core-components';
 import { BaseRepoUrlPickerProps } from './types';
 
@@ -52,14 +51,12 @@ export const GithubRepoPicker = (
             items={ownerItems}
           />
         ) : (
-          <>
-            <InputLabel htmlFor="ownerInput">Owner</InputLabel>
-            <Input
-              id="ownerInput"
-              onChange={e => onChange({ owner: e.target.value })}
-              value={owner}
-            />
-          </>
+          <TextField
+            id="ownerInput"
+            label="Owner"
+            onChange={e => onChange({ owner: e.target.value })}
+            value={owner}
+          />
         )}
         <FormHelperText>
           The organization, user or project that this repo will belong to

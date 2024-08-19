@@ -16,8 +16,7 @@
 
 import { WidgetProps } from '@rjsf/utils';
 import { useTemplateSecrets } from '@backstage/plugin-scaffolder-react';
-import InputLabel from '@material-ui/core/InputLabel';
-import Input from '@material-ui/core/Input';
+import TextField from '@material-ui/core/TextField';
 import React from 'react';
 
 /**
@@ -35,19 +34,17 @@ export const SecretWidget = (
   } = props;
 
   return (
-    <>
-      <InputLabel htmlFor={title}>{title}</InputLabel>
-      <Input
-        id={title}
-        aria-describedby={title}
-        onChange={e => {
-          onChange(Array(e.target?.value.length).fill('*').join(''));
-          setSecrets({ [name]: e.target?.value });
-        }}
-        value={secrets[name] ?? ''}
-        type="password"
-        autoComplete="off"
-      />
-    </>
+    <TextField
+      id={title}
+      label={title}
+      aria-describedby={title}
+      onChange={e => {
+        onChange(Array(e.target.value.length).fill('*').join(''));
+        setSecrets({ [name]: e.target.value });
+      }}
+      value={secrets[name] ?? ''}
+      type="password"
+      autoComplete="off"
+    />
   );
 };
