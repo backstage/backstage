@@ -189,15 +189,26 @@ function OutputLink(props: {
 }) {
   const routeRef = props.node?.instance?.getData(coreExtensionData.routeRef);
 
-  const link = useRouteRef(routeRef as RouteRef<undefined>);
+  try {
+    const link = useRouteRef(routeRef as RouteRef<undefined>);
 
-  return (
-    <Tooltip title={<Typography>{props.dataRef.id}</Typography>}>
-      <Box className={props.className}>
-        {link ? <Link to={link()}>link</Link> : null}
-      </Box>
-    </Tooltip>
-  );
+    return (
+      <Tooltip title={<Typography>{props.dataRef.id}</Typography>}>
+        <Box className={props.className}>
+          {link ? <Link to={link()}>link</Link> : null}
+        </Box>
+      </Tooltip>
+    );
+  } catch (ex) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      props.node?.spec.id
+        ? `Unable to generate output link for ${props.node.spec.id}`
+        : 'Unable to generate output link',
+      ex,
+    );
+    return null;
+  }
 }
 
 function Output(props: { dataRef: ExtensionDataRef<unknown>; node?: AppNode }) {
