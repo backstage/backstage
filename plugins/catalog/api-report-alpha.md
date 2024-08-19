@@ -7,7 +7,6 @@
 
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { AnyExtensionInputMap } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { BackstagePlugin } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
@@ -18,7 +17,6 @@ import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
-import { PortableSchema } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
@@ -123,28 +121,6 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'systemDiagramCard.edgeLabels.dependsOn': 'depends on';
     readonly 'systemDiagramCard.edgeLabels.partOf': 'part of';
     readonly 'systemDiagramCard.edgeLabels.provides': 'provides';
-  }
->;
-
-// @alpha @deprecated (undocumented)
-export function createCatalogFilterExtension<
-  TInputs extends AnyExtensionInputMap,
-  TConfig,
->(options: {
-  namespace?: string;
-  name?: string;
-  inputs?: TInputs;
-  configSchema?: PortableSchema<TConfig>;
-  loader: (options: { config: TConfig }) => Promise<JSX.Element>;
-}): ExtensionDefinition<
-  TConfig,
-  TConfig,
-  never,
-  never,
-  {
-    kind?: string | undefined;
-    namespace?: string | undefined;
-    name?: string | undefined;
   }
 >;
 
