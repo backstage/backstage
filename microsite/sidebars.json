@@ -460,7 +460,8 @@
           "frontend-system/architecture/references",
           "frontend-system/architecture/utility-apis",
           "frontend-system/architecture/routes",
-          "frontend-system/architecture/naming-patterns"
+          "frontend-system/architecture/naming-patterns",
+          "frontend-system/architecture/migrations"
         ]
       },
       {
