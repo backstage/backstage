@@ -20,7 +20,7 @@ By adhering to Backstage’s design guidelines, plugins ensure a consistent user
 
 ## Scalability and Maintenance
 
-Backstage plugins are designed to be modular and independent, allowing for easy updates and maintenance without affecting the overall system. This modularity supports horizontal scalability, where each plugin can be scaled independently according to the needs of the application, ensuring robust performance and reliability【94†source】【96†source】. For more on structuring and connecting plugins, see the [Structure of a Plugin](https://backstage.io/docs/plugins/structure-of-a-plugin) documentation.
+Backstage plugins are designed to be modular and independent, allowing for easy updates and maintenance without affecting the overall system. This modularity supports horizontal scalability, where each plugin can be scaled independently according to the needs of the application, ensuring robust performance and reliability. For more on structuring and connecting plugins, see the [Structure of a Plugin](https://backstage.io/docs/plugins/structure-of-a-plugin) documentation.
 
 ## Community and Ecosystem Growth
 
