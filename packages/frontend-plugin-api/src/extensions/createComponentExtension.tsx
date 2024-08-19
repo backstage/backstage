@@ -34,7 +34,9 @@ export function createComponentExtension<
   ref: ComponentRef<TProps>;
   name?: string;
   disabled?: boolean;
+  /** @deprecated these will be removed in the future */
   inputs?: TInputs;
+  /** @deprecated these will be removed in the future */
   configSchema?: PortableSchema<TConfig>;
   loader:
     | {
