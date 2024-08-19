@@ -84,6 +84,7 @@ export class PluginTokenHandler {
     }
 
     const pluginId = String(decodeJwt(token).sub);
+    const targetPluginId = String(decodeJwt(token).aud);
     if (!pluginId) {
       throw new AuthenticationError('Invalid plugin token: missing subject');
     }
@@ -101,7 +102,7 @@ export class PluginTokenHandler {
       jwksClient.getKey,
       {
         typ: tokenTypes.plugin.typParam,
-        audience: this.ownPluginId,
+        audience: targetPluginId,
         requiredClaims: ['iat', 'exp', 'sub', 'aud'],
       },
     ).catch(e => {
