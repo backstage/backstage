@@ -12,7 +12,7 @@ Backstage's plugin architecture is designed to be highly flexible, enabling the 
 
 ## Improved Collaboration and Knowledge Sharing
 
-Plugins facilitate better collaboration among teams by consolidating documentation, code repositories, CI/CD pipelines, and monitoring tools in one place. This centralization makes it easier for team members to find information, share insights, and collaborate on projects, enhancing overall team productivity and coherence【94†source】【95†source】.
+Plugins facilitate better collaboration among teams by consolidating documentation, code repositories, CI/CD pipelines, and monitoring tools in one place. This centralization makes it easier for team members to find information, share insights, and collaborate on projects, enhancing overall team productivity and coherence.
 
 ## Consistency and Best Practices
 
