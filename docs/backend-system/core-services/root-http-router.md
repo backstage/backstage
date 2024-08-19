@@ -42,7 +42,7 @@ createBackendPlugin({
 
 ## Configuring the service
 
-There's additional options that you can pass to configure the root HTTP Router service. These options are passed when you call `createBackend`.
+There's additional options that you can pass to configure the root HTTP Router service, by using the `rootHttpRouterServiceFactoryWithOptions` export instead of the raw default factory when passing it to your `backend.add` calls. It has the following option fields:
 
 - `indexPath` - optional path to forward all unmatched requests to. Defaults to `/api/app` which is the `app-backend` plugin responsible for serving the frontend application through the backend.
 
@@ -51,15 +51,26 @@ There's additional options that you can pass to configure the root HTTP Router s
 You can configure the root HTTP Router service by passing the options to the `createBackend` function.
 
 ```ts
-import { rootHttpRouterServiceFactory } from '@backstage/backend-app-api';
+import {
+  rootHttpRouterServiceFactoryWithOptions,
+  createHealthRouter,
+} from '@backstage/backend-app-api';
 import { RequestHandler } from 'express';
 import morgan from 'morgan';
 
 const backend = createBackend();
 
 backend.add(
-  rootHttpRouterServiceFactory({
-    configure: ({ app, middleware, routes, config, logger, lifecycle }) => {
+  rootHttpRouterServiceFactoryWithOptions({
+    configure: ({
+      app,
+      middleware,
+      routes,
+      config,
+      logger,
+      lifecycle,
+      healthRouter,
+    }) => {
       // Refer to https://expressjs.com/en/guide/writing-middleware.html on how to write express middleware
       const customMiddleware = {
         logging(): RequestHandler {
@@ -92,6 +103,7 @@ backend.add(
       app.use(middleware.helmet());
       app.use(middleware.cors());
       app.use(middleware.compression());
+      app.use(healthRouter);
 
       // you can add you your own middleware in here
       app.use(customMiddleware.logging());
@@ -114,12 +126,12 @@ The root HTTP Router service also allows for configuration of the underlying Nod
 A `applyDefaults` helper is also made available to use the default app/router configuration while still enabling custom server configuration
 
 ```ts
-import { rootHttpRouterServiceFactory } from '@backstage/backend-app-api';
+import { rootHttpRouterServiceFactoryWithOptions } from '@backstage/backend-app-api';
 
 const backend = createBackend();
 
 backend.add(
-  rootHttpRouterServiceFactory({
+  rootHttpRouterServiceFactoryWithOptions({
     configure: ({ server, applyDefaults }) => {
       // apply default app/router configuration
       applyDefaults();
