@@ -15,5 +15,7 @@
  */
 
 export * from './blueprints';
-export * from './extensions';
 export * from './converters';
+export { catalogReactTranslationRef } from '../translation';
+export { isOwnerOf } from '../utils/isOwnerOf';
+export { useEntityPermission } from '../hooks/useEntityPermission';
