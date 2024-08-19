@@ -17,8 +17,7 @@
 import FormControl from '@material-ui/core/FormControl';
 import React from 'react';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
+import TextField from '@material-ui/core/TextField';
 
 import { BaseRepoBranchPickerProps } from './types';
 
@@ -43,9 +42,9 @@ export const DefaultRepoBranchPicker = ({
       required={required}
       error={rawErrors?.length > 0 && !branch}
     >
-      <InputLabel htmlFor="branchInput">Branch</InputLabel>
-      <Input
+      <TextField
         id="branchInput"
+        label="Branch"
         onChange={e => onChange({ branch: e.target.value })}
         value={branch}
       />

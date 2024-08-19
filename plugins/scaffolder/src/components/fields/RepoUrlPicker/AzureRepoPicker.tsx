@@ -17,8 +17,7 @@
 import React from 'react';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
+import TextField from '@material-ui/core/TextField';
 import { BaseRepoUrlPickerProps } from './types';
 import { Select, SelectItem } from '@backstage/core-components';
 
@@ -65,14 +64,12 @@ export const AzureRepoPicker = (
             items={organizationItems}
           />
         ) : (
-          <>
-            <InputLabel htmlFor="orgInput">Organization</InputLabel>
-            <Input
-              id="orgInput"
-              onChange={e => onChange({ organization: e.target.value })}
-              value={organization}
-            />
-          </>
+          <TextField
+            id="orgInput"
+            label="Organization"
+            onChange={e => onChange({ organization: e.target.value })}
+            value={organization}
+          />
         )}
         <FormHelperText>
           The Organization that this repo will belong to
@@ -95,14 +92,12 @@ export const AzureRepoPicker = (
             items={projectItems}
           />
         ) : (
-          <>
-            <InputLabel htmlFor="projectInput">Project</InputLabel>
-            <Input
-              id="projectInput"
-              onChange={e => onChange({ project: e.target.value })}
-              value={project}
-            />
-          </>
+          <TextField
+            id="projectInput"
+            label="Project"
+            onChange={e => onChange({ project: e.target.value })}
+            value={project}
+          />
         )}
         <FormHelperText>
           The Project that this repo will belong to
