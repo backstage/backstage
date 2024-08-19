@@ -73,6 +73,8 @@ export function MockEntityListContextProvider<
       error: value?.error,
       totalItems:
         value?.totalItems ?? (value?.entities ?? defaultValues.entities).length,
+      fields: value?.fields ?? undefined,
+      setFields: value?.setFields ?? (() => {}),
     }),
     [value, defaultValues, filters, updateFilters],
   );

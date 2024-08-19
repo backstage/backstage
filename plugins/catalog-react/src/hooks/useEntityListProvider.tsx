@@ -110,6 +110,11 @@ export type EntityListContextProps<
   };
 
   totalItems?: number;
+  /**
+   * Pass required fields key values for Entity
+   */
+  fields?: string[];
+  setFields: (fields: string[]) => void;
 };
 
 /**
@@ -127,6 +132,7 @@ type OutputState<EntityFilters extends DefaultEntityFilters> = {
   backendEntities: Entity[];
   pageInfo?: QueryEntitiesResponse['pageInfo'];
   totalItems?: number;
+  fields?: string[];
 };
 
 /**
@@ -188,9 +194,12 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
         entities: [],
         backendEntities: [],
         pageInfo: enablePagination ? {} : undefined,
+        fields: [],
       };
     },
   );
+
+  const [fields, setFields] = useState<string[]>([]);
 
   // The main async filter worker. Note that while it has a lot of dependencies
   // in terms of its implementation, the triggering only happens (debounced)
@@ -219,6 +228,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
             const response = await catalogApi.queryEntities({
               cursor,
               limit,
+              fields: fields.length > 0 ? fields : undefined,
             });
             setOutputState({
               appliedFilters: requestedFilters,
@@ -227,6 +237,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
               entities: response.items.filter(entityFilter),
               pageInfo: response.pageInfo,
               totalItems: response.totalItems,
+              fields,
             });
           }
         } else {
@@ -241,6 +252,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
               ...backendFilter,
               limit,
               orderFields: [{ field: 'metadata.name', order: 'asc' }],
+              fields: fields.length > 0 ? fields : undefined,
             });
             setOutputState({
               appliedFilters: requestedFilters,
@@ -248,6 +260,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
               entities: response.items.filter(entityFilter),
               pageInfo: response.pageInfo,
               totalItems: response.totalItems,
+              fields,
             });
           }
         }
@@ -266,6 +279,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
           // fields + table columns
           const response = await catalogApi.getEntities({
             filter: backendFilter,
+            fields: fields.length > 0 ? fields : undefined,
           });
           const entities = response.items.filter(entityFilter);
           setOutputState({
@@ -273,6 +287,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
             backendEntities: response.items,
             entities,
             totalItems: entities.length,
+            fields,
           });
         } else {
           const entities = outputState.backendEntities.filter(entityFilter);
@@ -281,6 +296,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
             backendEntities: outputState.backendEntities,
             entities,
             totalItems: entities.length,
+            fields,
           });
         }
       }
@@ -309,6 +325,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       outputState,
       cursor,
       enablePagination,
+      fields,
     ],
     { loading: true },
   );
@@ -362,8 +379,18 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       error,
       pageInfo,
       totalItems: outputState.totalItems,
+      fields,
+      setFields,
     }),
-    [outputState, updateFilters, queryParameters, loading, error, pageInfo],
+    [
+      outputState,
+      updateFilters,
+      queryParameters,
+      loading,
+      error,
+      pageInfo,
+      fields,
+    ],
   );
 
   return (

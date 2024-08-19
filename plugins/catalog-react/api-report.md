@@ -307,6 +307,8 @@ export type EntityListContextProps<
     prev?: () => void;
   };
   totalItems?: number;
+  fields?: string[];
+  setFields: (fields: string[]) => void;
 };
 
 // @public
