@@ -314,6 +314,8 @@ export type EntityListContextProps<
   setLimit: (limit: number) => void;
   setOffset?: (offset: number) => void;
   paginationMode: PaginationMode;
+  fields?: string[];
+  setFields: (fields: string[]) => void;
 };
 
 // @public (undocumented)
