@@ -5501,7 +5501,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-gitlab@workspace:plugins/catalog-backend-module-gitlab"
   dependencies:
-    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-defaults": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-tasks": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
