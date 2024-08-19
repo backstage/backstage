@@ -15,10 +15,6 @@
  */
 
 import type { PluginDatabaseManager } from '@backstage/backend-common';
-import type {
-  PluginTaskScheduler,
-  TaskFunction,
-} from '@backstage/backend-tasks';
 import type { Config } from '@backstage/config';
 import type {
   DeferredEntity,
@@ -29,7 +25,12 @@ import type { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import type { DurationObjectUnits } from 'luxon';
 import type { Logger } from 'winston';
 import { IncrementalIngestionDatabaseManager } from './database/IncrementalIngestionDatabaseManager';
-import { LoggerService, UrlReaderService } from '@backstage/backend-plugin-api';
+import {
+  LoggerService,
+  UrlReaderService,
+  SchedulerService,
+  SchedulerServiceTaskFunction,
+} from '@backstage/backend-plugin-api';
 
 /**
  * Ingest entities into the catalog in bite-sized chunks.
@@ -187,14 +188,14 @@ export interface IncrementalEntityProviderOptions {
 export type PluginEnvironment = {
   logger: Logger;
   database: PluginDatabaseManager;
-  scheduler: PluginTaskScheduler;
+  scheduler: SchedulerService;
   config: Config;
   reader: UrlReaderService;
   permissions: PermissionEvaluator;
 };
 
 export interface IterationEngine {
-  taskFn: TaskFunction;
+  taskFn: SchedulerServiceTaskFunction;
 }
 
 export interface IterationEngineOptions {

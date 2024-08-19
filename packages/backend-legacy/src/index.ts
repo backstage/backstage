@@ -34,7 +34,6 @@ import {
   ServerTokenManager,
   useHotMemoize,
 } from '@backstage/backend-common';
-import { TaskScheduler } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import healthcheck from './plugins/healthcheck';
 import { metricsHandler, metricsInit } from './metrics';
@@ -57,6 +56,7 @@ import { DefaultEventBroker } from '@backstage/plugin-events-backend';
 import { DefaultEventsService } from '@backstage/plugin-events-node';
 import { DefaultSignalsService } from '@backstage/plugin-signals-node';
 import { UrlReaders } from '@backstage/backend-defaults/urlReader';
+import { DefaultSchedulerService } from '@backstage/backend-defaults/scheduler';
 
 function makeCreateEnv(config: Config) {
   const root = getRootLogger();
@@ -69,7 +69,6 @@ function makeCreateEnv(config: Config) {
   });
   const databaseManager = DatabaseManager.fromConfig(config, { logger: root });
   const cacheManager = CacheManager.fromConfig(config);
-  const taskScheduler = TaskScheduler.fromConfig(config, { databaseManager });
   const identity = DefaultIdentityClient.create({
     discovery,
   });
@@ -89,7 +88,10 @@ function makeCreateEnv(config: Config) {
     const logger = root.child({ type: 'plugin', plugin });
     const database = databaseManager.forPlugin(plugin);
     const cache = cacheManager.forPlugin(plugin);
-    const scheduler = taskScheduler.forPlugin(plugin);
+    const scheduler = DefaultSchedulerService.create({
+      logger,
+      database,
+    });
 
     return {
       logger,

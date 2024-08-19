@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TaskScheduleDefinition } from '@backstage/backend-tasks';
+import { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugin-api';
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { GitLabIntegrationConfig } from '@backstage/integration';
 
@@ -196,7 +196,7 @@ export type GitlabProviderConfig = {
   allowInherited?: boolean;
 
   orgEnabled?: boolean;
-  schedule?: TaskScheduleDefinition;
+  schedule?: SchedulerServiceTaskScheduleDefinition;
   /**
    * If the project is a fork, skip repository
    */

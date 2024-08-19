@@ -13,9 +13,9 @@ import { GitLabIntegrationConfig } from '@backstage/integration';
 import { GroupEntity } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/plugin-catalog-node';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
-import { TaskRunner } from '@backstage/backend-tasks';
-import { TaskScheduleDefinition } from '@backstage/backend-tasks';
+import { SchedulerService } from '@backstage/backend-plugin-api';
+import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
+import { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugin-api';
 import { UserEntity } from '@backstage/catalog-model';
 
 // @public
@@ -28,8 +28,8 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     options: {
       logger: LoggerService;
       events?: EventsService;
-      schedule?: TaskRunner;
-      scheduler?: PluginTaskScheduler;
+      schedule?: SchedulerServiceTaskRunner;
+      scheduler?: SchedulerService;
     },
   ): GitlabDiscoveryEntityProvider[];
   // (undocumented)
@@ -83,8 +83,8 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     options: {
       logger: LoggerService;
       events?: EventsService;
-      schedule?: TaskRunner;
-      scheduler?: PluginTaskScheduler;
+      schedule?: SchedulerServiceTaskRunner;
+      scheduler?: SchedulerService;
       userTransformer?: UserTransformer;
       groupEntitiesTransformer?: GroupTransformer;
       groupNameTransformer?: GroupNameTransformer;
@@ -108,7 +108,7 @@ export type GitlabProviderConfig = {
   groupPattern: RegExp;
   allowInherited?: boolean;
   orgEnabled?: boolean;
-  schedule?: TaskScheduleDefinition;
+  schedule?: SchedulerServiceTaskScheduleDefinition;
   skipForkedRepos?: boolean;
   excludeRepos?: string[];
 };

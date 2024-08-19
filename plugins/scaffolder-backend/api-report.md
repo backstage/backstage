@@ -37,10 +37,10 @@ import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { PluginDatabaseManager } from '@backstage/backend-common';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
 import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE } from '@backstage/plugin-scaffolder-common/alpha';
 import { ScaffolderEntitiesProcessor as ScaffolderEntitiesProcessor_2 } from '@backstage/plugin-catalog-backend-module-scaffolder-entity-model';
+import { SchedulerService } from '@backstage/backend-plugin-api';
 import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
@@ -509,7 +509,7 @@ export interface RouterOptions {
   // (undocumented)
   reader: UrlReaderService;
   // (undocumented)
-  scheduler?: PluginTaskScheduler;
+  scheduler?: SchedulerService;
   // (undocumented)
   taskBroker?: TaskBroker_2;
   // @deprecated (undocumented)

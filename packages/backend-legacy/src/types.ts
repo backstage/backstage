@@ -22,12 +22,14 @@ import {
   PluginEndpointDiscovery,
   TokenManager,
 } from '@backstage/backend-common';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { EventBroker, EventsService } from '@backstage/plugin-events-node';
 import { SignalsService } from '@backstage/plugin-signals-node';
-import { UrlReaderService } from '@backstage/backend-plugin-api';
+import {
+  UrlReaderService,
+  SchedulerService,
+} from '@backstage/backend-plugin-api';
 
 export type PluginEnvironment = {
   logger: Logger;
@@ -38,7 +40,7 @@ export type PluginEnvironment = {
   discovery: PluginEndpointDiscovery;
   tokenManager: TokenManager;
   permissions: PermissionEvaluator;
-  scheduler: PluginTaskScheduler;
+  scheduler: SchedulerService;
   identity: IdentityApi;
   /**
    * @deprecated use `events` instead
