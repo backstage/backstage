@@ -52,7 +52,6 @@
   },
   "dependencies": {
     "@azure/identity": "^4.0.0",
-    "@backstage/backend-common": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/backend-tasks": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
@@ -68,7 +67,6 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "@backstage/backend-common": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/lodash": "^4.14.151",
