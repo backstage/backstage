@@ -126,7 +126,8 @@ export type CatalogPermissionRuleInput<
 
 /**
  * @deprecated Please migrate to the new backend system as this will be removed in the future.
- * @public */
+ * @public
+ */
 export type CatalogEnvironment = {
   logger: LoggerService;
   database: DatabaseService;
