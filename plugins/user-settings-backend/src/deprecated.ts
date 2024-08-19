@@ -15,17 +15,11 @@
  */
 
 import express from 'express';
-import { merge } from 'lodash';
-import * as winston from 'winston';
-
-import { ConfigReader } from '@backstage/config';
 import { DatabaseService } from '@backstage/backend-plugin-api';
-import { WinstonLogger } from '@backstage/backend-defaults/rootLogger';
-import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
-import { IdentityApi } from '@backstage/plugin-auth-node';
 import { SignalsService } from '@backstage/plugin-signals-node';
 
-import { createRouter as _createRouter } from './service';
+import { createRouter as internalCreateRouter } from './service';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 
 /**
  * Type for the options passed to the "createRouter" function.
@@ -49,35 +43,5 @@ export type RouterOptions = {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const router = await _createRouter(options);
-  const config = new ConfigReader({});
-  const logger = winston
-    .createLogger(
-      merge<winston.LoggerOptions, winston.LoggerOptions>(
-        {
-          level: process.env.LOG_LEVEL || 'info',
-          format: winston.format.combine(
-            WinstonLogger.redacter().format,
-            process.env.NODE_ENV === 'production'
-              ? winston.format.json()
-              : WinstonLogger.colorFormat(),
-          ),
-          transports: [
-            new winston.transports.Console({
-              silent:
-                process.env.JEST_WORKER_ID !== undefined &&
-                !process.env.LOG_LEVEL,
-            }),
-          ],
-        },
-        {},
-      ),
-    )
-    .child({ service: 'backstage' });
-  const middleware = MiddlewareFactory.create({
-    config,
-    logger,
-  });
-  router.use(middleware.error());
-  return router;
+  return await internalCreateRouter(options);
 }
