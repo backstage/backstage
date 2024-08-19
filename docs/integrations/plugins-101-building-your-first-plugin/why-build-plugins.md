@@ -24,6 +24,6 @@ Backstage plugins are designed to be modular and independent, allowing for easy 
 
 ## Community and Ecosystem Growth
 
-Developing and contributing plugins to the Backstage community helps in expanding the ecosystem. Open-source contributions foster innovation and collaboration, allowing developers to leverage a wide range of existing plugins and avoid reinventing the wheel. This collaborative environment accelerates the development of new features and enhances the overall value of the Backstage platform【94†source】【95†source】.
+Developing and contributing plugins to the Backstage community helps in expanding the ecosystem. Open-source contributions foster innovation and collaboration, allowing developers to leverage a wide range of existing plugins and avoid reinventing the wheel. This collaborative environment accelerates the development of new features and enhances the overall value of the Backstage platform.
 
 Building plugins for Backstage significantly enhances developer productivity, promotes best practices, supports scalability, and fosters community growth. These plugins transform Backstage into a comprehensive developer portal that can adapt to the unique needs of any organization. For more detailed information, refer to the [Backstage Plugin Development documentation](https://backstage.io/docs/plugins/plugin-development/) and the [Introduction to Plugins](https://backstage.io/docs/plugins/).
