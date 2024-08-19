@@ -46,7 +46,6 @@ describe('PluginTokenHandler', () => {
       discovery: mockServices.discovery(),
       keyDuration: { seconds: 10 },
       logger: mockServices.logger.mock(),
-      ownPluginId: 'test',
       keySource: {
         getPrivateSigningKey: getKeyMock,
         listKeys: jest.fn(),

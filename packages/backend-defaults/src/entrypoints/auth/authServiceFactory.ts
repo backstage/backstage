@@ -67,7 +67,6 @@ export const authServiceFactory = createServiceFactory({
     });
 
     const pluginTokens = PluginTokenHandler.create({
-      ownPluginId: plugin.getId(),
       logger,
       keySource,
       keyDuration,

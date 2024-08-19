@@ -28,7 +28,6 @@ const SECONDS_IN_MS = 1000;
 const ALLOWED_PLUGIN_ID_PATTERN = /^[a-z0-9_-]+$/i;
 
 type Options = {
-  ownPluginId: string;
   keyDuration: HumanDuration;
   keySource: PluginKeySource;
   discovery: DiscoveryService;
@@ -54,7 +53,6 @@ export class PluginTokenHandler {
   static create(options: Options) {
     return new PluginTokenHandler(
       options.logger,
-      options.ownPluginId,
       options.keySource,
       options.algorithm ?? 'ES256',
       Math.round(durationToMilliseconds(options.keyDuration) / 1000),
@@ -64,7 +62,6 @@ export class PluginTokenHandler {
 
   private constructor(
     private readonly logger: LoggerService,
-    private readonly ownPluginId: string,
     private readonly keySource: PluginKeySource,
     private readonly algorithm: string,
     private readonly keyDurationSeconds: number,
