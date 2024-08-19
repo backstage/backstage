@@ -16,7 +16,7 @@ Plugins facilitate better collaboration among teams by consolidating documentati
 
 ## Consistency and Best Practices
 
-By adhering to Backstage’s design guidelines, plugins ensure a consistent user experience across the platform. This consistency helps in maintaining usability and reducing the learning curve for new users, promoting the adoption of best practices within development teams【93†source】【95†source】. More details can be found in the [Introduction to Plugins](https://backstage.io/docs/plugins/) section.
+By adhering to Backstage’s design guidelines, plugins ensure a consistent user experience across the platform. This consistency helps in maintaining usability and reducing the learning curve for new users, promoting the adoption of best practices within development teams. More details can be found in the [Introduction to Plugins](https://backstage.io/docs/plugins/) section.
 
 ## Scalability and Maintenance
 
