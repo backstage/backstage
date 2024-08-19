@@ -4,7 +4,7 @@ Backstage plugins are essential components that enable the integration of variou
 
 ## Enhancing Developer Productivity
 
-Plugins in Backstage centralize and simplify access to tools, reducing the time developers spend switching between different systems. By providing a consistent interface and user experience, plugins minimize cognitive load and streamline workflows, allowing developers to focus more on coding and less on tool management. Plugins can leverage platform APIs and reusable UI components to integrate external data and services seamlessly【93†source】【94†source】.
+Plugins in Backstage centralize and simplify access to tools, reducing the time developers spend switching between different systems. By providing a consistent interface and user experience, plugins minimize cognitive load and streamline workflows, allowing developers to focus more on coding and less on tool management. Plugins can leverage platform APIs and reusable UI components to integrate external data and services seamlessly.
 
 ## Customizable and Extensible Platform
 
