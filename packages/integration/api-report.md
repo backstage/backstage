@@ -314,6 +314,11 @@ export function defaultScmResolveUrl(options: {
 }): string;
 
 // @public
+export type FetchConfig = {
+  throttling?: ThrottlingConfig;
+};
+
+// @public
 export class GerritIntegration implements ScmIntegration {
   constructor(integrationConfig: GerritIntegrationConfig);
   // (undocumented)
@@ -1028,7 +1033,9 @@ export class SingleInstanceGithubCredentialsProvider
   getCredentials(opts: { url: string }): Promise<GithubCredentials>;
 }
 
-// Warnings were encountered during analysis:
-//
-// src/bitbucketCloud/config.d.ts:36:5 - (ae-forgotten-export) The symbol "FetchConfig" needs to be exported by the entry point index.d.ts
+// @public
+export type ThrottlingConfig = {
+  count: number;
+  interval: HumanDuration;
+};
 ```
