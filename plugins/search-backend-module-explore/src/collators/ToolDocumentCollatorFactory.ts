@@ -16,10 +16,13 @@
 
 import {
   createLegacyAuthAdapters,
-  PluginEndpointDiscovery,
   TokenManager,
 } from '@backstage/backend-common';
-import { AuthService, LoggerService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  DiscoveryService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { ExploreTool } from '@backstage-community/plugin-explore-common';
 import {
@@ -37,12 +40,11 @@ import { Readable } from 'stream';
 export interface ToolDocument extends IndexableDocument, ExploreTool {}
 
 /**
- * The options for the {@link ToolDocumentCollatorFactory}.
- *
  * @public
+ * @deprecated This type is deprecated along with the {@link ToolDocumentCollatorFactory}.
  */
 export type ToolDocumentCollatorFactoryOptions = {
-  discovery: PluginEndpointDiscovery;
+  discovery: DiscoveryService;
   logger: LoggerService;
   tokenManager?: TokenManager;
   auth?: AuthService;
@@ -52,18 +54,18 @@ export type ToolDocumentCollatorFactoryOptions = {
  * Search collator responsible for collecting explore tools to index.
  *
  * @public
+ * @deprecated Migrate to the {@link https://backstage.io/docs/backend-system/building-backends/migrating | new backend system} and install this collator via module instead (see {@link https://github.com/backstage/backstage/blob/nbs10/search-deprecate-create-router/plugins/search-backend-module-explore/README.md#installation | here} for more installation details).
  */
 export class ToolDocumentCollatorFactory implements DocumentCollatorFactory {
   public readonly type: string = 'tools';
 
-  private readonly discovery: PluginEndpointDiscovery;
+  private readonly discovery: DiscoveryService;
   private readonly logger: LoggerService;
   private readonly auth: AuthService;
 
   private constructor(options: ToolDocumentCollatorFactoryOptions) {
     this.discovery = options.discovery;
     this.logger = options.logger;
-
     this.auth = createLegacyAuthAdapters(options).auth;
   }
 
