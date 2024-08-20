@@ -176,6 +176,7 @@ The release plan involves initially creating a shared audit event package. Follo
 ## Dependencies
 
 - `@backstage/types`
+- <https://github.com/backstage/backstage/issues/24169>
 
 ## Alternatives
 
