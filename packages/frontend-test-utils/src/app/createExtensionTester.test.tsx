@@ -18,10 +18,10 @@ import React, { useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import {
+  ApiBlueprint,
   analyticsApiRef,
   configApiRef,
   coreExtensionData,
-  createApiExtension,
   createApiFactory,
   createExtension,
   createExtensionDataRef,
@@ -64,8 +64,8 @@ describe('createExtensionTester', () => {
   it("should fail to render an extension that doesn't output a react element", async () => {
     const extension = createExtension({
       ...defaultDefinition,
-      output: { path: coreExtensionData.routePath },
-      factory: () => ({ path: '/foo' }),
+      output: [coreExtensionData.routePath],
+      factory: () => [coreExtensionData.routePath('/foo')],
     });
     const tester = createExtensionTester(extension);
     expect(() => tester.render()).toThrowErrorMatchingInlineSnapshot(
@@ -122,7 +122,7 @@ describe('createExtensionTester', () => {
           const appTitle = configApi.getOptionalString('app.title');
           return (
             <div>
-              <h2>{appTitle ?? 'Backstafe app'}</h2>
+              <h2>{appTitle ?? 'Backstage app'}</h2>
               <h3>{config.title ?? 'Index page'}</h3>
               <Link to="/details">See details</Link>
             </div>
@@ -186,12 +186,14 @@ describe('createExtensionTester', () => {
     // Mocking the analytics api implementation
     const analyticsApiMock = new MockAnalyticsApi();
 
-    const analyticsApiOverride = createApiExtension({
-      factory: createApiFactory({
-        api: analyticsApiRef,
-        deps: {},
-        factory: () => analyticsApiMock,
-      }),
+    const analyticsApiOverride = ApiBlueprint.make({
+      params: {
+        factory: createApiFactory({
+          api: analyticsApiRef,
+          deps: {},
+          factory: () => analyticsApiMock,
+        }),
+      },
     });
 
     const indexPageExtension = createExtension({

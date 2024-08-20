@@ -17,7 +17,6 @@
 import React from 'react';
 import { createApp } from '@backstage/frontend-app-api';
 import { screen } from '@testing-library/react';
-import { createSchemaFromZod } from '../schema/createSchemaFromZod';
 import { createFrontendPlugin } from './createFrontendPlugin';
 import { JsonObject } from '@backstage/types';
 import { createExtension } from './createExtension';
@@ -43,14 +42,14 @@ const Extension1 = createExtension({
 const Extension2 = createExtension({
   name: '2',
   attachTo: { id: 'test/output', input: 'names' },
-  output: {
-    name: nameExtensionDataRef,
+  output: [nameExtensionDataRef],
+  config: {
+    schema: {
+      name: z => z.string().default('extension-2'),
+    },
   },
-  configSchema: createSchemaFromZod(z =>
-    z.object({ name: z.string().default('extension-2') }),
-  ),
   factory({ config }) {
-    return { name: config.name };
+    return [nameExtensionDataRef(config.name)];
   },
 });
 
@@ -58,45 +57,45 @@ const Extension3 = createExtension({
   name: '3',
   attachTo: { id: 'test/output', input: 'names' },
   inputs: {
-    addons: createExtensionInput({
-      name: nameExtensionDataRef,
-    }),
+    addons: createExtensionInput([nameExtensionDataRef]),
   },
-  output: {
-    name: nameExtensionDataRef,
-  },
+  output: [nameExtensionDataRef],
   factory({ inputs }) {
-    return {
-      name: `extension-3:${inputs.addons.map(n => n.output.name).join('-')}`,
-    };
+    return [
+      nameExtensionDataRef(
+        `extension-3:${inputs.addons
+          .map(n => n.get(nameExtensionDataRef))
+          .join('-')}`,
+      ),
+    ];
   },
 });
 
 const Child = createExtension({
   name: 'child',
   attachTo: { id: 'test/3', input: 'addons' },
-  output: {
-    name: nameExtensionDataRef,
+  output: [nameExtensionDataRef],
+  config: {
+    schema: {
+      name: z => z.string().default('child'),
+    },
   },
-  configSchema: createSchemaFromZod(z =>
-    z.object({ name: z.string().default('child') }),
-  ),
   factory({ config }) {
-    return { name: config.name };
+    return [nameExtensionDataRef(config.name)];
   },
 });
 
 const Child2 = createExtension({
   name: 'child2',
   attachTo: { id: 'test/3', input: 'addons' },
-  output: {
-    name: nameExtensionDataRef,
+  output: [nameExtensionDataRef],
+  config: {
+    schema: {
+      name: z => z.string().default('child2'),
+    },
   },
-  configSchema: createSchemaFromZod(z =>
-    z.object({ name: z.string().default('child2') }),
-  ),
   factory({ config }) {
-    return { name: config.name };
+    return [nameExtensionDataRef(config.name)];
   },
 });
 
@@ -104,19 +103,19 @@ const outputExtension = createExtension({
   name: 'output',
   attachTo: { id: 'app', input: 'root' },
   inputs: {
-    names: createExtensionInput({
-      name: nameExtensionDataRef,
-    }),
+    names: createExtensionInput([nameExtensionDataRef]),
   },
-  output: {
-    element: coreExtensionData.reactElement,
-  },
+  output: [coreExtensionData.reactElement],
   factory({ inputs }) {
-    return {
-      element: React.createElement('span', {}, [
-        `Names: ${inputs.names.map(n => n.output.name).join(', ')}`,
-      ]),
-    };
+    return [
+      coreExtensionData.reactElement(
+        React.createElement('span', {}, [
+          `Names: ${inputs.names
+            .map(n => n.get(nameExtensionDataRef))
+            .join(', ')}`,
+        ]),
+      ),
+    ];
   },
 });
 

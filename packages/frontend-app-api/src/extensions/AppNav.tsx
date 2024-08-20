@@ -20,8 +20,8 @@ import {
   coreExtensionData,
   createExtensionInput,
   useRouteRef,
-  createNavItemExtension,
-  createNavLogoExtension,
+  NavItemBlueprint,
+  NavLogoBlueprint,
 } from '@backstage/frontend-plugin-api';
 import { makeStyles } from '@material-ui/core/styles';
 import {
@@ -53,7 +53,7 @@ const useSidebarLogoStyles = makeStyles({
 });
 
 const SidebarLogo = (
-  props: (typeof createNavLogoExtension.logoElementsDataRef)['T'],
+  props: (typeof NavLogoBlueprint.dataRefs.logoElements)['T'],
 ) => {
   const classes = useSidebarLogoStyles();
   const { isOpen } = useSidebarOpenState();
@@ -70,7 +70,7 @@ const SidebarLogo = (
 };
 
 const SidebarNavItem = (
-  props: (typeof createNavItemExtension.targetDataRef)['T'],
+  props: (typeof NavItemBlueprint.dataRefs.target)['T'],
 ) => {
   const { icon: Icon, title, routeRef } = props;
   const link = useRouteRef(routeRef);
@@ -86,8 +86,8 @@ export const AppNav = createExtension({
   name: 'nav',
   attachTo: { id: 'app/layout', input: 'nav' },
   inputs: {
-    items: createExtensionInput([createNavItemExtension.targetDataRef]),
-    logos: createExtensionInput([createNavLogoExtension.logoElementsDataRef], {
+    items: createExtensionInput([NavItemBlueprint.dataRefs.target]),
+    logos: createExtensionInput([NavLogoBlueprint.dataRefs.logoElements], {
       singleton: true,
       optional: true,
     }),
@@ -97,12 +97,12 @@ export const AppNav = createExtension({
     coreExtensionData.reactElement(
       <Sidebar>
         <SidebarLogo
-          {...inputs.logos?.get(createNavLogoExtension.logoElementsDataRef)}
+          {...inputs.logos?.get(NavLogoBlueprint.dataRefs.logoElements)}
         />
         <SidebarDivider />
         {inputs.items.map((item, index) => (
           <SidebarNavItem
-            {...item.get(createNavItemExtension.targetDataRef)}
+            {...item.get(NavItemBlueprint.dataRefs.target)}
             key={index}
           />
         ))}

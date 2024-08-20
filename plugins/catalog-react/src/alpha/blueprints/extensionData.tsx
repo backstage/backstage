@@ -14,7 +14,21 @@
  * limitations under the License.
  */
 
-export { default } from './plugin';
+import { Entity } from '@backstage/catalog-model';
+import { createExtensionDataRef } from '@backstage/frontend-plugin-api';
 
-export * from './blueprints';
-export * from './translation';
+/** @internal */
+export const entityContentTitleDataRef = createExtensionDataRef<string>().with({
+  id: 'catalog.entity-content-title',
+});
+
+/** @internal */
+export const entityFilterFunctionDataRef = createExtensionDataRef<
+  (entity: Entity) => boolean
+>().with({ id: 'catalog.entity-filter-function' });
+
+/** @internal */
+export const entityFilterExpressionDataRef =
+  createExtensionDataRef<string>().with({
+    id: 'catalog.entity-filter-expression',
+  });

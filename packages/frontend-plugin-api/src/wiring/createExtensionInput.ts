@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { AnyExtensionDataMap } from './createExtension';
 import { ExtensionDataRef } from './createExtensionDataRef';
 
 /** @public */
@@ -27,36 +26,6 @@ export interface ExtensionInput<
   config: TConfig;
 }
 
-/**
- * @public
- * @deprecated This type will be removed. Use `ExtensionInput` instead.
- */
-export interface LegacyExtensionInput<
-  TExtensionDataMap extends AnyExtensionDataMap,
-  TConfig extends { singleton: boolean; optional: boolean },
-> {
-  $$type: '@backstage/ExtensionInput';
-  extensionData: TExtensionDataMap;
-  config: TConfig;
-}
-
-/**
- * @public
- * @deprecated Use the following form instead: `createExtensionInput([dataRef1, dataRef2])`
- */
-export function createExtensionInput<
-  TExtensionDataMap extends AnyExtensionDataMap,
-  TConfig extends { singleton?: boolean; optional?: boolean },
->(
-  extensionData: TExtensionDataMap,
-  config?: TConfig,
-): LegacyExtensionInput<
-  TExtensionDataMap,
-  {
-    singleton: TConfig['singleton'] extends true ? true : false;
-    optional: TConfig['optional'] extends true ? true : false;
-  }
->;
 /** @public */
 export function createExtensionInput<
   UExtensionData extends ExtensionDataRef<unknown, string, { optional?: true }>,
@@ -73,26 +42,17 @@ export function createExtensionInput<
 >;
 export function createExtensionInput<
   TExtensionData extends ExtensionDataRef<unknown, string, { optional?: true }>,
-  TExtensionDataMap extends AnyExtensionDataMap,
   TConfig extends { singleton?: boolean; optional?: boolean },
 >(
-  extensionData: Array<TExtensionData> | TExtensionDataMap,
+  extensionData: Array<TExtensionData>,
   config?: TConfig,
-):
-  | LegacyExtensionInput<
-      TExtensionDataMap,
-      {
-        singleton: TConfig['singleton'] extends true ? true : false;
-        optional: TConfig['optional'] extends true ? true : false;
-      }
-    >
-  | ExtensionInput<
-      TExtensionData,
-      {
-        singleton: TConfig['singleton'] extends true ? true : false;
-        optional: TConfig['optional'] extends true ? true : false;
-      }
-    > {
+): ExtensionInput<
+  TExtensionData,
+  {
+    singleton: TConfig['singleton'] extends true ? true : false;
+    optional: TConfig['optional'] extends true ? true : false;
+  }
+> {
   if (process.env.NODE_ENV !== 'production') {
     if (Array.isArray(extensionData)) {
       const seen = new Set();
@@ -124,19 +84,11 @@ export function createExtensionInput<
         ? true
         : false,
     },
-  } as
-    | LegacyExtensionInput<
-        TExtensionDataMap,
-        {
-          singleton: TConfig['singleton'] extends true ? true : false;
-          optional: TConfig['optional'] extends true ? true : false;
-        }
-      >
-    | ExtensionInput<
-        TExtensionData,
-        {
-          singleton: TConfig['singleton'] extends true ? true : false;
-          optional: TConfig['optional'] extends true ? true : false;
-        }
-      >;
+  } as ExtensionInput<
+    TExtensionData,
+    {
+      singleton: TConfig['singleton'] extends true ? true : false;
+      optional: TConfig['optional'] extends true ? true : false;
+    }
+  >;
 }

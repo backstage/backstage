@@ -16,9 +16,6 @@
 
 import { AppNode } from '../apis';
 import {
-  AnyExtensionDataMap,
-  AnyExtensionInputMap,
-  ExtensionDataValues,
   ExtensionDefinition,
   ResolvedExtensionInputs,
   toInternalExtensionDefinition,
@@ -47,13 +44,27 @@ export type InternalExtension<TConfig, TConfigInput> = Extension<
   (
     | {
         readonly version: 'v1';
-        readonly inputs: AnyExtensionInputMap;
-        readonly output: AnyExtensionDataMap;
-        factory(options: {
+        readonly inputs: {
+          [inputName in string]: {
+            $$type: '@backstage/ExtensionInput';
+            extensionData: {
+              [name in string]: AnyExtensionDataRef;
+            };
+            config: { optional: boolean; singleton: boolean };
+          };
+        };
+        readonly output: {
+          [name in string]: AnyExtensionDataRef;
+        };
+        factory(context: {
           node: AppNode;
           config: TConfig;
-          inputs: ResolvedExtensionInputs<AnyExtensionInputMap>;
-        }): ExtensionDataValues<any>;
+          inputs: {
+            [inputName in string]: unknown;
+          };
+        }): {
+          [inputName in string]: unknown;
+        };
       }
     | {
         readonly version: 'v2';
