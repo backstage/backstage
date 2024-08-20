@@ -185,7 +185,7 @@ paths:
                         type:
                           type: string
                           enum:
-                            - plugin
+                            - module
                         pluginId: { type: string }
                         moduleId: { type: string }
 ```
@@ -219,7 +219,7 @@ paths:
                         type:
                           type: string
                           enum:
-                            - plugin
+                            - module
                         pluginId: { type: string }
                         moduleId: { type: string }
 ```
