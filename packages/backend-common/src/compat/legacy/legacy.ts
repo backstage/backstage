@@ -18,7 +18,6 @@ import {
   AuthService,
   coreServices,
   createBackendPlugin,
-  HttpAuthService,
   LoggerService,
   RootConfigService,
   ServiceRef,
@@ -97,32 +96,32 @@ export interface LegacyIdentityService {
   >;
 }
 
+// This doesn't use DefaultIdentityClient because we will be removing it and break support for ownershipEntityRefs
 function createIdentityServiceShim(
-  httpAuth: HttpAuthService,
+  auth: AuthService,
   userInfo: UserInfoService,
 ): LegacyIdentityService {
   return {
     async getIdentity(options) {
-      const credentials = await httpAuth
-        .credentials(options.request, {
-          allow: ['user'],
-        })
-        .catch(() => undefined);
+      const authHeader = options.request.headers.authorization;
+      if (typeof authHeader !== 'string') {
+        return undefined;
+      }
 
-      if (!credentials) {
+      const token = authHeader.match(/^Bearer[ ]+(\S+)$/i)?.[1];
+      if (!token) {
+        return undefined;
+      }
+
+      const credentials = await auth.authenticate(token);
+      if (!auth.isPrincipal(credentials, 'user')) {
         return undefined;
       }
 
       const info = await userInfo.getUserInfo(credentials);
 
       return {
-        get token(): string {
-          throw new Error(
-            'The identity service shim provided by legacyPlugin does not support accessing the user token. ' +
-              'The calling plugin needs to be migrated to use the new auth services. ' +
-              'See https://backstage.io/docs/tutorials/auth-service-migration',
-          );
-        },
+        token,
         identity: {
           type: 'user',
           userEntityRef: info.userEntityRef,
@@ -169,7 +168,6 @@ export function makeLegacyPlugin<
             ...envMapping,
             $$router: coreServices.httpRouter,
             $$auth: coreServices.auth,
-            $$httpAuth: coreServices.httpAuth,
             $$userInfo: coreServices.userInfo,
             $$config: coreServices.rootConfig,
             $$logger: coreServices.logger,
@@ -177,7 +175,6 @@ export function makeLegacyPlugin<
           async init({
             $$auth,
             $$config,
-            $$httpAuth,
             $$logger,
             $$router,
             $$userInfo,
@@ -196,7 +193,6 @@ export function makeLegacyPlugin<
 
             const auth = $$auth as typeof coreServices.auth.T;
             const config = $$config as typeof coreServices.rootConfig.T;
-            const httpAuth = $$httpAuth as typeof coreServices.httpAuth.T;
             const logger = $$logger as typeof coreServices.logger.T;
             const router = $$router as typeof coreServices.httpRouter.T;
             const userInfo = $$userInfo as typeof coreServices.userInfo.T;
@@ -207,7 +203,7 @@ export function makeLegacyPlugin<
               config,
               logger,
             );
-            pluginEnv.identity = createIdentityServiceShim(httpAuth, userInfo);
+            pluginEnv.identity = createIdentityServiceShim(auth, userInfo);
 
             const pluginRouter = await createRouter(
               pluginEnv as TransformedEnv<TEnv, TEnvTransforms> & {
