@@ -1,5 +1,17 @@
 # @backstage/catalog-model
 
+## 1.6.0
+
+### Minor Changes
+
+- 34fa803: Introduce an optional spec.type attribute on the Domain and System entity kinds
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 1.6.0-next.0
 
 ### Minor Changes

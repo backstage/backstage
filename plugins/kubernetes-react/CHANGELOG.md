@@ -1,5 +1,18 @@
 # @backstage/plugin-kubernetes-react
 
+## 0.4.2
+
+### Patch Changes
+
+- 954a593: `Liveness Probe` added in ContainerCard Component of PodDrawer
+- Updated dependencies
+  - @backstage/core-components@0.14.10
+  - @backstage/catalog-model@1.6.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.8.2
+
 ## 0.4.2-next.3
 
 ### Patch Changes

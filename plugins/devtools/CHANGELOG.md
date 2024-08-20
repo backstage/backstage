@@ -1,5 +1,19 @@
 # @backstage/plugin-devtools
 
+## 0.1.17
+
+### Patch Changes
+
+- c7603e8: Deprecate the old pattern of `create*Extension`, and replace it with the equivalent Blueprint implementation instead
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.7.0
+  - @backstage/core-components@0.14.10
+  - @backstage/core-compat-api@0.2.8
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-devtools-common@0.1.12
+  - @backstage/plugin-permission-react@0.4.25
+
 ## 0.1.17-next.3
 
 ### Patch Changes

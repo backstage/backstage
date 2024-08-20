@@ -1,5 +1,24 @@
 # @backstage/plugin-search-backend-node
 
+## 1.3.0
+
+### Minor Changes
+
+- fc24d9e: Stop using `@backstage/backend-tasks` as it will be deleted in near future.
+
+### Patch Changes
+
+- 389f5a4: Update deprecated url-reader-related imports.
+- 3123c16: Fix package metadata
+- 7c5f3b0: Explicit declare if the service ref accepts `single` or `multiple` implementations.
+- Updated dependencies
+  - @backstage/backend-defaults@0.4.2
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-search-common@1.2.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 1.2.28-next.3
 
 ### Patch Changes

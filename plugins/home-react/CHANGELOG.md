@@ -1,5 +1,13 @@
 # @backstage/plugin-home-react
 
+## 0.1.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.10
+  - @backstage/core-plugin-api@1.9.3
+
 ## 0.1.16-next.0
 
 ### Patch Changes

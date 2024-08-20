@@ -1,5 +1,32 @@
 # @backstage/backend-tasks
 
+## 0.6.0
+
+### Minor Changes
+
+- fc24d9e: This package is deprecated and will be removed in a near future, follow the instructions below to stop using it:
+
+  - `TaskScheduler`: Please migrate to the new backend system, and depend on `coreServices.scheduler` from `@backstage/backend-plugin-api` instead, or use `DefaultSchedulerService` from `@backstage/backend-defaults;
+  - `TaskRunner`: Please import `SchedulerServiceTaskRunner` from `@backstage/backend-plugin-api` instead;
+  - `TaskFunction`: Please import `SchedulerServiceTaskFunction` from `@backstage/backend-plugin-api` instead;
+  - `TaskDescriptor`: Please import `SchedulerServiceTaskDescriptor` from `@backstage/backend-plugin-api` instead;
+  - `TaskInvocationDefinition`: Please import `SchedulerServiceTaskInvocationDefinition` from `@backstage/backend-plugin-api` instead;
+  - `TaskScheduleDefinition`: Please import `SchedulerServiceTaskFunction` from `@backstage/backend-plugin-api` instead;
+  - `TaskScheduleDefinitionConfig`: Please import `SchedulerServiceTaskScheduleDefinitionConfig` from `@backstage/backend-plugin-api` instead;
+  - `PluginTaskScheduler`: Please use `SchedulerService` from `@backstage/backend-plugin-api` instead (most likely via `coreServices.scheduler`);
+  - `readTaskScheduleDefinitionFromConfig`: Please import `readSchedulerServiceTaskScheduleDefinitionFromConfig` from `@backstage/backend-plugin-api` instead;
+  - `HumanDuration`: Import `TypesHumanDuration` from `@backstage/types` instead.
+
+### Patch Changes
+
+- ba9abf4: The `PluginTaskScheduler` now allows tasks with `frequency: { trigger: 'manual' }`. This means that the task will not be scheduled, but rather run only when manually triggered with `PluginTaskScheduler.triggerTask`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/backend-common@0.24.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.5.28-next.3
 
 ### Patch Changes

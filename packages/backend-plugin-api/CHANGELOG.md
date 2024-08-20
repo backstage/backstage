@@ -1,5 +1,119 @@
 # @backstage/backend-plugin-api
 
+## 0.8.0
+
+### Minor Changes
+
+- 389f5a4: **BREAKING** Deleted the following deprecated `UrlReader` exports
+
+  - ReadUrlOptions: Use `UrlReaderServiceReadUrlOptions` instead;
+  - ReadUrlResponse: Use `UrlReaderServiceReadUrlResponse` instead;
+  - ReadTreeOptions: Use `UrlReaderServiceReadTreeOptions` instead;
+  - ReadTreeResponse: Use `UrlReaderServiceReadTreeResponse` instead;
+  - ReadTreeResponseFile: Use `UrlReaderServiceReadTreeResponseFile` instead;
+  - ReadTreeResponseDirOptions: Use `UrlReaderServiceReadTreeResponseDirOptions` instead;
+  - SearchOptions: Use `UrlReaderServiceSearchOptions` instead;
+  - SearchResponse: Use `UrlReaderServiceSearchResponse` instead;
+  - SearchResponseFile: Use `UrlReaderServiceSearchResponseFile` instead.
+
+- 7c5f3b0: The `createServiceRef` function now accepts a new boolean `multiple` option. The `multiple` option defaults to `false` and when set to `true`, it enables that multiple implementation are installed for the created service ref.
+
+  We're looking for ways to make it possible to augment services without the need to replace the entire service.
+
+  Typical example of that being the ability to install support for additional targets for the `UrlReader` service without replacing the service itself. This achieves that by allowing us to define services that can have multiple simultaneous implementation, allowing the `UrlReader` implementation to depend on such a service to collect all possible implementation of support for external targets:
+
+  ```diff
+  // @backstage/backend-defaults
+
+  + export const urlReaderFactoriesServiceRef = createServiceRef<ReaderFactory>({
+  +   id: 'core.urlReader.factories',
+  +   scope: 'plugin',
+  +   multiton: true,
+  + });
+
+  ...
+
+  export const urlReaderServiceFactory = createServiceFactory({
+    service: coreServices.urlReader,
+    deps: {
+      config: coreServices.rootConfig,
+      logger: coreServices.logger,
+  +   factories: urlReaderFactoriesServiceRef,
+    },
+  -  async factory({ config, logger }) {
+  +  async factory({ config, logger, factories }) {
+      return UrlReaders.default({
+        config,
+        logger,
+  +     factories,
+      });
+    },
+  });
+  ```
+
+  With that, you can then add more custom `UrlReader` factories by installing more implementations of the `urlReaderFactoriesServiceRef` in your backend instance. Something like:
+
+  ```ts
+  // packages/backend/index.ts
+  import { createServiceFactory } from '@backstage/backend-plugin-api';
+  import { urlReaderFactoriesServiceRef } from '@backstage/backend-defaults';
+  ...
+
+  backend.add(createServiceFactory({
+    service: urlReaderFactoriesServiceRef,
+    deps: {},
+    async factory() {
+      return CustomUrlReader.factory;
+    },
+  }));
+
+  ...
+
+  ```
+
+- c99c620: **BREAKING** Removed the following deprecated types:
+
+  - `ServiceRefConfig` use `ServiceRefOptions`
+  - `RootServiceFactoryConfig` use `RootServiceFactoryOptions`
+  - `PluginServiceFactoryConfig` use `PluginServiceFactoryOptions`
+
+### Patch Changes
+
+- 6061061: Added `createBackendFeatureLoader`, which can be used to create an installable backend feature that can in turn load in additional backend features in a dynamic way.
+- ba9abf4: The `SchedulerService` now allows tasks with `frequency: { trigger: 'manual' }`. This means that the task will not be scheduled, but rather run only when manually triggered with `SchedulerService.triggerTask`.
+- 8b13183: Added `createBackendFeatureLoader`, which can be used to programmatically select and install backend features.
+
+  A feature loader can return an list of features to be installed, for example in the form on an `Array` or other for of iterable, which allows for the loader to be defined as a generator function. Both synchronous and asynchronous loaders are supported.
+
+  Additionally, a loader can depend on services in its implementation, with the restriction that it can only depend on root-scoped services, and it may not override services that have already been instantiated.
+
+  ```ts
+  const searchLoader = createBackendFeatureLoader({
+    deps: {
+      config: coreServices.rootConfig,
+    },
+    *loader({ config }) {
+      // Example of a custom config flag to enable search
+      if (config.getOptionalString('customFeatureToggle.search')) {
+        yield import('@backstage/plugin-search-backend/alpha');
+        yield import('@backstage/plugin-search-backend-module-catalog/alpha');
+        yield import('@backstage/plugin-search-backend-module-explore/alpha');
+        yield import('@backstage/plugin-search-backend-module-techdocs/alpha');
+      }
+    },
+  });
+  ```
+
+- ddde5fe: Fixed a type issue where plugin and modules depending on multiton services would not receive the correct type.
+- f011d1b: fix typo in `getPluginRequestToken` comments
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-auth-node@0.5.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.8.0-next.3
 
 ### Patch Changes

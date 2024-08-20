@@ -1,5 +1,46 @@
 # @backstage/cli
 
+## 0.27.0
+
+### Minor Changes
+
+- 32a38e1: **BREAKING**: The lockfile (`yarn.lock`) dependency analysis and mutations have been removed from several commands.
+
+  The `versions:bump` command will no longer attempt to bump and deduplicate dependencies by modifying the lockfile, it will only update `package.json` files.
+
+  The `versions:check` command has been removed, since its only purpose was verification and mutation of the lockfile. We recommend using the `yarn dedupe` command instead, or the `yarn-deduplicate` package if you're using Yarn classic.
+
+  The check that was built into the `package start` command has been removed, it will no longer warn about lockfile mismatches.
+
+  The packages in the Backstage ecosystem handle package duplications much better now than when these CLI features were first introduced, so the need for these features has diminished. By removing them, we drastically reduce the integration between the Backstage CLI and Yarn, making it much easier to add support for other package managers in the future.
+
+### Patch Changes
+
+- 7eb08a6: Add frontend-dynamic-container role to eslint config factory
+- b2d97fd: Fixing loading of additional config files with new `ConfigSources`
+- fbc7819: Use ES2022 in CLI bundler
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- 6d898d8: Switched the `process` polyfill to use `require.resolve` for greater compatability.
+- e53074f: Updated default backend plugin to use `RootConfigService` instead of `Config`. This also removes the dependency on `@backstage/config` as it's no longer used.
+- ee2b0e5: The experimental module federation build now has the ability to force the use of development versions of `react` and `react-dom` by setting the `FORCE_REACT_DEVELOPMENT` flag.
+- 239dffc: Remove usage of deprecated functionality from @backstage/config-loader
+- e6e7d86: Switched the target from `'ES2022'` to `'es2022'` for better compatibility with older versions of `swc`.
+- 2ced236: Updated dependency `@module-federation/enhanced` to `0.3.1`
+- 0eedec3: Add support for dynamic plugins via the EXPERIMENTAL_MODULE_FEDERATION environment variable when running `yarn start`.
+- adabb40: New command now supports setting package license
+- dc4fb4f: Fix for `repo build --all` not properly detecting the experimental public entry point.
+- Updated dependencies
+  - @backstage/config-loader@1.9.0
+  - @backstage/integration@1.14.0
+  - @backstage/catalog-model@1.6.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.7
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/eslint-plugin@0.1.8
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
 ## 0.27.0-next.4
 
 ### Patch Changes

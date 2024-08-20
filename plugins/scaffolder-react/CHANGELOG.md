@@ -1,5 +1,30 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.11.0
+
+### Minor Changes
+
+- 8839381: Add scaffolder option to display object items in separate rows on review page
+
+### Patch Changes
+
+- 072c00c: Fixed a bug in `DefaultTableOutputs` where output elements overlapped on smaller screen sizes
+- 46e5e55: Change scaffolder widgets to use `TextField` component for more flexibility in theme overrides.
+- d0e95a7: Add ability to customise form fields in the UI by exposing `uiSchema` and `formContext` in `FormProps`
+- 4670f06: support `ajv-errors` for scaffolder validation to allow for customizing the error messages
+- 04759f2: Fix null check in `isJsonObject` utility function for scaffolder review state component
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.12.3
+  - @backstage/core-components@0.14.10
+  - @backstage/catalog-model@1.6.0
+  - @backstage/catalog-client@1.6.6
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/theme@0.5.6
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+  - @backstage/plugin-permission-react@0.4.25
+  - @backstage/plugin-scaffolder-common@1.5.5
+
 ## 1.11.0-next.3
 
 ### Patch Changes

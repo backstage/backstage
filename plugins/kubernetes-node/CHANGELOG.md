@@ -1,5 +1,17 @@
 # @backstage/plugin-kubernetes-node
 
+## 0.1.17
+
+### Patch Changes
+
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- b63d378: Update internal imports
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/catalog-model@1.6.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.8.2
+
 ## 0.1.17-next.3
 
 ### Patch Changes

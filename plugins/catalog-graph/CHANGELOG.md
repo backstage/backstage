@@ -1,5 +1,22 @@
 # @backstage/plugin-catalog-graph
 
+## 0.4.8
+
+### Patch Changes
+
+- c7603e8: Deprecate the old pattern of `create*Extension`, and replace it with the equivalent Blueprint implementation instead
+- fba7537: Memoize entity graph nodes when applying an `entityFilter` to prevent repeated redraws
+- 4a529c2: Use `entityPresentationApi` for the node title and the icon.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.7.0
+  - @backstage/plugin-catalog-react@1.12.3
+  - @backstage/core-components@0.14.10
+  - @backstage/core-compat-api@0.2.8
+  - @backstage/catalog-model@1.6.0
+  - @backstage/catalog-client@1.6.6
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/types@1.1.1
+
 ## 0.4.8-next.4
 
 ### Patch Changes

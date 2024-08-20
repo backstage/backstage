@@ -1,5 +1,37 @@
 # @backstage/plugin-auth-backend
 
+## 0.22.10
+
+### Patch Changes
+
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- cc9a7a5: Deprecated `createRouter` and its router options in favour of the new backend system.
+- Updated dependencies
+  - @backstage/plugin-auth-backend-module-cloudflare-access-provider@0.2.0
+  - @backstage/plugin-auth-backend-module-atlassian-provider@0.2.4
+  - @backstage/plugin-auth-backend-module-bitbucket-provider@0.1.6
+  - @backstage/plugin-auth-backend-module-microsoft-provider@0.1.18
+  - @backstage/plugin-auth-backend-module-onelogin-provider@0.1.4
+  - @backstage/plugin-auth-backend-module-aws-alb-provider@0.1.15
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.18
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.20
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.20
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.20
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.2.4
+  - @backstage/plugin-auth-backend-module-oidc-provider@0.2.4
+  - @backstage/plugin-auth-backend-module-okta-provider@0.0.16
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/backend-common@0.24.0
+  - @backstage/plugin-auth-node@0.5.0
+  - @backstage/plugin-catalog-node@1.12.5
+  - @backstage/catalog-model@1.6.0
+  - @backstage/catalog-client@1.6.6
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-backend-module-azure-easyauth-provider@0.1.6
+  - @backstage/plugin-auth-backend-module-oauth2-proxy-provider@0.1.16
+
 ## 0.22.10-next.3
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # @backstage/plugin-auth-backend-module-microsoft-provider
 
+## 0.1.18
+
+### Patch Changes
+
+- c8f1cae: Add `signIn` to authentication provider configuration schema
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- 39f36a9: Updated the Microsoft authenticator to accurately define required scopes, but to also omit the required and additional scopes when requesting resource scopes.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/plugin-auth-node@0.5.0
+
 ## 0.1.18-next.3
 
 ### Patch Changes

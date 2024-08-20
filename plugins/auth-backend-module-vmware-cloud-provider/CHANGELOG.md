@@ -1,5 +1,15 @@
 # @backstage/plugin-auth-backend-module-vmware-cloud-provider
 
+## 0.2.4
+
+### Patch Changes
+
+- c8f1cae: Add `signIn` to authentication provider configuration schema
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/plugin-auth-node@0.5.0
+  - @backstage/catalog-model@1.6.0
+
 ## 0.2.4-next.3
 
 ### Patch Changes

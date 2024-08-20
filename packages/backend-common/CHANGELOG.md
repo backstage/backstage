@@ -1,5 +1,72 @@
 # @backstage/backend-common
 
+## 0.24.0
+
+### Minor Changes
+
+- 389f5a4: **BREAKING**: Removed the following `Url Reader` deprecated exports:
+
+  - UrlReader: Use `UrlReaderService` from `@backstage/backend-plugin-api` instead;
+  - AzureUrlReader: Import from `@backstage/backend-defaults/urlReader` instead;
+  - BitbucketUrlReader: Import from `@backstage/backend-defaults/urlReader` instead;
+  - BitbucketCloudUrlReader: Import from `@backstage/backend-defaults/urlReader` instead;
+  - BitbucketServerUrlReader: Import from `@backstage/backend-defaults/urlReader` instead;
+  - GithubUrlReader: Import from `@backstage/backend-defaults/urlReader` instead;
+  - GitlabUrlReader: Import from `@backstage/backend-defaults/urlReader` instead;
+  - GerritUrlReader: Import from `@backstage/backend-defaults/urlReader` instead;
+  - GiteaUrlReader: Import from `@backstage/backend-defaults/urlReader` instead;
+  - HarnessUrlReader: Import from `@backstage/backend-defaults/urlReader` instead;
+  - AwsS3UrlReader: Import from `@backstage/backend-defaults/urlReader` instead;
+  - FetchUrlReader: Import from `@backstage/backend-defaults/urlReader` instead;
+  - UrlReaders: Import from `@backstage/backend-defaults/urlReader` instead;
+  - UrlReadersOptions: Import from `@backstage/backend-defaults/urlReader` instead;
+  - UrlReaderPredicateTuple: Import from `@backstage/backend-defaults/urlReader` instead;
+  - FromReadableArrayOptions: Import from `@backstage/backend-defaults/urlReader` instead;
+  - ReaderFactory: Import from `@backstage/backend-defaults/urlReader` instead;
+  - ReadUrlOptions:Use `UrlReaderServiceReadUrlOptions` from `@backstage/backend-plugin-api` instead;
+  - ReadUrlResponse: Use `UrlReaderServiceReadUrlResponse` from `@backstage/backend-plugin-api` instead;
+  - ReadUrlResponseFactory: Import from `@backstage/backend-defaults/urlReader` instead;
+  - ReadUrlResponseFactoryFromStreamOptions: Import from `@backstage/backend-defaults/urlReader` instead;
+  - ReadTreeOptions: Use `UrlReaderServiceReadTreeOptions` from `@backstage/backend-plugin-api` instead;
+  - ReadTreeResponse: Use `UrlReaderServiceReadTreeResponse` from `@backstage/backend-plugin-api` instead;
+  - ReadTreeResponseFile: Use `UrlReaderServiceReadTreeResponseFile` from `@backstage/backend-plugin-api` instead;
+  - ReadTreeResponseDirOptions: Use `UrlReaderServiceReadTreeResponseDirOptions` from `@backstage/backend-plugin-api` instead;
+  - ReadTreeResponseFactory: Import from `@backstage/backend-defaults/urlReader` instead;
+  - ReadTreeResponseFactoryOptions: Import from `@backstage/backend-defaults/urlReader` instead;
+  - SearchOptions: Use `UrlReaderServiceSearchOptions` from `@backstage/backend-plugin-api` instead;
+  - SearchResponse: Use `UrlReaderServiceSearchResponse` from `@backstage/backend-plugin-api` instead;
+  - SearchResponseFile: Use `UrlReaderServiceSearchResponseFile` from `@backstage/backend-plugin-api` instead.
+
+### Patch Changes
+
+- ba8571e: Setup user agent header for AWS sdk clients, this enables users to better track API calls made from Backstage to AWS APIs through things like CloudTrail.
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- 6795e33: This package is marked as `deprecated` and will be removed in a near future, please follow the deprecated instructions for the exports you still use.
+- 7e13b7a: The remaining exports in the package have now been deprecated:
+
+  - `cacheToPluginCacheManager`
+  - `createLegacyAuthAdapters`
+  - `LegacyCreateRouter`
+  - `legacyPlugin`
+  - `loggerToWinstonLogger`
+  - `makeLegacyPlugin`
+
+  Users of these export should fully [migrate to the new backend system](https://backstage.io/docs/backend-system/building-backends/migrating).
+
+- ddde5fe: Internal type refactor.
+- b63d378: export `createConfigSecretEnumerator` from `@backstage/backend-common` instead of `@backstage/backend-app-api`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/config-loader@1.9.0
+  - @backstage/plugin-auth-node@0.5.0
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/integration@1.14.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+
 ## 0.23.4-next.3
 
 ### Patch Changes

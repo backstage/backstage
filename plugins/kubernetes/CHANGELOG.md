@@ -1,5 +1,21 @@
 # @backstage/plugin-kubernetes
 
+## 0.11.13
+
+### Patch Changes
+
+- e6c15cc: Adds support for Backstage's new frontend system, available via the `/alpha` sub-path export.
+- fe1fbb2: Migrating usages of the deprecated `createExtension` `v1` format to the newer `v2` format, and old `create*Extension` extension creators to blueprints.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.7.0
+  - @backstage/plugin-catalog-react@1.12.3
+  - @backstage/plugin-kubernetes-react@0.4.2
+  - @backstage/core-components@0.14.10
+  - @backstage/core-compat-api@0.2.8
+  - @backstage/catalog-model@1.6.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/plugin-kubernetes-common@0.8.2
+
 ## 0.11.13-next.3
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-kubernetes-common",
-  "version": "0.8.2-next.2",
+  "version": "0.8.2",
   "description": "Common functionalities for kubernetes, to be shared between kubernetes and kubernetes-backend plugin",
   "backstage": {
     "role": "common-library",

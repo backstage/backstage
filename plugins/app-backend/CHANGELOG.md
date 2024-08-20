@@ -1,5 +1,21 @@
 # @backstage/plugin-app-backend
 
+## 0.3.72
+
+### Patch Changes
+
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- 6bd6fda: Deprecate `createRouter` and its options in favour of the new backend system.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/backend-common@0.24.0
+  - @backstage/config-loader@1.9.0
+  - @backstage/plugin-auth-node@0.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.23
+
 ## 0.3.72-next.3
 
 ### Patch Changes

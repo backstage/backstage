@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-permission-react",
-  "version": "0.4.25-next.1",
+  "version": "0.4.25",
   "backstage": {
     "role": "web-library",
     "pluginId": "permission",

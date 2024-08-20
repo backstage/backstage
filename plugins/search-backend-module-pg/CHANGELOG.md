@@ -1,5 +1,17 @@
 # @backstage/plugin-search-backend-module-pg
 
+## 0.5.33
+
+### Patch Changes
+
+- 7251567: Removing `@backstage/backend-app-api` dependency
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/backend-common@0.24.0
+  - @backstage/plugin-search-backend-node@1.3.0
+  - @backstage/plugin-search-common@1.2.14
+  - @backstage/config@1.2.0
+
 ## 0.5.33-next.3
 
 ### Patch Changes
