@@ -150,11 +150,11 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'fields.gitlabRepoPicker.owner.title': 'Owner Available';
     readonly 'fields.gitlabRepoPicker.owner.description': 'GitLab namespace where this repository will belong to. It can be the name of organization, group, subgroup, user, or the project.';
     readonly 'fields.gitlabRepoPicker.owner.inputTitle': 'Owner';
-    readonly 'fields.repoUrlPickerHost.host.title': 'Host';
-    readonly 'fields.repoUrlPickerHost.host.description': 'The host where the repository will be created';
-    readonly 'fields.repoUrlPickerRepoName.repository.title': 'Repositories Available';
-    readonly 'fields.repoUrlPickerRepoName.repository.description': 'The name of the repository';
-    readonly 'fields.repoUrlPickerRepoName.repository.inputTitle': 'Repository';
+    readonly 'fields.repoUrlPicker.host.title': 'Host';
+    readonly 'fields.repoUrlPicker.host.description': 'The host where the repository will be created';
+    readonly 'fields.repoUrlPicker.repository.title': 'Repositories Available';
+    readonly 'fields.repoUrlPicker.repository.description': 'The name of the repository';
+    readonly 'fields.repoUrlPicker.repository.inputTitle': 'Repository';
     readonly 'actionsPage.content.emptyState.title': 'No information to display';
     readonly 'actionsPage.content.emptyState.description': 'There are no actions installed or there was an issue communicating with backend.';
     readonly 'actionsPage.content.tableCell.type': 'Type';

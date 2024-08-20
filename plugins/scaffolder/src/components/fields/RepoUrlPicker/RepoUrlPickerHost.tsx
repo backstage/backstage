@@ -76,7 +76,7 @@ export const RepoUrlPickerHost = (props: {
         <Select
           native
           disabled={hosts?.length === 1}
-          label={t('fields.repoUrlPickerHost.host.title')}
+          label={t('fields.repoUrlPicker.host.title')}
           onChange={s => onChange(String(Array.isArray(s) ? s[0] : s))}
           selected={host}
           items={hostsOptions}
@@ -84,7 +84,7 @@ export const RepoUrlPickerHost = (props: {
         />
 
         <FormHelperText>
-          {t('fields.repoUrlPickerHost.host.description')}
+          {t('fields.repoUrlPicker.host.description')}
         </FormHelperText>
       </FormControl>
     </>

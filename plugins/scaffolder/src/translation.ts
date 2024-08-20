@@ -125,13 +125,11 @@ export const scaffolderTranslationRef = createTranslationRef({
             'GitLab namespace where this repository will belong to. It can be the name of organization, group, subgroup, user, or the project.',
         },
       },
-      repoUrlPickerHost: {
+      repoUrlPicker: {
         host: {
           title: 'Host',
           description: 'The host where the repository will be created',
         },
-      },
-      repoUrlPickerRepoName: {
         repository: {
           title: 'Repositories Available',
           inputTitle: 'Repository',

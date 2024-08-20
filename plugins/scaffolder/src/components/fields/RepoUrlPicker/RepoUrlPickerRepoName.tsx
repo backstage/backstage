@@ -56,7 +56,7 @@ export const RepoUrlPickerRepoName = (props: {
         {allowedRepos?.length ? (
           <Select
             native
-            label={t('fields.repoUrlPickerRepoName.repository.title')}
+            label={t('fields.repoUrlPicker.repository.title')}
             onChange={selected =>
               onChange(String(Array.isArray(selected) ? selected[0] : selected))
             }
@@ -74,7 +74,7 @@ export const RepoUrlPickerRepoName = (props: {
             renderInput={params => (
               <TextField
                 {...params}
-                label={t('fields.repoUrlPickerRepoName.repository.inputTitle')}
+                label={t('fields.repoUrlPicker.repository.inputTitle')}
                 required
               />
             )}
@@ -83,7 +83,7 @@ export const RepoUrlPickerRepoName = (props: {
           />
         )}
         <FormHelperText>
-          {t('fields.repoUrlPickerRepoName.repository.description')}
+          {t('fields.repoUrlPicker.repository.description')}
         </FormHelperText>
       </FormControl>
     </>
