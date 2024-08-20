@@ -19,7 +19,7 @@ import fs from 'fs-extra';
 import { relative as relativePath, resolve as resolvePath } from 'path';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
-import postcss from 'rollup-plugin-postcss';
+import styles from 'rollup-plugin-styles';
 import esbuild from 'rollup-plugin-esbuild';
 import svgr from '@svgr/rollup';
 import dts from 'rollup-plugin-dts';
@@ -128,7 +128,9 @@ export async function makeRollupConfigs(
           include: /node_modules/,
           exclude: [/\/[^/]+\.(?:stories|test)\.[^/]+$/],
         }),
-        postcss(),
+        styles({
+          mode: 'extract',
+        }),
         forwardFileImports({
           exclude: /\.icon\.svg$/,
           include: [

@@ -137,7 +137,7 @@
     "rollup": "^4.0.0",
     "rollup-plugin-dts": "^6.1.0",
     "rollup-plugin-esbuild": "^6.1.1",
-    "rollup-plugin-postcss": "^4.0.0",
+    "rollup-plugin-styles": "^4.0.0",
     "rollup-pluginutils": "^2.8.2",
     "run-script-webpack-plugin": "^0.2.0",
     "semver": "^7.5.3",
