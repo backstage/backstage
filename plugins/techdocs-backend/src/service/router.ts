@@ -252,10 +252,14 @@ export async function createRouter(
       // However, if caching is enabled, take the opportunity to check and
       // invalidate stale cache entries.
       if (cache) {
+        const { token: techDocsToken } = await auth.getPluginRequestToken({
+          onBehalfOf: await auth.getOwnServiceCredentials(),
+          targetPluginId: 'techdocs',
+        });
         await docsSynchronizer.doCacheSync({
           responseHandler,
           discovery,
-          token,
+          token: techDocsToken,
           entity,
         });
         return;
