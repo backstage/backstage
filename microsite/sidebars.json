@@ -1,6 +1,7 @@
 {
   "releases": {
     "Release Notes": [
+      "releases/v1.30.0",
       "releases/v1.29.0",
       "releases/v1.28.0",
       "releases/v1.27.0",
