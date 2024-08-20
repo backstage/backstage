@@ -26,8 +26,8 @@ import {
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import {
   BitbucketServerIntegration,
-  FetchFunction,
-  FetchService,
+  BitbucketFetchFunction,
+  BitbucketFetchService,
   getBitbucketServerDownloadUrl,
   getBitbucketServerFileFetchUrl,
   getBitbucketServerRequestOptions,
@@ -59,13 +59,13 @@ export class BitbucketServerUrlReader implements UrlReaderService {
     });
   };
 
-  private fetch: FetchFunction;
+  private fetch: BitbucketFetchFunction;
 
   constructor(
     private readonly integration: BitbucketServerIntegration,
     private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
   ) {
-    this.fetch = FetchService.get(integration.config);
+    this.fetch = BitbucketFetchService.get(integration.config);
   }
 
   async read(url: string): Promise<Buffer> {

@@ -15,7 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
-import { ThrottlingConfig, readThrottlingConfig } from '../FetchService';
+import { FetchConfig, readFetchConfig } from '../helpers';
 
 const BITBUCKET_CLOUD_HOST = 'bitbucket.org';
 const BITBUCKET_CLOUD_API_BASE_URL = 'https://api.bitbucket.org/2.0';
@@ -54,11 +54,11 @@ export type BitbucketCloudIntegrationConfig = {
   token?: string;
 
   /**
-   * The throttling configuration for requests to Bitbucket Cloud (bitbucket.org).
+   * The fetch configuration for requests to Bitbucket Cloud (bitbucket.org).
    *
-   * If not specified, no throttling will be applied.
+   * If not specified, the default fetch configuration will be used.
    */
-  throttling?: ThrottlingConfig;
+  fetch?: FetchConfig;
 };
 
 /**
@@ -76,8 +76,8 @@ export function readBitbucketCloudIntegrationConfig(
   // (as the anonymous one is provided by default).
   const username = config.getString('username');
   const appPassword = config.getString('appPassword')?.trim();
-  const throttling = config.has('throttling')
-    ? readThrottlingConfig(config.getConfig('throttling'))
+  const fetch = config.has('fetch')
+    ? readFetchConfig(config.getConfig('fetch'))
     : undefined;
 
   return {
@@ -85,7 +85,7 @@ export function readBitbucketCloudIntegrationConfig(
     apiBaseUrl,
     username,
     appPassword,
-    throttling,
+    fetch,
   };
 }
 

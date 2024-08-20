@@ -17,8 +17,8 @@
 import { Request, Response } from 'node-fetch';
 import {
   BitbucketServerIntegrationConfig,
-  FetchFunction,
-  FetchService,
+  BitbucketFetchFunction,
+  BitbucketFetchService,
   getBitbucketServerRequestOptions,
 } from '@backstage/integration';
 import { BitbucketServerProject, BitbucketServerRepository } from './types';
@@ -31,7 +31,7 @@ import { BitbucketServerProject, BitbucketServerRepository } from './types';
 export class BitbucketServerClient {
   private readonly config: BitbucketServerIntegrationConfig;
 
-  private readonly fetch: FetchFunction;
+  private readonly fetch: BitbucketFetchFunction;
 
   static fromConfig(options: {
     config: BitbucketServerIntegrationConfig;
@@ -41,7 +41,7 @@ export class BitbucketServerClient {
 
   constructor(options: { config: BitbucketServerIntegrationConfig }) {
     this.config = options.config;
-    this.fetch = FetchService.get(this.config);
+    this.fetch = BitbucketFetchService.get(this.config);
   }
 
   async listProjects(options: {

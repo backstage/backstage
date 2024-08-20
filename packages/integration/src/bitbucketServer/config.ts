@@ -16,8 +16,7 @@
 
 import { Config } from '@backstage/config';
 import { trimEnd } from 'lodash';
-import { isValidHost } from '../helpers';
-import { ThrottlingConfig, readThrottlingConfig } from '../FetchService';
+import { FetchConfig, isValidHost, readFetchConfig } from '../helpers';
 
 /**
  * The configuration parameters for a single Bitbucket Server API provider.
@@ -67,11 +66,11 @@ export type BitbucketServerIntegrationConfig = {
   password?: string;
 
   /**
-   * Throttling configuration for requests to the Bitbucket Server provider.
+   * The fetch configuration for requests to Bitbucket Server.
    *
-   * If not specified, no throttling will be applied.
+   * If not specified, the default fetch configuration will be used.
    */
-  throttling?: ThrottlingConfig;
+  fetch?: FetchConfig;
 };
 
 /**
@@ -89,8 +88,8 @@ export function readBitbucketServerIntegrationConfig(
   const username = config.getOptionalString('username');
   const password = config.getOptionalString('password');
 
-  const throttling = config.has('throttling')
-    ? readThrottlingConfig(config.getConfig('throttling'))
+  const fetch = config.has('fetch')
+    ? readFetchConfig(config.getConfig('fetch'))
     : undefined;
 
   if (!isValidHost(host)) {
@@ -111,7 +110,7 @@ export function readBitbucketServerIntegrationConfig(
     token,
     username,
     password,
-    throttling,
+    fetch,
   };
 }
 

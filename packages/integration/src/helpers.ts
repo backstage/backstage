@@ -17,6 +17,8 @@
 import parseGitUrl from 'git-url-parse';
 import { trimEnd } from 'lodash';
 import { ScmIntegration, ScmIntegrationsGroup } from './types';
+import { HumanDuration } from '@backstage/types';
+import { Config, readDurationFromConfig } from '@backstage/config';
 
 /** Checks whether the given argument is a valid URL hostname */
 export function isValidHost(host: string): boolean {
@@ -123,3 +125,43 @@ export function registerMswTestHooks(worker: {
   afterAll(() => worker.close());
   afterEach(() => worker.resetHandlers());
 }
+
+/**
+ * Reads the throttling configuration from the provided config object.
+ * @public
+ */
+export function readThrottlingConfig(config: Config): ThrottlingConfig {
+  return {
+    count: config.getNumber('count'),
+    interval: readDurationFromConfig(config.getConfig('interval')),
+  };
+}
+
+/**
+ * Reads the fetch configuration from the provided config object.
+ * @public
+ */
+export function readFetchConfig(config: Config): FetchConfig {
+  return {
+    throttling: config.has('throttling')
+      ? readThrottlingConfig(config.getConfig('throttling'))
+      : undefined,
+  };
+}
+
+/**
+ * Configuration for the throttling of HTTP requests.
+ * @public
+ */
+export type ThrottlingConfig = {
+  count: number;
+  interval: HumanDuration;
+};
+
+/**
+ * Configuration for making http fetch calls.
+ * @public
+ */
+export type FetchConfig = {
+  throttling?: ThrottlingConfig;
+};

@@ -17,15 +17,14 @@
 import fetch, { Response, RequestInfo, RequestInit } from 'node-fetch';
 import pThrottle from 'p-throttle';
 import { durationToMilliseconds } from '@backstage/types';
-import { HumanDuration } from '@backstage/types';
-import { Config, readDurationFromConfig } from '@backstage/config';
+import { FetchConfig } from '../helpers';
 
 /**
  * A function that is a wrapper for the `fetch` function in node-fetch.
  * This will either be a direct call to `fetch` or a throttled version of it.
  * @public
  */
-export type FetchFunction = (
+export type BitbucketFetchFunction = (
   url: RequestInfo,
   init?: RequestInit,
 ) => Promise<Response>;
@@ -35,8 +34,8 @@ export type FetchFunction = (
  * This service can be configured to throttle the number of requests that can be made.
  * @internal
  */
-export class FetchService {
-  private static cache: Record<string, FetchFunction> = {};
+export class BitbucketFetchService {
+  private static cache: Record<string, BitbucketFetchFunction> = {};
   private constructor() {}
 
   /**
@@ -44,20 +43,20 @@ export class FetchService {
    * This function will either be a direct call to `fetch` or a throttled version of it.
    * The function is cached based on the host of the URL that is being fetched, and will return the same function for the same host.
    */
-  public static get(options: { host: string; throttling?: ThrottlingConfig }) {
+  public static get(options: { host: string; fetch?: FetchConfig }) {
     let func = this.cache[options.host];
     if (func !== undefined) {
       return func;
     }
 
-    if (options.throttling === undefined) {
+    if (options.fetch?.throttling === undefined) {
       func = (url: RequestInfo, init?: RequestInit) => {
         return fetch(url, init);
       };
     } else {
       const throttle = pThrottle({
-        limit: options.throttling.count,
-        interval: durationToMilliseconds(options.throttling.interval),
+        limit: options.fetch.throttling.count,
+        interval: durationToMilliseconds(options.fetch.throttling.interval),
       });
       func = throttle(async (url: RequestInfo, init?: RequestInit) => {
         return fetch(url, init);
@@ -68,23 +67,3 @@ export class FetchService {
     return func;
   }
 }
-
-/**
- * Reads the throttling configuration from the provided config object.
- * @public
- */
-export function readThrottlingConfig(config: Config): ThrottlingConfig {
-  return {
-    count: config.getNumber('count'),
-    interval: readDurationFromConfig(config.getConfig('interval')),
-  };
-}
-
-/**
- * Configuration for the throttling of HTTP requests.
- * @public
- */
-export type ThrottlingConfig = {
-  count: number;
-  interval: HumanDuration;
-};

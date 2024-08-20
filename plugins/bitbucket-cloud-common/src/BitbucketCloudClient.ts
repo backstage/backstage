@@ -16,8 +16,8 @@
 
 import {
   BitbucketCloudIntegrationConfig,
-  FetchFunction,
-  FetchService,
+  BitbucketFetchFunction,
+  BitbucketFetchService,
 } from '@backstage/integration';
 import { Request, Response } from 'node-fetch';
 import { Models } from './models';
@@ -36,12 +36,12 @@ export class BitbucketCloudClient {
     return new BitbucketCloudClient(config);
   }
 
-  private readonly fetch: FetchFunction;
+  private readonly fetch: BitbucketFetchFunction;
 
   private constructor(
     private readonly config: BitbucketCloudIntegrationConfig,
   ) {
-    this.fetch = FetchService.get(config);
+    this.fetch = BitbucketFetchService.get(config);
   }
 
   searchCode(
