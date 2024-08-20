@@ -91,10 +91,10 @@ If there's any ambiguity about HOW your proposal will be implemented, this is th
 
 ### Glossary
 
-### New Type `BackstageFeature`
+### New Type `BackendFeatureMeta`
 
 ```ts
-type BackstageFeature =
+type BackendFeatureMeta =
   | {
       type: 'plugin';
       pluginId: string;
@@ -112,7 +112,7 @@ While we could attach the existing information to the `PluginMetadataService`, w
 
 ```ts
 interface InstanceMetadataService {
-  getInstalledFeatures: () => BackstageFeature[];
+  getInstalledFeatures: () => BackendFeatureMeta[];
 }
 ```
 
@@ -124,7 +124,7 @@ This will be a new service that can be provided either as a core service or a ne
 
 ```ts
 interface DeploymentMetadataService {
-  getInstalledFeatures: () => BackstageFeature[];
+  getInstalledFeatures: () => BackendFeatureMeta[];
 }
 ```
 
