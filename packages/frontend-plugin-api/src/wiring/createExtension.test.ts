@@ -688,7 +688,7 @@ describe('createExtension', () => {
 
       const tester = createExtensionTester(overridden);
 
-      expect(tester.data(numberDataRef)).toBe(43);
+      expect(tester.get(numberDataRef)).toBe(43);
     });
 
     it('should work functionally with overrides', () => {
@@ -722,14 +722,14 @@ describe('createExtension', () => {
         },
       });
 
-      expect(createExtensionTester(overriden).data(stringDataRef)).toBe(
+      expect(createExtensionTester(overriden).get(stringDataRef)).toBe(
         'foo-boom-override-hello',
       );
 
       expect(
         createExtensionTester(overriden, {
           config: { foo: 'hello', bar: 'world' },
-        }).data(stringDataRef),
+        }).get(stringDataRef),
       ).toBe('foo-hello-override-world');
     });
 
@@ -767,35 +767,37 @@ describe('createExtension', () => {
               opt: inputs.opt?.get(testDataRef1) ?? 'none',
               single: inputs.single.get(testDataRef1),
               singleOpt: inputs.single.get(testDataRef2) ?? 'none',
-              multi: inputs.multi.map(i => i.get(testDataRef1)).join(','),
+              multi: inputs.multi
+                .map(i => `${i.node.spec.id}=${i.get(testDataRef1)}`)
+                .join(','),
             }),
           ];
         },
       });
 
       const optExt = createExtension({
-        name: 'opt',
+        name: 'o',
         attachTo: { id: 'subject', input: 'opt' },
         output: [testDataRef1],
         factory: () => [testDataRef1('orig-opt')],
       });
 
       const singleExt = createExtension({
-        name: 'single',
+        name: 's',
         attachTo: { id: 'subject', input: 'single' },
         output: [testDataRef1, testDataRef2.optional()],
         factory: () => [testDataRef1('orig-single')],
       });
 
       const multi1Ext = createExtension({
-        name: 'multi1',
+        name: 'm1',
         attachTo: { id: 'subject', input: 'multi' },
         output: [testDataRef1],
         factory: () => [testDataRef1('orig-multi1')],
       });
 
       const multi2Ext = createExtension({
-        name: 'multi2',
+        name: 'm2',
         attachTo: { id: 'subject', input: 'multi' },
         output: [testDataRef1],
         factory: () => [testDataRef1('orig-multi2')],
@@ -807,12 +809,12 @@ describe('createExtension', () => {
           .add(singleExt)
           .add(multi1Ext)
           .add(multi2Ext)
-          .data(outputRef),
+          .get(outputRef),
       ).toEqual({
         opt: 'orig-opt',
         single: 'orig-single',
         singleOpt: 'none',
-        multi: 'orig-multi1,orig-multi2',
+        multi: 'm1=orig-multi1,m2=orig-multi2',
       });
 
       // All values provided
@@ -834,12 +836,12 @@ describe('createExtension', () => {
           .add(singleExt)
           .add(multi1Ext)
           .add(multi2Ext)
-          .data(outputRef),
+          .get(outputRef),
       ).toEqual({
         opt: 'opt',
         single: 'single',
         singleOpt: 'singleOpt',
-        multi: 'multi1,multi2',
+        multi: 'm1=multi1,m2=multi2',
       });
 
       // Minimal values provided
@@ -860,7 +862,7 @@ describe('createExtension', () => {
           .add(singleExt)
           .add(multi1Ext)
           .add(multi2Ext)
-          .data(outputRef),
+          .get(outputRef),
       ).toEqual({
         opt: 'none',
         single: 'single',
@@ -883,12 +885,12 @@ describe('createExtension', () => {
           .add(singleExt)
           .add(multi1Ext)
           .add(multi2Ext)
-          .data(outputRef),
+          .get(outputRef),
       ).toEqual({
         opt: 'orig-opt',
         single: 'orig-single',
         singleOpt: 'none',
-        multi: 'orig-multi1,orig-multi2',
+        multi: 'm1=orig-multi1,m2=orig-multi2',
       });
 
       // Forward inputs separately
@@ -910,12 +912,66 @@ describe('createExtension', () => {
           .add(singleExt)
           .add(multi1Ext)
           .add(multi2Ext)
-          .data(outputRef),
+          .get(outputRef),
       ).toEqual({
         opt: 'orig-opt',
         single: 'orig-single',
         singleOpt: 'none',
-        multi: 'orig-multi1,orig-multi2',
+        multi: 'm1=orig-multi1,m2=orig-multi2',
+      });
+
+      // Reordering inputs
+      expect(
+        createExtensionTester(
+          subject.override({
+            factory(originalFactory, { inputs }) {
+              return originalFactory({
+                inputs: {
+                  opt: inputs.opt,
+                  single: inputs.single,
+                  multi: [inputs.multi[1], inputs.multi[0]],
+                },
+              });
+            },
+          }),
+        )
+          .add(optExt)
+          .add(singleExt)
+          .add(multi1Ext)
+          .add(multi2Ext)
+          .get(outputRef),
+      ).toEqual({
+        opt: 'orig-opt',
+        single: 'orig-single',
+        singleOpt: 'none',
+        multi: 'm2=orig-multi2,m1=orig-multi1',
+      });
+
+      // Filter out inputs
+      expect(
+        createExtensionTester(
+          subject.override({
+            factory(originalFactory, { inputs }) {
+              return originalFactory({
+                inputs: {
+                  opt: inputs.opt,
+                  single: inputs.single,
+                  multi: inputs.multi.filter(i => i.node.spec.id.endsWith('2')),
+                },
+              });
+            },
+          }),
+        )
+          .add(optExt)
+          .add(singleExt)
+          .add(multi1Ext)
+          .add(multi2Ext)
+          .get(outputRef),
+      ).toEqual({
+        opt: 'orig-opt',
+        single: 'orig-single',
+        singleOpt: 'none',
+        multi: 'm2=orig-multi2',
       });
 
       // Overriding based on original input
@@ -941,12 +997,12 @@ describe('createExtension', () => {
           .add(singleExt)
           .add(multi1Ext)
           .add(multi2Ext)
-          .data(outputRef),
+          .get(outputRef),
       ).toEqual({
         opt: 'none',
         single: 'override-orig-single',
         singleOpt: 'new-singleOpt',
-        multi: 'override-orig-multi1,override-orig-multi2',
+        multi: 'm1=override-orig-multi1,m2=override-orig-multi2',
       });
 
       // Mismatched input override length
@@ -967,9 +1023,32 @@ describe('createExtension', () => {
           .add(singleExt)
           .add(multi1Ext)
           .add(multi2Ext)
-          .data(outputRef),
+          .get(outputRef),
       ).toThrowErrorMatchingInlineSnapshot(
         `"Failed to instantiate extension 'subject', override data provided for input 'multi' must match the length of the original inputs"`,
+      );
+
+      // Mix forward and data override
+      expect(() =>
+        createExtensionTester(
+          subject.override({
+            factory(originalFactory, { inputs }) {
+              return originalFactory({
+                inputs: {
+                  ...inputs,
+                  multi: [inputs.multi[0], [testDataRef1('multi2')]],
+                },
+              });
+            },
+          }),
+        )
+          .add(optExt)
+          .add(singleExt)
+          .add(multi1Ext)
+          .add(multi2Ext)
+          .get(outputRef),
+      ).toThrowErrorMatchingInlineSnapshot(
+        `"Failed to instantiate extension 'subject', override data for input 'multi' may not mix forwarded inputs with data overrides"`,
       );
 
       // Required input not provided
@@ -990,7 +1069,7 @@ describe('createExtension', () => {
           .add(singleExt)
           .add(multi1Ext)
           .add(multi2Ext)
-          .data(outputRef),
+          .get(outputRef),
       ).toThrowErrorMatchingInlineSnapshot(
         `"Failed to instantiate extension 'subject', missing required extension data value(s) 'test1'"`,
       );
@@ -1019,7 +1098,7 @@ describe('createExtension', () => {
           .add(singleExt)
           .add(multi1Ext)
           .add(multi2Ext)
-          .data(outputRef),
+          .get(outputRef),
       ).toThrowErrorMatchingInlineSnapshot(
         `"Failed to instantiate extension 'subject', extension data 'test2' was provided but not declared"`,
       );

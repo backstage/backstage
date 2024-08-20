@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-kubernetes-backend",
-  "version": "0.18.4-next.2",
+  "version": "0.18.4",
   "description": "A Backstage backend plugin that integrates towards Kubernetes",
   "backstage": {
     "role": "backend-plugin",
@@ -99,6 +99,7 @@
   },
   "devDependencies": {
     "@backstage/backend-app-api": "workspace:^",
+    "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/plugin-permission-backend": "workspace:^",

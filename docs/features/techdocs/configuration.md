@@ -203,7 +203,7 @@ techdocs:
 
     # (Optional) The time (in milliseconds) that the TechDocs backend will wait
     # for a cache service to respond before continuing on as though the cached
-    # object was not found (e.g. when the cache sercice is unavailable). The
+    # object was not found (e.g. when the cache service is unavailable). The
     # default value is 1000
     readTimeout: 500
 ```

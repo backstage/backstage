@@ -1,5 +1,8 @@
 # @backstage/backend-common
 
+> [!CAUTION]
+> This package is deprecated and will be removed in a near future, so please follow the deprecated instructions for the exports you still use.
+
 Common functionality library for Backstage backends, implementing logging,
 error handling and similar.
 

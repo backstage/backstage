@@ -16,8 +16,14 @@
 
 import { IconComponent } from '@backstage/core-plugin-api';
 import { RouteRef } from '../routing';
-import { createExtensionBlueprint } from '../wiring';
-import { createNavItemExtension } from '../extensions/createNavItemExtension';
+import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
+
+// TODO(Rugvip): Should this be broken apart into separate refs? title/icon/routeRef
+const targetDataRef = createExtensionDataRef<{
+  title: string;
+  icon: IconComponent;
+  routeRef: RouteRef<undefined>;
+}>().with({ id: 'core.nav-item.target' });
 
 /**
  * Creates extensions that make up the items of the nav bar.
@@ -27,9 +33,9 @@ import { createNavItemExtension } from '../extensions/createNavItemExtension';
 export const NavItemBlueprint = createExtensionBlueprint({
   kind: 'nav-item',
   attachTo: { id: 'app/nav', input: 'items' },
-  output: [createNavItemExtension.targetDataRef],
+  output: [targetDataRef],
   dataRefs: {
-    target: createNavItemExtension.targetDataRef,
+    target: targetDataRef,
   },
   factory: (
     {
@@ -43,7 +49,7 @@ export const NavItemBlueprint = createExtensionBlueprint({
     },
     { config },
   ) => [
-    createNavItemExtension.targetDataRef({
+    targetDataRef({
       title: config.title ?? title,
       icon,
       routeRef,

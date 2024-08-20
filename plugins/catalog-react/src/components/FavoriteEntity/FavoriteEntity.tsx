@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import { withStyles } from '@material-ui/core/styles';
@@ -46,20 +46,24 @@ export const FavoriteEntity = (props: FavoriteEntityProps) => {
     props.entity,
   );
   const { t } = useTranslationRef(catalogReactTranslationRef);
+  const title = isStarredEntity
+    ? t('favoriteEntity.removeFromFavorites')
+    : t('favoriteEntity.addToFavorites');
+
+  const id = `favorite-${stringifyEntityRef(props.entity).replace(
+    /[^a-zA-Z0-9-_]/g,
+    '-',
+  )}`;
+
   return (
     <IconButton
-      aria-label="favorite"
+      aria-label={title}
+      id={id}
       color="inherit"
       {...props}
       onClick={() => toggleStarredEntity()}
     >
-      <Tooltip
-        title={
-          isStarredEntity
-            ? t('favoriteEntity.removeFromFavorites')
-            : t('favoriteEntity.addToFavorites')
-        }
-      >
+      <Tooltip id={id} title={title}>
         {isStarredEntity ? <YellowStar /> : <StarBorder />}
       </Tooltip>
     </IconButton>

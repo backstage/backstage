@@ -17,16 +17,42 @@
 import React from 'react';
 import { createApp } from '@backstage/frontend-app-api';
 import { pagesPlugin } from './examples/pagesPlugin';
+import notFoundErrorPage from './examples/notFoundErrorPageExtension';
 import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
-import homePlugin from '@backstage/plugin-home/alpha';
-import techdocsPlugin from '@backstage/plugin-techdocs/alpha';
+import homePlugin, {
+  titleExtensionDataRef,
+} from '@backstage/plugin-home/alpha';
+
+import {
+  coreExtensionData,
+  createExtension,
+  createExtensionOverrides,
+  ApiBlueprint,
+} from '@backstage/frontend-plugin-api';
+import {
+  techdocsPlugin,
+  TechDocsIndexPage,
+  TechDocsReaderPage,
+  EntityTechdocsContent,
+} from '@backstage/plugin-techdocs';
 import appVisualizerPlugin from '@backstage/plugin-app-visualizer';
+import { homePage } from './HomePage';
 import { convertLegacyApp } from '@backstage/core-compat-api';
 import { FlatRoutes } from '@backstage/core-app-api';
 import { Route } from 'react-router';
 import { CatalogImportPage } from '@backstage/plugin-catalog-import';
+import { createApiFactory, configApiRef } from '@backstage/core-plugin-api';
+import {
+  ScmAuth,
+  ScmIntegrationsApi,
+  scmAuthApiRef,
+  scmIntegrationsApiRef,
+} from '@backstage/integration-react';
 import kubernetesPlugin from '@backstage/plugin-kubernetes/alpha';
-import extensions from '@internal/app-next-example-extensions';
+import { signInPageOverrides } from './overrides/SignInPage';
+import { convertLegacyPlugin } from '@backstage/core-compat-api';
+import { convertLegacyPageExtension } from '@backstage/core-compat-api';
+import { convertLegacyEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
 
 /*
 
@@ -57,6 +83,47 @@ TODO:
 
 /* app.tsx */
 
+const convertedTechdocsPlugin = convertLegacyPlugin(techdocsPlugin, {
+  extensions: [
+    // TODO: We likely also need a way to convert an entire <Route> tree similar to collectLegacyRoutes
+    convertLegacyPageExtension(TechDocsIndexPage),
+    convertLegacyPageExtension(TechDocsReaderPage, {
+      defaultPath: '/docs/:namespace/:kind/:name/*',
+    }),
+    convertLegacyEntityContentExtension(EntityTechdocsContent),
+  ],
+});
+
+const homePageExtension = createExtension({
+  name: 'myhomepage',
+  attachTo: { id: 'page:home', input: 'props' },
+  output: [coreExtensionData.reactElement, titleExtensionDataRef],
+  factory() {
+    return [
+      coreExtensionData.reactElement(homePage),
+      titleExtensionDataRef('just a title'),
+    ];
+  },
+});
+
+const scmAuthExtension = ApiBlueprint.make({
+  namespace: scmAuthApiRef.id,
+  params: {
+    factory: ScmAuth.createDefaultApiFactory(),
+  },
+});
+
+const scmIntegrationApi = ApiBlueprint.make({
+  namespace: scmIntegrationsApiRef.id,
+  params: {
+    factory: createApiFactory({
+      api: scmIntegrationsApiRef,
+      deps: { configApi: configApiRef },
+      factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
+    }),
+  },
+});
+
 const collectedLegacyPlugins = convertLegacyApp(
   <FlatRoutes>
     <Route path="/catalog-import" element={<CatalogImportPage />} />
@@ -66,13 +133,21 @@ const collectedLegacyPlugins = convertLegacyApp(
 const app = createApp({
   features: [
     pagesPlugin,
-    techdocsPlugin,
+    convertedTechdocsPlugin,
     userSettingsPlugin,
     homePlugin,
     appVisualizerPlugin,
     kubernetesPlugin,
-    extensions,
+    signInPageOverrides,
     ...collectedLegacyPlugins,
+    createExtensionOverrides({
+      extensions: [
+        homePageExtension,
+        scmAuthExtension,
+        scmIntegrationApi,
+        notFoundErrorPage,
+      ],
+    }),
   ],
   /* Handled through config instead */
   // bindRoutes({ bind }) {

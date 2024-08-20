@@ -38,4 +38,5 @@ export type AwsAlbClaims = {
   email: string;
   exp: number;
   iss: string;
+  signer: string;
 };

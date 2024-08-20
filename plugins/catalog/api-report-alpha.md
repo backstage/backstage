@@ -5,13 +5,41 @@
 ```ts
 /// <reference types="react" />
 
+import { AnyApiFactory } from '@backstage/frontend-plugin-api';
+import { AnyExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { AnyExtensionInputMap } from '@backstage/frontend-plugin-api';
+import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { BackstagePlugin } from '@backstage/frontend-plugin-api';
+import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { Entity } from '@backstage/catalog-model';
+import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
+import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
+import { IconComponent } from '@backstage/core-plugin-api';
+import { JSX as JSX_2 } from 'react';
 import { PortableSchema } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
+import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
+import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
+
+// @alpha
+export const CatalogFilterBlueprint: ExtensionBlueprint<
+  {
+    kind: 'catalog-filter';
+    namespace: undefined;
+    name: undefined;
+  },
+  {
+    loader: () => Promise<JSX.Element>;
+  },
+  ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
+  {},
+  {},
+  {},
+  never
+>;
 
 // @alpha (undocumented)
 export const catalogTranslationRef: TranslationRef<
@@ -98,7 +126,7 @@ export const catalogTranslationRef: TranslationRef<
   }
 >;
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export function createCatalogFilterExtension<
   TInputs extends AnyExtensionInputMap,
   TConfig,
@@ -113,9 +141,11 @@ export function createCatalogFilterExtension<
   TConfig,
   never,
   never,
-  string | undefined,
-  string | undefined,
-  string | undefined
+  {
+    kind?: string | undefined;
+    namespace?: string | undefined;
+    name?: string | undefined;
+  }
 >;
 
 // @alpha (undocumented)
@@ -141,7 +171,650 @@ const _default: BackstagePlugin<
     }>;
     unregisterRedirect: ExternalRouteRef<undefined>;
   },
-  {}
+  {
+    'nav-item:catalog': ExtensionDefinition<
+      {},
+      {},
+      ConfigurableExtensionDataRef<
+        {
+          title: string;
+          icon: IconComponent;
+          routeRef: RouteRef<undefined>;
+        },
+        'core.nav-item.target',
+        {}
+      >,
+      {},
+      {
+        kind: 'nav-item';
+        namespace: undefined;
+        name: undefined;
+      }
+    >;
+    'api:catalog/starred-entities': ExtensionDefinition<
+      {},
+      {},
+      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
+      {},
+      {
+        kind: 'api';
+        namespace: undefined;
+        name: 'starred-entities';
+      }
+    >;
+    'api:catalog/entity-presentation': ExtensionDefinition<
+      {},
+      {},
+      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
+      {},
+      {
+        kind: 'api';
+        namespace: undefined;
+        name: 'entity-presentation';
+      }
+    >;
+    'entity-card:catalog/about': ExtensionDefinition<
+      {
+        filter: string | undefined;
+      },
+      {
+        filter?: string | undefined;
+      },
+      | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+      | ConfigurableExtensionDataRef<
+          (entity: Entity) => boolean,
+          'catalog.entity-filter-function',
+          {
+            optional: true;
+          }
+        >
+      | ConfigurableExtensionDataRef<
+          string,
+          'catalog.entity-filter-expression',
+          {
+            optional: true;
+          }
+        >,
+      {},
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'about';
+      }
+    >;
+    'entity-card:catalog/links': ExtensionDefinition<
+      {
+        filter: string | undefined;
+      },
+      {
+        filter?: string | undefined;
+      },
+      | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+      | ConfigurableExtensionDataRef<
+          (entity: Entity) => boolean,
+          'catalog.entity-filter-function',
+          {
+            optional: true;
+          }
+        >
+      | ConfigurableExtensionDataRef<
+          string,
+          'catalog.entity-filter-expression',
+          {
+            optional: true;
+          }
+        >,
+      {},
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'links';
+      }
+    >;
+    'entity-card:catalog/labels': ExtensionDefinition<
+      {
+        filter: string | undefined;
+      },
+      {
+        filter?: string | undefined;
+      },
+      | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+      | ConfigurableExtensionDataRef<
+          (entity: Entity) => boolean,
+          'catalog.entity-filter-function',
+          {
+            optional: true;
+          }
+        >
+      | ConfigurableExtensionDataRef<
+          string,
+          'catalog.entity-filter-expression',
+          {
+            optional: true;
+          }
+        >,
+      {},
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'labels';
+      }
+    >;
+    'entity-card:catalog/depends-on-components': ExtensionDefinition<
+      {
+        filter: string | undefined;
+      },
+      {
+        filter?: string | undefined;
+      },
+      | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+      | ConfigurableExtensionDataRef<
+          (entity: Entity) => boolean,
+          'catalog.entity-filter-function',
+          {
+            optional: true;
+          }
+        >
+      | ConfigurableExtensionDataRef<
+          string,
+          'catalog.entity-filter-expression',
+          {
+            optional: true;
+          }
+        >,
+      {},
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'depends-on-components';
+      }
+    >;
+    'entity-card:catalog/depends-on-resources': ExtensionDefinition<
+      {
+        filter: string | undefined;
+      },
+      {
+        filter?: string | undefined;
+      },
+      | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+      | ConfigurableExtensionDataRef<
+          (entity: Entity) => boolean,
+          'catalog.entity-filter-function',
+          {
+            optional: true;
+          }
+        >
+      | ConfigurableExtensionDataRef<
+          string,
+          'catalog.entity-filter-expression',
+          {
+            optional: true;
+          }
+        >,
+      {},
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'depends-on-resources';
+      }
+    >;
+    'entity-card:catalog/has-components': ExtensionDefinition<
+      {
+        filter: string | undefined;
+      },
+      {
+        filter?: string | undefined;
+      },
+      | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+      | ConfigurableExtensionDataRef<
+          (entity: Entity) => boolean,
+          'catalog.entity-filter-function',
+          {
+            optional: true;
+          }
+        >
+      | ConfigurableExtensionDataRef<
+          string,
+          'catalog.entity-filter-expression',
+          {
+            optional: true;
+          }
+        >,
+      {},
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'has-components';
+      }
+    >;
+    'entity-card:catalog/has-resources': ExtensionDefinition<
+      {
+        filter: string | undefined;
+      },
+      {
+        filter?: string | undefined;
+      },
+      | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+      | ConfigurableExtensionDataRef<
+          (entity: Entity) => boolean,
+          'catalog.entity-filter-function',
+          {
+            optional: true;
+          }
+        >
+      | ConfigurableExtensionDataRef<
+          string,
+          'catalog.entity-filter-expression',
+          {
+            optional: true;
+          }
+        >,
+      {},
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'has-resources';
+      }
+    >;
+    'entity-card:catalog/has-subcomponents': ExtensionDefinition<
+      {
+        filter: string | undefined;
+      },
+      {
+        filter?: string | undefined;
+      },
+      | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+      | ConfigurableExtensionDataRef<
+          (entity: Entity) => boolean,
+          'catalog.entity-filter-function',
+          {
+            optional: true;
+          }
+        >
+      | ConfigurableExtensionDataRef<
+          string,
+          'catalog.entity-filter-expression',
+          {
+            optional: true;
+          }
+        >,
+      {},
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'has-subcomponents';
+      }
+    >;
+    'entity-card:catalog/has-subdomains': ExtensionDefinition<
+      {
+        filter: string | undefined;
+      },
+      {
+        filter?: string | undefined;
+      },
+      | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+      | ConfigurableExtensionDataRef<
+          (entity: Entity) => boolean,
+          'catalog.entity-filter-function',
+          {
+            optional: true;
+          }
+        >
+      | ConfigurableExtensionDataRef<
+          string,
+          'catalog.entity-filter-expression',
+          {
+            optional: true;
+          }
+        >,
+      {},
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'has-subdomains';
+      }
+    >;
+    'entity-card:catalog/has-systems': ExtensionDefinition<
+      {
+        filter: string | undefined;
+      },
+      {
+        filter?: string | undefined;
+      },
+      | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+      | ConfigurableExtensionDataRef<
+          (entity: Entity) => boolean,
+          'catalog.entity-filter-function',
+          {
+            optional: true;
+          }
+        >
+      | ConfigurableExtensionDataRef<
+          string,
+          'catalog.entity-filter-expression',
+          {
+            optional: true;
+          }
+        >,
+      {},
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'has-systems';
+      }
+    >;
+    'entity-content:catalog/overview': ExtensionDefinition<
+      {
+        [x: string]: any;
+      } & {
+        path: string | undefined;
+        title: string | undefined;
+        filter: string | undefined;
+      },
+      {
+        [x: string]: any;
+      } & {
+        filter?: string | undefined;
+        title?: string | undefined;
+        path?: string | undefined;
+      },
+      | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+      | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+      | ConfigurableExtensionDataRef<
+          RouteRef<AnyRouteRefParams>,
+          'core.routing.ref',
+          {
+            optional: true;
+          }
+        >
+      | ConfigurableExtensionDataRef<string, 'catalog.entity-content-title', {}>
+      | ConfigurableExtensionDataRef<
+          (entity: Entity) => boolean,
+          'catalog.entity-filter-function',
+          {
+            optional: true;
+          }
+        >
+      | ConfigurableExtensionDataRef<
+          string,
+          'catalog.entity-filter-expression',
+          {
+            optional: true;
+          }
+        >,
+      {
+        cards: ExtensionInput<
+          | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+          | ConfigurableExtensionDataRef<
+              (entity: Entity) => boolean,
+              'catalog.entity-filter-function',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              string,
+              'catalog.entity-filter-expression',
+              {
+                optional: true;
+              }
+            >,
+          {
+            singleton: false;
+            optional: false;
+          }
+        >;
+      },
+      {
+        kind: 'entity-content';
+        namespace: undefined;
+        name: 'overview';
+      }
+    >;
+    'catalog-filter:catalog/tag': ExtensionDefinition<
+      {},
+      {},
+      ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
+      {},
+      {
+        kind: 'catalog-filter';
+        namespace: undefined;
+        name: 'tag';
+      }
+    >;
+    'catalog-filter:catalog/kind': ExtensionDefinition<
+      {
+        initialFilter: string;
+      },
+      {
+        initialFilter?: string | undefined;
+      },
+      ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
+      {
+        [x: string]: ExtensionInput<
+          AnyExtensionDataRef,
+          {
+            optional: boolean;
+            singleton: boolean;
+          }
+        >;
+      },
+      {
+        kind: 'catalog-filter';
+        namespace: undefined;
+        name: 'kind';
+      }
+    >;
+    'catalog-filter:catalog/type': ExtensionDefinition<
+      {},
+      {},
+      ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
+      {},
+      {
+        kind: 'catalog-filter';
+        namespace: undefined;
+        name: 'type';
+      }
+    >;
+    'catalog-filter:catalog/mode': ExtensionDefinition<
+      {
+        mode: 'all' | 'owners-only' | undefined;
+      },
+      {
+        mode?: 'all' | 'owners-only' | undefined;
+      },
+      ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
+      {
+        [x: string]: ExtensionInput<
+          AnyExtensionDataRef,
+          {
+            optional: boolean;
+            singleton: boolean;
+          }
+        >;
+      },
+      {
+        kind: 'catalog-filter';
+        namespace: undefined;
+        name: 'mode';
+      }
+    >;
+    'catalog-filter:catalog/namespace': ExtensionDefinition<
+      {},
+      {},
+      ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
+      {},
+      {
+        kind: 'catalog-filter';
+        namespace: undefined;
+        name: 'namespace';
+      }
+    >;
+    'catalog-filter:catalog/lifecycle': ExtensionDefinition<
+      {},
+      {},
+      ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
+      {},
+      {
+        kind: 'catalog-filter';
+        namespace: undefined;
+        name: 'lifecycle';
+      }
+    >;
+    'catalog-filter:catalog/processing-status': ExtensionDefinition<
+      {},
+      {},
+      ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
+      {},
+      {
+        kind: 'catalog-filter';
+        namespace: undefined;
+        name: 'processing-status';
+      }
+    >;
+    'catalog-filter:catalog/list': ExtensionDefinition<
+      {
+        initialFilter: 'all' | 'owned' | 'starred';
+      },
+      {
+        initialFilter?: 'all' | 'owned' | 'starred' | undefined;
+      },
+      ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
+      {
+        [x: string]: ExtensionInput<
+          AnyExtensionDataRef,
+          {
+            optional: boolean;
+            singleton: boolean;
+          }
+        >;
+      },
+      {
+        kind: 'catalog-filter';
+        namespace: undefined;
+        name: 'list';
+      }
+    >;
+    'page:catalog': ExtensionDefinition<
+      {
+        [x: string]: any;
+      } & {
+        path: string | undefined;
+      },
+      {
+        [x: string]: any;
+      } & {
+        path?: string | undefined;
+      },
+      | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+      | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+      | ConfigurableExtensionDataRef<
+          RouteRef<AnyRouteRefParams>,
+          'core.routing.ref',
+          {
+            optional: true;
+          }
+        >,
+      {
+        filters: ExtensionInput<
+          ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
+          {
+            singleton: false;
+            optional: false;
+          }
+        >;
+      },
+      {
+        kind: 'page';
+        namespace: undefined;
+        name: undefined;
+      }
+    >;
+    'page:catalog/entity': ExtensionDefinition<
+      {
+        [x: string]: any;
+      } & {
+        path: string | undefined;
+      },
+      {
+        [x: string]: any;
+      } & {
+        path?: string | undefined;
+      },
+      | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+      | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+      | ConfigurableExtensionDataRef<
+          RouteRef<AnyRouteRefParams>,
+          'core.routing.ref',
+          {
+            optional: true;
+          }
+        >,
+      {
+        contents: ExtensionInput<
+          | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+          | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+          | ConfigurableExtensionDataRef<
+              RouteRef<AnyRouteRefParams>,
+              'core.routing.ref',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              string,
+              'catalog.entity-content-title',
+              {}
+            >
+          | ConfigurableExtensionDataRef<
+              (entity: Entity) => boolean,
+              'catalog.entity-filter-function',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              string,
+              'catalog.entity-filter-expression',
+              {
+                optional: true;
+              }
+            >,
+          {
+            singleton: false;
+            optional: false;
+          }
+        >;
+      },
+      {
+        kind: 'page';
+        namespace: undefined;
+        name: 'entity';
+      }
+    >;
+    'search-result-list-item:catalog': ExtensionDefinition<
+      {
+        noTrack: boolean;
+      },
+      {
+        noTrack?: boolean | undefined;
+      },
+      ConfigurableExtensionDataRef<
+        {
+          predicate?: SearchResultItemExtensionPredicate | undefined;
+          component: SearchResultItemExtensionComponent;
+        },
+        'search.search-result-list-item.item',
+        {}
+      >,
+      {},
+      {
+        kind: 'search-result-list-item';
+        namespace: undefined;
+        name: undefined;
+      }
+    >;
+  }
 >;
 export default _default;
 

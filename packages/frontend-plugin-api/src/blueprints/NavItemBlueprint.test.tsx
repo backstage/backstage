@@ -77,7 +77,7 @@ describe('NavItemBlueprint', () => {
 
     const tester = createExtensionTester(extension);
 
-    expect(tester.data(NavItemBlueprint.dataRefs.target)).toEqual({
+    expect(tester.get(NavItemBlueprint.dataRefs.target)).toEqual({
       title: 'TEST',
       icon: MockIcon,
       routeRef: mockRouteRef,
@@ -97,7 +97,7 @@ describe('NavItemBlueprint', () => {
       config: { title: 'OVERRIDDEN' },
     });
 
-    expect(tester.data(NavItemBlueprint.dataRefs.target)).toEqual({
+    expect(tester.get(NavItemBlueprint.dataRefs.target)).toEqual({
       title: 'OVERRIDDEN',
       icon: MockIcon,
       routeRef: mockRouteRef,

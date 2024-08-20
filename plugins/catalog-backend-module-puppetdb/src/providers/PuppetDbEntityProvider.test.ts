@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { TaskInvocationDefinition, TaskRunner } from '@backstage/backend-tasks';
+import {
+  SchedulerServiceTaskRunner,
+  SchedulerServiceTaskInvocationDefinition,
+} from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { PuppetDbEntityProvider } from './PuppetDbEntityProvider';
 import {
@@ -39,14 +42,14 @@ jest.mock('../puppet/read', () => {
 
 const logger = mockServices.logger.mock();
 
-class PersistingTaskRunner implements TaskRunner {
-  private tasks: TaskInvocationDefinition[] = [];
+class PersistingTaskRunner implements SchedulerServiceTaskRunner {
+  private tasks: SchedulerServiceTaskInvocationDefinition[] = [];
 
   getTasks() {
     return this.tasks;
   }
 
-  run(task: TaskInvocationDefinition): Promise<void> {
+  run(task: SchedulerServiceTaskInvocationDefinition): Promise<void> {
     this.tasks.push(task);
     return Promise.resolve(undefined);
   }

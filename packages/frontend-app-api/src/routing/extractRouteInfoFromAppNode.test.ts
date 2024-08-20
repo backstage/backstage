@@ -25,7 +25,7 @@ import {
   coreExtensionData,
   createExtension,
   createExtensionInput,
-  createPlugin,
+  createFrontendPlugin,
   createRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { MockConfigApi } from '@backstage/test-utils';
@@ -50,28 +50,30 @@ function createTestExtension(options: {
     attachTo: options.parent
       ? { id: `test/${options.parent}`, input: 'children' }
       : { id: 'app/routes', input: 'routes' },
-    output: {
-      element: coreExtensionData.reactElement,
-      path: coreExtensionData.routePath.optional(),
-      routeRef: coreExtensionData.routeRef.optional(),
-    },
+    output: [
+      coreExtensionData.reactElement,
+      coreExtensionData.routePath.optional(),
+      coreExtensionData.routeRef.optional(),
+    ],
     inputs: {
-      children: createExtensionInput({
-        element: coreExtensionData.reactElement,
-      }),
+      children: createExtensionInput([coreExtensionData.reactElement]),
     },
-    factory() {
-      return {
-        path: options.path,
-        routeRef: options.routeRef,
-        element: React.createElement('div'),
-      };
+    *factory() {
+      if (options.path !== undefined) {
+        yield coreExtensionData.routePath(options.path);
+      }
+
+      if (options.routeRef) {
+        yield coreExtensionData.routeRef(options.routeRef);
+      }
+
+      yield coreExtensionData.reactElement(React.createElement('div'));
     },
   });
 }
 
 function routeInfoFromExtensions(extensions: ExtensionDefinition<any, any>[]) {
-  const plugin = createPlugin({
+  const plugin = createFrontendPlugin({
     id: 'test',
     extensions,
   });

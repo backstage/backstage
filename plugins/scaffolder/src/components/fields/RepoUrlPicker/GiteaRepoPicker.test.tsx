@@ -16,13 +16,14 @@
 
 import React from 'react';
 import { GiteaRepoPicker } from './GiteaRepoPicker';
-import { render, fireEvent } from '@testing-library/react';
+import { fireEvent } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
 
 describe('GiteaRepoPicker', () => {
   describe('owner input field', () => {
-    it('calls onChange when the owner input changes', () => {
+    it('calls onChange when the owner input changes', async () => {
       const onChange = jest.fn();
-      const { getAllByRole } = render(
+      const { getAllByRole } = await renderInTestApp(
         <GiteaRepoPicker
           onChange={onChange}
           rawErrors={[]}

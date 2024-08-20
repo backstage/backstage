@@ -1,5 +1,28 @@
 # @backstage/plugin-scaffolder-backend-module-notifications
 
+## 0.0.6
+
+### Patch Changes
+
+- 6fc03c7: Add examples for notification:send scaffolder action & improve related tests
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/backend-common@0.24.0
+  - @backstage/plugin-scaffolder-node@0.4.9
+  - @backstage/plugin-notifications-node@0.2.4
+  - @backstage/plugin-notifications-common@0.0.5
+
+## 0.0.6-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.3
+  - @backstage/backend-common@0.23.4-next.3
+  - @backstage/plugin-notifications-common@0.0.5
+  - @backstage/plugin-notifications-node@0.2.4-next.3
+  - @backstage/plugin-scaffolder-node@0.4.9-next.3
+
 ## 0.0.6-next.2
 
 ### Patch Changes

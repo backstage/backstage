@@ -511,17 +511,6 @@ export interface PluginMetadataService {
   getId(): string;
 }
 
-// @public @deprecated (undocumented)
-export type PluginServiceFactoryConfig<
-  TService,
-  TInstances extends 'singleton' | 'multiton',
-  TContext,
-  TImpl extends TService,
-  TDeps extends {
-    [name in string]: ServiceRef<unknown>;
-  },
-> = PluginServiceFactoryOptions<TService, TInstances, TContext, TImpl, TDeps>;
-
 // @public (undocumented)
 export interface PluginServiceFactoryOptions<
   TService,
@@ -552,25 +541,6 @@ export interface PluginServiceFactoryOptions<
 export function readSchedulerServiceTaskScheduleDefinitionFromConfig(
   config: Config,
 ): SchedulerServiceTaskScheduleDefinition;
-
-// @public @deprecated (undocumented)
-export type ReadTreeOptions = UrlReaderServiceReadTreeOptions;
-
-// @public @deprecated (undocumented)
-export type ReadTreeResponse = UrlReaderServiceReadTreeResponse;
-
-// @public @deprecated (undocumented)
-export type ReadTreeResponseDirOptions =
-  UrlReaderServiceReadTreeResponseDirOptions;
-
-// @public @deprecated (undocumented)
-export type ReadTreeResponseFile = UrlReaderServiceReadTreeResponseFile;
-
-// @public @deprecated (undocumented)
-export type ReadUrlOptions = UrlReaderServiceReadUrlOptions;
-
-// @public @deprecated (undocumented)
-export type ReadUrlResponse = UrlReaderServiceReadUrlResponse;
 
 // @public
 export function resolvePackagePath(name: string, ...paths: string[]): string;
@@ -603,16 +573,6 @@ export interface RootLifecycleService extends LifecycleService {}
 
 // @public
 export interface RootLoggerService extends LoggerService {}
-
-// @public @deprecated (undocumented)
-export type RootServiceFactoryConfig<
-  TService,
-  TInstances extends 'singleton' | 'multiton',
-  TImpl extends TService,
-  TDeps extends {
-    [name in string]: ServiceRef<unknown>;
-  },
-> = RootServiceFactoryOptions<TService, TInstances, TImpl, TDeps>;
 
 // @public (undocumented)
 export interface RootServiceFactoryOptions<
@@ -707,15 +667,6 @@ export interface SchedulerServiceTaskScheduleDefinitionConfig {
   timeout: string | HumanDuration;
 }
 
-// @public @deprecated (undocumented)
-export type SearchOptions = UrlReaderServiceSearchOptions;
-
-// @public @deprecated (undocumented)
-export type SearchResponse = UrlReaderServiceSearchResponse;
-
-// @public @deprecated (undocumented)
-export type SearchResponseFile = UrlReaderServiceSearchResponseFile;
-
 // @public (undocumented)
 export interface ServiceFactory<
   TService = unknown,
@@ -754,13 +705,6 @@ export type ServiceRef<
   T: TService;
   $$type: '@backstage/ServiceRef';
 };
-
-// @public @deprecated (undocumented)
-export type ServiceRefConfig<
-  TService,
-  TScope extends 'root' | 'plugin',
-  TInstances extends 'singleton' | 'multiton',
-> = ServiceRefOptions<TService, TScope, TInstances>;
 
 // @public (undocumented)
 export interface ServiceRefOptions<

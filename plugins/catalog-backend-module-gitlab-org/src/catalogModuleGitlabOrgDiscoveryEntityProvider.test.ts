@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { createServiceFactory } from '@backstage/backend-plugin-api';
-import { TaskScheduleDefinition } from '@backstage/backend-tasks';
+import {
+  createServiceFactory,
+  SchedulerServiceTaskScheduleDefinition,
+} from '@backstage/backend-plugin-api';
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { GitlabOrgDiscoveryEntityProvider } from '@backstage/plugin-catalog-backend-module-gitlab';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
@@ -35,7 +37,7 @@ describe('catalogModuleGitlabOrgDiscoveryEntityProvider', () => {
       },
     });
     let addedProviders: Array<GitlabOrgDiscoveryEntityProvider> | undefined;
-    let usedSchedule: TaskScheduleDefinition | undefined;
+    let usedSchedule: SchedulerServiceTaskScheduleDefinition | undefined;
 
     const extensionPoint = {
       addEntityProvider: (providers: any) => {

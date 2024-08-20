@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-devtools-common",
-  "version": "0.1.12-next.1",
+  "version": "0.1.12",
   "description": "Common functionalities for the devtools plugin",
   "backstage": {
     "role": "common-library",

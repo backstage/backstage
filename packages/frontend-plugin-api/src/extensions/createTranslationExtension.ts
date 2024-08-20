@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
+import { TranslationBlueprint } from '../blueprints/TranslationBlueprint';
 import { TranslationMessages, TranslationResource } from '../translation';
-import { createExtension, createExtensionDataRef } from '../wiring';
+import { createExtension } from '../wiring';
 
 /**
  * @public
@@ -31,7 +32,7 @@ export function createTranslationExtension(options: {
     name: options.name,
     attachTo: { id: 'app', input: 'translations' },
     output: {
-      resource: createTranslationExtension.translationDataRef,
+      resource: TranslationBlueprint.dataRefs.translation,
     },
     factory: () => ({ resource: options.resource }),
   });
@@ -42,7 +43,5 @@ export function createTranslationExtension(options: {
  * @deprecated Use {@link TranslationBlueprint} instead.
  */
 export namespace createTranslationExtension {
-  export const translationDataRef = createExtensionDataRef<
-    TranslationResource | TranslationMessages
-  >().with({ id: 'core.translation.translation' });
+  export const translationDataRef = TranslationBlueprint.dataRefs.translation;
 }

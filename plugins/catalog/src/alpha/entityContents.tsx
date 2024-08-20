@@ -19,27 +19,38 @@ import {
   coreExtensionData,
   createExtensionInput,
 } from '@backstage/frontend-plugin-api';
-import {
-  createEntityContentExtension,
-  catalogExtensionData,
-} from '@backstage/plugin-catalog-react/alpha';
+import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
-export const catalogOverviewEntityContent = createEntityContentExtension({
-  name: 'overview',
-  defaultPath: '/',
-  defaultTitle: 'Overview',
-  disabled: false,
-  inputs: {
-    cards: createExtensionInput({
-      element: coreExtensionData.reactElement,
-      filterFunction: catalogExtensionData.entityFilterFunction.optional(),
-      filterExpression: catalogExtensionData.entityFilterExpression.optional(),
-    }),
-  },
-  loader: async ({ inputs }) =>
-    import('./EntityOverviewPage').then(m => (
-      <m.EntityOverviewPage cards={inputs.cards.map(c => c.output)} />
-    )),
-});
+export const catalogOverviewEntityContent =
+  EntityContentBlueprint.makeWithOverrides({
+    name: 'overview',
+    inputs: {
+      cards: createExtensionInput([
+        coreExtensionData.reactElement,
+        EntityContentBlueprint.dataRefs.filterFunction.optional(),
+        EntityContentBlueprint.dataRefs.filterExpression.optional(),
+      ]),
+    },
+    factory: (originalFactory, { inputs }) => {
+      return originalFactory({
+        defaultPath: '/',
+        defaultTitle: 'Overview',
+        loader: async () =>
+          import('./EntityOverviewPage').then(m => (
+            <m.EntityOverviewPage
+              cards={inputs.cards.map(c => ({
+                element: c.get(coreExtensionData.reactElement),
+                filterFunction: c.get(
+                  EntityContentBlueprint.dataRefs.filterFunction,
+                ),
+                filterExpression: c.get(
+                  EntityContentBlueprint.dataRefs.filterExpression,
+                ),
+              }))}
+            />
+          )),
+      });
+    },
+  });
 
 export default [catalogOverviewEntityContent];

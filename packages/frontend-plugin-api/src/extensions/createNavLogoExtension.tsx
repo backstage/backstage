@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { createExtension, createExtensionDataRef } from '../wiring';
+import { createExtension } from '../wiring';
+import { NavLogoBlueprint } from '../blueprints/NavLogoBlueprint';
 
 /**
  * Helper for creating extensions for a nav logos.
@@ -35,7 +36,7 @@ export function createNavLogoExtension(options: {
     namespace: options?.namespace,
     attachTo: { id: 'app/nav', input: 'logos' },
     output: {
-      logos: createNavLogoExtension.logoElementsDataRef,
+      logos: NavLogoBlueprint.dataRefs.logoElements,
     },
     factory: () => {
       return {
@@ -48,10 +49,13 @@ export function createNavLogoExtension(options: {
   });
 }
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use {@link NavLogoBlueprint} instead.
+ */
 export namespace createNavLogoExtension {
-  export const logoElementsDataRef = createExtensionDataRef<{
-    logoIcon?: JSX.Element;
-    logoFull?: JSX.Element;
-  }>().with({ id: 'core.nav-logo.logo-elements' });
+  /**
+   * @deprecated Use {@link NavLogoBlueprint} instead.
+   */
+  export const logoElementsDataRef = NavLogoBlueprint.dataRefs.logoElements;
 }

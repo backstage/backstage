@@ -40,7 +40,11 @@ export {
   type ExtensionDataValue,
   type ConfigurableExtensionDataRef,
 } from './createExtensionDataRef';
-export { createPlugin, type PluginOptions } from './createPlugin';
+export {
+  createPlugin,
+  createFrontendPlugin,
+  type PluginOptions,
+} from './createFrontendPlugin';
 export {
   createExtensionOverrides,
   type ExtensionOverridesOptions,

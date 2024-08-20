@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import { AwsS3Integration, ScmIntegrations } from '@backstage/integration';
 import {
@@ -36,7 +35,11 @@ import {
   AwsCredentialsManager,
   DefaultAwsCredentialsManager,
 } from '@backstage/integration-aws-node';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  LoggerService,
+  SchedulerService,
+  SchedulerServiceTaskRunner,
+} from '@backstage/backend-plugin-api';
 
 // TODO: event-based updates using S3 events (+ queue like SQS)?
 /**
@@ -57,8 +60,8 @@ export class AwsS3EntityProvider implements EntityProvider {
     configRoot: Config,
     options: {
       logger: LoggerService;
-      schedule?: TaskRunner;
-      scheduler?: PluginTaskScheduler;
+      schedule?: SchedulerServiceTaskRunner;
+      scheduler?: SchedulerService;
     },
   ): AwsS3EntityProvider[] {
     const providerConfigs = readAwsS3Configs(configRoot);
@@ -107,7 +110,7 @@ export class AwsS3EntityProvider implements EntityProvider {
     private readonly integration: AwsS3Integration,
     private readonly awsCredentialsManager: AwsCredentialsManager,
     logger: LoggerService,
-    taskRunner: TaskRunner,
+    taskRunner: SchedulerServiceTaskRunner,
   ) {
     this.logger = logger.child({
       target: this.getProviderName(),
@@ -116,7 +119,9 @@ export class AwsS3EntityProvider implements EntityProvider {
     this.scheduleFn = this.createScheduleFn(taskRunner);
   }
 
-  private createScheduleFn(taskRunner: TaskRunner): () => Promise<void> {
+  private createScheduleFn(
+    taskRunner: SchedulerServiceTaskRunner,
+  ): () => Promise<void> {
     return async () => {
       const taskId = `${this.getProviderName()}:refresh`;
       return taskRunner.run({

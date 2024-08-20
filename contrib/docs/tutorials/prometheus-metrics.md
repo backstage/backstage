@@ -1,5 +1,8 @@
 # Prometheus
 
+> [!NOTE]
+> The Prometheus metrics have been marked as deprecated and will be removed at a later point. The recommendation is to use the OpenTelemetry metrics by following the [Setup OpenTelemetry](https://backstage.io/docs/tutorials/setup-opentelemetry) documentation
+
 ## Overview
 
 This is a small tutorial that goes over how to setup your Backstage instance to output metrics in a format that can be pulled in by Prometheus.

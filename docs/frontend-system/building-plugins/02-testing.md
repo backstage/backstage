@@ -41,7 +41,7 @@ describe('Entity details component', () => {
 });
 ```
 
-To mock [Utility APIs](../architecture/06-utility-apis.md) that are used by your component you can use the `TestApiProvider` to override individual API implementations. In the snippet below, we wrap the component within a `TestApiProvider` in order to mock the catalog client API:
+To mock [Utility APIs](../architecture/33-utility-apis.md) that are used by your component you can use the `TestApiProvider` to override individual API implementations. In the snippet below, we wrap the component within a `TestApiProvider` in order to mock the catalog client API:
 
 ```tsx
 import React from 'react';
@@ -85,6 +85,8 @@ describe('Entity details component', () => {
 });
 ```
 
+This pattern also works for many other context providers. An important example is the `EntityProvider` from the `@backstage/plugin-catalog-react` package, which you can use to provide a mocked entity context to the component.
+
 ## Testing extensions
 
 To facilitate testing of frontend extensions, the `@backstage/frontend-test-utils` package provides a tester class which starts up an entire frontend harness, complete with a number of default features. You can then provide overrides for extensions whose behavior you need to adjust for the test run.
@@ -93,7 +95,7 @@ A number of features (frontend extensions and overrides) are also accepted by th
 
 ### Single extension
 
-In order to test an extension in isolation, you simply need to pass it into the tester factory, then call the render method on the returned instance:
+In order to test an extension in isolation, you can use `createExtensionTester` to create a tester instance and access the element that the extension outputs. This element can then be rendered as usual with `renderInTestApp`:
 
 ```tsx
 import { screen } from '@testing-library/react';
@@ -101,90 +103,49 @@ import { createExtensionTester } from '@backstage/frontend-test-utils';
 import { indexPageExtension } from './plugin';
 
 describe('Index page', () => {
-  it('should render a the index page', () => {
-    createExtensionTester(indexPageExtension).render();
+  it('should render a the index page', async () => {
+    await renderInTestApp(
+      createExtensionTester(indexPageExtension).reactElement(),
+    );
 
     expect(screen.getByText('Index Page')).toBeInTheDocument();
   });
 });
 ```
 
-### Extension preset
+This pattern also allows you to wrap the extension with context providers, such as the `TestApiProvider` that was introduced [above](#testing-react-components).
 
-There are some extensions that rely on other extensions existence, such as a page that links to another page. In that case, you can add more than one extension to the preset of features you want to render in the test, as shown below:
+Note that the `.reactElement()` method will look for the `coreExtensionData.reactElement` data in the extension outputs. If that doesn't exist and the extension outputs something else that you want to test, you can access the output data using the `.get(dataRef)` method instead.
+
+### Multiple extensions
+
+In some cases you might need to test multiple extensions together, in particular when testing inputs. In this case, you can add more extensions to the tester instance using the `.add(...)` method. It also accepts an optional options object as the second argument, which you can use to provide configuration for the extension instance.
 
 ```tsx
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createExtensionTester } from '@backstage/frontend-test-utils';
-import { indexPageExtension, detailsPageExtension } from './plugin';
+import { indexPageExtension, indexPageHeader } from './plugin';
 
 describe('Index page', async () => {
-  it('should link to the details page', () => {
-    createExtensionTester(indexPageExtension)
-      // Adding more extensions to the preset being tested
-      .add(detailsPageExtension)
-      .render();
+  it('should link to the index page with header', async () => {
+    const tester = createExtensionTester(indexPageExtension)
+      // Adding the header to be rendered on the index page
+      .add(indexPageHeader);
 
-    await expect(screen.findByText('Index Page')).toBeInTheDocument();
+    await renderInTestApp(tester.reactElement());
 
-    await userEvent.click(screen.getByRole('link', { name: 'See details' }));
+    await expect(screen.findByText('Index page')).toBeInTheDocument();
+    await expect(screen.findByText('Index page header')).toBeInTheDocument();
 
-    await expect(
-      screen.findByText('Details Page'),
-    ).resolves.toBeInTheDocument();
+    expect(
+      tester.query(indexPageHeader).get(headerDataRef),
+    ).toMatchObject(/* ... */);
   });
 });
 ```
 
-### Mocking apis
-
-If your extensions requires implementation of APIs that aren't wired up by default, you'll have to add overrides to the preset of features being tested:
-
-```tsx
-import { screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { createApiFactory } from '@backestage/core-plugin-api';
-import {
-  createExtensionOverrides,
-  configApiRef,
-  analyticsApiRef,
-} from '@backstage/frontend-plugin-api';
-import {
-  createExtensionTester,
-  MockConfigApi,
-  MockAnalyticsApi,
-} from '@backstage/frontend-test-utils';
-import { indexPageExtension } from './plugin';
-
-describe('Index page', () => {
-  it('should capture click events in analytics', async () => {
-    // Mocking the analytics api implementation
-    const analyticsApiMock = new MockAnalyticsApi();
-
-    const analyticsApiOverride = createApiExtension({
-      factory: createApiFactory({
-        api: analyticsApiRef,
-        factory: () => analyticsApiMock,
-      }),
-    });
-
-    createExtensionTester(indexPageExtension)
-      // Overriding the analytics api extension
-      .add(analyticsApiOverride)
-      .render();
-
-    await userEvent.click(
-      await screen.findByRole('link', { name: 'See details' }),
-    );
-
-    expect(analyticsApiMock.getEvents()[0]).toMatchObject({
-      action: 'click',
-      subject: 'See details',
-    });
-  });
-});
-```
+When testing multiple extensions you may sometimes want to access the output of other extensions than the main test subject. You can use the `.query(ext)` method to query a different extension that has been added to the tester, by passing the extension used with the `createExtensionTester(...).add(ext)`
 
 ### Setting configuration
 
@@ -198,36 +159,26 @@ import { indexPageExtension, detailsPageExtension } from './plugin';
 
 describe('Index page', () => {
   it('should accepts a custom title via config', async () => {
-    createExtensionTester(indexPageExtension, {
-      // Configuration specific of index page
-      config: { title: 'Custom index' },
-    })
-      .add(detailsExtensionPage, {
-        // Configuration specific of details page
-        config: { title: 'Custom details' },
-      })
-      .render({
-        // Configuration specific of the instance
-        config: {
-          app: {
-            title: 'Custom app',
-          },
+    const tester = createExtensionTester(indexPageExtension, {
+      // Extension configuration for the index page
+      config: { title: 'Custom page' },
+    }).add(indexPageHeader, {
+      // Extension configuration for the index page header
+      config: { title: 'Custom page header' },
+    });
+
+    await renderInTestApp(tester.reactElement(), {
+      // Global configuration for the app
+      config: {
+        app: {
+          title: 'Custom app',
         },
-      });
+      },
+    });
 
-    await expect(
-      screen.findByRole('heading', { name: 'Custom app' }),
-    ).resolves.toBeInTheDocument();
-
-    await expect(
-      screen.findByRole('heading', { name: 'Custom index' }),
-    ).resolves.toBeInTheDocument();
-
-    await userEvent.click(screen.getByRole('link', { name: 'See details' }));
-
-    await expect(
-      screen.findByText('Custom details'),
-    ).resolves.toBeInTheDocument();
+    await expect(screen.findByText('Custom app')).toBeInTheDocument();
+    await expect(screen.findByText('Custom page')).toBeInTheDocument();
+    await expect(screen.findByText('Custom page header')).toBeInTheDocument();
   });
 });
 ```

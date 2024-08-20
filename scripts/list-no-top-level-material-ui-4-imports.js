@@ -25,11 +25,7 @@ async function main() {
 
   for (const pkg of packages) {
     pkgRole = pkg.packageJson.backstage?.role;
-    if (
-      pkgRole === 'frontend-plugin' ||
-      pkgRole === 'web-library' ||
-      pkgRole === 'frontend-extensions'
-    ) {
+    if (pkgRole === 'frontend-plugin' || pkgRole === 'web-library') {
       const depKeys = Object.keys(pkg.packageJson.dependencies);
       if (depKeys.findIndex(d => d.includes('@material-ui')) !== -1) {
         const eslintrcPath = join(pkg.dir, '.eslintrc.js');

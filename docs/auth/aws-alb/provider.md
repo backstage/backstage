@@ -11,20 +11,26 @@ and get the user seamlessly authenticated.
 ## Configuration
 
 The provider configuration can be added to your `app-config.yaml` under the root
-`auth` configuration:
+`auth` configuration, similar to the following example:
 
 ```yaml title="app-config.yaml"
 auth:
   providers:
     awsalb:
-      issuer: 'https://example.okta.com/oauth2/default' # optional
-      region: 'us-west-2' # required, use your actual region here
+      # this is the URL of the IdP you configured
+      issuer: 'https://example.okta.com/oauth2/default'
+      # this is the ARN of your ALB instance
+      signer: 'arn:aws:elasticloadbalancing:us-east-2:123456789012:loadbalancer/app/my-load-balancer/1234567890123456'
+      # this is the region where your ALB instance resides
+      region: 'us-west-2'
       signIn:
         resolvers:
           # typically you would pick one of these
           - resolver: emailMatchingUserEntityProfileEmail
           - resolver: emailLocalPartMatchingUserEntityName
 ```
+
+Ensure that you have set the signer correctly. It is also recommended that you restrict your target groups' security policy to only accept connections from that ALB.
 
 ### Resolvers
 

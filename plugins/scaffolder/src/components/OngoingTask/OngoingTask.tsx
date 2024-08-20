@@ -43,6 +43,8 @@ import {
   taskCreatePermission,
   RESOURCE_TYPE_SCAFFOLDER_TASK,
 } from '@backstage/plugin-scaffolder-common/alpha';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../translation';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -86,6 +88,7 @@ export const OngoingTask = (props: {
       })) ?? [],
     [taskStream],
   );
+  const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const [logsVisible, setLogVisibleState] = useState(false);
   const [buttonBarVisible, setButtonBarVisibleState] = useState(true);
@@ -168,7 +171,7 @@ export const OngoingTask = (props: {
   const Outputs = props.TemplateOutputsComponent ?? DefaultTemplateOutputs;
 
   const templateName =
-    taskStream.task?.spec.templateInfo?.entity?.metadata.name;
+    taskStream.task?.spec.templateInfo?.entity?.metadata.name || '';
 
   const cancelEnabled = !(taskStream.cancelled || taskStream.completed);
 
@@ -176,14 +179,16 @@ export const OngoingTask = (props: {
     <Page themeId="website">
       <Header
         pageTitleOverride={
-          templateName ? `Run of ${templateName}` : `Scaffolder Run`
+          templateName
+            ? t('ongoingTask.pageTitle.hasTemplateName', { templateName })
+            : t('ongoingTask.pageTitle.noTemplateName')
         }
         title={
           <div>
-            Run of <code>{templateName}</code>
+            {t('ongoingTask.title')} <code>{templateName}</code>
           </div>
         }
-        subtitle={`Task ${taskId}`}
+        subtitle={t('ongoingTask.subtitle', { taskId: taskId as string })}
       >
         <ContextMenu
           cancelEnabled={cancelEnabled}
@@ -232,7 +237,7 @@ export const OngoingTask = (props: {
                     onClick={triggerCancel}
                     data-testid="cancel-button"
                   >
-                    Cancel
+                    {t('ongoingTask.cancelButtonTitle')}
                   </Button>
                   <Button
                     className={classes.logsVisibilityButton}
@@ -240,7 +245,9 @@ export const OngoingTask = (props: {
                     variant="outlined"
                     onClick={() => setLogVisibleState(!logsVisible)}
                   >
-                    {logsVisible ? 'Hide Logs' : 'Show Logs'}
+                    {logsVisible
+                      ? t('ongoingTask.hideLogsButtonTitle')
+                      : t('ongoingTask.showLogsButtonTitle')}
                   </Button>
                   <Button
                     variant="contained"
@@ -249,7 +256,7 @@ export const OngoingTask = (props: {
                     onClick={startOver}
                     data-testid="start-over-button"
                   >
-                    Start Over
+                    {t('ongoingTask.startOverButtonTitle')}
                   </Button>
                 </div>
               </Box>

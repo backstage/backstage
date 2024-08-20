@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { TaskRunner } from '@backstage/backend-tasks';
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
@@ -78,7 +77,10 @@ import {
 } from '../lib/github';
 import { splitTeamSlug } from '../lib/util';
 import { areGroupEntities, areUserEntities } from '../lib/guards';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  LoggerService,
+  SchedulerServiceTaskRunner,
+} from '@backstage/backend-plugin-api';
 
 const EVENT_TOPICS = [
   'github.installation',
@@ -128,10 +130,10 @@ export interface GithubMultiOrgEntityProviderOptions {
    * manually at some interval.
    *
    * But more commonly you will pass in the result of
-   * {@link @backstage/backend-tasks#PluginTaskScheduler.createScheduledTaskRunner}
+   * {@link @backstage/backend-plugin-api#SchedulerService.createScheduledTaskRunner}
    * to enable automatic scheduling of tasks.
    */
-  schedule?: 'manual' | TaskRunner;
+  schedule?: 'manual' | SchedulerServiceTaskRunner;
 
   /**
    * The logger to use.
