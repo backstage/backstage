@@ -1,5 +1,13 @@
 # @backstage/plugin-bitbucket-cloud-common
 
+## 0.2.22
+
+### Patch Changes
+
+- 3fca643: Added method `listBranchesByRepository` to `BitbucketCloudClient`
+- Updated dependencies
+  - @backstage/integration@1.14.0
+
 ## 0.2.22-next.1
 
 ### Patch Changes

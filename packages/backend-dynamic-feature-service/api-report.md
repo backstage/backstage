@@ -25,15 +25,15 @@ import { PermissionPolicy } from '@backstage/plugin-permission-node';
 import { PluginCacheManager } from '@backstage/backend-common';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { Router } from 'express';
+import { SchedulerService } from '@backstage/backend-plugin-api';
+import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
 import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
-import { TaskRunner } from '@backstage/backend-tasks';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { TokenManager } from '@backstage/backend-common';
-import { UrlReader } from '@backstage/backend-common';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
 export interface BackendDynamicPlugin extends BaseDynamicPlugin {
@@ -210,7 +210,7 @@ export interface LegacyBackendPluginInstaller {
   // (undocumented)
   search?(
     indexBuilder: IndexBuilder,
-    schedule: TaskRunner,
+    schedule: SchedulerServiceTaskRunner,
     env: LegacyPluginEnvironment,
   ): void;
 }
@@ -221,11 +221,11 @@ export type LegacyPluginEnvironment = {
   cache: PluginCacheManager;
   database: PluginDatabaseManager;
   config: Config;
-  reader: UrlReader;
+  reader: UrlReaderService;
   discovery: PluginEndpointDiscovery;
   tokenManager: TokenManager;
   permissions: PermissionEvaluator;
-  scheduler: PluginTaskScheduler;
+  scheduler: SchedulerService;
   identity: IdentityApi;
   eventBroker: EventBroker;
   events: EventsService;

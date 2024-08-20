@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { SchedulerService } from '@backstage/backend-plugin-api';
 import { TestDatabases, mockServices } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { IncrementalEntityProvider } from '../types';
@@ -66,8 +66,7 @@ describe('WrapperProviders', () => {
         config,
         logger,
         client,
-        scheduler:
-          scheduler as Partial<PluginTaskScheduler> as PluginTaskScheduler,
+        scheduler: scheduler as Partial<SchedulerService> as SchedulerService,
         applyDatabaseMigrations,
       });
       const wrapped1 = providers.wrap(provider1, {

@@ -16,9 +16,6 @@
 
 import { AppNode } from '../apis';
 import {
-  AnyExtensionDataMap,
-  AnyExtensionInputMap,
-  ExtensionDataValues,
   ExtensionDefinition,
   ResolvedExtensionInputs,
   toInternalExtensionDefinition,
@@ -47,13 +44,27 @@ export type InternalExtension<TConfig, TConfigInput> = Extension<
   (
     | {
         readonly version: 'v1';
-        readonly inputs: AnyExtensionInputMap;
-        readonly output: AnyExtensionDataMap;
-        factory(options: {
+        readonly inputs: {
+          [inputName in string]: {
+            $$type: '@backstage/ExtensionInput';
+            extensionData: {
+              [name in string]: AnyExtensionDataRef;
+            };
+            config: { optional: boolean; singleton: boolean };
+          };
+        };
+        readonly output: {
+          [name in string]: AnyExtensionDataRef;
+        };
+        factory(context: {
           node: AppNode;
           config: TConfig;
-          inputs: ResolvedExtensionInputs<AnyExtensionInputMap>;
-        }): ExtensionDataValues<any>;
+          inputs: {
+            [inputName in string]: unknown;
+          };
+        }): {
+          [inputName in string]: unknown;
+        };
       }
     | {
         readonly version: 'v2';
@@ -94,13 +105,51 @@ export function toInternalExtension<TConfig, TConfigInput>(
   return internal;
 }
 
+/** @ignore */
+export type ResolveExtensionId<
+  TExtension extends ExtensionDefinition<any>,
+  TDefaultNamespace extends string | undefined,
+> = TExtension extends ExtensionDefinition<
+  any,
+  any,
+  any,
+  any,
+  {
+    kind: infer IKind extends string | undefined;
+    namespace: infer INamespace extends string | undefined;
+    name: infer IName extends string | undefined;
+  }
+>
+  ? [string | undefined] extends [IKind | INamespace | IName]
+    ? never
+    : (
+        (
+          undefined extends TDefaultNamespace ? INamespace : TDefaultNamespace
+        ) extends infer ISelectedNamespace extends string
+          ? undefined extends IName
+            ? ISelectedNamespace
+            : `${ISelectedNamespace}/${IName}`
+          : IName
+      ) extends infer INamePart extends string
+    ? IKind extends string
+      ? `${IKind}:${INamePart}`
+      : INamePart
+    : never
+  : never;
+
 /** @internal */
 export function resolveExtensionDefinition<TConfig, TConfigInput>(
   definition: ExtensionDefinition<TConfig, TConfigInput>,
   context?: { namespace?: string },
 ): Extension<TConfig, TConfigInput> {
   const internalDefinition = toInternalExtensionDefinition(definition);
-  const { name, kind, namespace: _, ...rest } = internalDefinition;
+  const {
+    name,
+    kind,
+    namespace: _skip1,
+    override: _skip2,
+    ...rest
+  } = internalDefinition;
   const namespace = internalDefinition.namespace ?? context?.namespace;
 
   const namePart =

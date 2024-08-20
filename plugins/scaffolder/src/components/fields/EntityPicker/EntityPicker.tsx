@@ -44,6 +44,8 @@ import {
   EntityPickerFilterQuery,
 } from './schema';
 import { VirtualizedListbox } from '../VirtualizedListbox';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../../translation';
 
 export { EntityPickerSchema } from './schema';
 
@@ -54,9 +56,13 @@ export { EntityPickerSchema } from './schema';
  * @public
  */
 export const EntityPicker = (props: EntityPickerProps) => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const {
     onChange,
-    schema: { title = 'Entity', description = 'An entity from the catalog' },
+    schema: {
+      title = t('fields.entityPicker.title'),
+      description = t('fields.entityPicker.description'),
+    },
     required,
     uiSchema,
     rawErrors,

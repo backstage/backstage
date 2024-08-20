@@ -17,10 +17,7 @@
 import {
   createLegacyAuthAdapters,
   HostDiscovery,
-  PluginDatabaseManager,
-  UrlReader,
 } from '@backstage/backend-common';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import {
   DefaultNamespaceEntityPolicy,
   Entity,
@@ -110,10 +107,14 @@ import { EventBroker, EventsService } from '@backstage/plugin-events-node';
 import { durationToMilliseconds } from '@backstage/types';
 import {
   AuthService,
+  DatabaseService,
   DiscoveryService,
   HttpAuthService,
   LoggerService,
   PermissionsService,
+  RootConfigService,
+  UrlReaderService,
+  SchedulerService,
 } from '@backstage/backend-plugin-api';
 
 /**
@@ -125,14 +126,17 @@ export type CatalogPermissionRuleInput<
   TParams extends PermissionRuleParams = PermissionRuleParams,
 > = PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
 
-/** @public */
+/**
+ * @deprecated Please migrate to the new backend system as this will be removed in the future.
+ * @public
+ */
 export type CatalogEnvironment = {
   logger: LoggerService;
-  database: PluginDatabaseManager;
-  config: Config;
-  reader: UrlReader;
+  database: DatabaseService;
+  config: RootConfigService;
+  reader: UrlReaderService;
   permissions: PermissionsService | PermissionAuthorizer;
-  scheduler?: PluginTaskScheduler;
+  scheduler?: SchedulerService;
   discovery?: DiscoveryService;
   auth?: AuthService;
   httpAuth?: HttpAuthService;
@@ -162,6 +166,7 @@ export type CatalogEnvironment = {
  *   persisted in the catalog.
  *
  * @public
+ * @deprecated Please migrate to the new backend system as this will be removed in the future.
  */
 export class CatalogBuilder {
   private readonly env: CatalogEnvironment;

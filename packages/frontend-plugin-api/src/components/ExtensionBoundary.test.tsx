@@ -30,24 +30,26 @@ import {
 } from '@backstage/core-plugin-api';
 import { createRouteRef } from '../routing';
 import { createExtensionTester } from '@backstage/frontend-test-utils';
-import { createApiExtension } from '../extensions';
+import { ApiBlueprint } from '../blueprints';
 
 const wrapInBoundaryExtension = (element?: JSX.Element) => {
   const routeRef = createRouteRef();
   return createExtension({
     name: 'test',
     attachTo: { id: 'app/routes', input: 'routes' },
-    output: {
-      element: coreExtensionData.reactElement,
-      path: coreExtensionData.routePath,
-      routeRef: coreExtensionData.routeRef.optional(),
-    },
+    output: [
+      coreExtensionData.reactElement,
+      coreExtensionData.routePath,
+      coreExtensionData.routeRef.optional(),
+    ],
     factory({ node }) {
-      return {
-        routeRef,
-        path: '/',
-        element: <ExtensionBoundary node={node}>{element}</ExtensionBoundary>,
-      };
+      return [
+        coreExtensionData.reactElement(
+          <ExtensionBoundary node={node}>{element}</ExtensionBoundary>,
+        ),
+        coreExtensionData.routePath('/'),
+        coreExtensionData.routeRef(routeRef),
+      ];
     },
   });
 };
@@ -134,8 +136,11 @@ describe('ExtensionBoundary', () => {
     await act(async () => {
       createExtensionTester(wrapInBoundaryExtension(<Emitter />))
         .add(
-          createApiExtension({
-            factory: createApiFactory(analyticsApiRef, analyticsApiMock),
+          ApiBlueprint.make({
+            namespace: analyticsApiRef.id,
+            params: {
+              factory: createApiFactory(analyticsApiRef, analyticsApiMock),
+            },
           }),
         )
         .render();

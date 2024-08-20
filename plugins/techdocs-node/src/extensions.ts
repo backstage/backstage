@@ -25,7 +25,7 @@ import {
 import * as winston from 'winston';
 
 /**
- * Extension point type for configuring Techdocs builds.
+ * Extension point type for configuring TechDocs builds.
  *
  * @public
  */
@@ -35,7 +35,7 @@ export interface TechdocsBuildsExtensionPoint {
 }
 
 /**
- * Extension point for configuring Techdocs builds.
+ * Extension point for configuring TechDocs builds.
  *
  * @public
  */
@@ -45,7 +45,7 @@ export const techdocsBuildsExtensionPoint =
   });
 
 /**
- * Extension point type for configuring a custom Techdocs generator
+ * Extension point type for configuring a custom TechDocs generator
  *
  * @public
  */
@@ -54,7 +54,7 @@ export interface TechdocsGeneratorExtensionPoint {
 }
 
 /**
- * Extension point for configuring a custom Techdocs generator
+ * Extension point for configuring a custom TechDocs generator
  *
  * @public
  */
@@ -64,7 +64,7 @@ export const techdocsGeneratorExtensionPoint =
   });
 
 /**
- * Extension point type for configuring a custom Techdocs preparer
+ * Extension point type for configuring a custom TechDocs preparer
  *
  * @public
  */
@@ -73,7 +73,7 @@ export interface TechdocsPreparerExtensionPoint {
 }
 
 /**
- * Extension point for configuring a custom Techdocs preparer
+ * Extension point for configuring a custom TechDocs preparer
  *
  * @public
  */
@@ -83,7 +83,7 @@ export const techdocsPreparerExtensionPoint =
   });
 
 /**
- * Extension point type for configuring a custom Techdocs publisher
+ * Extension point type for configuring a custom TechDocs publisher
  *
  * @public
  */
@@ -92,7 +92,7 @@ export interface TechdocsPublisherExtensionPoint {
 }
 
 /**
- * Extension point for configuring a custom Techdocs publisher
+ * Extension point for configuring a custom TechDocs publisher
  *
  * @public
  */

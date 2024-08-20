@@ -19,20 +19,20 @@ import { MemoryRouter, Link } from 'react-router-dom';
 import { RenderResult, render } from '@testing-library/react';
 import { createSpecializedApp } from '@backstage/frontend-app-api';
 import {
-  ExtensionDataValue,
+  AnyExtensionDataRef,
   AppNode,
   AppTree,
   Extension,
   ExtensionDataRef,
   ExtensionDefinition,
   IconComponent,
+  NavItemBlueprint,
   RouteRef,
+  RouterBlueprint,
   coreExtensionData,
   createExtension,
   createExtensionInput,
   createExtensionOverrides,
-  createNavItemExtension,
-  createRouterExtension,
   useRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { Config, ConfigReader } from '@backstage/config';
@@ -74,35 +74,34 @@ const TestAppNavExtension = createExtension({
   name: 'nav',
   attachTo: { id: 'app/layout', input: 'nav' },
   inputs: {
-    items: createExtensionInput({
-      target: createNavItemExtension.targetDataRef,
-    }),
+    items: createExtensionInput([NavItemBlueprint.dataRefs.target]),
   },
-  output: {
-    element: coreExtensionData.reactElement,
-  },
+  output: [coreExtensionData.reactElement],
   factory({ inputs }) {
-    return {
-      element: (
+    return [
+      coreExtensionData.reactElement(
         <nav>
           <ul>
-            {inputs.items.map((item, index) => (
-              <NavItem
-                key={index}
-                icon={item.output.target.icon}
-                title={item.output.target.title}
-                routeRef={item.output.target.routeRef}
-              />
-            ))}
+            {inputs.items.map((item, index) => {
+              const target = item.get(NavItemBlueprint.dataRefs.target);
+              return (
+                <NavItem
+                  key={index}
+                  icon={target.icon}
+                  title={target.title}
+                  routeRef={target.routeRef}
+                />
+              );
+            })}
           </ul>
-        </nav>
+        </nav>,
       ),
-    };
+    ];
   },
 });
 
 /** @public */
-export class ExtensionQuery {
+export class ExtensionQuery<UOutput extends AnyExtensionDataRef> {
   #node: AppNode;
 
   constructor(node: AppNode) {
@@ -125,61 +124,26 @@ export class ExtensionQuery {
     return instance;
   }
 
-  data<T>(ref: ExtensionDataRef<T>): T | undefined {
+  get<TId extends UOutput['id']>(
+    ref: ExtensionDataRef<any, TId, any>,
+  ): UOutput extends ExtensionDataRef<infer IData, TId, infer IConfig>
+    ? IConfig['optional'] extends true
+      ? IData | undefined
+      : IData
+    : never {
     return this.instance.getData(ref);
   }
 }
 
 /** @public */
-export class ExtensionTester {
+export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
   /** @internal */
-  static forSubject<TConfig, TConfigInput>(
+  static forSubject<TConfig, TConfigInput, UOutput extends AnyExtensionDataRef>(
     subject: ExtensionDefinition<TConfig, TConfigInput>,
     options?: { config?: TConfigInput },
-  ): ExtensionTester {
+  ): ExtensionTester<UOutput> {
     const tester = new ExtensionTester();
-    const internal = toInternalExtensionDefinition(subject);
-
-    // attaching to app/routes to render as index route
-    if (internal.version === 'v1') {
-      tester.add(
-        createExtension({
-          ...internal,
-          attachTo: { id: 'app/routes', input: 'routes' },
-          output: {
-            ...internal.output,
-            path: coreExtensionData.routePath,
-          },
-          factory: params => ({
-            ...internal.factory(params as any),
-            path: '/',
-          }),
-        }),
-        options as TConfigInput & {},
-      );
-    } else if (internal.version === 'v2') {
-      tester.add(
-        createExtension({
-          ...internal,
-          attachTo: { id: 'app/routes', input: 'routes' },
-          output: internal.output.find(
-            ref => ref.id === coreExtensionData.routePath.id,
-          )
-            ? internal.output
-            : [...internal.output, coreExtensionData.routePath],
-          factory: params => {
-            const parentOutput = Array.from(
-              internal.factory(params) as Iterable<
-                ExtensionDataValue<any, any>
-              >,
-            ).filter(val => val.id !== coreExtensionData.routePath.id);
-
-            return [...parentOutput, coreExtensionData.routePath('/')];
-          },
-        }),
-        options as TConfigInput & {},
-      );
-    }
+    tester.add(subject, options as TConfigInput & {});
     return tester;
   }
 
@@ -195,7 +159,7 @@ export class ExtensionTester {
   add<TConfig, TConfigInput>(
     extension: ExtensionDefinition<TConfig, TConfigInput>,
     options?: { config?: TConfigInput },
-  ): ExtensionTester {
+  ): ExtensionTester<UOutput> {
     if (this.#tree) {
       throw new Error(
         'Cannot add more extensions accessing the extension tree',
@@ -222,17 +186,24 @@ export class ExtensionTester {
     return this;
   }
 
-  data<T>(ref: ExtensionDataRef<T>): T | undefined {
+  get<TId extends UOutput['id']>(
+    ref: ExtensionDataRef<any, TId, any>,
+  ): UOutput extends ExtensionDataRef<infer IData, TId, infer IConfig>
+    ? IConfig['optional'] extends true
+      ? IData | undefined
+      : IData
+    : never {
     const tree = this.#resolveTree();
 
-    return new ExtensionQuery(tree.root).data(ref);
+    return new ExtensionQuery(tree.root).get(ref);
   }
 
-  query(id: string | ExtensionDefinition<any, any>): ExtensionQuery {
+  query<UQueryExtensionOutput extends AnyExtensionDataRef>(
+    extension: ExtensionDefinition<any, any, UQueryExtensionOutput>,
+  ): ExtensionQuery<UQueryExtensionOutput> {
     const tree = this.#resolveTree();
 
-    const actualId =
-      typeof id === 'string' ? id : resolveExtensionDefinition(id).id;
+    const actualId = resolveExtensionDefinition(extension).id;
 
     const node = tree.nodes.get(actualId);
 
@@ -248,6 +219,25 @@ export class ExtensionTester {
     return new ExtensionQuery(node);
   }
 
+  reactElement(): JSX.Element {
+    const tree = this.#resolveTree();
+
+    const element = new ExtensionQuery(tree.root).get(
+      coreExtensionData.reactElement,
+    );
+
+    if (!element) {
+      throw new Error(
+        'No element found. Make sure the extension has a `coreExtensionData.reactElement` output, or use the `.get(...)` to access output data directly instead',
+      );
+    }
+
+    return element;
+  }
+
+  /**
+   * @deprecated Switch to using `renderInTestApp` directly and using `.reactElement()` or `.get(...)` to get the component you w
+   */
   render(options?: { config?: JsonObject }): RenderResult {
     const { config = {} } = options ?? {};
 
@@ -258,17 +248,47 @@ export class ExtensionTester {
       );
     }
 
+    const subjectInternal = toInternalExtensionDefinition(subject.definition);
+    let subjectOverride;
+    // attaching to app/routes to render as index route
+    if (subjectInternal.version === 'v1') {
+      throw new Error('The extension tester does not support v1 extensions');
+    } else if (subjectInternal.version === 'v2') {
+      subjectOverride = createExtension({
+        ...subjectInternal,
+        attachTo: { id: 'app/routes', input: 'routes' },
+        output: subjectInternal.output.find(
+          ref => ref.id === coreExtensionData.routePath.id,
+        )
+          ? subjectInternal.output
+          : [...subjectInternal.output, coreExtensionData.routePath],
+        factory: params => {
+          const parentOutput = Array.from(
+            subjectInternal.factory(params as any),
+          ).filter(val => val.id !== coreExtensionData.routePath.id);
+
+          return [...parentOutput, coreExtensionData.routePath('/')];
+        },
+      });
+      (subjectOverride as any).configSchema = subjectInternal.configSchema;
+    } else {
+      throw new Error('Unsupported extension version');
+    }
+
     const app = createSpecializedApp({
       features: [
         createExtensionOverrides({
           extensions: [
-            ...this.#extensions.map(extension => extension.definition),
+            subjectOverride,
+            ...this.#extensions.slice(1).map(extension => extension.definition),
             TestAppNavExtension,
-            createRouterExtension({
+            RouterBlueprint.make({
               namespace: 'test',
-              Component: ({ children }) => (
-                <MemoryRouter>{children}</MemoryRouter>
-              ),
+              params: {
+                Component: ({ children }) => (
+                  <MemoryRouter>{children}</MemoryRouter>
+                ),
+              },
             }),
           ],
         }),
@@ -339,9 +359,13 @@ export class ExtensionTester {
 }
 
 /** @public */
-export function createExtensionTester<TConfig>(
-  subject: ExtensionDefinition<TConfig>,
-  options?: { config?: TConfig },
-): ExtensionTester {
+export function createExtensionTester<
+  TConfig,
+  TConfigInput,
+  UOutput extends AnyExtensionDataRef,
+>(
+  subject: ExtensionDefinition<TConfig, TConfigInput, UOutput>,
+  options?: { config?: TConfigInput },
+): ExtensionTester<UOutput> {
   return ExtensionTester.forSubject(subject, options);
 }

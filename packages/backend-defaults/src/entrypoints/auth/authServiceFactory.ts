@@ -88,6 +88,7 @@ export const authServiceFactory = createServiceFactory({
       plugin.getId(),
       disableDefaultAuthPolicy,
       keySource,
+      logger,
     );
   },
 });

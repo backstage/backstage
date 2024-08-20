@@ -16,10 +16,10 @@
 
 import { TokenManager } from '@backstage/backend-common';
 import {
-  PluginTaskScheduler,
-  TaskInvocationDefinition,
-  TaskRunner,
-} from '@backstage/backend-tasks';
+  SchedulerService,
+  SchedulerServiceTaskInvocationDefinition,
+  SchedulerServiceTaskRunner,
+} from '@backstage/backend-plugin-api';
 import {
   mockServices,
   registerMswTestHooks,
@@ -40,14 +40,14 @@ import {
   BitbucketCloudEntityProvider,
 } from './BitbucketCloudEntityProvider';
 
-class PersistingTaskRunner implements TaskRunner {
-  private tasks: TaskInvocationDefinition[] = [];
+class PersistingTaskRunner implements SchedulerServiceTaskRunner {
+  private tasks: SchedulerServiceTaskInvocationDefinition[] = [];
 
   getTasks() {
     return this.tasks;
   }
 
-  run(task: TaskInvocationDefinition): Promise<void> {
+  run(task: SchedulerServiceTaskInvocationDefinition): Promise<void> {
     this.tasks.push(task);
     return Promise.resolve(undefined);
   }
@@ -190,7 +190,7 @@ describe('BitbucketCloudEntityProvider', () => {
   });
 
   it('fail with scheduler but no schedule config', () => {
-    const scheduler = jest.fn() as unknown as PluginTaskScheduler;
+    const scheduler = jest.fn() as unknown as SchedulerService;
     const config = new ConfigReader({
       catalog: {
         providers: {
@@ -214,7 +214,7 @@ describe('BitbucketCloudEntityProvider', () => {
   it('single simple provider config with schedule in config', () => {
     const scheduler = {
       createScheduledTaskRunner: (_: any) => jest.fn(),
-    } as unknown as PluginTaskScheduler;
+    } as unknown as SchedulerService;
     const config = new ConfigReader({
       catalog: {
         providers: {

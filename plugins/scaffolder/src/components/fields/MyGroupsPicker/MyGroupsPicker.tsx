@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   errorApiRef,
   identityApiRef,
@@ -23,17 +23,31 @@ import {
 import TextField from '@material-ui/core/TextField';
 import FormControl from '@material-ui/core/FormControl';
 import { MyGroupsPickerProps, MyGroupsPickerSchema } from './schema';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import Autocomplete, {
+  createFilterOptions,
+} from '@material-ui/lab/Autocomplete';
+import {
+  catalogApiRef,
+  EntityDisplayName,
+  entityPresentationApiRef,
+  EntityRefPresentationSnapshot,
+} from '@backstage/plugin-catalog-react';
 import { NotFoundError } from '@backstage/errors';
 import useAsync from 'react-use/esm/useAsync';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import { VirtualizedListbox } from '../VirtualizedListbox';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../../translation';
 
 export { MyGroupsPickerSchema };
 
 export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const {
-    schema: { title, description },
+    schema: {
+      title = t('fields.myGroupsPicker.title'),
+      description = t('fields.myGroupsPicker.description'),
+    },
     required,
     rawErrors,
     onChange,
@@ -43,19 +57,14 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
   const identityApi = useApi(identityApiRef);
   const catalogApi = useApi(catalogApiRef);
   const errorApi = useApi(errorApiRef);
-  const [groups, setGroups] = useState<
-    {
-      label: string;
-      ref: string;
-    }[]
-  >([]);
+  const entityPresentationApi = useApi(entityPresentationApiRef);
 
-  useAsync(async () => {
+  const { value: groups, loading } = useAsync(async () => {
     const { userEntityRef } = await identityApi.getBackstageIdentity();
 
     if (!userEntityRef) {
       errorApi.post(new NotFoundError('No user entity ref found'));
-      return;
+      return { catalogEntities: [], entityRefToPresentation: new Map() };
     }
 
     const { items } = await catalogApi.getEntities({
@@ -65,24 +74,38 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
       },
     });
 
-    const groupValues = items
-      .filter((e): e is Entity => Boolean(e))
-      .map(item => ({
-        label: item.metadata.title ?? item.metadata.name,
-        ref: stringifyEntityRef(item),
-      }));
+    const entityRefToPresentation = new Map<
+      string,
+      EntityRefPresentationSnapshot
+    >(
+      await Promise.all(
+        items.map(async item => {
+          const presentation = await entityPresentationApi.forEntity(item)
+            .promise;
+          return [stringifyEntityRef(item), presentation] as [
+            string,
+            EntityRefPresentationSnapshot,
+          ];
+        }),
+      ),
+    );
 
-    setGroups(groupValues);
+    return { catalogEntities: items, entityRefToPresentation };
   });
 
-  const updateChange = (
-    _: React.ChangeEvent<{}>,
-    value: { label: string; ref: string } | null,
-  ) => {
-    onChange(value?.ref ?? '');
+  const updateChange = (_: React.ChangeEvent<{}>, value: Entity | null) => {
+    onChange(value ? stringifyEntityRef(value) : '');
   };
 
-  const selectedEntity = groups?.find(e => e.ref === formData) || null;
+  const selectedEntity =
+    groups?.catalogEntities.find(e => stringifyEntityRef(e) === formData) ||
+    null;
+
+  useEffect(() => {
+    if (groups?.catalogEntities.length === 1 && !selectedEntity) {
+      onChange(stringifyEntityRef(groups.catalogEntities[0]));
+    }
+  }, [groups, onChange, selectedEntity]);
 
   return (
     <FormControl
@@ -91,11 +114,17 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
       error={rawErrors?.length > 0}
     >
       <Autocomplete
+        disabled={groups?.catalogEntities.length === 1}
         id="OwnershipEntityRefPicker-dropdown"
-        options={groups || []}
+        options={groups?.catalogEntities || []}
         value={selectedEntity}
+        loading={loading}
         onChange={updateChange}
-        getOptionLabel={group => group.label}
+        getOptionLabel={option =>
+          groups?.entityRefToPresentation.get(stringifyEntityRef(option))
+            ?.primaryTitle!
+        }
+        autoSelect
         renderInput={params => (
           <TextField
             {...params}
@@ -105,8 +134,16 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
             FormHelperTextProps={{ margin: 'dense', style: { marginLeft: 0 } }}
             variant="outlined"
             required={required}
+            InputProps={params.InputProps}
           />
         )}
+        renderOption={option => <EntityDisplayName entityRef={option} />}
+        filterOptions={createFilterOptions<Entity>({
+          stringify: option =>
+            groups?.entityRefToPresentation.get(stringifyEntityRef(option))
+              ?.primaryTitle!,
+        })}
+        ListboxComponent={VirtualizedListbox}
       />
     </FormControl>
   );

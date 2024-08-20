@@ -15,9 +15,7 @@
  */
 
 import {
-  AnyExtensionDataMap,
   AnyExtensionDataRef,
-  AnyExtensionInputMap,
   ExtensionDataContainer,
   ExtensionDataRef,
   ExtensionInput,
@@ -32,8 +30,10 @@ type Mutable<T> = {
   -readonly [P in keyof T]: T[P];
 };
 
-function resolveInputDataMap(
-  dataMap: AnyExtensionDataMap,
+function resolveV1InputDataMap(
+  dataMap: {
+    [name in string]: AnyExtensionDataRef;
+  },
   attachment: AppNode,
   inputName: string,
 ) {
@@ -92,6 +92,16 @@ function resolveInputDataContainer(
     get(ref) {
       return dataMap.get(ref.id);
     },
+    *[Symbol.iterator]() {
+      for (const [id, value] of dataMap) {
+        // TODO: Would be better to be able to create a new instance using the ref here instead
+        yield {
+          $$type: '@backstage/ExtensionDataValue',
+          id,
+          value,
+        };
+      }
+    },
   } as { node: AppNode } & ExtensionDataContainer<AnyExtensionDataRef>;
 }
 
@@ -124,9 +134,17 @@ function reportUndeclaredAttachments(
 }
 
 function resolveV1Inputs(
-  inputMap: AnyExtensionInputMap,
+  inputMap: {
+    [inputName in string]: {
+      $$type: '@backstage/ExtensionInput';
+      extensionData: {
+        [name in string]: AnyExtensionDataRef;
+      };
+      config: { optional: boolean; singleton: boolean };
+    };
+  },
   attachments: ReadonlyMap<string, AppNode[]>,
-): ResolvedExtensionInputs<AnyExtensionInputMap> {
+) {
   return mapValues(inputMap, (input, inputName) => {
     const attachedNodes = attachments.get(inputName) ?? [];
 
@@ -148,7 +166,7 @@ function resolveV1Inputs(
       }
       return {
         node: attachedNodes[0],
-        output: resolveInputDataMap(
+        output: resolveV1InputDataMap(
           input.extensionData,
           attachedNodes[0],
           inputName,
@@ -158,9 +176,16 @@ function resolveV1Inputs(
 
     return attachedNodes.map(attachment => ({
       node: attachment,
-      output: resolveInputDataMap(input.extensionData, attachment, inputName),
+      output: resolveV1InputDataMap(input.extensionData, attachment, inputName),
     }));
-  }) as ResolvedExtensionInputs<AnyExtensionInputMap>;
+  }) as {
+    [inputName in string]: {
+      node: AppNode;
+      output: {
+        [name in string]: unknown;
+      };
+    };
+  };
 }
 
 function resolveV2Inputs(

@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+import { createServiceRef } from '../services';
 import { createBackendModule } from './createBackendModule';
+import { createExtensionPoint } from './createExtensionPoint';
 import { InternalBackendRegistrations } from './types';
 
 describe('createBackendModule', () => {
@@ -53,5 +55,36 @@ describe('createBackendModule', () => {
 
     // @ts-expect-error
     expect(module({ a: 'a' })).toBeDefined();
+  });
+
+  it('should be able to depend on all types of dependencies', () => {
+    const extensionPoint = createExtensionPoint<string>({ id: 'point' });
+    const singleServiceRef = createServiceRef<string>({ id: 'single' });
+    const multiServiceRef = createServiceRef<string>({
+      id: 'multi',
+      multiton: true,
+    });
+
+    const plugin = createBackendModule({
+      pluginId: 'x',
+      moduleId: 'y',
+      register(r) {
+        r.registerInit({
+          deps: {
+            point: extensionPoint,
+            single: singleServiceRef,
+            multi: multiServiceRef,
+          },
+          async init({ point, single, multi }) {
+            const a: string = point;
+            const b: string = single;
+            const c: string[] = multi;
+            expect([a, b, c]).toBe('unused');
+          },
+        });
+      },
+    });
+
+    expect(plugin.$$type).toEqual('@backstage/BackendFeature');
   });
 });

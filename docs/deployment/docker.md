@@ -246,6 +246,9 @@ WORKDIR /app
 
 # Copy the install dependencies from the build stage and context
 COPY --from=build --chown=node:node /app/yarn.lock /app/package.json /app/packages/backend/dist/skeleton/ ./
+# Note: The skeleton bundle only includes package.json files -- if your app has
+# plugins that define a `bin` export, the bin files need to be copied as well to
+# be linked in node_modules/.bin during yarn install.
 
 RUN --mount=type=cache,target=/home/node/.cache/yarn,sharing=locked,uid=1000,gid=1000 \
     yarn install --frozen-lockfile --production --network-timeout 600000

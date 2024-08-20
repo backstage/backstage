@@ -14,15 +14,5 @@
  * limitations under the License.
  */
 
-export * from './cache';
-export * from './config';
-export * from './database';
-export * from './discovery';
 export * from './identity';
-export * from './lifecycle';
-export * from './permissions';
-export * from './rootLifecycle';
 export * from './tokenManager';
-export * from './urlReader';
-
-export * from './deprecated';

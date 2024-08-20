@@ -45,9 +45,7 @@ describe('BackwardsCompatProvider', () => {
     createExtensionTester(
       createExtension({
         attachTo: { id: 'ignored', input: 'ignored' },
-        output: {
-          element: coreExtensionData.reactElement,
-        },
+        output: [coreExtensionData.reactElement],
         factory() {
           function Component() {
             const app = useApp();
@@ -66,9 +64,7 @@ describe('BackwardsCompatProvider', () => {
             );
           }
 
-          return {
-            element: compatWrapper(<Component />),
-          };
+          return [coreExtensionData.reactElement(compatWrapper(<Component />))];
         },
       }),
     ).render();

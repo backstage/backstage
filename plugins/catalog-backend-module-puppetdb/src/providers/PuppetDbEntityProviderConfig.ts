@@ -15,9 +15,9 @@
  */
 
 import {
-  readTaskScheduleDefinitionFromConfig,
-  TaskScheduleDefinition,
-} from '@backstage/backend-tasks';
+  SchedulerServiceTaskScheduleDefinition,
+  readSchedulerServiceTaskScheduleDefinitionFromConfig,
+} from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { DEFAULT_PROVIDER_ID } from './constants';
 
@@ -42,7 +42,7 @@ export type PuppetDbEntityProviderConfig = {
   /**
    * (Optional) Task schedule definition for the refresh.
    */
-  schedule?: TaskScheduleDefinition;
+  schedule?: SchedulerServiceTaskScheduleDefinition;
 };
 
 /**
@@ -87,7 +87,9 @@ function readProviderConfig(
   const query = config.getOptionalString('query');
 
   const schedule = config.has('schedule')
-    ? readTaskScheduleDefinitionFromConfig(config.getConfig('schedule'))
+    ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
+        config.getConfig('schedule'),
+      )
     : undefined;
 
   return {

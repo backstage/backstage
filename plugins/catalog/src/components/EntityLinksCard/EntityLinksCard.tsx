@@ -23,7 +23,7 @@ import { ColumnBreakpoints } from './types';
 import { IconComponent, useApp } from '@backstage/core-plugin-api';
 import { InfoCard, InfoCardVariants } from '@backstage/core-components';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { catalogTranslationRef } from '../../translation';
+import { catalogTranslationRef } from '../../alpha/translation';
 
 /** @public */
 export interface EntityLinksCardProps {

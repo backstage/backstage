@@ -23,6 +23,8 @@ import TextField from '@material-ui/core/TextField';
 import useDebounce from 'react-use/esm/useDebounce';
 import { useApi } from '@backstage/core-plugin-api';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../../translation';
 
 /**
  * The underlying component that is rendered in the form for the `BitbucketRepoPicker`
@@ -48,6 +50,8 @@ export const BitbucketRepoPicker = (
     state,
     accessToken,
   } = props;
+  const { t } = useTranslationRef(scaffolderTranslationRef);
+
   const { host, workspace, project } = state;
   const ownerItems: SelectItem[] = allowedOwners
     ? allowedOwners?.map(i => ({ label: i, value: i }))
@@ -164,7 +168,7 @@ export const BitbucketRepoPicker = (
           {allowedOwners?.length ? (
             <Select
               native
-              label="Allowed Workspaces"
+              label={t('fields.bitbucketRepoPicker.workspaces.title')}
               onChange={s =>
                 onChange({ workspace: String(Array.isArray(s) ? s[0] : s) })
               }
@@ -180,14 +184,18 @@ export const BitbucketRepoPicker = (
               }}
               options={availableWorkspaces}
               renderInput={params => (
-                <TextField {...params} label="Workspace" required />
+                <TextField
+                  {...params}
+                  label={t('fields.bitbucketRepoPicker.workspaces.inputTitle')}
+                  required
+                />
               )}
               freeSolo
               autoSelect
             />
           )}
           <FormHelperText>
-            The Workspace that this repo will belong to
+            {t('fields.bitbucketRepoPicker.workspaces.description')}
           </FormHelperText>
         </FormControl>
       )}
@@ -199,7 +207,7 @@ export const BitbucketRepoPicker = (
         {allowedProjects?.length ? (
           <Select
             native
-            label="Allowed Projects"
+            label={t('fields.bitbucketRepoPicker.project.title')}
             onChange={s =>
               onChange({ project: String(Array.isArray(s) ? s[0] : s) })
             }
@@ -215,14 +223,18 @@ export const BitbucketRepoPicker = (
             }}
             options={availableProjects}
             renderInput={params => (
-              <TextField {...params} label="Project" required />
+              <TextField
+                {...params}
+                label={t('fields.bitbucketRepoPicker.project.inputTitle')}
+                required
+              />
             )}
             freeSolo
             autoSelect
           />
         )}
         <FormHelperText>
-          The Project that this repo will belong to
+          {t('fields.bitbucketRepoPicker.project.description')}
         </FormHelperText>
       </FormControl>
     </>

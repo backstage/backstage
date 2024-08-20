@@ -243,8 +243,10 @@ Mkdocs
 monorepo
 Monorepo
 monorepos
+morgan
 msgraph
 msw
+multiton
 mutex
 mutexes
 mysql

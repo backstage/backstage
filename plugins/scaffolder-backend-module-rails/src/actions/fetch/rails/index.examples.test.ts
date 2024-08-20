@@ -27,7 +27,7 @@ jest.mock('./railsNewRunner', () => {
   };
 });
 
-import { ContainerRunner, UrlReader } from '@backstage/backend-common';
+import { ContainerRunner } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { resolve as resolvePath } from 'path';
@@ -37,6 +37,7 @@ import { createMockDirectory } from '@backstage/backend-test-utils';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { examples } from './index.examples';
 import yaml from 'yaml';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 describe('fetch:rails', () => {
   const mockDir = createMockDirectory();
@@ -66,7 +67,7 @@ describe('fetch:rails', () => {
     workspacePath: mockDir.path,
   });
 
-  const mockReader: UrlReader = {
+  const mockReader: UrlReaderService = {
     readUrl: jest.fn(),
     readTree: jest.fn(),
     search: jest.fn(),

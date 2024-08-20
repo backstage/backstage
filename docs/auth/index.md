@@ -112,9 +112,16 @@ const app = createApp({
 });
 ```
 
-You can also use the `providers` prop to enable multiple sign-in methods, for example
+:::note Note
 
-- allowing guest access:
+You can configure sign-in to use a redirect flow with no pop-up by adding
+`enableExperimentalRedirectFlow: true` to the root of your `app-config.yaml`
+
+:::
+
+### Using Multiple Providers
+
+You can also use the `providers` prop to enable multiple sign-in methods, for example to allow guest access:
 
 ```tsx title="packages/app/src/App.tsx"
 const app = createApp({
@@ -140,12 +147,53 @@ const app = createApp({
 });
 ```
 
-:::note Note
+### Conditionally Render Sign In Provider
 
-You can configure sign-in to use a redirect flow with no pop-up by adding
-`enableExperimentalRedirectFlow: true` to the root of your `app-config.yaml`
+In the above example you have both Guest and GitHub sign-in options, this is helpful for non-production but in Production you will most likely not want to offer Guest access. You can easily use information from your config to help conditionally render the provider:
 
-:::
+```tsx title="packages/app/src/App.tsx"
+import {
+  configApiRef,
+  githubAuthApiRef,
+  useApi,
+} from '@backstage/core-plugin-api';
+
+const app = createApp({
+  components: {
+    SignInPage: props => {
+      const configApi = useApi(configApiRef);
+      if (configApi.getString('auth.environment') === 'development') {
+        return (
+          <SignInPage
+            {...props}
+            providers={[
+              'guest',
+              {
+                id: 'github-auth-provider',
+                title: 'GitHub',
+                message: 'Sign in using GitHub',
+                apiRef: githubAuthApiRef,
+              },
+            ]}
+          />
+        );
+      }
+      return (
+        <SignInPage
+          {...props}
+          provider={{
+            id: 'google-auth-provider',
+            title: 'Google',
+            message: 'Sign In using Google',
+            apiRef: googleAuthApiRef,
+          }}
+        />
+      );
+    },
+  },
+  // ..
+});
+```
 
 ## Sign-In with Proxy Providers
 

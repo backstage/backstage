@@ -342,6 +342,62 @@ describe('BackendInitializer', () => {
     await init.start();
   });
 
+  it('should allow plugins and modules depend on multiton services', async () => {
+    expect.assertions(2);
+
+    const multiServiceRef = createServiceRef<string>({
+      id: 'a',
+      multiton: true,
+    });
+    const init = new BackendInitializer(baseFactories);
+
+    init.add(
+      createServiceFactory({
+        service: multiServiceRef,
+        deps: {},
+        factory: () => 'x',
+      }),
+    );
+    init.add(
+      createServiceFactory({
+        service: multiServiceRef,
+        deps: {},
+        factory: () => 'y',
+      }),
+    );
+
+    init.add(
+      createBackendPlugin({
+        pluginId: 'test',
+        register(reg) {
+          reg.registerInit({
+            deps: { multi: multiServiceRef },
+            async init({ multi }) {
+              expect(multi).toEqual(['x', 'y']);
+            },
+          });
+        },
+      }),
+    );
+
+    init.add(
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'test',
+        register(reg) {
+          reg.registerInit({
+            deps: { multi: multiServiceRef },
+            async init({ multi }) {
+              expect(multi).toEqual(['x', 'y']);
+            },
+          });
+        },
+      }),
+    );
+
+    await init.start();
+  });
+
   it('should forward errors when plugins fail to start', async () => {
     const init = new BackendInitializer([]);
     init.add(

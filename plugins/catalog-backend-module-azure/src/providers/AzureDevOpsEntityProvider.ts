@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import {
   AzureDevOpsCredentialsProvider,
@@ -32,7 +31,11 @@ import { readAzureDevOpsConfigs } from './config';
 import { AzureDevOpsConfig } from './types';
 import * as uuid from 'uuid';
 import { codeSearch, CodeSearchResultItem } from '../lib';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  SchedulerService,
+  SchedulerServiceTaskRunner,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 
 /**
  * Provider which discovers catalog files within an Azure DevOps repositories.
@@ -50,8 +53,8 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
     configRoot: Config,
     options: {
       logger: LoggerService;
-      schedule?: TaskRunner;
-      scheduler?: PluginTaskScheduler;
+      schedule?: SchedulerServiceTaskRunner;
+      scheduler?: SchedulerService;
     },
   ): AzureDevOpsEntityProvider[] {
     const providerConfigs = readAzureDevOpsConfigs(configRoot);
@@ -99,7 +102,7 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
     private readonly integration: AzureIntegration,
     private readonly credentialsProvider: AzureDevOpsCredentialsProvider,
     logger: LoggerService,
-    taskRunner: TaskRunner,
+    taskRunner: SchedulerServiceTaskRunner,
   ) {
     this.logger = logger.child({
       target: this.getProviderName(),
@@ -108,7 +111,9 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
     this.scheduleFn = this.createScheduleFn(taskRunner);
   }
 
-  private createScheduleFn(taskRunner: TaskRunner): () => Promise<void> {
+  private createScheduleFn(
+    taskRunner: SchedulerServiceTaskRunner,
+  ): () => Promise<void> {
     return async () => {
       const taskId = `${this.getProviderName()}:refresh`;
       return taskRunner.run({

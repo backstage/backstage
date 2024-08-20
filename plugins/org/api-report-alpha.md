@@ -4,13 +4,151 @@
 
 ```ts
 import { BackstagePlugin } from '@backstage/frontend-plugin-api';
+import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { Entity } from '@backstage/catalog-model';
+import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
+import { default as React_2 } from 'react';
 
 // @alpha (undocumented)
 const _default: BackstagePlugin<
   {},
   {
     catalogIndex: ExternalRouteRef<undefined>;
+  },
+  {
+    'entity-card:org/group-profile': ExtensionDefinition<
+      {
+        filter: string | undefined;
+      },
+      {
+        filter?: string | undefined;
+      },
+      | ConfigurableExtensionDataRef<
+          React_2.JSX.Element,
+          'core.reactElement',
+          {}
+        >
+      | ConfigurableExtensionDataRef<
+          (entity: Entity) => boolean,
+          'catalog.entity-filter-function',
+          {
+            optional: true;
+          }
+        >
+      | ConfigurableExtensionDataRef<
+          string,
+          'catalog.entity-filter-expression',
+          {
+            optional: true;
+          }
+        >,
+      {},
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'group-profile';
+      }
+    >;
+    'entity-card:org/members-list': ExtensionDefinition<
+      {
+        filter: string | undefined;
+      },
+      {
+        filter?: string | undefined;
+      },
+      | ConfigurableExtensionDataRef<
+          React_2.JSX.Element,
+          'core.reactElement',
+          {}
+        >
+      | ConfigurableExtensionDataRef<
+          (entity: Entity) => boolean,
+          'catalog.entity-filter-function',
+          {
+            optional: true;
+          }
+        >
+      | ConfigurableExtensionDataRef<
+          string,
+          'catalog.entity-filter-expression',
+          {
+            optional: true;
+          }
+        >,
+      {},
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'members-list';
+      }
+    >;
+    'entity-card:org/ownership': ExtensionDefinition<
+      {
+        filter: string | undefined;
+      },
+      {
+        filter?: string | undefined;
+      },
+      | ConfigurableExtensionDataRef<
+          React_2.JSX.Element,
+          'core.reactElement',
+          {}
+        >
+      | ConfigurableExtensionDataRef<
+          (entity: Entity) => boolean,
+          'catalog.entity-filter-function',
+          {
+            optional: true;
+          }
+        >
+      | ConfigurableExtensionDataRef<
+          string,
+          'catalog.entity-filter-expression',
+          {
+            optional: true;
+          }
+        >,
+      {},
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'ownership';
+      }
+    >;
+    'entity-card:org/user-profile': ExtensionDefinition<
+      {
+        filter: string | undefined;
+      },
+      {
+        filter?: string | undefined;
+      },
+      | ConfigurableExtensionDataRef<
+          React_2.JSX.Element,
+          'core.reactElement',
+          {}
+        >
+      | ConfigurableExtensionDataRef<
+          (entity: Entity) => boolean,
+          'catalog.entity-filter-function',
+          {
+            optional: true;
+          }
+        >
+      | ConfigurableExtensionDataRef<
+          string,
+          'catalog.entity-filter-expression',
+          {
+            optional: true;
+          }
+        >,
+      {},
+      {
+        kind: 'entity-card';
+        namespace: undefined;
+        name: 'user-profile';
+      }
+    >;
   }
 >;
 export default _default;

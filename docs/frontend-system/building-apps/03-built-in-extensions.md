@@ -24,7 +24,7 @@ Be careful when disabling built-in extensions, as there may be other extensions 
 
 ## Override built-in extensions
 
-You can override any built-in extension whenever their customizations, whether through configuration or input, do not meet a use case for your Backstage instance. Check out [this](../architecture/05-extension-overrides.md) documentation on how to override application extensions.
+You can override any built-in extension whenever their customizations, whether through configuration or input, do not meet a use case for your Backstage instance. Check out [this](../architecture/25-extension-overrides.md) documentation on how to override application extensions.
 
 :::warning
 Be aware there could be some implementation requirements to properly override an built-in extension, such as using same apis and do not remove inputs or configurations otherwise you can cause a side effect in other parts of the system that expects same minimal behavior.

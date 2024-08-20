@@ -1,5 +1,24 @@
 # @backstage/config-loader
 
+## 1.9.0
+
+### Minor Changes
+
+- 274428f: Add configuration key to File and Remote `ConfigSource`s that enables configuration of parsing logic. Previously limited to yaml, these `ConfigSource`s now allow for a multitude of parsing options (e.g. JSON).
+
+### Patch Changes
+
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- 1edd6c2: The `env` option of `ConfigSources.default` now correctly allows undefined members.
+- 493feac: Add boolean `allowMissingDefaultConfig` option to `ConfigSources.default` and
+  `ConfigSources.defaultForTargets`, which results in omission of a ConfigSource
+  for the default app-config.yaml configuration file if it's not present.
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 1.9.0-next.2
 
 ### Patch Changes

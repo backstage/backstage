@@ -1,5 +1,34 @@
 # @backstage/plugin-catalog-backend-module-gcp
 
+## 0.2.0
+
+### Minor Changes
+
+- fc24d9e: Stop using `@backstage/backend-tasks` as it will be deleted in near future.
+
+### Patch Changes
+
+- 9342ac8: Removed unused dependency
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/plugin-catalog-node@1.12.5
+  - @backstage/catalog-model@1.6.0
+  - @backstage/config@1.2.0
+  - @backstage/plugin-kubernetes-common@0.8.2
+
+## 0.1.24-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.3
+  - @backstage/backend-common@0.23.4-next.3
+  - @backstage/catalog-model@1.6.0-next.0
+  - @backstage/backend-tasks@0.5.28-next.3
+  - @backstage/config@1.2.0
+  - @backstage/plugin-catalog-node@1.12.5-next.3
+  - @backstage/plugin-kubernetes-common@0.8.2-next.2
+
 ## 0.1.24-next.2
 
 ### Patch Changes

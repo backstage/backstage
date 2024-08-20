@@ -20,8 +20,8 @@ import {
   coreExtensionData,
   createExtensionInput,
   useRouteRef,
-  createNavItemExtension,
-  createNavLogoExtension,
+  NavItemBlueprint,
+  NavLogoBlueprint,
 } from '@backstage/frontend-plugin-api';
 import { makeStyles } from '@material-ui/core/styles';
 import {
@@ -53,7 +53,7 @@ const useSidebarLogoStyles = makeStyles({
 });
 
 const SidebarLogo = (
-  props: (typeof createNavLogoExtension.logoElementsDataRef)['T'],
+  props: (typeof NavLogoBlueprint.dataRefs.logoElements)['T'],
 ) => {
   const classes = useSidebarLogoStyles();
   const { isOpen } = useSidebarOpenState();
@@ -70,7 +70,7 @@ const SidebarLogo = (
 };
 
 const SidebarNavItem = (
-  props: (typeof createNavItemExtension.targetDataRef)['T'],
+  props: (typeof NavItemBlueprint.dataRefs.target)['T'],
 ) => {
   const { icon: Icon, title, routeRef } = props;
   const link = useRouteRef(routeRef);
@@ -86,33 +86,27 @@ export const AppNav = createExtension({
   name: 'nav',
   attachTo: { id: 'app/layout', input: 'nav' },
   inputs: {
-    items: createExtensionInput({
-      target: createNavItemExtension.targetDataRef,
+    items: createExtensionInput([NavItemBlueprint.dataRefs.target]),
+    logos: createExtensionInput([NavLogoBlueprint.dataRefs.logoElements], {
+      singleton: true,
+      optional: true,
     }),
-    logos: createExtensionInput(
-      {
-        elements: createNavLogoExtension.logoElementsDataRef,
-      },
-      {
-        singleton: true,
-        optional: true,
-      },
+  },
+  output: [coreExtensionData.reactElement],
+  factory: ({ inputs }) => [
+    coreExtensionData.reactElement(
+      <Sidebar>
+        <SidebarLogo
+          {...inputs.logos?.get(NavLogoBlueprint.dataRefs.logoElements)}
+        />
+        <SidebarDivider />
+        {inputs.items.map((item, index) => (
+          <SidebarNavItem
+            {...item.get(NavItemBlueprint.dataRefs.target)}
+            key={index}
+          />
+        ))}
+      </Sidebar>,
     ),
-  },
-  output: {
-    element: coreExtensionData.reactElement,
-  },
-  factory({ inputs }) {
-    return {
-      element: (
-        <Sidebar>
-          <SidebarLogo {...inputs.logos?.output.elements} />
-          <SidebarDivider />
-          {inputs.items.map((item, index) => (
-            <SidebarNavItem {...item.output.target} key={index} />
-          ))}
-        </Sidebar>
-      ),
-    };
-  },
+  ],
 });

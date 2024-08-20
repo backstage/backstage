@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { UrlReader } from '@backstage/backend-common';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import {
   Entity,
@@ -38,7 +38,7 @@ export type ParsedLocationAnnotation = {
 };
 
 /**
- * Returns a parset locations annotation
+ * Returns a parsed locations annotation
  * @public
  * @param annotationName - The name of the annotation in the entity metadata
  * @param entity - A TechDocs entity instance
@@ -114,7 +114,7 @@ export const transformDirLocation = (
 };
 
 /**
- * Returns a entity reference based on the TechDocs annotation type
+ * Returns an entity reference based on the TechDocs annotation type
  * @public
  * @param entity - A TechDocs instance
  * @param scmIntegration - An implementation for  SCM integration API
@@ -143,7 +143,7 @@ export const getLocationForEntity = (
  * @param opts - Options for configuring the reader, e.g. logger, etag, etc.
  */
 export const getDocFilesFromRepository = async (
-  reader: UrlReader,
+  reader: UrlReaderService,
   entity: Entity,
   opts?: { etag?: string; logger?: Logger },
 ): Promise<PreparerResponse> => {
