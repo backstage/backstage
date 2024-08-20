@@ -15,7 +15,7 @@
  */
 
 import type { Entity } from '@backstage/catalog-model';
-import { UrlReader } from '@backstage/backend-common';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { Logger } from 'winston';
 
 /**
@@ -30,7 +30,7 @@ export type ETag = string;
  */
 export type PreparerConfig = {
   logger: Logger;
-  reader: UrlReader;
+  reader: UrlReaderService;
 };
 
 /**

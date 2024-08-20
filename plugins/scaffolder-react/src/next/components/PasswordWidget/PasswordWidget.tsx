@@ -15,8 +15,7 @@
  */
 
 import { WidgetProps } from '@rjsf/utils';
-import InputLabel from '@material-ui/core/InputLabel';
-import Input from '@material-ui/core/Input';
+import TextField from '@material-ui/core/TextField';
 import React from 'react';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import { MarkdownContent } from '@backstage/core-components';
@@ -32,9 +31,9 @@ export const PasswordWidget = (
 
   return (
     <>
-      <InputLabel htmlFor={title}>{title}</InputLabel>
-      <Input
+      <TextField
         id={title}
+        label={title}
         aria-describedby={title}
         onChange={e => {
           onChange(e.target.value);

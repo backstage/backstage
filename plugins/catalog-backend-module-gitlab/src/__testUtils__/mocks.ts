@@ -299,6 +299,33 @@ export const config_single_integration_skip_forks: MockObject = {
   },
 };
 
+export const config_single_integration_exclude_repos: MockObject = {
+  integrations: {
+    gitlab: [
+      {
+        host: 'example.com',
+        apiBaseUrl: 'https://example.com/api/v4',
+        token: '1234',
+      },
+    ],
+  },
+  catalog: {
+    providers: {
+      gitlab: {
+        'test-id': {
+          host: 'example.com',
+          group: 'group1',
+          excludeRepos: ['group1/test-repo1'],
+          schedule: {
+            frequency: 'PT30M',
+            timeout: 'PT3M',
+          },
+        },
+      },
+    },
+  },
+};
+
 export const config_no_schedule: MockObject = {
   integrations: {
     gitlab: [

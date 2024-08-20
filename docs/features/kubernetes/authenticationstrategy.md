@@ -173,8 +173,7 @@ To create the Backend module, run `yarn new`, select `backend-module`. Then fill
 
 This will create a new package at `plugins/kubernetes-backend-module-pinniped`. We are going to need also the `@backstage/plugin-kubernetes-node` and `@backstage/plugin-kubernetes-common` dependencies, the `@backstage/plugin-kubernetes-node` houses the [kubernetesAuthStrategyExtensionPoint](https://github.com/backstage/backstage/blob/ebe7afad9d19f279469168ca0d4feceb92c1ad36/plugins/kubernetes-node/src/extensions.ts#L77) and a [Pinniped Helper](https://github.com/backstage/backstage/blob/ebe7afad9d19f279469168ca0d4feceb92c1ad36/plugins/kubernetes-node/src/auth/PinnipedHelper.ts#L53) class.
 
-```bash
-# From your Backstage root directory
+```bash title="From your Backstage root directory"
 yarn --cwd plugins/kubernetes-backend-module-pinniped add @backstage/plugin-kubernetes-node
 yarn --cwd plugins/kubernetes-backend-module-pinniped add @backstage/plugin-kubernetes-common
 ```

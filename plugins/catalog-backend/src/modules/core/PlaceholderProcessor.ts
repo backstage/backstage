@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -27,11 +26,12 @@ import {
   PlaceholderResolverParams,
   processingResult,
 } from '@backstage/plugin-catalog-node';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 /** @public */
 export type PlaceholderProcessorOptions = {
   resolvers: Record<string, PlaceholderResolver>;
-  reader: UrlReader;
+  reader: UrlReaderService;
   integrations: ScmIntegrationRegistry;
 };
 

@@ -18,8 +18,7 @@ Microsoft Graph API.
 
 The package is not installed by default, therefore you have to add `@backstage/plugin-catalog-backend-module-msgraph` to your backend package.
 
-```bash
-# From your Backstage root directory
+```bash title="From your Backstage root directory"
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-msgraph
 ```
 
@@ -112,6 +111,17 @@ microsoftGraphOrg:
       search: '"description:One" AND ("displayName:Video" OR "displayName:Drive")'
 ```
 
+If you don't want to only ingest groups matching the `search` and/or `filter` query, but also the groups which are members of the matched groups, you can use the `includeSubGroups` configuration:
+
+```yaml
+microsoftGraphOrg:
+  providerId:
+    group:
+      filter: securityEnabled eq false and mailEnabled eq true and groupTypes/any(c:c+eq+'Unified')
+      search: '"description:One" AND ("displayName:Video" OR "displayName:Drive")'
+      includeSubGroups: true
+```
+
 In addition to these groups, one additional group will be created for your organization.
 All imported groups will be a child of this group.
 
@@ -181,6 +191,23 @@ microsoftGraphOrg:
       select: ['id', 'displayName', 'description']
 ```
 
+### Using Provider Config Transformer
+
+Dynamic configuration scaling allows the `msgraph` catalog plugin to adjust its settings at runtime without requiring a redeploy. This feature is useful for scenarios where configuration needs to be updated based on real-time events or changing conditions. For example, you can dynamically adjust synchronization schedules, filters, and search parameters to optimize performance and responsiveness.
+
+:::note
+Adjusting fields that are not used on each scheduled ingestion (e.g., `id`, `schedule`) will have no effect.
+:::
+
+:::warning
+Dynamically changing configuration on the fly can introduce unintended consequences, such as system instability and configuration errors. Please review your transformer carefully to ensure that it is working as anticipated!
+:::
+
+#### Example Use Cases:
+
+- **Filter Scaling**: Adjust filters like `userGroupMember` and `groupFilter` dynamically.
+- **Search Parameter Adjustment**: Change search parameters such as `groupSearch` and `userSelect` on-the-fly.
+
 ### Using Custom Transformers
 
 Transformers can be configured by extending `microsoftGraphOrgEntityProviderTransformExtensionPoint`. Here is an example:
@@ -192,6 +219,7 @@ import {
   myUserTransformer,
   myGroupTransformer,
   myOrganizationTransformer,
+  myProviderConfigTransformer,
 } from './transformers';
 
 backend.add(
@@ -213,6 +241,9 @@ backend.add(
           microsoftGraphTransformers.setOrganizationTransformer(
             myOrganizationTransformer,
           );
+          microsoftGraphTransformers.setProviderConfigTransformer(
+            myProviderConfigTransformer,
+          );
           /* highlight-add-end */
         },
       });
@@ -221,7 +252,7 @@ backend.add(
 );
 ```
 
-The `myUserTransformer`, `myGroupTransformer`, and `myOrganizationTransformer` transformer functions are from the examples in the section below.
+The `myUserTransformer`, `myGroupTransformer`, `myOrganizationTransformer`, and `myProviderConfigTransformer` transformer functions are from the examples in the section below.
 
 ### Transformer Examples
 
@@ -233,6 +264,7 @@ import {
   defaultGroupTransformer,
   defaultUserTransformer,
   defaultOrganizationTransformer,
+  MicrosoftGraphProviderConfig,
 } from '@backstage/plugin-catalog-backend-module-msgraph';
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 
@@ -274,6 +306,16 @@ export async function myOrganizationTransformer(
   graphOrganization: MicrosoftGraph.Organization,
 ): Promise<GroupEntity | undefined> {
   return undefined;
+}
+
+// Example config transformer that expands the group filter to also include 'azure-group-a'
+export async function myProviderConfigTransformer(
+  provider: MicrosoftGraphProviderConfig,
+): Promise<MicrosoftGraphProviderConfig> {
+  if (!provider.groupFilter?.includes('azure-group-a')) {
+    provider.groupFilter = `${provider.groupFilter} or displayName eq 'azure-group-a'`;
+  }
+  return provider;
 }
 ```
 

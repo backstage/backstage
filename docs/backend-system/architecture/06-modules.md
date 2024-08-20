@@ -52,7 +52,7 @@ This allows you to install the module in your backend instance by just referenci
 
 ```ts
 backend.add(
-  import('backstage-plugin-catalog-backend-module-example-processor'),
+  import('@internal/backstage-plugin-catalog-backend-module-example-processor'),
 );
 ```
 

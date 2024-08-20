@@ -1,8 +1,15 @@
 # @backstage/backend-tasks
 
+> [!CAUTION]
+> This package is deprecated and will be removed in a near future.
+
 Common distributed task management for Backstage backends.
 
 ## Usage
+
+> [!CAUTION]
+> Please note that the documentation below is only valid for versions equal to or below `0.5.28-next.3`.
+> As this package will be deleted soon, we recommend that you migrate to the new backend system, and depend on `coreServices.scheduler` from `@backstage/backend-plugin-api` instead, or use `DefaultSchedulerService` from `@backstage/backend-defaults`. Here are the [backend](https://backstage.io/docs/backend-system/building-backends/migrating) and [plugin](https://backstage.io/docs/backend-system/building-plugins-and-modules/migrating) migration guides.
 
 Add the library to your backend package:
 
@@ -27,12 +34,3 @@ await scheduler.scheduleTask({
   },
 });
 ```
-
-## Local Development
-
-When working with the `@backstage/backend-tasks` library you may run into your task not running immediately at startup as expected if you are using a persistent database. This is by design - the library respects the previous state and does not run the task sooner than the specified frequency. If you want to get around this, there is a table called `backstage_backend_tasks__tasks` in the applicable plugin's database which will contain a record with the next run date and time. You can delete this record to get things back to what you expect.
-
-## Documentation
-
-- [Backstage Readme](https://github.com/backstage/backstage/blob/master/README.md)
-- [Backstage Documentation](https://backstage.io/docs)

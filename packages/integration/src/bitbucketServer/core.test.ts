@@ -16,7 +16,7 @@
 
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { setupRequestMockHandlers } from '../helpers';
+import { registerMswTestHooks } from '../helpers';
 import { BitbucketServerIntegrationConfig } from './config';
 import {
   getBitbucketServerDefaultBranch,
@@ -27,7 +27,7 @@ import {
 
 describe('bitbucketServer core', () => {
   const worker = setupServer();
-  setupRequestMockHandlers(worker);
+  registerMswTestHooks(worker);
 
   describe('getBitbucketServerRequestOptions', () => {
     it('inserts a token when needed', () => {

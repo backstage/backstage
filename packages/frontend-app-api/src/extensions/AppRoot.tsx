@@ -23,12 +23,12 @@ import React, {
   useState,
 } from 'react';
 import {
+  AppRootWrapperBlueprint,
+  RouterBlueprint,
+  SignInPageBlueprint,
   coreExtensionData,
-  createAppRootWrapperExtension,
   createExtension,
   createExtensionInput,
-  createRouterExtension,
-  createSignInPageExtension,
 } from '@backstage/frontend-plugin-api';
 import {
   IdentityApi,
@@ -48,52 +48,54 @@ export const AppRoot = createExtension({
   name: 'root',
   attachTo: { id: 'app', input: 'root' },
   inputs: {
-    router: createExtensionInput(
-      { component: createRouterExtension.componentDataRef },
-      { singleton: true, optional: true },
-    ),
-    signInPage: createExtensionInput(
-      { component: createSignInPageExtension.componentDataRef },
-      { singleton: true, optional: true },
-    ),
-    children: createExtensionInput(
-      { element: coreExtensionData.reactElement },
-      { singleton: true },
-    ),
-    elements: createExtensionInput({
-      element: coreExtensionData.reactElement,
+    router: createExtensionInput([RouterBlueprint.dataRefs.component], {
+      singleton: true,
+      optional: true,
     }),
-    wrappers: createExtensionInput({
-      component: createAppRootWrapperExtension.componentDataRef,
+    signInPage: createExtensionInput([SignInPageBlueprint.dataRefs.component], {
+      singleton: true,
+      optional: true,
     }),
+    children: createExtensionInput([coreExtensionData.reactElement], {
+      singleton: true,
+    }),
+    elements: createExtensionInput([coreExtensionData.reactElement]),
+    wrappers: createExtensionInput([
+      AppRootWrapperBlueprint.dataRefs.component,
+    ]),
   },
-  output: {
-    element: coreExtensionData.reactElement,
-  },
+  output: [coreExtensionData.reactElement],
   factory({ inputs }) {
     let content: React.ReactNode = (
       <>
         {inputs.elements.map(el => (
-          <Fragment key={el.node.spec.id}>{el.output.element}</Fragment>
+          <Fragment key={el.node.spec.id}>
+            {el.get(coreExtensionData.reactElement)}
+          </Fragment>
         ))}
-        {inputs.children.output.element}
+        {inputs.children.get(coreExtensionData.reactElement)}
       </>
     );
 
     for (const wrapper of inputs.wrappers) {
-      content = <wrapper.output.component>{content}</wrapper.output.component>;
+      const Component = wrapper.get(AppRootWrapperBlueprint.dataRefs.component);
+      content = <Component>{content}</Component>;
     }
 
-    return {
-      element: (
+    return [
+      coreExtensionData.reactElement(
         <AppRouter
-          SignInPageComponent={inputs.signInPage?.output.component}
-          RouterComponent={inputs.router?.output.component}
+          SignInPageComponent={inputs.signInPage?.get(
+            SignInPageBlueprint.dataRefs.component,
+          )}
+          RouterComponent={inputs.router?.get(
+            RouterBlueprint.dataRefs.component,
+          )}
         >
           {content}
-        </AppRouter>
+        </AppRouter>,
       ),
-    };
+    ];
   },
 });
 

@@ -37,15 +37,13 @@ import {
 import { ScannedPluginManifest, ScannedPluginPackage } from '../scanner/types';
 import { randomUUID } from 'crypto';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
-import {
-  createSpecializedBackend,
-  rootLifecycleServiceFactory,
-} from '@backstage/backend-app-api';
+import { createSpecializedBackend } from '@backstage/backend-app-api';
 import { ConfigSources } from '@backstage/config-loader';
 import { Logs, MockedLogger, LogContent } from '../__testUtils__/testUtils';
 import { PluginScanner } from '../scanner/plugin-scanner';
 import { findPaths } from '@backstage/cli-common';
 import { createMockDirectory } from '@backstage/backend-test-utils';
+import { rootLifecycleServiceFactory } from '@backstage/backend-defaults/rootLifecycle';
 
 describe('backend-dynamic-feature-service', () => {
   const mockDir = createMockDirectory();

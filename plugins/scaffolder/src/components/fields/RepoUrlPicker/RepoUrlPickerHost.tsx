@@ -20,6 +20,8 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import { useApi } from '@backstage/core-plugin-api';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import useAsync from 'react-use/esm/useAsync';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../../translation';
 
 export const RepoUrlPickerHost = (props: {
   host?: string;
@@ -28,6 +30,7 @@ export const RepoUrlPickerHost = (props: {
   rawErrors: string[];
 }) => {
   const { host, hosts, onChange, rawErrors } = props;
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const scaffolderApi = useApi(scaffolderApiRef);
 
   const { value: { integrations } = { integrations: [] }, loading } = useAsync(
@@ -73,7 +76,7 @@ export const RepoUrlPickerHost = (props: {
         <Select
           native
           disabled={hosts?.length === 1}
-          label="Host"
+          label={t('fields.repoUrlPicker.host.title')}
           onChange={s => onChange(String(Array.isArray(s) ? s[0] : s))}
           selected={host}
           items={hostsOptions}
@@ -81,7 +84,7 @@ export const RepoUrlPickerHost = (props: {
         />
 
         <FormHelperText>
-          The host where the repository will be created
+          {t('fields.repoUrlPicker.host.description')}
         </FormHelperText>
       </FormControl>
     </>

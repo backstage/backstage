@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ContainerRunner, UrlReader } from '@backstage/backend-common';
+import { ContainerRunner } from '@backstage/backend-common';
 import { JsonObject } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
@@ -27,6 +27,8 @@ import {
 import { resolve as resolvePath } from 'path';
 import { RailsNewRunner } from './railsNewRunner';
 import { PassThrough } from 'stream';
+import { examples } from './index.examples';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 /**
  * Creates the `fetch:rails` Scaffolder action.
@@ -39,7 +41,7 @@ import { PassThrough } from 'stream';
  * @public
  */
 export function createFetchRailsAction(options: {
-  reader: UrlReader;
+  reader: UrlReaderService;
   integrations: ScmIntegrations;
   containerRunner?: ContainerRunner;
   /** A list of image names that are allowed to be passed as imageName input */
@@ -56,6 +58,7 @@ export function createFetchRailsAction(options: {
     id: 'fetch:rails',
     description:
       'Downloads a template from the given `url` into the workspace, and runs a rails new generator on it.',
+    examples,
     schema: {
       input: {
         type: 'object',

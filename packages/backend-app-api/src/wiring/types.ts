@@ -18,19 +18,14 @@ import {
   BackendFeature,
   ExtensionPoint,
   ServiceRef,
-  ServiceFactoryOrFunction,
+  ServiceFactory,
 } from '@backstage/backend-plugin-api';
 
 /**
  * @public
  */
 export interface Backend {
-  add(
-    feature:
-      | BackendFeature
-      | (() => BackendFeature)
-      | Promise<{ default: BackendFeature | (() => BackendFeature) }>,
-  ): void;
+  add(feature: BackendFeature | Promise<{ default: BackendFeature }>): void;
   start(): Promise<void>;
   stop(): Promise<void>;
 }
@@ -39,7 +34,7 @@ export interface Backend {
  * @public
  */
 export interface CreateSpecializedBackendOptions {
-  defaultServiceFactories: ServiceFactoryOrFunction[];
+  defaultServiceFactories: ServiceFactory[];
 }
 
 /**

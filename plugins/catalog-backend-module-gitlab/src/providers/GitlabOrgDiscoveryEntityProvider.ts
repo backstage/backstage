@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { LoggerService } from '@backstage/backend-plugin-api';
-import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
+import {
+  LoggerService,
+  SchedulerService,
+  SchedulerServiceTaskRunner,
+} from '@backstage/backend-plugin-api';
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
@@ -114,8 +117,8 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     options: {
       logger: LoggerService;
       events?: EventsService;
-      schedule?: TaskRunner;
-      scheduler?: PluginTaskScheduler;
+      schedule?: SchedulerServiceTaskRunner;
+      scheduler?: SchedulerService;
       userTransformer?: UserTransformer;
       groupEntitiesTransformer?: GroupEntitiesTransformer;
       groupNameTransformer?: GroupNameTransformer;
@@ -176,7 +179,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     integration: GitLabIntegration;
     logger: LoggerService;
     events?: EventsService;
-    taskRunner: TaskRunner;
+    taskRunner: SchedulerServiceTaskRunner;
     userTransformer?: UserTransformer;
     groupEntitiesTransformer?: GroupEntitiesTransformer;
     groupNameTransformer?: GroupNameTransformer;
@@ -321,7 +324,9 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     }
   }
 
-  private createScheduleFn(taskRunner: TaskRunner): () => Promise<void> {
+  private createScheduleFn(
+    taskRunner: SchedulerServiceTaskRunner,
+  ): () => Promise<void> {
     return async () => {
       const taskId = `${this.getProviderName()}:refresh`;
       return taskRunner.run({

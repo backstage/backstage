@@ -60,7 +60,7 @@ export interface RouteResolutionApi {
     anyRouteRef:
       | RouteRef<TParams>
       | SubRouteRef<TParams>
-      | ExternalRouteRef<TParams, any>,
+      | ExternalRouteRef<TParams>,
     options?: RouteResolutionApiResolveOptions,
   ): RouteFunc<TParams> | undefined;
 }

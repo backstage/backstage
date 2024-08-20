@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { MockFetchApi, setupRequestMockHandlers } from '@backstage/test-utils';
+import { MockFetchApi, registerMswTestHooks } from '@backstage/test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { NotificationsClient } from './NotificationsClient';
@@ -33,7 +33,7 @@ const testNotification: Partial<Notification> = {
 };
 
 describe('NotificationsClient', () => {
-  setupRequestMockHandlers(server);
+  registerMswTestHooks(server);
   const mockBaseUrl = 'http://backstage/api/notifications';
   const discoveryApi = { getBaseUrl: async () => mockBaseUrl };
   const fetchApi = new MockFetchApi();

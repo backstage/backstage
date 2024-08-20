@@ -44,6 +44,8 @@ export const Form = (props: PropsWithChildren<ScaffolderRJSFFormProps>) => {
                 uiSchema={wrapperProps.uiSchema ?? {}}
                 formData={wrapperProps.formData}
                 rawErrors={wrapperProps.rawErrors ?? []}
+                disabled={wrapperProps.disabled ?? false}
+                readonly={wrapperProps.readonly ?? false}
               />
             );
           },

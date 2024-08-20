@@ -47,12 +47,12 @@ import {
   validateRequestBody,
 } from './util';
 import { createOpenApiRouter } from '../schema/openapi.generated';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { parseEntityPaginationParams } from './request/parseEntityPaginationParams';
 import {
   AuthService,
   HttpAuthService,
   LoggerService,
+  SchedulerService,
 } from '@backstage/backend-plugin-api';
 import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
 
@@ -60,6 +60,7 @@ import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
  * Options used by {@link createRouter}.
  *
  * @public
+ * @deprecated Please migrate to the new backend system as this will be removed in the future.
  */
 export interface RouterOptions {
   entitiesCatalog?: EntitiesCatalog;
@@ -67,7 +68,7 @@ export interface RouterOptions {
   locationService: LocationService;
   orchestrator?: CatalogProcessingOrchestrator;
   refreshService?: RefreshService;
-  scheduler?: PluginTaskScheduler;
+  scheduler?: SchedulerService;
   logger: LoggerService;
   config: Config;
   permissionIntegrationRouter?: express.Router;
@@ -77,8 +78,6 @@ export interface RouterOptions {
 
 /**
  * Creates a catalog router.
- *
- * @public
  */
 export async function createRouter(
   options: RouterOptions,

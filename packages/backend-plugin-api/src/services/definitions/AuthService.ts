@@ -208,7 +208,7 @@ export interface AuthService {
    *
    * @remarks
    *
-   * This method should be called before each request. Do not cold on to the
+   * This method should be called before each request. Do not hold on to the
    * issued token and reuse it for future calls.
    */
   getPluginRequestToken(options: {

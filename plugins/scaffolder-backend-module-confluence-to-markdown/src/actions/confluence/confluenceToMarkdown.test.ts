@@ -15,23 +15,24 @@
  */
 
 import { createConfluenceToMarkdownAction } from './confluenceToMarkdown';
-import { UrlReader, loggerToWinstonLogger } from '@backstage/backend-common';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import {
   createMockDirectory,
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import type { ActionContext } from '@backstage/plugin-scaffolder-node';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 describe('confluence:transform:markdown', () => {
   const baseUrl = `https://nodomain.confluence.com`;
   const worker = setupServer();
-  setupRequestMockHandlers(worker);
+  registerMswTestHooks(worker);
 
   const config = new ConfigReader({
     confluence: {
@@ -50,7 +51,7 @@ describe('confluence:transform:markdown', () => {
     }),
   );
 
-  let reader: UrlReader;
+  let reader: UrlReaderService;
   let mockContext: ActionContext<{
     confluenceUrls: string[];
     repoUrl: string;

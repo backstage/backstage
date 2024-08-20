@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import { ContainerRunner, UrlReader } from '@backstage/backend-common';
-import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
+import { ContainerRunner } from '@backstage/backend-common';
+import {
+  UrlReaderService,
+  resolveSafeChildPath,
+} from '@backstage/backend-plugin-api';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
@@ -28,6 +31,7 @@ import {
   fetchContents,
   executeShellCommand,
 } from '@backstage/plugin-scaffolder-node';
+import { examples } from './cookiecutter.examples';
 
 export class CookiecutterRunner {
   private readonly containerRunner?: ContainerRunner;
@@ -139,7 +143,7 @@ export class CookiecutterRunner {
  * @public
  */
 export function createFetchCookiecutterAction(options: {
-  reader: UrlReader;
+  reader: UrlReaderService;
   integrations: ScmIntegrations;
   containerRunner?: ContainerRunner;
 }) {
@@ -156,6 +160,7 @@ export function createFetchCookiecutterAction(options: {
     id: 'fetch:cookiecutter',
     description:
       'Downloads a template from the given URL into the workspace, and runs cookiecutter on it.',
+    examples,
     schema: {
       input: {
         type: 'object',

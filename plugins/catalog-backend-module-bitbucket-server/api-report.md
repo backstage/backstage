@@ -10,9 +10,9 @@ import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { LocationSpec } from '@backstage/plugin-catalog-node';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Response as Response_2 } from 'node-fetch';
-import { TaskRunner } from '@backstage/backend-tasks';
+import { SchedulerService } from '@backstage/backend-plugin-api';
+import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
 
 // @public
 export class BitbucketServerClient {
@@ -57,8 +57,8 @@ export class BitbucketServerEntityProvider implements EntityProvider {
     options: {
       logger: LoggerService;
       parser?: BitbucketServerLocationParser;
-      schedule?: TaskRunner;
-      scheduler?: PluginTaskScheduler;
+      schedule?: SchedulerServiceTaskRunner;
+      scheduler?: SchedulerService;
     },
   ): BitbucketServerEntityProvider[];
   // (undocumented)

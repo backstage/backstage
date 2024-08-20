@@ -1,0 +1,15 @@
+---
+title: VeeCode Infracost
+author: VeeCode Platform
+authorUrl: https://platform.vee.codes/
+category: FinOps
+description: The Infracost plug-in works in conjunction with terraform and provides a graphical representation and cost estimate data for your entity at your respective provider.
+documentation: https://platform.vee.codes/plugin/Infracost
+iconUrl: https://veecode-platform.github.io/support/imgs/logo_5.svg
+npmPackageName: '@veecode-platform/backstage-plugin-infracost'
+tags:
+  - finops
+  - infracost
+  - estimate
+  - terraform
+addedDate: '2024-07-25'

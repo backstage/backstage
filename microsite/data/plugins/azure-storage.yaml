@@ -4,9 +4,9 @@ author: Deepankumar
 authorUrl: https://github.com/deepan10
 category: Infrastructure
 description: Explore Azure Storage Blobs in Backstage.
-documentation: https://github.com/deepan10/backstage-plugins/tree/main/plugins/azure-storage
+documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/azure-storage-explorer/plugins/azure-storage
 iconUrl: /img/azure-storage-folder.png
-npmPackageName: 'backstage-plugin-azure-storage'
+npmPackageName: '@backstage-community/plugin-azure-storage-explorer'
 tags:
   - Azure
   - Azure Storage

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TaskScheduleDefinition } from '@backstage/backend-tasks';
+import { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugin-api';
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
@@ -23,7 +23,7 @@ import { catalogModuleGithubOrgEntityProvider } from './module';
 describe('catalogModuleGithubOrgEntityProvider', () => {
   it('should register provider at the catalog extension point', async () => {
     let addedProviders: Array<EntityProvider> | undefined;
-    let usedSchedule: TaskScheduleDefinition | undefined;
+    let usedSchedule: SchedulerServiceTaskScheduleDefinition | undefined;
 
     const extensionPoint = {
       addEntityProvider: (...providers: any) => {

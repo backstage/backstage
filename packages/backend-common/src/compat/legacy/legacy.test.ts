@@ -24,7 +24,7 @@ import { Router } from 'express';
 import { createLegacyAuthAdapters } from '..';
 import { legacyPlugin } from './legacy';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { authServiceFactory } from '../../../../backend-app-api/src/services/implementations/auth';
+import { authServiceFactory } from '../../../../backend-defaults/src/entrypoints/auth';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { tokenManagerServiceFactory } from '../../../../backend-app-api/src/services/implementations/tokenManager';
 

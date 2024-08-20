@@ -19,8 +19,32 @@ export interface Config {
     providers?: {
       /** @visibility frontend */
       awsalb?: {
-        issuer?: string;
+        /**
+         * The issuer IdP URL that was configured in your ALB; this corresponds
+         * to the `iss` claim in your tokens.
+         *
+         * @example https://example.okta.com/oauth2/default
+         */
+        issuer: string;
+        /**
+         * The ARN of the ALB that signs the tokens; this corresponds to the
+         * `signer` claim in your tokens.
+         *
+         * @example arn:aws:elasticloadbalancing:us-east-2:123456789012:loadbalancer/app/my-load-balancer/1234567890123456
+         */
+        signer?: string;
+        /**
+         * The AWS region where the ALB is located.
+         *
+         * @example us-east-2
+         */
         region: string;
+        signIn?: {
+          resolvers: Array<
+            | { resolver: 'emailLocalPartMatchingUserEntityName' }
+            | { resolver: 'emailMatchingUserEntityProfileEmail' }
+          >;
+        };
       };
     };
   };

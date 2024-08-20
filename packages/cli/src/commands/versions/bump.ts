@@ -24,7 +24,6 @@ import fs from 'fs-extra';
 import chalk from 'chalk';
 import ora from 'ora';
 import semver from 'semver';
-import { minimatch } from 'minimatch';
 import { OptionValues } from 'commander';
 import { isError, NotFoundError } from '@backstage/errors';
 import { resolve as resolvePath } from 'path';
@@ -36,7 +35,6 @@ import {
   Lockfile,
   YarnInfoInspectData,
 } from '../../lib/versioning';
-import { forbiddenDuplicatesFilter } from './lint';
 import { BACKSTAGE_JSON } from '@backstage/cli-common';
 import { runParallelWorkers } from '../../lib/parallel';
 import {
@@ -44,7 +42,6 @@ import {
   getManifestByVersion,
   ReleaseManifest,
 } from '@backstage/release-manifests';
-import { PackageGraph } from '@backstage/cli-node';
 import { migrateMovedPackages } from './migrate';
 
 function shouldUseGlobalAgent(): boolean {
@@ -125,8 +122,6 @@ export default async (opts: OptionValues) => {
 
   // Next check with the package registry to see which dependency ranges we need to bump
   const versionBumps = new Map<string, PkgVersionInfo[]>();
-  // Track package versions that we want to remove from yarn.lock in order to trigger a bump
-  const unlocked = Array<{ name: string; range: string; target: string }>();
 
   await runParallelWorkers({
     parallelismFactor: 4,
@@ -157,71 +152,12 @@ export default async (opts: OptionValues) => {
     },
   });
 
-  const filter = (name: string) => minimatch(name, pattern);
-
-  // Check for updates of transitive backstage dependencies
-  await runParallelWorkers({
-    parallelismFactor: 4,
-    items: lockfile.keys(),
-    async worker(name) {
-      // Only check @backstage packages and friends, we don't want this to do a full update of all deps
-      if (!filter(name)) {
-        return;
-      }
-
-      let target: string;
-      try {
-        target = await findTargetVersion(name);
-      } catch (error) {
-        if (isError(error) && error.name === 'NotFoundError') {
-          console.log(`Package info not found, ignoring package ${name}`);
-          return;
-        }
-        throw error;
-      }
-
-      for (const entry of lockfile.get(name) ?? []) {
-        // Ignore lockfile entries that don't satisfy the version range, since
-        // these can't cause the package to be locked to an older version
-        if (!semver.satisfies(target, entry.range)) {
-          continue;
-        }
-        // Unlock all entries that are within range but on the old version
-        unlocked.push({ name, range: entry.range, target });
-      }
-    },
-  });
-
-  console.log();
-
   // Write all discovered version bumps to package.json in this repo
-  if (versionBumps.size === 0 && unlocked.length === 0) {
+  if (versionBumps.size === 0) {
     console.log(chalk.green('All Backstage packages are up to date!'));
   } else {
     console.log(chalk.yellow('Some packages are outdated, updating'));
     console.log();
-
-    if (unlocked.length > 0) {
-      const removed = new Set<string>();
-      for (const { name, range, target } of unlocked) {
-        // Don't bother removing lockfile entries if they're already on the correct version
-        const existingEntry = lockfile.get(name)?.find(e => e.range === range);
-        if (existingEntry?.version === target) {
-          continue;
-        }
-        const key = JSON.stringify({ name, range });
-        if (!removed.has(key)) {
-          removed.add(key);
-          console.log(
-            `${chalk.magenta('unlocking')} ${name}@${chalk.yellow(
-              range,
-            )} ~> ${chalk.yellow(target)}`,
-          );
-          lockfile.remove(name, range);
-        }
-      }
-      await lockfile.save(lockfilePath);
-    }
 
     const breakingUpdates = new Map<string, { from: string; to: string }>();
     await runParallelWorkers({
@@ -334,38 +270,6 @@ export default async (opts: OptionValues) => {
   }
 
   console.log();
-
-  // Finally we make sure the new lockfile doesn't have any duplicates
-  const dedupLockfile = await Lockfile.load(lockfilePath);
-
-  const result = dedupLockfile.analyze({
-    filter,
-    localPackages: PackageGraph.fromPackages(
-      await PackageGraph.listTargetPackages(),
-    ),
-  });
-
-  const forbiddenNewRanges = result.newRanges.filter(({ name }) =>
-    forbiddenDuplicatesFilter(name),
-  );
-  if (forbiddenNewRanges.length > 0) {
-    console.log(chalk.yellow('  ⚠️ Warning! ⚠️'));
-    console.log();
-    console.log(
-      chalk.yellow(
-        '  The below package(s) have incompatible duplicate installations, likely due to a bad dependency in a plugin.',
-      ),
-    );
-    console.log(
-      chalk.yellow(
-        '  You can investigate this by running `yarn why <package-name>`, and report the issue to the plugin maintainers.',
-      ),
-    );
-    console.log();
-    for (const { name } of forbiddenNewRanges) {
-      console.log(chalk.yellow(`    ${name}`));
-    }
-  }
 };
 
 export function createStrictVersionFinder(options: {

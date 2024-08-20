@@ -26,6 +26,8 @@ import React, { useEffect, useState } from 'react';
 import { useDryRun } from '../DryRunContext';
 import { DryRunResultsList } from './DryRunResultsList';
 import { DryRunResultsView } from './DryRunResultsView';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../../translation';
 
 const useStyles = makeStyles(theme => ({
   header: {
@@ -51,6 +53,7 @@ export function DryRunResults() {
   const dryRun = useDryRun();
   const [expanded, setExpanded] = useState(false);
   const [hidden, setHidden] = useState(true);
+  const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const resultsLength = dryRun.results.length;
   const prevResultsLength = usePrevious(resultsLength);
@@ -76,7 +79,7 @@ export function DryRunResults() {
           className={classes.header}
           expandIcon={<ExpandMoreIcon />}
         >
-          <Typography>Dry-run results</Typography>
+          <Typography>{t('templateEditorPage.dryRunResults.title')}</Typography>
         </AccordionSummary>
         <Divider orientation="horizontal" />
         <AccordionDetails className={classes.content}>

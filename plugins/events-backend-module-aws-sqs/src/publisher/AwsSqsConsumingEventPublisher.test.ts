@@ -19,7 +19,7 @@ import {
   ReceiveMessageCommand,
   SQSClient,
 } from '@aws-sdk/client-sqs';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { SchedulerService } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { TestEventsService } from '@backstage/plugin-events-backend-test-utils';
 import { mockClient } from 'aws-sdk-client-mock';
@@ -56,7 +56,7 @@ describe('AwsSqsConsumingEventPublisher', () => {
     const events = new TestEventsService();
     const scheduler = {
       scheduleTask: jest.fn(),
-    } as unknown as PluginTaskScheduler;
+    } as unknown as SchedulerService;
 
     const publishers = AwsSqsConsumingEventPublisher.fromConfig({
       config,
@@ -90,7 +90,7 @@ describe('AwsSqsConsumingEventPublisher', () => {
     const events = new TestEventsService();
     const scheduler = {
       scheduleTask: jest.fn(),
-    } as unknown as PluginTaskScheduler;
+    } as unknown as SchedulerService;
 
     const publishers = AwsSqsConsumingEventPublisher.fromConfig({
       config,
@@ -141,7 +141,7 @@ describe('AwsSqsConsumingEventPublisher', () => {
       scheduleTask: (spec: { fn: () => Promise<void> }) => {
         taskFn = spec.fn;
       },
-    } as unknown as PluginTaskScheduler;
+    } as unknown as SchedulerService;
 
     // on the first attempt, we will return 1 message and 0 messages afterwards
     const sqsMock = mockClient(SQSClient);

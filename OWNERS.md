@@ -32,11 +32,11 @@ Scope: The catalog plugin and catalog model
 | Patrik Oldsberg      | Spotify      | Cubic Belugas | [Rugvip](https://github.com/Rugvip)             | `Rugvip#0019`   |
 | Vincenzo Scamporlino | Spotify      | Cubic Belugas | [vinzscam](http://github.com/vinzscam)          | `vinzscam#6944` |
 
-### Discoverability
+### Home
 
-Team: @backstage/discoverability-maintainers
+Team: @backstage/home-maintainers
 
-Scope: Discoverability within Backstage, including the home page, information architecture, and search
+Scope: The Backstage home page and information architecture
 
 | Name                     | Organization | Team           | GitHub                                   | Discord           |
 | ------------------------ | ------------ | -------------- | ---------------------------------------- | ----------------- |
@@ -45,6 +45,18 @@ Scope: Discoverability within Backstage, including the home page, information ar
 | Djamaile Rahamat         | Spotify      | Infinite Buck$ | [djamaile](http://github.com/djamaile)   | dyoqi             |
 | Raghunandan Balachandran | Spotify      | Infinite Buck$ | [soapraj](http://github.com/soapraj)     | raghunandanb#1114 |
 | Bailey Brooks            | Spotify      | Infinite Buck$ | [bailey](http://github.com/bailey)       | \_bailey4         |
+
+### Search
+
+Team: @backstage/search-maintainers
+
+Scope: The Backstage Search plugin
+
+| Name                     | Organization | Team           | GitHub                                        | Discord           |
+| ------------------------ | ------------ | -------------- | --------------------------------------------- | ----------------- |
+| Emma Indal               | Spotify      | Infinite Buck$ | [emmaindal](http://github.com/emmaindal)      | emmaindal#7503    |
+| Raghunandan Balachandran | Spotify      | Infinite Buck$ | [soapraj](http://github.com/soapraj)          | raghunandanb#1114 |
+| Alex Lorenzi             | Spotify      | ProTean        | [AlexLorenzi](https://github.com/AlexLorenzi) | alexlorenzi       |
 
 ### Helm Charts
 
@@ -158,6 +170,18 @@ Scope: The Scaffolder frontend and backend plugins, and related tooling.
 | Name                | Organization | GitHub                                | Discord          |
 | ------------------- | ------------ | ------------------------------------- | ---------------- |
 | Bogdan Nechyporenko | Bol.com      | [acierto](https://github.com/acierto) | `bogdan_haarlem` |
+
+### Documentation
+
+Team: @backstage/documentation-maintainers
+
+Scope: The Backstage Documentation
+
+| Name            | Organization  | GitHub                                                | Discord       |
+| --------------- | ------------- | ----------------------------------------------------- | ------------- |
+| Andre Wanlin    | Spotify       | [awanlin](https://github.com/awanlin)                 | `ahhhndre`    |
+| Aramis Sennyey  |               | [aramissennyeydd](https://github.com/aramissennyeydd) | `Aramis#7984` |
+| Peter Macdonald | VodafoneZiggo | [Parsifal-M](https://github.com/Parsifal-M)           | `parsifal`    |
 
 ## Sponsors
 

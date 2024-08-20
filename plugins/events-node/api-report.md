@@ -4,7 +4,7 @@
 
 ```ts
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { ServiceFactory } from '@backstage/backend-plugin-api';
+import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 
 // @public
@@ -63,13 +63,15 @@ export interface EventsService {
 export type EventsServiceEventHandler = (params: EventParams) => Promise<void>;
 
 // @public (undocumented)
-export const eventsServiceFactory: () => ServiceFactory<
+export const eventsServiceFactory: ServiceFactoryCompat<
   EventsService,
-  'plugin'
+  'plugin',
+  'singleton',
+  undefined
 >;
 
 // @public
-export const eventsServiceRef: ServiceRef<EventsService, 'plugin'>;
+export const eventsServiceRef: ServiceRef<EventsService, 'plugin', 'singleton'>;
 
 // @public (undocumented)
 export type EventsServiceSubscribeOptions = {

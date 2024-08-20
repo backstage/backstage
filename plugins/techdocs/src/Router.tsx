@@ -25,10 +25,10 @@ import {
   useEntity,
   MissingAnnotationEmptyState,
 } from '@backstage/plugin-catalog-react';
-
-const TECHDOCS_ANNOTATION = 'backstage.io/techdocs-ref';
-
-const TECHDOCS_EXTERNAL_ANNOTATION = 'backstage.io/techdocs-entity';
+import {
+  TECHDOCS_ANNOTATION,
+  TECHDOCS_EXTERNAL_ANNOTATION,
+} from '@backstage/plugin-techdocs-common';
 
 /**
  * Helper that takes in entity and returns true/false if TechDocs is available for the entity

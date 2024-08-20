@@ -78,7 +78,7 @@ export const examples: TemplateExample[] = [
           name: 'Publish to Gitea',
           input: {
             repoUrl: 'gitea.com?repo=repo&owner=owner',
-            defaultBranch: 'main',
+            defaultBranch: 'staging',
           },
         },
       ],

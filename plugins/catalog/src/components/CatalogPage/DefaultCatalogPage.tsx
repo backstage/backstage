@@ -33,7 +33,7 @@ import {
 import React, { ReactNode } from 'react';
 import { createComponentRouteRef } from '../../routes';
 import { CatalogTable, CatalogTableRow } from '../CatalogTable';
-import { catalogTranslationRef } from '../../translation';
+import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 import { CatalogTableColumnsFunc } from '../CatalogTable/types';
@@ -69,7 +69,7 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
               to={createComponentLink && createComponentLink()}
             />
           )}
-          <SupportButton>All your software catalog entities</SupportButton>
+          <SupportButton>{t('indexPage.supportButtonContent')}</SupportButton>
         </ContentHeader>
         <EntityListProvider pagination={pagination}>
           <CatalogFilterLayout>

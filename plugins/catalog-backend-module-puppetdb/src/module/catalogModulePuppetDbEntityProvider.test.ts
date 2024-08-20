@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TaskScheduleDefinition } from '@backstage/backend-tasks';
+import { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugin-api';
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { catalogModulePuppetDbEntityProvider } from './catalogModulePuppetDbEntityProvider';
@@ -23,7 +23,7 @@ import { PuppetDbEntityProvider } from '../providers/PuppetDbEntityProvider';
 describe('catalogModulePuppetDbEntityProvider', () => {
   it('should register provider at the catalog extension point', async () => {
     let addedProviders: Array<PuppetDbEntityProvider> | undefined;
-    let usedSchedule: TaskScheduleDefinition | undefined;
+    let usedSchedule: SchedulerServiceTaskScheduleDefinition | undefined;
 
     const extensionPoint = {
       addEntityProvider: (providers: any) => {

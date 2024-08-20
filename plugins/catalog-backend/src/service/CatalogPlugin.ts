@@ -28,6 +28,8 @@ import {
   catalogPermissionExtensionPoint,
   CatalogProcessingExtensionPoint,
   catalogProcessingExtensionPoint,
+  CatalogLocationsExtensionPoint,
+  catalogLocationsExtensionPoint,
 } from '@backstage/plugin-catalog-node/alpha';
 import {
   CatalogProcessor,
@@ -40,6 +42,20 @@ import {
 import { merge } from 'lodash';
 import { Permission } from '@backstage/plugin-permission-common';
 import { ForwardedError } from '@backstage/errors';
+
+class CatalogLocationsExtensionPointImpl
+  implements CatalogLocationsExtensionPoint
+{
+  #locationTypes: string[] | undefined;
+
+  setAllowedLocationTypes(locationTypes: Array<string>) {
+    this.#locationTypes = locationTypes;
+  }
+
+  get allowedLocationTypes() {
+    return this.#locationTypes;
+  }
+}
 
 class CatalogProcessingExtensionPointImpl
   implements CatalogProcessingExtensionPoint
@@ -199,6 +215,12 @@ export const catalogPlugin = createBackendPlugin({
     const modelExtensions = new CatalogModelExtensionPointImpl();
     env.registerExtensionPoint(catalogModelExtensionPoint, modelExtensions);
 
+    const locationTypeExtensions = new CatalogLocationsExtensionPointImpl();
+    env.registerExtensionPoint(
+      catalogLocationsExtensionPoint,
+      locationTypeExtensions,
+    );
+
     env.registerInit({
       deps: {
         logger: coreServices.logger,
@@ -270,6 +292,12 @@ export const catalogPlugin = createBackendPlugin({
         builder.addPermissions(...permissionExtensions.permissions);
         builder.addPermissionRules(...permissionExtensions.permissionRules);
         builder.setFieldFormatValidators(modelExtensions.fieldValidators);
+
+        if (locationTypeExtensions.allowedLocationTypes) {
+          builder.setAllowedLocationTypes(
+            locationTypeExtensions.allowedLocationTypes,
+          );
+        }
 
         const { processingEngine, router } = await builder.build();
 

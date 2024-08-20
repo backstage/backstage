@@ -27,6 +27,8 @@ import {
   componentEntityHelpLink,
   RelatedEntitiesCard,
 } from '../RelatedEntitiesCard';
+import { catalogTranslationRef } from '../../alpha/translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export interface DependsOnComponentsCardProps {
@@ -37,9 +39,10 @@ export interface DependsOnComponentsCardProps {
 }
 
 export function DependsOnComponentsCard(props: DependsOnComponentsCardProps) {
+  const { t } = useTranslationRef(catalogTranslationRef);
   const {
     variant = 'gridItem',
-    title = 'Depends on components',
+    title = t('dependsOnComponentsCard.title'),
     columns = componentEntityColumns,
     tableOptions = {},
   } = props;
@@ -50,7 +53,7 @@ export function DependsOnComponentsCard(props: DependsOnComponentsCardProps) {
       entityKind="Component"
       relationType={RELATION_DEPENDS_ON}
       columns={columns}
-      emptyMessage="No component is a dependency of this component"
+      emptyMessage={t('dependsOnComponentsCard.emptyMessage')}
       emptyHelpLink={componentEntityHelpLink}
       asRenderableEntities={asComponentEntities}
       tableOptions={tableOptions}

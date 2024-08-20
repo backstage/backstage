@@ -146,14 +146,6 @@ export class ServerPermissionClient implements PermissionsService {
       return options.credentials;
     }
 
-    if (options?.token) {
-      try {
-        return await this.#auth.authenticate(options.token);
-      } catch {
-        // ignore
-      }
-    }
-
     return undefined;
   }
 

@@ -19,7 +19,7 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import {
-  setupRequestMockHandlers,
+  registerMswTestHooks,
   startTestBackend,
 } from '@backstage/backend-test-utils';
 import {
@@ -36,7 +36,7 @@ import fetch from 'node-fetch';
 
 describe('createRouter reloadable configuration', () => {
   const server = setupServer();
-  setupRequestMockHandlers(server);
+  registerMswTestHooks(server);
 
   it('should be able to observe the config', async () => {
     // Grab the subscriber function and use mutable config data to mock a config file change

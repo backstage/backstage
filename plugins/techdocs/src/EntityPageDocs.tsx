@@ -19,13 +19,12 @@ import {
   getCompoundEntityRef,
   parseEntityRef,
 } from '@backstage/catalog-model';
+import { TECHDOCS_EXTERNAL_ANNOTATION } from '@backstage/plugin-techdocs-common';
 
 import React from 'react';
 import { TechDocsReaderPage } from './plugin';
 import { TechDocsReaderPageContent } from './reader/components/TechDocsReaderPageContent';
 import { TechDocsReaderPageSubheader } from './reader/components/TechDocsReaderPageSubheader';
-
-const TECHDOCS_EXTERNAL_ANNOTATION = 'backstage.io/techdocs-entity';
 
 type EntityPageDocsProps = { entity: Entity };
 

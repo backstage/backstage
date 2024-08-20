@@ -66,7 +66,7 @@ Linking routes from different plugins requires this configuration. You can do th
 
 ### Enable feature discovery
 
-Use this setting to enable experimental feature discovery when building your app with `@backstage/cli`. With this configuration your application tries to discover and install package extensions automatically, check [here](../architecture/02-app.md#feature-discovery) for more details.
+Use this setting to enable experimental feature discovery when building your app with `@backstage/cli`. With this configuration your application tries to discover and install package extensions automatically, check [here](../architecture/10-app.md#feature-discovery) for more details.
 
 :::warning
 Remember that package extensions that are not auto-discovered must be manually added to the application when creating an app. See [features](#install-features-manually) for more details.
@@ -78,7 +78,7 @@ It is possible to enable, disable and configure extensions individually in the `
 
 ### Customize or override built-in extensions
 
-Previously you would customize the application route, components, apis, sidebar, etc. through the code in `App.tsx`. Now we want you to write less code and install more extensions to customize your Backstage instance. See [here](../building-plugins/03-extension-types.md) which types of extensions are available for you to customize your application.
+Previously you would customize the application routes, components, apis, sidebar, etc. through the code in `App.tsx`. Now we want to allow the same thing to be achieved while writing less code and instead installing more extensions to customize your Backstage instance. See the [extension blueprints](../building-plugins/03-common-extension-blueprints.md) section for a list of common extension kinds that are available for you to customize and extend your application.
 
 ## Use code to customize the app at a more granular level
 
@@ -99,7 +99,7 @@ export default app.createRoot();
 ```
 
 :::info
-You can also pass overrides to the features array, for more details, please read the [extension overrides](../architecture/05-extension-overrides.md) documentation.
+You can also pass overrides to the features array, for more details, please read the [extension overrides](../architecture/25-extension-overrides.md) documentation.
 :::
 
 ### Using an async features loader

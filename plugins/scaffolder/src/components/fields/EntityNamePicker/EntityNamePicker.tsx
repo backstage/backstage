@@ -16,6 +16,8 @@
 import React from 'react';
 import { EntityNamePickerProps } from './schema';
 import TextField from '@material-ui/core/TextField';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../../translation';
 
 export { EntityNamePickerSchema } from './schema';
 
@@ -23,10 +25,14 @@ export { EntityNamePickerSchema } from './schema';
  * EntityName Picker
  */
 export const EntityNamePicker = (props: EntityNamePickerProps) => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const {
     onChange,
     required,
-    schema: { title = 'Name', description = 'Unique name of the component' },
+    schema: {
+      title = t('fields.entityNamePicker.title'),
+      description = t('fields.entityNamePicker.description'),
+    },
     rawErrors,
     formData,
     uiSchema: { 'ui:autofocus': autoFocus },
@@ -46,6 +52,7 @@ export const EntityNamePicker = (props: EntityNamePickerProps) => {
       margin="normal"
       error={rawErrors?.length > 0 && !formData}
       inputProps={{ autoFocus }}
+      FormHelperTextProps={{ margin: 'dense', style: { marginLeft: 0 } }}
     />
   );
 };

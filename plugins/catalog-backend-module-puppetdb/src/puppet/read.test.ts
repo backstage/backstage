@@ -20,14 +20,14 @@ import {
   PuppetDbEntityProviderConfig,
 } from '../providers';
 import { DEFAULT_NAMESPACE } from '@backstage/catalog-model';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { ANNOTATION_PUPPET_CERTNAME, ENDPOINT_FACTSETS } from './constants';
 
 describe('readPuppetNodes', () => {
   const worker = setupServer();
-  setupRequestMockHandlers(worker);
+  registerMswTestHooks(worker);
 
   beforeEach(() => {
     jest.clearAllMocks();

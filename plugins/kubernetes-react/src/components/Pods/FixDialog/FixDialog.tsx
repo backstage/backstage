@@ -33,6 +33,8 @@ import { DetectedError } from '@backstage/plugin-kubernetes-common';
 import { PodLogs } from '../PodLogs';
 import { Events } from '../Events';
 import { LinkButton } from '@backstage/core-components';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -96,17 +98,15 @@ export const FixDialog: React.FC<FixDialogProps> = ({
         </Grid>
         <Grid item xs={12}>
           <Typography variant="h6">Fix:</Typography>
-          <Typography>
-            <ul>
-              {(error.proposedFix?.actions ?? []).map((fix, i) => {
-                return (
-                  <li key={`${pod.metadata?.name ?? 'unknown'}-pf-${i}`}>
-                    {fix}
-                  </li>
-                );
-              })}
-            </ul>
-          </Typography>
+          <List>
+            {(error.proposedFix?.actions ?? []).map((fix, i) => {
+              return (
+                <ListItem key={`${pod.metadata?.name ?? 'unknown'}-pf-${i}`}>
+                  {fix}
+                </ListItem>
+              );
+            })}
+          </List>
         </Grid>
 
         {pf && pf.type === 'logs' && (

@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import { ExtendedHttpServer } from '@backstage/backend-app-api';
 import { ClusterDetails } from '../types';
 import {
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
   startTestBackend,
 } from '@backstage/backend-test-utils';
 import { createBackendModule } from '@backstage/backend-plugin-api';
@@ -37,13 +36,14 @@ import { JsonObject } from '@backstage/types';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
+import { ExtendedHttpServer } from '@backstage/backend-defaults/rootHttpRouter';
 
 describe('Pinniped - tokenCredentialRequest', () => {
   let app: ExtendedHttpServer;
   const logger = loggerToWinstonLogger(mockServices.logger.mock());
   let httpsRequest: jest.SpyInstance;
   const worker = setupServer();
-  setupRequestMockHandlers(worker);
+  registerMswTestHooks(worker);
 
   beforeAll(() => {
     httpsRequest = jest.spyOn(

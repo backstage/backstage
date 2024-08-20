@@ -66,14 +66,14 @@ import {
 class ExamplePermissionPolicy implements PermissionPolicy {
   async handle(
     request: PolicyQuery,
-    user?: BackstageIdentityResponse,
+    user?: PolicyQueryUser,
   ): Promise<PolicyDecision> {
     /* highlight-add-start */
     if (
       isPermission(request.permission, templateParameterReadPermission) ||
       isPermission(request.permission, templateStepReadPermission)
     ) {
-      if (user?.identity.userEntityRef === 'user:default/spiderman')
+      if (user?.info.userEntityRef === 'user:default/spiderman')
         return createScaffolderTemplateConditionalDecision(request.permission, {
           not: scaffolderTemplateConditions.hasTag({ tag: 'secret' }),
         });
@@ -109,11 +109,11 @@ import {
 class ExamplePermissionPolicy implements PermissionPolicy {
   async handle(
     request: PolicyQuery,
-    user?: BackstageIdentityResponse,
+    user?: PolicyQueryUser,
   ): Promise<PolicyDecision> {
     /* highlight-add-start */
     if (isPermission(request.permission, actionExecutePermission)) {
-      if (user?.identity.userEntityRef === 'user:default/spiderman') {
+      if (user?.info.userEntityRef === 'user:default/spiderman') {
         return createScaffolderActionConditionalDecision(request.permission, {
           not: scaffolderActionConditions.hasActionId({
             actionId: 'debug:log',
@@ -147,11 +147,11 @@ import {
 class ExamplePermissionPolicy implements PermissionPolicy {
   async handle(
     request: PolicyQuery,
-    user?: BackstageIdentityResponse,
+    user?: PolicyQueryUser,
   ): Promise<PolicyDecision> {
     /* highlight-add-start */
     if (isPermission(request.permission, actionExecutePermission)) {
-      if (user?.identity.userEntityRef === 'user:default/spiderman') {
+      if (user?.info.userEntityRef === 'user:default/spiderman') {
         return createScaffolderActionConditionalDecision(request.permission, {
           not: {
             allOf: [
@@ -190,25 +190,25 @@ import {
 class ExamplePermissionPolicy implements PermissionPolicy {
   async handle(
     request: PolicyQuery,
-    user?: BackstageIdentityResponse,
+    user?: PolicyQueryUser,
   ): Promise<PolicyDecision> {
     /* highlight-add-start */
     if (isPermission(request.permission, taskCreatePermission)) {
-      if (user?.identity.userEntityRef === 'user:default/spiderman') {
+      if (user?.info.userEntityRef === 'user:default/spiderman') {
         return {
           result: AuthorizeResult.ALLOW,
         };
       }
     }
     if (isPermission(request.permission, taskCancelPermission)) {
-      if (user?.identity.userEntityRef === 'user:default/spiderman') {
+      if (user?.info.userEntityRef === 'user:default/spiderman') {
         return {
           result: AuthorizeResult.ALLOW,
         };
       }
     }
     if (isPermission(request.permission, taskReadPermission)) {
-      if (user?.identity.userEntityRef === 'user:default/spiderman') {
+      if (user?.info.userEntityRef === 'user:default/spiderman') {
         return {
           result: AuthorizeResult.ALLOW,
         };
@@ -239,7 +239,6 @@ Instead of the changes in `permission.ts` noted in the above example you will ma
 
 ```ts title="packages/backend/src/index.ts"
 import { createBackendModule } from '@backstage/backend-plugin-api';
-import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import {
   PolicyDecision,
   AuthorizeResult,
@@ -247,13 +246,14 @@ import {
 import {
   PermissionPolicy,
   PolicyQuery,
+  PolicyQueryUser,
 } from '@backstage/plugin-permission-node';
 import { policyExtensionPoint } from '@backstage/plugin-permission-node/alpha';
 
 class ExamplePermissionPolicy implements PermissionPolicy {
   async handle(
     request: PolicyQuery,
-    user?: BackstageIdentityResponse,
+    user?: PolicyQueryUser,
   ): Promise<PolicyDecision> {
     // Various scaffolder permission checks ...
 

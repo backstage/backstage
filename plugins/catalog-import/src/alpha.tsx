@@ -25,9 +25,9 @@ import {
   convertLegacyRouteRef,
 } from '@backstage/core-compat-api';
 import {
-  createApiExtension,
-  createPageExtension,
-  createPlugin,
+  createFrontendPlugin,
+  PageBlueprint,
+  ApiBlueprint,
 } from '@backstage/frontend-plugin-api';
 import {
   scmAuthApiRef,
@@ -40,47 +40,51 @@ import { catalogApiRef } from '@backstage/plugin-catalog-react';
 
 // TODO: It's currently possible to override the import page with a custom one. We need to decide
 //       whether this type of override is typically done with an input or by overriding the entire extension.
-const catalogImportPage = createPageExtension({
-  defaultPath: '/catalog-import',
-  routeRef: convertLegacyRouteRef(rootRouteRef),
-  loader: () =>
-    import('./components/ImportPage').then(m =>
-      compatWrapper(<m.ImportPage />),
-    ),
+const catalogImportPage = PageBlueprint.make({
+  params: {
+    defaultPath: '/catalog-import',
+    routeRef: convertLegacyRouteRef(rootRouteRef),
+    loader: () =>
+      import('./components/ImportPage').then(m =>
+        compatWrapper(<m.ImportPage />),
+      ),
+  },
 });
 
-const catalogImportApi = createApiExtension({
-  factory: createApiFactory({
-    api: catalogImportApiRef,
-    deps: {
-      discoveryApi: discoveryApiRef,
-      scmAuthApi: scmAuthApiRef,
-      fetchApi: fetchApiRef,
-      scmIntegrationsApi: scmIntegrationsApiRef,
-      catalogApi: catalogApiRef,
-      configApi: configApiRef,
-    },
-    factory: ({
-      discoveryApi,
-      scmAuthApi,
-      fetchApi,
-      scmIntegrationsApi,
-      catalogApi,
-      configApi,
-    }) =>
-      new CatalogImportClient({
+const catalogImportApi = ApiBlueprint.make({
+  params: {
+    factory: createApiFactory({
+      api: catalogImportApiRef,
+      deps: {
+        discoveryApi: discoveryApiRef,
+        scmAuthApi: scmAuthApiRef,
+        fetchApi: fetchApiRef,
+        scmIntegrationsApi: scmIntegrationsApiRef,
+        catalogApi: catalogApiRef,
+        configApi: configApiRef,
+      },
+      factory: ({
         discoveryApi,
         scmAuthApi,
-        scmIntegrationsApi,
         fetchApi,
+        scmIntegrationsApi,
         catalogApi,
         configApi,
-      }),
-  }),
+      }) =>
+        new CatalogImportClient({
+          discoveryApi,
+          scmAuthApi,
+          scmIntegrationsApi,
+          fetchApi,
+          catalogApi,
+          configApi,
+        }),
+    }),
+  },
 });
 
 /** @alpha */
-export default createPlugin({
+export default createFrontendPlugin({
   id: 'catalog-import',
   extensions: [catalogImportApi, catalogImportPage],
   routes: {

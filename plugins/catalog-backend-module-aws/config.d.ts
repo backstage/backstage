@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TaskScheduleDefinitionConfig } from '@backstage/backend-tasks';
+import { SchedulerServiceTaskScheduleDefinitionConfig } from '@backstage/backend-plugin-api';
 
 export interface Config {
   catalog?: {
@@ -26,8 +26,14 @@ export interface Config {
         provider: {
           /**
            * The role to be assumed by this processor
+           * @deprecated Use `accountId` instead.
            */
           roleArn?: string;
+
+          /**
+           * The AWS account ID to query for organizational data
+           */
+          accountId?: string;
         };
       };
     };
@@ -63,7 +69,7 @@ export interface Config {
             /**
              * (Optional) TaskScheduleDefinition for the refresh.
              */
-            schedule?: TaskScheduleDefinitionConfig;
+            schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
           }
         | {
             [name: string]: {
@@ -91,7 +97,7 @@ export interface Config {
               /**
                * (Optional) TaskScheduleDefinition for the refresh.
                */
-              schedule?: TaskScheduleDefinitionConfig;
+              schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
             };
           };
     };

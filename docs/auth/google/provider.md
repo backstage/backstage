@@ -24,9 +24,9 @@ To support Google authentication, you must create OAuth credentials:
    - Add yourself as a test user, if using External user type
 6. Set **Application Type** to `Web Application` with these settings:
    - `Name`: Backstage (or your custom app name)
-   - `Authorized JavaScript origins`: http://localhost:3000
+   - `Authorized JavaScript origins`: <http://localhost:3000>
    - `Authorized Redirect URIs`:
-     http://localhost:7007/api/auth/google/handler/frame
+     <http://localhost:7007/api/auth/google/handler/frame>
 7. Click Create
 
 ## Configuration
@@ -72,8 +72,25 @@ The resolvers will be tried in order, but will only be skipped if they throw a `
 
 If these resolvers do not fit your needs you can build a custom resolver, this is covered in the [Building Custom Resolvers](../identity-resolver.md#building-custom-resolvers) section of the Sign-in Identities and Resolvers documentation.
 
+## Backend Installation
+
+To add the provider to the backend we will first need to install the package by running this command:
+
+```bash title="from your Backstage root directory"
+yarn --cwd packages/backend add @backstage/plugin-auth-backend-module-google-provider
+```
+
+Then we will need to add this line:
+
+```ts title="in packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-auth-backend'));
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-auth-backend-module-google-provider'));
+/* highlight-add-end */
+```
+
 ## Adding the provider to the Backstage frontend
 
 To add the provider to the frontend, add the `googleAuthApi` reference and
 `SignInPage` component as shown in
-[Adding the provider to the sign-in page](../index.md#adding-the-provider-to-the-sign-in-page).
+[Adding the provider to the sign-in page](../index.md#sign-in-configuration).

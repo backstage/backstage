@@ -503,4 +503,32 @@ describe('TaskWorker', () => {
       await knex.destroy();
     },
   );
+
+  it.each(databases.eachSupportedId())(
+    'next_run_start_at is not set for manually-triggered tasks, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+      await migrateBackendTasks(knex);
+
+      const fn = jest.fn(
+        async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
+      );
+
+      const initialSettings: TaskSettingsV2 = {
+        version: 2,
+        cadence: 'manual',
+        timeoutAfterDuration: 'PT1M',
+      };
+
+      const worker = new TaskWorker('task99', fn, knex, logger);
+      await worker.persistTask(initialSettings);
+      await worker.tryClaimTask('ticket', initialSettings);
+      await worker.tryReleaseTask('ticket', initialSettings);
+
+      const row = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+      expect(row.next_run_start_at).toBeNull();
+
+      await knex.destroy();
+    },
+  );
 });

@@ -17,7 +17,7 @@
 import {
   createRouteRef,
   createExternalRouteRef,
-  createPlugin,
+  createFrontendPlugin,
 } from '@backstage/frontend-plugin-api';
 import { collectRouteIds } from './collectRouteIds';
 
@@ -34,7 +34,11 @@ describe('collectRouteIds', () => {
     );
 
     const collected = collectRouteIds([
-      createPlugin({ id: 'test', routes: { ref }, externalRoutes: { extRef } }),
+      createFrontendPlugin({
+        id: 'test',
+        routes: { ref },
+        externalRoutes: { extRef },
+      }),
     ]);
     expect(Object.fromEntries(collected.routes)).toEqual({
       'test.ref': ref,

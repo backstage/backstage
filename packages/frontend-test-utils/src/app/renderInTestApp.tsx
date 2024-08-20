@@ -15,12 +15,23 @@
  */
 
 import React from 'react';
+import { Link, MemoryRouter } from 'react-router-dom';
+import { createSpecializedApp } from '@backstage/frontend-app-api';
+import { RenderResult, render } from '@testing-library/react';
+import { ConfigReader } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import {
-  RouteRef,
-  coreExtensionData,
   createExtension,
+  createExtensionOverrides,
+  ExtensionDefinition,
+  coreExtensionData,
+  RouteRef,
+  useRouteRef,
+  createExtensionInput,
+  IconComponent,
+  RouterBlueprint,
+  NavItemBlueprint,
 } from '@backstage/frontend-plugin-api';
-import { createExtensionTester } from './createExtensionTester';
 
 /**
  * Options to customize the behavior of the test app.
@@ -44,7 +55,65 @@ export type TestAppOptions = {
    * ```
    */
   mountedRoutes?: { [path: string]: RouteRef };
+
+  /**
+   * Additional configuration passed to the app when rendering elements inside it.
+   */
+  config?: JsonObject;
 };
+
+const NavItem = (props: {
+  routeRef: RouteRef<undefined>;
+  title: string;
+  icon: IconComponent;
+}) => {
+  const { routeRef, title, icon: Icon } = props;
+  const link = useRouteRef(routeRef);
+  if (!link) {
+    return null;
+  }
+  return (
+    <li>
+      <Link to={link()}>
+        <Icon /> {title}
+      </Link>
+    </li>
+  );
+};
+
+export const TestAppNavExtension = createExtension({
+  namespace: 'app',
+  name: 'nav',
+  attachTo: { id: 'app/layout', input: 'nav' },
+  inputs: {
+    items: createExtensionInput([NavItemBlueprint.dataRefs.target]),
+  },
+  output: [coreExtensionData.reactElement],
+  factory({ inputs }) {
+    return [
+      coreExtensionData.reactElement(
+        <nav>
+          <ul>
+            {inputs.items.map((item, index) => {
+              const { icon, title, routeRef } = item.get(
+                NavItemBlueprint.dataRefs.target,
+              );
+
+              return (
+                <NavItem
+                  key={index}
+                  icon={icon}
+                  title={title}
+                  routeRef={routeRef}
+                />
+              );
+            })}
+          </ul>
+        </nav>,
+      ),
+    ];
+  },
+});
 
 /**
  * @public
@@ -53,36 +122,61 @@ export type TestAppOptions = {
 export function renderInTestApp(
   element: JSX.Element,
   options?: TestAppOptions,
-) {
-  const extension = createExtension({
-    namespace: 'test',
-    attachTo: { id: 'app', input: 'root' },
-    output: {
-      element: coreExtensionData.reactElement,
-    },
-    factory: () => ({ element }),
-  });
-  const tester = createExtensionTester(extension);
+): RenderResult {
+  const extensions: Array<ExtensionDefinition<any, any>> = [
+    createExtension({
+      namespace: 'test',
+      attachTo: { id: 'app/routes', input: 'routes' },
+      output: [coreExtensionData.reactElement, coreExtensionData.routePath],
+      factory: () => {
+        return [
+          coreExtensionData.reactElement(element),
+          coreExtensionData.routePath('/'),
+        ];
+      },
+    }),
+    RouterBlueprint.make({
+      namespace: 'test',
+      params: {
+        Component: ({ children }) => <MemoryRouter>{children}</MemoryRouter>,
+      },
+    }),
+    TestAppNavExtension,
+  ];
 
   if (options?.mountedRoutes) {
     for (const [path, routeRef] of Object.entries(options.mountedRoutes)) {
       // TODO(Rugvip): add support for external route refs
-      tester.add(
+      extensions.push(
         createExtension({
           kind: 'test-route',
           name: path,
           attachTo: { id: 'app/root', input: 'elements' },
-          output: {
-            element: coreExtensionData.reactElement,
-            path: coreExtensionData.routePath,
-            routeRef: coreExtensionData.routeRef,
-          },
-          factory() {
-            return { element: <React.Fragment />, path, routeRef };
-          },
+          output: [
+            coreExtensionData.reactElement,
+            coreExtensionData.routePath,
+            coreExtensionData.routeRef,
+          ],
+          factory: () => [
+            coreExtensionData.reactElement(<React.Fragment />),
+            coreExtensionData.routePath(path),
+            coreExtensionData.routeRef(routeRef),
+          ],
         }),
       );
     }
   }
-  return tester.render();
+
+  const app = createSpecializedApp({
+    features: [
+      createExtensionOverrides({
+        extensions,
+      }),
+    ],
+    config: ConfigReader.fromConfigs([
+      { context: 'render-config', data: options?.config ?? {} },
+    ]),
+  });
+
+  return render(app.createRoot());
 }

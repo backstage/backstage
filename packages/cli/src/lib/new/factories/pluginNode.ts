@@ -61,6 +61,7 @@ export const pluginNode = createFactory<Options>({
         privatePackage: ctx.private,
         npmRegistry: ctx.npmRegistry,
         pluginVersion: ctx.defaultVersion,
+        license: ctx.license,
       },
     });
 

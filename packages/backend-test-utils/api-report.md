@@ -19,10 +19,9 @@ import { CacheService } from '@backstage/backend-plugin-api';
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { EventsService } from '@backstage/plugin-events-node';
-import { ExtendedHttpServer } from '@backstage/backend-app-api';
+import { ExtendedHttpServer } from '@backstage/backend-defaults/rootHttpRouter';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
-import { HttpRouterFactoryOptions } from '@backstage/backend-defaults/httpRouter';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
 import { IdentityService } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
@@ -39,6 +38,7 @@ import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
+import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
@@ -54,9 +54,6 @@ export interface CreateMockDirectoryOptions {
   content?: MockDirectoryContent;
   mockOsTmpDir?: boolean;
 }
-
-// @public (undocumented)
-export function isDockerDisabledForTests(): boolean;
 
 // @public (undocumented)
 export namespace mockCredentials {
@@ -143,9 +140,6 @@ export interface MockDirectoryContentOptions {
   shouldReadAsText?: boolean | ((path: string, buffer: Buffer) => boolean);
 }
 
-// @public @deprecated (undocumented)
-export type MockDirectoryOptions = CreateMockDirectoryOptions;
-
 // @public (undocumented)
 export namespace mockServices {
   // (undocumented)
@@ -156,7 +150,12 @@ export namespace mockServices {
   // (undocumented)
   export namespace auth {
     const // (undocumented)
-      factory: () => ServiceFactory<AuthService, 'plugin'>;
+      factory: ServiceFactoryCompat<
+        AuthService,
+        'plugin',
+        'singleton',
+        undefined
+      >;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<AuthService> | undefined,
@@ -165,7 +164,12 @@ export namespace mockServices {
   // (undocumented)
   export namespace cache {
     const // (undocumented)
-      factory: () => ServiceFactory<CacheService, 'plugin'>;
+      factory: ServiceFactoryCompat<
+        CacheService,
+        'plugin',
+        'singleton',
+        undefined
+      >;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<CacheService> | undefined,
@@ -174,7 +178,12 @@ export namespace mockServices {
   // (undocumented)
   export namespace database {
     const // (undocumented)
-      factory: () => ServiceFactory<DatabaseService, 'plugin'>;
+      factory: ServiceFactoryCompat<
+        DatabaseService,
+        'plugin',
+        'singleton',
+        undefined
+      >;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<DatabaseService> | undefined,
@@ -185,7 +194,12 @@ export namespace mockServices {
   // (undocumented)
   export namespace discovery {
     const // (undocumented)
-      factory: () => ServiceFactory<DiscoveryService, 'plugin'>;
+      factory: ServiceFactoryCompat<
+        DiscoveryService,
+        'plugin',
+        'singleton',
+        undefined
+      >;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<DiscoveryService> | undefined,
@@ -194,7 +208,12 @@ export namespace mockServices {
   // (undocumented)
   export namespace events {
     const // (undocumented)
-      factory: () => ServiceFactory<EventsService, 'plugin'>;
+      factory: ServiceFactoryCompat<
+        EventsService,
+        'plugin',
+        'singleton',
+        undefined
+      >;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<EventsService> | undefined,
@@ -206,13 +225,10 @@ export namespace mockServices {
   }): HttpAuthService;
   // (undocumented)
   export namespace httpAuth {
-    const factory: (
-      options?:
-        | {
-            defaultCredentials?: BackstageCredentials | undefined;
-          }
-        | undefined,
-    ) => ServiceFactory<HttpAuthService, 'plugin'>;
+    const factory: ((options?: {
+      defaultCredentials?: BackstageCredentials;
+    }) => ServiceFactory<HttpAuthService, 'plugin', 'singleton'>) &
+      ServiceFactory<HttpAuthService, 'plugin', 'singleton'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<HttpAuthService> | undefined,
@@ -221,9 +237,12 @@ export namespace mockServices {
   // (undocumented)
   export namespace httpRouter {
     const // (undocumented)
-      factory: (
-        options?: HttpRouterFactoryOptions | undefined,
-      ) => ServiceFactory<HttpRouterService, 'plugin'>;
+      factory: ServiceFactoryCompat<
+        HttpRouterService,
+        'plugin',
+        'singleton',
+        undefined
+      >;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<HttpRouterService> | undefined,
@@ -234,7 +253,12 @@ export namespace mockServices {
   // (undocumented)
   export namespace identity {
     const // (undocumented)
-      factory: () => ServiceFactory<IdentityService, 'plugin'>;
+      factory: ServiceFactoryCompat<
+        IdentityService,
+        'plugin',
+        'singleton',
+        undefined
+      >;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<IdentityService> | undefined,
@@ -243,7 +267,12 @@ export namespace mockServices {
   // (undocumented)
   export namespace lifecycle {
     const // (undocumented)
-      factory: () => ServiceFactory<LifecycleService, 'plugin'>;
+      factory: ServiceFactoryCompat<
+        LifecycleService,
+        'plugin',
+        'singleton',
+        undefined
+      >;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<LifecycleService> | undefined,
@@ -252,7 +281,12 @@ export namespace mockServices {
   // (undocumented)
   export namespace logger {
     const // (undocumented)
-      factory: () => ServiceFactory<LoggerService, 'plugin'>;
+      factory: ServiceFactoryCompat<
+        LoggerService,
+        'plugin',
+        'singleton',
+        undefined
+      >;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<LoggerService> | undefined,
@@ -261,7 +295,12 @@ export namespace mockServices {
   // (undocumented)
   export namespace permissions {
     const // (undocumented)
-      factory: () => ServiceFactory<PermissionsService, 'plugin'>;
+      factory: ServiceFactoryCompat<
+        PermissionsService,
+        'plugin',
+        'singleton',
+        undefined
+      >;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<PermissionsService> | undefined,
@@ -276,14 +315,28 @@ export namespace mockServices {
       data?: JsonObject;
     };
     const // (undocumented)
-      factory: (
-        options?: Options | undefined,
-      ) => ServiceFactory<RootConfigService, 'root'>;
+      factory: ServiceFactory<
+        RootConfigService,
+        'root',
+        'singleton' | 'multiton'
+      > &
+        ((
+          options?: Options | undefined,
+        ) => ServiceFactory<
+          RootConfigService,
+          'root',
+          'singleton' | 'multiton'
+        >);
   }
   // (undocumented)
   export namespace rootHealth {
     const // (undocumented)
-      factory: () => ServiceFactory<RootHealthService, 'root'>;
+      factory: ServiceFactoryCompat<
+        RootHealthService,
+        'root',
+        'singleton',
+        undefined
+      >;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<RootHealthService> | undefined,
@@ -292,9 +345,10 @@ export namespace mockServices {
   // (undocumented)
   export namespace rootHttpRouter {
     const // (undocumented)
-      factory: (
+      factory: ((
         options?: RootHttpRouterFactoryOptions | undefined,
-      ) => ServiceFactory<RootHttpRouterService, 'root'>;
+      ) => ServiceFactory<RootHttpRouterService, 'root', 'singleton'>) &
+        ServiceFactory<RootHttpRouterService, 'root', 'singleton'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<RootHttpRouterService> | undefined,
@@ -303,7 +357,12 @@ export namespace mockServices {
   // (undocumented)
   export namespace rootLifecycle {
     const // (undocumented)
-      factory: () => ServiceFactory<RootLifecycleService, 'root'>;
+      factory: ServiceFactoryCompat<
+        RootLifecycleService,
+        'root',
+        'singleton',
+        undefined
+      >;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<RootLifecycleService> | undefined,
@@ -318,9 +377,10 @@ export namespace mockServices {
       level?: 'none' | 'error' | 'warn' | 'info' | 'debug';
     };
     const // (undocumented)
-      factory: (
-        options?: Options | undefined,
-      ) => ServiceFactory<LoggerService, 'root'>;
+      factory: ServiceFactory<LoggerService, 'root', 'singleton' | 'multiton'> &
+        ((
+          options?: Options | undefined,
+        ) => ServiceFactory<LoggerService, 'root', 'singleton' | 'multiton'>);
     const // (undocumented)
       mock: (
         partialImpl?: Partial<RootLoggerService> | undefined,
@@ -329,7 +389,12 @@ export namespace mockServices {
   // (undocumented)
   export namespace scheduler {
     const // (undocumented)
-      factory: () => ServiceFactory<SchedulerService, 'plugin'>;
+      factory: ServiceFactoryCompat<
+        SchedulerService,
+        'plugin',
+        'singleton',
+        undefined
+      >;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<SchedulerService> | undefined,
@@ -340,7 +405,12 @@ export namespace mockServices {
   // (undocumented)
   export namespace tokenManager {
     const // (undocumented)
-      factory: () => ServiceFactory<TokenManagerService, 'plugin'>;
+      factory: ServiceFactoryCompat<
+        TokenManagerService,
+        'plugin',
+        'singleton',
+        undefined
+      >;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<TokenManagerService> | undefined,
@@ -349,7 +419,12 @@ export namespace mockServices {
   // (undocumented)
   export namespace urlReader {
     const // (undocumented)
-      factory: () => ServiceFactory<UrlReaderService, 'plugin'>;
+      factory: ServiceFactoryCompat<
+        UrlReaderService,
+        'plugin',
+        'singleton',
+        undefined
+      >;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<UrlReaderService> | undefined,
@@ -360,7 +435,12 @@ export namespace mockServices {
   ): UserInfoService;
   // (undocumented)
   export namespace userInfo {
-    const factory: () => ServiceFactory<UserInfoService, 'plugin'>;
+    const factory: ServiceFactoryCompat<
+      UserInfoService,
+      'plugin',
+      'singleton',
+      undefined
+    >;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<UserInfoService> | undefined,
@@ -369,25 +449,42 @@ export namespace mockServices {
 }
 
 // @public
-export class ServiceFactoryTester<TService, TScope extends 'root' | 'plugin'> {
-  static from<TService, TScope extends 'root' | 'plugin'>(
-    subject:
-      | ServiceFactory<TService, TScope>
-      | (() => ServiceFactory<TService, TScope>),
+export function registerMswTestHooks(worker: {
+  listen: (t: any) => void;
+  close: () => void;
+  resetHandlers: () => void;
+}): void;
+
+// @public
+export class ServiceFactoryTester<
+  TService,
+  TScope extends 'root' | 'plugin',
+  TInstances extends 'singleton' | 'multiton' = 'singleton',
+> {
+  static from<
+    TService,
+    TScope extends 'root' | 'plugin',
+    TInstances extends 'singleton' | 'multiton' = 'singleton',
+  >(
+    subject: ServiceFactory<TService, TScope, TInstances>,
     options?: ServiceFactoryTesterOptions,
-  ): ServiceFactoryTester<TService, TScope>;
-  get(
-    ...args: 'root' extends TScope ? [] : [pluginId?: string]
-  ): Promise<TService>;
-  getService<TGetService, TGetScope extends 'root' | 'plugin'>(
-    service: ServiceRef<TGetService, TGetScope>,
+  ): ServiceFactoryTester<TService, TScope, TInstances>;
+  getService<
+    TGetService,
+    TGetScope extends 'root' | 'plugin',
+    TGetInstances extends 'singleton' | 'multiton' = 'singleton',
+  >(
+    service: ServiceRef<TGetService, TGetScope, TGetInstances>,
     ...args: 'root' extends TGetScope ? [] : [pluginId?: string]
-  ): Promise<TGetService>;
+  ): Promise<TGetInstances extends 'multiton' ? TGetService[] : TGetService>;
+  getSubject(
+    ...args: 'root' extends TScope ? [] : [pluginId?: string]
+  ): Promise<TInstances extends 'multiton' ? TService[] : TService>;
 }
 
 // @public
 export interface ServiceFactoryTesterOptions {
-  dependencies?: Array<ServiceFactory | (() => ServiceFactory)>;
+  dependencies?: Array<ServiceFactory>;
 }
 
 // @public (undocumented)
@@ -400,13 +497,6 @@ export type ServiceMock<TService> = {
     ? TService[Key] & jest.MockInstance<Return, Args>
     : TService[Key];
 };
-
-// @public
-export function setupRequestMockHandlers(worker: {
-  listen: (t: any) => void;
-  close: () => void;
-  resetHandlers: () => void;
-}): void;
 
 // @public (undocumented)
 export function startTestBackend<TExtensionPoints extends any[]>(
@@ -432,9 +522,8 @@ export interface TestBackendOptions<TExtensionPoints extends any[]> {
   // (undocumented)
   features?: Array<
     | BackendFeature
-    | (() => BackendFeature)
     | Promise<{
-        default: BackendFeature | (() => BackendFeature);
+        default: BackendFeature;
       }>
   >;
 }

@@ -313,7 +313,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     });
 
     // Attempt cleanup upon failure.
-    // todo(@backstage/discoverability-maintainers): Consider introducing a more
+    // todo(@backstage/search-maintainers): Consider introducing a more
     // formal mechanism for handling such errors in BatchSearchEngineIndexer and
     // replacing this handler with it. See: #17291
     indexer.on('error', async e => {

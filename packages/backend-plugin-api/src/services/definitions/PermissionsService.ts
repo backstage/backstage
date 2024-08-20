@@ -17,6 +17,7 @@
 import {
   AuthorizePermissionRequest,
   AuthorizePermissionResponse,
+  EvaluatorRequestOptions,
   PermissionEvaluator,
   QueryPermissionRequest,
   QueryPermissionResponse,
@@ -24,18 +25,14 @@ import {
 import { BackstageCredentials } from './AuthService';
 
 /**
- * Options for {@link @backstage/plugin-permission-common#PermissionEvaluator} requests.
+ * Options for {@link PermissionsService} requests.
  *
  * @public
  */
-export type PermissionsServiceRequestOptions =
-  | {
-      /** @deprecated use the `credentials` option instead. */
-      token?: string;
-    }
-  | {
-      credentials: BackstageCredentials;
-    };
+export interface PermissionsServiceRequestOptions
+  extends EvaluatorRequestOptions {
+  credentials: BackstageCredentials;
+}
 
 /**
  * Permission system integration for authorization of user/service actions.
@@ -59,7 +56,7 @@ export interface PermissionsService extends PermissionEvaluator {
    */
   authorize(
     requests: AuthorizePermissionRequest[],
-    options?: PermissionsServiceRequestOptions,
+    options: PermissionsServiceRequestOptions,
   ): Promise<AuthorizePermissionResponse[]>;
 
   /**
@@ -79,6 +76,6 @@ export interface PermissionsService extends PermissionEvaluator {
    */
   authorizeConditional(
     requests: QueryPermissionRequest[],
-    options?: PermissionsServiceRequestOptions,
+    options: PermissionsServiceRequestOptions,
   ): Promise<QueryPermissionResponse[]>;
 }

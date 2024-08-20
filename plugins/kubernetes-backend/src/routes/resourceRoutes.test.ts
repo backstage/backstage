@@ -20,10 +20,10 @@ import {
   mockServices,
   startTestBackend,
 } from '@backstage/backend-test-utils';
-import { ExtendedHttpServer } from '@backstage/backend-app-api';
 import { kubernetesObjectsProviderExtensionPoint } from '@backstage/plugin-kubernetes-node';
 import { createBackendModule } from '@backstage/backend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { ExtendedHttpServer } from '@backstage/backend-defaults/rootHttpRouter';
 
 describe('resourcesRoutes', () => {
   let app: ExtendedHttpServer;

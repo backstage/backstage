@@ -29,7 +29,7 @@ import { BackstagePlugin, Extension, ExtensionDataRef } from '../../wiring';
 export interface AppNodeSpec {
   readonly id: string;
   readonly attachTo: { id: string; input: string };
-  readonly extension: Extension<unknown>;
+  readonly extension: Extension<unknown, unknown>;
   readonly disabled: boolean;
   readonly config?: unknown;
   readonly source?: BackstagePlugin;

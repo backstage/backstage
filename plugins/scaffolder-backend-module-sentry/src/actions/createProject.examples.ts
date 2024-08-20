@@ -50,4 +50,41 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
+  {
+    description: 'Creates a Sentry project when no auth token is passed',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'create-sentry-project',
+          action: 'sentry:project:create',
+          name: 'Create a Sentry project with provided project slug.',
+          input: {
+            organizationSlug: 'my-org',
+            teamSlug: 'team-a',
+            name: 'Scaffolded project A',
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description:
+      'Creates a Sentry project with a long project name and automatically generated slug.',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'create-sentry-project',
+          action: 'sentry:project:create',
+          name: 'Create a Sentry project with a long name and no slug provided.',
+          input: {
+            organizationSlug: 'my-org',
+            teamSlug: 'team-c',
+            name: 'A very long name for the scaffolded project C that will generate a slug',
+            authToken:
+              'c16711beb516e1e910d2ede554dc1bf725654ef3c75e5a9106de9aec13d6gf94',
+          },
+        },
+      ],
+    }),
+  },
 ];

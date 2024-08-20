@@ -18,7 +18,6 @@ import {
   DatabaseManager,
   loggerToWinstonLogger,
   PluginDatabaseManager,
-  UrlReaders,
 } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ConfigReader } from '@backstage/config';
@@ -47,7 +46,8 @@ import {
 } from '@backstage/plugin-permission-common';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import { AutocompleteHandler } from '@backstage/plugin-scaffolder-node/alpha';
-import { MiddlewareFactory } from '@backstage/backend-app-api';
+import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
+import { UrlReaders } from '@backstage/backend-defaults/urlReader';
 
 const mockAccess = jest.fn();
 
@@ -432,10 +432,11 @@ describe('createRouter', () => {
         });
 
         const response = await request(app).get(
-          `/v2/tasks?createdBy=user:default/foo`,
+          `/v2/tasks?createdBy=user:default/foo&status=completed`,
         );
         expect(taskBroker.list).toHaveBeenCalledWith({
           createdBy: 'user:default/foo',
+          status: 'completed',
         });
 
         expect(response.status).toEqual(200);

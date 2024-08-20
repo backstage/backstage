@@ -20,10 +20,10 @@ import { graphql } from '@octokit/graphql';
 import { LocationSpec } from '@backstage/plugin-catalog-node';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { SchedulerService } from '@backstage/backend-plugin-api';
+import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmLocationAnalyzer } from '@backstage/plugin-catalog-node';
-import { TaskRunner } from '@backstage/backend-tasks';
 import { TokenManager } from '@backstage/backend-common';
 import { UserEntity } from '@backstage/catalog-model';
 
@@ -70,8 +70,8 @@ export class GitHubEntityProvider implements EntityProvider {
     config: Config,
     options: {
       logger: LoggerService;
-      schedule?: TaskRunner;
-      scheduler?: PluginTaskScheduler;
+      schedule?: SchedulerServiceTaskRunner;
+      scheduler?: SchedulerService;
     },
   ): GitHubEntityProvider[];
   // (undocumented)
@@ -90,8 +90,8 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     options: {
       events?: EventsService;
       logger: LoggerService;
-      schedule?: TaskRunner;
-      scheduler?: PluginTaskScheduler;
+      schedule?: SchedulerServiceTaskRunner;
+      scheduler?: SchedulerService;
     },
   ): GithubEntityProvider[];
   // (undocumented)
@@ -173,7 +173,7 @@ export interface GithubMultiOrgEntityProviderOptions {
   id: string;
   logger: LoggerService;
   orgs?: string[];
-  schedule?: 'manual' | TaskRunner;
+  schedule?: 'manual' | SchedulerServiceTaskRunner;
   teamTransformer?: TeamTransformer;
   userTransformer?: UserTransformer;
 }
@@ -251,7 +251,7 @@ export interface GithubOrgEntityProviderOptions {
   id: string;
   logger: LoggerService;
   orgUrl: string;
-  schedule?: 'manual' | TaskRunner;
+  schedule?: 'manual' | SchedulerServiceTaskRunner;
   teamTransformer?: TeamTransformer;
   userTransformer?: UserTransformer;
 }

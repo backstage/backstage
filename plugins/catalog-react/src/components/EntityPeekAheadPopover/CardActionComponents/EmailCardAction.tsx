@@ -18,6 +18,8 @@ import IconButton from '@material-ui/core/IconButton';
 import EmailIcon from '@material-ui/icons/Email';
 import React from 'react';
 import { Link } from '@backstage/core-components';
+import { catalogReactTranslationRef } from '../../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /**
  * Email Card action link
@@ -25,12 +27,17 @@ import { Link } from '@backstage/core-components';
  * @private
  */
 export const EmailCardAction = (props: { email: string }) => {
+  const { t } = useTranslationRef(catalogReactTranslationRef);
   return (
     <IconButton
       component={Link}
       aria-label="Email"
-      title={`Email ${props.email}`}
-      to={`mailto:${props.email}`}
+      title={t('entityPeekAheadPopover.emailCardAction.title', {
+        email: props.email,
+      })}
+      to={t('entityPeekAheadPopover.emailCardAction.subTitle', {
+        email: props.email,
+      })}
     >
       <EmailIcon />
     </IconButton>

@@ -28,7 +28,7 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import {
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import {
   FetchResponse,
@@ -1128,7 +1128,7 @@ describe('KubernetesFanOutHandler', () => {
 
     describe('with a real fetcher', () => {
       const worker = setupServer();
-      setupRequestMockHandlers(worker);
+      registerMswTestHooks(worker);
 
       it('fetch error short-circuits requests to a single cluster, recovering across the fleet', async () => {
         const pods = [{ metadata: { name: 'pod-name' } }];

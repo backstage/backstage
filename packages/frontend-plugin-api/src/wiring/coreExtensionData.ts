@@ -20,7 +20,9 @@ import { createExtensionDataRef } from './createExtensionDataRef';
 
 /** @public */
 export const coreExtensionData = {
-  reactElement: createExtensionDataRef<JSX.Element>('core.reactElement'),
-  routePath: createExtensionDataRef<string>('core.routing.path'),
-  routeRef: createExtensionDataRef<RouteRef>('core.routing.ref'),
+  reactElement: createExtensionDataRef<JSX.Element>().with({
+    id: 'core.reactElement',
+  }),
+  routePath: createExtensionDataRef<string>().with({ id: 'core.routing.path' }),
+  routeRef: createExtensionDataRef<RouteRef>().with({ id: 'core.routing.ref' }),
 };

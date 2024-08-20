@@ -20,7 +20,7 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import {
   TestApiProvider,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
   wrapInTestApp,
 } from '@backstage/test-utils';
 import { ProxiedSignInPage } from './ProxiedSignInPage';
@@ -28,7 +28,7 @@ import { discoveryApiRef } from '@backstage/core-plugin-api';
 
 describe('ProxiedSignInPage', () => {
   const worker = setupServer();
-  setupRequestMockHandlers(worker);
+  registerMswTestHooks(worker);
 
   const Subject = wrapInTestApp(<div>authenticated</div>, {
     components: {

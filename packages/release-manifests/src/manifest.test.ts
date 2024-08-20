@@ -16,7 +16,7 @@
 
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { registerMswTestHooks } from '@backstage/test-utils';
 import {
   getManifestByReleaseLine,
   getManifestByVersion,
@@ -25,7 +25,7 @@ import {
 
 describe('Release Manifests', () => {
   const worker = setupServer();
-  setupRequestMockHandlers(worker);
+  registerMswTestHooks(worker);
 
   describe('getManifestByVersion', () => {
     it('should return a list of packages in a release', async () => {

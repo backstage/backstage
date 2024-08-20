@@ -199,7 +199,8 @@ const routes = (
       <RequirePermission permission={todoListCreatePermission}>
         <TodoListPage />
       </RequirePermission>
-      {/* highlight-add-end */}}
+      {/* highlight-add-end */}
+    }>
       {/* ... */}
     </Route>
   </FlatRoutes>

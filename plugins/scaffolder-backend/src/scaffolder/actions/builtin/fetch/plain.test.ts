@@ -21,11 +21,11 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
 
 import { resolve as resolvePath } from 'path';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
-import { UrlReader } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { fetchContents } from '@backstage/plugin-scaffolder-node';
 import { createFetchPlainAction } from './plain';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 describe('fetch:plain', () => {
   const integrations = ScmIntegrations.fromConfig(
@@ -35,7 +35,7 @@ describe('fetch:plain', () => {
       },
     }),
   );
-  const reader: UrlReader = {
+  const reader: UrlReaderService = {
     readUrl: jest.fn(),
     readTree: jest.fn(),
     search: jest.fn(),

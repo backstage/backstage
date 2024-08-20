@@ -70,16 +70,14 @@ export interface Config {
      */
     publisher?:
       | {
-          type:
-            | 'local'
-            | 'googleGcs'
-            | 'awsS3'
-            | 'azureBlobStorage'
-            | 'openStackSwift';
+          type: 'local';
 
+          /**
+           *  Optional when 'type' is set to local
+           */
           local?: {
             /**
-             * Directory to store generated static files.
+             * (Optional) Directory to store generated static files.
              */
             publishDirectory?: string;
           };
@@ -132,6 +130,11 @@ export interface Config {
              * (Required) Cloud Storage Bucket Name
              */
             bucketName: string;
+            /**
+             * (Optional) Location in storage bucket to save files
+             * If not set, the default location will be the root of the storage bucket
+             */
+            bucketRootPath?: string;
             /**
              * (Optional) AWS Region.
              * If not set, AWS_REGION environment variable or aws config file will be used.

@@ -44,7 +44,7 @@ export type CreateAppRouteBinder = <
   externalRoutes: TExternalRoutes,
   targetRoutes: PartialKeys<
     TargetRouteMap<TExternalRoutes>,
-    KeysWithType<TExternalRoutes, ExternalRouteRef<any, true>>
+    KeysWithType<TExternalRoutes, ExternalRouteRef<any>>
   >,
 ) => void;
 

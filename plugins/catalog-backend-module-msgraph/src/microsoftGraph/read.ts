@@ -178,6 +178,7 @@ export async function readMicrosoftGraphGroups(
     groupFilter?: string;
     groupSearch?: string;
     groupSelect?: string[];
+    groupIncludeSubGroups?: boolean;
     groupTransformer?: GroupTransformer;
     organizationTransformer?: OrganizationTransformer;
   },
@@ -244,6 +245,31 @@ export async function readMicrosoftGraphGroups(
 
           if (member['@odata.type'] === '#microsoft.graph.group') {
             ensureItem(groupMember, group.id!, member.id);
+
+            if (options?.groupIncludeSubGroups) {
+              const groupMemberEntity = await transformer(member);
+
+              if (groupMemberEntity) {
+                groups.push(groupMemberEntity);
+
+                for await (const subMember of client.getGroupMembers(
+                  member.id!,
+                  { top: PAGE_SIZE },
+                )) {
+                  if (!subMember.id) {
+                    continue;
+                  }
+
+                  if (subMember['@odata.type'] === '#microsoft.graph.user') {
+                    ensureItem(groupMemberOf, subMember.id, member.id!);
+                  }
+
+                  if (subMember['@odata.type'] === '#microsoft.graph.group') {
+                    ensureItem(groupMember, member.id!, subMember.id);
+                  }
+                }
+              }
+            }
           }
         }
 
@@ -377,6 +403,7 @@ export async function readMicrosoftGraphOrg(
     groupSearch?: string;
     groupFilter?: string;
     groupSelect?: string[];
+    groupIncludeSubGroups?: boolean;
     queryMode?: 'basic' | 'advanced';
     userTransformer?: UserTransformer;
     groupTransformer?: GroupTransformer;
@@ -421,6 +448,7 @@ export async function readMicrosoftGraphOrg(
       groupFilter: options.groupFilter,
       groupSearch: options.groupSearch,
       groupSelect: options.groupSelect,
+      groupIncludeSubGroups: options.groupIncludeSubGroups,
       groupTransformer: options.groupTransformer,
       organizationTransformer: options.organizationTransformer,
     });

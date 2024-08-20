@@ -37,10 +37,11 @@ import {
   AuthService,
   DiscoveryService,
   LoggerService,
+  SchedulerService,
+  SchedulerServiceTaskRunner,
 } from '@backstage/backend-plugin-api';
 import * as uuid from 'uuid';
 import lodash from 'lodash';
-import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 
 const HTTP_VERBS: (keyof PathItemObject)[] = [
   'get',
@@ -163,7 +164,7 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
     public readonly discovery: DiscoveryService,
     public readonly logger: LoggerService,
     public readonly auth: AuthService,
-    taskRunner: TaskRunner,
+    taskRunner: SchedulerServiceTaskRunner,
   ) {
     this.scheduleFn = this.createScheduleFn(taskRunner);
   }
@@ -173,7 +174,7 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
     options: {
       discovery: DiscoveryService;
       logger: LoggerService;
-      schedule: PluginTaskScheduler;
+      schedule: SchedulerService;
       auth: AuthService;
     },
   ) {
@@ -204,7 +205,9 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
     return await this.scheduleFn();
   }
 
-  private createScheduleFn(taskRunner: TaskRunner): () => Promise<void> {
+  private createScheduleFn(
+    taskRunner: SchedulerServiceTaskRunner,
+  ): () => Promise<void> {
     return async () => {
       const taskId = `${this.getProviderName()}:refresh`;
       return taskRunner.run({

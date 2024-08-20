@@ -12,6 +12,12 @@ export class BitbucketCloudClient {
     config: BitbucketCloudIntegrationConfig,
   ): BitbucketCloudClient;
   // (undocumented)
+  listBranchesByRepository(
+    repository: string,
+    workspace: string,
+    options?: FilterAndSortOptions & PartialResponseOptions,
+  ): WithPagination<Models.PaginatedBranches, Models.Branch>;
+  // (undocumented)
   listProjectsByWorkspace(
     workspace: string,
     options?: FilterAndSortOptions & PartialResponseOptions,
@@ -208,6 +214,9 @@ export namespace Models {
     previous?: string;
     size?: number;
     values?: Array<TResultItem> | Set<TResultItem>;
+  }
+  export interface PaginatedBranches extends Paginated<Branch> {
+    values?: Set<Branch>;
   }
   export interface PaginatedProjects extends Paginated<Project> {
     values?: Set<Project>;

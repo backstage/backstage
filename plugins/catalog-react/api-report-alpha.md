@@ -5,76 +5,213 @@
 ```ts
 /// <reference types="react" />
 
-import { AnyExtensionInputMap } from '@backstage/frontend-plugin-api';
+import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
+import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
-import { PortableSchema } from '@backstage/frontend-plugin-api';
-import { ResolvedExtensionInputs } from '@backstage/frontend-plugin-api';
+import { JSX as JSX_2 } from 'react';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/frontend-plugin-api';
+import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
 // @alpha (undocumented)
-export const catalogExtensionData: {
-  entityContentTitle: ConfigurableExtensionDataRef<string, {}>;
-  entityFilterFunction: ConfigurableExtensionDataRef<
-    (entity: Entity) => boolean,
-    {}
-  >;
-  entityFilterExpression: ConfigurableExtensionDataRef<string, {}>;
-};
+export const catalogReactTranslationRef: TranslationRef<
+  'catalog-react',
+  {
+    readonly 'catalogFilter.title': 'Filters';
+    readonly 'catalogFilter.buttonTitle': 'Filters';
+    readonly 'entityKindPicker.title': 'Kind';
+    readonly 'entityKindPicker.errorMessage': 'Failed to load entity kinds';
+    readonly 'entityLifecyclePicker.title': 'Lifecycle';
+    readonly 'entityNamespacePicker.title': 'Namespace';
+    readonly 'entityOwnerPicker.title': 'Owner';
+    readonly 'entityProcessingStatusPicker.title': 'Processing Status';
+    readonly 'entityTagPicker.title': 'Tags';
+    readonly 'entityPeekAheadPopover.title': 'Drill into the entity to see all of the tags.';
+    readonly 'entityPeekAheadPopover.entityCardActionsTitle': 'Show details';
+    readonly 'entityPeekAheadPopover.emailCardAction.title': 'Email {{email}}';
+    readonly 'entityPeekAheadPopover.emailCardAction.subTitle': 'mailto {{email}}';
+    readonly 'entitySearchBar.placeholder': 'Search';
+    readonly 'entityTypePicker.title': 'Type';
+    readonly 'entityTypePicker.errorMessage': 'Failed to load entity types';
+    readonly 'entityTypePicker.optionAllTitle': 'all';
+    readonly 'favoriteEntity.addToFavorites': 'Add to favorites';
+    readonly 'favoriteEntity.removeFromFavorites': 'Remove from favorites';
+    readonly 'inspectEntityDialog.title': 'Entity Inspector';
+    readonly 'inspectEntityDialog.closeButtonTitle': 'Close';
+    readonly 'inspectEntityDialog.ancestryPage.title': 'Ancestry';
+    readonly 'inspectEntityDialog.colocatedPage.title': 'Colocated';
+    readonly 'inspectEntityDialog.colocatedPage.description': 'These are the entities that are colocated with this entity - as in, they originated from the same data source (e.g. came from the same YAML file), or from the same origin (e.g. the originally registered URL).';
+    readonly 'inspectEntityDialog.colocatedPage.alertNoLocation': 'Entity had no location information.';
+    readonly 'inspectEntityDialog.colocatedPage.alertNoEntity': 'There were no other entities on this location.';
+    readonly 'inspectEntityDialog.jsonPage.title': 'Entity as JSON';
+    readonly 'inspectEntityDialog.jsonPage.description': 'This is the raw entity data as received from the catalog, on JSON form.';
+    readonly 'inspectEntityDialog.overviewPage.title': 'Overview';
+    readonly 'inspectEntityDialog.yamlPage.title': 'Entity as YAML';
+    readonly 'inspectEntityDialog.yamlPage.description': 'This is the raw entity data as received from the catalog, on YAML form.';
+    readonly 'unregisterEntityDialog.title': 'Are you sure you want to unregister this entity?';
+    readonly 'unregisterEntityDialog.cancelButtonTitle': 'Cancel';
+    readonly 'unregisterEntityDialog.deleteButtonTitle': 'Delete Entity';
+    readonly 'unregisterEntityDialog.deleteEntitySuccessMessage': 'Removed entity {{entityName}}';
+    readonly 'unregisterEntityDialog.onlyDeleteStateTitle': 'This entity does not seem to originate from a registered location. You therefore only have the option to delete it outright from the catalog.';
+    readonly 'unregisterEntityDialog.errorStateTitle': 'Internal error: Unknown state';
+    readonly 'unregisterEntityDialog.bootstrapState.title': 'You cannot unregister this entity, since it originates from a protected Backstage configuration (location "{{location}}"). If you believe this is in error, please contact the {{appTitle}} integrator.';
+    readonly 'unregisterEntityDialog.bootstrapState.advancedDescription': 'You have the option to delete the entity itself from the catalog. Note that this should only be done if you know that the catalog file has been deleted at, or moved from, its origin location. If that is not the case, the entity will reappear shortly as the next refresh round is performed by the catalog.';
+    readonly 'unregisterEntityDialog.bootstrapState.advancedOptions': 'Advanced Options';
+    readonly 'unregisterEntityDialog.unregisterState.title': 'This action will unregister the following entities:';
+    readonly 'unregisterEntityDialog.unregisterState.description': 'To undo, just re-register the entity in {{appTitle}}.';
+    readonly 'unregisterEntityDialog.unregisterState.subTitle': 'Located at the following location:';
+    readonly 'unregisterEntityDialog.unregisterState.advancedDescription': 'You also have the option to delete the entity itself from the catalog. Note that this should only be done if you know that the catalog file has been deleted at, or moved from, its origin location. If that is not the case, the entity will reappear shortly as the next refresh round is performed by the catalog.';
+    readonly 'unregisterEntityDialog.unregisterState.advancedOptions': 'Advanced Options';
+    readonly 'unregisterEntityDialog.unregisterState.unregisterButtonTitle': 'Unregister Location';
+    readonly 'userListPicker.defaultOrgName': 'Company';
+    readonly 'userListPicker.orgFilterAllLabel': 'All';
+    readonly 'userListPicker.personalFilter.title': 'Personal';
+    readonly 'userListPicker.personalFilter.ownedLabel': 'Owned';
+    readonly 'userListPicker.personalFilter.starredLabel': 'Starred';
+  }
+>;
 
 // @alpha (undocumented)
-export function createEntityCardExtension<
-  TConfig extends {
-    filter?: string;
+export function convertLegacyEntityCardExtension(
+  LegacyExtension: ComponentType<{}>,
+  overrides?: {
+    name?: string;
+    filter?:
+      | typeof EntityCardBlueprint.dataRefs.filterFunction.T
+      | typeof EntityCardBlueprint.dataRefs.filterExpression.T;
   },
-  TInputs extends AnyExtensionInputMap,
->(options: {
-  namespace?: string;
-  name?: string;
-  attachTo?: {
-    id: string;
-    input: string;
-  };
-  disabled?: boolean;
-  inputs?: TInputs;
-  configSchema?: PortableSchema<TConfig>;
-  filter?:
-    | typeof catalogExtensionData.entityFilterFunction.T
-    | typeof catalogExtensionData.entityFilterExpression.T;
-  loader: (options: {
-    config: TConfig;
-    inputs: Expand<ResolvedExtensionInputs<TInputs>>;
-  }) => Promise<JSX.Element>;
-}): ExtensionDefinition<TConfig>;
+): ExtensionDefinition<any>;
 
 // @alpha (undocumented)
-export function createEntityContentExtension<
-  TInputs extends AnyExtensionInputMap,
->(options: {
-  namespace?: string;
-  name?: string;
-  attachTo?: {
-    id: string;
-    input: string;
-  };
-  disabled?: boolean;
-  inputs?: TInputs;
-  routeRef?: RouteRef;
-  defaultPath: string;
-  defaultTitle: string;
-  filter?:
-    | typeof catalogExtensionData.entityFilterFunction.T
-    | typeof catalogExtensionData.entityFilterExpression.T;
-  loader: (options: {
-    inputs: Expand<ResolvedExtensionInputs<TInputs>>;
-  }) => Promise<JSX.Element>;
-}): ExtensionDefinition<{
-  title: string;
-  path: string;
-  filter?: string | undefined;
-}>;
+export function convertLegacyEntityContentExtension(
+  LegacyExtension: ComponentType<{}>,
+  overrides?: {
+    name?: string;
+    filter?:
+      | typeof EntityContentBlueprint.dataRefs.filterFunction.T
+      | typeof EntityContentBlueprint.dataRefs.filterExpression.T;
+    defaultPath?: string;
+    defaultTitle?: string;
+  },
+): ExtensionDefinition<any>;
+
+// @alpha
+export const EntityCardBlueprint: ExtensionBlueprint<
+  {
+    kind: 'entity-card';
+    namespace: undefined;
+    name: undefined;
+  },
+  {
+    loader: () => Promise<JSX.Element>;
+    filter?: string | ((entity: Entity) => boolean) | undefined;
+  },
+  | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+  | ConfigurableExtensionDataRef<
+      (entity: Entity) => boolean,
+      'catalog.entity-filter-function',
+      {
+        optional: true;
+      }
+    >
+  | ConfigurableExtensionDataRef<
+      string,
+      'catalog.entity-filter-expression',
+      {
+        optional: true;
+      }
+    >,
+  {},
+  {
+    filter: string | undefined;
+  },
+  {
+    filter?: string | undefined;
+  },
+  {
+    filterFunction: ConfigurableExtensionDataRef<
+      (entity: Entity) => boolean,
+      'catalog.entity-filter-function',
+      {}
+    >;
+    filterExpression: ConfigurableExtensionDataRef<
+      string,
+      'catalog.entity-filter-expression',
+      {}
+    >;
+  }
+>;
+
+// @alpha
+export const EntityContentBlueprint: ExtensionBlueprint<
+  {
+    kind: 'entity-content';
+    namespace: undefined;
+    name: undefined;
+  },
+  {
+    loader: () => Promise<JSX.Element>;
+    defaultPath: string;
+    defaultTitle: string;
+    routeRef?: RouteRef<AnyRouteRefParams> | undefined;
+    filter?: string | ((entity: Entity) => boolean) | undefined;
+  },
+  | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+  | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+  | ConfigurableExtensionDataRef<
+      RouteRef<AnyRouteRefParams>,
+      'core.routing.ref',
+      {
+        optional: true;
+      }
+    >
+  | ConfigurableExtensionDataRef<string, 'catalog.entity-content-title', {}>
+  | ConfigurableExtensionDataRef<
+      (entity: Entity) => boolean,
+      'catalog.entity-filter-function',
+      {
+        optional: true;
+      }
+    >
+  | ConfigurableExtensionDataRef<
+      string,
+      'catalog.entity-filter-expression',
+      {
+        optional: true;
+      }
+    >,
+  {},
+  {
+    path: string | undefined;
+    title: string | undefined;
+    filter: string | undefined;
+  },
+  {
+    filter?: string | undefined;
+    title?: string | undefined;
+    path?: string | undefined;
+  },
+  {
+    title: ConfigurableExtensionDataRef<
+      string,
+      'catalog.entity-content-title',
+      {}
+    >;
+    filterFunction: ConfigurableExtensionDataRef<
+      (entity: Entity) => boolean,
+      'catalog.entity-filter-function',
+      {}
+    >;
+    filterExpression: ConfigurableExtensionDataRef<
+      string,
+      'catalog.entity-filter-expression',
+      {}
+    >;
+  }
+>;
 
 // @alpha
 export function isOwnerOf(owner: Entity, entity: Entity): boolean;

@@ -16,6 +16,8 @@
 
 const MESSAGE_MARKER = 'eHgtF5hmbrXyiEvo';
 
+// NOTE: This function is also imported and used in backend code
+
 /**
  * Internal helper that describes the location of the parent caller.
  * @internal

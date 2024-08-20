@@ -18,7 +18,7 @@ jest.mock('fs-extra');
 
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
-import { UrlReader } from '@backstage/backend-common';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { fetchContents, fetchFile } from './fetch';
@@ -39,7 +39,7 @@ describe('fetchContents helper', () => {
 
   const readUrl = jest.fn();
   const readTree = jest.fn();
-  const reader: UrlReader = {
+  const reader: UrlReaderService = {
     readUrl,
     readTree,
     search: jest.fn(),

@@ -107,33 +107,30 @@ export function convertLegacyApp(
     name: 'layout',
     attachTo: { id: 'app', input: 'root' },
     inputs: {
-      content: createExtensionInput(
-        {
-          element: coreExtensionData.reactElement,
-        },
-        { singleton: true },
-      ),
+      content: createExtensionInput([coreExtensionData.reactElement], {
+        singleton: true,
+      }),
     },
-    output: {
-      element: coreExtensionData.reactElement,
-    },
+    output: [coreExtensionData.reactElement],
     factory({ inputs }) {
       // Clone the root element, this replaces the FlatRoutes declared in the app with out content input
-      return {
-        element: React.cloneElement(
-          rootEl,
-          undefined,
-          inputs.content.output.element,
+      return [
+        coreExtensionData.reactElement(
+          React.cloneElement(
+            rootEl,
+            undefined,
+            inputs.content.get(coreExtensionData.reactElement),
+          ),
         ),
-      };
+      ];
     },
   });
   const CoreNavOverride = createExtension({
     namespace: 'app',
     name: 'nav',
     attachTo: { id: 'app/layout', input: 'nav' },
-    output: {},
-    factory: () => ({}),
+    output: [],
+    factory: () => [],
     disabled: true,
   });
 

@@ -80,7 +80,6 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
       entityMetadata: { value: entityMetadata, loading: entityMetadataLoading },
       entityRef,
       setShadowRoot,
-      incShadowRootVersion,
     } = useTechDocsReaderPage();
     const dom = useTechDocsReaderDom(entityRef);
     const path = window.location.pathname;
@@ -103,12 +102,11 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
     const handleAppend = useCallback(
       (newShadowRoot: ShadowRoot) => {
         setShadowRoot(newShadowRoot);
-        incShadowRootVersion();
         if (onReady instanceof Function) {
           onReady();
         }
       },
-      [setShadowRoot, incShadowRootVersion, onReady],
+      [setShadowRoot, onReady],
     );
 
     // No entity metadata = 404. Don't render content at all.

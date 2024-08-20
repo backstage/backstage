@@ -15,6 +15,5 @@
  */
 
 export { httpRouterServiceFactory } from './httpRouterServiceFactory';
-export type { HttpRouterFactoryOptions } from './httpRouterServiceFactory';
 export { createLifecycleMiddleware } from './createLifecycleMiddleware';
 export type { LifecycleMiddlewareOptions } from './createLifecycleMiddleware';

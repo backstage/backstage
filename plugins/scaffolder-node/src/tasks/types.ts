@@ -180,5 +180,8 @@ export interface TaskBroker {
 
   get(taskId: string): Promise<SerializedTask>;
 
-  list?(options?: { createdBy?: string }): Promise<{ tasks: SerializedTask[] }>;
+  list?(options?: {
+    createdBy?: string;
+    status?: TaskStatus;
+  }): Promise<{ tasks: SerializedTask[] }>;
 }

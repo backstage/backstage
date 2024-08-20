@@ -4,12 +4,14 @@
 
 ```ts
 import { RootHealthService } from '@backstage/backend-plugin-api';
-import { ServiceFactory } from '@backstage/backend-plugin-api';
+import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
-export const rootHealthServiceFactory: () => ServiceFactory<
+export const rootHealthServiceFactory: ServiceFactoryCompat<
   RootHealthService,
-  'root'
+  'root',
+  'singleton',
+  undefined
 >;
 
 // (No @packageDocumentation comment for this package)

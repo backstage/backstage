@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { readTaskScheduleDefinitionFromConfig } from '@backstage/backend-tasks';
+import { readSchedulerServiceTaskScheduleDefinitionFromConfig } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { GerritProviderConfig } from './types';
 
@@ -24,7 +24,9 @@ function readGerritConfig(id: string, config: Config): GerritProviderConfig {
   const query = config.getString('query');
 
   const schedule = config.has('schedule')
-    ? readTaskScheduleDefinitionFromConfig(config.getConfig('schedule'))
+    ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
+        config.getConfig('schedule'),
+      )
     : undefined;
 
   return {

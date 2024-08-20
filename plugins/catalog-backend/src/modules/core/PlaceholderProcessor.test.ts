@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
@@ -29,11 +28,12 @@ import {
   textPlaceholderResolver,
   yamlPlaceholderResolver,
 } from './PlaceholderProcessor';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 const integrations = ScmIntegrations.fromConfig(new ConfigReader({}));
 
 describe('PlaceholderProcessor', () => {
-  const reader: jest.Mocked<UrlReader> = {
+  const reader: jest.Mocked<UrlReaderService> = {
     readTree: jest.fn(),
     search: jest.fn(),
     readUrl: jest.fn(),

@@ -53,8 +53,8 @@ export class TaskWorker {
     );
 
     let workCheckFrequency = this.workCheckFrequency;
-    const isCron = !settings?.cadence.startsWith('P');
-    if (!isCron) {
+    const isDuration = settings?.cadence.startsWith('P');
+    if (isDuration) {
       const cadence = Duration.fromISO(settings.cadence);
       if (cadence < workCheckFrequency) {
         workCheckFrequency = cadence;
@@ -175,7 +175,9 @@ export class TaskWorker {
     // read it back again.
     taskSettingsV2Schema.parse(settings);
 
-    const isCron = !settings?.cadence.startsWith('P');
+    const isManual = settings?.cadence === 'manual';
+    const isDuration = settings?.cadence.startsWith('P');
+    const isCron = !isManual && !isDuration;
 
     let startAt: Knex.Raw | undefined;
     let nextStartAt: Knex.Raw | undefined;
@@ -193,6 +195,9 @@ export class TaskWorker {
         .toUTC();
 
       nextStartAt = this.nextRunAtRaw(time);
+      startAt ||= nextStartAt;
+    } else if (isManual) {
+      nextStartAt = this.knex.raw('null');
       startAt ||= nextStartAt;
     } else {
       startAt ||= this.knex.fn.now();
@@ -317,7 +322,9 @@ export class TaskWorker {
     ticket: string,
     settings: TaskSettingsV2,
   ): Promise<boolean> {
-    const isCron = !settings?.cadence.startsWith('P');
+    const isManual = settings?.cadence === 'manual';
+    const isDuration = settings?.cadence.startsWith('P');
+    const isCron = !isManual && !isDuration;
 
     let nextRun: Knex.Raw;
     if (isCron) {
@@ -325,6 +332,8 @@ export class TaskWorker {
       this.logger.debug(`task: ${this.taskId} will next occur around ${time}`);
 
       nextRun = this.nextRunAtRaw(time);
+    } else if (isManual) {
+      nextRun = this.knex.raw('null');
     } else {
       const dt = Duration.fromISO(settings.cadence).as('seconds');
       this.logger.debug(

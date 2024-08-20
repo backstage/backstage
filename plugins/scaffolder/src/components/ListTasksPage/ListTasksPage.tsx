@@ -41,6 +41,8 @@ import {
 import { actionsRouteRef, editRouteRef, rootRouteRef } from '../../routes';
 import { ScaffolderPageContextMenu } from '@backstage/plugin-scaffolder-react/alpha';
 import { useNavigate } from 'react-router-dom';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../translation';
 
 export interface MyTaskPageProps {
   initiallySelectedFilter?: 'owned' | 'all';
@@ -48,6 +50,7 @@ export interface MyTaskPageProps {
 
 const ListTaskPageContent = (props: MyTaskPageProps) => {
   const { initiallySelectedFilter = 'owned' } = props;
+  const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const scaffolderApi = useApi(scaffolderApiRef);
   const rootLink = useRouteRef(rootRouteRef);
@@ -76,8 +79,8 @@ const ListTaskPageContent = (props: MyTaskPageProps) => {
         <ErrorPanel error={error} />
         <EmptyState
           missing="info"
-          title="No information to display"
-          description="There are no tasks or there was an issue communicating with backend."
+          title={t('listTaskPage.content.emptyState.title')}
+          description={t('listTaskPage.content.emptyState.description')}
         />
       </>
     );
@@ -94,17 +97,17 @@ const ListTaskPageContent = (props: MyTaskPageProps) => {
       <CatalogFilterLayout.Content>
         <Table<ScaffolderTask>
           data={value?.tasks ?? []}
-          title="Tasks"
+          title={t('listTaskPage.content.tableTitle')}
           columns={[
             {
-              title: 'Task ID',
+              title: t('listTaskPage.content.tableCell.taskID'),
               field: 'id',
               render: row => (
                 <Link to={`${rootLink()}/tasks/${row.id}`}>{row.id}</Link>
               ),
             },
             {
-              title: 'Template',
+              title: t('listTaskPage.content.tableCell.template'),
               field: 'spec.templateInfo.entity.metadata.title',
               render: row => (
                 <TemplateTitleColumn
@@ -113,19 +116,19 @@ const ListTaskPageContent = (props: MyTaskPageProps) => {
               ),
             },
             {
-              title: 'Created',
+              title: t('listTaskPage.content.tableCell.created'),
               field: 'createdAt',
               render: row => <CreatedAtColumn createdAt={row.createdAt} />,
             },
             {
-              title: 'Owner',
+              title: t('listTaskPage.content.tableCell.owner'),
               field: 'createdBy',
               render: row => (
                 <OwnerEntityColumn entityRef={row.spec?.user?.ref} />
               ),
             },
             {
-              title: 'Status',
+              title: t('listTaskPage.content.tableCell.status'),
               field: 'status',
               render: row => <TaskStatusColumn status={row.status} />,
             },
@@ -141,6 +144,7 @@ export const ListTasksPage = (props: MyTaskPageProps) => {
   const editorLink = useRouteRef(editRouteRef);
   const actionsLink = useRouteRef(actionsRouteRef);
   const createLink = useRouteRef(rootRouteRef);
+  const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const scaffolderPageContextMenuProps = {
     onEditorClicked: () => navigate(editorLink()),
@@ -151,9 +155,9 @@ export const ListTasksPage = (props: MyTaskPageProps) => {
   return (
     <Page themeId="home">
       <Header
-        pageTitleOverride="Templates Tasks"
-        title="List template tasks"
-        subtitle="All tasks that have been started"
+        pageTitleOverride={t('listTaskPage.pageTitle')}
+        title={t('listTaskPage.title')}
+        subtitle={t('listTaskPage.subtitle')}
       >
         <ScaffolderPageContextMenu {...scaffolderPageContextMenuProps} />
       </Header>

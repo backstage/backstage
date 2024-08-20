@@ -12,7 +12,7 @@ import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { Logger } from 'winston';
 import { PlaceholderResolverParams } from '@backstage/plugin-catalog-backend';
 import { ScmIntegrations } from '@backstage/integration';
-import { UrlReader } from '@backstage/backend-common';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 // @public
 const catalogModuleJsonSchemaRefPlaceholderResolver: BackendFeatureCompat;
@@ -31,14 +31,14 @@ export class OpenApiRefProcessor implements CatalogProcessor {
   constructor(options: {
     integrations: ScmIntegrations;
     logger: Logger;
-    reader: UrlReader;
+    reader: UrlReaderService;
   });
   // (undocumented)
   static fromConfig(
     config: Config,
     options: {
       logger: Logger;
-      reader: UrlReader;
+      reader: UrlReaderService;
     },
   ): OpenApiRefProcessor;
   // (undocumented)

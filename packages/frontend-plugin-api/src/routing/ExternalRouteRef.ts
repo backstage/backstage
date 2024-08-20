@@ -29,18 +29,15 @@ import { AnyRouteRefParams } from './types';
  */
 export interface ExternalRouteRef<
   TParams extends AnyRouteRefParams = AnyRouteRefParams,
-  TOptional extends boolean = boolean,
 > {
   readonly $$type: '@backstage/ExternalRouteRef';
   readonly T: TParams;
-  readonly optional: TOptional;
 }
 
 /** @internal */
 export interface InternalExternalRouteRef<
   TParams extends AnyRouteRefParams = AnyRouteRefParams,
-  TOptional extends boolean = boolean,
-> extends ExternalRouteRef<TParams, TOptional> {
+> extends ExternalRouteRef<TParams> {
   readonly version: 'v1';
   getParams(): string[];
   getDescription(): string;
@@ -52,11 +49,8 @@ export interface InternalExternalRouteRef<
 /** @internal */
 export function toInternalExternalRouteRef<
   TParams extends AnyRouteRefParams = AnyRouteRefParams,
-  TOptional extends boolean = boolean,
->(
-  resource: ExternalRouteRef<TParams, TOptional>,
-): InternalExternalRouteRef<TParams, TOptional> {
-  const r = resource as InternalExternalRouteRef<TParams, TOptional>;
+>(resource: ExternalRouteRef<TParams>): InternalExternalRouteRef<TParams> {
+  const r = resource as InternalExternalRouteRef<TParams>;
   if (r.$$type !== '@backstage/ExternalRouteRef') {
     throw new Error(`Invalid ExternalRouteRef, bad type '${r.$$type}'`);
   }
@@ -79,7 +73,6 @@ class ExternalRouteRefImpl
   readonly $$type = '@backstage/ExternalRouteRef' as any;
 
   constructor(
-    readonly optional: boolean,
     readonly params: string[] = [],
     readonly defaultTarget: string | undefined,
     creationSite: string,
@@ -104,7 +97,6 @@ class ExternalRouteRefImpl
  */
 export function createExternalRouteRef<
   TParams extends { [param in TParamKeys]: string } | undefined = undefined,
-  TOptional extends boolean = false,
   TParamKeys extends string = string,
 >(options?: {
   /**
@@ -113,14 +105,6 @@ export function createExternalRouteRef<
   readonly params?: string extends TParamKeys
     ? (keyof TParams)[]
     : TParamKeys[];
-
-  /**
-   * Whether or not this route is optional, defaults to false.
-   *
-   * Optional external routes are not required to be bound in the app, and
-   * if they aren't, `useExternalRouteRef` will return `undefined`.
-   */
-  optional?: TOptional;
 
   /**
    * The route (typically in another plugin) that this should map to by default.
@@ -134,13 +118,11 @@ export function createExternalRouteRef<
     ? undefined
     : string extends TParamKeys
     ? TParams
-    : { [param in TParamKeys]: string },
-  TOptional
+    : { [param in TParamKeys]: string }
 > {
   return new ExternalRouteRefImpl(
-    Boolean(options?.optional),
     options?.params as string[] | undefined,
     options?.defaultTarget,
     describeParentCallSite(),
-  ) as ExternalRouteRef<any, any>;
+  );
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { UrlReader } from '@backstage/backend-common';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
@@ -28,7 +28,7 @@ import path from 'path';
  * @public
  */
 export async function fetchContents(options: {
-  reader: UrlReader;
+  reader: UrlReaderService;
   integrations: ScmIntegrations;
   baseUrl?: string;
   fetchUrl?: string;
@@ -67,7 +67,7 @@ export async function fetchContents(options: {
  * @public
  */
 export async function fetchFile(options: {
-  reader: UrlReader;
+  reader: UrlReaderService;
   integrations: ScmIntegrations;
   baseUrl?: string;
   fetchUrl?: string;

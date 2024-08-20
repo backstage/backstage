@@ -123,6 +123,7 @@ interface DomainEntityV1alpha1 extends Entity {
   spec: {
     owner: string;
     subdomainOf?: string;
+    type?: string;
   };
 }
 export { DomainEntityV1alpha1 as DomainEntity };
@@ -454,6 +455,7 @@ interface SystemEntityV1alpha1 extends Entity {
   spec: {
     owner: string;
     domain?: string;
+    type?: string;
   };
 }
 export { SystemEntityV1alpha1 as SystemEntity };

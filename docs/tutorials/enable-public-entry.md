@@ -100,3 +100,47 @@ With that, Backstage's cli and backend will detect public entry point and serve 
 5. Finally, as soon as you log in, you will be redirected to the main app home page (inspect the page and see that the protected bundle was served from the app backend after the redirect).
 
 That's it!
+
+## New Frontend System
+
+If your app uses the new frontend system, you can still use the public entry point feature. The `index-public-experimental.tsx` file does end up looking a bit different in this case:
+
+```tsx title="in packages/app/src/index-public-experimental.tsx"
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { CookieAuthRedirect } from '@backstage/plugin-auth-react';
+import { createApp } from '@backstage/frontend-app-api';
+import {
+  coreExtensionData,
+  createExtension,
+  createExtensionOverrides,
+  createSignInPageExtension,
+} from '@backstage/frontend-plugin-api';
+
+const signInPage = createSignInPageExtension({
+  name: 'guest',
+  loader: async () => props => <SignInPage {...props} providers={['guest']} />,
+});
+
+const authRedirectExtension = createExtension({
+  namespace: 'app',
+  name: 'layout',
+  attachTo: { id: 'app/root', input: 'children' },
+  output: {
+    element: coreExtensionData.reactElement,
+  },
+  factory: () => ({
+    element: <CookieAuthRedirect />,
+  }),
+});
+
+const app = createApp({
+  features: [
+    createExtensionOverrides({
+      extensions: [signInPage, authRedirectExtension],
+    }),
+  ],
+});
+
+ReactDOM.createRoot(document.getElementById('root')!).render(app.createRoot());
+```

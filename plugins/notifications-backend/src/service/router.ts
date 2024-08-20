@@ -24,15 +24,6 @@ import {
 import { v4 as uuid } from 'uuid';
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 import {
-  Entity,
-  isGroupEntity,
-  isUserEntity,
-  RELATION_HAS_MEMBER,
-  RELATION_OWNED_BY,
-  RELATION_PARENT_OF,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
-import {
   NotificationProcessor,
   NotificationSendOptions,
 } from '@backstage/plugin-notifications-node';
@@ -54,6 +45,7 @@ import {
   NotificationStatus,
 } from '@backstage/plugin-notifications-common';
 import { parseEntityOrderFieldParams } from './parseEntityOrderFieldParams';
+import { getUsersForEntityRef } from './getUsersForEntityRef';
 
 /** @internal */
 export interface RouterOptions {
@@ -92,91 +84,6 @@ export async function createRouter(
     const credentials = await httpAuth.credentials(req, { allow: ['user'] });
     const info = await userInfo.getUserInfo(credentials);
     return info.userEntityRef;
-  };
-
-  const getUsersForEntityRef = async (
-    entityRef: string | string[] | null,
-    excludeEntityRefs: string | string[],
-  ): Promise<string[]> => {
-    const { token } = await auth.getPluginRequestToken({
-      onBehalfOf: await auth.getOwnServiceCredentials(),
-      targetPluginId: 'catalog',
-    });
-
-    if (entityRef === null) {
-      return [];
-    }
-
-    const fields = ['kind', 'metadata.name', 'metadata.namespace', 'relations'];
-
-    const refs = Array.isArray(entityRef) ? entityRef : [entityRef];
-    const entities = await catalogClient.getEntitiesByRefs(
-      {
-        entityRefs: refs,
-        fields,
-      },
-      { token },
-    );
-
-    const excluded = Array.isArray(excludeEntityRefs)
-      ? excludeEntityRefs
-      : [excludeEntityRefs];
-
-    const mapEntity = async (entity: Entity | undefined): Promise<string[]> => {
-      if (!entity) {
-        return [];
-      }
-
-      const currentEntityRef = stringifyEntityRef(entity);
-      if (excluded.includes(currentEntityRef)) {
-        return [];
-      }
-
-      if (isUserEntity(entity)) {
-        return [currentEntityRef];
-      } else if (isGroupEntity(entity) && entity.relations) {
-        const users = entity.relations
-          .filter(relation => relation.type === RELATION_HAS_MEMBER)
-          .map(r => r.targetRef);
-
-        const childGroupRefs = entity.relations
-          .filter(relation => relation.type === RELATION_PARENT_OF)
-          .map(r => r.targetRef);
-
-        const childGroups = await catalogClient.getEntitiesByRefs(
-          {
-            entityRefs: childGroupRefs,
-            fields,
-          },
-          { token },
-        );
-        const childGroupUsers = await Promise.all(
-          childGroups.items.map(mapEntity),
-        );
-        return [...users, ...childGroupUsers.flat(2)];
-      } else if (entity.relations) {
-        const ownerRef = entity.relations.find(
-          relation => relation.type === RELATION_OWNED_BY,
-        )?.targetRef;
-
-        if (ownerRef) {
-          const owner = await catalogClient.getEntityByRef(ownerRef, { token });
-          if (owner) {
-            return mapEntity(owner);
-          }
-        }
-      }
-
-      return [];
-    };
-
-    const users: string[] = [];
-    for (const entity of entities.items) {
-      const u = await mapEntity(entity);
-      users.push(...u);
-    }
-
-    return users;
   };
 
   const filterProcessors = (payload: NotificationPayload) => {
@@ -543,6 +450,7 @@ export async function createRouter(
           users = await getUsersForEntityRef(
             entityRef,
             recipients.excludeEntityRef ?? [],
+            { auth, catalogClient },
           );
         } catch (e) {
           logger.error(`Failed to resolve notification receivers: ${e}`);

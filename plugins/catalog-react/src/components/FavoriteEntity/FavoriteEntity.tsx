@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import { withStyles } from '@material-ui/core/styles';
@@ -22,6 +22,8 @@ import Star from '@material-ui/icons/Star';
 import StarBorder from '@material-ui/icons/StarBorder';
 import React, { ComponentProps } from 'react';
 import { useStarredEntity } from '../../hooks/useStarredEntity';
+import { catalogReactTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export type FavoriteEntityProps = ComponentProps<typeof IconButton> & {
@@ -43,16 +45,25 @@ export const FavoriteEntity = (props: FavoriteEntityProps) => {
   const { toggleStarredEntity, isStarredEntity } = useStarredEntity(
     props.entity,
   );
+  const { t } = useTranslationRef(catalogReactTranslationRef);
+  const title = isStarredEntity
+    ? t('favoriteEntity.removeFromFavorites')
+    : t('favoriteEntity.addToFavorites');
+
+  const id = `favorite-${stringifyEntityRef(props.entity).replace(
+    /[^a-zA-Z0-9-_]/g,
+    '-',
+  )}`;
+
   return (
     <IconButton
-      aria-label="favorite"
+      aria-label={title}
+      id={id}
       color="inherit"
       {...props}
       onClick={() => toggleStarredEntity()}
     >
-      <Tooltip
-        title={isStarredEntity ? 'Remove from favorites' : 'Add to favorites'}
-      >
+      <Tooltip id={id} title={title}>
         {isStarredEntity ? <YellowStar /> : <StarBorder />}
       </Tooltip>
     </IconButton>

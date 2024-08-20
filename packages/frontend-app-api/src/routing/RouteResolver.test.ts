@@ -41,9 +41,7 @@ const subRef2 = createSubRouteRef({ parent: ref1, path: '/foo/:a' });
 const subRef3 = createSubRouteRef({ parent: ref2, path: '/bar' });
 const subRef4 = createSubRouteRef({ parent: ref2, path: '/bar/:a' });
 const externalRef1 = createExternalRouteRef();
-const externalRef2 = createExternalRouteRef({ optional: true });
-const externalRef3 = createExternalRouteRef({ params: ['x'] });
-const externalRef4 = createExternalRouteRef({ optional: true, params: ['x'] });
+const externalRef2 = createExternalRouteRef({ params: ['x'] });
 
 function src(sourcePath: string) {
   return { sourcePath };
@@ -62,9 +60,7 @@ describe('RouteResolver', () => {
       undefined,
     );
     expect(r.resolve(externalRef1, src('/'))?.()).toBe(undefined);
-    expect(r.resolve(externalRef2, src('/'))?.()).toBe(undefined);
-    expect(r.resolve(externalRef3, src('/'))?.({ x: '5x' })).toBe(undefined);
-    expect(r.resolve(externalRef4, src('/'))?.({ x: '6x' })).toBe(undefined);
+    expect(r.resolve(externalRef2, src('/'))?.({ x: '5x' })).toBe(undefined);
   });
 
   it('should resolve an absolute route', () => {
@@ -87,9 +83,7 @@ describe('RouteResolver', () => {
       undefined,
     );
     expect(r.resolve(externalRef1, src('/'))?.()).toBe(undefined);
-    expect(r.resolve(externalRef2, src('/'))?.()).toBe(undefined);
-    expect(r.resolve(externalRef3, src('/'))?.({ x: '5x' })).toBe(undefined);
-    expect(r.resolve(externalRef4, src('/'))?.({ x: '6x' })).toBe(undefined);
+    expect(r.resolve(externalRef2, src('/'))?.({ x: '5x' })).toBe(undefined);
   });
 
   it('should resolve an absolute route with a param and with a parent', () => {
@@ -112,8 +106,7 @@ describe('RouteResolver', () => {
       ],
       new Map<ExternalRouteRef, RouteRef | SubRouteRef>([
         [externalRef1, ref1],
-        [externalRef3, ref2],
-        [externalRef4, subRef3],
+        [externalRef2, subRef3],
       ]),
       '',
     );
@@ -133,11 +126,7 @@ describe('RouteResolver', () => {
       '/my-route/my-parent/4x/bar/4a',
     );
     expect(r.resolve(externalRef1, src('/'))?.()).toBe('/my-route');
-    expect(r.resolve(externalRef2, src('/'))?.()).toBe(undefined);
-    expect(r.resolve(externalRef3, src('/'))?.({ x: '5x' })).toBe(
-      '/my-route/my-parent/5x',
-    );
-    expect(r.resolve(externalRef4, src('/'))?.({ x: '6x' })).toBe(
+    expect(r.resolve(externalRef2, src('/'))?.({ x: '6x' })).toBe(
       '/my-route/my-parent/6x/bar',
     );
   });
@@ -230,8 +219,7 @@ describe('RouteResolver', () => {
       ],
       new Map<ExternalRouteRef, RouteRef | SubRouteRef>([
         [externalRef1, ref1],
-        [externalRef3, ref2],
-        [externalRef4, subRef3],
+        [externalRef2, subRef3],
       ]),
       '',
     );
@@ -282,17 +270,10 @@ describe('RouteResolver', () => {
     expect(() => r.resolve(externalRef1, src('/'))?.()).toThrow(
       /^Cannot route.*with parent.*as it has parameters$/,
     );
-    expect(r.resolve(externalRef2, src(l))?.()).toBe(undefined);
-    expect(r.resolve(externalRef3, src(l))?.({ x: '5x' })).toBe(
-      '/my-grandparent/my-y/my-parent/5x',
+    expect(r.resolve(externalRef2, src(l))?.({ x: '5x' })).toBe(
+      '/my-grandparent/my-y/my-parent/5x/bar',
     );
-    expect(() => r.resolve(externalRef3, src('/'))?.({ x: '5x' })).toThrow(
-      /^Cannot route.*with parent.*as it has parameters$/,
-    );
-    expect(r.resolve(externalRef4, src(l))?.({ x: '6x' })).toBe(
-      '/my-grandparent/my-y/my-parent/6x/bar',
-    );
-    expect(() => r.resolve(externalRef4, src('/'))?.({ x: '6x' })).toThrow(
+    expect(() => r.resolve(externalRef2, src('/'))?.({ x: '5x' })).toThrow(
       /^Cannot route.*with parent.*as it has parameters$/,
     );
   });

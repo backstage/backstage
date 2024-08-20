@@ -104,7 +104,7 @@ export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
    * therefore an open connection to PG. This handler ensures we close the
    * transaction and associated connection.
    *
-   * todo(@backstage/discoverability-maintainers): Consider introducing a more
+   * todo(@backstage/search-maintainers): Consider introducing a more
    * formal mechanism for handling such errors in BatchSearchEngineIndexer and
    * replacing this method with it. See: #17291
    *

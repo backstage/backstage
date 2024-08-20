@@ -27,6 +27,8 @@ import { useKeyboardEvent } from '@react-hookz/web';
 import CodeMirror from '@uiw/react-codemirror';
 import React, { useMemo } from 'react';
 import { useDirectoryEditor } from './DirectoryEditorContext';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../translation';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -66,6 +68,7 @@ export function TemplateEditorTextArea(props: {
 }) {
   const { errorText } = props;
   const classes = useStyles();
+  const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const panelExtension = useMemo(() => {
     if (!errorText) {
@@ -102,7 +105,11 @@ export function TemplateEditorTextArea(props: {
         <div className={classes.floatingButtons}>
           <Paper>
             {props.onSave && (
-              <Tooltip title="Save file">
+              <Tooltip
+                title={t(
+                  'templateEditorPage.templateEditorTextArea.saveIconTooltip',
+                )}
+              >
                 <IconButton
                   className={classes.floatingButton}
                   onClick={() => props.onSave?.()}
@@ -112,7 +119,11 @@ export function TemplateEditorTextArea(props: {
               </Tooltip>
             )}
             {props.onReload && (
-              <Tooltip title="Reload file">
+              <Tooltip
+                title={t(
+                  'templateEditorPage.templateEditorTextArea.refreshIconTooltip',
+                )}
+              >
                 <IconButton
                   className={classes.floatingButton}
                   onClick={() => props.onReload?.()}

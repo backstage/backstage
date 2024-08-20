@@ -21,14 +21,14 @@ import {
   IdentityApi,
   StorageApi,
 } from '@backstage/core-plugin-api';
-import { MockFetchApi, setupRequestMockHandlers } from '@backstage/test-utils';
+import { MockFetchApi, registerMswTestHooks } from '@backstage/test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { UserSettingsStorage } from './UserSettingsStorage';
 
 describe('Persistent Storage API', () => {
   const server = setupServer();
-  setupRequestMockHandlers(server);
+  registerMswTestHooks(server);
 
   const mockBaseUrl = 'http://backstage:9191/api';
   const mockErrorApi = { post: jest.fn(), error$: jest.fn() };

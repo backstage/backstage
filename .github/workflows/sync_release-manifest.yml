@@ -12,27 +12,33 @@ jobs:
         with:
           egress-policy: audit
 
-      # Setup node & install deps before checkout, keeping install quick
-      - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
-        with:
-          node-version: 18.x
-      - name: Install dependencies
-        # Just the deps for the assemble manifest script
-        run: npm install semver@7.3.5 fs-extra@10.0.0 @manypkg/get-packages@1.1.1
-
       - name: Checkout
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
-          path: backstage
           # 'v' prefix is added here for the tag, we keep it out of the manifest logic
           ref: v${{ github.event.client_payload.version }}
+
+      - name: use node.js 18.x
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
+        with:
+          node-version: 18.x
+          registry-url: https://registry.npmjs.org/ # Needed for auth
+
+      - name: yarn install
+        uses: backstage/actions/yarn-install@a674369920067381b450d398b27df7039b7ef635 # v0.6.5
+        with:
+          cache-prefix: ${{ runner.os }}-v18.x
+
+      - name: Build yarn plugin
+        working-directory: packages/yarn-plugin
+        run: yarn build
 
       # Checkout backstage/versions into /backstage/versions, which is where store the output
       - name: Checkout versions
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           repository: backstage/versions
-          path: backstage/versions
+          path: versions
           token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
 
       - name: Configure Git
@@ -43,11 +49,23 @@ jobs:
       - name: Create release
         # This grabs the scripts from master in order to support backfills
         run: |
-          cd backstage
           mkdir -p scripts
           wget -O scripts/assemble-manifest.js https://raw.githubusercontent.com/backstage/backstage/master/scripts/assemble-manifest.js
           node scripts/assemble-manifest.js ${{ github.event.client_payload.version }}
-          cd versions
+
+      # Copies the build output of the yarn-plugin package to the appropriate
+      # directory, allowing the plugin to be installed with a command like
+      # `yarn plugin import https://versions.backstage.io/v1/tags/main/yarn-plugin`
+      - name: Add yarn plugin to release
+        working-directory: packages/yarn-plugin
+        run: >-
+          cp
+          bundles/@yarnpkg/plugin-backstage.js
+          ../../versions/v1/releases/${{ github.event.client_payload.version }}/yarn-plugin
+
+      - name: Commit to versions repo
+        working-directory: versions
+        run: |
           git add .
           git commit -am "${{ github.event.client_payload.version }}"
           git push
@@ -65,7 +83,7 @@ jobs:
               workflow_id: 'release.yml',
               ref: 'master',
               inputs: {
-                version: require('./backstage/packages/create-app/package.json').version,
-                releaseVersion: require('./backstage/package.json').version
+                version: require('./packages/create-app/package.json').version,
+                releaseVersion: require('./package.json').version
               },
             });

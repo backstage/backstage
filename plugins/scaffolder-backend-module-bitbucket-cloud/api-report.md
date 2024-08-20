@@ -36,6 +36,7 @@ export function createPublishBitbucketCloudAction(options: {
     description?: string | undefined;
     defaultBranch?: string | undefined;
     repoVisibility?: 'private' | 'public' | undefined;
+    gitCommitMessage?: string | undefined;
     sourcePath?: string | undefined;
     token?: string | undefined;
   },

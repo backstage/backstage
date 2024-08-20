@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 /**
@@ -53,7 +53,8 @@ export function resolveUrlToRelative(url: string, baseUrl: string) {
  * @public
  */
 export function useNavigateUrl() {
-  const navigate = useNavigate();
+  // useRef prevents useNavigate from causing unnecessary re-renders
+  const navigate = useRef(useNavigate());
   const configApi = useApi(configApiRef);
   const appBaseUrl = configApi.getOptionalString('app.baseUrl');
   const navigateFn = useCallback(
@@ -70,9 +71,9 @@ export function useNavigateUrl() {
           // URL passed in was relative.
         }
       }
-      navigate(url);
+      navigate.current(url);
     },
-    [navigate, appBaseUrl],
+    [appBaseUrl],
   );
   return navigateFn;
 }

@@ -16,11 +16,12 @@
 
 import React from 'react';
 import { AzureRepoPicker } from './AzureRepoPicker';
-import { render, fireEvent } from '@testing-library/react';
+import { fireEvent } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
 
 describe('AzureRepoPicker', () => {
   it('renders the two input fields', async () => {
-    const { getAllByRole } = render(
+    const { getAllByRole } = await renderInTestApp(
       <AzureRepoPicker onChange={jest.fn()} rawErrors={[]} state={{}} />,
     );
 
@@ -30,9 +31,9 @@ describe('AzureRepoPicker', () => {
   });
 
   describe('org field', () => {
-    it('calls onChange when the organisation changes', () => {
+    it('calls onChange when the organisation changes', async () => {
       const onChange = jest.fn();
-      const { getAllByRole } = render(
+      const { getAllByRole } = await renderInTestApp(
         <AzureRepoPicker onChange={onChange} rawErrors={[]} state={{}} />,
       );
 
@@ -45,9 +46,9 @@ describe('AzureRepoPicker', () => {
   });
 
   describe('project field', () => {
-    it('calls onChange when the project changes', () => {
+    it('calls onChange when the project changes', async () => {
       const onChange = jest.fn();
-      const { getAllByRole } = render(
+      const { getAllByRole } = await renderInTestApp(
         <AzureRepoPicker onChange={onChange} rawErrors={[]} state={{}} />,
       );
 

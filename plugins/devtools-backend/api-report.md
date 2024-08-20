@@ -13,8 +13,9 @@ import { ExternalDependency } from '@backstage/plugin-devtools-common';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
+import { RootConfigService } from '@backstage/backend-plugin-api';
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public (undocumented)
@@ -32,10 +33,10 @@ export class DevToolsBackendApi {
 const devtoolsPlugin: BackendFeatureCompat;
 export default devtoolsPlugin;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export interface RouterOptions {
   // (undocumented)
-  config: Config;
+  config: RootConfigService;
   // (undocumented)
   devToolsBackendApi?: DevToolsBackendApi;
   // (undocumented)

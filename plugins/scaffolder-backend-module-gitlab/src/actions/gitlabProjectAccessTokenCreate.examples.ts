@@ -102,4 +102,162 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
+  {
+    description: 'Create a GitLab project access token with an access level',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'createAccessToken',
+          action: 'gitlab:projectAccessToken:create',
+          name: 'Create GitLab Project Access Token',
+          input: {
+            repoUrl: 'gitlab.com?repo=repo&owner=owner',
+            projectId: '456',
+            accessLevel: 30,
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description: 'Create a GitLab project access token with multiple options',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'createAccessToken',
+          action: 'gitlab:projectAccessToken:create',
+          name: 'Create GitLab Project Access Token',
+          input: {
+            repoUrl: 'gitlab.com?repo=repo&owner=owner',
+            projectId: '456',
+            accessLevel: 40,
+            name: 'full-access-token',
+            expiresAt: '2024-12-31',
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description:
+      'Create a GitLab project access token with a token for authorization',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'createAccessToken',
+          action: 'gitlab:projectAccessToken:create',
+          name: 'Create GitLab Project Access Token',
+          input: {
+            repoUrl: 'gitlab.com?repo=repo&owner=owner',
+            projectId: '101112',
+            token: 'personal-access-token',
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description: 'Create a GitLab project access token with read-only scopes',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'createAccessToken',
+          action: 'gitlab:projectAccessToken:create',
+          name: 'Create GitLab Project Access Token',
+          input: {
+            repoUrl: 'gitlab.com?repo=repo&owner=owner',
+            projectId: '101112',
+            scopes: ['read_repository', 'read_api'],
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description: 'Create a GitLab project access token with guest access level',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'createAccessToken',
+          action: 'gitlab:projectAccessToken:create',
+          name: 'Create GitLab Project Access Token',
+          input: {
+            repoUrl: 'gitlab.com?repo=repo&owner=owner',
+            projectId: '101112',
+            accessLevel: 10,
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description:
+      'Create a GitLab project access token with maintainer access level',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'createAccessToken',
+          action: 'gitlab:projectAccessToken:create',
+          name: 'Create GitLab Project Access Token',
+          input: {
+            repoUrl: 'gitlab.com?repo=repo&owner=owner',
+            projectId: '101112',
+            accessLevel: 40,
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description: 'Create a GitLab project access token with owner access level',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'createAccessToken',
+          action: 'gitlab:projectAccessToken:create',
+          name: 'Create GitLab Project Access Token',
+          input: {
+            repoUrl: 'gitlab.com?repo=repo&owner=owner',
+            projectId: '101112',
+            accessLevel: 50,
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description:
+      'Create a GitLab project access token with a specified name and no expiration date',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'createAccessToken',
+          action: 'gitlab:projectAccessToken:create',
+          name: 'Create GitLab Project Access Token',
+          input: {
+            repoUrl: 'gitlab.com?repo=repo&owner=owner',
+            projectId: '101112',
+            name: 'no-expiry-token',
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description:
+      'Create a GitLab project access token for a specific gitlab instance',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'createAccessToken',
+          action: 'gitlab:projectAccessToken:create',
+          name: 'Create GitLab Project Access Token',
+          input: {
+            repoUrl: 'gitlab.example.com?repo=repo&owner=owner',
+            projectId: '101112',
+          },
+        },
+      ],
+    }),
+  },
 ];

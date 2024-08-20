@@ -50,6 +50,7 @@ To link that a component provides or consumes an API, see the [`providesApis`](h
       - [Custom Api Renderings](#custom-api-renderings)
       - [Adding Swagger UI Interceptor](#adding-requestinterceptor-to-swagger-ui)
       - [Providing Swagger UI Specific Supported Methods](#provide-specific-supported-methods-to-swagger-ui)
+      - [Custom Resolvers for AsyncApi](#custom-resolvers-for-asyncapi)
     - [Integrations](#integrations)
       - [Implementing OAuth 2 Authorization Code flow with Swagger UI](#implementing-oauth-2-authorization-code-flow-with-swagger-ui)
 
@@ -1091,6 +1092,61 @@ export default createExtensionOverrides({
 ```
 
 N.B. if you wish to disable the `Try It Out` feature for your API, you can provide an empty list to the `supportedSubmitMethods` parameter.
+
+##### Custom Resolvers for AsyncApi
+
+You can override the default http/https resolvers, for example to add authentication to requests to internal schema registries by providing the `resolvers` prop to the `AsyncApiDefinitionWidget`. This is an example:
+
+```tsx
+...
+import {
+  AsyncApiDefinitionWidget,
+  apiDocsConfigRef,
+  defaultDefinitionWidgets,
+} from '@backstage/plugin-api-docs';
+import { ApiEntity } from '@backstage/catalog-model';
+
+export const apis: AnyApiFactory[] = [
+...
+  createApiFactory({
+    api: apiDocsConfigRef,
+    deps: {},
+    factory: () => {
+      const myCustomResolver = {
+        schema: 'https',
+        order: 1,
+        canRead: true,
+        async read(uri: any) {
+          const response = await fetch(request, {
+            headers: {
+              X-Custom: 'Custom',
+            },
+          });
+          return response.text();
+        },
+      };
+
+      const definitionWidgets = defaultDefinitionWidgets().map(obj => {
+        if (obj.type === 'asyncapi') {
+          return {
+            ...obj,
+            component: (definition) => (
+              <AsyncApiDefinitionWidget definition={definition} resolvers={[myCustomResolver]} />
+            ),
+          };
+        }
+        return obj;
+      });
+
+      return {
+        getApiDefinitionWidget: (apiEntity: ApiEntity) => {
+          return definitionWidgets.find(d => d.type === apiEntity.spec.type);
+        },
+      };
+    }
+  })
+]
+```
 
 ### Integrations
 

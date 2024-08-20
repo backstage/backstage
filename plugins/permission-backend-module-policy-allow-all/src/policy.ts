@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,
   PolicyDecision,
@@ -22,12 +21,13 @@ import {
 import {
   PermissionPolicy,
   PolicyQuery,
+  PolicyQueryUser,
 } from '@backstage/plugin-permission-node';
 
 export class AllowAllPermissionPolicy implements PermissionPolicy {
   async handle(
     _request: PolicyQuery,
-    _user?: BackstageIdentityResponse,
+    _user?: PolicyQueryUser,
   ): Promise<PolicyDecision> {
     return {
       result: AuthorizeResult.ALLOW,

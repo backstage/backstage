@@ -45,9 +45,9 @@ The plugin itself now wants to provide this API and its default implementation, 
 
 ```tsx title="in @internal/plugin-example"
 import {
-  createApiExtension,
+  ApiBlueprint,
   createApiFactory,
-  createPlugin,
+  createFrontendPlugin,
   storageApiRef,
   StorageApi,
 } from '@backstage/frontend-plugin-api';
@@ -62,21 +62,24 @@ class WorkImpl implements WorkApi {
   }
 }
 
-const exampleWorkApi = createApiExtension({
-  factory: createApiFactory({
-    api: workApiRef,
-    deps: { storageApi: storageApiRef },
-    factory: ({ storageApi }) => {
-      return new WorkImpl({ storageApi });
-    },
-  }),
+const workApi = ApiBlueprint.make({
+  name: 'work',
+  params: {
+    factory: createApiFactory({
+      api: workApiRef,
+      deps: { storageApi: storageApiRef },
+      factory: ({ storageApi }) => {
+        return new WorkImpl({ storageApi });
+      },
+    }),
+  },
 });
 
 /**
  * The Example plugin.
  * @public
  */
-export default createPlugin({
+export default createFrontendPlugin({
   id: 'example',
   extensions: [exampleWorkApi],
 });
@@ -86,43 +89,37 @@ For illustration we make a skeleton implementation class and the API extension a
 
 The code also illustrates how the API factory declares a dependency on another utility API - the core storage API in this case. An instance of that utility API is then provided to the factory function.
 
-The resulting extension ID of the work API will be the kind `api:` followed by the plugin ID as the namespace, in this case ending up as `api:plugin.example.work`. Check out [the naming patterns doc](../architecture/08-naming-patterns.md) for more information on how this works. You can now use this ID to refer to the API in app-config and elsewhere.
+The extension ID of the work API will be the kind `api:` followed by the plugin ID as the namespace, a `/` separator, and lastly the name we used of the extension. In this case we end up with `api:example/work`. Check out [the naming patterns doc](../architecture/50-naming-patterns.md) for more information on how this works. You can now use this ID to refer to the API in app-config and elsewhere. In case there is a single API that is a central to the functionality of the plugin, most typically an API client, you can choose to omit the name of the extension so that you end up with just `api:<pluginId>`.
 
 ## Adding configurability
 
-Here we will describe how to amend a utility API with the capability of having extension config, which is driven by [your app-config](../../conf/writing.md). You do this by giving an extension config schema to your API extension factory function. Let's make the required additions to our original work example API.
+Here we will describe how to amend a utility API with the capability of having extension config, which is driven by [your app-config](../../conf/writing.md). You do this by giving an extension config schema to your API extension factory function. Let's refactory the example above to also accept configuration, which will require us to use the [override method of the blueprint](../architecture/23-extension-blueprints.md#creating-an-extension-from-a-blueprint-with-overrides).
 
 ```tsx title="in @internal/plugin-example"
-/* highlight-add-next-line */
-import { createSchemaFromZod } from '@backstage/frontend-plugin-api';
-
-const exampleWorkApi = createApiExtension({
-  /* highlight-add-start */
-  api: workApiRef,
-  configSchema: createSchemaFromZod(z =>
-    z.object({
-      goSlow: z.boolean().default(false),
-    }),
-  ),
-  /* highlight-add-end */
-  /* highlight-remove-next-line */
-  factory: createApiFactory({
-  /* highlight-add-next-line */
-  factory: ({ config }) => createApiFactory({
-    api: workApiRef,
-    deps: { storageApi: storageApiRef },
-    factory: ({ storageApi }) => {
-      /* highlight-add-start */
-      if (config.goSlow) {
-        /* ... */
-      }
-      /* highlight-add-end */
+const exampleWorkApi = ApiBlueprint.makeWithOverrides({
+  config: {
+    schema: {
+      goSlow: z => z.boolean().default(false),
     },
-  }),
+  },
+  factory(originalFactory, { config }) {
+    return originalFactory({
+      factory: createApiFactory({
+        api: workApiRef,
+        deps: { storageApi: storageApiRef },
+        factory: ({ storageApi }) => {
+          return new WorkImpl({
+            storageApi,
+            goSlow: config.goSlow,
+          });
+        },
+      }),
+    });
+  },
 });
 ```
 
-We wanted users to be able to set a `goSlow` extension config parameter for our API instances. So we passed in a `configSchema` to `createApiExtension` which matches that interface. This example builds it using [the zod library](https://zod.dev/). The actual extension config values will then be passed in a type safe manner in to the `factory` which is now a callback, wherein we can do what we wish with them. When changing to the callback form, we also had to add a top level `api: workApiRef` under `createApiExtension`.
+We wanted users to be able to set a `goSlow` extension config parameter for our API instances, which we declared in our new configuration schema. The actual extension config values will then be passed in a type safe manner in to the blueprint `factory`, wherein we can use them to create our API factory and pass as our blueprint parameters.
 
 Note that the expression "extension config" as used here, is _not_ the same thing as the `configApi` which gives you access to the full app-config. The extension config discussed here is instead the particular configuration settings given to your utility API instance. This is discussed more [in the Configuring section](./04-configuring.md).
 
@@ -130,11 +127,11 @@ Note also that the extension config schema contained a default value fo the `goS
 
 ## Adding inputs
 
-Inputs are added to Utility APIs in the same way as other extension types:
+Inputs are added to Utility APIs in the same way as other extension blueprints:
 
-- Declaring a set of `inputs` on your extension
-- If needed, create custom extension data types to be used in those inputs
-- If needed, export an extension creator function for creating that particular attachment type
+- Use `.makeWithOverrides` and declare a set of `inputs` for your extension.
+- If needed, create custom extension data types to be used in those inputs.
+- If needed, create and export an [extension blueprint](../architecture/23-extension-blueprints.md#creating-an-extension-blueprint) for creating that particular attachment type.
 
 This is a power use case and not very commonly used.
 

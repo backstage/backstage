@@ -47,6 +47,7 @@ describe('<CustomNode />', () => {
     );
 
     expect(screen.getByText('kind:namespace/name')).toBeInTheDocument();
+    expect(screen.getByText('namespace/name')).toBeInTheDocument();
   });
 
   test('renders node, skips default namespace', async () => {
@@ -73,7 +74,7 @@ describe('<CustomNode />', () => {
       </svg>,
     );
 
-    expect(screen.getByText('kind:name')).toBeInTheDocument();
+    expect(screen.getByText('name')).toBeInTheDocument();
   });
 
   test('renders node with onClick', async () => {
@@ -102,8 +103,8 @@ describe('<CustomNode />', () => {
       </svg>,
     );
 
-    expect(screen.getByText('kind:namespace/name')).toBeInTheDocument();
-    await userEvent.click(screen.getByText('kind:namespace/name'));
+    expect(screen.getByText('namespace/name')).toBeInTheDocument();
+    await userEvent.click(screen.getByText('namespace/name'));
     expect(onClick).toHaveBeenCalledTimes(1);
   });
 
@@ -134,5 +135,6 @@ describe('<CustomNode />', () => {
     );
 
     expect(screen.getByText('Custom Title')).toBeInTheDocument();
+    expect(screen.getByText('kind:namespace/name')).toBeInTheDocument();
   });
 });

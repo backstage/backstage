@@ -22,6 +22,7 @@ import {
   NotificationSeverity,
 } from '@backstage/plugin-notifications-common';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
+import { examples } from './sendNotification.examples';
 
 /**
  * @public
@@ -42,6 +43,7 @@ export function createSendNotificationAction(options: {
   }>({
     id: 'notification:send',
     description: 'Sends a notification using NotificationService',
+    examples,
     schema: {
       input: {
         type: 'object',

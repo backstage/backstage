@@ -4,12 +4,14 @@
 
 ```ts
 import { RootLifecycleService } from '@backstage/backend-plugin-api';
-import { ServiceFactory } from '@backstage/backend-plugin-api';
+import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
 
 // @public
-export const rootLifecycleServiceFactory: () => ServiceFactory<
+export const rootLifecycleServiceFactory: ServiceFactoryCompat<
   RootLifecycleService,
-  'root'
+  'root',
+  'singleton',
+  undefined
 >;
 
 // (No @packageDocumentation comment for this package)

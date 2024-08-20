@@ -45,6 +45,8 @@ import {
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
 } from '../../routes';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../translation';
 
 import { TemplateWizardPageContextMenu } from './TemplateWizardPageContextMenu';
 
@@ -75,6 +77,7 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
   const { templateName, namespace } = useRouteRefParams(
     selectedTemplateRouteRef,
   );
+  const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const templateRef = stringifyEntityRef({
     kind: 'Template',
@@ -103,9 +106,9 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
     <AnalyticsContext attributes={{ entityRef: templateRef }}>
       <Page themeId="website">
         <Header
-          pageTitleOverride="Create a new component"
-          title="Create a new component"
-          subtitle="Create new software components using standard templates in your organization"
+          pageTitleOverride={t('templateWizardPage.pageTitle')}
+          title={t('templateWizardPage.title')}
+          subtitle={t('templateWizardPage.subtitle')}
           {...props.headerOptions}
         >
           <TemplateWizardPageContextMenu editUrl={editUrl} />

@@ -50,7 +50,7 @@ components need to be in a known machine-readable format so we can build further
 tooling and analysis on top.
 
 APIs have a visibility: they are either public (making them available for any
-other component to consume), restricted (only available to an allowlisted set of
+other component to consume), restricted (only available to an allowed set of
 consumers), or private (only available within their system). As public APIs are
 going to be the primary way interaction between components, Backstage supports
 documenting, indexing and searching all APIs so we can browse them as

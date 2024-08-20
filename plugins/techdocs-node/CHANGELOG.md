@@ -1,5 +1,118 @@
 # @backstage/plugin-techdocs-node
 
+## 1.12.9
+
+### Patch Changes
+
+- 389f5a4: Update deprecated url-reader-related imports.
+- 69bd940: Use annotation constants from new techdocs-common package.
+- 949083d: Update `patchMkdocsYmlPrebuild` to modify `repo_url` and `edit_uri` independently.
+- 5cedd9f: Fix TechDocs Edit URL for nested docs
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/backend-common@0.24.0
+  - @backstage/plugin-search-common@1.2.14
+  - @backstage/integration@1.14.0
+  - @backstage/plugin-techdocs-common@0.1.0
+  - @backstage/catalog-model@1.6.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+
+## 1.12.9-next.3
+
+### Patch Changes
+
+- 5cedd9f: Fix TechDocs Edit URL for nested docs
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.3
+  - @backstage/backend-common@0.23.4-next.3
+  - @backstage/catalog-model@1.6.0-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/plugin-search-common@1.2.14-next.1
+  - @backstage/plugin-techdocs-common@0.1.0-next.0
+
+## 1.12.9-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.2
+  - @backstage/backend-common@0.23.4-next.2
+  - @backstage/plugin-search-common@1.2.14-next.1
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-techdocs-common@0.1.0-next.0
+
+## 1.12.9-next.1
+
+### Patch Changes
+
+- 69bd940: Use annotation constants from new techdocs-common package.
+- 949083d: Update `patchMkdocsYmlPrebuild` to modify `repo_url` and `edit_uri` independently.
+- Updated dependencies
+  - @backstage/plugin-techdocs-common@0.1.0-next.0
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/backend-common@0.23.4-next.1
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/plugin-search-common@1.2.14-next.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 1.12.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.23.4-next.0
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/backend-plugin-api@0.7.1-next.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/plugin-search-common@1.2.13
+
+## 1.12.8
+
+### Patch Changes
+
+- 9ecf5fd: Adds extension point for publishers to the techdocs backend
+- 4c4d077: Bumps default version of techdocs docker image to latest
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/backend-common@0.23.3
+  - @backstage/integration@1.13.0
+  - @backstage/plugin-search-common@1.2.13
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+
+## 1.12.8-next.1
+
+### Patch Changes
+
+- 9ecf5fd: Adds extension point for publishers to the techdocs backend
+- 4c4d077: Bumps default version of techdocs docker image to latest
+- Updated dependencies
+  - @backstage/backend-common@0.23.3-next.1
+  - @backstage/backend-plugin-api@0.6.22-next.1
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.13.0-next.0
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/plugin-search-common@1.2.12
+
 ## 1.12.7-next.0
 
 ### Patch Changes

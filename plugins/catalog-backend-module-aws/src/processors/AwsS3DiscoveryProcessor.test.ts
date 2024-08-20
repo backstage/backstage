@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { UrlReaders } from '@backstage/backend-common';
+import { UrlReaders } from '@backstage/backend-defaults/urlReader';
 import { ConfigReader } from '@backstage/config';
 import { AwsS3DiscoveryProcessor } from './AwsS3DiscoveryProcessor';
 import {

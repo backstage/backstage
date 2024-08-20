@@ -21,8 +21,10 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
 
 import { join as joinPath, sep as pathSep } from 'path';
 import fs from 'fs-extra';
-import { UrlReader } from '@backstage/backend-common';
-import { resolvePackagePath } from '@backstage/backend-plugin-api';
+import {
+  UrlReaderService,
+  resolvePackagePath,
+} from '@backstage/backend-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { createFetchTemplateAction } from './template';
 import {
@@ -78,7 +80,7 @@ describe('fetch:template', () => {
       workspace: {},
     });
     action = createFetchTemplateAction({
-      reader: Symbol('UrlReader') as unknown as UrlReader,
+      reader: Symbol('UrlReader') as unknown as UrlReaderService,
       integrations: Symbol('Integrations') as unknown as ScmIntegrations,
     });
   });

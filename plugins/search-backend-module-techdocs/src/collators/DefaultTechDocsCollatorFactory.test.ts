@@ -22,7 +22,7 @@ import { ConfigReader } from '@backstage/config';
 import { TestPipeline } from '@backstage/plugin-search-backend-node';
 import {
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -106,7 +106,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
     let collator: Readable;
 
     const worker = setupServer();
-    setupRequestMockHandlers(worker);
+    registerMswTestHooks(worker);
 
     beforeEach(async () => {
       factory = DefaultTechDocsCollatorFactory.fromConfig(config, options);

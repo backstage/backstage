@@ -25,10 +25,19 @@ describe('createSchemaFromZod', () => {
       }),
     );
 
-    expect(() => parse({ derp: { bar: 'derp' } })).toThrow(
+    expect(() => {
+      // @ts-expect-error
+      return parse({ derp: { bar: 'derp' } });
+    }).toThrow(
       `Missing required value at 'foo'; Expected number, received string at 'derp.bar'`,
     );
-    expect(() => parse(undefined)).toThrow(`Missing required value`);
-    expect(() => parse('derp')).toThrow(`Expected object, received string`);
+    expect(() => {
+      // @ts-expect-error
+      return parse(undefined);
+    }).toThrow(`Missing required value`);
+    expect(() => {
+      // @ts-expect-error
+      return parse('derp');
+    }).toThrow(`Expected object, received string`);
   });
 });

@@ -26,23 +26,12 @@ describe('ExternalRouteRef', () => {
     const routeRef: ExternalRouteRef<undefined> = createExternalRouteRef();
     const internal = toInternalExternalRouteRef(routeRef);
     expect(internal.getParams()).toEqual([]);
-    expect(internal.optional).toBe(false);
 
     expect(String(internal)).toMatch(
       /^ExternalRouteRef\{created at '.*ExternalRouteRef\.test\.ts.*'\}$/,
     );
     internal.setId('some-id');
     expect(String(internal)).toBe('ExternalRouteRef{some-id}');
-  });
-
-  it('should be created as optional', () => {
-    const routeRef: ExternalRouteRef<undefined, true> = createExternalRouteRef({
-      params: [],
-      optional: true,
-    });
-    const internal = toInternalExternalRouteRef(routeRef);
-    expect(internal.getParams()).toEqual([]);
-    expect(internal.optional).toEqual(true);
   });
 
   it('should be created with params', () => {
@@ -52,63 +41,39 @@ describe('ExternalRouteRef', () => {
     }> = createExternalRouteRef({ params: ['x', 'y'] });
     const internal = toInternalExternalRouteRef(routeRef);
     expect(internal.getParams()).toEqual(['x', 'y']);
-    expect(internal.optional).toEqual(false);
-  });
-
-  it('should be created as optional with params', () => {
-    const routeRef: ExternalRouteRef<{
-      x: string;
-      y: string;
-    }> = createExternalRouteRef({ params: ['x', 'y'], optional: true });
-    const internal = toInternalExternalRouteRef(routeRef);
-    expect(internal.getParams()).toEqual(['x', 'y']);
-    expect(internal.optional).toEqual(true);
   });
 
   it('should properly infer and validate parameter types and assignments', () => {
-    function checkRouteRef<
-      T extends AnyRouteRefParams,
-      TOptional extends boolean,
-      TCheck extends TOptional,
-    >(
-      _ref: ExternalRouteRef<T, TOptional>,
+    function checkRouteRef<T extends AnyRouteRefParams>(
+      _ref: ExternalRouteRef<T>,
       _params: T extends undefined ? undefined : T,
-      _optional: TCheck,
     ) {}
 
-    const _1 = createExternalRouteRef({ params: ['notX'] });
-    checkRouteRef(_1, { notX: '' }, false);
+    const _1 = createExternalRouteRef();
+    checkRouteRef(_1, undefined);
     // @ts-expect-error
-    checkRouteRef(_1, { x: '' }, false);
+    checkRouteRef(_1, { x: '' });
 
-    const _2 = createExternalRouteRef({ params: ['x'], optional: true });
-    checkRouteRef(_2, { x: '' }, true);
+    const _2 = createExternalRouteRef({ params: ['x'] });
+    checkRouteRef(_2, { x: '' });
     // @ts-expect-error
-    checkRouteRef(_2, undefined, false);
+    checkRouteRef(_2, { notX: '' });
+    // @ts-expect-error
+    checkRouteRef(_2, undefined);
 
     const _3 = createExternalRouteRef({ params: ['x', 'y'] });
-    checkRouteRef(_3, { x: '', y: '' }, false);
+    checkRouteRef(_3, { x: '', y: '' });
     // @ts-expect-error
-    checkRouteRef(_3, { x: '' }, false);
+    checkRouteRef(_3, { x: '' });
     // @ts-expect-error
-    checkRouteRef(_3, { x: '', y: '', z: '' }, false);
+    checkRouteRef(_3, { x: '', y: '', z: '' });
 
     const _4 = createExternalRouteRef({ params: [] });
-    checkRouteRef(_4, undefined, false);
+    checkRouteRef(_4, undefined);
     // @ts-expect-error
-    checkRouteRef<any>(_4, { x: '' });
-
-    const _5 = createExternalRouteRef();
-    checkRouteRef(_5, undefined, false);
-    // @ts-expect-error
-    checkRouteRef<any>(_5, { x: '' });
-
-    const _6 = createExternalRouteRef({ optional: true });
-    checkRouteRef(_6, undefined, true);
-    // @ts-expect-error
-    checkRouteRef(_6, undefined, false);
+    checkRouteRef(_4, { x: '' });
 
     // To avoid complains about missing expectations and unused vars
-    expect([_1, _2, _3, _4, _5, _6].join('')).toEqual(expect.any(String));
+    expect([_1, _2, _3, _4].join('')).toEqual(expect.any(String));
   });
 });

@@ -30,6 +30,12 @@ const pipelineInputProperties = z.object({
   projectId: z.number().describe('Project Id'),
   tokenDescription: z.string().describe('Pipeline token description'),
   branch: z.string().describe('Project branch'),
+  variables: z
+    .record(z.string(), z.string())
+    .optional()
+    .describe(
+      'A object/record of key-valued strings containing the pipeline variables.',
+    ),
 });
 
 const pipelineOutputProperties = z.object({
@@ -57,7 +63,7 @@ export const createTriggerGitlabPipelineAction = (options: {
     async handler(ctx) {
       let pipelineTokenResponse: PipelineTriggerTokenSchema | null = null;
 
-      const { repoUrl, projectId, tokenDescription, token, branch } =
+      const { repoUrl, projectId, tokenDescription, token, branch, variables } =
         commonGitlabConfig.merge(pipelineInputProperties).parse(ctx.input);
 
       const { host } = parseRepoUrl(repoUrl, integrations);
@@ -84,6 +90,7 @@ export const createTriggerGitlabPipelineAction = (options: {
             projectId,
             branch,
             pipelineTokenResponse.token,
+            { variables },
           )) as ExpandedPipelineSchema;
 
         if (!pipelineTriggerResponse.id) {

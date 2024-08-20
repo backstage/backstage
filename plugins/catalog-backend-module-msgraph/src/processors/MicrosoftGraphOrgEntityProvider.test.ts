@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 import {
-  PluginTaskScheduler,
-  TaskInvocationDefinition,
-  TaskRunner,
-} from '@backstage/backend-tasks';
+  SchedulerService,
+  SchedulerServiceTaskRunner,
+  SchedulerServiceTaskInvocationDefinition,
+} from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import {
   ANNOTATION_LOCATION,
@@ -48,14 +48,14 @@ const readMicrosoftGraphOrgMocked = readMicrosoftGraphOrg as jest.Mock<
   Promise<{ users: UserEntity[]; groups: GroupEntity[] }>
 >;
 
-class PersistingTaskRunner implements TaskRunner {
-  private tasks: TaskInvocationDefinition[] = [];
+class PersistingTaskRunner implements SchedulerServiceTaskRunner {
+  private tasks: SchedulerServiceTaskInvocationDefinition[] = [];
 
   getTasks() {
     return this.tasks;
   }
 
-  run(task: TaskInvocationDefinition): Promise<void> {
+  run(task: SchedulerServiceTaskInvocationDefinition): Promise<void> {
     this.tasks.push(task);
     return Promise.resolve(undefined);
   }
@@ -102,7 +102,7 @@ describe('MicrosoftGraphOrgEntityProvider', () => {
   const taskRunner = new PersistingTaskRunner();
   const scheduler = {
     createScheduledTaskRunner: (_: any) => taskRunner,
-  } as unknown as PluginTaskScheduler;
+  } as unknown as SchedulerService;
   const entityProviderConnection: EntityProviderConnection = {
     applyMutation: jest.fn(),
     refresh: jest.fn(),

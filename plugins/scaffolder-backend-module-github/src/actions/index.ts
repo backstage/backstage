@@ -21,12 +21,12 @@ export { createGithubRepoPushAction } from './githubRepoPush';
 export { createGithubWebhookAction } from './githubWebhook';
 export { createGithubDeployKeyAction } from './githubDeployKey';
 export { createGithubEnvironmentAction } from './githubEnvironment';
-
 export {
   createPublishGithubPullRequestAction,
   type CreateGithubPullRequestActionOptions,
 } from './githubPullRequest';
 export { createPublishGithubAction } from './github';
 export { createGithubAutolinksAction } from './githubAutolinks';
+export { createGithubPagesEnableAction } from './githubPagesEnable';
 
 export { getOctokitOptions } from './helpers';

@@ -15,11 +15,17 @@
  */
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
 import { DocsBuildStrategy } from './techdocsTypes';
-import { PreparerBase, RemoteProtocol, TechdocsGenerator } from './stages';
+import {
+  PreparerBase,
+  PublisherBase,
+  PublisherType,
+  RemoteProtocol,
+  TechdocsGenerator,
+} from './stages';
 import * as winston from 'winston';
 
 /**
- * Extension point type for configuring Techdocs builds.
+ * Extension point type for configuring TechDocs builds.
  *
  * @public
  */
@@ -29,7 +35,7 @@ export interface TechdocsBuildsExtensionPoint {
 }
 
 /**
- * Extension point for configuring Techdocs builds.
+ * Extension point for configuring TechDocs builds.
  *
  * @public
  */
@@ -39,7 +45,7 @@ export const techdocsBuildsExtensionPoint =
   });
 
 /**
- * Extension point type for configuring a custom Techdocs generator
+ * Extension point type for configuring a custom TechDocs generator
  *
  * @public
  */
@@ -48,7 +54,7 @@ export interface TechdocsGeneratorExtensionPoint {
 }
 
 /**
- * Extension point for configuring a custom Techdocs generator
+ * Extension point for configuring a custom TechDocs generator
  *
  * @public
  */
@@ -58,7 +64,7 @@ export const techdocsGeneratorExtensionPoint =
   });
 
 /**
- * Extension point type for configuring a custom Techdocs preparer
+ * Extension point type for configuring a custom TechDocs preparer
  *
  * @public
  */
@@ -67,11 +73,30 @@ export interface TechdocsPreparerExtensionPoint {
 }
 
 /**
- * Extension point for configuring a custom Techdocs preparer
+ * Extension point for configuring a custom TechDocs preparer
  *
  * @public
  */
 export const techdocsPreparerExtensionPoint =
   createExtensionPoint<TechdocsPreparerExtensionPoint>({
     id: 'techdocs.preparer',
+  });
+
+/**
+ * Extension point type for configuring a custom TechDocs publisher
+ *
+ * @public
+ */
+export interface TechdocsPublisherExtensionPoint {
+  registerPublisher(type: PublisherType, publisher: PublisherBase): void;
+}
+
+/**
+ * Extension point for configuring a custom TechDocs publisher
+ *
+ * @public
+ */
+export const techdocsPublisherExtensionPoint =
+  createExtensionPoint<TechdocsPublisherExtensionPoint>({
+    id: 'techdocs.publisher',
   });

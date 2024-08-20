@@ -74,6 +74,11 @@ export interface BaseConfigSourcesOptions {
   watch?: boolean;
   rootDir?: string;
   remote?: Pick<RemoteConfigSourceOptions, 'reloadInterval'>;
+  /**
+   * Allow the default app-config.yaml to be missing, in which case the source
+   * will not be created.
+   */
+  allowMissingDefaultConfig?: boolean;
 
   /**
    * A custom substitution function that overrides the default one.
@@ -102,7 +107,7 @@ export interface ConfigSourcesDefaultForTargetsOptions
  */
 export interface ConfigSourcesDefaultOptions extends BaseConfigSourcesOptions {
   argv?: string[];
-  env?: Record<string, string>;
+  env?: Record<string, string | undefined>;
 }
 
 /**
@@ -177,14 +182,19 @@ export class ConfigSources {
     if (argSources.length === 0) {
       const defaultPath = resolvePath(rootDir, 'app-config.yaml');
       const localPath = resolvePath(rootDir, 'app-config.local.yaml');
+      const alwaysIncludeDefaultConfigSource =
+        !options.allowMissingDefaultConfig;
 
-      argSources.push(
-        FileConfigSource.create({
-          watch: options.watch,
-          path: defaultPath,
-          substitutionFunc: options.substitutionFunc,
-        }),
-      );
+      if (alwaysIncludeDefaultConfigSource || fs.pathExistsSync(defaultPath)) {
+        argSources.push(
+          FileConfigSource.create({
+            watch: options.watch,
+            path: defaultPath,
+            substitutionFunc: options.substitutionFunc,
+          }),
+        );
+      }
+
       if (fs.pathExistsSync(localPath)) {
         argSources.push(
           FileConfigSource.create({

@@ -169,15 +169,12 @@ Before running this step, please make sure you followed the steps described in [
 In order to test the logic above, the integrators of your backstage instance need to change their permission policy to return `DENY` for our newly-created permission:
 
 ```ts title="packages/backend/src/plugins/permission.ts"
-/* highlight-add-start */
-import {
-  BackstageIdentityResponse,
-} from '@backstage/plugin-auth-node';
-/* highlight-add-end */
 import {
   PermissionPolicy,
-  /* highlight-add-next-line */
+  /* highlight-add-start */
   PolicyQuery,
+  PolicyQueryUser,
+  /* highlight-add-end */
 } from '@backstage/plugin-permission-node';
 /* highlight-add-start */
 import { isPermission } from '@backstage/plugin-permission-common';
@@ -190,7 +187,7 @@ class TestPermissionPolicy implements PermissionPolicy {
   /* highlight-add-start */
   async handle(
     request: PolicyQuery,
-    _user?: BackstageIdentityResponse,
+    _user?: PolicyQueryUser,
   ): Promise<PolicyDecision> {
     if (isPermission(request.permission, todoListCreatePermission)) {
       return {

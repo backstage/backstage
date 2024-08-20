@@ -7,4 +7,4 @@ metadata:
 spec:
   lifecycle: experimental
   type: backstage-backend-plugin-module
-  owner: discoverability-maintainers
+  owner: search-maintainers

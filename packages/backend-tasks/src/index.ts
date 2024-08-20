@@ -17,6 +17,10 @@
 /**
  * Common distributed task management library for Backstage backends
  *
+ * @remarks
+ * This package is deprecated and will be removed in a near future.
+ * Please migrate to the new backend system, and depend on `coreServices.scheduler` from  `@backstage/backend-plugin-api` instead, or use `DefaultSchedulerService` from `@backstage/backend-defaults`.
+ *
  * @packageDocumentation
  */
 

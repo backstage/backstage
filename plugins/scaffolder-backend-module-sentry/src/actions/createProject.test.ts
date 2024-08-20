@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { InputError } from '@backstage/errors';
@@ -27,7 +27,7 @@ import { createSentryCreateProjectAction } from './createProject';
 
 describe('sentry:project:create action', () => {
   const worker = setupServer();
-  setupRequestMockHandlers(worker);
+  registerMswTestHooks(worker);
 
   const createScaffolderConfig = (configData: JsonObject = {}) => ({
     config: new ConfigReader({

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React, { ReactNode } from 'react';
-import { fireEvent, render, waitFor } from '@testing-library/react';
+import { fireEvent, waitFor } from '@testing-library/react';
 import { PaginatedCatalogTable } from './PaginatedCatalogTable';
 import { screen } from '@testing-library/react';
 import { CatalogTableRow } from './types';
@@ -63,8 +63,8 @@ describe('PaginatedCatalogTable', () => {
     );
   };
 
-  it('should display all the items', () => {
-    render(
+  it('should display all the items', async () => {
+    await renderInTestApp(
       wrapInContext(<PaginatedCatalogTable data={data} columns={columns} />),
     );
 
@@ -74,7 +74,7 @@ describe('PaginatedCatalogTable', () => {
   });
 
   it('should display and invoke the next button', async () => {
-    const { rerender } = render(
+    const { rerender } = await renderInTestApp(
       wrapInContext(
         <PaginatedCatalogTable
           data={data}
@@ -106,7 +106,7 @@ describe('PaginatedCatalogTable', () => {
   });
 
   it('should display and invoke the prev button', async () => {
-    const { rerender } = render(
+    const { rerender } = await renderInTestApp(
       wrapInContext(
         <PaginatedCatalogTable
           data={data}

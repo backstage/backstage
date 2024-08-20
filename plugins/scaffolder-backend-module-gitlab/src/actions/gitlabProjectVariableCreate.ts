@@ -16,10 +16,10 @@
 
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import { Gitlab } from '@gitbeaker/node';
+import { VariableType } from '@gitbeaker/rest';
 import { z } from 'zod';
 import commonGitlabConfig from '../commonGitlabConfig';
-import { getToken } from '../util';
+import { getClient, parseRepoUrl } from '../util';
 import { examples } from './gitlabProjectVariableCreate.examples';
 
 /**
@@ -72,6 +72,7 @@ export const createGitlabProjectVariableAction = (options: {
     },
     async handler(ctx) {
       const {
+        repoUrl,
         projectId,
         key,
         value,
@@ -80,21 +81,19 @@ export const createGitlabProjectVariableAction = (options: {
         masked = false,
         raw = false,
         environmentScope = '*',
+        token,
       } = ctx.input;
-      const { token, integrationConfig } = getToken(ctx.input, integrations);
 
-      const api = new Gitlab({
-        host: integrationConfig.config.baseUrl,
-        token: token,
-      });
-      await api.ProjectVariables.create(projectId, {
-        key: key,
-        value: value,
-        variable_type: variableType,
+      const { host } = parseRepoUrl(repoUrl, integrations);
+
+      const api = getClient({ host, integrations, token });
+
+      await api.ProjectVariables.create(projectId, key, value, {
+        variableType: variableType as VariableType,
         protected: variableProtected,
-        masked: masked,
-        raw: raw,
-        environment_scope: environmentScope,
+        masked,
+        raw,
+        environmentScope,
       });
     },
   });

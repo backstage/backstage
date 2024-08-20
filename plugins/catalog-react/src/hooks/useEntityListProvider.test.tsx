@@ -20,6 +20,7 @@ import {
   alertApiRef,
   ConfigApi,
   configApiRef,
+  errorApiRef,
   IdentityApi,
   identityApiRef,
   storageApiRef,
@@ -39,6 +40,8 @@ import {
 } from '../filters';
 import { EntityListProvider, useEntityList } from './useEntityListProvider';
 import { useMountEffect } from '@react-hookz/web';
+import { translationApiRef } from '@backstage/core-plugin-api/alpha';
+import { MockTranslationApi } from '@backstage/test-utils/alpha';
 
 const entities: Entity[] = [
   {
@@ -110,6 +113,8 @@ const createWrapper =
             [storageApiRef, MockStorageApi.create()],
             [starredEntitiesApiRef, new MockStarredEntitiesApi()],
             [alertApiRef, { post: jest.fn() }],
+            [translationApiRef, MockTranslationApi.create()],
+            [errorApiRef, { error$: jest.fn(), post: jest.fn() }],
           ]}
         >
           <EntityListProvider pagination={options.pagination}>

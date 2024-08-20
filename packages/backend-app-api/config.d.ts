@@ -71,7 +71,7 @@ export interface Config {
        * the Backstage ecosystem to get authorized for access to APIs that do
        * not permit unauthorized access.
        */
-      externalAccess: Array<
+      externalAccess?: Array<
         | {
             /**
              * This is the legacy service-to-service access method, where a set
@@ -287,6 +287,7 @@ export interface Config {
           }
       >;
     };
+    packages?: 'all' | { include?: string[]; exclude?: string[] };
   };
 
   /** Discovery options. */

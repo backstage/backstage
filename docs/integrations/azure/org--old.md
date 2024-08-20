@@ -18,8 +18,7 @@ Microsoft Graph API.
 
 The package is not installed by default, therefore you have to add `@backstage/plugin-catalog-backend-module-msgraph` to your backend package.
 
-```bash
-# From your Backstage root directory
+```bash title="From your Backstage root directory"
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-msgraph
 ```
 

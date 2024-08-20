@@ -32,7 +32,7 @@ export type TemplateGroupFilter = {
  */
 export type FormProps = Pick<
   SchemaFormProps,
-  'transformErrors' | 'noHtml5Validate'
+  'transformErrors' | 'noHtml5Validate' | 'uiSchema' | 'formContext'
 >;
 
 /**

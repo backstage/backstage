@@ -6,7 +6,7 @@
 import { Config } from '@backstage/config';
 import { EventsService } from '@backstage/plugin-events-node';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { SchedulerService } from '@backstage/backend-plugin-api';
 
 // @public
 export class AwsSqsConsumingEventPublisher {
@@ -15,7 +15,7 @@ export class AwsSqsConsumingEventPublisher {
     config: Config;
     events: EventsService;
     logger: LoggerService;
-    scheduler: PluginTaskScheduler;
+    scheduler: SchedulerService;
   }): AwsSqsConsumingEventPublisher[];
   // (undocumented)
   start(): Promise<void>;

@@ -6,3 +6,4 @@ metadata:
 spec:
   owner: user:frank.tiernan
   subdomainOf: audio
+  type: product-group

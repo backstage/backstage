@@ -21,8 +21,7 @@ to an entity in the software catalog.
 
 1. Add the plugin's npm package to the repo:
 
-   ```bash
-   # From your Backstage root directory
+   ```bash title="From your Backstage root directory"
    yarn --cwd packages/app add @circleci/backstage-plugin
    ```
 

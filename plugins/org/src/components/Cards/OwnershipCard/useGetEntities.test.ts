@@ -231,6 +231,114 @@ describe('useGetEntities', () => {
       );
     });
   });
+
+  describe('useGetEntities with 500+ relations', () => {
+    const manyGroups = Array.from({ length: 555 }, (_, i) =>
+      createGroupEntityFromName(`group${i + 1}`),
+    );
+
+    const givenUserWithManyGroups = {
+      kind: 'User',
+      metadata: {
+        name: givenUser,
+      },
+      spec: {
+        memberOf: manyGroups.map(
+          group => `group:default/${group.metadata.name}`,
+        ),
+      },
+    } as Partial<Entity> as Entity;
+
+    beforeEach(() => {
+      getEntityRelationsMock.mockImplementation(entity =>
+        entity?.kind === 'User'
+          ? manyGroups.map(group => createGroupRefFromName(group.metadata.name))
+          : [],
+      );
+      (catalogApiMock.getEntities as jest.Mock).mockClear();
+    });
+
+    it('should handle 500+ relations without exceeding URL length limits', async () => {
+      const { result } = renderHook(
+        ({ entity }) => useGetEntities(entity, 'aggregated'),
+        {
+          initialProps: { entity: givenUserWithManyGroups },
+        },
+      );
+
+      await waitFor(() => expect(result.current.loading).toBe(false), {
+        timeout: 5000,
+      });
+
+      const callArgs = (catalogApiMock.getEntities as jest.Mock).mock
+        .calls[0][0];
+
+      expect(
+        callArgs.filter[0]['relations.ownedBy'].length,
+      ).toBeLessThanOrEqual(100);
+
+      const owners = callArgs.filter[0]['relations.ownedBy'];
+
+      expect(Array.isArray(owners)).toBeTruthy();
+      expect(owners.length).toBeLessThanOrEqual(100);
+    });
+  });
+
+  describe('useGetEntities exceeding default 16384 bytes header size', () => {
+    const largeNumberOfGroups = Array.from({ length: 600 }, (_, i) =>
+      createGroupEntityFromName(`very-long-group-name-${i + 1}`),
+    );
+
+    const givenUserWithLargeNumberOfGroups = {
+      kind: 'User',
+      metadata: {
+        name: givenUser,
+      },
+      spec: {
+        memberOf: largeNumberOfGroups.map(
+          group => `group:default/${group.metadata.name}`,
+        ),
+      },
+    } as Partial<Entity> as Entity;
+
+    beforeEach(() => {
+      getEntityRelationsMock.mockImplementation(entity =>
+        entity?.kind === 'User'
+          ? largeNumberOfGroups.map(group =>
+              createGroupRefFromName(group.metadata.name),
+            )
+          : [],
+      );
+      (catalogApiMock.getEntities as jest.Mock).mockClear();
+    });
+
+    it('should batch the request to avoid exceeding header size limits', async () => {
+      const { result } = renderHook(
+        ({ entity }) => useGetEntities(entity, 'aggregated'),
+        {
+          initialProps: { entity: givenUserWithLargeNumberOfGroups },
+        },
+      );
+
+      await waitFor(() => expect(result.current.loading).toBe(false), {
+        timeout: 5000,
+      });
+      const callArgs = (catalogApiMock.getEntities as jest.Mock).mock
+        .calls[0][0];
+
+      const url = new URL(
+        `http://localhost/api/catalog/entities?${new URLSearchParams(
+          callArgs as any,
+        )}`,
+      );
+      const headerSize = url.href.length;
+      expect(headerSize).toBeLessThanOrEqual(16384);
+
+      const owners = callArgs.filter[0]['relations.ownedBy'];
+      expect(Array.isArray(owners)).toBeTruthy();
+      expect(owners.length).toBeLessThanOrEqual(100);
+    });
+  });
 });
 
 function createGroupEntityFromName(name: string): Entity {

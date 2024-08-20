@@ -18,6 +18,7 @@ import {
   AuthService,
   coreServices,
   createBackendPlugin,
+  HttpRouterService,
   ServiceRef,
 } from '@backstage/backend-plugin-api';
 import { RequestHandler } from 'express';
@@ -27,6 +28,7 @@ import { TokenManager } from '../../deprecated';
 
 /**
  * @public
+ * @deprecated Fully use the new backend system instead.
  */
 export type LegacyCreateRouter<TEnv> = (deps: TEnv) => Promise<RequestHandler>;
 
@@ -69,6 +71,7 @@ function wrapTokenManager(tokenManager: TokenManager, auth: AuthService) {
  * Creates a new custom plugin compatibility wrapper.
  *
  * @public
+ * @deprecated Fully use the new backend system instead.
  * @remarks
  *
  * Usually you can use {@link legacyPlugin} directly instead, but you might
@@ -105,7 +108,10 @@ export function makeLegacyPlugin<
                   return [key, transform(dep)];
                 }
                 if (key === 'tokenManager') {
-                  return [key, wrapTokenManager(dep as TokenManager, _auth)];
+                  return [
+                    key,
+                    wrapTokenManager(dep as TokenManager, _auth as AuthService),
+                  ];
                 }
                 return [key, dep];
               }),
@@ -113,7 +119,7 @@ export function makeLegacyPlugin<
             const router = await createRouter(
               pluginEnv as TransformedEnv<TEnv, TEnvTransforms>,
             );
-            _router.use(router);
+            (_router as HttpRouterService).use(router);
           },
         });
       },
@@ -128,6 +134,7 @@ export function makeLegacyPlugin<
  * register it with the http router based on the plugin id.
  *
  * @public
+ * @deprecated Fully use the new backend system instead.
  * @remarks
  *
  * This is intended to be used by plugin authors to ease the transition to the

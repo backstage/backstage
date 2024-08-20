@@ -40,14 +40,8 @@ const baseOverrides = createExtensionOverrides({
       namespace: 'app',
       name: 'root',
       attachTo: { id: 'app', input: 'root' },
-      output: {
-        element: coreExtensionData.reactElement,
-      },
-      factory() {
-        return {
-          element: <div>root</div>,
-        };
-      },
+      output: [coreExtensionData.reactElement],
+      factory: () => [coreExtensionData.reactElement(<div>root</div>)],
     }),
   ],
 });

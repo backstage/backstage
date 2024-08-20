@@ -21,7 +21,7 @@ import yaml from 'yaml';
 import { examples } from './bitbucketCloudPipelinesRun.examples';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 describe('bitbucket:pipelines:run', () => {
@@ -48,7 +48,7 @@ describe('bitbucket:pipelines:run', () => {
     build_number: 1,
   };
   const worker = setupServer();
-  setupRequestMockHandlers(worker);
+  registerMswTestHooks(worker);
 
   beforeEach(() => {
     jest.resetAllMocks();

@@ -24,6 +24,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { Notification } from '@backstage/plugin-notifications-common';
 import { useConfirm } from 'material-ui-confirm';
+import BroadcastIcon from '@material-ui/icons/RssFeed';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import {
   Link,
@@ -40,7 +41,7 @@ import { BulkActions } from './BulkActions';
 
 const ThrottleDelayMs = 1000;
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   description: {
     maxHeight: '5rem',
     overflow: 'auto',
@@ -48,7 +49,15 @@ const useStyles = makeStyles({
   severityItem: {
     alignContent: 'center',
   },
-});
+  broadcastIcon: {
+    fontSize: '1rem',
+    verticalAlign: 'text-bottom',
+  },
+  notificationInfoRow: {
+    marginLeft: theme.spacing(0.5),
+    marginRight: theme.spacing(0.5),
+  },
+}));
 
 /** @public */
 export type NotificationsTableProps = Pick<
@@ -173,12 +182,14 @@ export const NotificationsTable = ({
     }
   }, [notifications, selectedNotifications]);
 
-  const compactColumns = React.useMemo(
-    (): TableColumn<Notification>[] => [
+  const compactColumns = React.useMemo((): TableColumn<Notification>[] => {
+    const showToolbar = notifications.length > 0;
+
+    return [
       {
         /* selection column */
         width: '1rem',
-        title: (
+        title: showToolbar ? (
           <SelectAll
             count={selectedNotifications.size}
             totalCount={notifications.length}
@@ -189,7 +200,7 @@ export const NotificationsTable = ({
               )
             }
           />
-        ),
+        ) : undefined,
         render: (notification: Notification) => (
           <CheckBox
             color="primary"
@@ -234,15 +245,40 @@ export const NotificationsTable = ({
                       {notification.payload.description}
                     </Typography>
                   ) : null}
+
                   <Typography variant="caption">
+                    {!notification.user && (
+                      <>
+                        <BroadcastIcon className={classes.broadcastIcon} />
+                      </>
+                    )}
                     {notification.origin && (
-                      <>{notification.origin}&nbsp;&bull;&nbsp;</>
+                      <>
+                        <Typography
+                          variant="inherit"
+                          className={classes.notificationInfoRow}
+                        >
+                          {notification.origin}
+                        </Typography>
+                        &bull;
+                      </>
                     )}
                     {notification.payload.topic && (
-                      <>{notification.payload.topic}&nbsp;&bull;&nbsp;</>
+                      <>
+                        <Typography
+                          variant="inherit"
+                          className={classes.notificationInfoRow}
+                        >
+                          {notification.payload.topic}
+                        </Typography>
+                        &bull;
+                      </>
                     )}
                     {notification.created && (
-                      <RelativeTime value={notification.created} />
+                      <RelativeTime
+                        value={notification.created}
+                        className={classes.notificationInfoRow}
+                      />
                     )}
                   </Typography>
                 </Box>
@@ -254,7 +290,7 @@ export const NotificationsTable = ({
       {
         /* actions column */
         width: '1rem',
-        title: (
+        title: showToolbar ? (
           <BulkActions
             notifications={notifications}
             selectedNotifications={selectedNotifications}
@@ -263,31 +299,31 @@ export const NotificationsTable = ({
             onSwitchSavedStatus={onSwitchSavedStatus}
             onMarkAllRead={onMarkAllRead}
           />
-        ),
+        ) : undefined,
         render: (notification: Notification) => (
           <BulkActions
             notifications={[notification]}
             selectedNotifications={new Set([notification.id])}
             onSwitchReadStatus={onSwitchReadStatus}
             onSwitchSavedStatus={onSwitchSavedStatus}
-            //
           />
         ),
       },
-    ],
-    [
-      markAsReadOnLinkOpen,
-      selectedNotifications,
-      notifications,
-      isUnread,
-      onSwitchReadStatus,
-      onSwitchSavedStatus,
-      onMarkAllRead,
-      onNotificationsSelectChange,
-      classes.severityItem,
-      classes.description,
-    ],
-  );
+    ];
+  }, [
+    notifications,
+    selectedNotifications,
+    isUnread,
+    onSwitchReadStatus,
+    onSwitchSavedStatus,
+    onMarkAllRead,
+    onNotificationsSelectChange,
+    classes.severityItem,
+    classes.description,
+    classes.broadcastIcon,
+    classes.notificationInfoRow,
+    markAsReadOnLinkOpen,
+  ]);
 
   return (
     <Table<Notification>

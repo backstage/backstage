@@ -19,9 +19,12 @@ import {
   MockAnalyticsApi,
   renderWithEffects,
   withLogCollector,
+  registerMswTestHooks,
 } from '@backstage/test-utils';
-import { screen, waitFor, act } from '@testing-library/react';
+import { screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { setupServer } from 'msw/node';
+import { rest } from 'msw';
 import React, { PropsWithChildren, ReactNode } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import {
@@ -51,6 +54,9 @@ import {
 } from '@backstage/core-plugin-api/alpha';
 
 describe('Integration Test', () => {
+  const server = setupServer();
+  registerMswTestHooks(server);
+
   const noOpAnalyticsApi = createApiFactory(
     analyticsApiRef,
     new NoOpAnalyticsApi(),
@@ -847,6 +853,17 @@ describe('Integration Test', () => {
   });
 
   it('should clear app cookie when the user logs out', async () => {
+    const logoutSignal = jest.fn();
+    server.use(
+      rest.delete(
+        'http://localhost:7007/app/.backstage/auth/v1/cookie',
+        (_req, res, ctx) => {
+          logoutSignal();
+          return res(ctx.status(200));
+        },
+      ),
+    );
+
     const meta = global.document.createElement('meta');
     meta.name = 'backstage-app-mode';
     meta.content = 'protected';
@@ -901,12 +918,7 @@ describe('Integration Test', () => {
       await userEvent.click(screen.getByText('Sign Out'));
     });
 
-    await waitFor(() =>
-      expect(fetchApiMock.fetch).toHaveBeenCalledWith(
-        'http://localhost:7007/app/.backstage/auth/v1/cookie',
-        { method: 'DELETE' },
-      ),
-    );
+    expect(logoutSignal).toHaveBeenCalled();
 
     global.document.head.removeChild(meta);
   });

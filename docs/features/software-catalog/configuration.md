@@ -47,7 +47,7 @@ action is logged for further investigation.
 ### Local File (`type: file`) Configurations
 
 In addition to url locations, you can use the `file` location type to bring in content from the local file system. You should only use this for local development, test setups, and example data, not for production data.
-You are also not able to use placeholders in them like `$text`. You can however reference other files relative to the current file. See the full [catalog example data set here](https://github.com/backstage/backstage/tree/master/packages/catalog-model/examples) for an extensive example.
+You are also not able to use placeholders in them like `$text`, `$json` or `$yaml`. You can however reference other files relative to the current file. See the full [catalog example data set here](https://github.com/backstage/backstage/tree/master/packages/catalog-model/examples) for an extensive example.
 
 Here is an example pulling in the `all.yaml` file from the examples folder. Note the use of `../../` to go up two levels from the current execution path of the backend. This is typically `packages/backend/`.
 
@@ -57,6 +57,20 @@ catalog:
     - type: file
       target: ../../examples/all.yaml
 ```
+
+:::note
+There might be cases where you need to test some `file` configurations in a Docker container. In a case like this, as the backend is serving the frontend in a default setup, the path would be from the root. Also, you need to **make sure to copy your files into your container**.
+
+Using the example above that would look like this:
+
+```yaml
+catalog:
+  locations:
+    - type: file
+      target: ./examples/all.yaml
+```
+
+:::
 
 ### Integration Processors
 
@@ -184,9 +198,8 @@ Catalog errors are published to the [events plugin](https://github.com/backstage
 
 The first step is to add the events backend plugin to your Backstage application. Navigate to your Backstage application directory and add the plugin package.
 
-```ts
-# From your Backstage root directory
-yarn --cwd packages/backend add @backstage/plugin-events-node
+```ts title="From your Backstage root directory"
+yarn --cwd packages/backend add @backstage/plugin-events-backend
 ```
 
 Now you can install the events backend plugin in your backend.
@@ -201,8 +214,7 @@ If you want to log catalog errors you can install the `@backstage/plugin-catalog
 
 Install the catalog logs module.
 
-```ts
-# From your Backstage root directory
+```ts title="From your Backstage root directory"
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-logs
 ```
 

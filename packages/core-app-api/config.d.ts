@@ -65,6 +65,18 @@ export interface Config {
         }>;
       }>;
     };
+
+    routes?: {
+      /**
+       * Maps external route references to regular route references. Both the
+       * key and the value is expected to be on the form `<pluginId>.<routeId>`.
+       * If the value is `false`, the route will be disabled even if it has a
+       * default mapping.
+       *
+       * @deepVisibility frontend
+       */
+      bindings?: { [externalRouteRefId: string]: string | false };
+    };
   };
 
   /**

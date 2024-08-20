@@ -58,6 +58,8 @@ import {
   rootRouteRef,
   scaffolderListTaskRouteRef,
 } from '../../routes';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../translation';
 
 const useStyles = makeStyles(theme => ({
   code: {
@@ -115,6 +117,7 @@ const ExamplesTable = (props: { examples: ActionExample[] }) => {
 
 const ActionPageContent = () => {
   const api = useApi(scaffolderApiRef);
+  const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const classes = useStyles();
   const { loading, value, error } = useAsync(async () => {
@@ -132,8 +135,8 @@ const ActionPageContent = () => {
         <ErrorPanel error={error} />
         <EmptyState
           missing="info"
-          title="No information to display"
-          description="There are no actions installed or there was an issue communicating with backend."
+          title={t('actionsPage.content.emptyState.title')}
+          description={t('actionsPage.content.emptyState.description')}
         />
       </>
     );
@@ -141,17 +144,21 @@ const ActionPageContent = () => {
 
   const renderTable = (rows?: JSX.Element[]) => {
     if (!rows || rows.length < 1) {
-      return <Typography>No schema defined</Typography>;
+      return (
+        <Typography>{t('actionsPage.content.noRowsDescription')}</Typography>
+      );
     }
     return (
       <TableContainer component={Paper}>
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Title</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell>Type</TableCell>
+              <TableCell>{t('actionsPage.content.tableCell.name')}</TableCell>
+              <TableCell>{t('actionsPage.content.tableCell.title')}</TableCell>
+              <TableCell>
+                {t('actionsPage.content.tableCell.description')}
+              </TableCell>
+              <TableCell>{t('actionsPage.content.tableCell.type')}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>{rows}</TableBody>
@@ -295,7 +302,7 @@ const ActionPageContent = () => {
         {action.schema?.input && (
           <Box pb={2}>
             <Typography variant="h5" component="h3">
-              Input
+              {t('actionsPage.action.input')}
             </Typography>
             {renderTable(
               formatRows(`${action.id}.input`, action?.schema?.input),
@@ -306,7 +313,7 @@ const ActionPageContent = () => {
         {action.schema?.output && (
           <Box pb={2}>
             <Typography variant="h5" component="h3">
-              Output
+              {t('actionsPage.action.output')}
             </Typography>
             {renderTable(
               formatRows(`${action.id}.output`, action?.schema?.output),
@@ -317,7 +324,7 @@ const ActionPageContent = () => {
           <Accordion>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography variant="h5" component="h3">
-                Examples
+                {t('actionsPage.action.examples')}
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
@@ -336,6 +343,7 @@ export const ActionsPage = () => {
   const editorLink = useRouteRef(editRouteRef);
   const tasksLink = useRouteRef(scaffolderListTaskRouteRef);
   const createLink = useRouteRef(rootRouteRef);
+  const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const scaffolderPageContextMenuProps = {
     onEditorClicked: () => navigate(editorLink()),
@@ -347,9 +355,9 @@ export const ActionsPage = () => {
   return (
     <Page themeId="home">
       <Header
-        pageTitleOverride="Create a New Component"
-        title="Installed actions"
-        subtitle="This is the collection of all installed actions"
+        pageTitleOverride={t('actionsPage.pageTitle')}
+        title={t('actionsPage.title')}
+        subtitle={t('actionsPage.subtitle')}
       >
         <ScaffolderPageContextMenu {...scaffolderPageContextMenuProps} />
       </Header>

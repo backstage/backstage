@@ -16,7 +16,7 @@
 
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { createBitbucketPipelinesRunAction } from './bitbucketCloudPipelinesRun';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
@@ -48,7 +48,7 @@ describe('bitbucket:pipelines:run', () => {
     build_number: 1,
   };
   const worker = setupServer();
-  setupRequestMockHandlers(worker);
+  registerMswTestHooks(worker);
 
   beforeEach(() => {
     jest.clearAllMocks();

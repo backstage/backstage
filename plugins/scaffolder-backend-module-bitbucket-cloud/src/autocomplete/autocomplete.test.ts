@@ -35,6 +35,11 @@ describe('handleAutocompleteRequest', () => {
         .fn()
         .mockReturnValue([{ values: [{ slug: 'repository1' }] }]),
     }),
+    listBranchesByRepository: jest.fn().mockReturnValue({
+      iteratePages: jest
+        .fn()
+        .mockReturnValue([{ values: [{ name: 'branch1' }] }]),
+    }),
   };
 
   const fromConfig = jest
@@ -87,6 +92,19 @@ describe('handleAutocompleteRequest', () => {
     });
 
     expect(result).toEqual({ results: [{ title: 'repository1' }] });
+  });
+
+  it('should return branches', async () => {
+    const result = await handleAutocompleteRequest({
+      token: 'foo',
+      resource: 'branches',
+      context: {
+        workspace: 'workspace1',
+        repository: 'repository1',
+      },
+    });
+
+    expect(result).toEqual({ results: [{ title: 'branch1' }] });
   });
 
   it('should throw an error when passing an invalid resource', async () => {

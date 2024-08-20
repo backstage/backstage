@@ -21,7 +21,7 @@ import {
 } from '@backstage/integration';
 import {
   createMockDirectory,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
 import { rest } from 'msw';
@@ -56,7 +56,7 @@ describe('BitbucketCloudUrlReader', () => {
   beforeEach(mockDir.clear);
 
   const worker = setupServer();
-  setupRequestMockHandlers(worker);
+  registerMswTestHooks(worker);
 
   describe('readUrl', () => {
     it('should be able to readUrl via buffer without ETag', async () => {

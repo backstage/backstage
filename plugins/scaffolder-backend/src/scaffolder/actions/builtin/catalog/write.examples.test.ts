@@ -55,8 +55,8 @@ describe('catalog:write', () => {
       input: yaml.parse(examples[0].example).steps[0].input,
     });
 
-    expect(fsMock.writeFile).toHaveBeenCalledTimes(1);
-    expect(fsMock.writeFile).toHaveBeenCalledWith(
+    expect(fsMock.outputFile).toHaveBeenCalledTimes(1);
+    expect(fsMock.outputFile).toHaveBeenCalledWith(
       resolvePath(mockContext.workspacePath, 'catalog-info.yaml'),
       yaml.stringify(entity),
     );

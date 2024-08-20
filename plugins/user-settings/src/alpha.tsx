@@ -16,9 +16,9 @@
 import {
   coreExtensionData,
   createExtensionInput,
-  createNavItemExtension,
-  createPageExtension,
-  createPlugin,
+  createFrontendPlugin,
+  PageBlueprint,
+  NavItemBlueprint,
 } from '@backstage/frontend-plugin-api';
 import {
   convertLegacyRouteRef,
@@ -32,38 +32,44 @@ import React from 'react';
 
 export * from './translation';
 
-const userSettingsPage = createPageExtension({
-  defaultPath: '/settings',
-  routeRef: convertLegacyRouteRef(settingsRouteRef),
+const userSettingsPage = PageBlueprint.makeWithOverrides({
   inputs: {
-    providerSettings: createExtensionInput(
-      {
-        element: coreExtensionData.reactElement,
-      },
-      { singleton: true, optional: true },
-    ),
+    providerSettings: createExtensionInput([coreExtensionData.reactElement], {
+      singleton: true,
+      optional: true,
+    }),
   },
-  loader: ({ inputs }) =>
-    import('./components/SettingsPage').then(m =>
-      compatWrapper(
-        <m.SettingsPage
-          providerSettings={inputs.providerSettings?.output.element}
-        />,
-      ),
-    ),
+  factory(originalFactory, { inputs }) {
+    return originalFactory({
+      defaultPath: '/settings',
+      routeRef: convertLegacyRouteRef(settingsRouteRef),
+      loader: () =>
+        import('./components/SettingsPage').then(m =>
+          compatWrapper(
+            <m.SettingsPage
+              providerSettings={inputs.providerSettings?.get(
+                coreExtensionData.reactElement,
+              )}
+            />,
+          ),
+        ),
+    });
+  },
 });
 
 /** @alpha */
-export const settingsNavItem = createNavItemExtension({
-  routeRef: convertLegacyRouteRef(settingsRouteRef),
-  title: 'Settings',
-  icon: SettingsIcon,
+export const settingsNavItem = NavItemBlueprint.make({
+  params: {
+    routeRef: convertLegacyRouteRef(settingsRouteRef),
+    title: 'Settings',
+    icon: SettingsIcon,
+  },
 });
 
 /**
  * @alpha
  */
-export default createPlugin({
+export default createFrontendPlugin({
   id: 'user-settings',
   extensions: [userSettingsPage, settingsNavItem],
   routes: convertLegacyRouteRefs({

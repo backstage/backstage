@@ -8,6 +8,10 @@ import { AnalyticsApi as AnalyticsApi_2 } from '@backstage/frontend-plugin-api';
 import { AnalyticsEvent } from '@backstage/core-plugin-api';
 import { AnalyticsEvent as AnalyticsEvent_2 } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/core-plugin-api';
+import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { BackstagePlugin as BackstagePlugin_2 } from '@backstage/frontend-plugin-api';
+import { ComponentType } from 'react';
+import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { ExternalRouteRef as ExternalRouteRef_2 } from '@backstage/frontend-plugin-api';
 import { FrontendFeature } from '@backstage/frontend-plugin-api';
@@ -26,6 +30,23 @@ export function convertLegacyApp(
   rootElement: React_2.JSX.Element,
 ): FrontendFeature[];
 
+// @public (undocumented)
+export function convertLegacyPageExtension(
+  LegacyExtension: ComponentType<{}>,
+  overrides?: {
+    name?: string;
+    defaultPath?: string;
+  },
+): ExtensionDefinition<any>;
+
+// @public (undocumented)
+export function convertLegacyPlugin(
+  legacyPlugin: BackstagePlugin,
+  options: {
+    extensions: ExtensionDefinition<any, any>[];
+  },
+): BackstagePlugin_2;
+
 // @public
 export function convertLegacyRouteRef<TParams extends AnyRouteRefParams>(
   ref: RouteRef<TParams>,
@@ -37,12 +58,24 @@ export function convertLegacyRouteRef<TParams extends AnyRouteRefParams>(
 ): SubRouteRef_2<TParams>;
 
 // @public
-export function convertLegacyRouteRef<
-  TParams extends AnyRouteRefParams,
-  TOptional extends boolean,
->(
-  ref: ExternalRouteRef<TParams, TOptional>,
-): ExternalRouteRef_2<TParams, TOptional>;
+export function convertLegacyRouteRef<TParams extends AnyRouteRefParams>(
+  ref: ExternalRouteRef<TParams>,
+): ExternalRouteRef_2<TParams>;
+
+// @public
+export function convertLegacyRouteRef<TParams extends AnyRouteRefParams>(
+  ref: RouteRef_2<TParams>,
+): RouteRef<TParams>;
+
+// @public
+export function convertLegacyRouteRef<TParams extends AnyRouteRefParams>(
+  ref: SubRouteRef_2<TParams>,
+): SubRouteRef<TParams>;
+
+// @public
+export function convertLegacyRouteRef<TParams extends AnyRouteRefParams>(
+  ref: ExternalRouteRef_2<TParams>,
+): ExternalRouteRef<TParams, true>;
 
 // @public
 export function convertLegacyRouteRefs<
@@ -75,8 +108,8 @@ export type ToNewRouteRef<T extends RouteRef | SubRouteRef | ExternalRouteRef> =
     ? RouteRef_2<IParams>
     : T extends SubRouteRef<infer IParams>
     ? SubRouteRef_2<IParams>
-    : T extends ExternalRouteRef<infer IParams, infer IOptional>
-    ? ExternalRouteRef_2<IParams, IOptional>
+    : T extends ExternalRouteRef<infer IParams>
+    ? ExternalRouteRef_2<IParams>
     : never;
 
 // (No @packageDocumentation comment for this package)

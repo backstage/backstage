@@ -59,6 +59,11 @@ const packageRoleInfos: PackageRoleInfo[] = [
     output: ['types', 'esm'],
   },
   {
+    role: 'frontend-dynamic-container' as PackageRole, // experimental
+    platform: 'web',
+    output: ['bundle'],
+  },
+  {
     role: 'backend-plugin',
     platform: 'node',
     output: ['types', 'cjs'],

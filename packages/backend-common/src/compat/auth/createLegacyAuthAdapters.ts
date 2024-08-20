@@ -292,6 +292,7 @@ export class UserInfoCompat implements UserInfoService {
 /**
  * An adapter that ensures presence of the auth and/or httpAuth services.
  * @public
+ * @deprecated Migrate to use the new backend system and auth services instead.
  */
 export function createLegacyAuthAdapters<
   TOptions extends {

@@ -23,7 +23,7 @@ import { ExtensionOverrides, FeatureFlagConfig } from './types';
 
 /** @public */
 export interface ExtensionOverridesOptions {
-  extensions: ExtensionDefinition<unknown>[];
+  extensions: ExtensionDefinition<any, any>[];
   featureFlags?: FeatureFlagConfig[];
 }
 

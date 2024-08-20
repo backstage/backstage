@@ -6,6 +6,10 @@ sidebar_label: Discovery
 description: Automatically discovering catalog entities from Gerrit repositories
 ---
 
+:::info
+This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage [version 1.24](../../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](./discovery--old.md) instead, and [consider migrating](../../backend-system/building-backends/08-migrating.md)!
+:::
+
 The Gerrit integration has a special entity provider for discovering catalog entities
 from Gerrit repositories. The provider uses the "List Projects" API in Gerrit to get
 a list of repositories and will automatically ingest all `catalog-info.yaml` files
@@ -16,24 +20,17 @@ stored in the root of the matching projects.
 As this provider is not one of the default providers, you will first need to install
 the Gerrit provider plugin:
 
-```bash
-# From your Backstage root directory
+```bash title="From your Backstage root directory"
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-gerrit
 ```
 
-Then add the plugin to the plugin catalog `packages/backend/src/plugins/catalog.ts`:
+Then update your backend by adding the following line:
 
-```ts
-/* packages/backend/src/plugins/catalog.ts */
-import { GerritEntityProvider } from '@backstage/plugin-catalog-backend-module-gerrit';
-const builder = await CatalogBuilder.create(env);
-/** ... other processors and/or providers ... */
-builder.addEntityProvider(
-  GerritEntityProvider.fromConfig(env.config, {
-    logger: env.logger,
-    scheduler: env.scheduler,
-  }),
-);
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-catalog-backend-module-gerrit/alpha'));
+/* highlight-add-end */
 ```
 
 ## Configuration

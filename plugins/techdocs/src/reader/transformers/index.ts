@@ -27,3 +27,4 @@ export * from './simplifyMkdocsFooter';
 export * from './onCssReady';
 export * from './scrollIntoNavigation';
 export * from './transformer';
+export * from './handleMetaRedirects';

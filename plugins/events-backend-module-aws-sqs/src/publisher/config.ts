@@ -34,7 +34,7 @@ export interface AwsSqsEventSourceConfig {
   endpoint?: string;
 }
 
-// TODO(pjungermann): validation could be improved similar to `convertToHumanDuration` at @backstage/backend-tasks
+// TODO(pjungermann): validation could be improved similar to `convertToHumanDuration` at @backstage/backend-plugin-api
 function readOptionalHumanDuration(
   config: Config,
   key: string,

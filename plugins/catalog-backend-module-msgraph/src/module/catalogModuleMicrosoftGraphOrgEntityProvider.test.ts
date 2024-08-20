@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TaskScheduleDefinition } from '@backstage/backend-tasks';
+import { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugin-api';
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { catalogModuleMicrosoftGraphOrgEntityProvider } from './catalogModuleMicrosoftGraphOrgEntityProvider';
@@ -23,7 +23,7 @@ import { MicrosoftGraphOrgEntityProvider } from '../processors';
 describe('catalogModuleMicrosoftGraphOrgEntityProvider', () => {
   it('should register provider at the catalog extension point', async () => {
     let addedProviders: Array<MicrosoftGraphOrgEntityProvider> | undefined;
-    let usedSchedule: TaskScheduleDefinition | undefined;
+    let usedSchedule: SchedulerServiceTaskScheduleDefinition | undefined;
 
     const extensionPoint = {
       addEntityProvider: (providers: any) => {

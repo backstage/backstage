@@ -26,7 +26,7 @@ import {
   RepoApiClient,
 } from './AzureRepoApiClient';
 import { setupServer } from 'msw/node';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { registerMswTestHooks } from '@backstage/test-utils';
 
 function mockRepoEndpoint() {
   return rest.get(
@@ -153,7 +153,7 @@ function mockPrEndpoint() {
 
 describe('RepoApiClient', () => {
   const server = setupServer();
-  setupRequestMockHandlers(server);
+  registerMswTestHooks(server);
   const testToken = new Date().toString();
   const sut = new RepoApiClient({
     project: 'project',

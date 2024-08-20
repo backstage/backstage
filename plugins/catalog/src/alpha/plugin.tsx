@@ -15,7 +15,7 @@
  */
 
 import { convertLegacyRouteRefs } from '@backstage/core-compat-api';
-import { createPlugin } from '@backstage/frontend-plugin-api';
+import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 
@@ -36,7 +36,7 @@ import entityContents from './entityContents';
 import searchResultItems from './searchResultItems';
 
 /** @alpha */
-export default createPlugin({
+export default createFrontendPlugin({
   id: 'catalog',
   routes: convertLegacyRouteRefs({
     catalogIndex: rootRouteRef,

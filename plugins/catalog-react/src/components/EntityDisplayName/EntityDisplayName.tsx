@@ -38,7 +38,9 @@ const useStyles = makeStyles(
     icon: {
       marginRight: theme.spacing(0.5),
       color: theme.palette.text.secondary,
-      lineHeight: 0,
+      '& svg': {
+        verticalAlign: 'middle',
+      },
     },
   }),
   { name: 'CatalogReactEntityDisplayName' },

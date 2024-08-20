@@ -69,7 +69,7 @@ module.exports = Object.assign(({ args }) => {
           loader: require.resolve('swc-loader'),
           options: {
             jsc: {
-              target: 'es2019',
+              target: 'ES2022',
               parser: {
                 syntax: 'typescript',
                 tsx: true,
@@ -89,7 +89,7 @@ module.exports = Object.assign(({ args }) => {
           loader: require.resolve('swc-loader'),
           options: {
             jsc: {
-              target: 'es2019',
+              target: 'ES2022',
               parser: {
                 syntax: 'ecmascript',
                 jsx: true,

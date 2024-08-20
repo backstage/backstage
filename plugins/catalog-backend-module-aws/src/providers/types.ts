@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { TaskScheduleDefinition } from '@backstage/backend-tasks';
+import { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugin-api';
 
 export type AwsS3Config = {
   id: string;
   bucketName: string;
   prefix?: string;
   region?: string;
-  schedule?: TaskScheduleDefinition;
+  schedule?: SchedulerServiceTaskScheduleDefinition;
   accountId?: string;
 };

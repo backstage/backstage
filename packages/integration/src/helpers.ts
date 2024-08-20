@@ -114,7 +114,7 @@ export function defaultScmResolveUrl(options: {
  *
  * @param worker - service worker
  */
-export function setupRequestMockHandlers(worker: {
+export function registerMswTestHooks(worker: {
   listen: (t: any) => void;
   close: () => void;
   resetHandlers: () => void;

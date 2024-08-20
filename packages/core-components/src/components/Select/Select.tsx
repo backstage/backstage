@@ -136,6 +136,7 @@ export type SelectProps = {
   native?: boolean;
   disabled?: boolean;
   margin?: 'dense' | 'none';
+  'data-testid'?: string;
 };
 
 /** @public */
@@ -151,6 +152,7 @@ export function SelectComponent(props: SelectProps) {
     native = false,
     disabled = false,
     margin,
+    'data-testid': dataTestId = 'select',
   } = props;
   const classes = useStyles();
   const [value, setValue] = useState<SelectedItems>(
@@ -203,7 +205,7 @@ export function SelectComponent(props: SelectProps) {
           value={value}
           native={native}
           disabled={disabled}
-          data-testid="select"
+          data-testid={dataTestId}
           displayEmpty
           multiple={multiple}
           margin={margin}

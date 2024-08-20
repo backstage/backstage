@@ -10,7 +10,7 @@ Plugins provide the actual base features of a Backstage backend. Each plugin ope
 
 ## Defining a Plugin
 
-Plugins are created using the `createBackendPlugin` function, and should typically be exported from a plugin package. All plugins must have an ID and a `register` method, where the ID matches the plugin ID in the package name, without the `-backend` suffix. See also the [dedicated section](./07-naming-patterns.md) about proper naming patterns.
+Plugins are created using the `createBackendPlugin` function, and should typically be exported from a plugin package. All plugins must have an ID and a `register` method, where the ID matches the plugin ID in the package name, without the `-backend` suffix. See also the [dedicated section](./08-naming-patterns.md) about proper naming patterns.
 
 ```ts
 // plugins/example-backend/src/plugin.ts

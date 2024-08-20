@@ -55,7 +55,7 @@ Backstage 的文档包括：
 - [Discord 聊天室](https://discord.gg/backstage-687207715902193673) - 获得支持或讨论项目
 - [参与贡献 Backstage](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md) - 如果您想做出贡献，请从这里开始
 - [RFCs](https://github.com/backstage/backstage/labels/rfc) - 帮助制定技术方向
-- [FAQ](https://backstage.io/docs/FAQ) - n.: 常问问题
+- [FAQ](https://backstage.io/docs/FAQ) - 常问问题
 - [行为准则](CODE_OF_CONDUCT.md) - 这是我们的行事方式
 - [采纳者](ADOPTERS.md) - 已经在使用 Backstage 的公司
 - [博客](https://backstage.io/blog/) - 公告和更新

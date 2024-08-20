@@ -17,11 +17,11 @@
 import React from 'react';
 import { Link } from '@backstage/core-components';
 import {
-  createPageExtension,
-  createPlugin,
+  createFrontendPlugin,
   createRouteRef,
   createExternalRouteRef,
   useRouteRef,
+  PageBlueprint,
 } from '@backstage/frontend-plugin-api';
 import { Route, Routes } from 'react-router-dom';
 
@@ -37,93 +37,101 @@ export const pageXRouteRef = createRouteRef();
 //   path: '/page2',
 // });
 
-const IndexPage = createPageExtension({
+const IndexPage = PageBlueprint.make({
   name: 'index',
-  defaultPath: '/',
-  routeRef: indexRouteRef,
-  loader: async () => {
-    const Component = () => {
-      const page1Link = useRouteRef(page1RouteRef);
-      return (
-        <div>
-          op
+  params: {
+    defaultPath: '/',
+    routeRef: indexRouteRef,
+    loader: async () => {
+      const Component = () => {
+        const page1Link = useRouteRef(page1RouteRef);
+        return (
           <div>
-            <Link to={page1Link()}>Page 1</Link>
-          </div>
-          <div>
-            <Link to="/home">Home</Link>
-          </div>
-          <div>
-            <Link to="/graphiql">GraphiQL</Link>
-          </div>
-          <div>
-            <Link to="/search">Search</Link>
-          </div>
-          <div>
-            <Link to="/settings">Settings</Link>
-          </div>
-        </div>
-      );
-    };
-    return <Component />;
-  },
-});
-
-const Page1 = createPageExtension({
-  name: 'page1',
-  defaultPath: '/page1',
-  routeRef: page1RouteRef,
-  loader: async () => {
-    const Component = () => {
-      const indexLink = useRouteRef(indexRouteRef);
-      const xLink = useRouteRef(externalPageXRouteRef);
-      // const page2Link = useRouteRef(page2RouteRef);
-
-      return (
-        <div>
-          <h1>This is page 1</h1>
-          <Link to={indexLink()}>Go back</Link>
-          <Link to="./page2">Page 2</Link>
-          {/* <Link to={page2Link()}>Page 2</Link> */}
-          <Link to={xLink()}>Page X</Link>
-
-          <div>
-            Sub-page content:
+            op
+            {page1Link && (
+              <div>
+                <Link to={page1Link()}>Page 1</Link>
+              </div>
+            )}
             <div>
-              <Routes>
-                <Route path="/" element={<h2>This is also page 1</h2>} />
-                <Route path="/page2" element={<h2>This is page 2</h2>} />
-              </Routes>
+              <Link to="/home">Home</Link>
+            </div>
+            <div>
+              <Link to="/graphiql">GraphiQL</Link>
+            </div>
+            <div>
+              <Link to="/search">Search</Link>
+            </div>
+            <div>
+              <Link to="/settings">Settings</Link>
             </div>
           </div>
-        </div>
-      );
-    };
-    return <Component />;
+        );
+      };
+      return <Component />;
+    },
   },
 });
 
-const ExternalPage = createPageExtension({
+const Page1 = PageBlueprint.make({
+  name: 'page1',
+  params: {
+    defaultPath: '/page1',
+    routeRef: page1RouteRef,
+    loader: async () => {
+      const Component = () => {
+        const indexLink = useRouteRef(indexRouteRef);
+        const xLink = useRouteRef(externalPageXRouteRef);
+        // const page2Link = useRouteRef(page2RouteRef);
+
+        return (
+          <div>
+            <h1>This is page 1</h1>
+            {indexLink && <Link to={indexLink()}>Go back</Link>}
+            <Link to="./page2">Page 2</Link>
+            {/* <Link to={page2Link()}>Page 2</Link> */}
+            {xLink && <Link to={xLink()}>Page X</Link>}
+
+            <div>
+              Sub-page content:
+              <div>
+                <Routes>
+                  <Route path="/" element={<h2>This is also page 1</h2>} />
+                  <Route path="/page2" element={<h2>This is page 2</h2>} />
+                </Routes>
+              </div>
+            </div>
+          </div>
+        );
+      };
+      return <Component />;
+    },
+  },
+});
+
+const ExternalPage = PageBlueprint.make({
   name: 'pageX',
-  defaultPath: '/pageX',
-  routeRef: pageXRouteRef,
-  loader: async () => {
-    const Component = () => {
-      const indexLink = useRouteRef(indexRouteRef);
-      // const pageXLink = useRouteRef(pageXRouteRef);
+  params: {
+    defaultPath: '/pageX',
+    routeRef: pageXRouteRef,
+    loader: async () => {
+      const Component = () => {
+        const indexLink = useRouteRef(indexRouteRef);
+        // const pageXLink = useRouteRef(pageXRouteRef);
 
-      return (
-        <div>
-          <h1>This is page X</h1>
-          <Link to={indexLink()}>Go back</Link>
-        </div>
-      );
-    };
-    return <Component />;
+        return (
+          <div>
+            <h1>This is page X</h1>
+            {indexLink && <Link to={indexLink()}>Go back</Link>}
+          </div>
+        );
+      };
+      return <Component />;
+    },
   },
 });
 
-export const pagesPlugin = createPlugin({
+export const pagesPlugin = createFrontendPlugin({
   id: 'pages',
   // routes: {
   //   index: indexRouteRef,

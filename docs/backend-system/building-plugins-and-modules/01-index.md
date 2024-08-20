@@ -68,7 +68,7 @@ that's specific to your plugin. In the example above, the logger might tag
 messages with your plugin ID, and the HTTP router might prefix API routes with
 your plugin ID, depending on the implementation used.
 
-See [the article on naming patterns](../architecture/07-naming-patterns.md) for
+See [the article on naming patterns](../architecture/08-naming-patterns.md) for
 details on how to best choose names/IDs for plugins and related backend system
 items.
 
@@ -124,7 +124,7 @@ export const catalogModuleExampleCustomProcessor = createBackendModule({
 export { catalogModuleExampleCustomProcessor as default } from './module';
 ```
 
-See [the article on naming patterns](../architecture/07-naming-patterns.md) for
+See [the article on naming patterns](../architecture/08-naming-patterns.md) for
 details on how to best choose names/IDs for modules and related backend system
 items.
 

@@ -27,6 +27,13 @@ export interface Config {
           clientSecret: string;
           callbackUrl?: string;
           additionalScopes?: string | string[];
+          signIn?: {
+            resolvers: Array<
+              | { resolver: 'emailMatchingUserEntityAnnotation' }
+              | { resolver: 'emailLocalPartMatchingUserEntityName' }
+              | { resolver: 'emailMatchingUserEntityProfileEmail' }
+            >;
+          };
         };
       };
     };

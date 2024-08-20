@@ -61,7 +61,7 @@ requests and return mock responses. This lets you stub out remote services
 rather than the local clients, leading to more thorough and robust tests. You
 can read more about how it works [in their documentation](https://mswjs.io/).
 
-The `@backstage/backend-test-utils` package exports a `setupRequestMockHandlers`
+The `@backstage/backend-test-utils` package exports a `registerMswTestHooks`
 function which ensures that the correct `jest` lifecycle hooks are invoked to
 set up and tear down your `msw` instance, and enables the option that completely
 rejects requests that don't match one of your mock rules. This ensures that your
@@ -70,13 +70,13 @@ tests cannot accidentally leak traffic into production from tests.
 Example:
 
 ```ts
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 
 describe('read from remote', () => {
   const worker = setupServer();
-  setupRequestMockHandlers(worker);
+  registerMswTestHooks(worker);
 
   it('should auth and read successfully', async () => {
     expect.assertions(1);

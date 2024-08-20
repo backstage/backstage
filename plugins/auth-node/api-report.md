@@ -552,6 +552,8 @@ export type PassportOAuthResult = {
 // @public (undocumented)
 export type PassportProfile = Profile & {
   avatarUrl?: string;
+  email?: string;
+  photo?: string;
 };
 
 // @public

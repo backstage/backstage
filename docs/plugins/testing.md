@@ -24,7 +24,7 @@ Running an individual test (e.g. `MyComponent.test.tsx`):
 
 To run both `MyComponent.test.tsx` and `MyControl.test.tsx` suite of tests:
 
-    yarn test MyCo
+    yarn test MyComponent MyControl
 
 :::note Note
 
@@ -51,10 +51,6 @@ import a third-party library if you needed (like Chai or
 We use the light-weight
 [react-testing-library](https://github.com/kentcdodds/react-testing-library) to
 render React components.
-
-## Testing Utilities
-
-TODO.
 
 ## Writing Unit Tests
 

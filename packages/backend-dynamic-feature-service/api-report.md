@@ -25,15 +25,15 @@ import { PermissionPolicy } from '@backstage/plugin-permission-node';
 import { PluginCacheManager } from '@backstage/backend-common';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { Router } from 'express';
-import { ServiceFactory } from '@backstage/backend-plugin-api';
+import { SchedulerService } from '@backstage/backend-plugin-api';
+import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
+import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
-import { TaskRunner } from '@backstage/backend-tasks';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { TokenManager } from '@backstage/backend-common';
-import { UrlReader } from '@backstage/backend-common';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
 export interface BackendDynamicPlugin extends BaseDynamicPlugin {
@@ -114,18 +114,22 @@ export interface DynamicPluginsFactoryOptions {
 }
 
 // @public (undocumented)
-export const dynamicPluginsFeatureDiscoveryServiceFactory: () => ServiceFactory<
+export const dynamicPluginsFeatureDiscoveryServiceFactory: ServiceFactoryCompat<
   FeatureDiscoveryService,
-  'root'
+  'root',
+  'singleton',
+  undefined
 >;
 
 // @public (undocumented)
 export const dynamicPluginsFrontendSchemas: BackendFeatureCompat;
 
 // @public (undocumented)
-export const dynamicPluginsRootLoggerServiceFactory: () => ServiceFactory<
+export const dynamicPluginsRootLoggerServiceFactory: ServiceFactoryCompat<
   RootLoggerService,
-  'root'
+  'root',
+  'singleton',
+  undefined
 >;
 
 // @public (undocumented)
@@ -142,19 +146,26 @@ export interface DynamicPluginsSchemasService {
 }
 
 // @public (undocumented)
-export const dynamicPluginsSchemasServiceFactory: (
-  options?: DynamicPluginsSchemasOptions | undefined,
-) => ServiceFactory<DynamicPluginsSchemasService, 'root'>;
+export const dynamicPluginsSchemasServiceFactory: ServiceFactoryCompat<
+  DynamicPluginsSchemasService,
+  'root',
+  'singleton',
+  DynamicPluginsSchemasOptions
+>;
 
 // @public (undocumented)
-export const dynamicPluginsServiceFactory: (
-  options?: DynamicPluginsFactoryOptions | undefined,
-) => ServiceFactory<DynamicPluginProvider, 'root'>;
+export const dynamicPluginsServiceFactory: ServiceFactoryCompat<
+  DynamicPluginProvider,
+  'root',
+  'singleton',
+  DynamicPluginsFactoryOptions
+>;
 
 // @public (undocumented)
 export const dynamicPluginsServiceRef: ServiceRef<
   DynamicPluginProvider,
-  'root'
+  'root',
+  'singleton'
 >;
 
 // @public (undocumented)
@@ -199,7 +210,7 @@ export interface LegacyBackendPluginInstaller {
   // (undocumented)
   search?(
     indexBuilder: IndexBuilder,
-    schedule: TaskRunner,
+    schedule: SchedulerServiceTaskRunner,
     env: LegacyPluginEnvironment,
   ): void;
 }
@@ -210,11 +221,11 @@ export type LegacyPluginEnvironment = {
   cache: PluginCacheManager;
   database: PluginDatabaseManager;
   config: Config;
-  reader: UrlReader;
+  reader: UrlReaderService;
   discovery: PluginEndpointDiscovery;
   tokenManager: TokenManager;
   permissions: PermissionEvaluator;
-  scheduler: PluginTaskScheduler;
+  scheduler: SchedulerService;
   identity: IdentityApi;
   eventBroker: EventBroker;
   events: EventsService;

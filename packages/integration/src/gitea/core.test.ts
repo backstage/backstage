@@ -15,7 +15,7 @@
  */
 
 import { setupServer } from 'msw/node';
-import { setupRequestMockHandlers } from '../helpers';
+import { registerMswTestHooks } from '../helpers';
 import { GiteaIntegrationConfig } from './config';
 import {
   getGiteaArchiveUrl,
@@ -28,7 +28,7 @@ import {
 
 describe('gitea core', () => {
   const worker = setupServer();
-  setupRequestMockHandlers(worker);
+  registerMswTestHooks(worker);
 
   describe('getGiteaFileCatalogInfoCntentsUrl', () => {
     it('can create an url from arguments', () => {

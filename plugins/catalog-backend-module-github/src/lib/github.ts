@@ -38,6 +38,7 @@ export type QueryResponse = {
 
 type RepositoryOwnerResponse = {
   repositories?: Connection<RepositoryResponse>;
+  repository?: RepositoryResponse;
 };
 
 export type OrganizationResponse = {
@@ -507,6 +508,61 @@ export async function getOrganizationRepositories(
   );
 
   return { repositories };
+}
+
+export async function getOrganizationRepository(
+  client: typeof graphql,
+  org: string,
+  repoName: string,
+  catalogPath: string,
+): Promise<RepositoryResponse | null> {
+  let relativeCatalogPathRef: string;
+  // We must strip the leading slash or the query for objects does not work
+  if (catalogPath.startsWith('/')) {
+    relativeCatalogPathRef = catalogPath.substring(1);
+  } else {
+    relativeCatalogPathRef = catalogPath;
+  }
+  const catalogPathRef = `HEAD:${relativeCatalogPathRef}`;
+  const query = `
+    query repository($org: String!, $repoName: String!, $catalogPathRef: String!) {
+      repositoryOwner(login: $org) {
+        repository(name: $repoName) {
+          name
+          catalogInfoFile: object(expression: $catalogPathRef) {
+            __typename
+            ... on Blob {
+              id
+              text
+            }
+          }
+          url
+          isArchived
+          isFork
+          visibility
+          repositoryTopics(first: 100) {
+            nodes {
+              ... on RepositoryTopic {
+                topic {
+                  name
+                }
+              }
+            }
+          }
+          defaultBranchRef {
+            name
+          }
+        }
+      }
+    }`;
+
+  const response: QueryResponse = await client(query, {
+    org,
+    repoName,
+    catalogPathRef,
+  });
+
+  return response.repositoryOwner?.repository || null;
 }
 
 /**

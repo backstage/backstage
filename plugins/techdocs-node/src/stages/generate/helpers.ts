@@ -117,7 +117,7 @@ export const getRepoUrlFromLocationAnnotation = (
 
       const sourceFolder = integration.resolveUrl({
         url: `./${docsFolder}`,
-        base: target,
+        base: target.endsWith('/') ? target : `${target}/`,
       });
       return {
         repo_url: target,

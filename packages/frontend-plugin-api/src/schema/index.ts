@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export { createSchemaFromZod } from './createSchemaFromZod';
 export { type PortableSchema } from './types';

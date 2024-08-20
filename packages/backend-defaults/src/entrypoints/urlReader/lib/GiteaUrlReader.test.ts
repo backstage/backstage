@@ -16,7 +16,7 @@
 
 import {
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { GiteaIntegration, readGiteaConfig } from '@backstage/integration';
@@ -64,7 +64,7 @@ const createReader = (config: JsonObject): UrlReaderPredicateTuple[] => {
 
 describe('GiteaUrlReader', () => {
   const worker = setupServer();
-  setupRequestMockHandlers(worker);
+  registerMswTestHooks(worker);
 
   afterAll(() => {
     jest.clearAllMocks();

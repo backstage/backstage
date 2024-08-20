@@ -44,6 +44,7 @@ import {
   copyToClipboard,
   useSanitizerTransformer,
   useStylesTransformer,
+  handleMetaRedirects,
 } from '../../transformers';
 import { useNavigateUrl } from './useNavigateUrl';
 
@@ -186,6 +187,7 @@ export const useTechDocsReaderDom = (
   const postRender = useCallback(
     async (transformedElement: Element) =>
       transformer(transformedElement, [
+        handleMetaRedirects(navigate, entityRef.name),
         scrollIntoNavigation(),
         copyToClipboard(theme),
         addLinkClickListener({
@@ -243,7 +245,7 @@ export const useTechDocsReaderDom = (
           onLoaded: () => {},
         }),
       ]),
-    [theme, navigate, analytics],
+    [theme, navigate, analytics, entityRef.name],
   );
 
   useEffect(() => {

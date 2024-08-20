@@ -23,10 +23,10 @@ export default notificationsModuleEmail;
 // @public (undocumented)
 export interface NotificationTemplateRenderer {
   // (undocumented)
-  getHtml?(notification: Notification_2): string;
+  getHtml?(notification: Notification_2): Promise<string>;
   // (undocumented)
-  getSubject?(notification: Notification_2): string;
+  getSubject?(notification: Notification_2): Promise<string>;
   // (undocumented)
-  getText?(notification: Notification_2): string;
+  getText?(notification: Notification_2): Promise<string>;
 }
 ```

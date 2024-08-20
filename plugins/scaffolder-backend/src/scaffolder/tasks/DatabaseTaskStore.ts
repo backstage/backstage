@@ -22,19 +22,19 @@ import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
 import {
   TaskStore,
-  TaskStoreEmitOptions,
-  TaskStoreListEventsOptions,
   TaskStoreCreateTaskOptions,
   TaskStoreCreateTaskResult,
-  TaskStoreShutDownTaskOptions,
+  TaskStoreEmitOptions,
+  TaskStoreListEventsOptions,
   TaskStoreRecoverTaskOptions,
+  TaskStoreShutDownTaskOptions,
 } from './types';
 import {
-  SerializedTaskEvent,
   SerializedTask,
-  TaskStatus,
+  SerializedTaskEvent,
   TaskEventType,
   TaskSecrets,
+  TaskStatus,
 } from '@backstage/plugin-scaffolder-node';
 import { DateTime, Duration } from 'luxon';
 import { TaskRecovery, TaskSpec } from '@backstage/plugin-scaffolder-common';
@@ -182,6 +182,7 @@ export class DatabaseTaskStore implements TaskStore {
 
   async list(options: {
     createdBy?: string;
+    status?: TaskStatus;
   }): Promise<{ tasks: SerializedTask[] }> {
     const queryBuilder = this.db<RawDbTaskRow>('tasks');
 
@@ -189,6 +190,10 @@ export class DatabaseTaskStore implements TaskStore {
       queryBuilder.where({
         created_by: options.createdBy,
       });
+    }
+
+    if (options.status) {
+      queryBuilder.where({ status: options.status });
     }
 
     const results = await queryBuilder.orderBy('created_at', 'desc').select();

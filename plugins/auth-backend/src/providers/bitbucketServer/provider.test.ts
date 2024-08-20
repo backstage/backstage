@@ -22,7 +22,7 @@ import {
   BitbucketServerOAuthResult,
 } from './provider';
 import { setupServer } from 'msw/node';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { AuthResolverContext } from '@backstage/plugin-auth-node';
 
@@ -131,7 +131,7 @@ describe('BitbucketServerAuthProvider', () => {
 
   describe('when transforming to type OAuthResponse', () => {
     const server = setupServer();
-    setupRequestMockHandlers(server);
+    registerMswTestHooks(server);
 
     it('should map to a valid response', async () => {
       server.use(whoAmIHandler(), getUserHandler());
@@ -311,7 +311,7 @@ describe('BitbucketServerAuthProvider', () => {
 
   describe('when authenticating', () => {
     const server = setupServer();
-    setupRequestMockHandlers(server);
+    registerMswTestHooks(server);
 
     it('should forward the refresh token', async () => {
       server.use(whoAmIHandler(), getUserHandler());

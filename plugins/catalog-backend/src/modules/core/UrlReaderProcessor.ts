@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { assertError } from '@backstage/errors';
 import limiterFactory from 'p-limit';
@@ -29,7 +28,7 @@ import {
   CatalogProcessorResult,
   processingResult,
 } from '@backstage/plugin-catalog-node';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import { LoggerService, UrlReaderService } from '@backstage/backend-plugin-api';
 
 const CACHE_KEY = 'v1';
 
@@ -47,7 +46,7 @@ type CacheItem = {
 export class UrlReaderProcessor implements CatalogProcessor {
   constructor(
     private readonly options: {
-      reader: UrlReader;
+      reader: UrlReaderService;
       logger: LoggerService;
     },
   ) {}

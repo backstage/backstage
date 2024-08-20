@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import {
   EntityProvider,
@@ -25,7 +24,11 @@ import {
   GithubOrgEntityProvider,
   GithubOrgEntityProviderOptions,
 } from './providers/GithubOrgEntityProvider';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  LoggerService,
+  SchedulerService,
+  SchedulerServiceTaskRunner,
+} from '@backstage/backend-plugin-api';
 
 /**
  * @public
@@ -58,8 +61,8 @@ export class GitHubEntityProvider implements EntityProvider {
     config: Config,
     options: {
       logger: LoggerService;
-      schedule?: TaskRunner;
-      scheduler?: PluginTaskScheduler;
+      schedule?: SchedulerServiceTaskRunner;
+      scheduler?: SchedulerService;
     },
   ): GitHubEntityProvider[] {
     options.logger.warn(

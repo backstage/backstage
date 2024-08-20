@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { UrlReader, UrlReaders } from '@backstage/backend-common';
 import {
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { rest } from 'msw';
@@ -31,6 +30,8 @@ import {
 } from '@backstage/plugin-catalog-node';
 import { defaultEntityDataParser } from '../util/parse';
 import { UrlReaderProcessor } from './UrlReaderProcessor';
+import { UrlReaders } from '@backstage/backend-defaults/urlReader';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 describe('UrlReaderProcessor', () => {
   const mockApiOrigin = 'http://localhost';
@@ -39,7 +40,7 @@ describe('UrlReaderProcessor', () => {
     set: jest.fn(),
   };
   const server = setupServer();
-  setupRequestMockHandlers(server);
+  registerMswTestHooks(server);
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -192,7 +193,7 @@ describe('UrlReaderProcessor', () => {
   it('uses search when there are globs', async () => {
     const logger = mockServices.logger.mock();
 
-    const reader: jest.Mocked<UrlReader> = {
+    const reader: jest.Mocked<UrlReaderService> = {
       readUrl: jest.fn(),
       readTree: jest.fn(),
       search: jest.fn().mockImplementation(async () => []),

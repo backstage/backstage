@@ -19,22 +19,27 @@ export {
   createExtension,
   type ExtensionDefinition,
   type CreateExtensionOptions,
-  type ExtensionDataValues,
   type ResolvedExtensionInput,
   type ResolvedExtensionInputs,
-  type AnyExtensionInputMap,
-  type AnyExtensionDataMap,
 } from './createExtension';
 export {
   createExtensionInput,
   type ExtensionInput,
 } from './createExtensionInput';
+export { type ExtensionDataContainer } from './createExtensionDataContainer';
 export {
   createExtensionDataRef,
+  type AnyExtensionDataRef,
   type ExtensionDataRef,
+  type ExtensionDataRefToValue,
+  type ExtensionDataValue,
   type ConfigurableExtensionDataRef,
 } from './createExtensionDataRef';
-export { createPlugin, type PluginOptions } from './createPlugin';
+export {
+  createPlugin,
+  createFrontendPlugin,
+  type PluginOptions,
+} from './createFrontendPlugin';
 export {
   createExtensionOverrides,
   type ExtensionOverridesOptions,
@@ -48,3 +53,9 @@ export {
   type FeatureFlagConfig,
   type FrontendFeature,
 } from './types';
+export {
+  type CreateExtensionBlueprintOptions,
+  type ExtensionBlueprint,
+  createExtensionBlueprint,
+} from './createExtensionBlueprint';
+export { type ResolveInputValueOverrides } from './resolveInputOverrides';

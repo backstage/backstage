@@ -18,53 +18,61 @@ import {
   compatWrapper,
   convertLegacyRouteRefs,
 } from '@backstage/core-compat-api';
-import { createPlugin } from '@backstage/frontend-plugin-api';
+import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 import React from 'react';
 import { catalogIndexRouteRef } from './routes';
-import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
+import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
 /** @alpha */
-const EntityGroupProfileCard = createEntityCardExtension({
+const EntityGroupProfileCard = EntityCardBlueprint.make({
   name: 'group-profile',
-  filter: 'kind:group',
-  loader: async () =>
-    import('./components/Cards/Group/GroupProfile/GroupProfileCard').then(m =>
-      compatWrapper(<m.GroupProfileCard />),
-    ),
+  params: {
+    filter: 'kind:group',
+    loader: async () =>
+      import('./components/Cards/Group/GroupProfile/GroupProfileCard').then(m =>
+        compatWrapper(<m.GroupProfileCard />),
+      ),
+  },
 });
 
 /** @alpha */
-const EntityMembersListCard = createEntityCardExtension({
+const EntityMembersListCard = EntityCardBlueprint.make({
   name: 'members-list',
-  filter: 'kind:group',
-  loader: async () =>
-    import('./components/Cards/Group/MembersList/MembersListCard').then(m =>
-      compatWrapper(<m.MembersListCard />),
-    ),
+  params: {
+    filter: 'kind:group',
+    loader: async () =>
+      import('./components/Cards/Group/MembersList/MembersListCard').then(m =>
+        compatWrapper(<m.MembersListCard />),
+      ),
+  },
 });
 
 /** @alpha */
-const EntityOwnershipCard = createEntityCardExtension({
+const EntityOwnershipCard = EntityCardBlueprint.make({
   name: 'ownership',
-  filter: 'kind:group,user',
-  loader: async () =>
-    import('./components/Cards/OwnershipCard/OwnershipCard').then(m =>
-      compatWrapper(<m.OwnershipCard />),
-    ),
+  params: {
+    filter: 'kind:group,user',
+    loader: async () =>
+      import('./components/Cards/OwnershipCard/OwnershipCard').then(m =>
+        compatWrapper(<m.OwnershipCard />),
+      ),
+  },
 });
 
 /** @alpha */
-const EntityUserProfileCard = createEntityCardExtension({
+const EntityUserProfileCard = EntityCardBlueprint.make({
   name: 'user-profile',
-  filter: 'kind:user',
-  loader: async () =>
-    import('./components/Cards/User/UserProfileCard/UserProfileCard').then(m =>
-      compatWrapper(<m.UserProfileCard />),
-    ),
+  params: {
+    filter: 'kind:user',
+    loader: async () =>
+      import('./components/Cards/User/UserProfileCard/UserProfileCard').then(
+        m => compatWrapper(<m.UserProfileCard />),
+      ),
+  },
 });
 
 /** @alpha */
-export default createPlugin({
+export default createFrontendPlugin({
   id: 'org',
   extensions: [
     EntityGroupProfileCard,

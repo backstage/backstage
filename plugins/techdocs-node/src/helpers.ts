@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { UrlReader } from '@backstage/backend-common';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import {
   Entity,
@@ -23,6 +23,7 @@ import {
 } from '@backstage/catalog-model';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { TECHDOCS_ANNOTATION } from '@backstage/plugin-techdocs-common';
 import path from 'path';
 import { Logger } from 'winston';
 import { PreparerResponse, RemoteProtocol } from './stages/prepare/types';
@@ -37,7 +38,7 @@ export type ParsedLocationAnnotation = {
 };
 
 /**
- * Returns a parset locations annotation
+ * Returns a parsed locations annotation
  * @public
  * @param annotationName - The name of the annotation in the entity metadata
  * @param entity - A TechDocs entity instance
@@ -113,7 +114,7 @@ export const transformDirLocation = (
 };
 
 /**
- * Returns a entity reference based on the TechDocs annotation type
+ * Returns an entity reference based on the TechDocs annotation type
  * @public
  * @param entity - A TechDocs instance
  * @param scmIntegration - An implementation for  SCM integration API
@@ -122,10 +123,7 @@ export const getLocationForEntity = (
   entity: Entity,
   scmIntegration: ScmIntegrationRegistry,
 ): ParsedLocationAnnotation => {
-  const annotation = parseReferenceAnnotation(
-    'backstage.io/techdocs-ref',
-    entity,
-  );
+  const annotation = parseReferenceAnnotation(TECHDOCS_ANNOTATION, entity);
 
   switch (annotation.type) {
     case 'url':
@@ -145,14 +143,11 @@ export const getLocationForEntity = (
  * @param opts - Options for configuring the reader, e.g. logger, etag, etc.
  */
 export const getDocFilesFromRepository = async (
-  reader: UrlReader,
+  reader: UrlReaderService,
   entity: Entity,
   opts?: { etag?: string; logger?: Logger },
 ): Promise<PreparerResponse> => {
-  const { target } = parseReferenceAnnotation(
-    'backstage.io/techdocs-ref',
-    entity,
-  );
+  const { target } = parseReferenceAnnotation(TECHDOCS_ANNOTATION, entity);
 
   opts?.logger?.debug(`Reading files from ${target}`);
   // readTree will throw NotModifiedError if etag has not changed.

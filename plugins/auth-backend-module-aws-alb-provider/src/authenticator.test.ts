@@ -21,7 +21,7 @@ import {
   ALB_JWT_HEADER,
   awsAlbAuthenticator,
 } from './authenticator';
-import { Config } from '@backstage/config';
+import { ConfigReader } from '@backstage/config';
 import { AuthenticationError } from '@backstage/errors';
 
 describe('AwsAlbProvider', () => {
@@ -35,6 +35,7 @@ describe('AwsAlbProvider', () => {
     email: 'user.name@email.test',
     exp: Date.now() + 10000,
     iss: 'ISSUER_URL',
+    signer: 'SIGNER_ARN',
   };
   const signingKey = new TextEncoder().encode('signingKey');
   let mockJwt: string;
@@ -87,6 +88,7 @@ describe('AwsAlbProvider', () => {
         { req: mockRequest },
         {
           issuer: 'ISSUER_URL',
+          signer: 'SIGNER_ARN',
           getKey: jest.fn().mockResolvedValue(signingKey),
         },
       );
@@ -114,12 +116,13 @@ describe('AwsAlbProvider', () => {
       });
     });
   });
+
   describe('should fail when', () => {
     it('Access token is missing', async () => {
       await expect(
         awsAlbAuthenticator.authenticate(
           { req: mockRequestWithoutAccessToken },
-          { issuer: 'ISSUER_URL', getKey: jest.fn() },
+          { issuer: 'ISSUER_URL', signer: 'SIGNER_ARN', getKey: jest.fn() },
         ),
       ).rejects.toThrow(AuthenticationError);
     });
@@ -128,7 +131,7 @@ describe('AwsAlbProvider', () => {
       await expect(
         awsAlbAuthenticator.authenticate(
           { req: mockRequestWithoutJwt },
-          { issuer: 'ISSUER_URL', getKey: jest.fn() },
+          { issuer: 'ISSUER_URL', signer: 'SIGNER_ARN', getKey: jest.fn() },
         ),
       ).rejects.toThrow(AuthenticationError);
     });
@@ -137,7 +140,7 @@ describe('AwsAlbProvider', () => {
       await expect(
         awsAlbAuthenticator.authenticate(
           { req: mockRequestWithInvalidJwt },
-          { issuer: 'ISSUER_URL', getKey: jest.fn() },
+          { issuer: 'ISSUER_URL', signer: 'SIGNER_ARN', getKey: jest.fn() },
         ),
       ).rejects.toThrow(
         'Exception occurred during JWT processing: JWSInvalid: Invalid Compact JWS',
@@ -164,6 +167,7 @@ describe('AwsAlbProvider', () => {
           { req },
           {
             issuer: 'ISSUER_URL',
+            signer: undefined,
             getKey: jest.fn().mockResolvedValue(signingKey),
           },
         ),
@@ -192,6 +196,36 @@ describe('AwsAlbProvider', () => {
           { req },
           {
             issuer: 'ISSUER_URL',
+            signer: 'SIGNER_ARN',
+            getKey: jest.fn().mockResolvedValue(signingKey),
+          },
+        ),
+      ).rejects.toThrow(
+        'Exception occurred during JWT processing: AuthenticationError: Issuer mismatch on JWT token',
+      );
+    });
+
+    it('signer is invalid', async () => {
+      const jwt = await new SignJWT({ signer: 'INVALID_SIGNER_ARN' })
+        .setProtectedHeader({ alg: 'HS256' })
+        .sign(signingKey);
+      const req = {
+        header: jest.fn(name => {
+          if (name === ALB_JWT_HEADER) {
+            return jwt;
+          } else if (name === ALB_ACCESS_TOKEN_HEADER) {
+            return mockAccessToken;
+          }
+          return undefined;
+        }),
+      } as unknown as express.Request;
+
+      await expect(
+        awsAlbAuthenticator.authenticate(
+          { req },
+          {
+            issuer: 'ISSUER_URL',
+            signer: 'SIGNER_ARN',
             getKey: jest.fn().mockResolvedValue(signingKey),
           },
         ),
@@ -200,15 +234,14 @@ describe('AwsAlbProvider', () => {
       );
     });
   });
+
   describe('should initialize', () => {
     it('with default options', async () => {
       const config = {
-        config: {
-          getString: jest
-            .fn()
-            .mockReturnValueOnce('ISSUER_URL')
-            .mockReturnValueOnce('TEST_REGION'),
-        } as unknown as Config,
+        config: new ConfigReader({
+          issuer: 'ISSUER_URL',
+          region: 'TEST_REGION',
+        }),
       };
 
       expect(awsAlbAuthenticator.initialize(config)).toEqual({

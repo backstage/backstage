@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-permission-common",
-  "version": "0.7.14",
+  "version": "0.8.1",
   "description": "Isomorphic types and client for Backstage permissions and authorization",
   "backstage": {
     "role": "common-library",
@@ -53,7 +53,8 @@
     "@backstage/types": "workspace:^",
     "cross-fetch": "^4.0.0",
     "uuid": "^9.0.0",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "zod-to-json-schema": "^3.20.4"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

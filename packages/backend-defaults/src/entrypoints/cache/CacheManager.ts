@@ -111,23 +111,10 @@ export class CacheManager {
     return {
       getClient: (defaultOptions = {}) => {
         const clientFactory = (options: CacheServiceOptions) => {
-          const concreteClient = this.getClientWithTtl(
+          return this.getClientWithTtl(
             pluginId,
             options.defaultTtl ?? this.defaultTtl,
           );
-
-          // Always provide an error handler to avoid stopping the process.
-          concreteClient.on('error', (err: Error) => {
-            // In all cases, just log the error.
-            this.logger?.error('Failed to create cache client', err);
-
-            // Invoke any custom error handler if provided.
-            if (typeof this.errorHandler === 'function') {
-              this.errorHandler(err);
-            }
-          });
-
-          return concreteClient;
         };
 
         return new DefaultCacheClient(
@@ -149,11 +136,17 @@ export class CacheManager {
     return (pluginId, defaultTtl) => {
       if (!store) {
         store = new KeyvRedis(this.connection);
+        // Always provide an error handler to avoid stopping the process
+        store.on('error', (err: Error) => {
+          this.logger?.error('Failed to create redis cache client', err);
+          this.errorHandler?.(err);
+        });
       }
       return new Keyv({
         namespace: pluginId,
         ttl: defaultTtl,
         store,
+        emitErrors: false,
         useRedisSets: this.useRedisSets,
       });
     };
@@ -165,10 +158,16 @@ export class CacheManager {
     return (pluginId, defaultTtl) => {
       if (!store) {
         store = new KeyvMemcache(this.connection);
+        // Always provide an error handler to avoid stopping the process
+        store.on('error', (err: Error) => {
+          this.logger?.error('Failed to create memcache cache client', err);
+          this.errorHandler?.(err);
+        });
       }
       return new Keyv({
         namespace: pluginId,
         ttl: defaultTtl,
+        emitErrors: false,
         store,
       });
     };
@@ -180,6 +179,7 @@ export class CacheManager {
       new Keyv({
         namespace: pluginId,
         ttl: defaultTtl,
+        emitErrors: false,
         store,
       });
   }

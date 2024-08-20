@@ -195,7 +195,7 @@ export class RouteResolver implements RouteResolutionApi {
     anyRouteRef:
       | RouteRef<TParams>
       | SubRouteRef<TParams>
-      | ExternalRouteRef<TParams, any>,
+      | ExternalRouteRef<TParams>,
     options?: RouteResolutionApiResolveOptions,
   ): RouteFunc<TParams> | undefined {
     // First figure out what our target absolute ref is, as well as our target path.

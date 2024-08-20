@@ -4,10 +4,15 @@
 
 ```ts
 import { AuthService } from '@backstage/backend-plugin-api';
-import { ServiceFactory } from '@backstage/backend-plugin-api';
+import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
 
 // @public
-export const authServiceFactory: () => ServiceFactory<AuthService, 'plugin'>;
+export const authServiceFactory: ServiceFactoryCompat<
+  AuthService,
+  'plugin',
+  'singleton',
+  undefined
+>;
 
 // (No @packageDocumentation comment for this package)
 ```

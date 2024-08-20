@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createPlugin } from '@backstage/frontend-plugin-api';
+import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { getAvailableFeatures } from './discovery';
 import { ConfigReader } from '@backstage/config';
 
@@ -42,7 +42,7 @@ describe('getAvailableFeatures', () => {
   });
 
   it('should discover a plugin', () => {
-    const testPlugin = createPlugin({ id: 'test' });
+    const testPlugin = createFrontendPlugin({ id: 'test' });
     globalSpy.mockReturnValue({
       modules: [{ default: testPlugin }],
     });
@@ -67,9 +67,9 @@ describe('getAvailableFeatures', () => {
   });
 
   it('should discover multiple plugins', () => {
-    const test1Plugin = createPlugin({ id: 'test1' });
-    const test2Plugin = createPlugin({ id: 'test2' });
-    const test3Plugin = createPlugin({ id: 'test3' });
+    const test1Plugin = createFrontendPlugin({ id: 'test1' });
+    const test2Plugin = createFrontendPlugin({ id: 'test2' });
+    const test3Plugin = createFrontendPlugin({ id: 'test3' });
     globalSpy.mockReturnValue({
       modules: [
         { default: test1Plugin },

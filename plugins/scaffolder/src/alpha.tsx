@@ -16,14 +16,14 @@
 
 import React from 'react';
 import {
-  createApiExtension,
   createApiFactory,
-  createNavItemExtension,
-  createPageExtension,
-  createPlugin,
+  createFrontendPlugin,
   discoveryApiRef,
   fetchApiRef,
   identityApiRef,
+  ApiBlueprint,
+  PageBlueprint,
+  NavItemBlueprint,
 } from '@backstage/frontend-plugin-api';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import {
@@ -51,40 +51,48 @@ export {
   type TemplateWizardPageProps,
 } from './next';
 
-const scaffolderApi = createApiExtension({
-  factory: createApiFactory({
-    api: scaffolderApiRef,
-    deps: {
-      discoveryApi: discoveryApiRef,
-      scmIntegrationsApi: scmIntegrationsApiRef,
-      fetchApi: fetchApiRef,
-      identityApi: identityApiRef,
-    },
-    factory: ({ discoveryApi, scmIntegrationsApi, fetchApi, identityApi }) =>
-      new ScaffolderClient({
-        discoveryApi,
-        scmIntegrationsApi,
-        fetchApi,
-        identityApi,
-      }),
-  }),
+export { scaffolderTranslationRef } from './translation';
+
+const scaffolderApi = ApiBlueprint.make({
+  params: {
+    factory: createApiFactory({
+      api: scaffolderApiRef,
+      deps: {
+        discoveryApi: discoveryApiRef,
+        scmIntegrationsApi: scmIntegrationsApiRef,
+        fetchApi: fetchApiRef,
+        identityApi: identityApiRef,
+      },
+      factory: ({ discoveryApi, scmIntegrationsApi, fetchApi, identityApi }) =>
+        new ScaffolderClient({
+          discoveryApi,
+          scmIntegrationsApi,
+          fetchApi,
+          identityApi,
+        }),
+    }),
+  },
 });
 
-const scaffolderPage = createPageExtension({
-  routeRef: convertLegacyRouteRef(rootRouteRef),
-  defaultPath: '/create',
-  loader: () =>
-    import('./components/Router').then(m => compatWrapper(<m.Router />)),
+const scaffolderPage = PageBlueprint.make({
+  params: {
+    routeRef: convertLegacyRouteRef(rootRouteRef),
+    defaultPath: '/create',
+    loader: () =>
+      import('./components/Router').then(m => compatWrapper(<m.Router />)),
+  },
 });
 
-const scaffolderNavItem = createNavItemExtension({
-  routeRef: convertLegacyRouteRef(rootRouteRef),
-  title: 'Create...',
-  icon: CreateComponentIcon,
+const scaffolderNavItem = NavItemBlueprint.make({
+  params: {
+    routeRef: convertLegacyRouteRef(rootRouteRef),
+    title: 'Create...',
+    icon: CreateComponentIcon,
+  },
 });
 
 /** @alpha */
-export default createPlugin({
+export default createFrontendPlugin({
   id: 'scaffolder',
   routes: convertLegacyRouteRefs({
     root: rootRouteRef,

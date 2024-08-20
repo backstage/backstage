@@ -35,7 +35,7 @@ jest.mock('@octokit/rest', () => {
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { GithubLocationAnalyzer } from './GithubLocationAnalyzer';
 import {
-  setupRequestMockHandlers,
+  registerMswTestHooks,
   mockServices,
 } from '@backstage/backend-test-utils';
 import { setupServer } from 'msw/node';
@@ -63,7 +63,7 @@ describe('GithubLocationAnalyzer', () => {
     },
   });
 
-  setupRequestMockHandlers(server);
+  registerMswTestHooks(server);
 
   beforeEach(() => {
     server.use(

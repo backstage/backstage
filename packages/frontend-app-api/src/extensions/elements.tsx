@@ -15,31 +15,36 @@
  */
 
 import { AlertDisplay, OAuthRequestDialog } from '@backstage/core-components';
-import {
-  createAppRootElementExtension,
-  createSchemaFromZod,
-} from '@backstage/frontend-plugin-api';
+import { AppRootElementBlueprint } from '@backstage/frontend-plugin-api';
 import React from 'react';
 
-export const oauthRequestDialogAppRootElement = createAppRootElementExtension({
+export const oauthRequestDialogAppRootElement = AppRootElementBlueprint.make({
   namespace: 'app',
   name: 'oauth-request-dialog',
-  element: <OAuthRequestDialog />,
+  params: {
+    element: <OAuthRequestDialog />,
+  },
 });
 
-export const alertDisplayAppRootElement = createAppRootElementExtension({
-  namespace: 'app',
-  name: 'alert-display',
-  configSchema: createSchemaFromZod(z =>
-    z.object({
-      transientTimeoutMs: z.number().default(5000),
-      anchorOrigin: z
-        .object({
-          vertical: z.enum(['top', 'bottom']).default('top'),
-          horizontal: z.enum(['left', 'center', 'right']).default('center'),
-        })
-        .default({}),
-    }),
-  ),
-  element: ({ config }) => <AlertDisplay {...config} />,
-});
+export const alertDisplayAppRootElement =
+  AppRootElementBlueprint.makeWithOverrides({
+    namespace: 'app',
+    name: 'alert-display',
+    config: {
+      schema: {
+        transientTimeoutMs: z => z.number().default(5000),
+        anchorOrigin: z =>
+          z
+            .object({
+              vertical: z.enum(['top', 'bottom']).default('top'),
+              horizontal: z.enum(['left', 'center', 'right']).default('center'),
+            })
+            .default({}),
+      },
+    },
+    factory: (originalFactory, { config }) => {
+      return originalFactory({
+        element: () => <AlertDisplay {...config} />,
+      });
+    },
+  });

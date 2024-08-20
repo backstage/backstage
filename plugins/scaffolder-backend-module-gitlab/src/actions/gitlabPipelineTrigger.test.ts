@@ -101,6 +101,7 @@ describe('gitlab:pipeline:trigger', () => {
       123,
       'main',
       'glptt-abcdef',
+      { variables: undefined },
     );
 
     expect(mockGitlabClient.PipelineTriggerTokens.remove).toHaveBeenCalledWith(
@@ -189,6 +190,7 @@ describe('gitlab:pipeline:trigger', () => {
       123,
       'main',
       'glptt-abcdef',
+      { variables: undefined },
     );
 
     expect(mockGitlabClient.PipelineTriggerTokens.remove).toHaveBeenCalledWith(
@@ -196,6 +198,7 @@ describe('gitlab:pipeline:trigger', () => {
       42,
     );
   });
+
   it('should clean up pipeline token on failure', async () => {
     const mockContext = createMockActionContext({
       input: {
@@ -230,6 +233,32 @@ describe('gitlab:pipeline:trigger', () => {
     expect(mockGitlabClient.PipelineTriggerTokens.remove).toHaveBeenCalledWith(
       123,
       42,
+    );
+  });
+
+  it('should succeed trigger and pass variables', async () => {
+    const mockContext = createMockActionContext({
+      input: {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        projectId: 123,
+        tokenDescription: 'My cool pipeline token',
+        branch: 'main',
+        variables: { var_one: 'val1', var_two: 'val2' },
+      },
+      workspacePath: 'seen2much',
+    });
+
+    await expect(
+      action.handler({
+        ...mockContext,
+      }),
+    ).rejects.toThrow('Failed to trigger pipeline');
+
+    expect(mockGitlabClient.PipelineTriggerTokens.trigger).toHaveBeenCalledWith(
+      123,
+      'main',
+      'glptt-abcdef',
+      { variables: { var_one: 'val1', var_two: 'val2' } },
     );
   });
 });

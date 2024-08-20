@@ -17,6 +17,9 @@
 /**
  * Common functionality library for Backstage backends
  *
+ * @remarks
+ * This package is deprecated and will be removed in a near future, so please follow the deprecated instructions for the exports you still use.
+ *
  * @packageDocumentation
  */
 

@@ -50,6 +50,7 @@ import { DependsOnResourcesCardProps } from './components/DependsOnResourcesCard
 import { HasComponentsCardProps } from './components/HasComponentsCard';
 import { HasResourcesCardProps } from './components/HasResourcesCard';
 import { HasSubcomponentsCardProps } from './components/HasSubcomponentsCard';
+import { HasSubdomainsCardProps } from './components/HasSubdomainsCard';
 import { HasSystemsCardProps } from './components/HasSystemsCard';
 import { RelatedEntitiesCardProps } from './components/RelatedEntitiesCard';
 import { CatalogSearchResultListItemProps } from './components/CatalogSearchResultListItem';
@@ -195,6 +196,19 @@ export const EntityHasSubcomponentsCard: (
         import('./components/HasSubcomponentsCard').then(
           m => m.HasSubcomponentsCard,
         ),
+    },
+  }),
+);
+
+/** @public */
+export const EntityHasSubdomainsCard: (
+  props: HasSubdomainsCardProps,
+) => JSX.Element = catalogPlugin.provide(
+  createComponentExtension({
+    name: 'EntityHasSubdomainsCard',
+    component: {
+      lazy: () =>
+        import('./components/HasSubdomainsCard').then(m => m.HasSubdomainsCard),
     },
   }),
 );

@@ -15,15 +15,16 @@
  */
 import React from 'react';
 import { RepoUrlPickerRepoName } from './RepoUrlPickerRepoName';
-import { render, fireEvent } from '@testing-library/react';
+import { fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { act } from 'react-dom/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 
 describe('RepoUrlPickerRepoName', () => {
   it('should call onChange with the first allowed repo if there is none set already', async () => {
     const onChange = jest.fn();
 
-    render(
+    await renderInTestApp(
       <RepoUrlPickerRepoName
         onChange={onChange}
         allowedRepos={['foo', 'bar']}
@@ -39,7 +40,7 @@ describe('RepoUrlPickerRepoName', () => {
 
     const onChange = jest.fn();
 
-    const { getByRole } = render(
+    const { getByRole } = await renderInTestApp(
       <RepoUrlPickerRepoName
         onChange={onChange}
         allowedRepos={allowedRepos}
@@ -59,7 +60,7 @@ describe('RepoUrlPickerRepoName', () => {
   it('should render a normal text area when no options are passed', async () => {
     const onChange = jest.fn();
 
-    const { getByRole } = render(
+    const { getByRole } = await renderInTestApp(
       <RepoUrlPickerRepoName
         onChange={onChange}
         allowedRepos={[]}
@@ -85,7 +86,7 @@ describe('RepoUrlPickerRepoName', () => {
 
     const onChange = jest.fn();
 
-    const { getByRole, getByText } = render(
+    const { getByRole, getByText } = await renderInTestApp(
       <RepoUrlPickerRepoName
         onChange={onChange}
         availableRepos={availableRepos}

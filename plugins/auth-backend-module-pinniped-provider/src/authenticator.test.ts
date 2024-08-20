@@ -23,7 +23,7 @@ import {
 } from '@backstage/plugin-auth-node';
 import { pinnipedAuthenticator } from './authenticator';
 import { setupServer } from 'msw/node';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { JWK, SignJWT, exportJWK, generateKeyPair } from 'jose';
 import { rest } from 'msw';
@@ -37,7 +37,7 @@ describe('pinnipedAuthenticator', () => {
   let publicKey: JWK;
 
   const mswServer = setupServer();
-  setupRequestMockHandlers(mswServer);
+  registerMswTestHooks(mswServer);
 
   const issuerMetadata = {
     issuer: 'https://pinniped.test',

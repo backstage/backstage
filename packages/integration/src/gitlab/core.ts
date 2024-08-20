@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import fetch from 'cross-fetch';
 import {
   getGitLabIntegrationRelativePath,
   GitLabIntegrationConfig,
 } from './config';
-import fetch from 'cross-fetch';
 
 /**
  * Given a URL pointing to a file on a provider, returns a URL that is suitable
@@ -51,14 +51,23 @@ export async function getGitLabFileFetchUrl(
  * @param config - The relevant provider config
  * @public
  */
-export function getGitLabRequestOptions(config: GitLabIntegrationConfig): {
-  headers: Record<string, string>;
-} {
-  const { token = '' } = config;
+export function getGitLabRequestOptions(
+  config: GitLabIntegrationConfig,
+  token?: string,
+): { headers: Record<string, string> } {
+  if (token) {
+    // If token comes from the user and starts with "gl", it's a private token (see https://docs.gitlab.com/ee/security/token_overview.html#token-prefixes)
+    return {
+      headers: token.startsWith('gl')
+        ? { 'PRIVATE-TOKEN': token }
+        : { Authorization: `Bearer ${token}` }, // Otherwise, it's a bearer token
+    };
+  }
+
+  // If token not provided, fetch the integration token
+  const { token: configToken = '' } = config;
   return {
-    headers: {
-      'PRIVATE-TOKEN': token,
-    },
+    headers: { 'PRIVATE-TOKEN': configToken },
   };
 }
 

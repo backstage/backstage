@@ -20,7 +20,7 @@ import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import {
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
   startTestBackend,
 } from '@backstage/backend-test-utils';
 import { Server } from 'http';
@@ -35,7 +35,7 @@ describe('authModuleOidcProvider', () => {
   let publicKey: JWK;
 
   const mswServer = setupServer();
-  setupRequestMockHandlers(mswServer);
+  registerMswTestHooks(mswServer);
 
   const issuerMetadata = {
     issuer: 'https://oidc.test',

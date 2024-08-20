@@ -15,13 +15,13 @@
  */
 
 import {
-  PluginTaskScheduler,
-  TaskInvocationDefinition,
-  TaskRunner,
-} from '@backstage/backend-tasks';
+  SchedulerService,
+  SchedulerServiceTaskRunner,
+  SchedulerServiceTaskInvocationDefinition,
+} from '@backstage/backend-plugin-api';
 import {
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
@@ -32,17 +32,17 @@ import * as mock from '../__testUtils__/mocks';
 import { GitlabDiscoveryEntityProvider } from './GitlabDiscoveryEntityProvider';
 
 const server = setupServer(...handlers);
-setupRequestMockHandlers(server);
+registerMswTestHooks(server);
 afterEach(() => jest.clearAllMocks());
 
-class PersistingTaskRunner implements TaskRunner {
-  private tasks: TaskInvocationDefinition[] = [];
+class PersistingTaskRunner implements SchedulerServiceTaskRunner {
+  private tasks: SchedulerServiceTaskInvocationDefinition[] = [];
 
   getTasks() {
     return this.tasks;
   }
 
-  run(task: TaskInvocationDefinition): Promise<void> {
+  run(task: SchedulerServiceTaskInvocationDefinition): Promise<void> {
     this.tasks.push(task);
     return Promise.resolve(undefined);
   }
@@ -75,7 +75,7 @@ describe('GitlabDiscoveryEntityProvider - configuration', () => {
   it('should fail with scheduler but no schedule config', () => {
     const scheduler = {
       createScheduledTaskRunner: (_: any) => jest.fn(),
-    } as unknown as PluginTaskScheduler;
+    } as unknown as SchedulerService;
     const config = new ConfigReader(mock.config_no_schedule_integration);
 
     expect(() =>
@@ -130,6 +130,7 @@ describe('GitlabDiscoveryEntityProvider - configuration', () => {
     );
   });
 });
+
 describe('GitlabDiscoveryEntityProvider - refresh', () => {
   it('should apply full update on scheduled execution', async () => {
     const config = new ConfigReader(mock.config_no_org_integration);
@@ -224,6 +225,38 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
           !entity.entity.metadata.annotations[
             'backstage.io/managed-by-location'
           ].includes('forked') &&
+          !entity.entity.metadata.annotations[
+            'backstage.io/managed-by-location'
+          ].includes('awesome'),
+      ),
+    });
+  });
+
+  it('should filter repositories that are excluded', async () => {
+    const config = new ConfigReader(
+      mock.config_single_integration_exclude_repos,
+    );
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+
+    await provider.connect(entityProviderConnection);
+
+    await provider.refresh(logger);
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: mock.expected_location_entities_default_branch.filter(
+        entity =>
+          !entity.entity.metadata.annotations[
+            'backstage.io/managed-by-location'
+          ].includes('test-repo1') &&
           !entity.entity.metadata.annotations[
             'backstage.io/managed-by-location'
           ].includes('awesome'),

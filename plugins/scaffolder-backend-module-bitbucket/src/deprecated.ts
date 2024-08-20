@@ -19,25 +19,29 @@ import * as bitbucketServer from '@backstage/plugin-scaffolder-backend-module-bi
 export { createPublishBitbucketAction } from './actions/bitbucket';
 
 /**
- * @public @deprecated use import from \@backstage/plugin-scaffolder-backend-module-bitbucket-cloud instead
+ * @public
+ * @deprecated use import from `@backstage/plugin-scaffolder-backend-module-bitbucket-cloud` instead
  */
 export const createPublishBitbucketCloudAction =
   bitbucketCloud.createPublishBitbucketCloudAction;
 
 /**
- * @public @deprecated use import from \@backstage/plugin-scaffolder-backend-module-bitbucket-cloud instead
+ * @public
+ * @deprecated use import from `@backstage/plugin-scaffolder-backend-module-bitbucket-cloud` instead
  */
 export const createBitbucketPipelinesRunAction =
   bitbucketCloud.createBitbucketPipelinesRunAction;
 
 /**
- * @public @deprecated use import from \@backstage/plugin-scaffolder-backend-module-bitbucket-server instead
+ * @public
+ * @deprecated use import from `@backstage/plugin-scaffolder-backend-module-bitbucket-server` instead
  */
 export const createPublishBitbucketServerAction =
   bitbucketServer.createPublishBitbucketServerAction;
 
 /**
- * @public @deprecated use import from \@backstage/plugin-scaffolder-backend-module-bitbucket-server instead
+ * @public
+ * @deprecated use import from `@backstage/plugin-scaffolder-backend-module-bitbucket-server` instead
  */
 export const createPublishBitbucketServerPullRequestAction =
   bitbucketServer.createPublishBitbucketServerPullRequestAction;

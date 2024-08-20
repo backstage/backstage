@@ -21,7 +21,7 @@ describe('tokenManagerFactory', () => {
   it('should create a disabled manager without configuration', async () => {
     const tokenManager = await ServiceFactoryTester.from(
       tokenManagerServiceFactory,
-    ).get();
+    ).getSubject();
 
     await expect(tokenManager.authenticate('abc')).rejects.toThrow(
       'no legacy keys are configured',
