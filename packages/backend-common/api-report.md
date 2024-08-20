@@ -35,6 +35,7 @@ import { PermissionsService } from '@backstage/backend-plugin-api';
 import { PluginMetadataService } from '@backstage/backend-plugin-api';
 import { PushResult } from 'isomorphic-git';
 import { ReadCommitResult } from 'isomorphic-git';
+import { Request as Request_2 } from 'express';
 import { RequestHandler } from 'express';
 import { resolvePackagePath as resolvePackagePath_2 } from '@backstage/backend-plugin-api';
 import { resolveSafeChildPath as resolveSafeChildPath_2 } from '@backstage/backend-plugin-api';
@@ -322,6 +323,23 @@ export type KubernetesContainerRunnerOptions = {
 export type LegacyCreateRouter<TEnv> = (deps: TEnv) => Promise<RequestHandler>;
 
 // @public @deprecated
+export interface LegacyIdentityService {
+  // (undocumented)
+  getIdentity(options: { request: Request_2<unknown> }): Promise<
+    | {
+        expiresInSeconds?: number;
+        token: string;
+        identity: {
+          type: 'user';
+          userEntityRef: string;
+          ownershipEntityRefs: string[];
+        };
+      }
+    | undefined
+  >;
+}
+
+// @public @deprecated
 export const legacyPlugin: (
   name: string,
   createRouterImport: Promise<{
@@ -335,9 +353,7 @@ export const legacyPlugin: (
           logger: LoggerService;
           permissions: PermissionsService;
           scheduler: SchedulerService;
-          tokenManager: TokenManagerService;
           reader: UrlReaderService;
-          identity: IdentityService;
         },
         {
           logger: (log: LoggerService) => Logger;
@@ -345,7 +361,10 @@ export const legacyPlugin: (
             getClient(options?: CacheServiceOptions | undefined): CacheService;
           };
         }
-      >
+      > & {
+        tokenManager: ServerTokenManager;
+        identity: LegacyIdentityService;
+      }
     >;
   }>,
 ) => BackendFeatureCompat;
@@ -384,7 +403,12 @@ export function makeLegacyPlugin<
 ): (
   name: string,
   createRouterImport: Promise<{
-    default: LegacyCreateRouter<TransformedEnv<TEnv, TEnvTransforms>>;
+    default: LegacyCreateRouter<
+      TransformedEnv<TEnv, TEnvTransforms> & {
+        tokenManager: ServerTokenManager;
+        identity: LegacyIdentityService;
+      }
+    >;
   }>,
 ) => BackendFeatureCompat;
 
