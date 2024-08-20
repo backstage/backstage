@@ -3,4 +3,4 @@
 '@backstage/backend-app-api': patch
 ---
 
-change externalAccess to optional
+`auth.externalAccess` should be optional in the config schema
