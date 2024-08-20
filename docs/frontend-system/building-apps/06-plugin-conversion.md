@@ -48,7 +48,7 @@ const convertedIndexPage = convertLegacyPageExtension(TechDocsIndexPage, {
 
 ### Other types of extensions
 
-The `@backstage/core-compat-api` only provides conversion functions for the built-in extension types, i.e. only page extensions. There are many plugins that define their own extension types, such as the entity content and card extensions for the catalog. For there it's up to the plugin libraries to provide their own conversion functions for these types of extensions. For example, `@backstage/plugin-catalog-react/alpha` provides both `convertLegacyEntityContentExtension` and `convertLegacyEntityCardExtension`.
+The `@backstage/core-compat-api` only provides conversion functions for the built-in extension types, i.e. only page extensions. There are many plugins that define their own extension types, such as the entity content and card extensions for the catalog. For those cases it's up to the plugin libraries to provide their own conversion functions for these types of extensions. For example, `@backstage/plugin-catalog-react/alpha` provides both `convertLegacyEntityContentExtension` and `convertLegacyEntityCardExtension`.
 
 The following are the known conversion functions provided by various libraries:
 
