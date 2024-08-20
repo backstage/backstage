@@ -1,5 +1,11 @@
 # @backstage/plugin-techdocs-backend
 
+## 1.10.11
+
+### Patch Changes
+
+- 9e6e44f: Dedicated token for techdocs cache sync
+
 ## 1.10.10
 
 ### Patch Changes

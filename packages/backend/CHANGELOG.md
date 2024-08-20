@@ -1,5 +1,12 @@
 # example-backend
 
+## 0.0.30
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-backend@1.10.11
+
 ## 0.0.29
 
 ### Patch Changes

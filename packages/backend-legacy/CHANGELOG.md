@@ -1,5 +1,12 @@
 # example-backend-legacy
 
+## 0.2.102
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-backend@1.10.11
+
 ## 0.2.101
 
 ### Patch Changes
