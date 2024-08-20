@@ -20,10 +20,11 @@ integrations:
   bitbucketCloud:
     - username: ${BITBUCKET_CLOUD_USERNAME}
       appPassword: ${BITBUCKET_CLOUD_PASSWORD}
-      throttling: # optional
-        count: 1 # number of requests per interval
-        # suppports ISO duration, "human duration" as used in code
-        interval: { seconds: 1 }
+      fetch: # optional
+        throttling: # optional
+          count: 1 # number of requests per interval
+          # suppports ISO duration, "human duration" as used in code
+          interval: { seconds: 1 }
 ```
 
 :::note Note

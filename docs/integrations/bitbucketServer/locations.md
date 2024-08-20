@@ -21,10 +21,11 @@ integrations:
     - host: bitbucket.mycompany.com
       apiBaseUrl: https://bitbucket.mycompany.com/rest/api/1.0
       token: ${BITBUCKET_SERVER_TOKEN}
-      throttling: # optional
-        count: 1 # number of requests per interval
-        # suppports ISO duration, "human duration" as used in code
-        interval: { seconds: 1 }
+      fetch: # optional
+        throttling: # optional
+          count: 1 # number of requests per interval
+          # suppports ISO duration, "human duration" as used in code
+          interval: { seconds: 1 }
 ```
 
 or with Basic Auth
@@ -36,10 +37,11 @@ integrations:
       apiBaseUrl: https://bitbucket.mycompany.com/rest/api/1.0
       username: ${BITBUCKET_SERVER_USERNAME}
       password: ${BITBUCKET_SERVER_PASSWORD}
-      throttling: # optional
-        count: 1 # number of requests per interval
-        # suppports ISO duration, "human duration" as used in code
-        interval: { seconds: 1 }
+      fetch: # optional
+        throttling: # optional
+          count: 1 # number of requests per interval
+          # suppports ISO duration, "human duration" as used in code
+          interval: { seconds: 1 }
 ```
 
 Directly under the `bitbucketServer` key is a list of provider configurations, where
