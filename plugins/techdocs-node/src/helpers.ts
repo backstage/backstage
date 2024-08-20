@@ -38,7 +38,7 @@ export type ParsedLocationAnnotation = {
 };
 
 /**
- * Returns a parset locations annotation
+ * Returns a parsed locations annotation
  * @public
  * @param annotationName - The name of the annotation in the entity metadata
  * @param entity - A TechDocs entity instance
@@ -114,7 +114,7 @@ export const transformDirLocation = (
 };
 
 /**
- * Returns a entity reference based on the TechDocs annotation type
+ * Returns an entity reference based on the TechDocs annotation type
  * @public
  * @param entity - A TechDocs instance
  * @param scmIntegration - An implementation for  SCM integration API
