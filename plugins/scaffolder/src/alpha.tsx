@@ -51,6 +51,8 @@ export {
   type TemplateWizardPageProps,
 } from './next';
 
+export { scaffolderTranslationRef } from './translation';
+
 const scaffolderApi = ApiBlueprint.make({
   params: {
     factory: createApiFactory({
