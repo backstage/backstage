@@ -73,16 +73,14 @@ describe('<FavoriteEntity/>', () => {
   });
 
   it('should remove from favorites', async () => {
+    const starredEntities = new MockStarredEntitiesApi();
+    await starredEntities.toggleStarred('component:default/example');
+
     await renderInTestApp(
       <TestApiProvider
         apis={[
           [storageApiRef, mockStorage],
-          [
-            starredEntitiesApiRef,
-            new MockStarredEntitiesApi({
-              starredEntities: ['component:default/example'],
-            }),
-          ],
+          [starredEntitiesApiRef, starredEntities],
         ]}
       >
         <FavoriteEntity entity={entity} />

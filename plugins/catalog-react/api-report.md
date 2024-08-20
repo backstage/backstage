@@ -686,7 +686,6 @@ export function MockEntityListContextProvider<
 
 // @public
 export class MockStarredEntitiesApi implements StarredEntitiesApi {
-  constructor(opts?: { starredEntities?: string[] });
   // (undocumented)
   starredEntitie$(): Observable<Set<string>>;
   // (undocumented)

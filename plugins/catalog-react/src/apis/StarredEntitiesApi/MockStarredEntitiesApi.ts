@@ -29,10 +29,6 @@ export class MockStarredEntitiesApi implements StarredEntitiesApi {
     ZenObservable.SubscriptionObserver<Set<string>>
   >();
 
-  constructor(opts: { starredEntities?: string[] } = {}) {
-    this.starredEntities = new Set(opts.starredEntities);
-  }
-
   private readonly observable = new ObservableImpl<Set<string>>(subscriber => {
     subscriber.next(new Set(this.starredEntities));
 
