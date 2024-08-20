@@ -1,5 +1,17 @@
 # @backstage/create-app
 
+## 0.5.18
+
+### Patch Changes
+
+- c0a705d: Added the Kubernetes plugin to `create-app`
+- d7a0aa3: Bumped create-app version.
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- 6c1081c: Updated dockerfile and `app-config.production.yaml` to make it easier to get started with example data
+- bfeba46: Included permission config and enabled it out of the box
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+
 ## 0.5.18-next.4
 
 ### Patch Changes

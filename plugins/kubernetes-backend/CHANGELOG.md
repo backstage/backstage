@@ -1,5 +1,29 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.18.4
+
+### Patch Changes
+
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- b63d378: Update internal imports
+- 8c1aa06: Add `kubernetes.clusterLocatorMethods[].clusters[].customResources` to the configuration schema.
+  This was already documented and supported by the plugin.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/backend-common@0.24.0
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-kubernetes-node@0.1.17
+  - @backstage/plugin-auth-node@0.5.0
+  - @backstage/plugin-permission-node@0.8.1
+  - @backstage/plugin-catalog-node@1.12.5
+  - @backstage/catalog-model@1.6.0
+  - @backstage/catalog-client@1.6.6
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.8.2
+
 ## 0.18.4-next.3
 
 ### Patch Changes

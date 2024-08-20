@@ -1,5 +1,39 @@
 # @backstage/plugin-catalog-backend
 
+## 1.25.0
+
+### Minor Changes
+
+- 163ba08: Deprecated `RouterOptions`, `CatalogBuilder`, and `CatalogEnvironment`. Please make sure to upgrade to the new backend system.
+- fc24d9e: Stop using `@backstage/backend-tasks` as it will be deleted in near future.
+
+### Patch Changes
+
+- 776eb56: `ProcessorOutputCollector` returns an error when receiving deferred entities that have an invalid `metadata.annotations` format.
+
+  This allows to return an error on an actual validation issue instead of reporting that the location annotations are missing afterwards, which is misleading for the users.
+
+- 389f5a4: Update deprecated url-reader-related imports.
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- a629fb2: Added setAllowedLocationTypes while introducing a new extension point called CatalogLocationsExtensionPoint
+- 51240ee: Preserve default `allowedLocationTypes` when `setAllowedLocationTypes()` of `CatalogLocationsExtensionPoint` is not called.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/backend-common@0.24.0
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-node@0.8.1
+  - @backstage/plugin-search-backend-module-catalog@0.2.0
+  - @backstage/plugin-catalog-node@1.12.5
+  - @backstage/integration@1.14.0
+  - @backstage/catalog-model@1.6.0
+  - @backstage/backend-openapi-utils@0.1.16
+  - @backstage/catalog-client@1.6.6
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.26
+  - @backstage/plugin-events-node@0.3.9
+
 ## 1.24.1-next.3
 
 ### Patch Changes

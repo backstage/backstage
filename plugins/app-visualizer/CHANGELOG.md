@@ -1,5 +1,17 @@
 # @backstage/plugin-app-visualizer
 
+## 0.1.9
+
+### Patch Changes
+
+- 72754db: Updated usage of `useRouteRef`, which can now always return `undefined`.
+- c7603e8: Deprecate the old pattern of `create*Extension`, and replace it with the equivalent Blueprint implementation instead
+- e493020: Fixing issue with the visualizer crashing when clicking on the detailed view because of `routeRef` parameters
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.7.0
+  - @backstage/core-components@0.14.10
+  - @backstage/core-plugin-api@1.9.3
+
 ## 0.1.9-next.3
 
 ### Patch Changes

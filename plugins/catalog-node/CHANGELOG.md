@@ -1,5 +1,21 @@
 # @backstage/plugin-catalog-node
 
+## 1.12.5
+
+### Patch Changes
+
+- a629fb2: Added setAllowedLocationTypes while introducing a new extension point called CatalogLocationsExtensionPoint
+- 7c5f3b0: Explicit declare if the service ref accepts `single` or `multiple` implementations.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-node@0.8.1
+  - @backstage/catalog-model@1.6.0
+  - @backstage/catalog-client@1.6.6
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.26
+
 ## 1.12.5-next.3
 
 ### Patch Changes

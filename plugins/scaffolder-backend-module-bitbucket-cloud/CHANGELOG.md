@@ -1,5 +1,20 @@
 # @backstage/plugin-scaffolder-backend-module-bitbucket-cloud
 
+## 0.1.13
+
+### Patch Changes
+
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- 3fca643: Added autocompletion support for resource `branches`
+- d57967c: Add ability to set the initial commit message when initializing a repository using the scaffolder action.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/plugin-scaffolder-node@0.4.9
+  - @backstage/integration@1.14.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.22
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 0.1.13-next.3
 
 ### Patch Changes

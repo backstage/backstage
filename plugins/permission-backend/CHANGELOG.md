@@ -1,5 +1,19 @@
 # @backstage/plugin-permission-backend
 
+## 0.5.47
+
+### Patch Changes
+
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/backend-common@0.24.0
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-auth-node@0.5.0
+  - @backstage/plugin-permission-node@0.8.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 0.5.47-next.3
 
 ### Patch Changes

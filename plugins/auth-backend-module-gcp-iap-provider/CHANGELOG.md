@@ -1,5 +1,17 @@
 # @backstage/plugin-auth-backend-module-gcp-iap-provider
 
+## 0.2.18
+
+### Patch Changes
+
+- c8f1cae: Add `signIn` to authentication provider configuration schema
+- 13a9c63: Corrected the documentation for the GCP IAP auth module and updated the configuration to follow proxy configuration conventions by ignoring authEnv
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/plugin-auth-node@0.5.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.2.18-next.3
 
 ### Patch Changes

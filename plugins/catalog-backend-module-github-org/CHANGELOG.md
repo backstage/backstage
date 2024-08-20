@@ -1,5 +1,21 @@
 # @backstage/plugin-catalog-backend-module-github-org
 
+## 0.2.0
+
+### Minor Changes
+
+- fc24d9e: Stop using `@backstage/backend-tasks` as it will be deleted in near future.
+
+### Patch Changes
+
+- 9342ac8: Removed unused dependency
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/plugin-catalog-backend-module-github@0.7.0
+  - @backstage/plugin-catalog-node@1.12.5
+  - @backstage/config@1.2.0
+  - @backstage/plugin-events-node@0.3.9
+
 ## 0.1.18-next.3
 
 ### Patch Changes

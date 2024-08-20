@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-techdocs-common",
-  "version": "0.1.0-next.0",
+  "version": "0.1.0",
   "description": "Common functionality for TechDocs",
   "backstage": {
     "role": "common-library",

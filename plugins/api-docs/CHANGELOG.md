@@ -1,5 +1,25 @@
 # @backstage/plugin-api-docs
 
+## 0.11.8
+
+### Patch Changes
+
+- 770ba02: `ConsumingComponentsCard` and `ProvidingComponentsCard` will now optionally accept `columns` to override which table columns are displayed
+- fe1fbb2: Migrating usages of the deprecated `createExtension` `v1` format to the newer `v2` format, and old `create*Extension` extension creators to blueprints.
+- ebfeb40: Added `resolvers` prop to `AsyncApiDefinitionWidget`. This allows to override the default http/https resolvers, for example to add authentication to requests to internal schema registries.
+- 4b6d2cb: Updated dependency `@graphiql/react` to `^0.23.0`.
+- 6582799: Add `tableOptions` to all tables and additionally `title` to API tables.
+- Updated dependencies
+  - @backstage/plugin-catalog@1.22.0
+  - @backstage/frontend-plugin-api@0.7.0
+  - @backstage/plugin-catalog-react@1.12.3
+  - @backstage/core-components@0.14.10
+  - @backstage/core-compat-api@0.2.8
+  - @backstage/catalog-model@1.6.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/plugin-catalog-common@1.0.26
+  - @backstage/plugin-permission-react@0.4.25
+
 ## 0.11.8-next.3
 
 ### Patch Changes

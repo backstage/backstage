@@ -1,5 +1,33 @@
 # @backstage/plugin-catalog-react
 
+## 1.12.3
+
+### Patch Changes
+
+- 7bd27e1: Deprecate the old pattern of `create*Extension`, and replace it with the equivalent Blueprint implementation instead.
+- 31bfc44: Updated alpha definitions of extension data references.
+- 7ca331c: Correct `EntityDisplayName`'s icon alignment with the text.
+- 9b89b82: Internal refactor to remove unnecessary `routable` prop in the implementation of the `createEntityContentExtension` alpha export.
+- bebd569: Fix extra divider displayed on user list picker component
+- 519b8e0: Added utilities for converting existing entity card and content extensions to the new frontend system. This is in particular useful when used in combination with the new `convertLegacyPlugin` utility from `@backstage/core-compat-api`.
+- d001a42: Fix label related accessibility issues with `FavorityEntity`
+- 012e3eb: Entity page extensions created for the new frontend system via the `/alpha` exports will now be enabled by default.
+- 6349099: Added config input type to the extensions
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.7.0
+  - @backstage/core-components@0.14.10
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/core-compat-api@0.2.8
+  - @backstage/catalog-model@1.6.0
+  - @backstage/catalog-client@1.6.6
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+  - @backstage/integration-react@1.1.30
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+  - @backstage/plugin-catalog-common@1.0.26
+  - @backstage/plugin-permission-react@0.4.25
+
 ## 1.12.3-next.3
 
 ### Patch Changes

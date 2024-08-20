@@ -1,5 +1,11 @@
 # @backstage/backend-dev-utils
 
+## 0.1.5
+
+### Patch Changes
+
+- 3a35172: Fix `EventEmitter` memory leak in the development utilities
+
 ## 0.1.4
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @backstage/plugin-proxy-backend
 
+## 0.5.4
+
+### Patch Changes
+
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- b63d378: Update internal imports
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/backend-common@0.24.0
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
 ## 0.5.4-next.3
 
 ### Patch Changes

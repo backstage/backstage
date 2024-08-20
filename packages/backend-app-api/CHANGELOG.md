@@ -1,5 +1,31 @@
 # @backstage/backend-app-api
 
+## 0.9.0
+
+### Minor Changes
+
+- da4fde5: **BREAKING**: Removed several deprecated service factories. These can instead be imported from `@backstage/backend-defaults` package.
+- fc24d9e: Stop using `@backstage/backend-tasks` as it will be deleted in near future.
+- 389f5a4: Remove deprecated `urlReaderServiceFactory`, please import from `@backstage/backend-defaults/urlReader` instead.
+
+### Patch Changes
+
+- 8b13183: Added support for the latest version of `BackendFeature`s from `@backstage/backend-plugin-api`, including feature loaders.
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- 7c5f3b0: Update the `ServiceRegister` implementation to enable registering multiple service implementations for a given service ref.
+- 80a0737: Added configuration for the `packages` options to config schema
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/backend-common@0.24.0
+  - @backstage/config-loader@1.9.0
+  - @backstage/plugin-auth-node@0.5.0
+  - @backstage/plugin-permission-node@0.8.1
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.7
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.8.1-next.3
 
 ### Patch Changes

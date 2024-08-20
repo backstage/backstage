@@ -1,5 +1,22 @@
 # @backstage/plugin-search-react
 
+## 1.7.14
+
+### Patch Changes
+
+- 7bd27e1: Deprecate the old pattern of `create*Extension`, and replace it with the equivalent Blueprint implementation instead.
+- 31bfc44: Updated alpha definitions of extension data references.
+- 3123c16: Fix package metadata
+- 6349099: Added config input type to the extensions
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.7.0
+  - @backstage/core-components@0.14.10
+  - @backstage/plugin-search-common@1.2.14
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/theme@0.5.6
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
 ## 1.7.14-next.3
 
 ### Patch Changes

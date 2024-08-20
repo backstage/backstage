@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder-backend-module-bitbucket
 
+## 0.2.13
+
+### Patch Changes
+
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/plugin-scaffolder-node@0.4.9
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.13
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.13
+  - @backstage/integration@1.14.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 0.2.13-next.3
 
 ### Patch Changes

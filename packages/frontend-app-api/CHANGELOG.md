@@ -1,5 +1,29 @@
 # @backstage/frontend-app-api
 
+## 0.8.0
+
+### Minor Changes
+
+- fc24d9e: Stop using `@backstage/backend-tasks` as it will be deleted in near future.
+
+### Patch Changes
+
+- 7777b5f: Support icon overriding with the new `IconBundleBlueprint` API.
+- 72754db: Updated usage of `useRouteRef`, which can now always return `undefined`.
+- 3be9aeb: Added support for v2 extensions, which declare their inputs and outputs without using a data map.
+- fe1fbb2: Migrating usages of the deprecated `createExtension` `v1` format to the newer `v2` format, and old `create*Extension` extension creators to blueprints.
+- 6349099: Added config input type to the extensions
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.7.0
+  - @backstage/core-components@0.14.10
+  - @backstage/core-app-api@1.14.2
+  - @backstage/config@1.2.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+  - @backstage/theme@0.5.6
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
 ## 0.7.5-next.3
 
 ### Patch Changes

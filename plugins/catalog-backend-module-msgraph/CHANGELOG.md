@@ -1,5 +1,23 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.6.0
+
+### Minor Changes
+
+- fc24d9e: Stop using `@backstage/backend-tasks` as it will be deleted in near future.
+
+### Patch Changes
+
+- 9342ac8: Removed unused dependency
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- 58dff4d: Added option to ingest groups based on their group membership in Azure Entra ID
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/plugin-catalog-node@1.12.5
+  - @backstage/catalog-model@1.6.0
+  - @backstage/config@1.2.0
+  - @backstage/plugin-catalog-common@1.0.26
+
 ## 0.5.31-next.3
 
 ### Patch Changes

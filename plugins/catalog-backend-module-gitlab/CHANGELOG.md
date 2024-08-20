@@ -1,5 +1,25 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.4.0
+
+### Minor Changes
+
+- fc24d9e: Stop using `@backstage/backend-tasks` as it will be deleted in near future.
+
+### Patch Changes
+
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- c7b14ed: Adds new optional `excludeRepos` configuration option to the Gitlab catalog provider.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/backend-common@0.24.0
+  - @backstage/plugin-catalog-node@1.12.5
+  - @backstage/integration@1.14.0
+  - @backstage/catalog-model@1.6.0
+  - @backstage/config@1.2.0
+  - @backstage/plugin-catalog-common@1.0.26
+  - @backstage/plugin-events-node@0.3.9
+
 ## 0.3.22-next.3
 
 ### Patch Changes

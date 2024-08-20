@@ -1,5 +1,29 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.4.5
+
+### Patch Changes
+
+- da97131: Added test cases for gitlab:issues:create examples
+- fad1b90: Allow the `createGitlabProjectVariableAction` to use oauth tokens
+- aab708e: Added test cases for gitlab:issue:edit examples
+- ef742dc: Added test cases for gitlab:projectAccessToken:create example
+- 1ba4c2f: Added test cases for gitlab:pipeline:trigger examples
+- a6603e4: Add custom action for merge request: **auto**
+
+  The **Auto** action selects the committed action between _create_ and _update_.
+
+  The **Auto** action fetches files using the **/projects/repository/tree endpoint**.
+  After fetching, it checks if the file exists locally and in the repository. If it does, it chooses **update**; otherwise, it chooses **create**.
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/backend-common@0.24.0
+  - @backstage/plugin-scaffolder-node@0.4.9
+  - @backstage/integration@1.14.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 0.4.5-next.3
 
 ### Patch Changes

@@ -1,5 +1,45 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.24.0
+
+### Minor Changes
+
+- fc24d9e: Stop using `@backstage/backend-tasks` as it will be deleted in near future.
+- dcd6a79: Added OpenTelemetry support to Scaffolder metrics
+
+### Patch Changes
+
+- 389f5a4: Update deprecated url-reader-related imports.
+- c544f81: Add support for status filtering in scaffolder tasks endpoint
+- b63d378: Update internal imports
+- ef87e06: Fix scaffolder action `catalog:write` to write to directories that don't already exist
+- Updated dependencies
+  - @backstage/backend-defaults@0.4.2
+  - @backstage/plugin-scaffolder-backend-module-github@0.4.1
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/backend-common@0.24.0
+  - @backstage/plugin-scaffolder-node@0.4.9
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.13
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.13
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.13
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.15
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.13
+  - @backstage/plugin-auth-node@0.5.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.15
+  - @backstage/plugin-permission-node@0.8.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.4.5
+  - @backstage/plugin-catalog-node@1.12.5
+  - @backstage/integration@1.14.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.22
+  - @backstage/catalog-model@1.6.0
+  - @backstage/catalog-client@1.6.6
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.21
+  - @backstage/plugin-scaffolder-common@1.5.5
+
 ## 1.23.1-next.3
 
 ### Patch Changes

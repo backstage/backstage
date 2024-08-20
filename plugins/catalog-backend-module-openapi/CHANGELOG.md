@@ -1,5 +1,21 @@
 # @backstage/plugin-catalog-backend-module-openapi
 
+## 0.1.41
+
+### Patch Changes
+
+- 389f5a4: Update deprecated url-reader-related imports.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/backend-common@0.24.0
+  - @backstage/plugin-catalog-backend@1.25.0
+  - @backstage/plugin-catalog-node@1.12.5
+  - @backstage/integration@1.14.0
+  - @backstage/catalog-model@1.6.0
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.26
+
 ## 0.1.41-next.3
 
 ### Patch Changes

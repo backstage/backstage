@@ -1,5 +1,26 @@
 # @backstage/plugin-search-backend-module-catalog
 
+## 0.2.0
+
+### Minor Changes
+
+- fc24d9e: Stop using `@backstage/backend-tasks` as it will be deleted in near future.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/backend-common@0.24.0
+  - @backstage/plugin-search-backend-node@1.3.0
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-search-common@1.2.14
+  - @backstage/plugin-catalog-node@1.12.5
+  - @backstage/catalog-model@1.6.0
+  - @backstage/catalog-client@1.6.6
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-catalog-common@1.0.26
+
 ## 0.1.29-next.3
 
 ### Patch Changes

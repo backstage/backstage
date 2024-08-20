@@ -1,5 +1,21 @@
 # @backstage/plugin-catalog-backend-module-backstage-openapi
 
+## 0.3.0
+
+### Minor Changes
+
+- fc24d9e: Stop using `@backstage/backend-tasks` as it will be deleted in near future.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/plugin-catalog-node@1.12.5
+  - @backstage/catalog-model@1.6.0
+  - @backstage/backend-openapi-utils@0.1.16
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 0.2.6-next.3
 
 ### Patch Changes

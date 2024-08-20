@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-tasks",
-  "version": "0.5.28-next.3",
+  "version": "0.6.0",
   "description": "Common distributed task management library for Backstage backends",
   "backstage": {
     "role": "node-library"

@@ -1,5 +1,39 @@
 # @backstage/plugin-auth-backend-module-aws-alb-provider
 
+## 0.1.15
+
+### Patch Changes
+
+- c8f1cae: Add `signIn` to authentication provider configuration schema
+- 4ea354f: Added a `signer` configuration option to validate against the token claims. We strongly recommend that you set this value (typically on the format `arn:aws:elasticloadbalancing:us-east-2:123456789012:loadbalancer/app/my-load-balancer/1234567890123456`) to ensure that the auth provider can safely check the authenticity of any incoming tokens.
+
+  Example:
+
+  ```diff
+   auth:
+     providers:
+       awsalb:
+         # this is the URL of the IdP you configured
+         issuer: 'https://example.okta.com/oauth2/default'
+         # this is the ARN of your ALB instance
+  +      signer: 'arn:aws:elasticloadbalancing:us-east-2:123456789012:loadbalancer/app/my-load-balancer/1234567890123456'
+         # this is the region where your ALB instance resides
+         region: 'us-west-2'
+         signIn:
+           resolvers:
+             # typically you would pick one of these
+             - resolver: emailMatchingUserEntityProfileEmail
+             - resolver: emailLocalPartMatchingUserEntityName
+  ```
+
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/backend-common@0.24.0
+  - @backstage/plugin-auth-backend@0.22.10
+  - @backstage/plugin-auth-node@0.5.0
+  - @backstage/errors@1.2.4
+
 ## 0.1.15-next.3
 
 ### Patch Changes

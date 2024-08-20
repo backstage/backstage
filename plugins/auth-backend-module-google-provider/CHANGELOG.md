@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-backend-module-google-provider
 
+## 0.1.20
+
+### Patch Changes
+
+- c8f1cae: Add `signIn` to authentication provider configuration schema
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/plugin-auth-node@0.5.0
+
 ## 0.1.20-next.3
 
 ### Patch Changes
