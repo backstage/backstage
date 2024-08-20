@@ -45,6 +45,9 @@ describe('TemplateListPage', () => {
     getEntityFacets: async () => ({
       facets: { 'spec.type': [{ value: 'service', count: 1 }] },
     }),
+    getEntitiesByRefs: async () => ({
+      items: [],
+    }),
   };
 
   it('should render the search bar for templates', async () => {
