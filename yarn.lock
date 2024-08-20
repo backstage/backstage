@@ -4172,7 +4172,7 @@ __metadata:
     "@backstage/plugin-catalog": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
-    "@oriflame/backstage-plugin-score-card": ^0.8.0
+    "@oriflame/backstage-plugin-score-card": ^0.9.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^15.0.0
     "@types/react": ^16.13.1 || ^17.0.0
@@ -4516,7 +4516,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/integration-react@workspace:^, @backstage/integration-react@workspace:packages/integration-react":
+"@backstage/integration-react@^1.1.24, @backstage/integration-react@workspace:^, @backstage/integration-react@workspace:packages/integration-react":
   version: 0.0.0-use.local
   resolution: "@backstage/integration-react@workspace:packages/integration-react"
   dependencies:
@@ -4540,7 +4540,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/integration@workspace:^, @backstage/integration@workspace:packages/integration":
+"@backstage/integration@^1.9.0, @backstage/integration@workspace:^, @backstage/integration@workspace:packages/integration":
   version: 0.0.0-use.local
   resolution: "@backstage/integration@workspace:packages/integration"
   dependencies:
@@ -13770,14 +13770,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oriflame/backstage-plugin-score-card@npm:^0.8.0":
-  version: 0.8.0
-  resolution: "@oriflame/backstage-plugin-score-card@npm:0.8.0"
+"@oriflame/backstage-plugin-score-card@npm:^0.9.0":
+  version: 0.9.0
+  resolution: "@oriflame/backstage-plugin-score-card@npm:0.9.0"
   dependencies:
     "@backstage/catalog-model": ^1.4.3
     "@backstage/config": ^1.1.1
     "@backstage/core-components": ^0.13.10
     "@backstage/core-plugin-api": ^1.8.2
+    "@backstage/integration": ^1.9.0
+    "@backstage/integration-react": ^1.1.24
     "@backstage/plugin-catalog-common": ^1.0.20
     "@backstage/plugin-catalog-react": ^1.9.3
     "@backstage/theme": ^0.5.0
@@ -13787,12 +13789,13 @@ __metadata:
     "@material-ui/icons": ^4.11.2
     "@material-ui/lab": ^4.0.0-alpha.57
     "@types/react": ^18.0.0
+    react-router-dom: 6.4.5
     react-use: ^17.2.4
   peerDependencies:
     react: ^18.0.0
     react-dom: ^18.0.0
-    react-router-dom: ^6.4.3
-  checksum: 4d1bf78b3fc6cce80b3cbc1abef5613bb609d2262e0d410aa57cc7e175eaf5cb727796ab61b44507f5c826b1f059f4ec03c280ce6cdbf7291d4461d745a9b5b6
+    react-router-dom: ^6.4.5
+  checksum: ff8290db6d8f32311b9ac6e2d85fe6d70aaf1016b0bcaa4ada0e4a5e0b57f370126a6651f38c982f678d0a981038ecb2f4bd84b72ac395e86527eaeeefa975f4
   languageName: node
   linkType: hard
 
@@ -14525,6 +14528,13 @@ __metadata:
     js-cookie:
       optional: true
   checksum: 842dd51a2c875814c7468632315d756e79fcdff2882d7224e8e06c630f95ab788b6a59c29c0318cb049a18be97537803be8e3dbae12de34b2ae1290ababe266a
+  languageName: node
+  linkType: hard
+
+"@remix-run/router@npm:1.0.5":
+  version: 1.0.5
+  resolution: "@remix-run/router@npm:1.0.5"
+  checksum: 5d66750b7defc10c80d9748fa003fcfe2af9ef82de3c06be88c926ede36a15b9e971ed2222981db843494e2f77c3de14470efe6dc877530cea774dc31162ec6f
   languageName: node
   linkType: hard
 
@@ -38825,6 +38835,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-router-dom@npm:6.4.5":
+  version: 6.4.5
+  resolution: "react-router-dom@npm:6.4.5"
+  dependencies:
+    "@remix-run/router": 1.0.5
+    react-router: 6.4.5
+  peerDependencies:
+    react: ">=16.8"
+    react-dom: ">=16.8"
+  checksum: 09d7841dd52efd2c60947171f95d9d1860cabd7540ac74dede86a6c36a2dd26a645e4928cbc8aa4e1c9d1f906f2ef144ba6da5ac69243590df855a6df8cfe1aa
+  languageName: node
+  linkType: hard
+
 "react-router-dom@npm:^6.3.0":
   version: 6.25.1
   resolution: "react-router-dom@npm:6.25.1"
@@ -38857,6 +38880,17 @@ __metadata:
   peerDependencies:
     react: ">=16.8"
   checksum: 2abbab5ecc5d1210f70980571326fd1956da3898b78bfcce6229e346e658dd42ec75bea1caea6aa45607ef677e442f3241dc3fb839293f276fa4bd466870aadd
+  languageName: node
+  linkType: hard
+
+"react-router@npm:6.4.5":
+  version: 6.4.5
+  resolution: "react-router@npm:6.4.5"
+  dependencies:
+    "@remix-run/router": 1.0.5
+  peerDependencies:
+    react: ">=16.8"
+  checksum: 0d471df39f0487224240f9910c2f2939519f3e9909a7b19f72767aeea2caf1c9fa4e8ea9a51b17c20051ec252db0fcc34a7a0b3068b338dd9d8eb656ffd489c1
   languageName: node
   linkType: hard
 
