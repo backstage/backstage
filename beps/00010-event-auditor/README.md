@@ -112,7 +112,7 @@ export type AuditEventSuccessStatus = { status: 'succeeded' };
  */
 export type AuditEventFailureStatus<E = ErrorLike> = {
   status: 'failed';
-  errors: E;
+  errors: E[];
 };
 
 export type AuditEventStatus = AuditEventSuccessStatus | AuditEventFailureStatus | undefined;
