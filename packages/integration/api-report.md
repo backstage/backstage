@@ -191,8 +191,14 @@ export type BitbucketCloudIntegrationConfig = {
   username?: string;
   appPassword?: string;
   token?: string;
-  throttling?: ThrottlingConfig;
+  fetch?: FetchConfig;
 };
+
+// @public
+export type BitbucketFetchFunction = (
+  url: RequestInfo_2,
+  init?: RequestInit_2,
+) => Promise<Response_2>;
 
 // @public @deprecated
 export class BitbucketIntegration implements ScmIntegration {
@@ -252,7 +258,7 @@ export type BitbucketServerIntegrationConfig = {
   token?: string;
   username?: string;
   password?: string;
-  throttling?: ThrottlingConfig;
+  fetch?: FetchConfig;
 };
 
 // @public
@@ -306,12 +312,6 @@ export function defaultScmResolveUrl(options: {
   base: string;
   lineNumber?: number;
 }): string;
-
-// @public
-export type FetchFunction = (
-  url: RequestInfo_2,
-  init?: RequestInit_2,
-) => Promise<Response_2>;
 
 // @public
 export class GerritIntegration implements ScmIntegration {
@@ -908,9 +908,6 @@ export function readGoogleGcsIntegrationConfig(
 export function readHarnessConfig(config: Config): HarnessIntegrationConfig;
 
 // @public
-export function readThrottlingConfig(config: Config): ThrottlingConfig;
-
-// @public
 export function replaceGithubUrlType(
   url: string,
   type: 'blob' | 'tree' | 'edit',
@@ -1031,9 +1028,7 @@ export class SingleInstanceGithubCredentialsProvider
   getCredentials(opts: { url: string }): Promise<GithubCredentials>;
 }
 
-// @public
-export type ThrottlingConfig = {
-  count: number;
-  interval: HumanDuration;
-};
+// Warnings were encountered during analysis:
+//
+// src/bitbucketCloud/config.d.ts:36:5 - (ae-forgotten-export) The symbol "FetchConfig" needs to be exported by the entry point index.d.ts
 ```
