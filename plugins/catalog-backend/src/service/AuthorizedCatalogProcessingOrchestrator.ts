@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { NotAllowedError } from '@backstage/errors';
-import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
+import { catalogEntityValidatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
   CatalogProcessingOrchestrator,
@@ -47,7 +47,7 @@ export class AuthorizedCatalogProcessingOrchestrator
       await this.permissionApi.authorize(
         [
           {
-            permission: catalogEntityCreatePermission,
+            permission: catalogEntityValidatePermission,
           },
         ],
         { credentials },

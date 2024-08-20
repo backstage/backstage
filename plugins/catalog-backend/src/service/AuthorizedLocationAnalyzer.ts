@@ -15,7 +15,7 @@
  */
 
 import { NotAllowedError } from '@backstage/errors';
-import { catalogLocationCreatePermission } from '@backstage/plugin-catalog-common/alpha';
+import { catalogLocationAnalyzePermission } from '@backstage/plugin-catalog-common/alpha';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
   BackstageCredentials,
@@ -39,7 +39,7 @@ export class AuthorizedLocationAnalyzer implements LocationAnalyzer {
       await this.permissionApi.authorize(
         [
           {
-            permission: catalogLocationCreatePermission,
+            permission: catalogLocationAnalyzePermission,
           },
         ],
         { credentials: credentials },
