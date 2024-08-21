@@ -29,8 +29,6 @@ import { I18nextTranslationApi } from '../../../core-app-api/src/apis/implementa
 
 /**
  * Contains translations that are installed in the app.
- *
- * @public
  */
 export const TranslationsApi = ApiBlueprint.makeWithOverrides({
   name: 'translations',

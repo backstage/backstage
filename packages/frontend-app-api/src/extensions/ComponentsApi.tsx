@@ -25,8 +25,6 @@ import { DefaultComponentsApi } from '../apis/implementations/ComponentsApi';
 
 /**
  * Contains the shareable components installed into the app.
- *
- * @public
  */
 export const ComponentsApi = ApiBlueprint.makeWithOverrides({
   name: 'components',

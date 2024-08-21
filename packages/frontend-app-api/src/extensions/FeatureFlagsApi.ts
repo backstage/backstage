@@ -24,8 +24,6 @@ import { LocalStorageFeatureFlags } from '../../../core-app-api/src/apis/impleme
 
 /**
  * Contains the shareable icons installed into the app.
- *
- * @public
  */
 export const FeatureFlagsApi = ApiBlueprint.make({
   name: 'feature-flags',

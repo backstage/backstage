@@ -32,8 +32,6 @@ import { AppThemeSelector } from '@backstage/core-app-api';
 
 /**
  * Contains the themes installed into the app.
- *
- * @public
  */
 export const AppThemeApi = ApiBlueprint.makeWithOverrides({
   name: 'app-theme',

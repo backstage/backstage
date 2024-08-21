@@ -26,8 +26,6 @@ import { DefaultIconsApi } from '../apis/implementations/IconsApi';
 
 /**
  * Contains the shareable icons installed into the app.
- *
- * @public
  */
 export const IconsApi = ApiBlueprint.makeWithOverrides({
   name: 'icons',
