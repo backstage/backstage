@@ -7,7 +7,7 @@ import { CacheService } from '@backstage/backend-plugin-api';
 import { CacheServiceOptions } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
+import { ServiceFactory } from '@backstage/backend-plugin-api';
 
 // @public
 export class CacheManager {
@@ -25,11 +25,10 @@ export type CacheManagerOptions = {
 };
 
 // @public
-export const cacheServiceFactory: ServiceFactoryCompat<
+export const cacheServiceFactory: ServiceFactory<
   CacheService,
   'plugin',
-  'singleton',
-  undefined
+  'singleton'
 >;
 
 // @public (undocumented)

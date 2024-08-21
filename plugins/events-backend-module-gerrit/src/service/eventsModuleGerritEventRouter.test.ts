@@ -32,7 +32,7 @@ describe('eventsModuleGerritEventRouter', () => {
     });
 
     await startTestBackend({
-      features: [eventsServiceFactory(), eventsModuleGerritEventRouter],
+      features: [eventsServiceFactory, eventsModuleGerritEventRouter],
     });
 
     expect(events.subscribed).toHaveLength(1);

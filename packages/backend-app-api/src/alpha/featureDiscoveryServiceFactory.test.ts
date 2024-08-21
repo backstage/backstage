@@ -147,7 +147,7 @@ describe('featureDiscoveryServiceFactory', () => {
     await startTestBackend({
       features: [
         mock.factory,
-        featureDiscoveryServiceFactory(),
+        featureDiscoveryServiceFactory,
         mockServices.rootConfig.factory({
           data: { backend: { packages: 'all' } },
         }),
@@ -166,7 +166,7 @@ describe('featureDiscoveryServiceFactory', () => {
     await startTestBackend({
       features: [
         mock.factory,
-        featureDiscoveryServiceFactory(),
+        featureDiscoveryServiceFactory,
         mockServices.rootConfig.factory({
           data: {
             backend: {
@@ -195,7 +195,7 @@ describe('featureDiscoveryServiceFactory', () => {
     await startTestBackend({
       features: [
         mock.factory,
-        featureDiscoveryServiceFactory(),
+        featureDiscoveryServiceFactory,
         mockServices.rootConfig.factory({
           data: {
             backend: {
@@ -220,7 +220,7 @@ describe('featureDiscoveryServiceFactory', () => {
     await startTestBackend({
       features: [
         mock.factory,
-        featureDiscoveryServiceFactory(),
+        featureDiscoveryServiceFactory,
         mockServices.rootConfig.factory({
           data: {
             backend: {
@@ -245,7 +245,7 @@ describe('featureDiscoveryServiceFactory', () => {
     await startTestBackend({
       features: [
         mock.factory,
-        featureDiscoveryServiceFactory(),
+        featureDiscoveryServiceFactory,
         mockServices.rootConfig.factory({
           data: {
             backend: {
@@ -270,7 +270,7 @@ describe('featureDiscoveryServiceFactory', () => {
     await startTestBackend({
       features: [
         mock.factory,
-        featureDiscoveryServiceFactory(),
+        featureDiscoveryServiceFactory,
         mockServices.rootConfig.factory({
           data: {
             backend: {
@@ -300,7 +300,7 @@ describe('featureDiscoveryServiceFactory', () => {
     await startTestBackend({
       features: [
         mock.factory,
-        featureDiscoveryServiceFactory(),
+        featureDiscoveryServiceFactory,
         mockServices.rootConfig.factory({
           data: { backend: { packages: {} } },
         }),
@@ -316,7 +316,7 @@ describe('featureDiscoveryServiceFactory', () => {
     await startTestBackend({
       features: [
         mock.factory,
-        featureDiscoveryServiceFactory(),
+        featureDiscoveryServiceFactory,
         mockServices.rootConfig.factory({
           data: { backend: {} },
         }),

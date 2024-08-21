@@ -64,15 +64,6 @@ export interface BackendFeature {
   $$type: '@backstage/BackendFeature';
 }
 
-// @public @deprecated (undocumented)
-export interface BackendFeatureCompat extends BackendFeature {
-  // @deprecated (undocumented)
-  (): this;
-}
-
-// @public @deprecated (undocumented)
-export type BackendModuleConfig = CreateBackendModuleOptions;
-
 // @public
 export interface BackendModuleRegistrationPoints {
   // (undocumented)
@@ -90,9 +81,6 @@ export interface BackendModuleRegistrationPoints {
     init(deps: DepsToInstances<TDeps>): Promise<void>;
   }): void;
 }
-
-// @public @deprecated (undocumented)
-export type BackendPluginConfig = CreateBackendPluginOptions;
 
 // @public
 export interface BackendPluginRegistrationPoints {
@@ -257,7 +245,7 @@ export interface CreateBackendFeatureLoaderOptions<
 // @public
 export function createBackendModule(
   options: CreateBackendModuleOptions,
-): BackendFeatureCompat;
+): BackendFeature;
 
 // @public
 export interface CreateBackendModuleOptions {
@@ -270,7 +258,7 @@ export interface CreateBackendModuleOptions {
 // @public
 export function createBackendPlugin(
   options: CreateBackendPluginOptions,
-): BackendFeatureCompat;
+): BackendFeature;
 
 // @public
 export interface CreateBackendPluginOptions {
@@ -297,25 +285,9 @@ export function createServiceFactory<
   TDeps extends {
     [name in string]: ServiceRef<unknown, 'root'>;
   },
-  TOpts extends object | undefined = undefined,
 >(
   options: RootServiceFactoryOptions<TService, TInstances, TImpl, TDeps>,
-): ServiceFactoryCompat<TService, 'root', TInstances>;
-
-// @public @deprecated
-export function createServiceFactory<
-  TService,
-  TInstances extends 'singleton' | 'multiton',
-  TImpl extends TService,
-  TDeps extends {
-    [name in string]: ServiceRef<unknown, 'root'>;
-  },
-  TOpts extends object | undefined = undefined,
->(
-  options: (
-    options?: TOpts,
-  ) => RootServiceFactoryOptions<TService, TInstances, TImpl, TDeps>,
-): ServiceFactoryCompat<TService, 'root', TInstances, TOpts>;
+): ServiceFactory<TService, 'root', TInstances>;
 
 // @public
 export function createServiceFactory<
@@ -326,7 +298,6 @@ export function createServiceFactory<
     [name in string]: ServiceRef<unknown>;
   },
   TContext = undefined,
-  TOpts extends object | undefined = undefined,
 >(
   options: PluginServiceFactoryOptions<
     TService,
@@ -335,29 +306,7 @@ export function createServiceFactory<
     TImpl,
     TDeps
   >,
-): ServiceFactoryCompat<TService, 'plugin', TInstances>;
-
-// @public @deprecated
-export function createServiceFactory<
-  TService,
-  TInstances extends 'singleton' | 'multiton',
-  TImpl extends TService,
-  TDeps extends {
-    [name in string]: ServiceRef<unknown>;
-  },
-  TContext = undefined,
-  TOpts extends object | undefined = undefined,
->(
-  options: (
-    options?: TOpts,
-  ) => PluginServiceFactoryOptions<
-    TService,
-    TInstances,
-    TContext,
-    TImpl,
-    TDeps
-  >,
-): ServiceFactoryCompat<TService, 'plugin', TInstances, TOpts>;
+): ServiceFactory<TService, 'plugin', TInstances>;
 
 // @public
 export function createServiceRef<TService>(
@@ -400,9 +349,6 @@ export type ExtensionPoint<T> = {
   toString(): string;
   $$type: '@backstage/ExtensionPoint';
 };
-
-// @public @deprecated (undocumented)
-export type ExtensionPointConfig = CreateExtensionPointOptions;
 
 // @public
 export interface HttpAuthService {
@@ -677,19 +623,6 @@ export interface ServiceFactory<
   service: ServiceRef<TService, TScope, TInstances>;
 }
 
-// @public @deprecated (undocumented)
-export interface ServiceFactoryCompat<
-  TService = unknown,
-  TScope extends 'plugin' | 'root' = 'plugin' | 'root',
-  TInstances extends 'singleton' | 'multiton' = 'singleton' | 'multiton',
-  TOpts extends object | undefined = undefined,
-> extends ServiceFactory<TService, TScope, TInstances> {
-  // @deprecated (undocumented)
-  (
-    ...options: undefined extends TOpts ? [] : [options?: TOpts]
-  ): ServiceFactory<TService, TScope, TInstances>;
-}
-
 // @public @deprecated
 export type ServiceFactoryOrFunction = ServiceFactory | (() => ServiceFactory);
 
@@ -716,10 +649,6 @@ export interface ServiceRefOptions<
   defaultFactory?(
     service: ServiceRef<TService, TScope>,
   ): Promise<ServiceFactory>;
-  // @deprecated (undocumented)
-  defaultFactory?(
-    service: ServiceRef<TService, TScope>,
-  ): Promise<() => ServiceFactory>;
   // (undocumented)
   id: string;
   // (undocumented)

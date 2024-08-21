@@ -26,15 +26,15 @@ import {
   EntityRefPresentation,
   EntityRefPresentationSnapshot,
 } from '@backstage/plugin-catalog-react';
-import { HumanDuration, durationToMilliseconds } from '@backstage/types';
+import { durationToMilliseconds, HumanDuration } from '@backstage/types';
 import DataLoader from 'dataloader';
 import ExpiryMap from 'expiry-map';
 import ObservableImpl from 'zen-observable';
 import {
+  createDefaultRenderer,
   DEFAULT_BATCH_DELAY,
   DEFAULT_CACHE_TTL,
   DEFAULT_ICONS,
-  createDefaultRenderer,
 } from './defaults';
 
 /**
@@ -371,6 +371,15 @@ export class DefaultEntityPresentationApi implements EntityPresentationApi {
       async (entityRefs: readonly string[]) => {
         const { items } = await options.catalogApi!.getEntitiesByRefs({
           entityRefs: entityRefs as string[],
+          fields: [
+            'kind',
+            'metadata.name',
+            'metadata.namespace',
+            'metadata.title',
+            'metadata.description',
+            'spec.profile.displayName',
+            'spec.type',
+          ],
         });
 
         const now = Date.now();

@@ -28,13 +28,6 @@ describe('createBackendPlugin', () => {
       },
     });
 
-    // legacy form
-    const legacy = result() as unknown as InternalBackendRegistrations;
-    expect(legacy.$$type).toEqual('@backstage/BackendFeature');
-    expect(legacy.version).toEqual('v1');
-    expect(legacy.getRegistrations).toEqual(expect.any(Function));
-
-    // new form
     const plugin = result as unknown as InternalBackendRegistrations;
     expect(plugin.$$type).toEqual('@backstage/BackendFeature');
     expect(plugin.version).toEqual('v1');
@@ -50,9 +43,6 @@ describe('createBackendPlugin', () => {
         },
       },
     ]);
-
-    // @ts-expect-error
-    expect(plugin({ a: 'a' })).toBeDefined();
   });
 
   it('should be able to depend on all compatible dependencies', () => {

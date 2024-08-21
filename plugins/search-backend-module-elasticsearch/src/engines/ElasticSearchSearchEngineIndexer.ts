@@ -17,7 +17,6 @@
 import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node';
 import { ElasticSearchClientWrapper } from './ElasticSearchClientWrapper';
 import { IndexableDocument } from '@backstage/plugin-search-common';
-import { Logger } from 'winston';
 import { Readable } from 'stream';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
@@ -30,7 +29,7 @@ export type ElasticSearchSearchEngineIndexerOptions = {
   indexPrefix: string;
   indexSeparator: string;
   alias: string;
-  logger: Logger | LoggerService;
+  logger: LoggerService;
   elasticSearchClientWrapper: ElasticSearchClientWrapper;
   batchSize: number;
   skipRefresh?: boolean;
@@ -56,7 +55,7 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
   private readonly indexPrefix: string;
   private readonly indexSeparator: string;
   private readonly alias: string;
-  private readonly logger: Logger | LoggerService;
+  private readonly logger: LoggerService;
   private readonly sourceStream: Readable;
   private readonly elasticSearchClientWrapper: ElasticSearchClientWrapper;
   private configuredBatchSize: number;

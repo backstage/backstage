@@ -18,15 +18,18 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
+import {
+  mockCredentials,
+  mockServices,
+  startTestBackend,
+} from '@backstage/backend-test-utils';
 import { EventEmitter } from 'events';
 import { Router } from 'express';
+import request from 'supertest';
 import { createLegacyAuthAdapters } from '..';
 import { legacyPlugin } from './legacy';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { authServiceFactory } from '../../../../backend-defaults/src/entrypoints/auth';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { tokenManagerServiceFactory } from '../../../../backend-app-api/src/services/implementations/tokenManager';
 
 describe('legacyPlugin', () => {
   it('can auth across the new and old systems', async () => {
@@ -41,7 +44,6 @@ describe('legacyPlugin', () => {
     await startTestBackend({
       features: [
         authServiceFactory,
-        tokenManagerServiceFactory,
         mockServices.rootConfig.factory({
           data: {
             backend: {
@@ -114,5 +116,55 @@ describe('legacyPlugin', () => {
     });
 
     await done;
+  });
+
+  it('can auth users with the identity service shim', async () => {
+    const backend = await startTestBackend({
+      features: [
+        mockServices.rootConfig.factory({
+          data: {
+            backend: {
+              auth: {
+                keys: [
+                  {
+                    secret: 'test',
+                  },
+                ],
+              },
+            },
+          },
+        }),
+        legacyPlugin(
+          'test',
+          Promise.resolve({
+            async default({ identity }) {
+              const router = Router();
+
+              router.get('/', async (req, res) => {
+                const user = await identity.getIdentity({ request: req });
+                res.json(user);
+              });
+
+              return router;
+            },
+          }),
+        ),
+      ],
+    });
+
+    const res = await request(backend.server)
+      .get('/api/test')
+      .set('authorization', mockCredentials.user.header());
+
+    const mockUserRef = mockCredentials.user().principal.userEntityRef;
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({
+      token: mockCredentials.user.token(),
+      identity: {
+        type: 'user',
+        userEntityRef: mockUserRef,
+        ownershipEntityRefs: [mockUserRef],
+      },
+    });
   });
 });

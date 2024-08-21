@@ -7,7 +7,7 @@ import { HttpRouterService } from '@backstage/backend-plugin-api';
 import { HumanDuration } from '@backstage/types';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { RequestHandler } from 'express';
-import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
+import { ServiceFactory } from '@backstage/backend-plugin-api';
 
 // @public
 export function createLifecycleMiddleware(
@@ -15,11 +15,10 @@ export function createLifecycleMiddleware(
 ): RequestHandler;
 
 // @public
-export const httpRouterServiceFactory: ServiceFactoryCompat<
+export const httpRouterServiceFactory: ServiceFactory<
   HttpRouterService,
   'plugin',
-  'singleton',
-  undefined
+  'singleton'
 >;
 
 // @public

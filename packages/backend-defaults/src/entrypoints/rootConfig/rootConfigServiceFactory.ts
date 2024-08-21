@@ -60,7 +60,7 @@ export const rootConfigServiceFactoryWithOptions = (
       console.log(`Loading config from ${source}`);
       return await ConfigSources.toConfig(source);
     },
-  })();
+  });
 
 /**
  * @public

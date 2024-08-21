@@ -38,6 +38,7 @@ import { featureDiscoveryServiceRef } from '@backstage/backend-plugin-api/alpha'
 import { DependencyGraph } from '../lib/DependencyGraph';
 import { ServiceRegistry } from './ServiceRegistry';
 import { createInitializationLogger } from './createInitializationLogger';
+import { unwrapFeature } from './helpers';
 
 export interface BackendRegisterInit {
   consumes: Set<ServiceOrExtensionPoint>;
@@ -163,7 +164,7 @@ export class BackendInitializer {
     if (featureDiscovery) {
       const { features } = await featureDiscovery.getBackendFeatures();
       for (const feature of features) {
-        this.#addFeature(feature);
+        this.#addFeature(unwrapFeature(feature));
       }
       this.#serviceRegistry.checkForCircularDeps();
     }
@@ -417,6 +418,7 @@ export class BackendInitializer {
 
       const result = await loader
         .loader(Object.fromEntries(deps))
+        .then(features => features.map(unwrapFeature))
         .catch(error => {
           throw new ForwardedError(
             `Feature loader ${loader.description} failed`,

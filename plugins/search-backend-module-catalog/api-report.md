@@ -9,11 +9,11 @@ import { AuthService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
 import { Config } from '@backstage/config';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { Entity } from '@backstage/catalog-model';
 import { GetEntitiesRequest } from '@backstage/catalog-client';
 import { Permission } from '@backstage/plugin-permission-common';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Readable } from 'stream';
 import { TokenManager } from '@backstage/backend-common';
 
@@ -25,7 +25,7 @@ export type CatalogCollatorEntityTransformer = (
 // @public (undocumented)
 export const defaultCatalogCollatorEntityTransformer: CatalogCollatorEntityTransformer;
 
-// @public
+// @public @deprecated
 export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
   // (undocumented)
   static fromConfig(
@@ -40,10 +40,10 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
   readonly visibilityPermission: Permission;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type DefaultCatalogCollatorFactoryOptions = {
   auth?: AuthService;
-  discovery: PluginEndpointDiscovery;
+  discovery: DiscoveryService;
   tokenManager?: TokenManager;
   locationTemplate?: string;
   filter?: GetEntitiesRequest['filter'];

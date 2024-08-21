@@ -27,14 +27,3 @@ export interface BackendFeature {
   // NOTE: This type is opaque in order to simplify future API evolution.
   $$type: '@backstage/BackendFeature';
 }
-
-/**
- * @public
- * @deprecated This type exists only as a helper for old code that relied on `createBackendFeature` and `createBackendPlugin` to return `() => BackendFeature` instead of `BackendFeature`. You should remove the `()` parentheses at the end of your usages. This type will be removed in a future release.
- */
-export interface BackendFeatureCompat extends BackendFeature {
-  /**
-   * @deprecated You do not need to use this call signature; use the type directly instead by removing the `()` parentheses at the end. This call signature will be removed in a future release.
-   */
-  (): this;
-}

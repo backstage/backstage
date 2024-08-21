@@ -14,7 +14,6 @@ import { Config } from '@backstage/config';
 import type { ConnectionOptions } from 'tls';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { IndexableResultSet } from '@backstage/plugin-search-common';
-import { Logger } from 'winston';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { Readable } from 'stream';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
@@ -306,7 +305,7 @@ export interface ElasticSearchNodeOptions {
 
 // @public
 export type ElasticSearchOptions = {
-  logger: Logger | LoggerService;
+  logger: LoggerService;
   config: Config;
   aliasPostfix?: string;
   indexPrefix?: string;
@@ -330,7 +329,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     elasticSearchClientOptions: ElasticSearchClientOptions,
     aliasPostfix: string,
     indexPrefix: string,
-    logger: Logger | LoggerService,
+    logger: LoggerService,
     batchSize: number,
     highlightOptions?: ElasticSearchHighlightOptions,
   );
@@ -373,7 +372,7 @@ export type ElasticSearchSearchEngineIndexerOptions = {
   indexPrefix: string;
   indexSeparator: string;
   alias: string;
-  logger: Logger | LoggerService;
+  logger: LoggerService;
   elasticSearchClientWrapper: ElasticSearchClientWrapper;
   batchSize: number;
   skipRefresh?: boolean;

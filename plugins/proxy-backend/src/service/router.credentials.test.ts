@@ -80,8 +80,8 @@ describe('credentials', () => {
       features: [
         import('../alpha'),
         mockServices.rootConfig.factory({ data: config }),
-        authServiceFactory(),
-        httpAuthServiceFactory(),
+        authServiceFactory,
+        httpAuthServiceFactory,
       ],
     });
 

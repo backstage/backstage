@@ -21,7 +21,7 @@ import { GitLabIntegration } from '@backstage/integration';
 import { HarnessIntegration } from '@backstage/integration';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { Readable } from 'stream';
-import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
+import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { UrlReaderServiceReadTreeOptions } from '@backstage/backend-plugin-api';
@@ -434,11 +434,10 @@ export class UrlReaders {
 }
 
 // @public
-export const urlReaderServiceFactory: ServiceFactoryCompat<
+export const urlReaderServiceFactory: ServiceFactory<
   UrlReaderService,
   'plugin',
-  'singleton',
-  undefined
+  'singleton'
 >;
 
 // @public

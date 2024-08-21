@@ -25,9 +25,12 @@ import {
 } from 'http-proxy-middleware';
 import { Logger } from 'winston';
 import http from 'http';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { JsonObject } from '@backstage/types';
-import { HttpRouterService } from '@backstage/backend-plugin-api';
+import {
+  DiscoveryService,
+  HttpRouterService,
+  RootConfigService,
+} from '@backstage/backend-plugin-api';
 
 // A list of headers that are always forwarded to the proxy targets.
 const safeForwardHeaders = [
@@ -50,11 +53,14 @@ const safeForwardHeaders = [
   'user-agent',
 ];
 
-/** @public */
+/**
+ * @public
+ * @deprecated Please migrate to the new backend system as this will be removed in the future.
+ */
 export interface RouterOptions {
   logger: Logger;
-  config: Config;
-  discovery: PluginEndpointDiscovery;
+  config: RootConfigService;
+  discovery: DiscoveryService;
   skipInvalidProxies?: boolean;
   reviveConsumedRequestBodies?: boolean;
 }
@@ -278,6 +284,7 @@ function readProxyConfig(config: Config, logger: Logger): JsonObject {
  *
  * @see https://backstage.io/docs/plugins/proxying
  * @public
+ * @deprecated Please migrate to the new backend system as this will be removed in the future.
  */
 export async function createRouter(
   options: RouterOptions,

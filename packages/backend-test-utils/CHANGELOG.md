@@ -6,8 +6,8 @@
 
 - 861f162: **BREAKING**: Removed these deprecated helpers:
 
-  - `setupRequestMockHandlers` Use `CreateMockDirectoryOptions` instead.
-  - `CreateMockDirectoryOptions` Use `registerMswTestHooks` instead.
+  - `setupRequestMockHandlers` is removed; use `registerMswTestHooks` instead.
+  - `MockDirectoryOptions` is removed; use `CreateMockDirectoryOptions` instead.
 
   Stopped exporting the deprecated and internal `isDockerDisabledForTests` helper.
 

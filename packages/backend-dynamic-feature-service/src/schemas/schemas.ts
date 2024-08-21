@@ -71,8 +71,10 @@ export interface DynamicPluginsSchemasOptions {
 /**
  * @public
  */
-export const dynamicPluginsSchemasServiceFactory = createServiceFactory(
-  (options?: DynamicPluginsSchemasOptions) => ({
+export const dynamicPluginsSchemasServiceFactoryWithOptions = (
+  options?: DynamicPluginsSchemasOptions,
+) =>
+  createServiceFactory({
     service: dynamicPluginsSchemasServiceRef,
     deps: {
       config: coreServices.rootConfig,
@@ -137,8 +139,13 @@ export const dynamicPluginsSchemasServiceFactory = createServiceFactory(
         },
       };
     },
-  }),
-);
+  });
+
+/**
+ * @public
+ */
+export const dynamicPluginsSchemasServiceFactory =
+  dynamicPluginsSchemasServiceFactoryWithOptions();
 
 /** @internal */
 async function gatherDynamicPluginsSchemas(

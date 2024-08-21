@@ -4,14 +4,13 @@
 
 ```ts
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
+import { ServiceFactory } from '@backstage/backend-plugin-api';
 
 // @public
-export const loggerServiceFactory: ServiceFactoryCompat<
+export const loggerServiceFactory: ServiceFactory<
   LoggerService,
   'plugin',
-  'singleton',
-  undefined
+  'singleton'
 >;
 
 // (No @packageDocumentation comment for this package)

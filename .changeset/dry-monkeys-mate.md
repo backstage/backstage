@@ -1,0 +1,5 @@
+---
+'@backstage/plugin-kubernetes-backend': patch
+---
+
+The `KubernetesBuilder` and its related types has been marked as deprecared. This backend should instead be initialized using the new backend system.

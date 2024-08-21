@@ -28,8 +28,8 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 import { ObjectToFetch as ObjectToFetch_2 } from '@backstage/plugin-kubernetes-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PermissionsService } from '@backstage/backend-plugin-api';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { RequestHandler } from 'http-proxy-middleware';
+import { RootConfigService } from '@backstage/backend-plugin-api';
 import { TokenCredential } from '@azure/identity';
 
 // @public (undocumented)
@@ -153,7 +153,7 @@ export const HEADER_KUBERNETES_AUTH: string;
 // @public
 export const HEADER_KUBERNETES_CLUSTER: string;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class KubernetesBuilder {
   constructor(env: KubernetesEnvironment);
   // (undocumented)
@@ -268,7 +268,7 @@ export class KubernetesBuilder {
   setServiceLocator(serviceLocator?: KubernetesServiceLocator_2): this;
 }
 
-// @public
+// @public @deprecated
 export type KubernetesBuilderReturn = Promise<{
   router: express.Router;
   clusterSupplier: KubernetesClustersSupplier_2;
@@ -289,7 +289,7 @@ export type KubernetesClustersSupplier =
 // @public @deprecated (undocumented)
 export type KubernetesCredential = k8sAuthTypes.KubernetesCredential;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export interface KubernetesEnvironment {
   // (undocumented)
   auth?: AuthService;
@@ -380,16 +380,16 @@ export class OidcStrategy implements AuthenticationStrategy_2 {
   validateCluster(authMetadata: AuthMetadata_2): Error[];
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export interface RouterOptions {
   // (undocumented)
   catalogApi: CatalogApi;
   // (undocumented)
   clusterSupplier?: KubernetesClustersSupplier;
   // (undocumented)
-  config: Config;
+  config: RootConfigService;
   // (undocumented)
-  discovery: PluginEndpointDiscovery;
+  discovery: DiscoveryService;
   // (undocumented)
   logger: Logger;
   // (undocumented)

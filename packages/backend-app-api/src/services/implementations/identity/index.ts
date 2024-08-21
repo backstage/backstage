@@ -15,4 +15,3 @@
  */
 
 export { identityServiceFactory } from './identityServiceFactory';
-export type { IdentityFactoryOptions } from './identityServiceFactory';

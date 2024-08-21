@@ -123,7 +123,7 @@ const rootHttpRouterServiceFactoryWithOptions = (
 
       return router;
     },
-  })();
+  });
 
 /** @public */
 export const rootHttpRouterServiceFactory = Object.assign(

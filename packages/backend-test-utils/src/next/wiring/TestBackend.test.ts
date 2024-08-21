@@ -71,34 +71,34 @@ describe('TestBackend', () => {
         features: [
           // @ts-expect-error
           [extensionPoint1, { a: 'a' }],
-          createServiceFactory(() => ({
+          createServiceFactory({
             service: serviceRef,
             deps: {},
             // @ts-expect-error
             factory: async () => ({ a: 'a' }),
-          })),
-          createServiceFactory(() => ({
+          }),
+          createServiceFactory({
             service: serviceRef,
             deps: {},
             factory: async () => ({ a: 'a', b: 'b' }),
-          })),
-          createServiceFactory(() => ({
+          }),
+          createServiceFactory({
             service: serviceRef,
             deps: {},
             // @ts-expect-error
             factory: async () => ({ c: 'c' }),
-          })),
-          createServiceFactory(() => ({
+          }),
+          createServiceFactory({
             service: serviceRef,
             deps: {},
             // @ts-expect-error
             factory: async () => ({ a: 'a', c: 'c' }),
-          })),
-          createServiceFactory(() => ({
+          }),
+          createServiceFactory({
             service: serviceRef,
             deps: {},
             factory: async () => ({ a: 'a', b: 'b', c: 'c' }),
-          })),
+          }),
         ],
         extensionPoints: [
           // @ts-expect-error
@@ -144,7 +144,7 @@ describe('TestBackend', () => {
     });
 
     await startTestBackend({
-      features: [testModule, sf()],
+      features: [testModule, sf],
     });
 
     expect(testFn).toHaveBeenCalledWith('winning');

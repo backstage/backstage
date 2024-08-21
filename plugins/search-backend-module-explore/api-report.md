@@ -7,18 +7,18 @@
 
 import { AuthService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { ExploreTool } from '@backstage-community/plugin-explore-common';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Readable } from 'stream';
 import { TokenManager } from '@backstage/backend-common';
 
 // @public
 export interface ToolDocument extends IndexableDocument, ExploreTool {}
 
-// @public
+// @public @deprecated
 export class ToolDocumentCollatorFactory implements DocumentCollatorFactory {
   // (undocumented)
   execute(): AsyncGenerator<ToolDocument>;
@@ -33,9 +33,9 @@ export class ToolDocumentCollatorFactory implements DocumentCollatorFactory {
   readonly type: string;
 }
 
-// @public
+// @public @deprecated (undocumented)
 export type ToolDocumentCollatorFactoryOptions = {
-  discovery: PluginEndpointDiscovery;
+  discovery: DiscoveryService;
   logger: LoggerService;
   tokenManager?: TokenManager;
   auth?: AuthService;

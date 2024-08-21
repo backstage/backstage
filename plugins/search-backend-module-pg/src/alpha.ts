@@ -19,7 +19,6 @@ import {
 } from '@backstage/backend-plugin-api';
 import { searchEngineRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
 import { PgSearchEngine } from './PgSearchEngine';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 
 /**
  * @alpha
@@ -41,7 +40,7 @@ export default createBackendModule({
           searchEngineRegistry.setSearchEngine(
             await PgSearchEngine.fromConfig(config, {
               database,
-              logger: loggerToWinstonLogger(logger),
+              logger,
             }),
           );
         } else {

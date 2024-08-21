@@ -151,32 +151,52 @@ export const myPluginTranslationRef = createTranslationRef({
 
 Step 1: Create translation resources
 
+You should separate different translations to their own files and import them in the main file:
+
 ```ts
 // packages/app/src/translations/userSettings.ts
 
 import { createTranslationResource } from '@backstage/core-plugin-api/alpha';
 import { userSettingsTranslationRef } from '@backstage/plugin-user-settings/alpha';
 
-export const userSettingsMessages = createTranslationResource({
+export const userSettingsTranslations = createTranslationResource({
   ref: userSettingsTranslationRef,
   translations: {
-    zh: () =>
-      Promise.resolve({
-        default: {
-          'languageToggle.title': '语言',
-          'languageToggle.select': '选择{{language}}',
-          'languageToggle.description': '切换语言',
-          'themeToggle.title': '主题',
-          'themeToggle.description': '切换主题',
-          'themeToggle.select': '选择{{theme}}',
-          'themeToggle.selectAuto': '选择自动主题',
-          'themeToggle.names.auto': '自动',
-          'themeToggle.names.dark': '暗黑',
-          'themeToggle.names.light': '明亮',
-        },
-      }),
+    zh: () => import('./userSettings-zh'),
   },
 });
+
+// packages/app/src/translations/userSettings-zh.ts
+import { userSettingsTranslationRef } from '@backstage/plugin-user-settings/alpha';
+
+const zh = createTranslationMessages({
+  ref: userSettingsTranslationRef,
+  full: false, // False means that this is a partial translation
+  messages: {
+    'languageToggle.title': '语言',
+    'languageToggle.select': '选择{{language}}',
+  },
+});
+
+export default zh;
+```
+
+It's also possible to export the list of messages directly:
+
+```ts
+// packages/app/src/translations/userSettings-zh.ts
+export default {
+  'languageToggle.title': '语言',
+  'languageToggle.select': '选择{{language}}',
+  'languageToggle.description': '切换语言',
+  'themeToggle.title': '主题',
+  'themeToggle.description': '切换主题',
+  'themeToggle.select': '选择{{theme}}',
+  'themeToggle.selectAuto': '选择自动主题',
+  'themeToggle.names.auto': '自动',
+  'themeToggle.names.dark': '暗黑',
+  'themeToggle.names.light': '明亮',
+};
 ```
 
 You should change `zh` under the translations object to your local language.
@@ -186,12 +206,12 @@ Step 2: Config translations in `packages/app/src/App.tsx`
 In an app you can both override the default messages, as well as register translations for additional languages:
 
 ```diff
-+ import { userSettingsMessages } from './translations/userSettings';
++ import { userSettingsTranslations } from './translations/userSettings';
 
  const app = createApp({
 +  __experimentalTranslations: {
 +    availableLanguages: ['en', 'zh'],
-+    resources: [userSettingsMessages],
++    resources: [userSettingsTranslations],
 +  },
  })
 ```

@@ -32,7 +32,7 @@ describe('eventsModuleBitbucketCloudEventRouter', () => {
     });
 
     await startTestBackend({
-      features: [eventsServiceFactory(), eventsModuleBitbucketCloudEventRouter],
+      features: [eventsServiceFactory, eventsModuleBitbucketCloudEventRouter],
     });
 
     expect(events.subscribed).toHaveLength(1);

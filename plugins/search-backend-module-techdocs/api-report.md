@@ -8,12 +8,12 @@
 import { AuthService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { Entity } from '@backstage/catalog-model';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { Permission } from '@backstage/plugin-permission-common';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Readable } from 'stream';
 import { TechDocsDocument } from '@backstage/plugin-techdocs-node';
 import { TokenManager } from '@backstage/backend-common';
@@ -21,7 +21,7 @@ import { TokenManager } from '@backstage/backend-common';
 // @public (undocumented)
 export const defaultTechDocsCollatorEntityTransformer: TechDocsCollatorEntityTransformer;
 
-// @public
+// @public @deprecated
 export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
   // (undocumented)
   static fromConfig(
@@ -41,9 +41,9 @@ export type TechDocsCollatorEntityTransformer = (
   entity: Entity,
 ) => Omit<TechDocsDocument, 'location' | 'authorization'>;
 
-// @public
+// @public @deprecated
 export type TechDocsCollatorFactoryOptions = {
-  discovery: PluginEndpointDiscovery;
+  discovery: DiscoveryService;
   logger: LoggerService;
   tokenManager?: TokenManager;
   auth?: AuthService;

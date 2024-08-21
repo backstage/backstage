@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-import {
-  PluginEndpointDiscovery,
-  TokenManager,
-} from '@backstage/backend-common';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
@@ -26,6 +22,7 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { Readable } from 'stream';
 import { DefaultCatalogCollatorFactory } from './DefaultCatalogCollatorFactory';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 
 const server = setupServer();
 
@@ -61,17 +58,13 @@ const expectedEntities: Entity[] = [
 
 describe('DefaultCatalogCollatorFactory', () => {
   const config = new ConfigReader({});
-  const mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery> = {
+  const mockDiscoveryApi: jest.Mocked<DiscoveryService> = {
     getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7007'),
     getExternalBaseUrl: jest.fn(),
   };
-  const mockTokenManager: jest.Mocked<TokenManager> = {
-    getToken: jest.fn().mockResolvedValue({ token: '' }),
-    authenticate: jest.fn(),
-  };
+
   const options = {
     discovery: mockDiscoveryApi,
-    tokenManager: mockTokenManager,
   };
 
   registerMswTestHooks(server);
@@ -209,7 +202,6 @@ describe('DefaultCatalogCollatorFactory', () => {
       // Provide an alternate location template.
       factory = DefaultCatalogCollatorFactory.fromConfig(new ConfigReader({}), {
         discovery: mockDiscoveryApi,
-        tokenManager: mockTokenManager,
         locationTemplate: '/software/:name',
       });
       collator = await factory.getCollator();
@@ -225,7 +217,6 @@ describe('DefaultCatalogCollatorFactory', () => {
       // Provide a custom filter.
       factory = DefaultCatalogCollatorFactory.fromConfig(new ConfigReader({}), {
         discovery: mockDiscoveryApi,
-        tokenManager: mockTokenManager,
         filter: {
           kind: ['Foo', 'Bar'],
         },

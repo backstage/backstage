@@ -81,7 +81,7 @@ USER node
 WORKDIR /app
 
 # This switches many Node.js dependencies to production mode.
-ENV NODE_ENV production
+ENV NODE_ENV=production
 
 # Copy repo skeleton first, to avoid unnecessary docker cache invalidation.
 # The skeleton contains the package.json of each package in the monorepo,
@@ -263,7 +263,7 @@ COPY --chown=node:node app-config*.yaml ./
 COPY --chown=node:node examples ./examples
 
 # This switches many Node.js dependencies to production mode.
-ENV NODE_ENV production
+ENV NODE_ENV=production
 
 CMD ["node", "packages/backend", "--config", "app-config.yaml", "--config", "app-config.production.yaml"]
 ```

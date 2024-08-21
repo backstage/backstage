@@ -15,7 +15,6 @@
  */
 
 import {
-  PluginEndpointDiscovery,
   TokenManager,
   createLegacyAuthAdapters,
 } from '@backstage/backend-common';
@@ -34,12 +33,15 @@ import { Readable } from 'stream';
 import { CatalogCollatorEntityTransformer } from './CatalogCollatorEntityTransformer';
 import { readCollatorConfigOptions } from './config';
 import { defaultCatalogCollatorEntityTransformer } from './defaultCatalogCollatorEntityTransformer';
-import { AuthService } from '@backstage/backend-plugin-api';
+import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
 
-/** @public */
+/**
+ * @public
+ * @deprecated This type is deprecated along with the {@link DefaultCatalogCollatorFactory}.
+ */
 export type DefaultCatalogCollatorFactoryOptions = {
   auth?: AuthService;
-  discovery: PluginEndpointDiscovery;
+  discovery: DiscoveryService;
   tokenManager?: TokenManager;
   /**
    * @deprecated Use the config key `search.collators.catalog.locationTemplate` instead.
@@ -64,6 +66,7 @@ export type DefaultCatalogCollatorFactoryOptions = {
  * Collates entities from the Catalog into documents for the search backend.
  *
  * @public
+ * @deprecated Migrate to the {@link https://backstage.io/docs/backend-system/building-backends/migrating | new backend system} and install this collator via module instead (see {@link https://github.com/backstage/backstage/blob/nbs10/search-deprecate-create-router/plugins/search-backend-module-catalog/README.md#installation | here} for more installation details).
  */
 export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
   public readonly type = 'software-catalog';
@@ -105,7 +108,7 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
     batchSize: number;
     entityTransformer?: CatalogCollatorEntityTransformer;
     auth: AuthService;
-    discovery: PluginEndpointDiscovery;
+    discovery: DiscoveryService;
     catalogClient?: CatalogApi;
   }) {
     const {

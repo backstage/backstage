@@ -15,6 +15,7 @@ import * as bitbucketCloud from '@backstage/plugin-scaffolder-backend-module-bit
 import * as bitbucketServer from '@backstage/plugin-scaffolder-backend-module-bitbucket-server';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
+import { DatabaseService } from '@backstage/backend-plugin-api';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { Duration } from 'luxon';
 import { executeShellCommand as executeShellCommand_2 } from '@backstage/plugin-scaffolder-node';
@@ -320,7 +321,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
   JsonObject
 >;
 
-// @public
+// @public @deprecated
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public @deprecated (undocumented)
@@ -469,7 +470,7 @@ export const executeShellCommand: typeof executeShellCommand_2;
 // @public @deprecated
 export const fetchContents: typeof fetchContents_2;
 
-// @public
+// @public @deprecated
 export interface RouterOptions {
   // (undocumented)
   actions?: TemplateAction_2<any, any>[];
@@ -489,7 +490,7 @@ export interface RouterOptions {
   // (undocumented)
   config: Config;
   // (undocumented)
-  database: PluginDatabaseManager;
+  database: DatabaseService;
   // (undocumented)
   discovery?: DiscoveryService;
   // (undocumented)

@@ -110,7 +110,7 @@ describe('httpRouterFactory', () => {
     });
 
     const defaultServices = [
-      httpRouterServiceFactory(),
+      httpRouterServiceFactory,
       mockServices.httpAuth.factory({
         defaultCredentials: mockCredentials.none(),
       }),

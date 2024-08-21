@@ -29,13 +29,6 @@ describe('createBackendModule', () => {
       },
     });
 
-    // legacy form
-    const legacy = result() as unknown as InternalBackendRegistrations;
-    expect(legacy.$$type).toEqual('@backstage/BackendFeature');
-    expect(legacy.version).toEqual('v1');
-    expect(legacy.getRegistrations).toEqual(expect.any(Function));
-
-    // new form
     const module = result as unknown as InternalBackendRegistrations;
     expect(module.$$type).toEqual('@backstage/BackendFeature');
     expect(module.version).toEqual('v1');
@@ -52,9 +45,6 @@ describe('createBackendModule', () => {
         },
       },
     ]);
-
-    // @ts-expect-error
-    expect(module({ a: 'a' })).toBeDefined();
   });
 
   it('should be able to depend on all types of dependencies', () => {

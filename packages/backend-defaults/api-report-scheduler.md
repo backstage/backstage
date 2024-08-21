@@ -6,7 +6,7 @@
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
-import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
+import { ServiceFactory } from '@backstage/backend-plugin-api';
 
 // @public
 export class DefaultSchedulerService {
@@ -18,11 +18,10 @@ export class DefaultSchedulerService {
 }
 
 // @public
-export const schedulerServiceFactory: ServiceFactoryCompat<
+export const schedulerServiceFactory: ServiceFactory<
   SchedulerService,
   'plugin',
-  'singleton',
-  undefined
+  'singleton'
 >;
 
 // (No @packageDocumentation comment for this package)

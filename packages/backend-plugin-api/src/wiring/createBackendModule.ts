@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { BackendFeatureCompat } from '../types';
+import { BackendFeature } from '../types';
 import {
   BackendModuleRegistrationPoints,
   InternalBackendModuleRegistration,
   InternalBackendPluginRegistration,
+  InternalBackendRegistrations,
 } from './types';
 
 /**
@@ -52,7 +53,7 @@ export interface CreateBackendModuleOptions {
  */
 export function createBackendModule(
   options: CreateBackendModuleOptions,
-): BackendFeatureCompat {
+): BackendFeature {
   function getRegistrations() {
     const extensionPoints: InternalBackendPluginRegistration['extensionPoints'] =
       [];
@@ -93,15 +94,10 @@ export function createBackendModule(
     ];
   }
 
-  function backendFeatureCompatWrapper() {
-    return backendFeatureCompatWrapper;
-  }
-
-  Object.assign(backendFeatureCompatWrapper, {
+  return {
     $$type: '@backstage/BackendFeature' as const,
+    featureType: 'registrations',
     version: 'v1',
     getRegistrations,
-  });
-
-  return backendFeatureCompatWrapper as BackendFeatureCompat;
+  } as InternalBackendRegistrations;
 }

@@ -55,4 +55,4 @@ COPY docker/default.conf.template /etc/nginx/templates/default.conf.template
 
 COPY docker/inject-config.sh /docker-entrypoint.d/40-inject-config.sh
 
-ENV PORT 80
+ENV PORT=80

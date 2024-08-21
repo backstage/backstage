@@ -16,6 +16,7 @@
 
 export {
   dynamicPluginsSchemasServiceFactory,
+  dynamicPluginsSchemasServiceFactoryWithOptions,
   type DynamicPluginsSchemasService,
   type DynamicPluginsSchemasOptions,
 } from './schemas';

@@ -38,7 +38,6 @@ import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
-import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
@@ -150,12 +149,7 @@ export namespace mockServices {
   // (undocumented)
   export namespace auth {
     const // (undocumented)
-      factory: ServiceFactoryCompat<
-        AuthService,
-        'plugin',
-        'singleton',
-        undefined
-      >;
+      factory: () => ServiceFactory<AuthService, 'plugin', 'singleton'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<AuthService> | undefined,
@@ -164,12 +158,7 @@ export namespace mockServices {
   // (undocumented)
   export namespace cache {
     const // (undocumented)
-      factory: ServiceFactoryCompat<
-        CacheService,
-        'plugin',
-        'singleton',
-        undefined
-      >;
+      factory: () => ServiceFactory<CacheService, 'plugin', 'singleton'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<CacheService> | undefined,
@@ -178,12 +167,7 @@ export namespace mockServices {
   // (undocumented)
   export namespace database {
     const // (undocumented)
-      factory: ServiceFactoryCompat<
-        DatabaseService,
-        'plugin',
-        'singleton',
-        undefined
-      >;
+      factory: () => ServiceFactory<DatabaseService, 'plugin', 'singleton'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<DatabaseService> | undefined,
@@ -194,12 +178,7 @@ export namespace mockServices {
   // (undocumented)
   export namespace discovery {
     const // (undocumented)
-      factory: ServiceFactoryCompat<
-        DiscoveryService,
-        'plugin',
-        'singleton',
-        undefined
-      >;
+      factory: () => ServiceFactory<DiscoveryService, 'plugin', 'singleton'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<DiscoveryService> | undefined,
@@ -208,12 +187,7 @@ export namespace mockServices {
   // (undocumented)
   export namespace events {
     const // (undocumented)
-      factory: ServiceFactoryCompat<
-        EventsService,
-        'plugin',
-        'singleton',
-        undefined
-      >;
+      factory: () => ServiceFactory<EventsService, 'plugin', 'singleton'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<EventsService> | undefined,
@@ -225,10 +199,9 @@ export namespace mockServices {
   }): HttpAuthService;
   // (undocumented)
   export namespace httpAuth {
-    const factory: ((options?: {
+    const factory: (options?: {
       defaultCredentials?: BackstageCredentials;
-    }) => ServiceFactory<HttpAuthService, 'plugin', 'singleton'>) &
-      ServiceFactory<HttpAuthService, 'plugin', 'singleton'>;
+    }) => ServiceFactory<HttpAuthService, 'plugin', 'singleton'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<HttpAuthService> | undefined,
@@ -237,12 +210,7 @@ export namespace mockServices {
   // (undocumented)
   export namespace httpRouter {
     const // (undocumented)
-      factory: ServiceFactoryCompat<
-        HttpRouterService,
-        'plugin',
-        'singleton',
-        undefined
-      >;
+      factory: () => ServiceFactory<HttpRouterService, 'plugin', 'singleton'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<HttpRouterService> | undefined,
@@ -253,12 +221,7 @@ export namespace mockServices {
   // (undocumented)
   export namespace identity {
     const // (undocumented)
-      factory: ServiceFactoryCompat<
-        IdentityService,
-        'plugin',
-        'singleton',
-        undefined
-      >;
+      factory: () => ServiceFactory<IdentityService, 'plugin', 'singleton'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<IdentityService> | undefined,
@@ -267,12 +230,7 @@ export namespace mockServices {
   // (undocumented)
   export namespace lifecycle {
     const // (undocumented)
-      factory: ServiceFactoryCompat<
-        LifecycleService,
-        'plugin',
-        'singleton',
-        undefined
-      >;
+      factory: () => ServiceFactory<LifecycleService, 'plugin', 'singleton'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<LifecycleService> | undefined,
@@ -281,12 +239,7 @@ export namespace mockServices {
   // (undocumented)
   export namespace logger {
     const // (undocumented)
-      factory: ServiceFactoryCompat<
-        LoggerService,
-        'plugin',
-        'singleton',
-        undefined
-      >;
+      factory: () => ServiceFactory<LoggerService, 'plugin', 'singleton'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<LoggerService> | undefined,
@@ -295,12 +248,7 @@ export namespace mockServices {
   // (undocumented)
   export namespace permissions {
     const // (undocumented)
-      factory: ServiceFactoryCompat<
-        PermissionsService,
-        'plugin',
-        'singleton',
-        undefined
-      >;
+      factory: () => ServiceFactory<PermissionsService, 'plugin', 'singleton'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<PermissionsService> | undefined,
@@ -315,28 +263,14 @@ export namespace mockServices {
       data?: JsonObject;
     };
     const // (undocumented)
-      factory: ServiceFactory<
-        RootConfigService,
-        'root',
-        'singleton' | 'multiton'
-      > &
-        ((
-          options?: Options | undefined,
-        ) => ServiceFactory<
-          RootConfigService,
-          'root',
-          'singleton' | 'multiton'
-        >);
+      factory: (
+        options?: Options | undefined,
+      ) => ServiceFactory<RootConfigService, 'root', 'singleton' | 'multiton'>;
   }
   // (undocumented)
   export namespace rootHealth {
     const // (undocumented)
-      factory: ServiceFactoryCompat<
-        RootHealthService,
-        'root',
-        'singleton',
-        undefined
-      >;
+      factory: () => ServiceFactory<RootHealthService, 'root', 'singleton'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<RootHealthService> | undefined,
@@ -345,7 +279,7 @@ export namespace mockServices {
   // (undocumented)
   export namespace rootHttpRouter {
     const // (undocumented)
-      factory: ((
+      factory: () => ((
         options?: RootHttpRouterFactoryOptions | undefined,
       ) => ServiceFactory<RootHttpRouterService, 'root', 'singleton'>) &
         ServiceFactory<RootHttpRouterService, 'root', 'singleton'>;
@@ -357,12 +291,7 @@ export namespace mockServices {
   // (undocumented)
   export namespace rootLifecycle {
     const // (undocumented)
-      factory: ServiceFactoryCompat<
-        RootLifecycleService,
-        'root',
-        'singleton',
-        undefined
-      >;
+      factory: () => ServiceFactory<RootLifecycleService, 'root', 'singleton'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<RootLifecycleService> | undefined,
@@ -377,10 +306,9 @@ export namespace mockServices {
       level?: 'none' | 'error' | 'warn' | 'info' | 'debug';
     };
     const // (undocumented)
-      factory: ServiceFactory<LoggerService, 'root', 'singleton' | 'multiton'> &
-        ((
-          options?: Options | undefined,
-        ) => ServiceFactory<LoggerService, 'root', 'singleton' | 'multiton'>);
+      factory: (
+        options?: Options | undefined,
+      ) => ServiceFactory<LoggerService, 'root', 'singleton' | 'multiton'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<RootLoggerService> | undefined,
@@ -389,12 +317,7 @@ export namespace mockServices {
   // (undocumented)
   export namespace scheduler {
     const // (undocumented)
-      factory: ServiceFactoryCompat<
-        SchedulerService,
-        'plugin',
-        'singleton',
-        undefined
-      >;
+      factory: () => ServiceFactory<SchedulerService, 'plugin', 'singleton'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<SchedulerService> | undefined,
@@ -405,12 +328,7 @@ export namespace mockServices {
   // (undocumented)
   export namespace tokenManager {
     const // (undocumented)
-      factory: ServiceFactoryCompat<
-        TokenManagerService,
-        'plugin',
-        'singleton',
-        undefined
-      >;
+      factory: () => ServiceFactory<TokenManagerService, 'plugin', 'singleton'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<TokenManagerService> | undefined,
@@ -419,12 +337,7 @@ export namespace mockServices {
   // (undocumented)
   export namespace urlReader {
     const // (undocumented)
-      factory: ServiceFactoryCompat<
-        UrlReaderService,
-        'plugin',
-        'singleton',
-        undefined
-      >;
+      factory: () => ServiceFactory<UrlReaderService, 'plugin', 'singleton'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<UrlReaderService> | undefined,
@@ -435,12 +348,7 @@ export namespace mockServices {
   ): UserInfoService;
   // (undocumented)
   export namespace userInfo {
-    const factory: ServiceFactoryCompat<
-      UserInfoService,
-      'plugin',
-      'singleton',
-      undefined
-    >;
+    const factory: () => ServiceFactory<UserInfoService, 'plugin', 'singleton'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<UserInfoService> | undefined,

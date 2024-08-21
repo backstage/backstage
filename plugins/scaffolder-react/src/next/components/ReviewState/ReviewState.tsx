@@ -52,7 +52,10 @@ function processSchema(
       }
     }
 
-    if (definitionInSchema['ui:widget'] === 'password') {
+    if (
+      definitionInSchema['ui:widget'] === 'password' ||
+      definitionInSchema['ui:field']?.toLocaleLowerCase('en-us') === 'secret'
+    ) {
       return [[getLastKey(key), '******']];
     }
 

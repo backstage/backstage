@@ -56,7 +56,7 @@ describe('eventsPlugin', () => {
     const { server } = await startTestBackend({
       extensionPoints: [],
       features: [
-        eventsServiceFactory(),
+        eventsServiceFactory,
         eventsPlugin,
         testModule,
         mockServices.logger.factory(),

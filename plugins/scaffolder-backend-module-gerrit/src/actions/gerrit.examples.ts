@@ -156,4 +156,22 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
+  {
+    description:
+      'Initialize a Gerrit Repository with Custom Default Branch and Commit Message',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'publish',
+          action: 'publish:gerrit',
+          name: 'Publish to Gerrit',
+          input: {
+            repoUrl: 'gerrit.com?repo=repo&owner=owner',
+            defaultBranch: 'feature-branch',
+            gitCommitMessage: 'Feature branch initialized',
+          },
+        },
+      ],
+    }),
+  },
 ];

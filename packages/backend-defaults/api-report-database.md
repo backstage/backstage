@@ -8,7 +8,7 @@ import { DatabaseService } from '@backstage/backend-plugin-api';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginMetadataService } from '@backstage/backend-plugin-api';
-import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
+import { ServiceFactory } from '@backstage/backend-plugin-api';
 
 // @public
 export class DatabaseManager implements LegacyRootDatabaseService {
@@ -32,11 +32,10 @@ export type DatabaseManagerOptions = {
 };
 
 // @public
-export const databaseServiceFactory: ServiceFactoryCompat<
+export const databaseServiceFactory: ServiceFactory<
   DatabaseService,
   'plugin',
-  'singleton',
-  undefined
+  'singleton'
 >;
 
 // @public @deprecated
