@@ -21,10 +21,11 @@ import {
 } from './createExtension';
 import {
   Extension,
-  ResolveExtensionId,
   resolveExtensionDefinition,
+  ResolveExtensionId,
 } from './resolveExtensionDefinition';
 import { AnyExternalRoutes, AnyRoutes, FeatureFlagConfig } from './types';
+import { TranslationResource } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export interface FrontendPlugin<
@@ -40,6 +41,11 @@ export interface FrontendPlugin<
   withOverrides(options: {
     extensions: Array<ExtensionDefinition>;
   }): FrontendPlugin<TRoutes, TExternalRoutes, TExtensionMap>;
+
+  /**
+   * @alpha
+   */
+  translations?: TranslationResource;
 }
 
 /**
@@ -63,6 +69,10 @@ export interface PluginOptions<
   externalRoutes?: TExternalRoutes;
   extensions?: TExtensions;
   featureFlags?: FeatureFlagConfig[];
+  /**
+   * @alpha
+   */
+  translations?: TranslationResource;
 }
 
 /** @public */
@@ -131,6 +141,7 @@ export function createFrontendPlugin<
     routes: options.routes ?? ({} as TRoutes),
     externalRoutes: options.externalRoutes ?? ({} as TExternalRoutes),
     featureFlags: options.featureFlags ?? [],
+    translations: options.translations,
     extensions,
     getExtension(id) {
       return extensionDefinitionsById.get(id);

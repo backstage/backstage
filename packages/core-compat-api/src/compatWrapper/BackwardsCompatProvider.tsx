@@ -14,33 +14,32 @@
  * limitations under the License.
  */
 
-import React, { useMemo } from 'react';
-import { ReactNode } from 'react';
+import React, { ReactNode, useMemo } from 'react';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppContextProvider } from '../../../core-app-api/src/app/AppContext';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { RouteResolver } from '../../../core-plugin-api/src/routing/useRouteRef';
 import {
-  createFrontendPlugin as createNewPlugin,
-  FrontendPlugin as NewFrontendPlugin,
   appTreeApiRef,
   componentsApiRef,
   coreComponentRefs,
+  createFrontendPlugin as createNewPlugin,
+  FrontendPlugin as NewFrontendPlugin,
   iconsApiRef,
-  useApi,
   routeResolutionApiRef,
+  useApi,
 } from '@backstage/frontend-plugin-api';
 import {
   AppComponents,
-  IconComponent,
   BackstagePlugin as LegacyBackstagePlugin,
+  IconComponent,
   RouteRef,
 } from '@backstage/core-plugin-api';
 import {
-  VersionedValue,
   createVersionedContext,
   createVersionedValueMap,
   getOrCreateGlobalSingleton,
+  VersionedValue,
 } from '@backstage/version-bridge';
 import { convertLegacyRouteRef } from '../convertLegacyRouteRef';
 
@@ -76,6 +75,9 @@ export function toLegacyPlugin(
     getApis: notImplemented,
     getFeatureFlags: notImplemented,
     provide: notImplemented,
+    getTranslations() {
+      return plugin.translations;
+    },
   };
 
   legacyPluginStore.set(plugin, legacy);
@@ -86,6 +88,7 @@ export function toLegacyPlugin(
 function toNewPlugin(plugin: LegacyBackstagePlugin): NewFrontendPlugin {
   return createNewPlugin({
     id: plugin.getId(),
+    translations: plugin.getTranslations(),
   });
 }
 

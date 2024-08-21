@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { createTranslationRef } from '@backstage/core-plugin-api/alpha';
+import {
+  createTranslationRef,
+  createTranslationResource,
+} from '@backstage/core-plugin-api/alpha';
 
 /** @alpha */
 export const userSettingsTranslationRef = createTranslationRef({
@@ -36,5 +39,13 @@ export const userSettingsTranslationRef = createTranslationRef({
         auto: 'Auto',
       },
     },
+  },
+});
+
+/** @alpha */
+export const userSettingsTranslations = createTranslationResource({
+  ref: userSettingsTranslationRef,
+  translations: {
+    fi: () => import('./translations/fi'),
   },
 });

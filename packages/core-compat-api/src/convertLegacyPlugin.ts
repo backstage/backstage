@@ -17,9 +17,9 @@
 import { BackstagePlugin as LegacyBackstagePlugin } from '@backstage/core-plugin-api';
 import {
   ApiBlueprint,
-  ExtensionDefinition,
   BackstagePlugin as NewBackstagePlugin,
   createFrontendPlugin,
+  ExtensionDefinition,
 } from '@backstage/frontend-plugin-api';
 import { convertLegacyRouteRefs } from './convertLegacyRouteRef';
 
@@ -37,5 +37,6 @@ export function convertLegacyPlugin(
     routes: convertLegacyRouteRefs(legacyPlugin.routes ?? {}),
     externalRoutes: convertLegacyRouteRefs(legacyPlugin.externalRoutes ?? {}),
     extensions: [...apiExtensions, ...options.extensions],
+    translations: legacyPlugin.getTranslations(),
   });
 }

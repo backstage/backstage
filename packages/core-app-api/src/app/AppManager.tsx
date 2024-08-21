@@ -32,19 +32,19 @@ import {
 import {
   AnyApiFactory,
   ApiHolder,
-  IconComponent,
   AppTheme,
-  appThemeApiRef,
-  configApiRef,
   AppThemeApi,
-  ConfigApi,
-  featureFlagsApiRef,
-  identityApiRef,
+  appThemeApiRef,
   BackstagePlugin,
-  FeatureFlag,
-  fetchApiRef,
+  ConfigApi,
+  configApiRef,
   discoveryApiRef,
   errorApiRef,
+  FeatureFlag,
+  featureFlagsApiRef,
+  fetchApiRef,
+  IconComponent,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
 import {
   AppLanguageApi,
@@ -67,8 +67,8 @@ import {
 } from '../routing/collectors';
 import { RoutingProvider } from '../routing/RoutingProvider';
 import {
-  validateRouteParameters,
   validateRouteBindings,
+  validateRouteParameters,
 } from '../routing/validation';
 import { AppContextProvider } from './AppContext';
 import { AppIdentityProxy } from '../apis/implementations/IdentityApi/AppIdentityProxy';
@@ -90,6 +90,7 @@ import { AppLanguageSelector } from '../apis/implementations/AppLanguageApi';
 import { I18nextTranslationApi } from '../apis/implementations/TranslationApi';
 import { overrideBaseUrlConfigs } from './overrideBaseUrlConfigs';
 import { isProtectedApp } from './isProtectedApp';
+import { compact } from 'lodash';
 
 type CompatiblePlugin =
   | BackstagePlugin
@@ -463,13 +464,29 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
 
     // The translation API is registered as a default API so that it can be overridden.
     // It will be up to the implementer of the new API to register translation resources.
+    const allTranslationResources: Array<
+      TranslationResource | TranslationMessages
+    > = compact([
+      ...this.getPlugins().map(plugin => {
+        const translations = plugin.getTranslations();
+        if (
+          !translations ||
+          this.translationResources.some(re => re.id === translations.id)
+        ) {
+          return undefined;
+        }
+        return translations;
+      }),
+      ...this.translationResources,
+    ]);
+
     this.apiFactoryRegistry.register('default', {
       api: translationApiRef,
       deps: { languageApi: appLanguageApiRef },
       factory: ({ languageApi }) =>
         I18nextTranslationApi.create({
           languageApi,
-          resources: this.translationResources,
+          resources: allTranslationResources,
         }),
     });
 

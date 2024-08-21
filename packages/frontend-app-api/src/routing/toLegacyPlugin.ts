@@ -48,6 +48,7 @@ export function toLegacyPlugin(plugin: BackstagePlugin): LegacyBackstagePlugin {
     getApis: notImplemented,
     getFeatureFlags: notImplemented,
     provide: notImplemented,
+    getTranslations: notImplemented,
   };
 
   legacyPluginStore.set(plugin, legacy);

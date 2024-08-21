@@ -230,6 +230,7 @@ export type BackstagePlugin<
   getId(): string;
   getApis(): Iterable<AnyApiFactory>;
   getFeatureFlags(): Iterable<PluginFeatureFlagConfig>;
+  getTranslations(): TranslationResource | undefined;
   provide<T>(extension: Extension<T>): T;
   routes: Routes;
   externalRoutes: ExternalRoutes;
@@ -655,6 +656,7 @@ export type PluginConfig<
   routes?: Routes;
   externalRoutes?: ExternalRoutes;
   featureFlags?: PluginFeatureFlagConfig[];
+  translations?: TranslationResource;
 };
 
 // @public
@@ -737,6 +739,14 @@ export type SubRouteRef<Params extends AnyParams = any> = {
   path: string;
   params: ParamKeys<Params>;
 };
+
+// @public (undocumented)
+export interface TranslationResource<TId extends string = string> {
+  // (undocumented)
+  $$type: '@backstage/TranslationResource';
+  // (undocumented)
+  id: TId;
+}
 
 // @public
 export type TypesToApiRefs<T> = {

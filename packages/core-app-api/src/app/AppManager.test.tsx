@@ -17,32 +17,32 @@
 import { LocalStorageFeatureFlags, NoOpAnalyticsApi } from '../apis';
 import {
   MockAnalyticsApi,
+  registerMswTestHooks,
   renderWithEffects,
   withLogCollector,
-  registerMswTestHooks,
 } from '@backstage/test-utils';
-import { screen, act } from '@testing-library/react';
+import { act, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import React, { PropsWithChildren, ReactNode } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import {
+  analyticsApiRef,
   configApiRef,
   createApiFactory,
-  featureFlagsApiRef,
-  createPlugin,
-  useRouteRef,
   createExternalRouteRef,
+  createPlugin,
+  createRoutableExtension,
   createRouteRef,
   createSubRouteRef,
-  createRoutableExtension,
-  analyticsApiRef,
-  useApi,
-  errorApiRef,
-  fetchApiRef,
   discoveryApiRef,
+  errorApiRef,
+  featureFlagsApiRef,
+  fetchApiRef,
   identityApiRef,
+  useApi,
+  useRouteRef,
 } from '@backstage/core-plugin-api';
 import { AppRouter } from './AppRouter';
 import { AppManager } from './AppManager';
@@ -439,6 +439,9 @@ describe('Integration Test', () => {
           },
           getApis() {
             return [];
+          },
+          getTranslations() {
+            return undefined;
           },
           output() {
             return [

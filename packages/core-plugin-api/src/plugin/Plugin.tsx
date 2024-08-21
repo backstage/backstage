@@ -15,14 +15,15 @@
  */
 
 import {
-  PluginConfig,
+  AnyExternalRoutes,
+  AnyRoutes,
   BackstagePlugin,
   Extension,
-  AnyRoutes,
-  AnyExternalRoutes,
+  PluginConfig,
   PluginFeatureFlagConfig,
 } from './types';
 import { AnyApiFactory } from '../apis';
+import { TranslationResource } from '../alpha';
 
 /**
  * @internal
@@ -60,6 +61,10 @@ export class PluginImpl<
 
   toString() {
     return `plugin{${this.config.id}}`;
+  }
+
+  getTranslations(): TranslationResource | undefined {
+    return this.config.translations;
   }
 }
 

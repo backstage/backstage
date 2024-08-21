@@ -15,11 +15,11 @@
  */
 
 import {
-  createPlugin as createLegacyPlugin,
-  createRouteRef as createLegacyRouteRef,
-  createExternalRouteRef as createLegacyExternalRouteRef,
   createApiFactory,
   createApiRef,
+  createExternalRouteRef as createLegacyExternalRouteRef,
+  createPlugin as createLegacyPlugin,
+  createRouteRef as createLegacyRouteRef,
 } from '@backstage/core-plugin-api';
 import { convertLegacyPlugin } from './convertLegacyPlugin';
 import { PageBlueprint } from '@backstage/frontend-plugin-api';
@@ -42,6 +42,7 @@ describe('convertLegacyPlugin', () => {
         "id": "test",
         "routes": {},
         "toString": [Function],
+        "translations": undefined,
         "version": "v1",
         "withOverrides": [Function],
       }

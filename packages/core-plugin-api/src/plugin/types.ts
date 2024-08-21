@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { RouteRef, SubRouteRef, ExternalRouteRef } from '../routing';
+import { ExternalRouteRef, RouteRef, SubRouteRef } from '../routing';
 import { AnyApiFactory } from '../apis';
+import { TranslationResource } from '../alpha';
 
 /**
  * Plugin extension type.
@@ -60,6 +61,10 @@ export type BackstagePlugin<
    * Returns all registered feature flags for this plugin.
    */
   getFeatureFlags(): Iterable<PluginFeatureFlagConfig>;
+  /**
+   * @alpha
+   */
+  getTranslations(): TranslationResource | undefined;
   provide<T>(extension: Extension<T>): T;
   routes: Routes;
   externalRoutes: ExternalRoutes;
@@ -89,6 +94,10 @@ export type PluginConfig<
   routes?: Routes;
   externalRoutes?: ExternalRoutes;
   featureFlags?: PluginFeatureFlagConfig[];
+  /**
+   * @alpha
+   */
+  translations?: TranslationResource;
 };
 
 /**

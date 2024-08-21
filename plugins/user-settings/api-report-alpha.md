@@ -12,6 +12,7 @@ import { IconComponent } from '@backstage/core-plugin-api';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
+import { TranslationResource } from '@backstage/core-plugin-api/alpha';
 
 // @alpha (undocumented)
 const _default: FrontendPlugin<
@@ -114,6 +115,9 @@ export const userSettingsTranslationRef: TranslationRef<
     readonly 'themeToggle.selectAuto': 'Select Auto Theme';
   }
 >;
+
+// @alpha (undocumented)
+export const userSettingsTranslations: TranslationResource<'user-settings'>;
 
 // (No @packageDocumentation comment for this package)
 ```

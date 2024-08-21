@@ -1274,6 +1274,8 @@ export interface FrontendPlugin<
   readonly id: string;
   // (undocumented)
   readonly routes: TRoutes;
+  // @alpha (undocumented)
+  translations?: TranslationResource;
   // (undocumented)
   withOverrides(options: {
     extensions: Array<ExtensionDefinition>;
@@ -1484,6 +1486,8 @@ export interface PluginOptions<
   id: TId;
   // (undocumented)
   routes?: TRoutes;
+  // @alpha (undocumented)
+  translations?: TranslationResource;
 }
 
 // @public (undocumented)
