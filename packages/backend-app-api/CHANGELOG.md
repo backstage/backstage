@@ -1,5 +1,11 @@
 # @backstage/backend-app-api
 
+## 0.9.2
+
+### Patch Changes
+
+- af62df8: Fix feature loaders in CJS double-default nested builds
+
 ## 0.9.1
 
 ### Patch Changes
