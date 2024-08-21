@@ -21,8 +21,9 @@ import {
   createApiFactory,
   iconsApiRef,
 } from '@backstage/frontend-plugin-api';
-
 import { DefaultIconsApi } from '../apis/implementations/IconsApi';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { icons as defaultIcons } from '../../../app-defaults/src/defaults';
 
 /**
  * Contains the shareable icons installed into the app.
@@ -39,7 +40,7 @@ export const IconsApi = ApiBlueprint.makeWithOverrides({
         new DefaultIconsApi(
           inputs.icons
             .map(i => i.get(IconBundleBlueprint.dataRefs.icons))
-            .reduce((acc, bundle) => ({ ...acc, ...bundle }), {}),
+            .reduce((acc, bundle) => ({ ...acc, ...bundle }), defaultIcons),
         ),
       ),
     });
