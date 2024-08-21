@@ -266,7 +266,7 @@ class AppTreeApiProxy implements AppTreeApi {
 }
 
 // Helps delay callers from reaching out to the API before the app tree has been materialized
-class RouteResolverProxy implements RouteResolutionApi {
+class RouteResolutionApiProxy implements RouteResolutionApi {
   #delegate: RouteResolutionApi | undefined;
 
   constructor(
@@ -340,7 +340,7 @@ export function createSpecializedApp(options?: {
   const factories = createApiFactories({ tree });
 
   const appTreeApi = new AppTreeApiProxy(tree);
-  const routeResolver = new RouteResolverProxy(
+  const routeResolutionApi = new RouteResolutionApiProxy(
     tree,
     resolveRouteBindings(
       options?.bindRoutes,
@@ -356,7 +356,7 @@ export function createSpecializedApp(options?: {
     staticFactories: [
       createApiFactory(appTreeApiRef, appTreeApi),
       createApiFactory(configApiRef, config),
-      createApiFactory(routeResolutionApiRef, routeResolver),
+      createApiFactory(routeResolutionApiRef, routeResolutionApi),
       createApiFactory(identityApiRef, appIdentityProxy),
     ],
   });
@@ -365,7 +365,7 @@ export function createSpecializedApp(options?: {
     instantiateAppNodeTree(appNode, apiHolder);
   }
 
-  const routeInfo = routeResolver.initialize();
+  const routeInfo = routeResolutionApi.initialize();
   appTreeApi.initialize();
 
   if (isProtectedApp()) {
