@@ -64,9 +64,6 @@ export interface BackendFeature {
   $$type: '@backstage/BackendFeature';
 }
 
-// @public @deprecated (undocumented)
-export type BackendModuleConfig = CreateBackendModuleOptions;
-
 // @public
 export interface BackendModuleRegistrationPoints {
   // (undocumented)
@@ -84,9 +81,6 @@ export interface BackendModuleRegistrationPoints {
     init(deps: DepsToInstances<TDeps>): Promise<void>;
   }): void;
 }
-
-// @public @deprecated (undocumented)
-export type BackendPluginConfig = CreateBackendPluginOptions;
 
 // @public
 export interface BackendPluginRegistrationPoints {
@@ -355,9 +349,6 @@ export type ExtensionPoint<T> = {
   toString(): string;
   $$type: '@backstage/ExtensionPoint';
 };
-
-// @public @deprecated (undocumented)
-export type ExtensionPointConfig = CreateExtensionPointOptions;
 
 // @public
 export interface HttpAuthService {
