@@ -76,7 +76,7 @@ function createTokenManagerShim(
 }
 
 /**
- * Originally IdentityApi from `@backstage/plugin-auth-node`, not re-declared here for backwards compatibility
+ * Originally IdentityApi from `@backstage/plugin-auth-node`, re-declared here for backwards compatibility
  * @public
  * @deprecated Only relevant for legacy plugins, which are deprecated.
  */
@@ -154,7 +154,7 @@ export function makeLegacyPlugin<
     createRouterImport: Promise<{
       default: LegacyCreateRouter<
         TransformedEnv<TEnv, TEnvTransforms> & {
-          tokenManager: ServerTokenManager;
+          tokenManager: TokenManager;
           identity: LegacyIdentityService;
         }
       >;
@@ -207,7 +207,7 @@ export function makeLegacyPlugin<
 
             const pluginRouter = await createRouter(
               pluginEnv as TransformedEnv<TEnv, TEnvTransforms> & {
-                tokenManager: ServerTokenManager;
+                tokenManager: TokenManager;
                 identity: LegacyIdentityService;
               },
             );

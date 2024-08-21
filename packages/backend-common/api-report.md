@@ -362,7 +362,7 @@ export const legacyPlugin: (
           };
         }
       > & {
-        tokenManager: ServerTokenManager;
+        tokenManager: TokenManager;
         identity: LegacyIdentityService;
       }
     >;
@@ -405,7 +405,7 @@ export function makeLegacyPlugin<
   createRouterImport: Promise<{
     default: LegacyCreateRouter<
       TransformedEnv<TEnv, TEnvTransforms> & {
-        tokenManager: ServerTokenManager;
+        tokenManager: TokenManager;
         identity: LegacyIdentityService;
       }
     >;
