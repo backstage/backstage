@@ -5,11 +5,11 @@
 ```ts
 import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node';
 import { Config } from '@backstage/config';
+import { DatabaseService } from '@backstage/backend-plugin-api';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { IndexableResultSet } from '@backstage/plugin-search-common';
 import { Knex } from 'knex';
-import { Logger } from 'winston';
-import { PluginDatabaseManager } from '@backstage/backend-common';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
 import { SearchQuery } from '@backstage/plugin-search-common';
 
@@ -25,9 +25,7 @@ export class DatabaseDocumentStore implements DatabaseStore {
   // (undocumented)
   completeInsert(tx: Knex.Transaction, type: string): Promise<void>;
   // (undocumented)
-  static create(
-    database: PluginDatabaseManager,
-  ): Promise<DatabaseDocumentStore>;
+  static create(database: DatabaseService): Promise<DatabaseDocumentStore>;
   // (undocumented)
   getTransaction(): Promise<Knex.Transaction>;
   // (undocumented)
@@ -85,12 +83,16 @@ export interface DocumentResultRow {
 // @public (undocumented)
 export class PgSearchEngine implements SearchEngine {
   // @deprecated
-  constructor(databaseStore: DatabaseStore, config: Config, logger?: Logger);
+  constructor(
+    databaseStore: DatabaseStore,
+    config: Config,
+    logger?: LoggerService,
+  );
   // @deprecated (undocumented)
   static from(options: {
-    database: PluginDatabaseManager;
+    database: DatabaseService;
     config: Config;
-    logger?: Logger;
+    logger?: LoggerService;
   }): Promise<PgSearchEngine>;
   // (undocumented)
   static fromConfig(
@@ -104,7 +106,7 @@ export class PgSearchEngine implements SearchEngine {
   // (undocumented)
   setTranslator(translator: PgSearchQueryTranslator): void;
   // (undocumented)
-  static supported(database: PluginDatabaseManager): Promise<boolean>;
+  static supported(database: DatabaseService): Promise<boolean>;
   // (undocumented)
   translator(
     query: SearchQuery,
@@ -128,7 +130,7 @@ export type PgSearchEngineIndexerOptions = {
   batchSize: number;
   type: string;
   databaseStore: DatabaseStore;
-  logger?: Logger;
+  logger?: LoggerService;
 };
 
 // @public
@@ -146,8 +148,8 @@ export type PgSearchHighlightOptions = {
 
 // @public
 export type PgSearchOptions = {
-  database: PluginDatabaseManager;
-  logger?: Logger;
+  database: DatabaseService;
+  logger?: LoggerService;
 };
 
 // @public (undocumented)
