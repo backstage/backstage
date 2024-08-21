@@ -21,10 +21,13 @@ const project = new Project({
   tsConfigFilePath: 'tsconfig.json',
 });
 
+function readPackageJson(pkg: string) {
+  return JSON.parse(fs.readFileSync(`${pkg}/package.json`, 'utf-8'));
+}
+
 export async function lint(paths: string[]) {
   const pkgs = (await resolvePackagePaths()).filter(pkg => {
-    const role = JSON.parse(fs.readFileSync(`${pkg}/package.json`, 'utf-8'))
-      .backstage?.role;
+    const role = readPackageJson(pkg).backstage?.role;
     return role === 'backend-plugin' || role === 'backend-plugin-module';
   });
 
@@ -71,5 +74,20 @@ function verifyIndex(pkg: string) {
     console.log('   ❌ createRouter is exported');
     if (!createRouterDeprecated)
       console.log('   ❌ createRouter is NOT deprecated');
+  }
+
+  const pkgJson = readPackageJson(pkg);
+  if (
+    '@backstage/backend-common' in pkgJson.dependencies ||
+    '@backstage/backend-common' in pkgJson.devDependencies
+  ) {
+    console.log('   ❌ Stop depending on "@backstage/backend-common"');
+  }
+
+  if (
+    '@backstage/backend-tasks' in pkgJson.dependencies ||
+    '@backstage/backend-tasks' in pkgJson.devDependencies
+  ) {
+    console.log('   ❌ Stop depending on "@backstage/backend-tasks"');
   }
 }
