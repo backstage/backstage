@@ -16,6 +16,7 @@ Commands:
   type-deps
   generate-catalog-info [options]
   knip-reports [options] [paths...]
+  backend-lint [paths...]
   package [command]
   repo [command]
   help [command]
@@ -36,6 +37,15 @@ Options:
   --allow-all-warnings
   -o, --omit-messages <messageCodes>
   --validate-release-tags
+  -h, --help
+```
+
+### `backstage-repo-tools backend-lint`
+
+```
+Usage: backstage-repo-tools backend-lint [options] [paths...]
+
+Options:
   -h, --help
 ```
 
