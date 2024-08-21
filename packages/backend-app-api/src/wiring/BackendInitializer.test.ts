@@ -576,4 +576,59 @@ describe('BackendInitializer', () => {
       "Illegal dependency: Module 'mod' for plugin 'test' attempted to depend on extension point 'a' for plugin 'test-a'. Extension points can only be used within their plugin's scope.",
     );
   });
+
+  it('should properly load double-default CJS modules', async () => {
+    expect.assertions(3);
+
+    const init = new BackendInitializer(baseFactories);
+    init.add(
+      createBackendFeatureLoader({
+        loader() {
+          return [
+            createBackendPlugin({
+              pluginId: 'no-double-wrapping',
+              register(reg) {
+                reg.registerInit({
+                  deps: {},
+                  async init() {
+                    expect(true).toBeTruthy();
+                  },
+                });
+              },
+            }),
+            {
+              default: createBackendPlugin({
+                pluginId: 'single-wrapping',
+                register(reg) {
+                  reg.registerInit({
+                    deps: {},
+                    async init() {
+                      expect(true).toBeTruthy();
+                    },
+                  });
+                },
+              }),
+            },
+            {
+              default: {
+                default: createBackendPlugin({
+                  pluginId: 'double-wrapping',
+                  register(reg) {
+                    reg.registerInit({
+                      deps: {},
+                      async init() {
+                        expect(true).toBeTruthy();
+                      },
+                    });
+                  },
+                }),
+              },
+            } as any, // not typescript valid, but can happen at runtime
+          ];
+        },
+      }),
+    );
+
+    await init.start();
+  });
 });
