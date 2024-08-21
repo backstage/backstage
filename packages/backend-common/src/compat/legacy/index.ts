@@ -15,4 +15,4 @@
  */
 
 export { legacyPlugin, makeLegacyPlugin } from './legacy';
-export type { LegacyCreateRouter } from './legacy';
+export type { LegacyCreateRouter, LegacyIdentityService } from './legacy';
