@@ -85,7 +85,7 @@ FROM node:16-bullseye-slim
 
 # highlight-add-start
 # Set Python interpreter for `node-gyp` to use
-ENV PYTHON /usr/bin/python3
+ENV PYTHON=/usr/bin/python3
 # highlight-add-end
 
 # Install sqlite3 dependencies. You can skip this if you don't use sqlite3 in the image,
