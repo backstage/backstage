@@ -76,14 +76,6 @@ export interface InternalServiceFactory<
   ): Promise<TService>;
 }
 
-/**
- * Represents either a {@link ServiceFactory} or a function that returns one.
- *
- * @deprecated The support for service factory functions is deprecated and will be removed.
- * @public
- */
-export type ServiceFactoryOrFunction = ServiceFactory | (() => ServiceFactory);
-
 /** @public */
 export interface ServiceRefOptions<
   TService,
