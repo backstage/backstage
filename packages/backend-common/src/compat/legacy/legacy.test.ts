@@ -30,8 +30,6 @@ import { createLegacyAuthAdapters } from '..';
 import { legacyPlugin } from './legacy';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { authServiceFactory } from '../../../../backend-defaults/src/entrypoints/auth';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { tokenManagerServiceFactory } from '../../../../backend-app-api/src/services/implementations/tokenManager';
 
 describe('legacyPlugin', () => {
   it('can auth across the new and old systems', async () => {
@@ -46,7 +44,6 @@ describe('legacyPlugin', () => {
     await startTestBackend({
       features: [
         authServiceFactory,
-        tokenManagerServiceFactory,
         mockServices.rootConfig.factory({
           data: {
             backend: {
