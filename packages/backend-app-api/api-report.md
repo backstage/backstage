@@ -6,7 +6,6 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { IdentityService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
-import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
 import { TokenManagerService } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
@@ -36,25 +35,17 @@ export interface CreateSpecializedBackendOptions {
   defaultServiceFactories: ServiceFactory[];
 }
 
-// @public @deprecated
-export type IdentityFactoryOptions = {
-  issuer?: string;
-  algorithms?: string[];
-};
-
 // @public @deprecated (undocumented)
-export const identityServiceFactory: ServiceFactoryCompat<
+export const identityServiceFactory: ServiceFactory<
   IdentityService,
   'plugin',
-  'singleton',
-  IdentityFactoryOptions
+  'singleton'
 >;
 
 // @public @deprecated (undocumented)
-export const tokenManagerServiceFactory: ServiceFactoryCompat<
+export const tokenManagerServiceFactory: ServiceFactory<
   TokenManagerService,
   'plugin',
-  'singleton',
-  undefined
+  'singleton'
 >;
 ```

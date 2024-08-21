@@ -90,7 +90,7 @@ export function makeLegacyPlugin<
       default: LegacyCreateRouter<TransformedEnv<TEnv, TEnvTransforms>>;
     }>,
   ) => {
-    const compatPlugin = createBackendPlugin({
+    return createBackendPlugin({
       pluginId: name,
       register(env) {
         env.registerInit({
@@ -124,8 +124,6 @@ export function makeLegacyPlugin<
         });
       },
     });
-
-    return compatPlugin();
   };
 }
 

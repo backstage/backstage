@@ -36,7 +36,7 @@ const server = setupServer();
 
 // TODO: Ship discovery mock service in the service factory tester
 const mockDeps = [
-  discoveryServiceFactory(),
+  discoveryServiceFactory,
   tokenManagerServiceFactory,
   mockServices.rootConfig.factory({
     data: {

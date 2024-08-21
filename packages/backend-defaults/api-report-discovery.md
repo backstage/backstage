@@ -5,14 +5,13 @@
 ```ts
 import { Config } from '@backstage/config';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
-import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
+import { ServiceFactory } from '@backstage/backend-plugin-api';
 
 // @public
-export const discoveryServiceFactory: ServiceFactoryCompat<
+export const discoveryServiceFactory: ServiceFactory<
   DiscoveryService,
   'plugin',
-  'singleton',
-  undefined
+  'singleton'
 >;
 
 // @public
