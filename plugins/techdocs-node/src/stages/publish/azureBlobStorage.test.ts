@@ -224,7 +224,6 @@ const getEntityRootDir = (entity: Entity) => {
 };
 
 const logger = mockServices.logger.mock();
-jest.spyOn(logger, 'error');
 
 const createPublisherFromConfig = ({
   accountName = 'accountName',

@@ -16,6 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { Writable } from 'stream';
+import { Logger } from 'winston';
 import { ParsedLocationAnnotation } from '../../helpers';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { TechDocsContainerRunner } from '../publish/types';
@@ -65,7 +66,7 @@ export type GeneratorRunOptions = {
   outputDir: string;
   parsedLocationAnnotation?: ParsedLocationAnnotation;
   etag?: string;
-  logger: LoggerService;
+  logger: Logger;
   logStream?: Writable;
   siteOptions?: { name?: string };
   runAsDefaultUser?: boolean;

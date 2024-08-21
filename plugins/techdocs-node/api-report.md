@@ -12,6 +12,7 @@ import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { IndexableDocument } from '@backstage/plugin-search-common';
+import { Logger } from 'winston';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
@@ -57,7 +58,7 @@ export type GeneratorRunOptions = {
   outputDir: string;
   parsedLocationAnnotation?: ParsedLocationAnnotation;
   etag?: string;
-  logger: LoggerService;
+  logger: Logger;
   logStream?: Writable;
   siteOptions?: {
     name?: string;
