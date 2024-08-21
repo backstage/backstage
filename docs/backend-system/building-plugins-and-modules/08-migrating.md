@@ -263,7 +263,7 @@ Given that you have followed the guide above to export your new backend plugin t
 ### Deprecate public exports other than the default export
 
 First of all make sure that `createRouter` and `routerOptions` are marked as deprecated to give users time and an indication to migrate to the new system (we recommend deprecating in one release and remove the deprecates in the following one).
-This is done by adding a `@deprecated` annotation to the legacy exports. It's worth noting that the plugin can continue using `createRouter` internally but it should not be exported as part of public api.
+This is done by adding a `@deprecated` annotation to the legacy exports. It's worth noting that the plugin can continue using `createRouter` internally but it should not be exported as part of public api. If you are reusing the create router and relative imports in migrated plugins, ensure that you refactor the internal code to remove deprecated imports once the `createRouter` export gets deleted. It is recommended that you avoid the use of `@backstage/backend-common` and `@backstage/backend-tasks` in migrated plugins as they will be deleted together with the ending of support for the legacy system. There are instructions in most of the deprecated imports about how to stop using them once you have migrated to the new backend system.
 
 ```ts title="@backstage/plugin-kubernetes-backend/src/service/router.ts"
 import { KubernetesBuilder } from './KubernetesBuilder';
