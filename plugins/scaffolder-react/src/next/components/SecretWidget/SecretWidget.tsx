@@ -14,10 +14,19 @@
  * limitations under the License.
  */
 
+import React from 'react';
 import { WidgetProps } from '@rjsf/utils';
 import { useTemplateSecrets } from '@backstage/plugin-scaffolder-react';
 import TextField from '@material-ui/core/TextField';
-import React from 'react';
+import get from 'lodash/get';
+import set from 'lodash/set';
+
+const getPath = (id: any, idSeparator?: string) => {
+  if (typeof id !== 'string') return '';
+
+  const [_root, ...parts] = id.split(idSeparator || '_');
+  return parts.join('.');
+};
 
 /**
  * Secret Widget for overriding the default password input widget
@@ -26,28 +35,40 @@ import React from 'react';
 export const SecretWidget = (
   props: Pick<
     WidgetProps,
-    'name' | 'onChange' | 'schema' | 'required' | 'disabled'
-  >,
+    'onChange' | 'schema' | 'required' | 'disabled' | 'idSchema'
+  > & {
+    idSeparator?: string;
+  },
 ) => {
   const { setSecrets, secrets } = useTemplateSecrets();
+
   const {
-    name,
     onChange,
     schema: { title, minLength, maxLength },
     required,
     disabled,
+    idSchema: { $id },
+    idSeparator,
   } = props;
+
+  const onChangeText = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    const redactedValue = Array(value.length).fill('*').join('');
+    onChange(redactedValue);
+
+    const path = getPath($id, idSeparator);
+    setSecrets(set({}, path, value));
+  };
+
+  const value = get(secrets, getPath($id, idSeparator), '');
 
   return (
     <TextField
       id={title}
       label={title}
       aria-describedby={title}
-      onChange={e => {
-        onChange(Array(e.target.value.length).fill('*').join(''));
-        setSecrets({ [name]: e.target.value });
-      }}
-      value={secrets[name] ?? ''}
+      onChange={onChangeText}
+      value={value}
       type="password"
       autoComplete="off"
       required={required}

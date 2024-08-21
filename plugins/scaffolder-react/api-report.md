@@ -401,7 +401,7 @@ export type ScaffolderRJSFRegistryFieldsType<
 // @public
 export interface ScaffolderScaffoldOptions {
   // (undocumented)
-  secrets?: Record<string, string>;
+  secrets?: JsonObject;
   // (undocumented)
   templateRef: string;
   // (undocumented)
@@ -459,9 +459,9 @@ export type ScaffolderTaskStatus =
 // @public
 export interface ScaffolderUseTemplateSecrets {
   // (undocumented)
-  secrets: Record<string, string>;
+  secrets: JsonObject;
   // (undocumented)
-  setSecrets: (input: Record<string, string>) => void;
+  setSecrets: (input: JsonObject) => void;
 }
 
 // @public

@@ -137,7 +137,7 @@ describe('RepoBranchPicker', () => {
 
       const SecretsComponent = () => {
         const { secrets } = useTemplateSecrets();
-        const secret = secrets[secretsKey];
+        const secret = secrets[secretsKey] as string;
         return secret ? <div>{secret}</div> : null;
       };
 
@@ -249,7 +249,7 @@ describe('RepoBranchPicker', () => {
 
       const SecretsComponent = () => {
         const { secrets } = useTemplateSecrets();
-        const secret = secrets[secretsKey];
+        const secret = secrets[secretsKey] as string;
         return secret ? <div>{secret}</div> : null;
       };
 
