@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AppNode } from '../apis';
+import { ApiHolder, AppNode } from '../apis';
 import {
   ExtensionDefinition,
   ResolvedExtensionInputs,
@@ -57,6 +57,7 @@ export type InternalExtension<TConfig, TConfigInput> = Extension<
           [name in string]: AnyExtensionDataRef;
         };
         factory(context: {
+          apis: ApiHolder;
           node: AppNode;
           config: TConfig;
           inputs: {
@@ -76,6 +77,7 @@ export type InternalExtension<TConfig, TConfigInput> = Extension<
         };
         readonly output: Array<AnyExtensionDataRef>;
         factory(options: {
+          apis: ApiHolder;
           node: AppNode;
           config: TConfig;
           inputs: ResolvedExtensionInputs<{

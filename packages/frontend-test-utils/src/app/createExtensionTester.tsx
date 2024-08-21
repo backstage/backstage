@@ -50,6 +50,9 @@ import { instantiateAppNodeTree } from '../../../frontend-app-api/src/tree/insta
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { readAppExtensionsConfig } from '../../../frontend-app-api/src/tree/readAppExtensionsConfig';
 
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { ApiRegistry } from '../../../core-app-api/src/apis/system/ApiRegistry';
+
 const NavItem = (props: {
   routeRef: RouteRef<undefined>;
   title: string;
@@ -320,7 +323,7 @@ export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
       }),
     );
 
-    instantiateAppNodeTree(tree.root);
+    instantiateAppNodeTree(tree.root, ApiRegistry.from([]));
 
     this.#tree = tree;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,28 +14,22 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import {
-  ExtensionBoundary,
+  ApiBlueprint,
   coreExtensionData,
   createExtension,
   createExtensionInput,
 } from '@backstage/frontend-plugin-api';
 
-export const App = createExtension({
-  namespace: 'app',
-  attachTo: { id: 'root', input: 'app' },
+export const Root = createExtension({
+  namespace: 'root',
+  attachTo: { id: 'ignored', input: 'ignored' },
   inputs: {
-    root: createExtensionInput([coreExtensionData.reactElement], {
+    app: createExtensionInput([coreExtensionData.reactElement], {
       singleton: true,
     }),
+    apis: createExtensionInput([ApiBlueprint.dataRefs.factory]),
   },
-  output: [coreExtensionData.reactElement],
-  factory: ({ node, inputs }) => [
-    coreExtensionData.reactElement(
-      <ExtensionBoundary node={node}>
-        {inputs.root.get(coreExtensionData.reactElement)}
-      </ExtensionBoundary>,
-    ),
-  ],
+  output: [],
+  factory: () => [],
 });
