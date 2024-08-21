@@ -236,6 +236,15 @@ export function registerCommands(program: Command) {
       ),
     );
 
+  program
+    .command('backend-lint [paths...]')
+    .description(
+      'Lint backend plugin packages for errors related to the new backend system migration',
+    )
+    .action(
+      lazy(() => import('./backend-lint/backend-lint').then(m => m.lint)),
+    );
+
   registerPackageCommand(program);
   registerRepoCommand(program);
 }
