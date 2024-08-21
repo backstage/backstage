@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,36 @@ import {
 } from '@backstage/theme';
 import DarkIcon from '@material-ui/icons/Brightness2';
 import LightIcon from '@material-ui/icons/WbSunny';
-import { ThemeBlueprint } from '@backstage/frontend-plugin-api';
+import {
+  createExtensionInput,
+  ThemeBlueprint,
+  ApiBlueprint,
+  createApiFactory,
+  appThemeApiRef,
+} from '@backstage/frontend-plugin-api';
+import { AppThemeSelector } from '@backstage/core-app-api';
+
+/**
+ * Contains the themes installed into the app.
+ *
+ * @public
+ */
+export const AppThemeApi = ApiBlueprint.makeWithOverrides({
+  name: 'app-theme',
+  inputs: {
+    themes: createExtensionInput([ThemeBlueprint.dataRefs.theme]),
+  },
+  factory: (originalFactory, { inputs }) => {
+    return originalFactory({
+      factory: createApiFactory(
+        appThemeApiRef,
+        AppThemeSelector.createWithStorage(
+          inputs.themes.map(i => i.get(ThemeBlueprint.dataRefs.theme)),
+        ),
+      ),
+    });
+  },
+});
 
 export const LightTheme = ThemeBlueprint.make({
   name: 'light',
