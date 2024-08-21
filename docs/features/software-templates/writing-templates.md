@@ -264,14 +264,23 @@ spec:
         password:
           type: string
           ui:field: Secret
+        api:
+          type: object
+          properties:
+            host:
+              type: string
+            key:
+              type: string
+              ui:field: Secret
 
   steps:
     - id: setupAuthentication
       action: auth:create
       input:
-        # make sure to use ${{ secrets.parameterName }} to reference these values
+        # make sure to use ${{ secrets.parameterPath }} to reference these values
         username: ${{ secrets.username }}
         password: ${{ secrets.password }}
+        apiKey: ${{ secrets.api.key }}
 ```
 
 ### Custom step layouts

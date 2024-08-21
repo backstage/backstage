@@ -36,6 +36,48 @@ describe('SecretsContext', () => {
     expect(result.current.hook?.secrets.foo).toEqual('bar');
   });
 
+  it('should allow setting nested secrets in the context', async () => {
+    const { result } = renderHook(
+      () => ({
+        hook: useTemplateSecrets(),
+      }),
+      {
+        wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+          <SecretsContextProvider>{children}</SecretsContextProvider>
+        ),
+      },
+    );
+
+    expect(result.current.hook?.secrets).toEqual({});
+
+    act(() => result.current.hook.setSecrets({ foo: { bar: 'baz' } }));
+
+    expect(result.current.hook?.secrets).toEqual({ foo: { bar: 'baz' } });
+  });
+
+  it('should allow setting secrets in arrays in the context', async () => {
+    const { result } = renderHook(
+      () => ({
+        hook: useTemplateSecrets(),
+      }),
+      {
+        wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+          <SecretsContextProvider>{children}</SecretsContextProvider>
+        ),
+      },
+    );
+
+    expect(result.current.hook?.secrets).toEqual({});
+
+    act(() => result.current.hook.setSecrets({ foo: ['one'] }));
+
+    expect(result.current.hook?.secrets).toEqual({ foo: ['one'] });
+
+    act(() => result.current.hook.setSecrets({ foo: [undefined, 'two'] }));
+
+    expect(result.current.hook?.secrets).toEqual({ foo: ['one', 'two'] });
+  });
+
   it('should create SecretsContextProvider with initial secrets', async () => {
     const { result } = renderHook(
       () => ({

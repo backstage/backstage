@@ -23,6 +23,7 @@ import React, {
   useContext,
   PropsWithChildren,
 } from 'react';
+import merge from 'lodash/merge';
 
 /**
  * The contents of the `SecretsContext`
@@ -60,13 +61,21 @@ export const SecretsContextProvider = (
   );
 };
 
+type SetSecretsInput = {
+  [key: string]: string | Secrets | (string | Secrets | undefined)[];
+};
+
+type Secrets = {
+  [key: string]: string | Secrets | (string | Secrets)[];
+};
+
 /**
  * The return type from the useTemplateSecrets hook.
  * @public
  */
 export interface ScaffolderUseTemplateSecrets {
-  setSecrets: (input: Record<string, string>) => void;
-  secrets: Record<string, string>;
+  setSecrets: (input: SetSecretsInput) => void;
+  secrets: Secrets;
 }
 
 /**
@@ -86,8 +95,11 @@ export const useTemplateSecrets = (): ScaffolderUseTemplateSecrets => {
   const { setSecrets: updateSecrets, secrets = {} } = value;
 
   const setSecrets = useCallback(
-    (input: Record<string, string>) => {
-      updateSecrets(currentSecrets => ({ ...currentSecrets, ...input }));
+    (input: Secrets) => {
+      updateSecrets(currentSecrets => {
+        const newSecrets = merge({}, currentSecrets, input);
+        return newSecrets;
+      });
     },
     [updateSecrets],
   );
