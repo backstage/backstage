@@ -30,14 +30,14 @@ export const exampleTodoListPlugin = createBackendPlugin({
   register(env) {
     env.registerInit({
       deps: {
-        identity: coreServices.identity,
+        httpAuth: coreServices.httpAuth,
         logger: coreServices.logger,
         httpRouter: coreServices.httpRouter,
       },
-      async init({ identity, logger, httpRouter }) {
+      async init({ httpAuth, logger, httpRouter }) {
         httpRouter.use(
           await createRouter({
-            identity,
+            httpAuth,
             logger,
           }),
         );

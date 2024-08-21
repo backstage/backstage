@@ -41,7 +41,6 @@ import { RootConfigService } from '@backstage/backend-plugin-api';
 import { SignInInfo as SignInInfo_2 } from '@backstage/plugin-auth-node';
 import { SignInResolver as SignInResolver_2 } from '@backstage/plugin-auth-node';
 import { TokenManager } from '@backstage/backend-common';
-import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { TokenParams as TokenParams_2 } from '@backstage/plugin-auth-node';
 import { UserEntity } from '@backstage/catalog-model';
 import { WebMessageResponse as WebMessageResponse_2 } from '@backstage/plugin-auth-node';
@@ -126,7 +125,7 @@ export type BitbucketServerOAuthResult = {
 export class CatalogIdentityClient {
   constructor(options: {
     catalogApi: CatalogApi;
-    tokenManager: TokenManager;
+    tokenManager?: TokenManager;
     discovery: DiscoveryService;
     auth?: AuthService;
     httpAuth?: HttpAuthService;
@@ -673,7 +672,7 @@ export interface RouterOptions {
   // (undocumented)
   tokenFactoryAlgorithm?: string;
   // (undocumented)
-  tokenManager: TokenManagerService;
+  tokenManager?: TokenManager;
 }
 
 // @public (undocumented)

@@ -78,7 +78,6 @@ export default createBackendModule({
         auth: coreServices.auth,
         httpAuth: coreServices.httpAuth,
         discovery: coreServices.discovery,
-        tokenManager: coreServices.tokenManager,
         scheduler: coreServices.scheduler,
         catalog: catalogServiceRef,
         indexRegistry: searchIndexRegistryExtensionPoint,
@@ -89,7 +88,6 @@ export default createBackendModule({
         auth,
         httpAuth,
         discovery,
-        tokenManager,
         scheduler,
         catalog,
         indexRegistry,
@@ -110,7 +108,6 @@ export default createBackendModule({
           schedule: scheduler.createScheduledTaskRunner(schedule),
           factory: DefaultTechDocsCollatorFactory.fromConfig(config, {
             discovery,
-            tokenManager,
             auth,
             httpAuth,
             logger,

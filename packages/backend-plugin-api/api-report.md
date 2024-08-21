@@ -12,7 +12,6 @@ import { Duration } from 'luxon';
 import { EvaluatorRequestOptions } from '@backstage/plugin-permission-common';
 import { Handler } from 'express';
 import { HumanDuration } from '@backstage/types';
-import { IdentityApi } from '@backstage/plugin-auth-node';
 import { isChildPath } from '@backstage/cli-common';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
@@ -194,11 +193,7 @@ export namespace coreServices {
   const rootLifecycle: ServiceRef<RootLifecycleService, 'root', 'singleton'>;
   const rootLogger: ServiceRef<RootLoggerService, 'root', 'singleton'>;
   const scheduler: ServiceRef<SchedulerService, 'plugin', 'singleton'>;
-  const // @deprecated
-    tokenManager: ServiceRef<TokenManagerService, 'plugin', 'singleton'>;
   const urlReader: ServiceRef<UrlReaderService, 'plugin', 'singleton'>;
-  const // @deprecated
-    identity: ServiceRef<IdentityService, 'plugin', 'singleton'>;
 }
 
 // @public
@@ -382,9 +377,6 @@ export interface HttpRouterServiceAuthPolicy {
   // (undocumented)
   path: string;
 }
-
-// @public @deprecated
-export interface IdentityService extends IdentityApi {}
 
 export { isChildPath };
 
@@ -655,14 +647,6 @@ export interface ServiceRefOptions<
   multiton?: TInstances extends 'multiton' ? true : false;
   // (undocumented)
   scope?: TScope;
-}
-
-// @public @deprecated
-export interface TokenManagerService {
-  authenticate(token: string): Promise<void>;
-  getToken(): Promise<{
-    token: string;
-  }>;
 }
 
 // @public

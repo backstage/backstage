@@ -40,7 +40,7 @@ import { Config } from '@backstage/config';
 export interface RouterOptions {
   logger: LoggerService;
   events: EventsService;
-  identity: IdentityApi;
+  identity?: IdentityApi;
   discovery: PluginEndpointDiscovery;
   config: Config;
   lifecycle?: LifecycleService;

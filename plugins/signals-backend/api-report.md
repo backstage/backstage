@@ -28,7 +28,7 @@ export interface RouterOptions {
   // (undocumented)
   events: EventsService;
   // (undocumented)
-  identity: IdentityApi;
+  identity?: IdentityApi;
   // (undocumented)
   lifecycle?: LifecycleService;
   // (undocumented)
