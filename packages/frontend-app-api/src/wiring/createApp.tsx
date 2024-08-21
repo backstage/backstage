@@ -55,13 +55,9 @@ import { AppThemeProvider } from '../../../core-app-api/src/app/AppThemeProvider
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { LocalStorageFeatureFlags } from '../../../core-app-api/src/apis/implementations/FeatureFlagsApi/LocalStorageFeatureFlags';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { defaultConfigLoaderSync } from '../../../core-app-api/src/app/defaultConfigLoader';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { overrideBaseUrlConfigs } from '../../../core-app-api/src/app/overrideBaseUrlConfigs';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { AppLanguageSelector } from '../../../core-app-api/src/apis/implementations/AppLanguageApi/AppLanguageSelector';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -72,7 +68,7 @@ import {
   alertDisplayAppRootElement,
 } from '../extensions/elements';
 import { extractRouteInfoFromAppNode } from '../routing/extractRouteInfoFromAppNode';
-import { appLanguageApiRef } from '@backstage/core-plugin-api/alpha';
+
 import { CreateAppRouteBinder } from '../routing';
 import { RouteResolver } from '../routing/RouteResolver';
 import { resolveRouteBindings } from '../routing/resolveRouteBindings';
@@ -95,6 +91,8 @@ import { AppThemeApi, DarkTheme, LightTheme } from '../extensions/AppThemeApi';
 import { IconsApi } from '../extensions/IconsApi';
 import { TranslationsApi } from '../extensions/TranslationsApi';
 import { ComponentsApi } from '../extensions/ComponentsApi';
+import { AppLanguageApi } from '../extensions/AppLanguageApi';
+import { FeatureFlagsApi } from '../extensions/FeatureFlagsApi';
 
 const DefaultApis = defaultApis.map(factory =>
   ApiBlueprint.make({ namespace: factory.api.id, params: { factory } }),
@@ -114,9 +112,11 @@ export const builtinExtensions = [
   oauthRequestDialogAppRootElement,
   alertDisplayAppRootElement,
   AppThemeApi,
+  AppLanguageApi,
   IconsApi,
   TranslationsApi,
   ComponentsApi,
+  FeatureFlagsApi,
   ...DefaultApis,
 ].map(def => resolveExtensionDefinition(def));
 
@@ -349,13 +349,6 @@ function createApiHolder(
     factoryRegistry.register('default', factory);
   }
 
-  // TODO: properly discovery feature flags, maybe rework the whole thing
-  factoryRegistry.register('default', {
-    api: featureFlagsApiRef,
-    deps: {},
-    factory: () => new LocalStorageFeatureFlags(),
-  });
-
   factoryRegistry.register('static', {
     api: identityApiRef,
     deps: {},
@@ -374,12 +367,6 @@ function createApiHolder(
     api: routeResolutionApiRef,
     deps: {},
     factory: () => routeResolutionApi,
-  });
-
-  factoryRegistry.register('static', {
-    api: appLanguageApiRef,
-    deps: {},
-    factory: () => AppLanguageSelector.createWithStorage(),
   });
 
   factoryRegistry.register('static', {
