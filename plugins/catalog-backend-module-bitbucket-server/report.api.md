@@ -15,7 +15,6 @@ import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
-import { TaskRunner } from '@backstage/backend-tasks';
 import { TokenManager } from '@backstage/backend-common';
 
 // @public
@@ -76,8 +75,8 @@ export class BitbucketServerEntityProvider implements EntityProvider {
       logger: LoggerService;
       events?: EventsService;
       parser?: BitbucketServerLocationParser;
-      schedule?: TaskRunner;
-      scheduler?: PluginTaskScheduler;
+      schedule?: SchedulerServiceTaskRunner;
+      scheduler?: SchedulerService;
       catalogApi?: CatalogApi;
       tokenManager?: TokenManager;
     },
