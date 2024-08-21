@@ -146,7 +146,9 @@ export class PluginTokenHandler {
     return { token };
   }
 
-  async isTargetPluginSupported(targetPluginId: string): Promise<boolean> {
+  private async isTargetPluginSupported(
+    targetPluginId: string,
+  ): Promise<boolean> {
     if (this.supportedTargetPlugins.has(targetPluginId)) {
       return true;
     }
@@ -199,7 +201,8 @@ export class PluginTokenHandler {
     // Double check that the target plugin has a valid JWKS endpoint, otherwise avoid creating a remote key set
     if (!(await this.isTargetPluginSupported(pluginId))) {
       throw new AuthenticationError(
-        `Received a plugin token where the source '${pluginId}' plugin unexpectedly does not have a JWKS endpoint`,
+        `Received a plugin token where the source '${pluginId}' plugin unexpectedly does not have a JWKS endpoint. ` +
+          'The target plugin needs to be migrated to be installed in an app using the new backend system.',
       );
     }
 
