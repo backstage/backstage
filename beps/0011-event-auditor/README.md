@@ -115,12 +115,16 @@ export type AuditEventFailureStatus<E = ErrorLike> = {
   errors: E[];
 };
 
-export type AuditEventStatus = AuditEventSuccessStatus | AuditEventFailureStatus | undefined;
+export type AuditEventStatus =
+  | AuditEventSuccessStatus
+  | AuditEventFailureStatus
+  | undefined;
 ```
 
 #### EventAuditor Interface
 
 This interface defines the functionalities of an `EventAuditor` class. This class provides methods for:
+
 - Extracting the actor ID from an Express request (if available).
 - Creating detailed audit event information based on provided options.
 - Logging an audit event with a specific level (info, debug, warn, or error).
@@ -139,7 +143,7 @@ export type AuditEventOptions = AuditEventStatus & {
   metadata?: JsonValue;
   response?: AuditResponse;
   request?: Request;
-} & ({ actorId: string; } | { credentials: BackstageCredentials } | undefined);
+} & ({ actorId: string } | { credentials: BackstageCredentials } | undefined);
 
 export type AuditEvent = {
   actor: ActorDetails;
