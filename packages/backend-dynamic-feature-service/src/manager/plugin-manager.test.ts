@@ -247,6 +247,59 @@ describe('backend-dynamic-feature-service', () => {
         },
       },
       {
+        name: 'should successfully load a backend plugin wrapped in a BackendFeatureCompatWrapper function',
+        packageManifest: {
+          name: 'backend-dynamic-plugin-test',
+          version: '0.0.0',
+          backstage: {
+            role: 'backend-plugin',
+          },
+          main: 'dist/index.cjs.js',
+        },
+        indexFile: {
+          relativePath: ['dist', 'index.cjs.js'],
+          content: `
+          function backendFeatureCompatWrapper() {
+            return backendFeatureCompatWrapper;
+          }
+          Object.assign(backendFeatureCompatWrapper, {
+            $$type: "@backstage/BackendFeature",
+            version: "v1",
+          });
+          const alpha = backendFeatureCompatWrapper;
+          exports.default = alpha;
+          `,
+        },
+        expectedLogs(location) {
+          return {
+            infos: [
+              {
+                message: `loaded dynamic backend plugin 'backend-dynamic-plugin-test' from '${location}'`,
+              },
+            ],
+          };
+        },
+        checkLoadedPlugins(plugins) {
+          expect(plugins).toMatchObject([
+            {
+              name: 'backend-dynamic-plugin-test',
+              version: '0.0.0',
+              role: 'backend-plugin',
+              platform: 'node',
+              installer: {
+                kind: 'new',
+              },
+            },
+          ]);
+          const installer: NewBackendPluginInstaller = (
+            plugins[0] as BackendDynamicPlugin
+          ).installer as NewBackendPluginInstaller;
+          expect((installer.install() as BackendFeature).$$type).toEqual(
+            '@backstage/BackendFeature',
+          );
+        },
+      },
+      {
         name: 'should fail when no index file',
         packageManifest: {
           name: 'backend-dynamic-plugin-test',

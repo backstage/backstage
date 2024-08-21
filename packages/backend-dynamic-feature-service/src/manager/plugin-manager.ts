@@ -308,7 +308,7 @@ export const dynamicPluginsFeatureDiscoveryServiceFactory =
 function isBackendFeature(value: unknown): value is BackendFeature {
   return (
     !!value &&
-    typeof value === 'object' &&
+    (typeof value === 'object' || typeof value === 'function') &&
     (value as BackendFeature).$$type === '@backstage/BackendFeature'
   );
 }
