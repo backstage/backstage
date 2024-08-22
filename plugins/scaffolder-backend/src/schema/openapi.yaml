@@ -113,16 +113,206 @@ components:
         - error
         - response
       additionalProperties: {}
+    JsonArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/JsonValue'
+      description: A type representing all allowed JSON array values.
     JsonObject:
       type: object
       properties: {}
       description: A type representing all allowed JSON object values.
       additionalProperties: {}
+    JsonPrimitive:
+      oneOf:
+        - type: number
+        - type: string
+        - type: boolean
+        - type: null
+      description: A type representing all allowed JSON primitive values.
+    JsonValue:
+      oneOf:
+        - $ref: '#/components/schemas/JsonObject'
+        - $ref: '#/components/schemas/JsonArray'
+        - $ref: '#/components/schemas/JsonPrimitive'
+      description: A type representing all allowed JSON values.
     ListActionsResponse:
       type: array
       items:
         $ref: '#/components/schemas/Action'
       description: The response shape for the `listActions` call to the `scaffolder-backend`
+    ListTasksResponse:
+      type: object
+      properties:
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/SerializedTask'
+      description: The response shape for the `listTasks` call to the `scaffolder-backend`
+    SerializedTask:
+      type: object
+      properties:
+        id:
+          type: string
+        spec:
+          $ref: '#/components/schemas/TaskSpec'
+        status:
+          $ref: '#/components/schemas/TaskStatus'
+        createdAt:
+          type: string
+        lastHeartbeatAt:
+          type: string
+        createdBy:
+          type: string
+        secrets:
+          $ref: '#/components/schemas/TaskSecrets'
+        state:
+          $ref: '#/components/schemas/JsonObject'
+      required:
+        - id
+        - spec
+        - status
+        - createdAt
+      description: SerializedTask
+    TaskRecovery:
+      type: object
+      properties:
+        EXPERIMENTAL_strategy:
+          $ref: '#/components/schemas/TaskRecoverStrategy'
+      description: |-
+        When task didn't have a chance to complete due to system restart you can define the strategy what to do with such tasks,
+        by defining a strategy.
+
+        By default, it is none, what means to not recover but updating the status from 'processing' to 'failed'.
+    TaskRecoverStrategy:
+      type: string
+      description: |
+        - none: not recover, let the task be marked as failed
+        - startOver: do recover, start the execution of the task from the first step.
+      enum:
+        - none
+        - startOver
+    TaskSecrets:
+      type: object
+      properties:
+        backstageToken:
+          type: string
+      additionalProperties:
+        type: string
+      description: TaskSecrets
+    TaskSpec:
+      $ref: '#/components/schemas/TaskSpecV1beta3'
+    TaskSpecV1beta3:
+      type: object
+      properties:
+        apiVersion:
+          type: string
+          enum:
+            - "scaffolder.backstage.io/v1beta3"
+          description: The apiVersion string of the TaskSpec.
+        parameters:
+          $ref: '#/components/schemas/JsonObject'
+          description: |
+            This is a JSONSchema which is used to render a form in the frontend
+            to collect user input and validate it against that schema. This can then be used in the `steps` part below to template
+            variables passed from the user into each action in the template.
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskStep'
+          description: |
+            A list of steps to be executed in sequence which are defined by the template. These steps are a list of the underlying
+            javascript action and some optional input parameters that may or may not have been collected from the end user.
+        output:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/JsonValue'
+          description: |
+            The output is an object where template authors can pull out information from template actions and return them in a known standard way.
+        templateInfo:
+          $ref: '#/components/schemas/TemplateInfo'
+          description: Some information about the template that is stored on the task spec.
+        user:
+          type: object
+          properties:
+            entity:
+              $ref: '../../../catalog-backend/src/schema/openapi.yaml#/components/schemas/UserEntity'
+              description: The decorated entity from the Catalog
+            ref:
+              type: string
+              description: An entity ref for the author of the task
+          description: Some decoration of the author of the task that should be available in the context
+        EXPERIMENTAL_recovery:
+          $ref: '#/components/schemas/TaskRecovery'
+          description: How to recover the task after system restart or system crash.
+      required:
+        - apiVersion
+        - parameters
+        - steps
+        - output
+      description: |-
+        A scaffolder task as stored in the database, generated from a v1beta3
+        apiVersion Template.
+    TaskStatus:
+      type: string
+      enum:
+        - 'cancelled'
+        - 'completed'
+        - 'failed'
+        - 'open'
+        - 'processing'
+      description: The status of each step of the Task
+    TaskStep:
+      type: object
+      properties:
+        id:
+          type: string
+          description: A unique identifier for this step.
+        name:
+          type: string
+          description: A display name to show the user.
+        action:
+          type: string
+          description: The underlying action ID that will be called as part of running this step.
+        input:
+          $ref: '#/components/schemas/JsonObject'
+          description: Additional data that will be passed to the action.
+        if:
+          oneOf:
+            - type: string
+            - type: boolean
+          description: When this is false, or if the templated value string evaluates to something that is falsy the step will be skipped.
+        each:
+          oneOf:
+            - type: string
+            - $ref: '#/components/schemas/JsonArray'
+          description: Run step repeatedly.
+      required:
+        - id
+        - name
+        - action
+      description: An individual step of a scaffolder task, as stored in the database.
+    TemplateInfo:
+      type: object
+      properties:
+        entityRef:
+          type: string
+          description: The entityRef of the template.
+        baseUrl:
+          type: string
+          description: Where the template is stored, so we can resolve relative paths for things like `fetch:template` paths.
+        entity:
+          type: object
+          description: The Template entity.
+          properties:
+            metadata:
+              $ref: '../../../catalog-backend/src/schema/openapi.yaml#/components/schemas/EntityMeta'
+              description: The metadata of the Template.
+      required:
+        - entityRef
+      description: |-
+        Information about a template that is stored on a task specification.
+        Includes a stringified entityRef, and the baseUrl which is usually the relative path of the template definition
     TemplateParameterSchema:
       type: object
       properties:
@@ -211,6 +401,22 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ListActionsResponse'
+      security:
+        - {}
+        - JWT: []
+      parameters: []
+
+  /v2/tasks:
+    get:
+      operationId: ListTasks
+      description: Returns a list of tasks, filtering by ownership and/or status if given.
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListTasksResponse'
       security:
         - {}
         - JWT: []
