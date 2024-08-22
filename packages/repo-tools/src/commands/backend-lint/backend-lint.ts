@@ -13,36 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import fs from 'fs-extra';
 import { Project } from 'ts-morph';
-import { resolvePackagePaths } from '../../lib/paths';
+import { BackstagePackageJson, PackageGraph } from '@backstage/cli-node';
+import fs from 'fs-extra';
+import { paths as cliPaths } from '../../lib/paths';
+import path from 'path';
 
 const project = new Project({
-  tsConfigFilePath: 'tsconfig.json',
+  tsConfigFilePath: cliPaths.resolveTargetRoot('tsconfig.json'),
 });
 
 function readPackageJson(pkg: string) {
-  return JSON.parse(fs.readFileSync(`${pkg}/package.json`, 'utf-8'));
+  return JSON.parse(fs.readFileSync(path.join(pkg, 'package.json'), 'utf-8'));
 }
 
 export async function lint(paths: string[]) {
-  const pkgs = (await resolvePackagePaths()).filter(pkg => {
-    const role = readPackageJson(pkg).backstage?.role;
-    return role === 'backend-plugin' || role === 'backend-plugin-module';
+  const pkgs = (await PackageGraph.listTargetPackages()).filter(pkg => {
+    return (
+      pkg.packageJson.backstage?.role === 'backend-plugin' ||
+      pkg.packageJson.backstage?.role === 'backend-plugin-module'
+    );
   });
 
   if (paths.length > 0) {
-    paths.forEach(verifyIndex);
+    paths.forEach(pkg => verifyIndex(pkg));
     return;
   }
-  pkgs.forEach(verifyIndex);
+  pkgs.forEach(pkg => verifyIndex(pkg.dir, pkg.packageJson));
 }
 
-function verifyIndex(pkg: string) {
+function verifyIndex(pkg: string, packageJson?: BackstagePackageJson) {
   console.log(`Verifying ${pkg}`);
-  const sourceFile = project.getSourceFile(`${pkg}/src/index.ts`);
+  const tsPath = path.join(pkg, 'src/index.ts');
+  const sourceFile = project.getSourceFile(tsPath);
   if (!sourceFile) {
-    console.log(`Could not find ${pkg}/src/index.ts`);
+    console.log(`Could not find ${tsPath}`);
     process.exit(1);
   }
   const symbols = sourceFile?.getExportSymbols();
@@ -76,18 +81,18 @@ function verifyIndex(pkg: string) {
       console.log('   ❌ createRouter is NOT deprecated');
   }
 
-  const pkgJson = readPackageJson(pkg);
+  const pkgJson = packageJson ?? readPackageJson(pkg);
   if (
     '@backstage/backend-common' in pkgJson.dependencies ||
     '@backstage/backend-common' in pkgJson.devDependencies
   ) {
-    console.log('   ❌ Stop depending on "@backstage/backend-common"');
+    console.log('   ❌ Stop depending on @backstage/backend-common');
   }
 
   if (
     '@backstage/backend-tasks' in pkgJson.dependencies ||
     '@backstage/backend-tasks' in pkgJson.devDependencies
   ) {
-    console.log('   ❌ Stop depending on "@backstage/backend-tasks"');
+    console.log('   ❌ Stop depending on @backstage/backend-tasks');
   }
 }
