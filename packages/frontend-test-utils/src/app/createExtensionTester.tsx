@@ -49,9 +49,7 @@ import { resolveAppNodeSpecs } from '../../../frontend-app-api/src/tree/resolveA
 import { instantiateAppNodeTree } from '../../../frontend-app-api/src/tree/instantiateAppNodeTree';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { readAppExtensionsConfig } from '../../../frontend-app-api/src/tree/readAppExtensionsConfig';
-
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { ApiRegistry } from '../../../core-app-api/src/apis/system/ApiRegistry';
+import { TestApiRegistry } from '@backstage/test-utils';
 
 const NavItem = (props: {
   routeRef: RouteRef<undefined>;
@@ -323,7 +321,7 @@ export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
       }),
     );
 
-    instantiateAppNodeTree(tree.root, ApiRegistry.from([]));
+    instantiateAppNodeTree(tree.root, TestApiRegistry.from());
 
     this.#tree = tree;
 

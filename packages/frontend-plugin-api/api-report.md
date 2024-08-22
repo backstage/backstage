@@ -650,6 +650,7 @@ export type CreateExtensionBlueprintOptions<
     params: TParams,
     context: {
       node: AppNode;
+      apis: ApiHolder;
       config: {
         [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
       };
@@ -730,6 +731,7 @@ export type CreateExtensionOptions<
   };
   factory(context: {
     node: AppNode;
+    apis: ApiHolder;
     config: {
       [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
     };
@@ -953,6 +955,7 @@ export interface ExtensionBlueprint<
       ) => ExtensionDataContainer<UOutput>,
       context: {
         node: AppNode;
+        apis: ApiHolder;
         config: TConfig & {
           [key in keyof TExtensionConfigSchema]: z.infer<
             ReturnType<TExtensionConfigSchema[key]>
@@ -1145,6 +1148,7 @@ export interface ExtensionDefinition<
         }) => ExtensionDataContainer<UOutput>,
         context: {
           node: AppNode;
+          apis: ApiHolder;
           config: TConfig & {
             [key in keyof TExtensionConfigSchema]: z.infer<
               ReturnType<TExtensionConfigSchema[key]>
