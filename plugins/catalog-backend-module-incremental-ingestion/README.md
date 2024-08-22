@@ -376,7 +376,7 @@ incrementalBuilder.addIncrementalEntityProvider(myEntityProvider, {
 
 ## Adding an Incremental Entity Provider to the catalog (New Backend)
 
-We'll assume you followed the <a href="#installation-new-backend">Installation</a> instructions. Cretae a module inside `packages/backend/src/extensions/catalogCustomIncrementalIngestion.ts`.
+We'll assume you followed the <a href="#installation-new-backend">Installation</a> instructions. Now create a module inside `packages/backend/src/extensions/catalogCustomIncrementalIngestion.ts`.
 
 ```ts
 import {
