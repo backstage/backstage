@@ -278,16 +278,24 @@ describe('createApp', () => {
             ]
           </app/root>
         ]
-        components [
-          <component:core.components.progress out=[core.component.component] />
-          <component:core.components.errorBoundaryFallback out=[core.component.component] />
-          <component:core.components.notFoundErrorPage out=[core.component.component] />
-        ]
-        themes [
-          <theme:app/light out=[core.theme.theme] />
-          <theme:app/dark out=[core.theme.theme] />
-        ]
         apis [
+          <api:app-theme out=[core.api.factory]>
+            themes [
+              <theme:app/light out=[core.theme.theme] />
+              <theme:app/dark out=[core.theme.theme] />
+            ]
+          </api:app-theme>
+          <api:app-language out=[core.api.factory] />
+          <api:icons out=[core.api.factory] />
+          <api:translations out=[core.api.factory] />
+          <api:components out=[core.api.factory]>
+            components [
+              <component:core.components.progress out=[core.component.component] />
+              <component:core.components.errorBoundaryFallback out=[core.component.component] />
+              <component:core.components.notFoundErrorPage out=[core.component.component] />
+            ]
+          </api:components>
+          <api:feature-flags out=[core.api.factory] />
           <api:core.discovery out=[core.api.factory] />
           <api:core.alert out=[core.api.factory] />
           <api:core.analytics out=[core.api.factory] />

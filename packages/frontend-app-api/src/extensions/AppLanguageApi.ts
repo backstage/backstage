@@ -14,25 +14,17 @@
  * limitations under the License.
  */
 
-import { AppTheme } from '@backstage/core-plugin-api';
-import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { AppLanguageSelector } from '../../../core-app-api/src/apis/implementations/AppLanguageApi';
+import { appLanguageApiRef } from '@backstage/core-plugin-api/alpha';
+import { ApiBlueprint, createApiFactory } from '@backstage/frontend-plugin-api';
 
-const themeDataRef = createExtensionDataRef<AppTheme>().with({
-  id: 'core.theme.theme',
-});
-
-/**
- * Creates an extension that adds/replaces an app theme.
- *
- * @public
- */
-export const ThemeBlueprint = createExtensionBlueprint({
-  kind: 'theme',
-  namespace: 'app',
-  attachTo: { id: 'api:app-theme', input: 'themes' },
-  output: [themeDataRef],
-  dataRefs: {
-    theme: themeDataRef,
+export const AppLanguageApi = ApiBlueprint.make({
+  name: 'app-language',
+  params: {
+    factory: createApiFactory(
+      appLanguageApiRef,
+      AppLanguageSelector.createWithStorage(),
+    ),
   },
-  factory: ({ theme }: { theme: AppTheme }) => [themeDataRef(theme)],
 });

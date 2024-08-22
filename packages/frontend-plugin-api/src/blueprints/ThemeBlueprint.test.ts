@@ -32,7 +32,7 @@ describe('ThemeBlueprint', () => {
       {
         "$$type": "@backstage/ExtensionDefinition",
         "attachTo": {
-          "id": "app",
+          "id": "api:app-theme",
           "input": "themes",
         },
         "configSchema": undefined,
