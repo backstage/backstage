@@ -687,7 +687,12 @@ export function createExtensionInput<
   },
 >(
   extensionData: Array<UExtensionData>,
-  config?: TConfig,
+  config?: TConfig & {
+    replaces?: Array<{
+      id: string;
+      input: string;
+    }>;
+  },
 ): ExtensionInput<
   UExtensionData,
   {
@@ -1183,7 +1188,7 @@ export interface ExtensionDefinition<
 
 // @public (undocumented)
 export interface ExtensionInput<
-  TExtensionData extends ExtensionDataRef<
+  UExtensionData extends ExtensionDataRef<
     unknown,
     string,
     {
@@ -1200,7 +1205,12 @@ export interface ExtensionInput<
   // (undocumented)
   config: TConfig;
   // (undocumented)
-  extensionData: Array<TExtensionData>;
+  extensionData: Array<UExtensionData>;
+  // (undocumented)
+  replaces?: Array<{
+    id: string;
+    input: string;
+  }>;
 }
 
 // @public (undocumented)
