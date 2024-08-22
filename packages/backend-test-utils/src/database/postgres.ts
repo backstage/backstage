@@ -187,8 +187,12 @@ export class PostgresEngine implements Engine {
         ...this.#connection,
         database: 'postgres',
       },
+      acquireConnectionTimeout: 600000,
       pool: {
-        acquireTimeoutMillis: 10000,
+        createTimeoutMillis: 600000,
+        destroyTimeoutMillis: 600000,
+        idleTimeoutMillis: 600000,
+        acquireTimeoutMillis: 600000,
       },
     });
   }

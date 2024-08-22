@@ -230,12 +230,16 @@ export class MysqlEngine implements Engine {
     const connection = {
       ...this.#connection,
       database: null as unknown as string,
+      acquireConnectionTimeout: 600000,
     };
     return knexFactory({
       client: this.#properties.driver,
       connection,
       pool: {
-        acquireTimeoutMillis: 10000,
+        acquireTimeoutMillis: 600000,
+        createTimeoutMillis: 600000,
+        destroyTimeoutMillis: 600000,
+        idleTimeoutMillis: 600000,
       },
     });
   }

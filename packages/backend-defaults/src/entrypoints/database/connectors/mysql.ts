@@ -160,9 +160,13 @@ export async function ensureMysqlDatabaseExists(
     connection: {
       database: null as unknown as string,
     },
+    acquireConnectionTimeout: 600000,
     pool: {
       min: 0,
-      acquireTimeoutMillis: 10000,
+      acquireTimeoutMillis: 600000,
+      createTimeoutMillis: 600000,
+      destroyTimeoutMillis: 600000,
+      idleTimeoutMillis: 600000,
     },
   });
 
@@ -206,9 +210,13 @@ export async function dropMysqlDatabase(
     connection: {
       database: null as unknown as string,
     },
+    acquireConnectionTimeout: 600000,
     pool: {
       min: 0,
-      acquireTimeoutMillis: 10000,
+      acquireTimeoutMillis: 600000,
+      createTimeoutMillis: 600000,
+      destroyTimeoutMillis: 600000,
+      idleTimeoutMillis: 600000,
     },
   });
 

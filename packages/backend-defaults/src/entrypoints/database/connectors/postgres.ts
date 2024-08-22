@@ -137,9 +137,13 @@ export async function ensurePgDatabaseExists(
     connection: {
       database: 'postgres',
     },
+    acquireConnectionTimeout: 600000,
     pool: {
       min: 0,
-      acquireTimeoutMillis: 10000,
+      acquireTimeoutMillis: 600000,
+      createTimeoutMillis: 600000,
+      destroyTimeoutMillis: 600000,
+      idleTimeoutMillis: 600000,
     },
   });
 

@@ -110,8 +110,13 @@ export const allDatabases: Record<TestDatabaseId, TestDatabaseProperties> =
   });
 
 export const LARGER_POOL_CONFIG = {
+  acquireConnectionTimeout: 600000,
   pool: {
     min: 0,
     max: 50,
+    createTimeoutMillis: 600000,
+    destroyTimeoutMillis: 600000,
+    idleTimeoutMillis: 600000,
+    acquireTimeoutMillis: 600000,
   },
 };

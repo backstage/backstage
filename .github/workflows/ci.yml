@@ -150,7 +150,41 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [18.x, 20.x]
+        node-version:
+          [
+            18.x,
+            20.x,
+            18.x,
+            20.x,
+            18.x,
+            20.x,
+            18.x,
+            20.x,
+            18.x,
+            20.x,
+            18.x,
+            20.x,
+            18.x,
+            20.x,
+            18.x,
+            20.x,
+            18.x,
+            20.x,
+            18.x,
+            20.x,
+            18.x,
+            20.x,
+            18.x,
+            20.x,
+            18.x,
+            20.x,
+            18.x,
+            20.x,
+            18.x,
+            20.x,
+            18.x,
+            20.x,
+          ]
 
     name: Test ${{ matrix.node-version }}
     services:
