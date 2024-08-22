@@ -16,9 +16,9 @@ Commands:
   type-deps
   generate-catalog-info [options]
   knip-reports [options] [paths...]
-  backend-lint [paths...]
   package [command]
   repo [command]
+  lint [command]
   help [command]
 ```
 
@@ -40,15 +40,6 @@ Options:
   -h, --help
 ```
 
-### `backstage-repo-tools backend-lint`
-
-```
-Usage: backstage-repo-tools backend-lint [options] [paths...]
-
-Options:
-  -h, --help
-```
-
 ### `backstage-repo-tools generate-catalog-info`
 
 ```
@@ -67,6 +58,28 @@ Usage: backstage-repo-tools knip-reports [options] [paths...]
 
 Options:
   --ci
+  -h, --help
+```
+
+### `backstage-repo-tools lint`
+
+```
+Usage: backstage-repo-tools lint [options] [command] [command]
+
+Options:
+  -h, --help
+
+Commands:
+  legacy-backend-exports [paths...]
+  help [command]
+```
+
+### `backstage-repo-tools lint legacy-backend-exports`
+
+```
+Usage: backstage-repo-tools lint legacy-backend-exports [options] [paths...]
+
+Options:
   -h, --help
 ```
 
