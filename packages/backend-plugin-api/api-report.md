@@ -623,9 +623,6 @@ export interface ServiceFactory<
   service: ServiceRef<TService, TScope, TInstances>;
 }
 
-// @public @deprecated
-export type ServiceFactoryOrFunction = ServiceFactory | (() => ServiceFactory);
-
 // @public
 export type ServiceRef<
   TService,
