@@ -198,13 +198,12 @@ describe('TestBackend', () => {
             rootLifecycle: coreServices.rootLifecycle,
             rootLogger: coreServices.rootLogger,
             scheduler: coreServices.scheduler,
-            tokenManager: coreServices.tokenManager,
             urlReader: coreServices.urlReader,
             auth: coreServices.auth,
             httpAuth: coreServices.httpAuth,
           },
           async init(deps) {
-            expect(Object.keys(deps)).toHaveLength(17);
+            expect(Object.keys(deps)).toHaveLength(16);
             expect(Object.values(deps)).not.toContain(undefined);
           },
         });

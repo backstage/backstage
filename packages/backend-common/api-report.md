@@ -22,7 +22,6 @@ import Docker from 'dockerode';
 import { ErrorRequestHandler } from 'express';
 import express from 'express';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
-import { IdentityService } from '@backstage/backend-plugin-api';
 import { isChildPath as isChildPath_2 } from '@backstage/backend-plugin-api';
 import { isDatabaseConflictError as isDatabaseConflictError_2 } from '@backstage/backend-plugin-api';
 import { KubeConfig } from '@kubernetes/client-node';
@@ -44,7 +43,6 @@ import { Router } from 'express';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { Server } from 'http';
 import { ServiceRef } from '@backstage/backend-plugin-api';
-import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { TransportStreamOptions } from 'winston-transport';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { UserInfoService } from '@backstage/backend-plugin-api';
@@ -101,7 +99,7 @@ export function createLegacyAuthAdapters<
     auth?: AuthService;
     httpAuth?: HttpAuthService;
     userInfo?: UserInfoService;
-    identity?: IdentityService;
+    identity?: LegacyIdentityService;
     tokenManager?: TokenManager;
     discovery: PluginEndpointDiscovery;
   },
@@ -547,7 +545,12 @@ export interface StatusCheckHandlerOptions {
 }
 
 // @public @deprecated (undocumented)
-export type TokenManager = TokenManagerService;
+export interface TokenManager {
+  authenticate(token: string): Promise<void>;
+  getToken(): Promise<{
+    token: string;
+  }>;
+}
 
 // @public @deprecated
 export function useHotCleanup(

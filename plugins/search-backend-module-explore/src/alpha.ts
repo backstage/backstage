@@ -43,7 +43,6 @@ export default createBackendModule({
         logger: coreServices.logger,
         discovery: coreServices.discovery,
         scheduler: coreServices.scheduler,
-        tokenManager: coreServices.tokenManager,
         auth: coreServices.auth,
         indexRegistry: searchIndexRegistryExtensionPoint,
       },
@@ -52,7 +51,6 @@ export default createBackendModule({
         logger,
         discovery,
         scheduler,
-        tokenManager,
         auth,
         indexRegistry,
       }) {
@@ -74,7 +72,6 @@ export default createBackendModule({
             discovery,
             logger,
             auth,
-            tokenManager,
           }),
         });
       },

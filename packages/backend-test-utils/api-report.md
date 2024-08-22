@@ -23,7 +23,6 @@ import { ExtendedHttpServer } from '@backstage/backend-defaults/rootHttpRouter';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
-import { IdentityService } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import Keyv from 'keyv';
 import { Knex } from 'knex';
@@ -39,7 +38,6 @@ import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
-import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { UserInfoService } from '@backstage/backend-plugin-api';
 
@@ -217,17 +215,6 @@ export namespace mockServices {
       ) => ServiceMock<HttpRouterService>;
   }
   // (undocumented)
-  export function identity(): IdentityService;
-  // (undocumented)
-  export namespace identity {
-    const // (undocumented)
-      factory: () => ServiceFactory<IdentityService, 'plugin', 'singleton'>;
-    const // (undocumented)
-      mock: (
-        partialImpl?: Partial<IdentityService> | undefined,
-      ) => ServiceMock<IdentityService>;
-  }
-  // (undocumented)
   export namespace lifecycle {
     const // (undocumented)
       factory: () => ServiceFactory<LifecycleService, 'plugin', 'singleton'>;
@@ -322,17 +309,6 @@ export namespace mockServices {
       mock: (
         partialImpl?: Partial<SchedulerService> | undefined,
       ) => ServiceMock<SchedulerService>;
-  }
-  // (undocumented)
-  export function tokenManager(): TokenManagerService;
-  // (undocumented)
-  export namespace tokenManager {
-    const // (undocumented)
-      factory: () => ServiceFactory<TokenManagerService, 'plugin', 'singleton'>;
-    const // (undocumented)
-      mock: (
-        partialImpl?: Partial<TokenManagerService> | undefined,
-      ) => ServiceMock<TokenManagerService>;
   }
   // (undocumented)
   export namespace urlReader {

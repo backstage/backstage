@@ -14,18 +14,28 @@
  * limitations under the License.
  */
 
-import { mockServices } from '@backstage/backend-test-utils';
 import { createLegacyAuthAdapters } from './createLegacyAuthAdapters';
 import { Request } from 'express';
+import { TokenManager } from '../../deprecated';
+
+const mockTokenManager: TokenManager = {
+  async getToken(): Promise<{ token: string }> {
+    return { token: 'mock-token' };
+  },
+  async authenticate(token: string): Promise<void> {
+    if (token !== 'mock-token') {
+      throw new Error('Invalid token');
+    }
+  },
+};
 
 describe('createLegacyAuthAdapters', () => {
   it('should pass through auth if only auth is provided', () => {
     const auth = {};
     const ret = createLegacyAuthAdapters({
       auth: auth as any,
-      tokenManager: mockServices.tokenManager(),
+      tokenManager: mockTokenManager,
       discovery: {} as any,
-      identity: mockServices.identity(),
     });
 
     expect(ret.auth).toBe(auth);
@@ -35,9 +45,8 @@ describe('createLegacyAuthAdapters', () => {
     const httpAuth = {};
     const ret = createLegacyAuthAdapters({
       httpAuth: httpAuth as any,
-      tokenManager: mockServices.tokenManager(),
+      tokenManager: mockTokenManager,
       discovery: {} as any,
-      identity: mockServices.identity(),
     });
 
     expect(ret.httpAuth).toBe(httpAuth);
@@ -49,9 +58,8 @@ describe('createLegacyAuthAdapters', () => {
     const ret = createLegacyAuthAdapters({
       auth: auth as any,
       httpAuth: httpAuth as any,
-      tokenManager: mockServices.tokenManager(),
+      tokenManager: mockTokenManager,
       discovery: {} as any,
-      identity: mockServices.identity(),
     });
 
     expect(ret.auth).toBe(auth);
@@ -64,9 +72,8 @@ describe('createLegacyAuthAdapters', () => {
     const ret = createLegacyAuthAdapters({
       auth: auth as any,
       userInfo: userInfo as any,
-      tokenManager: mockServices.tokenManager(),
+      tokenManager: mockTokenManager,
       discovery: {} as any,
-      identity: mockServices.identity(),
     });
 
     expect(ret.auth).toBe(auth);
@@ -77,9 +84,8 @@ describe('createLegacyAuthAdapters', () => {
     const ret = createLegacyAuthAdapters({
       auth: undefined,
       httpAuth: undefined,
-      tokenManager: mockServices.tokenManager(),
+      tokenManager: mockTokenManager,
       discovery: {} as any,
-      identity: mockServices.identity(),
     });
 
     expect(ret).toEqual({
@@ -94,7 +100,6 @@ describe('createLegacyAuthAdapters', () => {
       auth: undefined,
       httpAuth: undefined,
       discovery: {} as any,
-      identity: mockServices.identity(),
     });
 
     const credentials = await httpAuth.credentials({
@@ -116,13 +121,12 @@ describe('createLegacyAuthAdapters', () => {
       auth: undefined,
       httpAuth: undefined,
       tokenManager: {
-        ...mockServices.tokenManager(),
+        ...mockTokenManager,
         async getToken() {
           return { token: 'new-token' };
         },
       },
       discovery: {} as any,
-      identity: mockServices.identity(),
     });
 
     const credentials = await httpAuth.credentials({
