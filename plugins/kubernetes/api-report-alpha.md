@@ -21,104 +21,125 @@ const _default: BackstagePlugin<
   },
   {},
   {
-    'page:kubernetes': ExtensionDefinition<
-      {
+    'api:kubernetes': ExtensionDefinition<{
+      kind: 'api';
+      namespace: undefined;
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+    }>;
+    'page:kubernetes': ExtensionDefinition<{
+      kind: 'page';
+      namespace: undefined;
+      name: undefined;
+      config: {
         path: string | undefined;
-      },
-      {
+      };
+      configInput: {
         path?: string | undefined;
-      },
-      | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-      | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-      | ConfigurableExtensionDataRef<
-          RouteRef<AnyRouteRefParams>,
-          'core.routing.ref',
-          {
-            optional: true;
-          }
-        >,
-      {},
-      {
-        kind: 'page';
-        namespace: undefined;
-        name: undefined;
-      }
-    >;
-    'entity-content:kubernetes/kubernetes': ExtensionDefinition<
-      {
+      };
+      output:
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+        | ConfigurableExtensionDataRef<
+            RouteRef<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+    }>;
+    'entity-content:kubernetes/kubernetes': ExtensionDefinition<{
+      kind: 'entity-content';
+      namespace: undefined;
+      name: 'kubernetes';
+      config: {
         path: string | undefined;
         title: string | undefined;
         filter: string | undefined;
-      },
-      {
+      };
+      configInput: {
         filter?: string | undefined;
         title?: string | undefined;
         path?: string | undefined;
-      },
-      | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-      | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-      | ConfigurableExtensionDataRef<
-          RouteRef<AnyRouteRefParams>,
-          'core.routing.ref',
-          {
-            optional: true;
-          }
-        >
-      | ConfigurableExtensionDataRef<string, 'catalog.entity-content-title', {}>
-      | ConfigurableExtensionDataRef<
-          (entity: Entity) => boolean,
-          'catalog.entity-filter-function',
-          {
-            optional: true;
-          }
-        >
-      | ConfigurableExtensionDataRef<
-          string,
-          'catalog.entity-filter-expression',
-          {
-            optional: true;
-          }
-        >,
-      {},
-      {
-        kind: 'entity-content';
-        namespace: undefined;
-        name: 'kubernetes';
-      }
-    >;
-    'api:kubernetes/proxy': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'proxy';
-      }
-    >;
-    'api:kubernetes/auth-providers': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'auth-providers';
-      }
-    >;
-    'api:kubernetes/cluster-link-formatter': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'cluster-link-formatter';
-      }
-    >;
+      };
+      output:
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+        | ConfigurableExtensionDataRef<
+            RouteRef<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            string,
+            'catalog.entity-content-title',
+            {}
+          >
+        | ConfigurableExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+    }>;
+    'api:kubernetes/proxy': ExtensionDefinition<{
+      kind: 'api';
+      namespace: undefined;
+      name: 'proxy';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+    }>;
+    'api:kubernetes/auth-providers': ExtensionDefinition<{
+      kind: 'api';
+      namespace: undefined;
+      name: 'auth-providers';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+    }>;
+    'api:kubernetes/cluster-link-formatter': ExtensionDefinition<{
+      kind: 'api';
+      namespace: undefined;
+      name: 'cluster-link-formatter';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+    }>;
   }
 >;
 export default _default;

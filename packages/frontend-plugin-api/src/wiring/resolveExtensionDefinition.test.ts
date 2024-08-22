@@ -23,10 +23,11 @@ import {
 describe('resolveExtensionDefinition', () => {
   const baseDef = {
     $$type: '@backstage/ExtensionDefinition',
+    T: null as any,
     version: 'v2',
     attachTo: { id: '', input: '' },
     disabled: false,
-    override: () => ({} as ExtensionDefinition<unknown>),
+    override: () => ({} as ExtensionDefinition),
   };
 
   it.each([
@@ -39,7 +40,7 @@ describe('resolveExtensionDefinition', () => {
     const resolved = resolveExtensionDefinition({
       ...baseDef,
       ...definition,
-    } as ExtensionDefinition<unknown>);
+    } as ExtensionDefinition);
     expect(resolved.id).toBe(expected);
     expect(String(resolved)).toBe(`Extension{id=${expected}}`);
   });
@@ -49,12 +50,12 @@ describe('resolveExtensionDefinition', () => {
       resolveExtensionDefinition({
         ...baseDef,
         kind: 'k',
-      } as ExtensionDefinition<unknown>),
+      } as ExtensionDefinition),
     ).toThrow(
       'Extension must declare an explicit namespace or name as it could not be resolved from context, kind=k namespace=undefined name=undefined',
     );
     expect(() =>
-      resolveExtensionDefinition(baseDef as ExtensionDefinition<unknown>),
+      resolveExtensionDefinition(baseDef as ExtensionDefinition),
     ).toThrow(
       'Extension must declare an explicit namespace or name as it could not be resolved from context, kind=undefined namespace=undefined name=undefined',
     );
@@ -64,10 +65,11 @@ describe('resolveExtensionDefinition', () => {
 describe('old resolveExtensionDefinition', () => {
   const baseDef = {
     $$type: '@backstage/ExtensionDefinition',
+    T: null as any,
     version: 'v1',
     attachTo: { id: '', input: '' },
     disabled: false,
-    override: () => ({} as ExtensionDefinition<unknown>),
+    override: () => ({} as ExtensionDefinition),
   };
 
   it.each([
@@ -80,7 +82,7 @@ describe('old resolveExtensionDefinition', () => {
     const resolved = resolveExtensionDefinition({
       ...baseDef,
       ...definition,
-    } as ExtensionDefinition<unknown>);
+    } as ExtensionDefinition);
     expect(resolved.id).toBe(expected);
     expect(String(resolved)).toBe(`Extension{id=${expected}}`);
   });
@@ -90,12 +92,12 @@ describe('old resolveExtensionDefinition', () => {
       resolveExtensionDefinition({
         ...baseDef,
         kind: 'k',
-      } as ExtensionDefinition<unknown>),
+      } as ExtensionDefinition),
     ).toThrow(
       'Extension must declare an explicit namespace or name as it could not be resolved from context, kind=k namespace=undefined name=undefined',
     );
     expect(() =>
-      resolveExtensionDefinition(baseDef as ExtensionDefinition<unknown>),
+      resolveExtensionDefinition(baseDef as ExtensionDefinition),
     ).toThrow(
       'Extension must declare an explicit namespace or name as it could not be resolved from context, kind=undefined namespace=undefined name=undefined',
     );
@@ -108,13 +110,12 @@ describe('ResolveExtensionId', () => {
       TKind extends string | undefined,
       TNamespace extends string | undefined,
       TName extends string | undefined,
-    > = ExtensionDefinition<
-      any,
-      any,
-      any,
-      any,
-      { kind: TKind; namespace: TNamespace; name: TName }
-    >;
+    > = ExtensionDefinition<{
+      kind: TKind;
+      namespace: TNamespace;
+      name: TName;
+      output: any;
+    }>;
 
     const id1: 'k:ns' = {} as ResolveExtensionId<
       NamedExtension<'k', 'ns', undefined>,

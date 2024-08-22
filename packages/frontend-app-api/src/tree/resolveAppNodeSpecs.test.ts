@@ -44,12 +44,13 @@ function makeExtDef(
 ) {
   return {
     $$type: '@backstage/ExtensionDefinition',
+    T: null as any,
     version: 'v1',
     name,
     attachTo: { id: attachId, input: 'default' },
     disabled: status === 'disabled',
-    override: () => ({} as ExtensionDefinition<unknown>),
-  } as ExtensionDefinition<unknown>;
+    override: () => ({} as ExtensionDefinition),
+  } as ExtensionDefinition;
 }
 
 describe('resolveAppNodeSpecs', () => {

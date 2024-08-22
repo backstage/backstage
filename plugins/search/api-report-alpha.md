@@ -22,21 +22,26 @@ const _default: BackstagePlugin<
   },
   {},
   {
-    'api:search': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: undefined;
-      }
-    >;
-    'nav-item:search': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<
+    'api:search': ExtensionDefinition<{
+      kind: 'api';
+      namespace: undefined;
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+    }>;
+    'nav-item:search': ExtensionDefinition<{
+      kind: 'nav-item';
+      namespace: undefined;
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
         {
           title: string;
           icon: IconComponent;
@@ -44,39 +49,35 @@ const _default: BackstagePlugin<
         },
         'core.nav-item.target',
         {}
-      >,
-      {},
-      {
-        kind: 'nav-item';
-        namespace: undefined;
-        name: undefined;
-      }
-    >;
-    'page:search': ExtensionDefinition<
-      {
+      >;
+      inputs: {};
+    }>;
+    'page:search': ExtensionDefinition<{
+      config: {
         noTrack: boolean;
       } & {
         path: string | undefined;
-      },
-      {
+      };
+      configInput: {
         noTrack?: boolean | undefined;
       } & {
         path?: string | undefined;
-      },
-      | ConfigurableExtensionDataRef<
-          React_2.JSX.Element,
-          'core.reactElement',
-          {}
-        >
-      | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-      | ConfigurableExtensionDataRef<
-          RouteRef<AnyRouteRefParams>,
-          'core.routing.ref',
-          {
-            optional: true;
-          }
-        >,
-      {
+      };
+      output:
+        | ConfigurableExtensionDataRef<
+            React_2.JSX.Element,
+            'core.reactElement',
+            {}
+          >
+        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+        | ConfigurableExtensionDataRef<
+            RouteRef<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {
         items: ExtensionInput<
           ConfigurableExtensionDataRef<
             {
@@ -91,35 +92,34 @@ const _default: BackstagePlugin<
             optional: false;
           }
         >;
-      },
-      {
-        kind: 'page';
-        namespace: undefined;
-        name: undefined;
-      }
-    >;
+      };
+      kind: 'page';
+      namespace: undefined;
+      name: undefined;
+    }>;
   }
 >;
 export default _default;
 
 // @alpha (undocumented)
-export const searchApi: ExtensionDefinition<
-  {},
-  {},
-  ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-  {},
-  {
-    kind: 'api';
-    namespace: undefined;
-    name: undefined;
-  }
->;
+export const searchApi: ExtensionDefinition<{
+  kind: 'api';
+  namespace: undefined;
+  name: undefined;
+  config: {};
+  configInput: {};
+  output: ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+  inputs: {};
+}>;
 
 // @alpha (undocumented)
-export const searchNavItem: ExtensionDefinition<
-  {},
-  {},
-  ConfigurableExtensionDataRef<
+export const searchNavItem: ExtensionDefinition<{
+  kind: 'nav-item';
+  namespace: undefined;
+  name: undefined;
+  config: {};
+  configInput: {};
+  output: ConfigurableExtensionDataRef<
     {
       title: string;
       icon: IconComponent;
@@ -127,37 +127,33 @@ export const searchNavItem: ExtensionDefinition<
     },
     'core.nav-item.target',
     {}
-  >,
-  {},
-  {
-    kind: 'nav-item';
-    namespace: undefined;
-    name: undefined;
-  }
->;
+  >;
+  inputs: {};
+}>;
 
 // @alpha (undocumented)
-export const searchPage: ExtensionDefinition<
-  {
+export const searchPage: ExtensionDefinition<{
+  config: {
     noTrack: boolean;
   } & {
     path: string | undefined;
-  },
-  {
+  };
+  configInput: {
     noTrack?: boolean | undefined;
   } & {
     path?: string | undefined;
-  },
-  | ConfigurableExtensionDataRef<React_2.JSX.Element, 'core.reactElement', {}>
-  | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-  | ConfigurableExtensionDataRef<
-      RouteRef<AnyRouteRefParams>,
-      'core.routing.ref',
-      {
-        optional: true;
-      }
-    >,
-  {
+  };
+  output:
+    | ConfigurableExtensionDataRef<React_2.JSX.Element, 'core.reactElement', {}>
+    | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+    | ConfigurableExtensionDataRef<
+        RouteRef<AnyRouteRefParams>,
+        'core.routing.ref',
+        {
+          optional: true;
+        }
+      >;
+  inputs: {
     items: ExtensionInput<
       ConfigurableExtensionDataRef<
         {
@@ -172,13 +168,11 @@ export const searchPage: ExtensionDefinition<
         optional: false;
       }
     >;
-  },
-  {
-    kind: 'page';
-    namespace: undefined;
-    name: undefined;
-  }
->;
+  };
+  kind: 'page';
+  namespace: undefined;
+  name: undefined;
+}>;
 
 // (No @packageDocumentation comment for this package)
 ```

@@ -21,6 +21,7 @@ import {
   Extension,
   ExtensionDataRef,
   ExtensionDefinition,
+  ExtensionDefinitionParameters,
   coreExtensionData,
 } from '@backstage/frontend-plugin-api';
 import { Config, ConfigReader } from '@backstage/config';
@@ -75,12 +76,12 @@ export class ExtensionQuery<UOutput extends AnyExtensionDataRef> {
 /** @public */
 export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
   /** @internal */
-  static forSubject<TConfig, TConfigInput, UOutput extends AnyExtensionDataRef>(
-    subject: ExtensionDefinition<TConfig, TConfigInput>,
-    options?: { config?: TConfigInput },
-  ): ExtensionTester<UOutput> {
+  static forSubject<T extends ExtensionDefinitionParameters>(
+    subject: ExtensionDefinition<T>,
+    options?: { config?: T['configInput'] },
+  ): ExtensionTester<T['output']> {
     const tester = new ExtensionTester();
-    tester.add(subject, options as TConfigInput & {});
+    tester.add(subject, options as T['configInput'] & {});
     return tester;
   }
 
@@ -89,13 +90,13 @@ export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
   readonly #extensions = new Array<{
     id: string;
     extension: Extension<any>;
-    definition: ExtensionDefinition<any>;
+    definition: ExtensionDefinition;
     config?: JsonValue;
   }>();
 
-  add<TConfig, TConfigInput>(
-    extension: ExtensionDefinition<TConfig, TConfigInput>,
-    options?: { config?: TConfigInput },
+  add<T extends ExtensionDefinitionParameters>(
+    extension: ExtensionDefinition<T>,
+    options?: { config?: T['configInput'] },
   ): ExtensionTester<UOutput> {
     if (this.#tree) {
       throw new Error(
@@ -103,20 +104,19 @@ export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
       );
     }
 
-    const { name, namespace } = extension;
-
-    const definition = {
-      ...extension,
-      // setting name "test" as fallback
-      name: !namespace && !name ? 'test' : name,
-    };
-
-    const resolvedExtension = resolveExtensionDefinition(definition);
+    let resolvedExtension;
+    try {
+      resolvedExtension = resolveExtensionDefinition(extension);
+    } catch {
+      resolvedExtension = resolveExtensionDefinition(extension, {
+        namespace: 'test',
+      });
+    }
 
     this.#extensions.push({
       id: resolvedExtension.id,
       extension: resolvedExtension,
-      definition,
+      definition: extension,
       config: options?.config as JsonValue,
     });
 
@@ -135,12 +135,17 @@ export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
     return new ExtensionQuery(tree.root).get(ref);
   }
 
-  query<UQueryExtensionOutput extends AnyExtensionDataRef>(
-    extension: ExtensionDefinition<any, any, UQueryExtensionOutput>,
-  ): ExtensionQuery<UQueryExtensionOutput> {
+  query<T extends ExtensionDefinitionParameters>(
+    extension: ExtensionDefinition<T>,
+  ): ExtensionQuery<T['output']> {
     const tree = this.#resolveTree();
 
-    const actualId = resolveExtensionDefinition(extension).id;
+    const actualId = this.#extensions.find(e => e.definition === extension)?.id;
+    if (!actualId) {
+      throw new Error(
+        `Unable to query extension as it has not been added to the tester, ${extension}`,
+      );
+    }
 
     const node = tree.nodes.get(actualId);
 
@@ -232,13 +237,9 @@ export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
 }
 
 /** @public */
-export function createExtensionTester<
-  TConfig,
-  TConfigInput,
-  UOutput extends AnyExtensionDataRef,
->(
-  subject: ExtensionDefinition<TConfig, TConfigInput, UOutput>,
-  options?: { config?: TConfigInput },
-): ExtensionTester<UOutput> {
+export function createExtensionTester<T extends ExtensionDefinitionParameters>(
+  subject: ExtensionDefinition<T>,
+  options?: { config?: T['configInput'] },
+): ExtensionTester<T['output']> {
   return ExtensionTester.forSubject(subject, options);
 }

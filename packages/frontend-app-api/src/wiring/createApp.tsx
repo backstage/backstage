@@ -22,6 +22,7 @@ import {
   AppTreeApi,
   appTreeApiRef,
   coreExtensionData,
+  ExtensionDefinition,
   FrontendFeature,
   RouteRef,
   ExternalRouteRef,
@@ -112,28 +113,30 @@ const DefaultApis = defaultApis.map(factory =>
   ApiBlueprint.make({ namespace: factory.api.id, params: { factory } }),
 );
 
-export const builtinExtensions = [
-  Root,
-  App,
-  AppRoot,
-  AppRoutes,
-  AppNav,
-  AppLayout,
-  DefaultProgressComponent,
-  DefaultErrorBoundaryComponent,
-  DefaultNotFoundErrorPageComponent,
-  LightTheme,
-  DarkTheme,
-  oauthRequestDialogAppRootElement,
-  alertDisplayAppRootElement,
-  AppThemeApi,
-  AppLanguageApi,
-  IconsApi,
-  TranslationsApi,
-  ComponentsApi,
-  FeatureFlagsApi,
-  ...DefaultApis,
-].map(def => resolveExtensionDefinition(def));
+export const builtinExtensions = (
+  [
+    Root,
+    App,
+    AppRoot,
+    AppRoutes,
+    AppNav,
+    AppLayout,
+    DefaultProgressComponent,
+    DefaultErrorBoundaryComponent,
+    DefaultNotFoundErrorPageComponent,
+    LightTheme,
+    DarkTheme,
+    oauthRequestDialogAppRootElement,
+    alertDisplayAppRootElement,
+    AppThemeApi,
+    AppLanguageApi,
+    IconsApi,
+    TranslationsApi,
+    ComponentsApi,
+    FeatureFlagsApi,
+    ...DefaultApis,
+  ] as ExtensionDefinition[]
+).map(def => resolveExtensionDefinition(def));
 
 function deduplicateFeatures(
   allFeatures: FrontendFeature[],

@@ -49,11 +49,10 @@ describe('convertLegacyEntityContentExtension', () => {
     );
 
     const converted = convertLegacyEntityContentExtension(LegacyExtension);
-    expect(converted.kind).toBe('entity-content');
-    expect(converted.namespace).toBe(undefined);
-    expect(converted.name).toBe('example');
 
     const tester = createExtensionTester(converted);
+
+    expect(tester.query(converted).node.spec.id).toBe('entity-content:example');
 
     await renderInTestApp(tester.reactElement(), {
       mountedRoutes: {
@@ -88,11 +87,10 @@ describe('convertLegacyEntityContentExtension', () => {
       defaultTitle: 'Other',
       filter: 'my-filter',
     });
-    expect(converted.kind).toBe('entity-content');
-    expect(converted.namespace).toBe(undefined);
-    expect(converted.name).toBe('other');
 
     const tester = createExtensionTester(converted);
+
+    expect(tester.query(converted).node.spec.id).toBe('entity-content:other');
 
     await renderInTestApp(tester.reactElement(), {
       mountedRoutes: {
@@ -123,14 +121,14 @@ describe('convertLegacyEntityContentExtension', () => {
           }),
         ),
       );
-      return converted.name;
+      return createExtensionTester(converted).query(converted).node.spec.id;
     };
 
-    expect(withName('EntityTestContent')).toBe(undefined);
-    expect(withName('EntityTestTrimContent')).toBe('trim');
-    expect(withName('EntityTeStTrimContent')).toBe('trim');
-    expect(withName('EntityExampleContent')).toBe('example');
-    expect(withName('EntityExAmpleContent')).toBe('ex-ample');
-    expect(withName('ExampleContent')).toBe('example-content');
+    expect(withName('EntityTestContent')).toBe('entity-content:test'); // falls back to test namespace
+    expect(withName('EntityTestTrimContent')).toBe('entity-content:trim');
+    expect(withName('EntityTeStTrimContent')).toBe('entity-content:trim');
+    expect(withName('EntityExampleContent')).toBe('entity-content:example');
+    expect(withName('EntityExAmpleContent')).toBe('entity-content:ex-ample');
+    expect(withName('ExampleContent')).toBe('entity-content:example-content');
   });
 });

@@ -48,11 +48,10 @@ describe('convertLegacyPageExtension', () => {
     );
 
     const converted = convertLegacyPageExtension(LegacyExtension);
-    expect(converted.kind).toBe('page');
-    expect(converted.namespace).toBe(undefined);
-    expect(converted.name).toBe('example');
 
     const tester = createExtensionTester(converted);
+
+    expect(tester.query(converted).node.spec.id).toBe('page:example');
 
     await renderInTestApp(tester.reactElement(), {
       mountedRoutes: {
@@ -79,11 +78,10 @@ describe('convertLegacyPageExtension', () => {
       name: 'other',
       defaultPath: '/other',
     });
-    expect(converted.kind).toBe('page');
-    expect(converted.namespace).toBe(undefined);
-    expect(converted.name).toBe('other');
 
     const tester = createExtensionTester(converted);
+
+    expect(tester.query(converted).node.spec.id).toBe('page:other');
 
     await renderInTestApp(tester.reactElement(), {
       mountedRoutes: {

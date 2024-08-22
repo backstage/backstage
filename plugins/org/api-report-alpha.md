@@ -17,138 +17,134 @@ const _default: BackstagePlugin<
     catalogIndex: ExternalRouteRef<undefined>;
   },
   {
-    'entity-card:org/group-profile': ExtensionDefinition<
-      {
+    'entity-card:org/group-profile': ExtensionDefinition<{
+      kind: 'entity-card';
+      namespace: undefined;
+      name: 'group-profile';
+      config: {
         filter: string | undefined;
-      },
-      {
+      };
+      configInput: {
         filter?: string | undefined;
-      },
-      | ConfigurableExtensionDataRef<
-          React_2.JSX.Element,
-          'core.reactElement',
-          {}
-        >
-      | ConfigurableExtensionDataRef<
-          (entity: Entity) => boolean,
-          'catalog.entity-filter-function',
-          {
-            optional: true;
-          }
-        >
-      | ConfigurableExtensionDataRef<
-          string,
-          'catalog.entity-filter-expression',
-          {
-            optional: true;
-          }
-        >,
-      {},
-      {
-        kind: 'entity-card';
-        namespace: undefined;
-        name: 'group-profile';
-      }
-    >;
-    'entity-card:org/members-list': ExtensionDefinition<
-      {
+      };
+      output:
+        | ConfigurableExtensionDataRef<
+            React_2.JSX.Element,
+            'core.reactElement',
+            {}
+          >
+        | ConfigurableExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+    }>;
+    'entity-card:org/members-list': ExtensionDefinition<{
+      kind: 'entity-card';
+      namespace: undefined;
+      name: 'members-list';
+      config: {
         filter: string | undefined;
-      },
-      {
+      };
+      configInput: {
         filter?: string | undefined;
-      },
-      | ConfigurableExtensionDataRef<
-          React_2.JSX.Element,
-          'core.reactElement',
-          {}
-        >
-      | ConfigurableExtensionDataRef<
-          (entity: Entity) => boolean,
-          'catalog.entity-filter-function',
-          {
-            optional: true;
-          }
-        >
-      | ConfigurableExtensionDataRef<
-          string,
-          'catalog.entity-filter-expression',
-          {
-            optional: true;
-          }
-        >,
-      {},
-      {
-        kind: 'entity-card';
-        namespace: undefined;
-        name: 'members-list';
-      }
-    >;
-    'entity-card:org/ownership': ExtensionDefinition<
-      {
+      };
+      output:
+        | ConfigurableExtensionDataRef<
+            React_2.JSX.Element,
+            'core.reactElement',
+            {}
+          >
+        | ConfigurableExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+    }>;
+    'entity-card:org/ownership': ExtensionDefinition<{
+      kind: 'entity-card';
+      namespace: undefined;
+      name: 'ownership';
+      config: {
         filter: string | undefined;
-      },
-      {
+      };
+      configInput: {
         filter?: string | undefined;
-      },
-      | ConfigurableExtensionDataRef<
-          React_2.JSX.Element,
-          'core.reactElement',
-          {}
-        >
-      | ConfigurableExtensionDataRef<
-          (entity: Entity) => boolean,
-          'catalog.entity-filter-function',
-          {
-            optional: true;
-          }
-        >
-      | ConfigurableExtensionDataRef<
-          string,
-          'catalog.entity-filter-expression',
-          {
-            optional: true;
-          }
-        >,
-      {},
-      {
-        kind: 'entity-card';
-        namespace: undefined;
-        name: 'ownership';
-      }
-    >;
-    'entity-card:org/user-profile': ExtensionDefinition<
-      {
+      };
+      output:
+        | ConfigurableExtensionDataRef<
+            React_2.JSX.Element,
+            'core.reactElement',
+            {}
+          >
+        | ConfigurableExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+    }>;
+    'entity-card:org/user-profile': ExtensionDefinition<{
+      kind: 'entity-card';
+      namespace: undefined;
+      name: 'user-profile';
+      config: {
         filter: string | undefined;
-      },
-      {
+      };
+      configInput: {
         filter?: string | undefined;
-      },
-      | ConfigurableExtensionDataRef<
-          React_2.JSX.Element,
-          'core.reactElement',
-          {}
-        >
-      | ConfigurableExtensionDataRef<
-          (entity: Entity) => boolean,
-          'catalog.entity-filter-function',
-          {
-            optional: true;
-          }
-        >
-      | ConfigurableExtensionDataRef<
-          string,
-          'catalog.entity-filter-expression',
-          {
-            optional: true;
-          }
-        >,
-      {},
-      {
-        kind: 'entity-card';
-        namespace: undefined;
-        name: 'user-profile';
-      }
-    >;
+      };
+      output:
+        | ConfigurableExtensionDataRef<
+            React_2.JSX.Element,
+            'core.reactElement',
+            {}
+          >
+        | ConfigurableExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+    }>;
   }
 >;
 export default _default;

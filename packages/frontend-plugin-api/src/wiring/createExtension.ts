@@ -142,33 +142,27 @@ export type CreateExtensionOptions<
 } & VerifyExtensionFactoryOutput<UOutput, UFactoryOutput>;
 
 /** @public */
-export interface ExtensionDefinition<
-  TConfig,
-  TConfigInput = TConfig,
-  UOutput extends AnyExtensionDataRef = AnyExtensionDataRef,
-  TInputs extends {
-    [inputName in string]: ExtensionInput<
+export type ExtensionDefinitionParameters = {
+  kind?: string;
+  namespace?: string;
+  name?: string;
+  configInput?: { [K in string]: any };
+  config?: { [K in string]: any };
+  output: AnyExtensionDataRef;
+  inputs?: {
+    [KName in string]: ExtensionInput<
       AnyExtensionDataRef,
       { optional: boolean; singleton: boolean }
     >;
-  } = {},
-  TIdParts extends {
-    kind?: string;
-    namespace?: string;
-    name?: string;
-  } = {
-    kind?: string;
-    namespace?: string;
-    name?: string;
-  },
-> {
+  };
+};
+
+/** @public */
+export type ExtensionDefinition<
+  T extends ExtensionDefinitionParameters = ExtensionDefinitionParameters,
+> = {
   $$type: '@backstage/ExtensionDefinition';
-  readonly kind?: TIdParts['kind'];
-  readonly namespace?: TIdParts['namespace'];
-  readonly name?: TIdParts['name'];
-  readonly attachTo: { id: string; input: string };
-  readonly disabled: boolean;
-  readonly configSchema?: PortableSchema<TConfig, TConfigInput>;
+  readonly T: T;
 
   override<
     TExtensionConfigSchema extends {
@@ -187,78 +181,71 @@ export interface ExtensionDefinition<
       attachTo?: { id: string; input: string };
       disabled?: boolean;
       inputs?: TExtraInputs & {
-        [KName in keyof TInputs]?: `Error: Input '${KName &
+        [KName in keyof T['inputs']]?: `Error: Input '${KName &
           string}' is already defined in parent definition`;
       };
       output?: Array<UNewOutput>;
       config?: {
         schema: TExtensionConfigSchema & {
-          [KName in keyof TConfig]?: `Error: Config key '${KName &
+          [KName in keyof T['config']]?: `Error: Config key '${KName &
             string}' is already defined in parent schema`;
         };
       };
       factory(
         originalFactory: (context?: {
-          config?: TConfig;
-          inputs?: ResolveInputValueOverrides<TInputs>;
-        }) => ExtensionDataContainer<UOutput>,
+          config?: T['config'];
+          inputs?: ResolveInputValueOverrides<NonNullable<T['inputs']>>;
+        }) => ExtensionDataContainer<NonNullable<T['output']>>,
         context: {
           node: AppNode;
           apis: ApiHolder;
-          config: TConfig & {
+          config: T['config'] & {
             [key in keyof TExtensionConfigSchema]: z.infer<
               ReturnType<TExtensionConfigSchema[key]>
             >;
           };
-          inputs: Expand<ResolvedExtensionInputs<TInputs & TExtraInputs>>;
+          inputs: Expand<ResolvedExtensionInputs<T['inputs'] & TExtraInputs>>;
         },
       ): Iterable<UFactoryOutput>;
     } & VerifyExtensionFactoryOutput<
-      AnyExtensionDataRef extends UNewOutput ? UOutput : UNewOutput,
+      AnyExtensionDataRef extends UNewOutput
+        ? NonNullable<T['output']>
+        : UNewOutput,
       UFactoryOutput
     >,
-  ): ExtensionDefinition<
-    {
+  ): ExtensionDefinition<{
+    kind: T['kind'];
+    namespace: T['namespace'];
+    name: T['name'];
+    output: AnyExtensionDataRef extends UNewOutput ? T['output'] : UNewOutput;
+    inputs: T['inputs'] & TExtraInputs;
+    config: T['config'] & {
       [key in keyof TExtensionConfigSchema]: z.infer<
         ReturnType<TExtensionConfigSchema[key]>
       >;
-    } & TConfig,
-    z.input<
-      z.ZodObject<{
-        [key in keyof TExtensionConfigSchema]: ReturnType<
-          TExtensionConfigSchema[key]
-        >;
-      }>
-    > &
-      TConfigInput,
-    AnyExtensionDataRef extends UNewOutput ? UOutput : UNewOutput,
-    TInputs & TExtraInputs,
-    TIdParts
-  >;
-}
+    };
+    configInput: T['configInput'] &
+      z.input<
+        z.ZodObject<{
+          [key in keyof TExtensionConfigSchema]: ReturnType<
+            TExtensionConfigSchema[key]
+          >;
+        }>
+      >;
+  }>;
+};
 
 /** @internal */
 export type InternalExtensionDefinition<
-  TConfig,
-  TConfigInput = TConfig,
-  UOutput extends AnyExtensionDataRef = AnyExtensionDataRef,
-  TInputs extends {
-    [inputName in string]: ExtensionInput<
-      AnyExtensionDataRef,
-      { optional: boolean; singleton: boolean }
-    >;
-  } = {},
-  TIdParts extends {
-    kind?: string;
-    namespace?: string;
-    name?: string;
-  } = {
-    kind?: string;
-    namespace?: string;
-    name?: string;
-  },
-> = ExtensionDefinition<TConfig, TConfigInput, UOutput, TInputs, TIdParts> &
-  (
+  T extends ExtensionDefinitionParameters = ExtensionDefinitionParameters,
+> = ExtensionDefinition<T> & {
+  readonly kind?: string;
+  readonly namespace?: string;
+  readonly name?: string;
+  readonly attachTo: { id: string; input: string };
+  readonly disabled: boolean;
+  readonly configSchema?: PortableSchema<T['config'], T['configInput']>;
+} & (
     | {
         readonly version: 'v1';
         readonly inputs: {
@@ -276,7 +263,7 @@ export type InternalExtensionDefinition<
         factory(context: {
           node: AppNode;
           apis: ApiHolder;
-          config: TConfig;
+          config: object;
           inputs: {
             [inputName in string]: unknown;
           };
@@ -296,7 +283,7 @@ export type InternalExtensionDefinition<
         factory(context: {
           node: AppNode;
           apis: ApiHolder;
-          config: TConfig;
+          config: object;
           inputs: ResolvedExtensionInputs<{
             [inputName in string]: ExtensionInput<
               AnyExtensionDataRef,
@@ -308,13 +295,10 @@ export type InternalExtensionDefinition<
   );
 
 /** @internal */
-export function toInternalExtensionDefinition<TConfig, TConfigInput>(
-  overrides: ExtensionDefinition<TConfig, TConfigInput>,
-): InternalExtensionDefinition<TConfig, TConfigInput> {
-  const internal = overrides as InternalExtensionDefinition<
-    TConfig,
-    TConfigInput
-  >;
+export function toInternalExtensionDefinition<
+  T extends ExtensionDefinitionParameters,
+>(overrides: ExtensionDefinition<T>): InternalExtensionDefinition<T> {
+  const internal = overrides as InternalExtensionDefinition<T>;
   if (internal.$$type !== '@backstage/ExtensionDefinition') {
     throw new Error(
       `Invalid extension definition instance, bad type '${internal.$$type}'`,
@@ -353,23 +337,45 @@ export function createExtension<
     TConfigSchema,
     UFactoryOutput
   >,
-): ExtensionDefinition<
-  {
-    [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
-  },
-  z.input<
-    z.ZodObject<{
-      [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
-    }>
-  >,
-  UOutput,
-  TInputs,
-  {
+): ExtensionDefinition<{
+  config: string extends keyof TConfigSchema
+    ? {}
+    : {
+        [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
+      };
+  configInput: string extends keyof TConfigSchema
+    ? {}
+    : z.input<
+        z.ZodObject<{
+          [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
+        }>
+      >;
+  output: UOutput;
+  inputs: TInputs;
+  kind: string | undefined extends TKind ? undefined : TKind;
+  namespace: string | undefined extends TNamespace ? undefined : TNamespace;
+  name: string | undefined extends TName ? undefined : TName;
+}> {
+  type T = {
+    config: string extends keyof TConfigSchema
+      ? {}
+      : {
+          [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
+        };
+    configInput: string extends keyof TConfigSchema
+      ? {}
+      : z.input<
+          z.ZodObject<{
+            [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
+          }>
+        >;
+    output: UOutput;
+    inputs: TInputs;
     kind: string | undefined extends TKind ? undefined : TKind;
     namespace: string | undefined extends TNamespace ? undefined : TNamespace;
     name: string | undefined extends TName ? undefined : TName;
-  }
-> {
+  };
+
   const schemaDeclaration = options.config?.schema;
   const configSchema =
     schemaDeclaration &&
@@ -384,6 +390,7 @@ export function createExtension<
   return {
     $$type: '@backstage/ExtensionDefinition',
     version: 'v2',
+    T: null as unknown as T,
     kind: options.kind,
     namespace: options.namespace,
     name: options.name,
@@ -486,21 +493,5 @@ export function createExtension<
         },
       }) as ExtensionDefinition<any>;
     },
-  } as InternalExtensionDefinition<
-    {
-      [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
-    },
-    z.input<
-      z.ZodObject<{
-        [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
-      }>
-    >,
-    UOutput,
-    TInputs,
-    {
-      kind: string | undefined extends TKind ? undefined : TKind;
-      namespace: string | undefined extends TNamespace ? undefined : TNamespace;
-      name: string | undefined extends TName ? undefined : TName;
-    }
-  >;
+  } as InternalExtensionDefinition<T>;
 }

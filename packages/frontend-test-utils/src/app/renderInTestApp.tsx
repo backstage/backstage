@@ -123,7 +123,7 @@ export function renderInTestApp(
   element: JSX.Element,
   options?: TestAppOptions,
 ): RenderResult {
-  const extensions: Array<ExtensionDefinition<any, any>> = [
+  const extensions: Array<ExtensionDefinition> = [
     createExtension({
       namespace: 'test',
       attachTo: { id: 'app/routes', input: 'routes' },

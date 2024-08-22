@@ -30,10 +30,52 @@ const _default: BackstagePlugin<
   },
   {},
   {
-    'nav-item:techdocs': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<
+    'api:techdocs': ExtensionDefinition<{
+      kind: 'api';
+      namespace: undefined;
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+    }>;
+    'page:techdocs': ExtensionDefinition<{
+      kind: 'page';
+      namespace: undefined;
+      name: undefined;
+      config: {
+        path: string | undefined;
+      };
+      configInput: {
+        path?: string | undefined;
+      };
+      output:
+        | ConfigurableExtensionDataRef<
+            React_2.JSX.Element,
+            'core.reactElement',
+            {}
+          >
+        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+        | ConfigurableExtensionDataRef<
+            RouteRef<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+    }>;
+    'nav-item:techdocs': ExtensionDefinition<{
+      kind: 'nav-item';
+      namespace: undefined;
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
         {
           title: string;
           icon: IconComponent;
@@ -41,51 +83,48 @@ const _default: BackstagePlugin<
         },
         'core.nav-item.target',
         {}
-      >,
-      {},
-      {
-        kind: 'nav-item';
-        namespace: undefined;
-        name: undefined;
-      }
-    >;
-    'api:techdocs/storage': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'storage';
-      }
-    >;
-    'search-result-list-item:techdocs': ExtensionDefinition<
-      {
+      >;
+      inputs: {};
+    }>;
+    'api:techdocs/storage': ExtensionDefinition<{
+      kind: 'api';
+      namespace: undefined;
+      name: 'storage';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+    }>;
+    'search-result-list-item:techdocs': ExtensionDefinition<{
+      config: {
         title: string | undefined;
         lineClamp: number;
         asLink: boolean;
         asListItem: boolean;
       } & {
         noTrack: boolean;
-      },
-      {
+      };
+      configInput: {
         title?: string | undefined;
         lineClamp?: number | undefined;
         asListItem?: boolean | undefined;
         asLink?: boolean | undefined;
       } & {
         noTrack?: boolean | undefined;
-      },
-      ConfigurableExtensionDataRef<
+      };
+      output: ConfigurableExtensionDataRef<
         {
           predicate?: SearchResultItemExtensionPredicate | undefined;
           component: SearchResultItemExtensionComponent;
         },
         'search.search-result-list-item.item',
         {}
-      >,
-      {
+      >;
+      inputs: {
         [x: string]: ExtensionInput<
           AnyExtensionDataRef,
           {
@@ -93,117 +132,117 @@ const _default: BackstagePlugin<
             singleton: boolean;
           }
         >;
-      },
-      {
-        kind: 'search-result-list-item';
-        namespace: undefined;
-        name: undefined;
-      }
-    >;
-    'page:techdocs/reader': ExtensionDefinition<
-      {
+      };
+      kind: 'search-result-list-item';
+      namespace: undefined;
+      name: undefined;
+    }>;
+    'page:techdocs/reader': ExtensionDefinition<{
+      kind: 'page';
+      namespace: undefined;
+      name: 'reader';
+      config: {
         path: string | undefined;
-      },
-      {
+      };
+      configInput: {
         path?: string | undefined;
-      },
-      | ConfigurableExtensionDataRef<
-          React_2.JSX.Element,
-          'core.reactElement',
-          {}
-        >
-      | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-      | ConfigurableExtensionDataRef<
-          RouteRef<AnyRouteRefParams>,
-          'core.routing.ref',
-          {
-            optional: true;
-          }
-        >,
-      {},
-      {
-        kind: 'page';
-        namespace: undefined;
-        name: 'reader';
-      }
-    >;
-    'entity-content:techdocs': ExtensionDefinition<
-      {
+      };
+      output:
+        | ConfigurableExtensionDataRef<
+            React_2.JSX.Element,
+            'core.reactElement',
+            {}
+          >
+        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+        | ConfigurableExtensionDataRef<
+            RouteRef<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+    }>;
+    'entity-content:techdocs': ExtensionDefinition<{
+      kind: 'entity-content';
+      namespace: undefined;
+      name: undefined;
+      config: {
         path: string | undefined;
         title: string | undefined;
         filter: string | undefined;
-      },
-      {
+      };
+      configInput: {
         filter?: string | undefined;
         title?: string | undefined;
         path?: string | undefined;
-      },
-      | ConfigurableExtensionDataRef<
-          React_2.JSX.Element,
-          'core.reactElement',
-          {}
-        >
-      | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-      | ConfigurableExtensionDataRef<
-          RouteRef<AnyRouteRefParams>,
-          'core.routing.ref',
-          {
-            optional: true;
-          }
-        >
-      | ConfigurableExtensionDataRef<string, 'catalog.entity-content-title', {}>
-      | ConfigurableExtensionDataRef<
-          (entity: Entity) => boolean,
-          'catalog.entity-filter-function',
-          {
-            optional: true;
-          }
-        >
-      | ConfigurableExtensionDataRef<
-          string,
-          'catalog.entity-filter-expression',
-          {
-            optional: true;
-          }
-        >,
-      {},
-      {
-        kind: 'entity-content';
-        namespace: undefined;
-        name: undefined;
-      }
-    >;
+      };
+      output:
+        | ConfigurableExtensionDataRef<
+            React_2.JSX.Element,
+            'core.reactElement',
+            {}
+          >
+        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+        | ConfigurableExtensionDataRef<
+            RouteRef<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            string,
+            'catalog.entity-content-title',
+            {}
+          >
+        | ConfigurableExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+    }>;
   }
 >;
 export default _default;
 
 // @alpha (undocumented)
-export const techDocsSearchResultListItemExtension: ExtensionDefinition<
-  {
+export const techDocsSearchResultListItemExtension: ExtensionDefinition<{
+  config: {
     title: string | undefined;
     lineClamp: number;
     asLink: boolean;
     asListItem: boolean;
   } & {
     noTrack: boolean;
-  },
-  {
+  };
+  configInput: {
     title?: string | undefined;
     lineClamp?: number | undefined;
     asListItem?: boolean | undefined;
     asLink?: boolean | undefined;
   } & {
     noTrack?: boolean | undefined;
-  },
-  ConfigurableExtensionDataRef<
+  };
+  output: ConfigurableExtensionDataRef<
     {
       predicate?: SearchResultItemExtensionPredicate | undefined;
       component: SearchResultItemExtensionComponent;
     },
     'search.search-result-list-item.item',
     {}
-  >,
-  {
+  >;
+  inputs: {
     [x: string]: ExtensionInput<
       AnyExtensionDataRef,
       {
@@ -211,13 +250,11 @@ export const techDocsSearchResultListItemExtension: ExtensionDefinition<
         singleton: boolean;
       }
     >;
-  },
-  {
-    kind: 'search-result-list-item';
-    namespace: undefined;
-    name: undefined;
-  }
->;
+  };
+  kind: 'search-result-list-item';
+  namespace: undefined;
+  name: undefined;
+}>;
 
 // (No @packageDocumentation comment for this package)
 ```

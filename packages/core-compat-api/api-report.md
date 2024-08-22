@@ -37,13 +37,13 @@ export function convertLegacyPageExtension(
     name?: string;
     defaultPath?: string;
   },
-): ExtensionDefinition<any>;
+): ExtensionDefinition;
 
 // @public (undocumented)
 export function convertLegacyPlugin(
   legacyPlugin: BackstagePlugin,
   options: {
-    extensions: ExtensionDefinition<any, any>[];
+    extensions: ExtensionDefinition[];
   },
 ): BackstagePlugin_2;
 
