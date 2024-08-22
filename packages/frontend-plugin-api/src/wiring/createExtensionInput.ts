@@ -18,12 +18,13 @@ import { ExtensionDataRef } from './createExtensionDataRef';
 
 /** @public */
 export interface ExtensionInput<
-  TExtensionData extends ExtensionDataRef<unknown, string, { optional?: true }>,
+  UExtensionData extends ExtensionDataRef<unknown, string, { optional?: true }>,
   TConfig extends { singleton: boolean; optional: boolean },
 > {
   $$type: '@backstage/ExtensionInput';
-  extensionData: Array<TExtensionData>;
+  extensionData: Array<UExtensionData>;
   config: TConfig;
+  replaces?: Array<{ id: string; input: string }>;
 }
 
 /** @public */
@@ -32,7 +33,7 @@ export function createExtensionInput<
   TConfig extends { singleton?: boolean; optional?: boolean },
 >(
   extensionData: Array<UExtensionData>,
-  config?: TConfig,
+  config?: TConfig & { replaces?: Array<{ id: string; input: string }> },
 ): ExtensionInput<
   UExtensionData,
   {
@@ -71,6 +72,7 @@ export function createExtensionInput<
         ? true
         : false,
     },
+    replaces: config?.replaces,
   } as ExtensionInput<
     UExtensionData,
     {
