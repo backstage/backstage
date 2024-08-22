@@ -17,7 +17,7 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { createRouter } from './service/router';
+import { createRouter } from './deprecated';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 
 /**
