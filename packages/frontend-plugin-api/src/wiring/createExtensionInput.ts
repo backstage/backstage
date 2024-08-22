@@ -39,19 +39,6 @@ export function createExtensionInput<
     singleton: TConfig['singleton'] extends true ? true : false;
     optional: TConfig['optional'] extends true ? true : false;
   }
->;
-export function createExtensionInput<
-  TExtensionData extends ExtensionDataRef<unknown, string, { optional?: true }>,
-  TConfig extends { singleton?: boolean; optional?: boolean },
->(
-  extensionData: Array<TExtensionData>,
-  config?: TConfig,
-): ExtensionInput<
-  TExtensionData,
-  {
-    singleton: TConfig['singleton'] extends true ? true : false;
-    optional: TConfig['optional'] extends true ? true : false;
-  }
 > {
   if (process.env.NODE_ENV !== 'production') {
     if (Array.isArray(extensionData)) {
@@ -85,7 +72,7 @@ export function createExtensionInput<
         : false,
     },
   } as ExtensionInput<
-    TExtensionData,
+    UExtensionData,
     {
       singleton: TConfig['singleton'] extends true ? true : false;
       optional: TConfig['optional'] extends true ? true : false;
