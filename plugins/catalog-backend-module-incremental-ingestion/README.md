@@ -333,7 +333,7 @@ Now that you have your new Incremental Entity Provider, we can connect it to the
 
 ## Adding an Incremental Entity Provider to the catalog (Old Backend)
 
-We'll assume you followed the <a href="#installation">Installation</a> instructions. After you create your `incrementalBuilder`, you can instantiate your Entity Provider and pass it to the `addIncrementalEntityProvider` method.
+We'll assume you followed the <a href="#installation-old-backend">Installation</a> instructions. After you create your `incrementalBuilder`, you can instantiate your Entity Provider and pass it to the `addIncrementalEntityProvider` method.
 
 ```ts
 const incrementalBuilder = await IncrementalCatalogBuilder.create(env, builder);
@@ -376,7 +376,7 @@ incrementalBuilder.addIncrementalEntityProvider(myEntityProvider, {
 
 ## Adding an Incremental Entity Provider to the catalog (New Backend)
 
-We'll assume you followed the <a href="#installation">Installation</a> instructions. Cretae a module inside `packages/backend/src/extensions/catalogCustomIncrementalIngestion.ts`.
+We'll assume you followed the <a href="#installation-new-backend">Installation</a> instructions. Cretae a module inside `packages/backend/src/extensions/catalogCustomIncrementalIngestion.ts`.
 
 ```ts
 import {
