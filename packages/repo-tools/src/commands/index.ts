@@ -162,6 +162,23 @@ function registerRepoCommand(program: Command) {
     );
 }
 
+function registerLintCommand(program: Command) {
+  const lintCommand = program
+    .command('lint [command]')
+    .description('Tools for linting repository.');
+  lintCommand
+    .command('legacy-backend-exports [paths...]')
+    .description(
+      'Lint backend plugin packages for legacy exports and make sure it conforms to the new export pattern',
+    )
+    .action(
+      lazy(() =>
+        import(
+          './lint-legacy-backend-exports/lint-legacy-backend-exports'
+        ).then(m => m.lint),
+      ),
+    );
+}
 export function registerCommands(program: Command) {
   program
     .command('api-reports [paths...]')
@@ -236,17 +253,9 @@ export function registerCommands(program: Command) {
       ),
     );
 
-  program
-    .command('backend-lint [paths...]')
-    .description(
-      'Lint backend plugin packages for errors related to the new backend system migration',
-    )
-    .action(
-      lazy(() => import('./backend-lint/backend-lint').then(m => m.lint)),
-    );
-
   registerPackageCommand(program);
   registerRepoCommand(program);
+  registerLintCommand(program);
 }
 
 // Wraps an action function so that it always exits and handles errors
