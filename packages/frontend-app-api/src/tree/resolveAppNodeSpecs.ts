@@ -32,7 +32,7 @@ import { toInternalExtension } from '../../../frontend-plugin-api/src/wiring/res
 /** @internal */
 export function resolveAppNodeSpecs(options: {
   features?: FrontendFeature[];
-  builtinExtensions?: Extension<unknown>[];
+  builtinExtensions?: Extension<any, any>[];
   parameters?: Array<ExtensionParameters>;
   forbidden?: Set<string>;
 }): AppNodeSpec[] {

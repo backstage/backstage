@@ -16,7 +16,6 @@
 
 import React from 'react';
 import {
-  ApiBlueprint,
   ExtensionBoundary,
   coreExtensionData,
   createExtension,
@@ -25,9 +24,8 @@ import {
 
 export const App = createExtension({
   namespace: 'app',
-  attachTo: { id: 'root', input: 'default' }, // ignored
+  attachTo: { id: 'root', input: 'app' },
   inputs: {
-    apis: createExtensionInput([ApiBlueprint.dataRefs.factory]),
     root: createExtensionInput([coreExtensionData.reactElement], {
       singleton: true,
     }),

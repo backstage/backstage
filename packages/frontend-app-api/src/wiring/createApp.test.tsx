@@ -255,28 +255,32 @@ describe('createApp', () => {
     const { tree } = appTreeApi!.getTree();
 
     expect(String(tree.root)).toMatchInlineSnapshot(`
-      "<app out=[core.reactElement]>
-        root [
-          <app/root out=[core.reactElement]>
-            children [
-              <app/layout out=[core.reactElement]>
-                content [
-                  <app/routes out=[core.reactElement]>
-                    routes [
-                      <page:my-plugin out=[core.routing.path, core.reactElement] />
+      "<root>
+        app [
+          <app out=[core.reactElement]>
+            root [
+              <app/root out=[core.reactElement]>
+                children [
+                  <app/layout out=[core.reactElement]>
+                    content [
+                      <app/routes out=[core.reactElement]>
+                        routes [
+                          <page:my-plugin out=[core.routing.path, core.reactElement] />
+                        ]
+                      </app/routes>
                     ]
-                  </app/routes>
+                    nav [
+                      <app/nav out=[core.reactElement] />
+                    ]
+                  </app/layout>
                 ]
-                nav [
-                  <app/nav out=[core.reactElement] />
+                elements [
+                  <app-root-element:app/oauth-request-dialog out=[core.reactElement] />
+                  <app-root-element:app/alert-display out=[core.reactElement] />
                 ]
-              </app/layout>
+              </app/root>
             ]
-            elements [
-              <app-root-element:app/oauth-request-dialog out=[core.reactElement] />
-              <app-root-element:app/alert-display out=[core.reactElement] />
-            ]
-          </app/root>
+          </app>
         ]
         apis [
           <api:app-theme out=[core.api.factory]>
@@ -315,7 +319,7 @@ describe('createApp', () => {
           <api:core.auth.vmware-cloud out=[core.api.factory] />
           <api:plugin.permission.api out=[core.api.factory] />
         ]
-      </app>"
+      </root>"
     `);
   });
 

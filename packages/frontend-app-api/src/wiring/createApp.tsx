@@ -19,10 +19,18 @@ import { ConfigReader } from '@backstage/config';
 import {
   ApiBlueprint,
   AppTree,
+  AppTreeApi,
   appTreeApiRef,
   coreExtensionData,
   FrontendFeature,
+  RouteRef,
+  ExternalRouteRef,
+  SubRouteRef,
+  AnyRouteRefParams,
+  RouteFunc,
+  RouteResolutionApiResolveOptions,
   RouteResolutionApi,
+  createApiFactory,
   routeResolutionApiRef,
 } from '@backstage/frontend-plugin-api';
 import { App } from '../extensions/App';
@@ -73,7 +81,6 @@ import { CreateAppRouteBinder } from '../routing';
 import { RouteResolver } from '../routing/RouteResolver';
 import { resolveRouteBindings } from '../routing/resolveRouteBindings';
 import { collectRouteIds } from '../routing/collectRouteIds';
-import { createAppTree } from '../tree';
 import {
   DefaultProgressComponent,
   DefaultErrorBoundaryComponent,
@@ -93,12 +100,20 @@ import { TranslationsApi } from '../extensions/TranslationsApi';
 import { ComponentsApi } from '../extensions/ComponentsApi';
 import { AppLanguageApi } from '../extensions/AppLanguageApi';
 import { FeatureFlagsApi } from '../extensions/FeatureFlagsApi';
+import { Root } from '../extensions/Root';
+import { resolveAppTree } from '../tree/resolveAppTree';
+import { resolveAppNodeSpecs } from '../tree/resolveAppNodeSpecs';
+import { readAppExtensionsConfig } from '../tree/readAppExtensionsConfig';
+import { instantiateAppNodeTree } from '../tree/instantiateAppNodeTree';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { ApiRegistry } from '../../../core-app-api/src/apis/system/ApiRegistry';
 
 const DefaultApis = defaultApis.map(factory =>
   ApiBlueprint.make({ namespace: factory.api.id, params: { factory } }),
 );
 
 export const builtinExtensions = [
+  Root,
   App,
   AppRoot,
   AppRoutes,
@@ -230,6 +245,70 @@ export function createApp(options?: {
   };
 }
 
+// Helps delay callers from reaching out to the API before the app tree has been materialized
+class AppTreeApiProxy implements AppTreeApi {
+  #safeToUse: boolean = false;
+
+  constructor(private readonly tree: AppTree) {}
+
+  getTree() {
+    if (!this.#safeToUse) {
+      throw new Error(
+        `You can't access the AppTreeApi during initialization of the app tree. Please move occurrences of this out of the initialization of the factory`,
+      );
+    }
+    return { tree: this.tree };
+  }
+
+  initialize() {
+    this.#safeToUse = true;
+  }
+}
+
+// Helps delay callers from reaching out to the API before the app tree has been materialized
+class RouteResolutionApiProxy implements RouteResolutionApi {
+  #delegate: RouteResolutionApi | undefined;
+
+  constructor(
+    private readonly tree: AppTree,
+    private readonly routeBindings: Map<
+      ExternalRouteRef,
+      RouteRef | SubRouteRef
+    >,
+    private readonly basePath: string,
+  ) {}
+
+  resolve<TParams extends AnyRouteRefParams>(
+    anyRouteRef:
+      | RouteRef<TParams>
+      | SubRouteRef<TParams>
+      | ExternalRouteRef<TParams>,
+    options?: RouteResolutionApiResolveOptions,
+  ): RouteFunc<TParams> | undefined {
+    if (!this.#delegate) {
+      throw new Error(
+        `You can't access the RouteResolver during initialization of the app tree. Please move occurrences of this out of the initialization of the factory`,
+      );
+    }
+
+    return this.#delegate.resolve(anyRouteRef, options);
+  }
+
+  initialize() {
+    const routeInfo = extractRouteInfoFromAppNode(this.tree.root);
+
+    this.#delegate = new RouteResolver(
+      routeInfo.routePaths,
+      routeInfo.routeParents,
+      routeInfo.routeObjects,
+      this.routeBindings,
+      this.basePath,
+    );
+
+    return routeInfo;
+  }
+}
+
 /**
  * Synchronous version of {@link createApp}, expecting all features and
  * config to have been loaded already.
@@ -248,32 +327,46 @@ export function createSpecializedApp(options?: {
 
   const features = deduplicateFeatures(duplicatedFeatures);
 
-  const tree = createAppTree({
-    features,
-    builtinExtensions,
-    config,
-  });
+  const tree = resolveAppTree(
+    'root',
+    resolveAppNodeSpecs({
+      features,
+      builtinExtensions,
+      parameters: readAppExtensionsConfig(config),
+      forbidden: new Set(['root']),
+    }),
+  );
 
-  const routeInfo = extractRouteInfoFromAppNode(tree.root);
-  const routeBindings = resolveRouteBindings(
-    options?.bindRoutes,
-    config,
-    collectRouteIds(features),
+  const factories = createApiFactories({ tree });
+
+  const appTreeApi = new AppTreeApiProxy(tree);
+  const routeResolutionApi = new RouteResolutionApiProxy(
+    tree,
+    resolveRouteBindings(
+      options?.bindRoutes,
+      config,
+      collectRouteIds(features),
+    ),
+    getBasePath(config),
   );
 
   const appIdentityProxy = new AppIdentityProxy();
-  const apiHolder = createApiHolder(
-    tree,
-    config,
-    appIdentityProxy,
-    new RouteResolver(
-      routeInfo.routePaths,
-      routeInfo.routeParents,
-      routeInfo.routeObjects,
-      routeBindings,
-      getBasePath(config),
-    ),
-  );
+  const apiHolder = createApiHolder({
+    factories,
+    staticFactories: [
+      createApiFactory(appTreeApiRef, appTreeApi),
+      createApiFactory(configApiRef, config),
+      createApiFactory(routeResolutionApiRef, routeResolutionApi),
+      createApiFactory(identityApiRef, appIdentityProxy),
+    ],
+  });
+
+  for (const appNode of tree.root.edges.attachments.get('app') ?? []) {
+    instantiateAppNodeTree(appNode, apiHolder);
+  }
+
+  const routeInfo = routeResolutionApi.initialize();
+  appTreeApi.initialize();
 
   if (isProtectedApp()) {
     const discoveryApi = apiHolder.get(discoveryApiRef);
@@ -310,7 +403,9 @@ export function createSpecializedApp(options?: {
     }
   }
 
-  const rootEl = tree.root.instance!.getData(coreExtensionData.reactElement);
+  const rootEl = tree.root.edges.attachments
+    .get('app')![0]
+    .instance!.getData(coreExtensionData.reactElement);
 
   const AppComponent = () => (
     <ApiProvider apis={apiHolder}>
@@ -331,49 +426,37 @@ export function createSpecializedApp(options?: {
   };
 }
 
-function createApiHolder(
-  tree: AppTree,
-  configApi: ConfigApi,
-  appIdentityProxy: AppIdentityProxy,
-  routeResolutionApi: RouteResolutionApi,
-): ApiHolder {
+function createApiFactories(options: { tree: AppTree }): AnyApiFactory[] {
+  const emptyApiHolder = ApiRegistry.from([]);
+  const factories = new Array<AnyApiFactory>();
+
+  for (const apiNode of options.tree.root.edges.attachments.get('apis') ?? []) {
+    instantiateAppNodeTree(apiNode, emptyApiHolder);
+    const apiFactory = apiNode.instance?.getData(ApiBlueprint.dataRefs.factory);
+    if (!apiFactory) {
+      throw new Error(
+        `No API factory found in for extension ${apiNode.spec.id}`,
+      );
+    }
+    factories.push(apiFactory);
+  }
+
+  return factories;
+}
+
+function createApiHolder(options: {
+  factories: AnyApiFactory[];
+  staticFactories: AnyApiFactory[];
+}): ApiHolder {
   const factoryRegistry = new ApiFactoryRegistry();
 
-  const pluginApis =
-    tree.root.edges.attachments
-      .get('apis')
-      ?.map(e => e.instance?.getData(ApiBlueprint.dataRefs.factory))
-      .filter((x): x is AnyApiFactory => !!x) ?? [];
-
-  for (const factory of pluginApis) {
+  for (const factory of options.factories) {
     factoryRegistry.register('default', factory);
   }
 
-  factoryRegistry.register('static', {
-    api: identityApiRef,
-    deps: {},
-    factory: () => appIdentityProxy,
-  });
-
-  factoryRegistry.register('static', {
-    api: appTreeApiRef,
-    deps: {},
-    factory: () => ({
-      getTree: () => ({ tree }),
-    }),
-  });
-
-  factoryRegistry.register('static', {
-    api: routeResolutionApiRef,
-    deps: {},
-    factory: () => routeResolutionApi,
-  });
-
-  factoryRegistry.register('static', {
-    api: configApiRef,
-    deps: {},
-    factory: () => configApi,
-  });
+  for (const factory of options.staticFactories) {
+    factoryRegistry.register('static', factory);
+  }
 
   ApiResolver.validateFactories(factoryRegistry, factoryRegistry.getAllApis());
 

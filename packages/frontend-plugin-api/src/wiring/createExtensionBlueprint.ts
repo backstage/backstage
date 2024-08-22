@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AppNode } from '../apis';
+import { ApiHolder, AppNode } from '../apis';
 import { Expand } from '../types';
 import {
   ExtensionDefinition,
@@ -70,6 +70,7 @@ export type CreateExtensionBlueprintOptions<
     params: TParams,
     context: {
       node: AppNode;
+      apis: ApiHolder;
       config: {
         [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
       };
@@ -172,6 +173,7 @@ export interface ExtensionBlueprint<
       ) => ExtensionDataContainer<UOutput>,
       context: {
         node: AppNode;
+        apis: ApiHolder;
         config: TConfig & {
           [key in keyof TExtensionConfigSchema]: z.infer<
             ReturnType<TExtensionConfigSchema[key]>
@@ -300,11 +302,12 @@ export function createExtensionBlueprint<
                 },
               }
             : undefined,
-        factory: ({ node, config, inputs }) => {
+        factory: ({ node, config, inputs, apis }) => {
           return args.factory(
             (innerParams, innerContext) => {
               return createExtensionDataContainer<UOutput>(
                 options.factory(innerParams, {
+                  apis,
                   node,
                   config: (innerContext?.config ?? config) as any,
                   inputs: resolveInputOverrides(
@@ -317,6 +320,7 @@ export function createExtensionBlueprint<
               );
             },
             {
+              apis,
               node,
               config: config as any,
               inputs: inputs as any,
