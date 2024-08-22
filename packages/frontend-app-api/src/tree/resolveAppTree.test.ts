@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { createExtension, Extension } from '@backstage/frontend-plugin-api';
+import {
+  coreExtensionData,
+  createExtension,
+  createExtensionInput,
+  Extension,
+} from '@backstage/frontend-plugin-api';
 import { resolveAppTree } from './resolveAppTree';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
@@ -164,5 +169,100 @@ describe('buildAppTree', () => {
         { ...baseSpec, id: 'a' },
       ]),
     ).toThrow("Unexpected duplicate extension id 'a'");
+  });
+
+  describe('redirects', () => {
+    it('should throw an error when theres a duplicate redirect target', () => {
+      const e1 = resolveExtensionDefinition(
+        createExtension({
+          name: 'test',
+          attachTo: { id: 'nonexistent', input: 'nonexistent' },
+          inputs: {
+            test: createExtensionInput([coreExtensionData.reactElement], {
+              replaces: [{ id: 'a', input: 'test' }],
+            }),
+          },
+          output: [],
+          factory: () => [],
+        }),
+      ) as Extension<unknown, unknown>;
+
+      const e2 = resolveExtensionDefinition(
+        createExtension({
+          name: 'test-2',
+          attachTo: { id: 'nonexistent', input: 'nonexistent' },
+          inputs: {
+            test: createExtensionInput([coreExtensionData.reactElement], {
+              replaces: [{ id: 'a', input: 'test' }],
+            }),
+          },
+          output: [],
+          factory: () => [],
+        }),
+      ) as Extension<unknown, unknown>;
+
+      expect(() =>
+        resolveAppTree('a', [
+          { ...baseSpec, id: 'a', extension: e1 },
+          { ...baseSpec, id: 'b', extension: e2 },
+        ]),
+      ).toThrow("Duplicate redirect target for input 'test' in extension 'b'");
+    });
+  });
+
+  it('should set the correct attachment point for a redirect', () => {
+    const e1 = resolveExtensionDefinition(
+      createExtension({
+        name: 'test',
+        attachTo: { id: 'nonexistent', input: 'nonexistent' },
+        inputs: {
+          test: createExtensionInput([coreExtensionData.reactElement], {
+            replaces: [{ id: 'replace', input: 'me' }],
+          }),
+        },
+        output: [],
+        factory: () => [],
+      }),
+    ) as Extension<unknown, unknown>;
+
+    const e2 = resolveExtensionDefinition(
+      createExtension({
+        name: 'test-2',
+        attachTo: { id: 'replace', input: 'me' },
+        output: [],
+        factory: () => [],
+      }),
+    ) as Extension<unknown, unknown>;
+
+    const tree = resolveAppTree('a', [
+      { attachTo: e1.attachTo, id: 'a', extension: e1, disabled: false },
+      { attachTo: e2.attachTo, id: 'b', extension: e2, disabled: false },
+    ]);
+
+    expect(tree.root).toMatchInlineSnapshot(`
+      {
+        "attachments": {
+          "test": [
+            {
+              "attachments": undefined,
+              "id": "b",
+              "output": undefined,
+            },
+          ],
+        },
+        "id": "a",
+        "output": undefined,
+      }
+    `);
+
+    expect(tree.orphans).toMatchInlineSnapshot(`[]`);
+
+    expect(String(tree.root)).toMatchInlineSnapshot(`
+      "<a>
+        test [
+          <b />
+        ]
+      </a>"
+    `);
   });
 });

@@ -119,6 +119,11 @@ export function resolveAppTree(
       if (input.replaces) {
         for (const replace of input.replaces) {
           const key = makeRedirectKey(replace);
+          if (redirectTargetsByKey.has(key)) {
+            throw new Error(
+              `Duplicate redirect target for input '${inputName}' in extension '${spec.id}'`,
+            );
+          }
           redirectTargetsByKey.set(key, { id: spec.id, input: inputName });
         }
       }
