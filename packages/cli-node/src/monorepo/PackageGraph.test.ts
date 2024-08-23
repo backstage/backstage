@@ -43,6 +43,7 @@ const testPackages = [
         c: '1.0.0',
       },
     },
+    relativeDir: './packages/a',
   },
   {
     dir: '/packages/b',
@@ -53,6 +54,7 @@ const testPackages = [
         c: '1.0.0',
       },
     },
+    relativeDir: './packages/b',
   },
   {
     dir: '/packages/c',
@@ -60,6 +62,7 @@ const testPackages = [
       name: 'c',
       version: '1.0.0',
     },
+    relativeDir: './packages/c',
   },
 ];
 

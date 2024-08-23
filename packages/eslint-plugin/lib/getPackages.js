@@ -28,7 +28,7 @@ const manypkg = require('@manypkg/get-packages');
  * @typedef PackageMap
  * @type object
  *
- * @property {ExtendedPackage} root
+ * @property {ExtendedPackage | undefined} root
  * @property {ExtendedPackage[]} list
  * @property {Map<string, ExtendedPackage>} map
  * @property {() => void} clearCache
@@ -59,7 +59,7 @@ module.exports = (function () {
     result = {
       map: new Map(packages.packages.map(pkg => [pkg.packageJson.name, pkg])),
       list: packages.packages,
-      root: packages.root,
+      root: packages.rootPackage,
       byPath(filePath) {
         return packages.packages.find(
           pkg => !path.relative(pkg.dir, filePath).startsWith('..'),

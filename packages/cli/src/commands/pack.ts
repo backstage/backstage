@@ -26,6 +26,7 @@ export const pre = async () => {
   publishPreflightCheck({
     dir: paths.targetDir,
     packageJson: await fs.readJson(paths.resolveTarget('package.json')),
+    relativeDir: paths.ownDir,
   });
 
   await productionPack({ packageDir: paths.targetDir });

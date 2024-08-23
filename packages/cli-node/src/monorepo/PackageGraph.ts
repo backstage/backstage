@@ -113,6 +113,7 @@ export interface BackstagePackageJson {
 export type BackstagePackage = {
   dir: string;
   packageJson: BackstagePackageJson;
+  relativeDir: string;
 };
 
 /**
@@ -149,6 +150,8 @@ export type PackageGraphNode = {
   localDevDependents: Map<string, PackageGraphNode>;
   /** Incoming local optionalDependencies */
   localOptionalDependents: Map<string, PackageGraphNode>;
+
+  relativeDir: string;
 };
 
 /**
@@ -198,6 +201,8 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
         localDependents: new Map(),
         localDevDependents: new Map(),
         localOptionalDependents: new Map(),
+
+        relativeDir: pkg.relativeDir,
       });
     }
 

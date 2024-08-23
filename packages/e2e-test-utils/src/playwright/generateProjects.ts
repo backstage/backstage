@@ -27,7 +27,7 @@ import type { BackstagePackage } from '@backstage/cli-node';
  */
 export function generateProjects(): PlaywrightTestConfig['projects'] {
   // TODO(Rugvip): Switch this over to use @backstage/cli-node once released, and support SINCE=origin/main
-  const { root, packages } = getPackagesSync(process.cwd());
+  const { rootPackage: root, packages } = getPackagesSync(process.cwd());
   const e2eTestPackages = [...(root ? [root] : []), ...packages].filter(pkg => {
     return fs.pathExistsSync(resolvePath(pkg.dir, 'e2e-tests'));
   }) as BackstagePackage[];

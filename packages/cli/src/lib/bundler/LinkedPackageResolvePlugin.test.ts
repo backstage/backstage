@@ -31,6 +31,7 @@ describe('LinkedPackageResolvePlugin', () => {
             name: 'a',
             version: '1.0.0',
           },
+          relativeDir: './external-a',
         },
         {
           dir: path.resolve(root, 'external-b'),
@@ -38,6 +39,7 @@ describe('LinkedPackageResolvePlugin', () => {
             name: '@s/b',
             version: '1.0.0',
           },
+          relativeDir: './external-b',
         },
       ],
     );

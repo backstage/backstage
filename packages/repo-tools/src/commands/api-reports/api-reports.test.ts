@@ -58,22 +58,27 @@ jest.spyOn(PackageGraph, 'listTargetPackages').mockResolvedValue([
   {
     dir: normalize(mockDir.resolve('packages/package-a')),
     packageJson: { name: 'package-a', version: '0.0.0' },
+    relativeDir: './packages-a',
   },
   {
     dir: normalize(mockDir.resolve('packages/package-b')),
     packageJson: { name: 'package-b', version: '0.0.0' },
+    relativeDir: './packages-b',
   },
   {
     dir: normalize(mockDir.resolve('plugins/plugin-a')),
     packageJson: { name: 'plugin-a', version: '0.0.0' },
+    relativeDir: './packages-a',
   },
   {
     dir: normalize(mockDir.resolve('plugins/plugin-b')),
     packageJson: { name: 'plugin-b', version: '0.0.0' },
+    relativeDir: './packages-b',
   },
   {
     dir: normalize(mockDir.resolve('plugins/plugin-c')),
     packageJson: { name: 'plugin-c', version: '0.0.0' },
+    relativeDir: './packages-c',
   },
 ]);
 

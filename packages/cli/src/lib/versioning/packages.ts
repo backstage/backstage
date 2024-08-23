@@ -96,10 +96,12 @@ export async function mapDependencies(
   targetDir: string,
   pattern: string,
 ): Promise<Map<string, PkgVersionInfo[]>> {
-  const { packages, root } = await getPackages(targetDir);
+  const { packages, rootPackage } = await getPackages(targetDir);
 
   // Include root package.json too
-  packages.push(root);
+  if (rootPackage) {
+    packages.push(rootPackage);
+  }
 
   const dependencyMap = new Map<string, PkgVersionInfo[]>();
   for (const pkg of packages) {
