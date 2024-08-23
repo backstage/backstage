@@ -24,13 +24,18 @@ import React from 'react';
  * @alpha
  */
 export const SecretWidget = (
-  props: Pick<WidgetProps, 'name' | 'onChange' | 'schema'>,
+  props: Pick<
+    WidgetProps,
+    'name' | 'onChange' | 'schema' | 'required' | 'disabled'
+  >,
 ) => {
   const { setSecrets, secrets } = useTemplateSecrets();
   const {
     name,
     onChange,
     schema: { title },
+    required,
+    disabled,
   } = props;
 
   return (
@@ -45,6 +50,8 @@ export const SecretWidget = (
       value={secrets[name] ?? ''}
       type="password"
       autoComplete="off"
+      required={required}
+      disabled={disabled}
     />
   );
 };
