@@ -107,9 +107,15 @@ describe('DatabaseManagerImpl', () => {
     });
 
     const impl2 = new DatabaseManagerImpl(
-      new ConfigReader({ client: 'pg' }),
-      { pg: connector },
-      { migrations: { skip: true } },
+      new ConfigReader({
+        client: 'pg',
+        backend: {
+          database: { plugin: { plugin1: { skipMigrations: true } } },
+        },
+      }),
+      {
+        pg: connector,
+      },
     );
 
     expect((await impl1.forPlugin('plugin1')).migrations).toEqual({
@@ -117,6 +123,24 @@ describe('DatabaseManagerImpl', () => {
     });
 
     expect((await impl2.forPlugin('plugin1')).migrations).toEqual({
+      skip: true,
+    });
+
+    const impl3 = new DatabaseManagerImpl(
+      new ConfigReader({
+        client: 'pg',
+        backend: {
+          database: {
+            skipMigrations: true,
+            plugin: { plugin1: { skipMigrations: false } },
+          },
+        },
+      }),
+      {
+        pg: connector,
+      },
+    );
+    expect((await impl3.forPlugin('plugin1')).migrations).toEqual({
       skip: true,
     });
   });

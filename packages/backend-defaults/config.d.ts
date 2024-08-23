@@ -375,6 +375,108 @@ export interface Config {
     };
   };
 
+  /** Database connection configuration, select base database type using the `client` field */
+  database: {
+    /** Default database client to use */
+    client: 'better-sqlite3' | 'sqlite3' | 'pg';
+    /**
+     * Base database connection string, or object with individual connection properties
+     * @visibility secret
+     */
+    connection:
+      | string
+      | {
+          /**
+           * Password that belongs to the client User
+           * @visibility secret
+           */
+          password?: string;
+          /**
+           * Other connection settings
+           */
+          [key: string]: unknown;
+        };
+    /** Database name prefix override */
+    prefix?: string;
+    /**
+     * Whether to ensure the given database exists by creating it if it does not.
+     * Defaults to true if unspecified.
+     */
+    ensureExists?: boolean;
+    /**
+     * Whether to ensure the given database schema exists by creating it if it does not.
+     * Defaults to false if unspecified.
+     *
+     * NOTE: Currently only supported by the `pg` client when pluginDivisionMode: schema
+     */
+    ensureSchemaExists?: boolean;
+    /**
+     * How plugins databases are managed/divided in the provided database instance.
+     *
+     * `database` -> Plugins are each given their own database to manage their schemas/tables.
+     *
+     * `schema` -> Plugins will be given their own schema (in the specified/default database)
+     *             to manage their tables.
+     *
+     * NOTE: Currently only supported by the `pg` client.
+     *
+     * @default database
+     */
+    pluginDivisionMode?: 'database' | 'schema';
+    /** Configures the ownership of newly created schemas in pg databases. */
+    role?: string;
+    /**
+     * Skip running database migrations.
+     * NOTE: Currently only supported by the `pg` client.
+     */
+    skipMigrations?: boolean;
+    /**
+     * Arbitrary config object to pass to knex when initializing
+     * (https://knexjs.org/#Installation-client). Most notable is the debug
+     * and asyncStackTraces booleans
+     */
+    knexConfig?: object;
+    /** Plugin specific database configuration and client override */
+    plugin?: {
+      [pluginId: string]: {
+        /** Database client override */
+        client?: 'better-sqlite3' | 'sqlite3' | 'pg';
+        /**
+         * Database connection string or Knex object override
+         * @visibility secret
+         */
+        connection?: string | object;
+        /**
+         * Whether to ensure the given database exists by creating it if it does not.
+         * Defaults to base config if unspecified.
+         */
+        ensureExists?: boolean;
+        /**
+         * Whether to ensure the given database schema exists by creating it if it does not.
+         * Defaults to false if unspecified.
+         *
+         * NOTE: Currently only supported by the `pg` client when pluginDivisionMode: schema
+         */
+        ensureSchemaExists?: boolean;
+        /**
+         * Arbitrary config object to pass to knex when initializing
+         * (https://knexjs.org/#Installation-client). Most notable is the
+         * debug and asyncStackTraces booleans.
+         *
+         * This is merged recursively into the base knexConfig
+         */
+        knexConfig?: object;
+        /** Configures the ownership of newly created schemas in pg databases. */
+        role?: string;
+        /**
+         * Skip running database migrations.
+         * NOTE: Currently only supported by the `pg` client.
+         */
+        skipMigrations?: boolean;
+      };
+    };
+  };
+
   /**
    * Options used by the default discovery service.
    */

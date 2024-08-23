@@ -41,7 +41,6 @@ function pluginPath(pluginId: string): string {
  * @public
  */
 export type DatabaseManagerOptions = {
-  migrations?: DatabaseService['migrations'];
   logger?: LoggerService;
 };
 
@@ -86,7 +85,16 @@ export class DatabaseManagerImpl implements LegacyRootDatabaseService {
       );
     }
     const getClient = () => this.getDatabase(pluginId, connector, deps);
-    const migrations = { skip: false, ...this.options?.migrations };
+
+    const migrationConfig =
+      this.config.getOptionalBoolean('backend.database.skipMigrations') ||
+      this.config.getOptionalBoolean(
+        `backend.database.plugin.${pluginId}.skipMigrations`,
+      );
+    const migrations = {
+      skip: migrationConfig || false,
+    };
+
     return { getClient, migrations };
   }
 
