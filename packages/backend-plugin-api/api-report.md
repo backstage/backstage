@@ -162,12 +162,12 @@ export interface CacheService {
 
 // @public
 export type CacheServiceOptions = {
-  defaultTtl?: number;
+  defaultTtl?: number | HumanDuration;
 };
 
 // @public
 export type CacheServiceSetOptions = {
-  ttl?: number;
+  ttl?: number | HumanDuration;
 };
 
 // @public

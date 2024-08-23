@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { HumanDuration } from '@backstage/types';
+
 export interface Config {
   app: {
     baseUrl: string; // defined in core, but repeated here without doc
@@ -180,7 +182,7 @@ export interface Config {
       | {
           store: 'memory';
           /** An optional default TTL (in milliseconds). */
-          defaultTtl?: number;
+          defaultTtl?: number | HumanDuration;
         }
       | {
           store: 'redis';
@@ -190,7 +192,7 @@ export interface Config {
            */
           connection: string;
           /** An optional default TTL (in milliseconds). */
-          defaultTtl?: number;
+          defaultTtl?: number | HumanDuration;
           /**
            * Whether or not [useRedisSets](https://github.com/jaredwray/keyv/tree/main/packages/redis#useredissets) should be configured to this redis cache.
            * Defaults to true if unspecified.
@@ -205,7 +207,7 @@ export interface Config {
            */
           connection: string;
           /** An optional default TTL (in milliseconds). */
-          defaultTtl?: number;
+          defaultTtl?: number | HumanDuration;
         };
 
     cors?: {

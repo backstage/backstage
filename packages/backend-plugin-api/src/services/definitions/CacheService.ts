@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JsonValue } from '@backstage/types';
+import { HumanDuration, JsonValue } from '@backstage/types';
 
 /**
  * Options passed to {@link CacheService.set}.
@@ -23,10 +23,10 @@ import { JsonValue } from '@backstage/types';
  */
 export type CacheServiceSetOptions = {
   /**
-   * Optional TTL in milliseconds. Defaults to the TTL provided when the client
+   * Optional TTL (in milliseconds if given as a number). Defaults to the TTL provided when the client
    * was set up (or no TTL if none are provided).
    */
-  ttl?: number;
+  ttl?: number | HumanDuration;
 };
 
 /**
@@ -36,11 +36,11 @@ export type CacheServiceSetOptions = {
  */
 export type CacheServiceOptions = {
   /**
-   * An optional default TTL (in milliseconds) to be set when getting a client
+   * An optional default TTL (in milliseconds if given as a number) to be set when getting a client
    * instance. If not provided, data will persist indefinitely by default (or
    * can be configured per entry at set-time).
    */
-  defaultTtl?: number;
+  defaultTtl?: number | HumanDuration;
 };
 
 /**

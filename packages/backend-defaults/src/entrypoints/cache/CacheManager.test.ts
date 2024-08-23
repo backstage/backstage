@@ -93,4 +93,96 @@ describe('CacheManager integration', () => {
       await expect(plugin2b.get('a')).resolves.toBe('plugin2b');
     },
   );
+
+  it.each(caches.eachSupportedId())(
+    'supports both milliseconds and human durations throughout, %p',
+    async cacheId => {
+      const { store, connection } = await caches.init(cacheId);
+
+      for (const defaultTtl of [200, { milliseconds: 200 }]) {
+        const manager = CacheManager.fromConfig(
+          mockServices.rootConfig({
+            data: {
+              backend: {
+                cache: {
+                  store,
+                  connection,
+                  defaultTtl,
+                },
+              },
+            },
+          }),
+        ).forPlugin('p');
+
+        const defaultClient = manager.getClient();
+        const numberOverrideClient = manager.getClient({ defaultTtl: 400 });
+        const durationOverrideClient = manager.getClient({
+          defaultTtl: { milliseconds: 400 },
+        });
+
+        await defaultClient.set('a', 'x');
+        await defaultClient.set('b', 'x');
+        await numberOverrideClient.set('c', 'x');
+        await durationOverrideClient.set('d', 'x');
+        await defaultClient.set('e', 'x', { ttl: 400 });
+        await defaultClient.set('f', 'x', { ttl: { milliseconds: 400 } });
+
+        await expect(defaultClient.get('a')).resolves.toBe('x');
+        await expect(defaultClient.get('b')).resolves.toBe('x');
+        await expect(defaultClient.get('c')).resolves.toBe('x');
+        await expect(defaultClient.get('d')).resolves.toBe('x');
+        await expect(defaultClient.get('e')).resolves.toBe('x');
+        await expect(defaultClient.get('f')).resolves.toBe('x');
+
+        await new Promise(resolve => setTimeout(resolve, 50 + 200));
+
+        await expect(defaultClient.get('a')).resolves.toBeUndefined();
+        await expect(defaultClient.get('b')).resolves.toBeUndefined();
+        await expect(defaultClient.get('c')).resolves.toBe('x');
+        await expect(defaultClient.get('d')).resolves.toBe('x');
+        await expect(defaultClient.get('e')).resolves.toBe('x');
+        await expect(defaultClient.get('f')).resolves.toBe('x');
+
+        await new Promise(resolve => setTimeout(resolve, 200));
+
+        await expect(defaultClient.get('a')).resolves.toBeUndefined();
+        await expect(defaultClient.get('b')).resolves.toBeUndefined();
+        await expect(defaultClient.get('c')).resolves.toBeUndefined();
+        await expect(defaultClient.get('d')).resolves.toBeUndefined();
+        await expect(defaultClient.get('e')).resolves.toBeUndefined();
+        await expect(defaultClient.get('f')).resolves.toBeUndefined();
+      }
+    },
+  );
+
+  it('rejects invalid defaultTtl', () => {
+    expect(() =>
+      CacheManager.fromConfig(
+        mockServices.rootConfig({
+          data: {
+            backend: {
+              cache: {
+                store: 'memory',
+              },
+            },
+          },
+        }),
+      ),
+    ).not.toThrow();
+
+    expect(() =>
+      CacheManager.fromConfig(
+        mockServices.rootConfig({
+          data: {
+            backend: {
+              cache: {
+                store: 'memory',
+                defaultTtl: 'hello',
+              },
+            },
+          },
+        }),
+      ),
+    ).toThrow(/Invalid configuration backend.cache.defaultTtl/);
+  });
 });
