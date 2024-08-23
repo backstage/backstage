@@ -3,8 +3,8 @@ on:
   # NOTE: If you change these you must update ci-noop.yml as well
   pull_request:
     paths-ignore:
-      - "microsite/**"
-      - "beps/**"
+      - 'microsite/**'
+      - 'beps/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -150,7 +150,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [18.x, 20.x, 18.x, 20.x, 18.x, 20.x]
+        node-version:
+          [
+            18.x,
+            20.x,
+            18.x,
+            20.x,
+            18.x,
+            20.x,
+            18.x,
+            20.x,
+            18.x,
+            20.x,
+            18.x,
+            20.x,
+          ]
 
     name: Test ${{ matrix.node-version }}
     services:
