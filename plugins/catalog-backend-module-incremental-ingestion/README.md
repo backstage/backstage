@@ -39,7 +39,7 @@ The Incremental Entity Provider backend is designed for data sources that provid
 2. The client must be stateless - a client is created from scratch for each iteration to allow distributing processing over multiple replicas.
 3. There must be sufficient storage in Postgres to handle the additional data. (Presumably, this is also true of sqlite, but it has only been tested with Postgres.)
 
-## Installation (New Backend)
+## Installation
 
 1. Install `@backstage/plugin-catalog-backend-module-incremental-ingestion` with `yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-incremental-ingestion` from the Backstage root directory.
 
@@ -57,7 +57,7 @@ const backend = createBackend();
 ++  ),
 ++);
 
-// We have created this in section **Adding an Incremental Entity Provider to the catalog (New Backend)**
+// We have created this in section **Adding an Incremental Entity Provider to the catalog**
 ++ backend.add(catalogModuleCustomIncrementalIngestionProvider);
 
 backend.start();
@@ -84,7 +84,7 @@ In all cases, `:provider` is the name of the incremental entity provider.
 
 ## Writing an Incremental Entity Provider
 
-To create an Incremental Entity Provider, you need to know how to retrieve a single page of the data that you wish to ingest into the Backstage catalog. If the API has pagination and you know how to make a paginated request to that API, you'll be able to implement an Incremental Entity Provider for this API. For more information about compatibility, check out the <a href="#requirements">requirements</a> section of this page.
+To create an Incremental Entity Provider, you need to know how to retrieve a single page of the data that you wish to ingest into the Backstage catalog. If the API has pagination and you know how to make a paginated request to that API, you'll be able to implement an Incremental Entity Provider for this API. For more information about compatibility, check out the [requirements](#requirements) section of this page.
 
 Here is the type definition for an Incremental Entity Provider.
 
@@ -275,9 +275,9 @@ export class MyIncrementalEntityProvider implements IncrementalEntityProvider<Cu
 
 Now that you have your new Incremental Entity Provider, we can connect it to the catalog.
 
-## Adding an Incremental Entity Provider to the catalog (New Backend)
+## Adding an Incremental Entity Provider to the catalog
 
-We'll assume you followed the <a href="#installation-new-backend">Installation</a> instructions. Now create a module inside `packages/backend/src/extensions/catalogCustomIncrementalIngestion.ts`.
+We'll assume you followed the [Installation](#installation-new-backend) instructions. Now create a module inside `packages/backend/src/extensions/catalogCustomIncrementalIngestion.ts`.
 
 ```ts
 import {
@@ -348,6 +348,10 @@ export const catalogModuleCustomIncrementalIngestionProvider =
 
 ## Installation (Old Backend)
 
+> **Note:** The old backend system is deprecated and will be removed soon.
+> The [New Backend System](https://backstage.io/docs/backend-system/) has been the default since Backstage [version 1.24](https://backstage.io/docs/releases/v1.24.0).
+> If you're still using the old backend, it's recommended that you [migrate](https://backstage.io/docs/backend-system/building-backends/migrating/).
+
 1. Install `@backstage/plugin-catalog-backend-module-incremental-ingestion` with `yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-incremental-ingestion` from the Backstage root directory.
 2. In your catalog.ts, import `IncrementalCatalogBuilder` from `@backstage/plugin-catalog-backend-module-incremental-ingestion` and instantiate it with `await IncrementalCatalogBuilder.create(env, builder)`. You have to pass `builder` into `IncrementalCatalogBuilder.create` function because `IncrementalCatalogBuilder` will convert an `IncrementalEntityProvider` into an `EntityProvider` and call `builder.addEntityProvider`.
 
@@ -404,7 +408,7 @@ export default async function createPlugin(
 
 ## Adding an Incremental Entity Provider to the catalog (Old Backend)
 
-We'll assume you followed the <a href="#installation-old-backend">Installation</a> instructions. After you create your `incrementalBuilder`, you can instantiate your Entity Provider and pass it to the `addIncrementalEntityProvider` method.
+We'll assume you followed the [Installation](#installation-old-backend) instructions. After you create your `incrementalBuilder`, you can instantiate your Entity Provider and pass it to the `addIncrementalEntityProvider` method.
 
 ```ts
 const incrementalBuilder = await IncrementalCatalogBuilder.create(env, builder);
