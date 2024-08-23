@@ -15,6 +15,7 @@
  */
 
 import { JsonObject, JsonValue } from '@backstage/types';
+import { startCase } from 'lodash';
 
 export function isJsonObject(value?: JsonValue): value is JsonObject {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -25,6 +26,6 @@ export function formatKey(key: string): string {
   const parts = key.split('/');
   return parts
     .filter(Boolean)
-    .map(part => part.charAt(0).toLocaleUpperCase('en-US') + part.slice(1))
+    .map(part => startCase(part))
     .join(' > ');
 }

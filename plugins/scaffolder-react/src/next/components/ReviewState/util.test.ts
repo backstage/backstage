@@ -45,7 +45,7 @@ describe('formatKey', () => {
   });
 
   it('should leave a top-level key untouched', () => {
-    expect(formatKey('topLevel')).toBe('TopLevel');
+    expect(formatKey('topLevel')).toBe('Top Level');
   });
 
   it('should handle keys with a leading slash', () => {
@@ -70,13 +70,11 @@ describe('formatKey', () => {
 
   it('should handle keys with spaces', () => {
     expect(formatKey('parent/child with spaces')).toBe(
-      'Parent > Child with spaces',
+      'Parent > Child With Spaces',
     );
   });
 
-  it('should handle keys with special characters', () => {
-    expect(formatKey('parent/child@!#$%^&*()')).toBe(
-      'Parent > Child@!#$%^&*()',
-    );
+  it('should remove special characters', () => {
+    expect(formatKey('parent/child@!#$%^&*()')).toBe('Parent > Child');
   });
 });
