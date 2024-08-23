@@ -9,7 +9,6 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { AsyncState } from 'react-use/esm/useAsync';
 import { AutocompleteProps } from '@material-ui/lab/Autocomplete';
 import { Extension } from '@backstage/core-plugin-api';
-import { ForwardRefExoticComponent } from 'react';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { LinkProps } from '@backstage/core-components';
@@ -132,10 +131,23 @@ export type SearchAutocompleteProps<Option> = Omit<
 };
 
 // @public
-export const SearchBar: ForwardRefExoticComponent<SearchBarProps>;
+export const SearchBar: React_2.ForwardRefExoticComponent<
+  Omit<
+    Omit<Partial<SearchBarBaseProps>, 'ref'> &
+      React_2.RefAttributes<HTMLDivElement>,
+    'ref'
+  > &
+    React_2.RefAttributes<HTMLDivElement>
+>;
 
 // @public
-export const SearchBarBase: ForwardRefExoticComponent<SearchBarBaseProps>;
+export const SearchBarBase: React_2.ForwardRefExoticComponent<
+  Omit<
+    Omit<SearchBarBaseProps, 'ref'> & React_2.RefAttributes<HTMLDivElement>,
+    'ref'
+  > &
+    React_2.RefAttributes<HTMLDivElement>
+>;
 
 // @public
 export type SearchBarBaseProps = Omit<TextFieldProps, 'onChange'> & {
