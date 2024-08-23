@@ -31624,14 +31624,14 @@ __metadata:
   linkType: hard
 
 "jscodeshift-add-imports@npm:^1.0.10":
-  version: 1.0.10
-  resolution: "jscodeshift-add-imports@npm:1.0.10"
+  version: 1.0.11
+  resolution: "jscodeshift-add-imports@npm:1.0.11"
   dependencies:
     "@babel/traverse": ^7.4.5
     jscodeshift-find-imports: ^2.0.2
   peerDependencies:
-    jscodeshift: ^0.7.0 || ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0
-  checksum: ecc64f24bea38864c56364236d9e78fe63930ee2c2a9e3ab9444fd62e013e80f1e21cbf854455aa1939be6bd58ce9054acc06bf9d4f327f99446c64503301de6
+    jscodeshift: ">=0.7 <1"
+  checksum: 58b555f86a3c4f5893262253e632413a9201e56bbedc2a56816dc7c7b971a4ddc8a3598b0bff227b4c9a56771d0af8f42a9b5b557b7ed2cf92c9b4c7f4dd3a68
   languageName: node
   linkType: hard
 
