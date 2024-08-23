@@ -21,7 +21,7 @@ import { TestApiProvider } from '@backstage/test-utils';
 import { useSignInAuthError } from './useSignInAuthError';
 import { serializeError } from '@backstage/errors';
 
-describe('useCookieAuthRefresh', () => {
+describe('useSignInAuthError', () => {
   const discoveryApiMock = {
     getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7000/api/auth'),
   };
