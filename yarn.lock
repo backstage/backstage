@@ -41016,8 +41016,8 @@ __metadata:
   linkType: hard
 
 "sort-package-json@npm:^2.8.0":
-  version: 2.10.0
-  resolution: "sort-package-json@npm:2.10.0"
+  version: 2.10.1
+  resolution: "sort-package-json@npm:2.10.1"
   dependencies:
     detect-indent: ^7.0.1
     detect-newline: ^4.0.0
@@ -41029,7 +41029,7 @@ __metadata:
     sort-object-keys: ^1.1.3
   bin:
     sort-package-json: cli.js
-  checksum: 095e5c5075c9799d3d6174f82e963fa3be0a1d193af0be656b651d2e5b563dfc794f46c7aa74e3fc761de3fba76951ad2d3de716cf50b3aca4e938f63edbfcae
+  checksum: 861d8161565fba322414d70b6be10fb331680549b73399778965be628783833c85c4e02929bcea5a2d96994884b0327dfe2f7c7a79409c901d2582b703f5333d
   languageName: node
   linkType: hard
 
