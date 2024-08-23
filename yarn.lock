@@ -8308,11 +8308,11 @@ __metadata:
   linkType: hard
 
 "@codemirror/legacy-modes@npm:^6.1.0":
-  version: 6.4.0
-  resolution: "@codemirror/legacy-modes@npm:6.4.0"
+  version: 6.4.1
+  resolution: "@codemirror/legacy-modes@npm:6.4.1"
   dependencies:
     "@codemirror/language": ^6.0.0
-  checksum: d382aa6f640a67418bd209e1e4b395340f96aac1b0cf185927fc2c7f98b62cfd0c59ef0f7048148ce8771622003ca844c78c2d18548235ecc57d0bcbfbbfe091
+  checksum: 3947842c5f06db49a152bf7dd03a626806c5f2e80abfa9840927396fef08ff8bc2dfb228e7231bd8d0b7bb1a84b7ef582df8361b2bef77419e0e04bf43cc6b7d
   languageName: node
   linkType: hard
 
@@ -8358,13 +8358,13 @@ __metadata:
   linkType: hard
 
 "@codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.23.0":
-  version: 6.28.2
-  resolution: "@codemirror/view@npm:6.28.2"
+  version: 6.32.0
+  resolution: "@codemirror/view@npm:6.32.0"
   dependencies:
     "@codemirror/state": ^6.4.0
     style-mod: ^4.1.0
     w3c-keyname: ^2.2.4
-  checksum: d2d36d7bbb1fc094fb421251b96144b67a932f43d12092bd2318ced283db0081e6e78cc99c5cecf9eedd24278d39fe41deaa490fcc03637d85c5cf332af58fec
+  checksum: 74a68694c1a7142f6b404de2ffe3a9af327065af8451a890e4e6bdc18e0eb1d4b34afd9aa917ca8eef280827fc361b5cbae5b6d79775b91dd68d5526553aedc5
   languageName: node
   linkType: hard
 
