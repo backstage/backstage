@@ -92,6 +92,22 @@ function makeRedirectKey(attachTo: { id: string; input: string }) {
   return `${attachTo.id}%${attachTo.input}`;
 }
 
+const MAX_REDIRECT_DEPTH = 100;
+
+const isValidAttachmentPoint = (
+  attachTo: { id: string; input: string },
+  nodes: Map<string, SerializableAppNode>,
+) => {
+  if (!nodes.has(attachTo.id)) {
+    return false;
+  }
+
+  return (
+    attachTo.input in
+    toInternalExtension(nodes.get(attachTo.id)!.spec.extension).inputs
+  );
+};
+
 /**
  * Build the app tree by iterating through all node specs and constructing the app
  * tree with all attachments in the same order as they appear in the input specs array.
@@ -143,8 +159,10 @@ export function resolveAppTree(
       rootNode = node;
     } else {
       let attachTo = node.spec.attachTo;
-      while (redirectTargetsByKey.has(makeRedirectKey(attachTo))) {
-        attachTo = redirectTargetsByKey.get(makeRedirectKey(attachTo))!;
+
+      if (!isValidAttachmentPoint(attachTo, nodes)) {
+        attachTo =
+          redirectTargetsByKey.get(makeRedirectKey(attachTo)) ?? attachTo;
       }
 
       const parent = nodes.get(attachTo.id);

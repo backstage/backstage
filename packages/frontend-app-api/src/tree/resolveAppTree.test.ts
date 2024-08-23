@@ -15,6 +15,7 @@
  */
 
 import {
+  AppNodeSpec,
   coreExtensionData,
   createExtension,
   createExtensionInput,
@@ -208,38 +209,37 @@ describe('buildAppTree', () => {
         ]),
       ).toThrow("Duplicate redirect target for input 'test' in extension 'b'");
     });
-  });
 
-  it('should set the correct attachment point for a redirect', () => {
-    const e1 = resolveExtensionDefinition(
-      createExtension({
-        name: 'test',
-        attachTo: { id: 'nonexistent', input: 'nonexistent' },
-        inputs: {
-          test: createExtensionInput([coreExtensionData.reactElement], {
-            replaces: [{ id: 'replace', input: 'me' }],
-          }),
-        },
-        output: [],
-        factory: () => [],
-      }),
-    ) as Extension<unknown, unknown>;
+    it('should set the correct attachment point for a redirect', () => {
+      const e1 = resolveExtensionDefinition(
+        createExtension({
+          name: 'test',
+          attachTo: { id: 'nonexistent', input: 'nonexistent' },
+          inputs: {
+            test: createExtensionInput([coreExtensionData.reactElement], {
+              replaces: [{ id: 'replace', input: 'me' }],
+            }),
+          },
+          output: [],
+          factory: () => [],
+        }),
+      ) as Extension<unknown, unknown>;
 
-    const e2 = resolveExtensionDefinition(
-      createExtension({
-        name: 'test-2',
-        attachTo: { id: 'replace', input: 'me' },
-        output: [],
-        factory: () => [],
-      }),
-    ) as Extension<unknown, unknown>;
+      const e2 = resolveExtensionDefinition(
+        createExtension({
+          name: 'test-2',
+          attachTo: { id: 'replace', input: 'me' },
+          output: [],
+          factory: () => [],
+        }),
+      ) as Extension<unknown, unknown>;
 
-    const tree = resolveAppTree('a', [
-      { attachTo: e1.attachTo, id: 'a', extension: e1, disabled: false },
-      { attachTo: e2.attachTo, id: 'b', extension: e2, disabled: false },
-    ]);
+      const tree = resolveAppTree('a', [
+        { attachTo: e1.attachTo, id: 'a', extension: e1, disabled: false },
+        { attachTo: e2.attachTo, id: 'b', extension: e2, disabled: false },
+      ]);
 
-    expect(tree.root).toMatchInlineSnapshot(`
+      expect(tree.root).toMatchInlineSnapshot(`
       {
         "attachments": {
           "test": [
@@ -255,14 +255,62 @@ describe('buildAppTree', () => {
       }
     `);
 
-    expect(tree.orphans).toMatchInlineSnapshot(`[]`);
+      expect(tree.orphans).toMatchInlineSnapshot(`[]`);
 
-    expect(String(tree.root)).toMatchInlineSnapshot(`
+      expect(String(tree.root)).toMatchInlineSnapshot(`
       "<a>
         test [
           <b />
         ]
       </a>"
     `);
+    });
+
+    it('should not allow redirects for attachment points that already exist', () => {
+      const e1 = resolveExtensionDefinition(
+        createExtension({
+          name: 'test',
+          attachTo: { id: 'a', input: 'a' },
+          inputs: {
+            test: createExtensionInput([coreExtensionData.reactElement], {
+              replaces: [{ id: 'test-2', input: 'test' }],
+            }),
+          },
+          output: [],
+          factory: () => [],
+        }),
+      ) as Extension<unknown, unknown>;
+
+      const e2 = resolveExtensionDefinition(
+        createExtension({
+          name: 'test-2',
+          attachTo: { id: 'b', input: 'b' },
+          inputs: {
+            test: createExtensionInput([coreExtensionData.reactElement]),
+          },
+          output: [],
+          factory: () => [],
+        }),
+      ) as Extension<unknown, unknown>;
+
+      const e3 = resolveExtensionDefinition(
+        createExtension({
+          name: 'test-3',
+          attachTo: { id: 'test-2', input: 'test' },
+          output: [],
+          factory: () => [],
+        }),
+      ) as Extension<unknown, unknown>;
+
+      const tree = resolveAppTree('test-2', [
+        { attachTo: e1.attachTo, id: e1.id, extension: e1, disabled: false },
+        { attachTo: e2.attachTo, id: e2.id, extension: e2, disabled: false },
+        { attachTo: e3.attachTo, id: e3.id, extension: e3, disabled: false },
+      ]);
+
+      expect(tree.nodes.get('test-3')?.edges.attachedTo?.node).toBe(
+        tree.nodes.get('test-2'),
+      );
+    });
   });
 });

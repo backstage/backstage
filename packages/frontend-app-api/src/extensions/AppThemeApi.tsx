@@ -36,7 +36,9 @@ import { AppThemeSelector } from '@backstage/core-app-api';
 export const AppThemeApi = ApiBlueprint.makeWithOverrides({
   name: 'app-theme',
   inputs: {
-    themes: createExtensionInput([ThemeBlueprint.dataRefs.theme]),
+    themes: createExtensionInput([ThemeBlueprint.dataRefs.theme], {
+      replaces: [{ id: 'app', input: 'themes' }],
+    }),
   },
   factory: (originalFactory, { inputs }) => {
     return originalFactory({
