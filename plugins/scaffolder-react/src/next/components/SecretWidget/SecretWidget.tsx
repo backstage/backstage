@@ -33,7 +33,7 @@ export const SecretWidget = (
   const {
     name,
     onChange,
-    schema: { title },
+    schema: { title, minLength, maxLength },
     required,
     disabled,
   } = props;
@@ -52,6 +52,10 @@ export const SecretWidget = (
       autoComplete="off"
       required={required}
       disabled={disabled}
+      inputProps={{
+        minLength,
+        maxLength,
+      }}
     />
   );
 };
