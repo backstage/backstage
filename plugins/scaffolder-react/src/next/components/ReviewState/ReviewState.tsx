@@ -41,11 +41,13 @@ function processSchema(
     data: formState,
   });
 
+  const name = definitionInSchema?.['ui:backstage']?.review?.name ?? key;
+
   if (definitionInSchema) {
     const backstageReviewOptions = definitionInSchema['ui:backstage']?.review;
     if (backstageReviewOptions) {
       if (backstageReviewOptions.mask) {
-        return [[key, backstageReviewOptions.mask]];
+        return [[name, backstageReviewOptions.mask]];
       }
       if (backstageReviewOptions.show === false) {
         return [];
@@ -56,13 +58,13 @@ function processSchema(
       definitionInSchema['ui:widget'] === 'password' ||
       definitionInSchema['ui:field']?.toLocaleLowerCase('en-us') === 'secret'
     ) {
-      return [[key, '******']];
+      return [[name, '******']];
     }
 
     if (definitionInSchema.enum && definitionInSchema.enumNames) {
       return [
         [
-          key,
+          name,
           definitionInSchema.enumNames[
             definitionInSchema.enum.indexOf(value)
           ] || value,
@@ -78,7 +80,7 @@ function processSchema(
     }
   }
 
-  return [[key, value]];
+  return [[name, value]];
 }
 
 /**
