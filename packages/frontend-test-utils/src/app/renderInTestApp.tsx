@@ -29,8 +29,8 @@ import {
   useRouteRef,
   createExtensionInput,
   IconComponent,
-  createNavItemExtension,
   RouterBlueprint,
+  NavItemBlueprint,
 } from '@backstage/frontend-plugin-api';
 
 /**
@@ -86,7 +86,7 @@ export const TestAppNavExtension = createExtension({
   name: 'nav',
   attachTo: { id: 'app/layout', input: 'nav' },
   inputs: {
-    items: createExtensionInput([createNavItemExtension.targetDataRef]),
+    items: createExtensionInput([NavItemBlueprint.dataRefs.target]),
   },
   output: [coreExtensionData.reactElement],
   factory({ inputs }) {
@@ -96,7 +96,7 @@ export const TestAppNavExtension = createExtension({
           <ul>
             {inputs.items.map((item, index) => {
               const { icon, title, routeRef } = item.get(
-                createNavItemExtension.targetDataRef,
+                NavItemBlueprint.dataRefs.target,
               );
 
               return (

@@ -17,7 +17,6 @@
 import {
   createLegacyAuthAdapters,
   HostDiscovery,
-  PluginDatabaseManager,
 } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
@@ -94,6 +93,7 @@ import {
   PermissionsService,
   UrlReaderService,
   SchedulerService,
+  DatabaseService,
 } from '@backstage/backend-plugin-api';
 import {
   IdentityApi,
@@ -170,13 +170,14 @@ function isTaskPermissionRuleInput(
  * RouterOptions
  *
  * @public
+ * @deprecated Please migrate to the new backend system as this will be removed in the future.
  */
 export interface RouterOptions {
   logger: Logger;
   config: Config;
   reader: UrlReaderService;
   lifecycle?: LifecycleService;
-  database: PluginDatabaseManager;
+  database: DatabaseService;
   catalogClient: CatalogApi;
   scheduler?: SchedulerService;
   actions?: TemplateAction<any, any>[];
@@ -286,6 +287,7 @@ const readDuration = (
 /**
  * A method to create a router for the scaffolder backend plugin.
  * @public
+ * @deprecated Please migrate to the new backend system as this will be removed in the future.
  */
 export async function createRouter(
   options: RouterOptions,

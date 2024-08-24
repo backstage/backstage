@@ -74,7 +74,7 @@ describe('collectLegacyRoutes', () => {
           },
           {
             id: 'api:plugin.scoringdata.service',
-            attachTo: { id: 'app', input: 'apis' },
+            attachTo: { id: 'root', input: 'apis' },
             disabled: false,
           },
         ],
@@ -90,7 +90,7 @@ describe('collectLegacyRoutes', () => {
           },
           {
             id: 'api:plugin.stackstorm.service',
-            attachTo: { id: 'app', input: 'apis' },
+            attachTo: { id: 'root', input: 'apis' },
             disabled: false,
           },
         ],
@@ -112,7 +112,7 @@ describe('collectLegacyRoutes', () => {
           },
           {
             id: 'api:plugin.puppetdb.service',
-            attachTo: { id: 'app', input: 'apis' },
+            attachTo: { id: 'root', input: 'apis' },
             disabled: false,
           },
         ],
@@ -211,7 +211,7 @@ describe('collectLegacyRoutes', () => {
           {
             id: 'api:plugin.catalog.service',
             attachTo: {
-              id: 'app',
+              id: 'root',
               input: 'apis',
             },
             defaultConfig: undefined,
@@ -220,7 +220,7 @@ describe('collectLegacyRoutes', () => {
           {
             id: 'api:catalog-react.starred-entities',
             attachTo: {
-              id: 'app',
+              id: 'root',
               input: 'apis',
             },
             defaultConfig: undefined,
@@ -229,7 +229,7 @@ describe('collectLegacyRoutes', () => {
           {
             id: 'api:plugin.catalog.entity-presentation',
             attachTo: {
-              id: 'app',
+              id: 'root',
               input: 'apis',
             },
             defaultConfig: undefined,
@@ -242,7 +242,7 @@ describe('collectLegacyRoutes', () => {
         extensions: [
           {
             id: 'api:plugin.scoringdata.service',
-            attachTo: { id: 'app', input: 'apis' },
+            attachTo: { id: 'root', input: 'apis' },
             disabled: false,
           },
         ],

@@ -19,7 +19,10 @@ import {
   coreExtensionData,
   createExtensionBlueprint,
 } from '@backstage/frontend-plugin-api';
-import { catalogExtensionData } from '../extensions';
+import {
+  entityFilterFunctionDataRef,
+  entityFilterExpressionDataRef,
+} from './extensionData';
 
 /**
  * @alpha
@@ -30,12 +33,12 @@ export const EntityCardBlueprint = createExtensionBlueprint({
   attachTo: { id: 'entity-content:catalog/overview', input: 'cards' },
   output: [
     coreExtensionData.reactElement,
-    catalogExtensionData.entityFilterFunction.optional(),
-    catalogExtensionData.entityFilterExpression.optional(),
+    entityFilterFunctionDataRef.optional(),
+    entityFilterExpressionDataRef.optional(),
   ],
   dataRefs: {
-    filterFunction: catalogExtensionData.entityFilterFunction,
-    filterExpression: catalogExtensionData.entityFilterExpression,
+    filterFunction: entityFilterFunctionDataRef,
+    filterExpression: entityFilterExpressionDataRef,
   },
   config: {
     schema: {
@@ -49,19 +52,19 @@ export const EntityCardBlueprint = createExtensionBlueprint({
     }: {
       loader: () => Promise<JSX.Element>;
       filter?:
-        | typeof catalogExtensionData.entityFilterFunction.T
-        | typeof catalogExtensionData.entityFilterExpression.T;
+        | typeof entityFilterFunctionDataRef.T
+        | typeof entityFilterExpressionDataRef.T;
     },
     { node, config },
   ) {
     yield coreExtensionData.reactElement(ExtensionBoundary.lazy(node, loader));
 
     if (config.filter) {
-      yield catalogExtensionData.entityFilterExpression(config.filter);
+      yield entityFilterExpressionDataRef(config.filter);
     } else if (typeof filter === 'string') {
-      yield catalogExtensionData.entityFilterExpression(filter);
+      yield entityFilterExpressionDataRef(filter);
     } else if (typeof filter === 'function') {
-      yield catalogExtensionData.entityFilterFunction(filter);
+      yield entityFilterFunctionDataRef(filter);
     }
   },
 });

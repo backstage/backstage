@@ -255,39 +255,51 @@ describe('createApp', () => {
     const { tree } = appTreeApi!.getTree();
 
     expect(String(tree.root)).toMatchInlineSnapshot(`
-      "<app out=[core.reactElement]>
-        root [
-          <app/root out=[core.reactElement]>
-            children [
-              <app/layout out=[core.reactElement]>
-                content [
-                  <app/routes out=[core.reactElement]>
-                    routes [
-                      <page:my-plugin out=[core.routing.path, core.reactElement] />
+      "<root>
+        app [
+          <app out=[core.reactElement]>
+            root [
+              <app/root out=[core.reactElement]>
+                children [
+                  <app/layout out=[core.reactElement]>
+                    content [
+                      <app/routes out=[core.reactElement]>
+                        routes [
+                          <page:my-plugin out=[core.routing.path, core.reactElement] />
+                        ]
+                      </app/routes>
                     ]
-                  </app/routes>
+                    nav [
+                      <app/nav out=[core.reactElement] />
+                    ]
+                  </app/layout>
                 ]
-                nav [
-                  <app/nav out=[core.reactElement] />
+                elements [
+                  <app-root-element:app/oauth-request-dialog out=[core.reactElement] />
+                  <app-root-element:app/alert-display out=[core.reactElement] />
                 ]
-              </app/layout>
+              </app/root>
             ]
-            elements [
-              <app-root-element:app/oauth-request-dialog out=[core.reactElement] />
-              <app-root-element:app/alert-display out=[core.reactElement] />
-            ]
-          </app/root>
-        ]
-        components [
-          <component:core.components.progress out=[core.component.component] />
-          <component:core.components.errorBoundaryFallback out=[core.component.component] />
-          <component:core.components.notFoundErrorPage out=[core.component.component] />
-        ]
-        themes [
-          <theme:app/light out=[core.theme.theme] />
-          <theme:app/dark out=[core.theme.theme] />
+          </app>
         ]
         apis [
+          <api:app-theme out=[core.api.factory]>
+            themes [
+              <theme:app/light out=[core.theme.theme] />
+              <theme:app/dark out=[core.theme.theme] />
+            ]
+          </api:app-theme>
+          <api:app-language out=[core.api.factory] />
+          <api:icons out=[core.api.factory] />
+          <api:translations out=[core.api.factory] />
+          <api:components out=[core.api.factory]>
+            components [
+              <component:core.components.progress out=[core.component.component] />
+              <component:core.components.errorBoundaryFallback out=[core.component.component] />
+              <component:core.components.notFoundErrorPage out=[core.component.component] />
+            ]
+          </api:components>
+          <api:feature-flags out=[core.api.factory] />
           <api:core.discovery out=[core.api.factory] />
           <api:core.alert out=[core.api.factory] />
           <api:core.analytics out=[core.api.factory] />
@@ -307,7 +319,7 @@ describe('createApp', () => {
           <api:core.auth.vmware-cloud out=[core.api.factory] />
           <api:plugin.permission.api out=[core.api.factory] />
         ]
-      </app>"
+      </root>"
     `);
   });
 

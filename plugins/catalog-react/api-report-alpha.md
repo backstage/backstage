@@ -5,7 +5,6 @@
 ```ts
 /// <reference types="react" />
 
-import { AnyExtensionInputMap } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
@@ -13,30 +12,9 @@ import { Entity } from '@backstage/catalog-model';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
-import { PortableSchema } from '@backstage/frontend-plugin-api';
-import { ResolvedExtensionInputs } from '@backstage/frontend-plugin-api';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
-
-// @alpha @deprecated (undocumented)
-export const catalogExtensionData: {
-  entityContentTitle: ConfigurableExtensionDataRef<
-    string,
-    'catalog.entity-content-title',
-    {}
-  >;
-  entityFilterFunction: ConfigurableExtensionDataRef<
-    (entity: Entity) => boolean,
-    'catalog.entity-filter-function',
-    {}
-  >;
-  entityFilterExpression: ConfigurableExtensionDataRef<
-    string,
-    'catalog.entity-filter-expression',
-    {}
-  >;
-};
 
 // @alpha (undocumented)
 export const catalogReactTranslationRef: TranslationRef<
@@ -119,82 +97,6 @@ export function convertLegacyEntityContentExtension(
     defaultTitle?: string;
   },
 ): ExtensionDefinition<any>;
-
-// @alpha @deprecated (undocumented)
-export function createEntityCardExtension<
-  TConfig extends {
-    filter?: string;
-  },
-  TInputs extends AnyExtensionInputMap,
->(options: {
-  namespace?: string;
-  name?: string;
-  attachTo?: {
-    id: string;
-    input: string;
-  };
-  disabled?: boolean;
-  inputs?: TInputs;
-  configSchema?: PortableSchema<TConfig>;
-  filter?:
-    | typeof catalogExtensionData.entityFilterFunction.T
-    | typeof catalogExtensionData.entityFilterExpression.T;
-  loader: (options: {
-    config: TConfig;
-    inputs: Expand<ResolvedExtensionInputs<TInputs>>;
-  }) => Promise<JSX.Element>;
-}): ExtensionDefinition<
-  TConfig,
-  TConfig,
-  never,
-  never,
-  {
-    kind?: string | undefined;
-    namespace?: string | undefined;
-    name?: string | undefined;
-  }
->;
-
-// @alpha @deprecated (undocumented)
-export function createEntityContentExtension<
-  TInputs extends AnyExtensionInputMap,
->(options: {
-  namespace?: string;
-  name?: string;
-  attachTo?: {
-    id: string;
-    input: string;
-  };
-  disabled?: boolean;
-  inputs?: TInputs;
-  routeRef?: RouteRef;
-  defaultPath: string;
-  defaultTitle: string;
-  filter?:
-    | typeof catalogExtensionData.entityFilterFunction.T
-    | typeof catalogExtensionData.entityFilterExpression.T;
-  loader: (options: {
-    inputs: Expand<ResolvedExtensionInputs<TInputs>>;
-  }) => Promise<JSX.Element>;
-}): ExtensionDefinition<
-  {
-    title: string;
-    path: string;
-    filter?: string | undefined;
-  },
-  {
-    filter?: string | undefined;
-    title?: string | undefined;
-    path?: string | undefined;
-  },
-  never,
-  never,
-  {
-    kind?: string | undefined;
-    namespace?: string | undefined;
-    name?: string | undefined;
-  }
->;
 
 // @alpha
 export const EntityCardBlueprint: ExtensionBlueprint<

@@ -22,7 +22,7 @@ import { ConfigReader } from '@backstage/core-app-api';
 import {
   MockAnalyticsApi,
   TestApiProvider,
-  renderWithEffects,
+  renderInTestApp,
 } from '@backstage/test-utils';
 import { searchApiRef } from '../../api';
 import { SearchContextProvider } from '../../context';
@@ -61,7 +61,7 @@ describe('SearchBar', () => {
   });
 
   it('Renders without exploding', async () => {
-    await renderWithEffects(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [configApiRef, configApiMock],
@@ -82,7 +82,7 @@ describe('SearchBar', () => {
   it('Renders with custom label', async () => {
     const label = 'label';
 
-    await renderWithEffects(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [configApiRef, configApiMock],
@@ -103,7 +103,7 @@ describe('SearchBar', () => {
   it('Renders with custom placeholder', async () => {
     const placeholder = 'placeholder';
 
-    await renderWithEffects(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [configApiRef, configApiMock],
@@ -124,7 +124,7 @@ describe('SearchBar', () => {
   it('Renders based on initial search', async () => {
     const term = 'term';
 
-    await renderWithEffects(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [configApiRef, configApiMock],
@@ -145,7 +145,7 @@ describe('SearchBar', () => {
   it('Updates term state when text is entered', async () => {
     jest.useFakeTimers();
 
-    await renderWithEffects(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [configApiRef, configApiMock],
@@ -181,7 +181,7 @@ describe('SearchBar', () => {
   it('Clear button clears term state', async () => {
     const term = 'term';
 
-    await renderWithEffects(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [configApiRef, configApiMock],
@@ -210,7 +210,7 @@ describe('SearchBar', () => {
   it('Should not show clear button', async () => {
     const term = 'term';
 
-    await renderWithEffects(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [configApiRef, configApiMock],
@@ -233,7 +233,7 @@ describe('SearchBar', () => {
 
     const debounceTime = 100;
 
-    await renderWithEffects(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [configApiRef, configApiMock],
@@ -275,7 +275,7 @@ describe('SearchBar', () => {
   it('Does not capture analytics event if not enabled in app', async () => {
     const analyticsApiMock = new MockAnalyticsApi();
 
-    await renderWithEffects(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [configApiRef, configApiMock],
@@ -297,5 +297,38 @@ describe('SearchBar', () => {
     await waitFor(() => expect(textbox).toHaveValue(value));
 
     expect(analyticsApiMock.getEvents()).toHaveLength(0);
+  });
+
+  it('Renders custom search icon', async () => {
+    const CustomSearchIcon = () => (
+      <svg>
+        <path id="custom-search-icon" />
+      </svg>
+    );
+
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [configApiRef, configApiMock],
+          [searchApiRef, searchApiMock],
+        ]}
+      >
+        <SearchContextProvider>
+          <SearchBar />
+        </SearchContextProvider>
+      </TestApiProvider>,
+      {
+        icons: {
+          search: CustomSearchIcon,
+        },
+      },
+    );
+
+    const queryButton = screen.getByLabelText('Query');
+
+    expect(queryButton).toBeInTheDocument();
+    expect(queryButton.innerHTML).toContain(
+      '<svg><path id="custom-search-icon"></path></svg>',
+    );
   });
 });

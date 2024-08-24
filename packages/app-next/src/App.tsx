@@ -86,7 +86,10 @@ TODO:
 const convertedTechdocsPlugin = convertLegacyPlugin(techdocsPlugin, {
   extensions: [
     // TODO: We likely also need a way to convert an entire <Route> tree similar to collectLegacyRoutes
-    convertLegacyPageExtension(TechDocsIndexPage),
+    convertLegacyPageExtension(TechDocsIndexPage, {
+      name: 'index',
+      defaultPath: '/docs',
+    }),
     convertLegacyPageExtension(TechDocsReaderPage, {
       defaultPath: '/docs/:namespace/:kind/:name/*',
     }),

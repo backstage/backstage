@@ -38,7 +38,7 @@ describe('ApiBlueprint', () => {
       {
         "$$type": "@backstage/ExtensionDefinition",
         "attachTo": {
-          "id": "app",
+          "id": "root",
           "input": "apis",
         },
         "configSchema": undefined,
@@ -87,7 +87,7 @@ describe('ApiBlueprint', () => {
       {
         "$$type": "@backstage/ExtensionDefinition",
         "attachTo": {
-          "id": "app",
+          "id": "root",
           "input": "apis",
         },
         "configSchema": {

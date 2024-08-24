@@ -18,13 +18,16 @@ import {
   AuthService,
   coreServices,
   createBackendPlugin,
-  HttpRouterService,
+  LoggerService,
+  RootConfigService,
   ServiceRef,
+  UserInfoService,
 } from '@backstage/backend-plugin-api';
 import { RequestHandler } from 'express';
 import { cacheToPluginCacheManager } from '../cache';
 import { loggerToWinstonLogger } from '../logging';
-import { TokenManager } from '../../deprecated';
+import { ServerTokenManager, TokenManager } from '../../deprecated';
+import { Request } from 'express';
 
 /**
  * @public
@@ -46,8 +49,13 @@ type TransformedEnv<
 // new plugin tokens, which we'll also be signaling by supporting the JWKS endpoint through
 // the http router.
 // This makes sure that we accept the new plugin tokens as valid tokens, but otherwise fall
-// back to whatever the token manager is doing.
-function wrapTokenManager(tokenManager: TokenManager, auth: AuthService) {
+// back to the legacy token manager.
+function createTokenManagerShim(
+  auth: AuthService,
+  config: RootConfigService,
+  logger: LoggerService,
+): TokenManager {
+  const tokenManager = ServerTokenManager.fromConfig(config, { logger });
   return {
     async getToken() {
       return tokenManager.getToken();
@@ -64,7 +72,64 @@ function wrapTokenManager(tokenManager: TokenManager, auth: AuthService) {
       }
       await tokenManager.authenticate(token);
     },
-  } satisfies TokenManager;
+  };
+}
+
+/**
+ * Originally IdentityApi from `@backstage/plugin-auth-node`, re-declared here for backwards compatibility
+ * @public
+ * @deprecated Only relevant for legacy plugins, which are deprecated.
+ */
+export interface LegacyIdentityService {
+  getIdentity(options: { request: Request<unknown> }): Promise<
+    | {
+        expiresInSeconds?: number;
+
+        token: string;
+        identity: {
+          type: 'user';
+          userEntityRef: string;
+          ownershipEntityRefs: string[];
+        };
+      }
+    | undefined
+  >;
+}
+
+// This doesn't use DefaultIdentityClient because we will be removing it and break support for ownershipEntityRefs
+function createIdentityServiceShim(
+  auth: AuthService,
+  userInfo: UserInfoService,
+): LegacyIdentityService {
+  return {
+    async getIdentity(options) {
+      const authHeader = options.request.headers.authorization;
+      if (typeof authHeader !== 'string') {
+        return undefined;
+      }
+
+      const token = authHeader.match(/^Bearer[ ]+(\S+)$/i)?.[1];
+      if (!token) {
+        return undefined;
+      }
+
+      const credentials = await auth.authenticate(token);
+      if (!auth.isPrincipal(credentials, 'user')) {
+        return undefined;
+      }
+
+      const info = await userInfo.getUserInfo(credentials);
+
+      return {
+        token,
+        identity: {
+          type: 'user',
+          userEntityRef: info.userEntityRef,
+          ownershipEntityRefs: info.ownershipEntityRefs,
+        },
+      };
+    },
+  };
 }
 
 /**
@@ -87,19 +152,34 @@ export function makeLegacyPlugin<
   return (
     name: string,
     createRouterImport: Promise<{
-      default: LegacyCreateRouter<TransformedEnv<TEnv, TEnvTransforms>>;
+      default: LegacyCreateRouter<
+        TransformedEnv<TEnv, TEnvTransforms> & {
+          tokenManager: TokenManager;
+          identity: LegacyIdentityService;
+        }
+      >;
     }>,
   ) => {
-    const compatPlugin = createBackendPlugin({
+    return createBackendPlugin({
       pluginId: name,
       register(env) {
         env.registerInit({
           deps: {
             ...envMapping,
-            _router: coreServices.httpRouter,
-            _auth: coreServices.auth,
+            $$router: coreServices.httpRouter,
+            $$auth: coreServices.auth,
+            $$userInfo: coreServices.userInfo,
+            $$config: coreServices.rootConfig,
+            $$logger: coreServices.logger,
           },
-          async init({ _router, _auth, ...envDeps }) {
+          async init({
+            $$auth,
+            $$config,
+            $$logger,
+            $$router,
+            $$userInfo,
+            ...envDeps
+          }) {
             const { default: createRouter } = await createRouterImport;
             const pluginEnv = Object.fromEntries(
               Object.entries(envDeps).map(([key, dep]) => {
@@ -107,25 +187,35 @@ export function makeLegacyPlugin<
                 if (transform) {
                   return [key, transform(dep)];
                 }
-                if (key === 'tokenManager') {
-                  return [
-                    key,
-                    wrapTokenManager(dep as TokenManager, _auth as AuthService),
-                  ];
-                }
                 return [key, dep];
               }),
             );
-            const router = await createRouter(
-              pluginEnv as TransformedEnv<TEnv, TEnvTransforms>,
+
+            const auth = $$auth as typeof coreServices.auth.T;
+            const config = $$config as typeof coreServices.rootConfig.T;
+            const logger = $$logger as typeof coreServices.logger.T;
+            const router = $$router as typeof coreServices.httpRouter.T;
+            const userInfo = $$userInfo as typeof coreServices.userInfo.T;
+
+            // Token manager and identity services are no longer supported in the new backend system, so we provide shims for them.
+            pluginEnv.tokenManager = createTokenManagerShim(
+              auth,
+              config,
+              logger,
             );
-            (_router as HttpRouterService).use(router);
+            pluginEnv.identity = createIdentityServiceShim(auth, userInfo);
+
+            const pluginRouter = await createRouter(
+              pluginEnv as TransformedEnv<TEnv, TEnvTransforms> & {
+                tokenManager: TokenManager;
+                identity: LegacyIdentityService;
+              },
+            );
+            router.use(pluginRouter);
           },
         });
       },
     });
-
-    return compatPlugin();
   };
 }
 
@@ -155,9 +245,7 @@ export const legacyPlugin = makeLegacyPlugin(
     logger: coreServices.logger,
     permissions: coreServices.permissions,
     scheduler: coreServices.scheduler,
-    tokenManager: coreServices.tokenManager,
     reader: coreServices.urlReader,
-    identity: coreServices.identity,
   },
   {
     logger: log => loggerToWinstonLogger(log),

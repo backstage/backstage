@@ -80,8 +80,8 @@ describe('credentials', () => {
       features: [
         import('../alpha'),
         mockServices.rootConfig.factory({ data: config }),
-        authServiceFactory(),
-        httpAuthServiceFactory(),
+        authServiceFactory,
+        httpAuthServiceFactory,
       ],
     });
 
@@ -295,5 +295,5 @@ describe('credentials', () => {
     } finally {
       await backend.stop();
     }
-  });
+  }, 20_000);
 });

@@ -39,14 +39,14 @@ class MockLogger {
 }
 
 const baseFactories = [
-  lifecycleServiceFactory(),
-  rootLifecycleServiceFactory(),
+  lifecycleServiceFactory,
+  rootLifecycleServiceFactory,
   createServiceFactory({
     service: coreServices.rootLogger,
     deps: {},
     factory: () => new MockLogger(),
-  })(),
-  loggerServiceFactory(),
+  }),
+  loggerServiceFactory,
 ];
 
 const testPlugin = createBackendPlugin({
@@ -57,7 +57,7 @@ const testPlugin = createBackendPlugin({
       async init() {},
     });
   },
-})();
+});
 
 describe('BackendInitializer', () => {
   it('should initialize root scoped services', async () => {
@@ -84,18 +84,18 @@ describe('BackendInitializer', () => {
         initialization: 'always',
         deps: {},
         factory: factory1,
-      })(),
+      }),
       createServiceFactory({
         service: ref2,
         deps: {},
         factory: factory2,
-      })(),
+      }),
       createServiceFactory({
         service: ref3,
         initialization: 'lazy',
         deps: {},
         factory: factory3,
-      })(),
+      }),
     ];
 
     const init = new BackendInitializer(services);
@@ -249,18 +249,18 @@ describe('BackendInitializer', () => {
         initialization: 'always',
         deps: {},
         factory: factory1,
-      })(),
+      }),
       createServiceFactory({
         service: ref2,
         deps: {},
         factory: factory2,
-      })(),
+      }),
       createServiceFactory({
         service: ref3,
         initialization: 'lazy',
         deps: {},
         factory: factory3,
-      })(),
+      }),
     ];
 
     const init = new BackendInitializer(services);
@@ -505,12 +505,12 @@ describe('BackendInitializer', () => {
     const extA = createExtensionPoint<string>({ id: 'a' });
     const extB = createExtensionPoint<string>({ id: 'b' });
     const init = new BackendInitializer([
-      rootLifecycleServiceFactory(),
+      rootLifecycleServiceFactory,
       createServiceFactory({
         service: coreServices.rootLogger,
         deps: {},
         factory: () => new MockLogger(),
-      })(),
+      }),
     ]);
     init.add(testPlugin);
     init.add(
@@ -575,5 +575,60 @@ describe('BackendInitializer', () => {
     await expect(init.start()).rejects.toThrow(
       "Illegal dependency: Module 'mod' for plugin 'test' attempted to depend on extension point 'a' for plugin 'test-a'. Extension points can only be used within their plugin's scope.",
     );
+  });
+
+  it('should properly load double-default CJS modules', async () => {
+    expect.assertions(3);
+
+    const init = new BackendInitializer(baseFactories);
+    init.add(
+      createBackendFeatureLoader({
+        loader() {
+          return [
+            createBackendPlugin({
+              pluginId: 'no-double-wrapping',
+              register(reg) {
+                reg.registerInit({
+                  deps: {},
+                  async init() {
+                    expect(true).toBeTruthy();
+                  },
+                });
+              },
+            }),
+            {
+              default: createBackendPlugin({
+                pluginId: 'single-wrapping',
+                register(reg) {
+                  reg.registerInit({
+                    deps: {},
+                    async init() {
+                      expect(true).toBeTruthy();
+                    },
+                  });
+                },
+              }),
+            },
+            {
+              default: {
+                default: createBackendPlugin({
+                  pluginId: 'double-wrapping',
+                  register(reg) {
+                    reg.registerInit({
+                      deps: {},
+                      async init() {
+                        expect(true).toBeTruthy();
+                      },
+                    });
+                  },
+                }),
+              },
+            } as any, // not typescript valid, but can happen at runtime
+          ];
+        },
+      }),
+    );
+
+    await init.start();
   });
 });

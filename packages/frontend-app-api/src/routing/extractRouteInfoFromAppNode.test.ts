@@ -28,9 +28,13 @@ import {
   createFrontendPlugin,
   createRouteRef,
 } from '@backstage/frontend-plugin-api';
-import { MockConfigApi } from '@backstage/test-utils';
-import { createAppTree } from '../tree';
+import { MockConfigApi, TestApiRegistry } from '@backstage/test-utils';
+
 import { builtinExtensions } from '../wiring/createApp';
+import { readAppExtensionsConfig } from '../tree/readAppExtensionsConfig';
+import { resolveAppNodeSpecs } from '../tree/resolveAppNodeSpecs';
+import { resolveAppTree } from '../tree/resolveAppTree';
+import { instantiateAppNodeTree } from '../tree/instantiateAppNodeTree';
 
 const ref1 = createRouteRef();
 const ref2 = createRouteRef();
@@ -77,11 +81,18 @@ function routeInfoFromExtensions(extensions: ExtensionDefinition<any, any>[]) {
     id: 'test',
     extensions,
   });
-  const tree = createAppTree({
-    config: new MockConfigApi({}),
-    builtinExtensions,
-    features: [plugin],
-  });
+
+  const tree = resolveAppTree(
+    'app',
+    resolveAppNodeSpecs({
+      features: [plugin],
+      builtinExtensions,
+      parameters: readAppExtensionsConfig(new MockConfigApi({})),
+      forbidden: new Set(['app']),
+    }),
+  );
+
+  instantiateAppNodeTree(tree.root, TestApiRegistry.from());
 
   return extractRouteInfoFromAppNode(tree.root);
 }

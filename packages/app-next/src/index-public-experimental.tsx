@@ -29,12 +29,8 @@ const authRedirectExtension = createExtension({
   namespace: 'app',
   name: 'layout',
   attachTo: { id: 'app/root', input: 'children' },
-  output: {
-    element: coreExtensionData.reactElement,
-  },
-  factory: () => ({
-    element: <CookieAuthRedirect />,
-  }),
+  output: [coreExtensionData.reactElement],
+  factory: () => [coreExtensionData.reactElement(<CookieAuthRedirect />)],
 });
 
 const app = createApp({

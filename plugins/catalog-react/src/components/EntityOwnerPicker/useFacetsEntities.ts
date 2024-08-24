@@ -52,7 +52,7 @@ export function useFacetsEntities({ enabled }: { enabled: boolean }) {
     const facetsResponse = await catalogApi.getEntityFacets({
       facets: [facet],
     });
-    const entityRefs = facetsResponse.facets[facet].map(e => e.value);
+    const entityRefs = facetsResponse.facets[facet]?.map(e => e.value) ?? [];
 
     return catalogApi
       .getEntitiesByRefs({ entityRefs })

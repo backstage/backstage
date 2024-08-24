@@ -5,7 +5,7 @@
 ```ts
 /// <reference types="node" />
 
-import { BackendFeatureCompat } from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { JWTHeaderParameters } from 'jose';
 import { KeyObject } from 'crypto';
 import type { PassportProfile } from '@backstage/plugin-auth-node/';
@@ -13,7 +13,7 @@ import { ProxyAuthenticator } from '@backstage/plugin-auth-node';
 import { SignInResolverFactory } from '@backstage/plugin-auth-node';
 
 // @public (undocumented)
-const authModuleAwsAlbProvider: BackendFeatureCompat;
+const authModuleAwsAlbProvider: BackendFeature;
 export { authModuleAwsAlbProvider };
 export default authModuleAwsAlbProvider;
 

@@ -16,6 +16,7 @@
 
 import { BackendFeature, ServiceFactory } from '@backstage/backend-plugin-api';
 import { BackendInitializer } from './BackendInitializer';
+import { unwrapFeature } from './helpers';
 import { Backend } from './types';
 
 export class BackstageBackend implements Backend {
@@ -49,22 +50,4 @@ function isPromise<T>(value: unknown | Promise<T>): value is Promise<T> {
     'then' in value &&
     typeof value.then === 'function'
   );
-}
-
-function unwrapFeature(
-  feature: BackendFeature | { default: BackendFeature },
-): BackendFeature {
-  if ('$$type' in feature) {
-    return feature;
-  }
-
-  // This is a workaround where default exports get transpiled to `exports['default'] = ...`
-  // in CommonJS modules, which in turn results in a double `{ default: { default: ... } }` nesting
-  // when importing using a dynamic import.
-  // TODO: This is a broader issue than just this piece of code, and should move away from CommonJS.
-  if ('default' in feature) {
-    return feature.default;
-  }
-
-  return feature;
 }

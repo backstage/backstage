@@ -18,28 +18,14 @@ import React from 'react';
 import {
   ExtensionBoundary,
   coreExtensionData,
-  createComponentExtension,
   createExtension,
   createExtensionInput,
-  IconBundleBlueprint,
-  ThemeBlueprint,
-  ApiBlueprint,
-  TranslationBlueprint,
 } from '@backstage/frontend-plugin-api';
 
 export const App = createExtension({
   namespace: 'app',
-  attachTo: { id: 'root', input: 'default' }, // ignored
+  attachTo: { id: 'root', input: 'app' },
   inputs: {
-    apis: createExtensionInput([ApiBlueprint.dataRefs.factory]),
-    themes: createExtensionInput([ThemeBlueprint.dataRefs.theme]),
-    components: createExtensionInput([
-      createComponentExtension.componentDataRef,
-    ]),
-    translations: createExtensionInput([
-      TranslationBlueprint.dataRefs.translation,
-    ]),
-    icons: createExtensionInput([IconBundleBlueprint.dataRefs.icons]),
     root: createExtensionInput([coreExtensionData.reactElement], {
       singleton: true,
     }),

@@ -20,7 +20,11 @@ import {
   ExtensionBoundary,
   RouteRef,
 } from '@backstage/frontend-plugin-api';
-import { catalogExtensionData } from '../extensions';
+import {
+  entityContentTitleDataRef,
+  entityFilterFunctionDataRef,
+  entityFilterExpressionDataRef,
+} from './extensionData';
 
 /**
  * @alpha
@@ -32,15 +36,15 @@ export const EntityContentBlueprint = createExtensionBlueprint({
   output: [
     coreExtensionData.reactElement,
     coreExtensionData.routePath,
-    catalogExtensionData.entityContentTitle,
+    entityContentTitleDataRef,
     coreExtensionData.routeRef.optional(),
-    catalogExtensionData.entityFilterFunction.optional(),
-    catalogExtensionData.entityFilterExpression.optional(),
+    entityFilterFunctionDataRef.optional(),
+    entityFilterExpressionDataRef.optional(),
   ],
   dataRefs: {
-    title: catalogExtensionData.entityContentTitle,
-    filterFunction: catalogExtensionData.entityFilterFunction,
-    filterExpression: catalogExtensionData.entityFilterExpression,
+    title: entityContentTitleDataRef,
+    filterFunction: entityFilterFunctionDataRef,
+    filterExpression: entityFilterExpressionDataRef,
   },
   config: {
     schema: {
@@ -62,8 +66,8 @@ export const EntityContentBlueprint = createExtensionBlueprint({
       defaultTitle: string;
       routeRef?: RouteRef;
       filter?:
-        | typeof catalogExtensionData.entityFilterFunction.T
-        | typeof catalogExtensionData.entityFilterExpression.T;
+        | typeof entityFilterFunctionDataRef.T
+        | typeof entityFilterExpressionDataRef.T;
     },
     { node, config },
   ) {
@@ -74,18 +78,18 @@ export const EntityContentBlueprint = createExtensionBlueprint({
 
     yield coreExtensionData.routePath(path);
 
-    yield catalogExtensionData.entityContentTitle(title);
+    yield entityContentTitleDataRef(title);
 
     if (routeRef) {
       yield coreExtensionData.routeRef(routeRef);
     }
 
     if (config.filter) {
-      yield catalogExtensionData.entityFilterExpression(config.filter);
+      yield entityFilterExpressionDataRef(config.filter);
     } else if (typeof filter === 'string') {
-      yield catalogExtensionData.entityFilterExpression(filter);
+      yield entityFilterExpressionDataRef(filter);
     } else if (typeof filter === 'function') {
-      yield catalogExtensionData.entityFilterFunction(filter);
+      yield entityFilterFunctionDataRef(filter);
     }
   },
 });

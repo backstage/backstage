@@ -4,10 +4,7 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { IdentityService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
-import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
-import { TokenManagerService } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
 export interface Backend {
@@ -35,26 +32,4 @@ export interface CreateSpecializedBackendOptions {
   // (undocumented)
   defaultServiceFactories: ServiceFactory[];
 }
-
-// @public @deprecated
-export type IdentityFactoryOptions = {
-  issuer?: string;
-  algorithms?: string[];
-};
-
-// @public @deprecated (undocumented)
-export const identityServiceFactory: ServiceFactoryCompat<
-  IdentityService,
-  'plugin',
-  'singleton',
-  IdentityFactoryOptions
->;
-
-// @public @deprecated (undocumented)
-export const tokenManagerServiceFactory: ServiceFactoryCompat<
-  TokenManagerService,
-  'plugin',
-  'singleton',
-  undefined
->;
 ```

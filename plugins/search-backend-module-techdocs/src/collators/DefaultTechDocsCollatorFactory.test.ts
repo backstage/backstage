@@ -13,10 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  PluginEndpointDiscovery,
-  TokenManager,
-} from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { TestPipeline } from '@backstage/plugin-search-backend-node';
@@ -30,6 +26,7 @@ import { Readable } from 'stream';
 import { DefaultTechDocsCollatorFactory } from './DefaultTechDocsCollatorFactory';
 import { defaultTechDocsCollatorEntityTransformer } from './defaultTechDocsCollatorEntityTransformer';
 import { TechDocsCollatorEntityTransformer } from './TechDocsCollatorEntityTransformer';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 
 const logger = mockServices.logger.mock();
 
@@ -82,18 +79,13 @@ const expectedEntities: Entity[] = [
 
 describe('DefaultTechDocsCollatorFactory', () => {
   const config = new ConfigReader({});
-  const mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery> = {
+  const mockDiscoveryApi: jest.Mocked<DiscoveryService> = {
     getBaseUrl: jest.fn().mockResolvedValue('http://test-backend'),
     getExternalBaseUrl: jest.fn(),
-  };
-  const mockTokenManager: jest.Mocked<TokenManager> = {
-    getToken: jest.fn().mockResolvedValue({ token: '' }),
-    authenticate: jest.fn(),
   };
   const options = {
     logger,
     discovery: mockDiscoveryApi,
-    tokenManager: mockTokenManager,
   };
 
   it('has expected type', () => {
@@ -187,7 +179,6 @@ describe('DefaultTechDocsCollatorFactory', () => {
       });
       factory = DefaultTechDocsCollatorFactory.fromConfig(_config, {
         discovery: mockDiscoveryApi,
-        tokenManager: mockTokenManager,
         logger,
       });
       collator = await factory.getCollator();
