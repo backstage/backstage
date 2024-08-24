@@ -181,7 +181,6 @@ The scaffolder plugin also exposes permissions that can restrict access to tasks
 ```ts title="packages/src/backend/plugins/permissions.ts"
 /* highlight-add-start */
 import {
-  adminTaskReadPermission,
   taskCancelPermission,
   taskCreatePermission,
   taskReadPermission,
@@ -208,8 +207,17 @@ class ExamplePermissionPolicy implements PermissionPolicy {
     user?: PolicyQueryUser,
   ): Promise<PolicyDecision> {
     /* highlight-add-start */
-    // Grant admin read access to all tasks (overrides owner-scoped access if granted)
-    if (isPermission(request.permission, adminTaskReadPermission)) {
+    if (isPermission(request.permission, taskReadPermission)) {
+      // Allow spiderman to read only his own tasks
+      if (user?.info.userEntityRef === 'user:default/spiderman') {
+        return createScaffolderTaskConditionalDecision(
+          request.permission,
+          scaffolderTaskConditions.isTaskOwner({
+            createdBy: user?.info.userEntityRef ?? '',
+          }),
+        );
+      }
+      // Allow admin1 to read any task
       if (user?.info.userEntityRef === 'user:default/admin1') {
         return {
           result: AuthorizeResult.ALLOW,
