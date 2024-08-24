@@ -13,17 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import {
-  ReadUrlResponse,
-  UrlReader,
-  UrlReaders,
-} from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { Readable } from 'stream';
 import { NewlineDelimitedJsonCollatorFactory } from './NewlineDelimitedJsonCollatorFactory';
 import { TestPipeline } from '../test-utils';
 import { mockServices } from '@backstage/backend-test-utils';
+import {
+  UrlReaderService,
+  UrlReaderServiceReadUrlResponse,
+} from '@backstage/backend-plugin-api';
+import { UrlReaders } from '@backstage/backend-defaults/urlReader';
 
 describe('DefaultCatalogCollatorFactory', () => {
   const config = new ConfigReader({});
@@ -42,7 +41,9 @@ describe('DefaultCatalogCollatorFactory', () => {
   describe('getCollator', () => {
     let readable: Readable;
     let reader: jest.Mocked<
-      UrlReader & { readUrl: jest.Mock<Promise<ReadUrlResponse>> }
+      UrlReaderService & {
+        readUrl: jest.Mock<Promise<UrlReaderServiceReadUrlResponse>>;
+      }
     >;
     let factory: NewlineDelimitedJsonCollatorFactory;
 

@@ -29,7 +29,7 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
 import { createPublishBitbucketServerPullRequestAction } from './bitbucketServerPullRequest';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
@@ -221,7 +221,7 @@ describe('publish:bitbucketServer:pull-request', () => {
   ];
 
   const server = setupServer();
-  setupRequestMockHandlers(server);
+  registerMswTestHooks(server);
 
   beforeEach(() => {
     jest.resetAllMocks();

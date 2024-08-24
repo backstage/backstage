@@ -15,13 +15,13 @@
  */
 
 import {
-  PluginTaskScheduler,
-  TaskInvocationDefinition,
-  TaskRunner,
-} from '@backstage/backend-tasks';
+  SchedulerService,
+  SchedulerServiceTaskRunner,
+  SchedulerServiceTaskInvocationDefinition,
+} from '@backstage/backend-plugin-api';
 import {
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
@@ -33,17 +33,17 @@ import { GroupNameTransformerOptions } from '../lib/types';
 import { GitlabOrgDiscoveryEntityProvider } from './GitlabOrgDiscoveryEntityProvider';
 
 const server = setupServer(...handlers);
-setupRequestMockHandlers(server);
+registerMswTestHooks(server);
 afterEach(() => jest.clearAllMocks());
 
-class PersistingTaskRunner implements TaskRunner {
-  private tasks: TaskInvocationDefinition[] = [];
+class PersistingTaskRunner implements SchedulerServiceTaskRunner {
+  private tasks: SchedulerServiceTaskInvocationDefinition[] = [];
 
   getTasks() {
     return this.tasks;
   }
 
-  run(task: TaskInvocationDefinition): Promise<void> {
+  run(task: SchedulerServiceTaskInvocationDefinition): Promise<void> {
     this.tasks.push(task);
     return Promise.resolve(undefined);
   }
@@ -113,7 +113,7 @@ describe('GitlabOrgDiscoveryEntityProvider - configuration', () => {
   it('should fail with scheduler but no schedule config', () => {
     const scheduler = {
       createScheduledTaskRunner: (_: any) => jest.fn(),
-    } as unknown as PluginTaskScheduler;
+    } as unknown as SchedulerService;
     const config = new ConfigReader(mock.config_org_integration_saas);
 
     expect(() =>
@@ -130,7 +130,7 @@ describe('GitlabOrgDiscoveryEntityProvider - configuration', () => {
     const schedule = new PersistingTaskRunner();
     const scheduler = {
       createScheduledTaskRunner: (_: any) => schedule,
-    } as unknown as PluginTaskScheduler;
+    } as unknown as SchedulerService;
     const config = new ConfigReader(mock.config_org_integration_saas_sched);
     const providers = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
       logger,

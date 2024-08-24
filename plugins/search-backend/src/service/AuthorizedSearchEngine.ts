@@ -39,7 +39,7 @@ import {
 import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
 import { Writable } from 'stream';
-import { PermissionsService } from '@backstage/backend-plugin-api';
+import { AuthService, PermissionsService } from '@backstage/backend-plugin-api';
 
 export function decodePageCursor(pageCursor?: string): { page: number } {
   if (!pageCursor) {
@@ -71,6 +71,7 @@ export class AuthorizedSearchEngine implements SearchEngine {
     private readonly searchEngine: SearchEngine,
     private readonly types: Record<string, DocumentTypeInfo>,
     private readonly permissions: PermissionsService,
+    private readonly auth: AuthService,
     config: Config,
   ) {
     this.queryLatencyBudgetMs =
@@ -92,9 +93,14 @@ export class AuthorizedSearchEngine implements SearchEngine {
   ): Promise<IndexableResultSet> {
     const queryStartTime = Date.now();
 
+    const compatOptions =
+      'credentials' in options
+        ? options
+        : { credentials: await this.auth.getNoneCredentials() };
+
     const conditionFetcher = new DataLoader(
       (requests: readonly QueryPermissionRequest[]) =>
-        this.permissions.authorizeConditional(requests.slice(), options),
+        this.permissions.authorizeConditional(requests.slice(), compatOptions),
       {
         cacheKeyFn: ({ permission: { name } }) => name,
       },
@@ -102,7 +108,7 @@ export class AuthorizedSearchEngine implements SearchEngine {
 
     const authorizer = new DataLoader(
       (requests: readonly AuthorizePermissionRequest[]) =>
-        this.permissions.authorize(requests.slice(), options),
+        this.permissions.authorize(requests.slice(), compatOptions),
       {
         // Serialize the permission name and resourceRef as
         // a query string to avoid collisions from overlapping
@@ -159,7 +165,7 @@ export class AuthorizedSearchEngine implements SearchEngine {
     if (!resultByResultFilteringRequired) {
       return this.searchEngine.query(
         { ...query, types: authorizedTypes },
-        options,
+        compatOptions,
       );
     }
 
@@ -174,7 +180,7 @@ export class AuthorizedSearchEngine implements SearchEngine {
     do {
       const nextPage = await this.searchEngine.query(
         { ...query, types: authorizedTypes, pageCursor: nextPageCursor },
-        options,
+        compatOptions,
       );
 
       filteredResults = filteredResults.concat(

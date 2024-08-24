@@ -45,11 +45,10 @@ export interface RootConfigFactoryOptions {
   watch?: boolean;
 }
 
-/**
- * @public
- */
-export const rootConfigServiceFactory = createServiceFactory(
-  (options?: RootConfigFactoryOptions) => ({
+export const rootConfigServiceFactoryWithOptions = (
+  options?: RootConfigFactoryOptions,
+) =>
+  createServiceFactory({
     service: coreServices.rootConfig,
     deps: {},
     async factory() {
@@ -61,5 +60,12 @@ export const rootConfigServiceFactory = createServiceFactory(
       console.log(`Loading config from ${source}`);
       return await ConfigSources.toConfig(source);
     },
-  }),
+  });
+
+/**
+ * @public
+ */
+export const rootConfigServiceFactory = Object.assign(
+  rootConfigServiceFactoryWithOptions,
+  rootConfigServiceFactoryWithOptions(),
 );

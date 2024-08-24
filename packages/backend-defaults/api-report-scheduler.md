@@ -18,9 +18,10 @@ export class DefaultSchedulerService {
 }
 
 // @public
-export const schedulerServiceFactory: () => ServiceFactory<
+export const schedulerServiceFactory: ServiceFactory<
   SchedulerService,
-  'plugin'
+  'plugin',
+  'singleton'
 >;
 
 // (No @packageDocumentation comment for this package)

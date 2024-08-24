@@ -35,7 +35,7 @@ describe('httpRouterFactory', () => {
       dependencies: [rootHttpRouter.factory],
     });
 
-    const router1 = await tester.get('test1');
+    const router1 = await tester.getSubject('test1');
     router1.use(() => {});
     expect(rootHttpRouter.use).toHaveBeenCalledTimes(1);
     expect(rootHttpRouter.use).toHaveBeenCalledWith(
@@ -43,37 +43,11 @@ describe('httpRouterFactory', () => {
       expect.any(Function),
     );
 
-    const router2 = await tester.get('test2');
+    const router2 = await tester.getSubject('test2');
     router2.use(() => {});
     expect(rootHttpRouter.use).toHaveBeenCalledTimes(2);
     expect(rootHttpRouter.use).toHaveBeenCalledWith(
       '/api/test2',
-      expect.any(Function),
-    );
-  });
-
-  it('should use custom path generator', async () => {
-    const rootHttpRouter = mockServices.rootHttpRouter.mock();
-    const tester = ServiceFactoryTester.from(
-      httpRouterServiceFactory({
-        getPath: id => `/some/${id}/path`,
-      }),
-      { dependencies: [rootHttpRouter.factory] },
-    );
-
-    const router1 = await tester.get('test1');
-    router1.use(() => {});
-    expect(rootHttpRouter.use).toHaveBeenCalledTimes(1);
-    expect(rootHttpRouter.use).toHaveBeenCalledWith(
-      '/some/test1/path',
-      expect.any(Function),
-    );
-
-    const router2 = await tester.get('test2');
-    router2.use(() => {});
-    expect(rootHttpRouter.use).toHaveBeenCalledTimes(2);
-    expect(rootHttpRouter.use).toHaveBeenCalledWith(
-      '/some/test2/path',
       expect.any(Function),
     );
   });
@@ -136,7 +110,7 @@ describe('httpRouterFactory', () => {
     });
 
     const defaultServices = [
-      httpRouterServiceFactory(),
+      httpRouterServiceFactory,
       mockServices.httpAuth.factory({
         defaultCredentials: mockCredentials.none(),
       }),

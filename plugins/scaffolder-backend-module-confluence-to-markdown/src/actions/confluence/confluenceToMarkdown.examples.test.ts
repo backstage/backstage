@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 import { createConfluenceToMarkdownAction } from './confluenceToMarkdown';
-import { UrlReader, loggerToWinstonLogger } from '@backstage/backend-common';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import {
   createMockDirectory,
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -28,11 +28,12 @@ import { examples } from './confluenceToMarkdown.examples';
 import yaml from 'yaml';
 import { ActionContext } from '@backstage/plugin-scaffolder-node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 describe('confluence:transform:markdown examples', () => {
   const baseUrl = `https://confluence.example.com`;
   const worker = setupServer();
-  setupRequestMockHandlers(worker);
+  registerMswTestHooks(worker);
 
   const config = new ConfigReader({
     confluence: {
@@ -51,7 +52,7 @@ describe('confluence:transform:markdown examples', () => {
     }),
   );
 
-  let reader: UrlReader;
+  let reader: UrlReaderService;
   let mockContext: ActionContext<{
     confluenceUrls: string[];
     repoUrl: string;

@@ -63,13 +63,14 @@ export interface EventsService {
 export type EventsServiceEventHandler = (params: EventParams) => Promise<void>;
 
 // @public (undocumented)
-export const eventsServiceFactory: () => ServiceFactory<
+export const eventsServiceFactory: ServiceFactory<
   EventsService,
-  'plugin'
+  'plugin',
+  'singleton'
 >;
 
 // @public
-export const eventsServiceRef: ServiceRef<EventsService, 'plugin'>;
+export const eventsServiceRef: ServiceRef<EventsService, 'plugin', 'singleton'>;
 
 // @public (undocumented)
 export type EventsServiceSubscribeOptions = {

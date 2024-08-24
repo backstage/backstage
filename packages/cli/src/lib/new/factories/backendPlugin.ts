@@ -64,6 +64,7 @@ export const backendPlugin = createFactory<Options>({
         pluginVersion: ctx.defaultVersion,
         privatePackage: ctx.private,
         npmRegistry: ctx.npmRegistry,
+        license: ctx.license,
       },
     });
 

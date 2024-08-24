@@ -7,9 +7,10 @@ import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { UserInfoService } from '@backstage/backend-plugin-api';
 
 // @public
-export const userInfoServiceFactory: () => ServiceFactory<
+export const userInfoServiceFactory: ServiceFactory<
   UserInfoService,
-  'plugin'
+  'plugin',
+  'singleton'
 >;
 
 // (No @packageDocumentation comment for this package)

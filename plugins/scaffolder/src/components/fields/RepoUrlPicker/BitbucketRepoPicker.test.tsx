@@ -16,9 +16,9 @@
 
 import React from 'react';
 import { BitbucketRepoPicker } from './BitbucketRepoPicker';
-import { render, fireEvent, waitFor } from '@testing-library/react';
+import { fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { TestApiProvider } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import {
   ScaffolderApi,
   scaffolderApiRef,
@@ -27,14 +27,16 @@ import { act } from 'react-dom/test-utils';
 
 describe('BitbucketRepoPicker', () => {
   const scaffolderApiMock: Partial<ScaffolderApi> = {
-    autocomplete: jest.fn().mockImplementation(opts => ({
-      results: [{ title: `${opts.resource}_example` }],
-    })),
+    autocomplete: jest.fn().mockImplementation(opts =>
+      Promise.resolve({
+        results: [{ title: `${opts.resource}_example` }],
+      }),
+    ),
   };
 
   it('renders a select if there is a list of allowed owners', async () => {
     const allowedOwners = ['owner1', 'owner2'];
-    const { findByText } = render(
+    const { findByText } = await renderInTestApp(
       <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
         <BitbucketRepoPicker
           onChange={jest.fn()}
@@ -49,10 +51,10 @@ describe('BitbucketRepoPicker', () => {
     expect(await findByText('owner2')).toBeInTheDocument();
   });
 
-  it('renders workspace input when host is bitbucket.org', () => {
+  it('renders workspace input when host is bitbucket.org', async () => {
     const state = { host: 'bitbucket.org', workspace: 'lolsWorkspace' };
 
-    const { getAllByRole } = render(
+    const { getAllByRole } = await renderInTestApp(
       <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
         <BitbucketRepoPicker
           onChange={jest.fn()}
@@ -66,12 +68,12 @@ describe('BitbucketRepoPicker', () => {
     expect(getAllByRole('textbox')[0]).toHaveValue('lolsWorkspace');
   });
 
-  it('hides the workspace input when the host is not bitbucket.org', () => {
+  it('hides the workspace input when the host is not bitbucket.org', async () => {
     const state = {
       host: 'mycustom.domain.bitbucket.org',
     };
 
-    const { getAllByRole } = render(
+    const { getAllByRole } = await renderInTestApp(
       <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
         <BitbucketRepoPicker
           onChange={jest.fn()}
@@ -85,9 +87,9 @@ describe('BitbucketRepoPicker', () => {
   });
 
   describe('workspace field', () => {
-    it('calls onChange when the workspace changes', () => {
+    it('calls onChange when the workspace changes', async () => {
       const onChange = jest.fn();
-      const { getAllByRole } = render(
+      const { getAllByRole } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <BitbucketRepoPicker
             onChange={onChange}
@@ -112,9 +114,9 @@ describe('BitbucketRepoPicker', () => {
   });
 
   describe('project field', () => {
-    it('calls onChange when the project changes', () => {
+    it('calls onChange when the project changes', async () => {
       const onChange = jest.fn();
-      const { getAllByRole } = render(
+      const { getAllByRole } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <BitbucketRepoPicker
             onChange={onChange}
@@ -136,7 +138,7 @@ describe('BitbucketRepoPicker', () => {
     });
 
     it('Does not render a select if the list of allowed projects does not exist', async () => {
-      const { getAllByRole } = render(
+      const { getAllByRole } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <BitbucketRepoPicker
             onChange={jest.fn()}
@@ -151,7 +153,7 @@ describe('BitbucketRepoPicker', () => {
     });
 
     it('Does not render a select if the list of allowed projects is empty', async () => {
-      const { getAllByRole } = render(
+      const { getAllByRole } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <BitbucketRepoPicker
             onChange={jest.fn()}
@@ -168,7 +170,7 @@ describe('BitbucketRepoPicker', () => {
 
     it('Does render a select if there is a list of allowed projects', async () => {
       const allowedProjects = ['project1', 'project2'];
-      const { findByText } = render(
+      const { findByText } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <BitbucketRepoPicker
             onChange={jest.fn()}
@@ -188,7 +190,7 @@ describe('BitbucketRepoPicker', () => {
     it('should populate workspaces if host is set and accessToken is provided', async () => {
       const onChange = jest.fn();
 
-      const { getAllByRole, getByText } = render(
+      const { getAllByRole, getByText } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <BitbucketRepoPicker
             onChange={onChange}
@@ -218,7 +220,7 @@ describe('BitbucketRepoPicker', () => {
     it('should populate projects if host and workspace are set and accessToken is provided', async () => {
       const onChange = jest.fn();
 
-      const { getAllByRole, getByText } = render(
+      const { getAllByRole, getByText } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <BitbucketRepoPicker
             onChange={onChange}
@@ -246,7 +248,7 @@ describe('BitbucketRepoPicker', () => {
     it('should populate repositories if host, workspace and project are set and accessToken is provided', async () => {
       const onChange = jest.fn();
 
-      render(
+      await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <BitbucketRepoPicker
             onChange={onChange}

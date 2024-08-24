@@ -23,6 +23,8 @@ import { EntityPicker } from '../EntityPicker/EntityPicker';
 
 import { OwnedEntityPickerProps } from './schema';
 import { EntityPickerProps } from '../EntityPicker/schema';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../../translation';
 
 export { OwnedEntityPickerSchema } from './schema';
 
@@ -33,8 +35,12 @@ export { OwnedEntityPickerSchema } from './schema';
  * @public
  */
 export const OwnedEntityPicker = (props: OwnedEntityPickerProps) => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const {
-    schema: { title = 'Entity', description = 'An entity from the catalog' },
+    schema: {
+      title = t('fields.ownedEntityPicker.title'),
+      description = t('fields.ownedEntityPicker.description'),
+    },
     uiSchema,
     required,
   } = props;

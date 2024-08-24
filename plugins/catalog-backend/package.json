@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend",
-  "version": "1.23.2-next.0",
+  "version": "1.25.0",
   "description": "The Backstage backend plugin that provides the Backstage catalog",
   "backstage": {
     "role": "backend-plugin",
@@ -64,7 +64,6 @@
     "@backstage/backend-common": "workspace:^",
     "@backstage/backend-openapi-utils": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
-    "@backstage/backend-tasks": "workspace:^",
     "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
@@ -90,7 +89,7 @@
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",
     "minimatch": "^9.0.0",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "^2.7.0",
     "p-limit": "^3.0.2",
     "prom-client": "^15.0.0",
     "uuid": "^9.0.0",

@@ -5,7 +5,7 @@
 ```ts
 /// <reference types="node" />
 
-import { BackendFeatureCompat } from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { IndexableDocument } from '@backstage/plugin-search-common';
@@ -13,7 +13,7 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 import { Readable } from 'stream';
 
 // @public
-const searchStackOverflowCollatorModule: BackendFeatureCompat;
+const searchStackOverflowCollatorModule: BackendFeature;
 export default searchStackOverflowCollatorModule;
 
 // @public

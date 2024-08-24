@@ -39,6 +39,7 @@ import {
   ContentHeader,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
+import { TECHDOCS_ANNOTATION } from '@backstage/plugin-techdocs-common';
 
 const panels = {
   DocsTable: DocsTable,
@@ -153,7 +154,7 @@ export const TechDocsCustomHome = (props: TechDocsCustomHomeProps) => {
   } = useAsync(async () => {
     const response = await catalogApi.getEntities({
       filter: {
-        'metadata.annotations.backstage.io/techdocs-ref': CATALOG_FILTER_EXISTS,
+        [`metadata.annotations.${TECHDOCS_ANNOTATION}`]: CATALOG_FILTER_EXISTS,
       },
       fields: [
         'apiVersion',
@@ -165,7 +166,7 @@ export const TechDocsCustomHome = (props: TechDocsCustomHomeProps) => {
       ],
     });
     return response.items.filter((entity: Entity) => {
-      return !!entity.metadata.annotations?.['backstage.io/techdocs-ref'];
+      return !!entity.metadata.annotations?.[TECHDOCS_ANNOTATION];
     });
   });
 

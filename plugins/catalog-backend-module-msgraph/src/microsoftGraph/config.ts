@@ -15,9 +15,9 @@
  */
 
 import {
-  readTaskScheduleDefinitionFromConfig,
-  TaskScheduleDefinition,
-} from '@backstage/backend-tasks';
+  SchedulerServiceTaskScheduleDefinition,
+  readSchedulerServiceTaskScheduleDefinitionFromConfig,
+} from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { trimEnd } from 'lodash';
 
@@ -117,6 +117,12 @@ export type MicrosoftGraphProviderConfig = {
   groupSelect?: string[];
 
   /**
+   * Whether to ingest groups that are members of the found/filtered/searched groups.
+   * Default value is `false`.
+   */
+  groupIncludeSubGroups?: boolean;
+
+  /**
    * By default, the Microsoft Graph API only provides the basic feature set
    * for querying. Certain features are limited to advanced query capabilities
    * (see https://docs.microsoft.com/en-us/graph/aad-advanced-queries)
@@ -135,7 +141,7 @@ export type MicrosoftGraphProviderConfig = {
   /**
    * Schedule configuration for refresh tasks.
    */
-  schedule?: TaskScheduleDefinition;
+  schedule?: SchedulerServiceTaskScheduleDefinition;
 };
 
 /**
@@ -292,6 +298,9 @@ export function readProviderConfig(
   const groupFilter = config.getOptionalString('group.filter');
   const groupSearch = config.getOptionalString('group.search');
   const groupSelect = config.getOptionalStringArray('group.select');
+  const groupIncludeSubGroups = config.getOptionalBoolean(
+    'group.includeSubGroups',
+  );
 
   const queryMode = config.getOptionalString('queryMode');
   if (
@@ -329,7 +338,9 @@ export function readProviderConfig(
   }
 
   const schedule = config.has('schedule')
-    ? readTaskScheduleDefinitionFromConfig(config.getConfig('schedule'))
+    ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
+        config.getConfig('schedule'),
+      )
     : undefined;
 
   return {
@@ -347,6 +358,7 @@ export function readProviderConfig(
     groupFilter,
     groupSearch,
     groupSelect,
+    groupIncludeSubGroups,
     queryMode,
     userGroupMemberFilter,
     userGroupMemberSearch,

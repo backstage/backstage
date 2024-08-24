@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { UrlReader, loggerToWinstonLogger } from '@backstage/backend-common';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
+import { TECHDOCS_ANNOTATION } from '@backstage/plugin-techdocs-common';
 import { ConfigReader } from '@backstage/config';
 import { DirectoryPreparer } from './dir';
 import { mockServices } from '@backstage/backend-test-utils';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 function normalizePath(path: string) {
   return path
@@ -45,7 +47,7 @@ const createMockEntity = (annotations: {}) => {
 };
 
 const mockConfig = new ConfigReader({});
-const mockUrlReader: jest.Mocked<UrlReader> = {
+const mockUrlReader: jest.Mocked<UrlReaderService> = {
   readUrl: jest.fn(),
   readTree: jest.fn(),
   search: jest.fn(),
@@ -61,7 +63,7 @@ describe('directory preparer', () => {
     const mockEntity = createMockEntity({
       'backstage.io/managed-by-location':
         'file:/directory/documented-component.yaml',
-      'backstage.io/techdocs-ref': 'dir:./our-documentation',
+      [TECHDOCS_ANNOTATION]: 'dir:./our-documentation',
     });
 
     const { preparedDir } = await directoryPreparer.prepare(mockEntity);
@@ -77,7 +79,7 @@ describe('directory preparer', () => {
     const mockEntity = createMockEntity({
       'backstage.io/managed-by-location':
         'file:/directory/documented-component.yaml',
-      'backstage.io/techdocs-ref': 'dir:/our-documentation/techdocs',
+      [TECHDOCS_ANNOTATION]: 'dir:/our-documentation/techdocs',
     });
 
     await expect(directoryPreparer.prepare(mockEntity)).rejects.toThrow(
@@ -94,7 +96,7 @@ describe('directory preparer', () => {
     const mockEntity = createMockEntity({
       'backstage.io/managed-by-location':
         'does-not-exist:https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
-      'backstage.io/techdocs-ref': 'dir:./docs',
+      [TECHDOCS_ANNOTATION]: 'dir:./docs',
     });
 
     await expect(directoryPreparer.prepare(mockEntity)).rejects.toThrow(

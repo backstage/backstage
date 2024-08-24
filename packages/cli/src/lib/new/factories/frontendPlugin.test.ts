@@ -80,6 +80,7 @@ describe('frontendPlugin factory', () => {
         modified = true;
       },
       createTemporaryDirectory: () => fs.mkdtemp('test'),
+      license: 'Apache-2.0',
     });
 
     expect(modified).toBe(true);
@@ -174,6 +175,7 @@ const router = (
       defaultVersion: '1.0.0',
       markAsModified: () => {},
       createTemporaryDirectory: () => fs.mkdtemp('test'),
+      license: 'Apache-2.0',
     });
 
     await expect(

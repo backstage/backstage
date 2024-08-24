@@ -22,10 +22,7 @@ import {
   errorHandler,
 } from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
-import {
-  BackstageIdentityResponse,
-  IdentityApi,
-} from '@backstage/plugin-auth-node';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,
   EvaluatePermissionRequest,
@@ -40,11 +37,11 @@ import {
   ApplyConditionsRequestEntry,
   ApplyConditionsResponseEntry,
   PermissionPolicy,
+  PolicyQueryUser,
 } from '@backstage/plugin-permission-node';
 import { PermissionIntegrationClient } from './PermissionIntegrationClient';
 import { memoize } from 'lodash';
 import DataLoader from 'dataloader';
-import { Config } from '@backstage/config';
 import {
   AuthService,
   BackstageCredentials,
@@ -53,6 +50,7 @@ import {
   DiscoveryService,
   HttpAuthService,
   LoggerService,
+  RootConfigService,
   UserInfoService,
 } from '@backstage/backend-plugin-api';
 
@@ -99,13 +97,14 @@ const evaluatePermissionRequestBatchSchema: z.ZodSchema<EvaluatePermissionReques
  * {@link createRouter}.
  *
  * @public
+ * @deprecated Please migrate to the new backend system as this will be removed in the future.
  */
 export interface RouterOptions {
   logger: LoggerService;
   discovery: DiscoveryService;
   policy: PermissionPolicy;
   identity?: IdentityApi;
-  config: Config;
+  config: RootConfigService;
   auth?: AuthService;
   httpAuth?: HttpAuthService;
   userInfo?: UserInfoService;
@@ -130,9 +129,9 @@ const handleRequest = async (
     );
   });
 
-  let user: BackstageIdentityResponse | undefined;
+  let user: PolicyQueryUser | undefined;
   if (auth.isPrincipal(credentials, 'user')) {
-    const { ownershipEntityRefs } = await userInfo.getUserInfo(credentials);
+    const info = await userInfo.getUserInfo(credentials);
     const { token } = await auth.getPluginRequestToken({
       onBehalfOf: credentials,
       targetPluginId: 'catalog', // TODO: unknown at this point
@@ -141,9 +140,11 @@ const handleRequest = async (
       identity: {
         type: 'user',
         userEntityRef: credentials.principal.userEntityRef,
-        ownershipEntityRefs,
+        ownershipEntityRefs: info.ownershipEntityRefs,
       },
       token,
+      credentials,
+      info,
     };
   }
 
@@ -190,6 +191,7 @@ const handleRequest = async (
  * Creates a new {@link express#Router} which provides the backend API
  * for the permission system.
  *
+ * @deprecated Please migrate to the new backend system as this will be removed in the future.
  * @public
  */
 export async function createRouter(

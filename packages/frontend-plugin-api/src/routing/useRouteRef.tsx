@@ -30,47 +30,14 @@ import { RouteFunc, routeResolutionApiRef, useApi } from '../apis';
  * See {@link https://backstage.io/docs/plugins/composability#routing-system}
  *
  * @param routeRef - The ref to route that should be converted to URL.
- * @returns A function that will in turn return the concrete URL of the `routeRef`.
- * @public
- */
-export function useRouteRef<
-  TOptional extends boolean,
-  TParams extends AnyRouteRefParams,
->(
-  routeRef: ExternalRouteRef<TParams, TOptional>,
-): TOptional extends true ? RouteFunc<TParams> | undefined : RouteFunc<TParams>;
-
-/**
- * React hook for constructing URLs to routes.
- *
- * @remarks
- *
- * See {@link https://backstage.io/docs/plugins/composability#routing-system}
- *
- * @param routeRef - The ref to route that should be converted to URL.
- * @returns A function that will in turn return the concrete URL of the `routeRef`.
- * @public
- */
-export function useRouteRef<TParams extends AnyRouteRefParams>(
-  routeRef: RouteRef<TParams> | SubRouteRef<TParams>,
-): RouteFunc<TParams>;
-
-/**
- * React hook for constructing URLs to routes.
- *
- * @remarks
- *
- * See {@link https://backstage.io/docs/plugins/composability#routing-system}
- *
- * @param routeRef - The ref to route that should be converted to URL.
- * @returns A function that will in turn return the concrete URL of the `routeRef`.
+ * @returns A function that will in turn return the concrete URL of the `routeRef`, or `undefined` if the route is not available.
  * @public
  */
 export function useRouteRef<TParams extends AnyRouteRefParams>(
   routeRef:
     | RouteRef<TParams>
     | SubRouteRef<TParams>
-    | ExternalRouteRef<TParams, any>,
+    | ExternalRouteRef<TParams>,
 ): RouteFunc<TParams> | undefined {
   const { pathname } = useLocation();
   const routeResolutionApi = useApi(routeResolutionApiRef);
@@ -79,11 +46,6 @@ export function useRouteRef<TParams extends AnyRouteRefParams>(
     () => routeResolutionApi.resolve(routeRef, { sourcePath: pathname }),
     [routeResolutionApi, routeRef, pathname],
   );
-
-  const isOptional = 'optional' in routeRef && routeRef.optional;
-  if (!routeFunc && !isOptional) {
-    throw new Error(`No path for ${routeRef}`);
-  }
 
   return routeFunc;
 }

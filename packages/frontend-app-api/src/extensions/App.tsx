@@ -18,47 +18,24 @@ import React from 'react';
 import {
   ExtensionBoundary,
   coreExtensionData,
-  createApiExtension,
-  createComponentExtension,
   createExtension,
   createExtensionInput,
-  createThemeExtension,
-  createTranslationExtension,
 } from '@backstage/frontend-plugin-api';
 
 export const App = createExtension({
   namespace: 'app',
-  attachTo: { id: 'root', input: 'default' }, // ignored
+  attachTo: { id: 'root', input: 'app' },
   inputs: {
-    apis: createExtensionInput({
-      api: createApiExtension.factoryDataRef,
+    root: createExtensionInput([coreExtensionData.reactElement], {
+      singleton: true,
     }),
-    themes: createExtensionInput({
-      theme: createThemeExtension.themeDataRef,
-    }),
-    components: createExtensionInput({
-      component: createComponentExtension.componentDataRef,
-    }),
-    translations: createExtensionInput({
-      translation: createTranslationExtension.translationDataRef,
-    }),
-    root: createExtensionInput(
-      {
-        element: coreExtensionData.reactElement,
-      },
-      { singleton: true },
+  },
+  output: [coreExtensionData.reactElement],
+  factory: ({ node, inputs }) => [
+    coreExtensionData.reactElement(
+      <ExtensionBoundary node={node}>
+        {inputs.root.get(coreExtensionData.reactElement)}
+      </ExtensionBoundary>,
     ),
-  },
-  output: {
-    root: coreExtensionData.reactElement,
-  },
-  factory({ node, inputs }) {
-    return {
-      root: (
-        <ExtensionBoundary node={node}>
-          {inputs.root.output.element}
-        </ExtensionBoundary>
-      ),
-    };
-  },
+  ],
 });

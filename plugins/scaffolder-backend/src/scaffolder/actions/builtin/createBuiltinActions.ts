@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { UrlReader } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import {
@@ -82,7 +81,7 @@ import {
 } from '@backstage/plugin-scaffolder-backend-module-gitlab';
 
 import { createPublishGiteaAction } from '@backstage/plugin-scaffolder-backend-module-gitea';
-import { AuthService } from '@backstage/backend-plugin-api';
+import { AuthService, UrlReaderService } from '@backstage/backend-plugin-api';
 
 /**
  * The options passed to {@link createBuiltinActions}
@@ -90,9 +89,9 @@ import { AuthService } from '@backstage/backend-plugin-api';
  */
 export interface CreateBuiltInActionsOptions {
   /**
-   * The {@link @backstage/backend-common#UrlReader} interface that will be used in the default actions.
+   * The {@link @backstage/backend-plugin-api#UrlReaderService} interface that will be used in the default actions.
    */
-  reader: UrlReader;
+  reader: UrlReaderService;
   /**
    * The {@link @backstage/integrations#ScmIntegrations} that will be used in the default actions.
    */

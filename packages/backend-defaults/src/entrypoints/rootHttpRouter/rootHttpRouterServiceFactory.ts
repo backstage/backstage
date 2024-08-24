@@ -69,9 +69,10 @@ function defaultConfigure({ applyDefaults }: RootHttpRouterConfigureContext) {
   applyDefaults();
 }
 
-/** @public */
-export const rootHttpRouterServiceFactory = createServiceFactory(
-  (options?: RootHttpRouterFactoryOptions) => ({
+const rootHttpRouterServiceFactoryWithOptions = (
+  options?: RootHttpRouterFactoryOptions,
+) =>
+  createServiceFactory({
     service: coreServices.rootHttpRouter,
     deps: {
       config: coreServices.rootConfig,
@@ -122,5 +123,10 @@ export const rootHttpRouterServiceFactory = createServiceFactory(
 
       return router;
     },
-  }),
+  });
+
+/** @public */
+export const rootHttpRouterServiceFactory = Object.assign(
+  rootHttpRouterServiceFactoryWithOptions,
+  rootHttpRouterServiceFactoryWithOptions(),
 );

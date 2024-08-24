@@ -241,7 +241,7 @@ const config: Config = {
           position: 'left',
         },
         {
-          to: 'docs/releases/v1.28.0',
+          to: 'docs/releases/v1.30.0',
           label: 'Releases',
           position: 'left',
         },

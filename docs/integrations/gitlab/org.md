@@ -25,8 +25,7 @@ This provider can also be configured to ingest GitLab data based on [GitLab Syst
 
 As this provider is not one of the default providers, you will first need to install the Gitlab provider plugin:
 
-```bash
-# From your Backstage root directory
+```bash title="From your Backstage root directory"
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-gitlab @backstage/plugin-catalog-backend-module-gitlab-org
 ```
 
@@ -174,7 +173,7 @@ catalog:
         group: org/teams # Required for gitlab.com when `orgEnabled: true`. Optional for self managed. Must not end with slash. Accepts only groups under the provided path (which will be stripped)
         allowInherited: true # Allow groups to be ingested even if there are no direct members.
         groupPattern: '[\s\S]*' # Optional. Filters found groups based on provided pattern. Defaults to `[\s\S]*`, which means to not filter anything
-        schedule: # Same options as in TaskScheduleDefinition. Optional for the Legacy Backend System.
+        schedule: # Same options as in SchedulerServiceTaskScheduleDefinition. Optional for the Legacy Backend System.
           # supports cron, ISO duration, "human duration" as used in code
           frequency: { minutes: 30 }
           # supports ISO duration, "human duration" as used in code

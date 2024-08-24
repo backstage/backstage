@@ -1,6 +1,8 @@
 {
   "releases": {
     "Release Notes": [
+      "releases/v1.30.0",
+      "releases/v1.29.0",
       "releases/v1.28.0",
       "releases/v1.27.0",
       "releases/v1.26.0",
@@ -120,7 +122,8 @@
           "features/software-templates/writing-custom-step-layouts",
           "features/software-templates/authorizing-scaffolder-template-details",
           "features/software-templates/migrating-to-rjsf-v5",
-          "features/software-templates/migrating-from-v1beta2-to-v1beta3"
+          "features/software-templates/migrating-from-v1beta2-to-v1beta3",
+          "features/software-templates/dry-run-testing"
         ]
       },
       {
@@ -132,6 +135,7 @@
           "features/search/concepts",
           "features/search/architecture",
           "features/search/search-engines",
+          "features/search/collators",
           "features/search/how-to-guides"
         ]
       },
@@ -295,6 +299,7 @@
       "conf/writing",
       "conf/defining"
     ],
+    "Notifications": ["notifications/index"],
     "Auth and identity": [
       "auth/index",
       {
@@ -392,6 +397,7 @@
           "backend-system/architecture/plugins",
           "backend-system/architecture/extension-points",
           "backend-system/architecture/modules",
+          "backend-system/architecture/feature-loaders",
           "backend-system/architecture/naming-patterns"
         ]
       },
@@ -429,6 +435,7 @@
           "backend-system/core-services/permissions",
           "backend-system/core-services/plugin-metadata",
           "backend-system/core-services/root-config",
+          "backend-system/core-services/root-health",
           "backend-system/core-services/root-http-router",
           "backend-system/core-services/root-lifecycle",
           "backend-system/core-services/root-logger",
@@ -447,13 +454,15 @@
         "items": [
           "frontend-system/architecture/index",
           "frontend-system/architecture/app",
-          "frontend-system/architecture/extensions",
           "frontend-system/architecture/plugins",
+          "frontend-system/architecture/extensions",
+          "frontend-system/architecture/extension-blueprints",
           "frontend-system/architecture/extension-overrides",
+          "frontend-system/architecture/references",
           "frontend-system/architecture/utility-apis",
           "frontend-system/architecture/routes",
           "frontend-system/architecture/naming-patterns",
-          "frontend-system/architecture/references"
+          "frontend-system/architecture/migrations"
         ]
       },
       {
@@ -462,7 +471,7 @@
         "items": [
           "frontend-system/building-plugins/index",
           "frontend-system/building-plugins/testing",
-          "frontend-system/building-plugins/extension-types",
+          "frontend-system/building-plugins/common-extension-blueprints",
           "frontend-system/building-plugins/built-in-data-refs",
           "frontend-system/building-plugins/migrating"
         ]
@@ -474,6 +483,7 @@
           "frontend-system/building-apps/index",
           "frontend-system/building-apps/configuring-extensions",
           "frontend-system/building-apps/built-in-extensions",
+          "frontend-system/building-apps/plugin-conversion",
           "frontend-system/building-apps/migrating"
         ]
       },

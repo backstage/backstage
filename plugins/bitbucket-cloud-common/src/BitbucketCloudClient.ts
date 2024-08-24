@@ -95,6 +95,26 @@ export class BitbucketCloudClient {
     );
   }
 
+  listBranchesByRepository(
+    repository: string,
+    workspace: string,
+    options?: FilterAndSortOptions & PartialResponseOptions,
+  ): WithPagination<Models.PaginatedBranches, Models.Branch> {
+    const workspaceEnc = encodeURIComponent(workspace);
+
+    return new WithPagination(
+      paginationOptions =>
+        this.createUrl(
+          `/repositories/${workspaceEnc}/${repository}/refs/branches`,
+          {
+            ...paginationOptions,
+            ...options,
+          },
+        ),
+      url => this.getTypeMapped(url),
+    );
+  }
+
   private createUrl(endpoint: string, options?: RequestOptions): URL {
     const request = new URL(this.config.apiBaseUrl + endpoint);
     for (const key in options) {

@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Backend,
-  createSpecializedBackend,
-  identityServiceFactory,
-  tokenManagerServiceFactory,
-} from '@backstage/backend-app-api';
+import { Backend, createSpecializedBackend } from '@backstage/backend-app-api';
 import { authServiceFactory } from '@backstage/backend-defaults/auth';
 import { cacheServiceFactory } from '@backstage/backend-defaults/cache';
 import { databaseServiceFactory } from '@backstage/backend-defaults/database';
@@ -40,26 +35,24 @@ import { userInfoServiceFactory } from '@backstage/backend-defaults/userInfo';
 import { eventsServiceFactory } from '@backstage/plugin-events-node';
 
 export const defaultServiceFactories = [
-  authServiceFactory(),
-  cacheServiceFactory(),
-  rootConfigServiceFactory(),
-  databaseServiceFactory(),
-  discoveryServiceFactory(),
-  httpAuthServiceFactory(),
-  httpRouterServiceFactory(),
-  identityServiceFactory(),
-  lifecycleServiceFactory(),
-  loggerServiceFactory(),
-  permissionsServiceFactory(),
-  rootHealthServiceFactory(),
-  rootHttpRouterServiceFactory(),
-  rootLifecycleServiceFactory(),
-  rootLoggerServiceFactory(),
-  schedulerServiceFactory(),
-  tokenManagerServiceFactory(),
-  userInfoServiceFactory(),
-  urlReaderServiceFactory(),
-  eventsServiceFactory(),
+  authServiceFactory,
+  cacheServiceFactory,
+  rootConfigServiceFactory,
+  databaseServiceFactory,
+  discoveryServiceFactory,
+  httpAuthServiceFactory,
+  httpRouterServiceFactory,
+  lifecycleServiceFactory,
+  loggerServiceFactory,
+  permissionsServiceFactory,
+  rootHealthServiceFactory,
+  rootHttpRouterServiceFactory,
+  rootLifecycleServiceFactory,
+  rootLoggerServiceFactory,
+  schedulerServiceFactory,
+  userInfoServiceFactory,
+  urlReaderServiceFactory,
+  eventsServiceFactory,
 ];
 
 /**

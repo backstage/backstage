@@ -95,6 +95,33 @@ describe('DatabaseTaskStore', () => {
     expect(tasks[0].id).toBeDefined();
   });
 
+  it('should list filtered created tasks by status', async () => {
+    const { store } = await createStore();
+
+    const { taskId } = await store.createTask({
+      spec: {} as TaskSpec,
+      createdBy: 'me',
+    });
+
+    await store.createTask({
+      spec: {} as TaskSpec,
+      createdBy: 'him',
+    });
+
+    const message = `This task was marked as stale as it exceeded its timeout`;
+    await store.completeTask({
+      taskId,
+      status: 'cancelled',
+      eventBody: { message },
+    });
+
+    const { tasks } = await store.list({ status: 'open' });
+    expect(tasks.length).toBe(1);
+    expect(tasks[0].createdBy).toBe('him');
+    expect(tasks[0].status).toBe('open');
+    expect(tasks[0].id).toBeDefined();
+  });
+
   it('should sent an event to start cancelling the task', async () => {
     const { store } = await createStore();
 

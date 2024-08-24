@@ -13,16 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import { Select, SelectItem } from '@backstage/core-components';
-import { RepoUrlPickerState } from './types';
+import { BaseRepoUrlPickerProps } from './types';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
 import useDebounce from 'react-use/esm/useDebounce';
 import { useApi } from '@backstage/core-plugin-api';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../../translation';
 
 /**
  * The underlying component that is rendered in the form for the `BitbucketRepoPicker`
@@ -33,14 +35,13 @@ import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
  * @param allowedProjects - Allowed projects for the Bitbucket cloud repository
  *
  */
-export const BitbucketRepoPicker = (props: {
-  allowedOwners?: string[];
-  allowedProjects?: string[];
-  onChange: (state: RepoUrlPickerState) => void;
-  state: RepoUrlPickerState;
-  rawErrors: string[];
-  accessToken?: string;
-}) => {
+export const BitbucketRepoPicker = (
+  props: BaseRepoUrlPickerProps<{
+    allowedOwners?: string[];
+    allowedProjects?: string[];
+    accessToken?: string;
+  }>,
+) => {
   const {
     allowedOwners = [],
     allowedProjects = [],
@@ -49,6 +50,8 @@ export const BitbucketRepoPicker = (props: {
     state,
     accessToken,
   } = props;
+  const { t } = useTranslationRef(scaffolderTranslationRef);
+
   const { host, workspace, project } = state;
   const ownerItems: SelectItem[] = allowedOwners
     ? allowedOwners?.map(i => ({ label: i, value: i }))
@@ -69,93 +72,90 @@ export const BitbucketRepoPicker = (props: {
   const [availableProjects, setAvailableProjects] = useState<string[]>([]);
 
   // Update available workspaces when client is available
-  useDebounce(
-    () => {
-      const updateAvailableWorkspaces = async () => {
-        if (
-          host === 'bitbucket.org' &&
-          accessToken &&
-          scaffolderApi.autocomplete
-        ) {
-          const { results } = await scaffolderApi.autocomplete({
-            token: accessToken,
-            resource: 'workspaces',
-            context: {},
-            provider: 'bitbucket-cloud',
-          });
+  const updateAvailableWorkspaces = useCallback(() => {
+    if (
+      !scaffolderApi.autocomplete ||
+      !accessToken ||
+      host !== 'bitbucket.org'
+    ) {
+      setAvailableWorkspaces([]);
+      return;
+    }
 
-          setAvailableWorkspaces(results.map(r => r.title));
-        } else {
-          setAvailableWorkspaces([]);
-        }
-      };
+    scaffolderApi
+      .autocomplete({
+        token: accessToken,
+        resource: 'workspaces',
+        provider: 'bitbucket-cloud',
+      })
+      .then(({ results }) => {
+        setAvailableWorkspaces(results.map(r => r.title));
+      })
+      .catch(() => {
+        setAvailableWorkspaces([]);
+      });
+  }, [scaffolderApi, accessToken, host]);
 
-      updateAvailableWorkspaces().catch(() => setAvailableWorkspaces([]));
-    },
-    500,
-    [host, accessToken],
-  );
+  useDebounce(updateAvailableWorkspaces, 500, [updateAvailableWorkspaces]);
 
   // Update available projects when client is available and workspace changes
-  useDebounce(
-    () => {
-      const updateAvailableProjects = async () => {
-        if (
-          host === 'bitbucket.org' &&
-          accessToken &&
-          workspace &&
-          scaffolderApi.autocomplete
-        ) {
-          const { results } = await scaffolderApi.autocomplete({
-            token: accessToken,
-            resource: 'projects',
-            context: { workspace },
-            provider: 'bitbucket-cloud',
-          });
+  const updateAvailableProjects = useCallback(() => {
+    if (
+      !scaffolderApi.autocomplete ||
+      !accessToken ||
+      host !== 'bitbucket.org' ||
+      !workspace
+    ) {
+      setAvailableProjects([]);
+      return;
+    }
 
-          setAvailableProjects(results.map(r => r.title));
-        } else {
-          setAvailableProjects([]);
-        }
-      };
+    scaffolderApi
+      .autocomplete({
+        token: accessToken,
+        resource: 'projects',
+        context: { workspace },
+        provider: 'bitbucket-cloud',
+      })
+      .then(({ results }) => {
+        setAvailableProjects(results.map(r => r.title));
+      })
+      .catch(() => {
+        setAvailableProjects([]);
+      });
+  }, [scaffolderApi, accessToken, host, workspace]);
 
-      updateAvailableProjects().catch(() => setAvailableProjects([]));
-    },
-    500,
-    [host, accessToken, workspace],
-  );
+  useDebounce(updateAvailableProjects, 500, [updateAvailableProjects]);
 
   // Update available repositories when client is available and workspace or project changes
-  useDebounce(
-    () => {
-      const updateAvailableRepositories = async () => {
-        if (
-          host === 'bitbucket.org' &&
-          accessToken &&
-          workspace &&
-          project &&
-          scaffolderApi.autocomplete
-        ) {
-          const { results } = await scaffolderApi.autocomplete({
-            token: accessToken,
-            resource: 'repositories',
-            context: { workspace, project },
-            provider: 'bitbucket-cloud',
-          });
+  const updateAvailableRepositories = useCallback(() => {
+    if (
+      !scaffolderApi.autocomplete ||
+      !accessToken ||
+      host !== 'bitbucket.org' ||
+      !workspace ||
+      !project
+    ) {
+      onChange({ availableRepos: [] });
+      return;
+    }
 
-          onChange({ availableRepos: results.map(r => r.title) });
-        } else {
-          onChange({ availableRepos: [] });
-        }
-      };
+    scaffolderApi
+      .autocomplete({
+        token: accessToken,
+        resource: 'repositories',
+        context: { workspace, project },
+        provider: 'bitbucket-cloud',
+      })
+      .then(({ results }) => {
+        onChange({ availableRepos: results.map(r => r.title) });
+      })
+      .catch(() => {
+        onChange({ availableRepos: [] });
+      });
+  }, [scaffolderApi, accessToken, host, workspace, project, onChange]);
 
-      updateAvailableRepositories().catch(() =>
-        onChange({ availableRepos: [] }),
-      );
-    },
-    500,
-    [host, accessToken, workspace, project],
-  );
+  useDebounce(updateAvailableRepositories, 500, [updateAvailableRepositories]);
 
   return (
     <>
@@ -168,7 +168,7 @@ export const BitbucketRepoPicker = (props: {
           {allowedOwners?.length ? (
             <Select
               native
-              label="Allowed Workspaces"
+              label={t('fields.bitbucketRepoPicker.workspaces.title')}
               onChange={s =>
                 onChange({ workspace: String(Array.isArray(s) ? s[0] : s) })
               }
@@ -184,14 +184,18 @@ export const BitbucketRepoPicker = (props: {
               }}
               options={availableWorkspaces}
               renderInput={params => (
-                <TextField {...params} label="Workspace" required />
+                <TextField
+                  {...params}
+                  label={t('fields.bitbucketRepoPicker.workspaces.inputTitle')}
+                  required
+                />
               )}
               freeSolo
               autoSelect
             />
           )}
           <FormHelperText>
-            The Workspace that this repo will belong to
+            {t('fields.bitbucketRepoPicker.workspaces.description')}
           </FormHelperText>
         </FormControl>
       )}
@@ -203,7 +207,7 @@ export const BitbucketRepoPicker = (props: {
         {allowedProjects?.length ? (
           <Select
             native
-            label="Allowed Projects"
+            label={t('fields.bitbucketRepoPicker.project.title')}
             onChange={s =>
               onChange({ project: String(Array.isArray(s) ? s[0] : s) })
             }
@@ -219,14 +223,18 @@ export const BitbucketRepoPicker = (props: {
             }}
             options={availableProjects}
             renderInput={params => (
-              <TextField {...params} label="Project" required />
+              <TextField
+                {...params}
+                label={t('fields.bitbucketRepoPicker.project.inputTitle')}
+                required
+              />
             )}
             freeSolo
             autoSelect
           />
         )}
         <FormHelperText>
-          The Project that this repo will belong to
+          {t('fields.bitbucketRepoPicker.project.description')}
         </FormHelperText>
       </FormControl>
     </>

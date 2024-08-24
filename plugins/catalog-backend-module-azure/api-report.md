@@ -10,9 +10,9 @@ import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { SchedulerService } from '@backstage/backend-plugin-api';
+import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { TaskRunner } from '@backstage/backend-tasks';
 
 // @public
 export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
@@ -46,8 +46,8 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
     configRoot: Config,
     options: {
       logger: LoggerService;
-      schedule?: TaskRunner;
-      scheduler?: PluginTaskScheduler;
+      schedule?: SchedulerServiceTaskRunner;
+      scheduler?: SchedulerService;
     },
   ): AzureDevOpsEntityProvider[];
   // (undocumented)

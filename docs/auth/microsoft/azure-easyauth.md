@@ -7,87 +7,6 @@ description: Adding Azure's EasyAuth Proxy as an authentication provider in Back
 
 The Backstage `core-plugin-api` package comes with a Microsoft authentication provider that can authenticate users using Microsoft Entra ID (formerly Azure Active Directory) for PaaS service hosted in Azure that support Easy Auth, such as Azure App Services.
 
-## Backend Changes
-
-Add the following into your `app-config.yaml` under the root `auth` configuration:
-
-```yaml title="app-config.yaml"
-auth:
-  providers:
-    azureEasyAuth:
-      signIn:
-        resolvers:
-          - resolver: idMatchingUserEntityAnnotation
-          - resolver: emailMatchingUserEntityProfileEmail
-          - resolver: emailLocalPartMatchingUserEntityName
-```
-
-The `idMatchingUserEntityAnnotation` is
-[a builtin sign-in resolver](../identity-resolver.md#using-builtin-resolvers) from `azureEasyAuth` provider.
-It tries to find a user entity with [a `graph.microsoft.com/user-id` annotation](../../features/software-catalog/well-known-annotations.md#graphmicrosoftcomtenant-id-graphmicrosoftcomgroup-id-graphmicrosoftcomuser-id)
-which matches the object ID of the user attempting to sign in.
-If you want to provide your own sign-in resolver,
-see [Building Custom Resolvers](../identity-resolver.md#building-custom-resolvers).
-
-Add the `@backstage/plugin-auth-backend-module-azure-easyauth-provider` to your backend installation.
-
-```sh
-# From your Backstage root directory
-yarn --cwd packages/backend add @backstage/plugin-auth-backend-module-azure-easyauth-provider
-```
-
-Then, add it to your backend's source,
-
-```ts title="packages/backend/src/index.ts"
-const backend = createBackend();
-
-backend.add(import('@backstage/plugin-auth-backend'));
-// highlight-add-next-line
-backend.add(
-  import('@backstage/plugin-auth-backend-module-azure-easyauth-provider'),
-);
-
-await backend.start();
-```
-
-Now the backend is ready to serve auth requests on the
-`/api/auth/azureEasyAuth/refresh` endpoint. All that's left is to update the frontend
-sign-in mechanism to poll that endpoint through the Easy Auth proxy, on the user's behalf.
-
-## Frontend Changes
-
-To use this component, you'll need to configure the app's `SignInPage`.
-It is recommended to use the `ProxiedSignInPage` for this provider when running in Azure, However for local development (or any other scenario running outside of Azure), you'll want to set up something different.
-For the closest experience to Easy Auth, you could set up the `microsoft` provider locally, but that will requires setting up App Registrations & secrets which may be locked down by your organisation, in which case it may be easier to use guest login locally.
-See [Sign-In with Proxy Providers](../index.md#sign-in-with-proxy-providers) for more details.
-
-```tsx title="packages/app/src/App.tsx"
-/* highlight-add-next-line */
-import { ProxiedSignInPage } from '@backstage/core-components';
-
-const app = createApp({
-  /* highlight-add-start */
-  components: {
-    SignInPage: props => {
-      const configApi = useApi(configApiRef);
-      if (configApi.getString('auth.environment') !== 'development') {
-        return <ProxiedSignInPage {...props} provider="azureEasyAuth" />;
-      }
-      return (
-        <SignInPage
-          {...props}
-          providers={['guest', 'custom']}
-          title="Select a sign-in method"
-          align="center"
-        />
-      );
-    },
-  },
-  /* highlight-add-end */
-  // ..
-});
-```
-
 ## Azure Configuration
 
 How to configure azure depends on the Azure service you're using to host Backstage.
@@ -136,3 +55,60 @@ resource webApp 'Microsoft.Web/sites@2022-03-01' existing = {
   }
 }
 ```
+
+## Configuration
+
+Add the following into your `app-config.yaml` under the root `auth` configuration:
+
+```yaml title="app-config.yaml"
+auth:
+  providers:
+    azureEasyAuth:
+      signIn:
+        resolvers:
+          # typically you would pick one of these
+          - resolver: emailMatchingUserEntityProfileEmail
+          - resolver: emailLocalPartMatchingUserEntityName
+          - resolver: idMatchingUserEntityAnnotation
+```
+
+### Resolvers
+
+This provider includes several resolvers out of the box that you can use:
+
+- `emailMatchingUserEntityProfileEmail`: Matches the email address from the auth provider with the User entity that has a matching `spec.profile.email`. If no match is found it will throw a `NotFoundError`.
+- `emailLocalPartMatchingUserEntityName`: Matches the [local part](https://en.wikipedia.org/wiki/Email_address#Local-part) of the email address from the auth provider with the User entity that has a matching `name`. If no match is found it will throw a `NotFoundError`.
+- `idMatchingUserEntityAnnotation`: Matches the user Id from the auth provider with the User entity that has a matching `graph.microsoft.com/user-id` annotation. If no match is found it will throw a `NotFoundError`.
+
+:::note Note
+
+The resolvers will be tried in order, but will only be skipped if they throw a `NotFoundError`.
+
+:::
+
+If these resolvers do not fit your needs you can build a custom resolver, this is covered in the [Building Custom Resolvers](../identity-resolver.md#building-custom-resolvers) section of the Sign-in Identities and Resolvers documentation.
+
+## Backend Installation
+
+To add the provider to the backend we will first need to install the package by running this command:
+
+```bash title="from your Backstage root directory"
+yarn --cwd packages/backend add @backstage/plugin-auth-backend-module-azure-easyauth-provider
+```
+
+Then we will need to this line:
+
+```ts title="in packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-auth-backend'));
+/* highlight-add-start */
+backend.add(
+  import('@backstage/plugin-auth-backend-module-azure-easyauth-provider'),
+);
+/* highlight-add-end */
+```
+
+## Adding the provider to the Backstage frontend
+
+See [Sign-In with Proxy Providers](../index.md#sign-in-with-proxy-providers) for pointers on how to set up the sign-in page, and to also make it work smoothly for local development. You'll use `azureEasyAuth` as the provider name.
+
+If you [provide a custom sign in resolver](https://backstage.io/docs/auth/identity-resolver#building-custom-resolvers), you can skip the `signIn` block entirely.

@@ -64,7 +64,7 @@ import { catalogEntityRefreshPermission } from '@backstage/plugin-catalog-common
 import { useSourceTemplateCompoundEntityRef } from './hooks';
 import { taskCreatePermission } from '@backstage/plugin-scaffolder-common/alpha';
 import { usePermission } from '@backstage/plugin-permission-react';
-import { catalogTranslationRef } from '../../translation';
+import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 const TECHDOCS_ANNOTATION = 'backstage.io/techdocs-ref';

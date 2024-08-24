@@ -126,7 +126,7 @@ The Catalog graphics plugin provides extensions for each of its features, see be
 
 #### Catalog Entity Relations Graph Card
 
-An [entity card](https://backstage.io/docs/frontend-system/building-plugins/extension-types#entitycard---reference) extension that renders the relation graph for an entity on the Catalog entity page and has an action that redirects users to the more advanced [relations graph page](#catalog-entity-relations-graph-page).
+An [entity card](https://backstage.io/docs/frontend-system/building-plugins/extension-blueprints#entitycard---reference) extension that renders the relation graph for an entity on the Catalog entity page and has an action that redirects users to the more advanced [relations graph page](#catalog-entity-relations-graph-page).
 
 | kind        | namespace     | name             | id                                    | Default enabled |
 | ----------- | ------------- | ---------------- | ------------------------------------- | --------------- |

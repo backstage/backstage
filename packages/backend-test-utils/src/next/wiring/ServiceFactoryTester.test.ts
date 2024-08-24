@@ -56,34 +56,34 @@ describe('ServiceFactoryTester', () => {
   it('should test a root service factory', async () => {
     const tester = ServiceFactoryTester.from(rootFactory);
 
-    await expect(tester.get()).resolves.toBe('root');
+    await expect(tester.getSubject()).resolves.toBe('root');
   });
 
   it('should test a plugin service factory', async () => {
     const tester = ServiceFactoryTester.from(pluginFactory);
 
-    await expect(tester.get('x')).resolves.toBe('x-plugin');
-    await expect(tester.get('y')).resolves.toBe('y-plugin');
-    await expect(tester.get('z')).resolves.toBe('z-plugin');
+    await expect(tester.getSubject('x')).resolves.toBe('x-plugin');
+    await expect(tester.getSubject('y')).resolves.toBe('y-plugin');
+    await expect(tester.getSubject('z')).resolves.toBe('z-plugin');
   });
 
   it('should test a plugin service factory with root context', async () => {
     const tester = ServiceFactoryTester.from(sharedPluginFactory);
 
-    await expect(tester.get('x')).resolves.toBe('x-1-plugin');
-    await expect(tester.get('y')).resolves.toBe('y-2-plugin');
-    await expect(tester.get('y')).resolves.toBe('y-2-plugin');
-    await expect(tester.get('y')).resolves.toBe('y-2-plugin');
-    await expect(tester.get('z')).resolves.toBe('z-3-plugin');
+    await expect(tester.getSubject('x')).resolves.toBe('x-1-plugin');
+    await expect(tester.getSubject('y')).resolves.toBe('y-2-plugin');
+    await expect(tester.getSubject('y')).resolves.toBe('y-2-plugin');
+    await expect(tester.getSubject('y')).resolves.toBe('y-2-plugin');
+    await expect(tester.getSubject('z')).resolves.toBe('z-3-plugin');
 
     const tester2 = ServiceFactoryTester.from(sharedPluginFactory);
 
-    await expect(tester2.get('z')).resolves.toBe('z-1-plugin');
-    await expect(tester2.get('y')).resolves.toBe('y-2-plugin');
-    await expect(tester2.get('x')).resolves.toBe('x-3-plugin');
-    await expect(tester2.get('x')).resolves.toBe('x-3-plugin');
-    await expect(tester2.get('y')).resolves.toBe('y-2-plugin');
-    await expect(tester2.get('z')).resolves.toBe('z-1-plugin');
+    await expect(tester2.getSubject('z')).resolves.toBe('z-1-plugin');
+    await expect(tester2.getSubject('y')).resolves.toBe('y-2-plugin');
+    await expect(tester2.getSubject('x')).resolves.toBe('x-3-plugin');
+    await expect(tester2.getSubject('x')).resolves.toBe('x-3-plugin');
+    await expect(tester2.getSubject('y')).resolves.toBe('y-2-plugin');
+    await expect(tester2.getSubject('z')).resolves.toBe('z-1-plugin');
   });
 
   it('should use dependencies', async () => {
@@ -93,10 +93,10 @@ describe('ServiceFactoryTester', () => {
         deps: { root: rootServiceRef, plugin: pluginServiceRef },
         factory: async ({ root, plugin }) => `${root}, ${plugin}`,
       }),
-      { dependencies: [rootFactory, pluginFactory()] },
+      { dependencies: [rootFactory, pluginFactory] },
     );
 
-    await expect(tester.get('x')).resolves.toBe('root, x-plugin');
+    await expect(tester.getSubject('x')).resolves.toBe('root, x-plugin');
   });
 
   it('should use dependencies with root context', async () => {
@@ -106,14 +106,14 @@ describe('ServiceFactoryTester', () => {
         deps: { shared: sharedPluginServiceRef, plugin: pluginServiceRef },
         factory: async ({ shared, plugin }) => `${shared}, ${plugin}`,
       }),
-      { dependencies: [sharedPluginFactory(), pluginFactory] },
+      { dependencies: [sharedPluginFactory, pluginFactory] },
     );
 
-    await expect(tester.get('x')).resolves.toBe('x-1-plugin, x-plugin');
-    await expect(tester.get('y')).resolves.toBe('y-2-plugin, y-plugin');
-    await expect(tester.get('y')).resolves.toBe('y-2-plugin, y-plugin');
-    await expect(tester.get('y')).resolves.toBe('y-2-plugin, y-plugin');
-    await expect(tester.get('z')).resolves.toBe('z-3-plugin, z-plugin');
+    await expect(tester.getSubject('x')).resolves.toBe('x-1-plugin, x-plugin');
+    await expect(tester.getSubject('y')).resolves.toBe('y-2-plugin, y-plugin');
+    await expect(tester.getSubject('y')).resolves.toBe('y-2-plugin, y-plugin');
+    await expect(tester.getSubject('y')).resolves.toBe('y-2-plugin, y-plugin');
+    await expect(tester.getSubject('z')).resolves.toBe('z-3-plugin, z-plugin');
   });
 
   it('should prioritize the subject implementation', async () => {
@@ -126,7 +126,7 @@ describe('ServiceFactoryTester', () => {
       { dependencies: [rootFactory] },
     );
 
-    await expect(tester.get()).resolves.toBe('other-root');
+    await expect(tester.getSubject()).resolves.toBe('other-root');
   });
 
   it('should throw on missing dependencies', async () => {
@@ -138,7 +138,7 @@ describe('ServiceFactoryTester', () => {
       }),
     );
 
-    await expect(tester.get('x')).rejects.toThrow(
+    await expect(tester.getSubject('x')).rejects.toThrow(
       "Failed to instantiate service 'b' for 'x' because the following dependent services are missing: 'a'",
     );
   });

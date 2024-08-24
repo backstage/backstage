@@ -329,7 +329,7 @@ You can also use static configuration to bind routes, removing the need to make
 changes to the app code. It does however mean that you won't get type safety
 when binding routes and compile-time validation of the bindings. Static
 configuration of route bindings is done under the `app.routes.bindings` key in
-`app-config.yaml`. It works the same way as [route bindings in the new frontend system](../frontend-system/architecture/07-routes.md#binding-external-route-references),
+`app-config.yaml`. It works the same way as [route bindings in the new frontend system](../frontend-system/architecture/36-routes.md#binding-external-route-references),
 for example:
 
 ```yaml
@@ -342,7 +342,7 @@ app:
 ### Default Targets for External Route References
 
 Following the `1.28` release of Backstage you can now define default targets for
-external route references. They work the same way as [default targets in the new frontend system](../frontend-system/architecture/07-routes.md#default-targets-for-external-route-references),
+external route references. They work the same way as [default targets in the new frontend system](../frontend-system/architecture/36-routes.md#default-targets-for-external-route-references),
 for example:
 
 ```ts

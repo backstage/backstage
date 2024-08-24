@@ -19,8 +19,7 @@ backend. The provider is not installed by default, therefore you have to add a
 dependency to `@backstage/plugin-catalog-backend-module-bitbucket-cloud` to your backend
 package.
 
-```bash
-# From your Backstage root directory
+```bash title="From your Backstage root directory"
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-bitbucket-cloud
 ```
 
@@ -147,7 +146,7 @@ catalog:
         filters: # optional
           projectKey: '^apis-.*$' # optional; RegExp
           repoSlug: '^service-.*$' # optional; RegExp
-        schedule: # same options as in TaskScheduleDefinition
+        schedule: # same options as in SchedulerServiceTaskScheduleDefinition
           # supports cron, ISO duration, "human duration" as used in code
           frequency: { minutes: 30 }
           # supports ISO duration, "human duration" as used in code

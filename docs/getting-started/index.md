@@ -1,6 +1,6 @@
 ---
 id: index
-title: Installing a standalone server
+title: Creating your Backstage App
 sidebar_label: Introduction
 description: How to install Backstage for your own use.
 ---

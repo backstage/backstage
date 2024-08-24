@@ -20,9 +20,9 @@ import {
   ExtensionDataRef,
   RouteRef,
   coreExtensionData,
-  createApiExtension,
-  createNavItemExtension,
-  createThemeExtension,
+  ApiBlueprint,
+  NavItemBlueprint,
+  ThemeBlueprint,
   useRouteRef,
 } from '@backstage/frontend-plugin-api';
 import Box from '@material-ui/core/Box';
@@ -66,9 +66,9 @@ const getOutputColor = createOutputColorGenerator(
     [coreExtensionData.reactElement.id]: colors.green[500],
     [coreExtensionData.routePath.id]: colors.yellow[500],
     [coreExtensionData.routeRef.id]: colors.purple[500],
-    [createApiExtension.factoryDataRef.id]: colors.blue[500],
-    [createThemeExtension.themeDataRef.id]: colors.lime[500],
-    [createNavItemExtension.targetDataRef.id]: colors.orange[500],
+    [ApiBlueprint.dataRefs.factory.id]: colors.blue[500],
+    [ThemeBlueprint.dataRefs.theme.id]: colors.lime[500],
+    [NavItemBlueprint.dataRefs.target.id]: colors.orange[500],
   },
 
   [
@@ -189,21 +189,26 @@ function OutputLink(props: {
 }) {
   const routeRef = props.node?.instance?.getData(coreExtensionData.routeRef);
 
-  let link: string | undefined = undefined;
   try {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    link = useRouteRef(routeRef as RouteRef<undefined>)();
-  } catch {
-    /* ignore */
-  }
+    const link = useRouteRef(routeRef as RouteRef<undefined>);
 
-  return (
-    <Tooltip title={<Typography>{props.dataRef.id}</Typography>}>
-      <Box className={props.className}>
-        {link ? <Link to={link}>link</Link> : null}
-      </Box>
-    </Tooltip>
-  );
+    return (
+      <Tooltip title={<Typography>{props.dataRef.id}</Typography>}>
+        <Box className={props.className}>
+          {link ? <Link to={link()}>link</Link> : null}
+        </Box>
+      </Tooltip>
+    );
+  } catch (ex) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      props.node?.spec.id
+        ? `Unable to generate output link for ${props.node.spec.id}`
+        : 'Unable to generate output link',
+      ex,
+    );
+    return null;
+  }
 }
 
 function Output(props: { dataRef: ExtensionDataRef<unknown>; node?: AppNode }) {
@@ -329,11 +334,11 @@ function Extension(props: { node: AppNode; depth: number }) {
 
 const legendMap = {
   'React Element': coreExtensionData.reactElement,
-  'Utility API': createApiExtension.factoryDataRef,
+  'Utility API': ApiBlueprint.dataRefs.factory,
   'Route Path': coreExtensionData.routePath,
   'Route Ref': coreExtensionData.routeRef,
-  'Nav Target': createNavItemExtension.targetDataRef,
-  Theme: createThemeExtension.themeDataRef,
+  'Nav Target': NavItemBlueprint.dataRefs.target,
+  Theme: ThemeBlueprint.dataRefs.theme,
 };
 
 function Legend() {

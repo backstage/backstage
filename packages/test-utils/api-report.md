@@ -8,6 +8,7 @@ import { AnalyticsEvent } from '@backstage/core-plugin-api';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/core-plugin-api';
 import { AppComponents } from '@backstage/core-plugin-api';
+import { AppIcons } from '@backstage/core-app-api';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { ComponentType } from 'react';
 import { Config } from '@backstage/config';
@@ -21,6 +22,7 @@ import { EvaluatePermissionRequest } from '@backstage/plugin-permission-common';
 import { EvaluatePermissionResponse } from '@backstage/plugin-permission-common';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
+import { IconComponent } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
@@ -198,6 +200,13 @@ export type MockStorageBucket = {
 };
 
 // @public
+export function registerMswTestHooks(worker: {
+  listen: (t: any) => void;
+  close: () => void;
+  resetHandlers: () => void;
+}): void;
+
+// @public
 export function renderInTestApp(
   Component: ComponentType<PropsWithChildren<{}>> | ReactNode,
   options?: TestAppOptions & LegacyRootOption,
@@ -209,7 +218,7 @@ export function renderWithEffects(
   options?: Pick<RenderOptions, 'wrapper'> & LegacyRootOption,
 ): Promise<RenderResult>;
 
-// @public
+// @public @deprecated (undocumented)
 export function setupRequestMockHandlers(worker: {
   listen: (t: any) => void;
   close: () => void;
@@ -245,6 +254,9 @@ export type TestAppOptions = {
     [path: string]: RouteRef | ExternalRouteRef;
   };
   components?: Partial<AppComponents>;
+  icons?: Partial<AppIcons> & {
+    [key in string]: IconComponent;
+  };
 };
 
 // @public

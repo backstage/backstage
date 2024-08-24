@@ -35,6 +35,7 @@ describe('Rollout', () => {
 
     expect(screen.getByText('dice-roller')).toBeInTheDocument();
     expect(screen.getByText('Rollout')).toBeInTheDocument();
+    expect(screen.getByText('namespace: default')).toBeInTheDocument();
     expect(screen.getByText('2 pods')).toBeInTheDocument();
     expect(screen.getByText('No pods with errors')).toBeInTheDocument();
     expect(screen.queryByText('Paused')).toBeNull();
@@ -52,6 +53,7 @@ describe('Rollout', () => {
 
     expect(screen.getByText('dice-roller')).toBeInTheDocument();
     expect(screen.getByText('Rollout')).toBeInTheDocument();
+    expect(screen.getByText('namespace: default')).toBeInTheDocument();
     expect(screen.getByText('2 pods')).toBeInTheDocument();
     expect(screen.getByText('1 pod with errors')).toBeInTheDocument();
     expect(screen.queryByText('Paused')).toBeNull();
@@ -71,6 +73,7 @@ describe('Rollout', () => {
 
     expect(screen.getByText('dice-roller')).toBeInTheDocument();
     expect(screen.getByText('Rollout')).toBeInTheDocument();
+    expect(screen.getByText('namespace: default')).toBeInTheDocument();
     expect(screen.getByText('2 pods')).toBeInTheDocument();
     expect(screen.getByText('No pods with errors')).toBeInTheDocument();
     expect(screen.getByText('Paused (45 minutes ago)')).toBeInTheDocument();
@@ -90,6 +93,7 @@ describe('Rollout', () => {
 
     expect(screen.getByText('dice-roller')).toBeInTheDocument();
     expect(screen.getByText('Rollout')).toBeInTheDocument();
+    expect(screen.getByText('namespace: default')).toBeInTheDocument();
     expect(screen.getByText('2 pods')).toBeInTheDocument();
     expect(screen.getByText('No pods with errors')).toBeInTheDocument();
     expect(screen.queryByText('Paused')).toBeNull();

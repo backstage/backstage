@@ -21,17 +21,24 @@ export interface Config {
        * Configuration for the Google Cloud Platform Identity-Aware Proxy (IAP) auth provider.
        */
       gcpIap?: {
-        [authEnv: string]: {
-          /**
-           * The audience to use when validating incoming JWT tokens.
-           * See https://backstage.io/docs/auth/google/gcp-iap-auth
-           */
-          audience: string;
+        /**
+         * The audience to use when validating incoming JWT tokens.
+         * See https://backstage.io/docs/auth/google/gcp-iap-auth
+         */
+        audience: string;
 
-          /**
-           * The name of the header to read the JWT token from, defaults to `'x-goog-iap-jwt-assertion'`.
-           */
-          jwtHeader?: string;
+        /**
+         * The name of the header to read the JWT token from, defaults to `'x-goog-iap-jwt-assertion'`.
+         */
+        jwtHeader?: string;
+
+        signIn?: {
+          resolvers: Array<
+            | { resolver: 'emailMatchingUserEntityAnnotation' }
+            | { resolver: 'idMatchingUserEntityAnnotation' }
+            | { resolver: 'emailLocalPartMatchingUserEntityName' }
+            | { resolver: 'emailMatchingUserEntityProfileEmail' }
+          >;
         };
       };
     };

@@ -16,18 +16,19 @@
 import React from 'react';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
+import TextField from '@material-ui/core/TextField';
 import { Select, SelectItem } from '@backstage/core-components';
-import { RepoUrlPickerState } from './types';
+import { BaseRepoUrlPickerProps } from './types';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../../translation';
 
-export const GithubRepoPicker = (props: {
-  allowedOwners?: string[];
-  rawErrors: string[];
-  state: RepoUrlPickerState;
-  onChange: (state: RepoUrlPickerState) => void;
-}) => {
+export const GithubRepoPicker = (
+  props: BaseRepoUrlPickerProps<{
+    allowedOwners?: string[];
+  }>,
+) => {
   const { allowedOwners = [], rawErrors, state, onChange } = props;
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const ownerItems: SelectItem[] = allowedOwners
     ? allowedOwners.map(i => ({ label: i, value: i }))
     : [{ label: 'Loading...', value: 'loading' }];
@@ -42,29 +43,30 @@ export const GithubRepoPicker = (props: {
         error={rawErrors?.length > 0 && !owner}
       >
         {allowedOwners?.length ? (
-          <Select
-            native
-            label="Owner Available"
-            onChange={s =>
-              onChange({ owner: String(Array.isArray(s) ? s[0] : s) })
-            }
-            disabled={allowedOwners.length === 1}
-            selected={owner}
-            items={ownerItems}
-          />
-        ) : (
           <>
-            <InputLabel htmlFor="ownerInput">Owner</InputLabel>
-            <Input
-              id="ownerInput"
-              onChange={e => onChange({ owner: e.target.value })}
-              value={owner}
+            <Select
+              native
+              label={t('fields.githubRepoPicker.owner.title')}
+              onChange={s =>
+                onChange({ owner: String(Array.isArray(s) ? s[0] : s) })
+              }
+              disabled={allowedOwners.length === 1}
+              selected={owner}
+              items={ownerItems}
             />
+            <FormHelperText>
+              {t('fields.githubRepoPicker.owner.description')}
+            </FormHelperText>
           </>
+        ) : (
+          <TextField
+            id="ownerInput"
+            label={t('fields.githubRepoPicker.owner.inputTitle')}
+            onChange={e => onChange({ owner: e.target.value })}
+            helperText={t('fields.githubRepoPicker.owner.description')}
+            value={owner}
+          />
         )}
-        <FormHelperText>
-          The organization, user or project that this repo will belong to
-        </FormHelperText>
       </FormControl>
     </>
   );

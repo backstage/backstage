@@ -1,5 +1,79 @@
 # @backstage/plugin-scaffolder-backend-module-sentry
 
+## 0.1.31
+
+### Patch Changes
+
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- 382e868: Added test cases for sentry:project:create examples
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/plugin-scaffolder-node@0.4.9
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 0.1.31-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.3
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-scaffolder-node@0.4.9-next.3
+
+## 0.1.31-next.2
+
+### Patch Changes
+
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- 382e868: Added test cases for sentry:project:create examples
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.2
+  - @backstage/plugin-scaffolder-node@0.4.9-next.2
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 0.1.31-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-scaffolder-node@0.4.9-next.1
+
+## 0.1.31-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.1-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-scaffolder-node@0.4.9-next.0
+
+## 0.1.30
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/plugin-scaffolder-node@0.4.8
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 0.1.30-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.22-next.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-scaffolder-node@0.4.8-next.1
+
 ## 0.1.29-next.0
 
 ### Patch Changes

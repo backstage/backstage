@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-search-common",
-  "version": "1.2.12",
+  "version": "1.2.14",
   "description": "Common functionalities for Search, to be shared between various search-enabled plugins",
   "backstage": {
     "role": "common-library",
@@ -8,6 +8,7 @@
     "pluginPackages": [
       "@backstage/plugin-search",
       "@backstage/plugin-search-backend",
+      "@backstage/plugin-search-backend-node",
       "@backstage/plugin-search-common",
       "@backstage/plugin-search-react"
     ]

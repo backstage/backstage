@@ -31,7 +31,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { collectLegacyRoutes } from './collectLegacyRoutes';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalBackstagePlugin } from '../../frontend-plugin-api/src/wiring/createPlugin';
+import { toInternalBackstagePlugin } from '../../frontend-plugin-api/src/wiring/createFrontendPlugin';
 import {
   createPlugin,
   createRoutableExtension,
@@ -70,11 +70,11 @@ describe('collectLegacyRoutes', () => {
             id: 'page:score-card',
             attachTo: { id: 'app/routes', input: 'routes' },
             disabled: false,
-            defaultConfig: { path: 'score-board' },
+            defaultConfig: {},
           },
           {
             id: 'api:plugin.scoringdata.service',
-            attachTo: { id: 'app', input: 'apis' },
+            attachTo: { id: 'root', input: 'apis' },
             disabled: false,
           },
         ],
@@ -86,11 +86,11 @@ describe('collectLegacyRoutes', () => {
             id: 'page:stackstorm',
             attachTo: { id: 'app/routes', input: 'routes' },
             disabled: false,
-            defaultConfig: { path: 'stackstorm' },
+            defaultConfig: {},
           },
           {
             id: 'api:plugin.stackstorm.service',
-            attachTo: { id: 'app', input: 'apis' },
+            attachTo: { id: 'root', input: 'apis' },
             disabled: false,
           },
         ],
@@ -102,17 +102,17 @@ describe('collectLegacyRoutes', () => {
             id: 'page:puppetDb',
             attachTo: { id: 'app/routes', input: 'routes' },
             disabled: false,
-            defaultConfig: { path: 'puppetdb' },
+            defaultConfig: {},
           },
           {
             id: 'page:puppetDb/1',
             attachTo: { id: 'app/routes', input: 'routes' },
             disabled: false,
-            defaultConfig: { path: 'puppetdb' },
+            defaultConfig: {},
           },
           {
             id: 'api:plugin.puppetdb.service',
-            attachTo: { id: 'app', input: 'apis' },
+            attachTo: { id: 'root', input: 'apis' },
             disabled: false,
           },
         ],
@@ -173,12 +173,12 @@ describe('collectLegacyRoutes', () => {
             id: 'page:catalog',
             attachTo: { id: 'app/routes', input: 'routes' },
             disabled: false,
-            defaultConfig: { path: 'catalog' },
+            defaultConfig: {},
           },
           {
             id: 'page:catalog/1',
             attachTo: { id: 'app/routes', input: 'routes' },
-            defaultConfig: { path: 'catalog/:namespace/:kind/:name' },
+            defaultConfig: {},
             disabled: false,
           },
           {
@@ -211,7 +211,7 @@ describe('collectLegacyRoutes', () => {
           {
             id: 'api:plugin.catalog.service',
             attachTo: {
-              id: 'app',
+              id: 'root',
               input: 'apis',
             },
             defaultConfig: undefined,
@@ -220,7 +220,7 @@ describe('collectLegacyRoutes', () => {
           {
             id: 'api:catalog-react.starred-entities',
             attachTo: {
-              id: 'app',
+              id: 'root',
               input: 'apis',
             },
             defaultConfig: undefined,
@@ -229,7 +229,7 @@ describe('collectLegacyRoutes', () => {
           {
             id: 'api:plugin.catalog.entity-presentation',
             attachTo: {
-              id: 'app',
+              id: 'root',
               input: 'apis',
             },
             defaultConfig: undefined,
@@ -242,7 +242,7 @@ describe('collectLegacyRoutes', () => {
         extensions: [
           {
             id: 'api:plugin.scoringdata.service',
-            attachTo: { id: 'app', input: 'apis' },
+            attachTo: { id: 'root', input: 'apis' },
             disabled: false,
           },
         ],

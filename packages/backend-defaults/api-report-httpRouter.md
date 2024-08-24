@@ -14,15 +14,12 @@ export function createLifecycleMiddleware(
   options: LifecycleMiddlewareOptions,
 ): RequestHandler;
 
-// @public (undocumented)
-export interface HttpRouterFactoryOptions {
-  getPath?(pluginId: string): string;
-}
-
 // @public
-export const httpRouterServiceFactory: (
-  options?: HttpRouterFactoryOptions | undefined,
-) => ServiceFactory<HttpRouterService, 'plugin'>;
+export const httpRouterServiceFactory: ServiceFactory<
+  HttpRouterService,
+  'plugin',
+  'singleton'
+>;
 
 // @public
 export interface LifecycleMiddlewareOptions {

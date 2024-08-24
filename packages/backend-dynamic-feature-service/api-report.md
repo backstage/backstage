@@ -4,7 +4,6 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { BackendFeatureCompat } from '@backstage/backend-plugin-api';
 import { BackstagePackageJson } from '@backstage/cli-node';
 import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
 import { Config } from '@backstage/config';
@@ -25,15 +24,15 @@ import { PermissionPolicy } from '@backstage/plugin-permission-node';
 import { PluginCacheManager } from '@backstage/backend-common';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { Router } from 'express';
+import { SchedulerService } from '@backstage/backend-plugin-api';
+import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
-import { TaskRunner } from '@backstage/backend-tasks';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { TokenManager } from '@backstage/backend-common';
-import { UrlReader } from '@backstage/backend-common';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
 export interface BackendDynamicPlugin extends BaseDynamicPlugin {
@@ -114,18 +113,20 @@ export interface DynamicPluginsFactoryOptions {
 }
 
 // @public (undocumented)
-export const dynamicPluginsFeatureDiscoveryServiceFactory: () => ServiceFactory<
+export const dynamicPluginsFeatureDiscoveryServiceFactory: ServiceFactory<
   FeatureDiscoveryService,
-  'root'
+  'root',
+  'singleton'
 >;
 
 // @public (undocumented)
-export const dynamicPluginsFrontendSchemas: BackendFeatureCompat;
+export const dynamicPluginsFrontendSchemas: BackendFeature;
 
 // @public (undocumented)
-export const dynamicPluginsRootLoggerServiceFactory: () => ServiceFactory<
+export const dynamicPluginsRootLoggerServiceFactory: ServiceFactory<
   RootLoggerService,
-  'root'
+  'root',
+  'singleton'
 >;
 
 // @public (undocumented)
@@ -142,19 +143,34 @@ export interface DynamicPluginsSchemasService {
 }
 
 // @public (undocumented)
-export const dynamicPluginsSchemasServiceFactory: (
-  options?: DynamicPluginsSchemasOptions | undefined,
-) => ServiceFactory<DynamicPluginsSchemasService, 'root'>;
+export const dynamicPluginsSchemasServiceFactory: ServiceFactory<
+  DynamicPluginsSchemasService,
+  'root',
+  'singleton'
+>;
 
 // @public (undocumented)
-export const dynamicPluginsServiceFactory: (
-  options?: DynamicPluginsFactoryOptions | undefined,
-) => ServiceFactory<DynamicPluginProvider, 'root'>;
+export const dynamicPluginsSchemasServiceFactoryWithOptions: (
+  options?: DynamicPluginsSchemasOptions,
+) => ServiceFactory<DynamicPluginsSchemasService, 'root', 'singleton'>;
+
+// @public (undocumented)
+export const dynamicPluginsServiceFactory: ServiceFactory<
+  DynamicPluginProvider,
+  'root',
+  'singleton'
+>;
+
+// @public (undocumented)
+export const dynamicPluginsServiceFactoryWithOptions: (
+  options?: DynamicPluginsFactoryOptions,
+) => ServiceFactory<DynamicPluginProvider, 'root', 'singleton'>;
 
 // @public (undocumented)
 export const dynamicPluginsServiceRef: ServiceRef<
   DynamicPluginProvider,
-  'root'
+  'root',
+  'singleton'
 >;
 
 // @public (undocumented)
@@ -199,7 +215,7 @@ export interface LegacyBackendPluginInstaller {
   // (undocumented)
   search?(
     indexBuilder: IndexBuilder,
-    schedule: TaskRunner,
+    schedule: SchedulerServiceTaskRunner,
     env: LegacyPluginEnvironment,
   ): void;
 }
@@ -210,11 +226,11 @@ export type LegacyPluginEnvironment = {
   cache: PluginCacheManager;
   database: PluginDatabaseManager;
   config: Config;
-  reader: UrlReader;
+  reader: UrlReaderService;
   discovery: PluginEndpointDiscovery;
   tokenManager: TokenManager;
   permissions: PermissionEvaluator;
-  scheduler: PluginTaskScheduler;
+  scheduler: SchedulerService;
   identity: IdentityApi;
   eventBroker: EventBroker;
   events: EventsService;

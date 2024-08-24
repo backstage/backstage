@@ -17,27 +17,20 @@
 import {
   ServiceFactoryTester,
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
 } from '@backstage/backend-test-utils';
-import { tokenManagerServiceFactory } from '@backstage/backend-app-api';
 import { authServiceFactory } from './authServiceFactory';
 import { base64url, decodeJwt } from 'jose';
 import { discoveryServiceFactory } from '../discovery';
-import {
-  BackstageServicePrincipal,
-  BackstageUserPrincipal,
-} from '@backstage/backend-plugin-api';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { InternalBackstageCredentials } from './types';
 import { toInternalBackstageCredentials } from './helpers';
 
 const server = setupServer();
 
 // TODO: Ship discovery mock service in the service factory tester
 const mockDeps = [
-  discoveryServiceFactory(),
-  tokenManagerServiceFactory,
+  discoveryServiceFactory,
   mockServices.rootConfig.factory({
     data: {
       backend: {
@@ -68,16 +61,20 @@ const mockDeps = [
 ];
 
 describe('authServiceFactory', () => {
-  setupRequestMockHandlers(server);
+  registerMswTestHooks(server);
 
   afterEach(() => {
     jest.useRealTimers();
   });
 
-  it('should authenticate issued tokens with legacy auth', async () => {
+  it('should not support tokens issued with legacy auth', async () => {
     server.use(
       rest.get(
         'http://localhost:7007/api/catalog/.backstage/auth/v1/jwks.json',
+        (_req, res, ctx) => res(ctx.status(404)),
+      ),
+      rest.get(
+        'http://localhost:7007/api/search/.backstage/auth/v1/jwks.json',
         (_req, res, ctx) => res(ctx.status(404)),
       ),
     );
@@ -86,29 +83,23 @@ describe('authServiceFactory', () => {
       dependencies: mockDeps,
     });
 
-    const searchAuth = await tester.get('search');
-    const catalogAuth = await tester.get('catalog');
+    const searchAuth = await tester.getSubject('search');
+    const catalogAuth = await tester.getSubject('catalog');
 
     const { token: searchToken } = await searchAuth.getPluginRequestToken({
       onBehalfOf: await searchAuth.getOwnServiceCredentials(),
       targetPluginId: 'catalog',
     });
 
-    await expect(searchAuth.authenticate(searchToken)).resolves.toEqual(
-      expect.objectContaining({
-        principal: {
-          type: 'service',
-          subject: 'external:backstage-plugin',
-        },
-      }),
+    await expect(
+      searchAuth.authenticate(searchToken),
+    ).rejects.toMatchInlineSnapshot(
+      `[AuthenticationError: Received a plugin token where the source 'search' plugin unexpectedly does not have a JWKS endpoint. The target plugin needs to be migrated to be installed in an app using the new backend system.]`,
     );
-    await expect(catalogAuth.authenticate(searchToken)).resolves.toEqual(
-      expect.objectContaining({
-        principal: {
-          type: 'service',
-          subject: 'external:backstage-plugin',
-        },
-      }),
+    await expect(
+      catalogAuth.authenticate(searchToken),
+    ).rejects.toMatchInlineSnapshot(
+      `[AuthenticationError: Received a plugin token where the source 'search' plugin unexpectedly does not have a JWKS endpoint. The target plugin needs to be migrated to be installed in an app using the new backend system.]`,
     );
   });
 
@@ -117,8 +108,8 @@ describe('authServiceFactory', () => {
       dependencies: mockDeps,
     });
 
-    const searchAuth = await tester.get('search');
-    const catalogAuth = await tester.get('catalog');
+    const searchAuth = await tester.getSubject('search');
+    const catalogAuth = await tester.getSubject('catalog');
 
     server.use(
       rest.get(
@@ -151,7 +142,7 @@ describe('authServiceFactory', () => {
     );
   });
 
-  it('should forward user token if target plugin does not support new auth service', async () => {
+  it('should issue a service token for the new system even if the target plugin does not support it', async () => {
     server.use(
       rest.get(
         'http://localhost:7007/api/permission/.backstage/auth/v1/jwks.json',
@@ -163,56 +154,17 @@ describe('authServiceFactory', () => {
       dependencies: mockDeps,
     });
 
-    const catalogAuth = await tester.get('catalog');
-
-    await expect(
-      catalogAuth.getPluginRequestToken({
-        onBehalfOf: {
-          $$type: '@backstage/BackstageCredentials',
-          version: 'v1',
-          authMethod: 'token',
-          token: 'alice-token',
-          principal: {
-            type: 'user',
-            userEntityRef: 'user:default/alice',
-          },
-        } as InternalBackstageCredentials<BackstageUserPrincipal>,
-        targetPluginId: 'permission',
-      }),
-    ).resolves.toEqual({ token: 'alice-token' });
-  });
-
-  it('should issue a new service token with token manager if target plugin does not support new auth service', async () => {
-    server.use(
-      rest.get(
-        'http://localhost:7007/api/permission/.backstage/auth/v1/jwks.json',
-        (_req, res, ctx) => res(ctx.status(404)),
-      ),
-    );
-
-    const tester = ServiceFactoryTester.from(authServiceFactory, {
-      dependencies: mockDeps,
-    });
-
-    const catalogAuth = await tester.get('catalog');
+    const catalogAuth = await tester.getSubject('catalog');
 
     const { token } = await catalogAuth.getPluginRequestToken({
-      onBehalfOf: {
-        $$type: '@backstage/BackstageCredentials',
-        version: 'v1',
-        authMethod: 'token',
-        token: 'some-upstream-service-token',
-        principal: {
-          type: 'service',
-          subject: 'external:upstream-service',
-        },
-      } as InternalBackstageCredentials<BackstageServicePrincipal>,
+      onBehalfOf: await catalogAuth.getOwnServiceCredentials(),
       targetPluginId: 'permission',
     });
 
     expect(decodeJwt(token)).toEqual(
       expect.objectContaining({
-        sub: 'backstage-server',
+        sub: 'catalog',
+        aud: 'permission',
       }),
     );
   });
@@ -261,7 +213,7 @@ describe('authServiceFactory', () => {
       dependencies: mockDeps,
     });
 
-    const catalogAuth = await tester.get('catalog');
+    const catalogAuth = await tester.getSubject('catalog');
 
     const fullToken =
       'eyJ0eXAiOiJ2bmQuYmFja3N0YWdlLnVzZXIiLCJhbGciOiJFUzI1NiIsImtpZCI6IjhkMDFjM2RiLTU2ZjktNDVmMC04NmRkLTA1YjNjODM1YjNkMyJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjcwMDcvYXBpL2F1dGgiLCJzdWIiOiJ1c2VyOmRldmVsb3BtZW50L2d1ZXN0IiwiZW50IjpbInVzZXI6ZGV2ZWxvcG1lbnQvZ3Vlc3QiLCJncm91cDpkZWZhdWx0L3RlYW0tYSJdLCJhdWQiOiJiYWNrc3RhZ2UiLCJpYXQiOjE3MTIwNzE3MTQsImV4cCI6MTcxMjA3NTMxNCwidWlwIjoiSmwxVEpycG9VUjR1NENjUE9nalJMeHpEMi1FMGZPR3ptSm81UWI2eS1aN19meG5oVVBEdWVWRE1CS0l6WF9pc0lvSDhlZm9EUFA5bG9aQnpPblB5Z2cifQ.1gVMq1ofO8PzRctu72D6c4IMqXuIabT79WdGEhW6vIrBRs_qhuWAa94Wvz_KYKpBTb2nxgzXJ5OeddeoYApMyQ';
@@ -318,9 +270,9 @@ describe('authServiceFactory', () => {
       dependencies: mockDeps,
     });
 
-    const searchAuth = await tester.get('search');
-    const catalogAuth = await tester.get('catalog');
-    const permissionAuth = await tester.get('permission');
+    const searchAuth = await tester.getSubject('search');
+    const catalogAuth = await tester.getSubject('catalog');
+    const permissionAuth = await tester.getSubject('permission');
 
     /* Corresponding private key in case this test needs to be updated in the future:
      {
@@ -415,15 +367,6 @@ describe('authServiceFactory', () => {
       targetPluginId: 'permission',
     });
     expect(decodeJwt(oboToken2).obo).toBe(limitedToken);
-
-    await expect(
-      catalogAuth.getPluginRequestToken({
-        onBehalfOf: oboCredentials,
-        targetPluginId: 'kubernetes',
-      }),
-    ).rejects.toThrow(
-      "Unable to call 'kubernetes' plugin on behalf of user, because the target plugin does not support on-behalf-of tokens or the plugin doesn't exist",
-    );
   });
 
   it('should eagerly reject access to external access tokens based on plugin id', async () => {
@@ -431,7 +374,7 @@ describe('authServiceFactory', () => {
       dependencies: mockDeps,
     });
 
-    const catalogAuth = await tester.get('catalog');
+    const catalogAuth = await tester.getSubject('catalog');
 
     await expect(
       catalogAuth.authenticate('limited-static-token'),
@@ -450,7 +393,7 @@ describe('authServiceFactory', () => {
       },
     });
 
-    const scaffolderAuth = await tester.get('scaffolder');
+    const scaffolderAuth = await tester.getSubject('scaffolder');
 
     await expect(
       scaffolderAuth.authenticate('limited-static-token'),

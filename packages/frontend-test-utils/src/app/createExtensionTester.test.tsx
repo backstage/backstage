@@ -18,25 +18,30 @@ import React, { useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import {
+  ApiBlueprint,
   analyticsApiRef,
   configApiRef,
   coreExtensionData,
-  createApiExtension,
   createApiFactory,
   createExtension,
-  createSchemaFromZod,
+  createExtensionDataRef,
+  createExtensionInput,
   useAnalytics,
   useApi,
 } from '@backstage/frontend-plugin-api';
 import { MockAnalyticsApi } from '../apis';
 import { createExtensionTester } from './createExtensionTester';
 
+const stringDataRef = createExtensionDataRef<string>().with({
+  id: 'test.string',
+});
+
 describe('createExtensionTester', () => {
   const defaultDefinition = {
     namespace: 'test',
     attachTo: { id: 'ignored', input: 'ignored' },
-    output: { element: coreExtensionData.reactElement },
-    factory: () => ({ element: <div>test</div> }),
+    output: [coreExtensionData.reactElement],
+    factory: () => [coreExtensionData.reactElement(<div>test</div>)],
   };
 
   it('should render a simple extension', async () => {
@@ -59,8 +64,8 @@ describe('createExtensionTester', () => {
   it("should fail to render an extension that doesn't output a react element", async () => {
     const extension = createExtension({
       ...defaultDefinition,
-      output: { path: coreExtensionData.routePath },
-      factory: () => ({ path: '/foo' }),
+      output: [coreExtensionData.routePath],
+      factory: () => [coreExtensionData.routePath('/foo')],
     });
     const tester = createExtensionTester(extension);
     expect(() => tester.render()).toThrowErrorMatchingInlineSnapshot(
@@ -71,23 +76,23 @@ describe('createExtensionTester', () => {
   it('should render multiple extensions', async () => {
     const indexPageExtension = createExtension({
       ...defaultDefinition,
-      factory: () => ({
-        element: (
+      factory: () => [
+        coreExtensionData.reactElement(
           <div>
             Index page <Link to="/details">See details</Link>
-          </div>
+          </div>,
         ),
-      }),
+      ],
     });
     const detailsPageExtension = createExtension({
       ...defaultDefinition,
       name: 'details',
       attachTo: { id: 'app/routes', input: 'routes' },
-      output: {
-        path: coreExtensionData.routePath,
-        element: coreExtensionData.reactElement,
-      },
-      factory: () => ({ path: '/details', element: <div>Details page</div> }),
+      output: [coreExtensionData.routePath, coreExtensionData.reactElement],
+      factory: () => [
+        coreExtensionData.routePath('/details'),
+        coreExtensionData.reactElement(<div>Details page</div>),
+      ],
     });
 
     const tester = createExtensionTester(indexPageExtension);
@@ -106,24 +111,25 @@ describe('createExtensionTester', () => {
   it('should accepts a custom config', async () => {
     const indexPageExtension = createExtension({
       ...defaultDefinition,
-      configSchema: createSchemaFromZod(z =>
-        z.object({ title: z.string().optional() }),
-      ),
+      config: {
+        schema: {
+          title: z => z.string().optional(),
+        },
+      },
       factory: ({ config }) => {
         const Component = () => {
           const configApi = useApi(configApiRef);
           const appTitle = configApi.getOptionalString('app.title');
           return (
             <div>
-              <h2>{appTitle ?? 'Backstafe app'}</h2>
+              <h2>{appTitle ?? 'Backstage app'}</h2>
               <h3>{config.title ?? 'Index page'}</h3>
               <Link to="/details">See details</Link>
             </div>
           );
         };
-        return {
-          element: <Component />,
-        };
+
+        return [coreExtensionData.reactElement(<Component />)];
       },
     });
 
@@ -131,17 +137,18 @@ describe('createExtensionTester', () => {
       ...defaultDefinition,
       name: 'details',
       attachTo: { id: 'app/routes', input: 'routes' },
-      configSchema: createSchemaFromZod(z =>
-        z.object({ title: z.string().optional() }),
-      ),
-      output: {
-        path: coreExtensionData.routePath,
-        element: coreExtensionData.reactElement,
+      config: {
+        schema: {
+          title: z => z.string().optional(),
+        },
       },
-      factory: ({ config }) => ({
-        path: '/details',
-        element: <div>{config.title ?? 'Details page'}</div>,
-      }),
+      output: [coreExtensionData.routePath, coreExtensionData.reactElement],
+      factory: ({ config }) => [
+        coreExtensionData.routePath('/details'),
+        coreExtensionData.reactElement(
+          <div>{config.title ?? 'Details page'}</div>,
+        ),
+      ],
     });
 
     const tester = createExtensionTester(indexPageExtension, {
@@ -179,12 +186,14 @@ describe('createExtensionTester', () => {
     // Mocking the analytics api implementation
     const analyticsApiMock = new MockAnalyticsApi();
 
-    const analyticsApiOverride = createApiExtension({
-      factory: createApiFactory({
-        api: analyticsApiRef,
-        deps: {},
-        factory: () => analyticsApiMock,
-      }),
+    const analyticsApiOverride = ApiBlueprint.make({
+      params: {
+        factory: createApiFactory({
+          api: analyticsApiRef,
+          deps: {},
+          factory: () => analyticsApiMock,
+        }),
+      },
     });
 
     const indexPageExtension = createExtension({
@@ -203,9 +212,7 @@ describe('createExtensionTester', () => {
           );
         };
 
-        return {
-          element: <Component />,
-        };
+        return [coreExtensionData.reactElement(<Component />)];
       },
     });
 
@@ -228,5 +235,139 @@ describe('createExtensionTester', () => {
         ]),
       ),
     );
+  });
+
+  it('should return the correct dataRef when called', () => {
+    const extension = createExtension({
+      namespace: 'test',
+      attachTo: { id: 'ignored', input: 'ignored' },
+      output: [stringDataRef],
+      factory: () => [stringDataRef('test-text')],
+    });
+
+    const tester = createExtensionTester(extension);
+
+    expect(tester.get(stringDataRef)).toBe('test-text');
+  });
+
+  it('should throw an error if trying to access an instance not provided to the tester', () => {
+    const extension = createExtension({
+      namespace: 'test',
+      name: 'e1',
+      attachTo: { id: 'ignored', input: 'ignored' },
+      output: [stringDataRef],
+      factory: () => [stringDataRef('test-text')],
+    });
+
+    const extension2 = createExtension({
+      namespace: 'test',
+      name: 'e2',
+      attachTo: { id: 'ignored', input: 'ignored' },
+      output: [stringDataRef],
+      factory: () => [stringDataRef('test-text')],
+    });
+
+    const tester = createExtensionTester(extension);
+
+    expect(() => tester.query(extension2)).toThrow(
+      "Extension with ID 'test/e2' not found, please make sure it's added to the tester",
+    );
+  });
+
+  it('should throw an error if trying to access an instance which is not part of the tree', () => {
+    const extension = createExtension({
+      namespace: 'test',
+      name: 'e1',
+      attachTo: { id: 'ignored', input: 'ignored' },
+      output: [stringDataRef],
+      factory: () => [stringDataRef('test-text')],
+    });
+
+    const extension2 = createExtension({
+      namespace: 'test',
+      name: 'e2',
+      attachTo: { id: 'ignored', input: 'ignored' },
+      output: [stringDataRef],
+      factory: () => [stringDataRef('test-text')],
+    });
+
+    const tester = createExtensionTester(extension).add(extension2);
+
+    expect(() => tester.query(extension2)).toThrow(
+      "Extension with ID 'test/e2' has not been instantiated, because it is not part of the test subject's extension tree",
+    );
+  });
+
+  it('should not allow getting extension data for an output that was not defined in the extension', () => {
+    const internalRef = createExtensionDataRef<number>().with({
+      id: 'test.internal',
+    });
+
+    const internalRef2 = createExtensionDataRef<number>().with({
+      id: 'test.internal2',
+    });
+
+    const extension = createExtension({
+      namespace: 'test',
+      name: 'e1',
+      attachTo: { id: 'ignored', input: 'ignored' },
+      output: [stringDataRef, internalRef.optional()],
+      factory: () => [stringDataRef('test-text')],
+    });
+
+    const tester = createExtensionTester(extension);
+
+    const test: string = tester.get(stringDataRef);
+
+    // @ts-expect-error - internalRef is optional
+    const test2: number = tester.get(internalRef);
+
+    // @ts-expect-error - internalRef2 is not defined in the extension
+    const test3: number = tester.get(internalRef2);
+
+    expect([test, test2, test3]).toBeDefined();
+  });
+
+  it('should support getting outputs from a query response', () => {
+    const internalRef = createExtensionDataRef<number>().with({
+      id: 'test.internal',
+    });
+
+    const internalRef2 = createExtensionDataRef<number>().with({
+      id: 'test.internal2',
+    });
+
+    const extension = createExtension({
+      namespace: 'test',
+      name: 'e1',
+      inputs: {
+        ignored: createExtensionInput([stringDataRef]),
+      },
+      attachTo: { id: 'ignored', input: 'ignored' },
+      output: [coreExtensionData.reactElement],
+      factory: () => [coreExtensionData.reactElement(<div>bob</div>)],
+    });
+
+    const extraExtension = createExtension({
+      namespace: 'test',
+      name: 'e2',
+      attachTo: { id: 'test/e1', input: 'ignored' },
+      output: [stringDataRef, internalRef.optional()],
+      factory: () => [stringDataRef('test-text')],
+    });
+
+    const tester = createExtensionTester(extension)
+      .add(extraExtension)
+      .query(extraExtension);
+
+    const test: string = tester.get(stringDataRef);
+
+    // @ts-expect-error - internalRef is optional
+    const test2: number = tester.get(internalRef);
+
+    // @ts-expect-error - internalRef2 is not defined in the extension
+    const test3: number = tester.get(internalRef2);
+
+    expect([test, test2, test3]).toBeDefined();
   });
 });

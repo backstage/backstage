@@ -57,7 +57,7 @@ import { ConfigReader, UrlPatternDiscovery } from '@backstage/core-app-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { ScmAuthApi } from '@backstage/integration-react';
 import { CatalogApi } from '@backstage/plugin-catalog-react';
-import { MockFetchApi, setupRequestMockHandlers } from '@backstage/test-utils';
+import { MockFetchApi, registerMswTestHooks } from '@backstage/test-utils';
 import { Octokit } from '@octokit/rest';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -70,7 +70,7 @@ import {
 
 describe('CatalogImportClient', () => {
   const server = setupServer();
-  setupRequestMockHandlers(server);
+  registerMswTestHooks(server);
 
   const mockBaseUrl = 'http://backstage:9191/api/catalog';
   const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);

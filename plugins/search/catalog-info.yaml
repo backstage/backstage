@@ -7,4 +7,4 @@ metadata:
 spec:
   lifecycle: production
   type: backstage-frontend-plugin
-  owner: discoverability-maintainers
+  owner: search-maintainers

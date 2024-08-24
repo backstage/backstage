@@ -15,7 +15,7 @@ import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Logger } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { UrlReader } from '@backstage/backend-common';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 import * as winston from 'winston';
 import { Writable } from 'stream';
 
@@ -82,7 +82,7 @@ export class Generators implements GeneratorBuilder {
 
 // @public
 export const getDocFilesFromRepository: (
-  reader: UrlReader,
+  reader: UrlReaderService,
   entity: Entity,
   opts?: {
     etag?: string;
@@ -157,7 +157,7 @@ export type PreparerBuilder = {
 // @public
 export type PreparerConfig = {
   logger: Logger;
-  reader: UrlReader;
+  reader: UrlReaderService;
 };
 
 // @public

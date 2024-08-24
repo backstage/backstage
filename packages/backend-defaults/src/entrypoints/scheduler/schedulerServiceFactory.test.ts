@@ -20,9 +20,9 @@ import { schedulerServiceFactory } from './schedulerServiceFactory';
 
 describe('schedulerFactory', () => {
   it('creates sidecar database features', async () => {
-    const tester = ServiceFactoryTester.from(schedulerServiceFactory());
+    const tester = ServiceFactoryTester.from(schedulerServiceFactory);
 
-    const scheduler = await tester.get();
+    const scheduler = await tester.getSubject();
     await scheduler.scheduleTask({
       id: 'task1',
       timeout: { seconds: 1 },

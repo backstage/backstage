@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
+import { useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { notificationsApiRef } from '../api';
 import { rootRouteRef } from '../routes';
-import { useRouteRef } from '@backstage/core-plugin-api';
-import { useNavigate } from 'react-router-dom';
 
-/** @public */
+/** @internal */
 export function useWebNotifications(enabled: boolean) {
   const [webNotificationPermission, setWebNotificationPermission] =
     useState('default');
-  const notificationsRoute = useRouteRef(rootRouteRef);
-  const navigate = useNavigate();
+  const notificationsRoute = useRouteRef(rootRouteRef)();
+  const notificationsApi = useApi(notificationsApiRef);
 
-  useEffect(() => {
+  const requestUserPermission = useCallback(() => {
     if (
       enabled &&
       'Notification' in window &&
@@ -57,16 +57,20 @@ export function useWebNotifications(enabled: boolean) {
         event.preventDefault();
         if (options.link) {
           window.open(options.link, '_blank');
+          notificationsApi.updateNotifications({
+            ids: [options.id],
+            read: true,
+          });
         } else {
-          navigate(notificationsRoute());
+          window.open(notificationsRoute);
         }
         notification.close();
       };
 
       return notification;
     },
-    [webNotificationPermission, navigate, notificationsRoute],
+    [webNotificationPermission, notificationsApi, notificationsRoute],
   );
 
-  return { sendWebNotification };
+  return { sendWebNotification, requestUserPermission };
 }

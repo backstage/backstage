@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import {
-  authServiceFactory,
-  httpAuthServiceFactory,
-} from '@backstage/backend-app-api';
+import { authServiceFactory } from '@backstage/backend-defaults/auth';
+import { httpAuthServiceFactory } from '@backstage/backend-defaults/httpAuth';
 import {
   mockServices,
-  setupRequestMockHandlers,
+  registerMswTestHooks,
   startTestBackend,
 } from '@backstage/backend-test-utils';
 import { ResponseError } from '@backstage/errors';
@@ -34,7 +32,7 @@ import fetch from 'node-fetch';
 
 describe('credentials', () => {
   const worker = setupServer();
-  setupRequestMockHandlers(worker);
+  registerMswTestHooks(worker);
 
   it('handles all valid credentials settings', async () => {
     const config = {
@@ -82,8 +80,8 @@ describe('credentials', () => {
       features: [
         import('../alpha'),
         mockServices.rootConfig.factory({ data: config }),
-        authServiceFactory(),
-        httpAuthServiceFactory(),
+        authServiceFactory,
+        httpAuthServiceFactory,
       ],
     });
 
@@ -297,5 +295,5 @@ describe('credentials', () => {
     } finally {
       await backend.stop();
     }
-  });
+  }, 20_000);
 });

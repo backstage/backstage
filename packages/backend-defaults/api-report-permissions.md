@@ -7,9 +7,10 @@ import { PermissionsService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 
 // @public
-export const permissionsServiceFactory: () => ServiceFactory<
+export const permissionsServiceFactory: ServiceFactory<
   PermissionsService,
-  'plugin'
+  'plugin',
+  'singleton'
 >;
 
 // (No @packageDocumentation comment for this package)

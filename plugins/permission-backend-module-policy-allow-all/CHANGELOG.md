@@ -1,5 +1,76 @@
 # @backstage/plugin-permission-backend-module-allow-all-policy
 
+## 0.1.20
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-auth-node@0.5.0
+  - @backstage/plugin-permission-node@0.8.1
+
+## 0.1.20-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.3
+  - @backstage/plugin-auth-node@0.5.0-next.3
+  - @backstage/plugin-permission-common@0.8.1-next.1
+  - @backstage/plugin-permission-node@0.8.1-next.3
+
+## 0.1.20-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.2
+  - @backstage/plugin-permission-common@0.8.1-next.1
+  - @backstage/plugin-auth-node@0.5.0-next.2
+  - @backstage/plugin-permission-node@0.8.1-next.2
+
+## 0.1.20-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.8.1-next.0
+  - @backstage/plugin-permission-node@0.8.1-next.1
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/plugin-auth-node@0.4.18-next.1
+
+## 0.1.20-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.1-next.0
+  - @backstage/plugin-auth-node@0.4.18-next.0
+  - @backstage/plugin-permission-common@0.8.0
+  - @backstage/plugin-permission-node@0.8.1-next.0
+
+## 0.1.19
+
+### Patch Changes
+
+- ed10fd2: Internal refactor to use new `PolicyQueryUser` type.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.0
+  - @backstage/plugin-permission-common@0.8.0
+  - @backstage/plugin-permission-node@0.8.0
+  - @backstage/plugin-auth-node@0.4.17
+
+## 0.1.19-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.22-next.1
+  - @backstage/plugin-auth-node@0.4.17-next.1
+  - @backstage/plugin-permission-common@0.7.14
+  - @backstage/plugin-permission-node@0.7.33-next.1
+
 ## 0.1.18-next.0
 
 ### Patch Changes

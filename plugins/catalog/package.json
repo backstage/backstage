@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog",
-  "version": "1.21.1-next.0",
+  "version": "1.22.0",
   "description": "The Backstage plugin for browsing the Backstage catalog",
   "backstage": {
     "role": "frontend-plugin",
@@ -29,7 +29,7 @@
   "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
-    "./alpha": "./src/alpha.ts",
+    "./alpha": "./src/alpha/index.ts",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
@@ -37,7 +37,7 @@
   "typesVersions": {
     "*": {
       "alpha": [
-        "src/alpha.ts"
+        "src/alpha/index.ts"
       ],
       "package.json": [
         "package.json"
@@ -90,6 +90,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
+    "@backstage/frontend-test-utils": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/dom": "^10.0.0",

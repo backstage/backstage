@@ -11,9 +11,10 @@ import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { transport } from 'winston';
 
 // @public
-export const rootLoggerServiceFactory: () => ServiceFactory<
+export const rootLoggerServiceFactory: ServiceFactory<
   RootLoggerService,
-  'root'
+  'root',
+  'singleton'
 >;
 
 // @public

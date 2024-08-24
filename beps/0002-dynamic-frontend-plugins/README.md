@@ -156,11 +156,246 @@ Each plugin is required to provide manifest file (metadata) in predefined format
 
 Plugin discovery is a pre-requisite for Plugin registry. This should be responsible for scanning for available plugins and generating/modifying the plugin registry to always keep it up to date.
 
+### CLI
+
+The following sections contains proposal of new CLI scripts to support the dynamic frontend plugins.
+
+#### Static and Dynamic Plugin Build Differences
+
+The major difference between static and dynamic plugins lies in their dependencies and how they are "installed" into a Backstage instance and whether they are bundled into final JS output during the build.
+
+While static plugins can define their dependencies using the dependencies field inside `package.json`, dynamic (module federation-based) plugins can't.
+
+A dynamic plugin requires all dependencies to be present in the build output. Module sharing is then used to optimize the "output size" at runtime. If a shared package is not found in the browser scope, or if the version range does not match the requirement, it falls back and loads additional JS assets from the "private" build and adds them to the scope.
+
+Webpack is also not the best tool for building traditional NPM packages. Dependencies can be externalized, but Webpack brings additional code into the bundles. Using Webpack external dependencies also conflicts with module federation shared modules. Externals will not be included even as a shared module fallback. As a result, such shared module can't be used because the dependency will not be defined in the init container.
+
+If the vision is to still support "static" plugins installed via NPM, it makes sense to keep the static and dynamic plugin builds separate and build two different bundles. Both can still be published as a single NPM package (not recommended), but to achieve optimal performance for both, there cannot be a shared output.
+
+#### Dynamic export CLI
+
+```sh
+backstage-cli plugin export-dynamic
+```
+
+Similar to the current build command, instead of producing static plugin output, it builds a dynamic plugin using Webpack and module federation plugins.
+
+**Internal arguments**
+
+Some configuration is required, but they can be internal using the script `cwd`.
+
+- _path_
+  - path to the plugin `package.json`
+- _export-name_
+  - Export name from where the plugin root is accessible
+  - defaults to `pluginEntry`
+
+**Shared modules**
+
+> NOTE: Details of module sharing are described in the [Module sharing](#module-sharing) section.
+
+Short summary of dependency sharing:
+
+- Predefined set of singleton packages
+- Generated granular config of modules for MUI dependencies
+- Share all other dependencies listed in package.json
+
+To allow additional customization of module sharing, extra configuration will be required. The extra module haring configuration can be embedded inside `package.json`.
+
+- [Schema proposal draft](./dependency-sharing-schema.json)
+- [Config draft](./share-config-sample.json)
+
+#### Generate module sharing map
+
+> NOTE: RedHat has similar internal generators that are used in combination with Scalprum. These can be built upon, moved to Scalprum, and exposed. If there is interest, the Backstage maintainers do not have to be responsible for maintaining the source code.
+
+A simple program to traverse the AST and find exports from the `main` or `module` script of a dependency. Any exposed modules from the dependency entry will be traced to their source files, and a module map can be generated.
+
+> NOTE: It is important that import paths in source code are also directly targeting the "traced" modules or are transformed at build time.
+
+**The script should be triggered by the plugin build cli**
+
+Generates a module map (exported module source file location) for module sharing.
+
+**Arguments**
+
+- _path_
+  - path to the module root (directory with package.json)
+
+[module map generator using TS example](#simplistic-minimal-example-of-module-map-generator)
+
+### Dynamic assets server
+
+A simple static asset server is sufficient to serve the dynamic assets. The asset server can collect the necessary metadata at boot or runtime. The asset server can be added to the `app-backend`
+
+It's important to consider old deployments as part of this storage, to make sure that dynamic chunks are still available to users who have not yet refreshed the page to load the latest version of the app.
+
+#### Plugin separation
+
+- Each plugin should be separated into a directory.
+- Each plugin can be viewed as a `private` workspace package in a npm workspaces environment.
+
+```sh
+path/to/assets/plugin/dynamic-plugins/
+└── dynamic-backstage.plugin-user-settings
+    ├── dist
+    ├── package.json
+    └── plugin-manifest.json
+```
+
+#### Boot time initialization
+
+**Dynamically build plugins**
+
+Only dynamic plugins can be hosted in the backend. The plugins has to provide the [manifest](#plugin-manifest). It the manifest is not found, plugin will not be considered dynamic and will be enabled for loading.
+
+**File system assets management**
+
+Once plugins are installed and fully dynamic, the asset server has to "discover" what plugins are loadable.
+
+This can be done by scanning the "assets" (dynamic-plugins in the dir example) for individual plugin manifests. Simple `glob` lookup for `path/dynamic-plugins/**/plugins-manifest.json` pattern should give required results.
+
+With this data the assets server should be able to generate a "plugin registry" with necessary metadata for the frontend. See the [Plugin Registry](#plugin-registry-1) for format details.
+
+The during the collection, the program can also add the `assetHost` prefix to the manifest location attribute described in the [webpack configuration](#sample-webpack-configuration) section.
+
+**Alternative means of assets management**
+
+To manage the assets by other means than just using filesystem, the file system should be treated only as an entry point for the plugins. Leveraging other means such as DB/cache/object storage should be also an option. The storage method should be mandated as long as a plugin registry and assets are available.
+
+**Singleton dependencies verification (optional)**
+
+With [module sharing](#module-sharing) and its singleton option, it is critical that the singleton dependencies versions are matching.
+
+The singleton configuration from the shell application can be extracted as well as from all dynamic plugins (included in the generated [manifest](#plugin-manifest)). A semver check can be used to prevent a plugin from initializing if a version mismatch is found. A version check also has to be made between plugins. New plugin singleton dependencies must match both the shell and all previously loaded plugins.
+
+#### Runtime updates
+
+It is fully expected that plugins can be added or removed at the asset server runtime. The same tasks can be performed as during boot time initialization. It is critical that the plugin registry is not cached and updated immediately if assets change.
+
+The server **should not remove older JS/CSS assets** immediately after updates. It is highly likely user can have older version still loaded in their browsers. A retention period is required for the assets. Using proper content hashes for builds will help with keep the duplicate assets to a minimum.
+
+#### Asset server API
+
+> NOTE Routes names are purely arbitrary at this point.
+
+The API can be very simplistic
+
+_GET /dynamic-plugins/plugin-registry_
+
+Returns generated [Plugin Registry](#plugin-registry-1).
+
+\*GET /dynamic-plugins/assets/\*\*
+
+Static assets endpoint. Can be handled via the `express.static` middleware.
+
+### Plugin loading
+
+> NOTE: Only viable for the new frontend plugin system.
+
+The feature loader is a perfect place to initialize a new dynamic plugin as it already accepts async loaders.
+
+An example of [integration with scalprum](https://github.com/backstage/backstage/commit/23085aa8dfbc73d4648c100cf06b6b67e8e31764).
+
+#### Integration to core
+
+**Dynamic Feature configuration**
+
+The dynamic remote loading can be added directly into the [`createApp`](https://github.com/backstage/backstage/blob/master/packages/frontend-app-api/src/wiring/createApp.tsx#L234) function.
+
+The current `feature` type can be expanded with a `DynamicFrontendFeature` type:
+
+```ts
+// current
+type Features: (FrontendFeature | CreateAppFeatureLoader)[];
+
+// with dynamic plugins
+type DynamicFrontendFeature = {
+  name: string;
+  manifestLocation: string // URI with host enhanced with the "DEFAULT_API_PATH" or "assetHost" prefix
+}
+
+type Features: (FrontendFeature | CreateAppFeatureLoader | DynamicFrontendFeature)[];
+```
+
+**Dynamic Feature boot loading**
+
+Scalprum can be initialized with the metadata originating from the dynamic backend plugin. In order to properly load a plugin with `publicPath` set to `auto`, a small transformation of the manifest has to happen before it is loaded. A sample Scalprum config with such transformation:
+
+```TS
+import { initialize } from '@scalprum/core';
+import { ScalprumProviderProps } from '@scalprum/react-core';
+
+// get the pluginRegistry from the backend plugin
+const pluginRegistry = await loadRemoteConfig()
+
+const pluginSDKOptions: ScalprumProviderProps['pluginSDKOptions'] = {
+  pluginLoaderOptions: {
+    transformPluginManifest: manifest => {
+      return {
+        ...manifest,
+        loadScripts: manifest.loadScripts.map(script => {
+          // Any additional transformations can happen here in case the manifest format needs to be adjusted further.
+          // the init scripts URL is enhanced with the asset location to add the host:
+          return `${manifest.customProperties.assetHost ?? DEFAULT_API_PATH}${script}`;
+        }),
+      };
+    },
+  },
+};
+
+// Initialize Scalprum instance
+const scalprum = initialize({
+  appsConfig: pluginRegistry,
+  pluginLoaderOptions: pluginSDKOptions.pluginLoaderOptions,
+});
+```
+
+Because the [`appLoader`](https://github.com/backstage/backstage/blob/master/packages/frontend-app-api/src/wiring/createApp.tsx#L193) is already async, it is a perfect place to load the plugin registry and init the dynamic plugins.
+
+Initializing the dynamic feature is just a case of mapping the `DynamicFrontendFeature` to `FrontendFeature` via Scalprum:
+
+```ts
+import { processManifest, getModule } from '@scalprum/core';
+// a ID of the module withing module federation container, can be customized, depends on the build
+const DEFAULT_MODULE_NAME = 'pluginEntry';
+
+async function loadScalprumFeature({ manifestLocation, name }) {
+  // initialize dynamic remote within scalprum cache
+  await processManifest(manifestLocation, name, DEFAULT_MODULE_NAME);
+  // gets the actual JS module from scalprum
+  const feature = await getModule<FrontendFeature>(name, DEFAULT_MODULE_NAME);
+
+  return feature;
+}
+const providedFeatures: FrontendFeature[] = [];
+for (const entry of options?.features ?? []) {
+  if ('manifestLocation' in entry && 'name' in entry) {
+    // some error handling required
+    const dynamicFeature = loadScalprumFeature(entry);
+    providedFeatures.push(dynamicFeature);
+  } else if ('load' in entry) {
+    // plugin with load function
+  } else {
+    // #static plugin
+  }
+}
+
+const app = createSpecializedApp({
+  icons: options?.icons,
+  config,
+  features: [...discoveredFeatures, ...providedFeatures],
+  bindRoutes: options?.bindRoutes,
+}).createRoot();
+```
+
+The federated modules are now available as if they were static plugins.
+
 ## Design Details
 
-> NOTE The details are based on the Janus implementation of dynamic frontend plugins. The implementation leverages [Scalprum](https://github.com/scalprum/scaffolding) which is a Webpack based dynamic plugin manager for React applications.
-
 ### Module federation implementation experiments
+
+> NOTE Experiments were tested and documented. Decision was mated to leverage [Scalprum](https://github.com/scalprum/scaffolding) and [dynamic-plugins-sdk](https://github.com/openshift/dynamic-plugin-sdk). Instead of native webpack module federation the [@module-federation/enhanced](https://www.npmjs.com/package/@module-federation/enhanced) plugin will be used to ensure future compatibility with other bundlers.
 
 Test should consist of trying to run permutations of webpack/Rspack/vite based shell apps/plugins and discover if we can freely choose any tool, or if we should restrict the tooling to just a subset of the available options.
 
@@ -217,70 +452,7 @@ This config ensures that only those modules (from @mui/material) that are used i
 
 This can be checked by debugging network traffic and shared scopes:
 
-![notifications system architecture diagram](./scope-sharing.png)
-
-#### Limitations
-
-A limitation of module sharing is that each module name can only appear once in each context. This means that if you're trying to build a bundle of shared modules with a deeper dependency tree, you may end up needing to resolve conflicts by renaming some modules that appear multiple times with different versions. This will in turn limit sharing of those modules with other bundles.
-
-There is also a conflict with the chunk splitting currently used in the Backstage CLI that means that some singleton modules need to be configured to be eagerly loaded. More broadly we may also want to re-evaluate the chunk splitting strategy in the Backstage CLI when adding support for module federation.
-
-### Plugin manifest
-
-Each plugin should have a manifest file with important metadata. This metadata is used to load the remote assets to browser. The plugin manifest should be part of a build output.
-
-A manifest should have:
-
-- name of plugin
-- how can be the init container accessed
-- what is the base URL (assets pathname)
-- name of the entry script(s)
-
-#### Scalprum compatible manifest
-
-```TS
-type PluginManifest = {
-  name: string;
-  version: string;
-  dependencies?: Record<string, string>;
-  customProperties?: AnyObject;
-  baseURL: string;
-  extensions: Extension[];
-  loadScripts: string[];
-  registrationMethod: 'callback' | 'custom';
-  buildHash?: string;
-}
-```
-
-```js
-{
-  "name": "backstage.plugin-github-actions",
-  "version": "0.6.6",
-  "extensions": [],
-  "registrationMethod": "callback", // where container init is available  in browser
-  "baseURL": "auto",
-  "loadScripts": [
-    "backstage.plugin-github-actions.804b91040fcbca6585ce.js"
-  ],
-  "buildHash": "804b91040fcbca6585ce1bcd4b1f8aa2"
-}
-```
-
-##### `registrationMethod`
-
-Refers to [webpack output.libraryTarget](https://webpack.js.org/configuration/output/#outputlibrarytarget).
-
-Callback refers to `jsonp` and a the `custom` is used if other available target configuration has been picked.
-
-It is recommended to use either `global` or `jsonp` as these are environment agnostic (browser VS node). `jsonp` requires additional configurations. The `global` is preferable due to its simplicity.
-
-##### `baseURL`
-
-The `baseURL` is derived from [webpack public path](https://webpack.js.org/configuration/output/#outputpublicpath)
-
-The public path can also be set to `auto` to remove the need to specify origin or pathname and resolve the pathname at runtime.
-
-In Scalprum, some manifest [post processing](https://github.com/janus-idp/backstage-showcase/blob/main/packages/app/src/components/DynamicRoot/DynamicRoot.tsx#L323) is required to load the initial scripts if the `auto` baseURL is chosen.
+![scope sharing sample](./scope-sharing.png)
 
 ### Plugin registry
 
@@ -290,6 +462,7 @@ Plugin registry can be fairly simplistic. It can be as simple as JSON file conta
 type RegistryEntry = {
   name: string // plugin name
   manifestLocation: string // path to the manifest resource
+  assetHost: string // host part of URL to deal with the `auto` publicPath
 }
 
 // object for easy access
@@ -308,7 +481,8 @@ Example of such registry
 {
   "backstage.plugin-github-actions": {
     "name": "backstage.plugin-github-actions",
-    "manifestLocation": "https://foo-bar.com/api/plugin-storage/plugin-manifest.json"
+    "manifestLocation": "/api/plugin-storage/plugin-manifest.json",
+    "assetHost": "https://foo-bar.com"
   },
   // ..rest of plugins
 }
@@ -318,6 +492,7 @@ Example of such registry
   {
     "name": "backstage.plugin-github-actions",
     "manifestLocation": "https://foo-bar.com/api/plugin-storage/plugin-manifest.json"
+    "assetHost": "https://foo-bar.com"
   },
   // ...rest of plugins
 ]
@@ -353,7 +528,6 @@ Example of registry with embedded manifests
     "pluginManifest": {
       "name": "backstage.plugin-github-actions",
       "version": "0.6.6",
-      "extensions": [],
       "registrationMethod": "callback",
       "baseURL": "auto",
       "loadScripts": [
@@ -372,7 +546,6 @@ Example of registry with embedded manifests
     "pluginManifest": {
       "name": "backstage.plugin-github-actions",
       "version": "0.6.6",
-      "extensions": [],
       "registrationMethod": "callback",
       "baseURL": "auto",
       "loadScripts": [
@@ -386,155 +559,374 @@ Example of registry with embedded manifests
 
 ```
 
-### Webpack build configuration
+### Frontend plugin build configuration
 
-> NOTE This is a sample current configuration in the Janus project. It uses Scalprum webpack based build plugin to generate the output. It does not take the [all options](#Module-federation-implementation-experiments) in consideration. This section will likely change considerably.
+#### Build tooling
 
-Part of a Scalprum tooling is also [dynamic-plugins-sdk](https://github.com/openshift/dynamic-plugin-sdk). Right now the package is a part of a different project, but that is about to change. More details in the [Scalprum roadmap](https://github.com/scalprum/scaffolding/blob/main/ROADMAP.md).
+- webpack module bundler as a base
+- use `@openshift/dynamic-plugin-sdk-webpack` to build dynamic frontend output
+  - with `@module-federation/enhanced` plugins instead of native webpack
 
-#### Sample plugin configuration using Scalprum SDK
+#### Module sharing
+
+Webpack allows for dependency/module sharing across different remote modules. For performance's sake, all dependencies should be shared. The sharing is version-restricted, and there can be multiple versions of the same package at the same time. This ensures that remote modules will have the necessary dependency version available, either from the shared scope or as a fallback from the respective build.
+
+**Singleton sharing**
+
+Singleton sharing is necessary for context sharing between remote modules and between remote modules and shell application.
+
+Only a minimal set of dependencies should be shared as singletons as it gives access to all packages to the parent context. Also **version checking is disabled for singleton packages!**
+
+Singleton "must have" list:
+
+- @scalprum/core
+- @scalprum/react-core
+- @openshift/dynamic-plugin-sdk
+- react
+- react-dom
+- react-router-dom
+
+Singleton "might have to" list:
+
+- @material-ui/core/styles
+- @material-ui/styles
+
+**@mui/_ and @material-ui/_ like packages**
+
+> NOTE: Can leverage [Generate module sharing map](#generate-module-sharing-map).
+
+Component libraries are usually large (thousands of svg icons in @mui/icons) and it is inefficient to share them as a whole. **Tree shaking is disabled for shared modules**. That means sharing large packages in multiple versions will result in a bloated JS in browsers.
+
+Sharing components like these can be done on module level. Instead of sharing the entire package, share its individual components:
+
+```js
+const shared = {
+  // will result in bloated bundles and degraded performance
+  '@mui/material': {
+    requiredVersion: 'x.x.x', // semver
+  },
+  // sharing per module level, only button module is included in the output
+  '@mui/material/Button': {
+    version: 'x.x.x', // might have to specifically set the version
+    requiredVersion: 'x.x.x', // semver
+  },
+};
+```
+
+Sharing dependencies on module level leads to optimal bundle size. Even if all modules from a dependency are listed, Webpack will only bundle modules that are discovered in the source files. That means the list can be generated at build time with no risk of bloating the output with unused modules.
+
+The module sharing "matching" is based on import paths. If relative import paths are used `import {foo} from 'bar'` it will not be matched to the absolute import path of a shared module `import foo from 'bar/foo'`. Therefore absolute import paths have to enforced or path transformation has to happen at build time. For JS builds, babel can be used, for ts builds a `ts-patch` utility with custom plugins is an option.
+
+#### Limitations
+
+A limitation of module sharing is that each module name can only appear once in each context. This means that if you're trying to build a bundle of shared modules with a deeper dependency tree, you may end up needing to resolve conflicts by renaming some modules that appear multiple times with different versions. This will in turn limit sharing of those modules with other bundles.
+
+There is also a conflict with the chunk splitting currently used in the Backstage CLI that means that some singleton modules need to be configured to be eagerly loaded. More broadly we may also want to re-evaluate the chunk splitting strategy in the Backstage CLI when adding support for module federation.
+
+#### Webpack chunk optimization
+
+Custom webpack chunk splitting configuration can be problematic, especially when modifying runtime and vendor chunks. Module federation creates its own chunks. Shared modules that are not set up to be eagerly loaded (using the `eager` configuration) **cannot be included inside the entry script**. With a custom chunk splitting setup, they can potentially be forced into the entry script, causing runtime errors. On the other hand, some critical runtime code that has to be in the entry script, cna be forced out of it. This is particularly problematic for the "shell" application.
+
+Chunk optimization should be disabled for the initial implementation.
+
+#### Webpack Public path option
+
+The `publicPath` output config in webpack is a mandatory attribute for federated modules. However, at build time, it is impossible to guess where the assets are served from. From origin to the pathname, this is specific to each installation.
+
+We can leverage the [auto](https://webpack.js.org/guides/public-path/#automatic-publicpath) option. However this means that some manifest transformation has to happen at runtime when entry scripts are loaded into the browser. More on that in the [Plugin manifest](#plugin-manifest), [CDN Plugin](#dynamic-assets-server-plugin), and [Plugin loading](#plugin-loading) sections.
+
+#### Sample webpack configuration
 
 ```TS
-import { DynamicRemotePlugin } from '@openshift/dynamic-plugin-sdk-webpack';
 
-const sharedModules = {
-  /**
-   * Mandatory singleton packages for sharing
-   */
-  react: {
-    singleton: true,
-    requiredVersion: '*',
-  },
-  'react-dom': {
-    singleton: true,
-    requiredVersion: '*',
-  },
-  'react-router-dom': {
-    singleton: true,
-    requiredVersion: '*',
-  },
-  'react-router': {
-    singleton: true,
-    requiredVersion: '*',
-  },
-  ...
-  /**
-   * Full list of shared modules in Janus
-   * https://github.com/janus-idp/backstage-plugins/blob/87a6b045c7b0f301ebed8b8f99dc1741fa2b044b/packages/cli/src/lib/bundler/scalprumConfig.ts#L16
-  */
+type DynamicPluginConfig = {
+  name: string;
+  version?: string;
+};
+// { name: "@backstage/plugin-api-docs", version: "1.0.0" }
+// generates "dynamic-backstage.plugin-api-docs"
+const getName = (plugin: DynamicPluginConfig) => {
+  let pluginName: string;
+  if (plugin.name.includes('/')) {
+    const fragments = plugin.name.split('/');
+    pluginName = `${fragments[0].replace('@', '')}.${fragments[1]}`;
+  } else {
+    pluginName = plugin.name;
+  }
 
+  return `dynamic-${pluginName}`;
 }
+
+
+// plugin = { name: "@backstage/plugin-api-docs", version: "1.0.0" } based on package.json
+const pluginName = getName(plugin);
+
+const { ModuleFederationPlugin, ContainerPlugin } = require('@module-federation/enhanced');
 
 const dynamicPluginPlugin = new DynamicRemotePlugin({
   extensions: [],
-  sharedModules,
-  entryScriptFilename: `${options.pluginMetadata.name}.[contenthash].js`,
-  pluginMetadata: {
-    // version cna be used from the package.json version field
-    version: '1.0.0',
-    /**
-     * Name can be easily derived from the plugin name
-     * https://github.com/janus-idp/backstage-plugins/blob/87a6b045c7b0f301ebed8b8f99dc1741fa2b044b/packages/cli/src/commands/export-dynamic-plugin/frontend.ts#L40
-    */
-    name: 'backstage.plugin-github-actions',
-    /**
-     * Path to the plugin entry point.
-     * It can default to the same entry point as in regular build.
-     * Plugins can expose multiple modules. We have found that one is sufficient from backstage plugins.
-    */
-    exposedModules: {
-      PluginRoot: './src/index.ts'
+  sharedModules, // from shared config and generated from `package.json` dependencies
+  entryScriptFilename: `[name].[contenthash].js`, // using contenthash for cashing purposes
+  moduleFederationSettings: {
+    libraryType: 'global', // use the globalThis object rather than jsonp
+    // instruct the sdk plugin to use @module-federation/enhanced tooling
+    pluginOverride: {
+      ModuleFederationPlugin,
+      ContainerPlugin,
     }
   },
-});
-```
-
-The `DynamicRemotePlugin` webpack plugin takes care of the rest, including the manifest generation.
-
-#### Sample plugin raw webpack configuration
-
-The Scalprum config translates to a following base webpack plugin configuration:
-
-```JS
-import { container } from 'webpack';
-
-const dynamicPlugin = new container.ModuleFederationPlugin({
-  name: 'backstage.plugin-github-actions',
-  library: {
-    type: 'global',
-    /**
-     * Some library.type has name limitation
-     * for example, if "type": "var" is used, the library.name can contain the "-" character
-    */
-    name: 'backstage.plugin-github-actions'
+  pluginMetadata: {
+    name: pluginName,
+    version: plugin.version || '0.0.0',
+    exposedModules: {
+      // path to the default export of the frontend plugin entry point
+      // the path should be sourced from the "main" attribute withing package.json
+      pluginEntry: './src/index.ts',
+    },
   },
-  filename: 'backstage.plugin-github-actions.[contenthash].js',
-  exposes: {
-    PluginRoot: './src/index.ts'
-  },
-  // list of shared modules like "react", "react-dom", etc
-  shared: sharedModules,
 });
+
+
+const config: Configuration = {
+    context: pluginRoot,
+    output: {
+      chunkFilename: `${pluginName}.[contenthash].js`,
+      path: path.resolve(pluginRoot, 'dist'),
+      publicPath: 'auto',
+    },
+    entry: {},
+    resolve: {
+      extensions: ['.js', '.jsx', '.ts', '.tsx'],
+    },
+    // extend existing webpack plugins that are relevant for dynamic plugins
+    plugins: [dynamicPluginPlugin, ...],
+    module: {
+      rules: [
+        {
+          // needs TS config as well
+          test: /\.js$/,
+          exclude: /(node_modules)/,
+          use: {
+            loader: 'swc-loader',
+          },
+        },
+        {
+          test: /\.(png|svg|jpg|jpeg|gif)$/i,
+          type: 'asset/resource',
+        },
+        // additional loaders for CSS if necessary, can use the same as the current backstage shell app
+      ],
+    },
+  };
+  return config;
 ```
 
-Additional plugin would have to be written from scratch to generate the plugin manifest file.
+**Webpack plugins**
 
-### Sample shell application webpack configuration
+Existing webpack plugins can be used. Subset of shared plugins should be identified from current configurations and shared between the dynamic plugins and the shell application.
 
-Shell application (backstage) has very simple module federation configuration. It does not require anything special to be able to inject plugins. Main requirement is to provide core shared packages like react and react-dom.
+### Plugin manifest
 
-```JS
-import { container } from 'webpack';
+Plugin manifest is a simple JSON file containing critical metadata to initialize a remote plugin.
 
-const scalprumPlugin = new container.ModuleFederationPlugin({
-  name: 'backstageHost',
-  filename: 'backstageHost.[contenthash].js',
-  // same share modules list as with plugin config
-  shared: [sharedModules],
-});
+The `@openshift/dynamic-plugin-sdk-webpack` plugin will output manifest file in the following format:
+
+```ts
+type PluginManifest = {
+  name: string;
+  version: string;
+  dependencies?: Record<string, string>;
+  customProperties?: AnyObject;
+  baseURL: string;
+  loadScripts: string[];
+  registrationMethod: 'callback' | 'custom';
+  buildHash?: string;
+};
 ```
 
-Nothing else is required.
+This manifest is directly usable in Scalprum at runtime.
 
-### Plugin storage
+**baseURL**
 
-Where will the dynamic plugin assets be hosted? Module federation does not strictly require the remote assets to be all hosted on the same origin.
+This attribute is populated by the `output.publicPath` configuration. In this case, it will be a value of `auto`. That is not usable by the Scalprum loader. It has to be a URL.
 
-Theoretically plugins can be hosted on some "public CDN" which is detached from individual backstage instances.
+Because the origin can't be reliably "guessed" at build time, the value has to be filled by the CDN server. The attribute can be either overridden or, preferably, added to the `customProperties` attribute.
 
-Assets can be also be hosted in the same way as they have always been.
+A default`DEFAULT_API_PATH` should be used. Covering majority of the use cases.
 
-It's important to consider old deployments as part of this storage, to make sure that dynamic chunks are still available to users who have not yet refreshed the page to load the latest version of the app.
+```ts
+type CustomProperties = {
+  assetHost?: string; // for local development should be http://localhost:PORT
+  // for deployment, should match the api host https://backstage.company.org
+};
+```
 
-### Plugin discovery
+Any additional metadata about plugins, can be also stored to the `customProperties`. Either at build time or runtime. That depends on the use case. The values can be read at runtime during plugin initialization.
 
-How to notify/send data to browser
+```ts
+type CustomProperties = {
+  backstage: Record<string, any>;
+};
+```
 
-### Plugin initialization
+**Exposing singleton packages config**
 
-Currently all plugins have to be initialized at UI bootstrap (page refresh). The new UI async API can be used to initialize the remote assets.
+Singleton shared packages do not follow the version matching strategy. It is a weak point in the dependency sharing strategy. Exposing the data in the manifest files provides the option to check the singleton configuration at runtime and prevent runtime crashes of plugins.
 
-The `CreateAppFeatureLoader` can be leveraged to initialize the remote container.
+```ts
+type SingletonShareConfig = {
+  singleton: true;
+  version: string;
+  packageName: string;
+};
 
-```TS
-const allPluginManifests = {...} // get this from the config
+type SingletonShareObject = {
+  [packageName: string]: SingletonShareConfig;
+};
+```
 
-const asyncFeatureLoaders: CreateAppFeatureLoader[] = Object.values(allPluginManifests).map(({ manifest }) => {
-  return {
-      getLoaderName: () => manifest.name,
-      load: (options) => {
-        // initialize the remote container, depends on tooling
-        const plugin = initDynamicPlugin(manifest)
-      }
+**Backstage plugin manifest**
+
+The plugin manifest for backstage with the additional attributes:
+
+```ts
+type SingletonShareConfig = {
+  singleton: true;
+  version: string;
+  packageName: string;
+};
+
+type SingletonShareObject = {
+  [packageName: string]: SingletonShareConfig;
+};
+
+type CustomProperties = {
+  assetHost?: string;
+  backstage: Record<string, any>;
+  singletonPackages: SingletonShareObject;
+};
+
+type PluginManifest = {
+  name: string;
+  version: string;
+  dependencies?: Record<string, string>;
+  customProperties: CustomProperties;
+  baseURL: 'auto';
+  loadScripts: string[];
+  registrationMethod: 'custom';
+  buildHash?: string;
+};
+```
+
+### Simplistic minimal example of module map generator
+
+```js
+const path = require('path');
+const typescript = require('typescript');
+const fs = require('fs');
+
+/** @type {typescript.CompilerOptions} */
+const defaultCompilerOptions = {
+  targe: 'es2015',
+  module: 'es2015',
+  esModuleInterop: true,
+  allowJs: true,
+  strict: false,
+  skipLibCheck: true,
+  noEmit: true,
+  // needs to be configured to the root directory dependency
+  rootDir: path.resolve(__dirname, 'dist'),
+  baseUrl: path.resolve(__dirname, 'dist'),
+};
+
+// these need to be configured, usually getting metadata from the lib package.json
+const rootDit = path.resolve(__dirname, 'dist');
+const base = path.resolve(__dirname, 'dist', 'index.js');
+
+function getDynamicModuleMap(libName) {
+  const compiler = typescript.createCompilerHost(defaultCompilerOptions, [
+    rootDit,
+  ]);
+  const program = typescript.createProgram(
+    [base],
+    defaultCompilerOptions,
+    compiler,
+  );
+
+  const moduleResolutionCache = typescript.createModuleResolutionCache(
+    rootDit,
+    x => x,
+    defaultCompilerOptions,
+  );
+  const errorDiagnostics = typescript
+    .getPreEmitDiagnostics(program)
+    .filter(d => d.category === typescript.DiagnosticCategory.Error);
+  if (errorDiagnostics.length > 0) {
+    const { getCanonicalFileName, getCurrentDirectory, getNewLine } = compiler;
+
+    console.error(
+      typescript.formatDiagnostics(errorDiagnostics, {
+        getCanonicalFileName,
+        getCurrentDirectory,
+        getNewLine,
+      }),
+    );
+
+    throw new Error(`Detected TypeScript errors while parsing modules`);
   }
-})
+  const typeChecker = program.getTypeChecker();
 
-const app = createApp({
-  features: [
-    ...asyncFeatureLoaders,
-    // rest of classic features
-  ]
-})
+  /** @param {typescript.SourceFile} sourceFile */
+  const getExportNames = sourceFile =>
+    typeChecker
+      .getExportsOfModule(typeChecker.getSymbolAtLocation(sourceFile))
+      .map(symbol => symbol.getName());
+
+  const baseExports = getExportNames(program.getSourceFile(base));
+  const compilerDir = compiler.getCurrentDirectory();
+  const resolvedModules = baseExports
+    .map(name => {
+      const res = typescript.resolveModuleName(
+        name,
+        base,
+        defaultCompilerOptions,
+        compiler,
+        moduleResolutionCache,
+      );
+      if (res.resolvedModule?.resolvedFileName) {
+        return {
+          name,
+          file:
+            libName +
+            res.resolvedModule.resolvedFileName
+              .replace(compilerDir, '')
+              .replace(/\.js$/, ''),
+        };
+      }
+      return undefined;
+    })
+    .filter(x => x !== undefined);
+
+  const moduleMapFileName = path.resolve(__dirname, 'module-map.json');
+  fs.writeFileSync(moduleMapFileName, JSON.stringify(resolvedModules, null, 2));
+}
+
+const libName = '@mui/foo';
+
+getDynamicModuleMap(libName);
+
+/**
+ * [
+ *  {
+ *    "name": "foo",
+ *    "file": "@mui/foo/dist/foo"
+ *  },
+ *  {
+ *    "name": "baz",
+ *    "file": "@mui/foo/dist/baz"
+ *  }
+ * ]
+ */
 ```
 
 ### Plugin declarative configuration

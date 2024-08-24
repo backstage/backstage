@@ -7,9 +7,10 @@ import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 
 // @public
-export const rootLifecycleServiceFactory: () => ServiceFactory<
+export const rootLifecycleServiceFactory: ServiceFactory<
   RootLifecycleService,
-  'root'
+  'root',
+  'singleton'
 >;
 
 // (No @packageDocumentation comment for this package)

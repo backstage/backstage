@@ -20,9 +20,9 @@ import {
   coreExtensionData,
   createExtension,
   createExtensionOverrides,
-  createPageExtension,
-  createPlugin,
-  createThemeExtension,
+  PageBlueprint,
+  createFrontendPlugin,
+  ThemeBlueprint,
 } from '@backstage/frontend-plugin-api';
 import { screen, waitFor } from '@testing-library/react';
 import { CreateAppFeatureLoader, createApp } from './createApp';
@@ -44,14 +44,19 @@ describe('createApp', () => {
         }),
       }),
       features: [
-        createPlugin({
+        createFrontendPlugin({
           id: 'test',
           extensions: [
-            createThemeExtension({
-              id: 'derp',
-              title: 'Derp',
-              variant: 'dark',
-              Provider: () => <div>Derp</div>,
+            ThemeBlueprint.make({
+              name: 'derp',
+              params: {
+                theme: {
+                  id: 'derp',
+                  title: 'Derp',
+                  variant: 'dark',
+                  Provider: () => <div>Derp</div>,
+                },
+              },
             }),
           ],
         }),
@@ -68,21 +73,25 @@ describe('createApp', () => {
     const app = createApp({
       configLoader: async () => ({ config: new MockConfigApi({}) }),
       features: [
-        createPlugin({
+        createFrontendPlugin({
           id: duplicatedFeatureId,
           extensions: [
-            createPageExtension({
-              defaultPath: '/',
-              loader: async () => <div>First Page</div>,
+            PageBlueprint.make({
+              params: {
+                defaultPath: '/',
+                loader: async () => <div>First Page</div>,
+              },
             }),
           ],
         }),
-        createPlugin({
+        createFrontendPlugin({
           id: duplicatedFeatureId,
           extensions: [
-            createPageExtension({
-              defaultPath: '/',
-              loader: async () => <div>Last Page</div>,
+            PageBlueprint.make({
+              params: {
+                defaultPath: '/',
+                loader: async () => <div>Last Page</div>,
+              },
             }),
           ],
         }),
@@ -107,12 +116,14 @@ describe('createApp', () => {
       async load({ config }) {
         return {
           features: [
-            createPlugin({
+            createFrontendPlugin({
               id: 'test',
               extensions: [
-                createPageExtension({
-                  defaultPath: '/',
-                  loader: async () => <div>{config.getString('key')}</div>,
+                PageBlueprint.make({
+                  params: {
+                    defaultPath: '/',
+                    loader: async () => <div>{config.getString('key')}</div>,
+                  },
                 }),
               ],
             }),
@@ -163,14 +174,14 @@ describe('createApp', () => {
     const app = createApp({
       configLoader: async () => ({ config: new MockConfigApi({}) }),
       features: [
-        createPlugin({
+        createFrontendPlugin({
           id: 'test',
           featureFlags: [{ name: 'test-1' }],
           extensions: [
             createExtension({
               name: 'first',
               attachTo: { id: 'app', input: 'root' },
-              output: { element: coreExtensionData.reactElement },
+              output: [coreExtensionData.reactElement],
               factory() {
                 const Component = () => {
                   const flagsApi = useApi(featureFlagsApiRef);
@@ -184,7 +195,7 @@ describe('createApp', () => {
                     </div>
                   );
                 };
-                return { element: <Component /> };
+                return [coreExtensionData.reactElement(<Component />)];
               },
             }),
           ],
@@ -197,8 +208,8 @@ describe('createApp', () => {
               name: 'root',
               attachTo: { id: 'app', input: 'root' },
               disabled: true,
-              output: {},
-              factory: () => ({}),
+              output: [],
+              factory: () => [],
             }),
           ],
         }),
@@ -218,17 +229,19 @@ describe('createApp', () => {
     const app = createApp({
       configLoader: async () => ({ config: new MockConfigApi({}) }),
       features: [
-        createPlugin({
+        createFrontendPlugin({
           id: 'my-plugin',
           extensions: [
-            createPageExtension({
-              defaultPath: '/',
-              loader: async () => {
-                const Component = () => {
-                  appTreeApi = useApi(appTreeApiRef);
-                  return <div>My Plugin Page</div>;
-                };
-                return <Component />;
+            PageBlueprint.make({
+              params: {
+                defaultPath: '/',
+                loader: async () => {
+                  const Component = () => {
+                    appTreeApi = useApi(appTreeApiRef);
+                    return <div>My Plugin Page</div>;
+                  };
+                  return <Component />;
+                },
               },
             }),
           ],
@@ -242,39 +255,51 @@ describe('createApp', () => {
     const { tree } = appTreeApi!.getTree();
 
     expect(String(tree.root)).toMatchInlineSnapshot(`
-      "<app out=[core.reactElement]>
-        root [
-          <app/root out=[core.reactElement]>
-            children [
-              <app/layout out=[core.reactElement]>
-                content [
-                  <app/routes out=[core.reactElement]>
-                    routes [
-                      <page:my-plugin out=[core.routing.path, core.routing.ref, core.reactElement] />
+      "<root>
+        app [
+          <app out=[core.reactElement]>
+            root [
+              <app/root out=[core.reactElement]>
+                children [
+                  <app/layout out=[core.reactElement]>
+                    content [
+                      <app/routes out=[core.reactElement]>
+                        routes [
+                          <page:my-plugin out=[core.routing.path, core.reactElement] />
+                        ]
+                      </app/routes>
                     ]
-                  </app/routes>
+                    nav [
+                      <app/nav out=[core.reactElement] />
+                    ]
+                  </app/layout>
                 ]
-                nav [
-                  <app/nav out=[core.reactElement] />
+                elements [
+                  <app-root-element:app/oauth-request-dialog out=[core.reactElement] />
+                  <app-root-element:app/alert-display out=[core.reactElement] />
                 ]
-              </app/layout>
+              </app/root>
             ]
-            elements [
-              <app-root-element:app/oauth-request-dialog out=[core.reactElement] />
-              <app-root-element:app/alert-display out=[core.reactElement] />
-            ]
-          </app/root>
-        ]
-        components [
-          <component:core.components.progress out=[core.component.component] />
-          <component:core.components.errorBoundaryFallback out=[core.component.component] />
-          <component:core.components.notFoundErrorPage out=[core.component.component] />
-        ]
-        themes [
-          <theme:app/light out=[core.theme.theme] />
-          <theme:app/dark out=[core.theme.theme] />
+          </app>
         ]
         apis [
+          <api:app-theme out=[core.api.factory]>
+            themes [
+              <theme:app/light out=[core.theme.theme] />
+              <theme:app/dark out=[core.theme.theme] />
+            ]
+          </api:app-theme>
+          <api:app-language out=[core.api.factory] />
+          <api:icons out=[core.api.factory] />
+          <api:translations out=[core.api.factory] />
+          <api:components out=[core.api.factory]>
+            components [
+              <component:core.components.progress out=[core.component.component] />
+              <component:core.components.errorBoundaryFallback out=[core.component.component] />
+              <component:core.components.notFoundErrorPage out=[core.component.component] />
+            ]
+          </api:components>
+          <api:feature-flags out=[core.api.factory] />
           <api:core.discovery out=[core.api.factory] />
           <api:core.alert out=[core.api.factory] />
           <api:core.analytics out=[core.api.factory] />
@@ -294,7 +319,7 @@ describe('createApp', () => {
           <api:core.auth.vmware-cloud out=[core.api.factory] />
           <api:plugin.permission.api out=[core.api.factory] />
         ]
-      </app>"
+      </root>"
     `);
   });
 

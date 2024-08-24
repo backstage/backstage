@@ -7,9 +7,10 @@ import { FeatureDiscoveryService } from '@backstage/backend-plugin-api/alpha';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 
 // @alpha (undocumented)
-export const featureDiscoveryServiceFactory: () => ServiceFactory<
+export const featureDiscoveryServiceFactory: ServiceFactory<
   FeatureDiscoveryService,
-  'root'
+  'root',
+  'singleton'
 >;
 
 // (No @packageDocumentation comment for this package)

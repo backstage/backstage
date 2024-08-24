@@ -15,12 +15,9 @@
  */
 
 import {
-  HostDiscovery,
-  PluginDatabaseManager,
-  UrlReader,
   createLegacyAuthAdapters,
+  HostDiscovery,
 } from '@backstage/backend-common';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
   CompoundEntityRef,
@@ -35,22 +32,22 @@ import { ScmIntegrations } from '@backstage/integration';
 import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
 import {
   TaskSpec,
+  TemplateEntityStepV1beta3,
   TemplateEntityV1beta3,
   templateEntityV1beta3Validator,
   TemplateParametersV1beta3,
-  TemplateEntityStepV1beta3,
 } from '@backstage/plugin-scaffolder-common';
 import {
   RESOURCE_TYPE_SCAFFOLDER_ACTION,
   RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
   scaffolderActionPermissions,
+  scaffolderTaskPermissions,
   scaffolderTemplatePermissions,
   taskCancelPermission,
   taskCreatePermission,
   taskReadPermission,
   templateParameterReadPermission,
   templateStepReadPermission,
-  scaffolderTaskPermissions,
 } from '@backstage/plugin-scaffolder-common/alpha';
 import express from 'express';
 import Router from 'express-promise-router';
@@ -58,8 +55,9 @@ import { validate } from 'jsonschema';
 import { Logger } from 'winston';
 import { z } from 'zod';
 import {
-  TemplateAction,
   TaskBroker,
+  TaskStatus,
+  TemplateAction,
   TemplateFilter,
   TemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
@@ -87,6 +85,9 @@ import {
   HttpAuthService,
   LifecycleService,
   PermissionsService,
+  UrlReaderService,
+  SchedulerService,
+  DatabaseService,
 } from '@backstage/backend-plugin-api';
 import {
   IdentityApi,
@@ -139,15 +140,16 @@ function isActionPermissionRuleInput(
  * RouterOptions
  *
  * @public
+ * @deprecated Please migrate to the new backend system as this will be removed in the future.
  */
 export interface RouterOptions {
   logger: Logger;
   config: Config;
-  reader: UrlReader;
+  reader: UrlReaderService;
   lifecycle?: LifecycleService;
-  database: PluginDatabaseManager;
+  database: DatabaseService;
   catalogClient: CatalogApi;
-  scheduler?: PluginTaskScheduler;
+  scheduler?: SchedulerService;
   actions?: TemplateAction<any, any>[];
   /**
    * @deprecated taskWorkers is deprecated in favor of concurrentTasksLimit option with a single TaskWorker
@@ -257,6 +259,7 @@ const readDuration = (
 /**
  * A method to create a router for the scaffolder backend plugin.
  * @public
+ * @deprecated Please migrate to the new backend system as this will be removed in the future.
  */
 export async function createRouter(
   options: RouterOptions,
@@ -587,8 +590,17 @@ export async function createRouter(
         );
       }
 
+      const [statusQuery] = [req.query.status].flat();
+      if (
+        typeof statusQuery !== 'string' &&
+        typeof statusQuery !== 'undefined'
+      ) {
+        throw new InputError('status query parameter must be a string');
+      }
+
       const tasks = await taskBroker.list({
         createdBy: userEntityRef,
+        status: statusQuery ? (statusQuery as TaskStatus) : undefined,
       });
 
       res.status(200).json(tasks);

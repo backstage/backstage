@@ -30,6 +30,7 @@ import {
   Link,
   Progress,
   TableColumn,
+  TableOptions,
   WarningPanel,
 } from '@backstage/core-components';
 
@@ -46,9 +47,16 @@ const presetColumns: TableColumn<ApiEntity>[] = [
  */
 export const HasApisCard = (props: {
   variant?: InfoCardVariants;
+  title?: string;
   columns?: TableColumn<ApiEntity>[];
+  tableOptions?: TableOptions;
 }) => {
-  const { variant = 'gridItem', columns = presetColumns } = props;
+  const {
+    variant = 'gridItem',
+    title = 'APIs',
+    columns = presetColumns,
+    tableOptions = {},
+  } = props;
   const { entity } = useEntity();
   const { entities, loading, error } = useRelatedEntities(entity, {
     type: RELATION_HAS_PART,
@@ -57,7 +65,7 @@ export const HasApisCard = (props: {
 
   if (loading) {
     return (
-      <InfoCard variant={variant} title="APIs">
+      <InfoCard variant={variant} title={title}>
         <Progress />
       </InfoCard>
     );
@@ -65,7 +73,7 @@ export const HasApisCard = (props: {
 
   if (error || !entities) {
     return (
-      <InfoCard variant={variant} title="APIs">
+      <InfoCard variant={variant} title={title}>
         <WarningPanel
           severity="error"
           title="Could not load APIs"
@@ -77,7 +85,7 @@ export const HasApisCard = (props: {
 
   return (
     <EntityTable
-      title="APIs"
+      title={title}
       variant={variant}
       emptyContent={
         <div style={{ textAlign: 'center' }}>
@@ -93,6 +101,7 @@ export const HasApisCard = (props: {
         </div>
       }
       columns={columns}
+      tableOptions={tableOptions}
       entities={entities as ApiEntity[]}
     />
   );

@@ -8,13 +8,17 @@ import { AnyOfCriteria } from '@backstage/plugin-permission-common';
 import { AuthorizePermissionRequest } from '@backstage/plugin-permission-common';
 import { AuthorizePermissionResponse } from '@backstage/plugin-permission-common';
 import { AuthService } from '@backstage/backend-plugin-api';
-import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
+import { BackstageUserIdentity } from '@backstage/plugin-auth-node';
+import { BackstageUserInfo } from '@backstage/backend-plugin-api';
 import { ConditionalPolicyDecision } from '@backstage/plugin-permission-common';
 import { Config } from '@backstage/config';
 import { DefinitivePolicyDecision } from '@backstage/plugin-permission-common';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import express from 'express';
 import { IdentifiedPermissionMessage } from '@backstage/plugin-permission-common';
+import { MetadataResponse as MetadataResponse_2 } from '@backstage/plugin-permission-common';
+import { MetadataResponseSerializedRule as MetadataResponseSerializedRule_2 } from '@backstage/plugin-permission-common';
 import { NotCriteria } from '@backstage/plugin-permission-common';
 import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
@@ -25,9 +29,8 @@ import { PermissionsServiceRequestOptions } from '@backstage/backend-plugin-api'
 import { PolicyDecision } from '@backstage/plugin-permission-common';
 import { QueryPermissionRequest } from '@backstage/plugin-permission-common';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
-import { TokenManagerService } from '@backstage/backend-plugin-api';
+import { TokenManager } from '@backstage/backend-common';
 import { z } from 'zod';
-import zodToJsonSchema from 'zod-to-json-schema';
 
 // @public
 export type ApplyConditionsRequest = {
@@ -186,19 +189,11 @@ export const makeCreatePermissionRule: <
   rule: PermissionRule<TResource, TQuery, TResourceType, TParams>,
 ) => PermissionRule<TResource, TQuery, TResourceType, TParams>;
 
-// @public
-export type MetadataResponse = {
-  permissions?: Permission[];
-  rules: MetadataResponseSerializedRule[];
-};
+// @public @deprecated
+export type MetadataResponse = MetadataResponse_2;
 
-// @public
-export type MetadataResponseSerializedRule = {
-  name: string;
-  description: string;
-  resourceType: string;
-  paramsSchema?: ReturnType<typeof zodToJsonSchema>;
-};
+// @public @deprecated
+export type MetadataResponseSerializedRule = MetadataResponseSerializedRule_2;
 
 // @public
 export type PermissionIntegrationRouterOptions<
@@ -246,10 +241,7 @@ export type PermissionIntegrationRouterOptions<
 // @public
 export interface PermissionPolicy {
   // (undocumented)
-  handle(
-    request: PolicyQuery,
-    user?: BackstageIdentityResponse,
-  ): Promise<PolicyDecision>;
+  handle(request: PolicyQuery, user?: PolicyQueryUser): Promise<PolicyDecision>;
 }
 
 // @public
@@ -273,6 +265,15 @@ export type PolicyQuery = {
 };
 
 // @public
+export type PolicyQueryUser = {
+  token: string;
+  expiresInSeconds?: number;
+  identity: BackstageUserIdentity;
+  credentials: BackstageCredentials;
+  info: BackstageUserInfo;
+};
+
+// @public
 export class ServerPermissionClient implements PermissionsService {
   // (undocumented)
   authorize(
@@ -289,7 +290,7 @@ export class ServerPermissionClient implements PermissionsService {
     config: Config,
     options: {
       discovery: DiscoveryService;
-      tokenManager: TokenManagerService;
+      tokenManager?: TokenManager;
       auth?: AuthService;
     },
   ): ServerPermissionClient;
