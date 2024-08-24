@@ -15,13 +15,17 @@
  */
 
 import { JsonObject, JsonValue } from '@backstage/types';
+import { startCase } from 'lodash';
 
 export function isJsonObject(value?: JsonValue): value is JsonObject {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-// Helper function to get the last part of the key
-export function getLastKey(key: string): string {
+// Helper function to format a key into a human-readable string
+export function formatKey(key: string): string {
   const parts = key.split('/');
-  return parts[parts.length - 1];
+  return parts
+    .filter(Boolean)
+    .map(part => startCase(part))
+    .join(' > ');
 }

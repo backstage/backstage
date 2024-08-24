@@ -18,7 +18,7 @@ import { StructuredMetadataTable } from '@backstage/core-components';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { Draft07 as JSONSchema } from 'json-schema-library';
 import { ParsedTemplateSchema } from '../../hooks/useTemplateSchema';
-import { isJsonObject, getLastKey } from './util';
+import { isJsonObject, formatKey } from './util';
 
 /**
  * The props for the {@link ReviewState} component.
@@ -45,7 +45,7 @@ function processSchema(
     const backstageReviewOptions = definitionInSchema['ui:backstage']?.review;
     if (backstageReviewOptions) {
       if (backstageReviewOptions.mask) {
-        return [[getLastKey(key), backstageReviewOptions.mask]];
+        return [[key, backstageReviewOptions.mask]];
       }
       if (backstageReviewOptions.show === false) {
         return [];
@@ -56,13 +56,13 @@ function processSchema(
       definitionInSchema['ui:widget'] === 'password' ||
       definitionInSchema['ui:field']?.toLocaleLowerCase('en-us') === 'secret'
     ) {
-      return [[getLastKey(key), '******']];
+      return [[key, '******']];
     }
 
     if (definitionInSchema.enum && definitionInSchema.enumNames) {
       return [
         [
-          getLastKey(key),
+          key,
           definitionInSchema.enumNames[
             definitionInSchema.enum.indexOf(value)
           ] || value,
@@ -78,7 +78,7 @@ function processSchema(
     }
   }
 
-  return [[getLastKey(key), value]];
+  return [[key, value]];
 }
 
 /**
@@ -96,5 +96,8 @@ export const ReviewState = (props: ReviewStateProps) => {
       })
       .filter(prop => prop.length > 0),
   );
-  return <StructuredMetadataTable metadata={reviewData} />;
+  const options = {
+    titleFormat: formatKey,
+  };
+  return <StructuredMetadataTable metadata={reviewData} options={options} />;
 };
