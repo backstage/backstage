@@ -48,7 +48,6 @@ import {
   taskCancelPermission,
   taskCreatePermission,
   taskReadPermission,
-  adminTaskReadPermission,
   templateParameterReadPermission,
   templateStepReadPermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
@@ -620,13 +619,6 @@ export async function createRouter(
     .get('/v2/tasks', async (req, res) => {
       const credentials = await httpAuth.credentials(req);
 
-      const isAdminUser = await checkBasicPermission({
-        credentials,
-        permissions: [adminTaskReadPermission],
-        permissionService: permissions,
-        throwError: false,
-      });
-
       const [userEntityRef] = [req.query.createdBy].flat();
       if (
         typeof userEntityRef !== 'string' &&
@@ -634,16 +626,14 @@ export async function createRouter(
       ) {
         throw new InputError('createdBy query parameter must be a string');
       }
+      await checkTaskPermission({
+        credentials,
+        permission: taskReadPermission,
+        permissionService: permissions,
+        createdBy: userEntityRef,
+        isTaskAuthorized,
+      });
 
-      if (!isAdminUser) {
-        await checkTaskPermission({
-          credentials,
-          permission: taskReadPermission,
-          permissionService: permissions,
-          createdBy: userEntityRef,
-          isTaskAuthorized,
-        });
-      }
       if (!taskBroker.list) {
         throw new Error(
           'TaskBroker does not support listing tasks, please implement the list method on the TaskBroker.',
@@ -667,24 +657,16 @@ export async function createRouter(
     })
     .get('/v2/tasks/:taskId', async (req, res) => {
       const credentials = await httpAuth.credentials(req);
-      const isAdminUser = await checkBasicPermission({
-        credentials,
-        permissions: [adminTaskReadPermission],
-        permissionService: permissions,
-        throwError: false,
-      });
 
       const { taskId } = req.params;
       const task = await getTaskById(taskId);
-      if (!isAdminUser) {
-        await checkTaskPermission({
-          credentials,
-          permission: taskReadPermission,
-          permissionService: permissions,
-          createdBy: task.createdBy,
-          isTaskAuthorized,
-        });
-      }
+      await checkTaskPermission({
+        credentials,
+        permission: taskReadPermission,
+        permissionService: permissions,
+        createdBy: task.createdBy,
+        isTaskAuthorized,
+      });
 
       res.status(200).json(task);
     })
@@ -706,24 +688,16 @@ export async function createRouter(
     })
     .get('/v2/tasks/:taskId/eventstream', async (req, res) => {
       const credentials = await httpAuth.credentials(req);
-      const isAdminUser = await checkBasicPermission({
-        credentials,
-        permissions: [adminTaskReadPermission],
-        permissionService: permissions,
-        throwError: false,
-      });
 
       const { taskId } = req.params;
-      if (!isAdminUser) {
-        const task = await getTaskById(taskId);
-        await checkTaskPermission({
-          credentials,
-          permission: taskReadPermission,
-          permissionService: permissions,
-          createdBy: task.createdBy,
-          isTaskAuthorized,
-        });
-      }
+      const task = await getTaskById(taskId);
+      await checkTaskPermission({
+        credentials,
+        permission: taskReadPermission,
+        permissionService: permissions,
+        createdBy: task.createdBy,
+        isTaskAuthorized,
+      });
 
       const after =
         req.query.after !== undefined ? Number(req.query.after) : undefined;
@@ -774,24 +748,15 @@ export async function createRouter(
     .get('/v2/tasks/:taskId/events', async (req, res) => {
       const credentials = await httpAuth.credentials(req);
 
-      const isAdminUser = await checkBasicPermission({
-        credentials,
-        permissions: [adminTaskReadPermission],
-        permissionService: permissions,
-        throwError: false,
-      });
-
       const { taskId } = req.params;
       const task = await getTaskById(taskId);
-      if (!isAdminUser) {
-        await checkTaskPermission({
-          credentials,
-          permission: taskReadPermission,
-          permissionService: permissions,
-          createdBy: task.createdBy,
-          isTaskAuthorized,
-        });
-      }
+      await checkTaskPermission({
+        credentials,
+        permission: taskReadPermission,
+        permissionService: permissions,
+        createdBy: task.createdBy,
+        isTaskAuthorized,
+      });
 
       const after = Number(req.query.after) || undefined;
 

@@ -100,18 +100,6 @@ export const taskReadPermission = createPermission({
 });
 
 /**
- * This permission is used to authorize actions involving reading information about any task
- *
- * @alpha
- */
-export const adminTaskReadPermission = createPermission({
-  name: 'scaffolder.task.admin.read',
-  attributes: {
-    action: 'read',
-  },
-});
-
-/**
  * This permission is used to authorize actions that involve the creation of tasks in the scaffolder.
  *
  * @alpha
@@ -157,7 +145,6 @@ export const scaffolderTaskPermissions = [
   taskCancelPermission,
   taskCreatePermission,
   taskReadPermission,
-  adminTaskReadPermission,
 ];
 
 /**
