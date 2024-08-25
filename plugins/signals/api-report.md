@@ -31,6 +31,9 @@ export class SignalClient implements SignalApi {
 }
 
 // @public (undocumented)
+export const SignalsDisplay: () => null;
+
+// @public (undocumented)
 export const signalsPlugin: BackstagePlugin<{}, {}>;
 
 // (No @packageDocumentation comment for this package)

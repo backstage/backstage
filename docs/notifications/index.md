@@ -109,22 +109,23 @@ Start with:
 yarn workspace app add @backstage/plugin-signals
 ```
 
-To install the plugin, you have to add the following to your `packages/app/src/plugins.ts`:
+To install the plugin, add the `SignalsDisplay` to your app root in `packages/app/src/App.tsx`:
 
-```ts
-export { signalsPlugin } from '@backstage/plugin-signals';
-```
+```tsx
+export { SignalsDisplay } from '@backstage/plugin-signals';
 
-And make sure that your `packages/app/src/App.tsx` contains:
-
-```ts
-import * as plugins from './plugins';
-
-const app = createApp({
-  // ...
-  plugins: Object.values(plugins),
-  // ...
-});
+export default app.createRoot(
+  <>
+    <AlertDisplay transientTimeoutMs={2500} />
+    <OAuthRequestDialog />
+    {/* highlight-add-next-line */}
+    <SignalsDisplay />
+    <AppRouter>
+      <VisitListener />
+      <Root>{routes}</Root>
+    </AppRouter>
+  </>,
+);
 ```
 
 If the signals plugin is properly configured, it will be automatically discovered by the notifications plugin and used.
