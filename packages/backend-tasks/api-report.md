@@ -62,7 +62,14 @@ export interface TaskScheduleDefinition {
         cron: string;
       }
     | Duration
-    | HumanDuration_2;
+    | HumanDuration_2
+    /**
+     * This task will only run when manually triggered with the `triggerTask` method; no automatic
+     * scheduling. This is useful for locking of global tasks that should not be run concurrently.
+     */
+    | {
+        trigger: 'manual';
+      };
   initialDelay?: Duration | HumanDuration_2;
   scope?: 'global' | 'local';
   timeout: Duration | HumanDuration_2;

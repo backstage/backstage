@@ -1,5 +1,55 @@
 # @backstage/plugin-scaffolder-node-test-utils
 
+## 0.1.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.24.0
+  - @backstage/backend-test-utils@0.5.0
+  - @backstage/plugin-scaffolder-node@0.4.9
+  - @backstage/types@1.1.1
+
+## 0.1.10-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.23.4-next.3
+  - @backstage/backend-test-utils@0.4.5-next.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-node@0.4.9-next.3
+
+## 0.1.10-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-test-utils@0.4.5-next.2
+  - @backstage/plugin-scaffolder-node@0.4.9-next.2
+  - @backstage/backend-common@0.23.4-next.2
+  - @backstage/types@1.1.1
+
+## 0.1.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.23.4-next.1
+  - @backstage/backend-test-utils@0.4.5-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-node@0.4.9-next.1
+
+## 0.1.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.23.4-next.0
+  - @backstage/backend-test-utils@0.4.5-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-node@0.4.9-next.0
+
 ## 0.1.9
 
 ### Patch Changes

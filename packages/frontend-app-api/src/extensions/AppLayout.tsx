@@ -27,30 +27,20 @@ export const AppLayout = createExtension({
   name: 'layout',
   attachTo: { id: 'app/root', input: 'children' },
   inputs: {
-    nav: createExtensionInput(
-      {
-        element: coreExtensionData.reactElement,
-      },
-      { singleton: true },
+    nav: createExtensionInput([coreExtensionData.reactElement], {
+      singleton: true,
+    }),
+    content: createExtensionInput([coreExtensionData.reactElement], {
+      singleton: true,
+    }),
+  },
+  output: [coreExtensionData.reactElement],
+  factory: ({ inputs }) => [
+    coreExtensionData.reactElement(
+      <SidebarPage>
+        {inputs.nav.get(coreExtensionData.reactElement)}
+        {inputs.content.get(coreExtensionData.reactElement)}
+      </SidebarPage>,
     ),
-    content: createExtensionInput(
-      {
-        element: coreExtensionData.reactElement,
-      },
-      { singleton: true },
-    ),
-  },
-  output: {
-    element: coreExtensionData.reactElement,
-  },
-  factory({ inputs }) {
-    return {
-      element: (
-        <SidebarPage>
-          {inputs.nav.output.element}
-          {inputs.content.output.element}
-        </SidebarPage>
-      ),
-    };
-  },
+  ],
 });

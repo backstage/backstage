@@ -20,6 +20,7 @@ import { CompoundEntityRef } from '@backstage/catalog-model';
 import {
   techdocsApiRef,
   TechDocsReaderPageProvider,
+  useShadowRootElements,
 } from '@backstage/plugin-techdocs-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 
@@ -36,6 +37,7 @@ jest.mock('../useReaderState', () => ({
 jest.mock('@backstage/plugin-techdocs-react', () => ({
   ...jest.requireActual('@backstage/plugin-techdocs-react'),
   useShadowDomStylesLoading: jest.fn().mockReturnValue(false),
+  useShadowRootElements: jest.fn(),
 }));
 
 import { TechDocsReaderPageContent } from './TechDocsReaderPageContent';
@@ -88,6 +90,12 @@ const Wrapper = ({
 );
 
 describe('<TechDocsReaderPageContent />', () => {
+  const useShadowRootElementsMock = useShadowRootElements as jest.Mock;
+
+  beforeEach(() => {
+    useShadowRootElementsMock.mockReturnValue([]);
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -154,6 +162,29 @@ describe('<TechDocsReaderPageContent />', () => {
     });
   });
 
+  it('should scroll to header if hash is not present in url', async () => {
+    jest.spyOn(document, 'querySelector');
+
+    getEntityMetadata.mockResolvedValue(mockEntityMetadata);
+    getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
+    useTechDocsReaderDom.mockReturnValue(document.createElement('html'));
+    useReaderState.mockReturnValue({ state: 'cached' });
+
+    const rendered = await renderInTestApp(
+      <Wrapper>
+        <TechDocsReaderPageContent withSearch={false} />
+      </Wrapper>,
+    );
+
+    await waitFor(() => {
+      expect(
+        rendered.getByTestId('techdocs-native-shadowroot'),
+      ).toBeInTheDocument();
+
+      expect(document.querySelector).toHaveBeenCalledWith('header');
+    });
+  });
+
   it('should scroll to hash if hash is present in url', async () => {
     jest.spyOn(document, 'querySelector');
 
@@ -165,6 +196,7 @@ describe('<TechDocsReaderPageContent />', () => {
     const mockTechDocsPage = document.createElement('html');
     mockTechDocsPage.appendChild(h2);
 
+    useShadowRootElementsMock.mockReturnValue([h2]);
     getEntityMetadata.mockResolvedValue(mockEntityMetadata);
     getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
     useTechDocsReaderDom.mockReturnValue(mockTechDocsPage);
@@ -187,27 +219,5 @@ describe('<TechDocsReaderPageContent />', () => {
     });
 
     window.location.hash = '';
-  });
-
-  it('should scroll to header if hash is not present in url', async () => {
-    jest.spyOn(document, 'querySelector');
-
-    getEntityMetadata.mockResolvedValue(mockEntityMetadata);
-    getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
-    useTechDocsReaderDom.mockReturnValue(document.createElement('html'));
-    useReaderState.mockReturnValue({ state: 'cached' });
-
-    const rendered = await renderInTestApp(
-      <Wrapper>
-        <TechDocsReaderPageContent withSearch={false} />
-      </Wrapper>,
-    );
-
-    await waitFor(() => {
-      expect(
-        rendered.getByTestId('techdocs-native-shadowroot'),
-      ).toBeInTheDocument();
-      expect(document.querySelector).toHaveBeenCalledWith('header');
-    });
   });
 });

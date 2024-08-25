@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-gcp",
-  "version": "0.1.23",
+  "version": "0.2.0",
   "description": "A Backstage catalog backend module that helps integrate towards GCP",
   "backstage": {
     "role": "backend-plugin-module",
@@ -51,9 +51,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/backend-common": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
-    "@backstage/backend-tasks": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",

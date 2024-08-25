@@ -7,7 +7,11 @@
 
 import { AnalyticsApi } from '@backstage/frontend-plugin-api';
 import { AnalyticsEvent } from '@backstage/frontend-plugin-api';
+import { AnyExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { AppNode } from '@backstage/frontend-plugin-api';
+import { AppNodeInstance } from '@backstage/frontend-plugin-api';
 import { ErrorWithContext } from '@backstage/test-utils';
+import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { MockConfigApi } from '@backstage/test-utils';
@@ -27,25 +31,60 @@ import { TestApiRegistry } from '@backstage/test-utils';
 import { withLogCollector } from '@backstage/test-utils';
 
 // @public (undocumented)
-export function createExtensionTester<TConfig>(
-  subject: ExtensionDefinition<TConfig>,
+export function createExtensionTester<
+  TConfig,
+  TConfigInput,
+  UOutput extends AnyExtensionDataRef,
+>(
+  subject: ExtensionDefinition<TConfig, TConfigInput, UOutput>,
   options?: {
-    config?: TConfig;
+    config?: TConfigInput;
   },
-): ExtensionTester;
+): ExtensionTester<UOutput>;
 
 export { ErrorWithContext };
 
 // @public (undocumented)
-export class ExtensionTester {
+export class ExtensionQuery<UOutput extends AnyExtensionDataRef> {
+  constructor(node: AppNode);
   // (undocumented)
-  add<TConfig>(
-    extension: ExtensionDefinition<TConfig>,
+  get<TId extends UOutput['id']>(
+    ref: ExtensionDataRef<any, TId, any>,
+  ): UOutput extends ExtensionDataRef<infer IData, TId, infer IConfig>
+    ? IConfig['optional'] extends true
+      ? IData | undefined
+      : IData
+    : never;
+  // (undocumented)
+  get instance(): AppNodeInstance;
+  // (undocumented)
+  get node(): AppNode;
+}
+
+// @public (undocumented)
+export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
+  // (undocumented)
+  add<TConfig, TConfigInput>(
+    extension: ExtensionDefinition<TConfig, TConfigInput>,
     options?: {
-      config?: TConfig;
+      config?: TConfigInput;
     },
-  ): ExtensionTester;
+  ): ExtensionTester<UOutput>;
   // (undocumented)
+  get<TId extends UOutput['id']>(
+    ref: ExtensionDataRef<any, TId, any>,
+  ): UOutput extends ExtensionDataRef<infer IData, TId, infer IConfig>
+    ? IConfig['optional'] extends true
+      ? IData | undefined
+      : IData
+    : never;
+  // (undocumented)
+  query<UQueryExtensionOutput extends AnyExtensionDataRef>(
+    extension: ExtensionDefinition<any, any, UQueryExtensionOutput>,
+  ): ExtensionQuery<UQueryExtensionOutput>;
+  // (undocumented)
+  reactElement(): JSX.Element;
+  // @deprecated (undocumented)
   render(options?: { config?: JsonObject }): RenderResult;
 }
 
@@ -99,6 +138,7 @@ export type TestAppOptions = {
   mountedRoutes?: {
     [path: string]: RouteRef;
   };
+  config?: JsonObject;
 };
 
 export { withLogCollector };

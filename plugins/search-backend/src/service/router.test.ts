@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import {
@@ -27,6 +26,8 @@ import { createRouter } from './router';
 import { wrapInOpenApiTestServer } from '@backstage/backend-openapi-utils';
 import { Server } from 'http';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
+import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 
 const mockPermissionEvaluator: PermissionEvaluator = {
   authorize: () => {
@@ -42,7 +43,7 @@ describe('createRouter', () => {
   let mockSearchEngine: jest.Mocked<SearchEngine>;
 
   const mockBaseUrl = 'http://backstage:9191/api/proxy';
-  const discovery: PluginEndpointDiscovery = {
+  const discovery: DiscoveryService = {
     async getBaseUrl() {
       return mockBaseUrl;
     },
@@ -83,7 +84,11 @@ describe('createRouter', () => {
       auth: mockServices.auth(),
       httpAuth: mockServices.httpAuth(),
     });
-    app = wrapInOpenApiTestServer(express().use(router));
+    const errorHandler = MiddlewareFactory.create({
+      config: mockServices.rootConfig(),
+      logger: mockServices.rootLogger(),
+    }).error();
+    app = wrapInOpenApiTestServer(express().use(router).use(errorHandler));
   });
 
   beforeEach(() => {

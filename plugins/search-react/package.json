@@ -1,12 +1,13 @@
 {
   "name": "@backstage/plugin-search-react",
-  "version": "1.7.13",
+  "version": "1.7.14",
   "backstage": {
     "role": "web-library",
     "pluginId": "search",
     "pluginPackages": [
       "@backstage/plugin-search",
       "@backstage/plugin-search-backend",
+      "@backstage/plugin-search-backend-node",
       "@backstage/plugin-search-common",
       "@backstage/plugin-search-react"
     ]
@@ -27,7 +28,7 @@
   "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
-    "./alpha": "./src/alpha.tsx",
+    "./alpha": "./src/alpha/index.ts",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
@@ -35,7 +36,7 @@
   "typesVersions": {
     "*": {
       "alpha": [
-        "src/alpha.tsx"
+        "src/alpha/index.ts"
       ],
       "package.json": [
         "package.json"

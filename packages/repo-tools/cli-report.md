@@ -18,6 +18,7 @@ Commands:
   knip-reports [options] [paths...]
   package [command]
   repo [command]
+  lint [command]
   help [command]
 ```
 
@@ -57,6 +58,28 @@ Usage: backstage-repo-tools knip-reports [options] [paths...]
 
 Options:
   --ci
+  -h, --help
+```
+
+### `backstage-repo-tools lint`
+
+```
+Usage: backstage-repo-tools lint [options] [command] [command]
+
+Options:
+  -h, --help
+
+Commands:
+  legacy-backend-exports [paths...]
+  help [command]
+```
+
+### `backstage-repo-tools lint legacy-backend-exports`
+
+```
+Usage: backstage-repo-tools lint legacy-backend-exports [options] [paths...]
+
+Options:
   -h, --help
 ```
 

@@ -4,13 +4,13 @@
 
 ```ts
 import { HttpAuthService } from '@backstage/backend-plugin-api';
-import { ServiceFactoryCompat } from '@backstage/backend-plugin-api';
+import { ServiceFactory } from '@backstage/backend-plugin-api';
 
 // @public
-export const httpAuthServiceFactory: ServiceFactoryCompat<
+export const httpAuthServiceFactory: ServiceFactory<
   HttpAuthService,
   'plugin',
-  undefined
+  'singleton'
 >;
 
 // (No @packageDocumentation comment for this package)

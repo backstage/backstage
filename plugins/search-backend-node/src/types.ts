@@ -17,8 +17,8 @@
 import {
   BackstageCredentials,
   LoggerService,
+  SchedulerServiceTaskRunner,
 } from '@backstage/backend-plugin-api';
-import { TaskRunner } from '@backstage/backend-tasks';
 import {
   DocumentCollatorFactory,
   DocumentDecoratorFactory,
@@ -43,9 +43,9 @@ export type IndexBuilderOptions = {
 export interface RegisterCollatorParameters {
   /**
    * The schedule for which the provided collator will be called, commonly the result of
-   * {@link @backstage/backend-tasks#PluginTaskScheduler.createScheduledTaskRunner}
+   * {@link @backstage/backend-plugin-api#SchedulerService.createScheduledTaskRunner}
    */
-  schedule: TaskRunner;
+  schedule: SchedulerServiceTaskRunner;
   /**
    * The class responsible for returning the document collator of the given type.
    */

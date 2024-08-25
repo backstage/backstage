@@ -16,19 +16,20 @@
 import React from 'react';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
+import TextField from '@material-ui/core/TextField';
 import { Select, SelectItem } from '@backstage/core-components';
-import { RepoUrlPickerState } from './types';
+import { BaseRepoUrlPickerProps } from './types';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../../translation';
 
-export const GiteaRepoPicker = (props: {
-  allowedOwners?: string[];
-  allowedRepos?: string[];
-  state: RepoUrlPickerState;
-  onChange: (state: RepoUrlPickerState) => void;
-  rawErrors: string[];
-}) => {
+export const GiteaRepoPicker = (
+  props: BaseRepoUrlPickerProps<{
+    allowedOwners?: string[];
+    allowedRepos?: string[];
+  }>,
+) => {
   const { allowedOwners = [], state, onChange, rawErrors } = props;
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const ownerItems: SelectItem[] = allowedOwners
     ? allowedOwners.map(i => ({ label: i, value: i }))
     : [{ label: 'Loading...', value: 'loading' }];
@@ -43,32 +44,36 @@ export const GiteaRepoPicker = (props: {
         error={rawErrors?.length > 0 && !owner}
       >
         {allowedOwners?.length ? (
-          <Select
-            native
-            label="Owner Available"
-            onChange={selected =>
-              onChange({
-                owner: String(Array.isArray(selected) ? selected[0] : selected),
-              })
-            }
-            disabled={allowedOwners.length === 1}
-            selected={owner}
-            items={ownerItems}
-          />
+          <>
+            <Select
+              native
+              label={t('fields.giteaRepoPicker.owner.title')}
+              onChange={selected =>
+                onChange({
+                  owner: String(
+                    Array.isArray(selected) ? selected[0] : selected,
+                  ),
+                })
+              }
+              disabled={allowedOwners.length === 1}
+              selected={owner}
+              items={ownerItems}
+            />
+            <FormHelperText>
+              {t('fields.giteaRepoPicker.owner.description')}
+            </FormHelperText>
+          </>
         ) : (
           <>
-            <InputLabel htmlFor="ownerInput">Owner</InputLabel>
-            <Input
+            <TextField
               id="ownerInput"
+              label={t('fields.giteaRepoPicker.owner.inputTitle')}
               onChange={e => onChange({ owner: e.target.value })}
+              helperText={t('fields.giteaRepoPicker.owner.description')}
               value={owner}
             />
           </>
         )}
-        <FormHelperText>
-          Gitea namespace where this repository will belong to. It can be the
-          name of organization, group, subgroup, user, or the project.
-        </FormHelperText>
       </FormControl>
     </>
   );

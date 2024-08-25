@@ -23,6 +23,8 @@ import SaveIcon from '@material-ui/icons/Save';
 import React from 'react';
 import { useDirectoryEditor } from './DirectoryEditorContext';
 import { FileBrowser } from '../../components/FileBrowser';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../translation';
 
 const useStyles = makeStyles(theme => ({
   button: {
@@ -47,6 +49,7 @@ export function TemplateEditorBrowser(props: { onClose?: () => void }) {
   const classes = useStyles();
   const directoryEditor = useDirectoryEditor();
   const changedFiles = directoryEditor.files.filter(file => file.dirty);
+  const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const handleClose = () => {
     if (!props.onClose) {
@@ -55,7 +58,7 @@ export function TemplateEditorBrowser(props: { onClose?: () => void }) {
     if (changedFiles.length > 0) {
       // eslint-disable-next-line no-alert
       const accepted = window.confirm(
-        'Are you sure? Unsaved changes will be lost',
+        t('templateEditorPage.templateEditorBrowser.closeConfirmMessage'),
       );
       if (!accepted) {
         return;
@@ -67,7 +70,9 @@ export function TemplateEditorBrowser(props: { onClose?: () => void }) {
   return (
     <>
       <div className={classes.buttons}>
-        <Tooltip title="Save all files">
+        <Tooltip
+          title={t('templateEditorPage.templateEditorBrowser.saveIconTooltip')}
+        >
           <IconButton
             className={classes.button}
             disabled={directoryEditor.files.every(file => !file.dirty)}
@@ -76,7 +81,11 @@ export function TemplateEditorBrowser(props: { onClose?: () => void }) {
             <SaveIcon />
           </IconButton>
         </Tooltip>
-        <Tooltip title="Reload directory">
+        <Tooltip
+          title={t(
+            'templateEditorPage.templateEditorBrowser.reloadIconTooltip',
+          )}
+        >
           <IconButton
             className={classes.button}
             onClick={() => directoryEditor.reload()}
@@ -85,7 +94,9 @@ export function TemplateEditorBrowser(props: { onClose?: () => void }) {
           </IconButton>
         </Tooltip>
         <div className={classes.buttonsGap} />
-        <Tooltip title="Close directory">
+        <Tooltip
+          title={t('templateEditorPage.templateEditorBrowser.closeIconTooltip')}
+        >
           <IconButton className={classes.button} onClick={handleClose}>
             <CloseIcon />
           </IconButton>

@@ -45,13 +45,30 @@ describe('v1 consumer', () => {
     });
 
     const routeFunc = renderedHook.result.current;
-    expect(routeFunc()).toBe('/hello');
+    expect(routeFunc?.()).toBe('/hello');
     expect(resolve).toHaveBeenCalledWith(
       routeRef,
       expect.objectContaining({
         sourcePath: '/my-page',
       }),
     );
+  });
+
+  it('should ignore missing routes', () => {
+    const routeRef = createRouteRef();
+
+    const renderedHook = renderHook(() => useRouteRef(routeRef), {
+      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+        <TestApiProvider
+          apis={[[routeResolutionApiRef, { resolve: () => undefined }]]}
+        >
+          <MemoryRouter initialEntries={['/my-page']} children={children} />
+        </TestApiProvider>
+      ),
+    });
+
+    const routeFunc = renderedHook.result.current;
+    expect(routeFunc).toBeUndefined();
   });
 
   it('re-resolves the routeFunc when the search parameters change', () => {

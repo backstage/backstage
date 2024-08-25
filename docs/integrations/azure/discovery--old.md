@@ -45,7 +45,7 @@ catalog:
         project: myproject
         repository: service-* # this will match all repos starting with service-*
         path: /catalog-info.yaml
-        schedule: # optional; same options as in TaskScheduleDefinition
+        schedule: # optional; same options as in SchedulerServiceTaskScheduleDefinition
           # supports cron, ISO duration, "human duration" as used in code
           frequency: { minutes: 30 }
           # supports ISO duration, "human duration" as used in code

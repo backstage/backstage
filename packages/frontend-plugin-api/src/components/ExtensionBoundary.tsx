@@ -19,6 +19,7 @@ import React, {
   ReactNode,
   Suspense,
   useEffect,
+  lazy as reactLazy,
 } from 'react';
 import { AnalyticsContext, useAnalytics } from '@backstage/core-plugin-api';
 import { ErrorBoundary } from './ErrorBoundary';
@@ -89,4 +90,21 @@ export function ExtensionBoundary(props: ExtensionBoundaryProps) {
       </ErrorBoundary>
     </Suspense>
   );
+}
+
+/** @public */
+export namespace ExtensionBoundary {
+  export function lazy(
+    appNode: AppNode,
+    lazyElement: () => Promise<JSX.Element>,
+  ): JSX.Element {
+    const ExtensionComponent = reactLazy(() =>
+      lazyElement().then(element => ({ default: () => element })),
+    );
+    return (
+      <ExtensionBoundary node={appNode}>
+        <ExtensionComponent />
+      </ExtensionBoundary>
+    );
+  }
 }

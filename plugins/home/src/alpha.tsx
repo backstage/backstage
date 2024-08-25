@@ -20,8 +20,8 @@ import {
   coreExtensionData,
   createExtensionDataRef,
   createExtensionInput,
-  createPageExtension,
-  createPlugin,
+  PageBlueprint,
+  createFrontendPlugin,
   createRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { compatWrapper } from '@backstage/core-compat-api';
@@ -31,39 +31,44 @@ const rootRouteRef = createRouteRef();
 /**
  * @alpha
  */
-export const titleExtensionDataRef = createExtensionDataRef<string>('title');
+export const titleExtensionDataRef = createExtensionDataRef<string>().with({
+  id: 'title',
+});
 
-const homePage = createPageExtension({
-  defaultPath: '/home',
-  routeRef: rootRouteRef,
+const homePage = PageBlueprint.makeWithOverrides({
   inputs: {
     props: createExtensionInput(
-      {
-        children: coreExtensionData.reactElement.optional(),
-        title: titleExtensionDataRef.optional(),
-      },
-
+      [
+        coreExtensionData.reactElement.optional(),
+        titleExtensionDataRef.optional(),
+      ],
       {
         singleton: true,
         optional: true,
       },
     ),
   },
-  loader: ({ inputs }) =>
-    import('./components/').then(m =>
-      compatWrapper(
-        <m.HomepageCompositionRoot
-          children={inputs.props?.output.children}
-          title={inputs.props?.output.title}
-        />,
-      ),
-    ),
+  factory: (originalFactory, { inputs }) => {
+    return originalFactory({
+      defaultPath: '/home',
+      routeRef: rootRouteRef,
+      loader: () =>
+        import('./components/').then(m =>
+          compatWrapper(
+            <m.HomepageCompositionRoot
+              children={inputs.props?.get(coreExtensionData.reactElement)}
+              title={inputs.props?.get(titleExtensionDataRef)}
+            />,
+          ),
+        ),
+    });
+  },
 });
 
 /**
  * @alpha
  */
-export default createPlugin({
+export default createFrontendPlugin({
   id: 'home',
   extensions: [homePage],
 });

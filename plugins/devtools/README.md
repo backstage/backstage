@@ -20,7 +20,7 @@ You may need to modify your Dockerfile to ensure `backstage.json` is copied into
 ```sh
 WORKDIR /app
 # This switches many Node.js dependencies to production mode.
-ENV NODE_ENV production
+ENV NODE_ENV=production
 
 # Then copy the rest of the backend bundle, along with any other files we might want (including backstage.json).
 COPY --chown=node:node ... backstage.json ./

@@ -33,7 +33,6 @@ import {
 import { ElasticSearchClientWrapper } from './ElasticSearchClientWrapper';
 import { ElasticSearchCustomIndexTemplate } from './types';
 import { ElasticSearchSearchEngineIndexer } from './ElasticSearchSearchEngineIndexer';
-import { Logger } from 'winston';
 import { MissingIndexError } from '@backstage/plugin-search-backend-node';
 import esb from 'elastic-builder';
 import { v4 as uuid } from 'uuid';
@@ -77,7 +76,7 @@ export type ElasticSearchQueryTranslator = (
  * @public
  */
 export type ElasticSearchOptions = {
-  logger: Logger | LoggerService;
+  logger: LoggerService;
   config: Config;
   aliasPostfix?: string;
   indexPrefix?: string;
@@ -131,7 +130,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     private readonly elasticSearchClientOptions: ElasticSearchClientOptions,
     private readonly aliasPostfix: string,
     private readonly indexPrefix: string,
-    private readonly logger: Logger | LoggerService,
+    private readonly logger: LoggerService,
     private readonly batchSize: number,
     highlightOptions?: ElasticSearchHighlightOptions,
   ) {
@@ -313,7 +312,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     });
 
     // Attempt cleanup upon failure.
-    // todo(@backstage/discoverability-maintainers): Consider introducing a more
+    // todo(@backstage/search-maintainers): Consider introducing a more
     // formal mechanism for handling such errors in BatchSearchEngineIndexer and
     // replacing this handler with it. See: #17291
     indexer.on('error', async e => {

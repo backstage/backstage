@@ -1,7 +1,7 @@
 {
   "name": "@backstage/repo-tools",
   "description": "CLI for Backstage repo tooling ",
-  "version": "0.9.4",
+  "version": "0.9.5",
   "publishConfig": {
     "access": "public"
   },
@@ -73,6 +73,7 @@
     "minimatch": "^9.0.0",
     "p-limit": "^3.0.2",
     "portfinder": "^1.0.32",
+    "ts-morph": "^23.0.0",
     "yaml-diff-patch": "^2.0.0"
   },
   "devDependencies": {

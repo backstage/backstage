@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  authServiceFactory,
-  httpAuthServiceFactory,
-} from '@backstage/backend-app-api';
+import { authServiceFactory } from '@backstage/backend-defaults/auth';
+import { httpAuthServiceFactory } from '@backstage/backend-defaults/httpAuth';
 import {
   mockServices,
   registerMswTestHooks,
@@ -82,8 +80,8 @@ describe('credentials', () => {
       features: [
         import('../alpha'),
         mockServices.rootConfig.factory({ data: config }),
-        authServiceFactory(),
-        httpAuthServiceFactory(),
+        authServiceFactory,
+        httpAuthServiceFactory,
       ],
     });
 
@@ -297,5 +295,5 @@ describe('credentials', () => {
     } finally {
       await backend.stop();
     }
-  });
+  }, 20_000);
 });

@@ -71,34 +71,34 @@ describe('TestBackend', () => {
         features: [
           // @ts-expect-error
           [extensionPoint1, { a: 'a' }],
-          createServiceFactory(() => ({
+          createServiceFactory({
             service: serviceRef,
             deps: {},
             // @ts-expect-error
             factory: async () => ({ a: 'a' }),
-          })),
-          createServiceFactory(() => ({
+          }),
+          createServiceFactory({
             service: serviceRef,
             deps: {},
             factory: async () => ({ a: 'a', b: 'b' }),
-          })),
-          createServiceFactory(() => ({
+          }),
+          createServiceFactory({
             service: serviceRef,
             deps: {},
             // @ts-expect-error
             factory: async () => ({ c: 'c' }),
-          })),
-          createServiceFactory(() => ({
+          }),
+          createServiceFactory({
             service: serviceRef,
             deps: {},
             // @ts-expect-error
             factory: async () => ({ a: 'a', c: 'c' }),
-          })),
-          createServiceFactory(() => ({
+          }),
+          createServiceFactory({
             service: serviceRef,
             deps: {},
             factory: async () => ({ a: 'a', b: 'b', c: 'c' }),
-          })),
+          }),
         ],
         extensionPoints: [
           // @ts-expect-error
@@ -144,7 +144,7 @@ describe('TestBackend', () => {
     });
 
     await startTestBackend({
-      features: [testModule, sf()],
+      features: [testModule, sf],
     });
 
     expect(testFn).toHaveBeenCalledWith('winning');
@@ -198,13 +198,12 @@ describe('TestBackend', () => {
             rootLifecycle: coreServices.rootLifecycle,
             rootLogger: coreServices.rootLogger,
             scheduler: coreServices.scheduler,
-            tokenManager: coreServices.tokenManager,
             urlReader: coreServices.urlReader,
             auth: coreServices.auth,
             httpAuth: coreServices.httpAuth,
           },
           async init(deps) {
-            expect(Object.keys(deps)).toHaveLength(17);
+            expect(Object.keys(deps)).toHaveLength(16);
             expect(Object.values(deps)).not.toContain(undefined);
           },
         });
@@ -240,6 +239,15 @@ describe('TestBackend', () => {
       .set('authorization', mockCredentials.user.header());
     expect(res.status).toEqual(200);
     expect(res.body).toEqual({ message: 'pong' });
+  });
+
+  it('should expose health check endpoints', async () => {
+    const { server } = await startTestBackend({ features: [] });
+
+    const res = await request(server).get('/.backstage/health/v1/liveness');
+
+    expect(res.status).toEqual(200);
+    expect(res.body).toEqual({ status: 'ok' });
   });
 
   it('should provide extension point implementations', async () => {

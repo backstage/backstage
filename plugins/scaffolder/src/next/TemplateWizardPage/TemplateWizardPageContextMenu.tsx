@@ -24,6 +24,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import Edit from '@material-ui/icons/Edit';
 import MoreVert from '@material-ui/icons/MoreVert';
 import React, { useState } from 'react';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../translation';
 
 const useStyles = makeStyles(theme => ({
   button: {
@@ -41,6 +43,7 @@ export function TemplateWizardPageContextMenu(
   const { editUrl } = props;
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
+  const { t } = useTranslationRef(scaffolderTranslationRef);
 
   if (!editUrl) {
     return null;
@@ -83,7 +86,11 @@ export function TemplateWizardPageContextMenu(
             <ListItemIcon>
               <Edit fontSize="small" />
             </ListItemIcon>
-            <ListItemText primary="Edit Configuration" />
+            <ListItemText
+              primary={t(
+                'templateWizardPage.pageContextMenu.editConfigurationTitle',
+              )}
+            />
           </MenuItem>
         </MenuList>
       </Popover>

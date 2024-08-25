@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useEntityStore } from './useEntityStore';
 import { pickBy } from 'lodash';
 
@@ -104,9 +104,13 @@ export function useEntityRelationGraph({
     requestEntities,
   ]);
 
-  const filteredEntities = entityFilter
-    ? pickBy(entities, (value, _key) => entityFilter(value))
-    : entities;
+  const filteredEntities = useMemo(
+    () =>
+      entityFilter
+        ? pickBy(entities, (value, _key) => entityFilter(value))
+        : entities,
+    [entities, entityFilter],
+  );
 
   return {
     entities: filteredEntities,

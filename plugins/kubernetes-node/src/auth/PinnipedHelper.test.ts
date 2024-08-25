@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { ExtendedHttpServer } from '@backstage/backend-app-api';
 import { ClusterDetails } from '../types';
 import {
   mockServices,
@@ -37,6 +36,7 @@ import { JsonObject } from '@backstage/types';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
+import { ExtendedHttpServer } from '@backstage/backend-defaults/rootHttpRouter';
 
 describe('Pinniped - tokenCredentialRequest', () => {
   let app: ExtendedHttpServer;

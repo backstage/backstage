@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { readTaskScheduleDefinitionFromConfig } from '@backstage/backend-tasks';
+import { readSchedulerServiceTaskScheduleDefinitionFromConfig } from '@backstage/backend-plugin-api';
 import {
   coreServices,
   createBackendModule,
@@ -46,7 +46,7 @@ export const searchStackOverflowCollatorModule = createBackendModule({
         };
 
         const schedule = config.has('stackoverflow.schedule')
-          ? readTaskScheduleDefinitionFromConfig(
+          ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
               config.getConfig('stackoverflow.schedule'),
             )
           : defaultSchedule;

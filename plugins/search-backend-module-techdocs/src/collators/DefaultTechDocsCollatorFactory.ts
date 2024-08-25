@@ -16,7 +16,6 @@
 
 import {
   createLegacyAuthAdapters,
-  PluginEndpointDiscovery,
   TokenManager,
 } from '@backstage/backend-common';
 import {
@@ -43,6 +42,7 @@ import { TechDocsCollatorEntityTransformer } from './TechDocsCollatorEntityTrans
 import { defaultTechDocsCollatorEntityTransformer } from './defaultTechDocsCollatorEntityTransformer';
 import {
   AuthService,
+  DiscoveryService,
   HttpAuthService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
@@ -57,9 +57,10 @@ interface MkSearchIndexDoc {
  * Options to configure the TechDocs collator factory
  *
  * @public
+ * @deprecated This type is deprecated along with the {@link DefaultTechDocsCollatorFactory}.
  */
 export type TechDocsCollatorFactoryOptions = {
-  discovery: PluginEndpointDiscovery;
+  discovery: DiscoveryService;
   logger: LoggerService;
   tokenManager?: TokenManager;
   auth?: AuthService;
@@ -82,13 +83,14 @@ type EntityInfo = {
  * TechDocs documents.
  *
  * @public
+ * @deprecated Migrate to the {@link https://backstage.io/docs/backend-system/building-backends/migrating | new backend system} and install this collator via module instead (see {@link https://github.com/backstage/backstage/blob/nbs10/search-deprecate-create-router/plugins/search-backend-module-techdocs/README.md#installation | here} for more installation details).
  */
 export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
   public readonly type: string = 'techdocs';
   public readonly visibilityPermission: Permission =
     catalogEntityReadPermission;
 
-  private discovery: PluginEndpointDiscovery;
+  private discovery: DiscoveryService;
   private locationTemplate: string;
   private readonly logger: LoggerService;
   private readonly auth: AuthService;

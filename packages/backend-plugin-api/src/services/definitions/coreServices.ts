@@ -240,20 +240,6 @@ export namespace coreServices {
   >({ id: 'core.scheduler' });
 
   /**
-   * Deprecated service authentication service, use the `auth` service instead.
-   *
-   * See {@link TokenManagerService}
-   * and {@link https://backstage.io/docs/backend-system/core-services/token-manager | the service docs}
-   * for more information.
-   *
-   * @public
-   * @deprecated Please migrate to the new `coreServices.auth`, `coreServices.httpAuth`, and `coreServices.userInfo` services as needed instead
-   */
-  export const tokenManager = createServiceRef<
-    import('./TokenManagerService').TokenManagerService
-  >({ id: 'core.tokenManager' });
-
-  /**
    * Reading content from external systems.
    *
    * See {@link UrlReaderService}
@@ -265,18 +251,4 @@ export namespace coreServices {
   export const urlReader = createServiceRef<
     import('./UrlReaderService').UrlReaderService
   >({ id: 'core.urlReader' });
-
-  /**
-   * Deprecated user authentication service, use the `auth` service instead.
-   *
-   * See {@link IdentityService}
-   * and {@link https://backstage.io/docs/backend-system/core-services/identity | the service docs}
-   * for more information.
-   *
-   * @public
-   * @deprecated Please migrate to the new `coreServices.auth`, `coreServices.httpAuth`, and `coreServices.userInfo` services as needed instead
-   */
-  export const identity = createServiceRef<
-    import('./IdentityService').IdentityService
-  >({ id: 'core.identity' });
 }

@@ -8,7 +8,7 @@ description: Configuring or overriding built-in extension data references
 
 > **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
 
-To have a better understanding of extension data references please read [the corresponding architecture section](../architecture/03-extensions.md#extension-data) first.
+To have a better understanding of extension data references please read [the corresponding architecture section](../architecture/20-extensions.md#extension-data) first.
 
 ## Built-in extension data references
 
@@ -24,18 +24,15 @@ The `reactElement` data reference can be used for defining the extension input/o
 
 ```tsx
 import {
+  createExtension,
   coreExtensionData,
-  createExtensionInput,
-  createPageExtension,
 } from '@backstage/frontend-plugin-api';
 
-const homePage = createPageExtension({
-  defaultPath: '/home',
-  routeRef: rootRouteRef,
-  inputs: {
-    props: createExtensionInput({
-      children: coreExtensionData.reactElement.optional(),
-    }),
+const examplePage = createExtension({
+  name: 'example',
+  output: [coreExtensionData.reactElement],
+  factor() {
+    return [coreExtensionData.reactElement(<h1>Example</h1>)];
   },
 });
 ```

@@ -1,5 +1,67 @@
 # @backstage/plugin-auth-backend-module-cloudflare-access-provider
 
+## 0.2.0
+
+### Minor Changes
+
+- 75d026a: Support for Cloudflare Custom Headers and Custom Cookie Auth Name
+
+### Patch Changes
+
+- c8f1cae: Add `signIn` to authentication provider configuration schema
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/plugin-auth-node@0.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 0.2.0-next.3
+
+### Minor Changes
+
+- 75d026a: Support for Cloudflare Custom Headers and Custom Cookie Auth Name
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.3
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-auth-node@0.5.0-next.3
+
+## 0.1.6-next.2
+
+### Patch Changes
+
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.2
+  - @backstage/plugin-auth-node@0.5.0-next.2
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 0.1.6-next.1
+
+### Patch Changes
+
+- c8f1cae: Add `signIn` to authentication provider configuration schema
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-auth-node@0.4.18-next.1
+
+## 0.1.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.1-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-auth-node@0.4.18-next.0
+
 ## 0.1.5
 
 ### Patch Changes

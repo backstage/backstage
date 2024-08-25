@@ -32,7 +32,7 @@ describe('eventsModuleAzureDevOpsEventRouter', () => {
     });
 
     await startTestBackend({
-      features: [eventsServiceFactory(), eventsModuleAzureDevOpsEventRouter],
+      features: [eventsServiceFactory, eventsModuleAzureDevOpsEventRouter],
     });
 
     expect(events.subscribed).toHaveLength(1);

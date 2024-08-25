@@ -5,20 +5,20 @@
 ```ts
 /// <reference types="node" />
 
-import { BackendFeatureCompat } from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { ContainerRunner } from '@backstage/backend-common';
 import { JsonObject } from '@backstage/types';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
-import { UrlReader } from '@backstage/backend-common';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 // @public
-const cookiecutterModule: BackendFeatureCompat;
+const cookiecutterModule: BackendFeature;
 export default cookiecutterModule;
 
 // @public
 export function createFetchCookiecutterAction(options: {
-  reader: UrlReader;
+  reader: UrlReaderService;
   integrations: ScmIntegrations;
   containerRunner?: ContainerRunner;
 }): TemplateAction<

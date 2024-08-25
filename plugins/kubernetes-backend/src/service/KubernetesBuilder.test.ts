@@ -56,7 +56,7 @@ import {
   kubernetesFetcherExtensionPoint,
   kubernetesServiceLocatorExtensionPoint,
 } from '@backstage/plugin-kubernetes-node';
-import { ExtendedHttpServer } from '@backstage/backend-app-api';
+import { ExtendedHttpServer } from '@backstage/backend-defaults/rootHttpRouter';
 
 describe('API integration tests', () => {
   let app: ExtendedHttpServer;

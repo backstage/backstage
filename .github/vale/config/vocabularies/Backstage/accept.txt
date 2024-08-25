@@ -85,7 +85,9 @@ debounce
 Debounce
 debuggability
 declaratively
+deduplicate
 deduplicated
+deduplication
 deliverables
 denormalized
 dependabot
@@ -241,8 +243,10 @@ Mkdocs
 monorepo
 Monorepo
 monorepos
+morgan
 msgraph
 msw
+multiton
 mutex
 mutexes
 mysql

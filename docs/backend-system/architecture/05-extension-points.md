@@ -78,7 +78,7 @@ Another pattern that can be used is a type of singleton pattern where the extens
 
 ```ts
 interface ScaffolderTaskRunnerExtensionPoint {
-  setTaskRunner(taskRunner: TaskRunner): void;
+  setTaskRunner(taskRunner: SchedulerServiceTaskRunner): void;
 }
 ```
 

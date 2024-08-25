@@ -25,12 +25,16 @@ import {
   coreExtensionData,
   createExtension,
   createExtensionInput,
-  createPlugin,
+  createFrontendPlugin,
   createRouteRef,
 } from '@backstage/frontend-plugin-api';
-import { MockConfigApi } from '@backstage/test-utils';
-import { createAppTree } from '../tree';
+import { MockConfigApi, TestApiRegistry } from '@backstage/test-utils';
+
 import { builtinExtensions } from '../wiring/createApp';
+import { readAppExtensionsConfig } from '../tree/readAppExtensionsConfig';
+import { resolveAppNodeSpecs } from '../tree/resolveAppNodeSpecs';
+import { resolveAppTree } from '../tree/resolveAppTree';
+import { instantiateAppNodeTree } from '../tree/instantiateAppNodeTree';
 
 const ref1 = createRouteRef();
 const ref2 = createRouteRef();
@@ -50,36 +54,45 @@ function createTestExtension(options: {
     attachTo: options.parent
       ? { id: `test/${options.parent}`, input: 'children' }
       : { id: 'app/routes', input: 'routes' },
-    output: {
-      element: coreExtensionData.reactElement,
-      path: coreExtensionData.routePath.optional(),
-      routeRef: coreExtensionData.routeRef.optional(),
-    },
+    output: [
+      coreExtensionData.reactElement,
+      coreExtensionData.routePath.optional(),
+      coreExtensionData.routeRef.optional(),
+    ],
     inputs: {
-      children: createExtensionInput({
-        element: coreExtensionData.reactElement,
-      }),
+      children: createExtensionInput([coreExtensionData.reactElement]),
     },
-    factory() {
-      return {
-        path: options.path,
-        routeRef: options.routeRef,
-        element: React.createElement('div'),
-      };
+    *factory() {
+      if (options.path !== undefined) {
+        yield coreExtensionData.routePath(options.path);
+      }
+
+      if (options.routeRef) {
+        yield coreExtensionData.routeRef(options.routeRef);
+      }
+
+      yield coreExtensionData.reactElement(React.createElement('div'));
     },
   });
 }
 
-function routeInfoFromExtensions(extensions: ExtensionDefinition<unknown>[]) {
-  const plugin = createPlugin({
+function routeInfoFromExtensions(extensions: ExtensionDefinition<any, any>[]) {
+  const plugin = createFrontendPlugin({
     id: 'test',
     extensions,
   });
-  const tree = createAppTree({
-    config: new MockConfigApi({}),
-    builtinExtensions,
-    features: [plugin],
-  });
+
+  const tree = resolveAppTree(
+    'app',
+    resolveAppNodeSpecs({
+      features: [plugin],
+      builtinExtensions,
+      parameters: readAppExtensionsConfig(new MockConfigApi({})),
+      forbidden: new Set(['app']),
+    }),
+  );
+
+  instantiateAppNodeTree(tree.root, TestApiRegistry.from());
 
   return extractRouteInfoFromAppNode(tree.root);
 }

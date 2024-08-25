@@ -22,7 +22,7 @@ import LabelIcon from '@material-ui/icons/Label';
 
 import { configApiRef } from '@backstage/core-plugin-api';
 import { ConfigReader } from '@backstage/core-app-api';
-import { TestApiProvider, renderWithEffects } from '@backstage/test-utils';
+import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
 
 import { searchApiRef } from '../../api';
 import { SearchAutocomplete } from './SearchAutocomplete';
@@ -44,7 +44,7 @@ describe('SearchAutocomplete', () => {
   });
 
   it('Renders without exploding', async () => {
-    await renderWithEffects(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [configApiRef, configApiMock],
@@ -59,7 +59,7 @@ describe('SearchAutocomplete', () => {
   });
 
   it('Show all options by default when focused', async () => {
-    await renderWithEffects(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [configApiRef, configApiMock],
@@ -84,7 +84,7 @@ describe('SearchAutocomplete', () => {
   });
 
   it('Updates context with the initial value', async () => {
-    await renderWithEffects(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [configApiRef, configApiMock],
@@ -106,7 +106,7 @@ describe('SearchAutocomplete', () => {
   });
 
   it('Updates context when value is cleared', async () => {
-    await renderWithEffects(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [configApiRef, configApiMock],
@@ -139,7 +139,7 @@ describe('SearchAutocomplete', () => {
   });
 
   it('Updates context when an option is select', async () => {
-    await renderWithEffects(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [configApiRef, configApiMock],
@@ -165,7 +165,7 @@ describe('SearchAutocomplete', () => {
   });
 
   it('Shows a circular progress when loading options', async () => {
-    await renderWithEffects(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [configApiRef, configApiMock],
@@ -184,7 +184,7 @@ describe('SearchAutocomplete', () => {
   });
 
   it('Uses the default search autocomplete option component', async () => {
-    await renderWithEffects(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [configApiRef, configApiMock],
