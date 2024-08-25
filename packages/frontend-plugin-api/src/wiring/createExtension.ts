@@ -148,7 +148,7 @@ export type ExtensionDefinitionParameters = {
   name?: string;
   configInput?: { [K in string]: any };
   config?: { [K in string]: any };
-  output: AnyExtensionDataRef;
+  output?: AnyExtensionDataRef;
   inputs?: {
     [KName in string]: ExtensionInput<
       AnyExtensionDataRef,

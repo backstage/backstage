@@ -79,7 +79,7 @@ export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
   static forSubject<T extends ExtensionDefinitionParameters>(
     subject: ExtensionDefinition<T>,
     options?: { config?: T['configInput'] },
-  ): ExtensionTester<T['output']> {
+  ): ExtensionTester<NonNullable<T['output']>> {
     const tester = new ExtensionTester();
     tester.add(subject, options as T['configInput'] & {});
     return tester;
@@ -137,7 +137,7 @@ export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
 
   query<T extends ExtensionDefinitionParameters>(
     extension: ExtensionDefinition<T>,
-  ): ExtensionQuery<T['output']> {
+  ): ExtensionQuery<NonNullable<T['output']>> {
     const tree = this.#resolveTree();
 
     const actualId = this.#extensions.find(e => e.definition === extension)?.id;
@@ -240,6 +240,6 @@ export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
 export function createExtensionTester<T extends ExtensionDefinitionParameters>(
   subject: ExtensionDefinition<T>,
   options?: { config?: T['configInput'] },
-): ExtensionTester<T['output']> {
+): ExtensionTester<NonNullable<T['output']>> {
   return ExtensionTester.forSubject(subject, options);
 }

@@ -37,7 +37,7 @@ export function createExtensionTester<T extends ExtensionDefinitionParameters>(
   options?: {
     config?: T['configInput'];
   },
-): ExtensionTester<T['output']>;
+): ExtensionTester<NonNullable<T['output']>>;
 
 export { ErrorWithContext };
 
@@ -78,7 +78,7 @@ export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
   // (undocumented)
   query<T extends ExtensionDefinitionParameters>(
     extension: ExtensionDefinition<T>,
-  ): ExtensionQuery<T['output']>;
+  ): ExtensionQuery<NonNullable<T['output']>>;
   // (undocumented)
   reactElement(): JSX.Element;
 }

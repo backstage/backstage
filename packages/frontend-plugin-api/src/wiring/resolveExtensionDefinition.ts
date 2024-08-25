@@ -116,7 +116,6 @@ export type ResolveExtensionId<
   kind: infer IKind extends string | undefined;
   namespace: infer INamespace extends string | undefined;
   name: infer IName extends string | undefined;
-  output: any;
 }>
   ? [string | undefined] extends [IKind | INamespace | IName]
     ? never

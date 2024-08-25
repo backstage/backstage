@@ -86,10 +86,10 @@ export type ExtensionBlueprintParameters = {
   kind: string;
   namespace?: string;
   name?: string;
-  params: object;
+  params?: object;
   configInput?: { [K in string]: any };
   config?: { [K in string]: any };
-  output: AnyExtensionDataRef;
+  output?: AnyExtensionDataRef;
   inputs?: {
     [KName in string]: ExtensionInput<
       AnyExtensionDataRef,
@@ -171,7 +171,7 @@ export interface ExtensionBlueprint<
           config?: T['config'];
           inputs?: ResolveInputValueOverrides<NonNullable<T['inputs']>>;
         },
-      ) => ExtensionDataContainer<T['output']>,
+      ) => ExtensionDataContainer<NonNullable<T['output']>>,
       context: {
         node: AppNode;
         apis: ApiHolder;
@@ -184,7 +184,9 @@ export interface ExtensionBlueprint<
       },
     ): Iterable<UFactoryOutput> &
       VerifyExtensionFactoryOutput<
-        AnyExtensionDataRef extends UNewOutput ? T['output'] : UNewOutput,
+        AnyExtensionDataRef extends UNewOutput
+          ? NonNullable<T['output']>
+          : UNewOutput,
         UFactoryOutput
       >;
   }): ExtensionDefinition<{
