@@ -15,12 +15,12 @@
  */
 import { Router } from 'express';
 import router from 'express-promise-router';
-import { Logger } from 'winston';
 import { TechDocsCache } from './TechDocsCache';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 type CacheMiddlewareOptions = {
   cache: TechDocsCache;
-  logger: Logger;
+  logger: LoggerService;
 };
 
 type ErrorCallback = (err?: Error) => void;
