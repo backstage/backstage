@@ -114,10 +114,16 @@ export class GithubCreateAppServer {
       default_events: ['create', 'delete', 'push', 'repository'],
       default_permissions: {
         metadata: 'read',
-        ...(this.permissions.includes('members') && { members: 'read' }),
-        ...(this.permissions.includes('read') && { contents: 'read' }),
+        ...(this.permissions.includes('members') && {
+          members: 'read',
+        }),
+        ...(this.permissions.includes('read') && {
+          contents: 'read',
+          checks: 'read',
+        }),
         ...(this.permissions.includes('write') && {
           contents: 'write',
+          checks: 'read',
           actions: 'write',
         }),
       },
