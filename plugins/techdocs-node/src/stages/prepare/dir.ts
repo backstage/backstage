@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
@@ -23,7 +22,6 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import { TECHDOCS_ANNOTATION } from '@backstage/plugin-techdocs-common';
-import { Logger } from 'winston';
 import { parseReferenceAnnotation, transformDirLocation } from '../../helpers';
 import {
   PreparerBase,
@@ -31,6 +29,7 @@ import {
   PreparerOptions,
   PreparerResponse,
 } from './types';
+import { LoggerService, UrlReaderService } from '@backstage/backend-plugin-api';
 
 /**
  * Preparer used to retrieve documentation files from a local directory
@@ -54,7 +53,7 @@ export class DirectoryPreparer implements PreparerBase {
 
   private constructor(
     config: Config,
-    _logger: Logger | null,
+    _logger: LoggerService | null,
     reader: UrlReaderService,
   ) {
     this.reader = reader;
