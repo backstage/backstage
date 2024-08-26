@@ -6,6 +6,7 @@
     "role": "node-library",
     "pluginId": "app",
     "pluginPackages": [
+      "@backstage/plugin-app",
       "@backstage/plugin-app-backend",
       "@backstage/plugin-app-node"
     ]
