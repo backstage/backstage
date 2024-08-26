@@ -44,7 +44,7 @@ function makeExtDef(
 ) {
   return {
     $$type: '@backstage/ExtensionDefinition',
-    T: null as any,
+    T: undefined as any,
     version: 'v1',
     name,
     attachTo: { id: attachId, input: 'default' },

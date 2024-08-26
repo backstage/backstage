@@ -390,7 +390,7 @@ export function createExtension<
   return {
     $$type: '@backstage/ExtensionDefinition',
     version: 'v2',
-    T: null as unknown as T,
+    T: undefined as unknown as T,
     kind: options.kind,
     namespace: options.namespace,
     name: options.name,

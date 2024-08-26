@@ -23,7 +23,7 @@ import {
 describe('resolveExtensionDefinition', () => {
   const baseDef = {
     $$type: '@backstage/ExtensionDefinition',
-    T: null as any,
+    T: undefined as any,
     version: 'v2',
     attachTo: { id: '', input: '' },
     disabled: false,
@@ -65,7 +65,7 @@ describe('resolveExtensionDefinition', () => {
 describe('old resolveExtensionDefinition', () => {
   const baseDef = {
     $$type: '@backstage/ExtensionDefinition',
-    T: null as any,
+    T: undefined as any,
     version: 'v1',
     attachTo: { id: '', input: '' },
     disabled: false,
