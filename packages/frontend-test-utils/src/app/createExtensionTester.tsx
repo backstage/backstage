@@ -143,7 +143,13 @@ export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
   ): ExtensionQuery<NonNullable<T['output']>> {
     const tree = this.#resolveTree();
 
-    const actualId = resolveExtensionDefinition(extension).id;
+    // Same fallback logic as in .add
+    const { name, namespace } = toInternalExtensionDefinition(extension);
+    const definition = {
+      ...extension,
+      name: !namespace && !name ? 'test' : name,
+    };
+    const actualId = resolveExtensionDefinition(definition).id;
 
     const node = tree.nodes.get(actualId);
 
