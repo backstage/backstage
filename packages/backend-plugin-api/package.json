@@ -40,7 +40,8 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "config.d.ts"
   ],
   "scripts": {
     "build": "backstage-cli package build",
@@ -67,5 +68,6 @@
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^"
-  }
+  },
+  "configSchema": "config.d.ts"
 }
