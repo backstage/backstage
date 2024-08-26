@@ -10,9 +10,6 @@ import { ResourcePermission } from '@backstage/plugin-permission-common';
 export const actionExecutePermission: ResourcePermission<'scaffolder-action'>;
 
 // @alpha
-export const adminTaskReadPermission: BasicPermission;
-
-// @alpha
 export const RESOURCE_TYPE_SCAFFOLDER_ACTION = 'scaffolder-action';
 
 // @alpha
