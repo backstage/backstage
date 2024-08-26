@@ -19,7 +19,7 @@ export { AppLayout } from './AppLayout';
 export { AppNav } from './AppNav';
 export { AppRoot } from './AppRoot';
 export { AppRoutes } from './AppRoutes';
-export { AppThemeApi } from './AppThemeApi';
+export { AppThemeApi, DarkTheme, LightTheme } from './AppThemeApi';
 export { ComponentsApi } from './ComponentsApi';
 export { IconsApi } from './IconsApi';
 export { FeatureFlagsApi } from './FeatureFlagsApi';

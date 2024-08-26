@@ -28,7 +28,8 @@ import {
   createApiFactory,
   appThemeApiRef,
 } from '@backstage/frontend-plugin-api';
-import { AppThemeSelector } from '@backstage/core-app-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { AppThemeSelector } from '../../../../packages/core-app-api/src/apis/implementations';
 
 /**
  * Contains the themes installed into the app.
