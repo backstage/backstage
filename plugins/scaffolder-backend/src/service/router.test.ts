@@ -455,13 +455,6 @@ describe('createRouter', () => {
       it('disallows users from seeing tasks they do not own', async () => {
         // Admin Read Permission is not granted
         jest
-          .spyOn(permissionApi, 'authorize')
-          .mockImplementationOnce(async () => [
-            {
-              result: AuthorizeResult.DENY,
-            },
-          ]);
-        jest
           .spyOn(permissionApi, 'authorizeConditional')
           .mockImplementationOnce(async () => [
             {
@@ -482,24 +475,10 @@ describe('createRouter', () => {
       it('allows admin users to see tasks they do not own', async () => {
         // Admin Read Permission is granted
         jest
-          .spyOn(permissionApi, 'authorize')
-          .mockImplementationOnce(async () => [
-            {
-              result: AuthorizeResult.ALLOW,
-            },
-          ]);
-        jest
           .spyOn(permissionApi, 'authorizeConditional')
           .mockImplementationOnce(async () => [
             {
-              conditions: {
-                resourceType: 'scaffolder-task',
-                rule: 'IS_TASK_OWNER',
-                params: { createdBy: 'user' },
-              },
-              pluginId: 'scaffolder',
-              resourceType: 'scaffolder-template',
-              result: AuthorizeResult.CONDITIONAL,
+              result: AuthorizeResult.ALLOW,
             },
           ]);
         (
@@ -555,13 +534,6 @@ describe('createRouter', () => {
         expect(response.body.secrets).toBeUndefined();
       });
       it('disallows users from seeing tasks they do not own', async () => {
-        jest
-          .spyOn(permissionApi, 'authorize')
-          .mockImplementationOnce(async () => [
-            {
-              result: AuthorizeResult.DENY,
-            },
-          ]);
         jest
           .spyOn(permissionApi, 'authorizeConditional')
           .mockImplementationOnce(async () => [
@@ -753,13 +725,6 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       });
       it('disallows users from seeing events for tasks they do not own', async () => {
         jest
-          .spyOn(permissionApi, 'authorize')
-          .mockImplementationOnce(async () => [
-            {
-              result: AuthorizeResult.DENY,
-            },
-          ]);
-        jest
           .spyOn(permissionApi, 'authorizeConditional')
           .mockImplementationOnce(async () => [
             {
@@ -895,13 +860,6 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         expect(subscriber!.closed).toBe(true);
       });
       it('disallows users from seeing events for tasks they do not own', async () => {
-        jest
-          .spyOn(permissionApi, 'authorize')
-          .mockImplementationOnce(async () => [
-            {
-              result: AuthorizeResult.DENY,
-            },
-          ]);
         jest
           .spyOn(permissionApi, 'authorizeConditional')
           .mockImplementationOnce(async () => [
@@ -1492,13 +1450,6 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       it('disallows users from seeing tasks they do not own', async () => {
         // Admin Read Permission is not granted
         jest
-          .spyOn(permissionApi, 'authorize')
-          .mockImplementationOnce(async () => [
-            {
-              result: AuthorizeResult.DENY,
-            },
-          ]);
-        jest
           .spyOn(permissionApi, 'authorizeConditional')
           .mockImplementationOnce(async () => [
             {
@@ -1519,24 +1470,10 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       it('allows admin users to see tasks they do not own', async () => {
         // Admin Read Permission is granted
         jest
-          .spyOn(permissionApi, 'authorize')
-          .mockImplementationOnce(async () => [
-            {
-              result: AuthorizeResult.ALLOW,
-            },
-          ]);
-        jest
           .spyOn(permissionApi, 'authorizeConditional')
           .mockImplementationOnce(async () => [
             {
-              conditions: {
-                resourceType: 'scaffolder-task',
-                rule: 'IS_TASK_OWNER',
-                params: { createdBy: 'user' },
-              },
-              pluginId: 'scaffolder',
-              resourceType: 'scaffolder-template',
-              result: AuthorizeResult.CONDITIONAL,
+              result: AuthorizeResult.ALLOW,
             },
           ]);
         (
@@ -1592,13 +1529,6 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         expect(response.body.secrets).toBeUndefined();
       });
       it('disallows users from seeing tasks they do not own', async () => {
-        jest
-          .spyOn(permissionApi, 'authorize')
-          .mockImplementationOnce(async () => [
-            {
-              result: AuthorizeResult.DENY,
-            },
-          ]);
         jest
           .spyOn(permissionApi, 'authorizeConditional')
           .mockImplementationOnce(async () => [
@@ -1894,13 +1824,6 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         expect(subscriber!.closed).toBe(true);
       });
       it('disallows users from seeing events for tasks they do not own', async () => {
-        jest
-          .spyOn(permissionApi, 'authorize')
-          .mockImplementationOnce(async () => [
-            {
-              result: AuthorizeResult.DENY,
-            },
-          ]);
         jest
           .spyOn(permissionApi, 'authorizeConditional')
           .mockImplementationOnce(async () => [
