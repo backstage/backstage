@@ -59,204 +59,6 @@ const appPlugin: BackstagePlugin<
         name: string;
       }
     >;
-    'api:app/discovery': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'discovery';
-      }
-    >;
-    'api:app/alert': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'alert';
-      }
-    >;
-    'api:app/analytics': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'analytics';
-      }
-    >;
-    'api:app/error': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'error';
-      }
-    >;
-    'api:app/storage': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'storage';
-      }
-    >;
-    'api:app/fetch': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'fetch';
-      }
-    >;
-    'api:app/oauth-request': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'oauth-request';
-      }
-    >;
-    'api:app/google-auth': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'google-auth';
-      }
-    >;
-    'api:app/microsoft-auth': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'microsoft-auth';
-      }
-    >;
-    'api:app/github-auth': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'github-auth';
-      }
-    >;
-    'api:app/okta-auth': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'okta-auth';
-      }
-    >;
-    'api:app/gitlab-auth': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'gitlab-auth';
-      }
-    >;
-    'api:app/onelogin-auth': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'onelogin-auth';
-      }
-    >;
-    'api:app/bitbucket-auth': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'bitbucket-auth';
-      }
-    >;
-    'api:app/bitbucket-server-auth': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'bitbucket-server-auth';
-      }
-    >;
-    'api:app/atlassian-auth': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'atlassian-auth';
-      }
-    >;
-    'api:app/vmware-cloud-auth': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'vmware-cloud-auth';
-      }
-    >;
-    'api:app/permission': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'permission';
-      }
-    >;
     app: ExtensionDefinition<
       {
         [x: string]: any;
@@ -655,6 +457,204 @@ const appPlugin: BackstagePlugin<
         kind: 'app-root-element';
         namespace: 'app';
         name: 'alert-display';
+      }
+    >;
+    'api:app/discovery': ExtensionDefinition<
+      {},
+      {},
+      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
+      {},
+      {
+        kind: 'api';
+        namespace: undefined;
+        name: 'discovery';
+      }
+    >;
+    'api:app/alert': ExtensionDefinition<
+      {},
+      {},
+      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
+      {},
+      {
+        kind: 'api';
+        namespace: undefined;
+        name: 'alert';
+      }
+    >;
+    'api:app/analytics': ExtensionDefinition<
+      {},
+      {},
+      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
+      {},
+      {
+        kind: 'api';
+        namespace: undefined;
+        name: 'analytics';
+      }
+    >;
+    'api:app/error': ExtensionDefinition<
+      {},
+      {},
+      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
+      {},
+      {
+        kind: 'api';
+        namespace: undefined;
+        name: 'error';
+      }
+    >;
+    'api:app/storage': ExtensionDefinition<
+      {},
+      {},
+      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
+      {},
+      {
+        kind: 'api';
+        namespace: undefined;
+        name: 'storage';
+      }
+    >;
+    'api:app/fetch': ExtensionDefinition<
+      {},
+      {},
+      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
+      {},
+      {
+        kind: 'api';
+        namespace: undefined;
+        name: 'fetch';
+      }
+    >;
+    'api:app/oauth-request': ExtensionDefinition<
+      {},
+      {},
+      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
+      {},
+      {
+        kind: 'api';
+        namespace: undefined;
+        name: 'oauth-request';
+      }
+    >;
+    'api:app/google-auth': ExtensionDefinition<
+      {},
+      {},
+      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
+      {},
+      {
+        kind: 'api';
+        namespace: undefined;
+        name: 'google-auth';
+      }
+    >;
+    'api:app/microsoft-auth': ExtensionDefinition<
+      {},
+      {},
+      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
+      {},
+      {
+        kind: 'api';
+        namespace: undefined;
+        name: 'microsoft-auth';
+      }
+    >;
+    'api:app/github-auth': ExtensionDefinition<
+      {},
+      {},
+      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
+      {},
+      {
+        kind: 'api';
+        namespace: undefined;
+        name: 'github-auth';
+      }
+    >;
+    'api:app/okta-auth': ExtensionDefinition<
+      {},
+      {},
+      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
+      {},
+      {
+        kind: 'api';
+        namespace: undefined;
+        name: 'okta-auth';
+      }
+    >;
+    'api:app/gitlab-auth': ExtensionDefinition<
+      {},
+      {},
+      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
+      {},
+      {
+        kind: 'api';
+        namespace: undefined;
+        name: 'gitlab-auth';
+      }
+    >;
+    'api:app/onelogin-auth': ExtensionDefinition<
+      {},
+      {},
+      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
+      {},
+      {
+        kind: 'api';
+        namespace: undefined;
+        name: 'onelogin-auth';
+      }
+    >;
+    'api:app/bitbucket-auth': ExtensionDefinition<
+      {},
+      {},
+      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
+      {},
+      {
+        kind: 'api';
+        namespace: undefined;
+        name: 'bitbucket-auth';
+      }
+    >;
+    'api:app/bitbucket-server-auth': ExtensionDefinition<
+      {},
+      {},
+      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
+      {},
+      {
+        kind: 'api';
+        namespace: undefined;
+        name: 'bitbucket-server-auth';
+      }
+    >;
+    'api:app/atlassian-auth': ExtensionDefinition<
+      {},
+      {},
+      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
+      {},
+      {
+        kind: 'api';
+        namespace: undefined;
+        name: 'atlassian-auth';
+      }
+    >;
+    'api:app/vmware-cloud-auth': ExtensionDefinition<
+      {},
+      {},
+      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
+      {},
+      {
+        kind: 'api';
+        namespace: undefined;
+        name: 'vmware-cloud-auth';
+      }
+    >;
+    'api:app/permission': ExtensionDefinition<
+      {},
+      {},
+      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
+      {},
+      {
+        kind: 'api';
+        namespace: undefined;
+        name: 'permission';
       }
     >;
   }
