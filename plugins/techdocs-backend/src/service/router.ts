@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createLegacyAuthAdapters } from '@backstage/backend-common';
+import {
+  createLegacyAuthAdapters,
+  PluginCacheManager,
+} from '@backstage/backend-common';
 import { CatalogClient } from '@backstage/catalog-client';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
@@ -39,7 +42,6 @@ import {
   DiscoveryService,
   HttpAuthService,
 } from '@backstage/backend-plugin-api';
-import { PluginCacheManager } from '@backstage/backend-defaults/cache';
 
 /**
  * Required dependencies for running TechDocs in the "out-of-the-box"

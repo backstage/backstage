@@ -28,10 +28,9 @@ import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
 import { CachedEntityLoader } from './CachedEntityLoader';
 import { createEventStream, createRouter, RouterOptions } from './router';
 import { TechDocsCache } from '../cache';
-import { mockServices } from '@backstage/backend-test-utils';
+import { mockErrorHandler, mockServices } from '@backstage/backend-test-utils';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { PluginCacheManager } from '@backstage/backend-defaults/cache';
-import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 
 jest.mock('@backstage/catalog-client');
 jest.mock('@backstage/config');
@@ -74,11 +73,7 @@ const getMockHttpResponseFor = (content: string): Buffer => {
 const createApp = async (options: RouterOptions) => {
   const app = express();
   app.use(await createRouter(options));
-  const errorHandler = MiddlewareFactory.create({
-    config: mockServices.rootConfig(),
-    logger: mockServices.rootLogger(),
-  }).error();
-  app.use(errorHandler);
+  app.use(mockErrorHandler());
   return app;
 };
 
