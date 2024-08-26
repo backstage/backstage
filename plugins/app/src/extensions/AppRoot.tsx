@@ -19,7 +19,6 @@ import React, {
   Fragment,
   PropsWithChildren,
   ReactNode,
-  useContext,
   useState,
 } from 'react';
 import {
@@ -27,19 +26,26 @@ import {
   RouterBlueprint,
   SignInPageBlueprint,
   coreExtensionData,
+  discoveryApiRef,
+  fetchApiRef,
+  errorApiRef,
   createExtension,
   createExtensionInput,
+  routeResolutionApiRef,
 } from '@backstage/frontend-plugin-api';
 import {
+  DiscoveryApi,
+  ErrorApi,
+  FetchApi,
   IdentityApi,
+  ProfileInfo,
   SignInPageProps,
   configApiRef,
+  identityApiRef,
   useApi,
 } from '@backstage/core-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { InternalAppContext } from '../../../../packages/frontend-app-api/src/wiring/InternalAppContext';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { AppIdentityProxy } from '../../../../packages/core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
+import { isProtectedApp } from '../../../../packages/core-app-api/src/app/isProtectedApp';
 import { BrowserRouter } from 'react-router-dom';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { RouteTracker } from '../../../../packages/frontend-app-api/src/routing/RouteTracker';
@@ -68,7 +74,32 @@ export const AppRoot = createExtension({
     ]),
   },
   output: [coreExtensionData.reactElement],
-  factory({ inputs }) {
+  factory({ inputs, apis }) {
+    const identityApi = apis.get(identityApiRef);
+    if (!identityApi) {
+      throw new Error('App requires an Identity API implementation');
+    }
+    if (!('enableCookieAuth' in identityApi)) {
+      throw new Error('Unexpected Identity API implementation');
+    }
+    const appIdentityProxy = identityApi as AppIdentityProxy;
+
+    if (isProtectedApp()) {
+      const discoveryApi = apis.get(discoveryApiRef);
+      const errorApi = apis.get(errorApiRef);
+      const fetchApi = apis.get(fetchApiRef);
+      if (!discoveryApi || !errorApi || !fetchApi) {
+        throw new Error(
+          'App is running in protected mode but missing required APIs',
+        );
+      }
+      appIdentityProxy.enableCookieAuth({
+        discoveryApi,
+        errorApi,
+        fetchApi,
+      });
+    }
+
     let content: React.ReactNode = (
       <>
         {inputs.elements.map(el => (
@@ -88,6 +119,7 @@ export const AppRoot = createExtension({
     return [
       coreExtensionData.reactElement(
         <AppRouter
+          appIdentityProxy={appIdentityProxy}
           SignInPageComponent={inputs.signInPage?.get(
             SignInPageBlueprint.dataRefs.component,
           )}
@@ -126,12 +158,33 @@ function SignInPageWrapper({
   return <>{children}</>;
 }
 
+type AppIdentityProxy = IdentityApi & {
+  enableCookieAuth(ctx: {
+    errorApi: ErrorApi;
+    fetchApi: FetchApi;
+    discoveryApi: DiscoveryApi;
+  }): void;
+  setTarget(
+    impl: IdentityApi & /* backwards compat stuff */ {
+      getUserId?(): string;
+      getIdToken?(): Promise<string | undefined>;
+      getProfile?(): ProfileInfo;
+    },
+    options: { signOutTargetUrl: string },
+  ): void;
+};
+
+type RouteResolverProxy = {
+  getRouteObjects(): any[];
+};
+
 /**
  * Props for the {@link AppRouter} component.
  * @public
  */
 export interface AppRouterProps {
   children?: ReactNode;
+  appIdentityProxy: AppIdentityProxy;
   SignInPageComponent?: ComponentType<SignInPageProps>;
   RouterComponent?: ComponentType<PropsWithChildren<{}>>;
 }
@@ -155,17 +208,22 @@ function DefaultRouter(props: PropsWithChildren<{}>) {
 export function AppRouter(props: AppRouterProps) {
   const {
     children,
+    appIdentityProxy,
     SignInPageComponent,
     RouterComponent = DefaultRouter,
   } = props;
 
   const configApi = useApi(configApiRef);
+  const routeResolutionsApi = useApi(routeResolutionApiRef);
   const basePath = getBasePath(configApi);
-  const internalAppContext = useContext(InternalAppContext);
-  if (!internalAppContext) {
-    throw new Error('AppRouter must be rendered within the AppProvider');
+
+  // TODO: Private access for now, probably replace with path -> node lookup method on the API
+  if (!('getRouteObjects' in routeResolutionsApi)) {
+    throw new Error('Unexpected route resolution API implementation');
   }
-  const { routeObjects, appIdentityProxy } = internalAppContext;
+  const routeObjects = (
+    routeResolutionsApi as RouteResolverProxy
+  ).getRouteObjects();
 
   // If the app hasn't configured a sign-in page, we just continue as guest.
   if (!SignInPageComponent) {

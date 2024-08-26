@@ -42,18 +42,12 @@ import {
   configApiRef,
   featureFlagsApiRef,
   identityApiRef,
-  errorApiRef,
-  discoveryApiRef,
-  fetchApiRef,
 } from '@backstage/core-plugin-api';
 import { getAvailableFeatures } from './discovery';
 import { ApiFactoryRegistry, ApiResolver } from '@backstage/core-app-api';
 
 // TODO: Get rid of all of these
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { isProtectedApp } from '../../../core-app-api/src/app/isProtectedApp';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
+
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { defaultConfigLoaderSync } from '../../../core-app-api/src/app/defaultConfigLoader';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -67,7 +61,6 @@ import { CreateAppRouteBinder } from '../routing';
 import { RouteResolver } from '../routing/RouteResolver';
 import { resolveRouteBindings } from '../routing/resolveRouteBindings';
 import { collectRouteIds } from '../routing/collectRouteIds';
-import { InternalAppContext } from './InternalAppContext';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalBackstagePlugin } from '../../../frontend-plugin-api/src/wiring/createFrontendPlugin';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -81,6 +74,9 @@ import { readAppExtensionsConfig } from '../tree/readAppExtensionsConfig';
 import { instantiateAppNodeTree } from '../tree/instantiateAppNodeTree';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { ApiRegistry } from '../../../core-app-api/src/apis/system/ApiRegistry';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
+import { BackstageRouteObject } from '../routing/types';
 
 function deduplicateFeatures(
   allFeatures: FrontendFeature[],
@@ -215,6 +211,7 @@ class AppTreeApiProxy implements AppTreeApi {
 // Helps delay callers from reaching out to the API before the app tree has been materialized
 class RouteResolutionApiProxy implements RouteResolutionApi {
   #delegate: RouteResolutionApi | undefined;
+  #routeObjects: BackstageRouteObject[] | undefined;
 
   constructor(
     private readonly tree: AppTree,
@@ -251,8 +248,13 @@ class RouteResolutionApiProxy implements RouteResolutionApi {
       this.routeBindings,
       this.basePath,
     );
+    this.#routeObjects = routeInfo.routeObjects;
 
     return routeInfo;
+  }
+
+  getRouteObjects() {
+    return this.#routeObjects;
   }
 }
 
@@ -285,7 +287,6 @@ export function createSpecializedApp(options?: {
   );
 
   const factories = createApiFactories({ tree });
-
   const appTreeApi = new AppTreeApiProxy(tree);
   const routeResolutionApi = new RouteResolutionApiProxy(
     tree,
@@ -312,24 +313,8 @@ export function createSpecializedApp(options?: {
     instantiateAppNodeTree(appNode, apiHolder);
   }
 
-  const routeInfo = routeResolutionApi.initialize();
+  routeResolutionApi.initialize();
   appTreeApi.initialize();
-
-  if (isProtectedApp()) {
-    const discoveryApi = apiHolder.get(discoveryApiRef);
-    const errorApi = apiHolder.get(errorApiRef);
-    const fetchApi = apiHolder.get(fetchApiRef);
-    if (!discoveryApi || !errorApi || !fetchApi) {
-      throw new Error(
-        'App is running in protected mode but missing required APIs',
-      );
-    }
-    appIdentityProxy.enableCookieAuth({
-      discoveryApi,
-      errorApi,
-      fetchApi,
-    });
-  }
 
   const featureFlagApi = apiHolder.get(featureFlagsApiRef);
   if (featureFlagApi) {
@@ -354,13 +339,7 @@ export function createSpecializedApp(options?: {
     .get('app')![0]
     .instance!.getData(coreExtensionData.reactElement);
 
-  const AppComponent = () => (
-    <InternalAppContext.Provider
-      value={{ appIdentityProxy, routeObjects: routeInfo.routeObjects }}
-    >
-      {rootEl}
-    </InternalAppContext.Provider>
-  );
+  const AppComponent = () => rootEl;
 
   return {
     createRoot() {
