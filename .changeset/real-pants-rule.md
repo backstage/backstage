@@ -1,5 +1,6 @@
 ---
-'@backstage/plugin-auth-backend-module-microsoft-provider': minor
+'@backstage/plugin-auth-backend-module-microsoft-provider': patch
+'@backstage/plugin-auth-backend': patch
 '@backstage/plugin-catalog-backend-module-msgraph': patch
 ---
 
