@@ -47,17 +47,11 @@ import {
   fetchApiRef,
 } from '@backstage/core-plugin-api';
 import { getAvailableFeatures } from './discovery';
-import {
-  ApiFactoryRegistry,
-  ApiProvider,
-  ApiResolver,
-} from '@backstage/core-app-api';
+import { ApiFactoryRegistry, ApiResolver } from '@backstage/core-app-api';
 
 // TODO: Get rid of all of these
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { isProtectedApp } from '../../../core-app-api/src/app/isProtectedApp';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { AppThemeProvider } from '../../../core-app-api/src/app/AppThemeProvider';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -361,15 +355,11 @@ export function createSpecializedApp(options?: {
     .instance!.getData(coreExtensionData.reactElement);
 
   const AppComponent = () => (
-    <ApiProvider apis={apiHolder}>
-      <AppThemeProvider>
-        <InternalAppContext.Provider
-          value={{ appIdentityProxy, routeObjects: routeInfo.routeObjects }}
-        >
-          {rootEl}
-        </InternalAppContext.Provider>
-      </AppThemeProvider>
-    </ApiProvider>
+    <InternalAppContext.Provider
+      value={{ appIdentityProxy, routeObjects: routeInfo.routeObjects }}
+    >
+      {rootEl}
+    </InternalAppContext.Provider>
   );
 
   return {

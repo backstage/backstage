@@ -21,6 +21,10 @@ import {
   createExtension,
   createExtensionInput,
 } from '@backstage/frontend-plugin-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { ApiProvider } from '../../../../packages/core-app-api/src';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { AppThemeProvider } from '../../../../packages/core-app-api/src/app/AppThemeProvider';
 
 export const App = createExtension({
   namespace: 'app',
@@ -31,11 +35,17 @@ export const App = createExtension({
     }),
   },
   output: [coreExtensionData.reactElement],
-  factory: ({ node, inputs }) => [
-    coreExtensionData.reactElement(
-      <ExtensionBoundary node={node}>
-        {inputs.root.get(coreExtensionData.reactElement)}
-      </ExtensionBoundary>,
-    ),
-  ],
+  factory: ({ node, apis, inputs }) => {
+    return [
+      coreExtensionData.reactElement(
+        <ApiProvider apis={apis}>
+          <AppThemeProvider>
+            <ExtensionBoundary node={node}>
+              {inputs.root.get(coreExtensionData.reactElement)}
+            </ExtensionBoundary>
+          </AppThemeProvider>
+        </ApiProvider>,
+      ),
+    ];
+  },
 });

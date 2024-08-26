@@ -29,7 +29,7 @@ const themeDataRef = createExtensionDataRef<AppTheme>().with({
 export const ThemeBlueprint = createExtensionBlueprint({
   kind: 'theme',
   namespace: 'app',
-  attachTo: { id: 'api:app-theme', input: 'themes' },
+  attachTo: { id: 'api:app/app-theme', input: 'themes' },
   output: [themeDataRef],
   dataRefs: {
     theme: themeDataRef,
