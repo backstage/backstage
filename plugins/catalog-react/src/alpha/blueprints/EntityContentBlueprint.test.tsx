@@ -15,7 +15,10 @@
  */
 import React from 'react';
 import { EntityContentBlueprint } from './EntityContentBlueprint';
-import { createExtensionTester } from '@backstage/frontend-test-utils';
+import {
+  createExtensionTester,
+  renderInTestApp,
+} from '@backstage/frontend-test-utils';
 import {
   coreExtensionData,
   createExtension,
@@ -211,9 +214,11 @@ describe('EntityContentBlueprint', () => {
       },
     });
 
-    createExtensionTester(extension, { config: { mock: 'mock test config' } })
-      .add(mockExtension)
-      .render();
+    renderInTestApp(
+      createExtensionTester(extension, { config: { mock: 'mock test config' } })
+        .add(mockExtension)
+        .reactElement(),
+    );
 
     await waitFor(() => {
       expect(screen.getByTestId('test')).toBeInTheDocument();

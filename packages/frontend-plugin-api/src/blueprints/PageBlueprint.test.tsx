@@ -103,7 +103,7 @@ describe('PageBlueprint', () => {
 
     expect(tester.get(coreExtensionData.routeRef)).toBe(mockRouteRef);
 
-    const { getByTestId } = tester.render();
+    const { getByTestId } = renderInTestApp(tester.reactElement());
 
     await waitFor(() => expect(getByTestId('test')).toBeInTheDocument());
   });

@@ -16,14 +16,15 @@
 
 import React from 'react';
 import { AppRootWrapperBlueprint } from './AppRootWrapperBlueprint';
-import { createExtensionTester } from '@backstage/frontend-test-utils';
-import { PageBlueprint } from './PageBlueprint';
-import { waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import {
   coreExtensionData,
   createExtension,
   createExtensionInput,
+  createFrontendPlugin,
 } from '../wiring';
+import { createSpecializedApp } from '@backstage/frontend-app-api';
+import { MockConfigApi } from '@backstage/test-utils';
 
 describe('AppRootWrapperBlueprint', () => {
   it('should return an extension with sensible defaults', () => {
@@ -64,24 +65,22 @@ describe('AppRootWrapperBlueprint', () => {
       },
     });
 
-    const { getByText } = createExtensionTester(
-      PageBlueprint.make({
-        params: {
-          defaultPath: '/',
-          loader: async () => <div />,
-        },
-      }),
-    )
-      .add(extension)
-      .render();
+    const app = createSpecializedApp({
+      features: [
+        createFrontendPlugin({
+          id: 'test',
+          extensions: [extension],
+        }),
+      ],
+    });
 
-    await waitFor(() => expect(getByText('Hello')).toBeInTheDocument());
+    render(app.createRoot());
+
+    await waitFor(() => expect(screen.getByText('Hello')).toBeInTheDocument());
   });
 
   it('should render the complex component wrapper', async () => {
     const extension = AppRootWrapperBlueprint.makeWithOverrides({
-      namespace: 'ns',
-      name: 'test',
       config: {
         schema: {
           name: z => z.string(),
@@ -104,28 +103,39 @@ describe('AppRootWrapperBlueprint', () => {
       },
     });
 
-    const { getByText, getByTestId } = createExtensionTester(
-      PageBlueprint.make({
-        params: {
-          defaultPath: '/',
-          loader: async () => <div>Hi</div>,
+    const app = createSpecializedApp({
+      features: [
+        createFrontendPlugin({
+          id: 'test',
+          extensions: [
+            extension,
+            createExtension({
+              name: 'test-child',
+              attachTo: { id: 'app-root-wrapper:test', input: 'children' },
+              output: [coreExtensionData.reactElement],
+              factory: () => [
+                coreExtensionData.reactElement(<div>Its Me</div>),
+              ],
+            }),
+          ],
+        }),
+      ],
+      config: new MockConfigApi({
+        app: {
+          extensions: [
+            {
+              'app-root-wrapper:test': { config: { name: 'Robin' } },
+            },
+          ],
         },
       }),
-    )
-      .add(extension, { config: { name: 'Robin' } })
-      .add(
-        createExtension({
-          attachTo: { id: 'app-root-wrapper:ns/test', input: 'children' },
-          output: [coreExtensionData.reactElement],
-          factory: () => [coreExtensionData.reactElement(<div>Its Me</div>)],
-        }),
-      )
-      .render();
+    });
+
+    render(app.createRoot());
 
     await waitFor(() => {
-      expect(getByText('Hi')).toBeInTheDocument();
-      expect(getByTestId('Robin-1')).toBeInTheDocument();
-      expect(getByText('Its Me')).toBeInTheDocument();
+      expect(screen.getByTestId('Robin-1')).toBeInTheDocument();
+      expect(screen.getByText('Its Me')).toBeInTheDocument();
     });
   });
 });
