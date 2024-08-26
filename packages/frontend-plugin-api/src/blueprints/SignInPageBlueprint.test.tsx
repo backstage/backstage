@@ -31,6 +31,7 @@ describe('SignInPageBlueprint', () => {
     ).toMatchInlineSnapshot(`
       {
         "$$type": "@backstage/ExtensionDefinition",
+        "T": undefined,
         "attachTo": {
           "id": "app/root",
           "input": "signInPage",

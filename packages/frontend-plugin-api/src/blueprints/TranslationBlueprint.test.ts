@@ -46,6 +46,7 @@ describe('TranslationBlueprint', () => {
     ).toMatchInlineSnapshot(`
       {
         "$$type": "@backstage/ExtensionDefinition",
+        "T": undefined,
         "attachTo": {
           "id": "api:translations",
           "input": "translations",

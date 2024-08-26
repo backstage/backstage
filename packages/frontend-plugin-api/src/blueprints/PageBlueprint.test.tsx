@@ -43,6 +43,7 @@ describe('PageBlueprint', () => {
     expect(myPage).toMatchInlineSnapshot(`
       {
         "$$type": "@backstage/ExtensionDefinition",
+        "T": undefined,
         "attachTo": {
           "id": "app/routes",
           "input": "routes",
