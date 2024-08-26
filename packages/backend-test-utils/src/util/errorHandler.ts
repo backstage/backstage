@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,5 +14,16 @@
  * limitations under the License.
  */
 
-export * from './deprecated';
-export * from './database';
+import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
+import { mockServices } from '../next';
+
+/**
+ * A mock for error handler middleware that can be used in router tests.
+ * @public
+ */
+export function mockErrorHandler() {
+  return MiddlewareFactory.create({
+    config: mockServices.rootConfig(),
+    logger: mockServices.rootLogger(),
+  }).error();
+}
