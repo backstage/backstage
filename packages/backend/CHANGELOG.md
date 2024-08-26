@@ -1,5 +1,17 @@
 # example-backend
 
+## 0.0.30
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.25.1
+  - @backstage/plugin-auth-backend@0.22.11
+  - @backstage/plugin-catalog-backend-module-openapi@0.1.42
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.20
+  - @backstage/plugin-notifications-backend@0.3.4
+  - @backstage/plugin-signals-backend@0.1.9
+
 ## 0.0.29
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @backstage/plugin-auth-backend-module-aws-alb-provider
 
+## 0.1.16
+
+### Patch Changes
+
+- 17c9d35: Fix a bug where the signer was checked from the payload instead of the header
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.22.11
+
 ## 0.1.15
 
 ### Patch Changes

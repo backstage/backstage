@@ -1,5 +1,12 @@
 # @backstage/plugin-catalog-backend-module-logs
 
+## 0.0.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.25.1
+
 ## 0.0.2
 
 ### Patch Changes
