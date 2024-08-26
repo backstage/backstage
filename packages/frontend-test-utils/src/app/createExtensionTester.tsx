@@ -29,6 +29,8 @@ import { JsonArray, JsonObject, JsonValue } from '@backstage/types';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { toInternalExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/createExtension';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { resolveAppTree } from '../../../frontend-app-api/src/tree/resolveAppTree';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { resolveAppNodeSpecs } from '../../../frontend-app-api/src/tree/resolveAppNodeSpecs';
@@ -104,19 +106,20 @@ export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
       );
     }
 
-    let resolvedExtension;
-    try {
-      resolvedExtension = resolveExtensionDefinition(extension);
-    } catch {
-      resolvedExtension = resolveExtensionDefinition(extension, {
-        namespace: 'test',
-      });
-    }
+    const { name, namespace } = toInternalExtensionDefinition(extension);
+
+    const definition = {
+      ...extension,
+      // setting name "test" as fallback
+      name: !namespace && !name ? 'test' : name,
+    };
+
+    const resolvedExtension = resolveExtensionDefinition(definition);
 
     this.#extensions.push({
       id: resolvedExtension.id,
       extension: resolvedExtension,
-      definition: extension,
+      definition,
       config: options?.config as JsonValue,
     });
 
@@ -140,12 +143,7 @@ export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
   ): ExtensionQuery<NonNullable<T['output']>> {
     const tree = this.#resolveTree();
 
-    const actualId = this.#extensions.find(e => e.definition === extension)?.id;
-    if (!actualId) {
-      throw new Error(
-        `Unable to query extension as it has not been added to the tester, ${extension}`,
-      );
-    }
+    const actualId = resolveExtensionDefinition(extension).id;
 
     const node = tree.nodes.get(actualId);
 
