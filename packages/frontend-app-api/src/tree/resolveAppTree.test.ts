@@ -15,7 +15,6 @@
  */
 
 import {
-  AppNodeSpec,
   coreExtensionData,
   createExtension,
   createExtensionInput,

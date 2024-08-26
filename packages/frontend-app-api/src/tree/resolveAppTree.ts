@@ -92,8 +92,6 @@ function makeRedirectKey(attachTo: { id: string; input: string }) {
   return `${attachTo.id}%${attachTo.input}`;
 }
 
-const MAX_REDIRECT_DEPTH = 100;
-
 const isValidAttachmentPoint = (
   attachTo: { id: string; input: string },
   nodes: Map<string, SerializableAppNode>,
