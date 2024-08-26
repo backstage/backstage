@@ -35,7 +35,6 @@ describe('AwsAlbProvider', () => {
     email: 'user.name@email.test',
     exp: Date.now() + 10000,
     iss: 'ISSUER_URL',
-    signer: 'SIGNER_ARN',
   };
   const signingKey = new TextEncoder().encode('signingKey');
   let mockJwt: string;
@@ -78,7 +77,7 @@ describe('AwsAlbProvider', () => {
 
   beforeEach(async () => {
     mockJwt = await new SignJWT(mockClaims)
-      .setProtectedHeader({ alg: 'HS256' })
+      .setProtectedHeader({ alg: 'HS256', signer: 'SIGNER_ARN' })
       .sign(signingKey);
   });
 
@@ -206,8 +205,8 @@ describe('AwsAlbProvider', () => {
     });
 
     it('signer is invalid', async () => {
-      const jwt = await new SignJWT({ signer: 'INVALID_SIGNER_ARN' })
-        .setProtectedHeader({ alg: 'HS256' })
+      const jwt = await new SignJWT({})
+        .setProtectedHeader({ alg: 'HS256', signer: 'INVALID_SIGNER_ARN' })
         .sign(signingKey);
       const req = {
         header: jest.fn(name => {
