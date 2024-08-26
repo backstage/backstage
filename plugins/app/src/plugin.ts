@@ -13,9 +13,52 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 
+import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
+import {
+  App,
+  AppLanguageApi,
+  AppLayout,
+  AppNav,
+  AppRoot,
+  AppRoutes,
+  AppThemeApi,
+  DarkTheme,
+  LightTheme,
+  ComponentsApi,
+  IconsApi,
+  FeatureFlagsApi,
+  TranslationsApi,
+  DefaultProgressComponent,
+  DefaultNotFoundErrorPageComponent,
+  DefaultErrorBoundaryComponent,
+  oauthRequestDialogAppRootElement,
+  alertDisplayAppRootElement,
+} from './extensions';
+import { apis } from './defaultApis';
+
+/** @public */
 export const appPlugin = createFrontendPlugin({
   id: 'app',
-  extensions: [],
+  extensions: [
+    ...apis,
+    App,
+    AppLanguageApi,
+    AppLayout,
+    AppNav,
+    AppRoot,
+    AppRoutes,
+    AppThemeApi,
+    DarkTheme,
+    LightTheme,
+    ComponentsApi,
+    IconsApi,
+    FeatureFlagsApi,
+    TranslationsApi,
+    DefaultProgressComponent,
+    DefaultNotFoundErrorPageComponent,
+    DefaultErrorBoundaryComponent,
+    oauthRequestDialogAppRootElement,
+    alertDisplayAppRootElement,
+  ],
 });
