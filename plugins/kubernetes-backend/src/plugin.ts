@@ -40,8 +40,6 @@ import {
   type KubernetesServiceLocatorExtensionPoint,
 } from '@backstage/plugin-kubernetes-node';
 
-import Router from 'express-promise-router';
-
 class ObjectsProvider implements KubernetesObjectsProviderExtensionPoint {
   private objectsProvider: KubernetesObjectsProvider | undefined;
 
