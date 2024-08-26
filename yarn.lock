@@ -4440,6 +4440,7 @@ __metadata:
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
+    "@backstage/plugin-app": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@backstage/types": "workspace:^"
@@ -4465,6 +4466,7 @@ __metadata:
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/frontend-app-api": "workspace:^"
     "@backstage/frontend-test-utils": "workspace:^"
+    "@backstage/plugin-app": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
@@ -4490,6 +4492,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/frontend-app-api": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
+    "@backstage/plugin-app": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@testing-library/jest-dom": ^6.0.0
@@ -4684,7 +4687,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-app@^0.0.0, @backstage/plugin-app@workspace:^, @backstage/plugin-app@workspace:plugins/app":
+"@backstage/plugin-app@workspace:^, @backstage/plugin-app@workspace:plugins/app":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-app@workspace:plugins/app"
   dependencies:
@@ -26922,7 +26925,6 @@ __metadata:
     "@backstage/frontend-app-api": "workspace:^"
     "@backstage/integration-react": "workspace:^"
     "@backstage/plugin-api-docs": "workspace:^"
-    "@backstage/plugin-app": ^0.0.0
     "@backstage/plugin-auth-react": "workspace:^"
     "@backstage/plugin-catalog": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
