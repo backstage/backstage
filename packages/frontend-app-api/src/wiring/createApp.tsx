@@ -34,10 +34,7 @@ import {
   createApiFactory,
   routeResolutionApiRef,
 } from '@backstage/frontend-plugin-api';
-import { App } from '@backstage/plugin-app/src/extensions/App';
-import { AppRoutes } from '@backstage/plugin-app/src/extensions/AppRoutes';
-import { AppLayout } from '@backstage/plugin-app/src/extensions/AppLayout';
-import { AppNav } from '@backstage/plugin-app/src/extensions/AppNav';
+
 import {
   AnyApiFactory,
   ApiHolder,
@@ -69,42 +66,20 @@ import { defaultConfigLoaderSync } from '../../../core-app-api/src/app/defaultCo
 import { overrideBaseUrlConfigs } from '../../../core-app-api/src/app/overrideBaseUrlConfigs';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { apis as defaultApis } from '../../../app-defaults/src/defaults';
 
-import {
-  oauthRequestDialogAppRootElement,
-  alertDisplayAppRootElement,
-} from '@backstage/plugin-app/src/extensions/elements';
 import { extractRouteInfoFromAppNode } from '../routing/extractRouteInfoFromAppNode';
 
 import { CreateAppRouteBinder } from '../routing';
 import { RouteResolver } from '../routing/RouteResolver';
 import { resolveRouteBindings } from '../routing/resolveRouteBindings';
 import { collectRouteIds } from '../routing/collectRouteIds';
-import {
-  DefaultProgressComponent,
-  DefaultErrorBoundaryComponent,
-  DefaultNotFoundErrorPageComponent,
-} from '@backstage/plugin-app/src/extensions/components';
 import { InternalAppContext } from './InternalAppContext';
-import { AppRoot } from '@backstage/plugin-app/src/extensions/AppRoot';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalBackstagePlugin } from '../../../frontend-plugin-api/src/wiring/createFrontendPlugin';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalExtensionOverrides } from '../../../frontend-plugin-api/src/wiring/createExtensionOverrides';
 import { stringifyError } from '@backstage/errors';
 import { getBasePath } from '../routing/getBasePath';
-import {
-  AppThemeApi,
-  DarkTheme,
-  LightTheme,
-} from '@backstage/plugin-app/src/extensions/AppThemeApi';
-import { IconsApi } from '@backstage/plugin-app/src/extensions/IconsApi';
-import { TranslationsApi } from '@backstage/plugin-app/src/extensions/TranslationsApi';
-import { ComponentsApi } from '@backstage/plugin-app/src/extensions/ComponentsApi';
-import { AppLanguageApi } from '@backstage/plugin-app/src/extensions/AppLanguageApi';
-import { FeatureFlagsApi } from '@backstage/plugin-app/src/extensions/FeatureFlagsApi';
 import { Root } from '../extensions/Root';
 import { resolveAppTree } from '../tree/resolveAppTree';
 import { resolveAppNodeSpecs } from '../tree/resolveAppNodeSpecs';
@@ -112,35 +87,6 @@ import { readAppExtensionsConfig } from '../tree/readAppExtensionsConfig';
 import { instantiateAppNodeTree } from '../tree/instantiateAppNodeTree';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { ApiRegistry } from '../../../core-app-api/src/apis/system/ApiRegistry';
-
-const DefaultApis = defaultApis.map(factory =>
-  ApiBlueprint.make({ namespace: factory.api.id, params: { factory } }),
-);
-
-export const builtinExtensions = (
-  [
-    Root,
-    App,
-    AppRoot,
-    AppRoutes,
-    AppNav,
-    AppLayout,
-    DefaultProgressComponent,
-    DefaultErrorBoundaryComponent,
-    DefaultNotFoundErrorPageComponent,
-    LightTheme,
-    DarkTheme,
-    oauthRequestDialogAppRootElement,
-    alertDisplayAppRootElement,
-    AppThemeApi,
-    AppLanguageApi,
-    IconsApi,
-    TranslationsApi,
-    ComponentsApi,
-    FeatureFlagsApi,
-    ...DefaultApis,
-  ] as ExtensionDefinition[]
-).map(def => resolveExtensionDefinition(def));
 
 function deduplicateFeatures(
   allFeatures: FrontendFeature[],
@@ -338,7 +284,7 @@ export function createSpecializedApp(options?: {
     'root',
     resolveAppNodeSpecs({
       features,
-      builtinExtensions,
+      builtinExtensions: [resolveExtensionDefinition(Root)],
       parameters: readAppExtensionsConfig(config),
       forbidden: new Set(['root']),
     }),
