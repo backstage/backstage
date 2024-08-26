@@ -32,6 +32,6 @@ export const Root = createExtension({
       replaces: [{ id: 'app', input: 'apis' }],
     }),
   },
-  output: [],
-  factory: () => [],
+  output: [coreExtensionData.reactElement],
+  factory: ({ inputs }) => inputs.app,
 });
