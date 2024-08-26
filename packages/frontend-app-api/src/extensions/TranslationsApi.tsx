@@ -33,9 +33,10 @@ import { I18nextTranslationApi } from '../../../core-app-api/src/apis/implementa
 export const TranslationsApi = ApiBlueprint.makeWithOverrides({
   name: 'translations',
   inputs: {
-    translations: createExtensionInput([
-      TranslationBlueprint.dataRefs.translation,
-    ]),
+    translations: createExtensionInput(
+      [TranslationBlueprint.dataRefs.translation],
+      { replaces: [{ id: 'app', input: 'translations' }] },
+    ),
   },
   factory: (originalFactory, { inputs }) => {
     return originalFactory({

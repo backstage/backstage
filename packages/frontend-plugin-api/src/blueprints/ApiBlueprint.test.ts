@@ -116,6 +116,7 @@ describe('ApiBlueprint', () => {
             "extensionData": [
               [Function],
             ],
+            "replaces": undefined,
           },
         },
         "kind": "api",

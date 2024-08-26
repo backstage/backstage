@@ -29,9 +29,10 @@ import { DefaultComponentsApi } from '../apis/implementations/ComponentsApi';
 export const ComponentsApi = ApiBlueprint.makeWithOverrides({
   name: 'components',
   inputs: {
-    components: createExtensionInput([
-      createComponentExtension.componentDataRef,
-    ]),
+    components: createExtensionInput(
+      [createComponentExtension.componentDataRef],
+      { replaces: [{ id: 'app', input: 'components' }] },
+    ),
   },
   factory: (originalFactory, { inputs }) => {
     return originalFactory({

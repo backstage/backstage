@@ -31,7 +31,9 @@ import { icons as defaultIcons } from '../../../app-defaults/src/defaults';
 export const IconsApi = ApiBlueprint.makeWithOverrides({
   name: 'icons',
   inputs: {
-    icons: createExtensionInput([IconBundleBlueprint.dataRefs.icons]),
+    icons: createExtensionInput([IconBundleBlueprint.dataRefs.icons], {
+      replaces: [{ id: 'app', input: 'icons' }],
+    }),
   },
   factory: (originalFactory, { inputs }) => {
     return originalFactory({

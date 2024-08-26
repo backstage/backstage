@@ -28,7 +28,9 @@ export const Root = createExtension({
     app: createExtensionInput([coreExtensionData.reactElement], {
       singleton: true,
     }),
-    apis: createExtensionInput([ApiBlueprint.dataRefs.factory]),
+    apis: createExtensionInput([ApiBlueprint.dataRefs.factory], {
+      replaces: [{ id: 'app', input: 'apis' }],
+    }),
   },
   output: [],
   factory: () => [],
