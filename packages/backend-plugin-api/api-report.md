@@ -514,7 +514,7 @@ export interface RootLoggerService extends LoggerService {}
 
 // @public (undocumented)
 export interface RootServiceFactoryOptions<
-  TService, // TODO(Rugvip): Can we forward the entire service ref type here instead of forwarding each type arg once the callback form is gone?
+  TService,
   TInstances extends 'singleton' | 'multiton',
   TImpl extends TService,
   TDeps extends {
