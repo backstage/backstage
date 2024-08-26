@@ -425,10 +425,7 @@ export interface Config {
     pluginDivisionMode?: 'database' | 'schema';
     /** Configures the ownership of newly created schemas in pg databases. */
     role?: string;
-    /**
-     * Skip running database migrations.
-     * NOTE: Currently only supported by the `pg` client.
-     */
+    /** Skip running database migrations. */
     skipMigrations?: boolean;
     /**
      * Arbitrary config object to pass to knex when initializing
@@ -468,10 +465,7 @@ export interface Config {
         knexConfig?: object;
         /** Configures the ownership of newly created schemas in pg databases. */
         role?: string;
-        /**
-         * Skip running database migrations.
-         * NOTE: Currently only supported by the `pg` client.
-         */
+        /** Skip running database migrations. */
         skipMigrations?: boolean;
       };
     };
