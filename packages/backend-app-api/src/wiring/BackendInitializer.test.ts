@@ -20,23 +20,32 @@ import { loggerServiceFactory } from '@backstage/backend-defaults/logger';
 import {
   createServiceRef,
   createServiceFactory,
+  coreServices,
   createBackendPlugin,
   createBackendModule,
   createExtensionPoint,
   createBackendFeatureLoader,
 } from '@backstage/backend-plugin-api';
 import { BackendInitializer } from './BackendInitializer';
-import { mockServices } from '@backstage/backend-test-utils';
 
-const requiredRootFactories = [
-  mockServices.rootConfig.factory(),
-  mockServices.rootLogger.factory(),
-];
+class MockLogger {
+  debug() {}
+  info() {}
+  warn() {}
+  error() {}
+  child() {
+    return this;
+  }
+}
 
 const baseFactories = [
-  ...requiredRootFactories,
   lifecycleServiceFactory,
   rootLifecycleServiceFactory,
+  createServiceFactory({
+    service: coreServices.rootLogger,
+    deps: {},
+    factory: () => new MockLogger(),
+  }),
   loggerServiceFactory,
 ];
 
@@ -390,7 +399,7 @@ describe('BackendInitializer', () => {
   });
 
   it('should forward errors when plugins fail to start', async () => {
-    const init = new BackendInitializer(requiredRootFactories);
+    const init = new BackendInitializer([]);
     init.add(
       createBackendPlugin({
         pluginId: 'test',
@@ -410,7 +419,7 @@ describe('BackendInitializer', () => {
   });
 
   it('should forward errors when modules fail to start', async () => {
-    const init = new BackendInitializer(requiredRootFactories);
+    const init = new BackendInitializer([]);
     init.add(testPlugin);
     init.add(
       createBackendModule({
@@ -432,7 +441,7 @@ describe('BackendInitializer', () => {
   });
 
   it('should reject duplicate plugins', async () => {
-    const init = new BackendInitializer(requiredRootFactories);
+    const init = new BackendInitializer([]);
     init.add(
       createBackendPlugin({
         pluginId: 'test',
@@ -461,7 +470,7 @@ describe('BackendInitializer', () => {
   });
 
   it('should reject duplicate modules', async () => {
-    const init = new BackendInitializer(requiredRootFactories);
+    const init = new BackendInitializer([]);
     init.add(testPlugin);
     init.add(
       createBackendModule({
@@ -496,8 +505,12 @@ describe('BackendInitializer', () => {
     const extA = createExtensionPoint<string>({ id: 'a' });
     const extB = createExtensionPoint<string>({ id: 'b' });
     const init = new BackendInitializer([
-      ...requiredRootFactories,
       rootLifecycleServiceFactory,
+      createServiceFactory({
+        service: coreServices.rootLogger,
+        deps: {},
+        factory: () => new MockLogger(),
+      }),
     ]);
     init.add(testPlugin);
     init.add(

@@ -113,12 +113,10 @@ export interface DynamicPluginsFactoryOptions {
 }
 
 // @public
-export const dynamicPluginsFeatureDiscoveryLoader: BackendFeature;
-
-// @public
-export const dynamicPluginsFeatureDiscoveryLoaderWithOptions: (
+export const dynamicPluginsFeatureDiscoveryLoader: ((
   options?: DynamicPluginsFactoryOptions,
-) => BackendFeature;
+) => BackendFeature) &
+  BackendFeature;
 
 // @public @deprecated (undocumented)
 export const dynamicPluginsFeatureDiscoveryServiceFactory: ServiceFactory<

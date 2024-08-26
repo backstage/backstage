@@ -215,7 +215,7 @@ export class DynamicPluginManager implements DynamicPluginProvider {
 
 /**
  * @public
- * @deprecated The `featureDiscoveryService` is deprecated in favor of using {@link dynamicPluginsFeatureDiscoveryLoader} or {@link dynamicPluginsFeatureDiscoveryLoaderWithOptions} instead.
+ * @deprecated The `featureDiscoveryService` is deprecated in favor of using {@link dynamicPluginsFeatureDiscoveryLoader} instead.
  */
 export const dynamicPluginsServiceRef = createServiceRef<DynamicPluginProvider>(
   {
@@ -233,7 +233,7 @@ export interface DynamicPluginsFactoryOptions {
 
 /**
  * @public
- * @deprecated Use {@link dynamicPluginsFeatureDiscoveryLoaderWithOptions} instead.
+ * @deprecated Use {@link dynamicPluginsFeatureDiscoveryLoader} instead.
  */
 export const dynamicPluginsServiceFactoryWithOptions = (
   options?: DynamicPluginsFactoryOptions,
@@ -296,7 +296,7 @@ class DynamicPluginsEnabledFeatureDiscoveryService
 
 /**
  * @public
- * @deprecated The `featureDiscoveryService` is deprecated in favor of using {@link dynamicPluginsFeatureDiscoveryLoader} or {@link dynamicPluginsFeatureDiscoveryLoaderWithOptions} instead.
+ * @deprecated The `featureDiscoveryService` is deprecated in favor of using {@link dynamicPluginsFeatureDiscoveryLoader} instead.
  */
 export const dynamicPluginsFeatureDiscoveryServiceFactory =
   createServiceFactory({
@@ -310,28 +310,7 @@ export const dynamicPluginsFeatureDiscoveryServiceFactory =
     },
   });
 
-/**
- * A function that returns a backend feature loader that uses the dynamic plugins system to discover features.
- *
- * @public
- *
- * @example
- * Using the `dynamicPluginsFeatureDiscoveryLoaderWithOptions` loader in a backend instance:
- * ```ts
- * //...
- * import { createBackend } from '@backstage/backend-defaults';
- * import { dynamicPluginsFeatureDiscoveryLoaderWithOptions } from '@backstage/backend-dynamic-feature-service';
- * import { myCustomModuleLoader } from './myCustomModuleLoader';
- *
- * const backend = createBackend();
- * backend.add(dynamicPluginsFeatureDiscoveryLoaderWithOptions({
- *   moduleLoader: myCustomModuleLoader
- * }));
- * //...
- * backend.start();
- * ```
- */
-export const dynamicPluginsFeatureDiscoveryLoaderWithOptions = (
+const dynamicPluginsFeatureDiscoveryLoaderWithOptions = (
   options?: DynamicPluginsFactoryOptions,
 ) =>
   createBackendFeatureLoader({
@@ -369,9 +348,27 @@ export const dynamicPluginsFeatureDiscoveryLoaderWithOptions = (
  * //...
  * backend.start();
  * ```
+ *
+ * @example
+ * Passing options to the `dynamicPluginsFeatureDiscoveryLoader` loader in a backend instance:
+ * ```ts
+ * //...
+ * import { createBackend } from '@backstage/backend-defaults';
+ * import { dynamicPluginsFeatureDiscoveryLoader } from '@backstage/backend-dynamic-feature-service';
+ * import { myCustomModuleLoader } from './myCustomModuleLoader';
+ *
+ * const backend = createBackend();
+ * backend.add(dynamicPluginsFeatureDiscoveryLoader({
+ *   moduleLoader: myCustomModuleLoader
+ * }));
+ * //...
+ * backend.start();
+ * ```
  */
-export const dynamicPluginsFeatureDiscoveryLoader =
-  dynamicPluginsFeatureDiscoveryLoaderWithOptions();
+export const dynamicPluginsFeatureDiscoveryLoader = Object.assign(
+  dynamicPluginsFeatureDiscoveryLoaderWithOptions,
+  dynamicPluginsFeatureDiscoveryLoaderWithOptions(),
+);
 
 function isBackendFeature(value: unknown): value is BackendFeature {
   return (

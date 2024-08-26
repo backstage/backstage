@@ -27,7 +27,7 @@ export interface FeatureDiscoveryService {
 /**
  * An optional service that can be used to dynamically load in additional BackendFeatures at runtime.
  * @alpha
- * @deprecated The `featureDiscoveryServiceRef` is deprecated in favor of using {@link @backstage/backend-app-api#featureDiscoveryLoader} instead.
+ * @deprecated The `featureDiscoveryServiceRef` is deprecated in favor of using {@link @backstage/backend-defaults#discoveryFeatureLoader} instead.
  */
 export const featureDiscoveryServiceRef =
   createServiceRef<FeatureDiscoveryService>({

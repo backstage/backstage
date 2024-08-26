@@ -37,7 +37,6 @@ export {
   dynamicPluginsServiceFactoryWithOptions,
   dynamicPluginsServiceRef,
   dynamicPluginsFeatureDiscoveryLoader,
-  dynamicPluginsFeatureDiscoveryLoaderWithOptions,
 } from './plugin-manager';
 
 export type {
