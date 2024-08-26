@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog-backend
 
+## 1.25.1
+
+### Patch Changes
+
+- 2fb4670: Fixed an issue with the by-query call, where ordering by a field that does not exist on all entities led to not all results being returned
+
 ## 1.25.0
 
 ### Minor Changes
