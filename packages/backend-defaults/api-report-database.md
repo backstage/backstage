@@ -27,6 +27,7 @@ export class DatabaseManager implements LegacyRootDatabaseService {
 
 // @public
 export type DatabaseManagerOptions = {
+  migrations?: DatabaseService['migrations'];
   logger?: LoggerService;
 };
 
