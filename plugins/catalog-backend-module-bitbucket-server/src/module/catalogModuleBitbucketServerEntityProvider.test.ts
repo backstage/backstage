@@ -56,7 +56,7 @@ describe('catalogModuleBitbucketServerEntityProvider', () => {
         [catalogProcessingExtensionPoint, catalogExtensionPointImpl],
       ],
       features: [
-        eventsServiceFactory(),
+        eventsServiceFactory,
         catalogModuleBitbucketServerEntityProvider,
         mockServices.rootConfig.factory({
           data: {
