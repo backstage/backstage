@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
-export { featureDiscoveryServiceFactory } from './alpha/featureDiscoveryServiceFactory';
+export {
+  featureDiscoveryLoader,
+  featureDiscoveryServiceFactory,
+} from './alpha/featureDiscoveryServiceFactory';

@@ -19,6 +19,7 @@ import {
   RootConfigService,
   RootLoggerService,
   coreServices,
+  createBackendFeatureLoader,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import {
@@ -153,7 +154,10 @@ class PackageDiscoveryService implements FeatureDiscoveryService {
   }
 }
 
-/** @alpha */
+/**
+ * @alpha
+ * @deprecated The `featureDiscoveryServiceFactory` is deprecated in favor of using {@link featureDiscoveryLoader} instead.
+ */
 export const featureDiscoveryServiceFactory = createServiceFactory({
   service: featureDiscoveryServiceRef,
   deps: {
@@ -162,6 +166,36 @@ export const featureDiscoveryServiceFactory = createServiceFactory({
   },
   factory({ config, logger }) {
     return new PackageDiscoveryService(config, logger);
+  },
+});
+
+/**
+ * A loader that discovers backend features from the current package.json and its dependencies.
+ *
+ * @public
+ *
+ * @example
+ * Using the `featureDiscoveryLoader` loader in a backend instance:
+ * ```ts
+ * //...
+ * import { createBackend } from '@backstage/backend-defaults';
+ * import { featureDiscoveryLoader } from '@backstage/backend-app-api';
+ *
+ * const backend = createBackend();
+ * backend.add(featureDiscoveryLoader);
+ * //...
+ * backend.start();
+ * ```
+ */
+export const featureDiscoveryLoader = createBackendFeatureLoader({
+  deps: {
+    config: coreServices.rootConfig,
+    logger: coreServices.rootLogger,
+  },
+  async loader({ config, logger }) {
+    const service = new PackageDiscoveryService(config, logger);
+    const { features } = await service.getBackendFeatures();
+    return features;
   },
 });
 

@@ -112,7 +112,15 @@ export interface DynamicPluginsFactoryOptions {
   moduleLoader?(logger: LoggerService): ModuleLoader;
 }
 
-// @public (undocumented)
+// @public
+export const dynamicPluginsFeatureDiscoveryLoader: BackendFeature;
+
+// @public
+export const dynamicPluginsFeatureDiscoveryLoaderWithOptions: (
+  options?: DynamicPluginsFactoryOptions,
+) => BackendFeature;
+
+// @public @deprecated (undocumented)
 export const dynamicPluginsFeatureDiscoveryServiceFactory: ServiceFactory<
   FeatureDiscoveryService,
   'root',
@@ -154,19 +162,19 @@ export const dynamicPluginsSchemasServiceFactoryWithOptions: (
   options?: DynamicPluginsSchemasOptions,
 ) => ServiceFactory<DynamicPluginsSchemasService, 'root', 'singleton'>;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const dynamicPluginsServiceFactory: ServiceFactory<
   DynamicPluginProvider,
   'root',
   'singleton'
 >;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const dynamicPluginsServiceFactoryWithOptions: (
   options?: DynamicPluginsFactoryOptions,
 ) => ServiceFactory<DynamicPluginProvider, 'root', 'singleton'>;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const dynamicPluginsServiceRef: ServiceRef<
   DynamicPluginProvider,
   'root',

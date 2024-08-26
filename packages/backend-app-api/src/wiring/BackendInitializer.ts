@@ -34,11 +34,11 @@ import type {
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type { InternalServiceFactory } from '../../../backend-plugin-api/src/services/system/types';
 import { ForwardedError, ConflictError } from '@backstage/errors';
-import { featureDiscoveryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { DependencyGraph } from '../lib/DependencyGraph';
 import { ServiceRegistry } from './ServiceRegistry';
 import { createInitializationLogger } from './createInitializationLogger';
 import { unwrapFeature } from './helpers';
+import { featureDiscoveryLoader } from '../alpha/featureDiscoveryServiceFactory';
 
 export interface BackendRegisterInit {
   consumes: Set<ServiceOrExtensionPoint>;
@@ -150,23 +150,12 @@ export class BackendInitializer {
   }
 
   async #doStart(): Promise<void> {
+    this.add(featureDiscoveryLoader);
+
     this.#serviceRegistry.checkForCircularDeps();
 
     for (const feature of this.#registeredFeatures) {
       this.#addFeature(await feature);
-    }
-
-    const featureDiscovery = await this.#serviceRegistry.get(
-      featureDiscoveryServiceRef,
-      'root',
-    );
-
-    if (featureDiscovery) {
-      const { features } = await featureDiscovery.getBackendFeatures();
-      for (const feature of features) {
-        this.#addFeature(unwrapFeature(feature));
-      }
-      this.#serviceRegistry.checkForCircularDeps();
     }
 
     await this.#applyBackendFeatureLoaders(this.#registeredFeatureLoaders);
