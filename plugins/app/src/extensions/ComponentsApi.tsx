@@ -21,7 +21,8 @@ import {
   createApiFactory,
   componentsApiRef,
 } from '@backstage/frontend-plugin-api';
-import { DefaultComponentsApi } from '../apis/implementations/ComponentsApi';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { DefaultComponentsApi } from '../../../../packages/frontend-app-api/src/apis/implementations/ComponentsApi';
 
 /**
  * Contains the shareable components installed into the app.

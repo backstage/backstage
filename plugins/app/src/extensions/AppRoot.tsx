@@ -36,12 +36,15 @@ import {
   configApiRef,
   useApi,
 } from '@backstage/core-plugin-api';
-import { InternalAppContext } from '../wiring/InternalAppContext';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
+import { InternalAppContext } from '../../../../packages/frontend-app-api/src/wiring/InternalAppContext';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { AppIdentityProxy } from '../../../../packages/core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
 import { BrowserRouter } from 'react-router-dom';
-import { RouteTracker } from '../routing/RouteTracker';
-import { getBasePath } from '../routing/getBasePath';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { RouteTracker } from '../../../../packages/frontend-app-api/src/routing/RouteTracker';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { getBasePath } from '../../../../packages/frontend-app-api/src/routing/getBasePath';
 
 export const AppRoot = createExtension({
   namespace: 'app',

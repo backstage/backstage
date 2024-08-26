@@ -20,7 +20,7 @@ import {
   featureFlagsApiRef,
 } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { LocalStorageFeatureFlags } from '../../../core-app-api/src/apis/implementations/FeatureFlagsApi/LocalStorageFeatureFlags';
+import { LocalStorageFeatureFlags } from '../../../../packages/core-app-api/src/apis/implementations/FeatureFlagsApi/LocalStorageFeatureFlags';
 
 /**
  * Contains the shareable icons installed into the app.

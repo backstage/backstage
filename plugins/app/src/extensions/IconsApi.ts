@@ -21,9 +21,10 @@ import {
   createApiFactory,
   iconsApiRef,
 } from '@backstage/frontend-plugin-api';
-import { DefaultIconsApi } from '../apis/implementations/IconsApi';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { icons as defaultIcons } from '../../../app-defaults/src/defaults';
+import { DefaultIconsApi } from '../../../../packages/frontend-app-api/src/apis/implementations/IconsApi';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { icons as defaultIcons } from '../../../../packages/app-defaults/src/defaults';
 
 /**
  * Contains the shareable icons installed into the app.

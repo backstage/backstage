@@ -34,10 +34,10 @@ import {
   createApiFactory,
   routeResolutionApiRef,
 } from '@backstage/frontend-plugin-api';
-import { App } from '../extensions/App';
-import { AppRoutes } from '../extensions/AppRoutes';
-import { AppLayout } from '../extensions/AppLayout';
-import { AppNav } from '../extensions/AppNav';
+import { App } from '@backstage/plugin-app/src/extensions/App';
+import { AppRoutes } from '@backstage/plugin-app/src/extensions/AppRoutes';
+import { AppLayout } from '@backstage/plugin-app/src/extensions/AppLayout';
+import { AppNav } from '@backstage/plugin-app/src/extensions/AppNav';
 import {
   AnyApiFactory,
   ApiHolder,
@@ -75,7 +75,7 @@ import { apis as defaultApis } from '../../../app-defaults/src/defaults';
 import {
   oauthRequestDialogAppRootElement,
   alertDisplayAppRootElement,
-} from '../extensions/elements';
+} from '@backstage/plugin-app/src/extensions/elements';
 import { extractRouteInfoFromAppNode } from '../routing/extractRouteInfoFromAppNode';
 
 import { CreateAppRouteBinder } from '../routing';
@@ -86,21 +86,25 @@ import {
   DefaultProgressComponent,
   DefaultErrorBoundaryComponent,
   DefaultNotFoundErrorPageComponent,
-} from '../extensions/components';
+} from '@backstage/plugin-app/src/extensions/components';
 import { InternalAppContext } from './InternalAppContext';
-import { AppRoot } from '../extensions/AppRoot';
+import { AppRoot } from '@backstage/plugin-app/src/extensions/AppRoot';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalBackstagePlugin } from '../../../frontend-plugin-api/src/wiring/createFrontendPlugin';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalExtensionOverrides } from '../../../frontend-plugin-api/src/wiring/createExtensionOverrides';
 import { stringifyError } from '@backstage/errors';
 import { getBasePath } from '../routing/getBasePath';
-import { AppThemeApi, DarkTheme, LightTheme } from '../extensions/AppThemeApi';
-import { IconsApi } from '../extensions/IconsApi';
-import { TranslationsApi } from '../extensions/TranslationsApi';
-import { ComponentsApi } from '../extensions/ComponentsApi';
-import { AppLanguageApi } from '../extensions/AppLanguageApi';
-import { FeatureFlagsApi } from '../extensions/FeatureFlagsApi';
+import {
+  AppThemeApi,
+  DarkTheme,
+  LightTheme,
+} from '@backstage/plugin-app/src/extensions/AppThemeApi';
+import { IconsApi } from '@backstage/plugin-app/src/extensions/IconsApi';
+import { TranslationsApi } from '@backstage/plugin-app/src/extensions/TranslationsApi';
+import { ComponentsApi } from '@backstage/plugin-app/src/extensions/ComponentsApi';
+import { AppLanguageApi } from '@backstage/plugin-app/src/extensions/AppLanguageApi';
+import { FeatureFlagsApi } from '@backstage/plugin-app/src/extensions/FeatureFlagsApi';
 import { Root } from '../extensions/Root';
 import { resolveAppTree } from '../tree/resolveAppTree';
 import { resolveAppNodeSpecs } from '../tree/resolveAppNodeSpecs';
