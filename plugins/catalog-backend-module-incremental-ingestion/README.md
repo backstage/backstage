@@ -46,19 +46,19 @@ The Incremental Entity Provider backend is designed for data sources that provid
 2. Add the following code to the `packages/backend/src/index.ts` file:
 
 ```diff
-++import { catalogModuleCustomIncrementalIngestionProvider } from './extensions/catalogCustomIncrementalIngestion';
++ import { catalogModuleCustomIncrementalIngestionProvider } from './extensions/catalogCustomIncrementalIngestion';
 
 
 const backend = createBackend();
 
-++backend.add(
-++  import(
-++    '@backstage/plugin-catalog-backend-module-incremental-ingestion/alpha'
-++  ),
-++);
++ backend.add(
++   import(
++     '@backstage/plugin-catalog-backend-module-incremental-ingestion/alpha'
++   ),
++ );
 
 // We have created this in section **Adding an Incremental Entity Provider to the catalog**
-++ backend.add(catalogModuleCustomIncrementalIngestionProvider);
++ backend.add(catalogModuleCustomIncrementalIngestionProvider);
 
 backend.start();
 ```
