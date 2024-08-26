@@ -3417,10 +3417,10 @@ __metadata:
   linkType: hard
 
 "@backstage-community/plugin-stackstorm@npm:^0.1.16":
-  version: 0.1.17
-  resolution: "@backstage-community/plugin-stackstorm@npm:0.1.17"
+  version: 0.1.18
+  resolution: "@backstage-community/plugin-stackstorm@npm:0.1.18"
   dependencies:
-    "@backstage/core-components": ^0.14.9
+    "@backstage/core-components": ^0.14.10
     "@backstage/core-plugin-api": ^1.9.3
     "@backstage/errors": ^1.2.4
     "@material-ui/core": ^4.12.2
@@ -3431,7 +3431,7 @@ __metadata:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
-  checksum: 3fa2b45da036e4001a9e034a8841b58877d0b4189d244806b3b1808d3c2a34bb4ab4acbcff629edda47d03b2941c51743dd84f7352ed0d700988aaee946b65f3
+  checksum: 9a11e4ee8c6e28df83658b91efa27d41808664a19b71b874b7a3eaa1a6befa1733f92ed14902f291e8050cc78a879357ab2fd0b37042cad9f0953d78953fcfd5
   languageName: node
   linkType: hard
 
@@ -4186,7 +4186,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/core-components@^0.14.10, @backstage/core-components@^0.14.9, @backstage/core-components@workspace:^, @backstage/core-components@workspace:packages/core-components":
+"@backstage/core-components@^0.14.10, @backstage/core-components@workspace:^, @backstage/core-components@workspace:packages/core-components":
   version: 0.0.0-use.local
   resolution: "@backstage/core-components@workspace:packages/core-components"
   dependencies:
