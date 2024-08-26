@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { CacheService } from '@backstage/backend-plugin-api';
 import { CatalogClient } from '@backstage/catalog-client';
-import { CacheClient } from '@backstage/backend-common';
 import {
   Entity,
   CompoundEntityRef,
@@ -23,12 +23,12 @@ import {
 
 export type CachedEntityLoaderOptions = {
   catalog: CatalogClient;
-  cache: CacheClient;
+  cache: CacheService;
 };
 
 export class CachedEntityLoader {
   private readonly catalog: CatalogClient;
-  private readonly cache: CacheClient;
+  private readonly cache: CacheService;
   private readonly readTimeout = 1000;
 
   constructor({ catalog, cache }: CachedEntityLoaderOptions) {
