@@ -75,16 +75,12 @@ export const AppRoot = createExtension({
   },
   output: [coreExtensionData.reactElement],
   factory({ inputs, apis }) {
-    const identityApi = apis.get(identityApiRef);
-    if (!identityApi) {
-      throw new Error('App requires an Identity API implementation');
-    }
-    if (!('enableCookieAuth' in identityApi)) {
-      throw new Error('Unexpected Identity API implementation');
-    }
-    const appIdentityProxy = identityApi as AppIdentityProxy;
-
     if (isProtectedApp()) {
+      const identityApi = apis.get(identityApiRef);
+      if (!identityApi) {
+        throw new Error('App requires an Identity API implementation');
+      }
+      const appIdentityProxy = toAppIdentityProxy(identityApi);
       const discoveryApi = apis.get(discoveryApiRef);
       const errorApi = apis.get(errorApiRef);
       const fetchApi = apis.get(fetchApiRef);
@@ -119,7 +115,6 @@ export const AppRoot = createExtension({
     return [
       coreExtensionData.reactElement(
         <AppRouter
-          appIdentityProxy={appIdentityProxy}
           SignInPageComponent={inputs.signInPage?.get(
             SignInPageBlueprint.dataRefs.component,
           )}
@@ -174,6 +169,13 @@ type AppIdentityProxy = IdentityApi & {
   ): void;
 };
 
+function toAppIdentityProxy(identityApi: IdentityApi): AppIdentityProxy {
+  if (!('enableCookieAuth' in identityApi)) {
+    throw new Error('Unexpected Identity API implementation');
+  }
+  return identityApi as AppIdentityProxy;
+}
+
 type RouteResolverProxy = {
   getRouteObjects(): any[];
 };
@@ -184,7 +186,6 @@ type RouteResolverProxy = {
  */
 export interface AppRouterProps {
   children?: ReactNode;
-  appIdentityProxy: AppIdentityProxy;
   SignInPageComponent?: ComponentType<SignInPageProps>;
   RouterComponent?: ComponentType<PropsWithChildren<{}>>;
 }
@@ -208,12 +209,12 @@ function DefaultRouter(props: PropsWithChildren<{}>) {
 export function AppRouter(props: AppRouterProps) {
   const {
     children,
-    appIdentityProxy,
     SignInPageComponent,
     RouterComponent = DefaultRouter,
   } = props;
 
   const configApi = useApi(configApiRef);
+  const appIdentityProxy = toAppIdentityProxy(useApi(identityApiRef));
   const routeResolutionsApi = useApi(routeResolutionApiRef);
   const basePath = getBasePath(configApi);
 

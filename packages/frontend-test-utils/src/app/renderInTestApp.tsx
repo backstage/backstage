@@ -27,12 +27,12 @@ import {
   coreExtensionData,
   RouteRef,
   useRouteRef,
-  createExtensionInput,
   IconComponent,
   RouterBlueprint,
   NavItemBlueprint,
   FrontendFeature,
 } from '@backstage/frontend-plugin-api';
+import appPlugin from '@backstage/plugin-app';
 
 /**
  * Options to customize the behavior of the test app.
@@ -92,38 +92,36 @@ const NavItem = (props: {
   );
 };
 
-export const TestAppNavExtension = createExtension({
-  namespace: 'app',
-  name: 'nav',
-  attachTo: { id: 'app/layout', input: 'nav' },
-  inputs: {
-    items: createExtensionInput([NavItemBlueprint.dataRefs.target]),
-  },
-  output: [coreExtensionData.reactElement],
-  factory({ inputs }) {
-    return [
-      coreExtensionData.reactElement(
-        <nav>
-          <ul>
-            {inputs.items.map((item, index) => {
-              const { icon, title, routeRef } = item.get(
-                NavItemBlueprint.dataRefs.target,
-              );
+const appPluginOverride = appPlugin.withOverrides({
+  extensions: [
+    appPlugin.getExtension('app/nav').override({
+      output: [coreExtensionData.reactElement],
+      factory(_originalFactory, { inputs }) {
+        return [
+          coreExtensionData.reactElement(
+            <nav>
+              <ul>
+                {inputs.items.map((item, index) => {
+                  const { icon, title, routeRef } = item.get(
+                    NavItemBlueprint.dataRefs.target,
+                  );
 
-              return (
-                <NavItem
-                  key={index}
-                  icon={icon}
-                  title={title}
-                  routeRef={routeRef}
-                />
-              );
-            })}
-          </ul>
-        </nav>,
-      ),
-    ];
-  },
+                  return (
+                    <NavItem
+                      key={index}
+                      icon={icon}
+                      title={title}
+                      routeRef={routeRef}
+                    />
+                  );
+                })}
+              </ul>
+            </nav>,
+          ),
+        ];
+      },
+    }),
+  ],
 });
 
 /**
@@ -152,7 +150,6 @@ export function renderInTestApp(
         Component: ({ children }) => <MemoryRouter>{children}</MemoryRouter>,
       },
     }),
-    TestAppNavExtension,
   ];
 
   if (options?.mountedRoutes) {
@@ -183,6 +180,7 @@ export function renderInTestApp(
   }
 
   const features: FrontendFeature[] = [
+    appPluginOverride,
     createExtensionOverrides({
       extensions,
     }),

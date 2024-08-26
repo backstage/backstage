@@ -29,6 +29,7 @@ import { CreateAppFeatureLoader, createApp } from './createApp';
 import { MockConfigApi, renderWithEffects } from '@backstage/test-utils';
 import React from 'react';
 import { featureFlagsApiRef, useApi } from '@backstage/core-plugin-api';
+import appPlugin from '@backstage/plugin-app';
 
 describe('createApp', () => {
   it('should allow themes to be installed', async () => {
@@ -44,6 +45,7 @@ describe('createApp', () => {
         }),
       }),
       features: [
+        appPlugin,
         createFrontendPlugin({
           id: 'test',
           extensions: [
@@ -73,6 +75,7 @@ describe('createApp', () => {
     const app = createApp({
       configLoader: async () => ({ config: new MockConfigApi({}) }),
       features: [
+        appPlugin,
         createFrontendPlugin({
           id: duplicatedFeatureId,
           extensions: [
@@ -136,7 +139,7 @@ describe('createApp', () => {
       configLoader: async () => ({
         config: new MockConfigApi({ key: 'config-value' }),
       }),
-      features: [loader],
+      features: [appPlugin, loader],
     });
 
     await renderWithEffects(app.createRoot());
@@ -174,6 +177,7 @@ describe('createApp', () => {
     const app = createApp({
       configLoader: async () => ({ config: new MockConfigApi({}) }),
       features: [
+        appPlugin,
         createFrontendPlugin({
           id: 'test',
           featureFlags: [{ name: 'test-1' }],
@@ -229,6 +233,7 @@ describe('createApp', () => {
     const app = createApp({
       configLoader: async () => ({ config: new MockConfigApi({}) }),
       features: [
+        appPlugin,
         createFrontendPlugin({
           id: 'my-plugin',
           extensions: [
@@ -255,22 +260,59 @@ describe('createApp', () => {
     const { tree } = appTreeApi!.getTree();
 
     expect(String(tree.root)).toMatchInlineSnapshot(`
-      "<root>
+      "<root out=[core.reactElement]>
+        apis [
+          <api:app/discovery out=[core.api.factory] />
+          <api:app/alert out=[core.api.factory] />
+          <api:app/analytics out=[core.api.factory] />
+          <api:app/error out=[core.api.factory] />
+          <api:app/storage out=[core.api.factory] />
+          <api:app/fetch out=[core.api.factory] />
+          <api:app/oauth-request out=[core.api.factory] />
+          <api:app/google-auth out=[core.api.factory] />
+          <api:app/microsoft-auth out=[core.api.factory] />
+          <api:app/github-auth out=[core.api.factory] />
+          <api:app/okta-auth out=[core.api.factory] />
+          <api:app/gitlab-auth out=[core.api.factory] />
+          <api:app/onelogin-auth out=[core.api.factory] />
+          <api:app/bitbucket-auth out=[core.api.factory] />
+          <api:app/bitbucket-server-auth out=[core.api.factory] />
+          <api:app/atlassian-auth out=[core.api.factory] />
+          <api:app/vmware-cloud-auth out=[core.api.factory] />
+          <api:app/permission out=[core.api.factory] />
+          <api:app/app-language out=[core.api.factory] />
+          <api:app/app-theme out=[core.api.factory]>
+            themes [
+              <theme:app/dark out=[core.theme.theme] />
+              <theme:app/light out=[core.theme.theme] />
+            ]
+          </api:app/app-theme>
+          <api:app/components out=[core.api.factory]>
+            components [
+              <component:core.components.progress out=[core.component.component] />
+              <component:core.components.notFoundErrorPage out=[core.component.component] />
+              <component:core.components.errorBoundaryFallback out=[core.component.component] />
+            ]
+          </api:app/components>
+          <api:app/icons out=[core.api.factory] />
+          <api:app/feature-flags out=[core.api.factory] />
+          <api:app/translations out=[core.api.factory] />
+        ]
         app [
           <app out=[core.reactElement]>
             root [
               <app/root out=[core.reactElement]>
                 children [
                   <app/layout out=[core.reactElement]>
+                    nav [
+                      <app/nav out=[core.reactElement] />
+                    ]
                     content [
                       <app/routes out=[core.reactElement]>
                         routes [
                           <page:my-plugin out=[core.routing.path, core.reactElement] />
                         ]
                       </app/routes>
-                    ]
-                    nav [
-                      <app/nav out=[core.reactElement] />
                     ]
                   </app/layout>
                 ]
@@ -281,43 +323,6 @@ describe('createApp', () => {
               </app/root>
             ]
           </app>
-        ]
-        apis [
-          <api:app-theme out=[core.api.factory]>
-            themes [
-              <theme:app/light out=[core.theme.theme] />
-              <theme:app/dark out=[core.theme.theme] />
-            ]
-          </api:app-theme>
-          <api:app-language out=[core.api.factory] />
-          <api:icons out=[core.api.factory] />
-          <api:translations out=[core.api.factory] />
-          <api:components out=[core.api.factory]>
-            components [
-              <component:core.components.progress out=[core.component.component] />
-              <component:core.components.errorBoundaryFallback out=[core.component.component] />
-              <component:core.components.notFoundErrorPage out=[core.component.component] />
-            ]
-          </api:components>
-          <api:feature-flags out=[core.api.factory] />
-          <api:core.discovery out=[core.api.factory] />
-          <api:core.alert out=[core.api.factory] />
-          <api:core.analytics out=[core.api.factory] />
-          <api:core.error out=[core.api.factory] />
-          <api:core.storage out=[core.api.factory] />
-          <api:core.fetch out=[core.api.factory] />
-          <api:core.oauthrequest out=[core.api.factory] />
-          <api:core.auth.google out=[core.api.factory] />
-          <api:core.auth.microsoft out=[core.api.factory] />
-          <api:core.auth.github out=[core.api.factory] />
-          <api:core.auth.okta out=[core.api.factory] />
-          <api:core.auth.gitlab out=[core.api.factory] />
-          <api:core.auth.onelogin out=[core.api.factory] />
-          <api:core.auth.bitbucket out=[core.api.factory] />
-          <api:core.auth.bitbucket-server out=[core.api.factory] />
-          <api:core.auth.atlassian out=[core.api.factory] />
-          <api:core.auth.vmware-cloud out=[core.api.factory] />
-          <api:plugin.permission.api out=[core.api.factory] />
         ]
       </root>"
     `);

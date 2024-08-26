@@ -29,12 +29,15 @@ import {
   createRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { MockConfigApi, TestApiRegistry } from '@backstage/test-utils';
+import appPlugin from '@backstage/plugin-app';
 
-import { builtinExtensions } from '../wiring/createApp';
 import { readAppExtensionsConfig } from '../tree/readAppExtensionsConfig';
 import { resolveAppNodeSpecs } from '../tree/resolveAppNodeSpecs';
 import { resolveAppTree } from '../tree/resolveAppTree';
 import { instantiateAppNodeTree } from '../tree/instantiateAppNodeTree';
+import { Root } from '../extensions/Root';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 
 const ref1 = createRouteRef();
 const ref2 = createRouteRef();
@@ -83,12 +86,12 @@ function routeInfoFromExtensions(extensions: ExtensionDefinition[]) {
   });
 
   const tree = resolveAppTree(
-    'app',
+    'root',
     resolveAppNodeSpecs({
-      features: [plugin],
-      builtinExtensions,
+      features: [appPlugin, plugin],
+      builtinExtensions: [resolveExtensionDefinition(Root)],
       parameters: readAppExtensionsConfig(new MockConfigApi({})),
-      forbidden: new Set(['app']),
+      forbidden: new Set(['root']),
     }),
   );
 
