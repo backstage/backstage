@@ -5,7 +5,7 @@ description: How to integrate Search into a Backstage plugin
 ---
 
 :::info
-This documentation is written for the old backend which has been replaced by [the new backend system](../backend-system/index.md), being the default since Backstage [version 1.24](../releases/v1.24.0.md). If have migrated to the new backend system, you may want to read [its own article](./integrating-search-into-plugins--old.md) instead. Otherwise, [consider migrating](../backend-system/building-backends/08-migrating.md)!
+This documentation is written for the old backend which has been replaced by [the new backend system](../backend-system/index.md), being the default since Backstage [version 1.24](../releases/v1.24.0.md). If have migrated to the new backend system, you may want to read [its own article](./integrating-search-into-plugins.md) instead. Otherwise, [consider migrating](../backend-system/building-backends/08-migrating.md)!
 :::
 
 The Backstage Search Platform was designed to give plugin developers the APIs
