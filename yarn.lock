@@ -18345,7 +18345,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>=13.7.0, @types/node@npm:^20.1.1, @types/node@npm:^20.10.6, @types/node@npm:^20.11.16":
+"@types/node@npm:*, @types/node@npm:>=13.7.0, @types/node@npm:^20.1.1, @types/node@npm:^20.11.16":
   version: 20.12.7
   resolution: "@types/node@npm:20.12.7"
   dependencies:
@@ -35301,11 +35301,11 @@ __metadata:
   linkType: hard
 
 "node-mocks-http@npm:^1.0.0":
-  version: 1.15.0
-  resolution: "node-mocks-http@npm:1.15.0"
+  version: 1.15.1
+  resolution: "node-mocks-http@npm:1.15.1"
   dependencies:
     "@types/express": ^4.17.21
-    "@types/node": ^20.10.6
+    "@types/node": "*"
     accepts: ^1.3.7
     content-disposition: ^0.5.3
     depd: ^1.1.0
@@ -35316,7 +35316,7 @@ __metadata:
     parseurl: ^1.3.3
     range-parser: ^1.2.0
     type-is: ^1.6.18
-  checksum: 9be3ef4eec1b283800bbae50d7615fb633c7d28a0bedcf13e2ddfaa7ed4aa865d00c1d26e929ee8d617b3734958d8c19345f615760004f1940a8268c9bbacf07
+  checksum: f6e64065abf0e1fbb6c4b954646d96fa77d4e6cd705f1c883e7147d192efed76a1e98aa2cafee77c299ba74e2563be75315cacc421527bb97917a5a48a242bbb
   languageName: node
   linkType: hard
 
