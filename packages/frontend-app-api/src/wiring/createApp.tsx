@@ -22,7 +22,6 @@ import {
   AppTreeApi,
   appTreeApiRef,
   coreExtensionData,
-  ExtensionDefinition,
   FrontendFeature,
   RouteRef,
   ExternalRouteRef,
