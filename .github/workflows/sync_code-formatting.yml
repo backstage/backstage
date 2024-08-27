@@ -25,7 +25,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
       - name: yarn install
-        uses: backstage/actions/yarn-install@9c49377ab7f06234e0b17760fe807c6af321ed19 # v0.6.13
+        uses: backstage/actions/yarn-install@3c138326f7fcbf253b88170c1f29bae8e975d47c # v0.6.14
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
