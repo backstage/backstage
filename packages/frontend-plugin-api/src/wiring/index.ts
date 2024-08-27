@@ -39,8 +39,15 @@ export {
 export {
   createPlugin,
   createFrontendPlugin,
+  type FrontendPlugin,
+  type BackstagePlugin,
   type PluginOptions,
 } from './createFrontendPlugin';
+export {
+  createFrontendModule,
+  type FrontendModule,
+  type ModuleOptions,
+} from './createFrontendModule';
 export {
   createExtensionOverrides,
   type ExtensionOverridesOptions,
@@ -49,7 +56,6 @@ export { type Extension } from './resolveExtensionDefinition';
 export {
   type AnyRoutes,
   type AnyExternalRoutes,
-  type BackstagePlugin,
   type ExtensionOverrides,
   type FeatureFlagConfig,
   type FrontendFeature,

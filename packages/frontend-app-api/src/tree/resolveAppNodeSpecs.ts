@@ -15,7 +15,6 @@
  */
 
 import {
-  BackstagePlugin,
   Extension,
   ExtensionOverrides,
   FrontendFeature,
@@ -25,7 +24,10 @@ import { toInternalExtensionOverrides } from '../../../frontend-plugin-api/src/w
 import { ExtensionParameters } from './readAppExtensionsConfig';
 import { AppNodeSpec } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalBackstagePlugin } from '../../../frontend-plugin-api/src/wiring/createFrontendPlugin';
+import {
+  isInternalFrontendPlugin,
+  toInternalFrontendPlugin,
+} from '../../../frontend-plugin-api/src/wiring/createFrontendPlugin';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalExtension } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 
@@ -43,16 +45,14 @@ export function resolveAppNodeSpecs(options: {
     features = [],
   } = options;
 
-  const plugins = features.filter(
-    (f): f is BackstagePlugin => f.$$type === '@backstage/BackstagePlugin',
-  );
+  const plugins = features.filter(isInternalFrontendPlugin);
   const overrides = features.filter(
     (f): f is ExtensionOverrides =>
       f.$$type === '@backstage/ExtensionOverrides',
   );
 
   const pluginExtensions = plugins.flatMap(source => {
-    return toInternalBackstagePlugin(source).extensions.map(extension => ({
+    return toInternalFrontendPlugin(source).extensions.map(extension => ({
       ...extension,
       source,
     }));
@@ -65,7 +65,7 @@ export function resolveAppNodeSpecs(options: {
   if (pluginExtensions.some(({ id }) => forbidden.has(id))) {
     const pluginsStr = pluginExtensions
       .filter(({ id }) => forbidden.has(id))
-      .map(({ source }) => `'${source.id}'`)
+      .map(({ source }) => `'${source.pluginId}'`)
       .join(', ');
     const forbiddenStr = [...forbidden].map(id => `'${id}'`).join(', ');
     throw new Error(
@@ -156,7 +156,7 @@ export function resolveAppNodeSpecs(options: {
     const extensionId = extension.id;
     const extensionData = data?.[extensionId];
     if (extensionData) duplicatedExtensionIds.add(extensionId);
-    const pluginId = params.source?.id ?? 'internal';
+    const pluginId = params.source?.pluginId ?? 'internal';
     const pluginCount = extensionData?.[pluginId] ?? 0;
     return {
       ...data,

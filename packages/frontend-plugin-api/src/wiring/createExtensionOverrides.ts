@@ -21,7 +21,10 @@ import {
 } from './resolveExtensionDefinition';
 import { ExtensionOverrides, FeatureFlagConfig } from './types';
 
-/** @public */
+/**
+ * @deprecated Use {@link createFrontendModule} instead.
+ * @public
+ */
 export interface ExtensionOverridesOptions {
   extensions: ExtensionDefinition[];
   featureFlags?: FeatureFlagConfig[];
@@ -34,7 +37,10 @@ export interface InternalExtensionOverrides extends ExtensionOverrides {
   readonly featureFlags: FeatureFlagConfig[];
 }
 
-/** @public */
+/**
+ * @deprecated Use {@link createFrontendModule} instead.
+ * @public
+ */
 export function createExtensionOverrides(
   options: ExtensionOverridesOptions,
 ): ExtensionOverrides {

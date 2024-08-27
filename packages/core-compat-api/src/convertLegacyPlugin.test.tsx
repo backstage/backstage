@@ -24,7 +24,7 @@ import {
 import { convertLegacyPlugin } from './convertLegacyPlugin';
 import { PageBlueprint } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalBackstagePlugin } from '../../frontend-plugin-api/src/wiring/createFrontendPlugin';
+import { toInternalFrontendPlugin } from '../../frontend-plugin-api/src/wiring/createFrontendPlugin';
 
 describe('convertLegacyPlugin', () => {
   it('should convert a plain legacy plugin to a new plugin', () => {
@@ -34,12 +34,13 @@ describe('convertLegacyPlugin', () => {
       }),
     ).toMatchInlineSnapshot(`
       {
-        "$$type": "@backstage/BackstagePlugin",
+        "$$type": "@backstage/FrontendPlugin",
         "extensions": [],
         "externalRoutes": {},
         "featureFlags": [],
         "getExtension": [Function],
         "id": "test",
+        "pluginId": "test",
         "routes": {},
         "toString": [Function],
         "version": "v1",
@@ -73,7 +74,7 @@ describe('convertLegacyPlugin', () => {
       },
     );
 
-    const internalConverted = toInternalBackstagePlugin(converted);
+    const internalConverted = toInternalFrontendPlugin(converted);
 
     expect(internalConverted.id).toBe('test');
     expect(internalConverted.routes).toEqual({

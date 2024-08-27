@@ -24,12 +24,33 @@ import {
   ResolveExtensionId,
   resolveExtensionDefinition,
 } from './resolveExtensionDefinition';
-import {
-  AnyExternalRoutes,
-  AnyRoutes,
-  BackstagePlugin,
-  FeatureFlagConfig,
-} from './types';
+import { AnyExternalRoutes, AnyRoutes, FeatureFlagConfig } from './types';
+
+/** @public */
+export interface FrontendPlugin<
+  TRoutes extends AnyRoutes = AnyRoutes,
+  TExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
+  TExtensionMap extends { [id in string]: ExtensionDefinition } = {},
+> {
+  readonly $$type: '@backstage/FrontendPlugin';
+  readonly pluginId: string;
+  readonly routes: TRoutes;
+  readonly externalRoutes: TExternalRoutes;
+  getExtension<TId extends keyof TExtensionMap>(id: TId): TExtensionMap[TId];
+  withOverrides(options: {
+    extensions: Array<ExtensionDefinition>;
+  }): FrontendPlugin<TRoutes, TExternalRoutes, TExtensionMap>;
+}
+
+/**
+ * @public
+ * @deprecated Use {@link FrontendPlugin} instead.
+ */
+export type BackstagePlugin<
+  TRoutes extends AnyRoutes = AnyRoutes,
+  TExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
+  TExtensionMap extends { [id in string]: ExtensionDefinition } = {},
+> = FrontendPlugin<TRoutes, TExternalRoutes, TExtensionMap>;
 
 /** @public */
 export interface PluginOptions<
@@ -48,10 +69,10 @@ export interface PluginOptions<
 }
 
 /** @public */
-export interface InternalBackstagePlugin<
+export interface InternalFrontendPlugin<
   TRoutes extends AnyRoutes = AnyRoutes,
   TExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
-> extends BackstagePlugin<TRoutes, TExternalRoutes> {
+> extends FrontendPlugin<TRoutes, TExternalRoutes> {
   readonly version: 'v1';
   readonly extensions: Extension<unknown>[];
   readonly featureFlags: FeatureFlagConfig[];
@@ -65,7 +86,7 @@ export function createFrontendPlugin<
   TExtensions extends readonly ExtensionDefinition[] = [],
 >(
   options: PluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>,
-): BackstagePlugin<
+): FrontendPlugin<
   TRoutes,
   TExternalRoutes,
   {
@@ -112,9 +133,9 @@ export function createFrontendPlugin<
   }
 
   return {
-    $$type: '@backstage/BackstagePlugin',
+    $$type: '@backstage/FrontendPlugin',
     version: 'v1',
-    id: pluginId,
+    id: pluginId, // TODO: Backwards compat to be able to install in older apps, remove after 1.31
     pluginId,
     routes: options.routes ?? ({} as TRoutes),
     externalRoutes: options.externalRoutes ?? ({} as TExternalRoutes),
@@ -143,21 +164,43 @@ export function createFrontendPlugin<
         extensions: [...nonOverriddenExtensions, ...overrides.extensions],
       });
     },
-  } as InternalBackstagePlugin<TRoutes, TExternalRoutes>;
+  } as InternalFrontendPlugin<TRoutes, TExternalRoutes>;
 }
 
 /** @internal */
-export function toInternalBackstagePlugin(
-  plugin: BackstagePlugin,
-): InternalBackstagePlugin {
-  const internal = plugin as InternalBackstagePlugin;
-  if (internal.$$type !== '@backstage/BackstagePlugin') {
+export function isInternalFrontendPlugin(opaque: {
+  $$type: string;
+}): opaque is InternalFrontendPlugin {
+  if (
+    opaque.$$type === '@backstage/FrontendPlugin' ||
+    opaque.$$type === '@backstage/BackstagePlugin'
+  ) {
+    // Throw if invalid + mutate
+    toInternalFrontendPlugin(opaque as FrontendPlugin);
+    return true;
+  }
+  return false;
+}
+
+/** @internal */
+export function toInternalFrontendPlugin(
+  plugin: FrontendPlugin,
+): InternalFrontendPlugin {
+  const internal = plugin as InternalFrontendPlugin;
+  if (
+    internal.$$type !== '@backstage/FrontendPlugin' &&
+    internal.$$type !== '@backstage/BackstagePlugin'
+  ) {
     throw new Error(`Invalid plugin instance, bad type '${internal.$$type}'`);
   }
   if (internal.version !== 'v1') {
     throw new Error(
       `Invalid plugin instance, bad version '${internal.version}'`,
     );
+  }
+  // Backwards compatibility to support old plugins defined with just an .id
+  if (!internal.pluginId) {
+    (internal as any).pluginId = (internal as any).id;
   }
   return internal;
 }

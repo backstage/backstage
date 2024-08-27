@@ -29,6 +29,8 @@ import {
 import { toInternalExternalRouteRef } from '../../../frontend-plugin-api/src/routing/ExternalRouteRef';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalSubRouteRef } from '../../../frontend-plugin-api/src/routing/SubRouteRef';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { isInternalFrontendPlugin } from '../../../frontend-plugin-api/src/wiring/createFrontendPlugin';
 
 /** @internal */
 export interface RouteRefsById {
@@ -42,12 +44,12 @@ export function collectRouteIds(features: FrontendFeature[]): RouteRefsById {
   const externalRoutesById = new Map<string, ExternalRouteRef>();
 
   for (const feature of features) {
-    if (feature.$$type !== '@backstage/BackstagePlugin') {
+    if (!isInternalFrontendPlugin(feature)) {
       continue;
     }
 
     for (const [name, ref] of Object.entries(feature.routes)) {
-      const refId = `${feature.id}.${name}`;
+      const refId = `${feature.pluginId}.${name}`;
       if (routesById.has(refId)) {
         throw new Error(`Unexpected duplicate route '${refId}'`);
       }
@@ -62,7 +64,7 @@ export function collectRouteIds(features: FrontendFeature[]): RouteRefsById {
       }
     }
     for (const [name, ref] of Object.entries(feature.externalRoutes)) {
-      const refId = `${feature.id}.${name}`;
+      const refId = `${feature.pluginId}.${name}`;
       if (externalRoutesById.has(refId)) {
         throw new Error(`Unexpected duplicate external route '${refId}'`);
       }
