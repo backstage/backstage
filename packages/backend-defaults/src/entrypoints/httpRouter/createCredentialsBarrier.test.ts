@@ -19,13 +19,11 @@
 import express from 'express';
 import request from 'supertest';
 import { createCredentialsBarrier } from './createCredentialsBarrier';
-import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
-import { MiddlewareFactory } from '../rootHttpRouter/http';
-
-const errorMiddleware = MiddlewareFactory.create({
-  config: mockServices.rootConfig(),
-  logger: mockServices.rootLogger(),
-}).error();
+import {
+  mockCredentials,
+  mockErrorHandler,
+  mockServices,
+} from '@backstage/backend-test-utils';
 
 function setup() {
   const barrier = createCredentialsBarrier({
@@ -37,7 +35,7 @@ function setup() {
 
   const app = express();
   app.use(barrier.middleware);
-  app.use(errorMiddleware);
+  app.use(mockErrorHandler());
   app.get('*', (_req, res) => res.status(200).end());
 
   return { app, barrier };
