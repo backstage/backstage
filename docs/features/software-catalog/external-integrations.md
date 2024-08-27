@@ -1031,3 +1031,35 @@ backend.add(catalogModuleCustomDataParser);
 
 backend.start();
 ```
+
+## Incremental Entity Provider
+
+WIP
+
+### Why did we create it?
+
+WIP
+
+### Requirements
+
+WIP
+
+### Installation
+
+WIP
+
+### Writing an Incremental Entity Provider
+
+WIP
+
+### Installing the Incremental Entity Provider
+
+WIP
+
+### Administrative Routes
+
+WIP
+
+### Error handling
+
+WIP
