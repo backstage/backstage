@@ -24,8 +24,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { ErrorPanel } from '@backstage/core-components';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { components as defaultComponents } from '../../../app-defaults/src/defaults';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { components as defaultComponents } from '../../../../packages/app-defaults/src/defaults';
 
 export const DefaultProgressComponent = createComponentExtension({
   ref: coreComponentRefs.progress,

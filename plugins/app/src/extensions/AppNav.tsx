@@ -33,9 +33,9 @@ import {
   SidebarItem,
 } from '@backstage/core-components';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import LogoIcon from '../../../app/src/components/Root/LogoIcon';
+import LogoIcon from '../../../../packages/app/src/components/Root/LogoIcon';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import LogoFull from '../../../app/src/components/Root/LogoFull';
+import LogoFull from '../../../../packages/app/src/components/Root/LogoFull';
 
 const useSidebarLogoStyles = makeStyles({
   root: {

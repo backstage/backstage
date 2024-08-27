@@ -34,6 +34,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/frontend-app-api": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
+    "@backstage/plugin-app": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@backstage/types": "workspace:^"
   },

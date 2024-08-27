@@ -262,7 +262,15 @@ describe('collectLegacyRoutes', () => {
         component: () =>
           Promise.resolve(() => {
             const app = useApp();
-            return <div>plugins: {app.getPlugins().map(p => p.getId())}</div>;
+            return (
+              <div>
+                plugins:{' '}
+                {app
+                  .getPlugins()
+                  .map(p => p.getId())
+                  .join(', ')}
+              </div>
+            );
           }),
       }),
     );
@@ -276,7 +284,7 @@ describe('collectLegacyRoutes', () => {
     render(createSpecializedApp({ features }).createRoot());
 
     await expect(
-      screen.findByText('plugins: test'),
+      screen.findByText('plugins: app, test'),
     ).resolves.toBeInTheDocument();
   });
 

@@ -14,24 +14,17 @@
  * limitations under the License.
  */
 
-import {
-  ApiBlueprint,
-  coreExtensionData,
-  createExtension,
-  createExtensionInput,
-} from '@backstage/frontend-plugin-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { AppLanguageSelector } from '../../../../packages/core-app-api/src/apis/implementations/AppLanguageApi';
+import { appLanguageApiRef } from '@backstage/core-plugin-api/alpha';
+import { ApiBlueprint, createApiFactory } from '@backstage/frontend-plugin-api';
 
-export const Root = createExtension({
-  namespace: 'root',
-  attachTo: { id: 'ignored', input: 'ignored' },
-  inputs: {
-    app: createExtensionInput([coreExtensionData.reactElement], {
-      singleton: true,
-    }),
-    apis: createExtensionInput([ApiBlueprint.dataRefs.factory], {
-      replaces: [{ id: 'app', input: 'apis' }],
-    }),
+export const AppLanguageApi = ApiBlueprint.make({
+  name: 'app-language',
+  params: {
+    factory: createApiFactory(
+      appLanguageApiRef,
+      AppLanguageSelector.createWithStorage(),
+    ),
   },
-  output: [coreExtensionData.reactElement],
-  factory: ({ inputs }) => inputs.app,
 });

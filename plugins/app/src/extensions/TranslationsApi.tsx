@@ -25,7 +25,7 @@ import {
 } from '@backstage/core-plugin-api/alpha';
 
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { I18nextTranslationApi } from '../../../core-app-api/src/apis/implementations/TranslationApi/I18nextTranslationApi';
+import { I18nextTranslationApi } from '../../../../packages/core-app-api/src/apis/implementations/TranslationApi/I18nextTranslationApi';
 
 /**
  * Contains translations that are installed in the app.

@@ -13,25 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { appPlugin } from './plugin';
 
-import {
-  ApiBlueprint,
-  coreExtensionData,
-  createExtension,
-  createExtensionInput,
-} from '@backstage/frontend-plugin-api';
-
-export const Root = createExtension({
-  namespace: 'root',
-  attachTo: { id: 'ignored', input: 'ignored' },
-  inputs: {
-    app: createExtensionInput([coreExtensionData.reactElement], {
-      singleton: true,
-    }),
-    apis: createExtensionInput([ApiBlueprint.dataRefs.factory], {
-      replaces: [{ id: 'app', input: 'apis' }],
-    }),
-  },
-  output: [coreExtensionData.reactElement],
-  factory: ({ inputs }) => inputs.app,
+describe('app', () => {
+  it('should export plugin', () => {
+    expect(appPlugin).toBeDefined();
+  });
 });

@@ -14,17 +14,4 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { AppLanguageSelector } from '../../../core-app-api/src/apis/implementations/AppLanguageApi';
-import { appLanguageApiRef } from '@backstage/core-plugin-api/alpha';
-import { ApiBlueprint, createApiFactory } from '@backstage/frontend-plugin-api';
-
-export const AppLanguageApi = ApiBlueprint.make({
-  name: 'app-language',
-  params: {
-    factory: createApiFactory(
-      appLanguageApiRef,
-      AppLanguageSelector.createWithStorage(),
-    ),
-  },
-});
+export { appPlugin as default } from './plugin';

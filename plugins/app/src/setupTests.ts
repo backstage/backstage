@@ -13,25 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import {
-  ApiBlueprint,
-  coreExtensionData,
-  createExtension,
-  createExtensionInput,
-} from '@backstage/frontend-plugin-api';
-
-export const Root = createExtension({
-  namespace: 'root',
-  attachTo: { id: 'ignored', input: 'ignored' },
-  inputs: {
-    app: createExtensionInput([coreExtensionData.reactElement], {
-      singleton: true,
-    }),
-    apis: createExtensionInput([ApiBlueprint.dataRefs.factory], {
-      replaces: [{ id: 'app', input: 'apis' }],
-    }),
-  },
-  output: [coreExtensionData.reactElement],
-  factory: ({ inputs }) => inputs.app,
-});
+import '@testing-library/jest-dom';

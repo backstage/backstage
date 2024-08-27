@@ -25,7 +25,7 @@ const iconsDataRef = createExtensionDataRef<{
 export const IconBundleBlueprint = createExtensionBlueprint({
   kind: 'icon-bundle',
   namespace: 'app',
-  attachTo: { id: 'api:icons', input: 'icons' },
+  attachTo: { id: 'api:app/icons', input: 'icons' },
   output: [iconsDataRef],
   config: {
     schema: {
