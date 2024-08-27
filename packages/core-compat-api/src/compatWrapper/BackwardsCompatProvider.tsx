@@ -22,7 +22,7 @@ import { AppContextProvider } from '../../../core-app-api/src/app/AppContext';
 import { RouteResolver } from '../../../core-plugin-api/src/routing/useRouteRef';
 import {
   createFrontendPlugin as createNewPlugin,
-  BackstagePlugin as NewBackstagePlugin,
+  FrontendPlugin as NewFrontendPlugin,
   appTreeApiRef,
   componentsApiRef,
   coreComponentRefs,
@@ -47,11 +47,11 @@ import { convertLegacyRouteRef } from '../convertLegacyRouteRef';
 // Make sure that we only convert each new plugin instance to its legacy equivalent once
 const legacyPluginStore = getOrCreateGlobalSingleton(
   'legacy-plugin-compatibility-store',
-  () => new WeakMap<NewBackstagePlugin, LegacyBackstagePlugin>(),
+  () => new WeakMap<NewFrontendPlugin, LegacyBackstagePlugin>(),
 );
 
 export function toLegacyPlugin(
-  plugin: NewBackstagePlugin,
+  plugin: NewFrontendPlugin,
 ): LegacyBackstagePlugin {
   let legacy = legacyPluginStore.get(plugin);
   if (legacy) {
@@ -83,7 +83,7 @@ export function toLegacyPlugin(
 }
 
 // TODO: Currently a very naive implementation, may need some more work
-function toNewPlugin(plugin: LegacyBackstagePlugin): NewBackstagePlugin {
+function toNewPlugin(plugin: LegacyBackstagePlugin): NewFrontendPlugin {
   return createNewPlugin({
     id: plugin.getId(),
   });

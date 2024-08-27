@@ -49,7 +49,7 @@ export function collectRouteIds(features: FrontendFeature[]): RouteRefsById {
     }
 
     for (const [name, ref] of Object.entries(feature.routes)) {
-      const refId = `${feature.pluginId}.${name}`;
+      const refId = `${feature.id}.${name}`;
       if (routesById.has(refId)) {
         throw new Error(`Unexpected duplicate route '${refId}'`);
       }
@@ -64,7 +64,7 @@ export function collectRouteIds(features: FrontendFeature[]): RouteRefsById {
       }
     }
     for (const [name, ref] of Object.entries(feature.externalRoutes)) {
-      const refId = `${feature.pluginId}.${name}`;
+      const refId = `${feature.id}.${name}`;
       if (externalRoutesById.has(refId)) {
         throw new Error(`Unexpected duplicate external route '${refId}'`);
       }

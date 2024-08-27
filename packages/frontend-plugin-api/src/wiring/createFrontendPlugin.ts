@@ -33,7 +33,7 @@ export interface FrontendPlugin<
   TExtensionMap extends { [id in string]: ExtensionDefinition } = {},
 > {
   readonly $$type: '@backstage/FrontendPlugin';
-  readonly pluginId: string;
+  readonly id: string;
   readonly routes: TRoutes;
   readonly externalRoutes: TExternalRoutes;
   getExtension<TId extends keyof TExtensionMap>(id: TId): TExtensionMap[TId];
@@ -59,9 +59,7 @@ export interface PluginOptions<
   TExternalRoutes extends AnyExternalRoutes,
   TExtensions extends readonly ExtensionDefinition[],
 > {
-  /** @deprecated use `pluginId` instead */
-  id?: TId;
-  pluginId?: TId;
+  id: TId;
   routes?: TRoutes;
   externalRoutes?: TExternalRoutes;
   extensions?: TExtensions;
@@ -96,11 +94,6 @@ export function createFrontendPlugin<
     >]: KExtension;
   }
 > {
-  const pluginId = options.pluginId ?? options.id;
-  if (!pluginId) {
-    throw new Error('No pluginId provided to createFrontendPlugin');
-  }
-
   const extensions = new Array<Extension<any>>();
   const extensionDefinitionsById = new Map<
     string,
@@ -109,11 +102,11 @@ export function createFrontendPlugin<
 
   for (const def of options.extensions ?? []) {
     const internal = toInternalExtensionDefinition(def);
-    const ext = resolveExtensionDefinition(def, { namespace: pluginId });
+    const ext = resolveExtensionDefinition(def, { namespace: options.id });
     extensions.push(ext);
     extensionDefinitionsById.set(ext.id, {
       ...internal,
-      namespace: pluginId,
+      namespace: options.id,
     });
   }
 
@@ -126,7 +119,7 @@ export function createFrontendPlugin<
     );
     // TODO(Rugvip): This could provide some more information about the kind + name of the extensions
     throw new Error(
-      `Plugin '${pluginId}' provided duplicate extensions: ${duplicates.join(
+      `Plugin '${options.id}' provided duplicate extensions: ${duplicates.join(
         ', ',
       )}`,
     );
@@ -135,8 +128,7 @@ export function createFrontendPlugin<
   return {
     $$type: '@backstage/FrontendPlugin',
     version: 'v1',
-    id: pluginId, // TODO: Backwards compat to be able to install in older apps, remove after 1.31
-    pluginId,
+    id: options.id, // TODO: Backwards compat to be able to install in older apps, remove after 1.31
     routes: options.routes ?? ({} as TRoutes),
     externalRoutes: options.externalRoutes ?? ({} as TExternalRoutes),
     featureFlags: options.featureFlags ?? [],
@@ -145,18 +137,18 @@ export function createFrontendPlugin<
       return extensionDefinitionsById.get(id);
     },
     toString() {
-      return `Plugin{id=${pluginId}}`;
+      return `Plugin{id=${options.id}}`;
     },
     withOverrides(overrides) {
       const overriddenExtensionIds = new Set(
         overrides.extensions.map(
-          e => resolveExtensionDefinition(e, { namespace: pluginId }).id,
+          e => resolveExtensionDefinition(e, { namespace: options.id }).id,
         ),
       );
       const nonOverriddenExtensions = (options.extensions ?? []).filter(
         e =>
           !overriddenExtensionIds.has(
-            resolveExtensionDefinition(e, { namespace: pluginId }).id,
+            resolveExtensionDefinition(e, { namespace: options.id }).id,
           ),
       );
       return createFrontendPlugin({
@@ -175,7 +167,7 @@ export function isInternalFrontendPlugin(opaque: {
     opaque.$$type === '@backstage/FrontendPlugin' ||
     opaque.$$type === '@backstage/BackstagePlugin'
   ) {
-    // Throw if invalid + mutate
+    // Make sure we throw if invalid
     toInternalFrontendPlugin(opaque as FrontendPlugin);
     return true;
   }
@@ -197,10 +189,6 @@ export function toInternalFrontendPlugin(
     throw new Error(
       `Invalid plugin instance, bad version '${internal.version}'`,
     );
-  }
-  // Backwards compatibility to support old plugins defined with just an .id
-  if (!internal.pluginId) {
-    (internal as any).pluginId = (internal as any).id;
   }
   return internal;
 }

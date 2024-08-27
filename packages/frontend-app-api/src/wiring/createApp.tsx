@@ -100,10 +100,10 @@ function deduplicateFeatures(
       if (!isInternalFrontendPlugin(feature)) {
         return true;
       }
-      if (seenIds.has(feature.pluginId)) {
+      if (seenIds.has(feature.id)) {
         return false;
       }
-      seenIds.add(feature.pluginId);
+      seenIds.add(feature.id);
       return true;
     })
     .reverse();
@@ -330,7 +330,7 @@ export function createSpecializedApp(options?: {
         toInternalFrontendPlugin(feature).featureFlags.forEach(flag =>
           featureFlagApi.registerFlag({
             name: flag.name,
-            pluginId: feature.pluginId,
+            pluginId: feature.id,
           }),
         );
       }

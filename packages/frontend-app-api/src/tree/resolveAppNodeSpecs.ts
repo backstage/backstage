@@ -65,7 +65,7 @@ export function resolveAppNodeSpecs(options: {
   if (pluginExtensions.some(({ id }) => forbidden.has(id))) {
     const pluginsStr = pluginExtensions
       .filter(({ id }) => forbidden.has(id))
-      .map(({ source }) => `'${source.pluginId}'`)
+      .map(({ source }) => `'${source.id}'`)
       .join(', ');
     const forbiddenStr = [...forbidden].map(id => `'${id}'`).join(', ');
     throw new Error(
@@ -156,7 +156,7 @@ export function resolveAppNodeSpecs(options: {
     const extensionId = extension.id;
     const extensionData = data?.[extensionId];
     if (extensionData) duplicatedExtensionIds.add(extensionId);
-    const pluginId = params.source?.pluginId ?? 'internal';
+    const pluginId = params.source?.id ?? 'internal';
     const pluginCount = extensionData?.[pluginId] ?? 0;
     return {
       ...data,
