@@ -1,5 +1,13 @@
 # @backstage/plugin-auth-backend-module-onelogin-provider
 
+## 0.1.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.1
+  - @backstage/backend-plugin-api@0.8.1
+
 ## 0.1.4
 
 ### Patch Changes

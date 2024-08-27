@@ -1,5 +1,13 @@
 # @backstage/backend-tasks
 
+## 0.6.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.24.1
+  - @backstage/backend-plugin-api@0.8.1
+
 ## 0.6.0
 
 ### Minor Changes

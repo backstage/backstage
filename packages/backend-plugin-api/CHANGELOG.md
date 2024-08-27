@@ -1,5 +1,12 @@
 # @backstage/backend-plugin-api
 
+## 0.8.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.1
+
 ## 0.8.0
 
 ### Minor Changes

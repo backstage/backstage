@@ -1,5 +1,13 @@
 # @backstage/plugin-events-backend-module-gerrit
 
+## 0.2.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.3.10
+  - @backstage/backend-plugin-api@0.8.1
+
 ## 0.2.9
 
 ### Patch Changes
