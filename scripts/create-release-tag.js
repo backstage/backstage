@@ -59,8 +59,9 @@ async function createGitTag(octokit, commitSha, tagName) {
 }
 
 async function main() {
-  if (!process.env.GITHUB_SHA) {
-    throw new Error('GITHUB_SHA is not set');
+  const commitSha = process.env.RELEASE_SHA ?? process.env.GITHUB_SHA;
+  if (!commitSha) {
+    throw new Error('RELEASE_SHA or GITHUB_SHA is not set');
   }
   if (!process.env.GITHUB_TOKEN) {
     throw new Error('GITHUB_TOKEN is not set');
@@ -69,7 +70,6 @@ async function main() {
     throw new Error('GITHUB_OUTPUT environment variable not set');
   }
 
-  const commitSha = process.env.GITHUB_SHA;
   const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 
   const releaseVersion = await getCurrentReleaseTag();
