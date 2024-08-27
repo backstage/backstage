@@ -1,5 +1,5 @@
 ---
-'@backstage/backend-defaults': minor
+'@backstage/backend-defaults': patch
 ---
 
 Exports the `discoveryFeatureLoader` as a replacement for the deprecated `featureDiscoveryService`.
