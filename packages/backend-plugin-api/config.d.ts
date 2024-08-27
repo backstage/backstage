@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,20 @@
 
 export interface Config {
   backend?: {
-    /** Used by the feature discovery service */
-    packages?:
-      | 'all'
-      | {
-          include?: string[];
-          exclude?: string[];
-        };
+    /**
+     * An absolute path to a directory that can be used as a working dir, for
+     * example as scratch space for large operations.
+     *
+     * @remarks
+     *
+     * Note that this must be an absolute path.
+     *
+     * If not set, the operating system's designated temporary directory is
+     * commonly used, but that is implementation defined per plugin.
+     *
+     * Plugins are encouraged to heed this config setting if present, to allow
+     * deployment in severely locked-down or limited environments.
+     */
+    workingDirectory?: string;
   };
 }

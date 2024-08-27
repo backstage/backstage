@@ -210,6 +210,9 @@ export interface Config {
           defaultTtl?: number | HumanDuration;
         };
 
+    /**
+     * Properties returned upon CORS requests to the backend, including the app-backend.
+     */
     cors?: {
       origin?: string | string[];
       methods?: string | string[];
@@ -220,6 +223,16 @@ export interface Config {
       preflightContinue?: boolean;
       optionsSuccessStatus?: number;
     };
+
+    /**
+     * Content Security Policy options.
+     *
+     * The keys are the plain policy ID, e.g. "upgrade-insecure-requests". The
+     * values are on the format that the helmet library expects them, as an
+     * array of strings. There is also the special value false, which means to
+     * remove the default value that Backstage puts in place for that policy.
+     */
+    csp?: { [policyId: string]: string[] | false };
 
     /**
      * Configuration related to URL reading, used for example for reading catalog info
@@ -248,15 +261,5 @@ export interface Config {
         paths?: string[];
       }>;
     };
-
-    /**
-     * Content Security Policy options.
-     *
-     * The keys are the plain policy ID, e.g. "upgrade-insecure-requests". The
-     * values are on the format that the helmet library expects them, as an
-     * array of strings. There is also the special value false, which means to
-     * remove the default value that Backstage puts in place for that policy.
-     */
-    csp?: { [policyId: string]: string[] | false };
   };
 }
