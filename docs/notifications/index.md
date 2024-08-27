@@ -219,6 +219,59 @@ React.useEffect(() => {
 }, [lastSignal, notificationsApi]);
 ```
 
+#### Using signals in your own plugin
+
+It's possible to use signals in your own plugin to deliver data from the backend to the frontend in near real-time.
+
+To use signals in your own frontend plugin, you need to add the `useSignal` hook from `@backstage/plugin-signals-react` from `@backstage/plugin-notifications-common` with optional generic type of the signal.
+
+```ts
+// To use the same type of signal in the backend, this should be placed in a shared common package
+export type MySignalType = {
+  user: string;
+  data: string;
+  // ....
+};
+
+const { lastSignal } = useSignal<MySignalType>('my-plugin');
+
+useEffect(() => {
+  if (lastSignal) {
+    // Do something with the signal
+  }
+}, [lastSignal]);
+```
+
+To send signals from the backend plugin, you must add the `signalsServiceRef` to your plugin or module as a dependency.
+
+```ts
+import { signalsServiceRef } from '@backstage/plugin-signals-node';
+export const myPlugin = createBackendPlugin({
+  pluginId: 'my',
+  register(env) {
+    env.registerInit({
+      deps: {
+        httpRouter: coreServices.httpRouter,
+        signals: signalsServiceRef,
+      },
+      async init({ httpRouter, signals }) {
+        httpRouter.use(
+          await createRouter({
+            signals,
+          }),
+        );
+      },
+    });
+  },
+});
+```
+
+To send the signal using the service, you can use the `publish` method.
+
+```ts
+signals.publish<MySignalType>({ user: 'user', data: 'test' });
+```
+
 ### Consuming Notifications
 
 In a front-end plugin, the simplest way to query a notification is by its ID:
@@ -250,14 +303,18 @@ import { Notification } from '@backstage/plugin-notifications-common';
 import { NotificationProcessor } from '@backstage/plugin-notifications-node';
 
 class MyNotificationProcessor implements NotificationProcessor {
-  async decorate(notification: Notification): Promise<Notification> {
+  // preProcess is called before the notification is saved to database.
+  // This is a good place to modify the notification before it is saved and sent to the user.
+  async preProcess(notification: Notification): Promise<Notification> {
     if (notification.origin === 'plugin-my-plugin') {
       notification.payload.icon = 'my-icon';
     }
     return notification;
   }
 
-  async send(notification: Notification): Promise<void> {
+  // postProcess is called after the notification is saved to database and the signal is emitted.
+  // This is a good place to send the notification to external services.
+  async postProcess(notification: Notification): Promise<void> {
     nodemailer.sendEmail({
       from: 'backstage',
       to: 'user',
