@@ -3,7 +3,7 @@ id: url-reader
 title: URL Reader
 sidebar_label: URL Reader
 # prettier-ignore
-description: URL Reader is a backend core API responsible for reading files from external locations.
+description: URL Reader is a backend core service responsible for reading files from external locations.
 ---
 
 ## Concept
@@ -32,24 +32,7 @@ when trying to read files.
 
 ## Interface
 
-When the Backstage backend starts, a new instance of URL Reader is created. You
-can see this in the index file of your Backstage backend
-i.e.`packages/backend/src/index.ts`.
-[Example](https://github.com/backstage/backstage/blob/ebbe91dbe79038a61d35cf6ed2d96e0e0d5a15f3/packages/backend/src/index.ts#L57)
-
-```ts
-// File: packages/backend/src/index.ts
-
-import { UrlReaders } from '@backstage/backend-common';
-
-function makeCreateEnv(config: Config) {
-  // ....
-  const reader = UrlReaders.default({ logger: root, config });
-  //
-}
-```
-
-This instance contains all the default URL Reader providers
+This service instance contains all the default URL Reader providers
 in the backend-defaults package including GitHub, GitLab, Bitbucket, Azure, Google
 GCS. As the need arises, more URL Readers are being written to support different
 providers.
@@ -57,21 +40,68 @@ providers.
 The generic interface of a URL Reader instance looks like this.
 
 ```ts
-export type UrlReader = {
-  /* Used to read a single file and return its content. */
-  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
-  /* Used to read a file tree and download as a directory. */
-  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
-  /* Used to search a file in a tree. */
-  search(url: string, options?: SearchOptions): Promise<SearchResponse>;
-};
+export interface UrlReaderService {
+  /**
+   * Reads a single file and return its content.
+   */
+  readUrl(
+    url: string,
+    options?: UrlReaderServiceReadUrlOptions,
+  ): Promise<UrlReaderServiceReadUrlResponse>;
+
+  /**
+   * Reads a full or partial file tree.
+   */
+  readTree(
+    url: string,
+    options?: UrlReaderServiceReadTreeOptions,
+  ): Promise<UrlReaderServiceReadTreeResponse>;
+
+  /**
+   * Searches for a file in a tree using a glob pattern.
+   */
+  search(
+    url: string,
+    options?: UrlReaderServiceSearchOptions,
+  ): Promise<UrlReaderServiceSearchResponse>;
+}
 ```
 
-## Using a URL Reader inside a plugin
+## Using the URL Reader service inside a plugin
 
-The `reader` instance is available in the backend plugin environment and passed
-on to all the backend plugins. You can see an
-[example](https://github.com/backstage/backstage/blob/b0be185369ebaad22255b7cdf18535d1d4ffd0e7/packages/backend/src/plugins/techdocs.ts#L31).
+The following example shows how to get the URL Reader service in your `example` backend plugin to read a file and a directory from a GitHub repository.
+
+```ts
+import {
+  coreServices,
+  createBackendPlugin,
+} from '@backstage/backend-plugin-api';
+import os from 'os';
+
+createBackendPlugin({
+  pluginId: 'example',
+  register(env) {
+    env.registerInit({
+      deps: {
+        urlReader: coreServices.urlReader,
+      },
+      async init({ urlReader }) {
+        const buffer = await urlReader
+          .read('https://github.com/backstage/backstage/blob/master/README.md')
+          .then(r => r.buffer());
+
+        const tmpDir = os.tmpdir();
+        const directory = await urlReader
+          .readTree(
+            'https://github.com/backstage/backstage/tree/master/packages/backend',
+          )
+          .then(tree => tree.dir({ targetDir: tmpDir }));
+      },
+    });
+  },
+});
+```
+
 When any of the methods on this instance is called with a URL, URL Reader
 extracts the host for that URL (e.g. `github.com`, `ghe.mycompany.com`, etc.).
 Using the
@@ -81,27 +111,18 @@ package, it looks inside the
 config of the `app-config.yaml` to find out how to work with the host based on
 the configs provided like authentication token, API base URL, etc.
 
-Make sure your plugin-specific backend file at
-`packages/backend/src/plugins/<PLUGIN>.ts` is forwarding the `reader` instance
-passed on as the `PluginEnvironment` to the actual plugin's `createRouter`
-function. See how this is done in
-[Catalog](https://github.com/backstage/backstage/blob/d5c83bb889b8142e343ebc4e4c0b90a02d1c1a3d/packages/backend/src/plugins/catalog.ts#L25-L27)
-and
-[TechDocs](https://github.com/backstage/backstage/blob/d5c83bb889b8142e343ebc4e4c0b90a02d1c1a3d/packages/backend/src/plugins/techdocs.ts#L31-L36)
-backend plugins.
-
 Once the reader instance is available inside the plugin, one of its methods can
 directly be used with a URL. Some example usages -
 
-- [`readUrl`](https://github.com/backstage/backstage/blob/a7607b5/plugins/catalog-backend/src/modules/codeowners/lib/read.ts#L24-L33) -
+- [`readUrl`](https://github.com/backstage/backstage/blob/38f3827/plugins/catalog-backend/src/modules/codeowners/lib/read.ts#L24-L34) -
   Catalog using the `readUrl` method to read the CODEOWNERS file in a repository.
-- [`readTree`](https://github.com/backstage/backstage/blob/84a8788/plugins/techdocs-node/src/helpers.ts#L146-L167) -
+- [`readTree`](https://github.com/backstage/backstage/blob/33ebb28/plugins/techdocs-node/src/helpers.ts#L147-L165) -
   TechDocs using the `readTree` method to download markdown files in order to
   generate the documentation site.
-- [`readTree`](https://github.com/backstage/backstage/blob/cb4f0e4/plugins/techdocs-node/src/stages/prepare/url.ts#L51-L73) -
+- [`readTree`](https://github.com/backstage/backstage/blob/33ebb28/plugins/techdocs-node/src/stages/prepare/url.ts#L55-L78) -
   TechDocs using `NotModifiedError` to maintain cache and speed up and limit the
   number of requests.
-- [`search`](https://github.com/backstage/backstage/blob/d5c83bb889b8142e343ebc4e4c0b90a02d1c1a3d/plugins/catalog-backend/src/ingestion/processors/UrlReaderProcessor.ts#L88-L108) -
+- [`search`](https://github.com/backstage/backstage/blob/38f3827/plugins/catalog-backend/src/modules/core/UrlReaderProcessor.ts#L120-L144) -
   Catalog using the `search` method to find files for a location URL containing
   a glob pattern.
 
@@ -122,7 +143,7 @@ to add a new URL Reader for any other provider, you are most welcome to
 contribute one!
 
 Feel free to use the
-[GitHub URL Reader](https://github.com/backstage/backstage/blob/d5c83bb889b8142e343ebc4e4c0b90a02d1c1a3d/packages/backend-common/src/reading/GithubUrlReader.ts)
+[GitHub URL Reader service](https://github.com/backstage/backstage/blob/ce2ca68f07ad3334401d3277b989bf145b728a64/packages/backend-defaults/src/entrypoints/urlReader/lib/GithubUrlReader.ts#L60)
 as a source of inspiration.
 
 ### 1. Add an integration
@@ -133,26 +154,26 @@ config file is supposed to be the place where a Backstage integrator defines the
 host URL for the integration, authentication details and other integration
 related configurations.
 
-The `@backstage/integration` package is where most of the integration specific
-code lives, so that it is shareable across Backstage. Functions like "read the
-integrations config and process it", "construct headers for authenticated
-requests to the host" or "convert a plain file URL into its API URL for
-downloading the file" would live in this package.
+The `@backstage/backend-defaults` package is where the URL Reader specific
+code lives. Functions like "read the integrations config and process it",
+"construct headers for authenticated requests to the host" or
+"convert a plain file URL into its API URL for downloading the file"
+would live in `@backstage/integrations` so that it is sharable across Backstage.
 
 ### 2. Create the URL Reader
 
 Create a new class which implements the
-[`UrlReader` type](https://github.com/backstage/backstage/blob/d5c83bb889b8142e343ebc4e4c0b90a02d1c1a3d/packages/backend-common/src/reading/types.ts#L21-L28)
-inside `@backstage/backend-common`. Create and export a static `factory` method
+[`UrlReaderService` type](https://github.com/backstage/backstage/blob/c4b8169/packages/backend-plugin-api/src/services/definitions/UrlReaderService.ts#L26)
+inside `@backstage/backend-defaults`. Create and export a static `factory` method
 which reads the integration config and returns a map of host URLs the new reader
 should be used for. See the
-[GitHub URL Reader](https://github.com/backstage/backstage/blob/d5c83bb889b8142e343ebc4e4c0b90a02d1c1a3d/packages/backend-common/src/reading/GithubUrlReader.ts#L50-L63)
+[GitHub URL Reader](https://github.com/backstage/backstage/blob/ce2ca68f07ad3334401d3277b989bf145b728a64/packages/backend-defaults/src/entrypoints/urlReader/lib/GithubUrlReader.ts#L61-L73)
 for example.
 
 ### 3. Implement the methods
 
 We want to make sure all URL Readers behave in the same way. Hence if possible,
-all the methods of the `UrlReader` interface should be implemented. However it
+all the methods of the `UrlReaderService` interface should be implemented. However it
 is okay to start by implementing just one of them and create issues for the
 remaining.
 
@@ -208,7 +229,7 @@ the tree and return the files matching the pattern in the `url`.
 There are two ways to make your new URL Reader available for use.
 
 You can choose to make it open source, by updating the
-[`default` factory](https://github.com/backstage/backstage/blob/d5c83bb889b8142e343ebc4e4c0b90a02d1c1a3d/packages/backend-common/src/reading/UrlReaders.ts#L62-L81)
+[`default` factory](https://github.com/backstage/backstage/blob/ce2ca68f07ad3334401d3277b989bf145b728a64/packages/backend-defaults/src/entrypoints/urlReader/lib/UrlReaders.ts#L82-L102)
 method of URL Readers.
 
 But for something internal which you don't want to make open source, you can
@@ -217,12 +238,23 @@ instance is created.
 
 ```ts
 // File: packages/backend/src/index.ts
-const reader = UrlReaders.default({
-  logger: root,
-  config,
-  // This is where your internal URL Readers would go.
-  factories: [myCustomReader.factory],
+import { urlReaderFactoriesServiceRef } from '@backstage/backend-defaults/urlReader';
+import {
+  createBackendFeatureLoader,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
+
+const customReader = createServiceFactory({
+  service: urlReaderFactoriesServiceRef,
+  deps: {},
+  async factory() {
+    return CustomUrlReader.factory;
+  },
 });
+
+const backend = createBackend();
+// backend.add() of other plugins and modules excluded
+backend.add(customReader);
 ```
 
 ### 5. Caching
@@ -244,18 +276,27 @@ when the backend starts and call one of the methods with your debugging URL.
 
 ```ts
 // File: packages/backend/src/index.ts
+import {
+  coreServices,
+  createBackendPlugin,
+} from '@backstage/backend-plugin-api';
 
-async function main() {
-  // ...
-  const createEnv = makeCreateEnv(config);
+const demoPlugin = createBackendPlugin({
+  pluginId: 'demo',
+  register(env) {
+    env.registerInit({
+      deps: {
+        urlReader: coreServices.urlReader,
+      },
+      async init({ urlReader }) {
+        const resp = urlReader.read('http://my-url');
+        console.log('RESPONSE', resp);
+    });
+  },
+});
 
-  const testReader = createEnv('test-url-reader').reader;
-  const response = await testReader.readUrl(
-    'https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
-  );
-  console.log((await response.buffer()).toString());
-  // ...
-}
+const backend = createBackend();
+backend.add(demoPlugin);
 ```
 
 This will be run every time you restart the backend. Note that after any change
