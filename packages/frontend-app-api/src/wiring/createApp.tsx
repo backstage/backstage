@@ -274,9 +274,7 @@ export function createSpecializedApp(options?: {
     config = new ConfigReader({}, 'empty-config'),
   } = options ?? {};
 
-  const duplicatedFeatures = [appPlugin, ...featuresWithoutApp];
-
-  const features = deduplicateFeatures(duplicatedFeatures);
+  const features = deduplicateFeatures([appPlugin, ...featuresWithoutApp]);
 
   const tree = resolveAppTree(
     'root',

@@ -16,14 +16,17 @@
 import React from 'react';
 import { RouterBlueprint } from './RouterBlueprint';
 import { MemoryRouter } from 'react-router-dom';
-import { waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import {
   coreExtensionData,
   createExtension,
   createExtensionInput,
 } from '../wiring';
 import { PageBlueprint } from './PageBlueprint';
-import { renderInTestApp } from '@backstage/frontend-test-utils';
+import {
+  createExtensionTester,
+  renderInTestApp,
+} from '@backstage/frontend-test-utils';
 
 describe('RouterBlueprint', () => {
   it('should return an extension when calling make with sensible defaults', () => {
@@ -70,18 +73,14 @@ describe('RouterBlueprint', () => {
       },
     });
 
-    const { getByTestId } = renderInTestApp(<div />, {
-      extensions: [
-        extension,
-        PageBlueprint.make({
-          namespace: 'test',
-          params: {
-            defaultPath: '/',
-            loader: async () => <div data-testid="test-contents" />,
-          },
-        }),
-      ],
-    });
+    const tester = createExtensionTester(extension);
+    const Component = tester.get(RouterBlueprint.dataRefs.component);
+
+    const { getByTestId } = render(
+      <Component>
+        <div data-testid="test-contents" />
+      </Component>,
+    );
 
     await waitFor(() => {
       expect(getByTestId('test-contents')).toBeInTheDocument();
@@ -116,38 +115,28 @@ describe('RouterBlueprint', () => {
       },
     });
 
-    const { getByTestId } = renderInTestApp(<div />, {
-      extensions: [
-        extension,
-        createExtension({
-          namespace: 'test',
-          attachTo: {
-            id: 'app-router-component:test/test',
-            input: 'children',
-          },
-          output: [coreExtensionData.reactElement],
-          *factory() {
-            yield coreExtensionData.reactElement(<div />);
-          },
-        }),
-        PageBlueprint.make({
-          namespace: 'test',
-          params: {
-            defaultPath: '/',
-            loader: async () => <div data-testid="test-contents" />,
-          },
-        }),
-      ],
-      config: {
-        app: {
-          extensions: [
-            {
-              'app-router-component:test/test': { config: { name: 'Robin' } },
-            },
-          ],
+    const tester = createExtensionTester(extension, {
+      config: { name: 'Robin' },
+    }).add(
+      createExtension({
+        namespace: 'test',
+        attachTo: {
+          id: 'app-router-component:test/test',
+          input: 'children',
         },
-      },
-    });
+        output: [coreExtensionData.reactElement],
+        *factory() {
+          yield coreExtensionData.reactElement(<div />);
+        },
+      }),
+    );
+    const Component = tester.get(RouterBlueprint.dataRefs.component);
+
+    const { getByTestId } = render(
+      <Component>
+        <div data-testid="test-contents" />
+      </Component>,
+    );
 
     await waitFor(() => {
       expect(getByTestId('test-contents')).toBeInTheDocument();
