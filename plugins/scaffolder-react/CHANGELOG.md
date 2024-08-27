@@ -1,5 +1,31 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.12.0-next.0
+
+### Minor Changes
+
+- 4512f71: Add `ui:backstage.review.name` option for custom item names on scaffolder review page, and also add support for rendering the `title` property instead of the key name.
+
+### Patch Changes
+
+- 3ebb64f: - Fix secret widget field not displaying as required.
+  - Fix secret widget not able to be required inside nested objects.
+  - Fix secret widget not able to be disabled.
+  - Support `minLength` and `maxLength` properties for secret widget.
+- 8dd6ef6: Fix an issue where keys with duplicate final key parts are not all displayed in the `ReviewState`. Change the way the keys are formatted to include the full schema path, separated by `>`.
+- 9a0672a: Scaffolder review page shows static amount of asterisks for secret fields.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.12.4-next.0
+  - @backstage/catalog-client@1.6.6
+  - @backstage/catalog-model@1.6.0
+  - @backstage/core-components@0.14.10
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/theme@0.5.6
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+  - @backstage/plugin-permission-react@0.4.25
+  - @backstage/plugin-scaffolder-common@1.5.5
+
 ## 1.11.0
 
 ### Minor Changes

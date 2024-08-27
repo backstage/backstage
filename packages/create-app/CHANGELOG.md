@@ -1,5 +1,13 @@
 # @backstage/create-app
 
+## 0.5.19-next.0
+
+### Patch Changes
+
+- 019d9ad: Minor dockerfile syntax update
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+
 ## 0.5.18
 
 ### Patch Changes
