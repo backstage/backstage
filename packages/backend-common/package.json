@@ -107,6 +107,7 @@
     "p-limit": "^3.1.0",
     "path-to-regexp": "^6.2.1",
     "pg": "^8.11.3",
+    "pg-format": "^1.0.4",
     "raw-body": "^2.4.1",
     "selfsigned": "^2.0.0",
     "stoppable": "^1.1.0",
