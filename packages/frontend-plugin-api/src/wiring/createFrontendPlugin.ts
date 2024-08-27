@@ -38,7 +38,9 @@ export interface PluginOptions<
   TExternalRoutes extends AnyExternalRoutes,
   TExtensions extends readonly ExtensionDefinition[],
 > {
-  id: TId;
+  /** @deprecated use `pluginId` instead */
+  id?: TId;
+  pluginId?: TId;
   routes?: TRoutes;
   externalRoutes?: TExternalRoutes;
   extensions?: TExtensions;
@@ -73,6 +75,11 @@ export function createFrontendPlugin<
     >]: KExtension;
   }
 > {
+  const pluginId = options.pluginId ?? options.id;
+  if (!pluginId) {
+    throw new Error('No pluginId provided to createFrontendPlugin');
+  }
+
   const extensions = new Array<Extension<any>>();
   const extensionDefinitionsById = new Map<
     string,
@@ -81,11 +88,11 @@ export function createFrontendPlugin<
 
   for (const def of options.extensions ?? []) {
     const internal = toInternalExtensionDefinition(def);
-    const ext = resolveExtensionDefinition(def, { namespace: options.id });
+    const ext = resolveExtensionDefinition(def, { namespace: pluginId });
     extensions.push(ext);
     extensionDefinitionsById.set(ext.id, {
       ...internal,
-      namespace: options.id,
+      namespace: pluginId,
     });
   }
 
@@ -98,7 +105,7 @@ export function createFrontendPlugin<
     );
     // TODO(Rugvip): This could provide some more information about the kind + name of the extensions
     throw new Error(
-      `Plugin '${options.id}' provided duplicate extensions: ${duplicates.join(
+      `Plugin '${pluginId}' provided duplicate extensions: ${duplicates.join(
         ', ',
       )}`,
     );
@@ -107,7 +114,8 @@ export function createFrontendPlugin<
   return {
     $$type: '@backstage/BackstagePlugin',
     version: 'v1',
-    id: options.id,
+    id: pluginId,
+    pluginId,
     routes: options.routes ?? ({} as TRoutes),
     externalRoutes: options.externalRoutes ?? ({} as TExternalRoutes),
     featureFlags: options.featureFlags ?? [],
@@ -116,18 +124,18 @@ export function createFrontendPlugin<
       return extensionDefinitionsById.get(id);
     },
     toString() {
-      return `Plugin{id=${options.id}}`;
+      return `Plugin{id=${pluginId}}`;
     },
     withOverrides(overrides) {
       const overriddenExtensionIds = new Set(
         overrides.extensions.map(
-          e => resolveExtensionDefinition(e, { namespace: options.id }).id,
+          e => resolveExtensionDefinition(e, { namespace: pluginId }).id,
         ),
       );
       const nonOverriddenExtensions = (options.extensions ?? []).filter(
         e =>
           !overriddenExtensionIds.has(
-            resolveExtensionDefinition(e, { namespace: options.id }).id,
+            resolveExtensionDefinition(e, { namespace: pluginId }).id,
           ),
       );
       return createFrontendPlugin({
