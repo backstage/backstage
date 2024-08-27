@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { ExtensionDefinition } from './createExtension';
+import {
+  ExtensionDefinition,
+  InternalExtensionDefinition,
+  toInternalExtensionDefinition,
+} from './createExtension';
 import {
   Extension,
   ResolveExtensionId,
@@ -32,7 +36,7 @@ export interface PluginOptions<
   TId extends string,
   TRoutes extends AnyRoutes,
   TExternalRoutes extends AnyExternalRoutes,
-  TExtensions extends readonly ExtensionDefinition<any, any>[],
+  TExtensions extends readonly ExtensionDefinition[],
 > {
   id: TId;
   routes?: TRoutes;
@@ -56,7 +60,7 @@ export function createFrontendPlugin<
   TId extends string,
   TRoutes extends AnyRoutes = {},
   TExternalRoutes extends AnyExternalRoutes = {},
-  TExtensions extends readonly ExtensionDefinition<any, any>[] = [],
+  TExtensions extends readonly ExtensionDefinition[] = [],
 >(
   options: PluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>,
 ): BackstagePlugin<
@@ -69,16 +73,20 @@ export function createFrontendPlugin<
     >]: KExtension;
   }
 > {
-  const extensions = new Array<Extension<unknown>>();
+  const extensions = new Array<Extension<any>>();
   const extensionDefinitionsById = new Map<
     string,
-    ExtensionDefinition<unknown>
+    InternalExtensionDefinition
   >();
 
   for (const def of options.extensions ?? []) {
+    const internal = toInternalExtensionDefinition(def);
     const ext = resolveExtensionDefinition(def, { namespace: options.id });
     extensions.push(ext);
-    extensionDefinitionsById.set(ext.id, { ...def, namespace: options.id });
+    extensionDefinitionsById.set(ext.id, {
+      ...internal,
+      namespace: options.id,
+    });
   }
 
   if (extensions.length !== extensionDefinitionsById.size) {

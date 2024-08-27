@@ -172,27 +172,25 @@ export type AnyRoutes = {
 };
 
 // @public
-export const ApiBlueprint: ExtensionBlueprint<
-  {
-    kind: 'api';
-    namespace: undefined;
-    name: undefined;
-  },
-  {
+export const ApiBlueprint: ExtensionBlueprint<{
+  kind: 'api';
+  namespace: undefined;
+  name: undefined;
+  params: {
     factory: AnyApiFactory;
-  },
-  ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-  {},
-  {},
-  {},
-  {
+  };
+  output: ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
     factory: ConfigurableExtensionDataRef<
       AnyApiFactory,
       'core.api.factory',
       {}
     >;
-  }
->;
+  };
+}>;
 
 export { ApiFactory };
 
@@ -246,43 +244,39 @@ export interface AppNodeSpec {
 }
 
 // @public
-export const AppRootElementBlueprint: ExtensionBlueprint<
-  {
-    kind: 'app-root-element';
-    namespace: undefined;
-    name: undefined;
-  },
-  {
+export const AppRootElementBlueprint: ExtensionBlueprint<{
+  kind: 'app-root-element';
+  namespace: undefined;
+  name: undefined;
+  params: {
     element: JSX.Element | (() => JSX.Element);
-  },
-  ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
-  {},
-  {},
-  {},
-  never
->;
+  };
+  output: ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: never;
+}>;
 
 // @public
-export const AppRootWrapperBlueprint: ExtensionBlueprint<
-  {
-    kind: 'app-root-wrapper';
-    namespace: undefined;
-    name: undefined;
-  },
-  {
+export const AppRootWrapperBlueprint: ExtensionBlueprint<{
+  kind: 'app-root-wrapper';
+  namespace: undefined;
+  name: undefined;
+  params: {
     Component: ComponentType<PropsWithChildren<{}>>;
-  },
-  ConfigurableExtensionDataRef<
+  };
+  output: ConfigurableExtensionDataRef<
     React_2.ComponentType<{
       children?: React_2.ReactNode;
     }>,
     'app.root.wrapper',
     {}
-  >,
-  {},
-  {},
-  {},
-  {
+  >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
     component: ConfigurableExtensionDataRef<
       React_2.ComponentType<{
         children?: React_2.ReactNode;
@@ -290,8 +284,8 @@ export const AppRootWrapperBlueprint: ExtensionBlueprint<
       'app.root.wrapper',
       {}
     >;
-  }
->;
+  };
+}>;
 
 export { AppTheme };
 
@@ -331,7 +325,7 @@ export interface BackstagePlugin<
   TRoutes extends AnyRoutes = AnyRoutes,
   TExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
   TExtensionMap extends {
-    [id in string]: ExtensionDefinition<any, any>;
+    [id in string]: ExtensionDefinition;
   } = {},
 > {
   // (undocumented)
@@ -346,7 +340,7 @@ export interface BackstagePlugin<
   readonly routes: TRoutes;
   // (undocumented)
   withOverrides(options: {
-    extensions: Array<ExtensionDefinition<any, any>>;
+    extensions: Array<ExtensionDefinition>;
   }): BackstagePlugin<TRoutes, TExternalRoutes, TExtensionMap>;
 }
 
@@ -454,22 +448,18 @@ export function createComponentExtension<TProps extends {}>(options: {
     | {
         sync: () => ComponentType<TProps>;
       };
-}): ExtensionDefinition<
-  {
-    [x: string]: any;
-  },
-  {
-    [x: string]: any;
-  },
-  ConfigurableExtensionDataRef<
+}): ExtensionDefinition<{
+  config: {};
+  configInput: {};
+  output: ConfigurableExtensionDataRef<
     {
       ref: ComponentRef;
       impl: ComponentType;
     },
     'core.component.component',
     {}
-  >,
-  {
+  >;
+  inputs: {
     [x: string]: ExtensionInput<
       AnyExtensionDataRef,
       {
@@ -477,13 +467,11 @@ export function createComponentExtension<TProps extends {}>(options: {
         singleton: boolean;
       }
     >;
-  },
-  {
-    kind: 'component';
-    namespace: string;
-    name: string;
-  }
->;
+  };
+  kind: 'component';
+  namespace: string;
+  name: string;
+}>;
 
 // @public (undocumented)
 export namespace createComponentExtension {
@@ -532,27 +520,29 @@ export function createExtension<
     TConfigSchema,
     UFactoryOutput
   >,
-): ExtensionDefinition<
-  {
-    [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
-  },
-  z.input<
-    z.ZodObject<{
-      [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
-    }>
-  >,
-  UOutput,
-  TInputs,
-  {
-    kind: string | undefined extends TKind ? undefined : TKind;
-    namespace: string | undefined extends TNamespace ? undefined : TNamespace;
-    name: string | undefined extends TName ? undefined : TName;
-  }
->;
+): ExtensionDefinition<{
+  config: string extends keyof TConfigSchema
+    ? {}
+    : {
+        [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
+      };
+  configInput: string extends keyof TConfigSchema
+    ? {}
+    : z.input<
+        z.ZodObject<{
+          [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
+        }>
+      >;
+  output: UOutput;
+  inputs: TInputs;
+  kind: string | undefined extends TKind ? undefined : TKind;
+  namespace: string | undefined extends TNamespace ? undefined : TNamespace;
+  name: string | undefined extends TName ? undefined : TName;
+}>;
 
 // @public
 export function createExtensionBlueprint<
-  TParams,
+  TParams extends object,
   UOutput extends AnyExtensionDataRef,
   TInputs extends {
     [inputName in string]: ExtensionInput<
@@ -585,29 +575,27 @@ export function createExtensionBlueprint<
     UFactoryOutput,
     TDataRefs
   >,
-): ExtensionBlueprint<
-  {
-    kind: TKind;
-    namespace: TNamespace;
-    name: TName;
-  },
-  TParams,
-  UOutput,
-  string extends keyof TInputs ? {} : TInputs,
-  string extends keyof TConfigSchema
+): ExtensionBlueprint<{
+  kind: TKind;
+  namespace: TNamespace;
+  name: TName;
+  params: TParams;
+  output: UOutput;
+  inputs: string extends keyof TInputs ? {} : TInputs;
+  config: string extends keyof TConfigSchema
     ? {}
     : {
         [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
-      },
-  string extends keyof TConfigSchema
+      };
+  configInput: string extends keyof TConfigSchema
     ? {}
     : z.input<
         z.ZodObject<{
           [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
         }>
-      >,
-  TDataRefs
->;
+      >;
+  dataRefs: TDataRefs;
+}>;
 
 // @public (undocumented)
 export type CreateExtensionBlueprintOptions<
@@ -777,7 +765,7 @@ export function createFrontendPlugin<
   TId extends string,
   TRoutes extends AnyRoutes = {},
   TExternalRoutes extends AnyExternalRoutes = {},
-  TExtensions extends readonly ExtensionDefinition<any, any>[] = [],
+  TExtensions extends readonly ExtensionDefinition[] = [],
 >(
   options: PluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>,
 ): BackstagePlugin<
@@ -860,34 +848,10 @@ export interface Extension<TConfig, TConfigInput = TConfig> {
 
 // @public (undocumented)
 export interface ExtensionBlueprint<
-  TIdParts extends {
-    kind: string;
-    namespace?: string;
-    name?: string;
-  },
-  TParams,
-  UOutput extends AnyExtensionDataRef,
-  TInputs extends {
-    [inputName in string]: ExtensionInput<
-      AnyExtensionDataRef,
-      {
-        optional: boolean;
-        singleton: boolean;
-      }
-    >;
-  },
-  TConfig extends {
-    [key in string]: unknown;
-  },
-  TConfigInput extends {
-    [key in string]: unknown;
-  },
-  TDataRefs extends {
-    [name in string]: AnyExtensionDataRef;
-  },
+  T extends ExtensionBlueprintParameters = ExtensionBlueprintParameters,
 > {
   // (undocumented)
-  dataRefs: TDataRefs;
+  dataRefs: T['dataRefs'];
   // (undocumented)
   make<
     TNewNamespace extends string | undefined,
@@ -900,20 +864,18 @@ export interface ExtensionBlueprint<
       input: string;
     };
     disabled?: boolean;
-    params: TParams;
-  }): ExtensionDefinition<
-    TConfig,
-    TConfigInput,
-    UOutput,
-    TInputs,
-    {
-      kind: TIdParts['kind'];
-      namespace: string | undefined extends TNewNamespace
-        ? TIdParts['namespace']
-        : TNewNamespace;
-      name: string | undefined extends TNewName ? TIdParts['name'] : TNewName;
-    }
-  >;
+    params: T['params'];
+  }): ExtensionDefinition<{
+    kind: T['kind'];
+    namespace: string | undefined extends TNewNamespace
+      ? T['namespace']
+      : TNewNamespace;
+    name: string | undefined extends TNewName ? T['name'] : TNewName;
+    config: T['config'];
+    configInput: T['configInput'];
+    output: T['output'];
+    inputs: T['inputs'];
+  }>;
   makeWithOverrides<
     TNewNamespace extends string | undefined,
     TNewName extends string | undefined,
@@ -940,64 +902,96 @@ export interface ExtensionBlueprint<
     };
     disabled?: boolean;
     inputs?: TExtraInputs & {
-      [KName in keyof TInputs]?: `Error: Input '${KName &
+      [KName in keyof T['inputs']]?: `Error: Input '${KName &
         string}' is already defined in parent definition`;
     };
     output?: Array<UNewOutput>;
     config?: {
       schema: TExtensionConfigSchema & {
-        [KName in keyof TConfig]?: `Error: Config key '${KName &
+        [KName in keyof T['config']]?: `Error: Config key '${KName &
           string}' is already defined in parent schema`;
       };
     };
     factory(
       originalFactory: (
-        params: TParams,
+        params: T['params'],
         context?: {
-          config?: TConfig;
-          inputs?: ResolveInputValueOverrides<TInputs>;
+          config?: T['config'];
+          inputs?: ResolveInputValueOverrides<NonNullable<T['inputs']>>;
         },
-      ) => ExtensionDataContainer<UOutput>,
+      ) => ExtensionDataContainer<NonNullable<T['output']>>,
       context: {
         node: AppNode;
         apis: ApiHolder;
-        config: TConfig & {
+        config: T['config'] & {
           [key in keyof TExtensionConfigSchema]: z.infer<
             ReturnType<TExtensionConfigSchema[key]>
           >;
         };
-        inputs: Expand<ResolvedExtensionInputs<TInputs & TExtraInputs>>;
+        inputs: Expand<ResolvedExtensionInputs<T['inputs'] & TExtraInputs>>;
       },
     ): Iterable<UFactoryOutput> &
       VerifyExtensionFactoryOutput<
-        AnyExtensionDataRef extends UNewOutput ? UOutput : UNewOutput,
+        AnyExtensionDataRef extends UNewOutput
+          ? NonNullable<T['output']>
+          : UNewOutput,
         UFactoryOutput
       >;
-  }): ExtensionDefinition<
-    {
-      [key in keyof TExtensionConfigSchema]: z.infer<
-        ReturnType<TExtensionConfigSchema[key]>
-      >;
-    } & TConfig,
-    z.input<
-      z.ZodObject<{
-        [key in keyof TExtensionConfigSchema]: ReturnType<
-          TExtensionConfigSchema[key]
-        >;
-      }>
-    > &
-      TConfigInput,
-    AnyExtensionDataRef extends UNewOutput ? UOutput : UNewOutput,
-    TInputs & TExtraInputs,
-    {
-      kind: TIdParts['kind'];
-      namespace: string | undefined extends TNewNamespace
-        ? TIdParts['namespace']
-        : TNewNamespace;
-      name: string | undefined extends TNewName ? TIdParts['name'] : TNewName;
-    }
-  >;
+  }): ExtensionDefinition<{
+    config: (string extends keyof TExtensionConfigSchema
+      ? {}
+      : {
+          [key in keyof TExtensionConfigSchema]: z.infer<
+            ReturnType<TExtensionConfigSchema[key]>
+          >;
+        }) &
+      T['config'];
+    configInput: (string extends keyof TExtensionConfigSchema
+      ? {}
+      : z.input<
+          z.ZodObject<{
+            [key in keyof TExtensionConfigSchema]: ReturnType<
+              TExtensionConfigSchema[key]
+            >;
+          }>
+        >) &
+      T['configInput'];
+    output: AnyExtensionDataRef extends UNewOutput ? T['output'] : UNewOutput;
+    inputs: T['inputs'] & TExtraInputs;
+    kind: T['kind'];
+    namespace: string | undefined extends TNewNamespace
+      ? T['namespace']
+      : TNewNamespace;
+    name: string | undefined extends TNewName ? T['name'] : TNewName;
+  }>;
 }
+
+// @public (undocumented)
+export type ExtensionBlueprintParameters = {
+  kind: string;
+  namespace?: string;
+  name?: string;
+  params?: object;
+  configInput?: {
+    [K in string]: any;
+  };
+  config?: {
+    [K in string]: any;
+  };
+  output?: AnyExtensionDataRef;
+  inputs?: {
+    [KName in string]: ExtensionInput<
+      AnyExtensionDataRef,
+      {
+        optional: boolean;
+        singleton: boolean;
+      }
+    >;
+  };
+  dataRefs?: {
+    [name in string]: AnyExtensionDataRef;
+  };
+};
 
 // @public (undocumented)
 export function ExtensionBoundary(
@@ -1072,47 +1066,11 @@ export type ExtensionDataValue<TData, TId extends string> = {
 };
 
 // @public (undocumented)
-export interface ExtensionDefinition<
-  TConfig,
-  TConfigInput = TConfig,
-  UOutput extends AnyExtensionDataRef = AnyExtensionDataRef,
-  TInputs extends {
-    [inputName in string]: ExtensionInput<
-      AnyExtensionDataRef,
-      {
-        optional: boolean;
-        singleton: boolean;
-      }
-    >;
-  } = {},
-  TIdParts extends {
-    kind?: string;
-    namespace?: string;
-    name?: string;
-  } = {
-    kind?: string;
-    namespace?: string;
-    name?: string;
-  },
-> {
-  // (undocumented)
+export type ExtensionDefinition<
+  T extends ExtensionDefinitionParameters = ExtensionDefinitionParameters,
+> = {
   $$type: '@backstage/ExtensionDefinition';
-  // (undocumented)
-  readonly attachTo: {
-    id: string;
-    input: string;
-  };
-  // (undocumented)
-  readonly configSchema?: PortableSchema<TConfig, TConfigInput>;
-  // (undocumented)
-  readonly disabled: boolean;
-  // (undocumented)
-  readonly kind?: TIdParts['kind'];
-  // (undocumented)
-  readonly name?: TIdParts['name'];
-  // (undocumented)
-  readonly namespace?: TIdParts['namespace'];
-  // (undocumented)
+  readonly T: T;
   override<
     TExtensionConfigSchema extends {
       [key in string]: (zImpl: typeof z) => z.ZodType;
@@ -1136,55 +1094,82 @@ export interface ExtensionDefinition<
       };
       disabled?: boolean;
       inputs?: TExtraInputs & {
-        [KName in keyof TInputs]?: `Error: Input '${KName &
+        [KName in keyof T['inputs']]?: `Error: Input '${KName &
           string}' is already defined in parent definition`;
       };
       output?: Array<UNewOutput>;
       config?: {
         schema: TExtensionConfigSchema & {
-          [KName in keyof TConfig]?: `Error: Config key '${KName &
+          [KName in keyof T['config']]?: `Error: Config key '${KName &
             string}' is already defined in parent schema`;
         };
       };
       factory(
         originalFactory: (context?: {
-          config?: TConfig;
-          inputs?: ResolveInputValueOverrides<TInputs>;
-        }) => ExtensionDataContainer<UOutput>,
+          config?: T['config'];
+          inputs?: ResolveInputValueOverrides<NonNullable<T['inputs']>>;
+        }) => ExtensionDataContainer<NonNullable<T['output']>>,
         context: {
           node: AppNode;
           apis: ApiHolder;
-          config: TConfig & {
+          config: T['config'] & {
             [key in keyof TExtensionConfigSchema]: z.infer<
               ReturnType<TExtensionConfigSchema[key]>
             >;
           };
-          inputs: Expand<ResolvedExtensionInputs<TInputs & TExtraInputs>>;
+          inputs: Expand<ResolvedExtensionInputs<T['inputs'] & TExtraInputs>>;
         },
       ): Iterable<UFactoryOutput>;
     } & VerifyExtensionFactoryOutput<
-      AnyExtensionDataRef extends UNewOutput ? UOutput : UNewOutput,
+      AnyExtensionDataRef extends UNewOutput
+        ? NonNullable<T['output']>
+        : UNewOutput,
       UFactoryOutput
     >,
-  ): ExtensionDefinition<
-    {
+  ): ExtensionDefinition<{
+    kind: T['kind'];
+    namespace: T['namespace'];
+    name: T['name'];
+    output: AnyExtensionDataRef extends UNewOutput ? T['output'] : UNewOutput;
+    inputs: T['inputs'] & TExtraInputs;
+    config: T['config'] & {
       [key in keyof TExtensionConfigSchema]: z.infer<
         ReturnType<TExtensionConfigSchema[key]>
       >;
-    } & TConfig,
-    z.input<
-      z.ZodObject<{
-        [key in keyof TExtensionConfigSchema]: ReturnType<
-          TExtensionConfigSchema[key]
-        >;
-      }>
-    > &
-      TConfigInput,
-    AnyExtensionDataRef extends UNewOutput ? UOutput : UNewOutput,
-    TInputs & TExtraInputs,
-    TIdParts
-  >;
-}
+    };
+    configInput: T['configInput'] &
+      z.input<
+        z.ZodObject<{
+          [key in keyof TExtensionConfigSchema]: ReturnType<
+            TExtensionConfigSchema[key]
+          >;
+        }>
+      >;
+  }>;
+};
+
+// @public (undocumented)
+export type ExtensionDefinitionParameters = {
+  kind?: string;
+  namespace?: string;
+  name?: string;
+  configInput?: {
+    [K in string]: any;
+  };
+  config?: {
+    [K in string]: any;
+  };
+  output?: AnyExtensionDataRef;
+  inputs?: {
+    [KName in string]: ExtensionInput<
+      AnyExtensionDataRef,
+      {
+        optional: boolean;
+        singleton: boolean;
+      }
+    >;
+  };
+};
 
 // @public (undocumented)
 export interface ExtensionInput<
@@ -1222,7 +1207,7 @@ export interface ExtensionOverrides {
 // @public (undocumented)
 export interface ExtensionOverridesOptions {
   // (undocumented)
-  extensions: ExtensionDefinition<any, any>[];
+  extensions: ExtensionDefinition[];
   // (undocumented)
   featureFlags?: FeatureFlagConfig[];
 }
@@ -1266,34 +1251,32 @@ export { gitlabAuthApiRef };
 export { googleAuthApiRef };
 
 // @public (undocumented)
-export const IconBundleBlueprint: ExtensionBlueprint<
-  {
-    kind: 'icon-bundle';
-    namespace: 'app';
-    name: undefined;
-  },
-  {
+export const IconBundleBlueprint: ExtensionBlueprint<{
+  kind: 'icon-bundle';
+  namespace: 'app';
+  name: undefined;
+  params: {
     icons: {
       [x: string]: IconComponent;
     };
-  },
-  ConfigurableExtensionDataRef<
+  };
+  output: ConfigurableExtensionDataRef<
     {
       [x: string]: IconComponent;
     },
     'core.icons',
     {}
-  >,
-  {},
-  {
+  >;
+  inputs: {};
+  config: {
     icons: string;
     test: string;
-  },
-  {
+  };
+  configInput: {
     test: string;
     icons?: string | undefined;
-  },
-  {
+  };
+  dataRefs: {
     icons: ConfigurableExtensionDataRef<
       {
         [x: string]: IconComponent;
@@ -1301,8 +1284,8 @@ export const IconBundleBlueprint: ExtensionBlueprint<
       'core.icons',
       {}
     >;
-  }
->;
+  };
+}>;
 
 // @public
 export type IconComponent = ComponentType<
@@ -1332,18 +1315,16 @@ export { identityApiRef };
 export { microsoftAuthApiRef };
 
 // @public
-export const NavItemBlueprint: ExtensionBlueprint<
-  {
-    kind: 'nav-item';
-    namespace: undefined;
-    name: undefined;
-  },
-  {
+export const NavItemBlueprint: ExtensionBlueprint<{
+  kind: 'nav-item';
+  namespace: undefined;
+  name: undefined;
+  params: {
     title: string;
     icon: IconComponent_2;
     routeRef: RouteRef<undefined>;
-  },
-  ConfigurableExtensionDataRef<
+  };
+  output: ConfigurableExtensionDataRef<
     {
       title: string;
       icon: IconComponent_2;
@@ -1351,11 +1332,11 @@ export const NavItemBlueprint: ExtensionBlueprint<
     },
     'core.nav-item.target',
     {}
-  >,
-  {},
-  {},
-  {},
-  {
+  >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
     target: ConfigurableExtensionDataRef<
       {
         title: string;
@@ -1365,32 +1346,30 @@ export const NavItemBlueprint: ExtensionBlueprint<
       'core.nav-item.target',
       {}
     >;
-  }
->;
+  };
+}>;
 
 // @public
-export const NavLogoBlueprint: ExtensionBlueprint<
-  {
-    kind: 'nav-logo';
-    namespace: undefined;
-    name: undefined;
-  },
-  {
+export const NavLogoBlueprint: ExtensionBlueprint<{
+  kind: 'nav-logo';
+  namespace: undefined;
+  name: undefined;
+  params: {
     logoIcon: JSX.Element;
     logoFull: JSX.Element;
-  },
-  ConfigurableExtensionDataRef<
+  };
+  output: ConfigurableExtensionDataRef<
     {
       logoIcon?: JSX.Element | undefined;
       logoFull?: JSX.Element | undefined;
     },
     'core.nav-logo.logo-elements',
     {}
-  >,
-  {},
-  {},
-  {},
-  {
+  >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
     logoElements: ConfigurableExtensionDataRef<
       {
         logoIcon?: JSX.Element | undefined;
@@ -1399,8 +1378,8 @@ export const NavLogoBlueprint: ExtensionBlueprint<
       'core.nav-logo.logo-elements',
       {}
     >;
-  }
->;
+  };
+}>;
 
 export { OAuthApi };
 
@@ -1421,35 +1400,34 @@ export { oneloginAuthApiRef };
 export { OpenIdConnectApi };
 
 // @public
-export const PageBlueprint: ExtensionBlueprint<
-  {
-    kind: 'page';
-    namespace: undefined;
-    name: undefined;
-  },
-  {
+export const PageBlueprint: ExtensionBlueprint<{
+  kind: 'page';
+  namespace: undefined;
+  name: undefined;
+  params: {
     defaultPath: string;
     loader: () => Promise<JSX.Element>;
     routeRef?: RouteRef<AnyRouteRefParams> | undefined;
-  },
-  | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-  | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-  | ConfigurableExtensionDataRef<
-      RouteRef<AnyRouteRefParams>,
-      'core.routing.ref',
-      {
-        optional: true;
-      }
-    >,
-  {},
-  {
+  };
+  output:
+    | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+    | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+    | ConfigurableExtensionDataRef<
+        RouteRef<AnyRouteRefParams>,
+        'core.routing.ref',
+        {
+          optional: true;
+        }
+      >;
+  inputs: {};
+  config: {
     path: string | undefined;
-  },
-  {
+  };
+  configInput: {
     path?: string | undefined;
-  },
-  never
->;
+  };
+  dataRefs: never;
+}>;
 
 export { PendingOAuthRequest };
 
@@ -1458,7 +1436,7 @@ export interface PluginOptions<
   TId extends string,
   TRoutes extends AnyRoutes,
   TExternalRoutes extends AnyExternalRoutes,
-  TExtensions extends readonly ExtensionDefinition<any, any>[],
+  TExtensions extends readonly ExtensionDefinition[],
 > {
   // (undocumented)
   extensions?: TExtensions;
@@ -1579,26 +1557,24 @@ export type RouteFunc<TParams extends AnyRouteRefParams> = (
 ) => string;
 
 // @public (undocumented)
-export const RouterBlueprint: ExtensionBlueprint<
-  {
-    kind: 'app-router-component';
-    namespace: undefined;
-    name: undefined;
-  },
-  {
+export const RouterBlueprint: ExtensionBlueprint<{
+  kind: 'app-router-component';
+  namespace: undefined;
+  name: undefined;
+  params: {
     Component: ComponentType<PropsWithChildren<{}>>;
-  },
-  ConfigurableExtensionDataRef<
+  };
+  output: ConfigurableExtensionDataRef<
     ComponentType<{
       children?: ReactNode;
     }>,
     'app.router.wrapper',
     {}
-  >,
-  {},
-  {},
-  {},
-  {
+  >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
     component: ConfigurableExtensionDataRef<
       ComponentType<{
         children?: ReactNode;
@@ -1606,8 +1582,8 @@ export const RouterBlueprint: ExtensionBlueprint<
       'app.router.wrapper',
       {}
     >;
-  }
->;
+  };
+}>;
 
 // @public
 export interface RouteRef<
@@ -1644,31 +1620,29 @@ export { SessionApi };
 export { SessionState };
 
 // @public
-export const SignInPageBlueprint: ExtensionBlueprint<
-  {
-    kind: 'sign-in-page';
-    namespace: undefined;
-    name: undefined;
-  },
-  {
+export const SignInPageBlueprint: ExtensionBlueprint<{
+  kind: 'sign-in-page';
+  namespace: undefined;
+  name: undefined;
+  params: {
     loader: () => Promise<ComponentType<SignInPageProps>>;
-  },
-  ConfigurableExtensionDataRef<
+  };
+  output: ConfigurableExtensionDataRef<
     React_2.ComponentType<SignInPageProps>,
     'core.sign-in-page.component',
     {}
-  >,
-  {},
-  {},
-  {},
-  {
+  >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
     component: ConfigurableExtensionDataRef<
       React_2.ComponentType<SignInPageProps>,
       'core.sign-in-page.component',
       {}
     >;
-  }
->;
+  };
+}>;
 
 export { StorageApi };
 
@@ -1689,35 +1663,31 @@ export interface SubRouteRef<
 }
 
 // @public
-export const ThemeBlueprint: ExtensionBlueprint<
-  {
-    kind: 'theme';
-    namespace: 'app';
-    name: undefined;
-  },
-  {
+export const ThemeBlueprint: ExtensionBlueprint<{
+  kind: 'theme';
+  namespace: 'app';
+  name: undefined;
+  params: {
     theme: AppTheme;
-  },
-  ConfigurableExtensionDataRef<AppTheme, 'core.theme.theme', {}>,
-  {},
-  {},
-  {},
-  {
+  };
+  output: ConfigurableExtensionDataRef<AppTheme, 'core.theme.theme', {}>;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
     theme: ConfigurableExtensionDataRef<AppTheme, 'core.theme.theme', {}>;
-  }
->;
+  };
+}>;
 
 // @public
-export const TranslationBlueprint: ExtensionBlueprint<
-  {
-    kind: 'translation';
-    namespace: undefined;
-    name: undefined;
-  },
-  {
+export const TranslationBlueprint: ExtensionBlueprint<{
+  kind: 'translation';
+  namespace: undefined;
+  name: undefined;
+  params: {
     resource: TranslationResource | TranslationMessages;
-  },
-  ConfigurableExtensionDataRef<
+  };
+  output: ConfigurableExtensionDataRef<
     | TranslationResource<string>
     | TranslationMessages<
         string,
@@ -1728,11 +1698,11 @@ export const TranslationBlueprint: ExtensionBlueprint<
       >,
     'core.translation.translation',
     {}
-  >,
-  {},
-  {},
-  {},
-  {
+  >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
     translation: ConfigurableExtensionDataRef<
       | TranslationResource<string>
       | TranslationMessages<
@@ -1745,8 +1715,8 @@ export const TranslationBlueprint: ExtensionBlueprint<
       'core.translation.translation',
       {}
     >;
-  }
->;
+  };
+}>;
 
 export { TranslationMessages };
 

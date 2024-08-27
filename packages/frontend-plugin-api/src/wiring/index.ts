@@ -18,6 +18,7 @@ export { coreExtensionData } from './coreExtensionData';
 export {
   createExtension,
   type ExtensionDefinition,
+  type ExtensionDefinitionParameters,
   type CreateExtensionOptions,
   type ResolvedExtensionInput,
   type ResolvedExtensionInputs,
@@ -56,6 +57,7 @@ export {
 export {
   type CreateExtensionBlueprintOptions,
   type ExtensionBlueprint,
+  type ExtensionBlueprintParameters,
   createExtensionBlueprint,
 } from './createExtensionBlueprint';
 export { type ResolveInputValueOverrides } from './resolveInputOverrides';

@@ -65,6 +65,7 @@ describe('createExtensionOverrides', () => {
         "extensions": [
           {
             "$$type": "@backstage/Extension",
+            "T": undefined,
             "attachTo": {
               "id": "app",
               "input": "apis",
@@ -80,6 +81,7 @@ describe('createExtensionOverrides', () => {
           },
           {
             "$$type": "@backstage/Extension",
+            "T": undefined,
             "attachTo": {
               "id": "app",
               "input": "apis",
@@ -95,6 +97,7 @@ describe('createExtensionOverrides', () => {
           },
           {
             "$$type": "@backstage/Extension",
+            "T": undefined,
             "attachTo": {
               "id": "app",
               "input": "apis",

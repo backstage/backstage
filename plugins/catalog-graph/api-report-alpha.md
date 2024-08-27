@@ -28,8 +28,8 @@ const _default: BackstagePlugin<
     }>;
   },
   {
-    'entity-card:catalog-graph/relations': ExtensionDefinition<
-      {
+    'entity-card:catalog-graph/relations': ExtensionDefinition<{
+      config: {
         kinds: string[] | undefined;
         relations: string[] | undefined;
         maxDepth: number | undefined;
@@ -43,8 +43,8 @@ const _default: BackstagePlugin<
         height: number | undefined;
       } & {
         filter: string | undefined;
-      },
-      {
+      };
+      configInput: {
         height?: number | undefined;
         curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
         direction?: Direction | undefined;
@@ -58,27 +58,28 @@ const _default: BackstagePlugin<
         relationPairs?: [string, string][] | undefined;
       } & {
         filter?: string | undefined;
-      },
-      | ConfigurableExtensionDataRef<
-          React_2.JSX.Element,
-          'core.reactElement',
-          {}
-        >
-      | ConfigurableExtensionDataRef<
-          (entity: Entity) => boolean,
-          'catalog.entity-filter-function',
-          {
-            optional: true;
-          }
-        >
-      | ConfigurableExtensionDataRef<
-          string,
-          'catalog.entity-filter-expression',
-          {
-            optional: true;
-          }
-        >,
-      {
+      };
+      output:
+        | ConfigurableExtensionDataRef<
+            React_2.JSX.Element,
+            'core.reactElement',
+            {}
+          >
+        | ConfigurableExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {
         [x: string]: ExtensionInput<
           AnyExtensionDataRef,
           {
@@ -86,15 +87,13 @@ const _default: BackstagePlugin<
             singleton: boolean;
           }
         >;
-      },
-      {
-        kind: 'entity-card';
-        namespace: undefined;
-        name: 'relations';
-      }
-    >;
-    'page:catalog-graph': ExtensionDefinition<
-      {
+      };
+      kind: 'entity-card';
+      namespace: undefined;
+      name: 'relations';
+    }>;
+    'page:catalog-graph': ExtensionDefinition<{
+      config: {
         selectedKinds: string[] | undefined;
         selectedRelations: string[] | undefined;
         rootEntityRefs: string[] | undefined;
@@ -110,8 +109,8 @@ const _default: BackstagePlugin<
         zoom: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
       } & {
         path: string | undefined;
-      },
-      {
+      };
+      configInput: {
         curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
         direction?: Direction | undefined;
         zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
@@ -127,21 +126,22 @@ const _default: BackstagePlugin<
         showFilters?: boolean | undefined;
       } & {
         path?: string | undefined;
-      },
-      | ConfigurableExtensionDataRef<
-          React_2.JSX.Element,
-          'core.reactElement',
-          {}
-        >
-      | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-      | ConfigurableExtensionDataRef<
-          RouteRef<AnyRouteRefParams>,
-          'core.routing.ref',
-          {
-            optional: true;
-          }
-        >,
-      {
+      };
+      output:
+        | ConfigurableExtensionDataRef<
+            React_2.JSX.Element,
+            'core.reactElement',
+            {}
+          >
+        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+        | ConfigurableExtensionDataRef<
+            RouteRef<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {
         [x: string]: ExtensionInput<
           AnyExtensionDataRef,
           {
@@ -149,13 +149,11 @@ const _default: BackstagePlugin<
             singleton: boolean;
           }
         >;
-      },
-      {
-        kind: 'page';
-        namespace: undefined;
-        name: undefined;
-      }
-    >;
+      };
+      kind: 'page';
+      namespace: undefined;
+      name: undefined;
+    }>;
   }
 >;
 export default _default;

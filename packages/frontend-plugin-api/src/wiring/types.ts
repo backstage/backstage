@@ -35,7 +35,7 @@ export type AnyExternalRoutes = { [name in string]: ExternalRouteRef };
 
 /** @public */
 export type ExtensionMap<
-  TExtensionMap extends { [id in string]: ExtensionDefinition<any, any> },
+  TExtensionMap extends { [id in string]: ExtensionDefinition },
 > = {
   get<TId extends keyof TExtensionMap>(id: TId): TExtensionMap[TId];
 };
@@ -44,7 +44,7 @@ export type ExtensionMap<
 export interface BackstagePlugin<
   TRoutes extends AnyRoutes = AnyRoutes,
   TExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
-  TExtensionMap extends { [id in string]: ExtensionDefinition<any, any> } = {},
+  TExtensionMap extends { [id in string]: ExtensionDefinition } = {},
 > {
   readonly $$type: '@backstage/BackstagePlugin';
   readonly id: string;
@@ -52,7 +52,7 @@ export interface BackstagePlugin<
   readonly externalRoutes: TExternalRoutes;
   getExtension<TId extends keyof TExtensionMap>(id: TId): TExtensionMap[TId];
   withOverrides(options: {
-    extensions: Array<ExtensionDefinition<any, any>>;
+    extensions: Array<ExtensionDefinition>;
   }): BackstagePlugin<TRoutes, TExternalRoutes, TExtensionMap>;
 }
 

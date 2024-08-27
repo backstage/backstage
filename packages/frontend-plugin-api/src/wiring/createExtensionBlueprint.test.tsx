@@ -35,10 +35,7 @@ import { createExtensionDataContainer } from './createExtensionDataContainer';
 
 function unused(..._any: any[]) {}
 
-function factoryOutput(
-  ext: ExtensionDefinition<any, any>,
-  inputs: unknown = undefined,
-) {
+function factoryOutput(ext: ExtensionDefinition, inputs: unknown = undefined) {
   const int = toInternalExtensionDefinition(ext);
   if (int.version !== 'v2') {
     throw new Error('Expected v2 extension');

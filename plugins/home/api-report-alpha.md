@@ -16,31 +16,28 @@ const _default: BackstagePlugin<
   {},
   {},
   {
-    'page:home': ExtensionDefinition<
-      {
-        [x: string]: any;
-      } & {
+    'page:home': ExtensionDefinition<{
+      config: {
         path: string | undefined;
-      },
-      {
-        [x: string]: any;
-      } & {
+      };
+      configInput: {
         path?: string | undefined;
-      },
-      | ConfigurableExtensionDataRef<
-          React_2.JSX.Element,
-          'core.reactElement',
-          {}
-        >
-      | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-      | ConfigurableExtensionDataRef<
-          RouteRef<AnyRouteRefParams>,
-          'core.routing.ref',
-          {
-            optional: true;
-          }
-        >,
-      {
+      };
+      output:
+        | ConfigurableExtensionDataRef<
+            React_2.JSX.Element,
+            'core.reactElement',
+            {}
+          >
+        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+        | ConfigurableExtensionDataRef<
+            RouteRef<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {
         props: ExtensionInput<
           | ConfigurableExtensionDataRef<
               React_2.JSX.Element,
@@ -61,13 +58,11 @@ const _default: BackstagePlugin<
             optional: true;
           }
         >;
-      },
-      {
-        kind: 'page';
-        namespace: undefined;
-        name: undefined;
-      }
-    >;
+      };
+      kind: 'page';
+      namespace: undefined;
+      name: undefined;
+    }>;
   }
 >;
 export default _default;

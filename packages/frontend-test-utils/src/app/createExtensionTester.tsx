@@ -21,12 +21,15 @@ import {
   Extension,
   ExtensionDataRef,
   ExtensionDefinition,
+  ExtensionDefinitionParameters,
   coreExtensionData,
 } from '@backstage/frontend-plugin-api';
 import { Config, ConfigReader } from '@backstage/config';
 import { JsonArray, JsonObject, JsonValue } from '@backstage/types';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { toInternalExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/createExtension';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { resolveAppTree } from '../../../frontend-app-api/src/tree/resolveAppTree';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -75,12 +78,12 @@ export class ExtensionQuery<UOutput extends AnyExtensionDataRef> {
 /** @public */
 export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
   /** @internal */
-  static forSubject<TConfig, TConfigInput, UOutput extends AnyExtensionDataRef>(
-    subject: ExtensionDefinition<TConfig, TConfigInput>,
-    options?: { config?: TConfigInput },
-  ): ExtensionTester<UOutput> {
+  static forSubject<T extends ExtensionDefinitionParameters>(
+    subject: ExtensionDefinition<T>,
+    options?: { config?: T['configInput'] },
+  ): ExtensionTester<NonNullable<T['output']>> {
     const tester = new ExtensionTester();
-    tester.add(subject, options as TConfigInput & {});
+    tester.add(subject, options as T['configInput'] & {});
     return tester;
   }
 
@@ -89,13 +92,13 @@ export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
   readonly #extensions = new Array<{
     id: string;
     extension: Extension<any>;
-    definition: ExtensionDefinition<any>;
+    definition: ExtensionDefinition;
     config?: JsonValue;
   }>();
 
-  add<TConfig, TConfigInput>(
-    extension: ExtensionDefinition<TConfig, TConfigInput>,
-    options?: { config?: TConfigInput },
+  add<T extends ExtensionDefinitionParameters>(
+    extension: ExtensionDefinition<T>,
+    options?: { config?: T['configInput'] },
   ): ExtensionTester<UOutput> {
     if (this.#tree) {
       throw new Error(
@@ -103,7 +106,7 @@ export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
       );
     }
 
-    const { name, namespace } = extension;
+    const { name, namespace } = toInternalExtensionDefinition(extension);
 
     const definition = {
       ...extension,
@@ -135,12 +138,18 @@ export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
     return new ExtensionQuery(tree.root).get(ref);
   }
 
-  query<UQueryExtensionOutput extends AnyExtensionDataRef>(
-    extension: ExtensionDefinition<any, any, UQueryExtensionOutput>,
-  ): ExtensionQuery<UQueryExtensionOutput> {
+  query<T extends ExtensionDefinitionParameters>(
+    extension: ExtensionDefinition<T>,
+  ): ExtensionQuery<NonNullable<T['output']>> {
     const tree = this.#resolveTree();
 
-    const actualId = resolveExtensionDefinition(extension).id;
+    // Same fallback logic as in .add
+    const { name, namespace } = toInternalExtensionDefinition(extension);
+    const definition = {
+      ...extension,
+      name: !namespace && !name ? 'test' : name,
+    };
+    const actualId = resolveExtensionDefinition(definition).id;
 
     const node = tree.nodes.get(actualId);
 
@@ -232,13 +241,9 @@ export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
 }
 
 /** @public */
-export function createExtensionTester<
-  TConfig,
-  TConfigInput,
-  UOutput extends AnyExtensionDataRef,
->(
-  subject: ExtensionDefinition<TConfig, TConfigInput, UOutput>,
-  options?: { config?: TConfigInput },
-): ExtensionTester<UOutput> {
+export function createExtensionTester<T extends ExtensionDefinitionParameters>(
+  subject: ExtensionDefinition<T>,
+  options?: { config?: T['configInput'] },
+): ExtensionTester<NonNullable<T['output']>> {
   return ExtensionTester.forSubject(subject, options);
 }
