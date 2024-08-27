@@ -31,6 +31,7 @@ import {
   IconComponent,
   RouterBlueprint,
   NavItemBlueprint,
+  FrontendFeature,
 } from '@backstage/frontend-plugin-api';
 
 /**
@@ -60,6 +61,16 @@ export type TestAppOptions = {
    * Additional configuration passed to the app when rendering elements inside it.
    */
   config?: JsonObject;
+
+  /**
+   * Additional extensions to add to the test app.
+   */
+  extensions?: ExtensionDefinition<any>[];
+
+  /**
+   * Additional features to add to the test app.
+   */
+  features?: FrontendFeature[];
 };
 
 const NavItem = (props: {
@@ -167,12 +178,22 @@ export function renderInTestApp(
     }
   }
 
+  if (options?.extensions) {
+    extensions.push(...options.extensions);
+  }
+
+  const features: FrontendFeature[] = [
+    createExtensionOverrides({
+      extensions,
+    }),
+  ];
+
+  if (options?.features) {
+    features.push(...options.features);
+  }
+
   const app = createSpecializedApp({
-    features: [
-      createExtensionOverrides({
-        extensions,
-      }),
-    ],
+    features,
     config: ConfigReader.fromConfigs([
       { context: 'render-config', data: options?.config ?? {} },
     ]),
