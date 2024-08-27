@@ -26786,6 +26786,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"example-app@link:../app::locator=example-backend%40workspace%3Apackages%2Fbackend":
+  version: 0.0.0-use.local
+  resolution: "example-app@link:../app::locator=example-backend%40workspace%3Apackages%2Fbackend"
+  languageName: node
+  linkType: soft
+
 "example-app@link:../app::locator=example-backend-legacy%40workspace%3Apackages%2Fbackend-legacy":
   version: 0.0.0-use.local
   resolution: "example-app@link:../app::locator=example-backend-legacy%40workspace%3Apackages%2Fbackend-legacy"
@@ -26961,6 +26967,7 @@ __metadata:
     "@opentelemetry/auto-instrumentations-node": ^0.43.0
     "@opentelemetry/exporter-prometheus": ^0.50.0
     "@opentelemetry/sdk-node": ^0.50.0
+    example-app: "link:../app"
   languageName: unknown
   linkType: soft
 
