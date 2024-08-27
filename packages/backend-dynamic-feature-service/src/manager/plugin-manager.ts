@@ -30,6 +30,7 @@ import {
   BackendFeature,
   LoggerService,
   coreServices,
+  createBackendFeatureLoader,
   createServiceFactory,
   createServiceRef,
 } from '@backstage/backend-plugin-api';
@@ -214,6 +215,7 @@ export class DynamicPluginManager implements DynamicPluginProvider {
 
 /**
  * @public
+ * @deprecated The `featureDiscoveryService` is deprecated in favor of using {@link dynamicPluginsFeatureDiscoveryLoader} instead.
  */
 export const dynamicPluginsServiceRef = createServiceRef<DynamicPluginProvider>(
   {
@@ -231,6 +233,7 @@ export interface DynamicPluginsFactoryOptions {
 
 /**
  * @public
+ * @deprecated Use {@link dynamicPluginsFeatureDiscoveryLoader} instead.
  */
 export const dynamicPluginsServiceFactoryWithOptions = (
   options?: DynamicPluginsFactoryOptions,
@@ -253,6 +256,7 @@ export const dynamicPluginsServiceFactoryWithOptions = (
 
 /**
  * @public
+ * @deprecated Use {@link dynamicPluginsFeatureDiscoveryLoader} instead.
  */
 export const dynamicPluginsServiceFactory =
   dynamicPluginsServiceFactoryWithOptions();
@@ -292,6 +296,7 @@ class DynamicPluginsEnabledFeatureDiscoveryService
 
 /**
  * @public
+ * @deprecated The `featureDiscoveryService` is deprecated in favor of using {@link dynamicPluginsFeatureDiscoveryLoader} instead.
  */
 export const dynamicPluginsFeatureDiscoveryServiceFactory =
   createServiceFactory({
@@ -304,6 +309,66 @@ export const dynamicPluginsFeatureDiscoveryServiceFactory =
       return new DynamicPluginsEnabledFeatureDiscoveryService(dynamicPlugins);
     },
   });
+
+const dynamicPluginsFeatureDiscoveryLoaderWithOptions = (
+  options?: DynamicPluginsFactoryOptions,
+) =>
+  createBackendFeatureLoader({
+    deps: {
+      config: coreServices.rootConfig,
+      logger: coreServices.rootLogger,
+    },
+    async loader({ config, logger }) {
+      const manager = await DynamicPluginManager.create({
+        config,
+        logger,
+        preferAlpha: true,
+        moduleLoader: options?.moduleLoader?.(logger),
+      });
+      const service = new DynamicPluginsEnabledFeatureDiscoveryService(manager);
+      const { features } = await service.getBackendFeatures();
+      return features;
+    },
+  });
+
+/**
+ * A backend feature loader that uses the dynamic plugins system to discover features.
+ *
+ * @public
+ *
+ * @example
+ * Using the `dynamicPluginsFeatureDiscoveryLoader` loader in a backend instance:
+ * ```ts
+ * //...
+ * import { createBackend } from '@backstage/backend-defaults';
+ * import { dynamicPluginsFeatureDiscoveryLoader } from '@backstage/backend-dynamic-feature-service';
+ *
+ * const backend = createBackend();
+ * backend.add(dynamicPluginsFeatureDiscoveryLoader);
+ * //...
+ * backend.start();
+ * ```
+ *
+ * @example
+ * Passing options to the `dynamicPluginsFeatureDiscoveryLoader` loader in a backend instance:
+ * ```ts
+ * //...
+ * import { createBackend } from '@backstage/backend-defaults';
+ * import { dynamicPluginsFeatureDiscoveryLoader } from '@backstage/backend-dynamic-feature-service';
+ * import { myCustomModuleLoader } from './myCustomModuleLoader';
+ *
+ * const backend = createBackend();
+ * backend.add(dynamicPluginsFeatureDiscoveryLoader({
+ *   moduleLoader: myCustomModuleLoader
+ * }));
+ * //...
+ * backend.start();
+ * ```
+ */
+export const dynamicPluginsFeatureDiscoveryLoader = Object.assign(
+  dynamicPluginsFeatureDiscoveryLoaderWithOptions,
+  dynamicPluginsFeatureDiscoveryLoaderWithOptions(),
+);
 
 function isBackendFeature(value: unknown): value is BackendFeature {
   return (

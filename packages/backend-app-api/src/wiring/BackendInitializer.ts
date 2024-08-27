@@ -157,6 +157,7 @@ export class BackendInitializer {
     }
 
     const featureDiscovery = await this.#serviceRegistry.get(
+      // TODO: Let's leave this in place and remove it once the deprecated service is removed. We can do that post-1.0 since it's alpha
       featureDiscoveryServiceRef,
       'root',
     );
