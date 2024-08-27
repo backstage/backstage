@@ -84,8 +84,6 @@ export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
   ): ExtensionQuery<UQueryExtensionOutput>;
   // (undocumented)
   reactElement(): JSX.Element;
-  // @deprecated (undocumented)
-  render(options?: { config?: JsonObject }): RenderResult;
 }
 
 // @public
