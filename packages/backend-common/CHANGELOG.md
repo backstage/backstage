@@ -1,5 +1,15 @@
 # @backstage/backend-common
 
+## 0.24.1
+
+### Patch Changes
+
+- a8f7034: Add `pg-format` as a dependency
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.1
+  - @backstage/backend-plugin-api@0.8.1
+  - @backstage/config-loader@1.9.0
+
 ## 0.24.0
 
 ### Minor Changes

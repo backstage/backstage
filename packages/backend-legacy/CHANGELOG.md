@@ -1,5 +1,42 @@
 # example-backend-legacy
 
+## 0.2.103
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.24.1
+  - @backstage/backend-defaults@0.4.4
+  - @backstage/plugin-app-backend@0.3.73
+  - @backstage/plugin-auth-backend@0.22.12
+  - @backstage/plugin-auth-node@0.5.1
+  - @backstage/plugin-catalog-backend@1.25.2
+  - @backstage/plugin-catalog-backend-module-unprocessed@0.4.11
+  - @backstage/plugin-devtools-backend@0.3.10
+  - @backstage/plugin-events-backend@0.3.11
+  - @backstage/plugin-events-node@0.3.10
+  - @backstage/plugin-kubernetes-backend@0.18.5
+  - @backstage/plugin-permission-backend@0.5.48
+  - @backstage/plugin-permission-node@0.8.2
+  - @backstage/plugin-proxy-backend@0.5.5
+  - @backstage/plugin-scaffolder-backend@1.24.1
+  - @backstage/plugin-scaffolder-backend-module-confluence-to-markdown@0.2.25
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.4.6
+  - @backstage/plugin-scaffolder-backend-module-rails@0.4.41
+  - @backstage/plugin-search-backend@1.5.16
+  - @backstage/plugin-search-backend-module-catalog@0.2.1
+  - @backstage/plugin-search-backend-module-elasticsearch@1.5.5
+  - @backstage/plugin-search-backend-module-explore@0.2.1
+  - @backstage/plugin-search-backend-module-pg@0.5.34
+  - @backstage/plugin-search-backend-module-techdocs@0.2.1
+  - @backstage/plugin-search-backend-node@1.3.1
+  - @backstage/plugin-signals-backend@0.1.10
+  - @backstage/plugin-signals-node@0.1.10
+  - @backstage/plugin-techdocs-backend@1.10.12
+  - @backstage/backend-plugin-api@0.8.1
+  - @backstage/plugin-catalog-node@1.12.6
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.22
+
 ## 0.2.102
 
 ### Patch Changes
