@@ -41,7 +41,10 @@ function processSchema(
     data: formState,
   });
 
-  const name = definitionInSchema?.['ui:backstage']?.review?.name ?? key;
+  const name =
+    definitionInSchema?.['ui:backstage']?.review?.name ??
+    definitionInSchema?.title ??
+    key;
 
   if (definitionInSchema) {
     const backstageReviewOptions = definitionInSchema['ui:backstage']?.review;

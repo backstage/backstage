@@ -435,6 +435,35 @@ describe('ReviewState', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('should allow using the title property', async () => {
+    const formState = {
+      foo: 'test',
+    };
+
+    const schemas: ParsedTemplateSchema[] = [
+      {
+        mergedSchema: {
+          type: 'object',
+          properties: {
+            foo: {
+              type: 'string',
+              title: 'Test Thing',
+            },
+          },
+        },
+        schema: {},
+        title: 'test',
+        uiSchema: {},
+      },
+    ];
+
+    const { queryByRole } = render(
+      <ReviewState formState={formState} schemas={schemas} />,
+    );
+
+    expect(queryByRole('row', { name: 'Test Thing test' })).toBeInTheDocument();
+  });
+
   it('should allow custom review name', async () => {
     const formState = {
       foo: 'test',
