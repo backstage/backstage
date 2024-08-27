@@ -453,6 +453,8 @@ export interface Config {
      * and asyncStackTraces booleans
      */
     knexConfig?: object;
+    /** Skip running database migrations. */
+    skipMigrations?: boolean;
     /** Plugin specific database configuration and client override */
     plugin?: {
       [pluginId: string]: {
@@ -485,6 +487,8 @@ export interface Config {
         knexConfig?: object;
         /** Configures the ownership of newly created schemas in pg databases. */
         role?: string;
+        /** Skip running database migrations. */
+        skipMigrations?: boolean;
       };
     };
   };
