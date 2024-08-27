@@ -25,7 +25,6 @@ import { coreExtensionData } from './coreExtensionData';
 import { MockConfigApi, renderWithEffects } from '@backstage/test-utils';
 import { createExtensionInput } from './createExtensionInput';
 import { BackstagePlugin } from './types';
-import appPlugin from '@backstage/plugin-app';
 
 const nameExtensionDataRef = createExtensionDataRef<string>().with({
   id: 'name',
@@ -128,7 +127,7 @@ function createTestAppRoot({
   config: JsonObject;
 }) {
   return createApp({
-    features: [...features, appPlugin],
+    features: [...features],
     configLoader: async () => ({ config: new MockConfigApi(config) }),
   }).createRoot();
 }

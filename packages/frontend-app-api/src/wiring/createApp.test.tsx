@@ -45,7 +45,6 @@ describe('createApp', () => {
         }),
       }),
       features: [
-        appPlugin,
         createFrontendPlugin({
           id: 'test',
           extensions: [
@@ -75,7 +74,6 @@ describe('createApp', () => {
     const app = createApp({
       configLoader: async () => ({ config: new MockConfigApi({}) }),
       features: [
-        appPlugin,
         createFrontendPlugin({
           id: duplicatedFeatureId,
           extensions: [
@@ -233,7 +231,6 @@ describe('createApp', () => {
     const app = createApp({
       configLoader: async () => ({ config: new MockConfigApi({}) }),
       features: [
-        appPlugin,
         createFrontendPlugin({
           id: 'my-plugin',
           extensions: [
