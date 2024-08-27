@@ -38,6 +38,7 @@
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
+    "@backstage/plugin-app": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
@@ -48,7 +49,6 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@backstage/plugin-app": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^15.0.0"

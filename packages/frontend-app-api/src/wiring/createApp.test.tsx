@@ -359,4 +359,27 @@ describe('createApp', () => {
 
     expect(screen.queryByText('Custom loading message')).toBeNull();
   });
+
+  it('should allow overriding the app plugin', async () => {
+    const app = createApp({
+      configLoader: () => new Promise(() => {}),
+      features: [
+        appPlugin.withOverrides({
+          extensions: [
+            appPlugin.getExtension('app/root').override({
+              factory: () => [
+                coreExtensionData.reactElement(
+                  <div>Custom app root element</div>,
+                ),
+              ],
+            }),
+          ],
+        }),
+      ],
+    });
+
+    await renderWithEffects(app.createRoot());
+
+    expect(screen.queryByText('Custom app root element')).toBeNull();
+  });
 });

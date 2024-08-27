@@ -76,6 +76,7 @@ import { ApiRegistry } from '../../../core-app-api/src/apis/system/ApiRegistry';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
 import { BackstageRouteObject } from '../routing/types';
+import appPlugin from '@backstage/plugin-app';
 
 function deduplicateFeatures(
   allFeatures: FrontendFeature[],
@@ -269,9 +270,11 @@ export function createSpecializedApp(options?: {
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
 }): { createRoot(): JSX.Element } {
   const {
-    features: duplicatedFeatures = [],
+    features: featuresWithoutApp = [],
     config = new ConfigReader({}, 'empty-config'),
   } = options ?? {};
+
+  const duplicatedFeatures = [appPlugin, ...featuresWithoutApp];
 
   const features = deduplicateFeatures(duplicatedFeatures);
 
