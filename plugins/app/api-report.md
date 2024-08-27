@@ -29,22 +29,18 @@ const appPlugin: BackstagePlugin<
   {},
   {},
   {
-    [x: `component:app/${string}`]: ExtensionDefinition<
-      {
-        [x: string]: any;
-      },
-      {
-        [x: string]: any;
-      },
-      ConfigurableExtensionDataRef<
+    [x: `component:app/${string}`]: ExtensionDefinition<{
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
         {
           ref: ComponentRef;
           impl: ComponentType;
         },
         'core.component.component',
         {}
-      >,
-      {
+      >;
+      inputs: {
         [x: string]: ExtensionInput<
           AnyExtensionDataRef,
           {
@@ -52,22 +48,20 @@ const appPlugin: BackstagePlugin<
             singleton: boolean;
           }
         >;
-      },
-      {
-        kind: 'component';
-        namespace: string;
-        name: string;
-      }
-    >;
-    app: ExtensionDefinition<
-      {
-        [x: string]: any;
-      },
-      {
-        [x: string]: any;
-      },
-      ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
-      {
+      };
+      kind: 'component';
+      namespace: string;
+      name: string;
+    }>;
+    app: ExtensionDefinition<{
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        JSX_2.Element,
+        'core.reactElement',
+        {}
+      >;
+      inputs: {
         root: ExtensionInput<
           ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
           {
@@ -75,33 +69,33 @@ const appPlugin: BackstagePlugin<
             optional: false;
           }
         >;
-      },
-      {
-        kind: undefined;
-        namespace: 'app';
-        name: undefined;
-      }
-    >;
-    'api:app/app-language': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'app-language';
-      }
-    >;
-    'app/layout': ExtensionDefinition<
-      {
-        [x: string]: any;
-      },
-      {
-        [x: string]: any;
-      },
-      ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
-      {
+      };
+      kind: undefined;
+      namespace: 'app';
+      name: undefined;
+    }>;
+    'api:app/app-language': ExtensionDefinition<{
+      kind: 'api';
+      namespace: undefined;
+      name: 'app-language';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+    }>;
+    'app/layout': ExtensionDefinition<{
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        JSX_2.Element,
+        'core.reactElement',
+        {}
+      >;
+      inputs: {
         nav: ExtensionInput<
           ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
           {
@@ -116,22 +110,20 @@ const appPlugin: BackstagePlugin<
             optional: false;
           }
         >;
-      },
-      {
-        kind: undefined;
-        namespace: 'app';
-        name: 'layout';
-      }
-    >;
-    'app/nav': ExtensionDefinition<
-      {
-        [x: string]: any;
-      },
-      {
-        [x: string]: any;
-      },
-      ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
-      {
+      };
+      kind: undefined;
+      namespace: 'app';
+      name: 'layout';
+    }>;
+    'app/nav': ExtensionDefinition<{
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        JSX_2.Element,
+        'core.reactElement',
+        {}
+      >;
+      inputs: {
         items: ExtensionInput<
           ConfigurableExtensionDataRef<
             {
@@ -161,22 +153,20 @@ const appPlugin: BackstagePlugin<
             optional: true;
           }
         >;
-      },
-      {
-        kind: undefined;
-        namespace: 'app';
-        name: 'nav';
-      }
-    >;
-    'app/root': ExtensionDefinition<
-      {
-        [x: string]: any;
-      },
-      {
-        [x: string]: any;
-      },
-      ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
-      {
+      };
+      kind: undefined;
+      namespace: 'app';
+      name: 'nav';
+    }>;
+    'app/root': ExtensionDefinition<{
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        JSX_2.Element,
+        'core.reactElement',
+        {}
+      >;
+      inputs: {
         router: ExtensionInput<
           ConfigurableExtensionDataRef<
             ComponentType<{
@@ -228,22 +218,20 @@ const appPlugin: BackstagePlugin<
             optional: false;
           }
         >;
-      },
-      {
-        kind: undefined;
-        namespace: 'app';
-        name: 'root';
-      }
-    >;
-    'app/routes': ExtensionDefinition<
-      {
-        [x: string]: any;
-      },
-      {
-        [x: string]: any;
-      },
-      ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
-      {
+      };
+      kind: undefined;
+      namespace: 'app';
+      name: 'root';
+    }>;
+    'app/routes': ExtensionDefinition<{
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        JSX_2.Element,
+        'core.reactElement',
+        {}
+      >;
+      inputs: {
         routes: ExtensionInput<
           | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
           | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
@@ -259,22 +247,20 @@ const appPlugin: BackstagePlugin<
             optional: false;
           }
         >;
-      },
-      {
-        kind: undefined;
-        namespace: 'app';
-        name: 'routes';
-      }
-    >;
-    'api:app/app-theme': ExtensionDefinition<
-      {
-        [x: string]: any;
-      },
-      {
-        [x: string]: any;
-      },
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {
+      };
+      kind: undefined;
+      namespace: 'app';
+      name: 'routes';
+    }>;
+    'api:app/app-theme': ExtensionDefinition<{
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {
         themes: ExtensionInput<
           ConfigurableExtensionDataRef<AppTheme, 'core.theme.theme', {}>,
           {
@@ -282,44 +268,38 @@ const appPlugin: BackstagePlugin<
             optional: false;
           }
         >;
-      },
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'app-theme';
-      }
-    >;
-    'theme:app/light': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AppTheme, 'core.theme.theme', {}>,
-      {},
-      {
-        kind: 'theme';
-        namespace: 'app';
-        name: 'light';
-      }
-    >;
-    'theme:app/dark': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AppTheme, 'core.theme.theme', {}>,
-      {},
-      {
-        kind: 'theme';
-        namespace: 'app';
-        name: 'dark';
-      }
-    >;
-    'api:app/components': ExtensionDefinition<
-      {
-        [x: string]: any;
-      },
-      {
-        [x: string]: any;
-      },
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {
+      };
+      kind: 'api';
+      namespace: undefined;
+      name: 'app-theme';
+    }>;
+    'theme:app/light': ExtensionDefinition<{
+      kind: 'theme';
+      namespace: 'app';
+      name: 'light';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<AppTheme, 'core.theme.theme', {}>;
+      inputs: {};
+    }>;
+    'theme:app/dark': ExtensionDefinition<{
+      kind: 'theme';
+      namespace: 'app';
+      name: 'dark';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<AppTheme, 'core.theme.theme', {}>;
+      inputs: {};
+    }>;
+    'api:app/components': ExtensionDefinition<{
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {
         components: ExtensionInput<
           ConfigurableExtensionDataRef<
             {
@@ -334,22 +314,20 @@ const appPlugin: BackstagePlugin<
             optional: false;
           }
         >;
-      },
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'components';
-      }
-    >;
-    'api:app/icons': ExtensionDefinition<
-      {
-        [x: string]: any;
-      },
-      {
-        [x: string]: any;
-      },
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {
+      };
+      kind: 'api';
+      namespace: undefined;
+      name: 'components';
+    }>;
+    'api:app/icons': ExtensionDefinition<{
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {
         icons: ExtensionInput<
           ConfigurableExtensionDataRef<
             {
@@ -363,33 +341,33 @@ const appPlugin: BackstagePlugin<
             optional: false;
           }
         >;
-      },
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'icons';
-      }
-    >;
-    'api:app/feature-flags': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'feature-flags';
-      }
-    >;
-    'api:app/translations': ExtensionDefinition<
-      {
-        [x: string]: any;
-      },
-      {
-        [x: string]: any;
-      },
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {
+      };
+      kind: 'api';
+      namespace: undefined;
+      name: 'icons';
+    }>;
+    'api:app/feature-flags': ExtensionDefinition<{
+      kind: 'api';
+      namespace: undefined;
+      name: 'feature-flags';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+    }>;
+    'api:app/translations': ExtensionDefinition<{
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {
         translations: ExtensionInput<
           ConfigurableExtensionDataRef<
             | TranslationResource<string>
@@ -408,33 +386,33 @@ const appPlugin: BackstagePlugin<
             optional: false;
           }
         >;
-      },
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'translations';
-      }
-    >;
-    'app-root-element:app/oauth-request-dialog': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
-      {},
-      {
-        kind: 'app-root-element';
-        namespace: 'app';
-        name: 'oauth-request-dialog';
-      }
-    >;
-    'app-root-element:app/alert-display': ExtensionDefinition<
-      {
+      };
+      kind: 'api';
+      namespace: undefined;
+      name: 'translations';
+    }>;
+    'app-root-element:app/oauth-request-dialog': ExtensionDefinition<{
+      kind: 'app-root-element';
+      namespace: 'app';
+      name: 'oauth-request-dialog';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        JSX_2.Element,
+        'core.reactElement',
+        {}
+      >;
+      inputs: {};
+    }>;
+    'app-root-element:app/alert-display': ExtensionDefinition<{
+      config: {
         transientTimeoutMs: number;
         anchorOrigin: {
           horizontal: 'center' | 'left' | 'right';
           vertical: 'top' | 'bottom';
         };
-      },
-      {
+      };
+      configInput: {
         anchorOrigin?:
           | {
               horizontal?: 'center' | 'left' | 'right' | undefined;
@@ -442,9 +420,13 @@ const appPlugin: BackstagePlugin<
             }
           | undefined;
         transientTimeoutMs?: number | undefined;
-      },
-      ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
-      {
+      };
+      output: ConfigurableExtensionDataRef<
+        JSX_2.Element,
+        'core.reactElement',
+        {}
+      >;
+      inputs: {
         [x: string]: ExtensionInput<
           AnyExtensionDataRef,
           {
@@ -452,211 +434,245 @@ const appPlugin: BackstagePlugin<
             singleton: boolean;
           }
         >;
-      },
-      {
-        kind: 'app-root-element';
-        namespace: 'app';
-        name: 'alert-display';
-      }
-    >;
-    'api:app/discovery': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'discovery';
-      }
-    >;
-    'api:app/alert': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'alert';
-      }
-    >;
-    'api:app/analytics': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'analytics';
-      }
-    >;
-    'api:app/error': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'error';
-      }
-    >;
-    'api:app/storage': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'storage';
-      }
-    >;
-    'api:app/fetch': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'fetch';
-      }
-    >;
-    'api:app/oauth-request': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'oauth-request';
-      }
-    >;
-    'api:app/google-auth': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'google-auth';
-      }
-    >;
-    'api:app/microsoft-auth': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'microsoft-auth';
-      }
-    >;
-    'api:app/github-auth': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'github-auth';
-      }
-    >;
-    'api:app/okta-auth': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'okta-auth';
-      }
-    >;
-    'api:app/gitlab-auth': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'gitlab-auth';
-      }
-    >;
-    'api:app/onelogin-auth': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'onelogin-auth';
-      }
-    >;
-    'api:app/bitbucket-auth': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'bitbucket-auth';
-      }
-    >;
-    'api:app/bitbucket-server-auth': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'bitbucket-server-auth';
-      }
-    >;
-    'api:app/atlassian-auth': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'atlassian-auth';
-      }
-    >;
-    'api:app/vmware-cloud-auth': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'vmware-cloud-auth';
-      }
-    >;
-    'api:app/permission': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: 'permission';
-      }
-    >;
+      };
+      kind: 'app-root-element';
+      namespace: 'app';
+      name: 'alert-display';
+    }>;
+    'api:app/discovery': ExtensionDefinition<{
+      kind: 'api';
+      namespace: undefined;
+      name: 'discovery';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+    }>;
+    'api:app/alert': ExtensionDefinition<{
+      kind: 'api';
+      namespace: undefined;
+      name: 'alert';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+    }>;
+    'api:app/analytics': ExtensionDefinition<{
+      kind: 'api';
+      namespace: undefined;
+      name: 'analytics';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+    }>;
+    'api:app/error': ExtensionDefinition<{
+      kind: 'api';
+      namespace: undefined;
+      name: 'error';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+    }>;
+    'api:app/storage': ExtensionDefinition<{
+      kind: 'api';
+      namespace: undefined;
+      name: 'storage';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+    }>;
+    'api:app/fetch': ExtensionDefinition<{
+      kind: 'api';
+      namespace: undefined;
+      name: 'fetch';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+    }>;
+    'api:app/oauth-request': ExtensionDefinition<{
+      kind: 'api';
+      namespace: undefined;
+      name: 'oauth-request';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+    }>;
+    'api:app/google-auth': ExtensionDefinition<{
+      kind: 'api';
+      namespace: undefined;
+      name: 'google-auth';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+    }>;
+    'api:app/microsoft-auth': ExtensionDefinition<{
+      kind: 'api';
+      namespace: undefined;
+      name: 'microsoft-auth';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+    }>;
+    'api:app/github-auth': ExtensionDefinition<{
+      kind: 'api';
+      namespace: undefined;
+      name: 'github-auth';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+    }>;
+    'api:app/okta-auth': ExtensionDefinition<{
+      kind: 'api';
+      namespace: undefined;
+      name: 'okta-auth';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+    }>;
+    'api:app/gitlab-auth': ExtensionDefinition<{
+      kind: 'api';
+      namespace: undefined;
+      name: 'gitlab-auth';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+    }>;
+    'api:app/onelogin-auth': ExtensionDefinition<{
+      kind: 'api';
+      namespace: undefined;
+      name: 'onelogin-auth';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+    }>;
+    'api:app/bitbucket-auth': ExtensionDefinition<{
+      kind: 'api';
+      namespace: undefined;
+      name: 'bitbucket-auth';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+    }>;
+    'api:app/bitbucket-server-auth': ExtensionDefinition<{
+      kind: 'api';
+      namespace: undefined;
+      name: 'bitbucket-server-auth';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+    }>;
+    'api:app/atlassian-auth': ExtensionDefinition<{
+      kind: 'api';
+      namespace: undefined;
+      name: 'atlassian-auth';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+    }>;
+    'api:app/vmware-cloud-auth': ExtensionDefinition<{
+      kind: 'api';
+      namespace: undefined;
+      name: 'vmware-cloud-auth';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+    }>;
+    'api:app/permission': ExtensionDefinition<{
+      kind: 'api';
+      namespace: undefined;
+      name: 'permission';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+    }>;
   }
 >;
 export default appPlugin;
