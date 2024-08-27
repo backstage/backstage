@@ -22,11 +22,7 @@ import {
   createExtension,
   createExtensionInput,
 } from '../wiring';
-import { PageBlueprint } from './PageBlueprint';
-import {
-  createExtensionTester,
-  renderInTestApp,
-} from '@backstage/frontend-test-utils';
+import { createExtensionTester } from '@backstage/frontend-test-utils';
 
 describe('RouterBlueprint', () => {
   it('should return an extension when calling make with sensible defaults', () => {
