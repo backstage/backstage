@@ -1,5 +1,78 @@
 # @backstage/backend-test-utils
 
+## 0.5.0
+
+### Minor Changes
+
+- 861f162: **BREAKING**: Removed these deprecated helpers:
+
+  - `setupRequestMockHandlers` is removed; use `registerMswTestHooks` instead.
+  - `MockDirectoryOptions` is removed; use `CreateMockDirectoryOptions` instead.
+
+  Stopped exporting the deprecated and internal `isDockerDisabledForTests` helper.
+
+  Removed `get` method from `ServiceFactoryTester` which is replaced by `getSubject`
+
+### Patch Changes
+
+- 8b13183: Internal updates to support latest version of `BackendFeauture`s from `@backstage/backend-plugin-api`.
+- b63d378: Update internal imports
+- 7c5f3b0: Update the `ServiceFactoryTester` to be able to test services that enables multi implementation installation.
+- 4e79d19: The default services for `startTestBackend` and `ServiceFactoryTester` now includes the Root Health Service.
+- Updated dependencies
+  - @backstage/backend-defaults@0.4.2
+  - @backstage/backend-app-api@0.9.0
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/plugin-auth-node@0.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-events-node@0.3.9
+
+## 0.4.5-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.3
+  - @backstage/backend-defaults@0.4.2-next.3
+  - @backstage/backend-app-api@0.8.1-next.3
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.5.0-next.3
+  - @backstage/plugin-events-node@0.3.9-next.3
+
+## 0.4.5-next.2
+
+### Patch Changes
+
+- 8b13183: Internal updates to support latest version of `BackendFeauture`s from `@backstage/backend-plugin-api`.
+- 7c5f3b0: Update the `ServiceFactoryTester` to be able to test services that enables multi implementation installation.
+- Updated dependencies
+  - @backstage/backend-defaults@0.4.2-next.2
+  - @backstage/backend-plugin-api@0.8.0-next.2
+  - @backstage/backend-app-api@0.8.1-next.2
+  - @backstage/plugin-auth-node@0.5.0-next.2
+  - @backstage/plugin-events-node@0.3.9-next.2
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.4.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/backend-app-api@0.8.1-next.1
+  - @backstage/backend-defaults@0.4.2-next.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.18-next.1
+  - @backstage/plugin-events-node@0.3.9-next.1
+
 ## 0.4.5-next.0
 
 ### Patch Changes

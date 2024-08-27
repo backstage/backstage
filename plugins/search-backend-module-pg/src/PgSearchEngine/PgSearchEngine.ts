@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { PluginDatabaseManager } from '@backstage/backend-common';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
 import {
   SearchQuery,
@@ -28,8 +27,8 @@ import {
   PgSearchQuery,
 } from '../database';
 import { v4 as uuid } from 'uuid';
-import { Logger } from 'winston';
 import { Config } from '@backstage/config';
+import { DatabaseService, LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Search query that the Postgres search engine understands.
@@ -62,8 +61,8 @@ export type PgSearchQueryTranslator = (
  * @public
  */
 export type PgSearchOptions = {
-  database: PluginDatabaseManager;
-  logger?: Logger;
+  database: DatabaseService;
+  logger?: LoggerService;
 };
 
 /**
@@ -84,7 +83,7 @@ export type PgSearchHighlightOptions = {
 
 /** @public */
 export class PgSearchEngine implements SearchEngine {
-  private readonly logger?: Logger;
+  private readonly logger?: LoggerService;
   private readonly highlightOptions: PgSearchHighlightOptions;
   private readonly indexerBatchSize: number;
 
@@ -94,7 +93,7 @@ export class PgSearchEngine implements SearchEngine {
   constructor(
     private readonly databaseStore: DatabaseStore,
     config: Config,
-    logger?: Logger,
+    logger?: LoggerService,
   ) {
     const uuidTag = uuid();
     const highlightConfig = config.getOptionalConfig(
@@ -121,12 +120,12 @@ export class PgSearchEngine implements SearchEngine {
   }
 
   /**
-   * @deprecated This will be removed in a future release, please us fromConfig instead
+   * @deprecated This will be removed in a future release, please use fromConfig instead
    */
   static async from(options: {
-    database: PluginDatabaseManager;
+    database: DatabaseService;
     config: Config;
-    logger?: Logger;
+    logger?: LoggerService;
   }): Promise<PgSearchEngine> {
     return new PgSearchEngine(
       await DatabaseDocumentStore.create(options.database),
@@ -143,7 +142,7 @@ export class PgSearchEngine implements SearchEngine {
     );
   }
 
-  static async supported(database: PluginDatabaseManager): Promise<boolean> {
+  static async supported(database: DatabaseService): Promise<boolean> {
     return await DatabaseDocumentStore.supported(await database.getClient());
   }
 

@@ -34,6 +34,7 @@ import {
   EntityTagPicker,
   CatalogFilterLayout,
   UserListPicker,
+  EntityOwnerPicker,
 } from '@backstage/plugin-catalog-react';
 import {
   ScaffolderPageContextMenu,
@@ -52,6 +53,11 @@ import {
 } from '../../routes';
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
+import {
+  TranslationFunction,
+  useTranslationRef,
+} from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../translation';
 
 /**
  * @alpha
@@ -74,17 +80,13 @@ export type TemplateListPageProps = {
   };
 };
 
-const defaultGroup: TemplateGroupFilter = {
-  title: 'Templates',
-  filter: () => true,
-};
-
 const createGroupsWithOther = (
   groups: TemplateGroupFilter[],
+  t: TranslationFunction<typeof scaffolderTranslationRef.T>,
 ): TemplateGroupFilter[] => [
   ...groups,
   {
-    title: 'Other Templates',
+    title: t('templateListPage.templateGroups.otherTitle'),
     filter: e => ![...groups].some(({ filter }) => filter(e)),
   },
 ];
@@ -107,10 +109,16 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
   const viewTechDocsLink = useRouteRef(viewTechDocRouteRef);
   const templateRoute = useRouteRef(selectedTemplateRouteRef);
   const app = useApp();
+  const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const groups = givenGroups.length
-    ? createGroupsWithOther(givenGroups)
-    : [defaultGroup];
+    ? createGroupsWithOther(givenGroups, t)
+    : [
+        {
+          title: t('templateListPage.templateGroups.defaultTitle'),
+          filter: () => true,
+        },
+      ];
 
   const scaffolderPageContextMenuProps = {
     onEditorClicked:
@@ -137,13 +145,15 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
         ? [
             {
               icon: app.getSystemIcon('docs') ?? DocsIcon,
-              text: 'View TechDocs',
+              text: t(
+                'templateListPage.additionalLinksForEntity.viewTechDocsTitle',
+              ),
               url: viewTechDocsLink({ kind, namespace, name }),
             },
           ]
         : [];
     },
-    [app, viewTechDocsLink],
+    [app, viewTechDocsLink, t],
   );
 
   const onTemplateSelected = useCallback(
@@ -159,23 +169,23 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
     <EntityListProvider>
       <Page themeId="home">
         <Header
-          pageTitleOverride="Create a new component"
-          title="Create a new component"
-          subtitle="Create new software components using standard templates in your organization"
+          pageTitleOverride={t('templateListPage.pageTitle')}
+          title={t('templateListPage.title')}
+          subtitle={t('templateListPage.subtitle')}
           {...headerOptions}
         >
           <ScaffolderPageContextMenu {...scaffolderPageContextMenuProps} />
         </Header>
         <Content>
-          <ContentHeader title="Available Templates">
+          <ContentHeader title={t('templateListPage.contentHeader.title')}>
             <RegisterExistingButton
-              title="Register Existing Component"
+              title={t(
+                'templateListPage.contentHeader.registerExistingButtonTitle',
+              )}
               to={registerComponentLink && registerComponentLink()}
             />
             <SupportButton>
-              Create new software components using standard templates. Different
-              templates create different kinds of components (services,
-              websites, documentation, ...).
+              {t('templateListPage.contentHeader.supportButtonTitle')}
             </SupportButton>
           </ContentHeader>
 
@@ -189,6 +199,7 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
               />
               <TemplateCategoryPicker />
               <EntityTagPicker />
+              <EntityOwnerPicker />
             </CatalogFilterLayout.Filters>
             <CatalogFilterLayout.Content>
               <TemplateGroups

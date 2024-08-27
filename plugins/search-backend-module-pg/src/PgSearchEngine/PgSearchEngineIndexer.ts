@@ -17,20 +17,20 @@
 import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Knex } from 'knex';
-import { Logger } from 'winston';
 import { DatabaseStore } from '../database';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /** @public */
 export type PgSearchEngineIndexerOptions = {
   batchSize: number;
   type: string;
   databaseStore: DatabaseStore;
-  logger?: Logger;
+  logger?: LoggerService;
 };
 
 /** @public */
 export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
-  private logger?: Logger;
+  private logger?: LoggerService;
   private store: DatabaseStore;
   private type: string;
   private tx: Knex.Transaction | undefined;
@@ -104,7 +104,7 @@ export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
    * therefore an open connection to PG. This handler ensures we close the
    * transaction and associated connection.
    *
-   * todo(@backstage/discoverability-maintainers): Consider introducing a more
+   * todo(@backstage/search-maintainers): Consider introducing a more
    * formal mechanism for handling such errors in BatchSearchEngineIndexer and
    * replacing this method with it. See: #17291
    *

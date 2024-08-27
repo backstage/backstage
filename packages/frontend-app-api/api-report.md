@@ -6,7 +6,6 @@
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { FrontendFeature } from '@backstage/frontend-plugin-api';
-import { IconComponent } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
@@ -14,9 +13,6 @@ import { SubRouteRef } from '@backstage/frontend-plugin-api';
 
 // @public (undocumented)
 export function createApp(options?: {
-  icons?: {
-    [key in string]: IconComponent;
-  };
   features?: (FrontendFeature | CreateAppFeatureLoader)[];
   configLoader?: () => Promise<{
     config: ConfigApi;
@@ -44,15 +40,12 @@ export type CreateAppRouteBinder = <
   externalRoutes: TExternalRoutes,
   targetRoutes: PartialKeys<
     TargetRouteMap<TExternalRoutes>,
-    KeysWithType<TExternalRoutes, ExternalRouteRef<any, true>>
+    KeysWithType<TExternalRoutes, ExternalRouteRef<any>>
   >,
 ) => void;
 
 // @public
 export function createSpecializedApp(options?: {
-  icons?: {
-    [key in string]: IconComponent;
-  };
   features?: FrontendFeature[];
   config?: ConfigApi;
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;

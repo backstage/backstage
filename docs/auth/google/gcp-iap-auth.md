@@ -24,7 +24,7 @@ Let's start by adding the following `auth` configuration in your
 ```yaml
 auth:
   providers:
-    gcp-iap:
+    gcpIap:
       audience: '/projects/<project number>/global/backendServices/<backend service id>'
       jwtHeader: x-custom-header # Optional: Only if you are using a custom header for the IAP JWT
       signIn:
@@ -77,6 +77,6 @@ backend.add(import('@backstage/plugin-auth-backend-module-gcp-iap-provider'));
 
 ## Adding the provider to the Backstage frontend
 
-See [Sign-In with Proxy Providers](../index.md#sign-in-with-proxy-providers) for pointers on how to set up the sign-in page, and to also make it work smoothly for local development. You'll use `gcp-iap` as the provider name.
+See [Sign-In with Proxy Providers](../index.md#sign-in-with-proxy-providers) for pointers on how to set up the sign-in page, and to also make it work smoothly for local development. You'll use `gcpIap` as the provider name.
 
 If you [provide a custom sign in resolver](https://backstage.io/docs/auth/identity-resolver#building-custom-resolvers), you can skip the `signIn` block entirely.

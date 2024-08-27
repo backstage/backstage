@@ -22,11 +22,11 @@
 import {
   coreServices,
   createBackendModule,
+  readSchedulerServiceTaskScheduleDefinitionFromConfig,
 } from '@backstage/backend-plugin-api';
 import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
 
 import { ToolDocumentCollatorFactory } from '@backstage/plugin-search-backend-module-explore';
-import { readTaskScheduleDefinitionFromConfig } from '@backstage/backend-tasks';
 
 /**
  * Search backend module for the Explore index.
@@ -43,7 +43,6 @@ export default createBackendModule({
         logger: coreServices.logger,
         discovery: coreServices.discovery,
         scheduler: coreServices.scheduler,
-        tokenManager: coreServices.tokenManager,
         auth: coreServices.auth,
         indexRegistry: searchIndexRegistryExtensionPoint,
       },
@@ -52,7 +51,6 @@ export default createBackendModule({
         logger,
         discovery,
         scheduler,
-        tokenManager,
         auth,
         indexRegistry,
       }) {
@@ -63,7 +61,7 @@ export default createBackendModule({
         };
 
         const schedule = config.has('search.collators.explore.schedule')
-          ? readTaskScheduleDefinitionFromConfig(
+          ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
               config.getConfig('search.collators.explore.schedule'),
             )
           : defaultSchedule;
@@ -74,7 +72,6 @@ export default createBackendModule({
             discovery,
             logger,
             auth,
-            tokenManager,
           }),
         });
       },

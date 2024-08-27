@@ -15,9 +15,9 @@
  */
 
 import {
-  readTaskScheduleDefinitionFromConfig,
-  TaskScheduleDefinition,
-} from '@backstage/backend-tasks';
+  SchedulerServiceTaskScheduleDefinition,
+  readSchedulerServiceTaskScheduleDefinitionFromConfig,
+} from '@backstage/backend-plugin-api';
 import { EntityFilterQuery } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
@@ -39,15 +39,16 @@ export const defaults = {
 
 export function readScheduleConfigOptions(
   configRoot: Config,
-): TaskScheduleDefinition {
-  let schedule: TaskScheduleDefinition | undefined = undefined;
+): SchedulerServiceTaskScheduleDefinition {
+  let schedule: SchedulerServiceTaskScheduleDefinition | undefined = undefined;
 
   const config = configRoot.getOptionalConfig(configKey);
   if (config) {
     const scheduleConfig = config.getOptionalConfig('schedule');
     if (scheduleConfig) {
       try {
-        schedule = readTaskScheduleDefinitionFromConfig(scheduleConfig);
+        schedule =
+          readSchedulerServiceTaskScheduleDefinitionFromConfig(scheduleConfig);
       } catch (error) {
         throw new InputError(`Invalid schedule at ${configKey}, ${error}`);
       }

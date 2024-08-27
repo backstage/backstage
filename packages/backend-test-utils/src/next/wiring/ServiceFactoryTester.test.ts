@@ -93,7 +93,7 @@ describe('ServiceFactoryTester', () => {
         deps: { root: rootServiceRef, plugin: pluginServiceRef },
         factory: async ({ root, plugin }) => `${root}, ${plugin}`,
       }),
-      { dependencies: [rootFactory, pluginFactory()] },
+      { dependencies: [rootFactory, pluginFactory] },
     );
 
     await expect(tester.getSubject('x')).resolves.toBe('root, x-plugin');
@@ -106,7 +106,7 @@ describe('ServiceFactoryTester', () => {
         deps: { shared: sharedPluginServiceRef, plugin: pluginServiceRef },
         factory: async ({ shared, plugin }) => `${shared}, ${plugin}`,
       }),
-      { dependencies: [sharedPluginFactory(), pluginFactory] },
+      { dependencies: [sharedPluginFactory, pluginFactory] },
     );
 
     await expect(tester.getSubject('x')).resolves.toBe('x-1-plugin, x-plugin');

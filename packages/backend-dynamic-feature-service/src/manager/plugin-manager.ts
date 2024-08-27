@@ -232,8 +232,10 @@ export interface DynamicPluginsFactoryOptions {
 /**
  * @public
  */
-export const dynamicPluginsServiceFactory = createServiceFactory(
-  (options?: DynamicPluginsFactoryOptions) => ({
+export const dynamicPluginsServiceFactoryWithOptions = (
+  options?: DynamicPluginsFactoryOptions,
+) =>
+  createServiceFactory({
     service: dynamicPluginsServiceRef,
     deps: {
       config: coreServices.rootConfig,
@@ -247,8 +249,13 @@ export const dynamicPluginsServiceFactory = createServiceFactory(
         moduleLoader: options?.moduleLoader?.(logger),
       });
     },
-  }),
-);
+  });
+
+/**
+ * @public
+ */
+export const dynamicPluginsServiceFactory =
+  dynamicPluginsServiceFactoryWithOptions();
 
 class DynamicPluginsEnabledFeatureDiscoveryService
   implements FeatureDiscoveryService
@@ -301,7 +308,7 @@ export const dynamicPluginsFeatureDiscoveryServiceFactory =
 function isBackendFeature(value: unknown): value is BackendFeature {
   return (
     !!value &&
-    typeof value === 'object' &&
+    (typeof value === 'object' || typeof value === 'function') &&
     (value as BackendFeature).$$type === '@backstage/BackendFeature'
   );
 }

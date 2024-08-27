@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { readTaskScheduleDefinitionFromConfig } from '@backstage/backend-tasks';
+import { readSchedulerServiceTaskScheduleDefinitionFromConfig } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { GitlabProviderConfig } from '../lib';
 
@@ -47,9 +47,13 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
     config.getOptionalBoolean('allowInherited') ?? false;
   const skipForkedRepos: boolean =
     config.getOptionalBoolean('skipForkedRepos') ?? false;
+  const excludeRepos: string[] =
+    config.getOptionalStringArray('excludeRepos') ?? [];
 
   const schedule = config.has('schedule')
-    ? readTaskScheduleDefinitionFromConfig(config.getConfig('schedule'))
+    ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
+        config.getConfig('schedule'),
+      )
     : undefined;
   const restrictUsersToGroup =
     config.getOptionalBoolean('restrictUsersToGroup') ?? false;
@@ -68,6 +72,7 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
     orgEnabled,
     allowInherited,
     skipForkedRepos,
+    excludeRepos,
     restrictUsersToGroup,
   };
 }

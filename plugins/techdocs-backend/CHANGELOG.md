@@ -1,5 +1,84 @@
 # @backstage/plugin-techdocs-backend
 
+## 1.10.10
+
+### Patch Changes
+
+- 69bd940: Use annotation constants from new techdocs-common package.
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- b77fbf4: Added back `type: 'local'` to TechDocs config schema for `publisher`
+- a16632c: Update configuration schema to match actual behavior
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/backend-common@0.24.0
+  - @backstage/plugin-techdocs-node@1.12.9
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-search-backend-module-techdocs@0.2.0
+  - @backstage/integration@1.14.0
+  - @backstage/plugin-techdocs-common@0.1.0
+  - @backstage/catalog-model@1.6.0
+  - @backstage/catalog-client@1.6.6
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-catalog-common@1.0.26
+
+## 1.10.10-next.3
+
+### Patch Changes
+
+- a16632c: Update configuration schema to match actual behavior
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.3
+  - @backstage/backend-common@0.23.4-next.3
+  - @backstage/plugin-techdocs-node@1.12.9-next.3
+  - @backstage/catalog-model@1.6.0-next.0
+  - @backstage/catalog-client@1.6.6-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/plugin-catalog-common@1.0.26-next.2
+  - @backstage/plugin-permission-common@0.8.1-next.1
+  - @backstage/plugin-search-backend-module-techdocs@0.1.28-next.3
+  - @backstage/plugin-techdocs-common@0.1.0-next.0
+
+## 1.10.10-next.2
+
+### Patch Changes
+
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.2
+  - @backstage/plugin-permission-common@0.8.1-next.1
+  - @backstage/plugin-search-backend-module-techdocs@0.1.28-next.2
+  - @backstage/backend-common@0.23.4-next.2
+  - @backstage/plugin-techdocs-node@1.12.9-next.2
+  - @backstage/plugin-catalog-common@1.0.26-next.1
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-techdocs-common@0.1.0-next.0
+
+## 1.10.10-next.1
+
+### Patch Changes
+
+- 69bd940: Use annotation constants from new techdocs-common package.
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.12.9-next.1
+  - @backstage/plugin-permission-common@0.8.1-next.0
+  - @backstage/plugin-techdocs-common@0.1.0-next.0
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/plugin-search-backend-module-techdocs@0.1.28-next.1
+  - @backstage/backend-common@0.23.4-next.1
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/plugin-catalog-common@1.0.26-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 1.10.10-next.0
 
 ### Patch Changes

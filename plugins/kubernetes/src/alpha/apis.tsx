@@ -15,7 +15,7 @@
  */
 
 import {
-  createApiExtension,
+  ApiBlueprint,
   createApiFactory,
   discoveryApiRef,
   fetchApiRef,
@@ -40,80 +40,91 @@ import {
   oneloginAuthApiRef,
 } from '@backstage/core-plugin-api';
 
-export const kubernetesApiExtension = createApiExtension({
-  factory: createApiFactory({
-    api: kubernetesApiRef,
-    deps: {
-      discoveryApi: discoveryApiRef,
-      fetchApi: fetchApiRef,
-      kubernetesAuthProvidersApi: kubernetesAuthProvidersApiRef,
-    },
-    factory: ({ discoveryApi, fetchApi, kubernetesAuthProvidersApi }) =>
-      new KubernetesBackendClient({
-        discoveryApi,
-        fetchApi,
-        kubernetesAuthProvidersApi,
-      }),
-  }),
+export const kubernetesApiExtension = ApiBlueprint.make({
+  params: {
+    factory: createApiFactory({
+      api: kubernetesApiRef,
+      deps: {
+        discoveryApi: discoveryApiRef,
+        fetchApi: fetchApiRef,
+        kubernetesAuthProvidersApi: kubernetesAuthProvidersApiRef,
+      },
+      factory: ({ discoveryApi, fetchApi, kubernetesAuthProvidersApi }) =>
+        new KubernetesBackendClient({
+          discoveryApi,
+          fetchApi,
+          kubernetesAuthProvidersApi,
+        }),
+    }),
+  },
 });
 
-export const kubernetesProxyApi = createApiExtension({
-  factory: createApiFactory({
-    api: kubernetesProxyApiRef,
-    deps: {
-      kubernetesApi: kubernetesApiRef,
-    },
-    factory: ({ kubernetesApi }) =>
-      new KubernetesProxyClient({
-        kubernetesApi,
-      }),
-  }),
+export const kubernetesProxyApi = ApiBlueprint.make({
+  name: 'proxy',
+  params: {
+    factory: createApiFactory({
+      api: kubernetesProxyApiRef,
+      deps: {
+        kubernetesApi: kubernetesApiRef,
+      },
+      factory: ({ kubernetesApi }) =>
+        new KubernetesProxyClient({
+          kubernetesApi,
+        }),
+    }),
+  },
 });
 
-export const kubernetesAuthProvidersApi = createApiExtension({
-  factory: createApiFactory({
-    api: kubernetesAuthProvidersApiRef,
-    deps: {
-      gitlabAuthApi: gitlabAuthApiRef,
-      googleAuthApi: googleAuthApiRef,
-      microsoftAuthApi: microsoftAuthApiRef,
-      oktaAuthApi: oktaAuthApiRef,
-      oneloginAuthApi: oneloginAuthApiRef,
-    },
-    factory: ({
-      gitlabAuthApi,
-      googleAuthApi,
-      microsoftAuthApi,
-      oktaAuthApi,
-      oneloginAuthApi,
-    }) => {
-      const oidcProviders = {
-        gitlab: gitlabAuthApi,
-        google: googleAuthApi,
-        microsoft: microsoftAuthApi,
-        okta: oktaAuthApi,
-        onelogin: oneloginAuthApi,
-      };
-
-      return new KubernetesAuthProviders({
-        microsoftAuthApi,
+export const kubernetesAuthProvidersApi = ApiBlueprint.make({
+  name: 'auth-providers',
+  params: {
+    factory: createApiFactory({
+      api: kubernetesAuthProvidersApiRef,
+      deps: {
+        gitlabAuthApi: gitlabAuthApiRef,
+        googleAuthApi: googleAuthApiRef,
+        microsoftAuthApi: microsoftAuthApiRef,
+        oktaAuthApi: oktaAuthApiRef,
+        oneloginAuthApi: oneloginAuthApiRef,
+      },
+      factory: ({
+        gitlabAuthApi,
         googleAuthApi,
-        oidcProviders,
-      });
-    },
-  }),
+        microsoftAuthApi,
+        oktaAuthApi,
+        oneloginAuthApi,
+      }) => {
+        const oidcProviders = {
+          gitlab: gitlabAuthApi,
+          google: googleAuthApi,
+          microsoft: microsoftAuthApi,
+          okta: oktaAuthApi,
+          onelogin: oneloginAuthApi,
+        };
+
+        return new KubernetesAuthProviders({
+          microsoftAuthApi,
+          googleAuthApi,
+          oidcProviders,
+        });
+      },
+    }),
+  },
 });
 
-export const kubernetesClusterLinkFormatterApi = createApiExtension({
-  factory: createApiFactory({
-    api: kubernetesClusterLinkFormatterApiRef,
-    deps: { googleAuthApi: googleAuthApiRef },
-    factory: deps => {
-      const formatters = getDefaultFormatters(deps);
-      return new KubernetesClusterLinkFormatter({
-        formatters,
-        defaultFormatterName: DEFAULT_FORMATTER_NAME,
-      });
-    },
-  }),
+export const kubernetesClusterLinkFormatterApi = ApiBlueprint.make({
+  name: 'cluster-link-formatter',
+  params: {
+    factory: createApiFactory({
+      api: kubernetesClusterLinkFormatterApiRef,
+      deps: { googleAuthApi: googleAuthApiRef },
+      factory: deps => {
+        const formatters = getDefaultFormatters(deps);
+        return new KubernetesClusterLinkFormatter({
+          formatters,
+          defaultFormatterName: DEFAULT_FORMATTER_NAME,
+        });
+      },
+    }),
+  },
 });

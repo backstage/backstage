@@ -15,11 +15,14 @@
  */
 
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { waitFor } from '@testing-library/react';
 import { CatalogApi } from '@backstage/catalog-client';
 import { MyGroupsPicker } from './MyGroupsPicker';
-import { TestApiProvider } from '@backstage/test-utils';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import {
+  catalogApiRef,
+  entityPresentationApiRef,
+} from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
 import {
   ErrorApi,
@@ -29,6 +32,7 @@ import {
 } from '@backstage/core-plugin-api';
 import userEvent from '@testing-library/user-event';
 import { ScaffolderRJSFFieldProps as FieldProps } from '@backstage/plugin-scaffolder-react';
+import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
 
 // Create a mock IdentityApi
 const mockIdentityApi: IdentityApi = {
@@ -111,12 +115,16 @@ describe('<MyGroupsPicker />', () => {
       required,
     } as unknown as FieldProps<string>;
 
-    render(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [identityApiRef, mockIdentityApi],
           [catalogApiRef, catalogApi],
           [errorApiRef, mockErrorApi],
+          [
+            entityPresentationApiRef,
+            DefaultEntityPresentationApi.create({ catalogApi }),
+          ],
         ]}
       >
         <MyGroupsPicker {...props} />
@@ -183,12 +191,16 @@ describe('<MyGroupsPicker />', () => {
       required,
     } as unknown as FieldProps<string>;
 
-    const { queryByText, getByRole } = render(
+    const { queryByText, getByRole } = await renderInTestApp(
       <TestApiProvider
         apis={[
           [identityApiRef, mockIdentityApi],
           [catalogApiRef, catalogApi],
           [errorApiRef, mockErrorApi],
+          [
+            entityPresentationApiRef,
+            DefaultEntityPresentationApi.create({ catalogApi }),
+          ],
         ]}
       >
         <MyGroupsPicker {...props} />
@@ -240,12 +252,16 @@ describe('<MyGroupsPicker />', () => {
       required,
     } as unknown as FieldProps<string>;
 
-    const { getByRole } = render(
+    const { getByRole } = await renderInTestApp(
       <TestApiProvider
         apis={[
           [identityApiRef, mockIdentityApi],
           [catalogApiRef, catalogApi],
           [errorApiRef, mockErrorApi],
+          [
+            entityPresentationApiRef,
+            DefaultEntityPresentationApi.create({ catalogApi }),
+          ],
         ]}
       >
         <MyGroupsPicker {...props} />
@@ -300,12 +316,16 @@ describe('<MyGroupsPicker />', () => {
       formData: 'group:default/group1',
     } as unknown as FieldProps<string>;
 
-    const { getByRole } = render(
+    const { getByRole } = await renderInTestApp(
       <TestApiProvider
         apis={[
           [identityApiRef, mockIdentityApi],
           [catalogApiRef, catalogApi],
           [errorApiRef, mockErrorApi],
+          [
+            entityPresentationApiRef,
+            DefaultEntityPresentationApi.create({ catalogApi }),
+          ],
         ]}
       >
         <MyGroupsPicker {...props} />

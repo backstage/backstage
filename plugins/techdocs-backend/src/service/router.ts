@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 import {
-  PluginEndpointDiscovery,
-  PluginCacheManager,
   createLegacyAuthAdapters,
+  PluginCacheManager,
 } from '@backstage/backend-common';
 import { CatalogClient } from '@backstage/catalog-client';
 import { stringifyEntityRef } from '@backstage/catalog-model';
@@ -38,20 +37,25 @@ import { createCacheMiddleware, TechDocsCache } from '../cache';
 import { CachedEntityLoader } from './CachedEntityLoader';
 import { DefaultDocsBuildStrategy } from './DefaultDocsBuildStrategy';
 import * as winston from 'winston';
-import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  DiscoveryService,
+  HttpAuthService,
+} from '@backstage/backend-plugin-api';
 
 /**
  * Required dependencies for running TechDocs in the "out-of-the-box"
  * deployment configuration (prepare/generate/publish all in the Backend).
  *
  * @public
+ *
  */
 export type OutOfTheBoxDeploymentOptions = {
   preparers: PreparerBuilder;
   generators: GeneratorBuilder;
   publisher: PublisherBase;
   logger: winston.Logger;
-  discovery: PluginEndpointDiscovery;
+  discovery: DiscoveryService;
   database?: Knex; // TODO: Make database required when we're implementing database stuff.
   config: Config;
   cache: PluginCacheManager;
@@ -67,11 +71,12 @@ export type OutOfTheBoxDeploymentOptions = {
  * configuration (prepare/generate handled externally in CI/CD).
  *
  * @public
+ * @deprecated This type is only exported for legacy reasons and will be removed in the future.
  */
 export type RecommendedDeploymentOptions = {
   publisher: PublisherBase;
   logger: winston.Logger;
-  discovery: PluginEndpointDiscovery;
+  discovery: DiscoveryService;
   config: Config;
   cache: PluginCacheManager;
   docsBuildStrategy?: DocsBuildStrategy;
@@ -85,6 +90,7 @@ export type RecommendedDeploymentOptions = {
  * One of the two deployment configurations must be provided.
  *
  * @public
+ * @deprecated This type is only exported for legacy reasons and will be removed in the future.
  */
 export type RouterOptions =
   | RecommendedDeploymentOptions
@@ -94,7 +100,7 @@ export type RouterOptions =
  * Typeguard to help createRouter() understand when we are in a "recommended"
  * deployment vs. when we are in an out-of-the-box deployment configuration.
  *
- * * @public
+ * @public
  */
 function isOutOfTheBoxOption(
   opt: RouterOptions,
@@ -106,6 +112,8 @@ function isOutOfTheBoxOption(
  * Creates a techdocs router.
  *
  * @public
+ *@deprecated This function is only exported for legacy reasons and will be removed in the future.
+ * Please {@link https://backstage.io/docs/backend-system/building-backends/migrating | migrate } to use the new backend system and follow these {@link https://backstage.io/docs/features/techdocs/getting-started#new-backend-system | instructions } to install the user settings backend plugin.
  */
 export async function createRouter(
   options: RouterOptions,
@@ -252,10 +260,14 @@ export async function createRouter(
       // However, if caching is enabled, take the opportunity to check and
       // invalidate stale cache entries.
       if (cache) {
+        const { token: techDocsToken } = await auth.getPluginRequestToken({
+          onBehalfOf: await auth.getOwnServiceCredentials(),
+          targetPluginId: 'techdocs',
+        });
         await docsSynchronizer.doCacheSync({
           responseHandler,
           discovery,
-          token,
+          token: techDocsToken,
           entity,
         });
         return;

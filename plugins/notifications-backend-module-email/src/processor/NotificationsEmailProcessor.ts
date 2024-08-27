@@ -37,6 +37,7 @@ import {
   createSendmailTransport,
   createSesTransport,
   createSmtpTransport,
+  createStreamTransport,
 } from './transports';
 import { UserEntity } from '@backstage/catalog-model';
 import { compact } from 'lodash';
@@ -56,6 +57,8 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
   private readonly throttleInterval: number;
   private readonly frontendBaseUrl: string;
   private readonly filter: NotificationProcessorFilters;
+  private readonly allowlistEmailAddresses?: string[];
+  private readonly denylistEmailAddresses?: string[];
 
   constructor(
     private readonly logger: LoggerService,
@@ -85,6 +88,12 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       ? durationToMilliseconds(readDurationFromConfig(cacheConfig))
       : 3_600_000;
     this.frontendBaseUrl = config.getString('app.baseUrl');
+    this.allowlistEmailAddresses = emailProcessorConfig.getOptionalStringArray(
+      'allowlistEmailAddresses',
+    );
+    this.denylistEmailAddresses = emailProcessorConfig.getOptionalStringArray(
+      'denylistEmailAddresses',
+    );
     this.filter = getProcessorFiltersFromConfig(emailProcessorConfig);
   }
 
@@ -105,6 +114,8 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       );
     } else if (transport === 'sendmail') {
       this.transporter = createSendmailTransport(this.transportConfig);
+    } else if (transport === 'stream') {
+      this.transporter = createStreamTransport();
     } else {
       throw new Error(`Unsupported transport: ${transport}`);
     }
@@ -196,15 +207,36 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
   private async getRecipientEmails(
     notification: Notification,
     options: NotificationSendOptions,
-  ) {
-    if (options.recipients.type === 'broadcast' || notification.user === null) {
-      return await this.getBroadcastEmails();
+  ): Promise<string[]> {
+    let emails: string[];
+    if (options.recipients.type === 'broadcast') {
+      emails = await this.getBroadcastEmails();
+    } else if (options.recipients.type === 'entity' && !!notification.user) {
+      emails = await this.getUserEmail(notification.user);
+    } else {
+      this.logger.info(
+        `Unknown notification type ${options.recipients.type} or missing user.`,
+      );
+      return [];
     }
-    return await this.getUserEmail(notification.user);
+
+    if (this.allowlistEmailAddresses) {
+      emails = emails.filter(email =>
+        this.allowlistEmailAddresses?.includes(email),
+      );
+    }
+
+    if (this.denylistEmailAddresses) {
+      emails = emails.filter(
+        email => !this.denylistEmailAddresses?.includes(email),
+      );
+    }
+    return emails;
   }
 
   private async sendMail(options: Mail.Options) {
     try {
+      this.logger.debug(`Sending notification email to ${options.to}`);
       await this.transporter.sendMail(options);
     } catch (e) {
       this.logger.error(`Failed to send email to ${options.to}: ${e}`);
@@ -310,6 +342,8 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       );
       return;
     }
+
+    this.logger.debug(`Sending notification emails to: ${emails.join(',')}`);
 
     if (!this.templateRenderer) {
       await this.sendPlainEmail(notification, emails);

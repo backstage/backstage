@@ -1,5 +1,73 @@
 # @backstage/plugin-catalog-backend-module-incremental-ingestion
 
+## 0.5.0
+
+### Minor Changes
+
+- fc24d9e: Stop using `@backstage/backend-tasks` as it will be deleted in near future.
+
+### Patch Changes
+
+- 389f5a4: Update deprecated url-reader-related imports.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/backend-common@0.24.0
+  - @backstage/plugin-catalog-backend@1.25.0
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-catalog-node@1.12.5
+  - @backstage/catalog-model@1.6.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-events-node@0.3.9
+
+## 0.4.28-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.3
+  - @backstage/backend-common@0.23.4-next.3
+  - @backstage/catalog-model@1.6.0-next.0
+  - @backstage/backend-tasks@0.5.28-next.3
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-catalog-backend@1.24.1-next.3
+  - @backstage/plugin-catalog-node@1.12.5-next.3
+  - @backstage/plugin-events-node@0.3.9-next.3
+  - @backstage/plugin-permission-common@0.8.1-next.1
+
+## 0.4.28-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.2
+  - @backstage/plugin-permission-common@0.8.1-next.1
+  - @backstage/backend-common@0.23.4-next.2
+  - @backstage/plugin-catalog-backend@1.24.1-next.2
+  - @backstage/backend-tasks@0.5.28-next.2
+  - @backstage/plugin-catalog-node@1.12.5-next.2
+  - @backstage/plugin-events-node@0.3.9-next.2
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 0.4.28-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.8.1-next.0
+  - @backstage/plugin-catalog-backend@1.24.1-next.1
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/backend-common@0.23.4-next.1
+  - @backstage/plugin-catalog-node@1.12.5-next.1
+  - @backstage/backend-tasks@0.5.28-next.1
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-events-node@0.3.9-next.1
+
 ## 0.4.28-next.0
 
 ### Patch Changes

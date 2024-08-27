@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-msgraph",
-  "version": "0.5.31-next.0",
+  "version": "0.6.0",
   "description": "A Backstage catalog backend module that helps integrate towards Microsoft Graph",
   "backstage": {
     "role": "backend-plugin-module",
@@ -52,9 +52,7 @@
   },
   "dependencies": {
     "@azure/identity": "^4.0.0",
-    "@backstage/backend-common": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
-    "@backstage/backend-tasks": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
@@ -62,13 +60,12 @@
     "@microsoft/microsoft-graph-types": "^2.6.0",
     "@types/node-fetch": "^2.5.12",
     "lodash": "^4.17.21",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "^2.7.0",
     "p-limit": "^3.0.2",
     "qs": "^6.9.4",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "@backstage/backend-common": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/lodash": "^4.14.151",

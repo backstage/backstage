@@ -15,7 +15,7 @@
  */
 
 import { AuthenticationError } from '@backstage/errors';
-import { AwsAlbClaims, AwsAlbResult } from './types';
+import { AwsAlbClaims, AwsAlbResult, AwsAlbProtectedHeader } from './types';
 import { jwtVerify } from 'jose';
 import {
   PassportProfile,
@@ -36,12 +36,13 @@ export const awsAlbAuthenticator = createProxyAuthenticator({
   },
   initialize({ config }) {
     const issuer = config.getString('issuer');
+    const signer = config.getOptionalString('signer');
     const region = config.getString('region');
     const keyCache = new NodeCache({ stdTTL: 3600 });
     const getKey = provisionKeyCache(region, keyCache);
-    return { issuer, getKey };
+    return { issuer, signer, getKey };
   },
-  async authenticate({ req }, { issuer, getKey }) {
+  async authenticate({ req }, { issuer, signer, getKey }) {
     const jwt = req.header(ALB_JWT_HEADER);
     const accessToken = req.header(ALB_ACCESS_TOKEN_HEADER);
 
@@ -59,10 +60,13 @@ export const awsAlbAuthenticator = createProxyAuthenticator({
 
     try {
       const verifyResult = await jwtVerify(jwt, getKey);
+      const header = verifyResult.protectedHeader as AwsAlbProtectedHeader;
       const claims = verifyResult.payload as AwsAlbClaims;
 
-      if (issuer && claims?.iss !== issuer) {
+      if (claims?.iss !== issuer) {
         throw new AuthenticationError('Issuer mismatch on JWT token');
+      } else if (signer && header?.signer !== signer) {
+        throw new AuthenticationError('Signer mismatch on JWT token');
       }
 
       const fullProfile: PassportProfile = {

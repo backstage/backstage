@@ -19,7 +19,7 @@ import {
   useShadowRootElements,
   useShadowRootSelection,
 } from './hooks';
-import { renderHook } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 import { fireEvent, waitFor } from '@testing-library/react';
 
 const fireSelectionChangeEvent = (window: Window) => {
@@ -34,7 +34,7 @@ const getSelection = jest.fn();
 const mockShadowRoot = () => {
   const div = document.createElement('div');
   const shadowRoot = div.attachShadow({ mode: 'open' });
-  shadowRoot.innerHTML = '<h1>Shadow DOM Mock</h1>';
+  shadowRoot.innerHTML = '<div><h1>Shadow DOM Mock</h1></div>';
   (shadowRoot as ShadowRoot & Pick<Document, 'getSelection'>).getSelection =
     getSelection;
   return shadowRoot;
@@ -84,6 +84,55 @@ describe('hooks', () => {
       const { result } = renderHook(() => useShadowRootElements(['h1']));
 
       expect(result.current).toHaveLength(1);
+    });
+
+    it('should update elements if shadow root changes', async () => {
+      const { result, rerender } = renderHook(() =>
+        useShadowRootElements(['h1']),
+      );
+
+      act(() => {
+        shadowRoot.innerHTML = '<div><h1>Updated Shadow DOM Mock</h1></div>';
+        rerender();
+      });
+
+      await waitFor(() => {
+        expect(result.current[0].textContent).toBe('Updated Shadow DOM Mock');
+      });
+    });
+
+    describe('mutation observer', () => {
+      const observer: jest.Mocked<MutationObserver> = {
+        observe: jest.fn(),
+        disconnect: jest.fn(),
+        takeRecords: jest.fn(),
+      };
+
+      beforeEach(() => {
+        jest
+          .spyOn(window, 'MutationObserver')
+          .mockImplementation(() => observer);
+      });
+
+      afterEach(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should observe shadow root changes', async () => {
+        renderHook(() => useShadowRootElements(['h1']));
+        expect(observer.observe).toHaveBeenCalledWith(shadowRoot, {
+          childList: true,
+          attributes: true,
+          characterData: true,
+          subtree: true,
+        });
+      });
+
+      it('should disconnect observer on unmount', async () => {
+        const { unmount } = renderHook(() => useShadowRootElements(['h1']));
+        unmount();
+        expect(observer.disconnect).toHaveBeenCalled();
+      });
     });
   });
 

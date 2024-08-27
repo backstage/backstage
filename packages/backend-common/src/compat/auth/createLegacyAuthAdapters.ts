@@ -23,8 +23,6 @@ import {
   BackstageUserInfo,
   BackstageUserPrincipal,
   HttpAuthService,
-  IdentityService,
-  TokenManagerService,
   UserInfoService,
 } from '@backstage/backend-plugin-api';
 import { AuthenticationError, NotAllowedError } from '@backstage/errors';
@@ -44,11 +42,12 @@ import {
 import { decodeJwt } from 'jose';
 import { TokenManager, PluginEndpointDiscovery } from '../../deprecated';
 import { JsonObject } from '@backstage/types';
+import { LegacyIdentityService } from '../legacy';
 
 class AuthCompat implements AuthService {
   constructor(
-    private readonly identity: IdentityService,
-    private readonly tokenManager?: TokenManagerService,
+    private readonly identity: LegacyIdentityService,
+    private readonly tokenManager?: TokenManager,
   ) {}
 
   isPrincipal<TType extends keyof BackstagePrincipalTypes>(
@@ -299,7 +298,7 @@ export function createLegacyAuthAdapters<
     auth?: AuthService;
     httpAuth?: HttpAuthService;
     userInfo?: UserInfoService;
-    identity?: IdentityService;
+    identity?: LegacyIdentityService;
     tokenManager?: TokenManager;
     discovery: PluginEndpointDiscovery;
   },

@@ -1,5 +1,115 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.3.0
+
+### Minor Changes
+
+- fc24d9e: Stop using `@backstage/backend-tasks` as it will be deleted in near future.
+
+### Patch Changes
+
+- 389f5a4: Update deprecated url-reader-related imports.
+- b63d378: Update internal imports
+- Updated dependencies
+  - @backstage/backend-defaults@0.4.2
+  - @backstage/backend-app-api@0.9.0
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/backend-common@0.24.0
+  - @backstage/plugin-catalog-backend@1.25.0
+  - @backstage/plugin-search-backend-node@1.3.0
+  - @backstage/plugin-scaffolder-node@0.4.9
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/config-loader@1.9.0
+  - @backstage/plugin-auth-node@0.5.0
+  - @backstage/plugin-permission-node@0.8.1
+  - @backstage/plugin-search-common@1.2.14
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.7
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.23
+  - @backstage/plugin-events-backend@0.3.10
+  - @backstage/plugin-events-node@0.3.9
+
+## 0.2.16-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.3
+  - @backstage/backend-common@0.23.4-next.3
+  - @backstage/backend-app-api@0.8.1-next.3
+  - @backstage/backend-tasks@0.5.28-next.3
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.7
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.9.0-next.2
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.23-next.3
+  - @backstage/plugin-auth-node@0.5.0-next.3
+  - @backstage/plugin-catalog-backend@1.24.1-next.3
+  - @backstage/plugin-events-backend@0.3.10-next.3
+  - @backstage/plugin-events-node@0.3.9-next.3
+  - @backstage/plugin-permission-common@0.8.1-next.1
+  - @backstage/plugin-permission-node@0.8.1-next.3
+  - @backstage/plugin-scaffolder-node@0.4.9-next.3
+  - @backstage/plugin-search-backend-node@1.2.28-next.3
+  - @backstage/plugin-search-common@1.2.14-next.1
+
+## 0.2.16-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.2
+  - @backstage/backend-app-api@0.8.1-next.2
+  - @backstage/plugin-scaffolder-node@0.4.9-next.2
+  - @backstage/plugin-permission-common@0.8.1-next.1
+  - @backstage/backend-common@0.23.4-next.2
+  - @backstage/plugin-catalog-backend@1.24.1-next.2
+  - @backstage/config-loader@1.9.0-next.2
+  - @backstage/plugin-auth-node@0.5.0-next.2
+  - @backstage/plugin-permission-node@0.8.1-next.2
+  - @backstage/plugin-search-backend-node@1.2.28-next.2
+  - @backstage/plugin-search-common@1.2.14-next.1
+  - @backstage/backend-tasks@0.5.28-next.2
+  - @backstage/plugin-app-node@0.1.23-next.2
+  - @backstage/plugin-events-backend@0.3.10-next.2
+  - @backstage/plugin-events-node@0.3.9-next.2
+  - @backstage/cli-node@0.2.7
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.2.16-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.9.0-next.1
+  - @backstage/plugin-permission-common@0.8.1-next.0
+  - @backstage/plugin-catalog-backend@1.24.1-next.1
+  - @backstage/plugin-permission-node@0.8.1-next.1
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/backend-app-api@0.8.1-next.1
+  - @backstage/backend-common@0.23.4-next.1
+  - @backstage/plugin-app-node@0.1.23-next.1
+  - @backstage/plugin-search-backend-node@1.2.28-next.1
+  - @backstage/plugin-search-common@1.2.14-next.0
+  - @backstage/backend-tasks@0.5.28-next.1
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.7
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.18-next.1
+  - @backstage/plugin-events-backend@0.3.10-next.1
+  - @backstage/plugin-events-node@0.3.9-next.1
+  - @backstage/plugin-scaffolder-node@0.4.9-next.1
+
 ## 0.2.16-next.0
 
 ### Patch Changes

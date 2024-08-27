@@ -18,11 +18,9 @@ import {
   coreServices,
   createBackendModule,
   createExtensionPoint,
+  SchedulerServiceTaskScheduleDefinition,
+  readSchedulerServiceTaskScheduleDefinitionFromConfig,
 } from '@backstage/backend-plugin-api';
-import {
-  readTaskScheduleDefinitionFromConfig,
-  TaskScheduleDefinition,
-} from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import {
   GithubMultiOrgEntityProvider,
@@ -134,7 +132,7 @@ function readDefinitionsFromConfig(rootConfig: Config): Array<{
   id: string;
   githubUrl: string;
   orgs?: string[];
-  schedule: TaskScheduleDefinition;
+  schedule: SchedulerServiceTaskScheduleDefinition;
 }> {
   const baseKey = 'catalog.providers.githubOrg';
   const baseConfig = rootConfig.getOptional(baseKey);
@@ -150,6 +148,8 @@ function readDefinitionsFromConfig(rootConfig: Config): Array<{
     id: c.getString('id'),
     githubUrl: c.getString('githubUrl'),
     orgs: c.getOptionalStringArray('orgs'),
-    schedule: readTaskScheduleDefinitionFromConfig(c.getConfig('schedule')),
+    schedule: readSchedulerServiceTaskScheduleDefinitionFromConfig(
+      c.getConfig('schedule'),
+    ),
   }));
 }

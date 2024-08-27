@@ -14,32 +14,53 @@
  * limitations under the License.
  */
 
-import { AnyExtensionDataMap } from './createExtension';
+import { ExtensionDataRef } from './createExtensionDataRef';
 
 /** @public */
 export interface ExtensionInput<
-  TExtensionData extends AnyExtensionDataMap,
+  UExtensionData extends ExtensionDataRef<unknown, string, { optional?: true }>,
   TConfig extends { singleton: boolean; optional: boolean },
 > {
   $$type: '@backstage/ExtensionInput';
-  extensionData: TExtensionData;
+  extensionData: Array<UExtensionData>;
   config: TConfig;
+  replaces?: Array<{ id: string; input: string }>;
 }
 
 /** @public */
 export function createExtensionInput<
-  TExtensionData extends AnyExtensionDataMap,
+  UExtensionData extends ExtensionDataRef<unknown, string, { optional?: true }>,
   TConfig extends { singleton?: boolean; optional?: boolean },
 >(
-  extensionData: TExtensionData,
-  config?: TConfig,
+  extensionData: Array<UExtensionData>,
+  config?: TConfig & { replaces?: Array<{ id: string; input: string }> },
 ): ExtensionInput<
-  TExtensionData,
+  UExtensionData,
   {
     singleton: TConfig['singleton'] extends true ? true : false;
     optional: TConfig['optional'] extends true ? true : false;
   }
 > {
+  if (process.env.NODE_ENV !== 'production') {
+    if (Array.isArray(extensionData)) {
+      const seen = new Set();
+      const duplicates = [];
+      for (const dataRef of extensionData) {
+        if (seen.has(dataRef.id)) {
+          duplicates.push(dataRef.id);
+        } else {
+          seen.add(dataRef.id);
+        }
+      }
+      if (duplicates.length > 0) {
+        throw new Error(
+          `ExtensionInput may not have duplicate data refs: '${duplicates.join(
+            "', '",
+          )}'`,
+        );
+      }
+    }
+  }
   return {
     $$type: '@backstage/ExtensionInput',
     extensionData,
@@ -51,5 +72,12 @@ export function createExtensionInput<
         ? true
         : false,
     },
-  };
+    replaces: config?.replaces,
+  } as ExtensionInput<
+    UExtensionData,
+    {
+      singleton: TConfig['singleton'] extends true ? true : false;
+      optional: TConfig['optional'] extends true ? true : false;
+    }
+  >;
 }

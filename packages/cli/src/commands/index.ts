@@ -254,6 +254,10 @@ export function registerCommands(program: Command) {
       '--baseVersion <version>',
       'The version to use for any new packages (default: 0.1.0)',
     )
+    .option(
+      '--license <license>',
+      'The license to use for any new packages (default: Apache-2.0)',
+    )
     .option('--no-private', 'Do not mark new packages as private')
     .action(lazy(() => import('./new/new').then(m => m.default)));
 

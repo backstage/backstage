@@ -75,7 +75,7 @@ import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 import { KubernetesProxy } from './KubernetesProxy';
 
 /**
- *
+ * @deprecated Please migrate to the new backend system as this will be removed in the future.
  * @public
  */
 export interface KubernetesEnvironment {
@@ -90,7 +90,7 @@ export interface KubernetesEnvironment {
 
 /**
  * The return type of the `KubernetesBuilder.build` method
- *
+ * @deprecated Please migrate to the new backend system as this will be removed in the future.
  * @public
  */
 export type KubernetesBuilderReturn = Promise<{
@@ -105,9 +105,9 @@ export type KubernetesBuilderReturn = Promise<{
 }>;
 
 /**
- *
+ * @deprecated Please migrate to the new backend system as this will be removed in the future.
  * @public
- */
+ * */
 export class KubernetesBuilder {
   private clusterSupplier?: KubernetesClustersSupplier;
   private defaultClusterRefreshInterval: Duration = Duration.fromObject({

@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  PluginEndpointDiscovery,
-  TokenManager,
-} from '@backstage/backend-common';
+import { TokenManager } from '@backstage/backend-common';
 import {
   Entity,
   parseEntityRef,
@@ -37,6 +34,8 @@ import {
   CATALOG_FILTER_EXISTS,
 } from '@backstage/catalog-client';
 import { TechDocsDocument } from '@backstage/plugin-techdocs-node';
+import { TECHDOCS_ANNOTATION } from '@backstage/plugin-techdocs-common';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 
 interface MkSearchIndexDoc {
   title: string;
@@ -50,7 +49,7 @@ interface MkSearchIndexDoc {
  * @public
  */
 export type TechDocsCollatorOptions = {
-  discovery: PluginEndpointDiscovery;
+  discovery: DiscoveryService;
   logger: Logger;
   tokenManager: TokenManager;
   locationTemplate?: string;
@@ -107,7 +106,7 @@ export class DefaultTechDocsCollator {
     ).getEntities(
       {
         filter: {
-          'metadata.annotations.backstage.io/techdocs-ref':
+          [`metadata.annotations.${TECHDOCS_ANNOTATION}`]:
             CATALOG_FILTER_EXISTS,
         },
         fields: [

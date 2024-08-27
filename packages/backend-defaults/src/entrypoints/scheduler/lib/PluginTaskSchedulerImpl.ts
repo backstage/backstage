@@ -155,6 +155,9 @@ export function parseDuration(
   if (typeof frequency === 'object' && 'cron' in frequency) {
     return frequency.cron;
   }
+  if (typeof frequency === 'object' && 'trigger' in frequency) {
+    return frequency.trigger;
+  }
 
   const parsed = Duration.isDuration(frequency)
     ? frequency

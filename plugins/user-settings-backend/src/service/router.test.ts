@@ -14,28 +14,22 @@
  * limitations under the License.
  */
 
-import {
-  BackstageIdentityResponse,
-  IdentityApi,
-} from '@backstage/plugin-auth-node';
 import express from 'express';
 import request from 'supertest';
 import { UserSettingsStore } from '../database/UserSettingsStore';
 import { createRouterInternal } from './router';
 import { SignalsService } from '@backstage/plugin-signals-node';
+import {
+  mockCredentials,
+  mockServices,
+  mockErrorHandler,
+} from '@backstage/backend-test-utils';
 
 describe('createRouter', () => {
   const userSettingsStore: jest.Mocked<UserSettingsStore> = {
     get: jest.fn(),
     set: jest.fn(),
     delete: jest.fn(),
-  };
-  const getIdentityMock = jest.fn<
-    Promise<BackstageIdentityResponse | undefined>,
-    any
-  >();
-  const identityApi: jest.Mocked<Partial<IdentityApi>> = {
-    getIdentity: getIdentityMock,
   };
   const signalService: jest.Mocked<SignalsService> = {
     publish: jest.fn(),
@@ -46,51 +40,44 @@ describe('createRouter', () => {
   beforeEach(async () => {
     const router = await createRouterInternal({
       userSettingsStore,
-      identity: identityApi as IdentityApi,
+      httpAuth: mockServices.httpAuth(),
       signals: signalService as SignalsService,
     });
 
-    app = express().use(router);
+    app = express().use(router).use(mockErrorHandler());
   });
 
   afterEach(() => {
     jest.resetAllMocks();
   });
 
+  const mockUserRef = mockCredentials.user().principal.userEntityRef;
+
   describe('GET /buckets/:bucket/keys/:key', () => {
     it('returns ok', async () => {
       const setting = { bucket: 'my-bucket', key: 'my-key', value: 'a' };
-      getIdentityMock.mockResolvedValue({
-        token: 'a',
-        identity: {
-          type: 'user',
-          ownershipEntityRefs: [],
-          userEntityRef: 'user-1',
-        },
-      });
 
       userSettingsStore.get.mockResolvedValue(setting);
 
-      const responses = await request(app)
-        .get('/buckets/my-bucket/keys/my-key')
-        .set('Authorization', 'Bearer foo');
+      const responses = await request(app).get(
+        '/buckets/my-bucket/keys/my-key',
+      );
 
       expect(responses.status).toEqual(200);
       expect(responses.body).toEqual(setting);
 
-      expect(getIdentityMock).toHaveBeenCalledTimes(1);
       expect(userSettingsStore.get).toHaveBeenCalledTimes(1);
       expect(userSettingsStore.get).toHaveBeenCalledWith({
-        userEntityRef: 'user-1',
+        userEntityRef: mockUserRef,
         bucket: 'my-bucket',
         key: 'my-key',
       });
     });
 
     it('returns an error if the Authorization header is missing', async () => {
-      const responses = await request(app).get(
-        '/buckets/my-bucket/keys/my-key',
-      );
+      const responses = await request(app)
+        .get('/buckets/my-bucket/keys/my-key')
+        .set('Authorization', mockCredentials.none.header());
 
       expect(responses.status).toEqual(401);
       expect(userSettingsStore.get).not.toHaveBeenCalled();
@@ -99,41 +86,31 @@ describe('createRouter', () => {
 
   describe('DELETE /buckets/:bucket/keys/:key', () => {
     it('returns ok', async () => {
-      getIdentityMock.mockResolvedValue({
-        token: 'a',
-        identity: {
-          type: 'user',
-          ownershipEntityRefs: [],
-          userEntityRef: 'user-1',
-        },
-      });
-
       userSettingsStore.delete.mockResolvedValue();
 
-      const responses = await request(app)
-        .delete('/buckets/my-bucket/keys/my-key')
-        .set('Authorization', 'Bearer foo');
+      const responses = await request(app).delete(
+        '/buckets/my-bucket/keys/my-key',
+      );
 
       expect(responses.status).toEqual(204);
 
-      expect(getIdentityMock).toHaveBeenCalledTimes(1);
       expect(userSettingsStore.delete).toHaveBeenCalledTimes(1);
       expect(userSettingsStore.delete).toHaveBeenCalledWith({
-        userEntityRef: 'user-1',
+        userEntityRef: mockUserRef,
         bucket: 'my-bucket',
         key: 'my-key',
       });
       expect(signalService.publish).toHaveBeenCalledWith({
-        recipients: { type: 'user', entityRef: 'user-1' },
+        recipients: { type: 'user', entityRef: mockUserRef },
         channel: `user-settings`,
         message: { type: 'key-deleted', key: 'my-key' },
       });
     });
 
     it('returns an error if the Authorization header is missing', async () => {
-      const responses = await request(app).delete(
-        '/buckets/my-bucket/keys/my-key',
-      );
+      const responses = await request(app)
+        .delete('/buckets/my-bucket/keys/my-key')
+        .set('Authorization', mockCredentials.none.header());
 
       expect(responses.status).toEqual(401);
       expect(userSettingsStore.delete).not.toHaveBeenCalled();
@@ -143,72 +120,51 @@ describe('createRouter', () => {
   describe('PUT /buckets/:bucket/keys/:key', () => {
     it('returns ok', async () => {
       const setting = { bucket: 'my-bucket', key: 'my-key', value: 'a' };
-      getIdentityMock.mockResolvedValue({
-        token: 'a',
-        identity: {
-          type: 'user',
-          ownershipEntityRefs: [],
-          userEntityRef: 'user-1',
-        },
-      });
 
       userSettingsStore.set.mockResolvedValue();
       userSettingsStore.get.mockResolvedValue(setting);
 
       const responses = await request(app)
         .put('/buckets/my-bucket/keys/my-key')
-        .set('Authorization', 'Bearer foo')
         .send({ value: 'a' });
 
       expect(responses.status).toEqual(200);
       expect(responses.body).toEqual(setting);
 
-      expect(getIdentityMock).toHaveBeenCalledTimes(1);
       expect(userSettingsStore.set).toHaveBeenCalledTimes(1);
       expect(userSettingsStore.set).toHaveBeenCalledWith({
-        userEntityRef: 'user-1',
+        userEntityRef: mockUserRef,
         bucket: 'my-bucket',
         key: 'my-key',
         value: 'a',
       });
       expect(userSettingsStore.get).toHaveBeenCalledTimes(1);
       expect(userSettingsStore.get).toHaveBeenCalledWith({
-        userEntityRef: 'user-1',
+        userEntityRef: mockUserRef,
         bucket: 'my-bucket',
         key: 'my-key',
       });
       expect(signalService.publish).toHaveBeenCalledWith({
-        recipients: { type: 'user', entityRef: 'user-1' },
+        recipients: { type: 'user', entityRef: mockUserRef },
         channel: `user-settings`,
         message: { type: 'key-changed', key: 'my-key' },
       });
     });
 
     it('returns an error if the value is not given', async () => {
-      getIdentityMock.mockResolvedValue({
-        token: 'a',
-        identity: {
-          type: 'user',
-          ownershipEntityRefs: [],
-          userEntityRef: 'user-1',
-        },
-      });
-
       const responses = await request(app)
         .put('/buckets/my-bucket/keys/my-key')
-        .set('Authorization', 'Bearer foo')
         .send({});
 
       expect(responses.status).toEqual(400);
 
-      expect(getIdentityMock).toHaveBeenCalledTimes(1);
       expect(userSettingsStore.set).not.toHaveBeenCalled();
     });
 
     it('returns an error if the Authorization header is missing', async () => {
-      const responses = await request(app).get(
-        '/buckets/my-bucket/keys/my-key',
-      );
+      const responses = await request(app)
+        .get('/buckets/my-bucket/keys/my-key')
+        .set('Authorization', mockCredentials.none.header());
 
       expect(responses.status).toEqual(401);
       expect(userSettingsStore.get).not.toHaveBeenCalled();

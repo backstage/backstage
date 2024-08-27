@@ -13,10 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  PluginEndpointDiscovery,
-  loggerToWinstonLogger,
-} from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { Publisher } from './publish';
 import { LocalPublish } from './local';
@@ -26,9 +22,10 @@ import { AzureBlobStoragePublish } from './azureBlobStorage';
 import { OpenStackSwiftPublish } from './openStackSwift';
 import { mockServices } from '@backstage/backend-test-utils';
 import { PublisherBase } from './types';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 
-const logger = loggerToWinstonLogger(mockServices.logger.mock());
-const discovery: jest.Mocked<PluginEndpointDiscovery> = {
+const logger = mockServices.logger.mock();
+const discovery: jest.Mocked<DiscoveryService> = {
   getBaseUrl: jest.fn().mockResolvedValueOnce('http://localhost:7007'),
   getExternalBaseUrl: jest.fn(),
 };

@@ -20,8 +20,7 @@ import zodToJsonSchema from 'zod-to-json-schema';
 import { PortableSchema } from './types';
 
 /**
- * @public
- * @deprecated Use the `config.schema` option of `createExtension` instead, or use `createExtensionBlueprint`.
+ * @internal
  */
 export function createSchemaFromZod<TOutput, TInput>(
   schemaCreator: (zImpl: typeof z) => ZodSchema<TOutput, ZodTypeDef, TInput>,

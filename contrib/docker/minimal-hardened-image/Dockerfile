@@ -9,53 +9,79 @@
 #
 # Once the commands have been run, you can build the image using `yarn docker-build`
 
-FROM cgr.dev/chainguard/wolfi-base:latest
+# syntax = docker/dockerfile:1.4
 
-ENV NODE_VERSION 18=~18.19
-ENV PYTHON_VERSION 3.12=~3.12
+# Build Python environment in a separate builder stage
+FROM cgr.dev/chainguard/python:latest-dev as python-builder
 
-RUN apk add nodejs-$NODE_VERSION yarn
+ENV PATH=/venv/bin:$PATH
 
-# Install sqlite3 dependencies. You can skip this if you don't use sqlite3 in the image,
-# in which case you should also move better-sqlite3 to "devDependencies" in package.json.
-# Additionally, we install dependencies for `techdocs.generator.runIn: local`.
-# https://backstage.io/docs/features/techdocs/getting-started#disabling-docker-in-docker-situation-optional
-RUN --mount=type=cache,target=/var/cache/apk,sharing=locked \
-    --mount=type=cache,target=/var/lib/apk,sharing=locked \
+RUN --mount=type=cache,target=/home/nonroot/.cache/pip,uid=65532,gid=65532 \
+    python3 -m venv /home/nonroot/venv && \
+    /home/nonroot/venv/bin/pip install mkdocs-techdocs-core==1.3.3
+
+# Build Node environment in a separate builder stage
+FROM cgr.dev/chainguard/wolfi-base:latest as node-builder
+
+ENV NODE_VERSION="20=~20.11"
+ENV NODE_ENV=production
+
+RUN --mount=type=cache,target=/var/cache/apk,sharing=locked,uid=65532,gid=65532 \
+    --mount=type=cache,target=/var/lib/apk,sharing=locked,uid=65532,gid=65532 \
     apk update && \
-    apk add sqlite-dev python-$PYTHON_VERSION py3-pip python-3-dev py3-setuptools build-base gcc libffi-dev glibc-dev openssl-dev brotli-dev c-ares-dev nghttp2-dev icu-dev zlib-dev gcc-12 libuv-dev && \
-    yarn config set python /usr/bin/python3
+    apk add nodejs-$NODE_VERSION yarn \
+    # Install isolate-vm dependencies, these are needed by the @backstage/plugin-scaffolder-backend.
+    openssl-dev brotli-dev c-ares-dev nghttp2-dev icu-dev zlib-dev gcc-12 libuv-dev build-base
 
-# Set up a virtual environment for mkdocs-techdocs-core.
-ENV VIRTUAL_ENV=/opt/venv
-RUN python3 -m venv $VIRTUAL_ENV
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
-
-RUN pip3 install mkdocs-techdocs-core==1.3.3
-
-# From here on we use the least-privileged `node` user to run the backend.
 WORKDIR /app
-RUN chown nonroot:nonroot /app
+RUN chown -R nonroot:nonroot /app
+
+RUN mkdir -p /home/nonroot/.yarn/berry && chown -R 65532:65532 /home/nonroot/.yarn/berry
+
 USER nonroot
 
-# This switches many Node.js dependencies to production mode.
-ENV NODE_ENV production
+COPY --chown=65532:65532 .yarn ./.yarn
+COPY --chown=65532:65532 .yarnrc.yml ./
 
-# Copy over Yarn 3 configuration, release, and plugins
-COPY --chown=nonroot:nonroot .yarn ./.yarn
-COPY --chown=nonroot:nonroot .yarnrc.yml ./
-
-# Copy repo skeleton first, to avoid unnecessary docker cache invalidation.
-# The skeleton contains the package.json of each package in the monorepo,
-# and along with yarn.lock and the root package.json, that's enough to run yarn install.
-COPY --chown=nonroot:nonroot yarn.lock package.json packages/backend/dist/skeleton.tar.gz ./
+COPY --chown=65532:65532 yarn.lock package.json packages/backend/dist/skeleton.tar.gz ./
 RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
 
-RUN --mount=type=cache,target=/home/node/.yarn/berry/cache,sharing=locked,uid=1000,gid=1000 \
-    yarn workspaces focus --all --production
+RUN --mount=type=cache,target=/home/nonroot/.yarn/berry/cache,sharing=locked,uid=65532,gid=65532 \
+    yarn workspaces focus --all --production && yarn cache clean --all
 
-# Then copy the rest of the backend bundle, along with any other files we might want.
-COPY --chown=nonroot:nonroot packages/backend/dist/bundle.tar.gz app-config*.yaml ./
-RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
+# Final stage to build the application image
+FROM cgr.dev/chainguard/wolfi-base:latest
 
+ENV PYTHON_VERSION="3.12=~3.12"
+ENV NODE_VERSION="20=~20.14"
+ENV NODE_ENV=production
+
+RUN --mount=type=cache,target=/var/cache/apk,sharing=locked,uid=65532,gid=65532 \
+    --mount=type=cache,target=/var/lib/apk,sharing=locked,uid=65532,gid=65532 \
+    apk update && \
+    apk add \
+    # add node for backstage
+    nodejs-$NODE_VERSION \
+    # add python for backstage techdocs
+    python-$PYTHON_VERSION \
+    # add tini for init process
+    tini
+
+WORKDIR /app
+
+COPY package.json app-config.yaml ./
+ADD packages/backend/dist/skeleton.tar.gz packages/backend/dist/bundle.tar.gz ./
+
+RUN chown -R 65532:65532 /app
+RUN chown -R 65532:65532 /tmp
+USER 65532:65532
+
+COPY --from=node-builder --chown=65532:65532 /app/node_modules ./node_modules
+COPY --from=python-builder --chown=65532:65532 /home/nonroot/venv /home/nonroot/venv
+ENV PATH=/home/nonroot/venv/bin:$PATH
+
+ENV NODE_OPTIONS="--no-node-snapshot"
+ENV GIT_PYTHON_REFRESH="quiet"
+
+ENTRYPOINT ["tini", "--"]
 CMD ["node", "packages/backend", "--config", "app-config.yaml"]

@@ -26,6 +26,7 @@ import { PassThrough } from 'stream';
 import { generateExampleOutput, isTruthy } from './helper';
 import { validate as validateJsonSchema } from 'jsonschema';
 import { TemplateActionRegistry } from '../actions';
+import { metrics } from '@opentelemetry/api';
 import {
   SecureTemplater,
   SecureTemplateRenderer,
@@ -508,11 +509,11 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
       const output = this.render(task.spec.output, context, renderTemplate);
       await taskTrack.markSuccessful();
+      await task.cleanWorkspace?.();
 
       return { output };
     } finally {
       if (workspacePath) {
-        await task.cleanWorkspace?.();
         await fs.remove(workspacePath);
       }
     }
@@ -520,25 +521,45 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 }
 
 function scaffoldingTracker() {
-  const taskCount = createCounterMetric({
+  // prom-client metrics are deprecated in favour of OpenTelemetry metrics.
+  const promTaskCount = createCounterMetric({
     name: 'scaffolder_task_count',
     help: 'Count of task runs',
     labelNames: ['template', 'user', 'result'],
   });
-  const taskDuration = createHistogramMetric({
+  const promTaskDuration = createHistogramMetric({
     name: 'scaffolder_task_duration',
     help: 'Duration of a task run',
     labelNames: ['template', 'result'],
   });
-  const stepCount = createCounterMetric({
+  const promtStepCount = createCounterMetric({
     name: 'scaffolder_step_count',
     help: 'Count of step runs',
     labelNames: ['template', 'step', 'result'],
   });
-  const stepDuration = createHistogramMetric({
+  const promStepDuration = createHistogramMetric({
     name: 'scaffolder_step_duration',
     help: 'Duration of a step runs',
     labelNames: ['template', 'step', 'result'],
+  });
+
+  const meter = metrics.getMeter('default');
+  const taskCount = meter.createCounter('scaffolder.task.count', {
+    description: 'Count of task runs',
+  });
+
+  const taskDuration = meter.createHistogram('scaffolder.task.duration', {
+    description: 'Duration of a task run',
+    unit: 'seconds',
+  });
+
+  const stepCount = meter.createCounter('scaffolder.step.count', {
+    description: 'Count of step runs',
+  });
+
+  const stepDuration = meter.createHistogram('scaffolder.step.duration', {
+    description: 'Duration of a step runs',
+    unit: 'seconds',
   });
 
   async function taskStart(task: TaskContext) {
@@ -546,9 +567,15 @@ function scaffoldingTracker() {
     const template = task.spec.templateInfo?.entityRef || '';
     const user = task.spec.user?.ref || '';
 
-    const taskTimer = taskDuration.startTimer({
+    const startTime = process.hrtime();
+    const taskTimer = promTaskDuration.startTimer({
       template,
     });
+
+    function endTime() {
+      const delta = process.hrtime(startTime);
+      return delta[0] + delta[1] / 1e9;
+    }
 
     async function skipDryRun(
       step: TaskStep,
@@ -561,12 +588,17 @@ function scaffoldingTracker() {
     }
 
     async function markSuccessful() {
-      taskCount.inc({
+      promTaskCount.inc({
         template,
         user,
         result: 'ok',
       });
       taskTimer({ result: 'ok' });
+
+      taskCount.add(1, { template, user, result: 'ok' });
+      taskDuration.record(endTime(), {
+        result: 'ok',
+      });
     }
 
     async function markFailed(step: TaskStep, err: Error) {
@@ -574,12 +606,17 @@ function scaffoldingTracker() {
         stepId: step.id,
         status: 'failed',
       });
-      taskCount.inc({
+      promTaskCount.inc({
         template,
         user,
         result: 'failed',
       });
       taskTimer({ result: 'failed' });
+
+      taskCount.add(1, { template, user, result: 'failed' });
+      taskDuration.record(endTime(), {
+        result: 'failed',
+      });
     }
 
     async function markCancelled(step: TaskStep) {
@@ -587,12 +624,17 @@ function scaffoldingTracker() {
         stepId: step.id,
         status: 'cancelled',
       });
-      taskCount.inc({
+      promTaskCount.inc({
         template,
         user,
         result: 'cancelled',
       });
       taskTimer({ result: 'cancelled' });
+
+      taskCount.add(1, { template, user, result: 'cancelled' });
+      taskDuration.record(endTime(), {
+        result: 'cancelled',
+      });
     }
 
     return {
@@ -610,40 +652,61 @@ function scaffoldingTracker() {
     });
     const template = task.spec.templateInfo?.entityRef || '';
 
-    const stepTimer = stepDuration.startTimer({
+    const startTime = process.hrtime();
+    const stepTimer = promStepDuration.startTimer({
       template,
       step: step.name,
     });
+
+    function endTime() {
+      const delta = process.hrtime(startTime);
+      return delta[0] + delta[1] / 1e9;
+    }
 
     async function markSuccessful() {
       await task.emitLog(`Finished step ${step.name}`, {
         stepId: step.id,
         status: 'completed',
       });
-      stepCount.inc({
+      promtStepCount.inc({
         template,
         step: step.name,
         result: 'ok',
       });
       stepTimer({ result: 'ok' });
+
+      stepCount.add(1, { template, step: step.name, result: 'ok' });
+      stepDuration.record(endTime(), {
+        result: 'ok',
+      });
     }
 
     async function markCancelled() {
-      stepCount.inc({
+      promtStepCount.inc({
         template,
         step: step.name,
         result: 'cancelled',
       });
       stepTimer({ result: 'cancelled' });
+
+      stepCount.add(1, { template, step: step.name, result: 'cancelled' });
+      stepDuration.record(endTime(), {
+        result: 'cancelled',
+      });
     }
 
     async function markFailed() {
-      stepCount.inc({
+      promtStepCount.inc({
         template,
         step: step.name,
         result: 'failed',
       });
       stepTimer({ result: 'failed' });
+
+      stepCount.add(1, { template, step: step.name, result: 'failed' });
+      stepDuration.record(endTime(), {
+        result: 'failed',
+      });
     }
 
     async function skipFalsy() {
@@ -652,6 +715,11 @@ function scaffoldingTracker() {
         { stepId: step.id, status: 'skipped' },
       );
       stepTimer({ result: 'skipped' });
+
+      stepCount.add(1, { template, step: step.name, result: 'skipped' });
+      stepDuration.record(endTime(), {
+        result: 'skipped',
+      });
     }
 
     return {

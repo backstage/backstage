@@ -33,7 +33,7 @@ import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common/
 import { UnregisterEntity, UnregisterEntityOptions } from './UnregisterEntity';
 import { useApi, alertApiRef } from '@backstage/core-plugin-api';
 import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
-import { catalogTranslationRef } from '../../translation';
+import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
