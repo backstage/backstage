@@ -128,7 +128,7 @@ export function createFrontendPlugin<
   return {
     $$type: '@backstage/FrontendPlugin',
     version: 'v1',
-    id: options.id, // TODO: Backwards compat to be able to install in older apps, remove after 1.31
+    id: options.id,
     routes: options.routes ?? ({} as TRoutes),
     externalRoutes: options.externalRoutes ?? ({} as TExternalRoutes),
     featureFlags: options.featureFlags ?? [],

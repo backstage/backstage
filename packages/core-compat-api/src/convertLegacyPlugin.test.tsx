@@ -40,7 +40,6 @@ describe('convertLegacyPlugin', () => {
         "featureFlags": [],
         "getExtension": [Function],
         "id": "test",
-        "pluginId": "test",
         "routes": {},
         "toString": [Function],
         "version": "v1",
