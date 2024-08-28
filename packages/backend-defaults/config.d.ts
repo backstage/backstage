@@ -373,205 +373,205 @@ export interface Config {
           }
       >;
     };
-  };
 
-  /**
-   * Options used by the default discovery service.
-   */
-  discovery?: {
     /**
-     * A list of target baseUrls and the associated plugins.
+     * Options used by the default discovery service.
      */
-    endpoints: Array<{
+    discovery?: {
       /**
-       * The target base URL to use for the plugin.
+       * A list of target baseUrls and the associated plugins.
+       */
+      endpoints: Array<{
+        /**
+         * The target base URL to use for the plugin.
+         *
+         * Can be either a string or an object with internal and external keys.
+         * Targets with `{{pluginId}}` or `{{ pluginId }} in the URL will be replaced with the plugin ID.
+         */
+        target: string | { internal: string; external: string };
+        /**
+         * Array of plugins which use the target base URL.
+         */
+        plugins: string[];
+      }>;
+    };
+
+    /** Database connection configuration, select base database type using the `client` field */
+    database: {
+      /** Default database client to use */
+      client: 'better-sqlite3' | 'sqlite3' | 'pg';
+      /**
+       * Base database connection string, or object with individual connection properties
+       * @visibility secret
+       */
+      connection:
+        | string
+        | {
+            /**
+             * Password that belongs to the client User
+             * @visibility secret
+             */
+            password?: string;
+            /**
+             * Other connection settings
+             */
+            [key: string]: unknown;
+          };
+      /** Database name prefix override */
+      prefix?: string;
+      /**
+       * Whether to ensure the given database exists by creating it if it does not.
+       * Defaults to true if unspecified.
+       */
+      ensureExists?: boolean;
+      /**
+       * Whether to ensure the given database schema exists by creating it if it does not.
+       * Defaults to false if unspecified.
        *
-       * Can be either a string or an object with internal and external keys.
-       * Targets with `{{pluginId}}` or `{{ pluginId }} in the URL will be replaced with the plugin ID.
+       * NOTE: Currently only supported by the `pg` client when pluginDivisionMode: schema
        */
-      target: string | { internal: string; external: string };
+      ensureSchemaExists?: boolean;
       /**
-       * Array of plugins which use the target base URL.
+       * How plugins databases are managed/divided in the provided database instance.
+       *
+       * `database` -> Plugins are each given their own database to manage their schemas/tables.
+       *
+       * `schema` -> Plugins will be given their own schema (in the specified/default database)
+       *             to manage their tables.
+       *
+       * NOTE: Currently only supported by the `pg` client.
+       *
+       * @default database
        */
-      plugins: string[];
-    }>;
-  };
-
-  /** Database connection configuration, select base database type using the `client` field */
-  database: {
-    /** Default database client to use */
-    client: 'better-sqlite3' | 'sqlite3' | 'pg';
-    /**
-     * Base database connection string, or object with individual connection properties
-     * @visibility secret
-     */
-    connection:
-      | string
-      | {
+      pluginDivisionMode?: 'database' | 'schema';
+      /** Configures the ownership of newly created schemas in pg databases. */
+      role?: string;
+      /**
+       * Arbitrary config object to pass to knex when initializing
+       * (https://knexjs.org/#Installation-client). Most notable is the debug
+       * and asyncStackTraces booleans
+       */
+      knexConfig?: object;
+      /** Skip running database migrations. */
+      skipMigrations?: boolean;
+      /** Plugin specific database configuration and client override */
+      plugin?: {
+        [pluginId: string]: {
+          /** Database client override */
+          client?: 'better-sqlite3' | 'sqlite3' | 'pg';
           /**
-           * Password that belongs to the client User
+           * Database connection string or Knex object override
            * @visibility secret
            */
-          password?: string;
+          connection?: string | object;
           /**
-           * Other connection settings
+           * Whether to ensure the given database exists by creating it if it does not.
+           * Defaults to base config if unspecified.
            */
-          [key: string]: unknown;
+          ensureExists?: boolean;
+          /**
+           * Whether to ensure the given database schema exists by creating it if it does not.
+           * Defaults to false if unspecified.
+           *
+           * NOTE: Currently only supported by the `pg` client when pluginDivisionMode: schema
+           */
+          ensureSchemaExists?: boolean;
+          /**
+           * Arbitrary config object to pass to knex when initializing
+           * (https://knexjs.org/#Installation-client). Most notable is the
+           * debug and asyncStackTraces booleans.
+           *
+           * This is merged recursively into the base knexConfig
+           */
+          knexConfig?: object;
+          /** Configures the ownership of newly created schemas in pg databases. */
+          role?: string;
+          /** Skip running database migrations. */
+          skipMigrations?: boolean;
         };
-    /** Database name prefix override */
-    prefix?: string;
-    /**
-     * Whether to ensure the given database exists by creating it if it does not.
-     * Defaults to true if unspecified.
-     */
-    ensureExists?: boolean;
-    /**
-     * Whether to ensure the given database schema exists by creating it if it does not.
-     * Defaults to false if unspecified.
-     *
-     * NOTE: Currently only supported by the `pg` client when pluginDivisionMode: schema
-     */
-    ensureSchemaExists?: boolean;
-    /**
-     * How plugins databases are managed/divided in the provided database instance.
-     *
-     * `database` -> Plugins are each given their own database to manage their schemas/tables.
-     *
-     * `schema` -> Plugins will be given their own schema (in the specified/default database)
-     *             to manage their tables.
-     *
-     * NOTE: Currently only supported by the `pg` client.
-     *
-     * @default database
-     */
-    pluginDivisionMode?: 'database' | 'schema';
-    /** Configures the ownership of newly created schemas in pg databases. */
-    role?: string;
-    /**
-     * Arbitrary config object to pass to knex when initializing
-     * (https://knexjs.org/#Installation-client). Most notable is the debug
-     * and asyncStackTraces booleans
-     */
-    knexConfig?: object;
-    /** Skip running database migrations. */
-    skipMigrations?: boolean;
-    /** Plugin specific database configuration and client override */
-    plugin?: {
-      [pluginId: string]: {
-        /** Database client override */
-        client?: 'better-sqlite3' | 'sqlite3' | 'pg';
-        /**
-         * Database connection string or Knex object override
-         * @visibility secret
-         */
-        connection?: string | object;
-        /**
-         * Whether to ensure the given database exists by creating it if it does not.
-         * Defaults to base config if unspecified.
-         */
-        ensureExists?: boolean;
-        /**
-         * Whether to ensure the given database schema exists by creating it if it does not.
-         * Defaults to false if unspecified.
-         *
-         * NOTE: Currently only supported by the `pg` client when pluginDivisionMode: schema
-         */
-        ensureSchemaExists?: boolean;
-        /**
-         * Arbitrary config object to pass to knex when initializing
-         * (https://knexjs.org/#Installation-client). Most notable is the
-         * debug and asyncStackTraces booleans.
-         *
-         * This is merged recursively into the base knexConfig
-         */
-        knexConfig?: object;
-        /** Configures the ownership of newly created schemas in pg databases. */
-        role?: string;
-        /** Skip running database migrations. */
-        skipMigrations?: boolean;
       };
     };
-  };
 
-  /** Cache connection configuration, select cache type using the `store` field */
-  cache?:
-    | {
-        store: 'memory';
-        /** An optional default TTL (in milliseconds). */
-        defaultTtl?: number | HumanDuration;
-      }
-    | {
-        store: 'redis';
-        /**
-         * A redis connection string in the form `redis://user:pass@host:port`.
-         * @visibility secret
-         */
-        connection: string;
-        /** An optional default TTL (in milliseconds). */
-        defaultTtl?: number | HumanDuration;
-        /**
-         * Whether or not [useRedisSets](https://github.com/jaredwray/keyv/tree/main/packages/redis#useredissets) should be configured to this redis cache.
-         * Defaults to true if unspecified.
-         */
-        useRedisSets?: boolean;
-      }
-    | {
-        store: 'memcache';
-        /**
-         * A memcache connection string in the form `user:pass@host:port`.
-         * @visibility secret
-         */
-        connection: string;
-        /** An optional default TTL (in milliseconds). */
-        defaultTtl?: number | HumanDuration;
-      };
+    /** Cache connection configuration, select cache type using the `store` field */
+    cache?:
+      | {
+          store: 'memory';
+          /** An optional default TTL (in milliseconds). */
+          defaultTtl?: number | HumanDuration;
+        }
+      | {
+          store: 'redis';
+          /**
+           * A redis connection string in the form `redis://user:pass@host:port`.
+           * @visibility secret
+           */
+          connection: string;
+          /** An optional default TTL (in milliseconds). */
+          defaultTtl?: number | HumanDuration;
+          /**
+           * Whether or not [useRedisSets](https://github.com/jaredwray/keyv/tree/main/packages/redis#useredissets) should be configured to this redis cache.
+           * Defaults to true if unspecified.
+           */
+          useRedisSets?: boolean;
+        }
+      | {
+          store: 'memcache';
+          /**
+           * A memcache connection string in the form `user:pass@host:port`.
+           * @visibility secret
+           */
+          connection: string;
+          /** An optional default TTL (in milliseconds). */
+          defaultTtl?: number | HumanDuration;
+        };
 
-  cors?: {
-    origin?: string | string[];
-    methods?: string | string[];
-    allowedHeaders?: string | string[];
-    exposedHeaders?: string | string[];
-    credentials?: boolean;
-    maxAge?: number;
-    preflightContinue?: boolean;
-    optionsSuccessStatus?: number;
-  };
+    cors?: {
+      origin?: string | string[];
+      methods?: string | string[];
+      allowedHeaders?: string | string[];
+      exposedHeaders?: string | string[];
+      credentials?: boolean;
+      maxAge?: number;
+      preflightContinue?: boolean;
+      optionsSuccessStatus?: number;
+    };
 
-  /**
-   * Content Security Policy options.
-   *
-   * The keys are the plain policy ID, e.g. "upgrade-insecure-requests". The
-   * values are on the format that the helmet library expects them, as an
-   * array of strings. There is also the special value false, which means to
-   * remove the default value that Backstage puts in place for that policy.
-   */
-  csp?: { [policyId: string]: string[] | false };
-
-  /**
-   * Configuration related to URL reading, used for example for reading catalog info
-   * files, scaffolder templates, and techdocs content.
-   */
-  reading?: {
     /**
-     * A list of targets to allow outgoing requests to. Users will be able to make
-     * requests on behalf of the backend to the targets that are allowed by this list.
+     * Content Security Policy options.
+     *
+     * The keys are the plain policy ID, e.g. "upgrade-insecure-requests". The
+     * values are on the format that the helmet library expects them, as an
+     * array of strings. There is also the special value false, which means to
+     * remove the default value that Backstage puts in place for that policy.
      */
-    allow?: Array<{
-      /**
-       * A host to allow outgoing requests to, being either a full host or
-       * a subdomain wildcard pattern with a leading `*`. For example `example.com`
-       * and `*.example.com` are valid values, `prod.*.example.com` is not.
-       * The host may also contain a port, for example `example.com:8080`.
-       */
-      host: string;
+    csp?: { [policyId: string]: string[] | false };
 
+    /**
+     * Configuration related to URL reading, used for example for reading catalog info
+     * files, scaffolder templates, and techdocs content.
+     */
+    reading?: {
       /**
-       * An optional list of paths. In case they are present only targets matching
-       * any of them will are allowed. You can use trailing slashes to make sure only
-       * subdirectories are allowed, for example `/mydir/` will allow targets with
-       * paths like `/mydir/a` but will block paths like `/mydir2`.
+       * A list of targets to allow outgoing requests to. Users will be able to make
+       * requests on behalf of the backend to the targets that are allowed by this list.
        */
-      paths?: string[];
-    }>;
+      allow?: Array<{
+        /**
+         * A host to allow outgoing requests to, being either a full host or
+         * a subdomain wildcard pattern with a leading `*`. For example `example.com`
+         * and `*.example.com` are valid values, `prod.*.example.com` is not.
+         * The host may also contain a port, for example `example.com:8080`.
+         */
+        host: string;
+
+        /**
+         * An optional list of paths. In case they are present only targets matching
+         * any of them will are allowed. You can use trailing slashes to make sure only
+         * subdirectories are allowed, for example `/mydir/` will allow targets with
+         * paths like `/mydir/a` but will block paths like `/mydir2`.
+         */
+        paths?: string[];
+      }>;
+    };
   };
 }
