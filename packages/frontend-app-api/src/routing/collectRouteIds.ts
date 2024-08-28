@@ -18,7 +18,6 @@ import {
   RouteRef,
   SubRouteRef,
   ExternalRouteRef,
-  FrontendFeature,
 } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
@@ -31,6 +30,7 @@ import { toInternalExternalRouteRef } from '../../../frontend-plugin-api/src/rou
 import { toInternalSubRouteRef } from '../../../frontend-plugin-api/src/routing/SubRouteRef';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { isInternalFrontendPlugin } from '../../../frontend-plugin-api/src/wiring/createFrontendPlugin';
+import { FrontendFeature } from '../wiring';
 
 /** @internal */
 export interface RouteRefsById {

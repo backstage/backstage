@@ -14,7 +14,7 @@ import { ErrorWithContext } from '@backstage/test-utils';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinitionParameters } from '@backstage/frontend-plugin-api';
-import { FrontendFeature } from '@backstage/frontend-plugin-api';
+import { FrontendFeature } from '@backstage/frontend-app-api';
 import { JsonObject } from '@backstage/types';
 import { MockConfigApi } from '@backstage/test-utils';
 import { MockErrorApi } from '@backstage/test-utils';

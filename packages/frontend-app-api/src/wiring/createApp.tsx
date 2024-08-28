@@ -22,7 +22,6 @@ import {
   AppTreeApi,
   appTreeApiRef,
   coreExtensionData,
-  FrontendFeature,
   RouteRef,
   ExternalRouteRef,
   SubRouteRef,
@@ -85,6 +84,7 @@ import { ApiRegistry } from '../../../core-app-api/src/apis/system/ApiRegistry';
 import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
 import { BackstageRouteObject } from '../routing/types';
 import appPlugin from '@backstage/plugin-app';
+import { FrontendFeature } from './types';
 
 function deduplicateFeatures(
   allFeatures: FrontendFeature[],

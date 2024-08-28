@@ -15,7 +15,7 @@
  */
 
 import { Config, ConfigReader } from '@backstage/config';
-import { FrontendFeature } from '@backstage/frontend-plugin-api';
+import { FrontendFeature } from '@backstage/frontend-app-api';
 
 interface DiscoveryGlobal {
   modules: Array<{ name: string; export?: string; default: unknown }>;

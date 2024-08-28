@@ -749,7 +749,20 @@ export function createExternalRouteRef<
 export function createFrontendModule<
   TId extends string,
   TExtensions extends readonly ExtensionDefinition[] = [],
->(options: FrontendModuleOptions<TId, TExtensions>): FrontendModule;
+>(options: CreateFrontendModuleOptions<TId, TExtensions>): FrontendModule;
+
+// @public (undocumented)
+export interface CreateFrontendModuleOptions<
+  TPluginId extends string,
+  TExtensions extends readonly ExtensionDefinition[],
+> {
+  // (undocumented)
+  extensions?: TExtensions;
+  // (undocumented)
+  featureFlags?: FeatureFlagConfig[];
+  // (undocumented)
+  pluginId: TPluginId;
+}
 
 // @public (undocumented)
 export function createFrontendPlugin<
@@ -1232,11 +1245,8 @@ export { FetchApi };
 
 export { fetchApiRef };
 
-// @public (undocumented)
-export type FrontendFeature =
-  | FrontendPlugin
-  | FrontendModule
-  | ExtensionOverrides;
+// @public @deprecated (undocumented)
+export type FrontendFeature = FrontendPlugin | ExtensionOverrides;
 
 // @public (undocumented)
 export interface FrontendModule {
@@ -1244,19 +1254,6 @@ export interface FrontendModule {
   readonly $$type: '@backstage/FrontendModule';
   // (undocumented)
   readonly pluginId: string;
-}
-
-// @public (undocumented)
-export interface FrontendModuleOptions<
-  TPluginId extends string,
-  TExtensions extends readonly ExtensionDefinition[],
-> {
-  // (undocumented)
-  extensions?: TExtensions;
-  // (undocumented)
-  featureFlags?: FeatureFlagConfig[];
-  // (undocumented)
-  pluginId: TPluginId;
 }
 
 // @public (undocumented)

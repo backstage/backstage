@@ -16,7 +16,6 @@
 
 import { ExternalRouteRef, RouteRef, SubRouteRef } from '../routing';
 import { ExtensionDefinition } from './createExtension';
-import { FrontendModule } from './createFrontendModule';
 import { FrontendPlugin } from './createFrontendPlugin';
 
 /**
@@ -47,8 +46,8 @@ export interface ExtensionOverrides {
   readonly $$type: '@backstage/ExtensionOverrides';
 }
 
-/** @public */
-export type FrontendFeature =
-  | FrontendPlugin
-  | FrontendModule
-  | ExtensionOverrides;
+/**
+ * @public
+ * @deprecated import from {@link @backstage/frontend-app-api#FrontendFeature} instead
+ */
+export type FrontendFeature = FrontendPlugin | ExtensionOverrides;

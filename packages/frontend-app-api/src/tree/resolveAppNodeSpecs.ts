@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Extension,
-  ExtensionOverrides,
-  FrontendFeature,
-} from '@backstage/frontend-plugin-api';
+import { Extension, ExtensionOverrides } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalExtensionOverrides } from '../../../frontend-plugin-api/src/wiring/createExtensionOverrides';
 import { ExtensionParameters } from './readAppExtensionsConfig';
@@ -30,6 +26,7 @@ import {
 } from '../../../frontend-plugin-api/src/wiring/createFrontendPlugin';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalExtension } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
+import { FrontendFeature } from '../wiring';
 
 /** @internal */
 export function resolveAppNodeSpecs(options: {

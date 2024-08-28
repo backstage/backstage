@@ -26,7 +26,7 @@ import {
 import { FeatureFlagConfig } from './types';
 
 /** @public */
-export interface FrontendModuleOptions<
+export interface CreateFrontendModuleOptions<
   TPluginId extends string,
   TExtensions extends readonly ExtensionDefinition[],
 > {
@@ -52,7 +52,7 @@ export interface InternalFrontendModule extends FrontendModule {
 export function createFrontendModule<
   TId extends string,
   TExtensions extends readonly ExtensionDefinition[] = [],
->(options: FrontendModuleOptions<TId, TExtensions>): FrontendModule {
+>(options: CreateFrontendModuleOptions<TId, TExtensions>): FrontendModule {
   const { pluginId } = options;
 
   const extensions = new Array<Extension<any>>();

@@ -51,7 +51,6 @@ export type BackstagePlugin<
   TExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
   TExtensionMap extends { [id in string]: ExtensionDefinition } = {},
 > = FrontendPlugin<TRoutes, TExternalRoutes, TExtensionMap>;
-
 /** @public */
 export interface PluginOptions<
   TId extends string,
