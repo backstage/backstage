@@ -50,8 +50,7 @@ createBackendPlugin({
 
 Custom URL readers that are not intended for open sourcing via a custom service factory for that specific reader. The following example shows how to create a custom URL reader and provide it to the backend.
 
-```ts
-// File: packages/backend/src/index.ts
+```ts title="packages/backend/src/index.ts"
 import { urlReaderFactoriesServiceRef } from '@backstage/backend-defaults/urlReader';
 import {
   createBackendFeatureLoader,
