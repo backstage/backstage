@@ -60,22 +60,16 @@ import {
   createServiceFactory,
   UrlReaderService,
 } from '@backstage/backend-plugin-api';
-import { ScmIntegrations } from '@backstage/integration';
-
-type CustomIntegrationConfig = {
-  // custom config fields
-};
+import { Config } from '@backstage/config';
 
 class CustomUrlReader implements UrlReaderService {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
-    const integrations = ScmIntegrations.fromConfig(config);
-    const integrationsConfig = integrations.byHost('myCustomDomain') ?? {};
-    const reader = new CustomUrlReader(integrationsConfig);
+    const reader = new CustomUrlReader(config);
     const predicate = (url: URL) => url.host === 'myCustomDomain';
     return [{ reader, predicate }];
   };
 
-  constructor(private readonly integrationConfig: CustomIntegrationConfig) {}
+  constructor(private readonly config: Config) {}
   // implementations of read, readTree and search methods skipped for this example
 }
 
