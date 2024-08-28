@@ -46,6 +46,7 @@ export const signalsPlugin = createPlugin({
 /** @public */
 export const SignalsDisplay = signalsPlugin.provide(
   createComponentExtension({
+    name: 'SignalsDisplay',
     component: {
       // No-op for now, this is just a placeholder to avoid the need for an explicit plugin installation
       sync: () => null,
