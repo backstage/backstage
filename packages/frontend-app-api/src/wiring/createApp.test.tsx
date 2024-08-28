@@ -23,6 +23,7 @@ import {
   PageBlueprint,
   createFrontendPlugin,
   ThemeBlueprint,
+  createFrontendModule,
 } from '@backstage/frontend-plugin-api';
 import { screen, waitFor } from '@testing-library/react';
 import { CreateAppFeatureLoader, createApp } from './createApp';
@@ -378,5 +379,58 @@ describe('createApp', () => {
     await renderWithEffects(app.createRoot());
 
     expect(screen.queryByText('Custom app root element')).toBeNull();
+  });
+
+  describe('modules', () => {
+    it('should be able to override extensions with a plugin extension override', async () => {
+      const mod = createFrontendModule({
+        pluginId: 'app',
+        extensions: [
+          appPlugin.getExtension('app/root').override({
+            factory: () => [
+              coreExtensionData.reactElement(
+                <div>Custom app root element</div>,
+              ),
+            ],
+          }),
+        ],
+      });
+
+      const app = createApp({
+        configLoader: () => new Promise(() => {}),
+        features: [mod],
+      });
+
+      await renderWithEffects(app.createRoot());
+
+      expect(screen.queryByText('Custom app root element')).toBeNull();
+    });
+
+    it('should be able to override extensions with a standalone extension override', async () => {
+      const mod = createFrontendModule({
+        pluginId: 'app',
+        extensions: [
+          createExtension({
+            name: 'root',
+            attachTo: { id: 'app', input: 'root' },
+            output: [coreExtensionData.reactElement],
+            factory: () => [
+              coreExtensionData.reactElement(
+                <div>Custom app root element</div>,
+              ),
+            ],
+          }),
+        ],
+      });
+
+      const app = createApp({
+        configLoader: () => new Promise(() => {}),
+        features: [mod],
+      });
+
+      await renderWithEffects(app.createRoot());
+
+      expect(screen.queryByText('Custom app root element')).toBeNull();
+    });
   });
 });

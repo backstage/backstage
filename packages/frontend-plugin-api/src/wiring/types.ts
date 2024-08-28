@@ -16,6 +16,7 @@
 
 import { ExternalRouteRef, RouteRef, SubRouteRef } from '../routing';
 import { ExtensionDefinition } from './createExtension';
+import { FrontendPlugin } from './createFrontendPlugin';
 
 /**
  * Feature flag configuration.
@@ -41,25 +42,12 @@ export type ExtensionMap<
 };
 
 /** @public */
-export interface BackstagePlugin<
-  TRoutes extends AnyRoutes = AnyRoutes,
-  TExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
-  TExtensionMap extends { [id in string]: ExtensionDefinition } = {},
-> {
-  readonly $$type: '@backstage/BackstagePlugin';
-  readonly id: string;
-  readonly routes: TRoutes;
-  readonly externalRoutes: TExternalRoutes;
-  getExtension<TId extends keyof TExtensionMap>(id: TId): TExtensionMap[TId];
-  withOverrides(options: {
-    extensions: Array<ExtensionDefinition>;
-  }): BackstagePlugin<TRoutes, TExternalRoutes, TExtensionMap>;
-}
-
-/** @public */
 export interface ExtensionOverrides {
   readonly $$type: '@backstage/ExtensionOverrides';
 }
 
-/** @public */
-export type FrontendFeature = BackstagePlugin | ExtensionOverrides;
+/**
+ * @public
+ * @deprecated import from {@link @backstage/frontend-app-api#FrontendFeature} instead
+ */
+export type FrontendFeature = FrontendPlugin | ExtensionOverrides;

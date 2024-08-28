@@ -15,7 +15,7 @@
  */
 
 import { Config, ConfigReader } from '@backstage/config';
-import { FrontendFeature } from '@backstage/frontend-plugin-api';
+import { FrontendFeature } from '@backstage/frontend-app-api';
 
 interface DiscoveryGlobal {
   modules: Array<{ name: string; export?: string; default: unknown }>;
@@ -84,6 +84,10 @@ export function getAvailableFeatures(config: Config): FrontendFeature[] {
 function isBackstageFeature(obj: unknown): obj is FrontendFeature {
   if (obj !== null && typeof obj === 'object' && '$$type' in obj) {
     return (
+      obj.$$type === '@backstage/FrontendPlugin' ||
+      obj.$$type === '@backstage/FrontendModule' ||
+      // TODO: Remove this once the old plugin type and extension overrides
+      // are no longer supported
       obj.$$type === '@backstage/BackstagePlugin' ||
       obj.$$type === '@backstage/ExtensionOverrides'
     );

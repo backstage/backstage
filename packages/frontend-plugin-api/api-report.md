@@ -320,29 +320,14 @@ export { BackstageIdentityApi };
 
 export { BackstageIdentityResponse };
 
-// @public (undocumented)
-export interface BackstagePlugin<
+// @public @deprecated (undocumented)
+export type BackstagePlugin<
   TRoutes extends AnyRoutes = AnyRoutes,
   TExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
   TExtensionMap extends {
     [id in string]: ExtensionDefinition;
   } = {},
-> {
-  // (undocumented)
-  readonly $$type: '@backstage/BackstagePlugin';
-  // (undocumented)
-  readonly externalRoutes: TExternalRoutes;
-  // (undocumented)
-  getExtension<TId extends keyof TExtensionMap>(id: TId): TExtensionMap[TId];
-  // (undocumented)
-  readonly id: string;
-  // (undocumented)
-  readonly routes: TRoutes;
-  // (undocumented)
-  withOverrides(options: {
-    extensions: Array<ExtensionDefinition>;
-  }): BackstagePlugin<TRoutes, TExternalRoutes, TExtensionMap>;
-}
+> = FrontendPlugin<TRoutes, TExternalRoutes, TExtensionMap>;
 
 export { BackstageUserIdentity };
 
@@ -732,7 +717,7 @@ export type CreateExtensionOptions<
   }): Iterable<UFactoryOutput>;
 } & VerifyExtensionFactoryOutput<UOutput, UFactoryOutput>;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function createExtensionOverrides(
   options: ExtensionOverridesOptions,
 ): ExtensionOverrides;
@@ -761,6 +746,25 @@ export function createExternalRouteRef<
 >;
 
 // @public (undocumented)
+export function createFrontendModule<
+  TId extends string,
+  TExtensions extends readonly ExtensionDefinition[] = [],
+>(options: CreateFrontendModuleOptions<TId, TExtensions>): FrontendModule;
+
+// @public (undocumented)
+export interface CreateFrontendModuleOptions<
+  TPluginId extends string,
+  TExtensions extends readonly ExtensionDefinition[],
+> {
+  // (undocumented)
+  extensions?: TExtensions;
+  // (undocumented)
+  featureFlags?: FeatureFlagConfig[];
+  // (undocumented)
+  pluginId: TPluginId;
+}
+
+// @public (undocumented)
 export function createFrontendPlugin<
   TId extends string,
   TRoutes extends AnyRoutes = {},
@@ -768,7 +772,7 @@ export function createFrontendPlugin<
   TExtensions extends readonly ExtensionDefinition[] = [],
 >(
   options: PluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>,
-): BackstagePlugin<
+): FrontendPlugin<
   TRoutes,
   TExternalRoutes,
   {
@@ -1204,7 +1208,7 @@ export interface ExtensionOverrides {
   readonly $$type: '@backstage/ExtensionOverrides';
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export interface ExtensionOverridesOptions {
   // (undocumented)
   extensions: ExtensionDefinition[];
@@ -1241,8 +1245,40 @@ export { FetchApi };
 
 export { fetchApiRef };
 
+// @public @deprecated (undocumented)
+export type FrontendFeature = FrontendPlugin | ExtensionOverrides;
+
 // @public (undocumented)
-export type FrontendFeature = BackstagePlugin | ExtensionOverrides;
+export interface FrontendModule {
+  // (undocumented)
+  readonly $$type: '@backstage/FrontendModule';
+  // (undocumented)
+  readonly pluginId: string;
+}
+
+// @public (undocumented)
+export interface FrontendPlugin<
+  TRoutes extends AnyRoutes = AnyRoutes,
+  TExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
+  TExtensionMap extends {
+    [id in string]: ExtensionDefinition;
+  } = {},
+> {
+  // (undocumented)
+  readonly $$type: '@backstage/FrontendPlugin';
+  // (undocumented)
+  readonly externalRoutes: TExternalRoutes;
+  // (undocumented)
+  getExtension<TId extends keyof TExtensionMap>(id: TId): TExtensionMap[TId];
+  // (undocumented)
+  readonly id: string;
+  // (undocumented)
+  readonly routes: TRoutes;
+  // (undocumented)
+  withOverrides(options: {
+    extensions: Array<ExtensionDefinition>;
+  }): FrontendPlugin<TRoutes, TExternalRoutes, TExtensionMap>;
+}
 
 export { githubAuthApiRef };
 

@@ -5,7 +5,8 @@
 ```ts
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
-import { FrontendFeature } from '@backstage/frontend-plugin-api';
+import { FrontendModule } from '@backstage/frontend-plugin-api';
+import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
@@ -52,4 +53,15 @@ export function createSpecializedApp(options?: {
 }): {
   createRoot(): JSX_2.Element;
 };
+
+// @public (undocumented)
+export type FrontendFeature =
+  | FrontendPlugin
+  | FrontendModule
+  | {
+      $$type: '@backstage/ExtensionOverrides';
+    }
+  | {
+      $$type: '@backstage/BackstagePlugin';
+    };
 ```

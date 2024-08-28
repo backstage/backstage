@@ -16,7 +16,10 @@
 
 import React from 'react';
 import { Link, MemoryRouter } from 'react-router-dom';
-import { createSpecializedApp } from '@backstage/frontend-app-api';
+import {
+  createSpecializedApp,
+  FrontendFeature,
+} from '@backstage/frontend-app-api';
 import { RenderResult, render } from '@testing-library/react';
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
@@ -30,7 +33,6 @@ import {
   IconComponent,
   RouterBlueprint,
   NavItemBlueprint,
-  FrontendFeature,
 } from '@backstage/frontend-plugin-api';
 import appPlugin from '@backstage/plugin-app';
 

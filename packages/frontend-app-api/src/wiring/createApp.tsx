@@ -22,7 +22,6 @@ import {
   AppTreeApi,
   appTreeApiRef,
   coreExtensionData,
-  FrontendFeature,
   RouteRef,
   ExternalRouteRef,
   SubRouteRef,
@@ -61,7 +60,15 @@ import { RouteResolver } from '../routing/RouteResolver';
 import { resolveRouteBindings } from '../routing/resolveRouteBindings';
 import { collectRouteIds } from '../routing/collectRouteIds';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalBackstagePlugin } from '../../../frontend-plugin-api/src/wiring/createFrontendPlugin';
+import {
+  toInternalFrontendPlugin,
+  isInternalFrontendPlugin,
+} from '../../../frontend-plugin-api/src/wiring/createFrontendPlugin';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import {
+  toInternalFrontendModule,
+  isInternalFrontendModule,
+} from '../../../frontend-plugin-api/src/wiring/createFrontendModule';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalExtensionOverrides } from '../../../frontend-plugin-api/src/wiring/createExtensionOverrides';
 import { stringifyError } from '@backstage/errors';
@@ -77,6 +84,7 @@ import { ApiRegistry } from '../../../core-app-api/src/apis/system/ApiRegistry';
 import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
 import { BackstageRouteObject } from '../routing/types';
 import appPlugin from '@backstage/plugin-app';
+import { FrontendFeature } from './types';
 
 function deduplicateFeatures(
   allFeatures: FrontendFeature[],
@@ -89,7 +97,7 @@ function deduplicateFeatures(
   return features
     .reverse()
     .filter(feature => {
-      if (feature.$$type !== '@backstage/BackstagePlugin') {
+      if (!isInternalFrontendPlugin(feature)) {
         return true;
       }
       if (seenIds.has(feature.id)) {
@@ -318,11 +326,19 @@ export function createSpecializedApp(options?: {
   const featureFlagApi = apiHolder.get(featureFlagsApiRef);
   if (featureFlagApi) {
     for (const feature of features) {
-      if (feature.$$type === '@backstage/BackstagePlugin') {
-        toInternalBackstagePlugin(feature).featureFlags.forEach(flag =>
+      if (isInternalFrontendPlugin(feature)) {
+        toInternalFrontendPlugin(feature).featureFlags.forEach(flag =>
           featureFlagApi.registerFlag({
             name: flag.name,
             pluginId: feature.id,
+          }),
+        );
+      }
+      if (isInternalFrontendModule(feature)) {
+        toInternalFrontendModule(feature).featureFlags.forEach(flag =>
+          featureFlagApi.registerFlag({
+            name: flag.name,
+            pluginId: feature.pluginId,
           }),
         );
       }

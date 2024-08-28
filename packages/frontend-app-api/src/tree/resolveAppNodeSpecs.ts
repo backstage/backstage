@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-import {
-  BackstagePlugin,
-  Extension,
-  ExtensionOverrides,
-  FrontendFeature,
-} from '@backstage/frontend-plugin-api';
+import { Extension, ExtensionOverrides } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalExtensionOverrides } from '../../../frontend-plugin-api/src/wiring/createExtensionOverrides';
 import { ExtensionParameters } from './readAppExtensionsConfig';
 import { AppNodeSpec } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalBackstagePlugin } from '../../../frontend-plugin-api/src/wiring/createFrontendPlugin';
+import {
+  isInternalFrontendPlugin,
+  toInternalFrontendPlugin,
+} from '../../../frontend-plugin-api/src/wiring/createFrontendPlugin';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalExtension } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
+import { FrontendFeature } from '../wiring';
 
 /** @internal */
 export function resolveAppNodeSpecs(options: {
@@ -43,16 +42,14 @@ export function resolveAppNodeSpecs(options: {
     features = [],
   } = options;
 
-  const plugins = features.filter(
-    (f): f is BackstagePlugin => f.$$type === '@backstage/BackstagePlugin',
-  );
+  const plugins = features.filter(isInternalFrontendPlugin);
   const overrides = features.filter(
     (f): f is ExtensionOverrides =>
       f.$$type === '@backstage/ExtensionOverrides',
   );
 
   const pluginExtensions = plugins.flatMap(source => {
-    return toInternalBackstagePlugin(source).extensions.map(extension => ({
+    return toInternalFrontendPlugin(source).extensions.map(extension => ({
       ...extension,
       source,
     }));

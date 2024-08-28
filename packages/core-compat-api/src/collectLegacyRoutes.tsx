@@ -268,7 +268,10 @@ export function collectLegacyRoutes(
       extensions: [
         ...extensions,
         ...Array.from(plugin.getApis()).map(factory =>
-          ApiBlueprint.make({ namespace: factory.api.id, params: { factory } }),
+          ApiBlueprint.make({
+            namespace: factory.api.id,
+            params: { factory },
+          }),
         ),
       ],
       routes: convertLegacyRouteRefs(plugin.routes ?? {}),
