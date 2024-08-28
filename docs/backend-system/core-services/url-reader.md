@@ -48,7 +48,7 @@ createBackendPlugin({
 
 ## Providing custom URL readers
 
-Custom URL readers that are not intended for open sourcing via a custom service factory for that specific reader. The following example shows how to create a custom URL reader and provide it to the backend.
+You can also create an internal or bespoke reader and provide it to the backend using a service factory. The following example shows how to create a custom URL reader and provide it to the backend.
 
 ```ts title="packages/backend/src/index.ts"
 import { urlReaderFactoriesServiceRef } from '@backstage/backend-defaults/urlReader';
@@ -56,6 +56,24 @@ import {
   createBackendFeatureLoader,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
+
+
+class CustomUrlReader implements UrlReaderService {
+  static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
+    const integrations = ScmIntegrations.fromConfig(config);
+      const reader = new GithubUrlReader(integration, { treeResponseFactory });
+      const predicate = (url: URL) => url.host === integration.config.host;
+      return { reader, predicate };
+    });
+
+  constructor(
+    private readonly integration: BitbucketServerIntegration,
+    private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
+  ) {}
+
+  // implementations of read, readTree and search methods skipped for this example
+  };
+
 
 const customReader = createServiceFactory({
   service: urlReaderFactoriesServiceRef,
