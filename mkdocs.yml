@@ -138,7 +138,6 @@ nav:
           - Proxying: 'plugins/proxying.md'
           - Backend plugin: 'plugins/backend-plugin.md'
           - Call existing API: 'plugins/call-existing-api.md'
-          - URL Reader: 'plugins/url-reader.md'
       - Testing:
           - Testing with Jest: 'plugins/testing.md'
       - Publishing:
