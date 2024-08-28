@@ -30,9 +30,9 @@ The search platform provides an interface (`DocumentCollatorFactory` from packag
 
 #### 1. Create a collator module package
 
-In order to add a FAQ collator to the Backstage index registry, we have to create a [plugin module](https://backstage.io/docs/backend-system/building-plugins-and-modules/index#modules) and the best way to do this is to create it in a separate package, e.g., `plugins/search-backend-module-faq-snippets-collator`, using the `backstage-cli new` command:
+In order to add a FAQ collator to the Backstage index registry, we have to create a [plugin module](https://backstage.io/docs/backend-system/building-plugins-and-modules/index#modules) and the best way to do this is to create it in a separate package, e.g., `plugins/search-backend-module-faq-snippets-collator`, using the `yarn new` command:
 
-1. Access your Backstage project root directory and run `npx @backstage/cli new`;
+1. Access your Backstage project root directory and run `yarn new`;
 2. When asked about what do you want to create, please select `backend-module` and hit enter;
 3. Inform `search` as the plugin id and `faq-snippets-collator` as module id;
 4. A `search-backend-module-faq-snippets-collator` folder should have been created in your project's "plugins" directory.
@@ -46,7 +46,7 @@ We will use some libraries in the module, so let's add them to your plugin modul
 git checkout -b tutorials/new-faq-snippets-collator
 
 # Install the package containing the interface
-yarn workspace backstage-plugin-search-backend-module-faq-snippets-collator add cross-fetch @backstage/config @backstage/plugin-search-common @backstage/plugin-search-backend-node
+yarn workspace @internal/backstage-plugin-search-backend-module-faq-snippets-collator add node-fetch @backstage/config @backstage/plugin-search-common @backstage/plugin-search-backend-node
 ```
 
 #### 3. Use Backstage App configuration
@@ -104,7 +104,7 @@ Imagine your FAQs can be retrieved at the URL `https://backstage.example.biz/faq
 Below we provide an example implementation of how the FAQ collator factory could look like using our new document type, placed in the `plugins/search-backend-module-faq-snippets-collator/src/factory.ts` file:
 
 ```ts
-import fetch from 'cross-fetch';
+import fetch from 'node-fetch';
 import { Readable } from 'stream';
 
 import { Config } from '@backstage/config';
@@ -213,7 +213,7 @@ export { export const searchFaqSnippetsCollatorModule as default } from './modul
 The newly created module should be added to the backend package dependencies as follows:
 
 ```sh
-yarn --cwd backend add backstage-plugin-search-backend-module-faq-snippets-collator
+yarn --cwd backend add @internal/backstage-plugin-search-backend-module-faq-snippets-collator
 ```
 
 After that, install the module on your Backstage backend instance:
@@ -224,9 +224,11 @@ import { createBackend } from '@backstage/backend-defaults';
 const backend = createBackend();
 // Installing the search backend plugin
 backend.add(import('@backstage/plugin-search-backend/alpha'));
-// Installing the newrly created faq snippets collator module
+// Installing the newly created faq snippets collator module
 backend.add(
-  import('backstage-plugin-search-backend-module-faq-snippets-collator'),
+  import(
+    '@internal/backstage-plugin-search-backend-module-faq-snippets-collator'
+  ),
 );
 //...
 backend.start();
