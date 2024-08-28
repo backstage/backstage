@@ -159,7 +159,7 @@ The same applies for modules that perform their own migrations and interact with
 the database. They will run on the same logical database instance as the target
 plugin, so care must be taken to choose table names that do not risk colliding
 with those of the plugin. A recommended naming pattern is `<package
-name>__<table name>`, for example the `@backstage/backend-tasks` package creates
+name>__<table name>`, for example the `Scheduler Service` package creates
 tables named `backstage_backend_tasks__<table>`. If you use the default [`Knex` migration facilities](https://knexjs.org/guide/migrations.html), you will also
 want to make sure that it uses similarly prefixed migration state tables for its
 internal bookkeeping needs, so they do not collide with the main ones used by
