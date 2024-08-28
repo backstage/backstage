@@ -43,6 +43,23 @@ const _default: BackstagePlugin<
       >;
       inputs: {};
     }>;
+    'nav-item:techdocs': ExtensionDefinition<{
+      kind: 'nav-item';
+      namespace: undefined;
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        {
+          title: string;
+          icon: IconComponent;
+          routeRef: RouteRef<undefined>;
+        },
+        'core.nav-item.target',
+        {}
+      >;
+      inputs: {};
+    }>;
     'page:techdocs': ExtensionDefinition<{
       kind: 'page';
       namespace: undefined;
@@ -67,23 +84,6 @@ const _default: BackstagePlugin<
               optional: true;
             }
           >;
-      inputs: {};
-    }>;
-    'nav-item:techdocs': ExtensionDefinition<{
-      kind: 'nav-item';
-      namespace: undefined;
-      name: undefined;
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        {
-          title: string;
-          icon: IconComponent;
-          routeRef: RouteRef<undefined>;
-        },
-        'core.nav-item.target',
-        {}
-      >;
       inputs: {};
     }>;
     'api:techdocs/storage': ExtensionDefinition<{

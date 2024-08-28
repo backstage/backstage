@@ -44,21 +44,26 @@ const _default: BackstagePlugin<
     }>;
   },
   {
-    'api:scaffolder': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: undefined;
-      }
-    >;
-    'nav-item:scaffolder': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<
+    'api:scaffolder': ExtensionDefinition<{
+      kind: 'api';
+      namespace: undefined;
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+    }>;
+    'nav-item:scaffolder': ExtensionDefinition<{
+      kind: 'nav-item';
+      namespace: undefined;
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
         {
           title: string;
           icon: IconComponent;
@@ -66,41 +71,35 @@ const _default: BackstagePlugin<
         },
         'core.nav-item.target',
         {}
-      >,
-      {},
-      {
-        kind: 'nav-item';
-        namespace: undefined;
-        name: undefined;
-      }
-    >;
-    'page:scaffolder': ExtensionDefinition<
-      {
+      >;
+      inputs: {};
+    }>;
+    'page:scaffolder': ExtensionDefinition<{
+      kind: 'page';
+      namespace: undefined;
+      name: undefined;
+      config: {
         path: string | undefined;
       };
       configInput: {
         path?: string | undefined;
-      },
-      | ConfigurableExtensionDataRef<
-          React_2.JSX.Element,
-          'core.reactElement',
-          {}
-        >
-      | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-      | ConfigurableExtensionDataRef<
-          RouteRef<AnyRouteRefParams>,
-          'core.routing.ref',
-          {
-            optional: true;
-          }
-        >,
-      {},
-      {
-        kind: 'page';
-        namespace: undefined;
-        name: undefined;
-      }
-    >;
+      };
+      output:
+        | ConfigurableExtensionDataRef<
+            React_2.JSX.Element,
+            'core.reactElement',
+            {}
+          >
+        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+        | ConfigurableExtensionDataRef<
+            RouteRef<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+    }>;
   }
 >;
 export default _default;
