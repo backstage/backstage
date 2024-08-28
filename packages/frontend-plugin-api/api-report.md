@@ -749,7 +749,7 @@ export function createExternalRouteRef<
 export function createFrontendModule<
   TId extends string,
   TExtensions extends readonly ExtensionDefinition[] = [],
->(options: ModuleOptions<TId, TExtensions>): FrontendModule;
+>(options: FrontendModuleOptions<TId, TExtensions>): FrontendModule;
 
 // @public (undocumented)
 export function createFrontendPlugin<
@@ -1247,6 +1247,19 @@ export interface FrontendModule {
 }
 
 // @public (undocumented)
+export interface FrontendModuleOptions<
+  TPluginId extends string,
+  TExtensions extends readonly ExtensionDefinition[],
+> {
+  // (undocumented)
+  extensions?: TExtensions;
+  // (undocumented)
+  featureFlags?: FeatureFlagConfig[];
+  // (undocumented)
+  pluginId: TPluginId;
+}
+
+// @public (undocumented)
 export interface FrontendPlugin<
   TRoutes extends AnyRoutes = AnyRoutes,
   TExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
@@ -1339,19 +1352,6 @@ export { IdentityApi };
 export { identityApiRef };
 
 export { microsoftAuthApiRef };
-
-// @public (undocumented)
-export interface ModuleOptions<
-  TPluginId extends string,
-  TExtensions extends readonly ExtensionDefinition[],
-> {
-  // (undocumented)
-  extensions?: TExtensions;
-  // (undocumented)
-  featureFlags?: FeatureFlagConfig[];
-  // (undocumented)
-  pluginId: TPluginId;
-}
 
 // @public
 export const NavItemBlueprint: ExtensionBlueprint<{
