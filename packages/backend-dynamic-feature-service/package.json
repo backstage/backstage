@@ -46,7 +46,7 @@
   },
   "dependencies": {
     "@backstage/backend-app-api": "workspace:^",
-    "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/cli-common": "workspace:^",
