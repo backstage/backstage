@@ -32,6 +32,7 @@ import {
   getEntityRelations,
   humanizeEntityRef,
   useEntityList,
+  useEntityUserFilterLabel,
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
 import Typography from '@material-ui/core/Typography';
@@ -44,10 +45,9 @@ import StarBorder from '@material-ui/icons/StarBorder';
 import { capitalize } from 'lodash';
 import pluralize from 'pluralize';
 import React, { ReactNode, useMemo } from 'react';
-import { columnFactories } from './columns';
 import { CatalogTableColumnsFunc, CatalogTableRow } from './types';
 import { PaginatedCatalogTable } from './PaginatedCatalogTable';
-import { defaultCatalogTableColumnsFunc } from './defaultCatalogTableColumnsFunc';
+import { useDefaultCatalogTableColumnsFunc } from './defaultCatalogTableColumnsFunc';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { catalogTranslationRef } from '../../alpha/translation';
 
@@ -82,23 +82,25 @@ const refCompare = (a: Entity, b: Entity) => {
 
 /** @public */
 export const CatalogTable = (props: CatalogTableProps) => {
-  const {
-    columns = defaultCatalogTableColumnsFunc,
-    tableOptions,
-    subtitle,
-    emptyContent,
-  } = props;
+  const { columns, tableOptions, subtitle, emptyContent } = props;
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
+  const { t } = useTranslationRef(catalogTranslationRef);
   const entityListContext = useEntityList();
+  const defaultColumns = useDefaultCatalogTableColumnsFunc(entityListContext);
   const { loading, error, entities, filters, pageInfo, totalItems } =
     entityListContext;
   const enablePagination = !!pageInfo;
   const tableColumns = useMemo(
     () =>
-      typeof columns === 'function' ? columns(entityListContext) : columns,
-    [columns, entityListContext],
+      // eslint-disable-next-line no-nested-ternary
+      !columns
+        ? defaultColumns
+        : typeof columns === 'function'
+        ? columns(entityListContext)
+        : columns,
+    [columns, entityListContext, defaultColumns],
   );
-  const { t } = useTranslationRef(catalogTranslationRef);
+  const { label } = useEntityUserFilterLabel(filters.user);
 
   if (error) {
     return (
@@ -176,7 +178,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
   const currentType = filters.type?.value || '';
   const currentCount = typeof totalItems === 'number' ? `(${totalItems})` : '';
   // TODO(timbonicus): remove the title from the CatalogTable once using EntitySearchBar
-  const titlePreamble = capitalize(filters.user?.value ?? 'all');
+  const titlePreamble = capitalize(label);
   const title = [
     titlePreamble,
     currentType,
@@ -234,9 +236,6 @@ export const CatalogTable = (props: CatalogTableProps) => {
     />
   );
 };
-
-CatalogTable.columns = columnFactories;
-CatalogTable.defaultColumnsFunc = defaultCatalogTableColumnsFunc;
 
 function toEntityRow(entity: Entity) {
   const partOfSystemRelations = getEntityRelations(entity, RELATION_PART_OF, {

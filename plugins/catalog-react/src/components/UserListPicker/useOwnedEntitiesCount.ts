@@ -28,7 +28,6 @@ import useDeepCompareEffect from 'react-use/esm/useDeepCompareEffect';
 export function useOwnedEntitiesCount() {
   const identityApi = useApi(identityApiRef);
   const catalogApi = useApi(catalogApiRef);
-
   const { filters } = useEntityList();
 
   const { value: ownershipEntityRefs, loading: loadingEntityRefs } = useAsync(

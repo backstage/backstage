@@ -21,7 +21,7 @@ import CopyIcon from '@material-ui/icons/FileCopy';
 import React, { MouseEventHandler, useEffect, useState } from 'react';
 import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 import { coreComponentsTranslationRef } from '../../translation';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 
 /**
  * Properties for {@link CopyTextButton}

@@ -33,6 +33,7 @@ import { act, fireEvent, screen } from '@testing-library/react';
 import * as React from 'react';
 import { CatalogTable } from './CatalogTable';
 import { CatalogTableColumnsFunc } from './types';
+import { useColumnFactories } from './columns';
 
 const entities: Entity[] = [
   {
@@ -344,9 +345,10 @@ describe('CatalogTable component', () => {
   });
 
   it('should render the label column with customized title and value as specified', async () => {
+    const columnFactories = useColumnFactories();
     const columns = [
-      CatalogTable.columns.createNameColumn({ defaultKind: 'API' }),
-      CatalogTable.columns.createLabelColumn('category', { title: 'Category' }),
+      columnFactories.createNameColumn({ defaultKind: 'API' }),
+      columnFactories.createLabelColumn('category', { title: 'Category' }),
     ];
     const entity = {
       apiVersion: 'backstage.io/v1alpha1',
@@ -382,14 +384,15 @@ describe('CatalogTable component', () => {
   });
 
   it('should render the label column with customized title and value as specified using function', async () => {
+    const columnFactories = useColumnFactories();
     const columns: CatalogTableColumnsFunc = ({
       filters,
       entities: entities1,
     }) => {
       return filters.kind?.value === 'api' && entities1.length
         ? [
-            CatalogTable.columns.createNameColumn({ defaultKind: 'API' }),
-            CatalogTable.columns.createLabelColumn('category', {
+            columnFactories.createNameColumn({ defaultKind: 'API' }),
+            columnFactories.createLabelColumn('category', {
               title: 'Category',
             }),
           ]

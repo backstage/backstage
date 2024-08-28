@@ -24,7 +24,11 @@ import {
   TableProps,
 } from '@backstage/core-components';
 import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
-import { CatalogTable, CatalogTableRow } from '@backstage/plugin-catalog';
+import {
+  CatalogTable,
+  CatalogTableRow,
+  useColumnFactories,
+} from '@backstage/plugin-catalog';
 import {
   EntityKindPicker,
   EntityLifecyclePicker,
@@ -37,21 +41,10 @@ import {
   CatalogFilterLayout,
   EntityOwnerPickerProps,
 } from '@backstage/plugin-catalog-react';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { registerComponentRouteRef } from '../../routes';
 import { usePermission } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
-
-const defaultColumns: TableColumn<CatalogTableRow>[] = [
-  CatalogTable.columns.createTitleColumn({ hidden: true }),
-  CatalogTable.columns.createNameColumn({ defaultKind: 'API' }),
-  CatalogTable.columns.createSystemColumn(),
-  CatalogTable.columns.createOwnerColumn(),
-  CatalogTable.columns.createSpecTypeColumn(),
-  CatalogTable.columns.createSpecLifecycleColumn(),
-  CatalogTable.columns.createMetadataDescriptionColumn(),
-  CatalogTable.columns.createTagsColumn(),
-];
 
 /**
  * DefaultApiExplorerPageProps
@@ -77,6 +70,7 @@ export const DefaultApiExplorerPage = (props: DefaultApiExplorerPageProps) => {
   } = props;
 
   const configApi = useApi(configApiRef);
+  const columnFactories = useColumnFactories();
   const generatedSubtitle = `${
     configApi.getOptionalString('organization.name') ?? 'Backstage'
   } API Explorer`;
@@ -84,6 +78,19 @@ export const DefaultApiExplorerPage = (props: DefaultApiExplorerPageProps) => {
   const { allowed } = usePermission({
     permission: catalogEntityCreatePermission,
   });
+
+  const defaultColumns: TableColumn<CatalogTableRow>[] = useMemo(() => {
+    return [
+      columnFactories.createTitleColumn({ hidden: true }),
+      columnFactories.createNameColumn({ defaultKind: 'API' }),
+      columnFactories.createSystemColumn(),
+      columnFactories.createOwnerColumn(),
+      columnFactories.createSpecTypeColumn(),
+      columnFactories.createSpecLifecycleColumn(),
+      columnFactories.createMetadataDescriptionColumn(),
+      columnFactories.createTagsColumn(),
+    ];
+  }, [columnFactories]);
 
   return (
     <PageWithHeader

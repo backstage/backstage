@@ -163,5 +163,18 @@ export const catalogTranslationRef = createTranslationRef({
         dependsOn: 'depends on',
       },
     },
+    catalogTableColumns: {
+      name: 'Name',
+      system: 'System',
+      owner: 'Owner',
+      targets: 'Targets',
+      type: 'Type',
+      lifecycle: 'Lifecycle',
+      description: 'Description',
+      tags: 'Tags',
+      title: 'Title',
+      label: 'Label',
+      namespace: 'Namespace',
+    },
   },
 });

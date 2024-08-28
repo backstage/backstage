@@ -26,7 +26,7 @@ import { GuestUserIdentity } from './GuestUserIdentity';
 import useLocalStorage from 'react-use/esm/useLocalStorage';
 import { ResponseError } from '@backstage/errors';
 import { coreComponentsTranslationRef } from '../../translation';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 
 const getIdentity = async (identity: ProxiedSignInIdentity) => {
   try {

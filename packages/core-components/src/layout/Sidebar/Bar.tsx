@@ -34,7 +34,7 @@ import { MobileSidebar } from './MobileSidebar';
 import { useContent } from './Page';
 import { SidebarOpenStateProvider } from './SidebarOpenStateContext';
 import { useSidebarPinState } from './SidebarPinStateContext';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { coreComponentsTranslationRef } from '../../translation';
 
 /** @public */

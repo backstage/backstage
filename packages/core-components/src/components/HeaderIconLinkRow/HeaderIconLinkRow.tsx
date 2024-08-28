@@ -26,7 +26,7 @@ const useStyles = makeStyles(
       margin: theme.spacing(2, 0),
       display: 'grid',
       gridAutoFlow: 'column',
-      gridAutoColumns: 'min-content',
+      gridAutoColumns: 'max-content',
       gridGap: theme.spacing(3),
     },
   }),

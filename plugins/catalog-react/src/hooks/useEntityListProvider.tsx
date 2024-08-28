@@ -39,9 +39,9 @@ import {
   EntityTagFilter,
   EntityTextFilter,
   EntityTypeFilter,
-  UserListFilter,
   EntityNamespaceFilter,
   EntityUserFilter,
+  UserListFilter,
 } from '../filters';
 import { EntityFilter } from '../types';
 import {

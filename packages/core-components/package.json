@@ -57,6 +57,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
+    "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
     "@date-io/core": "^1.3.13",

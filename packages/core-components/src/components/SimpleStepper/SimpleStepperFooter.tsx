@@ -21,7 +21,7 @@ import React, { PropsWithChildren, ReactNode, useContext } from 'react';
 import { VerticalStepperContext } from './SimpleStepper';
 import { StepActions } from './types';
 import { coreComponentsTranslationRef } from '../../translation';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 
 export type SimpleStepperFooterClassKey = 'root';
 

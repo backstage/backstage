@@ -24,7 +24,7 @@ import { useSupportConfig } from '../../hooks';
 import { MicDrop } from './MicDrop';
 import { StackDetails } from './StackDetails';
 import { coreComponentsTranslationRef } from '../../translation';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 
 interface IErrorPageProps {
   status?: string;

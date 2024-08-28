@@ -16,7 +16,7 @@
 
 import { useApiHolder, configApiRef } from '@backstage/core-plugin-api';
 import { coreComponentsTranslationRef } from '../translation';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 
 export type SupportItemLink = {
   url: string;

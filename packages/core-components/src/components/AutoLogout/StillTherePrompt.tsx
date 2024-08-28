@@ -23,7 +23,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import React, { useEffect } from 'react';
 import { IIdleTimer } from 'react-idle-timer';
 import { coreComponentsTranslationRef } from '../../translation';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 
 export interface StillTherePromptProps {
   idleTimer: IIdleTimer;

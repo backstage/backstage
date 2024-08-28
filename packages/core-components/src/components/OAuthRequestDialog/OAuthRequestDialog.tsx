@@ -31,7 +31,7 @@ import {
 } from '@backstage/core-plugin-api';
 import Typography from '@material-ui/core/Typography';
 import { coreComponentsTranslationRef } from '../../translation';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 
 export type OAuthRequestDialogClassKey =
   | 'dialog'

@@ -60,6 +60,8 @@ import React, {
 import { SelectProps } from '../Select/Select';
 import { Filter, Filters, SelectedFilters, Without } from './Filters';
 import { TableLoadingBody } from './TableLoadingBody';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { coreComponentsTranslationRef } from '../../translation';
 
 // Material-table is not using the standard icons available in in material-ui. https://github.com/mbrn/material-table/issues/51
 const tableIcons: Icons = {
@@ -323,6 +325,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
     ...restProps
   } = props;
   const tableClasses = useTableStyles();
+  const { t } = useTranslationRef(coreComponentsTranslationRef);
 
   const theme = useTheme();
 
@@ -455,7 +458,13 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
         data={tableData}
         style={{ width: '100%' }}
         localization={{
-          toolbar: { searchPlaceholder: 'Filter', searchTooltip: 'Filter' },
+          toolbar: {
+            searchPlaceholder: t('table.filter.searchPlaceholder'),
+            searchTooltip: t('table.filter.searchTooltip'),
+          },
+          header: {
+            actions: t('table.header.actions.title'),
+          },
           ...localization,
         }}
         {...restProps}

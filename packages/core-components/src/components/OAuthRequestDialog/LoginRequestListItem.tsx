@@ -24,7 +24,7 @@ import React, { useState } from 'react';
 import { isError } from '@backstage/errors';
 import { PendingOAuthRequest } from '@backstage/core-plugin-api';
 import { coreComponentsTranslationRef } from '../../translation';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 
 export type LoginRequestListItemClassKey = 'root';
 

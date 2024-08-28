@@ -28,7 +28,7 @@ import { ProviderComponent, ProviderLoader, SignInProvider } from './types';
 import { GridItem } from './styles';
 import { UserIdentity } from './UserIdentity';
 import { coreComponentsTranslationRef } from '../../translation';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 
 // accept base64url format according to RFC7515 (https://tools.ietf.org/html/rfc7515#section-3)
 const ID_TOKEN_REGEX = /^[a-z0-9_\-]+\.[a-z0-9_\-]+\.[a-z0-9_\-]+$/i;

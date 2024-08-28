@@ -753,6 +753,15 @@ export function useEntityTypeFilter(): {
   setSelectedTypes: (types: string[]) => void;
 };
 
+// Warning: (ae-missing-release-tag) "useEntityUserFilterLabel" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const useEntityUserFilterLabel: (
+  userFilter?: EntityUserFilter | UserListFilter,
+) => {
+  label: string;
+};
+
 // @public
 export function useRelatedEntities(
   entity: Entity,

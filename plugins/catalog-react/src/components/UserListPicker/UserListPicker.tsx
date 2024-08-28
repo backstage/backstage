@@ -230,7 +230,6 @@ export const UserListPicker = (props: UserListPickerProps) => {
     starredEntitiesFilter,
     ownedEntitiesFilter,
     updateFilters,
-
     loading,
   ]);
 

@@ -22,7 +22,7 @@ import React, { useEffect, useState } from 'react';
 import { Select } from '../Select';
 import { SelectProps } from '../Select/Select';
 import { coreComponentsTranslationRef } from '../../translation';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 
 export type TableFiltersClassKey = 'root' | 'value' | 'heder' | 'filters';
 

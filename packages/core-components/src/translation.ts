@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { createTranslationRef } from '@backstage/frontend-plugin-api';
 
 /** @alpha */
 export const coreComponentsTranslationRef = createTranslationRef({
@@ -88,6 +88,13 @@ export const coreComponentsTranslationRef = createTranslationRef({
       filter: {
         title: 'Filters',
         clearAll: 'Clear all',
+        searchPlaceholder: 'Filter',
+        searchTooltip: 'Filter',
+      },
+      header: {
+        actions: {
+          title: 'Actions',
+        },
       },
     },
     alertDisplay: {

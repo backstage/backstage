@@ -25,7 +25,7 @@ import { ErrorPanel } from '../../components/ErrorPanel';
 import { Progress } from '../../components/Progress';
 import { ProxiedSignInIdentity } from './ProxiedSignInIdentity';
 import { coreComponentsTranslationRef } from '../../translation';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 
 /**
  * Props for {@link ProxiedSignInPage}.

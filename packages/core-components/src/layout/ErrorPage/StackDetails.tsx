@@ -19,7 +19,7 @@ import { useState } from 'react';
 import { Link } from '../../components/Link';
 import { CodeSnippet } from '../../components';
 import { makeStyles } from '@material-ui/core/styles';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { coreComponentsTranslationRef } from '../../translation';
 
 interface IStackDetailsProps {
