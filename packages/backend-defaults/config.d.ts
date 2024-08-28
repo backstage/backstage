@@ -374,28 +374,6 @@ export interface Config {
       >;
     };
 
-    /**
-     * Options used by the default discovery service.
-     */
-    discovery?: {
-      /**
-       * A list of target baseUrls and the associated plugins.
-       */
-      endpoints: Array<{
-        /**
-         * The target base URL to use for the plugin.
-         *
-         * Can be either a string or an object with internal and external keys.
-         * Targets with `{{pluginId}}` or `{{ pluginId }} in the URL will be replaced with the plugin ID.
-         */
-        target: string | { internal: string; external: string };
-        /**
-         * Array of plugins which use the target base URL.
-         */
-        plugins: string[];
-      }>;
-    };
-
     /** Database connection configuration, select base database type using the `client` field */
     database: {
       /** Default database client to use */
@@ -573,5 +551,27 @@ export interface Config {
         paths?: string[];
       }>;
     };
+  };
+
+  /**
+   * Options used by the default discovery service.
+   */
+  discovery?: {
+    /**
+     * A list of target baseUrls and the associated plugins.
+     */
+    endpoints: Array<{
+      /**
+       * The target base URL to use for the plugin.
+       *
+       * Can be either a string or an object with internal and external keys.
+       * Targets with `{{pluginId}}` or `{{ pluginId }} in the URL will be replaced with the plugin ID.
+       */
+      target: string | { internal: string; external: string };
+      /**
+       * Array of plugins which use the target base URL.
+       */
+      plugins: string[];
+    }>;
   };
 }
