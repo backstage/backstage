@@ -9327,14 +9327,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gitbeaker/core@npm:^40.0.3":
-  version: 40.0.3
-  resolution: "@gitbeaker/core@npm:40.0.3"
+"@gitbeaker/core@npm:^40.1.3":
+  version: 40.1.3
+  resolution: "@gitbeaker/core@npm:40.1.3"
   dependencies:
-    "@gitbeaker/requester-utils": ^40.0.3
-    qs: ^6.11.2
+    "@gitbeaker/requester-utils": ^40.1.3
+    qs: ^6.12.2
     xcase: ^2.0.1
-  checksum: 999cea3f1523eabfae473e8a21849fdd4f6b4d30f0de681e735b238713b198ff9381c35d2ba5949d27ddc7ed5a953b14fc5a6ed38a5d98b05b6a5670a0c69162
+  checksum: 2bb114b1a9d0d5b0b5c3fed82c0880f8b8d47633605a2913c6f489931ac9be8988e8f6c07bc6e58e526d25b012868e0dbd7b5bee96d6b92658d4220e364ca691
   languageName: node
   linkType: hard
 
@@ -9374,15 +9374,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gitbeaker/requester-utils@npm:^40.0.3":
-  version: 40.0.3
-  resolution: "@gitbeaker/requester-utils@npm:40.0.3"
+"@gitbeaker/requester-utils@npm:^40.1.3":
+  version: 40.1.3
+  resolution: "@gitbeaker/requester-utils@npm:40.1.3"
   dependencies:
     picomatch-browser: ^2.2.6
-    qs: ^6.11.2
-    rate-limiter-flexible: ^4.0.0
+    qs: ^6.12.2
+    rate-limiter-flexible: ^4.0.1
     xcase: ^2.0.1
-  checksum: 1a46dc9c730c29e2229b04ed9bbe6cd87b7e5f16c1d0a5e78106f0287ab3d981ce2b099eb41cdb0f9180bb6b11d25f5f1fa92a91b69682bcd4ac986e58b55d31
+  checksum: fc2e312a1d7e4639b733c1df729d80b1cc2fc3305205ce0f5b6e6e366e95b73f4e3bfd62a26df308d4947151eedb0eeeb30ba64e6d62cca45c1f570a0d05773d
   languageName: node
   linkType: hard
 
@@ -9397,12 +9397,12 @@ __metadata:
   linkType: hard
 
 "@gitbeaker/rest@npm:^40.0.3":
-  version: 40.0.3
-  resolution: "@gitbeaker/rest@npm:40.0.3"
+  version: 40.1.3
+  resolution: "@gitbeaker/rest@npm:40.1.3"
   dependencies:
-    "@gitbeaker/core": ^40.0.3
-    "@gitbeaker/requester-utils": ^40.0.3
-  checksum: 6a6427b82ee3357fbe07e1235de7a3c98d50155898180fbe4dd641c8575faa93853f1a39185e18876f84469e1a385ccd9beb26fd95b61c260b81eb0ed342355b
+    "@gitbeaker/core": ^40.1.3
+    "@gitbeaker/requester-utils": ^40.1.3
+  checksum: 1258f7877481598649122a856b24390188e7f84734538346b1dd413fad896725905ac6ab8c8cf0751e1ef4f7165347405e010dc7a735bae701871a795a885db4
   languageName: node
   linkType: hard
 
@@ -38048,12 +38048,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qs@npm:^6.10.1, qs@npm:^6.10.2, qs@npm:^6.11.0, qs@npm:^6.11.2, qs@npm:^6.9.1, qs@npm:^6.9.4":
-  version: 6.12.1
-  resolution: "qs@npm:6.12.1"
+"qs@npm:^6.10.1, qs@npm:^6.10.2, qs@npm:^6.11.0, qs@npm:^6.11.2, qs@npm:^6.12.2, qs@npm:^6.9.1, qs@npm:^6.9.4":
+  version: 6.13.0
+  resolution: "qs@npm:6.13.0"
   dependencies:
     side-channel: ^1.0.6
-  checksum: aa761d99e65b6936ba2dd2187f2d9976afbcda38deb3ff1b3fe331d09b0c578ed79ca2abdde1271164b5be619c521ec7db9b34c23f49a074e5921372d16242d5
+  checksum: e9404dc0fc2849245107108ce9ec2766cde3be1b271de0bf1021d049dc5b98d1a2901e67b431ac5509f865420a7ed80b7acb3980099fe1c118a1c5d2e1432ad8
   languageName: node
   linkType: hard
 
@@ -38235,10 +38235,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rate-limiter-flexible@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "rate-limiter-flexible@npm:4.0.0"
-  checksum: defaa10e35d77399c4bbdeaa0e3f0028bcc5f6d678118d54496d5c01a4c9d5d56e16885e2ea339e7dd1ea056a3594bba24a18b5da236965f1d186fd52bdbe9fe
+"rate-limiter-flexible@npm:^4.0.0, rate-limiter-flexible@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "rate-limiter-flexible@npm:4.0.1"
+  checksum: 88cb4ae4c6a94646eb4987f08ae203896fc340d84038e145958607ab711d9c703e47e55f177a4bf9bab4c637c73ee2254fffe2ec4e289d41389c8502194ca868
   languageName: node
   linkType: hard
 
