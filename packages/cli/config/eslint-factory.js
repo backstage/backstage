@@ -277,7 +277,7 @@ function createConfigForRole(dir, role, extraConfig = {}) {
         restrictedSrcSyntax: [
           {
             message:
-              "`__dirname` doesn't refer to the same dir in production builds, try `resolvePackagePath()` from `@backstage/backend-common` instead.",
+              "`__dirname` doesn't refer to the same dir in production builds, try `resolvePackagePath()` from `@backstage/backend-plugin-api` instead.",
             selector: 'Identifier[name="__dirname"]',
           },
           ...(extraConfig.restrictedSrcSyntax ?? []),

@@ -32,7 +32,6 @@ leaving any imports in place.
 import { version as root } from '../../../../package.json';
 
 import { version as appDefaults } from '../../../app-defaults/package.json';
-import { version as backendCommon } from '../../../backend-common/package.json';
 import { version as backendDefaults } from '../../../backend-defaults/package.json';
 import { version as catalogClient } from '../../../catalog-client/package.json';
 import { version as catalogModel } from '../../../catalog-model/package.json';
@@ -88,7 +87,6 @@ import { version as pluginUserSettings } from '../../../../plugins/user-settings
 export const packageVersions = {
   root,
   '@backstage/app-defaults': appDefaults,
-  '@backstage/backend-common': backendCommon,
   '@backstage/backend-defaults': backendDefaults,
   '@backstage/catalog-client': catalogClient,
   '@backstage/catalog-model': catalogModel,
