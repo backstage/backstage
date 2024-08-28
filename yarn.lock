@@ -17482,13 +17482,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/eslint@npm:^8.56.5":
-  version: 8.56.5
-  resolution: "@types/eslint@npm:8.56.5"
+"@types/eslint@npm:^8.56.10":
+  version: 8.56.12
+  resolution: "@types/eslint@npm:8.56.12"
   dependencies:
     "@types/estree": "*"
     "@types/json-schema": "*"
-  checksum: 95a7a23ca38c78e5c27a2ed36ef60f094d5e6589e3473c320b6ff69eb3ca6333d5b7f0d5053416369f5ab2fb86874df19562d4d67a98237c17def6e30abff540
+  checksum: 0f7710ee02a256c499514251f527f84de964bb29487db840408e4cde79283124a38935597636d2265756c34dd1d902e1b00ae78930d4a0b55111909cb7b80d84
   languageName: node
   linkType: hard
 
@@ -26285,18 +26285,18 @@ __metadata:
   linkType: hard
 
 "eslint-webpack-plugin@npm:^4.0.0":
-  version: 4.1.0
-  resolution: "eslint-webpack-plugin@npm:4.1.0"
+  version: 4.2.0
+  resolution: "eslint-webpack-plugin@npm:4.2.0"
   dependencies:
-    "@types/eslint": ^8.56.5
+    "@types/eslint": ^8.56.10
     jest-worker: ^29.7.0
     micromatch: ^4.0.5
     normalize-path: ^3.0.0
     schema-utils: ^4.2.0
   peerDependencies:
-    eslint: ^8.0.0
+    eslint: ^8.0.0 || ^9.0.0
     webpack: ^5.0.0
-  checksum: 1676ff08b0424e4656aa638a0c2a7b2f3f6a504651689a2d86b237c9a52ad65e17aeb5abbe13663e25353d8a706dcf45f49dbe4795dad27b6b0650db8aa21b16
+  checksum: 51538d60d0d0f3dd5774a4291af4620884a45a40270e2878c2f7c8dbff3584ef8588ffded8de696a4bbcee45bee219eba442eb503f5eddcc79aefeb4845985ae
   languageName: node
   linkType: hard
 
