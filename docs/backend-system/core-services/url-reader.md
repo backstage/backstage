@@ -97,7 +97,7 @@ the browser naturally when a person is browsing the provider in their browser.
 Upon receiving the URL, `readUrl` converts the user-friendly URL into an API URL
 which can be used to request the provider's API.
 
-`readUrl` then makes an authenticated request to the provider API and returns the response containing the file's contents and ETag(if the provider supports it).
+`readUrl` then makes an authenticated request to the provider API and returns the response containing the file's contents and `ETag` (if the provider supports it).
 
 #### `readTree`
 
