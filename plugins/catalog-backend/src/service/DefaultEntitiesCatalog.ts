@@ -249,7 +249,18 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
         ]);
       }
     });
-    entitiesQuery = entitiesQuery.orderBy('final_entities.entity_id', 'asc'); // stable sort
+
+    if (!request?.order) {
+      entitiesQuery = entitiesQuery
+        .leftOuterJoin(
+          'refresh_state',
+          'refresh_state.entity_id',
+          'final_entities.entity_id',
+        )
+        .orderBy('refresh_state.entity_ref', 'asc'); // default sort
+    } else {
+      entitiesQuery.orderBy('final_entities.entity_id', 'asc'); // stable sort
+    }
 
     const { limit, offset } = parsePagination(request?.pagination);
     if (limit !== undefined) {
