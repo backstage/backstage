@@ -88,7 +88,7 @@
     "@microsoft/api-extractor-model": "*",
     "@microsoft/tsdoc": "*",
     "@microsoft/tsdoc-config": "*",
-    "@useoptic/optic": "^0.50.7",
+    "@useoptic/optic": "^0.55.0",
     "prettier": "^2.8.1",
     "typescript": "> 3.0.0"
   },
