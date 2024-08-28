@@ -74,8 +74,8 @@ backend.add(customReader);
 
 We want to make sure all URL Readers behave in the same way. Hence if possible,
 all the methods of the `UrlReaderService` interface should be implemented. However it
-is okay to start by implementing just one of them and create issues for the
-remaining.
+is okay to start by implementing just one of them and creating issues for the
+remaining ones.
 
 You can choose to make new URL Readers open source if the use case is beneficial to other users. Either as its own package or by updating the
 [`default` factory](https://github.com/backstage/backstage/blob/ce2ca68f07ad3334401d3277b989bf145b728a64/packages/backend-defaults/src/entrypoints/urlReader/lib/UrlReaders.ts#L82-L102)
