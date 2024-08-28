@@ -46,7 +46,7 @@ export {
 export {
   createFrontendModule,
   type FrontendModule,
-  type ModuleOptions,
+  type FrontendModuleOptions,
 } from './createFrontendModule';
 export {
   createExtensionOverrides,
