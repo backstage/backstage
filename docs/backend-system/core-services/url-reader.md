@@ -115,7 +115,7 @@ used to download either a zip or a tarball. You can download the entire tree
 sub-tree. But some APIs are smart enough to accept a path and return only a
 sub-tree in the downloaded archive.
 
-#### search
+#### `search`
 
 `search` method expects a glob pattern of a URL and returns a list of files
 matching the query.
