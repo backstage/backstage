@@ -135,7 +135,7 @@ the tree and return the files matching the pattern in the `url`.
 All of the methods above support an ETag based caching. If the method is called
 without an ETag, the response contains the ETag of the resource (should ideally
 forward the ETag returned by the provider). If the method is called with an
-`etag`, it first compares the ETag and returns a `NotModifiedError` in case the
+ETag, it first compares the ETag and returns a `NotModifiedError` in case the
 resource has not been modified. This approach is very similar to the actual
 [`ETag`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag) and
 [`If-None-Match`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/If-None-Match)
