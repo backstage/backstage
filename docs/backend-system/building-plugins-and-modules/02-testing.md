@@ -58,7 +58,7 @@ interactions with the running test service.
 
 ### mock services
 
-The `mockServices` object provides a number of service factory functions satisfy plugin dependencies but also mocks to verify interactions between plugin and services.
+The `mockServices` object from `@backstage/backend-test-utils` provides a number of service factory functions that you can use to verify interactions between plugin and services.
 
 The following mock services are available:
 
