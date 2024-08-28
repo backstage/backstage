@@ -3522,8 +3522,8 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/types": "workspace:^"
     "@google-cloud/storage": ^7.0.0
-    "@keyv/memcache": ^1.3.5
-    "@keyv/redis": ^2.5.3
+    "@keyv/memcache": ^2.0.1
+    "@keyv/redis": ^3.0.1
     "@kubernetes/client-node": 0.20.0
     "@manypkg/get-packages": ^1.1.3
     "@octokit/rest": ^19.0.3
@@ -3561,7 +3561,7 @@ __metadata:
     http-errors: ^2.0.0
     isomorphic-git: ^1.23.0
     jose: ^5.0.0
-    keyv: ^4.5.2
+    keyv: ^5.0.0
     knex: ^3.0.0
     lodash: ^4.17.21
     logform: ^2.3.2
@@ -3624,8 +3624,8 @@ __metadata:
     "@backstage/plugin-permission-node": "workspace:^"
     "@backstage/types": "workspace:^"
     "@google-cloud/storage": ^7.0.0
-    "@keyv/memcache": ^1.3.5
-    "@keyv/redis": ^2.5.3
+    "@keyv/memcache": ^2.0.1
+    "@keyv/redis": ^3.0.1
     "@manypkg/get-packages": ^1.1.3
     "@octokit/rest": ^19.0.3
     "@opentelemetry/api": ^1.3.0
@@ -3807,18 +3807,17 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@keyv/memcache": ^1.3.5
-    "@keyv/redis": ^2.5.3
+    "@keyv/memcache": ^2.0.1
+    "@keyv/redis": ^3.0.1
     "@types/express": ^4.17.6
     "@types/express-serve-static-core": ^4.17.5
-    "@types/keyv": ^4.2.0
     "@types/qs": ^6.9.6
     "@types/supertest": ^2.0.8
     better-sqlite3: ^11.0.0
     cookie: ^0.6.0
     express: ^4.17.1
     fs-extra: ^11.0.0
-    keyv: ^4.5.2
+    keyv: ^5.0.0
     knex: ^3.0.0
     msw: ^1.0.0
     mysql2: ^3.0.0
@@ -10445,22 +10444,32 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@keyv/memcache@npm:^1.3.5":
-  version: 1.3.7
-  resolution: "@keyv/memcache@npm:1.3.7"
+"@keyv/memcache@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "@keyv/memcache@npm:2.0.1"
   dependencies:
-    json-buffer: ^3.0.1
-    memjs: ^1.3.1
-  checksum: 61c836c1b0c264c35281a38dbc380a102b2899eab46226a0e31614d3d7c4708ecdb06d8858f711893212ae5b357a79213c7a7b7a81b6196e56dd889dd1ca498b
+    "@keyv/serialize": "*"
+    buffer: ^6.0.3
+    memjs: ^1.3.2
+  checksum: 357b320fb3998e7bff9e3a5702da3cc0d4337586f1a04392dfb490cef7af2c039c3ecda922b18029cc9de6e9310a91cde1602b0851fb86acb93b629200458cc2
   languageName: node
   linkType: hard
 
-"@keyv/redis@npm:^2.5.3":
-  version: 2.8.5
-  resolution: "@keyv/redis@npm:2.8.5"
+"@keyv/redis@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "@keyv/redis@npm:3.0.1"
   dependencies:
     ioredis: ^5.4.1
-  checksum: 87ffec61d31fa9de128ba3e5a7b616535ddbdaa4d92cbc9e1a9fab143adf967135e9cca16e192e8f52cc1ba00ed2a7f10eca9944d7550385530dab95333e81ef
+  checksum: b81009935d6eb0eae30c5a9a66b73f2cdf1a40e2b7c45f343fae4c887de1c9c10342358835933c62952d46bc11b96e68e7ed6b12549a3d33637b892e8e1d3760
+  languageName: node
+  linkType: hard
+
+"@keyv/serialize@npm:*":
+  version: 1.0.1
+  resolution: "@keyv/serialize@npm:1.0.1"
+  dependencies:
+    buffer: ^6.0.3
+  checksum: ff3dd9a6246b17fca3d1b0aba312dea931059fdecc36027f4d8133e59dbb3554a0a516b1f3dfc7fb2b3ca7a3d6fa307804f299566ab214febd3fb9d0502eebed
   languageName: node
   linkType: hard
 
@@ -17837,7 +17846,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/keyv@npm:*, @types/keyv@npm:^4.2.0":
+"@types/keyv@npm:*":
   version: 4.2.0
   resolution: "@types/keyv@npm:4.2.0"
   dependencies:
@@ -31545,7 +31554,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json-buffer@npm:3.0.1, json-buffer@npm:^3.0.1":
+"json-buffer@npm:3.0.1":
   version: 3.0.1
   resolution: "json-buffer@npm:3.0.1"
   checksum: 9026b03edc2847eefa2e37646c579300a1f3a4586cfb62bf857832b60c852042d0d6ae55d1afb8926163fa54c2b01d83ae24705f34990348bdac6273a29d4581
@@ -32005,12 +32014,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"keyv@npm:*, keyv@npm:^4.0.0, keyv@npm:^4.5.2":
-  version: 4.5.4
-  resolution: "keyv@npm:4.5.4"
+"keyv@npm:*, keyv@npm:^5.0.0":
+  version: 5.0.1
+  resolution: "keyv@npm:5.0.1"
   dependencies:
-    json-buffer: 3.0.1
-  checksum: 74a24395b1c34bd44ad5cb2b49140d087553e170625240b86755a6604cd65aa16efdbdeae5cdb17ba1284a0fbb25ad06263755dbc71b8d8b06f74232ce3cdd72
+    "@keyv/serialize": "*"
+  checksum: 2b311f500e23e02a913400132ced64c94639bb6c57c29c93b0f8a9bf8f7d84f5de7a12ec4205b13f18ee90fd7dbcf494c8530603b97e799cd3f07a19496cc2fe
   languageName: node
   linkType: hard
 
@@ -32020,6 +32029,15 @@ __metadata:
   dependencies:
     json-buffer: 3.0.0
   checksum: bb7e8f3acffdbafbc2dd5b63f377fe6ec4c0e2c44fc82720449ef8ab54f4a7ce3802671ed94c0f475ae0a8549703353a2124561fcf3317010c141b32ca1ce903
+  languageName: node
+  linkType: hard
+
+"keyv@npm:^4.0.0, keyv@npm:^4.5.2":
+  version: 4.5.4
+  resolution: "keyv@npm:4.5.4"
+  dependencies:
+    json-buffer: 3.0.1
+  checksum: 74a24395b1c34bd44ad5cb2b49140d087553e170625240b86755a6604cd65aa16efdbdeae5cdb17ba1284a0fbb25ad06263755dbc71b8d8b06f74232ce3cdd72
   languageName: node
   linkType: hard
 
@@ -33464,10 +33482,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"memjs@npm:^1.3.1":
-  version: 1.3.1
-  resolution: "memjs@npm:1.3.1"
-  checksum: cb70879055151f15292e95ab57765e745c84d2fedd363b453afc3e2f48bf185e3771eecf9544f95009a3a374e810e34c1e18948134e814d791c2f0f35359ddeb
+"memjs@npm:^1.3.2":
+  version: 1.3.2
+  resolution: "memjs@npm:1.3.2"
+  checksum: f92c2a43725b70af69832f807d02b87a07609a1c1f2c8c37670dff5bae6ac5f0d767cc8b3a6a59626703538f96c0bd4f03f9d00ea3b28aeb33270d24e8782233
   languageName: node
   linkType: hard
 

@@ -158,7 +158,7 @@ export class CacheManager {
     let store: typeof KeyvRedis | undefined;
     return (pluginId, defaultTtl) => {
       if (!store) {
-        store = new KeyvRedis(this.connection);
+        store = new KeyvRedis({ uri: this.connection });
         // Always provide an error handler to avoid stopping the process
         store.on('error', (err: Error) => {
           this.logger?.error('Failed to create redis cache client', err);
