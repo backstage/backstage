@@ -15928,8 +15928,8 @@ __metadata:
   linkType: hard
 
 "@stoplight/spectral-rulesets@npm:^1.14.1, @stoplight/spectral-rulesets@npm:^1.18.0":
-  version: 1.18.1
-  resolution: "@stoplight/spectral-rulesets@npm:1.18.1"
+  version: 1.19.1
+  resolution: "@stoplight/spectral-rulesets@npm:1.19.1"
   dependencies:
     "@asyncapi/specs": ^4.1.0
     "@stoplight/better-ajv-errors": 1.0.3
@@ -15940,12 +15940,13 @@ __metadata:
     "@stoplight/spectral-runtime": ^1.1.1
     "@stoplight/types": ^13.6.0
     "@types/json-schema": ^7.0.7
-    ajv: ^8.8.2
+    ajv: ^8.12.0
     ajv-formats: ~2.1.0
     json-schema-traverse: ^1.0.0
+    leven: 3.1.0
     lodash: ~4.17.21
     tslib: ^2.3.0
-  checksum: 2eeff0fb3ffb7a2f3fca8c92c4d766925f62fabdc92b1899d3bc620a29e4ff8e68aacc63b8a77ede4030ee9127a12022e94117773ba5fd278acd7ba15c0fe5a0
+  checksum: eaecc5062701bd1317ab828dd3b6ad69544e5f0e9d9aecdfdf1da0c476557cb355d6a077731751d6c177c57fa6234f0fd28639733f196768c46e404a4376c763
   languageName: node
   linkType: hard
 
@@ -20428,7 +20429,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ajv@npm:^8.0.0, ajv@npm:^8.10.0, ajv@npm:^8.11.0, ajv@npm:^8.11.2, ajv@npm:^8.12.0, ajv@npm:^8.6.0, ajv@npm:^8.6.3, ajv@npm:^8.8.2, ajv@npm:^8.9.0":
+"ajv@npm:^8.0.0, ajv@npm:^8.10.0, ajv@npm:^8.11.0, ajv@npm:^8.11.2, ajv@npm:^8.12.0, ajv@npm:^8.6.0, ajv@npm:^8.6.3, ajv@npm:^8.9.0":
   version: 8.12.0
   resolution: "ajv@npm:8.12.0"
   dependencies:
@@ -32265,7 +32266,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"leven@npm:^3.1.0":
+"leven@npm:3.1.0, leven@npm:^3.1.0":
   version: 3.1.0
   resolution: "leven@npm:3.1.0"
   checksum: 638401d534585261b6003db9d99afd244dfe82d75ddb6db5c0df412842d5ab30b2ef18de471aaec70fe69a46f17b4ae3c7f01d8a4e6580ef7adb9f4273ad1e55
