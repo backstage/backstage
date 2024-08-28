@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { JSX, ReactNode } from 'react';
+import React, { JSX } from 'react';
 import { ConfigReader } from '@backstage/config';
 import {
   ApiBlueprint,
@@ -32,7 +32,6 @@ import {
   createApiFactory,
   routeResolutionApiRef,
 } from '@backstage/frontend-plugin-api';
-
 import {
   AnyApiFactory,
   ApiHolder,
@@ -41,15 +40,14 @@ import {
   featureFlagsApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
-import { getAvailableFeatures } from './discovery';
 import { ApiFactoryRegistry, ApiResolver } from '@backstage/core-app-api';
 
 // TODO: Get rid of all of these
 
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { defaultConfigLoaderSync } from '../../../core-app-api/src/app/defaultConfigLoader';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { overrideBaseUrlConfigs } from '../../../core-app-api/src/app/overrideBaseUrlConfigs';
+import {
+  createApp as _createApp,
+  CreateAppFeatureLoader as _CreateAppFeatureLoader,
+} from '@backstage/frontend-defaults';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 
@@ -71,7 +69,6 @@ import {
 } from '../../../frontend-plugin-api/src/wiring/createFrontendModule';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalExtensionOverrides } from '../../../frontend-plugin-api/src/wiring/createExtensionOverrides';
-import { stringifyError } from '@backstage/errors';
 import { getBasePath } from '../routing/getBasePath';
 import { Root } from '../extensions/Root';
 import { resolveAppTree } from '../tree/resolveAppTree';
@@ -83,7 +80,6 @@ import { ApiRegistry } from '../../../core-app-api/src/apis/system/ApiRegistry';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
 import { BackstageRouteObject } from '../routing/types';
-import appPlugin from '@backstage/plugin-app';
 import { FrontendFeature } from './types';
 
 function deduplicateFeatures(
@@ -107,93 +103,6 @@ function deduplicateFeatures(
       return true;
     })
     .reverse();
-}
-
-/**
- * A source of dynamically loaded frontend features.
- *
- * @public
- */
-export interface CreateAppFeatureLoader {
-  /**
-   * Returns name of this loader. suitable for showing to users.
-   */
-  getLoaderName(): string;
-
-  /**
-   * Loads a number of features dynamically.
-   */
-  load(options: { config: ConfigApi }): Promise<{
-    features: FrontendFeature[];
-  }>;
-}
-
-/** @public */
-export function createApp(options?: {
-  features?: (FrontendFeature | CreateAppFeatureLoader)[];
-  configLoader?: () => Promise<{ config: ConfigApi }>;
-  bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
-  /**
-   * The component to render while loading the app (waiting for config, features, etc)
-   *
-   * Is the text "Loading..." by default.
-   * If set to "null" then no loading fallback component is rendered.   *
-   */
-  loadingComponent?: ReactNode;
-}): {
-  createRoot(): JSX.Element;
-} {
-  let suspenseFallback = options?.loadingComponent;
-  if (suspenseFallback === undefined) {
-    suspenseFallback = 'Loading...';
-  }
-
-  async function appLoader() {
-    const config =
-      (await options?.configLoader?.().then(c => c.config)) ??
-      ConfigReader.fromConfigs(
-        overrideBaseUrlConfigs(defaultConfigLoaderSync()),
-      );
-
-    const discoveredFeatures = getAvailableFeatures(config);
-
-    const providedFeatures: FrontendFeature[] = [];
-    for (const entry of options?.features ?? []) {
-      if ('load' in entry) {
-        try {
-          const result = await entry.load({ config });
-          providedFeatures.push(...result.features);
-        } catch (e) {
-          throw new Error(
-            `Failed to read frontend features from loader '${entry.getLoaderName()}', ${stringifyError(
-              e,
-            )}`,
-          );
-        }
-      } else {
-        providedFeatures.push(entry);
-      }
-    }
-
-    const app = createSpecializedApp({
-      config,
-      features: [...discoveredFeatures, ...providedFeatures],
-      bindRoutes: options?.bindRoutes,
-    }).createRoot();
-
-    return { default: () => app };
-  }
-
-  return {
-    createRoot() {
-      const LazyApp = React.lazy(appLoader);
-      return (
-        <React.Suspense fallback={suspenseFallback}>
-          <LazyApp />
-        </React.Suspense>
-      );
-    },
-  };
 }
 
 // Helps delay callers from reaching out to the API before the app tree has been materialized
@@ -267,8 +176,21 @@ class RouteResolutionApiProxy implements RouteResolutionApi {
 }
 
 /**
- * Synchronous version of {@link createApp}, expecting all features and
- * config to have been loaded already.
+ * @public
+ * @deprecated Import from `@backstage/frontend-defaults` instead.
+ */
+export const createApp = _createApp;
+
+/**
+ * @public
+ * @deprecated Import from `@backstage/frontend-defaults` instead.
+ */
+export type CreateAppFeatureLoader = _CreateAppFeatureLoader;
+
+/**
+ * Creates an empty app without any default features. This is a low-level API is
+ * intended for use in tests or specialized setups. Typically wou want to use
+ * `createApp` from `@backstage/frontend-defaults` instead.
  *
  * @public
  */
@@ -277,12 +199,8 @@ export function createSpecializedApp(options?: {
   config?: ConfigApi;
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
 }): { createRoot(): JSX.Element } {
-  const {
-    features: featuresWithoutApp = [],
-    config = new ConfigReader({}, 'empty-config'),
-  } = options ?? {};
-
-  const features = deduplicateFeatures([appPlugin, ...featuresWithoutApp]);
+  const config = options?.config ?? new ConfigReader({}, 'empty-config');
+  const features = deduplicateFeatures(options?.features ?? []);
 
   const tree = resolveAppTree(
     'root',
@@ -317,12 +235,6 @@ export function createSpecializedApp(options?: {
     ],
   });
 
-  // Now instantiate the entire tree, which will skip anything that's already been instantiated
-  instantiateAppNodeTree(tree.root, apiHolder);
-
-  routeResolutionApi.initialize();
-  appTreeApi.initialize();
-
   const featureFlagApi = apiHolder.get(featureFlagsApiRef);
   if (featureFlagApi) {
     for (const feature of features) {
@@ -349,6 +261,12 @@ export function createSpecializedApp(options?: {
       }
     }
   }
+
+  // Now instantiate the entire tree, which will skip anything that's already been instantiated
+  instantiateAppNodeTree(tree.root, apiHolder);
+
+  routeResolutionApi.initialize();
+  appTreeApi.initialize();
 
   const rootEl = tree.root.instance!.getData(coreExtensionData.reactElement);
 

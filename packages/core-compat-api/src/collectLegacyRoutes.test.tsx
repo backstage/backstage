@@ -38,8 +38,8 @@ import {
   createRouteRef,
   useApp,
 } from '@backstage/core-plugin-api';
-import { createSpecializedApp } from '@backstage/frontend-app-api';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/frontend-test-utils';
 
 describe('collectLegacyRoutes', () => {
   it('should collect legacy routes', () => {
@@ -281,7 +281,7 @@ describe('collectLegacyRoutes', () => {
       </FlatRoutes>,
     );
 
-    render(createSpecializedApp({ features }).createRoot());
+    renderInTestApp(<div />, { features });
 
     await expect(
       screen.findByText('plugins: app, test'),

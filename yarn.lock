@@ -4426,17 +4426,14 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
-    "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/errors": "workspace:^"
+    "@backstage/frontend-defaults": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/plugin-app": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/theme": "workspace:^"
     "@backstage/types": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
-    "@material-ui/core": ^4.12.4
-    "@material-ui/icons": ^4.11.3
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^15.0.0
     "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -4444,6 +4441,26 @@ __metadata:
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
+  languageName: unknown
+  linkType: soft
+
+"@backstage/frontend-defaults@workspace:^, @backstage/frontend-defaults@workspace:packages/frontend-defaults":
+  version: 0.0.0-use.local
+  resolution: "@backstage/frontend-defaults@workspace:packages/frontend-defaults"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/frontend-app-api": "workspace:^"
+    "@backstage/frontend-plugin-api": "workspace:^"
+    "@backstage/plugin-app": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
+    "@testing-library/jest-dom": ^6.0.0
+    "@testing-library/react": ^15.0.0
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0 || ^18.0.0
   languageName: unknown
   linkType: soft
 

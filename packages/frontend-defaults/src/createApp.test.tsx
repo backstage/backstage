@@ -19,7 +19,6 @@ import {
   appTreeApiRef,
   coreExtensionData,
   createExtension,
-  createExtensionOverrides,
   PageBlueprint,
   createFrontendPlugin,
   ThemeBlueprint,
@@ -176,7 +175,13 @@ describe('createApp', () => {
     const app = createApp({
       configLoader: async () => ({ config: new MockConfigApi({}) }),
       features: [
-        appPlugin,
+        appPlugin.withOverrides({
+          extensions: [
+            appPlugin
+              .getExtension('app/root')
+              .override({ disabled: true, factory: orig => orig() }),
+          ],
+        }),
         createFrontendPlugin({
           id: 'test',
           featureFlags: [{ name: 'test-1' }],
@@ -203,18 +208,10 @@ describe('createApp', () => {
             }),
           ],
         }),
-        createExtensionOverrides({
+        createFrontendPlugin({
+          id: 'other',
           featureFlags: [{ name: 'test-2' }],
-          extensions: [
-            createExtension({
-              namespace: 'app',
-              name: 'root',
-              attachTo: { id: 'app', input: 'root' },
-              disabled: true,
-              output: [],
-              factory: () => [],
-            }),
-          ],
+          extensions: [],
         }),
       ],
     });
@@ -222,7 +219,7 @@ describe('createApp', () => {
     await renderWithEffects(app.createRoot());
 
     await expect(
-      screen.findByText("Flags: test-1 from 'test', test-2 from ''"),
+      screen.findByText("Flags: test-1 from 'test', test-2 from 'other'"),
     ).resolves.toBeInTheDocument();
   });
 

@@ -18,7 +18,7 @@ The first step in migrating an app is to switch out the `createApp` function for
 // highlight-remove-next-line
 import { createApp } from '@backstage/app-defaults';
 // highlight-add-next-line
-import { createApp } from '@backstage/frontend-app-api';
+import { createApp } from '@backstage/frontend-defaults';
 ```
 
 This immediate switch will lead to a lot of breakages that we need to fix.
