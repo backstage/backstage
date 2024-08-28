@@ -31,17 +31,20 @@ import { myPlugin } from './plugin.ts';
 describe('myPlugin', () => {
   it('can serve values from config', async () => {
     const fakeConfig = { myPlugin: { value: 7 } };
+    const mockLogger = mockServices.logger.mock();
 
     const { server } = await startTestBackend({
       features: [
         myPlugin(),
         mockServices.rootConfig.factory({ data: fakeConfig }),
+        mockLogger,
       ],
     });
 
     const response = await request(server).get('/api/example/get-value');
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ value: 7 });
+    expect(mockLogger.info).toHaveBeenCalledWith('Starting myPlugin');
   });
 });
 ```
@@ -52,6 +55,31 @@ pass options to them, which will override the default mock services.
 The returned server also has a `port()` method which returns the dynamically
 bound listening port. You can use this to perform lower level network
 interactions with the running test service.
+
+### mock services
+
+The `mockServices` object provides a number of service factory functions satisfy plugin dependencies but also mocks to verify interactions between plugin and services.
+
+The following mock services are available:
+
+- `auth`
+- `cache`
+- `database`
+- `discovery`
+- `events`
+- `httpAuth`
+- `httpRouter`
+- `lifecycle`
+- `logger`
+- `permissions`
+- `rootConfig`
+- `rootHealth`
+- `rootHttpRouter`
+- `rootLifecycle`
+- `rootLogger`
+- `scheduler`
+- `urlReader`
+- `userInfo`
 
 ## Testing Remote Service Interactions
 
