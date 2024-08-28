@@ -51,29 +51,33 @@ createBackendPlugin({
 You can also create an internal or bespoke reader and provide it to the backend using a service factory. The following example shows how to create a custom URL reader and provide it to the backend.
 
 ```ts title="packages/backend/src/index.ts"
-import { urlReaderFactoriesServiceRef } from '@backstage/backend-defaults/urlReader';
+import { createBackend } from '@backstage/backend-defaults';
 import {
-  createBackendFeatureLoader,
+  ReaderFactory,
+  urlReaderFactoriesServiceRef,
+} from '@backstage/backend-defaults/urlReader';
+import {
   createServiceFactory,
+  UrlReaderService,
 } from '@backstage/backend-plugin-api';
+import { ScmIntegrations } from '@backstage/integration';
 
+type CustomIntegrationConfig = {
+  // custom config fields
+};
 
 class CustomUrlReader implements UrlReaderService {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
     const integrations = ScmIntegrations.fromConfig(config);
-      const reader = new GithubUrlReader(integration, { treeResponseFactory });
-      const predicate = (url: URL) => url.host === integration.config.host;
-      return { reader, predicate };
-    });
-
-  constructor(
-    private readonly integration: BitbucketServerIntegration,
-    private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
-  ) {}
-
-  // implementations of read, readTree and search methods skipped for this example
+    const integrationsConfig = integrations.byHost('myCustomDomain') ?? {};
+    const reader = new CustomUrlReader(integrationsConfig);
+    const predicate = (url: URL) => url.host === 'myCustomDomain';
+    return [{ reader, predicate }];
   };
 
+  constructor(private readonly integrationConfig: CustomIntegrationConfig) {}
+  // implementations of read, readTree and search methods skipped for this example
+}
 
 const customReader = createServiceFactory({
   service: urlReaderFactoriesServiceRef,
