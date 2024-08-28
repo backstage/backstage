@@ -132,7 +132,7 @@ the tree and return the files matching the pattern in the `url`.
 
 ### Caching
 
-All of the methods above support an ETag based caching. If the method is called
+All of the methods above support ETag based caching. If the method is called
 without an ETag, the response contains the ETag of the resource (should ideally
 forward the ETag returned by the provider). If the method is called with an
 ETag, it first compares the ETag and returns a `NotModifiedError` in case the
