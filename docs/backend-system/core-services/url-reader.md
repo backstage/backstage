@@ -125,7 +125,7 @@ matching the query.
 - ✅ Valid URL : `https://github.com/backstage/backstage/blob/master/**/*.md`
 - ✅ Valid URL :
   `https://github.com/backstage/backstage/blob/master/*/package.json`
-- ✅ Valid URL : `https://github.com/backstage/backstage/blob/master/READM`
+- ✅ Valid URL : `https://github.com/backstage/backstage/blob/master/README`
 
 The core logic of `readTree` can be used here to extract all the files inside
 the tree and return the files matching the pattern in the `url`.
