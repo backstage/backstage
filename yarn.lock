@@ -34437,8 +34437,8 @@ __metadata:
   linkType: hard
 
 "msw@npm:^2.0.0, msw@npm:^2.0.8":
-  version: 2.3.5
-  resolution: "msw@npm:2.3.5"
+  version: 2.4.0
+  resolution: "msw@npm:2.4.0"
   dependencies:
     "@bundled-es-modules/cookie": ^2.0.0
     "@bundled-es-modules/statuses": ^1.0.1
@@ -34449,7 +34449,6 @@ __metadata:
     "@types/cookie": ^0.6.0
     "@types/statuses": ^2.0.4
     chalk: ^4.1.2
-    graphql: ^16.8.1
     headers-polyfill: ^4.0.2
     is-node-process: ^1.2.0
     outvariant: ^1.4.2
@@ -34460,11 +34459,13 @@ __metadata:
   peerDependencies:
     typescript: ">= 4.7.x"
   peerDependenciesMeta:
+    graphql:
+      optional: true
     typescript:
       optional: true
   bin:
     msw: cli/index.js
-  checksum: 0867b11ad26cf54d6b4a01a416524ce56ee62c165ce753cb82cc404882e24dc96ecf81c1900348d96afce8f17da32ec640953c9b4c1319c3d84f97a75f4c735a
+  checksum: 0be990c56dc1f071bab37785807be99d8429abeb165f122ed47954a2513a5bcd2a0b1866390faed211cf8cd9232e93d9c5551075c59b3a1aa555cafa3a3233f6
   languageName: node
   linkType: hard
 
