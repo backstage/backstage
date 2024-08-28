@@ -54,7 +54,7 @@ backend.add(import('@backstage/plugin-notifications-backend'));
 ### Add Notifications Frontend
 
 ```bash
-yarn workspace app add @backstage/notifications
+yarn workspace app add @backstage/plugin-notifications
 ```
 
 To add the notifications main menu, add following to your `packages/app/src/components/Root/Root.tsx`:
@@ -112,7 +112,7 @@ yarn workspace app add @backstage/plugin-signals
 To install the plugin, add the `SignalsDisplay` to your app root in `packages/app/src/App.tsx`:
 
 ```tsx
-export { SignalsDisplay } from '@backstage/plugin-signals';
+import { SignalsDisplay } from '@backstage/plugin-signals';
 
 export default app.createRoot(
   <>
