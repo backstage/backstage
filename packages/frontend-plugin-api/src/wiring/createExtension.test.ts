@@ -705,6 +705,41 @@ describe('createExtension', () => {
       ).toBe('foo-hello-override-world');
     });
 
+    it('should be able to disable extension with override', () => {
+      const subject = createExtension({
+        name: 'root',
+        attachTo: { id: 'ignored', input: 'ignored' },
+        inputs: {
+          input: createExtensionInput([stringDataRef], {
+            singleton: true,
+            optional: true,
+          }),
+        },
+        output: [stringDataRef.optional()],
+        factory({ inputs }) {
+          return inputs.input ?? [];
+        },
+      });
+
+      const attached = createExtension({
+        attachTo: { id: 'root', input: 'input' },
+        output: [stringDataRef],
+        factory() {
+          return [stringDataRef('test')];
+        },
+      });
+
+      expect(
+        createExtensionTester(subject).add(attached).get(stringDataRef),
+      ).toBe('test');
+
+      expect(
+        createExtensionTester(subject)
+          .add(attached.override({ disabled: true }))
+          .get(stringDataRef),
+      ).toBe(undefined);
+    });
+
     it('should be able to override input values', () => {
       const outputRef = createExtensionDataRef<unknown>().with({
         id: 'output',

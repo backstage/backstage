@@ -1108,7 +1108,7 @@ export type ExtensionDefinition<
             string}' is already defined in parent schema`;
         };
       };
-      factory(
+      factory?(
         originalFactory: (context?: {
           config?: T['config'];
           inputs?: ResolveInputValueOverrides<NonNullable<T['inputs']>>;
