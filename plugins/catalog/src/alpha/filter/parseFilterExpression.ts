@@ -27,6 +27,7 @@ const rootMatcherFactories: Record<
   (
     parameters: string[],
     onParseError: (error: Error) => void,
+    negation?: boolean,
   ) => EntityMatcherFn
 > = {
   kind: createKindMatcher,
@@ -60,10 +61,14 @@ export function parseFilterExpression(expression: string): {
   const parts = splitFilterExpression(expression, e =>
     expressionParseErrors.push(e),
   );
-
+  let negation = false;
   const matchers = parts.flatMap(part => {
     const factory = rootMatcherFactories[part.key];
     if (!factory) {
+      if (isNegation(part.key)) {
+        negation = true;
+        return [];
+      }
       const known = Object.keys(rootMatcherFactories).map(m => `'${m}'`);
       expressionParseErrors.push(
         new InputError(
@@ -73,9 +78,12 @@ export function parseFilterExpression(expression: string): {
       return [];
     }
 
-    const matcher = factory(part.parameters, e =>
-      expressionParseErrors.push(e),
+    const matcher = factory(
+      part.parameters,
+      e => expressionParseErrors.push(e),
+      negation,
     );
+    negation = false;
     return [matcher];
   });
 
@@ -106,7 +114,11 @@ export function splitFilterExpression(
   const result = new Array<{ key: string; parameters: string[] }>();
 
   for (const word of words) {
-    const match = word.match(/^([^:]+):(.+)$/);
+    let match = word.match(/^([^:]+):(.+)$/);
+    if (match && isNegation(match[1])) {
+      result.push({ key: 'not', parameters: [] });
+      match = match[2].match(/^([^:]+):(.+)$/) || null;
+    }
     if (!match) {
       onParseError(
         new InputError(
@@ -123,4 +135,11 @@ export function splitFilterExpression(
   }
 
   return result;
+}
+
+function isNegation(parameter: string): boolean {
+  if (parameter.toLocaleLowerCase('en-US') === 'not') {
+    return true;
+  }
+  return false;
 }

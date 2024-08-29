@@ -22,7 +22,10 @@ import { EntityMatcherFn } from './types';
 export function createKindMatcher(
   parameters: string[],
   _onParseError: (error: Error) => void,
+  negation?: boolean,
 ): EntityMatcherFn {
   const items = parameters.map(p => p.toLocaleLowerCase('en-US'));
-  return entity => items.includes(entity.kind.toLocaleLowerCase('en-US'));
+  const isMatch = (entity: any) =>
+    items.includes(entity.kind.toLocaleLowerCase('en-US'));
+  return negation ? entity => !isMatch(entity) : isMatch;
 }

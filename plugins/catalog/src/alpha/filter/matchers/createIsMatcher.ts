@@ -28,6 +28,7 @@ const allowedMatchers: Record<string, EntityMatcherFn> = {
 export function createIsMatcher(
   parameters: string[],
   onParseError: (error: Error) => void,
+  negation?: boolean,
 ): EntityMatcherFn {
   const matchers = parameters.flatMap(parameter => {
     const matcher = allowedMatchers[parameter.toLocaleLowerCase('en-US')];
@@ -43,6 +44,7 @@ export function createIsMatcher(
     return [matcher];
   });
 
-  return entity =>
+  const isMatch = (entity: any) =>
     matchers.length ? matchers.some(matcher => matcher(entity)) : true;
+  return negation ? entity => !isMatch(entity) : isMatch;
 }

@@ -93,6 +93,20 @@ describe('parseFilterExpression', () => {
     );
   });
 
+  it('recognizes negation key', () => {
+    const component = { kind: 'Component' } as unknown as Entity;
+    expect(run('not:kind:user')(component)).toBe(true);
+  });
+
+  it('supports negation and affirmative expressions', () => {
+    const component = {
+      kind: 'Component',
+      spec: { type: 'service' },
+    } as unknown as Entity;
+    expect(run('not:kind:user type:service')(component)).toBe(true);
+    expect(run('type:service not:kind:user')(component)).toBe(true);
+  });
+
   it('rejects unknown keys', () => {
     expect(() => run('unknown:foo')).toThrowErrorMatchingInlineSnapshot(
       `"'unknown' is not a valid filter expression key, expected one of 'kind','type','is','has'"`,
