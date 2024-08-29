@@ -5953,6 +5953,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^15.0.0
     "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
+    luxon: ^3.5.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -33393,7 +33394,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"luxon@npm:^3.0.0, luxon@npm:^3.2.1, luxon@npm:^3.4.3, luxon@npm:~3.4.0":
+"luxon@npm:^3.0.0, luxon@npm:^3.2.1, luxon@npm:^3.4.3, luxon@npm:^3.5.0":
+  version: 3.5.0
+  resolution: "luxon@npm:3.5.0"
+  checksum: f290fe5788c8e51e748744f05092160d4be12150dca70f9fadc0d233e53d60ce86acd82e7d909a114730a136a77e56f0d3ebac6141bbb82fd310969a4704825b
+  languageName: node
+  linkType: hard
+
+"luxon@npm:~3.4.0":
   version: 3.4.4
   resolution: "luxon@npm:3.4.4"
   checksum: 36c1f99c4796ee4bfddf7dc94fa87815add43ebc44c8934c924946260a58512f0fd2743a629302885df7f35ccbd2d13f178c15df046d0e3b6eb71db178f1c60c
