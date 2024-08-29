@@ -24,6 +24,8 @@ import { Config } from '@docusaurus/types';
 const backstageTheme = themes.vsDark;
 backstageTheme.plain.backgroundColor = '#232323';
 
+const useVersionedDocs = require('fs').existsSync('versions.json');
+
 const config: Config = {
   title: 'Backstage Software Catalog and Developer Platform',
   tagline: 'An open source framework for building developer portals',
@@ -57,22 +59,26 @@ const config: Config = {
           editUrl: 'https://github.com/backstage/backstage/edit/master/docs/',
           path: '../docs',
           sidebarPath: 'sidebars.json',
-          includeCurrentVersion: true,
-          lastVersion: 'stable',
-          versions: {
-            stable: {
-              label: 'Stable',
-              path: '/',
-              banner: 'none',
-              badge: false,
-            },
-            current: {
-              label: 'Next',
-              path: '/next',
-              banner: 'unreleased',
-              badge: true,
-            },
-          },
+          ...(useVersionedDocs
+            ? {
+                includeCurrentVersion: true,
+                lastVersion: 'stable',
+                versions: {
+                  stable: {
+                    label: 'Stable',
+                    path: '/',
+                    banner: 'none',
+                    badge: false,
+                  },
+                  current: {
+                    label: 'Next',
+                    path: '/next',
+                    banner: 'unreleased',
+                    badge: true,
+                  },
+                },
+              }
+            : undefined),
         },
         blog: {
           path: 'blog',
@@ -275,10 +281,14 @@ const config: Config = {
           label: 'Community',
           position: 'left',
         },
-        {
-          type: 'docsVersionDropdown',
-          position: 'right',
-        },
+        ...(useVersionedDocs
+          ? [
+              {
+                type: 'docsVersionDropdown',
+                position: 'right' as const,
+              },
+            ]
+          : []),
       ],
     },
     image: 'img/sharing-opengraph.png',
