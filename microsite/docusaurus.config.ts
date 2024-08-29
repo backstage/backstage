@@ -57,6 +57,22 @@ const config: Config = {
           editUrl: 'https://github.com/backstage/backstage/edit/master/docs/',
           path: '../docs',
           sidebarPath: 'sidebars.json',
+          includeCurrentVersion: true,
+          lastVersion: 'stable',
+          versions: {
+            stable: {
+              label: 'Stable',
+              path: '/',
+              banner: 'none',
+              badge: false,
+            },
+            current: {
+              label: 'Next',
+              path: '/next',
+              banner: 'unreleased',
+              badge: true,
+            },
+          },
         },
         blog: {
           path: 'blog',
@@ -258,6 +274,10 @@ const config: Config = {
           to: '/community',
           label: 'Community',
           position: 'left',
+        },
+        {
+          type: 'docsVersionDropdown',
+          position: 'right',
         },
       ],
     },
