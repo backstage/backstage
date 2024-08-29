@@ -1,5 +1,5 @@
 ---
-id: 02-adding-a-basic-permission-check
+id: 02-adding-a-basic-permission-check--old
 title: 2. Adding a basic permission check
 description: Explains how to add a basic permission check to a Backstage plugin
 ---

@@ -61,23 +61,21 @@ Edit `plugins/todo-list-backend/src/service/router.ts`:
 ```ts title="plugins/todo-list-backend/src/service/router.ts"
 /* highlight-remove-start */
 import { InputError } from '@backstage/errors';
-import { HttpAuthService, LoggerService } from '@backstage/backend-plugin-api';
+import { LoggerService, HttpAuthService } from '@backstage/backend-plugin-api';
 /* highlight-remove-end */
 /* highlight-add-start */
 import { InputError, NotAllowedError } from '@backstage/errors';
-import { AuthService, HttpAuthService, LoggerService } from '@backstage/backend-plugin-api';
-import { AuthorizeResult, PermissionEvaluator } from '@backstage/plugin-permission-common';
+import { LoggerService, HttpAuthService, PermissionsService } from '@backstage/backend-plugin-api';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import { todoListCreatePermission } from '@internal/plugin-todo-list-common';
 /* highlight-add-end */
 
 export interface RouterOptions {
   logger: LoggerService;
+  httpAuth: HttpAuthService;
   /* highlight-add-next-line */
-  auth: AuthService;
-  identity: IdentityApi;
-  /* highlight-add-next-line */
-  permissions: PermissionEvaluator;
+  permissions: PermissionsService;
 }
 
 export async function createRouter(
@@ -86,7 +84,7 @@ export async function createRouter(
   /* highlight-remove-next-line */
   const { logger, httpAuth } = options;
   /* highlight-add-next-line */
-  const { logger, auth, httpAuth, permissions } = options;
+  const { logger, httpAuth, permissions } = options;
 
   /* highlight-add-start */
   const permissionIntegrationRouter = createPermissionIntegrationRouter({
@@ -115,13 +113,11 @@ export async function createRouter(
     const user = await identity.getIdentity({ request: req });
     author = user?.identity.userEntityRef;
     /* highlight-add-start */
+    const credentials = await httpAuth.credentials(req, { allow: ['user'] });
     const decision = (
       await permissions.authorize(
         [{ permission: todoListCreatePermission }],
-        await auth.getPluginRequestToken({
-          onBehalfOf: credentials,
-          targetPluginId: 'permission',
-        }),
+        { credentials },
       )
     )[0];
 
@@ -141,7 +137,7 @@ export async function createRouter(
   // ...
 ```
 
-Pass the `auth` and `permissions` objects to the plugin in `plugins/todo-list-backend/src/plugin.ts`:
+Pass the `permissions` object to the plugin in `plugins/todo-list-backend/src/plugin.ts`:
 
 ```ts title="plugins/todo-list-backend/src/plugin.ts"
 import { coreServices, createBackendPlugin } from '@backstage/backend-plugin-api';
@@ -153,25 +149,21 @@ export const exampleTodoListPlugin = createBackendPlugin({
     env.registerInit({
       deps: {
         logger: coreServices.logger,
-        /* highlight-add-start */
-        auth: coreServices.auth,
-        permissions: coreServices.permissions,
-        /* highlight-add-end */
         httpAuth: coreServices.httpAuth,
         httpRouter: coreServices.httpRouter,
+        /* highlight-add-next-line */
+        permissions: coreServices.permissions,
       },
       /* highlight-remove-next-line */
       async init({ logger, httpAuth, httpRouter }) {
       /* highlight-add-next-line */
-      async init({ logger, auth, httpAuth, httpRouter, permissions }) {
+      async init({ logger, httpAuth, httpRouter, permissions }) {
         httpRouter.use(
           await createRouter({
             logger,
-            /* highlight-add-start */
-            auth,
-            permissions,
-            /* highlight-add-end */
             httpAuth,
+            /* highlight-add-next-line */
+            permissions,
           }),
         );
         httpRouter.addAuthPolicy({
@@ -279,8 +271,6 @@ describe('createRouter', () => {
   beforeAll(async () => {
     const router = await createRouter({
       logger: mockServices.logger.mock(),
-      /* highlight-add-next-line */
-      auth: mockServices.auth.mock(),
       httpAuth: mockServices.httpAuth.mock(),
       /* highlight-add-next-line */
       permissions: mockServices.permissions.mock(),
