@@ -7,17 +7,11 @@ import { ConfigApi } from '@backstage/frontend-plugin-api';
 import { CreateAppRouteBinder } from '@backstage/frontend-app-api';
 import { FrontendFeature } from '@backstage/frontend-app-api';
 import { JSX as JSX_2 } from 'react';
+import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 
 // @public
-export function createApp(options?: {
-  features?: (FrontendFeature | CreateAppFeatureLoader)[];
-  configLoader?: () => Promise<{
-    config: ConfigApi;
-  }>;
-  bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
-  loadingComponent?: ReactNode;
-}): {
+export function createApp(options?: CreateAppOptions): {
   createRoot(): JSX_2.Element;
 };
 
@@ -28,4 +22,22 @@ export interface CreateAppFeatureLoader {
     features: FrontendFeature[];
   }>;
 }
+
+// @public
+export interface CreateAppOptions {
+  // (undocumented)
+  bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
+  // (undocumented)
+  configLoader?: () => Promise<{
+    config: ConfigApi;
+  }>;
+  // (undocumented)
+  features?: (FrontendFeature | CreateAppFeatureLoader)[];
+  loadingComponent?: ReactNode;
+}
+
+// @public
+export function createPublicSignInApp(options?: CreateAppOptions): {
+  createRoot(): React_2.JSX.Element;
+};
 ```
