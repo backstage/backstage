@@ -67,6 +67,7 @@ export const notificationsPlugin = createBackendPlugin({
         database: coreServices.database,
         discovery: coreServices.discovery,
         signals: signalsServiceRef,
+        config: coreServices.rootConfig,
       },
       async init({
         auth,
@@ -77,6 +78,7 @@ export const notificationsPlugin = createBackendPlugin({
         database,
         discovery,
         signals,
+        config,
       }) {
         httpRouter.use(
           await createRouter({
@@ -84,6 +86,7 @@ export const notificationsPlugin = createBackendPlugin({
             httpAuth,
             userInfo,
             logger,
+            config,
             database,
             discovery,
             signals,

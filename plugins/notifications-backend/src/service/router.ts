@@ -46,10 +46,12 @@ import {
 } from '@backstage/plugin-notifications-common';
 import { parseEntityOrderFieldParams } from './parseEntityOrderFieldParams';
 import { getUsersForEntityRef } from './getUsersForEntityRef';
+import { Config } from '@backstage/config';
 
 /** @internal */
 export interface RouterOptions {
   logger: LoggerService;
+  config: Config;
   database: PluginDatabaseManager;
   discovery: DiscoveryService;
   auth: AuthService;
@@ -65,6 +67,7 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const {
+    config,
     logger,
     database,
     auth,
@@ -79,6 +82,7 @@ export async function createRouter(
   const catalogClient =
     catalog ?? new CatalogClient({ discoveryApi: discovery });
   const store = await DatabaseNotificationsStore.create({ database });
+  const frontendBaseUrl = config.getString('app.baseUrl');
 
   const getUser = async (req: Request<unknown>) => {
     const credentials = await httpAuth.credentials(req, { allow: ['user'] });
@@ -174,6 +178,18 @@ export async function createRouter(
           );
         }
       }
+    }
+  };
+
+  const validateLink = (link: string) => {
+    const stripLeadingSlash = (s: string) => s.replace(/^\//, '');
+    const ensureTrailingSlash = (s: string) => s.replace(/\/?$/, '/');
+    const url = new URL(
+      stripLeadingSlash(link),
+      ensureTrailingSlash(frontendBaseUrl),
+    );
+    if (url.protocol !== 'https:' && url.protocol !== 'http:') {
+      throw new Error('Only HTTP/HTTPS links are allowed');
     }
   };
 
@@ -419,11 +435,19 @@ export async function createRouter(
         allow: ['service'],
       });
 
-      const { title } = payload;
+      const { title, link } = payload;
 
       if (!recipients || !title) {
         logger.error(`Invalid notification request received`);
         throw new InputError(`Invalid notification request received`);
+      }
+
+      if (link) {
+        try {
+          validateLink(link);
+        } catch (e) {
+          throw new InputError('Invalid link provided', e);
+        }
       }
 
       const origin = credentials.principal.subject;
