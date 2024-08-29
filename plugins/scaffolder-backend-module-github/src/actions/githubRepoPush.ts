@@ -52,6 +52,7 @@ export function createGithubRepoPushAction(options: {
     gitCommitMessage?: string;
     gitAuthorName?: string;
     gitAuthorEmail?: string;
+    signCommit?: boolean;
     requireCodeOwnerReviews?: boolean;
     dismissStaleReviews?: boolean;
     bypassPullRequestAllowances?:
@@ -103,6 +104,7 @@ export function createGithubRepoPushAction(options: {
           gitCommitMessage: inputProps.gitCommitMessage,
           gitAuthorName: inputProps.gitAuthorName,
           gitAuthorEmail: inputProps.gitAuthorEmail,
+          signCommit: inputProps.signCommit,
           sourcePath: inputProps.sourcePath,
           token: inputProps.token,
           requiredCommitSigning: inputProps.requiredCommitSigning,
@@ -126,6 +128,7 @@ export function createGithubRepoPushAction(options: {
         gitCommitMessage = 'initial commit',
         gitAuthorName,
         gitAuthorEmail,
+        signCommit = false,
         requireCodeOwnerReviews = false,
         dismissStaleReviews = false,
         bypassPullRequestAllowances,
@@ -139,7 +142,7 @@ export function createGithubRepoPushAction(options: {
         requiredCommitSigning = false,
       } = ctx.input;
 
-      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
+      const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
 
       if (!owner) {
         throw new InputError('Invalid repository owner provided in repoUrl');
@@ -151,6 +154,13 @@ export function createGithubRepoPushAction(options: {
         token: providedToken,
         repoUrl,
       });
+      const integrationConfig = integrations.github.byHost(host);
+
+      if (!integrationConfig) {
+        throw new InputError(
+          `No matching integration configuration for host ${host}, please check your integrations config`,
+        );
+      }
 
       const client = new Octokit(octokitOptions);
 
@@ -180,9 +190,11 @@ export function createGithubRepoPushAction(options: {
         requireLastPushApproval,
         config,
         ctx.logger,
+        integrationConfig,
         gitCommitMessage,
         gitAuthorName,
         gitAuthorEmail,
+        signCommit,
         dismissStaleReviews,
         requiredCommitSigning,
       );

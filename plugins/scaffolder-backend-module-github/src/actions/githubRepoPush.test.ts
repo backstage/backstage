@@ -57,8 +57,8 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
 });
 
 import {
-  TemplateAction,
   initRepoAndPush,
+  TemplateAction,
 } from '@backstage/plugin-scaffolder-node';
 import { ConfigReader } from '@backstage/config';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
@@ -256,6 +256,133 @@ describe('github:repo:push', () => {
       logger: mockContext.logger,
       commitMessage: 'initial commit',
       gitAuthorInfo: { email: undefined, name: undefined },
+    });
+  });
+
+  it('should throw if no signing key configured', async () => {
+    const customAuthorConfig = new ConfigReader({
+      integrations: {
+        github: [
+          { host: 'github.com', token: 'tokenlols' },
+          { host: 'ghe.github.com' },
+        ],
+      },
+    });
+
+    const customAuthorIntegrations =
+      ScmIntegrations.fromConfig(customAuthorConfig);
+    const customAuthorAction = createGithubRepoPushAction({
+      integrations: customAuthorIntegrations,
+      config: customAuthorConfig,
+      githubCredentialsProvider,
+    });
+
+    mockOctokit.rest.repos.get.mockResolvedValue({
+      data: {
+        clone_url: 'https://github.com/clone/url.git',
+        html_url: 'https://github.com/html/url',
+      },
+    });
+
+    await expect(
+      customAuthorAction.handler({
+        ...mockContext,
+        input: { ...mockContext.input, signCommit: true },
+      }),
+    ).rejects.toThrow();
+  });
+
+  it('should call initRepoAndPush with the configured defaultSigningKey', async () => {
+    const customAuthorConfig = new ConfigReader({
+      integrations: {
+        github: [
+          { host: 'github.com', token: 'tokenlols' },
+          { host: 'ghe.github.com' },
+        ],
+      },
+      scaffolder: {
+        defaultSigningKey: 'test-signing-key',
+      },
+    });
+
+    const customAuthorIntegrations =
+      ScmIntegrations.fromConfig(customAuthorConfig);
+    const customAuthorAction = createGithubRepoPushAction({
+      integrations: customAuthorIntegrations,
+      config: customAuthorConfig,
+      githubCredentialsProvider,
+    });
+
+    mockOctokit.rest.repos.get.mockResolvedValue({
+      data: {
+        clone_url: 'https://github.com/clone/url.git',
+        html_url: 'https://github.com/html/url',
+      },
+    });
+
+    await customAuthorAction.handler({
+      ...mockContext,
+      input: { ...mockContext.input, signCommit: true },
+    });
+
+    expect(initRepoAndPush).toHaveBeenCalledWith({
+      dir: mockContext.workspacePath,
+      remoteUrl: 'https://github.com/clone/url.git',
+      defaultBranch: 'master',
+      auth: { username: 'x-access-token', password: 'tokenlols' },
+      logger: mockContext.logger,
+      gitAuthorInfo: { email: undefined, name: undefined },
+      commitMessage: 'initial commit',
+      signingKey: 'test-signing-key',
+    });
+  });
+
+  it('should call initRepoAndPush with the configured signingKey', async () => {
+    const customAuthorConfig = new ConfigReader({
+      integrations: {
+        github: [
+          {
+            host: 'github.com',
+            token: 'tokenlols',
+            signingKey: 'github-signing-key',
+          },
+          { host: 'ghe.github.com' },
+        ],
+      },
+      scaffolder: {
+        defaultSigningKey: 'test-signing-key',
+      },
+    });
+
+    const customAuthorIntegrations =
+      ScmIntegrations.fromConfig(customAuthorConfig);
+    const customAuthorAction = createGithubRepoPushAction({
+      integrations: customAuthorIntegrations,
+      config: customAuthorConfig,
+      githubCredentialsProvider,
+    });
+
+    mockOctokit.rest.repos.get.mockResolvedValue({
+      data: {
+        clone_url: 'https://github.com/clone/url.git',
+        html_url: 'https://github.com/html/url',
+      },
+    });
+
+    await customAuthorAction.handler({
+      ...mockContext,
+      input: { ...mockContext.input, signCommit: true },
+    });
+
+    expect(initRepoAndPush).toHaveBeenCalledWith({
+      dir: mockContext.workspacePath,
+      remoteUrl: 'https://github.com/clone/url.git',
+      defaultBranch: 'master',
+      auth: { username: 'x-access-token', password: 'tokenlols' },
+      logger: mockContext.logger,
+      gitAuthorInfo: { email: undefined, name: undefined },
+      commitMessage: 'initial commit',
+      signingKey: 'github-signing-key',
     });
   });
 

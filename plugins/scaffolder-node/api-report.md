@@ -104,6 +104,7 @@ export function commitAndPushBranch(options: {
   branch?: string;
   remoteRef?: string;
   remote?: string;
+  signingKey?: string;
 }): Promise<{
   commitHash: string;
 }>;
@@ -127,6 +128,7 @@ export function commitAndPushRepo(input: {
   };
   branch?: string;
   remoteRef?: string;
+  signingKey?: string;
 }): Promise<{
   commitHash: string;
 }>;
@@ -239,6 +241,7 @@ export function initRepoAndPush(input: {
     name?: string;
     email?: string;
   };
+  signingKey?: string;
 }): Promise<{
   commitHash: string;
 }>;

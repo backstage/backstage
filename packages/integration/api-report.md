@@ -151,6 +151,7 @@ export type AzureIntegrationConfig = {
   token?: string;
   credential?: AzureDevOpsCredential;
   credentials?: AzureDevOpsCredential[];
+  signingKey?: string;
 };
 
 // @public
@@ -187,6 +188,7 @@ export type BitbucketCloudIntegrationConfig = {
   username?: string;
   appPassword?: string;
   token?: string;
+  signingKey?: string;
 };
 
 // @public @deprecated
@@ -217,6 +219,7 @@ export type BitbucketIntegrationConfig = {
   token?: string;
   username?: string;
   appPassword?: string;
+  signingKey?: string;
 };
 
 // @public
@@ -247,6 +250,7 @@ export type BitbucketServerIntegrationConfig = {
   token?: string;
   username?: string;
   password?: string;
+  signingKey?: string;
 };
 
 // @public
@@ -330,6 +334,7 @@ export type GerritIntegrationConfig = {
   gitilesBaseUrl: string;
   username?: string;
   password?: string;
+  signingKey?: string;
 };
 
 // @public
@@ -565,6 +570,7 @@ export type GiteaIntegrationConfig = {
   baseUrl?: string;
   username?: string;
   password?: string;
+  signingKey?: string;
 };
 
 // @public
@@ -636,6 +642,7 @@ export type GithubIntegrationConfig = {
   rawBaseUrl?: string;
   token?: string;
   apps?: GithubAppConfig[];
+  signingKey?: string;
 };
 
 // @public (undocumented)
@@ -679,6 +686,7 @@ export type GitLabIntegrationConfig = {
   apiBaseUrl: string;
   token?: string;
   baseUrl: string;
+  signingKey?: string;
 };
 
 // @public

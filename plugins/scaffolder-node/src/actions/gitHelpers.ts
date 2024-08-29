@@ -31,6 +31,7 @@ export async function initRepoAndPush(input: {
   defaultBranch?: string;
   commitMessage?: string;
   gitAuthorInfo?: { name?: string; email?: string };
+  signingKey?: string;
 }): Promise<{ commitHash: string }> {
   const {
     dir,
@@ -40,6 +41,7 @@ export async function initRepoAndPush(input: {
     defaultBranch = 'master',
     commitMessage = 'Initial commit',
     gitAuthorInfo,
+    signingKey,
   } = input;
   const git = Git.fromAuth({
     ...auth,
@@ -64,6 +66,7 @@ export async function initRepoAndPush(input: {
     message: commitMessage,
     author: authorInfo,
     committer: authorInfo,
+    signingKey,
   });
   await git.addRemote({
     dir,
@@ -93,6 +96,7 @@ export async function commitAndPushRepo(input: {
   gitAuthorInfo?: { name?: string; email?: string };
   branch?: string;
   remoteRef?: string;
+  signingKey?: string;
 }): Promise<{ commitHash: string }> {
   const {
     dir,
@@ -102,6 +106,7 @@ export async function commitAndPushRepo(input: {
     gitAuthorInfo,
     branch = 'master',
     remoteRef,
+    signingKey,
   } = input;
 
   const git = Git.fromAuth({
@@ -124,6 +129,7 @@ export async function commitAndPushRepo(input: {
     message: commitMessage,
     author: authorInfo,
     committer: authorInfo,
+    signingKey,
   });
 
   await git.push({
@@ -217,6 +223,7 @@ export async function commitAndPushBranch(options: {
   branch?: string;
   remoteRef?: string;
   remote?: string;
+  signingKey?: string;
 }): Promise<{ commitHash: string }> {
   const {
     dir,
@@ -227,6 +234,7 @@ export async function commitAndPushBranch(options: {
     branch = 'master',
     remoteRef,
     remote = 'origin',
+    signingKey,
   } = options;
   const git = Git.fromAuth({
     ...auth,
@@ -244,6 +252,7 @@ export async function commitAndPushBranch(options: {
     message: commitMessage,
     author: authorInfo,
     committer: authorInfo,
+    signingKey,
   });
 
   await git.push({

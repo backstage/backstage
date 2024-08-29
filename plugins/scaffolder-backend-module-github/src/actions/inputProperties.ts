@@ -89,6 +89,11 @@ const gitAuthorEmail = {
   type: 'string',
   description: `Sets the default author email for the commit.`,
 };
+const signCommit = {
+  title: 'Sign commit',
+  type: 'boolean',
+  description: 'Sign commit with configured PGP private key',
+};
 const allowMergeCommit = {
   title: 'Allow Merge Commits',
   type: 'boolean',
@@ -317,6 +322,7 @@ export { deleteBranchOnMerge };
 export { description };
 export { gitAuthorEmail };
 export { gitAuthorName };
+export { signCommit };
 export { gitCommitMessage };
 export { homepage };
 export { protectDefaultBranch };

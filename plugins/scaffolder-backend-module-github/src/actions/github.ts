@@ -59,6 +59,7 @@ export function createPublishGithubAction(options: {
     gitCommitMessage?: string;
     gitAuthorName?: string;
     gitAuthorEmail?: string;
+    signCommit?: boolean;
     allowRebaseMerge?: boolean;
     allowSquashMerge?: boolean;
     squashMergeCommitTitle?: 'PR_TITLE' | 'COMMIT_OR_PR_TITLE';
@@ -147,6 +148,7 @@ export function createPublishGithubAction(options: {
           gitCommitMessage: inputProps.gitCommitMessage,
           gitAuthorName: inputProps.gitAuthorName,
           gitAuthorEmail: inputProps.gitAuthorEmail,
+          signCommit: inputProps.signCommit,
           allowMergeCommit: inputProps.allowMergeCommit,
           allowSquashMerge: inputProps.allowSquashMerge,
           squashMergeCommitTitle: inputProps.squashMergeCommitTitle,
@@ -198,6 +200,7 @@ export function createPublishGithubAction(options: {
         gitCommitMessage,
         gitAuthorName,
         gitAuthorEmail,
+        signCommit = false,
         allowMergeCommit = true,
         allowSquashMerge = true,
         squashMergeCommitTitle = 'COMMIT_OR_PR_TITLE',
@@ -224,10 +227,17 @@ export function createPublishGithubAction(options: {
       });
       const client = new Octokit(octokitOptions);
 
-      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
+      const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
 
       if (!owner) {
         throw new InputError('Invalid repository owner provided in repoUrl');
+      }
+
+      const integrationConfig = integrations.github.byHost(host);
+      if (!integrationConfig) {
+        throw new InputError(
+          `No matching integration configuration for host ${host}, please check your integrations config`,
+        );
       }
 
       const newRepo = await createGithubRepoWithCollaboratorsAndTopics(
@@ -280,9 +290,11 @@ export function createPublishGithubAction(options: {
         requireLastPushApproval,
         config,
         ctx.logger,
+        integrationConfig,
         gitCommitMessage,
         gitAuthorName,
         gitAuthorEmail,
+        signCommit,
         dismissStaleReviews,
         requiredCommitSigning,
       );

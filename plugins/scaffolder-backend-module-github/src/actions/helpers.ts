@@ -19,6 +19,7 @@ import { assertError, InputError, NotFoundError } from '@backstage/errors';
 import {
   DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
+  GithubIntegration,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import { OctokitOptions } from '@octokit/core/dist-types/types';
@@ -363,9 +364,11 @@ export async function initRepoPushAndProtect(
   requireLastPushApproval: boolean,
   config: Config,
   logger: any,
+  integrationConfig: GithubIntegration,
   gitCommitMessage?: string,
   gitAuthorName?: string,
   gitAuthorEmail?: string,
+  signCommit?: boolean,
   dismissStaleReviews?: boolean,
   requiredCommitSigning?: boolean,
 ): Promise<{ commitHash: string }> {
@@ -377,6 +380,15 @@ export async function initRepoPushAndProtect(
       ? gitAuthorEmail
       : config.getOptionalString('scaffolder.defaultAuthor.email'),
   };
+
+  const signingKey =
+    integrationConfig.config.signingKey ??
+    config.getOptionalString('scaffolder.defaultSigningKey');
+  if (signCommit && !signingKey) {
+    throw new Error(
+      'Signing commits is enabled but no signing key is provided in the configuration',
+    );
+  }
 
   const commitMessage =
     getGitCommitMessage(gitCommitMessage, config) || 'initial commit';
@@ -392,6 +404,7 @@ export async function initRepoPushAndProtect(
     logger,
     commitMessage,
     gitAuthorInfo,
+    signingKey: signCommit ? signingKey : undefined,
   });
 
   if (protectDefaultBranch) {

@@ -16,13 +16,13 @@
 
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import { Gitlab } from '@gitbeaker/node';
 import {
-  initRepoAndPush,
+  createTemplateAction,
   getRepoSourceDirectory,
+  initRepoAndPush,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
+import { Gitlab } from '@gitbeaker/node';
 import { Config } from '@backstage/config';
 import { examples } from './gitlab.examples';
 
@@ -48,6 +48,7 @@ export function createPublishGitlabAction(options: {
     gitCommitMessage?: string;
     gitAuthorName?: string;
     gitAuthorEmail?: string;
+    signCommit?: boolean;
     setUserAsOwner?: boolean;
     /** @deprecated in favour of settings.topics field */
     topics?: string[];
@@ -117,6 +118,11 @@ export function createPublishGitlabAction(options: {
             title: 'Default Author Email',
             type: 'string',
             description: `Sets the default author email for the commit.`,
+          },
+          signCommit: {
+            title: 'Sign commit',
+            type: 'boolean',
+            description: 'Sign commit with configured PGP private key',
           },
           sourcePath: {
             title: 'Source Path',
@@ -316,6 +322,7 @@ export function createPublishGitlabAction(options: {
         settings = {},
         branches = [],
         projectVariables = [],
+        signCommit,
       } = ctx.input;
       const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
 
@@ -404,6 +411,15 @@ export function createPublishGitlabAction(options: {
           ? gitAuthorEmail
           : config.getOptionalString('scaffolder.defaultAuthor.email'),
       };
+      const signingKey =
+        integrationConfig.config.signingKey ??
+        config.getOptionalString('scaffolder.defaultSigningKey');
+      if (signCommit && !signingKey) {
+        throw new Error(
+          'Signing commits is enabled but no signing key is provided in the configuration',
+        );
+      }
+
       const commitResult = await initRepoAndPush({
         dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
         remoteUrl: http_url_to_repo as string,
@@ -417,6 +433,7 @@ export function createPublishGitlabAction(options: {
           ? gitCommitMessage
           : config.getOptionalString('scaffolder.defaultCommitMessage'),
         gitAuthorInfo,
+        signingKey: signCommit ? signingKey : undefined,
       });
 
       if (branches) {

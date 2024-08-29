@@ -249,6 +249,7 @@ export function createGithubRepoPushAction(options: {
     gitCommitMessage?: string | undefined;
     gitAuthorName?: string | undefined;
     gitAuthorEmail?: string | undefined;
+    signCommit?: boolean | undefined;
     requireCodeOwnerReviews?: boolean | undefined;
     dismissStaleReviews?: boolean | undefined;
     bypassPullRequestAllowances?:
@@ -314,6 +315,7 @@ export function createPublishGithubAction(options: {
     gitCommitMessage?: string | undefined;
     gitAuthorName?: string | undefined;
     gitAuthorEmail?: string | undefined;
+    signCommit?: boolean | undefined;
     allowRebaseMerge?: boolean | undefined;
     allowSquashMerge?: boolean | undefined;
     squashMergeCommitTitle?: 'PR_TITLE' | 'COMMIT_OR_PR_TITLE' | undefined;

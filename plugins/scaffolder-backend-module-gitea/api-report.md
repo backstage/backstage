@@ -23,6 +23,7 @@ export function createPublishGiteaAction(options: {
     gitAuthorName?: string | undefined;
     gitAuthorEmail?: string | undefined;
     sourcePath?: string | undefined;
+    signCommit?: boolean | undefined;
   },
   JsonObject
 >;

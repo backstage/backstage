@@ -68,6 +68,11 @@ export type GithubIntegrationConfig = {
    * If no apps are specified, token or anonymous is used.
    */
   apps?: GithubAppConfig[];
+
+  /**
+   * Signing key for signing commits
+   */
+  signingKey?: string;
 };
 
 /**
@@ -153,7 +158,14 @@ export function readGithubIntegrationConfig(
     rawBaseUrl = GITHUB_RAW_BASE_URL;
   }
 
-  return { host, apiBaseUrl, rawBaseUrl, token, apps };
+  return {
+    host,
+    apiBaseUrl,
+    rawBaseUrl,
+    token,
+    apps,
+    signingKey: config.getOptionalString('signingKey'),
+  };
 }
 
 /**

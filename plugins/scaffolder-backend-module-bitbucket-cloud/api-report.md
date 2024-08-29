@@ -39,6 +39,7 @@ export function createPublishBitbucketCloudAction(options: {
     gitCommitMessage?: string | undefined;
     sourcePath?: string | undefined;
     token?: string | undefined;
+    signCommit?: boolean | undefined;
   },
   JsonObject
 >;

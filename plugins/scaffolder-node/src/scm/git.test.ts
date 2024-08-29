@@ -16,6 +16,12 @@
 jest.mock('isomorphic-git');
 jest.mock('isomorphic-git/http/node');
 jest.mock('fs-extra');
+jest.mock('@isomorphic-git/pgp-plugin', () => ({
+  ...jest.requireActual('@isomorphic-git/pgp-plugin'),
+  pgp: {
+    sign: jest.fn().mockResolvedValue({ signature: 'sign' }),
+  },
+}));
 
 import * as isomorphic from 'isomorphic-git';
 import { Git } from './git';
@@ -140,8 +146,9 @@ describe('Git', () => {
         name: 'comitter',
         email: 'test@backstage.io',
       };
+      const signingKey = 'test-signing-key';
 
-      await git.commit({ dir, message, author, committer });
+      await git.commit({ dir, message, author, committer, signingKey });
 
       expect(isomorphic.commit).toHaveBeenCalledWith({
         fs,
@@ -149,6 +156,8 @@ describe('Git', () => {
         message,
         author,
         committer,
+        signingKey,
+        onSign: expect.any(Function),
       });
     });
   });

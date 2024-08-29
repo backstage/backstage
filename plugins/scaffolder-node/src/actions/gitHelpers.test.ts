@@ -17,12 +17,12 @@
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { Git } from '../scm';
 import {
-  commitAndPushRepo,
-  initRepoAndPush,
-  commitAndPushBranch,
   addFiles,
-  createBranch,
   cloneRepo,
+  commitAndPushBranch,
+  commitAndPushRepo,
+  createBranch,
+  initRepoAndPush,
 } from './gitHelpers';
 import { mockServices } from '@backstage/backend-test-utils';
 
@@ -227,6 +227,32 @@ describe('commitAndPushRepo', () => {
           name: 'Scaffolder',
           email: 'scaffolder@backstage.io',
         },
+      });
+    });
+
+    it('creates commit with signing key', async () => {
+      await commitAndPushRepo({
+        dir: '/test/repo/dir/',
+        auth: {
+          username: 'test-user',
+          password: 'test-password',
+        },
+        logger: loggerToWinstonLogger(mockServices.logger.mock()),
+        commitMessage: 'commit message',
+        signingKey: 'test-signing-key',
+      });
+      expect(mockedGit.commit).toHaveBeenCalledWith({
+        dir: '/test/repo/dir/',
+        message: 'commit message',
+        author: {
+          name: 'Scaffolder',
+          email: 'scaffolder@backstage.io',
+        },
+        committer: {
+          name: 'Scaffolder',
+          email: 'scaffolder@backstage.io',
+        },
+        signingKey: 'test-signing-key',
       });
     });
 
