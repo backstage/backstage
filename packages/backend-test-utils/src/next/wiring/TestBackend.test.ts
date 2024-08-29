@@ -334,4 +334,47 @@ describe('TestBackend', () => {
       "Unable to determine the plugin ID of extension point(s) 'a'. Tested extension points must be depended on by one or more tested modules.",
     );
   });
+
+  it('should forward errors from plugins', async () => {
+    await expect(
+      startTestBackend({
+        features: [
+          createBackendPlugin({
+            pluginId: 'test',
+            register(reg) {
+              reg.registerInit({
+                deps: {},
+                async init() {
+                  throw new Error('nah');
+                },
+              });
+            },
+          }),
+        ],
+      }),
+    ).rejects.toThrow("Plugin 'test' startup failed; caused by Error: nah");
+  });
+
+  it('should forward errors from modules', async () => {
+    await expect(
+      startTestBackend({
+        features: [
+          createBackendModule({
+            pluginId: 'test',
+            moduleId: 'tester',
+            register(reg) {
+              reg.registerInit({
+                deps: {},
+                async init() {
+                  throw new Error('nah');
+                },
+              });
+            },
+          }),
+        ],
+      }),
+    ).rejects.toThrow(
+      "Module 'tester' for plugin 'test' startup failed; caused by Error: nah",
+    );
+  });
 });
