@@ -30,11 +30,11 @@ The search platform provides an interface (`DocumentCollatorFactory` from packag
 
 #### 1. Create a collator module package
 
-In order to add a FAQ collator to the Backstage index registry, we have to create a [plugin module](https://backstage.io/docs/backend-system/building-plugins-and-modules/index#modules) and the best way to do this is to create it in a separate package, e.g., `plugins/search-backend-module-faq-snippets-collator`, using the `yarn new` command:
+In order to add an FAQ collator to the Backstage index registry we have to create a [plugin module](https://backstage.io/docs/backend-system/building-plugins-and-modules/index#modules), and the best way to do this is to create it in a separate package, e.g., `plugins/search-backend-module-faq-snippets-collator`, using the `yarn new` command:
 
 1. Access your Backstage project root directory and run `yarn new`;
 2. When asked about what do you want to create, please select `backend-module` and hit enter;
-3. Inform `search` as the plugin id and `faq-snippets-collator` as module id;
+3. Input `search` as the plugin ID and `faq-snippets-collator` as the module ID;
 4. A `search-backend-module-faq-snippets-collator` folder should have been created in your project's "plugins" directory.
 
 #### 2. Install the collator dependencies
@@ -46,7 +46,7 @@ We will use some libraries in the module, so let's add them to your plugin modul
 git checkout -b tutorials/new-faq-snippets-collator
 
 # Install the package containing the interface
-yarn workspace @internal/backstage-plugin-search-backend-module-faq-snippets-collator add node-fetch @backstage/config @backstage/plugin-search-common @backstage/plugin-search-backend-node
+yarn workspace @internal/backstage-plugin-search-backend-module-faq-snippets-collator add node-fetch @backstage/plugin-search-common @backstage/plugin-search-backend-node
 ```
 
 #### 3. Use Backstage App configuration
@@ -60,14 +60,16 @@ faq:
 
 It is optional to define a schedule for the collator to run, or else it defaults to the value in the collator factory code (See [5. Implement the collator factory](#5-implement-the-collator-factory)):
 
-```diff
+```yaml
 faq:
   baseUrl: https://backstage.example.biz/faq-snippets
-+ schedule:
-+   # supports cron, ISO duration, "human duration" as used in code
-+   frequency: { minutes: 30 }
-+   # supports ISO duration, "human duration" as used in code
-+   timeout: { minutes: 3 }
+  /* highlight-add-start */
+  schedule:
+    # supports cron, ISO duration, "human duration" as used in code
+    frequency: { minutes: 30 }
+    # supports ISO duration, "human duration" as used in code
+    timeout: { minutes: 3 }
+  /* highlight-add-end */
 ```
 
 #### 4. Define the collator document type
@@ -107,8 +109,10 @@ Below we provide an example implementation of how the FAQ collator factory could
 import fetch from 'node-fetch';
 import { Readable } from 'stream';
 
-import { Config } from '@backstage/config';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  LoggerService,
+  RootConfigService,
+} from '@backstage/backend-plugin-api';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 
 import { FaqSnippetDocument } from './types';
@@ -126,7 +130,7 @@ export class FaqSnippetsCollatorFactory implements DocumentCollatorFactory {
   }
 
   static fromConfig(
-    config: Config,
+    config: RootConfigService,
     options: {
       logger: LoggerService;
     },
@@ -205,7 +209,7 @@ export const searchFaqSnippetsCollatorModule = createBackendModule({
 In the fragment above, the module is registered, and when the Backstage backend initializes it, it adds the FAQ Snippets collator to the search index registry. Now let's export the module as default from the `index.ts` file:
 
 ```ts title='plugins/search-backend-module-faq-snippets-collator/src/index.ts'
-export { export const searchFaqSnippetsCollatorModule as default } from './module';
+export { searchFaqSnippetsCollatorModule as default } from './module';
 ```
 
 #### 7. Install the collator module
@@ -213,7 +217,7 @@ export { export const searchFaqSnippetsCollatorModule as default } from './modul
 The newly created module should be added to the backend package dependencies as follows:
 
 ```sh
-yarn --cwd backend add @internal/backstage-plugin-search-backend-module-faq-snippets-collator
+yarn --cwd packages/backend add @internal/backstage-plugin-search-backend-module-faq-snippets-collator
 ```
 
 After that, install the module on your Backstage backend instance:
@@ -240,7 +244,7 @@ To verify your implementation works as expected make sure to add tests for it. F
 
 Look at [DefaultTechDocsCollatorFactory test](https://github.com/backstage/backstage/blob/de294ce5c410c9eb56da6870a1fab795268f60e3/plugins/techdocs-backend/src/search/DefaultTechDocsCollatorFactory.test.ts), for an example.
 
-You can also check out the documentation on [how to test Backstage plugin modules](https://backstage.io/docs/backend-system/building-plugins-and-modules/testing).
+You can also check out the documentation on [how to test Backstage plugin modules](../backend-system/building-plugins-and-modules/02-testing.md).
 
 #### 9. Running the collator locally
 
@@ -249,7 +253,7 @@ Run `yarn dev` in the root folder of your Backstage project and look for logs li
 ```sh
 [backend]: YYYY-MM-DDTHH:MM:SS.000Z search info Task worker starting: search_index_faq_snippets, {"version":2,"cadence":"PT10M","initialDelayDuration":"PT3S","timeoutAfterDuration":"PT15M"} task=search_index_faq_snippets
 [backend]: YYYY-MM-DDTHH:MM:SS.000Z search info Collating documents for faq-snippets via FaqSnippetsCollatorFactory documentType=faq-snippets
-[backend]: 2024-08-28T07:00:50.520Z search info Fetching faq snippets from https://backstage.example.biz/faq-snippets
+[backend]: YYYY-MM-DDTHH:MM:SS.000Z search info Fetching faq snippets from https://backstage.example.biz/faq-snippets
 [backend]: YYYY-MM-DDTHH:MM:SS.000Z search info Collating documents for faq-snippets succeeded documentType=faq-snippets
 ```
 

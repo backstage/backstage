@@ -1,5 +1,5 @@
 ---
-id: integrating-search-into-plugins
+id: integrating-search-into-plugins--old
 title: Integrating Search into a plugin
 description: How to integrate Search into a Backstage plugin
 ---
