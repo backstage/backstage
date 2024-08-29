@@ -19,6 +19,7 @@ import {
   LifecycleService,
   LoggerService,
   PluginMetadataService,
+  RootConfigService,
 } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { stringifyError } from '@backstage/errors';
@@ -200,7 +201,7 @@ export class DatabaseManager implements LegacyRootDatabaseService {
    * @param options - An optional configuration object.
    */
   static fromConfig(
-    config: Config,
+    config: RootConfigService,
     options?: DatabaseManagerOptions,
   ): DatabaseManager {
     const databaseConfig = config.getConfig('backend.database');

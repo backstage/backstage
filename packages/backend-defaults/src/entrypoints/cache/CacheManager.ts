@@ -17,8 +17,8 @@
 import {
   CacheServiceOptions,
   LoggerService,
+  RootConfigService,
 } from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
 import Keyv from 'keyv';
 import { DefaultCacheClient } from './CacheClient';
 import {
@@ -62,7 +62,7 @@ export class CacheManager {
    * @param config - The loaded application configuration.
    */
   static fromConfig(
-    config: Config,
+    config: RootConfigService,
     options: CacheManagerOptions = {},
   ): CacheManager {
     // If no `backend.cache` config is provided, instantiate the CacheManager
