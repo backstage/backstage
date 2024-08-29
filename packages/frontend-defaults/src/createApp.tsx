@@ -50,11 +50,11 @@ export interface CreateAppFeatureLoader {
 }
 
 /**
- * Creates a new Backstage frontend app instance. See https://backstage.io/docs/frontend-system/building-apps/index
+ * Options for {@link createApp}.
  *
  * @public
  */
-export function createApp(options?: {
+export interface CreateAppOptions {
   features?: (FrontendFeature | CreateAppFeatureLoader)[];
   configLoader?: () => Promise<{ config: ConfigApi }>;
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
@@ -65,7 +65,14 @@ export function createApp(options?: {
    * If set to "null" then no loading fallback component is rendered.   *
    */
   loadingComponent?: ReactNode;
-}): {
+}
+
+/**
+ * Creates a new Backstage frontend app instance. See https://backstage.io/docs/frontend-system/building-apps/index
+ *
+ * @public
+ */
+export function createApp(options?: CreateAppOptions): {
   createRoot(): JSX.Element;
 } {
   let suspenseFallback = options?.loadingComponent;
