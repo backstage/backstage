@@ -93,8 +93,11 @@ export class BackendInitializer {
 
     if (missingRefs.size > 0) {
       const missing = Array.from(missingRefs).join(', ');
+      const target = moduleId
+        ? `module '${moduleId}' for plugin '${pluginId}'`
+        : `plugin '${pluginId}'`;
       throw new Error(
-        `No extension point or service available for the following ref(s): ${missing}`,
+        `Service or extension point dependencies of ${target} are missing for the following ref(s): ${missing}`,
       );
     }
 
