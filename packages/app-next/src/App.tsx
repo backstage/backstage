@@ -26,8 +26,8 @@ import homePlugin, {
 import {
   coreExtensionData,
   createExtension,
-  createExtensionOverrides,
   ApiBlueprint,
+  createFrontendModule,
 } from '@backstage/frontend-plugin-api';
 import {
   techdocsPlugin,
@@ -45,7 +45,6 @@ import { createApiFactory, configApiRef } from '@backstage/core-plugin-api';
 import {
   ScmAuth,
   ScmIntegrationsApi,
-  scmAuthApiRef,
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
 import kubernetesPlugin from '@backstage/plugin-kubernetes/alpha';
@@ -97,34 +96,48 @@ const convertedTechdocsPlugin = convertLegacyPlugin(techdocsPlugin, {
   ],
 });
 
-const homePageExtension = createExtension({
-  name: 'myhomepage',
-  attachTo: { id: 'page:home', input: 'props' },
-  output: [coreExtensionData.reactElement, titleExtensionDataRef],
-  factory() {
-    return [
-      coreExtensionData.reactElement(homePage),
-      titleExtensionDataRef('just a title'),
-    ];
-  },
-});
-
-const scmAuthExtension = ApiBlueprint.make({
-  namespace: scmAuthApiRef.id,
-  params: {
-    factory: ScmAuth.createDefaultApiFactory(),
-  },
-});
-
-const scmIntegrationApi = ApiBlueprint.make({
-  namespace: scmIntegrationsApiRef.id,
-  params: {
-    factory: createApiFactory({
-      api: scmIntegrationsApiRef,
-      deps: { configApi: configApiRef },
-      factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
+const customHomePageModule = createFrontendModule({
+  pluginId: 'home',
+  extensions: [
+    createExtension({
+      name: 'my-home-page',
+      attachTo: { id: 'page:home', input: 'props' },
+      output: [coreExtensionData.reactElement, titleExtensionDataRef],
+      factory() {
+        return [
+          coreExtensionData.reactElement(homePage),
+          titleExtensionDataRef('just a title'),
+        ];
+      },
     }),
-  },
+  ],
+});
+
+const scmModule = createFrontendModule({
+  pluginId: 'app',
+  extensions: [
+    ApiBlueprint.make({
+      name: 'scm-auth',
+      params: {
+        factory: ScmAuth.createDefaultApiFactory(),
+      },
+    }),
+    ApiBlueprint.make({
+      name: 'scm-integrations',
+      params: {
+        factory: createApiFactory({
+          api: scmIntegrationsApiRef,
+          deps: { configApi: configApiRef },
+          factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
+        }),
+      },
+    }),
+  ],
+});
+
+const notFoundErrorPageModule = createFrontendModule({
+  pluginId: 'app',
+  extensions: [notFoundErrorPage],
 });
 
 const collectedLegacyPlugins = convertLegacyApp(
@@ -142,15 +155,10 @@ const app = createApp({
     appVisualizerPlugin,
     kubernetesPlugin,
     signInPageOverrides,
+    scmModule,
+    notFoundErrorPageModule,
+    customHomePageModule,
     ...collectedLegacyPlugins,
-    createExtensionOverrides({
-      extensions: [
-        homePageExtension,
-        scmAuthExtension,
-        scmIntegrationApi,
-        notFoundErrorPage,
-      ],
-    }),
   ],
   /* Handled through config instead */
   // bindRoutes({ bind }) {
