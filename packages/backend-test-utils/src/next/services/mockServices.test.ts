@@ -18,13 +18,15 @@ import { coreServices } from '@backstage/backend-plugin-api';
 import { mockServices } from './mockServices';
 
 describe('mockServices', () => {
-  it('should have mock implementations for all core services', () => {
-    const mockServiceKeys = Object.keys(mockServices);
-    for (const key of Object.keys(coreServices)) {
-      if (key === 'pluginMetadata') {
-        continue;
-      }
-      expect(mockServiceKeys).toContain(key);
-    }
+  const coreServiceKeys = Object.keys(coreServices).filter(
+    key => key !== 'pluginMetadata',
+  ) as Array<keyof typeof mockServices>;
+
+  it.each(coreServiceKeys)('should have mock implementations for %s', key => {
+    expect(mockServices[key]).toBeDefined();
+    expect(mockServices[key].mock).toEqual(expect.any(Function));
+    expect(mockServices[key].mock()).toEqual(expect.any(Object));
+    expect(mockServices[key].factory).toEqual(expect.any(Function));
+    expect(mockServices[key].factory()).toEqual(expect.any(Object));
   });
 });

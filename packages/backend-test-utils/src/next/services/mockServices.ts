@@ -141,6 +141,24 @@ export namespace mockServices {
       coreServices.rootConfig,
       rootConfig,
     );
+    export const mock = simpleMock(coreServices.rootConfig, () => ({
+      get: jest.fn(),
+      getBoolean: jest.fn(),
+      getConfig: jest.fn(),
+      getConfigArray: jest.fn(),
+      getNumber: jest.fn(),
+      getOptional: jest.fn(),
+      getOptionalBoolean: jest.fn(),
+      getOptionalConfig: jest.fn(),
+      getOptionalConfigArray: jest.fn(),
+      getOptionalNumber: jest.fn(),
+      getOptionalString: jest.fn(),
+      getOptionalStringArray: jest.fn(),
+      getString: jest.fn(),
+      getStringArray: jest.fn(),
+      has: jest.fn(),
+      keys: jest.fn(),
+    }));
   }
 
   export function rootLogger(options?: rootLogger.Options): LoggerService {
@@ -341,7 +359,7 @@ export namespace mockServices {
   }
 
   export namespace rootHttpRouter {
-    export const factory = () => rootHttpRouterServiceFactory;
+    export const factory = () => rootHttpRouterServiceFactory();
     export const mock = simpleMock(coreServices.rootHttpRouter, () => ({
       use: jest.fn(),
     }));
