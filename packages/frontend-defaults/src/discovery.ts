@@ -53,7 +53,7 @@ function readPackageDetectionConfig(config: Config) {
 }
 
 /**
- * @public
+ * @internal
  */
 export function getAvailableFeatures(config: Config): FrontendFeature[] {
   const discovered = (

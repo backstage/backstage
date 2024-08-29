@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-export {
-  createApp,
-  createSpecializedApp,
-  type CreateAppFeatureLoader,
-} from './createSpecializedApp';
-export * from './types';
+/**
+ * APIs for creating Backstage apps with a default setup.
+ *
+ * @packageDocumentation
+ */
+
+export { createApp, type CreateAppFeatureLoader } from './createApp';

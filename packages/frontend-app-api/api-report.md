@@ -4,33 +4,20 @@
 
 ```ts
 import { ConfigApi } from '@backstage/core-plugin-api';
+import { createApp as createApp_2 } from '@backstage/frontend-defaults';
+import { CreateAppFeatureLoader as CreateAppFeatureLoader_2 } from '@backstage/frontend-defaults';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { FrontendModule } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
-import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SubRouteRef } from '@backstage/frontend-plugin-api';
 
-// @public (undocumented)
-export function createApp(options?: {
-  features?: (FrontendFeature | CreateAppFeatureLoader)[];
-  configLoader?: () => Promise<{
-    config: ConfigApi;
-  }>;
-  bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
-  loadingComponent?: ReactNode;
-}): {
-  createRoot(): JSX_2.Element;
-};
+// @public @deprecated (undocumented)
+export const createApp: typeof createApp_2;
 
-// @public
-export interface CreateAppFeatureLoader {
-  getLoaderName(): string;
-  load(options: { config: ConfigApi }): Promise<{
-    features: FrontendFeature[];
-  }>;
-}
+// @public @deprecated (undocumented)
+export type CreateAppFeatureLoader = CreateAppFeatureLoader_2;
 
 // @public
 export type CreateAppRouteBinder = <
