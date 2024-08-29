@@ -58,28 +58,73 @@ interactions with the running test service.
 
 ### mock services
 
-The `mockServices` object from `@backstage/backend-test-utils` provides a number of service factory functions that you can use to verify interactions between plugin and services.
+The [`mockServices`](https://backstage.io/docs/reference/backend-test-utils.mockservices) object from `@backstage/backend-test-utils` provides service factory functions, and mocks for all core services that you can use to verify interactions between plugin and services.
 
-The following mock services are available:
+All mock services provide a factory function that is sufficient for most tests. Here's an example:
 
-- `auth`
-- `cache`
-- `database`
-- `discovery`
-- `events`
-- `httpAuth`
-- `httpRouter`
-- `lifecycle`
-- `logger`
-- `permissions`
-- `rootConfig`
-- `rootHealth`
-- `rootHttpRouter`
-- `rootLifecycle`
-- `rootLogger`
-- `scheduler`
-- `urlReader`
-- `userInfo`
+```ts
+const fakeConfig = { myPlugin: { value: 7 } };
+const { server } = await startTestBackend({
+  features: [
+    // Will provide access to the default urlReaders automatically.
+    mockServices.urlReader.factory(),
+    // Some factories accept options, in this example we provide some fake config.
+    mockServices.rootConfig.factory({ data: fakeConfig }),
+  ],
+});
+```
+
+There might be situations where you want to mock a service implementation to verify interactions, in those cases you can use the `mock` function to get a mock object that you can interact with. Here's an example:
+
+```ts
+import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
+import { myPlugin } from './plugin.ts';
+
+describe('myPlugin', () => {
+  it('should call use UrlReader', async () => {
+    const mockReader = mockServices.urlReader.mock();
+
+    await startTestBackend({
+      features: [myPlugin(), mockReader],
+    });
+
+    expect(mockReader.readUrl).toHaveBeenCalledWith('https://backstage.io');
+  });
+
+  it('should call use UrlReader again', async () => {
+    const partialImpl = jest.fn();
+    await startTestBackend({
+      features: [
+        myPlugin(),
+        // You could also supply partial implementations to the mock function.
+        mockServices.urlReader.mock({ readUrl: partialImpl }),
+      ],
+    });
+    expect(partialImpl).toHaveBeenCalledWith('https://backstage.io');
+  });
+});
+```
+
+Available services:
+
+- [`auth`](https://backstage.io/docs/reference/backend-test-utils.mockservices.auth/)
+- [`cache`](https://backstage.io/docs/reference/backend-test-utils.mockservices.cache/)
+- [`database`](https://backstage.io/docs/reference/backend-test-utils.mockservices.database/)
+- [`discovery`](https://backstage.io/docs/reference/backend-test-utils.mockservices.discovery/)
+- [`events`](https://backstage.io/docs/reference/backend-test-utils.mockservices.events/)
+- [`httpAuth`](https://backstage.io/docs/reference/backend-test-utils.mockservices.httpAuth/)
+- [`httpRouter`](https://backstage.io/docs/reference/backend-test-utils.mockservices.httpRouter/)
+- [`lifecycle`](https://backstage.io/docs/reference/backend-test-utils.mockservices.lifecycle/)
+- [`logger`](https://backstage.io/docs/reference/backend-test-utils.mockservices.logger/)
+- [`permissions`](https://backstage.io/docs/reference/backend-test-utils.mockservices.permissions/)
+- [`rootConfig`](https://backstage.io/docs/reference/backend-test-utils.mockservices.rootConfig/)
+- [`rootHealth`](https://backstage.io/docs/reference/backend-test-utils.mockservices.rootHealth/)
+- [`rootHttpRouter`](https://backstage.io/docs/reference/backend-test-utils.mockservices.rootHttpRouter/)
+- [`rootLifecycle`](https://backstage.io/docs/reference/backend-test-utils.mockservices.rootLifecycle/)
+- [`rootLogger`](https://backstage.io/docs/reference/backend-test-utils.mockservices.rootLogger/)
+- [`scheduler`](https://backstage.io/docs/reference/backend-test-utils.mockservices.scheduler/)
+- [`urlReader`](https://backstage.io/docs/reference/backend-test-utils.mockservices.urlReader/)
+- [`userInfo`](https://backstage.io/docs/reference/backend-test-utils.mockservices.userInfo/)
 
 ## Testing Remote Service Interactions
 
