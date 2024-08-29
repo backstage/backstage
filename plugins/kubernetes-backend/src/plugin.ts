@@ -193,27 +193,33 @@ export const kubernetesPlugin = createBackendPlugin({
         auth,
         httpAuth,
       }) {
-        // TODO: expose all of the customization & extension points of the builder here
-        const builder: KubernetesBuilder = KubernetesBuilder.createBuilder({
-          logger,
-          config,
-          catalogApi,
-          permissions,
-          discovery,
-          auth,
-          httpAuth,
-        })
-          .setObjectsProvider(extPointObjectsProvider.getObjectsProvider())
-          .setClusterSupplier(extPointClusterSuplier.getClusterSupplier())
-          .setFetcher(extPointFetcher.getFetcher())
-          .setServiceLocator(extPointServiceLocator.getServiceLocator());
+        if (config.has('kubernetes')) {
+          // TODO: expose all of the customization & extension points of the builder here
+          const builder: KubernetesBuilder = KubernetesBuilder.createBuilder({
+            logger,
+            config,
+            catalogApi,
+            permissions,
+            discovery,
+            auth,
+            httpAuth,
+          })
+            .setObjectsProvider(extPointObjectsProvider.getObjectsProvider())
+            .setClusterSupplier(extPointClusterSuplier.getClusterSupplier())
+            .setFetcher(extPointFetcher.getFetcher())
+            .setServiceLocator(extPointServiceLocator.getServiceLocator());
 
-        AuthStrategy.addAuthStrategiesFromArray(
-          extPointAuthStrategy.getAuthenticationStrategies(),
-          builder,
-        );
-        const { router } = await builder.build();
-        http.use(router);
+          AuthStrategy.addAuthStrategiesFromArray(
+            extPointAuthStrategy.getAuthenticationStrategies(),
+            builder,
+          );
+          const { router } = await builder.build();
+          http.use(router);
+        } else {
+          logger.warn(
+            'Failed to initialize kubernetes backend: valid kubernetes config is missing',
+          );
+        }
       },
     });
   },
