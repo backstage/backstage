@@ -12,7 +12,6 @@ import { AzureIntegration } from '@backstage/integration';
 import { BitbucketCloudIntegration } from '@backstage/integration';
 import { BitbucketIntegration } from '@backstage/integration';
 import { BitbucketServerIntegration } from '@backstage/integration';
-import { Config } from '@backstage/config';
 import { GerritIntegration } from '@backstage/integration';
 import { GiteaIntegration } from '@backstage/integration';
 import { GithubCredentialsProvider } from '@backstage/integration';
@@ -21,6 +20,7 @@ import { GitLabIntegration } from '@backstage/integration';
 import { HarnessIntegration } from '@backstage/integration';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { Readable } from 'stream';
+import { RootConfigService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
@@ -360,7 +360,7 @@ export class HarnessUrlReader implements UrlReaderService {
 
 // @public
 export type ReaderFactory = (options: {
-  config: Config;
+  config: RootConfigService;
   logger: LoggerService;
   treeResponseFactory: ReadTreeResponseFactory;
 }) => UrlReaderPredicateTuple[];
@@ -442,7 +442,7 @@ export const urlReaderServiceFactory: ServiceFactory<
 
 // @public
 export type UrlReadersOptions = {
-  config: Config;
+  config: RootConfigService;
   logger: LoggerService;
   factories?: ReaderFactory[];
 };

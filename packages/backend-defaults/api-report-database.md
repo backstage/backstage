@@ -8,6 +8,7 @@ import { DatabaseService } from '@backstage/backend-plugin-api';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginMetadataService } from '@backstage/backend-plugin-api';
+import { RootConfigService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 
 // @public
@@ -20,7 +21,7 @@ export class DatabaseManager implements LegacyRootDatabaseService {
     },
   ): DatabaseService;
   static fromConfig(
-    config: Config,
+    config: RootConfigService,
     options?: DatabaseManagerOptions,
   ): DatabaseManager;
 }

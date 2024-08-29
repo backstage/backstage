@@ -5,15 +5,15 @@
 ```ts
 import { CacheService } from '@backstage/backend-plugin-api';
 import { CacheServiceOptions } from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { RootConfigService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 
 // @public
 export class CacheManager {
   forPlugin(pluginId: string): PluginCacheManager;
   static fromConfig(
-    config: Config,
+    config: RootConfigService,
     options?: CacheManagerOptions,
   ): CacheManager;
 }
