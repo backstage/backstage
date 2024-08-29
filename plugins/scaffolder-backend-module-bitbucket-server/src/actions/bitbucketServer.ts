@@ -21,8 +21,8 @@ import {
 } from '@backstage/integration';
 import {
   createTemplateAction,
-  initRepoAndPush,
   getRepoSourceDirectory,
+  initRepoAndPush,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
 
@@ -137,6 +137,7 @@ export function createPublishBitbucketServerAction(options: {
     gitCommitMessage?: string;
     gitAuthorName?: string;
     gitAuthorEmail?: string;
+    signCommit?: boolean;
   }>({
     id: 'publish:bitbucketServer',
     description:
@@ -197,6 +198,11 @@ export function createPublishBitbucketServerAction(options: {
             type: 'string',
             description: `Sets the author email for the commit.`,
           },
+          signCommit: {
+            title: 'Sign commit',
+            type: 'boolean',
+            description: 'Sign commit with configured PGP private key',
+          },
         },
       },
       output: {
@@ -227,6 +233,7 @@ export function createPublishBitbucketServerAction(options: {
         gitCommitMessage = 'initial commit',
         gitAuthorName,
         gitAuthorEmail,
+        signCommit,
       } = ctx.input;
 
       const { project, repo, host } = parseRepoUrl(repoUrl, integrations);
@@ -279,6 +286,15 @@ export function createPublishBitbucketServerAction(options: {
           : config.getOptionalString('scaffolder.defaultAuthor.email'),
       };
 
+      const signingKey =
+        integrationConfig.config.commitSigningKey ??
+        config.getOptionalString('scaffolder.defaultCommitSigningKey');
+      if (signCommit && !signingKey) {
+        throw new Error(
+          'Signing commits is enabled but no signing key is provided in the configuration',
+        );
+      }
+
       const auth = authConfig.token
         ? {
             token: token!,
@@ -298,6 +314,7 @@ export function createPublishBitbucketServerAction(options: {
           ? gitCommitMessage
           : config.getOptionalString('scaffolder.defaultCommitMessage'),
         gitAuthorInfo,
+        signingKey: signCommit ? signingKey : undefined,
       });
 
       if (enableLFS) {

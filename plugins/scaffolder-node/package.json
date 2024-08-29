@@ -60,6 +60,7 @@
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-scaffolder-common": "workspace:^",
     "@backstage/types": "workspace:^",
+    "@isomorphic-git/pgp-plugin": "^0.0.7",
     "concat-stream": "^2.0.0",
     "fs-extra": "^11.2.0",
     "globby": "^11.0.0",
