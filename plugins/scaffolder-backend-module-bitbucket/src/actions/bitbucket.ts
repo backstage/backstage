@@ -21,8 +21,8 @@ import {
 } from '@backstage/integration';
 import {
   createTemplateAction,
-  initRepoAndPush,
   getRepoSourceDirectory,
+  initRepoAndPush,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
 import { Config } from '@backstage/config';
@@ -220,6 +220,7 @@ export function createPublishBitbucketAction(options: {
     gitCommitMessage?: string;
     gitAuthorName?: string;
     gitAuthorEmail?: string;
+    signCommit?: boolean;
   }>({
     id: 'publish:bitbucket',
     description:
@@ -280,6 +281,11 @@ export function createPublishBitbucketAction(options: {
             type: 'string',
             description: `Sets the default author email for the commit.`,
           },
+          signCommit: {
+            title: 'Sign commit',
+            type: 'boolean',
+            description: 'Sign commit with configured PGP private key',
+          },
         },
       },
       output: {
@@ -313,6 +319,7 @@ export function createPublishBitbucketAction(options: {
         gitCommitMessage = 'initial commit',
         gitAuthorName,
         gitAuthorEmail,
+        signCommit,
       } = ctx.input;
 
       const { workspace, project, repo, host } = parseRepoUrl(
@@ -380,6 +387,14 @@ export function createPublishBitbucketAction(options: {
           ? gitAuthorEmail
           : config.getOptionalString('scaffolder.defaultAuthor.email'),
       };
+      const signingKey =
+        integrationConfig.config.signingKey ??
+        config.getOptionalString('scaffolder.defaultSigningKey');
+      if (signCommit && !signingKey) {
+        throw new Error(
+          'Signing commits is enabled but no signing key is provided in the configuration',
+        );
+      }
 
       let auth;
 
@@ -409,6 +424,7 @@ export function createPublishBitbucketAction(options: {
           ? gitCommitMessage
           : config.getOptionalString('scaffolder.defaultCommitMessage'),
         gitAuthorInfo,
+        signingKey: signCommit ? signingKey : undefined,
       });
 
       if (enableLFS && host !== 'bitbucket.org') {
