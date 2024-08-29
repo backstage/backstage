@@ -1,5 +1,5 @@
 ---
-id: 01-setup
+id: 01-setup--old
 title: 1. Tutorial setup
 description: How to get started with the permission framework as a plugin author
 ---
