@@ -45169,11 +45169,11 @@ __metadata:
   linkType: hard
 
 "zod-to-json-schema@npm:^3.20.4, zod-to-json-schema@npm:^3.21.4":
-  version: 3.22.5
-  resolution: "zod-to-json-schema@npm:3.22.5"
+  version: 3.23.2
+  resolution: "zod-to-json-schema@npm:3.23.2"
   peerDependencies:
-    zod: ^3.22.4
-  checksum: 3c4f87c7cf0f8027ff5e40f30d7b6c823a7a5a521b1238c0dd82b2dfcf259d8c8ea01e030639b0ffa2ab50fd69632999fd40b54b4af49f75b3192c1416c4f8d0
+    zod: ^3.23.3
+  checksum: 6dc87a6045f5dcca23d009f2e212f3f5dbb790b1e80488162560359f30aa2babb6a2ea8d44953e9193c6c923300c58e5ae157a9dc089d0bcf5e2437b3158ca1b
   languageName: node
   linkType: hard
 
