@@ -1,5 +1,17 @@
 # @backstage/plugin-proxy-backend
 
+## 0.5.6-next.0
+
+### Patch Changes
+
+- d425fc4: Modules, plugins, and services are now `BackendFeature`, not a function that returns a feature.
+- d298e6e: Deprecated `createRouter` and its router options in favour of the new backend system.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.9.0-next.0
+  - @backstage/backend-common@0.25.0-next.0
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
 ## 0.5.4
 
 ### Patch Changes

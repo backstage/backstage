@@ -23,8 +23,8 @@ RUN --mount=type=cache,target=/home/nonroot/.cache/pip,uid=65532,gid=65532 \
 # Build Node environment in a separate builder stage
 FROM cgr.dev/chainguard/wolfi-base:latest as node-builder
 
-ENV NODE_VERSION 20=~20.11
-ENV NODE_ENV production
+ENV NODE_VERSION="20=~20.11"
+ENV NODE_ENV=production
 
 RUN --mount=type=cache,target=/var/cache/apk,sharing=locked,uid=65532,gid=65532 \
     --mount=type=cache,target=/var/lib/apk,sharing=locked,uid=65532,gid=65532 \
@@ -52,20 +52,20 @@ RUN --mount=type=cache,target=/home/nonroot/.yarn/berry/cache,sharing=locked,uid
 # Final stage to build the application image
 FROM cgr.dev/chainguard/wolfi-base:latest
 
-ENV PYTHON_VERSION 3.12=~3.12
-ENV NODE_VERSION 20=~20.14
-ENV NODE_ENV production
+ENV PYTHON_VERSION="3.12=~3.12"
+ENV NODE_VERSION="20=~20.14"
+ENV NODE_ENV=production
 
 RUN --mount=type=cache,target=/var/cache/apk,sharing=locked,uid=65532,gid=65532 \
     --mount=type=cache,target=/var/lib/apk,sharing=locked,uid=65532,gid=65532 \
     apk update && \
     apk add \
     # add node for backstage
-        nodejs-$NODE_VERSION \
+    nodejs-$NODE_VERSION \
     # add python for backstage techdocs
-        python-$PYTHON_VERSION \
+    python-$PYTHON_VERSION \
     # add tini for init process
-        tini
+    tini
 
 WORKDIR /app
 

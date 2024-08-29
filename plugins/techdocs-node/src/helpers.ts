@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import { UrlReaderService } from '@backstage/backend-plugin-api';
-import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
+import {
+  LoggerService,
+  UrlReaderService,
+  resolveSafeChildPath,
+} from '@backstage/backend-plugin-api';
 import {
   Entity,
   getEntitySourceLocation,
@@ -25,7 +28,6 @@ import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TECHDOCS_ANNOTATION } from '@backstage/plugin-techdocs-common';
 import path from 'path';
-import { Logger } from 'winston';
 import { PreparerResponse, RemoteProtocol } from './stages/prepare/types';
 
 /**
@@ -145,7 +147,7 @@ export const getLocationForEntity = (
 export const getDocFilesFromRepository = async (
   reader: UrlReaderService,
   entity: Entity,
-  opts?: { etag?: string; logger?: Logger },
+  opts?: { etag?: string; logger?: LoggerService },
 ): Promise<PreparerResponse> => {
   const { target } = parseReferenceAnnotation(TECHDOCS_ANNOTATION, entity);
 

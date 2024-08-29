@@ -18,12 +18,13 @@ import { ExtensionDataRef } from './createExtensionDataRef';
 
 /** @public */
 export interface ExtensionInput<
-  TExtensionData extends ExtensionDataRef<unknown, string, { optional?: true }>,
+  UExtensionData extends ExtensionDataRef<unknown, string, { optional?: true }>,
   TConfig extends { singleton: boolean; optional: boolean },
 > {
   $$type: '@backstage/ExtensionInput';
-  extensionData: Array<TExtensionData>;
+  extensionData: Array<UExtensionData>;
   config: TConfig;
+  replaces?: Array<{ id: string; input: string }>;
 }
 
 /** @public */
@@ -32,22 +33,9 @@ export function createExtensionInput<
   TConfig extends { singleton?: boolean; optional?: boolean },
 >(
   extensionData: Array<UExtensionData>,
-  config?: TConfig,
+  config?: TConfig & { replaces?: Array<{ id: string; input: string }> },
 ): ExtensionInput<
   UExtensionData,
-  {
-    singleton: TConfig['singleton'] extends true ? true : false;
-    optional: TConfig['optional'] extends true ? true : false;
-  }
->;
-export function createExtensionInput<
-  TExtensionData extends ExtensionDataRef<unknown, string, { optional?: true }>,
-  TConfig extends { singleton?: boolean; optional?: boolean },
->(
-  extensionData: Array<TExtensionData>,
-  config?: TConfig,
-): ExtensionInput<
-  TExtensionData,
   {
     singleton: TConfig['singleton'] extends true ? true : false;
     optional: TConfig['optional'] extends true ? true : false;
@@ -84,8 +72,9 @@ export function createExtensionInput<
         ? true
         : false,
     },
+    replaces: config?.replaces,
   } as ExtensionInput<
-    TExtensionData,
+    UExtensionData,
     {
       singleton: TConfig['singleton'] extends true ? true : false;
       optional: TConfig['optional'] extends true ? true : false;

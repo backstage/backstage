@@ -45,6 +45,9 @@ describe('TemplateListPage', () => {
     getEntityFacets: async () => ({
       facets: { 'spec.type': [{ value: 'service', count: 1 }] },
     }),
+    getEntitiesByRefs: async () => ({
+      items: [],
+    }),
   };
 
   it('should render the search bar for templates', async () => {
@@ -112,6 +115,28 @@ describe('TemplateListPage', () => {
     );
 
     expect(getByText('Categories')).toBeInTheDocument();
+  });
+
+  it('should render the EntityOwnerPicker', async () => {
+    const { getByText } = await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, mockCatalogApi],
+          [
+            starredEntitiesApiRef,
+            new DefaultStarredEntitiesApi({
+              storageApi: MockStorageApi.create(),
+            }),
+          ],
+          [permissionApiRef, {}],
+        ]}
+      >
+        <TemplateListPage />
+      </TestApiProvider>,
+      { mountedRoutes: { '/': rootRouteRef } },
+    );
+
+    expect(getByText('Owner')).toBeInTheDocument();
   });
 
   // eslint-disable-next-line jest/no-disabled-tests

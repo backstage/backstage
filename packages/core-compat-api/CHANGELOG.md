@@ -1,5 +1,15 @@
 # @backstage/core-compat-api
 
+## 0.2.9-next.0
+
+### Patch Changes
+
+- fec8b57: Updated exports to use the new type parameters for extensions and extension blueprints.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.8.0-next.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/version-bridge@1.0.8
+
 ## 0.2.8
 
 ### Patch Changes

@@ -32,7 +32,7 @@ describe('eventsModuleGitlabEventRouter', () => {
     });
 
     await startTestBackend({
-      features: [eventsServiceFactory(), eventsModuleGitlabEventRouter],
+      features: [eventsServiceFactory, eventsModuleGitlabEventRouter],
     });
 
     expect(events.subscribed).toHaveLength(1);

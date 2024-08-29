@@ -14,25 +14,49 @@
  * limitations under the License.
  */
 
-import { ExtensionDefinition } from './createExtension';
+import {
+  ExtensionDefinition,
+  InternalExtensionDefinition,
+  toInternalExtensionDefinition,
+} from './createExtension';
 import {
   Extension,
   ResolveExtensionId,
   resolveExtensionDefinition,
 } from './resolveExtensionDefinition';
-import {
-  AnyExternalRoutes,
-  AnyRoutes,
-  BackstagePlugin,
-  FeatureFlagConfig,
-} from './types';
+import { AnyExternalRoutes, AnyRoutes, FeatureFlagConfig } from './types';
 
+/** @public */
+export interface FrontendPlugin<
+  TRoutes extends AnyRoutes = AnyRoutes,
+  TExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
+  TExtensionMap extends { [id in string]: ExtensionDefinition } = {},
+> {
+  readonly $$type: '@backstage/FrontendPlugin';
+  readonly id: string;
+  readonly routes: TRoutes;
+  readonly externalRoutes: TExternalRoutes;
+  getExtension<TId extends keyof TExtensionMap>(id: TId): TExtensionMap[TId];
+  withOverrides(options: {
+    extensions: Array<ExtensionDefinition>;
+  }): FrontendPlugin<TRoutes, TExternalRoutes, TExtensionMap>;
+}
+
+/**
+ * @public
+ * @deprecated Use {@link FrontendPlugin} instead.
+ */
+export type BackstagePlugin<
+  TRoutes extends AnyRoutes = AnyRoutes,
+  TExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
+  TExtensionMap extends { [id in string]: ExtensionDefinition } = {},
+> = FrontendPlugin<TRoutes, TExternalRoutes, TExtensionMap>;
 /** @public */
 export interface PluginOptions<
   TId extends string,
   TRoutes extends AnyRoutes,
   TExternalRoutes extends AnyExternalRoutes,
-  TExtensions extends readonly ExtensionDefinition<any, any>[],
+  TExtensions extends readonly ExtensionDefinition[],
 > {
   id: TId;
   routes?: TRoutes;
@@ -42,10 +66,10 @@ export interface PluginOptions<
 }
 
 /** @public */
-export interface InternalBackstagePlugin<
+export interface InternalFrontendPlugin<
   TRoutes extends AnyRoutes = AnyRoutes,
   TExternalRoutes extends AnyExternalRoutes = AnyExternalRoutes,
-> extends BackstagePlugin<TRoutes, TExternalRoutes> {
+> extends FrontendPlugin<TRoutes, TExternalRoutes> {
   readonly version: 'v1';
   readonly extensions: Extension<unknown>[];
   readonly featureFlags: FeatureFlagConfig[];
@@ -56,10 +80,10 @@ export function createFrontendPlugin<
   TId extends string,
   TRoutes extends AnyRoutes = {},
   TExternalRoutes extends AnyExternalRoutes = {},
-  TExtensions extends readonly ExtensionDefinition<any, any>[] = [],
+  TExtensions extends readonly ExtensionDefinition[] = [],
 >(
   options: PluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>,
-): BackstagePlugin<
+): FrontendPlugin<
   TRoutes,
   TExternalRoutes,
   {
@@ -69,16 +93,20 @@ export function createFrontendPlugin<
     >]: KExtension;
   }
 > {
-  const extensions = new Array<Extension<unknown>>();
+  const extensions = new Array<Extension<any>>();
   const extensionDefinitionsById = new Map<
     string,
-    ExtensionDefinition<unknown>
+    InternalExtensionDefinition
   >();
 
   for (const def of options.extensions ?? []) {
+    const internal = toInternalExtensionDefinition(def);
     const ext = resolveExtensionDefinition(def, { namespace: options.id });
     extensions.push(ext);
-    extensionDefinitionsById.set(ext.id, { ...def, namespace: options.id });
+    extensionDefinitionsById.set(ext.id, {
+      ...internal,
+      namespace: options.id,
+    });
   }
 
   if (extensions.length !== extensionDefinitionsById.size) {
@@ -97,7 +125,7 @@ export function createFrontendPlugin<
   }
 
   return {
-    $$type: '@backstage/BackstagePlugin',
+    $$type: '@backstage/FrontendPlugin',
     version: 'v1',
     id: options.id,
     routes: options.routes ?? ({} as TRoutes),
@@ -127,15 +155,33 @@ export function createFrontendPlugin<
         extensions: [...nonOverriddenExtensions, ...overrides.extensions],
       });
     },
-  } as InternalBackstagePlugin<TRoutes, TExternalRoutes>;
+  } as InternalFrontendPlugin<TRoutes, TExternalRoutes>;
 }
 
 /** @internal */
-export function toInternalBackstagePlugin(
-  plugin: BackstagePlugin,
-): InternalBackstagePlugin {
-  const internal = plugin as InternalBackstagePlugin;
-  if (internal.$$type !== '@backstage/BackstagePlugin') {
+export function isInternalFrontendPlugin(opaque: {
+  $$type: string;
+}): opaque is InternalFrontendPlugin {
+  if (
+    opaque.$$type === '@backstage/FrontendPlugin' ||
+    opaque.$$type === '@backstage/BackstagePlugin'
+  ) {
+    // Make sure we throw if invalid
+    toInternalFrontendPlugin(opaque as FrontendPlugin);
+    return true;
+  }
+  return false;
+}
+
+/** @internal */
+export function toInternalFrontendPlugin(
+  plugin: FrontendPlugin,
+): InternalFrontendPlugin {
+  const internal = plugin as InternalFrontendPlugin;
+  if (
+    internal.$$type !== '@backstage/FrontendPlugin' &&
+    internal.$$type !== '@backstage/BackstagePlugin'
+  ) {
     throw new Error(`Invalid plugin instance, bad type '${internal.$$type}'`);
   }
   if (internal.version !== 'v1') {

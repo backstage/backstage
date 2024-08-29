@@ -728,6 +728,19 @@ metadata:
     const throwError = () =>
       startTestBackend({
         features: [
+          mockServices.rootConfig.factory({
+            data: {
+              kubernetes: {
+                serviceLocatorMethod: { type: 'multiTenant' },
+                clusterLocatorMethods: [
+                  {
+                    type: 'config',
+                    clusters: [],
+                  },
+                ],
+              },
+            },
+          }),
           import('@backstage/plugin-kubernetes-backend/alpha'),
           createBackendModule({
             pluginId: 'kubernetes',

@@ -86,8 +86,16 @@ export class DatabaseManagerImpl implements LegacyRootDatabaseService {
       );
     }
     const getClient = () => this.getDatabase(pluginId, connector, deps);
-    const migrations = { skip: false, ...this.options?.migrations };
-    return { getClient, migrations };
+
+    const skip =
+      this.options?.migrations?.skip ??
+      this.config.getOptionalBoolean(
+        `backend.database.plugin.${pluginId}.skipMigrations`,
+      ) ??
+      this.config.getOptionalBoolean('backend.database.skipMigrations') ??
+      false;
+
+    return { getClient, migrations: { skip } };
   }
 
   /**

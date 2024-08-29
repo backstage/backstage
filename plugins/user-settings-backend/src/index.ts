@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export * from './service';
+export * from './deprecated';
 export * from './database';

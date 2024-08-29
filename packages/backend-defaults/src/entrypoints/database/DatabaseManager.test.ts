@@ -96,27 +96,83 @@ describe('DatabaseManagerImpl', () => {
     expect(connector2.getClient).toHaveBeenLastCalledWith('plugin2', undefined);
   });
 
-  it('retains the migration skip info', async () => {
+  it('migration skip options take precedence over config', async () => {
     const connector = {
       getClient: jest.fn(),
       dropDatabase: jest.fn(),
     } satisfies Connector;
 
+    const impl = new DatabaseManagerImpl(
+      new ConfigReader({
+        client: 'pg',
+        backend: {
+          database: {
+            skipMigrations: true,
+            plugin: { plugin1: { skipMigrations: true } },
+          },
+        },
+      }),
+      {
+        pg: connector,
+      },
+      { migrations: { skip: false } },
+    );
+    expect((await impl.forPlugin('plugin1')).migrations).toEqual({
+      skip: false,
+    });
+
     const impl1 = new DatabaseManagerImpl(new ConfigReader({ client: 'pg' }), {
       pg: connector,
     });
 
-    const impl2 = new DatabaseManagerImpl(
-      new ConfigReader({ client: 'pg' }),
-      { pg: connector },
-      { migrations: { skip: true } },
-    );
-
     expect((await impl1.forPlugin('plugin1')).migrations).toEqual({
       skip: false,
     });
+  });
 
+  it('plugin can skip migrations using config', async () => {
+    const connector = {
+      getClient: jest.fn(),
+      dropDatabase: jest.fn(),
+    } satisfies Connector;
+
+    const impl = new DatabaseManagerImpl(
+      new ConfigReader({
+        client: 'pg',
+        backend: {
+          database: { plugin: { plugin1: { skipMigrations: true } } },
+        },
+      }),
+      {
+        pg: connector,
+      },
+    );
+
+    expect((await impl.forPlugin('plugin1')).migrations).toEqual({
+      skip: true,
+    });
+    expect((await impl.forPlugin('plugin2')).migrations).toEqual({
+      skip: false,
+    });
+
+    const impl2 = new DatabaseManagerImpl(
+      new ConfigReader({
+        client: 'pg',
+        backend: {
+          database: {
+            skipMigrations: true,
+            plugin: { plugin1: { skipMigrations: false } },
+          },
+        },
+      }),
+      {
+        pg: connector,
+      },
+    );
     expect((await impl2.forPlugin('plugin1')).migrations).toEqual({
+      skip: false,
+    });
+    expect((await impl2.forPlugin('plugin2')).migrations).toEqual({
       skip: true,
     });
   });

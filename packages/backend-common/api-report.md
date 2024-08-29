@@ -9,7 +9,7 @@
 import { AppConfig } from '@backstage/config';
 import { AuthCallback } from 'isomorphic-git';
 import { AuthService } from '@backstage/backend-plugin-api';
-import { BackendFeatureCompat } from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CacheService } from '@backstage/backend-plugin-api';
 import { CacheServiceOptions } from '@backstage/backend-plugin-api';
 import { CacheServiceSetOptions } from '@backstage/backend-plugin-api';
@@ -22,7 +22,6 @@ import Docker from 'dockerode';
 import { ErrorRequestHandler } from 'express';
 import express from 'express';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
-import { IdentityService } from '@backstage/backend-plugin-api';
 import { isChildPath as isChildPath_2 } from '@backstage/backend-plugin-api';
 import { isDatabaseConflictError as isDatabaseConflictError_2 } from '@backstage/backend-plugin-api';
 import { KubeConfig } from '@kubernetes/client-node';
@@ -35,6 +34,7 @@ import { PermissionsService } from '@backstage/backend-plugin-api';
 import { PluginMetadataService } from '@backstage/backend-plugin-api';
 import { PushResult } from 'isomorphic-git';
 import { ReadCommitResult } from 'isomorphic-git';
+import { Request as Request_2 } from 'express';
 import { RequestHandler } from 'express';
 import { resolvePackagePath as resolvePackagePath_2 } from '@backstage/backend-plugin-api';
 import { resolveSafeChildPath as resolveSafeChildPath_2 } from '@backstage/backend-plugin-api';
@@ -43,7 +43,6 @@ import { Router } from 'express';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { Server } from 'http';
 import { ServiceRef } from '@backstage/backend-plugin-api';
-import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { TransportStreamOptions } from 'winston-transport';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { UserInfoService } from '@backstage/backend-plugin-api';
@@ -100,7 +99,7 @@ export function createLegacyAuthAdapters<
     auth?: AuthService;
     httpAuth?: HttpAuthService;
     userInfo?: UserInfoService;
-    identity?: IdentityService;
+    identity?: LegacyIdentityService;
     tokenManager?: TokenManager;
     discovery: PluginEndpointDiscovery;
   },
@@ -322,6 +321,23 @@ export type KubernetesContainerRunnerOptions = {
 export type LegacyCreateRouter<TEnv> = (deps: TEnv) => Promise<RequestHandler>;
 
 // @public @deprecated
+export interface LegacyIdentityService {
+  // (undocumented)
+  getIdentity(options: { request: Request_2<unknown> }): Promise<
+    | {
+        expiresInSeconds?: number;
+        token: string;
+        identity: {
+          type: 'user';
+          userEntityRef: string;
+          ownershipEntityRefs: string[];
+        };
+      }
+    | undefined
+  >;
+}
+
+// @public @deprecated
 export const legacyPlugin: (
   name: string,
   createRouterImport: Promise<{
@@ -335,9 +351,7 @@ export const legacyPlugin: (
           logger: LoggerService;
           permissions: PermissionsService;
           scheduler: SchedulerService;
-          tokenManager: TokenManagerService;
           reader: UrlReaderService;
-          identity: IdentityService;
         },
         {
           logger: (log: LoggerService) => Logger;
@@ -345,10 +359,13 @@ export const legacyPlugin: (
             getClient(options?: CacheServiceOptions | undefined): CacheService;
           };
         }
-      >
+      > & {
+        tokenManager: TokenManager;
+        identity: LegacyIdentityService;
+      }
     >;
   }>,
-) => BackendFeatureCompat;
+) => BackendFeature;
 
 // Warning: (ae-forgotten-export) The symbol "LegacyRootDatabaseService_2" needs to be exported by the entry point index.d.ts
 //
@@ -384,9 +401,14 @@ export function makeLegacyPlugin<
 ): (
   name: string,
   createRouterImport: Promise<{
-    default: LegacyCreateRouter<TransformedEnv<TEnv, TEnvTransforms>>;
+    default: LegacyCreateRouter<
+      TransformedEnv<TEnv, TEnvTransforms> & {
+        tokenManager: TokenManager;
+        identity: LegacyIdentityService;
+      }
+    >;
   }>,
-) => BackendFeatureCompat;
+) => BackendFeature;
 
 // @public @deprecated
 export function notFoundHandler(): RequestHandler;
@@ -523,7 +545,12 @@ export interface StatusCheckHandlerOptions {
 }
 
 // @public @deprecated (undocumented)
-export type TokenManager = TokenManagerService;
+export interface TokenManager {
+  authenticate(token: string): Promise<void>;
+  getToken(): Promise<{
+    token: string;
+  }>;
+}
 
 // @public @deprecated
 export function useHotCleanup(

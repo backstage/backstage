@@ -16,7 +16,10 @@
 
 import React from 'react';
 import { Link, MemoryRouter } from 'react-router-dom';
-import { createSpecializedApp } from '@backstage/frontend-app-api';
+import {
+  createSpecializedApp,
+  FrontendFeature,
+} from '@backstage/frontend-app-api';
 import { RenderResult, render } from '@testing-library/react';
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
@@ -27,11 +30,11 @@ import {
   coreExtensionData,
   RouteRef,
   useRouteRef,
-  createExtensionInput,
   IconComponent,
   RouterBlueprint,
   NavItemBlueprint,
 } from '@backstage/frontend-plugin-api';
+import appPlugin from '@backstage/plugin-app';
 
 /**
  * Options to customize the behavior of the test app.
@@ -60,6 +63,16 @@ export type TestAppOptions = {
    * Additional configuration passed to the app when rendering elements inside it.
    */
   config?: JsonObject;
+
+  /**
+   * Additional extensions to add to the test app.
+   */
+  extensions?: ExtensionDefinition<any>[];
+
+  /**
+   * Additional features to add to the test app.
+   */
+  features?: FrontendFeature[];
 };
 
 const NavItem = (props: {
@@ -81,38 +94,36 @@ const NavItem = (props: {
   );
 };
 
-export const TestAppNavExtension = createExtension({
-  namespace: 'app',
-  name: 'nav',
-  attachTo: { id: 'app/layout', input: 'nav' },
-  inputs: {
-    items: createExtensionInput([NavItemBlueprint.dataRefs.target]),
-  },
-  output: [coreExtensionData.reactElement],
-  factory({ inputs }) {
-    return [
-      coreExtensionData.reactElement(
-        <nav>
-          <ul>
-            {inputs.items.map((item, index) => {
-              const { icon, title, routeRef } = item.get(
-                NavItemBlueprint.dataRefs.target,
-              );
+const appPluginOverride = appPlugin.withOverrides({
+  extensions: [
+    appPlugin.getExtension('app/nav').override({
+      output: [coreExtensionData.reactElement],
+      factory(_originalFactory, { inputs }) {
+        return [
+          coreExtensionData.reactElement(
+            <nav>
+              <ul>
+                {inputs.items.map((item, index) => {
+                  const { icon, title, routeRef } = item.get(
+                    NavItemBlueprint.dataRefs.target,
+                  );
 
-              return (
-                <NavItem
-                  key={index}
-                  icon={icon}
-                  title={title}
-                  routeRef={routeRef}
-                />
-              );
-            })}
-          </ul>
-        </nav>,
-      ),
-    ];
-  },
+                  return (
+                    <NavItem
+                      key={index}
+                      icon={icon}
+                      title={title}
+                      routeRef={routeRef}
+                    />
+                  );
+                })}
+              </ul>
+            </nav>,
+          ),
+        ];
+      },
+    }),
+  ],
 });
 
 /**
@@ -123,7 +134,7 @@ export function renderInTestApp(
   element: JSX.Element,
   options?: TestAppOptions,
 ): RenderResult {
-  const extensions: Array<ExtensionDefinition<any, any>> = [
+  const extensions: Array<ExtensionDefinition> = [
     createExtension({
       namespace: 'test',
       attachTo: { id: 'app/routes', input: 'routes' },
@@ -141,7 +152,6 @@ export function renderInTestApp(
         Component: ({ children }) => <MemoryRouter>{children}</MemoryRouter>,
       },
     }),
-    TestAppNavExtension,
   ];
 
   if (options?.mountedRoutes) {
@@ -167,12 +177,23 @@ export function renderInTestApp(
     }
   }
 
+  if (options?.extensions) {
+    extensions.push(...options.extensions);
+  }
+
+  const features: FrontendFeature[] = [
+    appPluginOverride,
+    createExtensionOverrides({
+      extensions,
+    }),
+  ];
+
+  if (options?.features) {
+    features.push(...options.features);
+  }
+
   const app = createSpecializedApp({
-    features: [
-      createExtensionOverrides({
-        extensions,
-      }),
-    ],
+    features,
     config: ConfigReader.fromConfigs([
       { context: 'render-config', data: options?.config ?? {} },
     ]),

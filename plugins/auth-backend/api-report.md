@@ -12,7 +12,7 @@ import { AuthResolverContext as AuthResolverContext_2 } from '@backstage/plugin-
 import { AuthService } from '@backstage/backend-plugin-api';
 import { AwsAlbResult as AwsAlbResult_2 } from '@backstage/plugin-auth-backend-module-aws-alb-provider';
 import { AzureEasyAuthResult } from '@backstage/plugin-auth-backend-module-azure-easyauth-provider';
-import { BackendFeatureCompat } from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BackstageSignInResult } from '@backstage/plugin-auth-node';
 import { CacheService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
@@ -41,7 +41,6 @@ import { RootConfigService } from '@backstage/backend-plugin-api';
 import { SignInInfo as SignInInfo_2 } from '@backstage/plugin-auth-node';
 import { SignInResolver as SignInResolver_2 } from '@backstage/plugin-auth-node';
 import { TokenManager } from '@backstage/backend-common';
-import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { TokenParams as TokenParams_2 } from '@backstage/plugin-auth-node';
 import { UserEntity } from '@backstage/catalog-model';
 import { WebMessageResponse as WebMessageResponse_2 } from '@backstage/plugin-auth-node';
@@ -58,7 +57,7 @@ export type AuthHandlerResult = {
 };
 
 // @public
-const authPlugin: BackendFeatureCompat;
+const authPlugin: BackendFeature;
 export default authPlugin;
 
 // @public @deprecated (undocumented)
@@ -126,7 +125,7 @@ export type BitbucketServerOAuthResult = {
 export class CatalogIdentityClient {
   constructor(options: {
     catalogApi: CatalogApi;
-    tokenManager: TokenManager;
+    tokenManager?: TokenManager;
     discovery: DiscoveryService;
     auth?: AuthService;
     httpAuth?: HttpAuthService;
@@ -534,6 +533,7 @@ export const providers: Readonly<{
     resolvers: Readonly<{
       emailMatchingUserEntityProfileEmail: () => SignInResolver_2<OAuthResult>;
       emailLocalPartMatchingUserEntityName: () => SignInResolver_2<OAuthResult>;
+      userIdMatchingUserEntityAnnotation: () => SignInResolver_2<OAuthResult>;
       emailMatchingUserEntityAnnotation: () => SignInResolver_2<OAuthResult>;
     }>;
   }>;
@@ -673,7 +673,7 @@ export interface RouterOptions {
   // (undocumented)
   tokenFactoryAlgorithm?: string;
   // (undocumented)
-  tokenManager: TokenManagerService;
+  tokenManager?: TokenManager;
 }
 
 // @public (undocumented)

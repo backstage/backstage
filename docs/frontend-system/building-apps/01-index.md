@@ -30,13 +30,13 @@ The created-app is currently templated for legacy frontend system applications, 
 
 ## The app instance
 
-The starting point of a frontend app is the `createApp` function, which accepts a single options object as its only parameter. It is imported from `@backstage/frontend-app-api`, which is where you will find most of the common APIs for building apps.
+The starting point of a frontend app is the `createApp` function, which accepts a single options object as its only parameter. It is imported from `@backstage/frontend-defaults`, which is where you will find most of the common APIs for building apps.
 
 This is how to create a minimal app:
 
 ```tsx title="in src/index.ts"
 import ReactDOM from 'react-dom/client';
-import { createApp } from '@backstage/frontend-app-api';
+import { createApp } from '@backstage/frontend-defaults';
 import catalogPlugin from '@backstage/plugin-catalog/alpha';
 
 // Create your app instance
@@ -87,7 +87,7 @@ Previously you would customize the application routes, components, apis, sidebar
 A manual installation is required if your packages are not discovered automatically, either because you are not using `@backstage/cli` to build your application or because the features are defined in local modules in the app package. In order to manually install a feature, you must import it and pass it to the `createApp` function:
 
 ```tsx title="packages/app/src/App.tsx"
-import { createApp } from '@backstage/frontend-app-api';
+import { createApp } from '@backstage/frontend-defaults';
 // This plugin was create as a local module in the app
 import { somePlugin } from './plugins';
 
@@ -104,10 +104,10 @@ You can also pass overrides to the features array, for more details, please read
 
 ### Using an async features loader
 
-In case you need to perform asynchronous operations before passing features to the `createApp` function, define a [feature loader](https://backstage.io/docs/reference/frontend-app-api.createappfeatureloader/) object and pass it to the `features` option:
+In case you need to perform asynchronous operations before passing features to the `createApp` function, define a [feature loader](https://backstage.io/docs/reference/frontend-defaults.createappfeatureloader/) object and pass it to the `features` option:
 
 ```tsx title="packages/app/src/App.tsx"
-import { createApp } from '@backstage/frontend-app-api';
+import { createApp } from '@backstage/frontend-defaults';
 
 const app = createApp({
   features: {
@@ -129,7 +129,7 @@ export default app.createRoot();
 In some cases we want to load our configuration from a backend server and to do so, you can pass an callback to the `configLoader` option when calling the `createApp` function, the callback should return a promise of an object with the config object:
 
 ```tsx title="packages/app/src/App.tsx"
-import { createApp } from '@backstage/frontend-app-api';
+import { createApp } from '@backstage/frontend-defaults';
 import { getConfigFromServer } from './utils';
 
 // Example lazy loading the app configuration

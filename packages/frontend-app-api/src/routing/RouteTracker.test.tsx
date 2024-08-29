@@ -46,7 +46,10 @@ describe('RouteTracker', () => {
       caseSensitive: false,
       children: [MATCH_ALL_ROUTE],
       appNode: {
-        spec: { extension: { id: 'home.page.index' }, source: { id: 'home' } },
+        spec: {
+          extension: { id: 'home.page.index' },
+          source: { id: 'home' },
+        },
       } as AppNode,
     },
     {

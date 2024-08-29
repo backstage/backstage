@@ -17,7 +17,10 @@
 import React from 'react';
 import { coreExtensionData } from './coreExtensionData';
 import { createExtensionBlueprint } from './createExtensionBlueprint';
-import { createExtensionTester } from '@backstage/frontend-test-utils';
+import {
+  createExtensionTester,
+  renderInTestApp,
+} from '@backstage/frontend-test-utils';
 import {
   ExtensionDataValue,
   createExtensionDataRef,
@@ -32,10 +35,7 @@ import { createExtensionDataContainer } from './createExtensionDataContainer';
 
 function unused(..._any: any[]) {}
 
-function factoryOutput(
-  ext: ExtensionDefinition<any, any>,
-  inputs: unknown = undefined,
-) {
+function factoryOutput(ext: ExtensionDefinition, inputs: unknown = undefined) {
   const int = toInternalExtensionDefinition(ext);
   if (int.version !== 'v2') {
     throw new Error('Expected v2 extension');
@@ -80,7 +80,9 @@ describe('createExtensionBlueprint', () => {
       version: 'v2',
     });
 
-    const { container } = createExtensionTester(extension).render();
+    const { container } = renderInTestApp(
+      createExtensionTester(extension).reactElement(),
+    );
     expect(container.querySelector('h1')).toHaveTextContent('Hello, world!');
   });
 
@@ -120,7 +122,9 @@ describe('createExtensionBlueprint', () => {
       version: 'v2',
     });
 
-    const { container } = createExtensionTester(extension).render();
+    const { container } = renderInTestApp(
+      createExtensionTester(extension).reactElement(),
+    );
     expect(container.querySelector('h1')).toHaveTextContent('Hello, world!');
   });
 
@@ -145,7 +149,9 @@ describe('createExtensionBlueprint', () => {
 
     expect(extension).toBeDefined();
 
-    const { container } = createExtensionTester(extension).render();
+    const { container } = renderInTestApp(
+      createExtensionTester(extension).reactElement(),
+    );
     expect(container.querySelector('h1')).toHaveTextContent('Hello, world!');
   });
 
@@ -216,13 +222,15 @@ describe('createExtensionBlueprint', () => {
 
     expect.assertions(4);
 
-    createExtensionTester(extension, {
-      config: {
-        something: 'something new!',
-        text: 'Hello, world!',
-        defaulted: 'lolz',
-      },
-    }).render();
+    renderInTestApp(
+      createExtensionTester(extension, {
+        config: {
+          something: 'something new!',
+          text: 'Hello, world!',
+          defaulted: 'lolz',
+        },
+      }).reactElement(),
+    );
   });
 
   it('should not allow overlapping config keys', () => {
@@ -291,12 +299,14 @@ describe('createExtensionBlueprint', () => {
 
     expect.assertions(2);
 
-    createExtensionTester(extension, {
-      config: {
-        something: 'something new!',
-        defaulted: 'lolz',
-      },
-    }).render();
+    renderInTestApp(
+      createExtensionTester(extension, {
+        config: {
+          something: 'something new!',
+          defaulted: 'lolz',
+        },
+      }).reactElement(),
+    );
   });
 
   it('should allow getting inputs properly', () => {

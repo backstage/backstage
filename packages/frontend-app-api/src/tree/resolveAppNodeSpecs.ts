@@ -14,25 +14,29 @@
  * limitations under the License.
  */
 
-import {
-  BackstagePlugin,
-  Extension,
-  ExtensionOverrides,
-  FrontendFeature,
-} from '@backstage/frontend-plugin-api';
+import { Extension, ExtensionOverrides } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalExtensionOverrides } from '../../../frontend-plugin-api/src/wiring/createExtensionOverrides';
 import { ExtensionParameters } from './readAppExtensionsConfig';
 import { AppNodeSpec } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalBackstagePlugin } from '../../../frontend-plugin-api/src/wiring/createFrontendPlugin';
+import {
+  isInternalFrontendPlugin,
+  toInternalFrontendPlugin,
+} from '../../../frontend-plugin-api/src/wiring/createFrontendPlugin';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import {
+  isInternalFrontendModule,
+  toInternalFrontendModule,
+} from '../../../frontend-plugin-api/src/wiring/createFrontendModule';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalExtension } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
+import { FrontendFeature } from '../wiring';
 
 /** @internal */
 export function resolveAppNodeSpecs(options: {
   features?: FrontendFeature[];
-  builtinExtensions?: Extension<unknown>[];
+  builtinExtensions?: Extension<any, any>[];
   parameters?: Array<ExtensionParameters>;
   forbidden?: Set<string>;
 }): AppNodeSpec[] {
@@ -43,20 +47,30 @@ export function resolveAppNodeSpecs(options: {
     features = [],
   } = options;
 
-  const plugins = features.filter(
-    (f): f is BackstagePlugin => f.$$type === '@backstage/BackstagePlugin',
-  );
+  const plugins = features.filter(isInternalFrontendPlugin);
   const overrides = features.filter(
     (f): f is ExtensionOverrides =>
       f.$$type === '@backstage/ExtensionOverrides',
   );
+  const modules = features.filter(isInternalFrontendModule);
 
   const pluginExtensions = plugins.flatMap(source => {
-    return toInternalBackstagePlugin(source).extensions.map(extension => ({
+    return toInternalFrontendPlugin(source).extensions.map(extension => ({
       ...extension,
       source,
     }));
   });
+  const moduleExtensions = modules.flatMap(mod =>
+    toInternalFrontendModule(mod).extensions.flatMap(extension => {
+      // Modules for plugins that are not installed are ignored
+      const source = plugins.find(p => p.id === mod.pluginId);
+      if (!source) {
+        return [];
+      }
+
+      return [{ ...extension, source }];
+    }),
+  );
   const overrideExtensions = overrides.flatMap(
     override => toInternalExtensionOverrides(override).extensions,
   );
@@ -72,13 +86,23 @@ export function resolveAppNodeSpecs(options: {
       `It is forbidden to override the following extension(s): ${forbiddenStr}, which is done by the following plugin(s): ${pluginsStr}`,
     );
   }
-
+  if (moduleExtensions.some(({ id }) => forbidden.has(id))) {
+    const pluginsStr = moduleExtensions
+      .filter(({ id }) => forbidden.has(id))
+      .map(({ source }) => `'${source.id}'`)
+      .join(', ');
+    const forbiddenStr = [...forbidden].map(id => `'${id}'`).join(', ');
+    throw new Error(
+      `It is forbidden to override the following extension(s): ${forbiddenStr}, which is done by a module for the following plugin(s): ${pluginsStr}`,
+    );
+  }
   if (overrideExtensions.some(({ id }) => forbidden.has(id))) {
     const forbiddenStr = [...forbidden].map(id => `'${id}'`).join(', ');
     throw new Error(
       `It is forbidden to override the following extension(s): ${forbiddenStr}, which is done by one or more extension overrides`,
     );
   }
+
   const overrideExtensionIds = overrideExtensions.map(({ id }) => id);
   if (overrideExtensionIds.length !== new Set(overrideExtensionIds).size) {
     const counts = new Map<string, number>();
@@ -141,6 +165,33 @@ export function resolveAppNodeSpecs(options: {
         extension: internalExtension,
         params: {
           source: undefined,
+          attachTo: internalExtension.attachTo,
+          disabled: internalExtension.disabled,
+          config: undefined,
+        },
+      });
+    }
+  }
+
+  // Install all module overrides
+  for (const extension of moduleExtensions) {
+    const internalExtension = toInternalExtension(extension);
+
+    // Check if our override is overriding an extension that already exists
+    const index = configuredExtensions.findIndex(
+      e => e.extension.id === extension.id,
+    );
+    if (index !== -1) {
+      // Only implementation, attachment point and default disabled status are overridden, the source is kept
+      configuredExtensions[index].extension = internalExtension;
+      configuredExtensions[index].params.attachTo = internalExtension.attachTo;
+      configuredExtensions[index].params.disabled = internalExtension.disabled;
+    } else {
+      // Add the extension as a new one when not overriding an existing one
+      configuredExtensions.push({
+        extension: internalExtension,
+        params: {
+          source: extension.source,
           attachTo: internalExtension.attachTo,
           disabled: internalExtension.disabled,
           config: undefined,

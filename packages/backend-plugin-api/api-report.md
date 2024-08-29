@@ -12,7 +12,6 @@ import { Duration } from 'luxon';
 import { EvaluatorRequestOptions } from '@backstage/plugin-permission-common';
 import { Handler } from 'express';
 import { HumanDuration } from '@backstage/types';
-import { IdentityApi } from '@backstage/plugin-auth-node';
 import { isChildPath } from '@backstage/cli-common';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
@@ -64,15 +63,6 @@ export interface BackendFeature {
   $$type: '@backstage/BackendFeature';
 }
 
-// @public @deprecated (undocumented)
-export interface BackendFeatureCompat extends BackendFeature {
-  // @deprecated (undocumented)
-  (): this;
-}
-
-// @public @deprecated (undocumented)
-export type BackendModuleConfig = CreateBackendModuleOptions;
-
 // @public
 export interface BackendModuleRegistrationPoints {
   // (undocumented)
@@ -90,9 +80,6 @@ export interface BackendModuleRegistrationPoints {
     init(deps: DepsToInstances<TDeps>): Promise<void>;
   }): void;
 }
-
-// @public @deprecated (undocumented)
-export type BackendPluginConfig = CreateBackendPluginOptions;
 
 // @public
 export interface BackendPluginRegistrationPoints {
@@ -175,12 +162,12 @@ export interface CacheService {
 
 // @public
 export type CacheServiceOptions = {
-  defaultTtl?: number;
+  defaultTtl?: number | HumanDuration;
 };
 
 // @public
 export type CacheServiceSetOptions = {
-  ttl?: number;
+  ttl?: number | HumanDuration;
 };
 
 // @public
@@ -206,11 +193,7 @@ export namespace coreServices {
   const rootLifecycle: ServiceRef<RootLifecycleService, 'root', 'singleton'>;
   const rootLogger: ServiceRef<RootLoggerService, 'root', 'singleton'>;
   const scheduler: ServiceRef<SchedulerService, 'plugin', 'singleton'>;
-  const // @deprecated
-    tokenManager: ServiceRef<TokenManagerService, 'plugin', 'singleton'>;
   const urlReader: ServiceRef<UrlReaderService, 'plugin', 'singleton'>;
-  const // @deprecated
-    identity: ServiceRef<IdentityService, 'plugin', 'singleton'>;
 }
 
 // @public
@@ -257,7 +240,7 @@ export interface CreateBackendFeatureLoaderOptions<
 // @public
 export function createBackendModule(
   options: CreateBackendModuleOptions,
-): BackendFeatureCompat;
+): BackendFeature;
 
 // @public
 export interface CreateBackendModuleOptions {
@@ -270,7 +253,7 @@ export interface CreateBackendModuleOptions {
 // @public
 export function createBackendPlugin(
   options: CreateBackendPluginOptions,
-): BackendFeatureCompat;
+): BackendFeature;
 
 // @public
 export interface CreateBackendPluginOptions {
@@ -297,25 +280,9 @@ export function createServiceFactory<
   TDeps extends {
     [name in string]: ServiceRef<unknown, 'root'>;
   },
-  TOpts extends object | undefined = undefined,
 >(
   options: RootServiceFactoryOptions<TService, TInstances, TImpl, TDeps>,
-): ServiceFactoryCompat<TService, 'root', TInstances>;
-
-// @public @deprecated
-export function createServiceFactory<
-  TService,
-  TInstances extends 'singleton' | 'multiton',
-  TImpl extends TService,
-  TDeps extends {
-    [name in string]: ServiceRef<unknown, 'root'>;
-  },
-  TOpts extends object | undefined = undefined,
->(
-  options: (
-    options?: TOpts,
-  ) => RootServiceFactoryOptions<TService, TInstances, TImpl, TDeps>,
-): ServiceFactoryCompat<TService, 'root', TInstances, TOpts>;
+): ServiceFactory<TService, 'root', TInstances>;
 
 // @public
 export function createServiceFactory<
@@ -326,7 +293,6 @@ export function createServiceFactory<
     [name in string]: ServiceRef<unknown>;
   },
   TContext = undefined,
-  TOpts extends object | undefined = undefined,
 >(
   options: PluginServiceFactoryOptions<
     TService,
@@ -335,29 +301,7 @@ export function createServiceFactory<
     TImpl,
     TDeps
   >,
-): ServiceFactoryCompat<TService, 'plugin', TInstances>;
-
-// @public @deprecated
-export function createServiceFactory<
-  TService,
-  TInstances extends 'singleton' | 'multiton',
-  TImpl extends TService,
-  TDeps extends {
-    [name in string]: ServiceRef<unknown>;
-  },
-  TContext = undefined,
-  TOpts extends object | undefined = undefined,
->(
-  options: (
-    options?: TOpts,
-  ) => PluginServiceFactoryOptions<
-    TService,
-    TInstances,
-    TContext,
-    TImpl,
-    TDeps
-  >,
-): ServiceFactoryCompat<TService, 'plugin', TInstances, TOpts>;
+): ServiceFactory<TService, 'plugin', TInstances>;
 
 // @public
 export function createServiceRef<TService>(
@@ -401,9 +345,6 @@ export type ExtensionPoint<T> = {
   $$type: '@backstage/ExtensionPoint';
 };
 
-// @public @deprecated (undocumented)
-export type ExtensionPointConfig = CreateExtensionPointOptions;
-
 // @public
 export interface HttpAuthService {
   credentials<TAllowed extends keyof BackstagePrincipalTypes = 'unknown'>(
@@ -436,9 +377,6 @@ export interface HttpRouterServiceAuthPolicy {
   // (undocumented)
   path: string;
 }
-
-// @public @deprecated
-export interface IdentityService extends IdentityApi {}
 
 export { isChildPath };
 
@@ -576,7 +514,7 @@ export interface RootLoggerService extends LoggerService {}
 
 // @public (undocumented)
 export interface RootServiceFactoryOptions<
-  TService, // TODO(Rugvip): Can we forward the entire service ref type here instead of forwarding each type arg once the callback form is gone?
+  TService,
   TInstances extends 'singleton' | 'multiton',
   TImpl extends TService,
   TDeps extends {
@@ -677,22 +615,6 @@ export interface ServiceFactory<
   service: ServiceRef<TService, TScope, TInstances>;
 }
 
-// @public @deprecated (undocumented)
-export interface ServiceFactoryCompat<
-  TService = unknown,
-  TScope extends 'plugin' | 'root' = 'plugin' | 'root',
-  TInstances extends 'singleton' | 'multiton' = 'singleton' | 'multiton',
-  TOpts extends object | undefined = undefined,
-> extends ServiceFactory<TService, TScope, TInstances> {
-  // @deprecated (undocumented)
-  (
-    ...options: undefined extends TOpts ? [] : [options?: TOpts]
-  ): ServiceFactory<TService, TScope, TInstances>;
-}
-
-// @public @deprecated
-export type ServiceFactoryOrFunction = ServiceFactory | (() => ServiceFactory);
-
 // @public
 export type ServiceRef<
   TService,
@@ -716,24 +638,12 @@ export interface ServiceRefOptions<
   defaultFactory?(
     service: ServiceRef<TService, TScope>,
   ): Promise<ServiceFactory>;
-  // @deprecated (undocumented)
-  defaultFactory?(
-    service: ServiceRef<TService, TScope>,
-  ): Promise<() => ServiceFactory>;
   // (undocumented)
   id: string;
   // (undocumented)
   multiton?: TInstances extends 'multiton' ? true : false;
   // (undocumented)
   scope?: TScope;
-}
-
-// @public @deprecated
-export interface TokenManagerService {
-  authenticate(token: string): Promise<void>;
-  getToken(): Promise<{
-    token: string;
-  }>;
 }
 
 // @public

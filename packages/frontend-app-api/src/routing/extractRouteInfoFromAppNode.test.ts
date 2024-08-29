@@ -28,9 +28,16 @@ import {
   createFrontendPlugin,
   createRouteRef,
 } from '@backstage/frontend-plugin-api';
-import { MockConfigApi } from '@backstage/test-utils';
-import { createAppTree } from '../tree';
-import { builtinExtensions } from '../wiring/createApp';
+import { MockConfigApi, TestApiRegistry } from '@backstage/test-utils';
+import appPlugin from '@backstage/plugin-app';
+
+import { readAppExtensionsConfig } from '../tree/readAppExtensionsConfig';
+import { resolveAppNodeSpecs } from '../tree/resolveAppNodeSpecs';
+import { resolveAppTree } from '../tree/resolveAppTree';
+import { instantiateAppNodeTree } from '../tree/instantiateAppNodeTree';
+import { Root } from '../extensions/Root';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 
 const ref1 = createRouteRef();
 const ref2 = createRouteRef();
@@ -72,16 +79,23 @@ function createTestExtension(options: {
   });
 }
 
-function routeInfoFromExtensions(extensions: ExtensionDefinition<any, any>[]) {
+function routeInfoFromExtensions(extensions: ExtensionDefinition[]) {
   const plugin = createFrontendPlugin({
     id: 'test',
     extensions,
   });
-  const tree = createAppTree({
-    config: new MockConfigApi({}),
-    builtinExtensions,
-    features: [plugin],
-  });
+
+  const tree = resolveAppTree(
+    'root',
+    resolveAppNodeSpecs({
+      features: [appPlugin, plugin],
+      builtinExtensions: [resolveExtensionDefinition(Root)],
+      parameters: readAppExtensionsConfig(new MockConfigApi({})),
+      forbidden: new Set(['root']),
+    }),
+  );
+
+  instantiateAppNodeTree(tree.root, TestApiRegistry.from());
 
   return extractRouteInfoFromAppNode(tree.root);
 }
