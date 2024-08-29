@@ -33,6 +33,7 @@ import yaml from 'yaml';
 import {
   LayoutOptions,
   FieldExtensionOptions,
+  FormProps,
 } from '@backstage/plugin-scaffolder-react';
 import { TemplateEditorForm } from './TemplateEditorForm';
 import { TemplateEditorTextArea } from './TemplateEditorTextArea';
@@ -114,11 +115,13 @@ export const TemplateFormPreviewer = ({
   customFieldExtensions = [],
   onClose,
   layouts = [],
+  formProps,
 }: {
   defaultPreviewTemplate?: string;
   customFieldExtensions?: FieldExtensionOptions<any, any>[];
   onClose?: () => void;
   layouts?: LayoutOptions[];
+  formProps?: FormProps;
 }) => {
   const classes = useStyles();
   const { t } = useTranslationRef(scaffolderTranslationRef);
@@ -213,6 +216,7 @@ export const TemplateFormPreviewer = ({
             fieldExtensions={customFieldExtensions}
             setErrorText={setErrorText}
             layouts={layouts}
+            formProps={formProps}
           />
         </div>
       </main>

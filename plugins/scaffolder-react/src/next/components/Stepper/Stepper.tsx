@@ -155,9 +155,13 @@ export const Stepper = (stepperProps: StepperProps) => {
   };
 
   const handleChange = useCallback(
-    (e: IChangeEvent) =>
-      setFormState(current => ({ ...current, ...e.formData })),
-    [setFormState],
+    (e: IChangeEvent) => {
+      setFormState(current => ({
+        ...current,
+        [`step${activeStep}`]: e.formData,
+      }));
+    },
+    [setFormState, activeStep],
   );
 
   const handleCreate = useCallback(() => {
@@ -191,7 +195,7 @@ export const Stepper = (stepperProps: StepperProps) => {
         return stepNum;
       });
     }
-    setFormState(current => ({ ...current, ...formData }));
+    setFormState(current => ({ ...current, [`step${activeStep}`]: formData }));
   };
 
   const {
@@ -201,6 +205,16 @@ export const Stepper = (stepperProps: StepperProps) => {
   } = props.formProps ?? {};
 
   const mergedUiSchema = merge({}, propUiSchema, currentStep?.uiSchema);
+
+  const mergedState = useMemo(() => {
+    const { [`step${activeStep}`]: activeState, ...historicalState } =
+      formState;
+    const chronologicalState = {
+      ...historicalState,
+      [`step${activeStep}`]: activeState,
+    };
+    return merge({}, ...Object.values(chronologicalState));
+  }, [formState, activeStep]);
 
   return (
     <>
@@ -237,8 +251,8 @@ export const Stepper = (stepperProps: StepperProps) => {
           <Form
             validator={validator}
             extraErrors={errors as unknown as ErrorSchema}
-            formData={formState}
-            formContext={{ ...propFormContext, formData: formState }}
+            formData={mergedState}
+            formContext={{ ...propFormContext, formData: mergedState }}
             schema={currentStep.schema}
             uiSchema={mergedUiSchema}
             onSubmit={handleNext}
@@ -274,7 +288,7 @@ export const Stepper = (stepperProps: StepperProps) => {
         ReviewStepComponent ? (
           <ReviewStepComponent
             disableButtons={isValidating}
-            formData={formState}
+            formData={mergedState}
             handleBack={handleBack}
             handleReset={() => {}}
             steps={steps}
@@ -282,7 +296,7 @@ export const Stepper = (stepperProps: StepperProps) => {
           />
         ) : (
           <>
-            <ReviewStateComponent formState={formState} schemas={steps} />
+            <ReviewStateComponent formState={mergedState} schemas={steps} />
             <div className={styles.footer}>
               <Button
                 onClick={handleBack}
