@@ -1,6 +1,5 @@
 name: Deploy Microsite
 on:
-  pull_request: # DEBUG ONLY
   push:
     branches:
       - master
@@ -220,8 +219,8 @@ jobs:
       - name: Check the build output
         run: ls microsite/build && ls microsite/build/storybook
 
-      # - name: Deploy both microsite and storybook to gh-pages
-      #   uses: JamesIves/github-pages-deploy-action@94f3c658273cf92fb48ef99e5fbc02bd2dc642b2 # v4.6.3
-      #   with:
-      #     branch: gh-pages
-      #     folder: microsite/build
+      - name: Deploy both microsite and storybook to gh-pages
+        uses: JamesIves/github-pages-deploy-action@94f3c658273cf92fb48ef99e5fbc02bd2dc642b2 # v4.6.3
+        with:
+          branch: gh-pages
+          folder: microsite/build
