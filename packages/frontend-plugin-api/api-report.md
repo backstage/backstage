@@ -631,6 +631,63 @@ export function createExtensionBlueprint<
   dataRefs: TDataRefs;
 }>;
 
+// @public @deprecated (undocumented)
+export function createExtensionBlueprint<
+  TParams extends object,
+  UOutput extends AnyExtensionDataRef,
+  TInputs extends {
+    [inputName in string]: ExtensionInput<
+      AnyExtensionDataRef,
+      {
+        optional: boolean;
+        singleton: boolean;
+      }
+    >;
+  },
+  TConfigSchema extends {
+    [key in string]: (zImpl: typeof z) => z.ZodType;
+  },
+  UFactoryOutput extends ExtensionDataValue<any, any>,
+  TKind extends string,
+  TNamespace extends string | undefined = undefined,
+  TName extends string | undefined = undefined,
+  TDataRefs extends {
+    [name in string]: AnyExtensionDataRef;
+  } = never,
+>(
+  options: CreateExtensionBlueprintOptions<
+    TKind,
+    TNamespace,
+    TName,
+    TParams,
+    UOutput,
+    TInputs,
+    TConfigSchema,
+    UFactoryOutput,
+    TDataRefs
+  >,
+): ExtensionBlueprint<{
+  kind: TKind;
+  namespace: TNamespace;
+  name: TName;
+  params: TParams;
+  output: UOutput;
+  inputs: string extends keyof TInputs ? {} : TInputs;
+  config: string extends keyof TConfigSchema
+    ? {}
+    : {
+        [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
+      };
+  configInput: string extends keyof TConfigSchema
+    ? {}
+    : z.input<
+        z.ZodObject<{
+          [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
+        }>
+      >;
+  dataRefs: TDataRefs;
+}>;
+
 // @public (undocumented)
 export type CreateExtensionBlueprintOptions<
   TKind extends string,
