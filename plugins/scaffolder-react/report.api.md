@@ -232,8 +232,13 @@ export interface ScaffolderApi {
   ): Promise<TemplateParameterSchema>;
   listActions(): Promise<ListActionsResponse>;
   // (undocumented)
-  listTasks?(options: { filterByOwnership: 'owned' | 'all' }): Promise<{
+  listTasks?(options: {
+    filterByOwnership: 'owned' | 'all';
+    limit?: number;
+    offset?: number;
+  }): Promise<{
     tasks: ScaffolderTask[];
+    totalTasks?: number;
   }>;
   retry?(taskId: string): Promise<void>;
   scaffold(
@@ -581,10 +586,10 @@ export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets;
 // src/api/types.d.ts:164:5 - (ae-undocumented) Missing documentation for "getTemplateParameterSchema".
 // src/api/types.d.ts:172:5 - (ae-undocumented) Missing documentation for "getTask".
 // src/api/types.d.ts:185:5 - (ae-undocumented) Missing documentation for "listTasks".
-// src/api/types.d.ts:190:5 - (ae-undocumented) Missing documentation for "getIntegrationsList".
-// src/api/types.d.ts:195:5 - (ae-undocumented) Missing documentation for "streamLogs".
-// src/api/types.d.ts:196:5 - (ae-undocumented) Missing documentation for "dryRun".
-// src/api/types.d.ts:197:5 - (ae-undocumented) Missing documentation for "autocomplete".
+// src/api/types.d.ts:193:5 - (ae-undocumented) Missing documentation for "getIntegrationsList".
+// src/api/types.d.ts:198:5 - (ae-undocumented) Missing documentation for "streamLogs".
+// src/api/types.d.ts:199:5 - (ae-undocumented) Missing documentation for "dryRun".
+// src/api/types.d.ts:200:5 - (ae-undocumented) Missing documentation for "autocomplete".
 // src/components/types.d.ts:7:1 - (ae-undocumented) Missing documentation for "TemplateGroupFilter".
 // src/extensions/types.d.ts:13:5 - (ae-undocumented) Missing documentation for "uiSchema".
 // src/extensions/types.d.ts:30:5 - (ae-undocumented) Missing documentation for ""ui:options"".

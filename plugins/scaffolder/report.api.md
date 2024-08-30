@@ -552,8 +552,13 @@ export class ScaffolderClient implements ScaffolderApi_2 {
   // (undocumented)
   listActions(): Promise<ListActionsResponse_2>;
   // (undocumented)
-  listTasks(options: { filterByOwnership: 'owned' | 'all' }): Promise<{
+  listTasks(options: {
+    filterByOwnership: 'owned' | 'all';
+    limit?: number;
+    offset?: number;
+  }): Promise<{
     tasks: ScaffolderTask_2[];
+    totalTasks?: number;
   }>;
   // (undocumented)
   retry?(taskId: string): Promise<void>;
@@ -670,16 +675,16 @@ export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets_2;
 // Warnings were encountered during analysis:
 //
 // src/api.d.ts:23:5 - (ae-undocumented) Missing documentation for "listTasks".
-// src/api.d.ts:28:5 - (ae-undocumented) Missing documentation for "getIntegrationsList".
-// src/api.d.ts:29:5 - (ae-undocumented) Missing documentation for "getTemplateParameterSchema".
-// src/api.d.ts:30:5 - (ae-undocumented) Missing documentation for "scaffold".
-// src/api.d.ts:31:5 - (ae-undocumented) Missing documentation for "getTask".
-// src/api.d.ts:32:5 - (ae-undocumented) Missing documentation for "streamLogs".
-// src/api.d.ts:33:5 - (ae-undocumented) Missing documentation for "dryRun".
-// src/api.d.ts:36:5 - (ae-undocumented) Missing documentation for "listActions".
-// src/api.d.ts:37:5 - (ae-undocumented) Missing documentation for "cancelTask".
-// src/api.d.ts:38:5 - (ae-undocumented) Missing documentation for "retry".
-// src/api.d.ts:39:5 - (ae-undocumented) Missing documentation for "autocomplete".
+// src/api.d.ts:31:5 - (ae-undocumented) Missing documentation for "getIntegrationsList".
+// src/api.d.ts:32:5 - (ae-undocumented) Missing documentation for "getTemplateParameterSchema".
+// src/api.d.ts:33:5 - (ae-undocumented) Missing documentation for "scaffold".
+// src/api.d.ts:34:5 - (ae-undocumented) Missing documentation for "getTask".
+// src/api.d.ts:35:5 - (ae-undocumented) Missing documentation for "streamLogs".
+// src/api.d.ts:36:5 - (ae-undocumented) Missing documentation for "dryRun".
+// src/api.d.ts:39:5 - (ae-undocumented) Missing documentation for "listActions".
+// src/api.d.ts:40:5 - (ae-undocumented) Missing documentation for "cancelTask".
+// src/api.d.ts:41:5 - (ae-undocumented) Missing documentation for "retry".
+// src/api.d.ts:42:5 - (ae-undocumented) Missing documentation for "autocomplete".
 // src/components/OngoingTask/OngoingTask.d.ts:6:22 - (ae-undocumented) Missing documentation for "OngoingTask".
 // src/components/fields/EntityPicker/schema.d.ts:15:22 - (ae-undocumented) Missing documentation for "EntityPickerFieldSchema".
 // src/components/fields/EntityTagsPicker/schema.d.ts:4:22 - (ae-undocumented) Missing documentation for "EntityTagsPickerFieldSchema".
