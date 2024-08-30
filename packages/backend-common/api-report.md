@@ -143,7 +143,7 @@ export function createStatusCheckRouter(options: {
 }): Promise<express.Router>;
 
 // @public @deprecated (undocumented)
-export class DatabaseManager implements LegacyRootDatabaseService {
+export class DatabaseManager {
   // (undocumented)
   forPlugin(
     pluginId: string,
@@ -172,11 +172,6 @@ export class DockerContainerRunner implements ContainerRunner {
   // (undocumented)
   runContainer(options: RunContainerOptions): Promise<void>;
 }
-
-// Warning: (ae-forgotten-export) The symbol "dropDatabase_2" needs to be exported by the entry point index.d.ts
-//
-// @public @deprecated (undocumented)
-export const dropDatabase: typeof dropDatabase_2;
 
 // @public @deprecated
 export function errorHandler(
@@ -366,11 +361,6 @@ export const legacyPlugin: (
     >;
   }>,
 ) => BackendFeature;
-
-// Warning: (ae-forgotten-export) The symbol "LegacyRootDatabaseService_2" needs to be exported by the entry point index.d.ts
-//
-// @public @deprecated (undocumented)
-export type LegacyRootDatabaseService = LegacyRootDatabaseService_2;
 
 // @public @deprecated
 export function loadBackendConfig(options: {

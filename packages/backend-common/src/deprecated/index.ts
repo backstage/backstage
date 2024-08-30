@@ -30,10 +30,8 @@ import {
 
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
-  dropDatabase as _dropDatabase,
   DatabaseManager as _DatabaseManager,
   type DatabaseManagerOptions as _DatabaseManagerOptions,
-  type LegacyRootDatabaseService as _LegacyRootDatabaseService,
 } from '../../../backend-defaults/src/entrypoints/database/DatabaseManager';
 
 import {
@@ -169,7 +167,7 @@ export type CacheClientOptions = CacheServiceOptions;
  * @public
  * @deprecated Use `DatabaseManager` from the `@backstage/backend-defaults` package instead
  */
-export class DatabaseManager implements LegacyRootDatabaseService {
+export class DatabaseManager {
   private constructor(private readonly _databaseManager: _DatabaseManager) {}
 
   static fromConfig(
@@ -201,18 +199,6 @@ export type DatabaseManagerOptions = _DatabaseManagerOptions;
  * @deprecated Use `DatabaseService` from the `@backstage/backend-plugin-api` package instead
  */
 export type PluginDatabaseManager = _PluginDatabaseManager;
-
-/**
- * @public
- * @deprecated Use `LegacyRootDatabaseService` from the `@backstage/backend-defaults` package instead
- */
-export type LegacyRootDatabaseService = _LegacyRootDatabaseService;
-
-/**
- * @public
- * @deprecated Use `dropDatabase` from the `@backstage/backend-defaults` package instead
- */
-export const dropDatabase = _dropDatabase;
 
 /**
  * @public

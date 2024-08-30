@@ -47,17 +47,9 @@ export type DatabaseManagerOptions = {
 };
 
 /**
- * An interface that represents the legacy global DatabaseManager implementation.
- * @public
- */
-export type LegacyRootDatabaseService = {
-  forPlugin(pluginId: string): DatabaseService;
-};
-
-/**
  * Testable implementation class for {@link DatabaseManager} below.
  */
-export class DatabaseManagerImpl implements LegacyRootDatabaseService {
+export class DatabaseManagerImpl {
   constructor(
     private readonly config: Config,
     private readonly connectors: Record<string, Connector>,
@@ -193,7 +185,7 @@ export class DatabaseManagerImpl implements LegacyRootDatabaseService {
  * set `prefix` which is used to prefix generated database names if config is
  * not provided.
  */
-export class DatabaseManager implements LegacyRootDatabaseService {
+export class DatabaseManager {
   /**
    * Creates a {@link DatabaseManager} from `backend.database` config.
    *
@@ -239,25 +231,5 @@ export class DatabaseManager implements LegacyRootDatabaseService {
     },
   ): PluginDatabaseManager {
     return this.impl.forPlugin(pluginId, deps);
-  }
-}
-
-/**
- * Helper for deleting databases.
- *
- * @public
- * @deprecated Will be removed in a future release.
- */
-export async function dropDatabase(
-  dbConfig: Config,
-  ...databaseNames: string[]
-): Promise<void> {
-  const client = dbConfig.getString('client');
-  const prefix = dbConfig.getOptionalString('prefix') || 'backstage_plugin_';
-
-  if (client === 'pg') {
-    await new PgConnector(dbConfig, prefix).dropDatabase(...databaseNames);
-  } else if (client === 'mysql' || client === 'mysql2') {
-    await new MysqlConnector(dbConfig, prefix).dropDatabase(...databaseNames);
   }
 }
