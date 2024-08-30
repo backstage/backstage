@@ -21,6 +21,9 @@ import {
   AppNodeSpec,
 } from '@backstage/frontend-plugin-api';
 
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { toInternalExtension } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
+
 function indent(str: string) {
   return str.replace(/^/gm, '  ');
 }
@@ -38,9 +41,7 @@ class SerializableAppNode implements AppNode {
     this.spec = spec;
   }
 
-  setParent(parent: SerializableAppNode) {
-    const input = this.spec.attachTo.input;
-
+  setParent(parent: SerializableAppNode, input: string) {
     this.edges.attachedTo = { node: parent, input };
 
     const parentInputEdges = parent.edges.attachments.get(input);
@@ -87,6 +88,24 @@ class SerializableAppNode implements AppNode {
   }
 }
 
+function makeRedirectKey(attachTo: { id: string; input: string }) {
+  return `${attachTo.id}%${attachTo.input}`;
+}
+
+const isValidAttachmentPoint = (
+  attachTo: { id: string; input: string },
+  nodes: Map<string, SerializableAppNode>,
+) => {
+  if (!nodes.has(attachTo.id)) {
+    return false;
+  }
+
+  return (
+    attachTo.input in
+    toInternalExtension(nodes.get(attachTo.id)!.spec.extension).inputs
+  );
+};
+
 /**
  * Build the app tree by iterating through all node specs and constructing the app
  * tree with all attachments in the same order as they appear in the input specs array.
@@ -98,17 +117,7 @@ export function resolveAppTree(
 ): AppTree {
   const nodes = new Map<string, SerializableAppNode>();
 
-  // A node with the provided rootNodeId must be found in the tree, and it must not be attached to anything
-  let rootNode: AppNode | undefined = undefined;
-
-  // While iterating through the inputs specs we keep track of all nodes that were created
-  // before their parent, and attach them later when the parent is created.
-  // As we find the parents and attach the children, we remove them from this map. This means
-  // that after iterating through all input specs, this will be a map for each root node.
-  const orphansByParent = new Map<
-    string /* parentId */,
-    SerializableAppNode[]
-  >();
+  const redirectTargetsByKey = new Map<string, { id: string; input: string }>();
 
   for (const spec of specs) {
     // The main check with a more helpful error message happens in resolveAppNodeSpecs
@@ -119,28 +128,46 @@ export function resolveAppTree(
     const node = new SerializableAppNode(spec);
     nodes.set(spec.id, node);
 
+    const internal = toInternalExtension(spec.extension);
+    for (const [inputName, input] of Object.entries(internal.inputs)) {
+      if (input.replaces) {
+        for (const replace of input.replaces) {
+          const key = makeRedirectKey(replace);
+          if (redirectTargetsByKey.has(key)) {
+            throw new Error(
+              `Duplicate redirect target for input '${inputName}' in extension '${spec.id}'`,
+            );
+          }
+          redirectTargetsByKey.set(key, { id: spec.id, input: inputName });
+        }
+      }
+    }
+  }
+
+  const orphans = new Array<SerializableAppNode>();
+
+  // A node with the provided rootNodeId must be found in the tree, and it must not be attached to anything
+  let rootNode: AppNode | undefined = undefined;
+
+  for (const node of nodes.values()) {
+    const spec = node.spec;
+
     // TODO: For now we simply ignore the attachTo spec of the root node, but it'd be cleaner if we could avoid defining it
     if (spec.id === rootNodeId) {
       rootNode = node;
     } else {
-      const parent = nodes.get(spec.attachTo.id);
-      if (parent) {
-        node.setParent(parent);
-      } else {
-        const orphanNodesForParent = orphansByParent.get(spec.attachTo.id);
-        if (orphanNodesForParent) {
-          orphanNodesForParent.push(node);
-        } else {
-          orphansByParent.set(spec.attachTo.id, [node]);
-        }
-      }
-    }
+      let attachTo = node.spec.attachTo;
 
-    const orphanedChildren = orphansByParent.get(spec.id);
-    if (orphanedChildren) {
-      orphansByParent.delete(spec.id);
-      for (const orphan of orphanedChildren) {
-        orphan.setParent(node);
+      if (!isValidAttachmentPoint(attachTo, nodes)) {
+        attachTo =
+          redirectTargetsByKey.get(makeRedirectKey(attachTo)) ?? attachTo;
+      }
+
+      const parent = nodes.get(attachTo.id);
+      if (parent) {
+        node.setParent(parent, attachTo.input);
+      } else {
+        orphans.push(node);
       }
     }
   }
@@ -152,6 +179,6 @@ export function resolveAppTree(
   return {
     root: rootNode,
     nodes,
-    orphans: Array.from(orphansByParent.values()).flat(),
+    orphans,
   };
 }

@@ -33,6 +33,7 @@ describe('NavItemBlueprint', () => {
     expect(extension).toMatchInlineSnapshot(`
       {
         "$$type": "@backstage/ExtensionDefinition",
+        "T": undefined,
         "attachTo": {
           "id": "app/nav",
           "input": "items",

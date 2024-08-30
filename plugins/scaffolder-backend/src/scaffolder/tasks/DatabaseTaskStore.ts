@@ -532,8 +532,8 @@ export class DatabaseTaskStore implements TaskStore {
   }
 
   async cleanWorkspace({ taskId }: { taskId: string }): Promise<void> {
-    await this.db<RawDbTaskRow>('tasks').where({ id: taskId }).update({
-      workspace: undefined,
+    await this.db('tasks').where({ id: taskId }).update({
+      workspace: null,
     });
   }
 
@@ -542,10 +542,11 @@ export class DatabaseTaskStore implements TaskStore {
     taskId: string;
   }): Promise<void> {
     if (options.path) {
+      const workspace = (await serializeWorkspace(options)).contents;
       await this.db<RawDbTaskRow>('tasks')
         .where({ id: options.taskId })
         .update({
-          workspace: (await serializeWorkspace(options)).contents,
+          workspace,
         });
     }
   }

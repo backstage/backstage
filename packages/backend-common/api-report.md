@@ -22,7 +22,6 @@ import Docker from 'dockerode';
 import { ErrorRequestHandler } from 'express';
 import express from 'express';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
-import { IdentityService } from '@backstage/backend-plugin-api';
 import { isChildPath as isChildPath_2 } from '@backstage/backend-plugin-api';
 import { isDatabaseConflictError as isDatabaseConflictError_2 } from '@backstage/backend-plugin-api';
 import { KubeConfig } from '@kubernetes/client-node';
@@ -44,7 +43,6 @@ import { Router } from 'express';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { Server } from 'http';
 import { ServiceRef } from '@backstage/backend-plugin-api';
-import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { TransportStreamOptions } from 'winston-transport';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { UserInfoService } from '@backstage/backend-plugin-api';
@@ -101,7 +99,7 @@ export function createLegacyAuthAdapters<
     auth?: AuthService;
     httpAuth?: HttpAuthService;
     userInfo?: UserInfoService;
-    identity?: IdentityService;
+    identity?: LegacyIdentityService;
     tokenManager?: TokenManager;
     discovery: PluginEndpointDiscovery;
   },
@@ -159,7 +157,10 @@ export class DatabaseManager implements LegacyRootDatabaseService {
   // (undocumented)
   static fromConfig(
     config: Config,
-    options?: DatabaseManagerOptions,
+    options?: {
+      migrations?: DatabaseService['migrations'];
+      logger?: LoggerService;
+    },
   ): DatabaseManager;
 }
 
@@ -174,11 +175,6 @@ export class DockerContainerRunner implements ContainerRunner {
   // (undocumented)
   runContainer(options: RunContainerOptions): Promise<void>;
 }
-
-// Warning: (ae-forgotten-export) The symbol "dropDatabase_2" needs to be exported by the entry point index.d.ts
-//
-// @public @deprecated (undocumented)
-export const dropDatabase: typeof dropDatabase_2;
 
 // @public @deprecated
 export function errorHandler(
@@ -369,10 +365,10 @@ export const legacyPlugin: (
   }>,
 ) => BackendFeature;
 
-// Warning: (ae-forgotten-export) The symbol "LegacyRootDatabaseService_2" needs to be exported by the entry point index.d.ts
-//
 // @public @deprecated (undocumented)
-export type LegacyRootDatabaseService = LegacyRootDatabaseService_2;
+export type LegacyRootDatabaseService = {
+  forPlugin(pluginId: string): DatabaseService;
+};
 
 // @public @deprecated
 export function loadBackendConfig(options: {
@@ -547,7 +543,12 @@ export interface StatusCheckHandlerOptions {
 }
 
 // @public @deprecated (undocumented)
-export type TokenManager = TokenManagerService;
+export interface TokenManager {
+  authenticate(token: string): Promise<void>;
+  getToken(): Promise<{
+    token: string;
+  }>;
+}
 
 // @public @deprecated
 export function useHotCleanup(

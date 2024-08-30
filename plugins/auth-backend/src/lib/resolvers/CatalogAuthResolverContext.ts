@@ -66,7 +66,7 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
     logger: LoggerService;
     catalogApi: CatalogApi;
     tokenIssuer: TokenIssuer;
-    tokenManager: TokenManager;
+    tokenManager?: TokenManager;
     discovery: DiscoveryService;
     auth: AuthService;
     httpAuth: HttpAuthService;

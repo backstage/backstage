@@ -48,11 +48,10 @@ describe('convertLegacyEntityCardExtension', () => {
     );
 
     const converted = convertLegacyEntityCardExtension(LegacyExtension);
-    expect(converted.kind).toBe('entity-card');
-    expect(converted.namespace).toBe(undefined);
-    expect(converted.name).toBe('example');
 
     const tester = createExtensionTester(converted);
+
+    expect(tester.query(converted).node.spec.id).toBe('entity-card:example');
 
     await renderInTestApp(tester.reactElement(), {
       mountedRoutes: {
@@ -83,11 +82,10 @@ describe('convertLegacyEntityCardExtension', () => {
       name: 'other',
       filter: 'my-filter',
     });
-    expect(converted.kind).toBe('entity-card');
-    expect(converted.namespace).toBe(undefined);
-    expect(converted.name).toBe('other');
 
     const tester = createExtensionTester(converted);
+
+    expect(tester.query(converted).node.spec.id).toBe('entity-card:other');
 
     await renderInTestApp(tester.reactElement(), {
       mountedRoutes: {
@@ -106,7 +104,7 @@ describe('convertLegacyEntityCardExtension', () => {
   });
 
   it('should support various naming patterns for entity card extensions', async () => {
-    const withName = (name: string) => {
+    const getDiscoveredId = (name: string) => {
       const converted = convertLegacyEntityCardExtension(
         legacyPlugin.provide(
           createRoutableExtension({
@@ -116,14 +114,14 @@ describe('convertLegacyEntityCardExtension', () => {
           }),
         ),
       );
-      return converted.name;
+      return createExtensionTester(converted).query(converted).node.spec.id;
     };
 
-    expect(withName('EntityTestCard')).toBe(undefined);
-    expect(withName('EntityTestTrimCard')).toBe('trim');
-    expect(withName('EntityTeStTrimCard')).toBe('trim');
-    expect(withName('EntityExampleCard')).toBe('example');
-    expect(withName('EntityExAmpleCard')).toBe('ex-ample');
-    expect(withName('ExampleCard')).toBe('example-card');
+    expect(getDiscoveredId('EntityTestCard')).toBe('entity-card:test'); // falls back to test namespace
+    expect(getDiscoveredId('EntityTestTrimCard')).toBe('entity-card:trim');
+    expect(getDiscoveredId('EntityTeStTrimCard')).toBe('entity-card:trim');
+    expect(getDiscoveredId('EntityExampleCard')).toBe('entity-card:example');
+    expect(getDiscoveredId('EntityExAmpleCard')).toBe('entity-card:ex-ample');
+    expect(getDiscoveredId('ExampleCard')).toBe('entity-card:example-card');
   });
 });

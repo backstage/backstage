@@ -1,5 +1,22 @@
 # @backstage/cli
 
+## 0.27.1-next.0
+
+### Patch Changes
+
+- 1b5c264: Add `checks: 'read'` for default GitHub app permissions
+- Updated dependencies
+  - @backstage/catalog-model@1.6.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.7
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.9.0
+  - @backstage/errors@1.2.4
+  - @backstage/eslint-plugin@0.1.8
+  - @backstage/integration@1.14.0
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
 ## 0.27.0
 
 ### Minor Changes

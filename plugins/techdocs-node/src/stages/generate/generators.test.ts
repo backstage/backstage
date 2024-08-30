@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { Generators } from './generators';
 import { TechdocsGenerator } from './techdocs';
 import { mockServices } from '@backstage/backend-test-utils';
 
-const logger = loggerToWinstonLogger(mockServices.logger.mock());
+const logger = mockServices.logger.mock();
 
 const mockEntity = {
   apiVersion: 'version',

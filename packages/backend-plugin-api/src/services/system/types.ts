@@ -76,14 +76,6 @@ export interface InternalServiceFactory<
   ): Promise<TService>;
 }
 
-/**
- * Represents either a {@link ServiceFactory} or a function that returns one.
- *
- * @deprecated The support for service factory functions is deprecated and will be removed.
- * @public
- */
-export type ServiceFactoryOrFunction = ServiceFactory | (() => ServiceFactory);
-
 /** @public */
 export interface ServiceRefOptions<
   TService,
@@ -173,7 +165,7 @@ type ServiceRefsToInstances<
 
 /** @public */
 export interface RootServiceFactoryOptions<
-  TService, // TODO(Rugvip): Can we forward the entire service ref type here instead of forwarding each type arg once the callback form is gone?
+  TService,
   TInstances extends 'singleton' | 'multiton',
   TImpl extends TService,
   TDeps extends { [name in string]: ServiceRef<unknown> },

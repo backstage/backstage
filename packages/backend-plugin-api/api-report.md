@@ -12,7 +12,6 @@ import { Duration } from 'luxon';
 import { EvaluatorRequestOptions } from '@backstage/plugin-permission-common';
 import { Handler } from 'express';
 import { HumanDuration } from '@backstage/types';
-import { IdentityApi } from '@backstage/plugin-auth-node';
 import { isChildPath } from '@backstage/cli-common';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
@@ -163,12 +162,12 @@ export interface CacheService {
 
 // @public
 export type CacheServiceOptions = {
-  defaultTtl?: number;
+  defaultTtl?: number | HumanDuration;
 };
 
 // @public
 export type CacheServiceSetOptions = {
-  ttl?: number;
+  ttl?: number | HumanDuration;
 };
 
 // @public
@@ -194,11 +193,7 @@ export namespace coreServices {
   const rootLifecycle: ServiceRef<RootLifecycleService, 'root', 'singleton'>;
   const rootLogger: ServiceRef<RootLoggerService, 'root', 'singleton'>;
   const scheduler: ServiceRef<SchedulerService, 'plugin', 'singleton'>;
-  const // @deprecated
-    tokenManager: ServiceRef<TokenManagerService, 'plugin', 'singleton'>;
   const urlReader: ServiceRef<UrlReaderService, 'plugin', 'singleton'>;
-  const // @deprecated
-    identity: ServiceRef<IdentityService, 'plugin', 'singleton'>;
 }
 
 // @public
@@ -383,9 +378,6 @@ export interface HttpRouterServiceAuthPolicy {
   path: string;
 }
 
-// @public @deprecated
-export interface IdentityService extends IdentityApi {}
-
 export { isChildPath };
 
 // @public
@@ -522,7 +514,7 @@ export interface RootLoggerService extends LoggerService {}
 
 // @public (undocumented)
 export interface RootServiceFactoryOptions<
-  TService, // TODO(Rugvip): Can we forward the entire service ref type here instead of forwarding each type arg once the callback form is gone?
+  TService,
   TInstances extends 'singleton' | 'multiton',
   TImpl extends TService,
   TDeps extends {
@@ -623,9 +615,6 @@ export interface ServiceFactory<
   service: ServiceRef<TService, TScope, TInstances>;
 }
 
-// @public @deprecated
-export type ServiceFactoryOrFunction = ServiceFactory | (() => ServiceFactory);
-
 // @public
 export type ServiceRef<
   TService,
@@ -655,14 +644,6 @@ export interface ServiceRefOptions<
   multiton?: TInstances extends 'multiton' ? true : false;
   // (undocumented)
   scope?: TScope;
-}
-
-// @public @deprecated
-export interface TokenManagerService {
-  authenticate(token: string): Promise<void>;
-  getToken(): Promise<{
-    token: string;
-  }>;
 }
 
 // @public

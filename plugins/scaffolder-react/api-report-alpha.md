@@ -152,7 +152,10 @@ export type ScaffolderReactTemplateCategoryPickerClassKey = 'root' | 'label';
 
 // @alpha
 export const SecretWidget: (
-  props: Pick<WidgetProps, 'name' | 'onChange' | 'schema'>,
+  props: Pick<
+    WidgetProps,
+    'name' | 'onChange' | 'schema' | 'required' | 'disabled'
+  >,
 ) => React_2.JSX.Element;
 
 // @alpha

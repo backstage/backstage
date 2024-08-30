@@ -4,6 +4,10 @@ title: 2. Adding a basic permission check
 description: Explains how to add a basic permission check to a Backstage plugin
 ---
 
+:::info
+This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage [version 1.24](../../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](./02-adding-a-basic-permission-check--old.md) instead, and [consider migrating](../../backend-system/building-backends/08-migrating.md)!
+:::
+
 If the outcome of a permission check doesn't need to change for different [resources](../../references/glossary.md#resource-permission-plugin), you can use a _basic permission check_. For this kind of check, we simply need to define a permission, and call `authorize` with it.
 
 For this tutorial, we'll use a basic permission check to authorize the `create` endpoint in our todo-backend. This will allow Backstage integrators to control whether each of their users is authorized to create todos by adjusting their [permission policy](../../references/glossary.md#policy-permission-plugin).
@@ -57,30 +61,30 @@ Edit `plugins/todo-list-backend/src/service/router.ts`:
 ```ts title="plugins/todo-list-backend/src/service/router.ts"
 /* highlight-remove-start */
 import { InputError } from '@backstage/errors';
-import { IdentityApi } from '@backstage/plugin-auth-node';
+import { LoggerService, HttpAuthService } from '@backstage/backend-plugin-api';
 /* highlight-remove-end */
 /* highlight-add-start */
 import { InputError, NotAllowedError } from '@backstage/errors';
-import { getBearerTokenFromAuthorizationHeader, IdentityApi } from '@backstage/plugin-auth-node';
-import { PermissionEvaluator, AuthorizeResult } from '@backstage/plugin-permission-common';
+import { LoggerService, HttpAuthService, PermissionsService } from '@backstage/backend-plugin-api';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import { todoListCreatePermission } from '@internal/plugin-todo-list-common';
 /* highlight-add-end */
 
 export interface RouterOptions {
-  logger: Logger;
-  identity: IdentityApi;
+  logger: LoggerService;
+  httpAuth: HttpAuthService;
   /* highlight-add-next-line */
-  permissions: PermissionEvaluator;
+  permissions: PermissionsService;
 }
 
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   /* highlight-remove-next-line */
-  const { logger, identity } = options;
+  const { logger, httpAuth } = options;
   /* highlight-add-next-line */
-  const { logger, identity, permissions } = options;
+  const { logger, httpAuth, permissions } = options;
 
   /* highlight-add-start */
   const permissionIntegrationRouter = createPermissionIntegrationRouter({
@@ -109,13 +113,12 @@ export async function createRouter(
     const user = await identity.getIdentity({ request: req });
     author = user?.identity.userEntityRef;
     /* highlight-add-start */
-    const token = getBearerTokenFromAuthorizationHeader(
-      req.header('authorization'),
-    );
+    const credentials = await httpAuth.credentials(req, { allow: ['user'] });
     const decision = (
-      await permissions.authorize([{ permission: todoListCreatePermission }], {
-      token,
-      })
+      await permissions.authorize(
+        [{ permission: todoListCreatePermission }],
+        { credentials },
+      )
     )[0];
 
     if (decision.result === AuthorizeResult.DENY) {
@@ -134,30 +137,43 @@ export async function createRouter(
   // ...
 ```
 
-Pass the `permissions` object to the plugin in `packages/backend/src/plugins/todolist.ts`:
+Pass the `permissions` object to the plugin in `plugins/todo-list-backend/src/plugin.ts`:
 
-```ts title="packages/backend/src/plugins/todolist.ts"
-import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
-import { createRouter } from '@internal/plugin-todo-list-backend';
-import { Router } from 'express';
-import { PluginEnvironment } from '../types';
+```ts title="plugins/todo-list-backend/src/plugin.ts"
+import { coreServices, createBackendPlugin } from '@backstage/backend-plugin-api';
+import { createRouter } from './service/router';
 
-export default async function createPlugin({
-  logger,
-  discovery,
-  /* highlight-add-next-line */
-  permissions,
-}: PluginEnvironment): Promise<Router> {
-  return await createRouter({
-    logger,
-    identity: DefaultIdentityClient.create({
-      discovery,
-      issuer: await discovery.getExternalBaseUrl('auth'),
-    }),
-    /* highlight-add-next-line */
-    permissions,
-  });
-}
+export const exampleTodoListPlugin = createBackendPlugin({
+  pluginId: 'todolist',
+  register(env) {
+    env.registerInit({
+      deps: {
+        logger: coreServices.logger,
+        httpAuth: coreServices.httpAuth,
+        httpRouter: coreServices.httpRouter,
+        /* highlight-add-next-line */
+        permissions: coreServices.permissions,
+      },
+      /* highlight-remove-next-line */
+      async init({ logger, httpAuth, httpRouter }) {
+      /* highlight-add-next-line */
+      async init({ logger, httpAuth, httpRouter, permissions }) {
+        httpRouter.use(
+          await createRouter({
+            logger,
+            httpAuth,
+            /* highlight-add-next-line */
+            permissions,
+          }),
+        );
+        httpRouter.addAuthPolicy({
+          path: '/health',
+          allow: 'unauthenticated',
+        });
+      },
+    });
+  },
+});
 ```
 
 That's it! Now your plugin is fully configured. Let's try to test the logic by denying the permission.
@@ -168,7 +184,15 @@ Before running this step, please make sure you followed the steps described in [
 
 In order to test the logic above, the integrators of your backstage instance need to change their permission policy to return `DENY` for our newly-created permission:
 
-```ts title="packages/backend/src/plugins/permission.ts"
+```ts title="packages/backend/src/extensions/permissionsPolicyExtension.ts"
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import {
+  PolicyDecision,
+  /* highlight-add-start */
+  isPermission,
+  /* highlight-add-end */
+  AuthorizeResult,
+} from '@backstage/plugin-permission-common';
 import {
   PermissionPolicy,
   /* highlight-add-start */
@@ -177,9 +201,9 @@ import {
   /* highlight-add-end */
 } from '@backstage/plugin-permission-node';
 /* highlight-add-start */
-import { isPermission } from '@backstage/plugin-permission-common';
 import { todoListCreatePermission } from '@internal/plugin-todo-list-common';
 /* highlight-add-end */
+import { policyExtensionPoint } from '@backstage/plugin-permission-node/alpha';
 
 class TestPermissionPolicy implements PermissionPolicy {
   /* highlight-remove-next-line */
@@ -200,6 +224,19 @@ class TestPermissionPolicy implements PermissionPolicy {
       result: AuthorizeResult.ALLOW,
     };
 }
+
+export default createBackendModule({
+  pluginId: 'permission',
+  moduleId: 'permission-policy',
+  register(reg) {
+    reg.registerInit({
+      deps: { policy: policyExtensionPoint },
+      async init({ policy }) {
+        policy.setPolicy(new TestPermissionPolicy());
+      },
+    });
+  },
+});
 ```
 
 Now the frontend should show an error whenever you try to create a new Todo item.
@@ -217,42 +254,26 @@ if (isPermission(request.permission, todoListCreatePermission)) {
 }
 ```
 
-At this point everything is working but if you run `yarn tsc` you'll get some errors, let's fix those up.
+At this point everything is working but if you run `yarn tsc` you'll get an error, let's fix this up.
 
-First we'll clean up the `plugins/todo-list-backend/src/service/router.test.ts`:
+Clean up the `plugins/todo-list-backend/src/service/router.test.ts`:
 
 ```ts title="plugins/todo-list-backend/src/service/router.test.ts"
-import { getVoidLogger } from '@backstage/backend-common';
-import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
-/* highlight-add-next-line */
-import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import express from 'express';
 import request from 'supertest';
 
 import { createRouter } from './router';
-
-/* highlight-add-start */
-const mockedAuthorize: jest.MockedFunction<PermissionEvaluator['authorize']> =
-  jest.fn();
-const mockedPermissionQuery: jest.MockedFunction<
-  PermissionEvaluator['authorizeConditional']
-> = jest.fn();
-
-const permissionEvaluator: PermissionEvaluator = {
-  authorize: mockedAuthorize,
-  authorizeConditional: mockedPermissionQuery,
-};
-/* highlight-add-end */
+import { mockServices } from '@backstage/backend-test-utils';
 
 describe('createRouter', () => {
   let app: express.Express;
 
   beforeAll(async () => {
     const router = await createRouter({
-      logger: getVoidLogger(),
-      identity: {} as DefaultIdentityClient,
+      logger: mockServices.logger.mock(),
+      httpAuth: mockServices.httpAuth.mock(),
       /* highlight-add-next-line */
-      permissions: permissionEvaluator,
+      permissions: mockServices.permissions.mock(),
     });
     app = express().use(router);
   });
@@ -269,114 +290,6 @@ describe('createRouter', () => {
       expect(response.body).toEqual({ status: 'ok' });
     });
   });
-});
-```
-
-Then we want to update the `plugins/todo-list-backend/src/service/standaloneServer.ts`:
-
-```ts title="plugins/todo-list-backend/src/service/standaloneServer.ts"
-import {
-  createServiceBuilder,
-  loadBackendConfig,
-  SingleHostDiscovery,
-  /* highlight-add-next-line */
-  ServerTokenManager,
-} from '@backstage/backend-common';
-import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
-/* highlight-add-next-line */
-import { ServerPermissionClient } from '@backstage/plugin-permission-node';
-import { Server } from 'http';
-import { Logger } from 'winston';
-import { createRouter } from './router';
-
-export interface ServerOptions {
-  port: number;
-  enableCors: boolean;
-  logger: Logger;
-}
-
-export async function startStandaloneServer(
-  options: ServerOptions,
-): Promise<Server> {
-  const logger = options.logger.child({ service: 'todo-list-backend' });
-  logger.debug('Starting application server...');
-  const config = await loadBackendConfig({ logger, argv: process.argv });
-  const discovery = SingleHostDiscovery.fromConfig(config);
-  /* highlight-add-start */
-  const tokenManager = ServerTokenManager.fromConfig(config, {
-    logger,
-  });
-  const permissions = ServerPermissionClient.fromConfig(config, {
-    discovery,
-    tokenManager,
-  });
-  /* highlight-add-end */
-  const router = await createRouter({
-    logger,
-    identity: DefaultIdentityClient.create({
-      discovery,
-      issuer: await discovery.getExternalBaseUrl('auth'),
-    }),
-    /* highlight-add-next-line */
-    permissions,
-  });
-
-  let service = createServiceBuilder(module)
-    .setPort(options.port)
-    .addRouter('/todo-list', router);
-  if (options.enableCors) {
-    service = service.enableCors({ origin: 'http://localhost:3000' });
-  }
-
-  return await service.start().catch(err => {
-    logger.error(err);
-    process.exit(1);
-  });
-}
-
-module.hot?.accept();
-```
-
-Finally, we need to update `plugins/todo-list-backend/src/plugin.ts`:
-
-```ts title="plugins/todo-list-backend/src/plugin.ts"
-import { loggerToWinstonLogger } from '@backstage/backend-common';
-import {
-  coreServices,
-  createBackendPlugin,
-} from '@backstage/backend-plugin-api';
-import { createRouter } from './service/router';
-
-/**
-* The example TODO list backend plugin.
-*
-* @public
-*/
-export const exampleTodoListPlugin = createBackendPlugin({
-  pluginId: 'exampleTodoList',
-  register(env) {
-    env.registerInit({
-      deps: {
-        identity: coreServices.identity,
-        logger: coreServices.logger,
-        httpRouter: coreServices.httpRouter,
-        /* highlight-add-next-line */
-        permissions: coreServices.permissions,
-      },
-      /* highlight-remove-next-line */
-      async init({ identity, logger, httpRouter }) {
-      /* highlight-add-next-line */
-      async init({ identity, logger, httpRouter, permissions }) {
-        httpRouter.use(
-          await createRouter({
-            identity,
-            logger: loggerToWinstonLogger(logger),
-            permissions,
-          }),
-        );
-      },
-    });
-  },
 });
 ```
 

@@ -14,10 +14,25 @@
  * limitations under the License.
  */
 
-import { TokenManagerService } from '@backstage/backend-plugin-api';
-
 /**
  * @public
  * @deprecated Please {@link https://backstage.io/docs/tutorials/auth-service-migration | migrate} to the new `coreServices.auth`, `coreServices.httpAuth`, and `coreServices.userInfo` services as needed instead.
  */
-export type TokenManager = TokenManagerService;
+export interface TokenManager {
+  /**
+   * Fetches a valid token.
+   *
+   * @remarks
+   *
+   * Tokens are valid for roughly one hour; the actual deadline is set in the
+   * payload `exp` claim. Never hold on to tokens for reuse; always ask for a
+   * new one for each outgoing request. This ensures that you always get a
+   * valid, fresh one.
+   */
+  getToken(): Promise<{ token: string }>;
+
+  /**
+   * Validates a given token.
+   */
+  authenticate(token: string): Promise<void>;
+}

@@ -24,11 +24,13 @@ import {
   HttpAuthService,
   LoggerService,
   RootConfigService,
-  TokenManagerService,
 } from '@backstage/backend-plugin-api';
 import { defaultAuthProviderFactories } from '../providers';
 import { AuthOwnershipResolver } from '@backstage/plugin-auth-node';
-import { createLegacyAuthAdapters } from '@backstage/backend-common';
+import {
+  TokenManager,
+  createLegacyAuthAdapters,
+} from '@backstage/backend-common';
 import { NotFoundError } from '@backstage/errors';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
@@ -56,7 +58,7 @@ export interface RouterOptions {
   database: DatabaseService;
   config: RootConfigService;
   discovery: DiscoveryService;
-  tokenManager: TokenManagerService;
+  tokenManager?: TokenManager;
   auth?: AuthService;
   httpAuth?: HttpAuthService;
   tokenFactoryAlgorithm?: string;

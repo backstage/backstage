@@ -34,7 +34,6 @@ describe('CatalogAuthResolverContext', () => {
       logger: mockServices.logger.mock(),
       catalogApi: mockCatalogApi as CatalogApi,
       tokenIssuer: {} as TokenIssuer,
-      tokenManager: mockServices.tokenManager(),
       discovery: {} as DiscoveryService,
       auth: mockServices.auth(),
       httpAuth: mockServices.httpAuth(),

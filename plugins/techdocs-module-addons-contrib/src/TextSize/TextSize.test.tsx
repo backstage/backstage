@@ -16,10 +16,22 @@
 
 import { TechDocsAddonTester } from '@backstage/plugin-techdocs-addons-test-utils';
 import React from 'react';
-import { fireEvent, waitFor, act } from '@testing-library/react';
+import { act, fireEvent, waitFor } from '@testing-library/react';
 import { TextSize } from '../plugin';
+import { useShadowRootElements } from '@backstage/plugin-techdocs-react';
+
+jest.mock('@backstage/plugin-techdocs-react', () => ({
+  ...jest.requireActual('@backstage/plugin-techdocs-react'),
+  useShadowRootElements: jest.fn(),
+}));
 
 describe('TextSize', () => {
+  const useShadowRootElementsMock = useShadowRootElements as jest.Mock;
+
+  beforeEach(() => {
+    useShadowRootElementsMock.mockReturnValue([]);
+  });
+
   it('renders without exploding', async () => {
     const { getByText } = await TechDocsAddonTester.buildAddonsInTechDocs([
       <TextSize />,
@@ -35,6 +47,9 @@ describe('TextSize', () => {
       await TechDocsAddonTester.buildAddonsInTechDocs([<TextSize />])
         .withDom(<body>TEST_CONTENT</body>)
         .renderWithEffects();
+
+    const content = getByText('TEST_CONTENT');
+    useShadowRootElementsMock.mockReturnValue([content]);
 
     fireEvent.click(getByTitle('Settings'));
 
@@ -60,7 +75,9 @@ describe('TextSize', () => {
 
     let style = window.getComputedStyle(getByText('TEST_CONTENT'));
 
-    expect(style.getPropertyValue('--md-typeset-font-size')).toBe('18.4px');
+    await waitFor(() => {
+      expect(style.getPropertyValue('--md-typeset-font-size')).toBe('18.4px');
+    });
 
     fireEvent.keyDown(slider, {
       key: 'ArrowLeft',
@@ -87,6 +104,9 @@ describe('TextSize', () => {
     } = await TechDocsAddonTester.buildAddonsInTechDocs([<TextSize />])
       .withDom(<body>TEST_CONTENT</body>)
       .renderWithEffects();
+
+    const content = getByText('TEST_CONTENT');
+    useShadowRootElementsMock.mockReturnValue([content]);
 
     fireEvent.click(getByTitle('Settings'));
 

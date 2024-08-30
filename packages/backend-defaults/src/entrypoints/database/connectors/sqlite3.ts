@@ -15,10 +15,7 @@
  */
 
 import { DevDataStore } from '@backstage/backend-dev-utils';
-import {
-  LifecycleService,
-  PluginMetadataService,
-} from '@backstage/backend-plugin-api';
+import { LifecycleService, LoggerService } from '@backstage/backend-plugin-api';
 import { Config, ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 import { ensureDirSync } from 'fs-extra';
@@ -35,12 +32,13 @@ import { mergeDatabaseConfig } from './mergeDatabaseConfig';
  * @param overrides - Additional options to merge with the config
  */
 export function createSqliteDatabaseClient(
+  pluginId: string,
   dbConfig: Config,
-  overrides?: Knex.Config,
-  deps?: {
+  deps: {
+    logger: LoggerService;
     lifecycle: LifecycleService;
-    pluginMetadata: PluginMetadataService;
   },
+  overrides?: Knex.Config,
 ) {
   const knexConfig = buildSqliteDatabaseConfig(dbConfig, overrides);
   const connConfig = knexConfig.connection as Knex.Sqlite3ConnectionConfig;
@@ -62,7 +60,7 @@ export function createSqliteDatabaseClient(
     const devStore = DevDataStore.get();
 
     if (devStore) {
-      const dataKey = `sqlite3-db-${deps.pluginMetadata.getId()}`;
+      const dataKey = `sqlite3-db-${pluginId}`;
 
       const connectionLoader = async () => {
         // If seed data is available, use it tconnectionLoader restore the database
@@ -180,9 +178,9 @@ export class Sqlite3Connector implements Connector {
 
   async getClient(
     pluginId: string,
-    deps?: {
+    deps: {
+      logger: LoggerService;
       lifecycle: LifecycleService;
-      pluginMetadata: PluginMetadataService;
     },
   ): Promise<Knex> {
     const pluginConfig = new ConfigReader(
@@ -202,16 +200,13 @@ export class Sqlite3Connector implements Connector {
     );
 
     const client = createSqliteDatabaseClient(
+      pluginId,
       pluginConfig,
-      databaseClientOverrides,
       deps,
+      databaseClientOverrides,
     );
 
     return client;
-  }
-
-  async dropDatabase(..._databaseNames: string[]): Promise<void> {
-    // do nothing
   }
 
   /**

@@ -50,7 +50,7 @@ export function bindProviderRouters(
     discovery: PluginEndpointDiscovery;
     auth: AuthService;
     httpAuth: HttpAuthService;
-    tokenManager: TokenManager;
+    tokenManager?: TokenManager;
     tokenIssuer: TokenIssuer;
     ownershipResolver?: AuthOwnershipResolver;
     catalogApi?: CatalogApi;

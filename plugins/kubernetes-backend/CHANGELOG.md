@@ -1,5 +1,27 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.18.6-next.0
+
+### Patch Changes
+
+- f55f8bf: The `KubernetesBuilder` and its related types has been marked as deprecared. This backend should instead be initialized using the new backend system.
+- d425fc4: Modules, plugins, and services are now `BackendFeature`, not a function that returns a feature.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.9.0-next.0
+  - @backstage/plugin-permission-node@0.8.3-next.0
+  - @backstage/backend-common@0.25.0-next.0
+  - @backstage/plugin-kubernetes-node@0.1.19-next.0
+  - @backstage/plugin-auth-node@0.5.2-next.0
+  - @backstage/plugin-catalog-node@1.12.7-next.0
+  - @backstage/catalog-client@1.6.6
+  - @backstage/catalog-model@1.6.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.8.2
+  - @backstage/plugin-permission-common@0.8.1
+
 ## 0.18.4
 
 ### Patch Changes

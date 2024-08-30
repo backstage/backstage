@@ -15,9 +15,7 @@
  */
 
 import { createBackend } from '@backstage/backend-defaults';
-import { mockServices } from '@backstage/backend-test-utils';
 
 const backend = createBackend();
-backend.add(mockServices.identity.factory());
 backend.add(import('../src/alpha'));
 backend.start();

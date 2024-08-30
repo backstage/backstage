@@ -30,10 +30,8 @@ import {
 
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
-  dropDatabase as _dropDatabase,
   DatabaseManager as _DatabaseManager,
   type DatabaseManagerOptions as _DatabaseManagerOptions,
-  type LegacyRootDatabaseService as _LegacyRootDatabaseService,
 } from '../../../backend-defaults/src/entrypoints/database/DatabaseManager';
 
 import {
@@ -48,6 +46,8 @@ import {
   isChildPath as _isChildPath,
   LifecycleService,
   PluginMetadataService,
+  DatabaseService,
+  LoggerService,
 } from '@backstage/backend-plugin-api';
 
 export * from './hot';
@@ -170,14 +170,20 @@ export type CacheClientOptions = CacheServiceOptions;
  * @deprecated Use `DatabaseManager` from the `@backstage/backend-defaults` package instead
  */
 export class DatabaseManager implements LegacyRootDatabaseService {
-  private constructor(private readonly _databaseManager: _DatabaseManager) {}
+  private constructor(
+    private readonly _databaseManager: _DatabaseManager,
+    private readonly logger?: LoggerService,
+  ) {}
 
   static fromConfig(
     config: Config,
-    options?: DatabaseManagerOptions,
+    options?: {
+      migrations?: DatabaseService['migrations'];
+      logger?: LoggerService;
+    },
   ): DatabaseManager {
     const _databaseManager = _DatabaseManager.fromConfig(config, options);
-    return new DatabaseManager(_databaseManager);
+    return new DatabaseManager(_databaseManager, options?.logger);
   }
 
   forPlugin(
@@ -186,7 +192,20 @@ export class DatabaseManager implements LegacyRootDatabaseService {
       | { lifecycle: LifecycleService; pluginMetadata: PluginMetadataService }
       | undefined,
   ): PluginDatabaseManager {
-    return this._databaseManager.forPlugin(pluginId, deps);
+    const logger: LoggerService = this.logger ?? {
+      debug() {},
+      info() {},
+      warn() {},
+      error() {},
+      child() {
+        return this;
+      },
+    };
+    const lifecycle: LifecycleService = deps?.lifecycle ?? {
+      addShutdownHook() {},
+      addStartupHook() {},
+    };
+    return this._databaseManager.forPlugin(pluginId, { logger, lifecycle });
   }
 }
 
@@ -204,15 +223,11 @@ export type PluginDatabaseManager = _PluginDatabaseManager;
 
 /**
  * @public
- * @deprecated Use `LegacyRootDatabaseService` from the `@backstage/backend-defaults` package instead
+ * @deprecated Use `DatabaseManager` from `@backstage/backend-defaults/database` instead, or migrate to the new backend system and use `coreServices.database`
  */
-export type LegacyRootDatabaseService = _LegacyRootDatabaseService;
-
-/**
- * @public
- * @deprecated Use `dropDatabase` from the `@backstage/backend-defaults` package instead
- */
-export const dropDatabase = _dropDatabase;
+export type LegacyRootDatabaseService = {
+  forPlugin(pluginId: string): DatabaseService;
+};
 
 /**
  * @public

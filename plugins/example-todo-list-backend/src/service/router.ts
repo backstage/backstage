@@ -19,8 +19,7 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { add, getAll, update } from './todos';
 import { InputError } from '@backstage/errors';
-import { IdentityApi } from '@backstage/plugin-auth-node';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import { HttpAuthService, LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Dependencies of the todo-list router
@@ -29,7 +28,7 @@ import { LoggerService } from '@backstage/backend-plugin-api';
  */
 export interface RouterOptions {
   logger: LoggerService;
-  identity: IdentityApi;
+  httpAuth: HttpAuthService;
 }
 
 /**
@@ -44,7 +43,7 @@ export interface RouterOptions {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger, identity } = options;
+  const { logger, httpAuth } = options;
 
   const router = Router();
   router.use(express.json());
@@ -59,16 +58,16 @@ export async function createRouter(
   });
 
   router.post('/todos', async (req, res) => {
-    let author: string | undefined = undefined;
-
-    const user = await identity.getIdentity({ request: req });
-    author = user?.identity.userEntityRef;
+    const credentials = await httpAuth.credentials(req, { allow: ['user'] });
 
     if (!isTodoCreateRequest(req.body)) {
       throw new InputError('Invalid payload');
     }
 
-    const todo = add({ title: req.body.title, author });
+    const todo = add({
+      title: req.body.title,
+      author: credentials.principal.userEntityRef,
+    });
     res.json(todo);
   });
 

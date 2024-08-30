@@ -30,7 +30,7 @@ export function convertLegacyEntityCardExtension(
       | typeof EntityCardBlueprint.dataRefs.filterFunction.T
       | typeof EntityCardBlueprint.dataRefs.filterExpression.T;
   },
-): ExtensionDefinition<any> {
+): ExtensionDefinition {
   const element = <LegacyExtension />;
 
   const extName = getComponentData<string>(element, 'core.extensionName');

@@ -28,7 +28,7 @@ import {
  */
 export namespace microsoftSignInResolvers {
   /**
-   * Looks up the user by matching their Microsoft username to the entity name.
+   * Looks up the user by matching their Microsoft email to the email entity annotation.
    */
   export const emailMatchingUserEntityAnnotation = createSignInResolverFactory({
     create() {
@@ -50,4 +50,31 @@ export namespace microsoftSignInResolvers {
       };
     },
   });
+  /**
+   * Looks up the user by matching their Microsoft user id to the user id entity annotation.
+   */
+  export const userIdMatchingUserEntityAnnotation = createSignInResolverFactory(
+    {
+      create() {
+        return async (
+          info: SignInInfo<OAuthAuthenticatorResult<PassportProfile>>,
+          ctx,
+        ) => {
+          const { result } = info;
+
+          const id = result.fullProfile.id;
+
+          if (!id) {
+            throw new Error('Microsoft profile contained no id');
+          }
+
+          return ctx.signInWithCatalogUser({
+            annotations: {
+              'graph.microsoft.com/user-id': id,
+            },
+          });
+        };
+      },
+    },
+  );
 }

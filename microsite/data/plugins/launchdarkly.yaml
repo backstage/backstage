@@ -1,0 +1,9 @@
+---
+title: LaunchDarkly
+author: roadie.io
+authorUrl: https://roadie.io
+category: CI/CD
+description: View LaunchDarkly feature flags for your entities in Backstage.
+documentation: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/launchdarkly/plugins/frontend/backstage-plugin-launchdarkly/README.md
+npmPackageName: '@roadiehq/backstage-plugin-launchdarkly'
+addedDate: '2024-07-27'

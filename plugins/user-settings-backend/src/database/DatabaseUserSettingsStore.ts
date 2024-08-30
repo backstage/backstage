@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { PluginDatabaseManager } from '@backstage/backend-common';
-import { resolvePackagePath } from '@backstage/backend-plugin-api';
+import {
+  resolvePackagePath,
+  DatabaseService,
+} from '@backstage/backend-plugin-api';
 import { NotFoundError } from '@backstage/errors';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
@@ -43,7 +45,7 @@ export type RawDbUserSettingsRow = {
  */
 export class DatabaseUserSettingsStore implements UserSettingsStore {
   static async create(options: {
-    database: PluginDatabaseManager;
+    database: DatabaseService;
   }): Promise<DatabaseUserSettingsStore> {
     const { database } = options;
     const client = await database.getClient();

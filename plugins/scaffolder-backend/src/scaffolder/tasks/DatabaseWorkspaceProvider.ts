@@ -29,7 +29,7 @@ export class DatabaseWorkspaceProvider implements WorkspaceProvider {
     path: string;
     taskId: string;
   }): Promise<void> {
-    this.storage.serializeWorkspace?.(options);
+    await this.storage.serializeWorkspace?.(options);
   }
 
   public async rehydrateWorkspace(options: {

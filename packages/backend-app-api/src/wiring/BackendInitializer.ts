@@ -93,8 +93,11 @@ export class BackendInitializer {
 
     if (missingRefs.size > 0) {
       const missing = Array.from(missingRefs).join(', ');
+      const target = moduleId
+        ? `module '${moduleId}' for plugin '${pluginId}'`
+        : `plugin '${pluginId}'`;
       throw new Error(
-        `No extension point or service available for the following ref(s): ${missing}`,
+        `Service or extension point dependencies of ${target} are missing for the following ref(s): ${missing}`,
       );
     }
 
@@ -157,6 +160,7 @@ export class BackendInitializer {
     }
 
     const featureDiscovery = await this.#serviceRegistry.get(
+      // TODO: Let's leave this in place and remove it once the deprecated service is removed. We can do that post-1.0 since it's alpha
       featureDiscoveryServiceRef,
       'root',
     );

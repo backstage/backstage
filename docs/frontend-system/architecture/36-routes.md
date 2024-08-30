@@ -256,7 +256,7 @@ app:
 We also have the ability to express this in code as an option to `createApp`, but you of course only need to use one of these two methods:
 
 ```tsx title="packages/app/src/App.tsx"
-import { createApp } from '@backstage/frontend-app-api';
+import { createApp } from '@backstage/frontend-defaults';
 import catalog from '@backstage/plugin-catalog';
 import scaffolder from '@backstage/plugin-scaffolder';
 

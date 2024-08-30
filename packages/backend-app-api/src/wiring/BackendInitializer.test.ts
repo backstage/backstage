@@ -577,6 +577,56 @@ describe('BackendInitializer', () => {
     );
   });
 
+  it('should reject plugins with missing dependencies', async () => {
+    const init = new BackendInitializer(baseFactories);
+    const ref = createServiceRef<string>({ id: 'a' });
+    init.add(
+      createBackendPlugin({
+        pluginId: 'test',
+        register(reg) {
+          reg.registerInit({
+            deps: { ref },
+            async init() {},
+          });
+        },
+      }),
+    );
+    await expect(init.start()).rejects.toThrow(
+      "Service or extension point dependencies of plugin 'test' are missing for the following ref(s): serviceRef{a}",
+    );
+  });
+
+  it('should reject modules with missing dependencies', async () => {
+    const init = new BackendInitializer(baseFactories);
+    const ref = createServiceRef<string>({ id: 'a' });
+    init.add(
+      createBackendPlugin({
+        pluginId: 'test',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {},
+          });
+        },
+      }),
+    );
+    init.add(
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'test-mod',
+        register(reg) {
+          reg.registerInit({
+            deps: { ref },
+            async init() {},
+          });
+        },
+      }),
+    );
+    await expect(init.start()).rejects.toThrow(
+      "Service or extension point dependencies of module 'test-mod' for plugin 'test' are missing for the following ref(s): serviceRef{a}",
+    );
+  });
+
   it('should properly load double-default CJS modules', async () => {
     expect.assertions(3);
 

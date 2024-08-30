@@ -44,9 +44,12 @@ import {
   AuthorizeResult,
   PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
-import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
+import {
+  mockCredentials,
+  mockErrorHandler,
+  mockServices,
+} from '@backstage/backend-test-utils';
 import { AutocompleteHandler } from '@backstage/plugin-scaffolder-node/alpha';
-import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import { UrlReaders } from '@backstage/backend-defaults/urlReader';
 
 const mockAccess = jest.fn();
@@ -1501,8 +1504,6 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
           results: [{ title: 'blob' }],
         });
 
-        const logger = mockServices.logger.mock();
-        const middleware = MiddlewareFactory.create({ config, logger });
         const router = await createRouter({
           logger: loggerToWinstonLogger(mockServices.logger.mock()),
           config: new ConfigReader({}),
@@ -1519,7 +1520,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
           },
         });
 
-        app = express().use(router).use(middleware.error());
+        app = express().use(router).use(mockErrorHandler());
       });
 
       it('should throw an error when the provider is not registered', async () => {

@@ -26,7 +26,7 @@ import { convertLegacyRouteRefs } from './convertLegacyRouteRef';
 /** @public */
 export function convertLegacyPlugin(
   legacyPlugin: LegacyBackstagePlugin,
-  options: { extensions: ExtensionDefinition<any, any>[] },
+  options: { extensions: ExtensionDefinition[] },
 ): NewBackstagePlugin {
   const apiExtensions = Array.from(legacyPlugin.getApis()).map(factory =>
     ApiBlueprint.make({ namespace: factory.api.id, params: { factory } }),

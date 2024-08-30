@@ -30,29 +30,27 @@ export type SearchResultItemExtensionPredicate = (
 ) => boolean;
 
 // @alpha
-export const SearchResultListItemBlueprint: ExtensionBlueprint<
-  {
-    kind: 'search-result-list-item';
-    namespace: undefined;
-    name: undefined;
-  },
-  SearchResultListItemBlueprintParams,
-  ConfigurableExtensionDataRef<
+export const SearchResultListItemBlueprint: ExtensionBlueprint<{
+  kind: 'search-result-list-item';
+  namespace: undefined;
+  name: undefined;
+  params: SearchResultListItemBlueprintParams;
+  output: ConfigurableExtensionDataRef<
     {
       predicate?: SearchResultItemExtensionPredicate | undefined;
       component: SearchResultItemExtensionComponent;
     },
     'search.search-result-list-item.item',
     {}
-  >,
-  {},
-  {
+  >;
+  inputs: {};
+  config: {
     noTrack: boolean;
-  },
-  {
+  };
+  configInput: {
     noTrack?: boolean | undefined;
-  },
-  {
+  };
+  dataRefs: {
     item: ConfigurableExtensionDataRef<
       {
         predicate?: SearchResultItemExtensionPredicate | undefined;
@@ -61,8 +59,8 @@ export const SearchResultListItemBlueprint: ExtensionBlueprint<
       'search.search-result-list-item.item',
       {}
     >;
-  }
->;
+  };
+}>;
 
 // @alpha (undocumented)
 export interface SearchResultListItemBlueprintParams {

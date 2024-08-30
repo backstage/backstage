@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  loggerToWinstonLogger,
-  PluginEndpointDiscovery,
-} from '@backstage/backend-common';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import {
@@ -31,6 +28,7 @@ import { TechDocsCache } from '../cache';
 import { DocsBuilder, shouldCheckForUpdate } from '../DocsBuilder';
 import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
 import { mockServices } from '@backstage/backend-test-utils';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 
 jest.mock('../DocsBuilder');
 jest.useFakeTimers();
@@ -66,7 +64,7 @@ describe('DocsSynchronizer', () => {
     hasDocsBeenGenerated: jest.fn(),
     publish: jest.fn(),
   };
-  const discovery: jest.Mocked<PluginEndpointDiscovery> = {
+  const discovery: jest.Mocked<DiscoveryService> = {
     getBaseUrl: jest.fn(),
     getExternalBaseUrl: jest.fn(),
   };

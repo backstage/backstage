@@ -5,62 +5,66 @@
 ```ts
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
-import { BackstagePlugin } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
+import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
-const _default: BackstagePlugin<
+const _default: FrontendPlugin<
   {
     root: RouteRef<undefined>;
   },
   {},
   {
-    'api:devtools': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: undefined;
-      }
-    >;
-    'page:devtools': ExtensionDefinition<
-      {
+    'api:devtools': ExtensionDefinition<{
+      kind: 'api';
+      namespace: undefined;
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+    }>;
+    'page:devtools': ExtensionDefinition<{
+      kind: 'page';
+      namespace: undefined;
+      name: undefined;
+      config: {
         path: string | undefined;
-      },
-      {
+      };
+      configInput: {
         path?: string | undefined;
-      },
-      | ConfigurableExtensionDataRef<
-          React_2.JSX.Element,
-          'core.reactElement',
-          {}
-        >
-      | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-      | ConfigurableExtensionDataRef<
-          RouteRef<AnyRouteRefParams>,
-          'core.routing.ref',
-          {
-            optional: true;
-          }
-        >,
-      {},
-      {
-        kind: 'page';
-        namespace: undefined;
-        name: undefined;
-      }
-    >;
-    'nav-item:devtools': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<
+      };
+      output:
+        | ConfigurableExtensionDataRef<
+            React_2.JSX.Element,
+            'core.reactElement',
+            {}
+          >
+        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+        | ConfigurableExtensionDataRef<
+            RouteRef<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+    }>;
+    'nav-item:devtools': ExtensionDefinition<{
+      kind: 'nav-item';
+      namespace: undefined;
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
         {
           title: string;
           icon: IconComponent;
@@ -68,14 +72,9 @@ const _default: BackstagePlugin<
         },
         'core.nav-item.target',
         {}
-      >,
-      {},
-      {
-        kind: 'nav-item';
-        namespace: undefined;
-        name: undefined;
-      }
-    >;
+      >;
+      inputs: {};
+    }>;
   }
 >;
 export default _default;

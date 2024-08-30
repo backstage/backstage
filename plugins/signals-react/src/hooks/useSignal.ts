@@ -46,7 +46,7 @@ export const useSignal = <TMessage extends JsonObject = JsonObject>(
   }, [signals, channel]);
 
   // Can be used to fallback (for example to long polling) if signals are not available in the system
-  const isSignalsAvailable = useMemo(() => !signals, [signals]);
+  const isSignalsAvailable = useMemo(() => !!signals, [signals]);
 
   return { lastSignal, isSignalsAvailable };
 };

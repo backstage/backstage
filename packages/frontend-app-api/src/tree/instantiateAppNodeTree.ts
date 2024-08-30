@@ -16,6 +16,7 @@
 
 import {
   AnyExtensionDataRef,
+  ApiHolder,
   ExtensionDataContainer,
   ExtensionDataRef,
   ExtensionInput,
@@ -242,9 +243,10 @@ function resolveV2Inputs(
 /** @internal */
 export function createAppNodeInstance(options: {
   node: AppNode;
+  apis: ApiHolder;
   attachments: ReadonlyMap<string, AppNode[]>;
 }): AppNodeInstance {
-  const { node, attachments } = options;
+  const { node, apis, attachments } = options;
   const { id, extension, config } = node.spec;
   const extensionData = new Map<string, unknown>();
   const extensionDataRefs = new Set<ExtensionDataRef<unknown>>();
@@ -268,6 +270,7 @@ export function createAppNodeInstance(options: {
     if (internalExtension.version === 'v1') {
       const namedOutputs = internalExtension.factory({
         node,
+        apis,
         config: parsedConfig,
         inputs: resolveV1Inputs(internalExtension.inputs, attachments),
       });
@@ -288,6 +291,7 @@ export function createAppNodeInstance(options: {
     } else if (internalExtension.version === 'v2') {
       const outputDataValues = internalExtension.factory({
         node,
+        apis,
         config: parsedConfig,
         inputs: resolveV2Inputs(internalExtension.inputs, attachments),
       });
@@ -349,7 +353,10 @@ export function createAppNodeInstance(options: {
  * Starting at the provided node, instantiate all reachable nodes in the tree that have not been disabled.
  * @internal
  */
-export function instantiateAppNodeTree(rootNode: AppNode): void {
+export function instantiateAppNodeTree(
+  rootNode: AppNode,
+  apis: ApiHolder,
+): void {
   function createInstance(node: AppNode): AppNodeInstance | undefined {
     if (node.instance) {
       return node.instance;
@@ -375,6 +382,7 @@ export function instantiateAppNodeTree(rootNode: AppNode): void {
 
     (node as Mutable<AppNode>).instance = createAppNodeInstance({
       node,
+      apis,
       attachments: instantiatedAttachments,
     });
 

@@ -15,7 +15,10 @@
  */
 
 import { Config } from '@backstage/config';
-import { DiscoveryService } from '@backstage/backend-plugin-api';
+import {
+  DiscoveryService,
+  RootConfigService,
+} from '@backstage/backend-plugin-api';
 import { readHttpServerOptions } from '../rootHttpRouter/http/config';
 
 type Target = string | { internal: string; external: string };
@@ -55,7 +58,10 @@ export class HostDiscovery implements DiscoveryService {
    * The basePath defaults to `/api`, meaning the default full internal
    * path for the `catalog` plugin will be `http://localhost:7007/api/catalog`.
    */
-  static fromConfig(config: Config, options?: { basePath?: string }) {
+  static fromConfig(
+    config: RootConfigService,
+    options?: { basePath?: string },
+  ) {
     const basePath = options?.basePath ?? '/api';
     const externalBaseUrl = config
       .getString('backend.baseUrl')

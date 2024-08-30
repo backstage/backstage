@@ -1,22 +1,17 @@
 {
   $schema: 'https://docs.renovatebot.com/renovate-schema.json',
-
   labels: ['dependencies'],
-
   extends: ['config:best-practices', ':gitSignOff'],
   // do not pin dev dependencies, which are part of the best-practices preset
   ignorePresets: [':pinDevDependencies', ':pinDigest', 'docker:pinDigests'],
-
   constraints: {
     // TODO(freben): Remove this later; it addresses a temporary issue in corepack
     // https://github.com/nodejs/corepack/issues/379
     // https://github.com/renovatebot/renovate/discussions/27465
     corepack: '0.24.1',
   },
-
-  // the default limit are 10 PRs
+  // the default limit is 10 PRs
   prConcurrentLimit: 20,
-
   postUpdateOptions: ['yarnDedupeHighest'],
   rangeStrategy: 'update-lockfile',
   ignoreDeps: [
@@ -26,19 +21,19 @@
   ],
   packageRules: [
     {
-      matchSourceUrlPrefixes: ['https://github.com/spotify/web-scripts'],
       groupName: 'Spotify web-scripts monorepo packages',
       rangeStrategy: 'replace',
+      matchSourceUrls: ['https://github.com/spotify/web-scripts{/,}**'],
     },
     {
-      matchSourceUrlPrefixes: ['https://github.com/microsoft/rushstack'],
       groupName: 'API Extractor / Rush Stack monorepo packages',
       rangeStrategy: 'replace',
+      matchSourceUrls: ['https://github.com/microsoft/rushstack{/,}**'],
     },
     {
-      matchSourceUrlPrefixes: ['https://github.com/gregberge/svgr'],
       groupName: 'SVGR monorepo packages',
       rangeStrategy: 'replace',
+      matchSourceUrls: ['https://github.com/gregberge/svgr{/,}**'],
     },
     // We update yarn packages manually as it's gzip'd and we don't want to pollute the repository too much.
     {

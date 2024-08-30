@@ -28,7 +28,7 @@ const factoryDataRef = createExtensionDataRef<AnyApiFactory>().with({
  */
 export const ApiBlueprint = createExtensionBlueprint({
   kind: 'api',
-  attachTo: { id: 'app', input: 'apis' },
+  attachTo: { id: 'root', input: 'apis' },
   output: [factoryDataRef],
   dataRefs: {
     factory: factoryDataRef,

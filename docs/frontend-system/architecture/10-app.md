@@ -16,7 +16,7 @@ Below is a simple example of how to create and render an app instance:
 
 ```ts
 import ReactDOM from 'react-dom/client';
-import { createApp } from '@backstage/frontend-app-api';
+import { createApp } from '@backstage/frontend-defaults';
 
 // Create your app instance
 const app = createApp({

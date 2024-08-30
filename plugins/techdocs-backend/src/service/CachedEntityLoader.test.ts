@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { CacheService } from '@backstage/backend-plugin-api';
 import { CachedEntityLoader } from './CachedEntityLoader';
 import { CatalogClient } from '@backstage/catalog-client';
-import { CacheClient } from '@backstage/backend-common';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 
 describe('CachedEntityLoader', () => {
@@ -23,7 +23,7 @@ describe('CachedEntityLoader', () => {
     getEntityByRef: jest.fn(),
   } as any;
 
-  const cache: jest.Mocked<CacheClient> = {
+  const cache: jest.Mocked<CacheService> = {
     get: jest.fn(),
     set: jest.fn(),
   } as any;

@@ -19,7 +19,6 @@ import {
   mockServices,
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
-import { tokenManagerServiceFactory } from '@backstage/backend-app-api';
 import { authServiceFactory } from './authServiceFactory';
 import { base64url, decodeJwt } from 'jose';
 import { discoveryServiceFactory } from '../discovery';
@@ -32,7 +31,6 @@ const server = setupServer();
 // TODO: Ship discovery mock service in the service factory tester
 const mockDeps = [
   discoveryServiceFactory,
-  tokenManagerServiceFactory,
   mockServices.rootConfig.factory({
     data: {
       backend: {

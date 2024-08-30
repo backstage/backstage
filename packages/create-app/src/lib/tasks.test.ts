@@ -50,7 +50,6 @@ jest.mock('./versions', () => ({
   packageVersions: {
     root: '1.2.3',
     '@backstage/cli': '1.0.0',
-    '@backstage/backend-common': '1.0.0',
     '@backstage/backend-defaults': '1.0.0',
     '@backstage/backend-tasks': '1.0.0',
     '@backstage/catalog-model': '1.0.0',

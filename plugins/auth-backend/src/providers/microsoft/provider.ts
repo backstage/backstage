@@ -65,5 +65,7 @@ export const microsoft = createAuthProviderIntegration({
       commonSignInResolvers.emailMatchingUserEntityProfileEmail(),
     emailMatchingUserEntityAnnotation:
       microsoftSignInResolvers.emailMatchingUserEntityAnnotation(),
+    userIdMatchingUserEntityAnnotation:
+      microsoftSignInResolvers.userIdMatchingUserEntityAnnotation(),
   }),
 });

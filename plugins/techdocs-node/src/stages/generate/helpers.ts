@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { isChildPath } from '@backstage/backend-plugin-api';
+import { isChildPath, LoggerService } from '@backstage/backend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { assertError, ForwardedError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -24,7 +24,6 @@ import gitUrlParse from 'git-url-parse';
 import yaml, { DEFAULT_SCHEMA, Type } from 'js-yaml';
 import path, { resolve as resolvePath } from 'path';
 import { PassThrough, Writable } from 'stream';
-import { Logger } from 'winston';
 import { ParsedLocationAnnotation } from '../../helpers';
 import { DefaultMkdocsContent, SupportedGeneratorKey } from './types';
 import { getFileTreeRecursively } from '../publish/helpers';
@@ -298,7 +297,7 @@ export const patchIndexPreBuild = async ({
   docsDir = 'docs',
 }: {
   inputDir: string;
-  logger: Logger;
+  logger: LoggerService;
   docsDir?: string;
 }) => {
   const docsPath = path.join(inputDir, docsDir);
@@ -342,7 +341,7 @@ export const patchIndexPreBuild = async ({
  */
 export const createOrUpdateMetadata = async (
   techdocsMetadataPath: string,
-  logger: Logger,
+  logger: LoggerService,
 ): Promise<void> => {
   const techdocsMetadataDir = techdocsMetadataPath
     .split(path.sep)

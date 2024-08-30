@@ -1,5 +1,26 @@
 # @backstage/plugin-techdocs-backend
 
+## 1.10.13-next.0
+
+### Patch Changes
+
+- 086c32d: Dedicated token for techdocs cache sync
+- 5b679ac: The `createRouter` and its related types has been marked as deprecared. This backend should instead be initialized using the new backend system.
+- d425fc4: Modules, plugins, and services are now `BackendFeature`, not a function that returns a feature.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.9.0-next.0
+  - @backstage/plugin-techdocs-node@1.12.11-next.0
+  - @backstage/plugin-search-backend-module-techdocs@0.2.2-next.0
+  - @backstage/backend-common@0.25.0-next.0
+  - @backstage/catalog-client@1.6.6
+  - @backstage/catalog-model@1.6.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.14.0
+  - @backstage/plugin-catalog-common@1.0.26
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-techdocs-common@0.1.0
+
 ## 1.10.10
 
 ### Patch Changes

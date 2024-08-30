@@ -22,7 +22,8 @@ import React, {
   isValidElement,
 } from 'react';
 import {
-  FrontendFeature,
+  ExtensionOverrides,
+  FrontendPlugin,
   coreExtensionData,
   createExtension,
   createExtensionInput,
@@ -60,7 +61,7 @@ function selectChildren(
 /** @public */
 export function convertLegacyApp(
   rootElement: React.JSX.Element,
-): FrontendFeature[] {
+): (FrontendPlugin | ExtensionOverrides)[] {
   if (getComponentData(rootElement, 'core.type') === 'FlatRoutes') {
     return collectLegacyRoutes(rootElement);
   }

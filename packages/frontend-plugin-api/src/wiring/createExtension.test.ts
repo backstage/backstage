@@ -18,6 +18,7 @@ import { createExtensionTester } from '@backstage/frontend-test-utils';
 import { createExtension } from './createExtension';
 import { createExtensionDataRef } from './createExtensionDataRef';
 import { createExtensionInput } from './createExtensionInput';
+import { PortableSchema } from '../schema';
 
 const stringDataRef = createExtensionDataRef<string>().with({ id: 'string' });
 const numberDataRef = createExtensionDataRef<number>().with({ id: 'number' });
@@ -289,7 +290,12 @@ describe('createExtension', () => {
     );
 
     expect(
-      extension.configSchema?.parse({
+      (
+        (extension as any).configSchema as PortableSchema<
+          (typeof extension.T)['config'],
+          (typeof extension.T)['configInput']
+        >
+      )?.parse({
         foo: 'x',
         bar: 'y',
         baz: 'z',
@@ -302,7 +308,12 @@ describe('createExtension', () => {
       baz: 'z',
     });
     expect(
-      extension.configSchema?.parse({
+      (
+        (extension as any).configSchema as PortableSchema<
+          (typeof extension.T)['config'],
+          (typeof extension.T)['configInput']
+        >
+      )?.parse({
         foo: 'x',
       }),
     ).toEqual({

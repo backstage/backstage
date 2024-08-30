@@ -15,11 +15,11 @@
  */
 
 import { Readable } from 'stream';
-import { Config } from '@backstage/config';
 import {
   UrlReaderService,
   UrlReaderServiceReadTreeResponse,
   LoggerService,
+  RootConfigService,
 } from '@backstage/backend-plugin-api';
 
 /**
@@ -40,7 +40,7 @@ export type UrlReaderPredicateTuple = {
  * @public
  */
 export type ReaderFactory = (options: {
-  config: Config;
+  config: RootConfigService;
   logger: LoggerService;
   treeResponseFactory: ReadTreeResponseFactory;
 }) => UrlReaderPredicateTuple[];

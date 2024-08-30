@@ -46,7 +46,7 @@
     "@backstage/cli-common": "workspace:^",
     "chalk": "^4.0.0",
     "commander": "^12.0.0",
-    "jscodeshift": "^0.15.0",
+    "jscodeshift": "^0.16.0",
     "jscodeshift-add-imports": "^1.0.10"
   },
   "devDependencies": {

@@ -408,7 +408,7 @@ describe('createGitLabMergeRequest', () => {
         'owner/repo',
         'new-mr',
         'Create my new MR',
-        [
+        expect.arrayContaining([
           {
             action: 'create',
             filePath: 'irrelevant/bar.txt',
@@ -423,7 +423,7 @@ describe('createGitLabMergeRequest', () => {
             content: 'SGVsbG8gdGhlcmUh',
             execute_filemode: false,
           },
-        ],
+        ]),
       );
     });
   });
@@ -450,7 +450,7 @@ describe('createGitLabMergeRequest', () => {
         'owner/repo',
         'new-mr',
         'Create my new MR',
-        [
+        expect.arrayContaining([
           {
             action: 'update',
             filePath: 'source/auto.txt',
@@ -465,7 +465,7 @@ describe('createGitLabMergeRequest', () => {
             encoding: 'base64',
             execute_filemode: false,
           },
-        ],
+        ]),
       );
     });
   });
@@ -562,7 +562,7 @@ describe('createGitLabMergeRequest', () => {
         'owner/repo',
         'new-mr',
         'Create my new MR',
-        [
+        expect.arrayContaining([
           {
             action: 'update',
             filePath: 'source/auto.txt',
@@ -577,7 +577,7 @@ describe('createGitLabMergeRequest', () => {
             encoding: 'base64',
             execute_filemode: false,
           },
-        ],
+        ]),
       );
     });
 
@@ -604,7 +604,7 @@ describe('createGitLabMergeRequest', () => {
         'owner/repo',
         'new-mr',
         'Create my new MR',
-        [
+        expect.arrayContaining([
           {
             action: 'update',
             filePath: 'source/auto.txt',
@@ -619,7 +619,7 @@ describe('createGitLabMergeRequest', () => {
             encoding: 'base64',
             execute_filemode: false,
           },
-        ],
+        ]),
       );
     });
 

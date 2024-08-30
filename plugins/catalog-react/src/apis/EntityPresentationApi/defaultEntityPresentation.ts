@@ -71,6 +71,9 @@ export function defaultEntityPresentation(
   };
 }
 
+const isString = (value: unknown): value is string =>
+  Boolean(value) && typeof value === 'string';
+
 // Try to extract display-worthy parts of an entity or ref as best we can, without throwing
 function getParts(entityOrRef: Entity | CompoundEntityRef | string): {
   kind?: string;
@@ -99,35 +102,29 @@ function getParts(entityOrRef: Entity | CompoundEntityRef | string): {
   }
 
   if (typeof entityOrRef === 'object' && entityOrRef !== null) {
-    const kind = [get(entityOrRef, 'kind')].find(
-      candidate => candidate && typeof candidate === 'string',
-    );
+    const kind = [get(entityOrRef, 'kind')].find(isString);
 
     const namespace = [
       get(entityOrRef, 'metadata.namespace'),
       get(entityOrRef, 'namespace'),
-    ].find(candidate => candidate && typeof candidate === 'string');
+    ].find(isString);
 
     const name = [
       get(entityOrRef, 'metadata.name'),
       get(entityOrRef, 'name'),
-    ].find(candidate => candidate && typeof candidate === 'string');
+    ].find(isString);
 
-    const title = [get(entityOrRef, 'metadata.title')].find(
-      candidate => candidate && typeof candidate === 'string',
-    );
+    const title = [get(entityOrRef, 'metadata.title')].find(isString);
 
     const description = [get(entityOrRef, 'metadata.description')].find(
-      candidate => candidate && typeof candidate === 'string',
+      isString,
     );
 
     const displayName = [get(entityOrRef, 'spec.profile.displayName')].find(
-      candidate => candidate && typeof candidate === 'string',
+      isString,
     );
 
-    const type = [get(entityOrRef, 'spec.type')].find(
-      candidate => candidate && typeof candidate === 'string',
-    );
+    const type = [get(entityOrRef, 'spec.type')].find(isString);
 
     return { kind, namespace, name, title, description, displayName, type };
   }

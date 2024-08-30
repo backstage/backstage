@@ -22,6 +22,7 @@ import {
 import { JsonValue } from '@backstage/types';
 import { createHash } from 'crypto';
 import Keyv from 'keyv';
+import { ttlToMilliseconds } from './types';
 
 export type CacheClientFactory = (options: CacheServiceOptions) => Keyv;
 
@@ -58,7 +59,9 @@ export class DefaultCacheClient implements CacheService {
     opts: CacheServiceSetOptions = {},
   ): Promise<void> {
     const k = this.getNormalizedKey(key);
-    await this.#client.set(k, value, opts.ttl);
+    const ttl =
+      opts.ttl !== undefined ? ttlToMilliseconds(opts.ttl) : undefined;
+    await this.#client.set(k, value, ttl);
   }
 
   async delete(key: string): Promise<void> {

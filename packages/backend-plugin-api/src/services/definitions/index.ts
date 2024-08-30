@@ -64,7 +64,6 @@ export type {
   SchedulerServiceTaskScheduleDefinition,
   SchedulerServiceTaskScheduleDefinitionConfig,
 } from './SchedulerService';
-export type { TokenManagerService } from './TokenManagerService';
 export type {
   UrlReaderServiceReadTreeOptions,
   UrlReaderServiceReadTreeResponse,
@@ -78,4 +77,3 @@ export type {
   UrlReaderService,
 } from './UrlReaderService';
 export type { BackstageUserInfo, UserInfoService } from './UserInfoService';
-export type { IdentityService } from './IdentityService';

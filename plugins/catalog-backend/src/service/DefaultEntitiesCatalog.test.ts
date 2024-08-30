@@ -1648,6 +1648,43 @@ describe('DefaultEntitiesCatalog', () => {
         expect(response5.totalItems).toBe(6);
       },
     );
+
+    it.each(databases.eachSupportedId())(
+      'should sort properly for fields that do not exist on all entities, %p',
+      async databaseId => {
+        await createDatabase(databaseId);
+
+        await Promise.all([
+          addEntityToSearch(entityFrom('AA', { uid: 'id1' })),
+          addEntityToSearch(entityFrom('BB', { uid: 'id2', title: 'YY' })),
+          addEntityToSearch(entityFrom('CC', { uid: 'id3', title: 'XX' })),
+        ]);
+
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: mockServices.logger.mock(),
+          stitcher,
+        });
+
+        await expect(
+          catalog
+            .queryEntities({
+              orderFields: [{ field: 'metadata.title', order: 'asc' }],
+              credentials: mockCredentials.none(),
+            })
+            .then(r => r.items.map(e => e.metadata.name)),
+        ).resolves.toEqual(['CC', 'BB', 'AA']); // 'AA' has no title, ends up last
+
+        await expect(
+          catalog
+            .queryEntities({
+              orderFields: [{ field: 'metadata.title', order: 'desc' }],
+              credentials: mockCredentials.none(),
+            })
+            .then(r => r.items.map(e => e.metadata.name)),
+        ).resolves.toEqual(['BB', 'CC', 'AA']); // 'AA' has no title, ends up last
+      },
+    );
   });
 
   describe('removeEntityByUid', () => {

@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import { ContainerRunner } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { Logger } from 'winston';
 import { getGeneratorKey } from './helpers';
 import { TechdocsGenerator } from './techdocs';
 import {
@@ -25,6 +23,8 @@ import {
   GeneratorBuilder,
   SupportedGeneratorKey,
 } from './types';
+import { LoggerService } from '@backstage/backend-plugin-api';
+import { TechDocsContainerRunner } from '../publish/types';
 
 /**
  * Collection of docs generators
@@ -41,8 +41,8 @@ export class Generators implements GeneratorBuilder {
   static async fromConfig(
     config: Config,
     options: {
-      logger: Logger;
-      containerRunner?: ContainerRunner;
+      logger: LoggerService;
+      containerRunner?: TechDocsContainerRunner;
       customGenerator?: TechdocsGenerator;
     },
   ): Promise<GeneratorBuilder> {

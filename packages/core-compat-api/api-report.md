@@ -12,9 +12,10 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { BackstagePlugin as BackstagePlugin_2 } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
+import { ExtensionOverrides } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { ExternalRouteRef as ExternalRouteRef_2 } from '@backstage/frontend-plugin-api';
-import { FrontendFeature } from '@backstage/frontend-plugin-api';
+import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
@@ -28,7 +29,7 @@ export function compatWrapper(element: ReactNode): React_2.JSX.Element;
 // @public (undocumented)
 export function convertLegacyApp(
   rootElement: React_2.JSX.Element,
-): FrontendFeature[];
+): (FrontendPlugin | ExtensionOverrides)[];
 
 // @public (undocumented)
 export function convertLegacyPageExtension(
@@ -37,13 +38,13 @@ export function convertLegacyPageExtension(
     name?: string;
     defaultPath?: string;
   },
-): ExtensionDefinition<any>;
+): ExtensionDefinition;
 
 // @public (undocumented)
 export function convertLegacyPlugin(
   legacyPlugin: BackstagePlugin,
   options: {
-    extensions: ExtensionDefinition<any, any>[];
+    extensions: ExtensionDefinition[];
   },
 ): BackstagePlugin_2;
 

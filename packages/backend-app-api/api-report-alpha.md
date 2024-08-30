@@ -6,7 +6,7 @@
 import { FeatureDiscoveryService } from '@backstage/backend-plugin-api/alpha';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export const featureDiscoveryServiceFactory: ServiceFactory<
   FeatureDiscoveryService,
   'root',

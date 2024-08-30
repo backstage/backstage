@@ -1,11 +1,5 @@
 name: Deploy Packages
 on:
-  workflow_dispatch:
-    inputs:
-      force_release:
-        description: Unconditionally trigger the release job
-        required: false
-        type: boolean
   push:
     branches: [master, patch/*]
 
@@ -82,7 +76,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
       - name: yarn install
-        uses: backstage/actions/yarn-install@772cef06641090d0095188e15c85647acdf0c250 # v0.6.11
+        uses: backstage/actions/yarn-install@3c138326f7fcbf253b88170c1f29bae8e975d47c # v0.6.14
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -140,7 +134,7 @@ jobs:
   release:
     needs: build
 
-    if: needs.build.outputs.needs_release == 'true' || inputs.force_release == true
+    if: needs.build.outputs.needs_release == 'true'
 
     runs-on: ubuntu-latest
 
@@ -148,75 +142,16 @@ jobs:
       matrix:
         node-version: [18.x]
 
-    env:
-      CI: 'true'
-      NODE_OPTIONS: --max-old-space-size=8192
-
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@17d0e2bd7d51742c71671bd19fa12bdc9d40a3d6 # v2.8.1
+        uses: step-security/harden-runner@5c7944e73c4c2a096b17a9cb74d65b6c2bbafbde # v2.9.1
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
-
-      - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
-        with:
-          node-version: ${{ matrix.node-version }}
-          registry-url: https://registry.npmjs.org/ # Needed for auth
-      - name: yarn install
-        uses: backstage/actions/yarn-install@772cef06641090d0095188e15c85647acdf0c250 # v0.6.11
-        with:
-          cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
-
-      - name: build type declarations
-        run: yarn tsc:full
-
-      - name: build packages
-        run: yarn backstage-cli repo build
-
-      - name: build embedded techdocs app
-        working-directory: packages/techdocs-cli-embedded-app
-        run: yarn build
-
-      # Publishes current version of packages that are not already present in the registry
-      - name: publish
-        run: |
-          yarn config set -H 'npmAuthToken' "${{secrets.NPM_TOKEN}}"
-          if [ -f ".changeset/pre.json" ]; then
-              yarn workspaces foreach -v --no-private npm publish --access public --tolerate-republish --tag next
-          else
-              yarn workspaces foreach -v --no-private npm publish --access public --tolerate-republish
-          fi
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      # Grabs the version in the root package.json and creates a tag on GitHub
-      - name: Create a release tag
-        id: create_tag
-        run: node scripts/create-release-tag.js
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
-
-      # Convert the newly created tag into a release with changelog information
-      - name: Create release on GitHub
-        run: node scripts/create-github-release.js ${{ steps.create_tag.outputs.tag_name }} 1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
-
-      - name: Dispatch repository event
-        uses: peter-evans/repository-dispatch@ff45666b9427631e3450c54a1bcbee4d9ff4d7c0 # v3.0.0
-        with:
-          token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
-          event-type: release-published
-          client-payload: '{"version": "${{ steps.create_tag.outputs.version }}"}'
-
-      # Notify everyone about this great new release :D
+      # Notify maintainers that a new release is ready to be published
       - name: Discord notification
         uses: Ilshidur/action-discord@0c4b27844ba47cb1c7bee539c8eead5284ce9fa9 # 0.3.2
         env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_RELEASE_WEBHOOK }}
-          TAG_NAME: ${{ steps.create_tag.outputs.tag_name }}
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_MAINTAINERS_WEBHOOK }}
         with:
-          args: 'A new release has been published! https://github.com/backstage/backstage/releases/tag/{{TAG_NAME}}'
+          args: 'A new release is ready to be [published](https://github.com/backstage/publishing/actions/workflows/publish-main.yml) from {{GITHUB_SHA}}'

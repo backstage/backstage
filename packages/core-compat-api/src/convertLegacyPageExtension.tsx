@@ -35,7 +35,7 @@ export function convertLegacyPageExtension(
     name?: string;
     defaultPath?: string;
   },
-): ExtensionDefinition<any> {
+): ExtensionDefinition {
   const element = <LegacyExtension />;
 
   const extName = getComponentData<string>(element, 'core.extensionName');

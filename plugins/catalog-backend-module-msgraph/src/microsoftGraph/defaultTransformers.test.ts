@@ -90,4 +90,31 @@ describe('defaultTransformers', () => {
       },
     });
   });
+
+  it('tests defaultUserTransformer with no email', async () => {
+    const user: MicrosoftGraph.User = {
+      id: 'foo',
+      displayName: 'BAR',
+      userPrincipalName: 'test@upn',
+    };
+    const userPhoto = 'test_photo';
+    const result = await defaultUserTransformer(user, userPhoto);
+    expect(result).toEqual({
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'User',
+      metadata: {
+        annotations: {
+          'graph.microsoft.com/user-id': 'foo',
+        },
+        name: 'test_upn',
+      },
+      spec: {
+        memberOf: [],
+        profile: {
+          displayName: 'BAR',
+          picture: 'test_photo',
+        },
+      },
+    });
+  });
 });

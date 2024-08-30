@@ -82,7 +82,6 @@ describe('ServerPermissionClient', () => {
     it('should bypass the permission backend if permissions are disabled', async () => {
       const client = ServerPermissionClient.fromConfig(new ConfigReader({}), {
         discovery,
-        tokenManager: mockServices.tokenManager.mock(),
         auth: mockServices.auth(),
       });
 
@@ -101,7 +100,6 @@ describe('ServerPermissionClient', () => {
     it('should bypass the permission backend if permissions are enabled and request has valid server credentials', async () => {
       const client = ServerPermissionClient.fromConfig(config, {
         discovery,
-        tokenManager: mockServices.tokenManager.mock(),
         auth: mockServices.auth(),
       });
 
@@ -115,7 +113,6 @@ describe('ServerPermissionClient', () => {
     it('should call the permission backend if permissions are enabled and request does not have valid server credentials', async () => {
       const client = ServerPermissionClient.fromConfig(config, {
         discovery,
-        tokenManager: mockServices.tokenManager.mock(),
         auth: mockServices.auth(),
       });
 
@@ -156,7 +153,6 @@ describe('ServerPermissionClient', () => {
     it('should bypass the permission backend if permissions are disabled', async () => {
       const client = ServerPermissionClient.fromConfig(new ConfigReader({}), {
         discovery,
-        tokenManager: mockServices.tokenManager.mock(),
         auth: mockServices.auth(),
       });
 
@@ -173,7 +169,6 @@ describe('ServerPermissionClient', () => {
     it('should bypass the permission backend if permissions are enabled and request has valid server credentials', async () => {
       const client = ServerPermissionClient.fromConfig(config, {
         discovery,
-        tokenManager: mockServices.tokenManager.mock(),
         auth: mockServices.auth(),
       });
 
@@ -190,7 +185,6 @@ describe('ServerPermissionClient', () => {
     it('should call the permission backend if permissions are enabled and request does not have valid server credentials', async () => {
       const client = ServerPermissionClient.fromConfig(config, {
         discovery,
-        tokenManager: mockServices.tokenManager.mock(),
         auth: mockServices.auth(),
       });
 
@@ -223,7 +217,6 @@ describe('ServerPermissionClient', () => {
           }),
           {
             discovery,
-            tokenManager: mockServices.tokenManager(),
             auth: mockServices.auth(),
           },
         );

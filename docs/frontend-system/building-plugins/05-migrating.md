@@ -15,9 +15,9 @@ The main concept is that routes, components, apis are now extensions. You can us
 In the legacy frontend system a plugin was defined in its own `plugin.ts` file as following:
 
 ```ts title="my-plugin/src/plugin.ts"
-  import { createFrontendPlugin } from '@backstage/core-plugin-api';
+  import { createPlugin } from '@backstage/core-plugin-api';
 
-  export const myPlugin = createFrontendPlugin({
+  export const myPlugin = createPlugin({
     id: 'my-plugin',
     apis: [],
     routes: {

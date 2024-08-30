@@ -70,6 +70,21 @@ describe('useFacetsEntities', () => {
     expect(result.current[0]).toEqual({ value: { items: [] }, loading: true });
   });
 
+  it(`should return empty response when facet is not present`, async () => {
+    mockedGetEntityFacets.mockResolvedValueOnce({
+      facets: { 'metadata.tags': [{ value: 'tag', count: 1 }] },
+    });
+    mockedGetEntitiesByRefs.mockResolvedValueOnce({ items: [] });
+    const { result } = renderHook(() => useFacetsEntities({ enabled: true }));
+    result.current[1]({ text: '' });
+    await waitFor(() => {
+      expect(result.current[0]).toEqual({
+        value: { items: [] },
+        loading: false,
+      });
+    });
+  });
+
   it(`should return the owners`, async () => {
     const entityRefs = ['component:default/e1', 'component:default/e2'];
     mockedGetEntityFacets.mockResolvedValue(facetsFromEntityRefs(entityRefs));

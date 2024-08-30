@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-backend-module-gerrit
 
+## 0.2.2-next.0
+
+### Patch Changes
+
+- d425fc4: Modules, plugins, and services are now `BackendFeature`, not a function that returns a feature.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.9.0-next.0
+  - @backstage/plugin-catalog-node@1.12.7-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.14.0
+
 ## 0.2.0
 
 ### Minor Changes

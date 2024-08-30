@@ -19,6 +19,7 @@ import {
   CacheService,
   CacheServiceOptions,
 } from '@backstage/backend-plugin-api';
+import { HumanDuration, durationToMilliseconds } from '@backstage/types';
 
 /**
  * Options given when constructing a {@link CacheManager}.
@@ -43,4 +44,8 @@ export type CacheManagerOptions = {
  */
 export interface PluginCacheManager {
   getClient(options?: CacheServiceOptions): CacheService;
+}
+
+export function ttlToMilliseconds(ttl: number | HumanDuration): number {
+  return typeof ttl === 'number' ? ttl : durationToMilliseconds(ttl);
 }

@@ -59,14 +59,14 @@ function writeTemporaryFile(tmpDir: string, name: string, content: string) {
 
 If the `name` of the file is controlled by the user, they can for example enter `../../../../etc/hosts` as the name of the file. This can lead to a file being written outside the intended directory, which in turn can be used to inject malicious code or other form of attacks.
 
-The recommended solution to this is to use `resolveSafeChildPath` from `@backstage/backend-common` to resolve the file path instead. It makes sure that the resolved path does not fall outside the provided directory. If you simply want to validate whether a file path is safe, you can use `isChildPath` instead.
+The recommended solution to this is to use `resolveSafeChildPath` from `@backstage/backend-plugin-api` to resolve the file path instead. It makes sure that the resolved path does not fall outside the provided directory. If you simply want to validate whether a file path is safe, you can use `isChildPath` instead.
 
 The insecure example above should instead be written like this:
 
 ```ts
 // THIS IS GOOD, DO THIS
 
-import { resolveSafeChildPath } from '@backstage/backend-common';
+import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import fs from 'fs-extra';
 
 function writeTemporaryFile(tmpDir: string, name: string, content: string) {

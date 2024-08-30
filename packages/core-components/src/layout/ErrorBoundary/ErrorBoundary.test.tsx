@@ -77,7 +77,8 @@ describe('<ErrorBoundary/>', () => {
         /^The above error occurred in the <Bomb> component:/,
       ),
       expect.stringMatching(/^ErrorBoundary/),
+      expect.stringMatching(/Warning: findDOMNode/), // React warning, unfortunate but currently true
     ]);
-    expect(error.length).toEqual(4);
+    expect(error.length).toEqual(5);
   });
 });

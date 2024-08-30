@@ -13,16 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  createLegacyAuthAdapters,
-  errorHandler,
-  PluginEndpointDiscovery,
-} from '@backstage/backend-common';
 import express, { NextFunction, Request, Response } from 'express';
 import Router from 'express-promise-router';
 import {
   AuthService,
   BackstageUserInfo,
+  DiscoveryService,
   LifecycleService,
   LoggerService,
   UserInfoService,
@@ -30,30 +26,25 @@ import {
 import * as https from 'https';
 import http, { IncomingMessage } from 'http';
 import { SignalManager } from './SignalManager';
-import { IdentityApi } from '@backstage/plugin-auth-node';
 import { EventsService } from '@backstage/plugin-events-node';
 import { WebSocket, WebSocketServer } from 'ws';
 import { Duplex } from 'stream';
 import { Config } from '@backstage/config';
 
-/** @public */
 export interface RouterOptions {
   logger: LoggerService;
   events: EventsService;
-  identity: IdentityApi;
-  discovery: PluginEndpointDiscovery;
+  discovery: DiscoveryService;
   config: Config;
   lifecycle?: LifecycleService;
-  auth?: AuthService;
-  userInfo?: UserInfoService;
+  userInfo: UserInfoService;
+  auth: AuthService;
 }
 
-/** @public */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger, discovery } = options;
-  const { auth, userInfo } = createLegacyAuthAdapters(options);
+  const { logger, discovery, auth, userInfo } = options;
 
   const manager = SignalManager.create(options);
   let subscribedToUpgradeRequests = false;
@@ -155,6 +146,5 @@ export async function createRouter(
     response.json({ status: 'ok' });
   });
 
-  router.use(errorHandler());
   return router;
 }

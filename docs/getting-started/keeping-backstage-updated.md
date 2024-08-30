@@ -76,3 +76,15 @@ While package duplication might be acceptable in many cases, you might want to
 deduplicate packages for the purpose of optimizing bundle size and installation
 speed. We recommend using deduplication utilities such as `yarn dedupe` to trim
 down the number of duplicate packages.
+
+## Proxy
+
+The Backstage CLI uses [global-agent](https://www.npmjs.com/package/global-agent) to configure HTTP/HTTPS proxy settings using environment variables. This allows you to route the CLI’s network traffic through a proxy server, which can be useful in environments with restricted internet access.
+
+### Example Configuration
+
+```bash
+export GLOBAL_AGENT_HTTP_PROXY=http://proxy.company.com:8080
+export GLOBAL_AGENT_HTTPS_PROXY=https://secure-proxy.company.com:8080
+export GLOBAL_AGENT_NO_PROXY=localhost,internal.company.com
+```

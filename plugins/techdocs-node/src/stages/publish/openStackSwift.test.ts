@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   Entity,
   CompoundEntityRef,
@@ -172,7 +171,7 @@ const getPosixEntityRootDir = (entity: Entity) => {
   );
 };
 
-const logger = loggerToWinstonLogger(mockServices.logger.mock());
+const logger = mockServices.logger.mock();
 
 let publisher: PublisherBase;
 

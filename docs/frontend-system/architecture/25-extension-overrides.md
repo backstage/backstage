@@ -295,7 +295,7 @@ export default createExtensionOverrides({
 Assuming the above code resides in the `@internal/search-page` package, you can install it in your app like this:
 
 ```tsx title="packages/app/src/App.tsx"
-import { createApp } from '@backstage/frontend-app-api';
+import { createApp } from '@backstage/frontend-defaults';
 import searchPageOverride from '@internal/search-page';
 
 const app = createApp({

@@ -32,5 +32,9 @@ export namespace microsoftSignInResolvers {
     OAuthAuthenticatorResult<PassportProfile>,
     unknown
   >;
+  const userIdMatchingUserEntityAnnotation: SignInResolverFactory<
+    OAuthAuthenticatorResult<PassportProfile>,
+    unknown
+  >;
 }
 ```

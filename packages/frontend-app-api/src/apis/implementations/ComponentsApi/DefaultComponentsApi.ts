@@ -16,7 +16,6 @@
 
 import { ComponentType } from 'react';
 import {
-  AppTree,
   ComponentRef,
   ComponentsApi,
   createComponentExtension,
@@ -30,19 +29,12 @@ import {
 export class DefaultComponentsApi implements ComponentsApi {
   #components: Map<string, ComponentType<any>>;
 
-  static fromTree(tree: AppTree) {
-    const componentEntries = tree.root.edges.attachments
-      .get('components')
-      ?.reduce((map, e) => {
-        const data = e.instance?.getData(
-          createComponentExtension.componentDataRef,
-        );
-        if (data) {
-          map.set(data.ref.id, data.impl);
-        }
-        return map;
-      }, new Map<string, ComponentType>());
-    return new DefaultComponentsApi(componentEntries ?? new Map());
+  static fromComponents(
+    components: Array<typeof createComponentExtension.componentDataRef.T>,
+  ) {
+    return new DefaultComponentsApi(
+      new Map(components.map(entry => [entry.ref.id, entry.impl])),
+    );
   }
 
   constructor(components: Map<string, any>) {

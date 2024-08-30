@@ -25,9 +25,12 @@ import request from 'supertest';
 import { createRouter } from './router';
 import { wrapInOpenApiTestServer } from '@backstage/backend-openapi-utils';
 import { Server } from 'http';
-import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
+import {
+  mockCredentials,
+  mockErrorHandler,
+  mockServices,
+} from '@backstage/backend-test-utils';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
-import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 
 const mockPermissionEvaluator: PermissionEvaluator = {
   authorize: () => {
@@ -84,11 +87,9 @@ describe('createRouter', () => {
       auth: mockServices.auth(),
       httpAuth: mockServices.httpAuth(),
     });
-    const errorHandler = MiddlewareFactory.create({
-      config: mockServices.rootConfig(),
-      logger: mockServices.rootLogger(),
-    }).error();
-    app = wrapInOpenApiTestServer(express().use(router).use(errorHandler));
+    app = wrapInOpenApiTestServer(
+      express().use(router).use(mockErrorHandler()),
+    );
   });
 
   beforeEach(() => {

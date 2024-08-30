@@ -18,7 +18,7 @@ The first step in migrating an app is to switch out the `createApp` function for
 // highlight-remove-next-line
 import { createApp } from '@backstage/app-defaults';
 // highlight-add-next-line
-import { createApp } from '@backstage/frontend-app-api';
+import { createApp } from '@backstage/frontend-defaults';
 ```
 
 This immediate switch will lead to a lot of breakages that we need to fix.
@@ -495,7 +495,7 @@ The entity pages are typically defined in `packages/app/src/components/catalog` 
 
 New apps feature a built-in sidebar extension (`app/nav`) that will render all nav item extensions provided by plugins. This is a placeholder implementation and not intended as a long-term solution. In the future we will aim to provide a more flexible sidebar extension that allows for more customization out of the box.
 
-Because the built-in sidebar is quite limited you may want to override the sidebar with your own custom implementation. To do so, use `createExtension` directly and refer to the [original sidebar implementation](https://github.com/backstage/backstage/blob/master/packages/frontend-app-api/src/extensions/AppNav.tsx). The following is an example of how to take your existing sidebar from the `Root` component that you typically find in `packages/app/src/components/Root.tsx`, and use it in an [extension override](../architecture/25-extension-overrides.md):
+Because the built-in sidebar is quite limited you may want to override the sidebar with your own custom implementation. To do so, use `createExtension` directly and refer to the [original sidebar implementation](https://github.com/backstage/backstage/blob/master/plugins/app/src/extensions/AppNav.tsx). The following is an example of how to take your existing sidebar from the `Root` component that you typically find in `packages/app/src/components/Root.tsx`, and use it in an [extension override](../architecture/25-extension-overrides.md):
 
 ```tsx
 const nav = createExtension({

@@ -31,8 +31,9 @@ describe('ThemeBlueprint', () => {
       .toMatchInlineSnapshot(`
       {
         "$$type": "@backstage/ExtensionDefinition",
+        "T": undefined,
         "attachTo": {
-          "id": "app",
+          "id": "api:app/app-theme",
           "input": "themes",
         },
         "configSchema": undefined,

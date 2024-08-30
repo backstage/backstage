@@ -18,7 +18,7 @@ import React from 'react';
 import { SignInPage } from '@backstage/core-components';
 import {
   SignInPageBlueprint,
-  createExtensionOverrides,
+  createFrontendModule,
 } from '@backstage/frontend-plugin-api';
 
 const signInPage = SignInPageBlueprint.make({
@@ -29,6 +29,7 @@ const signInPage = SignInPageBlueprint.make({
   },
 });
 
-export const signInPageOverrides = createExtensionOverrides({
+export const signInPageModule = createFrontendModule({
+  pluginId: 'app',
   extensions: [signInPage],
 });

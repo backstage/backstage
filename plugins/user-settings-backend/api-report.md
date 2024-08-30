@@ -8,18 +8,15 @@ import express from 'express';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { SignalsService } from '@backstage/plugin-signals-node';
 
-// @public
+// @public @deprecated
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
-// @public (undocumented)
-export interface RouterOptions {
-  // (undocumented)
+// @public @deprecated
+export type RouterOptions = {
   database: DatabaseService;
-  // (undocumented)
   identity: IdentityApi;
-  // (undocumented)
   signals?: SignalsService;
-}
+};
 
 // (No @packageDocumentation comment for this package)
 ```

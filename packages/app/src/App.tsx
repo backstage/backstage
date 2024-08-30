@@ -73,8 +73,7 @@ import { DelayingComponentFieldExtension } from './components/scaffolder/customS
 import { defaultPreviewTemplate } from './components/scaffolder/defaultPreviewTemplate';
 import { searchPage } from './components/search/SearchPage';
 import { providers } from './identityProviders';
-import * as plugins from './plugins';
-
+import { SignalsDisplay } from '@backstage/plugin-signals';
 import { techDocsPage } from './components/techdocs/TechDocsPage';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
@@ -86,7 +85,6 @@ import { NotificationsPage } from '@backstage/plugin-notifications';
 
 const app = createApp({
   apis,
-  plugins: Object.values(plugins),
   icons: {
     // Custom icon example
     alert: AlarmIcon,
@@ -217,6 +215,7 @@ export default app.createRoot(
   <>
     <AlertDisplay transientTimeoutMs={2500} />
     <OAuthRequestDialog />
+    <SignalsDisplay />
     <AppRouter>
       <VisitListener />
       <Root>{routes}</Root>

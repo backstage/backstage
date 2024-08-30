@@ -170,7 +170,8 @@ describe('ReviewState', () => {
     );
 
     expect(getByRole('row', { name: 'Name lols' })).toBeInTheDocument();
-    expect(getByRole('row', { name: 'Foo lols' })).toBeInTheDocument();
+    expect(getByRole('row', { name: 'Test bob' })).toBeInTheDocument();
+    expect(getByRole('row', { name: 'Nest > Foo lols' })).toBeInTheDocument();
   });
 
   it('should display enum label from enumNames', async () => {
@@ -219,7 +220,9 @@ describe('ReviewState', () => {
     expect(
       queryByRole('row', { name: 'Name Label-type2' }),
     ).toBeInTheDocument();
-    expect(queryByRole('row', { name: 'Foo Label-type2' })).toBeInTheDocument();
+    expect(
+      queryByRole('row', { name: 'Nest > Foo Label-type2' }),
+    ).toBeInTheDocument();
   });
 
   it('should display enum value if no corresponding enumNames', async () => {
@@ -292,8 +295,12 @@ describe('ReviewState', () => {
       <ReviewState formState={formState} schemas={schemas} />,
     );
 
-    expect(queryByRole('row', { name: 'Foo type3' })).toBeInTheDocument();
-    expect(queryByRole('row', { name: 'Bar type4' })).toBeInTheDocument();
+    expect(
+      queryByRole('row', { name: 'Name > Foo type3' }),
+    ).toBeInTheDocument();
+    expect(
+      queryByRole('row', { name: 'Name > Bar type4' }),
+    ).toBeInTheDocument();
   });
 
   it('should display nested objects in separate rows', async () => {
@@ -303,6 +310,7 @@ describe('ReviewState', () => {
         bar: 'type4',
         example: {
           test: 'type6',
+          foo: 'type7',
         },
       },
     };
@@ -329,6 +337,9 @@ describe('ReviewState', () => {
                     test: {
                       type: 'string',
                     },
+                    foo: {
+                      type: 'string',
+                    },
                   },
                 },
               },
@@ -345,9 +356,18 @@ describe('ReviewState', () => {
       <ReviewState formState={formState} schemas={schemas} />,
     );
 
-    expect(queryByRole('row', { name: 'Foo type3' })).toBeInTheDocument();
-    expect(queryByRole('row', { name: 'Bar type4' })).toBeInTheDocument();
-    expect(queryByRole('row', { name: 'Test type6' })).toBeInTheDocument();
+    expect(
+      queryByRole('row', { name: 'Name > Foo type3' }),
+    ).toBeInTheDocument();
+    expect(
+      queryByRole('row', { name: 'Name > Bar type4' }),
+    ).toBeInTheDocument();
+    expect(
+      queryByRole('row', { name: 'Name > Example > Test type6' }),
+    ).toBeInTheDocument();
+    expect(
+      queryByRole('row', { name: 'Name > Example > Foo type7' }),
+    ).toBeInTheDocument();
   });
 
   it('should display partially nested objects', async () => {
@@ -404,8 +424,77 @@ describe('ReviewState', () => {
       <ReviewState formState={formState} schemas={schemas} />,
     );
 
-    expect(queryByRole('row', { name: 'Foo type3' })).toBeInTheDocument();
-    expect(queryByRole('row', { name: 'Bar type4' })).toBeInTheDocument();
-    expect(queryByRole('row', { name: 'Test type6' })).not.toBeInTheDocument();
+    expect(
+      queryByRole('row', { name: 'Name > Foo type3' }),
+    ).toBeInTheDocument();
+    expect(
+      queryByRole('row', { name: 'Name > Bar type4' }),
+    ).toBeInTheDocument();
+    expect(
+      queryByRole('row', { name: 'Name > Example > Test type6' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('should allow using the title property', async () => {
+    const formState = {
+      foo: 'test',
+    };
+
+    const schemas: ParsedTemplateSchema[] = [
+      {
+        mergedSchema: {
+          type: 'object',
+          properties: {
+            foo: {
+              type: 'string',
+              title: 'Test Thing',
+            },
+          },
+        },
+        schema: {},
+        title: 'test',
+        uiSchema: {},
+      },
+    ];
+
+    const { queryByRole } = render(
+      <ReviewState formState={formState} schemas={schemas} />,
+    );
+
+    expect(queryByRole('row', { name: 'Test Thing test' })).toBeInTheDocument();
+  });
+
+  it('should allow custom review name', async () => {
+    const formState = {
+      foo: 'test',
+    };
+
+    const schemas: ParsedTemplateSchema[] = [
+      {
+        mergedSchema: {
+          type: 'object',
+          properties: {
+            foo: {
+              type: 'string',
+              'ui:backstage': {
+                review: {
+                  name: 'bar',
+                },
+              },
+            },
+          },
+        },
+        schema: {},
+        title: 'test',
+        uiSchema: {},
+      },
+    ];
+
+    const { queryByRole } = render(
+      <ReviewState formState={formState} schemas={schemas} />,
+    );
+
+    expect(queryByRole('row', { name: 'Bar test' })).toBeInTheDocument();
+    expect(queryByRole('row', { name: 'Foo test' })).not.toBeInTheDocument();
   });
 });

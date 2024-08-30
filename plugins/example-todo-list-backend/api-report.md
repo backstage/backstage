@@ -5,7 +5,7 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import express from 'express';
-import { IdentityApi } from '@backstage/plugin-auth-node';
+import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
 // @public
@@ -18,7 +18,7 @@ export default exampleTodoListPlugin;
 // @public
 export interface RouterOptions {
   // (undocumented)
-  identity: IdentityApi;
+  httpAuth: HttpAuthService;
   // (undocumented)
   logger: LoggerService;
 }

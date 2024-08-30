@@ -66,7 +66,7 @@ describe('convertLegacyApp', () => {
           },
           {
             id: 'api:plugin.scoringdata.service',
-            attachTo: { id: 'app', input: 'apis' },
+            attachTo: { id: 'root', input: 'apis' },
             disabled: false,
           },
         ],
@@ -82,7 +82,7 @@ describe('convertLegacyApp', () => {
           },
           {
             id: 'api:plugin.stackstorm.service',
-            attachTo: { id: 'app', input: 'apis' },
+            attachTo: { id: 'root', input: 'apis' },
             disabled: false,
           },
         ],
@@ -104,7 +104,7 @@ describe('convertLegacyApp', () => {
           },
           {
             id: 'api:plugin.puppetdb.service',
-            attachTo: { id: 'app', input: 'apis' },
+            attachTo: { id: 'root', input: 'apis' },
             disabled: false,
           },
         ],

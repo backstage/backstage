@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Logger } from 'winston';
 import fs from 'fs-extra';
 import yaml from 'js-yaml';
 import { ParsedLocationAnnotation } from '../../helpers';
 import { getRepoUrlFromLocationAnnotation, MKDOCS_SCHEMA } from './helpers';
 import { assertError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 type MkDocsObject = {
   plugins?: string[];
@@ -30,7 +30,7 @@ type MkDocsObject = {
 
 const patchMkdocsFile = async (
   mkdocsYmlPath: string,
-  logger: Logger,
+  logger: LoggerService,
   updateAction: (mkdocsYml: MkDocsObject) => boolean,
 ) => {
   // We only want to override the mkdocs.yml if it has actually changed. This is relevant if
@@ -103,7 +103,7 @@ const patchMkdocsFile = async (
  */
 export const patchMkdocsYmlPreBuild = async (
   mkdocsYmlPath: string,
-  logger: Logger,
+  logger: LoggerService,
   parsedLocationAnnotation: ParsedLocationAnnotation,
   scmIntegrations: ScmIntegrationRegistry,
 ) => {
@@ -149,7 +149,7 @@ export const patchMkdocsYmlPreBuild = async (
  */
 export const patchMkdocsYmlWithPlugins = async (
   mkdocsYmlPath: string,
-  logger: Logger,
+  logger: LoggerService,
   defaultPlugins: string[] = ['techdocs-core'],
 ) => {
   await patchMkdocsFile(mkdocsYmlPath, logger, mkdocsYml => {

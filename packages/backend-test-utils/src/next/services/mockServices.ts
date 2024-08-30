@@ -35,12 +35,10 @@ import {
   BackstageUserInfo,
   DiscoveryService,
   HttpAuthService,
-  IdentityService,
   LoggerService,
   RootConfigService,
   ServiceFactory,
   ServiceRef,
-  TokenManagerService,
   UserInfoService,
   coreServices,
   createServiceFactory,
@@ -53,7 +51,6 @@ import {
 import { JsonObject } from '@backstage/types';
 import { MockAuthService } from './MockAuthService';
 import { MockHttpAuthService } from './MockHttpAuthService';
-import { MockIdentityService } from './MockIdentityService';
 import { MockRootLoggerService } from './MockRootLoggerService';
 import { MockUserInfoService } from './MockUserInfoService';
 import { mockCredentials } from './mockCredentials';
@@ -144,6 +141,24 @@ export namespace mockServices {
       coreServices.rootConfig,
       rootConfig,
     );
+    export const mock = simpleMock(coreServices.rootConfig, () => ({
+      get: jest.fn(),
+      getBoolean: jest.fn(),
+      getConfig: jest.fn(),
+      getConfigArray: jest.fn(),
+      getNumber: jest.fn(),
+      getOptional: jest.fn(),
+      getOptionalBoolean: jest.fn(),
+      getOptionalConfig: jest.fn(),
+      getOptionalConfigArray: jest.fn(),
+      getOptionalNumber: jest.fn(),
+      getOptionalString: jest.fn(),
+      getOptionalStringArray: jest.fn(),
+      getString: jest.fn(),
+      getStringArray: jest.fn(),
+      has: jest.fn(),
+      keys: jest.fn(),
+    }));
   }
 
   export function rootLogger(options?: rootLogger.Options): LoggerService {
@@ -164,46 +179,6 @@ export namespace mockServices {
       error: jest.fn(),
       info: jest.fn(),
       warn: jest.fn(),
-    }));
-  }
-
-  export function tokenManager(): TokenManagerService {
-    return {
-      async getToken(): Promise<{ token: string }> {
-        return { token: 'mock-token' };
-      },
-      async authenticate(token: string): Promise<void> {
-        if (token !== 'mock-token') {
-          throw new Error('Invalid token');
-        }
-      },
-    };
-  }
-  export namespace tokenManager {
-    export const factory = () =>
-      createServiceFactory({
-        service: coreServices.tokenManager,
-        deps: {},
-        factory: () => tokenManager(),
-      });
-    export const mock = simpleMock(coreServices.tokenManager, () => ({
-      authenticate: jest.fn(),
-      getToken: jest.fn(),
-    }));
-  }
-
-  export function identity(): IdentityService {
-    return new MockIdentityService();
-  }
-  export namespace identity {
-    export const factory = () =>
-      createServiceFactory({
-        service: coreServices.identity,
-        deps: {},
-        factory: () => identity(),
-      });
-    export const mock = simpleMock(coreServices.identity, () => ({
-      getIdentity: jest.fn(),
     }));
   }
 
@@ -384,7 +359,7 @@ export namespace mockServices {
   }
 
   export namespace rootHttpRouter {
-    export const factory = () => rootHttpRouterServiceFactory;
+    export const factory = () => rootHttpRouterServiceFactory();
     export const mock = simpleMock(coreServices.rootHttpRouter, () => ({
       use: jest.fn(),
     }));

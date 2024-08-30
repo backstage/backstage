@@ -17,7 +17,7 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { createRouter } from './service/router';
+import { createRouter } from './deprecated';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 
 /**
@@ -34,7 +34,6 @@ export const signalsPlugin = createBackendPlugin({
         logger: coreServices.logger,
         config: coreServices.rootConfig,
         lifecycle: coreServices.rootLifecycle,
-        identity: coreServices.identity,
         discovery: coreServices.discovery,
         userInfo: coreServices.userInfo,
         auth: coreServices.auth,
@@ -45,7 +44,6 @@ export const signalsPlugin = createBackendPlugin({
         logger,
         config,
         lifecycle,
-        identity,
         discovery,
         userInfo,
         auth,
@@ -55,7 +53,6 @@ export const signalsPlugin = createBackendPlugin({
           await createRouter({
             logger,
             config,
-            identity,
             lifecycle,
             discovery,
             userInfo,

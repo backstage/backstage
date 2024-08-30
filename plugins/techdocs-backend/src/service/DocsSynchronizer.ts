@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import {
   DEFAULT_NAMESPACE,
   Entity,
@@ -38,6 +37,7 @@ import {
   DocsBuilder,
   shouldCheckForUpdate,
 } from '../DocsBuilder';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 
 export type DocsSynchronizerSyncOpts = {
   log: (message: string) => void;
@@ -189,7 +189,7 @@ export class DocsSynchronizer {
     entity,
   }: {
     responseHandler: DocsSynchronizerSyncOpts;
-    discovery: PluginEndpointDiscovery;
+    discovery: DiscoveryService;
     token: string | undefined;
     entity: Entity;
   }) {

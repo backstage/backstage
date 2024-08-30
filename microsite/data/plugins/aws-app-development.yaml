@@ -1,10 +1,10 @@
 ---
-title: OPA on AWS
+title: Harmonix on AWS
 author: Amazon Web Services
 authorUrl: https://aws.amazon.com/
 category: Infrastructure
-description: Orchestrate Platforms and Applications (OPA) allows customers to build and manage AWS Apps & Environments within Backstage
-documentation: https://opaonaws.io
-iconUrl: https://github.com/awslabs/app-development-for-backstage-io-on-aws/blob/main/website/static/img/white_OPA_text02.png?raw=true
+description: Harmonix allows customers to build and manage AWS Apps & Environments within Backstage
+documentation: https://harmonixonaws.io
+iconUrl: https://github.com/awslabs/harmonix/blob/main/docs/images/harmonix-white.png?raw=true
 npmPackageName: '@aws/plugin-aws-apps-for-backstage'
 addedDate: '2023-05-10'

@@ -20,10 +20,16 @@ import {
   buildSqliteDatabaseConfig,
   createSqliteDatabaseClient,
 } from './sqlite3';
+import { mockServices } from '@backstage/backend-test-utils';
 
 describe('better-sqlite3', () => {
   const createConfig = (connection: any) =>
     new ConfigReader({ client: 'better-sqlite3', connection });
+
+  const deps = {
+    logger: mockServices.logger.mock(),
+    lifecycle: mockServices.lifecycle.mock(),
+  };
 
   describe('buildSqliteDatabaseConfig', () => {
     it('builds an in-memory connection', () => {
@@ -90,7 +96,9 @@ describe('better-sqlite3', () => {
 
   describe('createSqliteDatabaseClient', () => {
     it('creates an in memory knex instance', () => {
-      expect(createSqliteDatabaseClient(createConfig(':memory:'))).toBeTruthy();
+      expect(
+        createSqliteDatabaseClient('p', createConfig(':memory:'), deps),
+      ).toBeTruthy();
     });
   });
 });

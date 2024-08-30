@@ -83,7 +83,7 @@ export function convertLegacyEntityCardExtension(
       | typeof EntityCardBlueprint.dataRefs.filterFunction.T
       | typeof EntityCardBlueprint.dataRefs.filterExpression.T;
   },
-): ExtensionDefinition<any>;
+): ExtensionDefinition;
 
 // @alpha (undocumented)
 export function convertLegacyEntityContentExtension(
@@ -96,42 +96,41 @@ export function convertLegacyEntityContentExtension(
     defaultPath?: string;
     defaultTitle?: string;
   },
-): ExtensionDefinition<any>;
+): ExtensionDefinition;
 
 // @alpha
-export const EntityCardBlueprint: ExtensionBlueprint<
-  {
-    kind: 'entity-card';
-    namespace: undefined;
-    name: undefined;
-  },
-  {
+export const EntityCardBlueprint: ExtensionBlueprint<{
+  kind: 'entity-card';
+  namespace: undefined;
+  name: undefined;
+  params: {
     loader: () => Promise<JSX.Element>;
     filter?: string | ((entity: Entity) => boolean) | undefined;
-  },
-  | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-  | ConfigurableExtensionDataRef<
-      (entity: Entity) => boolean,
-      'catalog.entity-filter-function',
-      {
-        optional: true;
-      }
-    >
-  | ConfigurableExtensionDataRef<
-      string,
-      'catalog.entity-filter-expression',
-      {
-        optional: true;
-      }
-    >,
-  {},
-  {
+  };
+  output:
+    | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+    | ConfigurableExtensionDataRef<
+        (entity: Entity) => boolean,
+        'catalog.entity-filter-function',
+        {
+          optional: true;
+        }
+      >
+    | ConfigurableExtensionDataRef<
+        string,
+        'catalog.entity-filter-expression',
+        {
+          optional: true;
+        }
+      >;
+  inputs: {};
+  config: {
     filter: string | undefined;
-  },
-  {
+  };
+  configInput: {
     filter?: string | undefined;
-  },
-  {
+  };
+  dataRefs: {
     filterFunction: ConfigurableExtensionDataRef<
       (entity: Entity) => boolean,
       'catalog.entity-filter-function',
@@ -142,59 +141,58 @@ export const EntityCardBlueprint: ExtensionBlueprint<
       'catalog.entity-filter-expression',
       {}
     >;
-  }
->;
+  };
+}>;
 
 // @alpha
-export const EntityContentBlueprint: ExtensionBlueprint<
-  {
-    kind: 'entity-content';
-    namespace: undefined;
-    name: undefined;
-  },
-  {
+export const EntityContentBlueprint: ExtensionBlueprint<{
+  kind: 'entity-content';
+  namespace: undefined;
+  name: undefined;
+  params: {
     loader: () => Promise<JSX.Element>;
     defaultPath: string;
     defaultTitle: string;
     routeRef?: RouteRef<AnyRouteRefParams> | undefined;
     filter?: string | ((entity: Entity) => boolean) | undefined;
-  },
-  | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-  | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-  | ConfigurableExtensionDataRef<
-      RouteRef<AnyRouteRefParams>,
-      'core.routing.ref',
-      {
-        optional: true;
-      }
-    >
-  | ConfigurableExtensionDataRef<string, 'catalog.entity-content-title', {}>
-  | ConfigurableExtensionDataRef<
-      (entity: Entity) => boolean,
-      'catalog.entity-filter-function',
-      {
-        optional: true;
-      }
-    >
-  | ConfigurableExtensionDataRef<
-      string,
-      'catalog.entity-filter-expression',
-      {
-        optional: true;
-      }
-    >,
-  {},
-  {
+  };
+  output:
+    | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+    | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+    | ConfigurableExtensionDataRef<
+        RouteRef<AnyRouteRefParams>,
+        'core.routing.ref',
+        {
+          optional: true;
+        }
+      >
+    | ConfigurableExtensionDataRef<string, 'catalog.entity-content-title', {}>
+    | ConfigurableExtensionDataRef<
+        (entity: Entity) => boolean,
+        'catalog.entity-filter-function',
+        {
+          optional: true;
+        }
+      >
+    | ConfigurableExtensionDataRef<
+        string,
+        'catalog.entity-filter-expression',
+        {
+          optional: true;
+        }
+      >;
+  inputs: {};
+  config: {
     path: string | undefined;
     title: string | undefined;
     filter: string | undefined;
-  },
-  {
+  };
+  configInput: {
     filter?: string | undefined;
     title?: string | undefined;
     path?: string | undefined;
-  },
-  {
+  };
+  dataRefs: {
     title: ConfigurableExtensionDataRef<
       string,
       'catalog.entity-content-title',
@@ -210,8 +208,8 @@ export const EntityContentBlueprint: ExtensionBlueprint<
       'catalog.entity-filter-expression',
       {}
     >;
-  }
->;
+  };
+}>;
 
 // @alpha
 export function isOwnerOf(owner: Entity, entity: Entity): boolean;

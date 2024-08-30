@@ -18,7 +18,6 @@ import {
   RouteRef,
   SubRouteRef,
   ExternalRouteRef,
-  FrontendFeature,
 } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
@@ -29,6 +28,9 @@ import {
 import { toInternalExternalRouteRef } from '../../../frontend-plugin-api/src/routing/ExternalRouteRef';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalSubRouteRef } from '../../../frontend-plugin-api/src/routing/SubRouteRef';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { isInternalFrontendPlugin } from '../../../frontend-plugin-api/src/wiring/createFrontendPlugin';
+import { FrontendFeature } from '../wiring';
 
 /** @internal */
 export interface RouteRefsById {
@@ -42,7 +44,7 @@ export function collectRouteIds(features: FrontendFeature[]): RouteRefsById {
   const externalRoutesById = new Map<string, ExternalRouteRef>();
 
   for (const feature of features) {
-    if (feature.$$type !== '@backstage/BackstagePlugin') {
+    if (!isInternalFrontendPlugin(feature)) {
       continue;
     }
 

@@ -195,6 +195,10 @@ const config: Config = {
             from: '/docs/local-dev/debugging/',
             to: '/docs/tooling/local-dev/debugging',
           },
+          {
+            from: '/docs/plugins/url-reader/',
+            to: '/docs/backend-system/core-services/url-reader',
+          },
         ],
       },
     ],

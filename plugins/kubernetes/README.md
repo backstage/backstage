@@ -52,7 +52,7 @@ export const app = createApp({
 });
 ```
 
-2. Next, enable your desired extensions in `app-config.yaml`
+2. Next, enable your desired extensions in `app-config.yaml`.
 
 ```yaml
 app:
@@ -60,4 +60,14 @@ app:
     - entity-content:kubernetes/kubernetes
 ```
 
-Now, the extension appears on your entity page as one of the tabs, which is called `KUBERNETES`
+Now, the extension appears on your entity page as one of the tabs, which is called `KUBERNETES`.
+By default, the tab will only appear on entities that are Components or Resources. You can override
+that behavior by providing a config block to the extension, like so:
+
+```yaml
+app:
+  extensions:
+    - entity-content:kubernetes/kubernetes:
+        config:
+          filter: kind:component,api,resource,system
+```

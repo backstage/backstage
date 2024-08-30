@@ -4,9 +4,9 @@ author: Deepankumar
 authorUrl: https://github.com/deepan10
 category: Security
 description: BlackDuck scanned vulnerabilities in Backstage.
-documentation: https://github.com/deepan10/backstage-plugin-blackduck
+documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/blackduck/plugins/blackduck
 iconUrl: https://avatars.githubusercontent.com/u/431461?s=200&v=4
-npmPackageName: '@deepan10/backstage-plugin-blackduck'
+npmPackageName: '@backstage-community/plugin-blackduck'
 tags:
   - security
 addedDate: '2022-12-03'

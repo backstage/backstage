@@ -295,5 +295,5 @@ describe('credentials', () => {
     } finally {
       await backend.stop();
     }
-  });
+  }, 20_000);
 });

@@ -80,7 +80,6 @@ export default createBackendModule({
         auth: coreServices.auth,
         config: coreServices.rootConfig,
         discovery: coreServices.discovery,
-        tokenManager: coreServices.tokenManager,
         scheduler: coreServices.scheduler,
         indexRegistry: searchIndexRegistryExtensionPoint,
         catalog: catalogServiceRef,
@@ -89,7 +88,6 @@ export default createBackendModule({
         auth,
         config,
         discovery,
-        tokenManager,
         scheduler,
         indexRegistry,
         catalog,
@@ -102,7 +100,6 @@ export default createBackendModule({
             auth,
             entityTransformer,
             discovery,
-            tokenManager,
             catalogClient: catalog,
           }),
         });
