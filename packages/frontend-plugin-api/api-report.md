@@ -1289,7 +1289,7 @@ export { googleAuthApiRef };
 // @public (undocumented)
 export const IconBundleBlueprint: ExtensionBlueprint<{
   kind: 'icon-bundle';
-  namespace: 'app';
+  namespace: undefined;
   name: undefined;
   params: {
     icons: {
@@ -1701,7 +1701,7 @@ export interface SubRouteRef<
 // @public
 export const ThemeBlueprint: ExtensionBlueprint<{
   kind: 'theme';
-  namespace: 'app';
+  namespace: undefined;
   name: undefined;
   params: {
     theme: AppTheme;
