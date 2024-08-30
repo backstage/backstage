@@ -428,8 +428,24 @@ export class DatabaseTaskStore implements TaskStore {
   // (undocumented)
   heartbeatTask(taskId: string): Promise<void>;
   // (undocumented)
-  list(options: { createdBy?: string; status?: TaskStatus_2 }): Promise<{
+  list(options: {
+    createdBy?: string;
+    status?: TaskStatus_2;
+    filters?: {
+      createdBy?: string | string[];
+      status?: TaskStatus_2 | TaskStatus_2[];
+    };
+    pagination?: {
+      limit?: number;
+      offset?: number;
+    };
+    order?: {
+      order: 'asc' | 'desc';
+      field: string;
+    }[];
+  }): Promise<{
     tasks: SerializedTask_2[];
+    totalTasks?: number;
   }>;
   // (undocumented)
   listEvents(options: TaskStoreListEventsOptions): Promise<{
@@ -647,8 +663,42 @@ export interface TaskStore {
   // (undocumented)
   heartbeatTask(taskId: string): Promise<void>;
   // (undocumented)
-  list?(options: { createdBy?: string; status?: TaskStatus }): Promise<{
+  list?(options: {
+    filters?: {
+      createdBy?: string | string[];
+      status?: TaskStatus | TaskStatus[];
+    };
+    pagination?: {
+      limit?: number;
+      offset?: number;
+    };
+    order?: {
+      order: 'asc' | 'desc';
+      field: string;
+    }[];
+  }): Promise<{
     tasks: SerializedTask[];
+    totalTasks?: number;
+  }>;
+  // @deprecated (undocumented)
+  list?(options: {
+    createdBy?: string;
+    status?: TaskStatus;
+    filters?: {
+      createdBy?: string | string[];
+      status?: TaskStatus | TaskStatus[];
+    };
+    pagination?: {
+      limit?: number;
+      offset?: number;
+    };
+    order?: {
+      order: 'asc' | 'desc';
+      field: string;
+    }[];
+  }): Promise<{
+    tasks: SerializedTask[];
+    totalTasks?: number;
   }>;
   // (undocumented)
   listEvents(options: TaskStoreListEventsOptions): Promise<{

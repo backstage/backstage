@@ -315,8 +315,27 @@ export interface TaskBroker {
   // (undocumented)
   get(taskId: string): Promise<SerializedTask>;
   // (undocumented)
-  list?(options?: { createdBy?: string; status?: TaskStatus }): Promise<{
+  list?(options?: {
+    filters?: {
+      createdBy?: string | string[];
+      status?: TaskStatus | TaskStatus[];
+    };
+    pagination?: {
+      limit?: number;
+      offset?: number;
+    };
+    order?: {
+      order: 'asc' | 'desc';
+      field: string;
+    }[];
+  }): Promise<{
     tasks: SerializedTask[];
+    totalTasks?: number;
+  }>;
+  // @deprecated (undocumented)
+  list?(options: { createdBy?: string; status?: TaskStatus }): Promise<{
+    tasks: SerializedTask[];
+    totalTasks?: number;
   }>;
   // (undocumented)
   recoverTasks?(): Promise<void>;

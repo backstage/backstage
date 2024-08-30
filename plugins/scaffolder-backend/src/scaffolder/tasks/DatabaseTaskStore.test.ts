@@ -75,6 +75,62 @@ describe('DatabaseTaskStore', () => {
     expect(tasks[0].id).toBeDefined();
   });
 
+  it('should allow paginating tasks', async () => {
+    const { store } = await createStore();
+    await store.createTask({
+      spec: {} as TaskSpec,
+      createdBy: 'me',
+    });
+
+    await store.createTask({
+      spec: {} as TaskSpec,
+      createdBy: 'him',
+    });
+
+    const { tasks } = await store.list({ pagination: { limit: 1, offset: 0 } });
+    expect(tasks.length).toBe(1);
+    expect(tasks[0].createdBy).toBe('me');
+    expect(tasks[0].status).toBe('open');
+    expect(tasks[0].id).toBeDefined();
+
+    const { tasks: tasks2 } = await store.list({
+      pagination: { limit: 1, offset: 1 },
+    });
+    expect(tasks2.length).toBe(1);
+    expect(tasks2[0].createdBy).toBe('him');
+    expect(tasks2[0].status).toBe('open');
+    expect(tasks2[0].id).toBeDefined();
+  });
+
+  it('should allow ordering tasks', async () => {
+    const { store } = await createStore();
+    await store.createTask({
+      spec: {} as TaskSpec,
+      createdBy: 'a',
+    });
+
+    await store.createTask({
+      spec: {} as TaskSpec,
+      createdBy: 'b',
+    });
+
+    const { tasks } = await store.list({
+      order: [{ field: 'created_by', order: 'asc' }],
+    });
+    expect(tasks.length).toBe(2);
+    expect(tasks[0].createdBy).toBe('a');
+    expect(tasks[0].status).toBe('open');
+    expect(tasks[0].id).toBeDefined();
+
+    const { tasks: tasks2 } = await store.list({
+      order: [{ field: 'created_by', order: 'desc' }],
+    });
+    expect(tasks2.length).toBe(2);
+    expect(tasks2[0].createdBy).toBe('b');
+    expect(tasks2[0].status).toBe('open');
+    expect(tasks2[0].id).toBeDefined();
+  });
+
   it('should list filtered created tasks by createdBy', async () => {
     const { store } = await createStore();
 
@@ -93,6 +149,14 @@ describe('DatabaseTaskStore', () => {
     expect(tasks[0].createdBy).toBe('him');
     expect(tasks[0].status).toBe('open');
     expect(tasks[0].id).toBeDefined();
+
+    const { tasks: tasks2 } = await store.list({
+      filters: { createdBy: 'him' },
+    });
+    expect(tasks2.length).toBe(1);
+    expect(tasks2[0].createdBy).toBe('him');
+    expect(tasks2[0].status).toBe('open');
+    expect(tasks2[0].id).toBeDefined();
   });
 
   it('should list filtered created tasks by status', async () => {
@@ -115,8 +179,43 @@ describe('DatabaseTaskStore', () => {
       eventBody: { message },
     });
 
-    const { tasks } = await store.list({ status: 'open' });
+    const { tasks, totalTasks } = await store.list({
+      status: 'open',
+    });
     expect(tasks.length).toBe(1);
+    expect(totalTasks).toBe(1);
+    expect(tasks[0].createdBy).toBe('him');
+    expect(tasks[0].status).toBe('open');
+    expect(tasks[0].id).toBeDefined();
+
+    const { tasks: tasks2, totalTasks: totalTasks2 } = await store.list({
+      filters: { status: ['open'] },
+    });
+    expect(tasks2.length).toBe(1);
+    expect(totalTasks2).toBe(1);
+    expect(tasks2[0].createdBy).toBe('him');
+    expect(tasks2[0].status).toBe('open');
+    expect(tasks2[0].id).toBeDefined();
+  });
+
+  it('should limit and offset based on parameters', async () => {
+    const { store } = await createStore();
+
+    await store.createTask({
+      spec: {} as TaskSpec,
+      createdBy: 'me',
+    });
+
+    await store.createTask({
+      spec: {} as TaskSpec,
+      createdBy: 'him',
+    });
+
+    const { tasks, totalTasks } = await store.list({
+      pagination: { limit: 1, offset: 1 },
+    });
+    expect(tasks.length).toBe(1);
+    expect(totalTasks).toBe(2);
     expect(tasks[0].createdBy).toBe('him');
     expect(tasks[0].status).toBe('open');
     expect(tasks[0].id).toBeDefined();
