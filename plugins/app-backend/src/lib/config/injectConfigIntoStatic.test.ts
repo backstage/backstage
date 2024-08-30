@@ -18,13 +18,14 @@ import {
   createMockDirectory,
   mockServices,
 } from '@backstage/backend-test-utils';
-import { injectConfig } from './config';
+import { injectConfigIntoStatic } from './injectConfigIntoStatic';
 
-describe('injectConfig', () => {
+describe('injectConfigIntoStatic', () => {
   const mockDir = createMockDirectory();
 
   const baseOptions = {
     appConfigs: [],
+    rootDir: 'ignored',
     staticDir: mockDir.path,
     logger: mockServices.logger.mock(),
   };
@@ -42,7 +43,7 @@ describe('injectConfig', () => {
       'main.js': '"__APP_INJECTED_RUNTIME_CONFIG__"',
     });
 
-    await injectConfig(baseOptions);
+    await injectConfigIntoStatic(baseOptions);
 
     expect(mockDir.content()).toEqual({
       'main.js': '/*__APP_INJECTED_CONFIG_MARKER__*/"[]"/*__INJECTED_END__*/',
@@ -55,7 +56,7 @@ describe('injectConfig', () => {
         '({a:"__APP_INJECTED_RUNTIME_CONFIG__",b:"__APP_INJECTED_RUNTIME_CONFIG__"})',
     });
 
-    await injectConfig(baseOptions);
+    await injectConfigIntoStatic(baseOptions);
 
     expect(mockDir.content()).toEqual({
       'main.js':
@@ -71,7 +72,7 @@ describe('injectConfig', () => {
       'after.js': 'NO_PLACEHOLDER_HERE',
     });
 
-    await injectConfig({
+    await injectConfigIntoStatic({
       ...baseOptions,
       appConfigs: [{ data: { x: 0 }, context: 'test' }],
     });
@@ -90,7 +91,7 @@ describe('injectConfig', () => {
       'main.js': 'JSON.parse("__APP_INJECTED_RUNTIME_CONFIG__")',
     });
 
-    await injectConfig({
+    await injectConfigIntoStatic({
       ...baseOptions,
       appConfigs: [{ data: { x: 0 }, context: 'test' }],
     });
@@ -100,7 +101,7 @@ describe('injectConfig', () => {
         'JSON.parse(/*__APP_INJECTED_CONFIG_MARKER__*/"[{\\"data\\":{\\"x\\":0},\\"context\\":\\"test\\"}]"/*__INJECTED_END__*/)',
     });
 
-    await injectConfig({
+    await injectConfigIntoStatic({
       ...baseOptions,
       appConfigs: [{ data: { x: 1, y: 2 }, context: 'test' }],
     });
@@ -117,7 +118,7 @@ describe('injectConfig', () => {
         '({ a: JSON.parse("__APP_INJECTED_RUNTIME_CONFIG__"), b: JSON.parse("__APP_INJECTED_RUNTIME_CONFIG__") })',
     });
 
-    await injectConfig({
+    await injectConfigIntoStatic({
       ...baseOptions,
       appConfigs: [{ data: { x: 0 }, context: 'test' }],
     });
@@ -127,7 +128,7 @@ describe('injectConfig', () => {
         '({ a: JSON.parse(/*__APP_INJECTED_CONFIG_MARKER__*/"[{\\"data\\":{\\"x\\":0},\\"context\\":\\"test\\"}]"/*__INJECTED_END__*/), b: JSON.parse(/*__APP_INJECTED_CONFIG_MARKER__*/"[{\\"data\\":{\\"x\\":0},\\"context\\":\\"test\\"}]"/*__INJECTED_END__*/) })',
     });
 
-    await injectConfig({
+    await injectConfigIntoStatic({
       ...baseOptions,
       appConfigs: [{ data: { x: 1, y: 2 }, context: 'test' }],
     });
