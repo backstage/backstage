@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  LifecycleService,
-  PluginMetadataService,
-} from '@backstage/backend-plugin-api';
+import { LifecycleService, LoggerService } from '@backstage/backend-plugin-api';
 import { Knex } from 'knex';
 
 export type { DatabaseService as PluginDatabaseManager } from '@backstage/backend-plugin-api';
@@ -25,9 +22,9 @@ export type { DatabaseService as PluginDatabaseManager } from '@backstage/backen
 export interface Connector {
   getClient(
     pluginId: string,
-    deps?: {
+    deps: {
+      logger: LoggerService;
       lifecycle: LifecycleService;
-      pluginMetadata: PluginMetadataService;
     },
   ): Promise<Knex>;
 }

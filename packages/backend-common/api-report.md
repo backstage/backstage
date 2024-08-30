@@ -157,7 +157,10 @@ export class DatabaseManager {
   // (undocumented)
   static fromConfig(
     config: Config,
-    options?: DatabaseManagerOptions,
+    options?: {
+      migrations?: DatabaseService['migrations'];
+      logger?: LoggerService;
+    },
   ): DatabaseManager;
 }
 

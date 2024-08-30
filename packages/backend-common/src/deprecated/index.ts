@@ -46,6 +46,8 @@ import {
   isChildPath as _isChildPath,
   LifecycleService,
   PluginMetadataService,
+  DatabaseService,
+  LoggerService,
 } from '@backstage/backend-plugin-api';
 
 export * from './hot';
@@ -168,14 +170,20 @@ export type CacheClientOptions = CacheServiceOptions;
  * @deprecated Use `DatabaseManager` from the `@backstage/backend-defaults` package instead
  */
 export class DatabaseManager {
-  private constructor(private readonly _databaseManager: _DatabaseManager) {}
+  private constructor(
+    private readonly _databaseManager: _DatabaseManager,
+    private readonly logger?: LoggerService,
+  ) {}
 
   static fromConfig(
     config: Config,
-    options?: DatabaseManagerOptions,
+    options?: {
+      migrations?: DatabaseService['migrations'];
+      logger?: LoggerService;
+    },
   ): DatabaseManager {
     const _databaseManager = _DatabaseManager.fromConfig(config, options);
-    return new DatabaseManager(_databaseManager);
+    return new DatabaseManager(_databaseManager, options?.logger);
   }
 
   forPlugin(
@@ -184,7 +192,20 @@ export class DatabaseManager {
       | { lifecycle: LifecycleService; pluginMetadata: PluginMetadataService }
       | undefined,
   ): PluginDatabaseManager {
-    return this._databaseManager.forPlugin(pluginId, deps);
+    const logger: LoggerService = this.logger ?? {
+      debug() {},
+      info() {},
+      warn() {},
+      error() {},
+      child() {
+        return this;
+      },
+    };
+    const lifecycle: LifecycleService = deps?.lifecycle ?? {
+      addShutdownHook() {},
+      addStartupHook() {},
+    };
+    return this._databaseManager.forPlugin(pluginId, { logger, lifecycle });
   }
 }
 

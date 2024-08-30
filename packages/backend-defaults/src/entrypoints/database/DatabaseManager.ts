@@ -18,7 +18,6 @@ import {
   DatabaseService,
   LifecycleService,
   LoggerService,
-  PluginMetadataService,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
@@ -43,7 +42,6 @@ function pluginPath(pluginId: string): string {
  */
 export type DatabaseManagerOptions = {
   migrations?: DatabaseService['migrations'];
-  logger?: LoggerService;
 };
 
 /**
@@ -66,9 +64,9 @@ export class DatabaseManagerImpl {
    */
   forPlugin(
     pluginId: string,
-    deps?: {
+    deps: {
+      logger: LoggerService;
       lifecycle: LifecycleService;
-      pluginMetadata: PluginMetadataService;
     },
   ): PluginDatabaseManager {
     const client = this.getClientType(pluginId).client;
@@ -128,9 +126,9 @@ export class DatabaseManagerImpl {
   private async getDatabase(
     pluginId: string,
     connector: Connector,
-    deps?: {
+    deps: {
+      logger: LoggerService;
       lifecycle: LifecycleService;
-      pluginMetadata: PluginMetadataService;
     },
   ): Promise<Knex> {
     if (this.databaseCache.has(pluginId)) {
@@ -141,13 +139,19 @@ export class DatabaseManagerImpl {
     this.databaseCache.set(pluginId, clientPromise);
 
     if (process.env.NODE_ENV !== 'test') {
-      clientPromise.then(client => this.startKeepaliveLoop(pluginId, client));
+      clientPromise.then(client =>
+        this.startKeepaliveLoop(pluginId, client, deps.logger),
+      );
     }
 
     return clientPromise;
   }
 
-  private startKeepaliveLoop(pluginId: string, client: Knex): void {
+  private startKeepaliveLoop(
+    pluginId: string,
+    client: Knex,
+    logger: LoggerService,
+  ): void {
     let lastKeepaliveFailed = false;
 
     setInterval(() => {
@@ -160,7 +164,7 @@ export class DatabaseManagerImpl {
         (error: unknown) => {
           if (!lastKeepaliveFailed) {
             lastKeepaliveFailed = true;
-            this.options?.logger?.warn(
+            logger.warn(
               `Database keepalive failed for plugin ${pluginId}, ${stringifyError(
                 error,
               )}`,
@@ -225,9 +229,9 @@ export class DatabaseManager {
    */
   forPlugin(
     pluginId: string,
-    deps?: {
+    deps: {
+      logger: LoggerService;
       lifecycle: LifecycleService;
-      pluginMetadata: PluginMetadataService;
     },
   ): PluginDatabaseManager {
     return this.impl.forPlugin(pluginId, deps);

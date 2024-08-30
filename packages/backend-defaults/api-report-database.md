@@ -6,7 +6,6 @@
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { PluginMetadataService } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 
@@ -14,9 +13,9 @@ import { ServiceFactory } from '@backstage/backend-plugin-api';
 export class DatabaseManager {
   forPlugin(
     pluginId: string,
-    deps?: {
+    deps: {
+      logger: LoggerService;
       lifecycle: LifecycleService;
-      pluginMetadata: PluginMetadataService;
     },
   ): DatabaseService;
   static fromConfig(
@@ -28,7 +27,6 @@ export class DatabaseManager {
 // @public
 export type DatabaseManagerOptions = {
   migrations?: DatabaseService['migrations'];
-  logger?: LoggerService;
 };
 
 // @public
