@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
+import { eventsServiceRef } from '@backstage/plugin-events-node';
 import {
   TaskBroker,
   TemplateAction,
@@ -46,12 +47,11 @@ import {
   createFetchTemplateAction,
   createFetchTemplateFileAction,
   createFilesystemDeleteAction,
-  createFilesystemRenameAction,
   createFilesystemReadDirAction,
+  createFilesystemRenameAction,
   createWaitAction,
 } from './scaffolder';
 import { createRouter } from './service/router';
-import { eventsServiceRef } from '@backstage/plugin-events-node';
 
 /**
  * Scaffolder plugin
@@ -115,6 +115,7 @@ export const scaffolderPlugin = createBackendPlugin({
         discovery: coreServices.discovery,
         httpRouter: coreServices.httpRouter,
         httpAuth: coreServices.httpAuth,
+        auditor: coreServices.auditor,
         catalogClient: catalogServiceRef,
         events: eventsServiceRef,
       },
@@ -131,6 +132,7 @@ export const scaffolderPlugin = createBackendPlugin({
         catalogClient,
         permissions,
         events,
+        auditor,
       }) {
         const log = loggerToWinstonLogger(logger);
         const integrations = ScmIntegrations.fromConfig(config);
@@ -195,6 +197,7 @@ export const scaffolderPlugin = createBackendPlugin({
           autocompleteHandlers,
           additionalWorkspaceProviders,
           events,
+          auditor,
         });
         httpRouter.use(router);
       },

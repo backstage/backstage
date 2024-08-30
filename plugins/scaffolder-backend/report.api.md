@@ -6,6 +6,7 @@
 /// <reference types="node" />
 
 import { ActionContext as ActionContext_2 } from '@backstage/plugin-scaffolder-node';
+import { AuditorService } from '@backstage/backend-plugin-api';
 import { AuthService } from '@backstage/backend-plugin-api';
 import { AutocompleteHandler } from '@backstage/plugin-scaffolder-node/alpha';
 import * as azure from '@backstage/plugin-scaffolder-backend-module-azure';
@@ -407,6 +408,7 @@ export type CreateWorkerOptions = {
   integrations: ScmIntegrations;
   workingDirectory: string;
   logger: Logger;
+  auditor?: AuditorService;
   additionalTemplateFilters?: Record<string, TemplateFilter_2>;
   concurrentTasksLimit?: number;
   additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
@@ -541,6 +543,8 @@ export interface RouterOptions {
   // (undocumented)
   additionalWorkspaceProviders?: Record<string, WorkspaceProvider>;
   // (undocumented)
+  auditor?: AuditorService;
+  // (undocumented)
   auth?: AuthService;
   // (undocumented)
   autocompleteHandlers?: Record<string, AutocompleteHandler>;
@@ -630,6 +634,7 @@ export class TaskManager implements TaskContext_2 {
     auth?: AuthService,
     config?: Config,
     additionalWorkspaceProviders?: Record<string, WorkspaceProvider>,
+    auditor?: AuditorService,
   ): TaskManager;
   // (undocumented)
   get createdBy(): string | undefined;

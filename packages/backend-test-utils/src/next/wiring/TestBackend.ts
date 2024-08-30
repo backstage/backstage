@@ -16,22 +16,19 @@
 
 import { Backend, createSpecializedBackend } from '@backstage/backend-app-api';
 import {
-  createServiceFactory,
   BackendFeature,
   ExtensionPoint,
   coreServices,
   createBackendModule,
   createBackendPlugin,
+  createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import { mockServices } from '../services';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
+import { mockServices } from '../services';
 // Direct internal import to avoid duplication
 // eslint-disable-next-line @backstage/no-forbidden-package-imports
-import {
-  InternalBackendFeature,
-  InternalBackendRegistrations,
-} from '@backstage/backend-plugin-api/src/wiring/types';
+import { HostDiscovery } from '@backstage/backend-defaults/discovery';
 import {
   DefaultRootHttpRouter,
   ExtendedHttpServer,
@@ -39,7 +36,12 @@ import {
   createHealthRouter,
   createHttpServer,
 } from '@backstage/backend-defaults/rootHttpRouter';
-import { HostDiscovery } from '@backstage/backend-defaults/discovery';
+// Direct internal import to avoid duplication
+// eslint-disable-next-line @backstage/no-forbidden-package-imports
+import type {
+  InternalBackendFeature,
+  InternalBackendRegistrations,
+} from '@backstage/backend-plugin-api/src/wiring/types';
 
 /** @public */
 export interface TestBackendOptions<TExtensionPoints extends any[]> {
@@ -67,6 +69,7 @@ export interface TestBackend extends Backend {
 
 export const defaultServiceFactories = [
   mockServices.auth.factory(),
+  mockServices.auditor.factory(),
   mockServices.cache.factory(),
   mockServices.rootConfig.factory(),
   mockServices.database.factory(),

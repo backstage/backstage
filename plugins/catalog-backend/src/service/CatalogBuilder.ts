@@ -37,14 +37,59 @@ import { Router } from 'express';
 import lodash, { keyBy } from 'lodash';
 
 import {
+  AuditorService,
+  AuthService,
+  DatabaseService,
+  DiscoveryService,
+  HttpAuthService,
+  LoggerService,
+  PermissionsService,
+  RootConfigService,
+  SchedulerService,
+  UrlReaderService,
+} from '@backstage/backend-plugin-api';
+import { Config, readDurationFromConfig } from '@backstage/config';
+import {
+  catalogPermissions,
+  RESOURCE_TYPE_CATALOG_ENTITY,
+} from '@backstage/plugin-catalog-common/alpha';
+import {
   CatalogProcessor,
   CatalogProcessorParser,
   EntitiesSearchFilter,
   EntityProvider,
-  PlaceholderResolver,
   LocationAnalyzer,
+  PlaceholderResolver,
   ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
+import { EventBroker, EventsService } from '@backstage/plugin-events-node';
+import {
+  Permission,
+  PermissionAuthorizer,
+  PermissionRuleParams,
+  toPermissionEvaluator,
+} from '@backstage/plugin-permission-common';
+import {
+  createConditionTransformer,
+  createPermissionIntegrationRouter,
+  PermissionRule,
+} from '@backstage/plugin-permission-node';
+import { durationToMilliseconds } from '@backstage/types';
+import { DefaultCatalogDatabase } from '../database/DefaultCatalogDatabase';
+import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
+import { DefaultProviderDatabase } from '../database/DefaultProviderDatabase';
+import { applyDatabaseMigrations } from '../database/migrations';
+import { DefaultCatalogRulesEnforcer } from '../ingestion/CatalogRules';
+import { RepoLocationAnalyzer } from '../ingestion/LocationAnalyzer';
+import { permissionRules as catalogPermissionRules } from '../permissions/rules';
+import {
+  CatalogProcessingEngine,
+  createRandomProcessingInterval,
+  ProcessingIntervalFunction,
+} from '../processing';
+import { connectEntityProviders } from '../processing/connectEntityProviders';
+import { DefaultCatalogProcessingEngine } from '../processing/DefaultCatalogProcessingEngine';
+import { DefaultCatalogProcessingOrchestrator } from '../processing/DefaultCatalogProcessingOrchestrator';
 import {
   AnnotateLocationEntityProcessor,
   BuiltinKindsEntityProcessor,
@@ -53,68 +98,24 @@ import {
   PlaceholderProcessor,
   UrlReaderProcessor,
 } from '../processors';
-import { ConfigLocationEntityProvider } from '../providers/ConfigLocationEntityProvider';
-import { DefaultLocationStore } from '../providers/DefaultLocationStore';
-import { RepoLocationAnalyzer } from '../ingestion/LocationAnalyzer';
-import { AuthorizedLocationAnalyzer } from './AuthorizedLocationAnalyzer';
 import {
   jsonPlaceholderResolver,
   textPlaceholderResolver,
   yamlPlaceholderResolver,
 } from '../processors/PlaceholderProcessor';
-import { defaultEntityDataParser } from '../util/parse';
-import {
-  CatalogProcessingEngine,
-  createRandomProcessingInterval,
-  ProcessingIntervalFunction,
-} from '../processing';
-import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
-import { applyDatabaseMigrations } from '../database/migrations';
-import { DefaultCatalogProcessingEngine } from '../processing/DefaultCatalogProcessingEngine';
-import { DefaultLocationService } from './DefaultLocationService';
-import { DefaultEntitiesCatalog } from './DefaultEntitiesCatalog';
-import { DefaultCatalogProcessingOrchestrator } from '../processing/DefaultCatalogProcessingOrchestrator';
+import { ConfigLocationEntityProvider } from '../providers/ConfigLocationEntityProvider';
+import { DefaultLocationStore } from '../providers/DefaultLocationStore';
 import { DefaultStitcher } from '../stitching/DefaultStitcher';
-import { createRouter } from './createRouter';
-import { DefaultRefreshService } from './DefaultRefreshService';
-import { AuthorizedRefreshService } from './AuthorizedRefreshService';
-import { DefaultCatalogRulesEnforcer } from '../ingestion/CatalogRules';
-import { Config, readDurationFromConfig } from '@backstage/config';
-import { connectEntityProviders } from '../processing/connectEntityProviders';
-import {
-  Permission,
-  PermissionAuthorizer,
-  PermissionRuleParams,
-  toPermissionEvaluator,
-} from '@backstage/plugin-permission-common';
-import { permissionRules as catalogPermissionRules } from '../permissions/rules';
-import {
-  createConditionTransformer,
-  createPermissionIntegrationRouter,
-  PermissionRule,
-} from '@backstage/plugin-permission-node';
+import { defaultEntityDataParser } from '../util/parse';
 import { AuthorizedEntitiesCatalog } from './AuthorizedEntitiesCatalog';
-import { basicEntityFilter } from './request';
-import {
-  catalogPermissions,
-  RESOURCE_TYPE_CATALOG_ENTITY,
-} from '@backstage/plugin-catalog-common/alpha';
+import { AuthorizedLocationAnalyzer } from './AuthorizedLocationAnalyzer';
 import { AuthorizedLocationService } from './AuthorizedLocationService';
-import { DefaultProviderDatabase } from '../database/DefaultProviderDatabase';
-import { DefaultCatalogDatabase } from '../database/DefaultCatalogDatabase';
-import { EventBroker, EventsService } from '@backstage/plugin-events-node';
-import { durationToMilliseconds } from '@backstage/types';
-import {
-  AuthService,
-  DatabaseService,
-  DiscoveryService,
-  HttpAuthService,
-  LoggerService,
-  PermissionsService,
-  RootConfigService,
-  UrlReaderService,
-  SchedulerService,
-} from '@backstage/backend-plugin-api';
+import { AuthorizedRefreshService } from './AuthorizedRefreshService';
+import { createRouter } from './createRouter';
+import { DefaultEntitiesCatalog } from './DefaultEntitiesCatalog';
+import { DefaultLocationService } from './DefaultLocationService';
+import { DefaultRefreshService } from './DefaultRefreshService';
+import { basicEntityFilter } from './request';
 
 /**
  * This is a duplicate of the alpha `CatalogPermissionRule` type, for use in the stable API.
@@ -134,11 +135,13 @@ export type CatalogEnvironment = {
   database: DatabaseService;
   config: RootConfigService;
   reader: UrlReaderService;
+  // TODO: Require all services once `backend-legacy` is removed
   permissions: PermissionsService | PermissionAuthorizer;
   scheduler?: SchedulerService;
   discovery?: DiscoveryService;
   auth?: AuthService;
   httpAuth?: HttpAuthService;
+  auditor?: AuditorService;
 };
 
 /**
@@ -478,6 +481,7 @@ export class CatalogBuilder {
       permissions,
       scheduler,
       discovery = HostDiscovery.fromConfig(config),
+      auditor,
     } = this.env;
 
     const { auth, httpAuth } = createLegacyAuthAdapters({
@@ -629,6 +633,7 @@ export class CatalogBuilder {
       auth,
       httpAuth,
       permissionsService,
+      auditor,
     });
 
     await connectEntityProviders(providerDatabase, entityProviders);
