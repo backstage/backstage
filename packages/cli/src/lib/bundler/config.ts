@@ -198,6 +198,17 @@ export async function createConfig(
         },
       }),
     );
+    plugins.push(
+      new HtmlWebpackPlugin({
+        meta: {
+          'backstage-app-mode': options?.appMode ?? 'public',
+        },
+        minify: false,
+        publicPath: '<%= publicPath %>',
+        filename: 'index.html.tmpl',
+        template: `raw-loader!${paths.targetHtml}`,
+      }),
+    );
   }
 
   if (options.moduleFederation) {
