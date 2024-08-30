@@ -71,7 +71,8 @@
     "express": "^4.17.1",
     "fs-extra": "^11.2.0",
     "lodash": "^4.17.21",
-    "winston": "^3.2.1"
+    "winston": "^3.2.1",
+    "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
