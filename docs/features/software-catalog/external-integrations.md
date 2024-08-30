@@ -1060,42 +1060,15 @@ backend.start();
 
 ### Writing an Incremental Entity Provider
 
-To create an Incremental Entity Provider, you need to know how to retrieve a single page of the data that you wish to ingest into the Backstage catalog. If the API has pagination and you know how to make a paginated request to that API, you'll be able to implement an Incremental Entity Provider for this API. For more information about compatibility, check out the [requirements](https://github.com/backstage/backstage/tree/master/plugins/catalog-backend-module-incremental-ingestion#requirements) section.
+To create an Incremental Entity Provider, you need to know how to retrieve a single page of data from an API with pagination. The `IncrementalEntityProvider` facilitates this by requiring:
 
-Here is the type definition for an Incremental Entity Provider.
+- **getProviderName:** A unique name to avoid conflicts with other providers.
+- **next:** Fetches a specific page of entities, moving the cursor forward.
+- **around:** Handles setup and teardown, wrapping the process that iterates through multiple pages.
 
-```ts
-interface IncrementalEntityProvider<TCursor, TContext> {
-  /**
-   * This name must be unique between all of the entity providers
-   * operating in the catalog.
-   */
-  getProviderName(): string;
-  /**
-   * Return a single page of entities from a specific point in the
-   * ingestion.
-   *
-   * @param context - anything needed in order to fetch a single page.
-   * @param cursor - a unique value identifying the page to ingest.
-   * @returns The entities to be ingested, as well as the cursor of
-   * the next page after this one.
-   */
-  next(
-    context: TContext,
-    cursor?: TCursor,
-  ): Promise<EntityIteratorResult<TCursor>>;
-  /**
-   * Do any setup and teardown necessary in order to provide the
-   * context for fetching pages. This should always invoke `burst` in
-   * order to fetch the individual pages.
-   *
-   * @param burst - a function which performs a series of iterations
-   */
-  around(burst: (context: TContext) => Promise<void>): Promise<void>;
-}
-```
+For more information on compatibility, refer to the [requirements](https://github.com/backstage/backstage/tree/master/plugins/catalog-backend-module-incremental-ingestion#requirements).
 
-For this tutorial, we'll write an Incremental Entity Provider that will call an imaginary API. This imaginary API will return a list of imaginary services. The imaginary API has an imaginary API client with the following interface.
+In this tutorial, we'll implement an Incremental Entity Provider that interacts with an imaginary API to fetch a list of imaginary services.
 
 ```ts
 interface MyApiClient {
