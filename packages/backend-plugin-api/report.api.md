@@ -26,6 +26,40 @@ import { Readable } from 'stream';
 import type { Request as Request_2 } from 'express';
 import type { Response as Response_2 } from 'express';
 
+// @public (undocumented)
+export type AuditorCreateEvent<TRootMeta extends JsonObject> = (options: {
+  eventId: string;
+  severityLevel?: AuditorEventSeverityLevel;
+  request?: Request_2<any, any, any, any, any>;
+  meta?: TRootMeta;
+  suppressInitialEvent?: boolean;
+}) => Promise<{
+  success<TMeta extends JsonObject>(options?: { meta?: TMeta }): Promise<void>;
+  fail<TMeta extends JsonObject, TError extends Error>(
+    options: {
+      meta?: TMeta;
+    } & (
+      | {
+          error: TError;
+        }
+      | {
+          errors: TError[];
+        }
+    ),
+  ): Promise<void>;
+}>;
+
+// @public
+export type AuditorEventSeverityLevel = 'low' | 'medium' | 'high' | 'critical';
+
+// @public
+export interface AuditorService {
+  // (undocumented)
+  createEvent<TMeta extends JsonObject>(
+    options: Parameters<AuditorCreateEvent<TMeta>>[0],
+  ): ReturnType<AuditorCreateEvent<TMeta>>;
+}
+
 // @public
 export interface AuthService {
   authenticate(
@@ -185,6 +219,7 @@ export namespace coreServices {
   const httpRouter: ServiceRef<HttpRouterService, 'plugin', 'singleton'>;
   const lifecycle: ServiceRef<LifecycleService, 'plugin', 'singleton'>;
   const logger: ServiceRef<LoggerService, 'plugin', 'singleton'>;
+  const auditor: ServiceRef<AuditorService, 'plugin', 'singleton'>;
   const permissions: ServiceRef<PermissionsService, 'plugin', 'singleton'>;
   const permissionsRegistry: ServiceRef<
     PermissionsRegistryService,

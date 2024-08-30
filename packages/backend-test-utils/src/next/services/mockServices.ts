@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { AuditorOptions } from '@backstage/backend-defaults/auditor';
 import { cacheServiceFactory } from '@backstage/backend-defaults/cache';
 import { databaseServiceFactory } from '@backstage/backend-defaults/database';
 import { HostDiscovery } from '@backstage/backend-defaults/discovery';
@@ -21,12 +22,14 @@ import { httpRouterServiceFactory } from '@backstage/backend-defaults/httpRouter
 import { lifecycleServiceFactory } from '@backstage/backend-defaults/lifecycle';
 import { loggerServiceFactory } from '@backstage/backend-defaults/logger';
 import { permissionsServiceFactory } from '@backstage/backend-defaults/permissions';
+import { permissionsRegistryServiceFactory } from '@backstage/backend-defaults/permissionsRegistry';
 import { rootHealthServiceFactory } from '@backstage/backend-defaults/rootHealth';
 import { rootHttpRouterServiceFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import { rootLifecycleServiceFactory } from '@backstage/backend-defaults/rootLifecycle';
 import { schedulerServiceFactory } from '@backstage/backend-defaults/scheduler';
 import { urlReaderServiceFactory } from '@backstage/backend-defaults/urlReader';
 import {
+  AuditorService,
   AuthService,
   BackstageCredentials,
   BackstageUserInfo,
@@ -47,13 +50,13 @@ import {
   eventsServiceRef,
 } from '@backstage/plugin-events-node';
 import { JsonObject } from '@backstage/types';
+import { Knex } from 'knex';
+import { MockAuditorService } from './MockAuditorService';
 import { MockAuthService } from './MockAuthService';
 import { MockHttpAuthService } from './MockHttpAuthService';
 import { MockRootLoggerService } from './MockRootLoggerService';
 import { MockUserInfoService } from './MockUserInfoService';
 import { mockCredentials } from './mockCredentials';
-import { Knex } from 'knex';
-import { permissionsRegistryServiceFactory } from '@backstage/backend-defaults/permissionsRegistry';
 
 /** @internal */
 function createLoggerMock() {
@@ -218,6 +221,84 @@ export namespace mockServices {
       error: jest.fn(),
       info: jest.fn(),
       warn: jest.fn(),
+    }));
+  }
+
+  /**
+   * Creates a mock implementation of the `AuditorService`.
+   */
+  export function auditor(
+    options?: Omit<auditor.Options, 'plugin'> & {
+      pluginId?: string;
+    },
+  ): AuditorService {
+    const service = 'backstage';
+    const pluginId = options?.pluginId ?? 'test';
+    const mockAuth =
+      options?.auth ??
+      new MockAuthService({
+        pluginId,
+        disableDefaultAuthPolicy: false,
+      });
+    const mockHttpAuth =
+      options?.httpAuth ??
+      new MockHttpAuthService(pluginId, mockCredentials.user());
+
+    const mockPlugin = {
+      getId: () => pluginId,
+    };
+
+    const auditorMock = MockAuditorService.create({
+      meta: options?.meta ? { ...options.meta, service } : { service },
+    });
+
+    return auditorMock.child(
+      { pluginId },
+      { auth: mockAuth, httpAuth: mockHttpAuth, plugin: mockPlugin },
+    );
+  }
+
+  export namespace auditor {
+    export type Options = Omit<AuditorOptions, 'format' | 'transports'>;
+
+    export const factory = (options?: auditor.Options) =>
+      createServiceFactory({
+        service: coreServices.auditor,
+        deps: {
+          auth: coreServices.auth,
+          httpAuth: coreServices.httpAuth,
+          plugin: coreServices.pluginMetadata,
+        },
+        createRootContext() {
+          const service = 'backstage';
+
+          return MockAuditorService.create({
+            meta: options?.meta ? { ...options.meta, service } : { service },
+          });
+        },
+        factory(
+          {
+            plugin,
+            auth: mockAuth,
+            httpAuth: mockHttpAuth,
+            plugin: mockPlugin,
+          },
+          rootAuditor,
+        ) {
+          return rootAuditor.child(
+            { plugin: plugin.getId() },
+            { auth: mockAuth, httpAuth: mockHttpAuth, plugin: mockPlugin },
+          );
+        },
+      });
+
+    export const mock = simpleMock(coreServices.auditor, () => ({
+      createEvent: jest.fn(async _ => {
+        return {
+          success: jest.fn(),
+          fail: jest.fn(),
+        };
+      }),
     }));
   }
 
