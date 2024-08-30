@@ -312,10 +312,6 @@ export class PgConnector implements Connector {
     return client;
   }
 
-  async dropDatabase(...databaseNames: string[]): Promise<void> {
-    return await dropPgDatabase(this.config, ...databaseNames);
-  }
-
   /**
    * Provides the canonical database name for a given plugin.
    *

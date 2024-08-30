@@ -26,11 +26,9 @@ describe('DatabaseManagerImpl', () => {
   it('calls the right connector, only once per plugin id', async () => {
     const connector1 = {
       getClient: jest.fn(),
-      dropDatabase: jest.fn(),
     } satisfies Connector;
     const connector2 = {
       getClient: jest.fn(),
-      dropDatabase: jest.fn(),
     } satisfies Connector;
 
     const impl = new DatabaseManagerImpl(
@@ -62,11 +60,9 @@ describe('DatabaseManagerImpl', () => {
   it('respects per-plugin overridden connectors', async () => {
     const connector1 = {
       getClient: jest.fn(),
-      dropDatabase: jest.fn(),
     } satisfies Connector;
     const connector2 = {
       getClient: jest.fn(),
-      dropDatabase: jest.fn(),
     } satisfies Connector;
 
     const impl = new DatabaseManagerImpl(
@@ -99,7 +95,6 @@ describe('DatabaseManagerImpl', () => {
   it('migration skip options take precedence over config', async () => {
     const connector = {
       getClient: jest.fn(),
-      dropDatabase: jest.fn(),
     } satisfies Connector;
 
     const impl = new DatabaseManagerImpl(
@@ -133,7 +128,6 @@ describe('DatabaseManagerImpl', () => {
   it('plugin can skip migrations using config', async () => {
     const connector = {
       getClient: jest.fn(),
-      dropDatabase: jest.fn(),
     } satisfies Connector;
 
     const impl = new DatabaseManagerImpl(

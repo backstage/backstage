@@ -30,6 +30,4 @@ export interface Connector {
       pluginMetadata: PluginMetadataService;
     },
   ): Promise<Knex>;
-
-  dropDatabase(...databaseNames: string[]): Promise<void>;
 }

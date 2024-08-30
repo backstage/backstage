@@ -293,10 +293,6 @@ export class MysqlConnector implements Connector {
     return client;
   }
 
-  async dropDatabase(...databaseNames: string[]): Promise<void> {
-    return await dropMysqlDatabase(this.config, ...databaseNames);
-  }
-
   /**
    * Provides the canonical database name for a given plugin.
    *

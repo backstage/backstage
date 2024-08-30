@@ -210,10 +210,6 @@ export class Sqlite3Connector implements Connector {
     return client;
   }
 
-  async dropDatabase(..._databaseNames: string[]): Promise<void> {
-    // do nothing
-  }
-
   /**
    * Provides the canonical database name for a given plugin.
    *
