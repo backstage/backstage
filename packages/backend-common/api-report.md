@@ -157,7 +157,10 @@ export class DatabaseManager implements LegacyRootDatabaseService {
   // (undocumented)
   static fromConfig(
     config: Config,
-    options?: DatabaseManagerOptions,
+    options?: {
+      migrations?: DatabaseService['migrations'];
+      logger?: LoggerService;
+    },
   ): DatabaseManager;
 }
 
@@ -172,11 +175,6 @@ export class DockerContainerRunner implements ContainerRunner {
   // (undocumented)
   runContainer(options: RunContainerOptions): Promise<void>;
 }
-
-// Warning: (ae-forgotten-export) The symbol "dropDatabase_2" needs to be exported by the entry point index.d.ts
-//
-// @public @deprecated (undocumented)
-export const dropDatabase: typeof dropDatabase_2;
 
 // @public @deprecated
 export function errorHandler(
@@ -367,10 +365,10 @@ export const legacyPlugin: (
   }>,
 ) => BackendFeature;
 
-// Warning: (ae-forgotten-export) The symbol "LegacyRootDatabaseService_2" needs to be exported by the entry point index.d.ts
-//
 // @public @deprecated (undocumented)
-export type LegacyRootDatabaseService = LegacyRootDatabaseService_2;
+export type LegacyRootDatabaseService = {
+  forPlugin(pluginId: string): DatabaseService;
+};
 
 // @public @deprecated
 export function loadBackendConfig(options: {
