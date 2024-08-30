@@ -149,6 +149,7 @@ export function resolveExtensionDefinition<
     override: _skip2,
     ...rest
   } = internalDefinition;
+
   const namespace = internalDefinition.namespace ?? context?.namespace;
 
   const namePart =
@@ -160,6 +161,13 @@ export function resolveExtensionDefinition<
   }
 
   const id = kind ? `${kind}:${namePart}` : namePart;
+
+  if (internalDefinition.namespace) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      `Extension ${id} has a deprecated namespace set, this option is no longer required, and should be removed from createExtensionBlueprint or createExtension. It will be automatically set from the pluginId when installing extensions using createFrontendModule and createFrontendPlugin`,
+    );
+  }
 
   return {
     ...rest,
