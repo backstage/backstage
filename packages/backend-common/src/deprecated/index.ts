@@ -169,7 +169,7 @@ export type CacheClientOptions = CacheServiceOptions;
  * @public
  * @deprecated Use `DatabaseManager` from the `@backstage/backend-defaults` package instead
  */
-export class DatabaseManager {
+export class DatabaseManager implements LegacyRootDatabaseService {
   private constructor(
     private readonly _databaseManager: _DatabaseManager,
     private readonly logger?: LoggerService,
@@ -220,6 +220,14 @@ export type DatabaseManagerOptions = _DatabaseManagerOptions;
  * @deprecated Use `DatabaseService` from the `@backstage/backend-plugin-api` package instead
  */
 export type PluginDatabaseManager = _PluginDatabaseManager;
+
+/**
+ * @public
+ * @deprecated Use `DatabaseManager` from `@backstage/backend-defaults/database` instead, or migrate to the new backend system and use `coreServices.database`
+ */
+export type LegacyRootDatabaseService = {
+  forPlugin(pluginId: string): DatabaseService;
+};
 
 /**
  * @public

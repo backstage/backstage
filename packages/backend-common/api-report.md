@@ -143,7 +143,7 @@ export function createStatusCheckRouter(options: {
 }): Promise<express.Router>;
 
 // @public @deprecated (undocumented)
-export class DatabaseManager {
+export class DatabaseManager implements LegacyRootDatabaseService {
   // (undocumented)
   forPlugin(
     pluginId: string,
@@ -364,6 +364,11 @@ export const legacyPlugin: (
     >;
   }>,
 ) => BackendFeature;
+
+// @public @deprecated (undocumented)
+export type LegacyRootDatabaseService = {
+  forPlugin(pluginId: string): DatabaseService;
+};
 
 // @public @deprecated
 export function loadBackendConfig(options: {

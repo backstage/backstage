@@ -1,5 +1,4 @@
 ---
-'@backstage/backend-common': minor
 '@backstage/backend-defaults': minor
 ---
 
