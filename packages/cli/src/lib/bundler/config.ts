@@ -202,6 +202,8 @@ export async function createConfig(
       new HtmlWebpackPlugin({
         meta: {
           'backstage-app-mode': options?.appMode ?? 'public',
+          // This is added to be written in the later step, and finally read by the extra entry point
+          'backstage-public-path': '<%= publicPath %>/',
         },
         minify: false,
         publicPath: '<%= publicPath %>',
@@ -352,7 +354,11 @@ export async function createConfig(
     },
     devtool: isDev ? 'eval-cheap-module-source-map' : 'source-map',
     context: paths.targetPath,
-    entry: [...(options.additionalEntryPoints ?? []), paths.targetEntry],
+    entry: [
+      require.resolve('@backstage/cli/config/webpack-public-path'),
+      ...(options.additionalEntryPoints ?? []),
+      paths.targetEntry,
+    ],
     resolve: {
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx', '.json', '.wasm'],
       mainFields: ['browser', 'module', 'main'],
