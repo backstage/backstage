@@ -7,7 +7,6 @@
     "plugins/*/migrations"
   ],
   "compilerOptions": {
-    "jsx": "react",
     "outDir": "dist-types",
     "rootDir": ".",
     "useUnknownInCatchVariables": false

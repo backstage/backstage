@@ -20,7 +20,6 @@ import {
   InfoCard,
   MarkdownContent,
   Progress,
-  Link,
 } from '@backstage/core-components';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { makeStyles } from '@material-ui/core/styles';
@@ -32,7 +31,6 @@ import { useFilteredSchemaProperties } from '../../hooks/useFilteredSchemaProper
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 import { useTemplateTimeSavedMinutes } from '../../hooks/useTemplateTimeSaved';
 import { JsonValue } from '@backstage/types';
-import Grid from '@material-ui/core/Grid';
 
 const useStyles = makeStyles({
   markdown: {
@@ -43,25 +41,6 @@ const useStyles = makeStyles({
     '& :last-child': {
       marginBottom: 0,
     },
-  },
-  instructions: {
-    maxWidth: '380px',
-    paddingRight: '20px',
-  },
-  formItems: {
-    minWidth: '350px',
-  },
-  formWrapper: {
-    paddingLeft: '18px',
-    paddingRight: '20px',
-    minWidth: '660px',
-  },
-  layoutWrapper: {
-    marginTop: '10px',
-    marginBottom: '15px',
-  },
-  description: {
-    maxWidth: '550px',
   },
 });
 
@@ -133,56 +112,30 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
     return props.onError(error);
   }
 
-  const mdContent =
-    "As part of our Large Scale Onboarding initiative, we've implemented new features to assist with the efficient onboarding of your services to Beacon.\n  To complete this Ownership Template and register your new Entities to the Beacon-UCP, verify the following information:\n  * Service ID: this can be found in the Service Registry on the Service Components table. Scroll to the right to find your service’s ID.\n  * Service name: this can be found in the Service registry on the Service Components table.\n\n  Once you’ve verified all the information, select Next, and we’ll collect some details about your service’s owner.";
-
   return (
     <Content>
       {loading && <Progress />}
-      <Grid
-        container
-        component="div"
-        justifyContent="space-evenly"
-        spacing={4}
-        className={styles.layoutWrapper}
-      >
-        <Grid item xs={8} className={styles.formWrapper}>
-          {sortedManifest && (
-            <InfoCard
-              title={title ?? sortedManifest.title}
-              subheader={
-                <MarkdownContent
-                  className={styles.markdown}
-                  content={
-                    description ??
-                    sortedManifest.description ??
-                    'No description'
-                  }
-                />
+      {sortedManifest && (
+        <InfoCard
+          title={title ?? sortedManifest.title}
+          subheader={
+            <MarkdownContent
+              className={styles.markdown}
+              content={
+                description ?? sortedManifest.description ?? 'No description'
               }
-              noPadding
-              titleTypographyProps={{ component: 'h2' }}
-            >
-              <Stepper
-                manifest={sortedManifest}
-                onCreate={workflowOnCreate}
-                {...props}
-              />
-            </InfoCard>
-          )}
-        </Grid>
-        <Grid item xs={8} className={styles.instructions}>
-          <InfoCard title="Using this form">
-            <MarkdownContent content={mdContent} />
-            <Link
-              to="https://git.autodesk.com/internal-dev-portal/beacon/blob/master/docs/Contributing_to_Backstage.md"
-              variant="button"
-            >
-              Learn More
-            </Link>
-          </InfoCard>
-        </Grid>
-      </Grid>
+            />
+          }
+          noPadding
+          titleTypographyProps={{ component: 'h2' }}
+        >
+          <Stepper
+            manifest={sortedManifest}
+            onCreate={workflowOnCreate}
+            {...props}
+          />
+        </InfoCard>
+      )}
     </Content>
   );
 };
