@@ -23,10 +23,7 @@ import { HostDiscovery as _HostDiscovery } from '../../../backend-defaults/src/e
 import { CacheManager as _CacheManager } from '../../../backend-defaults/src/entrypoints/cache/CacheManager';
 
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import {
-  type PluginCacheManager as _PluginCacheManager,
-  type CacheManagerOptions as _CacheManagerOptions,
-} from '../../../backend-defaults/src/entrypoints/cache/types';
+import { type CacheManagerOptions as _CacheManagerOptions } from '../../../backend-defaults/src/entrypoints/cache/types';
 
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
@@ -48,6 +45,7 @@ import {
   PluginMetadataService,
   DatabaseService,
   LoggerService,
+  RootConfigService,
 } from '@backstage/backend-plugin-api';
 
 export * from './hot';
@@ -133,7 +131,31 @@ export { HostDiscovery as SingleHostDiscovery };
  * @public
  * @deprecated Use `CacheManager` from the `@backstage/backend-defaults` package instead
  */
-export class CacheManager extends _CacheManager {}
+export class CacheManager {
+  /**
+   * Creates a new {@link CacheManager} instance by reading from the `backend`
+   * config section, specifically the `.cache` key.
+   *
+   * @param config - The loaded application configuration.
+   */
+  static fromConfig(
+    config: RootConfigService,
+    options: CacheManagerOptions = {},
+  ): CacheManager {
+    return new CacheManager(_CacheManager.fromConfig(config, options));
+  }
+
+  private constructor(private readonly _impl: _CacheManager) {}
+
+  forPlugin(pluginId: string): PluginCacheManager {
+    return {
+      getClient: options => {
+        const result = this._impl.forPlugin(pluginId);
+        return options ? result.withOptions(options) : result;
+      },
+    };
+  }
+}
 
 /**
  * @public
@@ -145,7 +167,9 @@ export type CacheManagerOptions = _CacheManagerOptions;
  * @public
  * @deprecated Use `PluginCacheManager` from the `@backstage/backend-defaults` package instead
  */
-export type PluginCacheManager = _PluginCacheManager;
+export type PluginCacheManager = {
+  getClient(options?: CacheServiceOptions): CacheService;
+};
 
 /**
  * @public
