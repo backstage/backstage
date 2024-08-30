@@ -348,6 +348,7 @@ export class GoogleGCSPublish implements PublisherBase {
    * can be used to verify if there are any pre-generated docs available to serve.
    */
   async hasDocsBeenGenerated(entity: Entity): Promise<boolean> {
+    Promise.resolve();
     return new Promise(resolve => {
       const entityTriplet = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
       const entityDir = this.legacyPathCasing
