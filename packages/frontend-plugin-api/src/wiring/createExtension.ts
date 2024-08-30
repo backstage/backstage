@@ -122,7 +122,6 @@ export type CreateExtensionOptions<
   UFactoryOutput extends ExtensionDataValue<any, any>,
 > = {
   kind?: TKind;
-  /** @deprecated namespace is no longer required, you can safely remove this option and it will default to the `pluginId`. It will be removed in a future release. */
   namespace?: TNamespace;
   name?: TName;
   attachTo: { id: string; input: string };
@@ -315,6 +314,94 @@ export function toInternalExtensionDefinition<
 }
 
 /** @public */
+export function createExtension<
+  UOutput extends AnyExtensionDataRef,
+  TInputs extends {
+    [inputName in string]: ExtensionInput<
+      AnyExtensionDataRef,
+      { optional: boolean; singleton: boolean }
+    >;
+  },
+  TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
+  UFactoryOutput extends ExtensionDataValue<any, any>,
+  const TKind extends string | undefined = undefined,
+  const TNamespace extends string | undefined = undefined,
+  const TName extends string | undefined = undefined,
+>(
+  options: CreateExtensionOptions<
+    TKind,
+    undefined,
+    TName,
+    UOutput,
+    TInputs,
+    TConfigSchema,
+    UFactoryOutput
+  >,
+): ExtensionDefinition<{
+  config: string extends keyof TConfigSchema
+    ? {}
+    : {
+        [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
+      };
+  configInput: string extends keyof TConfigSchema
+    ? {}
+    : z.input<
+        z.ZodObject<{
+          [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
+        }>
+      >;
+  output: UOutput;
+  inputs: TInputs;
+  kind: string | undefined extends TKind ? undefined : TKind;
+  namespace: string | undefined extends TNamespace ? undefined : TNamespace;
+  name: string | undefined extends TName ? undefined : TName;
+}>;
+/**
+ * @public
+ * @deprecated namespace is no longer required, you can safely remove this option and it will default to the `pluginId`. It will be removed in a future release.
+ */
+export function createExtension<
+  UOutput extends AnyExtensionDataRef,
+  TInputs extends {
+    [inputName in string]: ExtensionInput<
+      AnyExtensionDataRef,
+      { optional: boolean; singleton: boolean }
+    >;
+  },
+  TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
+  UFactoryOutput extends ExtensionDataValue<any, any>,
+  const TKind extends string | undefined = undefined,
+  const TNamespace extends string | undefined = undefined,
+  const TName extends string | undefined = undefined,
+>(
+  options: CreateExtensionOptions<
+    TKind,
+    TNamespace,
+    TName,
+    UOutput,
+    TInputs,
+    TConfigSchema,
+    UFactoryOutput
+  >,
+): ExtensionDefinition<{
+  config: string extends keyof TConfigSchema
+    ? {}
+    : {
+        [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
+      };
+  configInput: string extends keyof TConfigSchema
+    ? {}
+    : z.input<
+        z.ZodObject<{
+          [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
+        }>
+      >;
+  output: UOutput;
+  inputs: TInputs;
+  kind: string | undefined extends TKind ? undefined : TKind;
+  namespace: string | undefined extends TNamespace ? undefined : TNamespace;
+  name: string | undefined extends TName ? undefined : TName;
+}>;
 export function createExtension<
   UOutput extends AnyExtensionDataRef,
   TInputs extends {
