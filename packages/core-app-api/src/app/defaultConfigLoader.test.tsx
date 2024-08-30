@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
+import React from 'react';
+import { render } from '@testing-library/react';
 import { defaultConfigLoaderSync } from './defaultConfigLoader';
+import { ConfigReader } from '@backstage/config';
 
 (process as any).env = { NODE_ENV: 'test' };
 const anyEnv = process.env as any;
@@ -51,6 +54,45 @@ describe('defaultConfigLoaderSync', () => {
       { data: { my: 'config' }, context: 'b' },
       { data: { my: 'runtime-config' }, context: 'env' },
     ]);
+  });
+
+  it('loads config from script tags and ignore static config', () => {
+    anyEnv.APP_CONFIG = [];
+
+    render(
+      <script type="backstage.io/config">
+        {`[{"data":{"my":"config"},"context":"a"},{"data":{"my":"override-config"},"context":"b"}]`}
+      </script>,
+    );
+
+    const configs = (defaultConfigLoaderSync as any)('{"my":"runtime-config"}');
+    expect(configs).toEqual([
+      { data: { my: 'config' }, context: 'a' },
+      { data: { my: 'override-config' }, context: 'b' },
+    ]);
+    expect(ConfigReader.fromConfigs(configs).get('my')).toBe('override-config');
+  });
+
+  it('loads config from all script tags in order', () => {
+    anyEnv.APP_CONFIG = [];
+
+    render(
+      <>
+        <script type="backstage.io/config">
+          {`[{"data":{"my":"config"},"context":"a"}]`}
+        </script>
+        <script type="backstage.io/config">
+          {`[{"data":{"my":"override-config"},"context":"b"}]`}
+        </script>
+      </>,
+    );
+
+    const configs = (defaultConfigLoaderSync as any)('{"my":"runtime-config"}');
+    expect(configs).toEqual([
+      { data: { my: 'config' }, context: 'a' },
+      { data: { my: 'override-config' }, context: 'b' },
+    ]);
+    expect(ConfigReader.fromConfigs(configs).get('my')).toBe('override-config');
   });
 
   it('fails to load invalid missing config', () => {
