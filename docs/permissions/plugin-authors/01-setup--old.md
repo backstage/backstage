@@ -1,11 +1,11 @@
 ---
-id: 01-setup
+id: 01-setup--old
 title: 1. Tutorial setup
 description: How to get started with the permission framework as a plugin author
 ---
 
 :::info
-This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage [version 1.24](../../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](./01-setup--old.md) instead, and [consider migrating](../../backend-system/building-backends/08-migrating.md)!
+This documentation is written for the old backend which has been replaced by [the new backend system](../../backend-system/index.md), being the default since Backstage [version 1.24](../../releases/v1.24.0.md). If have migrated to the new backend system, you may want to read [its own article](./01-setup.md) instead. Otherwise, [consider migrating](../../backend-system/building-backends/08-migrating.md)!
 :::
 
 The following tutorial is designed to help plugin authors add support for permissions to their plugins. We'll add support for permissions to example `todo-list` and `todo-list-backend` plugins, but the process should be similar for other plugins!
@@ -44,31 +44,58 @@ The source code is available here:
 2. Add these packages as dependencies for your Backstage app:
 
    ```sh title="From your Backstage root directory"
-   yarn --cwd packages/backend add @backstage/plugin-permission-backend @backstage/plugin-permission-backend-module-allow-all-policy @internal/plugin-todo-list-backend @internal/plugin-todo-list-common
+   yarn --cwd packages/backend add @internal/plugin-todo-list-backend @internal/plugin-todo-list-common
    yarn --cwd packages/app add @internal/plugin-todo-list
    ```
 
 3. Include the backend and frontend plugin in your application:
 
+   Create a new `packages/backend/src/plugins/todolist.ts` with the following content:
+
+   ```typescript title="packages/backend/src/plugins/todolist.ts"
+   import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
+   import { createRouter } from '@internal/plugin-todo-list-backend';
+   import { Router } from 'express';
+   import { PluginEnvironment } from '../types';
+
+   export default async function createPlugin({
+     logger,
+     discovery,
+   }: PluginEnvironment): Promise<Router> {
+     return await createRouter({
+       logger,
+       identity: DefaultIdentityClient.create({
+         discovery,
+         issuer: await discovery.getExternalBaseUrl('auth'),
+       }),
+     });
+   }
+   ```
+
    Apply the following changes to `packages/backend/src/index.ts`:
 
    ```ts title="packages/backend/src/index.ts"
-   import { createBackend } from '@backstage/backend-defaults';
-   //...
-   const backend = createBackend();
-   //...
-   /* highlight-add-start */
-   // Installing the permission plugin
-   backend.add(import('@backstage/plugin-permission-backend/alpha'));
-   // Installing the allow all permission policy module
-   backend.add(
-     import('@backstage/plugin-permission-backend-module-allow-all-policy'),
-   );
-   // Installing the todolist plugin
-   backend.add(import('@internal/plugin-todo-list-backend'));
-   /* highlight-add-end */
-   //...
-   backend.start();
+   import techdocs from './plugins/techdocs';
+   /* highlight-add-next-line */
+   import todoList from './plugins/todolist';
+   import search from './plugins/search';
+
+   async function main() {
+     const searchEnv = useHotMemoize(module, () => createEnv('search'));
+     const appEnv = useHotMemoize(module, () => createEnv('app'));
+     /* highlight-add-next-line */
+     const todoListEnv = useHotMemoize(module, () => createEnv('todolist'));
+     // ..
+
+     apiRouter.use('/proxy', await proxy(proxyEnv));
+     apiRouter.use('/search', await search(searchEnv));
+     apiRouter.use('/permission', await permission(permissionEnv));
+     /* highlight-add-next-line */
+     apiRouter.use('/todolist', await todoList(todoListEnv));
+     // Add backends ABOVE this line; this 404 handler is the catch-all fallback
+     apiRouter.use(notFoundHandler());
+     // ..
+   }
    ```
 
    Apply the following changes to `packages/app/src/App.tsx`:
@@ -76,11 +103,13 @@ The source code is available here:
    ```tsx title="packages/app/src/App.tsx"
    /* highlight-add-next-line */
    import { TodoListPage } from '@internal/plugin-todo-list';
-   //...
 
    const routes = (
      <FlatRoutes>
-       {/* ... */}
+       <Route path="/search" element={<SearchPage />}>
+         {searchPage}
+       </Route>
+       <Route path="/settings" element={<UserSettingsPage />} />
        {/* highlight-add-next-line */}
        <Route path="/todo-list" element={<TodoListPage />} />
        {/* ... */}
