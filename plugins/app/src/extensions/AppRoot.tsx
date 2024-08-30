@@ -53,7 +53,6 @@ import { RouteTracker } from '../../../../packages/frontend-app-api/src/routing/
 import { getBasePath } from '../../../../packages/frontend-app-api/src/routing/getBasePath';
 
 export const AppRoot = createExtension({
-  namespace: 'app',
   name: 'root',
   attachTo: { id: 'app', input: 'root' },
   inputs: {

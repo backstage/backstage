@@ -23,7 +23,6 @@ import {
 import { SidebarPage } from '@backstage/core-components';
 
 export const AppLayout = createExtension({
-  namespace: 'app',
   name: 'layout',
   attachTo: { id: 'app/root', input: 'children' },
   inputs: {

@@ -57,6 +57,7 @@ export type CreateExtensionBlueprintOptions<
   TDataRefs extends { [name in string]: AnyExtensionDataRef },
 > = {
   kind: TKind;
+  /** @deprecated namespace is no longer required, you can safely remove this option and it will default to the `pluginId`. It will be removed in a future release. */
   namespace?: TNamespace;
   attachTo: { id: string; input: string };
   disabled?: boolean;
@@ -111,6 +112,7 @@ export interface ExtensionBlueprint<
     TNewNamespace extends string | undefined,
     TNewName extends string | undefined,
   >(args: {
+    /** @deprecated namespace is no longer required, you can safely remove this option and it will default to the `pluginId`. It will be removed in a future release. */
     namespace?: TNewNamespace;
     name?: TNewName;
     attachTo?: { id: string; input: string };
@@ -149,6 +151,7 @@ export interface ExtensionBlueprint<
       >;
     },
   >(args: {
+    /** @deprecated namespace is no longer required, you can safely remove this option and it will default to the `pluginId`. It will be removed in a future release. */
     namespace?: TNewNamespace;
     name?: TNewName;
     attachTo?: { id: string; input: string };
