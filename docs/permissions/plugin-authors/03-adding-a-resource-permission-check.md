@@ -82,10 +82,7 @@ router.put('/todos', async (req, res) => {
   const decision = (
     await permissions.authorize(
       [{ permission: todoListUpdatePermission, resourceRef: req.body.id }],
-      await auth.getPluginRequestToken({
-        onBehalfOf: credentials,
-        targetPluginId: 'permission',
-      }),
+      { credentials },
     )
   )[0];
 
