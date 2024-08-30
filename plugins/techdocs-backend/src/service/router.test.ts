@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
+import {
+  PluginCacheManager,
+  loggerToWinstonLogger,
+} from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import {
   DocsBuildStrategy,
@@ -30,7 +33,6 @@ import { createEventStream, createRouter, RouterOptions } from './router';
 import { TechDocsCache } from '../cache';
 import { mockErrorHandler, mockServices } from '@backstage/backend-test-utils';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
-import { PluginCacheManager } from '@backstage/backend-defaults/cache';
 
 jest.mock('@backstage/catalog-client');
 jest.mock('@backstage/config');

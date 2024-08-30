@@ -65,10 +65,15 @@ export type CacheClientOptions = CacheServiceOptions;
 // @public @deprecated (undocumented)
 export type CacheClientSetOptions = CacheServiceSetOptions;
 
-// Warning: (ae-forgotten-export) The symbol "CacheManager_2" needs to be exported by the entry point index.d.ts
-//
 // @public @deprecated (undocumented)
-export class CacheManager extends CacheManager_2 {}
+export class CacheManager {
+  // (undocumented)
+  forPlugin(pluginId: string): PluginCacheManager;
+  static fromConfig(
+    config: RootConfigService,
+    options?: CacheManagerOptions,
+  ): CacheManager;
+}
 
 // Warning: (ae-forgotten-export) The symbol "CacheManagerOptions_2" needs to be exported by the entry point index.d.ts
 //
@@ -411,10 +416,10 @@ export function makeLegacyPlugin<
 // @public @deprecated
 export function notFoundHandler(): RequestHandler;
 
-// Warning: (ae-forgotten-export) The symbol "PluginCacheManager_2" needs to be exported by the entry point index.d.ts
-//
 // @public @deprecated (undocumented)
-export type PluginCacheManager = PluginCacheManager_2;
+export type PluginCacheManager = {
+  getClient(options?: CacheServiceOptions): CacheService;
+};
 
 // @public @deprecated (undocumented)
 export type PluginDatabaseManager = DatabaseService;

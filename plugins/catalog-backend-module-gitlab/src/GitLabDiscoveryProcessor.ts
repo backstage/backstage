@@ -27,10 +27,7 @@ import {
 } from '@backstage/plugin-catalog-node';
 import { GitLabClient, GitLabProject, paginated } from './lib';
 import { CacheService, LoggerService } from '@backstage/backend-plugin-api';
-import {
-  CacheManager,
-  PluginCacheManager,
-} from '@backstage/backend-defaults/cache';
+import { CacheManager } from '@backstage/backend-defaults/cache';
 
 /**
  * Extracts repositories out of an GitLab instance.
@@ -64,13 +61,13 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
 
   private constructor(options: {
     integrations: ScmIntegrationRegistry;
-    pluginCache: PluginCacheManager;
+    pluginCache: CacheService;
     logger: LoggerService;
     skipReposWithoutExactFileMatch?: boolean;
     skipForkedRepos?: boolean;
   }) {
     this.integrations = options.integrations;
-    this.cache = options.pluginCache.getClient();
+    this.cache = options.pluginCache;
     this.logger = options.logger;
     this.skipReposWithoutExactFileMatch =
       options.skipReposWithoutExactFileMatch || false;
