@@ -122,6 +122,7 @@ export type CreateExtensionOptions<
   UFactoryOutput extends ExtensionDataValue<any, any>,
 > = {
   kind?: TKind;
+  /** @deprecated namespace is no longer required, you can safely remove this option and it will default to the `pluginId`. It will be removed in a future release. */
   namespace?: TNamespace;
   name?: TName;
   attachTo: { id: string; input: string };
