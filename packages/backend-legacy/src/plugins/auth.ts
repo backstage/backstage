@@ -80,8 +80,31 @@ export default async function createPlugin(
       }),
       microsoft: providers.microsoft.create({
         signIn: {
-          resolver:
-            providers.microsoft.resolvers.emailMatchingUserEntityAnnotation(),
+          resolver: async ({ profile, result }, ctx) => {
+            if (!profile.email) {
+              throw new Error(
+                'Login failed, user profile does not contain an email',
+              );
+            }
+            const logger = env.logger;
+            logger.info(`User ID: ${result.fullProfile.id}`);
+            // We again use the local part of the email as the user name.
+            const [localPart] = profile.email.split('@');
+
+            // By using `stringifyEntityRef` we ensure that the reference is formatted correctly
+            const userEntityRef = stringifyEntityRef({
+              kind: 'User',
+              name: localPart,
+              namespace: DEFAULT_NAMESPACE,
+            });
+
+            return ctx.issueToken({
+              claims: {
+                sub: userEntityRef,
+                ent: [userEntityRef],
+              },
+            });
+          },
         },
       }),
       google: providers.google.create({

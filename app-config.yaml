@@ -58,6 +58,11 @@ backend:
   reading:
     allow:
       - host: example.com
+      - host: 'git.autodesk.com'
+      - host: 'github.com'
+      - host: 'login.microsoftonline.com'
+      - host: 'graph.microsoft.com'
+      - host: '*.onmicrosoft.com'
       - host: '*.mozilla.org'
   # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
 
@@ -199,8 +204,11 @@ allure:
 
 integrations:
   github:
-    - host: github.com
-      token: ${GITHUB_TOKEN}
+    - host: git.autodesk.com
+      clientId: 7c8b5cd624b9f7e38c11
+      clientSecret: ${AUTH_GITHUB_CLIENT_SECRET}
+      apiBaseUrl: https://git.autodesk.com/api/v3
+      token: ${PERSONAL_GIT_TOKEN}
   ### Example for how to add your GitHub Enterprise instance using the API:
   # - host: ghe.example.net
   #   apiBaseUrl: https://ghe.example.net/api/v3
@@ -244,6 +252,8 @@ catalog:
         - System
         - Domain
         - Location
+        - User
+        - Template
   providers:
     backstageOpenapi:
       plugins:
@@ -478,4 +488,4 @@ stackstorm:
   webUrl: https://your.stackstorm.webui.instance.com
 
 permission:
-  enabled: true
+  enabled: false
