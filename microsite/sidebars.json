@@ -366,7 +366,8 @@
         "label": "Local Development",
         "items": [
           "tooling/local-dev/linking-local-packages",
-          "tooling/local-dev/debugging"
+          "tooling/local-dev/debugging",
+          "tooling/local-dev/profiling"
         ]
       },
       "tooling/package-metadata"
