@@ -17,7 +17,7 @@
 import { OptionValues } from 'commander';
 import { buildPackage, Output } from '../../lib/builder';
 import { findRoleFromCommand } from '../../lib/role';
-import { PackageRoles } from '@backstage/cli-node';
+import { PackageGraph, PackageRoles } from '@backstage/cli-node';
 import { paths } from '../../lib/paths';
 import { buildFrontend } from './buildFrontend';
 import { buildBackend } from './buildBackend';
@@ -82,5 +82,6 @@ export async function command(opts: OptionValues): Promise<void> {
   return buildPackage({
     outputs,
     minify: Boolean(opts.minify),
+    workspacePackages: await PackageGraph.listTargetPackages(),
   });
 }

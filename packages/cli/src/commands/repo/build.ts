@@ -137,6 +137,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       outputs,
       logPrefix: `${chalk.cyan(relativePath(paths.targetRoot, pkg.dir))}: `,
       minify: buildOptions.minify,
+      workspacePackages: packages,
     };
   });
 

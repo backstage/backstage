@@ -21,6 +21,7 @@ import tar, { CreateOptions } from 'tar';
 import { createDistWorkspace } from '../../lib/packager';
 import { getEnvironmentParallelism } from '../../lib/parallel';
 import { buildPackage, Output } from '../../lib/builder';
+import { PackageGraph } from '@backstage/cli-node';
 
 const BUNDLE_FILE = 'bundle.tar.gz';
 const SKELETON_FILE = 'skeleton.tar.gz';
@@ -42,6 +43,7 @@ export async function buildBackend(options: BuildBackendOptions) {
     packageJson: pkg,
     outputs: new Set([Output.cjs]),
     minify,
+    workspacePackages: await PackageGraph.listTargetPackages(),
   });
 
   const tmpDir = await fs.mkdtemp(resolvePath(os.tmpdir(), 'backstage-bundle'));
