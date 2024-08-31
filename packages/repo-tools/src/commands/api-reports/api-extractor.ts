@@ -1232,6 +1232,9 @@ export async function categorizePackageDirs(packageDirs: string[]) {
           if (!role) {
             return; // Ignore packages without roles
           }
+          if (pkgJson?.backstage?.inline) {
+            return; // Ignore inline packages
+          }
           if (role === 'cli') {
             cliPackageDirs.push(dir);
           } else if (role !== 'frontend' && role !== 'backend') {
