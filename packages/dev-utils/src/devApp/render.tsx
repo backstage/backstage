@@ -39,8 +39,8 @@ import {
   createRouteRef,
   IconComponent,
   RouteRef,
-  TranslationResource,
 } from '@backstage/core-plugin-api';
+import { TranslationResource } from '@backstage/core-plugin-api/alpha';
 import {
   ScmIntegrationsApi,
   scmIntegrationsApiRef,

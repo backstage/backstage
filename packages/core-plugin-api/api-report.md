@@ -738,14 +738,6 @@ export type SubRouteRef<Params extends AnyParams = any> = {
   params: ParamKeys<Params>;
 };
 
-// @public (undocumented)
-export interface TranslationResource<TId extends string = string> {
-  // (undocumented)
-  $$type: '@backstage/TranslationResource';
-  // (undocumented)
-  id: TId;
-}
-
 // @public
 export type TypesToApiRefs<T> = {
   [key in keyof T]: ApiRef<T[key]>;

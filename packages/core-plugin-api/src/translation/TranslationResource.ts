@@ -19,7 +19,7 @@ import {
   TranslationRef,
 } from '@backstage/core-plugin-api/alpha';
 
-/** @public */
+/** @alpha */
 export interface TranslationResource<TId extends string = string> {
   $$type: '@backstage/TranslationResource';
   id: TId;

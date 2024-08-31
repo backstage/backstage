@@ -16,7 +16,7 @@ import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { SignInProviderConfig } from '@backstage/core-components';
-import { TranslationResource } from '@backstage/core-plugin-api';
+import { TranslationResource } from '@backstage/core-plugin-api/alpha';
 
 // @public
 export function createDevApp(): DevAppBuilder;

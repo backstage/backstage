@@ -184,7 +184,7 @@ export interface TranslationRefOptions<
   translations?: TTranslations;
 }
 
-// @public (undocumented)
+// @alpha (undocumented)
 export interface TranslationResource<TId extends string = string> {
   // (undocumented)
   $$type: '@backstage/TranslationResource';
