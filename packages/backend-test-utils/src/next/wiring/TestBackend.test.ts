@@ -377,4 +377,35 @@ describe('TestBackend', () => {
       "Module 'tester' for plugin 'test' startup failed; caused by Error: nah",
     );
   });
+
+  it('should forward errors from plugin register', async () => {
+    await expect(
+      startTestBackend({
+        features: [
+          createBackendPlugin({
+            pluginId: 'test',
+            register() {
+              throw new Error('nah');
+            },
+          }),
+        ],
+      }),
+    ).rejects.toThrow('nah');
+  });
+
+  it('should forward errors from module register', async () => {
+    await expect(
+      startTestBackend({
+        features: [
+          createBackendModule({
+            pluginId: 'test',
+            moduleId: 'tester',
+            register() {
+              throw new Error('nah');
+            },
+          }),
+        ],
+      }),
+    ).rejects.toThrow('nah');
+  });
 });
