@@ -1,5 +1,4 @@
 ---
-'@backstage/core-plugin-api': patch
 '@backstage/dev-utils': patch
 ---
 
