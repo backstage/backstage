@@ -31,7 +31,6 @@ function unused(..._any: any[]) {}
 describe('createExtension', () => {
   it('should create an extension with a simple output', () => {
     const baseConfig = {
-      namespace: 'test',
       attachTo: { id: 'root', input: 'default' },
       output: [stringDataRef],
     };
@@ -41,7 +40,7 @@ describe('createExtension', () => {
         return [stringDataRef('bar')];
       },
     });
-    expect(extension).toMatchObject({ version: 'v2', namespace: 'test' });
+    expect(extension).toMatchObject({ version: 'v2' });
 
     // Member arrow function declaration
     createExtension({
@@ -161,7 +160,6 @@ describe('createExtension', () => {
 
   it('should create an extension with a some optional output', () => {
     const baseConfig = {
-      namespace: 'test',
       attachTo: { id: 'root', input: 'default' },
       output: [stringDataRef, numberDataRef.optional()],
     };
@@ -169,7 +167,7 @@ describe('createExtension', () => {
       ...baseConfig,
       factory: () => [stringDataRef('bar')],
     });
-    expect(extension).toMatchObject({ version: 'v2', namespace: 'test' });
+    expect(extension).toMatchObject({ version: 'v2' });
 
     createExtension({
       ...baseConfig,
@@ -206,7 +204,6 @@ describe('createExtension', () => {
 
   it('should create an extension with input', () => {
     const extension = createExtension({
-      namespace: 'test',
       attachTo: { id: 'root', input: 'default' },
       inputs: {
         mixed: createExtensionInput([stringDataRef, numberDataRef.optional()]),
@@ -250,15 +247,14 @@ describe('createExtension', () => {
         return [stringDataRef('bar')];
       },
     });
-    expect(extension).toMatchObject({ version: 'v2', namespace: 'test' });
+    expect(extension).toMatchObject({ version: 'v2' });
     expect(String(extension)).toBe(
-      'ExtensionDefinition{namespace=test,attachTo=root@default}',
+      'ExtensionDefinition{attachTo=root@default}',
     );
   });
 
   it('should create an extension with config', () => {
     const extension = createExtension({
-      namespace: 'test',
       attachTo: { id: 'root', input: 'default' },
       config: {
         schema: {
@@ -284,9 +280,9 @@ describe('createExtension', () => {
         return [stringDataRef('bar')];
       },
     });
-    expect(extension).toMatchObject({ version: 'v2', namespace: 'test' });
+    expect(extension).toMatchObject({ version: 'v2' });
     expect(String(extension)).toBe(
-      'ExtensionDefinition{namespace=test,attachTo=root@default}',
+      'ExtensionDefinition{attachTo=root@default}',
     );
 
     expect(
@@ -330,7 +326,6 @@ describe('createExtension', () => {
     expect(
       // @ts-expect-error
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef],
         factory() {
@@ -342,7 +337,6 @@ describe('createExtension', () => {
     expect(
       // @ts-expect-error
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef],
         factory() {
@@ -354,7 +348,6 @@ describe('createExtension', () => {
     // Duplicate output, we won't attempt to handle this a compile time and instead error out at runtime
     expect(
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef],
         factory() {
@@ -366,7 +359,6 @@ describe('createExtension', () => {
     expect(
       // @ts-expect-error
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef],
         factory() {
@@ -377,7 +369,6 @@ describe('createExtension', () => {
 
     expect(
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef],
         factory() {
@@ -388,7 +379,6 @@ describe('createExtension', () => {
 
     expect(
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef.optional()],
         factory() {
@@ -399,7 +389,6 @@ describe('createExtension', () => {
 
     expect(
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef.optional()],
         factory() {
@@ -413,7 +402,6 @@ describe('createExtension', () => {
     expect(
       // @ts-expect-error
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef],
         *factory() {
@@ -425,7 +413,6 @@ describe('createExtension', () => {
     expect(
       // @ts-expect-error
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef],
         *factory() {
@@ -437,7 +424,6 @@ describe('createExtension', () => {
     // Duplicate output, we won't attempt to handle this a compile time and instead error out at runtime
     expect(
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef],
         *factory() {
@@ -450,7 +436,6 @@ describe('createExtension', () => {
     expect(
       // @ts-expect-error
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef],
         *factory() {
@@ -462,7 +447,6 @@ describe('createExtension', () => {
 
     expect(
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef],
         *factory() {
@@ -474,7 +458,6 @@ describe('createExtension', () => {
 
     expect(
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef.optional()],
         *factory() {
@@ -486,7 +469,6 @@ describe('createExtension', () => {
 
     expect(
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef.optional()],
         *factory() {
@@ -499,7 +481,6 @@ describe('createExtension', () => {
   it('should support new form of inputs', () => {
     expect(
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         inputs: {
           header: createExtensionInput([stringDataRef.optional()], {
@@ -534,7 +515,6 @@ describe('createExtension', () => {
   describe('overrides', () => {
     it('should allow overriding of config and merging', () => {
       const testExtension = createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'blob' },
         output: [stringDataRef],
         config: {
@@ -563,7 +543,6 @@ describe('createExtension', () => {
 
     it('should allow overriding of outputs', () => {
       const testExtension = createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'blob' },
         output: [stringDataRef],
         inputs: {
@@ -603,7 +582,6 @@ describe('createExtension', () => {
 
     it('should allow overriding the factory function and calling the original factory', () => {
       const testExtension = createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'blob' },
         output: [stringDataRef],
         config: {
@@ -635,7 +613,7 @@ describe('createExtension', () => {
     it('should allow overriding the returned values from the parent factory', () => {
       const testExtension = createExtension({
         kind: 'thing',
-        namespace: 'test',
+
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef],
         config: {
@@ -666,7 +644,7 @@ describe('createExtension', () => {
     it('should work functionally with overrides', () => {
       const testExtension = createExtension({
         kind: 'thing',
-        namespace: 'test',
+
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef],
         config: {
@@ -749,28 +727,28 @@ describe('createExtension', () => {
 
       const optExt = createExtension({
         name: 'o',
-        attachTo: { id: 'subject', input: 'opt' },
+        attachTo: { id: 'test/subject', input: 'opt' },
         output: [testDataRef1],
         factory: () => [testDataRef1('orig-opt')],
       });
 
       const singleExt = createExtension({
         name: 's',
-        attachTo: { id: 'subject', input: 'single' },
+        attachTo: { id: 'test/subject', input: 'single' },
         output: [testDataRef1, testDataRef2.optional()],
         factory: () => [testDataRef1('orig-single')],
       });
 
       const multi1Ext = createExtension({
         name: 'm1',
-        attachTo: { id: 'subject', input: 'multi' },
+        attachTo: { id: 'test/subject', input: 'multi' },
         output: [testDataRef1],
         factory: () => [testDataRef1('orig-multi1')],
       });
 
       const multi2Ext = createExtension({
         name: 'm2',
-        attachTo: { id: 'subject', input: 'multi' },
+        attachTo: { id: 'test/subject', input: 'multi' },
         output: [testDataRef1],
         factory: () => [testDataRef1('orig-multi2')],
       });
@@ -786,7 +764,7 @@ describe('createExtension', () => {
         opt: 'orig-opt',
         single: 'orig-single',
         singleOpt: 'none',
-        multi: 'm1=orig-multi1,m2=orig-multi2',
+        multi: 'test/m1=orig-multi1,test/m2=orig-multi2',
       });
 
       // All values provided
@@ -813,7 +791,7 @@ describe('createExtension', () => {
         opt: 'opt',
         single: 'single',
         singleOpt: 'singleOpt',
-        multi: 'm1=multi1,m2=multi2',
+        multi: 'test/m1=multi1,test/m2=multi2',
       });
 
       // Minimal values provided
@@ -862,7 +840,7 @@ describe('createExtension', () => {
         opt: 'orig-opt',
         single: 'orig-single',
         singleOpt: 'none',
-        multi: 'm1=orig-multi1,m2=orig-multi2',
+        multi: 'test/m1=orig-multi1,test/m2=orig-multi2',
       });
 
       // Forward inputs separately
@@ -889,7 +867,7 @@ describe('createExtension', () => {
         opt: 'orig-opt',
         single: 'orig-single',
         singleOpt: 'none',
-        multi: 'm1=orig-multi1,m2=orig-multi2',
+        multi: 'test/m1=orig-multi1,test/m2=orig-multi2',
       });
 
       // Reordering inputs
@@ -916,7 +894,7 @@ describe('createExtension', () => {
         opt: 'orig-opt',
         single: 'orig-single',
         singleOpt: 'none',
-        multi: 'm2=orig-multi2,m1=orig-multi1',
+        multi: 'test/m2=orig-multi2,test/m1=orig-multi1',
       });
 
       // Filter out inputs
@@ -943,7 +921,7 @@ describe('createExtension', () => {
         opt: 'orig-opt',
         single: 'orig-single',
         singleOpt: 'none',
-        multi: 'm2=orig-multi2',
+        multi: 'test/m2=orig-multi2',
       });
 
       // Overriding based on original input
@@ -974,7 +952,7 @@ describe('createExtension', () => {
         opt: 'none',
         single: 'override-orig-single',
         singleOpt: 'new-singleOpt',
-        multi: 'm1=override-orig-multi1,m2=override-orig-multi2',
+        multi: 'test/m1=override-orig-multi1,test/m2=override-orig-multi2',
       });
 
       // Mismatched input override length
@@ -997,7 +975,7 @@ describe('createExtension', () => {
           .add(multi2Ext)
           .get(outputRef),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Failed to instantiate extension 'subject', override data provided for input 'multi' must match the length of the original inputs"`,
+        `"Failed to instantiate extension 'test/subject', override data provided for input 'multi' must match the length of the original inputs"`,
       );
 
       // Mix forward and data override
@@ -1020,7 +998,7 @@ describe('createExtension', () => {
           .add(multi2Ext)
           .get(outputRef),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Failed to instantiate extension 'subject', override data for input 'multi' may not mix forwarded inputs with data overrides"`,
+        `"Failed to instantiate extension 'test/subject', override data for input 'multi' may not mix forwarded inputs with data overrides"`,
       );
 
       // Required input not provided
@@ -1043,7 +1021,7 @@ describe('createExtension', () => {
           .add(multi2Ext)
           .get(outputRef),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Failed to instantiate extension 'subject', missing required extension data value(s) 'test1'"`,
+        `"Failed to instantiate extension 'test/subject', missing required extension data value(s) 'test1'"`,
       );
 
       // Wrong value provided
@@ -1072,7 +1050,7 @@ describe('createExtension', () => {
           .add(multi2Ext)
           .get(outputRef),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Failed to instantiate extension 'subject', extension data 'test2' was provided but not declared"`,
+        `"Failed to instantiate extension 'test/subject', extension data 'test2' was provided but not declared"`,
       );
     });
   });

@@ -31,7 +31,7 @@ describe('ApiBlueprint', () => {
       params: {
         factory,
       },
-      namespace: 'test',
+      name: 'test',
     });
 
     expect(extension).toMatchInlineSnapshot(`
@@ -47,8 +47,8 @@ describe('ApiBlueprint', () => {
         "factory": [Function],
         "inputs": {},
         "kind": "api",
-        "name": undefined,
-        "namespace": "test",
+        "name": "test",
+        "namespace": undefined,
         "output": [
           [Function],
         ],
@@ -72,7 +72,7 @@ describe('ApiBlueprint', () => {
       inputs: {
         test: createExtensionInput([ApiBlueprint.dataRefs.factory]),
       },
-      namespace: api.id,
+      name: api.id,
       factory(originalFactory, { config: _config, inputs: _inputs }) {
         return originalFactory({
           factory: createApiFactory({
@@ -122,8 +122,8 @@ describe('ApiBlueprint', () => {
           },
         },
         "kind": "api",
-        "name": undefined,
-        "namespace": "test",
+        "name": "test",
+        "namespace": undefined,
         "output": [
           [Function],
         ],
