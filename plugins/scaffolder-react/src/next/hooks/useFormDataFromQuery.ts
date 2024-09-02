@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { JsonValue } from '@backstage/types';
 import qs from 'qs';
-import { useState } from 'react';
 
 /**
  * This hook is used to get the formData from the query string.
@@ -25,19 +23,17 @@ import { useState } from 'react';
 export const useFormDataFromQuery = (
   initialState?: Record<string, JsonValue>,
 ) => {
-  return useState<Record<string, any>>(() => {
-    if (initialState) {
-      return initialState;
-    }
+  if (initialState) {
+    return initialState;
+  }
 
-    const query = qs.parse(window.location.search, {
-      ignoreQueryPrefix: true,
-    });
-
-    try {
-      return JSON.parse(query.formData as string);
-    } catch (e) {
-      return {};
-    }
+  const query = qs.parse(window.location.search, {
+    ignoreQueryPrefix: true,
   });
+
+  try {
+    return JSON.parse(query.formData as string);
+  } catch (e) {
+    return {};
+  }
 };

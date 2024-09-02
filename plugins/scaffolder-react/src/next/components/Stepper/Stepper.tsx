@@ -115,7 +115,8 @@ export const Stepper = (stepperProps: StepperProps) => {
   const apiHolder = useApiHolder();
   const [activeStep, setActiveStep] = useState(0);
   const [isValidating, setIsValidating] = useState(false);
-  const [formState, setFormState] = useFormDataFromQuery(props.initialState);
+  const initialState = useFormDataFromQuery(props.initialState);
+  const [formState, setFormState] = useState<{ [step: string]: any }>();
 
   const [errors, setErrors] = useState<undefined | FormValidation>();
   const styles = useStyles();
@@ -164,11 +165,6 @@ export const Stepper = (stepperProps: StepperProps) => {
     [setFormState, activeStep],
   );
 
-  const handleCreate = useCallback(() => {
-    props.onCreate(formState);
-    analytics.captureEvent('click', `${createLabel}`);
-  }, [props, formState, analytics, createLabel]);
-
   const currentStep = useTransformSchemaToProps(steps[activeStep], { layouts });
 
   const handleNext = async ({
@@ -207,6 +203,9 @@ export const Stepper = (stepperProps: StepperProps) => {
   const mergedUiSchema = merge({}, propUiSchema, currentStep?.uiSchema);
 
   const mergedState = useMemo(() => {
+    if (!formState) {
+      return initialState;
+    }
     const { [`step${activeStep}`]: activeState, ...historicalState } =
       formState;
     const chronologicalState = {
@@ -214,7 +213,12 @@ export const Stepper = (stepperProps: StepperProps) => {
       [`step${activeStep}`]: activeState,
     };
     return merge({}, ...Object.values(chronologicalState));
-  }, [formState, activeStep]);
+  }, [formState, activeStep, initialState]);
+
+  const handleCreate = useCallback(() => {
+    props.onCreate(mergedState);
+    analytics.captureEvent('click', `${createLabel}`);
+  }, [props, mergedState, analytics, createLabel]);
 
   return (
     <>
