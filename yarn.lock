@@ -4522,8 +4522,10 @@ __metadata:
     "@backstage/plugin-app": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
+    "@backstage/version-bridge": "workspace:^"
     "@testing-library/jest-dom": ^6.0.0
     "@types/react": "*"
+    zod: ^3.22.4
   peerDependencies:
     "@testing-library/react": ^15.0.0
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -10001,6 +10003,23 @@ __metadata:
   checksum: 50be288696a55cf860cee8aef7e10751b3d28694f1f6f5fc9c085bb3c45aa77f43961d40626d48f16a993f16f12a83b4282b16845a173fb1791ddb79bb1f93e8
   languageName: node
   linkType: hard
+
+"@internal/frontend@workspace:packages/frontend-internal":
+  version: 0.0.0-use.local
+  resolution: "@internal/frontend@workspace:packages/frontend-internal"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/frontend-app-api": "workspace:^"
+    "@backstage/frontend-plugin-api": "workspace:^"
+    "@backstage/frontend-test-utils": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
+    "@backstage/types": "workspace:^"
+    "@backstage/version-bridge": "workspace:^"
+    "@testing-library/jest-dom": ^6.0.0
+    "@testing-library/react": ^15.0.0
+    zod: ^3.22.4
+  languageName: unknown
+  linkType: soft
 
 "@internal/plugin-todo-list-backend@workspace:plugins/example-todo-list-backend":
   version: 0.0.0-use.local

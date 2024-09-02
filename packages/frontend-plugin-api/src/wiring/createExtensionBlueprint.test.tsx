@@ -27,11 +27,9 @@ import {
 } from './createExtensionDataRef';
 import { createExtensionInput } from './createExtensionInput';
 import { RouteRef } from '../routing';
-import {
-  ExtensionDefinition,
-  toInternalExtensionDefinition,
-} from './createExtension';
+import { ExtensionDefinition } from './createExtension';
 import { createExtensionDataContainer } from './createExtensionDataContainer';
+import { toInternalExtensionDefinition } from '@internal/frontend';
 
 function unused(..._any: any[]) {}
 

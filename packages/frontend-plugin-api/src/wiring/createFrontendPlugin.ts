@@ -15,10 +15,10 @@
  */
 
 import {
-  ExtensionDefinition,
   InternalExtensionDefinition,
   toInternalExtensionDefinition,
-} from './createExtension';
+} from '@internal/frontend';
+import { ExtensionDefinition } from './createExtension';
 import {
   Extension,
   ResolveExtensionId,

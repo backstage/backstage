@@ -15,7 +15,6 @@
  */
 
 import { ApiHolder, AppNode } from '../apis';
-import { PortableSchema } from '../schema';
 import { Expand } from '../types';
 import {
   ResolveInputValueOverrides,
@@ -32,6 +31,7 @@ import {
 import { ExtensionInput } from './createExtensionInput';
 import { z } from 'zod';
 import { createSchemaFromZod } from '../schema/createSchemaFromZod';
+import { InternalExtensionDefinition } from '@internal/frontend';
 
 /**
  * Convert a single extension input into a matching resolved input.
@@ -234,84 +234,6 @@ export type ExtensionDefinition<
       >;
   }>;
 };
-
-/** @internal */
-export type InternalExtensionDefinition<
-  T extends ExtensionDefinitionParameters = ExtensionDefinitionParameters,
-> = ExtensionDefinition<T> & {
-  readonly kind?: string;
-  readonly namespace?: string;
-  readonly name?: string;
-  readonly attachTo: { id: string; input: string };
-  readonly disabled: boolean;
-  readonly configSchema?: PortableSchema<T['config'], T['configInput']>;
-} & (
-    | {
-        readonly version: 'v1';
-        readonly inputs: {
-          [inputName in string]: {
-            $$type: '@backstage/ExtensionInput';
-            extensionData: {
-              [name in string]: AnyExtensionDataRef;
-            };
-            config: { optional: boolean; singleton: boolean };
-          };
-        };
-        readonly output: {
-          [name in string]: AnyExtensionDataRef;
-        };
-        factory(context: {
-          node: AppNode;
-          apis: ApiHolder;
-          config: object;
-          inputs: {
-            [inputName in string]: unknown;
-          };
-        }): {
-          [inputName in string]: unknown;
-        };
-      }
-    | {
-        readonly version: 'v2';
-        readonly inputs: {
-          [inputName in string]: ExtensionInput<
-            AnyExtensionDataRef,
-            { optional: boolean; singleton: boolean }
-          >;
-        };
-        readonly output: Array<AnyExtensionDataRef>;
-        factory(context: {
-          node: AppNode;
-          apis: ApiHolder;
-          config: object;
-          inputs: ResolvedExtensionInputs<{
-            [inputName in string]: ExtensionInput<
-              AnyExtensionDataRef,
-              { optional: boolean; singleton: boolean }
-            >;
-          }>;
-        }): Iterable<ExtensionDataValue<any, any>>;
-      }
-  );
-
-/** @internal */
-export function toInternalExtensionDefinition<
-  T extends ExtensionDefinitionParameters,
->(overrides: ExtensionDefinition<T>): InternalExtensionDefinition<T> {
-  const internal = overrides as InternalExtensionDefinition<T>;
-  if (internal.$$type !== '@backstage/ExtensionDefinition') {
-    throw new Error(
-      `Invalid extension definition instance, bad type '${internal.$$type}'`,
-    );
-  }
-  const version = internal.version;
-  if (version !== 'v1' && version !== 'v2') {
-    throw new Error(
-      `Invalid extension definition instance, bad version '${version}'`,
-    );
-  }
-  return internal;
-}
 
 /** @public */
 export function createExtension<

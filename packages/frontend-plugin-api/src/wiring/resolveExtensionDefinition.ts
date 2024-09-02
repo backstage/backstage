@@ -19,7 +19,6 @@ import {
   ExtensionDefinition,
   ExtensionDefinitionParameters,
   ResolvedExtensionInputs,
-  toInternalExtensionDefinition,
 } from './createExtension';
 import { PortableSchema } from '../schema';
 import { ExtensionInput } from './createExtensionInput';
@@ -27,6 +26,7 @@ import {
   AnyExtensionDataRef,
   ExtensionDataValue,
 } from './createExtensionDataRef';
+import { toInternalExtensionDefinition } from '@internal/frontend';
 
 /** @public */
 export interface Extension<TConfig, TConfigInput = TConfig> {
