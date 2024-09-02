@@ -613,7 +613,6 @@ describe('createExtension', () => {
     it('should allow overriding the returned values from the parent factory', () => {
       const testExtension = createExtension({
         kind: 'thing',
-
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef],
         config: {
@@ -644,7 +643,6 @@ describe('createExtension', () => {
     it('should work functionally with overrides', () => {
       const testExtension = createExtension({
         kind: 'thing',
-
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef],
         config: {
