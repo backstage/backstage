@@ -149,6 +149,7 @@ export function resolveExtensionDefinition<
     override: _skip2,
     ...rest
   } = internalDefinition;
+
   const namespace = internalDefinition.namespace ?? context?.namespace;
 
   const namePart =
