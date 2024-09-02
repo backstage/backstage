@@ -9,7 +9,7 @@ import { LifecycleService } from '@backstage/backend-plugin-api';
 import { RequestHandler } from 'express';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 
-// @public
+// @public @deprecated
 export function createLifecycleMiddleware(
   options: LifecycleMiddlewareOptions,
 ): RequestHandler;

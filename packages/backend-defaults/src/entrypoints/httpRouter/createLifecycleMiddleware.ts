@@ -48,6 +48,8 @@ export interface LifecycleMiddlewareOptions {
  * {@link @backstage/errors#ServiceUnavailableError}.
  *
  * @public
+ * @deprecated This function export will be removed in a future release.
+ * If rely on this function then please reach out to the Backstage maintainers.
  */
 export function createLifecycleMiddleware(
   options: LifecycleMiddlewareOptions,
