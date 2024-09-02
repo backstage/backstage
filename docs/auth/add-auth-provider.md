@@ -129,12 +129,14 @@ due to its comprehensive set of supported authentication
 
 ### Create new auth provider module
 
-Create a new module using `yarn new`, pick `backend-module` and provide `auth-backend` as the plugin ID and `providername-provider` as the module ID.
+In this example we will create auth module for a made up service named foobar.
+
+Create a new module using `yarn new`, pick `backend-module` and provide `auth-backend` as the plugin ID and `foobar-provider` as the module ID.
 
 Make sure that the module has the appropriate passport provider as a dependency.
 
 ```bash
-cd plugins/auth-backend-backend-module-providername-provider
+cd plugins/auth-backend-backend-module-foobar-provider
 yarn add passport-provider-a
 yarn add @types/passport-provider-a
 ```
@@ -143,7 +145,7 @@ yarn add @types/passport-provider-a
 
 We're then creating a new module that can extend the Auth backend using the `authProvidersExtensionPoint`.
 
-```ts title="plugins/auth-backend-providername-provider/src/module.ts"
+```ts title="plugins/auth-backend-foobar-provider/src/module.ts"
 import { createBackendModule } from '@backstage/backend-plugin-api';
 import {
   authProvidersExtensionPoint,
@@ -153,9 +155,9 @@ import {
 import { providerAuthenticator } from './authenticator';
 
 /** @public */
-export const authModuleOktaProvider = createBackendModule({
+export const authModuleFoobarProvider = createBackendModule({
   pluginId: 'auth',
-  moduleId: 'providername',
+  moduleId: 'foobar',
   register(reg) {
     reg.registerInit({
       deps: {
@@ -163,7 +165,7 @@ export const authModuleOktaProvider = createBackendModule({
       },
       async init({ providers }) {
         providers.registerProvider({
-          providerId: 'providername',
+          providerId: 'foobar',
           factory: createOAuthProviderFactory({
             authenticator: providerAuthenticator,
             signInResolverFactories: {
@@ -178,8 +180,9 @@ export const authModuleOktaProvider = createBackendModule({
 ```
 
 Now let's implement the actual authenticator for our provider using `Strategy` from a passport package.
+The authenticator is responsible for creating the passport strategy and handling the authentication flow using secrets from the config file.
 
-```ts title="plugins/auth-backend-providername-provider/src/authenticator.ts"
+```ts title="plugins/auth-backend-foobar-provider/src/authenticator.ts"
 import { Strategy as ProviderStrategy } from 'passport-provider-a';
 import {
   createOAuthAuthenticator,
@@ -238,6 +241,12 @@ export const providerAuthenticator = createOAuthAuthenticator({
 });
 ```
 
+Here are some examples of authenticators that are already implemented in the codebase:
+
+- [Google](https://github.com/backstage/backstage/blob/master/plugins/auth-backend-module-google-provider/src/authenticator.ts)
+- [Github](https://github.com/backstage/backstage/blob/master/plugins/auth-backend-module-github-provider/src/authenticator.ts)
+- [Okta](https://github.com/backstage/backstage/blob/master/plugins/auth-backend-module-okta-provider/src/authenticator.ts)
+
 ### Creating proxy auth based provider
 
 A proxy auth provider is a provider that uses another provider to authenticate for example Google IAP or AWS ALB, please note that those providers are already supported by Backstage.
@@ -266,17 +275,13 @@ The process for adding the new module is the same as for any other type of modul
 If this provider is internal to your installation the import path that you add to `packages/backend/src/index.ts` would be something like:
 
 ```ts
-backend.add(
-  import('@internal/plugin-auth-backend-module-providername-provider'),
-);
+backend.add(import('@internal/plugin-auth-backend-module-foobar-provider'));
 ```
 
 But if this module is contributed directly to Backstage the module would be imported as
 
 ```ts
-backend.add(
-  import('@backstage/plugin-auth-backend-module-providername-provider'),
-);
+backend.add(import('@backstage/plugin-auth-backend-module-foobar-provider'));
 ```
 
 By doing this `auth-backend` automatically adds these endpoints:
