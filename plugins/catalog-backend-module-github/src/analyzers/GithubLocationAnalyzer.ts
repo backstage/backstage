@@ -44,6 +44,7 @@ export type GithubLocationAnalyzerOptions = {
   tokenManager?: TokenManager;
   auth?: AuthService;
   githubCredentialsProvider?: GithubCredentialsProvider;
+  catalog?: CatalogApi;
 };
 
 /** @public */
@@ -54,7 +55,8 @@ export class GithubLocationAnalyzer implements ScmLocationAnalyzer {
   private readonly auth: AuthService;
 
   constructor(options: GithubLocationAnalyzerOptions) {
-    this.catalogClient = new CatalogClient({ discoveryApi: options.discovery });
+    this.catalogClient =
+      options.catalog ?? new CatalogClient({ discoveryApi: options.discovery });
     this.integrations = ScmIntegrations.fromConfig(options.config);
     this.githubCredentialsProvider =
       options.githubCredentialsProvider ||

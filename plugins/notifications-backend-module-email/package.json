@@ -42,6 +42,7 @@
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/integration-aws-node": "workspace:^",
+    "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/plugin-notifications-common": "workspace:^",
     "@backstage/plugin-notifications-node": "workspace:^",
     "@backstage/types": "workspace:^",

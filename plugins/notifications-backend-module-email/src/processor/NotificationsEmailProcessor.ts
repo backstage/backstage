@@ -24,10 +24,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { Config, readDurationFromConfig } from '@backstage/config';
 import { durationToMilliseconds } from '@backstage/types';
-import {
-  CATALOG_FILTER_EXISTS,
-  CatalogClient,
-} from '@backstage/catalog-client';
+import { CATALOG_FILTER_EXISTS, CatalogApi } from '@backstage/catalog-client';
 import {
   getProcessorFiltersFromConfig,
   Notification,
@@ -63,7 +60,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
   constructor(
     private readonly logger: LoggerService,
     private readonly config: Config,
-    private readonly catalog: CatalogClient,
+    private readonly catalog: CatalogApi,
     private readonly auth: AuthService,
     private readonly cache?: CacheService,
     private readonly templateRenderer?: NotificationTemplateRenderer,
