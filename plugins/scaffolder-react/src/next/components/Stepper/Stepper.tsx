@@ -116,7 +116,9 @@ export const Stepper = (stepperProps: StepperProps) => {
   const [activeStep, setActiveStep] = useState(0);
   const [isValidating, setIsValidating] = useState(false);
   const initialState = useFormDataFromQuery(props.initialState);
-  const [formState, setFormState] = useState<{ [step: string]: any }>();
+  const [formState, setFormState] = useState<{
+    [step: string]: Record<string, JsonValue>;
+  }>();
 
   const [errors, setErrors] = useState<undefined | FormValidation>();
   const styles = useStyles();

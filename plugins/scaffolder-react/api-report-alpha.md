@@ -276,7 +276,7 @@ export const useFilteredSchemaProperties: (
 // @alpha
 export const useFormDataFromQuery: (
   initialState?: Record<string, JsonValue>,
-) => any;
+) => Record<string, JsonValue>;
 
 // @alpha (undocumented)
 export const useTemplateParameterSchema: (templateRef: string) => {

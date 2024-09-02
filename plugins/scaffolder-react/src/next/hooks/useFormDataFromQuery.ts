@@ -22,7 +22,7 @@ import qs from 'qs';
  */
 export const useFormDataFromQuery = (
   initialState?: Record<string, JsonValue>,
-) => {
+): Record<string, JsonValue> => {
   if (initialState) {
     return initialState;
   }
