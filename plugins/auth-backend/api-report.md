@@ -14,6 +14,7 @@ import { AwsAlbResult as AwsAlbResult_2 } from '@backstage/plugin-auth-backend-m
 import { AzureEasyAuthResult } from '@backstage/plugin-auth-backend-module-azure-easyauth-provider';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BackstageSignInResult } from '@backstage/plugin-auth-node';
+import { bitbucketServerSignInResolvers } from '@backstage/plugin-auth-backend-module-bitbucket-server-provider';
 import { CacheService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ClientAuthResponse } from '@backstage/plugin-auth-node';
@@ -108,7 +109,7 @@ export type BitbucketPassportProfile = Profile & {
   };
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type BitbucketServerOAuthResult = {
   fullProfile: Profile;
   params: {
@@ -442,9 +443,7 @@ export const providers: Readonly<{
           }
         | undefined,
     ) => AuthProviderFactory_2;
-    resolvers: Readonly<{
-      emailMatchingUserEntityProfileEmail: () => SignInResolver_2<BitbucketServerOAuthResult>;
-    }>;
+    resolvers: Readonly<bitbucketServerSignInResolvers>;
   }>;
   cfAccess: Readonly<{
     create: (options: {

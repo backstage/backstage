@@ -53,6 +53,7 @@
     "@backstage/plugin-auth-backend-module-aws-alb-provider": "workspace:^",
     "@backstage/plugin-auth-backend-module-azure-easyauth-provider": "workspace:^",
     "@backstage/plugin-auth-backend-module-bitbucket-provider": "workspace:^",
+    "@backstage/plugin-auth-backend-module-bitbucket-server-provider": "workspace:^",
     "@backstage/plugin-auth-backend-module-cloudflare-access-provider": "workspace:^",
     "@backstage/plugin-auth-backend-module-gcp-iap-provider": "workspace:^",
     "@backstage/plugin-auth-backend-module-github-provider": "workspace:^",
