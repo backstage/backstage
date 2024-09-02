@@ -22,7 +22,6 @@ import React, {
   isValidElement,
 } from 'react';
 import {
-  ExtensionOverrides,
   FrontendModule,
   FrontendPlugin,
   coreExtensionData,

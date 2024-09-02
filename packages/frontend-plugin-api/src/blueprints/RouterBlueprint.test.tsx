@@ -114,7 +114,7 @@ describe('RouterBlueprint', () => {
     }).add(
       createExtension({
         attachTo: {
-          id: 'app-router-component:test/test',
+          id: 'app-router-component:test',
           input: 'children',
         },
         output: [coreExtensionData.reactElement],

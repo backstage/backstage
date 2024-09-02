@@ -110,8 +110,6 @@ export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
 
     const definition = {
       ...extension,
-      // If no namespace is set, we default to "test"
-      namespace: namespace ?? 'test',
       // setting name "test" as fallback
       name: !namespace && !name ? 'test' : name,
     };

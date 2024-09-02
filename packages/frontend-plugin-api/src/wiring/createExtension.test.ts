@@ -727,28 +727,28 @@ describe('createExtension', () => {
 
       const optExt = createExtension({
         name: 'o',
-        attachTo: { id: 'test/subject', input: 'opt' },
+        attachTo: { id: 'subject', input: 'opt' },
         output: [testDataRef1],
         factory: () => [testDataRef1('orig-opt')],
       });
 
       const singleExt = createExtension({
         name: 's',
-        attachTo: { id: 'test/subject', input: 'single' },
+        attachTo: { id: 'subject', input: 'single' },
         output: [testDataRef1, testDataRef2.optional()],
         factory: () => [testDataRef1('orig-single')],
       });
 
       const multi1Ext = createExtension({
         name: 'm1',
-        attachTo: { id: 'test/subject', input: 'multi' },
+        attachTo: { id: 'subject', input: 'multi' },
         output: [testDataRef1],
         factory: () => [testDataRef1('orig-multi1')],
       });
 
       const multi2Ext = createExtension({
         name: 'm2',
-        attachTo: { id: 'test/subject', input: 'multi' },
+        attachTo: { id: 'subject', input: 'multi' },
         output: [testDataRef1],
         factory: () => [testDataRef1('orig-multi2')],
       });
@@ -764,7 +764,7 @@ describe('createExtension', () => {
         opt: 'orig-opt',
         single: 'orig-single',
         singleOpt: 'none',
-        multi: 'test/m1=orig-multi1,test/m2=orig-multi2',
+        multi: 'm1=orig-multi1,m2=orig-multi2',
       });
 
       // All values provided
@@ -791,7 +791,7 @@ describe('createExtension', () => {
         opt: 'opt',
         single: 'single',
         singleOpt: 'singleOpt',
-        multi: 'test/m1=multi1,test/m2=multi2',
+        multi: 'm1=multi1,m2=multi2',
       });
 
       // Minimal values provided
@@ -840,7 +840,7 @@ describe('createExtension', () => {
         opt: 'orig-opt',
         single: 'orig-single',
         singleOpt: 'none',
-        multi: 'test/m1=orig-multi1,test/m2=orig-multi2',
+        multi: 'm1=orig-multi1,m2=orig-multi2',
       });
 
       // Forward inputs separately
@@ -867,7 +867,7 @@ describe('createExtension', () => {
         opt: 'orig-opt',
         single: 'orig-single',
         singleOpt: 'none',
-        multi: 'test/m1=orig-multi1,test/m2=orig-multi2',
+        multi: 'm1=orig-multi1,m2=orig-multi2',
       });
 
       // Reordering inputs
@@ -894,7 +894,7 @@ describe('createExtension', () => {
         opt: 'orig-opt',
         single: 'orig-single',
         singleOpt: 'none',
-        multi: 'test/m2=orig-multi2,test/m1=orig-multi1',
+        multi: 'm2=orig-multi2,m1=orig-multi1',
       });
 
       // Filter out inputs
@@ -921,7 +921,7 @@ describe('createExtension', () => {
         opt: 'orig-opt',
         single: 'orig-single',
         singleOpt: 'none',
-        multi: 'test/m2=orig-multi2',
+        multi: 'm2=orig-multi2',
       });
 
       // Overriding based on original input
@@ -952,7 +952,7 @@ describe('createExtension', () => {
         opt: 'none',
         single: 'override-orig-single',
         singleOpt: 'new-singleOpt',
-        multi: 'test/m1=override-orig-multi1,test/m2=override-orig-multi2',
+        multi: 'm1=override-orig-multi1,m2=override-orig-multi2',
       });
 
       // Mismatched input override length
@@ -975,7 +975,7 @@ describe('createExtension', () => {
           .add(multi2Ext)
           .get(outputRef),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Failed to instantiate extension 'test/subject', override data provided for input 'multi' must match the length of the original inputs"`,
+        `"Failed to instantiate extension 'subject', override data provided for input 'multi' must match the length of the original inputs"`,
       );
 
       // Mix forward and data override
@@ -998,7 +998,7 @@ describe('createExtension', () => {
           .add(multi2Ext)
           .get(outputRef),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Failed to instantiate extension 'test/subject', override data for input 'multi' may not mix forwarded inputs with data overrides"`,
+        `"Failed to instantiate extension 'subject', override data for input 'multi' may not mix forwarded inputs with data overrides"`,
       );
 
       // Required input not provided
@@ -1021,7 +1021,7 @@ describe('createExtension', () => {
           .add(multi2Ext)
           .get(outputRef),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Failed to instantiate extension 'test/subject', missing required extension data value(s) 'test1'"`,
+        `"Failed to instantiate extension 'subject', missing required extension data value(s) 'test1'"`,
       );
 
       // Wrong value provided
@@ -1050,7 +1050,7 @@ describe('createExtension', () => {
           .add(multi2Ext)
           .get(outputRef),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Failed to instantiate extension 'test/subject', extension data 'test2' was provided but not declared"`,
+        `"Failed to instantiate extension 'subject', extension data 'test2' was provided but not declared"`,
       );
     });
   });
