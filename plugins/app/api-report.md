@@ -29,30 +29,6 @@ const appPlugin: FrontendPlugin<
   {},
   {},
   {
-    [x: `component:app/${string}`]: ExtensionDefinition<{
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        {
-          ref: ComponentRef;
-          impl: ComponentType;
-        },
-        'core.component.component',
-        {}
-      >;
-      inputs: {
-        [x: string]: ExtensionInput<
-          AnyExtensionDataRef,
-          {
-            optional: boolean;
-            singleton: boolean;
-          }
-        >;
-      };
-      kind: 'component';
-      namespace: string;
-      name: string;
-    }>;
     app: ExtensionDefinition<{
       config: {};
       configInput: {};
