@@ -14,10 +14,10 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'signIn.title': 'Sign In';
     readonly 'signIn.loginFailed': 'Login failed';
     readonly 'signIn.customProvider.title': 'Custom User';
-    readonly 'signIn.customProvider.continue': 'Continue';
     readonly 'signIn.customProvider.subtitle': 'Enter your own User ID and credentials.\n This selection will not be stored.';
     readonly 'signIn.customProvider.userId': 'User ID';
     readonly 'signIn.customProvider.tokenInvalid': 'Token is not a valid OpenID Connect JWT Token';
+    readonly 'signIn.customProvider.continue': 'Continue';
     readonly 'signIn.customProvider.idToken': 'ID Token (optional)';
     readonly 'signIn.guestProvider.title': 'Guest';
     readonly 'signIn.guestProvider.enter': 'Enter';
