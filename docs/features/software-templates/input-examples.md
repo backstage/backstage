@@ -297,7 +297,7 @@ spec:
           type: string
 
   steps:
-    - $yaml: https://github.com//example/path/to/action.yaml
+    - $yaml: https://github.com/example/path/to/action.yaml
 
     - id: fetch
       name: Fetch template
