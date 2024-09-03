@@ -1170,7 +1170,6 @@ export class MyIncrementalEntityProvider implements IncrementalEntityProvider<Cu
 
 
   async around(burst: (context: Context) => Promise<void>): Promise<void> {
-
     const apiClient = new MyApiClient(this.token)
 
     await burst({ apiClient })
