@@ -1,5 +1,20 @@
 # @backstage/backend-test-utils
 
+## 0.6.0-next.1
+
+### Patch Changes
+
+- 710f621: Added missing service mock for `mockServices.rootConfig.mock`, and fixed the definition of `mockServices.rootHttpRouter.factory` to not have a duplicate callback.
+- Updated dependencies
+  - @backstage/backend-defaults@0.5.0-next.1
+  - @backstage/plugin-auth-node@0.5.2-next.1
+  - @backstage/backend-app-api@0.10.0-next.1
+  - @backstage/backend-plugin-api@0.9.0-next.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-events-node@0.4.0-next.1
+
 ## 0.6.0-next.0
 
 ### Minor Changes

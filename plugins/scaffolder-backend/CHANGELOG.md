@@ -1,5 +1,37 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.25.0-next.1
+
+### Patch Changes
+
+- f865103: Updated dependency `esbuild` to `^0.23.0`.
+- Updated dependencies
+  - @backstage/backend-defaults@0.5.0-next.1
+  - @backstage/backend-common@0.25.0-next.1
+  - @backstage/plugin-auth-node@0.5.2-next.1
+  - @backstage/catalog-client@1.6.7-next.0
+  - @backstage/backend-plugin-api@0.9.0-next.1
+  - @backstage/catalog-model@1.6.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.14.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-bitbucket-cloud-common@0.2.22
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.0-next.1
+  - @backstage/plugin-catalog-node@1.12.7-next.1
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-node@0.8.3-next.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.0-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.0-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.0-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.0-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.0-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.0-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.0-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.5.0-next.1
+  - @backstage/plugin-scaffolder-common@1.5.5
+  - @backstage/plugin-scaffolder-node@0.4.11-next.1
+
 ## 1.25.0-next.0
 
 ### Minor Changes

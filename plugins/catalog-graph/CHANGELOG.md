@@ -1,5 +1,20 @@
 # @backstage/plugin-catalog-graph
 
+## 0.4.9-next.1
+
+### Patch Changes
+
+- da91078: Fixed a bug in the `CatalogGraphPage` component where, after clicking on some nodes, clicking the back button would break the navigation. This issue caused the entire navigation to fail and behaved differently across various browsers.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.8.0-next.1
+  - @backstage/core-compat-api@0.3.0-next.1
+  - @backstage/catalog-client@1.6.7-next.0
+  - @backstage/core-components@0.14.11-next.0
+  - @backstage/plugin-catalog-react@1.12.4-next.1
+  - @backstage/catalog-model@1.6.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/types@1.1.1
+
 ## 0.4.9-next.0
 
 ### Patch Changes

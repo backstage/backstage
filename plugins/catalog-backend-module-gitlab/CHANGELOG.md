@@ -1,5 +1,20 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.4.2-next.1
+
+### Patch Changes
+
+- 53b24d9: Internal update to use the new cache manager
+- Updated dependencies
+  - @backstage/backend-defaults@0.5.0-next.1
+  - @backstage/backend-plugin-api@0.9.0-next.1
+  - @backstage/catalog-model@1.6.0
+  - @backstage/config@1.2.0
+  - @backstage/integration@1.14.0
+  - @backstage/plugin-catalog-common@1.0.26
+  - @backstage/plugin-catalog-node@1.12.7-next.1
+  - @backstage/plugin-events-node@0.4.0-next.1
+
 ## 0.4.2-next.0
 
 ### Patch Changes

@@ -1,5 +1,18 @@
 # @backstage/frontend-test-utils
 
+## 0.2.0-next.1
+
+### Patch Changes
+
+- 948d431: Removing deprecated `namespace` parameter in favour of `pluginId` instead
+- Updated dependencies
+  - @backstage/frontend-app-api@0.9.0-next.1
+  - @backstage/frontend-plugin-api@0.8.0-next.1
+  - @backstage/plugin-app@0.1.0-next.1
+  - @backstage/config@1.2.0
+  - @backstage/test-utils@1.6.0-next.0
+  - @backstage/types@1.1.1
+
 ## 0.2.0-next.0
 
 ### Minor Changes

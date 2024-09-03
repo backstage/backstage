@@ -1,5 +1,30 @@
 # @backstage/plugin-catalog-backend
 
+## 1.25.3-next.1
+
+### Patch Changes
+
+- 1882cfe: Moved `getEntities` ordering to utilize database instead of having it inside catalog client
+
+  Please note that the latest version of `@backstage/catalog-client` will not order the entities in the same way as before. This is because the ordering is now done in the database query instead of in the client. If you rely on the ordering of the entities, you may need to update your backend plugin or code to handle this change.
+
+- Updated dependencies
+  - @backstage/backend-common@0.25.0-next.1
+  - @backstage/catalog-client@1.6.7-next.0
+  - @backstage/backend-openapi-utils@0.1.18-next.1
+  - @backstage/backend-plugin-api@0.9.0-next.1
+  - @backstage/catalog-model@1.6.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.14.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.26
+  - @backstage/plugin-catalog-node@1.12.7-next.1
+  - @backstage/plugin-events-node@0.4.0-next.1
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-node@0.8.3-next.1
+  - @backstage/plugin-search-backend-module-catalog@0.2.2-next.1
+
 ## 1.25.3-next.0
 
 ### Patch Changes
