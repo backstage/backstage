@@ -130,6 +130,7 @@
     "pirates": "^4.0.6",
     "postcss": "^8.1.0",
     "process": "^0.11.10",
+    "raw-loader": "^4.0.2",
     "react-dev-utils": "^12.0.0-next.60",
     "react-refresh": "^0.14.0",
     "recursive-readdir": "^2.2.2",

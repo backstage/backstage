@@ -25,7 +25,7 @@ import { mockServices } from '@backstage/backend-test-utils';
 
 jest.mock('../lib/config', () => ({
   injectConfig: jest.fn(),
-  readConfigs: jest.fn(),
+  readFrontendConfig: jest.fn(),
 }));
 
 global.__non_webpack_require__ = {
@@ -120,11 +120,13 @@ describe('createRouter with static fallback handler', () => {
 describe('createRouter config schema test', () => {
   const libConfigs = require('../lib/config');
   const libConfigsActual = jest.requireActual('../lib/config');
-  const readConfigsMock: jest.Mock = libConfigs.readConfigs;
+  const readFrontendConfigMock: jest.Mock = libConfigs.readFrontendConfig;
 
   beforeEach(() => {
     jest.resetAllMocks();
-    readConfigsMock.mockImplementation(libConfigsActual.readConfigs);
+    readFrontendConfigMock.mockImplementation(
+      libConfigsActual.readFrontendConfig,
+    );
   });
 
   it('uses an external schema', async () => {
@@ -155,7 +157,7 @@ describe('createRouter config schema test', () => {
       }),
     });
 
-    const results = readConfigsMock.mock.results;
+    const results = readFrontendConfigMock.mock.results;
     expect(results.length).toBe(1);
 
     const mockedResult = results[0];
@@ -177,7 +179,7 @@ describe('createRouter config schema test', () => {
       appPackageName: 'example-app',
     });
 
-    const results = readConfigsMock.mock.results;
+    const results = readFrontendConfigMock.mock.results;
     expect(results.length).toBe(1);
 
     const mockedResult = results[0];

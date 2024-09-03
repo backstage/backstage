@@ -16,26 +16,12 @@
 
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
-import { AppConfig, Config } from '@backstage/config';
-import { JsonObject } from '@backstage/types';
-import {
-  ConfigSchema,
-  loadConfigSchema,
-  readEnvConfig,
-} from '@backstage/config-loader';
-import { LoggerService } from '@backstage/backend-plugin-api';
-
-type InjectOptions = {
-  appConfigs: AppConfig[];
-  // Directory of the static JS files to search for file to inject
-  staticDir: string;
-  logger: LoggerService;
-};
+import { InjectOptions } from './types';
 
 /**
  * Injects configs into the app bundle, replacing any existing injected config.
  */
-export async function injectConfig(
+export async function injectConfigIntoStatic(
   options: InjectOptions,
 ): Promise<string | undefined> {
   const { staticDir, logger, appConfigs } = options;
@@ -72,48 +58,4 @@ export async function injectConfig(
   }
   logger.info('Env config not injected');
   return undefined;
-}
-
-type ReadOptions = {
-  env: { [name: string]: string | undefined };
-  appDistDir: string;
-  config: Config;
-  schema?: ConfigSchema;
-};
-
-/**
- * Read config from environment and process the backend config using the
- * schema that is embedded in the frontend build.
- */
-export async function readConfigs(options: ReadOptions): Promise<AppConfig[]> {
-  const { env, appDistDir, config } = options;
-
-  const appConfigs = readEnvConfig(env);
-
-  const schemaPath = resolvePath(appDistDir, '.config-schema.json');
-  if (await fs.pathExists(schemaPath)) {
-    const serializedSchema = await fs.readJson(schemaPath);
-
-    try {
-      const schema =
-        options.schema ||
-        (await loadConfigSchema({
-          serialized: serializedSchema,
-        }));
-
-      const frontendConfigs = await schema.process(
-        [{ data: config.get() as JsonObject, context: 'app' }],
-        { visibility: ['frontend'], withDeprecatedKeys: true },
-      );
-      appConfigs.push(...frontendConfigs);
-    } catch (error) {
-      throw new Error(
-        'Invalid app bundle schema. If this error is unexpected you need to run `yarn build` in the app. ' +
-          `If that doesn't help you should make sure your config schema is correct and rebuild the app bundle again. ` +
-          `Caused by the following schema error, ${error}`,
-      );
-    }
-  }
-
-  return appConfigs;
 }
