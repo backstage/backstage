@@ -16,12 +16,7 @@ export const discoveryServiceFactory: ServiceFactory<
 
 // @public
 export class HostDiscovery implements DiscoveryService {
-  static fromConfig(
-    config: RootConfigService,
-    options?: {
-      basePath?: string;
-    },
-  ): HostDiscovery;
+  static fromConfig(config: RootConfigService): HostDiscovery;
   // (undocumented)
   getBaseUrl(pluginId: string): Promise<string>;
   // (undocumented)

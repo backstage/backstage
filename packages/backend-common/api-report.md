@@ -277,12 +277,7 @@ export class Git {
 
 // @public @deprecated
 class HostDiscovery implements DiscoveryService {
-  static fromConfig(
-    config: Config,
-    options?: {
-      basePath?: string;
-    },
-  ): HostDiscovery;
+  static fromConfig(config: Config): HostDiscovery;
   // (undocumented)
   getBaseUrl(pluginId: string): Promise<string>;
   // (undocumented)
