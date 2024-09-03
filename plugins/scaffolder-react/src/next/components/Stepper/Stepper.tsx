@@ -115,13 +115,15 @@ export const Stepper = (stepperProps: StepperProps) => {
   const apiHolder = useApiHolder();
   const [activeStep, setActiveStep] = useState(0);
   const [isValidating, setIsValidating] = useState(false);
-  const initialState = useFormDataFromQuery(props.initialState);
+  const [initialState] = useFormDataFromQuery(props.initialState);
   const [formState, setFormState] = useState<{
     [step: string]: Record<string, JsonValue>;
   }>();
 
   const [errors, setErrors] = useState<undefined | FormValidation>();
   const styles = useStyles();
+
+  const makeStepKey = (step: string | number) => `step-${step}`;
 
   const backLabel =
     presentation?.buttonLabels?.backButtonText ?? backButtonText;
@@ -161,7 +163,7 @@ export const Stepper = (stepperProps: StepperProps) => {
     (e: IChangeEvent) => {
       setFormState(current => ({
         ...current,
-        [`step${activeStep}`]: e.formData,
+        [makeStepKey(activeStep)]: e.formData,
       }));
     },
     [setFormState, activeStep],
@@ -193,7 +195,10 @@ export const Stepper = (stepperProps: StepperProps) => {
         return stepNum;
       });
     }
-    setFormState(current => ({ ...current, [`step${activeStep}`]: formData }));
+    setFormState(current => ({
+      ...current,
+      [makeStepKey(activeStep)]: formData,
+    }));
   };
 
   const {
@@ -208,11 +213,11 @@ export const Stepper = (stepperProps: StepperProps) => {
     if (!formState) {
       return initialState;
     }
-    const { [`step${activeStep}`]: activeState, ...historicalState } =
+    const { [makeStepKey(activeStep)]: activeState, ...historicalState } =
       formState;
     const chronologicalState = {
       ...historicalState,
-      [`step${activeStep}`]: activeState,
+      [makeStepKey(activeStep)]: activeState,
     };
     return merge({}, ...Object.values(chronologicalState));
   }, [formState, activeStep, initialState]);
