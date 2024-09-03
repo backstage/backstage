@@ -37,3 +37,4 @@ export {
 
 export * from './components';
 export * from './deprecated';
+export * from './extensions';
