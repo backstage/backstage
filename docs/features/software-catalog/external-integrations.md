@@ -1201,7 +1201,9 @@ export class MyIncrementalEntityProvider implements IncrementalEntityProvider<Cu
           }
         },
         spec: {
-          type: 'service'
+          type: 'service',
+          lifecycle: 'production', // Ideally your source has this information
+          owner: 'unknown', // Ideally your source has this information
         }
       }
     }));
