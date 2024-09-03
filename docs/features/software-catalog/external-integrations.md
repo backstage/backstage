@@ -1064,7 +1064,7 @@ To create an Incremental Entity Provider, you need to know how to retrieve a sin
 
 - **getProviderName:** A unique name to avoid conflicts with other providers.
 - **next:** Fetches a specific page of entities, moving the cursor forward.
-- **around:** Handles setup and teardown, wrapping the process that iterates through multiple pages.
+- **around:** Handles setup and tear-down, wrapping the process that iterates through multiple pages.
 
 For more information on compatibility, refer to the [requirements](https://github.com/backstage/backstage/tree/master/plugins/catalog-backend-module-incremental-ingestion#requirements).
 
