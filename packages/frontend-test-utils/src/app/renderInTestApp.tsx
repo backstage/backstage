@@ -25,7 +25,6 @@ import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 import {
   createExtension,
-  createExtensionOverrides,
   ExtensionDefinition,
   coreExtensionData,
   RouteRef,
@@ -33,6 +32,7 @@ import {
   IconComponent,
   RouterBlueprint,
   NavItemBlueprint,
+  createExtensionOverrides,
 } from '@backstage/frontend-plugin-api';
 import appPlugin from '@backstage/plugin-app';
 
@@ -182,10 +182,10 @@ export function renderInTestApp(
   }
 
   const features: FrontendFeature[] = [
-    appPluginOverride,
     createExtensionOverrides({
       extensions,
     }),
+    appPluginOverride,
   ];
 
   if (options?.features) {
