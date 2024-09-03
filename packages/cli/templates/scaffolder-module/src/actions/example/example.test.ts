@@ -1,6 +1,5 @@
 import { PassThrough } from 'stream';
 import { createAcmeExampleAction } from './example';
-import { getVoidLogger } from '@backstage/backend-common';
 
 describe('acme:example', () => {
   afterEach(() => {
@@ -10,15 +9,14 @@ describe('acme:example', () => {
   it('should call action', async () => {
     const action = createAcmeExampleAction();
 
-    const logger = getVoidLogger();
-    jest.spyOn(logger, 'info');
+    const logger = { info: jest.fn() };
 
     await action.handler({
       input: {
         myParameter: 'test',
       },
       workspacePath: '/tmp',
-      logger,
+      logger: logger as any,
       logStream: new PassThrough(),
       output: jest.fn(),
       createTemporaryDirectory() {

@@ -16,11 +16,11 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 import { default as lunr_2 } from 'lunr';
 import { Permission } from '@backstage/plugin-permission-common';
 import { Readable } from 'stream';
+import { SchedulerServiceTaskFunction } from '@backstage/backend-plugin-api';
+import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
 import { SearchQuery } from '@backstage/plugin-search-common';
-import { TaskFunction } from '@backstage/backend-tasks';
-import { TaskRunner } from '@backstage/backend-tasks';
 import { Transform } from 'stream';
-import { UrlReader } from '@backstage/backend-common';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { Writable } from 'stream';
 
 // @public
@@ -138,7 +138,7 @@ export class NewlineDelimitedJsonCollatorFactory
 export type NewlineDelimitedJsonCollatorFactoryOptions = {
   type: string;
   searchPattern: string;
-  reader: UrlReader;
+  reader: UrlReaderService;
   logger: LoggerService;
   visibilityPermission?: Permission;
 };
@@ -158,7 +158,7 @@ export type QueryTranslator = (query: SearchQuery) => unknown;
 // @public
 export interface RegisterCollatorParameters {
   factory: DocumentCollatorFactory;
-  schedule: TaskRunner;
+  schedule: SchedulerServiceTaskRunner;
 }
 
 // @public
@@ -177,8 +177,8 @@ export class Scheduler {
 // @public
 export type ScheduleTaskParameters = {
   id: string;
-  task: TaskFunction;
-  scheduledRunner: TaskRunner;
+  task: SchedulerServiceTaskFunction;
+  scheduledRunner: SchedulerServiceTaskRunner;
 };
 
 // @public

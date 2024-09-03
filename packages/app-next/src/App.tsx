@@ -26,10 +26,15 @@ import homePlugin, {
 import {
   coreExtensionData,
   createExtension,
-  createApiExtension,
-  createExtensionOverrides,
+  ApiBlueprint,
+  createFrontendModule,
 } from '@backstage/frontend-plugin-api';
-import techdocsPlugin from '@backstage/plugin-techdocs/alpha';
+import {
+  techdocsPlugin,
+  TechDocsIndexPage,
+  TechDocsReaderPage,
+  EntityTechdocsContent,
+} from '@backstage/plugin-techdocs';
 import appVisualizerPlugin from '@backstage/plugin-app-visualizer';
 import { homePage } from './HomePage';
 import { convertLegacyApp } from '@backstage/core-compat-api';
@@ -43,7 +48,10 @@ import {
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
 import kubernetesPlugin from '@backstage/plugin-kubernetes/alpha';
-import { signInPageOverrides } from './overrides/SignInPage';
+import { signInPageModule } from './overrides/SignInPage';
+import { convertLegacyPlugin } from '@backstage/core-compat-api';
+import { convertLegacyPageExtension } from '@backstage/core-compat-api';
+import { convertLegacyEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
 
 /*
 
@@ -74,28 +82,62 @@ TODO:
 
 /* app.tsx */
 
-const homePageExtension = createExtension({
-  name: 'myhomepage',
-  attachTo: { id: 'page:home', input: 'props' },
-  output: {
-    children: coreExtensionData.reactElement,
-    title: titleExtensionDataRef,
-  },
-  factory() {
-    return { children: homePage, title: 'just a title' };
-  },
+const convertedTechdocsPlugin = convertLegacyPlugin(techdocsPlugin, {
+  extensions: [
+    // TODO: We likely also need a way to convert an entire <Route> tree similar to collectLegacyRoutes
+    convertLegacyPageExtension(TechDocsIndexPage, {
+      name: 'index',
+      defaultPath: '/docs',
+    }),
+    convertLegacyPageExtension(TechDocsReaderPage, {
+      defaultPath: '/docs/:namespace/:kind/:name/*',
+    }),
+    convertLegacyEntityContentExtension(EntityTechdocsContent),
+  ],
 });
 
-const scmAuthExtension = createApiExtension({
-  factory: ScmAuth.createDefaultApiFactory(),
+const customHomePageModule = createFrontendModule({
+  pluginId: 'home',
+  extensions: [
+    createExtension({
+      name: 'my-home-page',
+      attachTo: { id: 'page:home', input: 'props' },
+      output: [coreExtensionData.reactElement, titleExtensionDataRef],
+      factory() {
+        return [
+          coreExtensionData.reactElement(homePage),
+          titleExtensionDataRef('just a title'),
+        ];
+      },
+    }),
+  ],
 });
 
-const scmIntegrationApi = createApiExtension({
-  factory: createApiFactory({
-    api: scmIntegrationsApiRef,
-    deps: { configApi: configApiRef },
-    factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
-  }),
+const scmModule = createFrontendModule({
+  pluginId: 'app',
+  extensions: [
+    ApiBlueprint.make({
+      name: 'scm-auth',
+      params: {
+        factory: ScmAuth.createDefaultApiFactory(),
+      },
+    }),
+    ApiBlueprint.make({
+      name: 'scm-integrations',
+      params: {
+        factory: createApiFactory({
+          api: scmIntegrationsApiRef,
+          deps: { configApi: configApiRef },
+          factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
+        }),
+      },
+    }),
+  ],
+});
+
+const notFoundErrorPageModule = createFrontendModule({
+  pluginId: 'app',
+  extensions: [notFoundErrorPage],
 });
 
 const collectedLegacyPlugins = convertLegacyApp(
@@ -107,21 +149,16 @@ const collectedLegacyPlugins = convertLegacyApp(
 const app = createApp({
   features: [
     pagesPlugin,
-    techdocsPlugin,
+    convertedTechdocsPlugin,
     userSettingsPlugin,
     homePlugin,
     appVisualizerPlugin,
     kubernetesPlugin,
-    signInPageOverrides,
+    signInPageModule,
+    scmModule,
+    notFoundErrorPageModule,
+    customHomePageModule,
     ...collectedLegacyPlugins,
-    createExtensionOverrides({
-      extensions: [
-        homePageExtension,
-        scmAuthExtension,
-        scmIntegrationApi,
-        notFoundErrorPage,
-      ],
-    }),
   ],
   /* Handled through config instead */
   // bindRoutes({ bind }) {

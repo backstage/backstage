@@ -1,5 +1,60 @@
 # @backstage/plugin-permission-backend
 
+## 0.5.49-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.25.0-next.1
+  - @backstage/plugin-auth-node@0.5.2-next.1
+  - @backstage/backend-plugin-api@0.9.0-next.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-node@0.8.3-next.1
+
+## 0.5.49-next.0
+
+### Patch Changes
+
+- d425fc4: Modules, plugins, and services are now `BackendFeature`, not a function that returns a feature.
+- fcb9356: Deprecated `createRouter` and its router options in favour of the new backend system.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.9.0-next.0
+  - @backstage/plugin-permission-node@0.8.3-next.0
+  - @backstage/backend-common@0.25.0-next.0
+  - @backstage/plugin-auth-node@0.5.2-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-permission-common@0.8.1
+
+## 0.5.47
+
+### Patch Changes
+
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/backend-common@0.24.0
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-auth-node@0.5.0
+  - @backstage/plugin-permission-node@0.8.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 0.5.47-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.3
+  - @backstage/backend-common@0.23.4-next.3
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-auth-node@0.5.0-next.3
+  - @backstage/plugin-permission-common@0.8.1-next.1
+  - @backstage/plugin-permission-node@0.8.1-next.3
+
 ## 0.5.47-next.2
 
 ### Patch Changes

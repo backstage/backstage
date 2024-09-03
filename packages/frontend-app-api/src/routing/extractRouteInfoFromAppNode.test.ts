@@ -25,12 +25,19 @@ import {
   coreExtensionData,
   createExtension,
   createExtensionInput,
-  createPlugin,
+  createFrontendPlugin,
   createRouteRef,
 } from '@backstage/frontend-plugin-api';
-import { MockConfigApi } from '@backstage/test-utils';
-import { createAppTree } from '../tree';
-import { builtinExtensions } from '../wiring/createApp';
+import { MockConfigApi, TestApiRegistry } from '@backstage/test-utils';
+import appPlugin from '@backstage/plugin-app';
+
+import { readAppExtensionsConfig } from '../tree/readAppExtensionsConfig';
+import { resolveAppNodeSpecs } from '../tree/resolveAppNodeSpecs';
+import { resolveAppTree } from '../tree/resolveAppTree';
+import { instantiateAppNodeTree } from '../tree/instantiateAppNodeTree';
+import { Root } from '../extensions/Root';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 
 const ref1 = createRouteRef();
 const ref2 = createRouteRef();
@@ -50,36 +57,47 @@ function createTestExtension(options: {
     attachTo: options.parent
       ? { id: `test/${options.parent}`, input: 'children' }
       : { id: 'app/routes', input: 'routes' },
-    output: {
-      element: coreExtensionData.reactElement,
-      path: coreExtensionData.routePath.optional(),
-      routeRef: coreExtensionData.routeRef.optional(),
-    },
+    output: [
+      coreExtensionData.reactElement,
+      coreExtensionData.routePath.optional(),
+      coreExtensionData.routeRef.optional(),
+    ],
     inputs: {
-      children: createExtensionInput({
-        element: coreExtensionData.reactElement,
-      }),
+      children: createExtensionInput([coreExtensionData.reactElement]),
     },
-    factory() {
-      return {
-        path: options.path,
-        routeRef: options.routeRef,
-        element: React.createElement('div'),
-      };
+    *factory() {
+      if (options.path !== undefined) {
+        yield coreExtensionData.routePath(options.path);
+      }
+
+      if (options.routeRef) {
+        yield coreExtensionData.routeRef(options.routeRef);
+      }
+
+      yield coreExtensionData.reactElement(React.createElement('div'));
     },
   });
 }
 
-function routeInfoFromExtensions(extensions: ExtensionDefinition<any, any>[]) {
-  const plugin = createPlugin({
+function routeInfoFromExtensions(extensions: ExtensionDefinition[]) {
+  const plugin = createFrontendPlugin({
     id: 'test',
     extensions,
   });
-  const tree = createAppTree({
-    config: new MockConfigApi({}),
-    builtinExtensions,
-    features: [plugin],
-  });
+
+  const tree = resolveAppTree(
+    'root',
+    resolveAppNodeSpecs({
+      features: [appPlugin, plugin],
+      builtinExtensions: [
+        resolveExtensionDefinition(Root, { namespace: 'root' }),
+      ],
+      parameters: readAppExtensionsConfig(new MockConfigApi({})),
+      forbidden: new Set(['root']),
+    }),
+  );
+
+  instantiateAppNodeTree(tree.root, TestApiRegistry.from());
 
   return extractRouteInfoFromAppNode(tree.root);
 }

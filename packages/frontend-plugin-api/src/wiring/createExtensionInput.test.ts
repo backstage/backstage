@@ -15,11 +15,7 @@
  */
 
 import { createExtensionDataRef } from './createExtensionDataRef';
-import {
-  ExtensionInput,
-  LegacyExtensionInput,
-  createExtensionInput,
-} from './createExtensionInput';
+import { ExtensionInput, createExtensionInput } from './createExtensionInput';
 
 const stringDataRef = createExtensionDataRef<string>().with({ id: 'str' });
 const numberDataRef = createExtensionDataRef<number>().with({ id: 'num' });
@@ -129,41 +125,5 @@ describe('createExtensionInput', () => {
     expect(() =>
       createExtensionInput([stringDataRef, stringDataRef], { singleton: true }),
     ).toThrow("ExtensionInput may not have duplicate data refs: 'str'");
-  });
-
-  describe('old api', () => {
-    it('should create a regular input', () => {
-      const input = createExtensionInput({
-        str: stringDataRef,
-        num: numberDataRef,
-      });
-      expect(input).toEqual({
-        $$type: '@backstage/ExtensionInput',
-        extensionData: { str: stringDataRef, num: numberDataRef },
-        config: { singleton: false, optional: false },
-      });
-
-      const x1: LegacyExtensionInput<
-        { str: typeof stringDataRef; num: typeof numberDataRef },
-        { singleton: false; optional: false }
-      > = input;
-      // @ts-expect-error
-      const x2: LegacyExtensionInput<
-        { str: typeof numberDataRef; num: typeof stringDataRef }, // switched
-        { singleton: false; optional: false }
-      > = input;
-      // @ts-expect-error
-      const x3: LegacyExtensionInput<
-        { str: typeof stringDataRef; num: typeof numberDataRef },
-        { singleton: true; optional: false }
-      > = input;
-      // @ts-expect-error
-      const x4: LegacyExtensionInput<
-        { str: typeof stringDataRef; num: typeof numberDataRef },
-        { singleton: false; optional: true }
-      > = input;
-
-      unused(x1, x2, x3, x4);
-    });
   });
 });

@@ -52,6 +52,7 @@ export function CustomNotFoundErrorPage() {
 }
 
 export default createComponentExtension({
+  name: 'not-found-error-page',
   ref: coreComponentRefs.notFoundErrorPage,
   loader: { sync: () => CustomNotFoundErrorPage },
 });

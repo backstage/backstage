@@ -4,24 +4,24 @@
 
 ```ts
 import { AuthService } from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import express from 'express';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PermissionPolicy } from '@backstage/plugin-permission-node';
+import { RootConfigService } from '@backstage/backend-plugin-api';
 import { UserInfoService } from '@backstage/backend-plugin-api';
 
-// @public
+// @public @deprecated
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
-// @public
+// @public @deprecated
 export interface RouterOptions {
   // (undocumented)
   auth?: AuthService;
   // (undocumented)
-  config: Config;
+  config: RootConfigService;
   // (undocumented)
   discovery: DiscoveryService;
   // (undocumented)

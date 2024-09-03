@@ -1,5 +1,38 @@
 # @backstage/plugin-events-backend-module-gerrit
 
+## 0.2.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.9.0-next.1
+  - @backstage/plugin-events-node@0.4.0-next.1
+
+## 0.2.11-next.0
+
+### Patch Changes
+
+- d425fc4: Modules, plugins, and services are now `BackendFeature`, not a function that returns a feature.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.9.0-next.0
+  - @backstage/plugin-events-node@0.4.0-next.0
+
+## 0.2.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/plugin-events-node@0.3.9
+
+## 0.2.9-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.3
+  - @backstage/plugin-events-node@0.3.9-next.3
+
 ## 0.2.9-next.2
 
 ### Patch Changes

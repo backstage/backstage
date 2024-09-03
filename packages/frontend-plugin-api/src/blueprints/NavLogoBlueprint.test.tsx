@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { NavLogoBlueprint } from './NavLogoBlueprint';
 import { createExtensionTester } from '@backstage/frontend-test-utils';
@@ -29,6 +30,7 @@ describe('NavLogoBlueprint', () => {
     expect(extension).toMatchInlineSnapshot(`
       {
         "$$type": "@backstage/ExtensionDefinition",
+        "T": undefined,
         "attachTo": {
           "id": "app/nav",
           "input": "logos",
@@ -64,7 +66,7 @@ describe('NavLogoBlueprint', () => {
 
     const tester = createExtensionTester(extension);
 
-    expect(tester.data(NavLogoBlueprint.dataRefs.logoElements)).toEqual({
+    expect(tester.get(NavLogoBlueprint.dataRefs.logoElements)).toEqual({
       logoFull,
       logoIcon,
     });

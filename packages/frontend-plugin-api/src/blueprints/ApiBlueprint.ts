@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import { createExtensionBlueprint } from '../wiring';
-import { createApiExtension } from '../extensions/createApiExtension';
+import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
 import { AnyApiFactory } from '@backstage/core-plugin-api';
+
+const factoryDataRef = createExtensionDataRef<AnyApiFactory>().with({
+  id: 'core.api.factory',
+});
 
 /**
  * Creates utility API extensions.
@@ -25,12 +28,12 @@ import { AnyApiFactory } from '@backstage/core-plugin-api';
  */
 export const ApiBlueprint = createExtensionBlueprint({
   kind: 'api',
-  attachTo: { id: 'app', input: 'apis' },
-  output: [createApiExtension.factoryDataRef],
+  attachTo: { id: 'root', input: 'apis' },
+  output: [factoryDataRef],
   dataRefs: {
-    factory: createApiExtension.factoryDataRef,
+    factory: factoryDataRef,
   },
   *factory(params: { factory: AnyApiFactory }) {
-    yield createApiExtension.factoryDataRef(params.factory);
+    yield factoryDataRef(params.factory);
   },
 });

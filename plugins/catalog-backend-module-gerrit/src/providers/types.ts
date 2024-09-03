@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TaskScheduleDefinition } from '@backstage/backend-tasks';
+import { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugin-api';
 
 export type GerritProjectInfo = {
   id: string;
@@ -30,5 +30,5 @@ export type GerritProviderConfig = {
   query: string;
   id: string;
   branch?: string;
-  schedule?: TaskScheduleDefinition;
+  schedule?: SchedulerServiceTaskScheduleDefinition;
 };

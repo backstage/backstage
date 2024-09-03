@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-aws",
-  "version": "0.3.18-next.2",
+  "version": "0.4.2-next.1",
   "description": "A Backstage catalog backend module that helps integrate towards AWS",
   "backstage": {
     "role": "backend-plugin-module",
@@ -57,9 +57,8 @@
     "@aws-sdk/credential-providers": "^3.350.0",
     "@aws-sdk/middleware-endpoint": "^3.347.0",
     "@aws-sdk/types": "^3.347.0",
-    "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
-    "@backstage/backend-tasks": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",

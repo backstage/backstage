@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { IconComponent } from '../icons';
 import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
 
@@ -23,8 +24,7 @@ const iconsDataRef = createExtensionDataRef<{
 /** @public */
 export const IconBundleBlueprint = createExtensionBlueprint({
   kind: 'icon-bundle',
-  namespace: 'app',
-  attachTo: { id: 'app', input: 'icons' },
+  attachTo: { id: 'api:app/icons', input: 'icons' },
   output: [iconsDataRef],
   config: {
     schema: {

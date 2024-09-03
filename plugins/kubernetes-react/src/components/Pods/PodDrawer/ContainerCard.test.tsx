@@ -40,6 +40,7 @@ describe('ContainerCard', () => {
           },
           containerSpec: {
             readinessProbe: {},
+            livenessProbe: {},
           },
           containerStatus: {
             name: 'some-name',

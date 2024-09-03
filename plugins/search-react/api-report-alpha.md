@@ -6,9 +6,8 @@
 /// <reference types="react" />
 
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
+import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ListItemProps } from '@material-ui/core/ListItem';
-import { PortableSchema } from '@backstage/frontend-plugin-api';
 import { SearchDocument } from '@backstage/plugin-search-common';
 import { SearchResult } from '@backstage/plugin-search-common';
 
@@ -19,36 +18,6 @@ export type BaseSearchResultListItemProps<T = {}> = T & {
 } & Omit<ListItemProps, 'button'>;
 
 // @alpha (undocumented)
-export function createSearchResultListItemExtension<
-  TConfig extends {
-    noTrack?: boolean;
-  },
->(
-  options: SearchResultItemExtensionOptions<TConfig>,
-): ExtensionDefinition<
-  TConfig,
-  TConfig,
-  never,
-  never,
-  string | undefined,
-  string | undefined,
-  string | undefined
->;
-
-// @alpha (undocumented)
-export namespace createSearchResultListItemExtension {
-  const // (undocumented)
-    itemDataRef: ConfigurableExtensionDataRef<
-      {
-        predicate?: SearchResultItemExtensionPredicate | undefined;
-        component: SearchResultItemExtensionComponent;
-      },
-      'search.search-result-list-item.item',
-      {}
-    >;
-}
-
-// @alpha (undocumented)
 export type SearchResultItemExtensionComponent = <
   P extends BaseSearchResultListItemProps,
 >(
@@ -56,28 +25,52 @@ export type SearchResultItemExtensionComponent = <
 ) => JSX.Element | null;
 
 // @alpha (undocumented)
-export type SearchResultItemExtensionOptions<
-  TConfig extends {
-    noTrack?: boolean;
-  },
-> = {
-  namespace?: string;
-  name?: string;
-  attachTo?: {
-    id: string;
-    input: string;
-  };
-  configSchema?: PortableSchema<TConfig>;
-  component: (options: {
-    config: TConfig;
-  }) => Promise<SearchResultItemExtensionComponent>;
-  predicate?: SearchResultItemExtensionPredicate;
-};
-
-// @alpha (undocumented)
 export type SearchResultItemExtensionPredicate = (
   result: SearchResult,
 ) => boolean;
+
+// @alpha
+export const SearchResultListItemBlueprint: ExtensionBlueprint<{
+  kind: 'search-result-list-item';
+  namespace: undefined;
+  name: undefined;
+  params: SearchResultListItemBlueprintParams;
+  output: ConfigurableExtensionDataRef<
+    {
+      predicate?: SearchResultItemExtensionPredicate | undefined;
+      component: SearchResultItemExtensionComponent;
+    },
+    'search.search-result-list-item.item',
+    {}
+  >;
+  inputs: {};
+  config: {
+    noTrack: boolean;
+  };
+  configInput: {
+    noTrack?: boolean | undefined;
+  };
+  dataRefs: {
+    item: ConfigurableExtensionDataRef<
+      {
+        predicate?: SearchResultItemExtensionPredicate | undefined;
+        component: SearchResultItemExtensionComponent;
+      },
+      'search.search-result-list-item.item',
+      {}
+    >;
+  };
+}>;
+
+// @alpha (undocumented)
+export interface SearchResultListItemBlueprintParams {
+  component: (options: {
+    config: {
+      noTrack?: boolean;
+    };
+  }) => Promise<SearchResultItemExtensionComponent>;
+  predicate?: SearchResultItemExtensionPredicate;
+}
 
 // (No @packageDocumentation comment for this package)
 ```

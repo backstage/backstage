@@ -195,6 +195,10 @@ const config: Config = {
             from: '/docs/local-dev/debugging/',
             to: '/docs/tooling/local-dev/debugging',
           },
+          {
+            from: '/docs/plugins/url-reader/',
+            to: '/docs/backend-system/core-services/url-reader',
+          },
         ],
       },
     ],
@@ -241,7 +245,7 @@ const config: Config = {
           position: 'left',
         },
         {
-          to: 'docs/releases/v1.29.0',
+          to: 'docs/releases/v1.30.0',
           label: 'Releases',
           position: 'left',
         },

@@ -95,7 +95,7 @@ import { createScaffolderFieldExtension } from '@backstage/plugin-scaffolder-rea
 import {
   ValidateKebabCase,
   validateKebabCaseValidation,
-} from './ValidateKebabCase/ValidateKebabCaseExtension';
+} from './ValidateKebabCaseExtension';
 
 export const ValidateKebabCaseFieldExtension = scaffolderPlugin.provide(
   createScaffolderFieldExtension({

@@ -40,22 +40,22 @@ describe('createExtensionOverrides', () => {
           createExtension({
             name: 'a',
             attachTo: { id: 'app', input: 'apis' },
-            output: {},
-            factory: () => ({}),
+            output: [],
+            factory: () => [],
           }),
           createExtension({
             namespace: 'b',
             attachTo: { id: 'app', input: 'apis' },
-            output: {},
-            factory: () => ({}),
+            output: [],
+            factory: () => [],
           }),
           createExtension({
             kind: 'k',
             namespace: 'c',
             name: 'n',
             attachTo: { id: 'app', input: 'apis' },
-            output: {},
-            factory: () => ({}),
+            output: [],
+            factory: () => [],
           }),
         ],
       }),
@@ -65,6 +65,7 @@ describe('createExtensionOverrides', () => {
         "extensions": [
           {
             "$$type": "@backstage/Extension",
+            "T": undefined,
             "attachTo": {
               "id": "app",
               "input": "apis",
@@ -74,12 +75,13 @@ describe('createExtensionOverrides', () => {
             "factory": [Function],
             "id": "a",
             "inputs": {},
-            "output": {},
+            "output": [],
             "toString": [Function],
-            "version": "v1",
+            "version": "v2",
           },
           {
             "$$type": "@backstage/Extension",
+            "T": undefined,
             "attachTo": {
               "id": "app",
               "input": "apis",
@@ -89,12 +91,13 @@ describe('createExtensionOverrides', () => {
             "factory": [Function],
             "id": "b",
             "inputs": {},
-            "output": {},
+            "output": [],
             "toString": [Function],
-            "version": "v1",
+            "version": "v2",
           },
           {
             "$$type": "@backstage/Extension",
+            "T": undefined,
             "attachTo": {
               "id": "app",
               "input": "apis",
@@ -104,9 +107,9 @@ describe('createExtensionOverrides', () => {
             "factory": [Function],
             "id": "k:c/n",
             "inputs": {},
-            "output": {},
+            "output": [],
             "toString": [Function],
-            "version": "v1",
+            "version": "v2",
           },
         ],
         "featureFlags": [],
@@ -122,8 +125,8 @@ describe('createExtensionOverrides', () => {
         createExtension({
           namespace: 'a',
           attachTo: { id: 'app', input: 'apis' },
-          output: {},
-          factory: () => ({}),
+          output: [],
+          factory: () => [],
         }),
       ],
     });

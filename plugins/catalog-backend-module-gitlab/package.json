@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-gitlab",
-  "version": "0.3.22-next.2",
+  "version": "0.4.2-next.1",
   "description": "A Backstage catalog backend module that helps integrate towards GitLab",
   "backstage": {
     "role": "backend-plugin-module",
@@ -51,9 +51,8 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
-    "@backstage/backend-tasks": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/integration": "workspace:^",

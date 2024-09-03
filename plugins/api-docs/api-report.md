@@ -9,6 +9,7 @@ import { ApiEntity } from '@backstage/catalog-model';
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CatalogTableRow } from '@backstage/plugin-catalog';
+import { ComponentEntity } from '@backstage/catalog-model';
 import { EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
@@ -16,6 +17,7 @@ import { JSX as JSX_2 } from 'react';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { TableColumn } from '@backstage/core-components';
+import { TableOptions } from '@backstage/core-components';
 import { TableProps } from '@backstage/core-components';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 
@@ -83,17 +85,29 @@ export const AsyncApiDefinitionWidget: (
 // @public (undocumented)
 export type AsyncApiDefinitionWidgetProps = {
   definition: string;
+  resolvers?: AsyncApiResolver[];
+};
+
+// @public (undocumented)
+export type AsyncApiResolver = {
+  schema: string;
+  order: number;
+  canRead: boolean;
+  read(uri: any): Promise<string>;
 };
 
 // @public (undocumented)
 export const ConsumedApisCard: (props: {
   variant?: InfoCardVariants;
+  title?: string;
   columns?: TableColumn<ApiEntity>[];
+  tableOptions?: TableOptions;
 }) => React_2.JSX.Element;
 
 // @public (undocumented)
 export const ConsumingComponentsCard: (props: {
   variant?: InfoCardVariants;
+  columns?: TableColumn<ComponentEntity>[];
 }) => React_2.JSX.Element;
 
 // @public
@@ -118,29 +132,37 @@ export const EntityApiDefinitionCard: () => JSX_2.Element;
 // @public (undocumented)
 export const EntityConsumedApisCard: (props: {
   variant?: InfoCardVariants | undefined;
+  title?: string | undefined;
   columns?: TableColumn<ApiEntity>[] | undefined;
+  tableOptions?: TableOptions<{}> | undefined;
 }) => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityConsumingComponentsCard: (props: {
   variant?: InfoCardVariants | undefined;
+  columns?: TableColumn<ComponentEntity>[] | undefined;
 }) => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityHasApisCard: (props: {
   variant?: InfoCardVariants | undefined;
+  title?: string | undefined;
   columns?: TableColumn<ApiEntity>[] | undefined;
+  tableOptions?: TableOptions<{}> | undefined;
 }) => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityProvidedApisCard: (props: {
   variant?: InfoCardVariants | undefined;
+  title?: string | undefined;
   columns?: TableColumn<ApiEntity>[] | undefined;
+  tableOptions?: TableOptions<{}> | undefined;
 }) => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityProvidingComponentsCard: (props: {
   variant?: InfoCardVariants | undefined;
+  columns?: TableColumn<ComponentEntity>[] | undefined;
 }) => JSX_2.Element;
 
 // @public (undocumented)
@@ -156,7 +178,9 @@ export type GraphQlDefinitionWidgetProps = {
 // @public (undocumented)
 export const HasApisCard: (props: {
   variant?: InfoCardVariants;
+  title?: string;
   columns?: TableColumn<ApiEntity>[];
+  tableOptions?: TableOptions;
 }) => React_2.JSX.Element;
 
 // @public (undocumented)
@@ -185,12 +209,15 @@ export type PlainApiDefinitionWidgetProps = {
 // @public (undocumented)
 export const ProvidedApisCard: (props: {
   variant?: InfoCardVariants;
+  title?: string;
   columns?: TableColumn<ApiEntity>[];
+  tableOptions?: TableOptions;
 }) => React_2.JSX.Element;
 
 // @public (undocumented)
 export const ProvidingComponentsCard: (props: {
   variant?: InfoCardVariants;
+  columns?: TableColumn<ComponentEntity>[];
 }) => React_2.JSX.Element;
 
 // @public (undocumented)

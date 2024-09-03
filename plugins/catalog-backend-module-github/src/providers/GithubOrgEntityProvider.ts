@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TaskRunner } from '@backstage/backend-tasks';
+import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
 import { Entity, isGroupEntity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
@@ -103,10 +103,10 @@ export interface GithubOrgEntityProviderOptions {
    * manually at some interval.
    *
    * But more commonly you will pass in the result of
-   * {@link @backstage/backend-tasks#PluginTaskScheduler.createScheduledTaskRunner}
+   * {@link @backstage/backend-plugin-api#SchedulerService.createScheduledTaskRunner}
    * to enable automatic scheduling of tasks.
    */
-  schedule?: 'manual' | TaskRunner;
+  schedule?: 'manual' | SchedulerServiceTaskRunner;
 
   /**
    * The logger to use.

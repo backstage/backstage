@@ -1,5 +1,30 @@
 # @backstage/core-components
 
+## 0.14.11-next.0
+
+### Patch Changes
+
+- 06b8206: Added `titleComponent` prop to `SignInPage` component to allow further customization of the title using `ReactNode`
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+  - @backstage/theme@0.5.6
+  - @backstage/version-bridge@1.0.8
+
+## 0.14.10
+
+### Patch Changes
+
+- 678971a: Move the `Link` component to the `RoutedTabs` instead of the `HeaderTabs` component
+- 13a9c63: Corrected the documentation for the GCP IAP auth module and updated the configuration to follow proxy configuration conventions by ignoring authEnv
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+  - @backstage/theme@0.5.6
+  - @backstage/version-bridge@1.0.8
+
 ## 0.14.10-next.0
 
 ### Patch Changes

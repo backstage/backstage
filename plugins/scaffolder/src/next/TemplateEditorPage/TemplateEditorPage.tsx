@@ -35,6 +35,8 @@ import {
   rootRouteRef,
   scaffolderListTaskRouteRef,
 } from '../../routes';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../translation';
 
 type Selection =
   | {
@@ -60,6 +62,7 @@ export function TemplateEditorPage(props: TemplateEditorPageProps) {
   const actionsLink = useRouteRef(actionsRouteRef);
   const tasksLink = useRouteRef(scaffolderListTaskRouteRef);
   const createLink = useRouteRef(rootRouteRef);
+  const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const scaffolderPageContextMenuProps = {
     onEditorClicked: undefined,
@@ -117,8 +120,8 @@ export function TemplateEditorPage(props: TemplateEditorPageProps) {
   return (
     <Page themeId="home">
       <Header
-        title="Template Editor"
-        subtitle="Edit, preview, and try out templates and template forms"
+        title={t('templateEditorPage.title')}
+        subtitle={t('templateEditorPage.subtitle')}
       >
         <ScaffolderPageContextMenu {...scaffolderPageContextMenuProps} />
       </Header>

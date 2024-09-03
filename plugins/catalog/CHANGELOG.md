@@ -1,5 +1,103 @@
 # @backstage/plugin-catalog
 
+## 1.22.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.8.0-next.1
+  - @backstage/core-compat-api@0.3.0-next.1
+  - @backstage/catalog-client@1.6.7-next.0
+  - @backstage/core-components@0.14.11-next.0
+  - @backstage/plugin-catalog-react@1.12.4-next.1
+  - @backstage/catalog-model@1.6.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+  - @backstage/integration-react@1.1.30
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.26
+  - @backstage/plugin-permission-react@0.4.25
+  - @backstage/plugin-scaffolder-common@1.5.5
+  - @backstage/plugin-search-common@1.2.14
+  - @backstage/plugin-search-react@1.8.0-next.1
+
+## 1.22.1-next.0
+
+### Patch Changes
+
+- fec8b57: Updated exports to use the new type parameters for extensions and extension blueprints.
+- 5446061: The `/alpha` export no longer export extension creators for the new frontend system, existing usage should be switched to use the equivalent extension blueprint instead. For more information see the [new frontend system 1.30 migration documentation](https://backstage.io/docs/frontend-system/architecture/migrations#130).
+- 180a45f: Entity presentation api now only fetches fields that are required to display entity title
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.8.0-next.0
+  - @backstage/core-compat-api@0.2.9-next.0
+  - @backstage/plugin-catalog-react@1.12.4-next.0
+  - @backstage/plugin-search-react@1.8.0-next.0
+  - @backstage/catalog-client@1.6.6
+  - @backstage/catalog-model@1.6.0
+  - @backstage/core-components@0.14.10
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+  - @backstage/integration-react@1.1.30
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.26
+  - @backstage/plugin-permission-react@0.4.25
+  - @backstage/plugin-scaffolder-common@1.5.5
+  - @backstage/plugin-search-common@1.2.14
+
+## 1.22.0
+
+### Minor Changes
+
+- 6925dcb: Introduces the HasSubdomainsCard component that displays the subdomains of a given domain
+
+### Patch Changes
+
+- 496b8a9: Export `RelatedEntitiesCard` presets to be reused.
+- 604a504: The entity relation cards available for the new frontend system via `/alpha` now have more accurate and granular default filters.
+- 7bd27e1: Deprecate the old pattern of `create*Extension`, and replace it with the equivalent Blueprint implementation instead.
+- c7603e8: Deprecate the old pattern of `create*Extension`, and replace it with the equivalent Blueprint implementation instead
+- 6582799: Add `tableOptions` to all tables and additionally `title` to API tables.
+- 6349099: Added config input type to the extensions
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.7.0
+  - @backstage/plugin-catalog-react@1.12.3
+  - @backstage/plugin-search-react@1.7.14
+  - @backstage/core-components@0.14.10
+  - @backstage/core-compat-api@0.2.8
+  - @backstage/plugin-search-common@1.2.14
+  - @backstage/catalog-model@1.6.0
+  - @backstage/catalog-client@1.6.6
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+  - @backstage/integration-react@1.1.30
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.26
+  - @backstage/plugin-permission-react@0.4.25
+  - @backstage/plugin-scaffolder-common@1.5.5
+
+## 1.22.0-next.3
+
+### Patch Changes
+
+- 6582799: Add `tableOptions` to all tables and additionally `title` to API tables.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.7.0-next.3
+  - @backstage/catalog-model@1.6.0-next.0
+  - @backstage/core-compat-api@0.2.8-next.3
+  - @backstage/plugin-catalog-react@1.12.3-next.3
+  - @backstage/plugin-search-react@1.7.14-next.3
+  - @backstage/catalog-client@1.6.6-next.0
+  - @backstage/core-components@0.14.10-next.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+  - @backstage/integration-react@1.1.30-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.26-next.2
+  - @backstage/plugin-permission-react@0.4.25-next.1
+  - @backstage/plugin-scaffolder-common@1.5.5-next.2
+  - @backstage/plugin-search-common@1.2.14-next.1
+
 ## 1.22.0-next.2
 
 ### Minor Changes

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { resolvePackagePath } from '@backstage/backend-common';
+import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Knex } from 'knex';
 import { UserInfoDatabaseHandler } from './UserInfoDatabaseHandler';

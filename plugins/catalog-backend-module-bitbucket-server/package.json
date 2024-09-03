@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-bitbucket-server",
-  "version": "0.1.37-next.2",
+  "version": "0.2.2-next.1",
   "backstage": {
     "role": "backend-plugin-module",
     "pluginId": "catalog",
@@ -50,9 +50,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/backend-common": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
-    "@backstage/backend-tasks": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",

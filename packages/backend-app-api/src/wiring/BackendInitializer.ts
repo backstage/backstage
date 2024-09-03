@@ -38,6 +38,7 @@ import { featureDiscoveryServiceRef } from '@backstage/backend-plugin-api/alpha'
 import { DependencyGraph } from '../lib/DependencyGraph';
 import { ServiceRegistry } from './ServiceRegistry';
 import { createInitializationLogger } from './createInitializationLogger';
+import { unwrapFeature } from './helpers';
 
 export interface BackendRegisterInit {
   consumes: Set<ServiceOrExtensionPoint>;
@@ -92,8 +93,11 @@ export class BackendInitializer {
 
     if (missingRefs.size > 0) {
       const missing = Array.from(missingRefs).join(', ');
+      const target = moduleId
+        ? `module '${moduleId}' for plugin '${pluginId}'`
+        : `plugin '${pluginId}'`;
       throw new Error(
-        `No extension point or service available for the following ref(s): ${missing}`,
+        `Service or extension point dependencies of ${target} are missing for the following ref(s): ${missing}`,
       );
     }
 
@@ -156,6 +160,7 @@ export class BackendInitializer {
     }
 
     const featureDiscovery = await this.#serviceRegistry.get(
+      // TODO: Let's leave this in place and remove it once the deprecated service is removed. We can do that post-1.0 since it's alpha
       featureDiscoveryServiceRef,
       'root',
     );
@@ -163,7 +168,7 @@ export class BackendInitializer {
     if (featureDiscovery) {
       const { features } = await featureDiscovery.getBackendFeatures();
       for (const feature of features) {
-        this.#addFeature(feature);
+        this.#addFeature(unwrapFeature(feature));
       }
       this.#serviceRegistry.checkForCircularDeps();
     }
@@ -417,6 +422,7 @@ export class BackendInitializer {
 
       const result = await loader
         .loader(Object.fromEntries(deps))
+        .then(features => features.map(unwrapFeature))
         .catch(error => {
           throw new ForwardedError(
             `Feature loader ${loader.description} failed`,

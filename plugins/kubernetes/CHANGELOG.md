@@ -1,5 +1,65 @@
 # @backstage/plugin-kubernetes
 
+## 0.11.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.8.0-next.1
+  - @backstage/core-compat-api@0.3.0-next.1
+  - @backstage/core-components@0.14.11-next.0
+  - @backstage/plugin-catalog-react@1.12.4-next.1
+  - @backstage/catalog-model@1.6.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/plugin-kubernetes-common@0.8.2
+  - @backstage/plugin-kubernetes-react@0.4.3-next.0
+
+## 0.11.14-next.0
+
+### Patch Changes
+
+- fec8b57: Updated exports to use the new type parameters for extensions and extension blueprints.
+- bfc0f42: Make k8s entity content appear on components & resources only by default in new FE system
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.8.0-next.0
+  - @backstage/core-compat-api@0.2.9-next.0
+  - @backstage/plugin-catalog-react@1.12.4-next.0
+  - @backstage/catalog-model@1.6.0
+  - @backstage/core-components@0.14.10
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/plugin-kubernetes-common@0.8.2
+  - @backstage/plugin-kubernetes-react@0.4.2
+
+## 0.11.13
+
+### Patch Changes
+
+- e6c15cc: Adds support for Backstage's new frontend system, available via the `/alpha` sub-path export.
+- fe1fbb2: Migrating usages of the deprecated `createExtension` `v1` format to the newer `v2` format, and old `create*Extension` extension creators to blueprints.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.7.0
+  - @backstage/plugin-catalog-react@1.12.3
+  - @backstage/plugin-kubernetes-react@0.4.2
+  - @backstage/core-components@0.14.10
+  - @backstage/core-compat-api@0.2.8
+  - @backstage/catalog-model@1.6.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/plugin-kubernetes-common@0.8.2
+
+## 0.11.13-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.7.0-next.3
+  - @backstage/catalog-model@1.6.0-next.0
+  - @backstage/core-compat-api@0.2.8-next.3
+  - @backstage/plugin-catalog-react@1.12.3-next.3
+  - @backstage/core-components@0.14.10-next.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/plugin-kubernetes-common@0.8.2-next.2
+  - @backstage/plugin-kubernetes-react@0.4.2-next.3
+
 ## 0.11.13-next.2
 
 ### Patch Changes

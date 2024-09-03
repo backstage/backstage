@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  LifecycleService,
-  PluginMetadataService,
-} from '@backstage/backend-plugin-api';
+import { LifecycleService, LoggerService } from '@backstage/backend-plugin-api';
 import { Config, ConfigReader } from '@backstage/config';
 import { ForwardedError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
@@ -29,6 +26,7 @@ import { Connector } from '../types';
 import defaultNameOverride from './defaultNameOverride';
 import defaultSchemaOverride from './defaultSchemaOverride';
 import { mergeDatabaseConfig } from './mergeDatabaseConfig';
+import format from 'pg-format';
 
 // Limits the number of concurrent DDL operations to 1
 const ddlLimiter = limiterFactory(1);
@@ -52,7 +50,8 @@ export function createPgDatabaseClient(
     database.client.pool.on(
       'createSuccess',
       async (_event: number, pgClient: Client) => {
-        await pgClient.query(`SET ROLE ${role}`);
+        const query = format('SET ROLE %I', role);
+        await pgClient.query(query);
       },
     );
   }
@@ -259,9 +258,9 @@ export class PgConnector implements Connector {
 
   async getClient(
     pluginId: string,
-    _deps?: {
+    _deps: {
+      logger: LoggerService;
       lifecycle: LifecycleService;
-      pluginMetadata: PluginMetadataService;
     },
   ): Promise<Knex> {
     const pluginConfig = new ConfigReader(
@@ -308,10 +307,6 @@ export class PgConnector implements Connector {
     );
 
     return client;
-  }
-
-  async dropDatabase(...databaseNames: string[]): Promise<void> {
-    return await dropPgDatabase(this.config, ...databaseNames);
   }
 
   /**

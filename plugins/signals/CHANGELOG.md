@@ -1,5 +1,57 @@
 # @backstage/plugin-signals
 
+## 0.0.10-next.1
+
+### Patch Changes
+
+- 3e9b1a4: Put a name on the `SignalsDisplay` component extension
+- Updated dependencies
+  - @backstage/core-components@0.14.11-next.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/theme@0.5.6
+  - @backstage/types@1.1.1
+  - @backstage/plugin-signals-react@0.0.5-next.0
+
+## 0.0.10-next.0
+
+### Patch Changes
+
+- 5add8e1: Added a `SignalsDisplay` extension to allows the signals plugin to be installed in an app as follows:
+
+  ```tsx
+  export default app.createRoot(
+    <>
+      <AlertDisplay transientTimeoutMs={2500} />
+      <OAuthRequestDialog />
+      <SignalsDisplay />
+      <AppRouter>
+        <VisitListener />
+        <Root>{routes}</Root>
+      </AppRouter>
+    </>,
+  );
+  ```
+
+  With this in place you can remove the explicit installation via the `plugins` option for `createApp`.
+
+- Updated dependencies
+  - @backstage/plugin-signals-react@0.0.5-next.0
+  - @backstage/core-components@0.14.10
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/theme@0.5.6
+  - @backstage/types@1.1.1
+
+## 0.0.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.10
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/theme@0.5.6
+  - @backstage/types@1.1.1
+  - @backstage/plugin-signals-react@0.0.4
+
 ## 0.0.9-next.0
 
 ### Patch Changes

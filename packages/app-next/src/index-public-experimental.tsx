@@ -14,36 +14,12 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { CookieAuthRedirect } from '@backstage/plugin-auth-react';
-import { createApp } from '@backstage/frontend-app-api';
-import { signInPageOverrides } from './overrides/SignInPage';
-import {
-  coreExtensionData,
-  createExtension,
-  createExtensionOverrides,
-} from '@backstage/frontend-plugin-api';
+import { signInPageModule } from './overrides/SignInPage';
+import { createPublicSignInApp } from '@backstage/frontend-defaults';
 
-const authRedirectExtension = createExtension({
-  namespace: 'app',
-  name: 'layout',
-  attachTo: { id: 'app/root', input: 'children' },
-  output: {
-    element: coreExtensionData.reactElement,
-  },
-  factory: () => ({
-    element: <CookieAuthRedirect />,
-  }),
-});
-
-const app = createApp({
-  features: [
-    signInPageOverrides,
-    createExtensionOverrides({
-      extensions: [authRedirectExtension],
-    }),
-  ],
+const app = createPublicSignInApp({
+  features: [signInPageModule],
 });
 
 ReactDOM.createRoot(document.getElementById('root')!).render(app.createRoot());

@@ -1,5 +1,52 @@
 # @backstage/core-compat-api
 
+## 0.3.0-next.1
+
+### Minor Changes
+
+- 6db849e: **BREAKING**: The `namespace` parameter for API's is now defaulted to the `pluginId` which was discovered. This means that if you're overriding API's by using ID's directly, they might have changed to include the plugin ID too.
+
+### Patch Changes
+
+- c816e2d: Added support for new `FrontendPlugin` and `FrontendModule` types.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.8.0-next.1
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/version-bridge@1.0.8
+
+## 0.2.9-next.0
+
+### Patch Changes
+
+- fec8b57: Updated exports to use the new type parameters for extensions and extension blueprints.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.8.0-next.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/version-bridge@1.0.8
+
+## 0.2.8
+
+### Patch Changes
+
+- 72754db: Updated usage of `useRouteRef`, which can now always return `undefined`.
+- fe1fbb2: Migrating usages of the deprecated `createExtension` `v1` format to the newer `v2` format, and old `create*Extension` extension creators to blueprints.
+- 16cf96c: Both `compatWrapper` and `convertLegacyRouteRef` now support converting from the new system to the old.
+- 519b8e0: Added new utilities for converting legacy plugins and extensions to the new system. The `convertLegacyPlugin` option will convert an existing plugin to the new system, although you need to supply extensions for the plugin yourself. To help out with this, there is also a new `convertLegacyPageExtension` which converts an existing page extension to the new system.
+- 6349099: Added config input type to the extensions
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.7.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/version-bridge@1.0.8
+
+## 0.2.8-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.7.0-next.3
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/version-bridge@1.0.8
+
 ## 0.2.8-next.2
 
 ### Patch Changes

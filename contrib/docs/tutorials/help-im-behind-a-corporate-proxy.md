@@ -111,3 +111,7 @@ The `proxy-agent` package can be used as an alternative to `global-agent` (do no
    ```
 
 4. Start the backend with `yarn start`
+
+## Backstage CLI
+
+The Backstage CLI [versions:bump](https://backstage.io/docs/tooling/cli/commands#versionsbump) command also supports proxies via `global-agent` environment variable configuration. See the [keeping Backstage updated](https://backstage.io/docs/getting-started/keeping-backstage-updated/#proxy) docs for more information.

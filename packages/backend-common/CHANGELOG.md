@@ -1,5 +1,142 @@
 # @backstage/backend-common
 
+## 0.25.0-next.1
+
+### Minor Changes
+
+- a4bac3c: **BREAKING**: You can no longer supply a `basePath` option to the host discovery implementation. In the new backend system, the ability to choose this path has been removed anyway at the plugin router level.
+- 988c145: **BREAKING**: Simplifications and cleanup as part of the Backend System 1.0 work.
+
+  - The deprecated `dropDatabase` function has now been removed, without replacement.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.2-next.1
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/backend-plugin-api@0.9.0-next.1
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.9.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.14.0
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+
+## 0.25.0-next.0
+
+### Minor Changes
+
+- d425fc4: **BREAKING**: The return values from `createBackendPlugin`, `createBackendModule`, and `createServiceFactory` are now simply `BackendFeature` and `ServiceFactory`, instead of the previously deprecated form of a function that returns them. For this reason, `createServiceFactory` also no longer accepts the callback form where you provide direct options to the service. This also affects all `coreServices.*` service refs.
+
+  This may in particular affect tests; if you were effectively doing `createBackendModule({...})()` (note the parentheses), you can now remove those extra parentheses at the end. You may encounter cases of this in your `packages/backend/src/index.ts` too, where you add plugins, modules, and services. If you were using `createServiceFactory` with a function as its argument for the purpose of passing in options, this pattern has been deprecated for a while and is no longer supported. You may want to explore the new multiton patterns to achieve your goals, or moving settings to app-config.
+
+  As part of this change, the `IdentityFactoryOptions` type was removed, and can no longer be used to tweak that service. The identity service was also deprecated some time ago, and you will want to [migrate to the new auth system](https://backstage.io/docs/tutorials/auth-service-migration) if you still rely on it.
+
+### Patch Changes
+
+- 8ba77ed: The `legacyPlugin` and `makeLegacyPlugin` helpers now provide their own shim implementation of the identity and token manager services, as these services are being removed from the new backend system.
+- d425fc4: Modules, plugins, and services are now `BackendFeature`, not a function that returns a feature.
+- 2e9ec14: Add `pg-format` as a dependency
+- 19ff127: Internal refactor to re-declare the token manager service which was removed from `@backstage/backend-plugin-api`, but is still supported in this package for backwards compatibility.
+- 66dbf0a: Allow the cache service to accept the human duration format for TTL
+- 0b2a402: Updates to the config schema to match reality
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.9.0-next.0
+  - @backstage/plugin-auth-node@0.5.2-next.0
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.9.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.14.0
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+
+## 0.24.0
+
+### Minor Changes
+
+- 389f5a4: **BREAKING**: Removed the following `Url Reader` deprecated exports:
+
+  - UrlReader: Use `UrlReaderService` from `@backstage/backend-plugin-api` instead;
+  - AzureUrlReader: Import from `@backstage/backend-defaults/urlReader` instead;
+  - BitbucketUrlReader: Import from `@backstage/backend-defaults/urlReader` instead;
+  - BitbucketCloudUrlReader: Import from `@backstage/backend-defaults/urlReader` instead;
+  - BitbucketServerUrlReader: Import from `@backstage/backend-defaults/urlReader` instead;
+  - GithubUrlReader: Import from `@backstage/backend-defaults/urlReader` instead;
+  - GitlabUrlReader: Import from `@backstage/backend-defaults/urlReader` instead;
+  - GerritUrlReader: Import from `@backstage/backend-defaults/urlReader` instead;
+  - GiteaUrlReader: Import from `@backstage/backend-defaults/urlReader` instead;
+  - HarnessUrlReader: Import from `@backstage/backend-defaults/urlReader` instead;
+  - AwsS3UrlReader: Import from `@backstage/backend-defaults/urlReader` instead;
+  - FetchUrlReader: Import from `@backstage/backend-defaults/urlReader` instead;
+  - UrlReaders: Import from `@backstage/backend-defaults/urlReader` instead;
+  - UrlReadersOptions: Import from `@backstage/backend-defaults/urlReader` instead;
+  - UrlReaderPredicateTuple: Import from `@backstage/backend-defaults/urlReader` instead;
+  - FromReadableArrayOptions: Import from `@backstage/backend-defaults/urlReader` instead;
+  - ReaderFactory: Import from `@backstage/backend-defaults/urlReader` instead;
+  - ReadUrlOptions:Use `UrlReaderServiceReadUrlOptions` from `@backstage/backend-plugin-api` instead;
+  - ReadUrlResponse: Use `UrlReaderServiceReadUrlResponse` from `@backstage/backend-plugin-api` instead;
+  - ReadUrlResponseFactory: Import from `@backstage/backend-defaults/urlReader` instead;
+  - ReadUrlResponseFactoryFromStreamOptions: Import from `@backstage/backend-defaults/urlReader` instead;
+  - ReadTreeOptions: Use `UrlReaderServiceReadTreeOptions` from `@backstage/backend-plugin-api` instead;
+  - ReadTreeResponse: Use `UrlReaderServiceReadTreeResponse` from `@backstage/backend-plugin-api` instead;
+  - ReadTreeResponseFile: Use `UrlReaderServiceReadTreeResponseFile` from `@backstage/backend-plugin-api` instead;
+  - ReadTreeResponseDirOptions: Use `UrlReaderServiceReadTreeResponseDirOptions` from `@backstage/backend-plugin-api` instead;
+  - ReadTreeResponseFactory: Import from `@backstage/backend-defaults/urlReader` instead;
+  - ReadTreeResponseFactoryOptions: Import from `@backstage/backend-defaults/urlReader` instead;
+  - SearchOptions: Use `UrlReaderServiceSearchOptions` from `@backstage/backend-plugin-api` instead;
+  - SearchResponse: Use `UrlReaderServiceSearchResponse` from `@backstage/backend-plugin-api` instead;
+  - SearchResponseFile: Use `UrlReaderServiceSearchResponseFile` from `@backstage/backend-plugin-api` instead.
+
+### Patch Changes
+
+- ba8571e: Setup user agent header for AWS sdk clients, this enables users to better track API calls made from Backstage to AWS APIs through things like CloudTrail.
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- 6795e33: This package is marked as `deprecated` and will be removed in a near future, please follow the deprecated instructions for the exports you still use.
+- 7e13b7a: The remaining exports in the package have now been deprecated:
+
+  - `cacheToPluginCacheManager`
+  - `createLegacyAuthAdapters`
+  - `LegacyCreateRouter`
+  - `legacyPlugin`
+  - `loggerToWinstonLogger`
+  - `makeLegacyPlugin`
+
+  Users of these export should fully [migrate to the new backend system](https://backstage.io/docs/backend-system/building-backends/migrating).
+
+- ddde5fe: Internal type refactor.
+- b63d378: export `createConfigSecretEnumerator` from `@backstage/backend-common` instead of `@backstage/backend-app-api`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/config-loader@1.9.0
+  - @backstage/plugin-auth-node@0.5.0
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/integration@1.14.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+
+## 0.23.4-next.3
+
+### Patch Changes
+
+- ddde5fe: Internal type refactor.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.3
+  - @backstage/backend-dev-utils@0.1.4
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.9.0-next.2
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.14.0-next.0
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.5.0-next.3
+
 ## 0.23.4-next.2
 
 ### Patch Changes

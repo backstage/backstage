@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-import {
-  ReadTreeResponse,
-  ReadUrlOptions,
-  ReadUrlResponse,
-  SearchResponse,
-  UrlReader,
-} from '@backstage/backend-common';
 import { Entity, getEntitySourceLocation } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
@@ -34,6 +27,13 @@ import {
   parseReferenceAnnotation,
   transformDirLocation,
 } from './helpers';
+import {
+  UrlReaderService,
+  UrlReaderServiceSearchResponse,
+  UrlReaderServiceReadUrlResponse,
+  UrlReaderServiceReadUrlOptions,
+  UrlReaderServiceReadTreeResponse,
+} from '@backstage/backend-plugin-api';
 
 jest.mock('@backstage/catalog-model', () => ({
   ...jest.requireActual('@backstage/catalog-model'),
@@ -290,19 +290,19 @@ describe('getLocationForEntity', () => {
 
 describe('getDocFilesFromRepository', () => {
   it('should read a remote directory using UrlReader.readTree', async () => {
-    class MockUrlReader implements UrlReader {
+    class MockUrlReader implements UrlReaderService {
       async read() {
         return Buffer.from('mock');
       }
 
       async readUrl(
         _url: string,
-        _options?: ReadUrlOptions | undefined,
-      ): Promise<ReadUrlResponse> {
+        _options?: UrlReaderServiceReadUrlOptions | undefined,
+      ): Promise<UrlReaderServiceReadUrlResponse> {
         throw new Error('Method not implemented.');
       }
 
-      async readTree(): Promise<ReadTreeResponse> {
+      async readTree(): Promise<UrlReaderServiceReadTreeResponse> {
         return {
           dir: async () => {
             return '/tmp/testfolder';
@@ -317,7 +317,7 @@ describe('getDocFilesFromRepository', () => {
         };
       }
 
-      async search(): Promise<SearchResponse> {
+      async search(): Promise<UrlReaderServiceSearchResponse> {
         return {
           etag: '',
           files: [],

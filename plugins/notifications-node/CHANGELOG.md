@@ -1,5 +1,54 @@
 # @backstage/plugin-notifications-node
 
+## 0.2.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.25.0-next.1
+  - @backstage/catalog-client@1.6.7-next.0
+  - @backstage/backend-plugin-api@0.9.0-next.1
+  - @backstage/catalog-model@1.6.0
+  - @backstage/plugin-notifications-common@0.0.5
+  - @backstage/plugin-signals-node@0.1.11-next.1
+
+## 0.2.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.9.0-next.0
+  - @backstage/backend-common@0.25.0-next.0
+  - @backstage/plugin-signals-node@0.1.11-next.0
+  - @backstage/catalog-client@1.6.6
+  - @backstage/catalog-model@1.6.0
+  - @backstage/plugin-notifications-common@0.0.5
+
+## 0.2.4
+
+### Patch Changes
+
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/backend-common@0.24.0
+  - @backstage/catalog-model@1.6.0
+  - @backstage/catalog-client@1.6.6
+  - @backstage/plugin-notifications-common@0.0.5
+  - @backstage/plugin-signals-node@0.1.9
+
+## 0.2.4-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.3
+  - @backstage/backend-common@0.23.4-next.3
+  - @backstage/catalog-model@1.6.0-next.0
+  - @backstage/catalog-client@1.6.6-next.0
+  - @backstage/plugin-notifications-common@0.0.5
+  - @backstage/plugin-signals-node@0.1.9-next.3
+
 ## 0.2.4-next.2
 
 ### Patch Changes

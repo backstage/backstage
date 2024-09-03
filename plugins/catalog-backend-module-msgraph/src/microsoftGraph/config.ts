@@ -15,9 +15,9 @@
  */
 
 import {
-  readTaskScheduleDefinitionFromConfig,
-  TaskScheduleDefinition,
-} from '@backstage/backend-tasks';
+  SchedulerServiceTaskScheduleDefinition,
+  readSchedulerServiceTaskScheduleDefinitionFromConfig,
+} from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { trimEnd } from 'lodash';
 
@@ -141,7 +141,7 @@ export type MicrosoftGraphProviderConfig = {
   /**
    * Schedule configuration for refresh tasks.
    */
-  schedule?: TaskScheduleDefinition;
+  schedule?: SchedulerServiceTaskScheduleDefinition;
 };
 
 /**
@@ -338,7 +338,9 @@ export function readProviderConfig(
   }
 
   const schedule = config.has('schedule')
-    ? readTaskScheduleDefinitionFromConfig(config.getConfig('schedule'))
+    ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
+        config.getConfig('schedule'),
+      )
     : undefined;
 
   return {

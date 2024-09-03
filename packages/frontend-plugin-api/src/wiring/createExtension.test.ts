@@ -18,53 +18,49 @@ import { createExtensionTester } from '@backstage/frontend-test-utils';
 import { createExtension } from './createExtension';
 import { createExtensionDataRef } from './createExtensionDataRef';
 import { createExtensionInput } from './createExtensionInput';
+import { PortableSchema } from '../schema';
 
 const stringDataRef = createExtensionDataRef<string>().with({ id: 'string' });
 const numberDataRef = createExtensionDataRef<number>().with({ id: 'number' });
+const booleanDataRef = createExtensionDataRef<boolean>().with({
+  id: 'boolean',
+});
 
 function unused(..._any: any[]) {}
 
 describe('createExtension', () => {
   it('should create an extension with a simple output', () => {
     const baseConfig = {
-      namespace: 'test',
       attachTo: { id: 'root', input: 'default' },
-      output: {
-        foo: stringDataRef,
-      },
+      output: [stringDataRef],
     };
     const extension = createExtension({
       ...baseConfig,
       factory() {
-        return {
-          foo: 'bar',
-        };
+        return [stringDataRef('bar')];
       },
     });
-    expect(extension).toMatchObject({ version: 'v1', namespace: 'test' });
+    expect(extension).toMatchObject({ version: 'v2' });
 
-    // When declared as an error function without a block the TypeScript errors
-    // are a more specific and will often point at the property that is problematic.
+    // Member arrow function declaration
+    createExtension({
+      ...baseConfig,
+      factory: () => [
+        stringDataRef(
+          // @ts-expect-error
+          3,
+        ),
+      ],
+    });
     // @ts-expect-error
     createExtension({
       ...baseConfig,
-      factory: () => ({
-        foo: 3,
-      }),
+      factory: () => [numberDataRef(3)],
     });
+    // @ts-expect-error
     createExtension({
       ...baseConfig,
-      factory: () =>
-        // @ts-expect-error
-        ({
-          bar: 'bar',
-        }),
-    });
-    createExtension({
-      ...baseConfig,
-      factory: () =>
-        // @ts-expect-error
-        ({}),
+      factory: () => [],
     });
     createExtension({
       ...baseConfig,
@@ -79,39 +75,37 @@ describe('createExtension', () => {
         'bar',
     });
 
-    // When declared as a function with a block the TypeScript error will instead
-    // be tied to the factory function declaration itself, but the error messages
-    // is still helpful and points to part of the return type that is problematic.
+    // Method declaration
     createExtension({
       ...baseConfig,
-      // @ts-expect-error
       factory() {
-        return {
-          foo: 3,
-        };
+        return [
+          stringDataRef(
+            // @ts-expect-error
+            3,
+          ),
+        ];
+      },
+    });
+    // @ts-expect-error
+    createExtension({
+      ...baseConfig,
+      factory() {
+        return [numberDataRef(3)];
+      },
+    });
+    // @ts-expect-error
+    createExtension({
+      ...baseConfig,
+      factory() {
+        return [];
       },
     });
     createExtension({
       ...baseConfig,
       // @ts-expect-error
       factory() {
-        return {
-          bar: 'bar',
-        };
-      },
-    });
-    createExtension({
-      ...baseConfig,
-      // @ts-expect-error
-      factory() {
-        return {};
-      },
-    });
-    createExtension({
-      ...baseConfig,
-      // @ts-expect-error
-      factory() {
-        return {};
+        return;
       },
     });
     createExtension({
@@ -122,36 +116,37 @@ describe('createExtension', () => {
       },
     });
 
+    // Member function declaration
     createExtension({
       ...baseConfig,
-      // @ts-expect-error
       factory: () => {
-        return {
-          foo: 3,
-        };
+        return [
+          stringDataRef(
+            // @ts-expect-error
+            3,
+          ),
+        ];
+      },
+    });
+    // @ts-expect-error
+    createExtension({
+      ...baseConfig,
+      factory: () => {
+        return [numberDataRef(3)];
+      },
+    });
+    // @ts-expect-error
+    createExtension({
+      ...baseConfig,
+      factory: () => {
+        return [];
       },
     });
     createExtension({
       ...baseConfig,
       // @ts-expect-error
       factory: () => {
-        return {
-          bar: 'bar',
-        };
-      },
-    });
-    createExtension({
-      ...baseConfig,
-      // @ts-expect-error
-      factory: () => {
-        return {};
-      },
-    });
-    createExtension({
-      ...baseConfig,
-      // @ts-expect-error
-      factory: () => {
-        return {};
+        return;
       },
     });
     createExtension({
@@ -165,54 +160,28 @@ describe('createExtension', () => {
 
   it('should create an extension with a some optional output', () => {
     const baseConfig = {
-      namespace: 'test',
       attachTo: { id: 'root', input: 'default' },
-      output: {
-        foo: stringDataRef,
-        bar: stringDataRef.optional(),
-      },
+      output: [stringDataRef, numberDataRef.optional()],
     };
     const extension = createExtension({
       ...baseConfig,
-      factory: () => ({
-        foo: 'bar',
-      }),
+      factory: () => [stringDataRef('bar')],
     });
-    expect(extension).toMatchObject({ version: 'v1', namespace: 'test' });
+    expect(extension).toMatchObject({ version: 'v2' });
 
     createExtension({
       ...baseConfig,
-      factory: () => ({
-        foo: 'bar',
-        bar: 'baz',
-      }),
+      factory: () => [stringDataRef('bar'), numberDataRef(3)],
     });
     // @ts-expect-error
     createExtension({
       ...baseConfig,
-      factory: () => ({
-        foo: 3,
-      }),
+      factory: () => [numberDataRef(3)],
     });
     // @ts-expect-error
     createExtension({
       ...baseConfig,
-      factory: () => ({
-        foo: 'bar',
-        bar: 3,
-      }),
-    });
-    createExtension({
-      ...baseConfig,
-      factory: () =>
-        // @ts-expect-error
-        ({ bar: 'bar' }),
-    });
-    createExtension({
-      ...baseConfig,
-      factory: () =>
-        // @ts-expect-error
-        ({}),
+      factory: () => [],
     });
     createExtension({
       ...baseConfig,
@@ -235,68 +204,57 @@ describe('createExtension', () => {
 
   it('should create an extension with input', () => {
     const extension = createExtension({
-      namespace: 'test',
       attachTo: { id: 'root', input: 'default' },
       inputs: {
-        mixed: createExtensionInput({
-          required: stringDataRef,
-          optional: stringDataRef.optional(),
-        }),
-        onlyRequired: createExtensionInput({
-          required: stringDataRef,
-        }),
-        onlyOptional: createExtensionInput({
-          optional: stringDataRef.optional(),
-        }),
+        mixed: createExtensionInput([stringDataRef, numberDataRef.optional()]),
+        onlyRequired: createExtensionInput([stringDataRef]),
+        onlyOptional: createExtensionInput([stringDataRef.optional()]),
       },
-      output: {
-        foo: stringDataRef,
-      },
+      output: [stringDataRef],
       factory({ inputs }) {
-        const a1: string = inputs.mixed?.[0].output.required;
+        const a1: string = inputs.mixed?.[0].get(stringDataRef);
         // @ts-expect-error
-        const a2: number = inputs.mixed?.[0].output.required;
+        const a2: number = inputs.mixed?.[0].get(stringDataRef);
         // @ts-expect-error
-        const a3: any = inputs.mixed?.[0].output.nonExistent;
+        const a3: any = inputs.mixed?.[0].get(booleanDataRef);
         unused(a1, a2, a3);
 
-        const b1: string | undefined = inputs.mixed?.[0].output.optional;
+        const b1: number | undefined = inputs.mixed?.[0].get(numberDataRef);
         // @ts-expect-error
-        const b2: string = inputs.mixed?.[0].output.optional;
+        const b2: string = inputs.mixed?.[0].get(numberDataRef);
         // @ts-expect-error
-        const b3: number = inputs.mixed?.[0].output.optional;
+        const b3: number = inputs.mixed?.[0].get(numberDataRef);
         // @ts-expect-error
-        const b4: number | undefined = inputs.mixed?.[0].output.optional;
+        const b4: string | undefined = inputs.mixed?.[0].get(numberDataRef);
         unused(b1, b2, b3, b4);
 
-        const c1: string = inputs.onlyRequired?.[0].output.required;
+        const c1: string = inputs.onlyRequired?.[0].get(stringDataRef);
         // @ts-expect-error
-        const c2: number = inputs.onlyRequired?.[0].output.required;
+        const c2: number = inputs.onlyRequired?.[0].get(stringDataRef);
         unused(c1, c2);
 
-        const d1: string | undefined = inputs.onlyOptional?.[0].output.optional;
+        const d1: string | undefined =
+          inputs.onlyOptional?.[0].get(stringDataRef);
         // @ts-expect-error
-        const d2: string = inputs.onlyOptional?.[0].output.optional;
+        const d2: string = inputs.onlyOptional?.[0].get(stringDataRef);
         // @ts-expect-error
-        const d3: number = inputs.onlyOptional?.[0].output.optional;
+        const d3: number = inputs.onlyOptional?.[0].get(stringDataRef);
         // @ts-expect-error
-        const d4: number | undefined = inputs.onlyOptional?.[0].output.optional;
+        const d4: number | undefined =
+          inputs.onlyOptional?.[0].get(stringDataRef);
         unused(d1, d2, d3, d4);
 
-        return {
-          foo: 'bar',
-        };
+        return [stringDataRef('bar')];
       },
     });
-    expect(extension).toMatchObject({ version: 'v1', namespace: 'test' });
+    expect(extension).toMatchObject({ version: 'v2' });
     expect(String(extension)).toBe(
-      'ExtensionDefinition{namespace=test,attachTo=root@default}',
+      'ExtensionDefinition{attachTo=root@default}',
     );
   });
 
   it('should create an extension with config', () => {
     const extension = createExtension({
-      namespace: 'test',
       attachTo: { id: 'root', input: 'default' },
       config: {
         schema: {
@@ -322,13 +280,18 @@ describe('createExtension', () => {
         return [stringDataRef('bar')];
       },
     });
-    expect(extension).toMatchObject({ version: 'v2', namespace: 'test' });
+    expect(extension).toMatchObject({ version: 'v2' });
     expect(String(extension)).toBe(
-      'ExtensionDefinition{namespace=test,attachTo=root@default}',
+      'ExtensionDefinition{attachTo=root@default}',
     );
 
     expect(
-      extension.configSchema?.parse({
+      (
+        (extension as any).configSchema as PortableSchema<
+          (typeof extension.T)['config'],
+          (typeof extension.T)['configInput']
+        >
+      )?.parse({
         foo: 'x',
         bar: 'y',
         baz: 'z',
@@ -341,7 +304,12 @@ describe('createExtension', () => {
       baz: 'z',
     });
     expect(
-      extension.configSchema?.parse({
+      (
+        (extension as any).configSchema as PortableSchema<
+          (typeof extension.T)['config'],
+          (typeof extension.T)['configInput']
+        >
+      )?.parse({
         foo: 'x',
       }),
     ).toEqual({
@@ -358,7 +326,6 @@ describe('createExtension', () => {
     expect(
       // @ts-expect-error
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef],
         factory() {
@@ -370,7 +337,6 @@ describe('createExtension', () => {
     expect(
       // @ts-expect-error
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef],
         factory() {
@@ -382,7 +348,6 @@ describe('createExtension', () => {
     // Duplicate output, we won't attempt to handle this a compile time and instead error out at runtime
     expect(
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef],
         factory() {
@@ -394,7 +359,6 @@ describe('createExtension', () => {
     expect(
       // @ts-expect-error
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef],
         factory() {
@@ -405,7 +369,6 @@ describe('createExtension', () => {
 
     expect(
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef],
         factory() {
@@ -416,7 +379,6 @@ describe('createExtension', () => {
 
     expect(
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef.optional()],
         factory() {
@@ -427,7 +389,6 @@ describe('createExtension', () => {
 
     expect(
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef.optional()],
         factory() {
@@ -441,7 +402,6 @@ describe('createExtension', () => {
     expect(
       // @ts-expect-error
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef],
         *factory() {
@@ -453,7 +413,6 @@ describe('createExtension', () => {
     expect(
       // @ts-expect-error
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef],
         *factory() {
@@ -465,7 +424,6 @@ describe('createExtension', () => {
     // Duplicate output, we won't attempt to handle this a compile time and instead error out at runtime
     expect(
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef],
         *factory() {
@@ -478,7 +436,6 @@ describe('createExtension', () => {
     expect(
       // @ts-expect-error
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef],
         *factory() {
@@ -490,7 +447,6 @@ describe('createExtension', () => {
 
     expect(
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef],
         *factory() {
@@ -502,7 +458,6 @@ describe('createExtension', () => {
 
     expect(
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef.optional()],
         *factory() {
@@ -514,7 +469,6 @@ describe('createExtension', () => {
 
     expect(
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef.optional()],
         *factory() {
@@ -527,7 +481,6 @@ describe('createExtension', () => {
   it('should support new form of inputs', () => {
     expect(
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         inputs: {
           header: createExtensionInput([stringDataRef.optional()], {
@@ -562,7 +515,6 @@ describe('createExtension', () => {
   describe('overrides', () => {
     it('should allow overriding of config and merging', () => {
       const testExtension = createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'blob' },
         output: [stringDataRef],
         config: {
@@ -591,7 +543,6 @@ describe('createExtension', () => {
 
     it('should allow overriding of outputs', () => {
       const testExtension = createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'blob' },
         output: [stringDataRef],
         inputs: {
@@ -631,7 +582,6 @@ describe('createExtension', () => {
 
     it('should allow overriding the factory function and calling the original factory', () => {
       const testExtension = createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'blob' },
         output: [stringDataRef],
         config: {
@@ -663,7 +613,6 @@ describe('createExtension', () => {
     it('should allow overriding the returned values from the parent factory', () => {
       const testExtension = createExtension({
         kind: 'thing',
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef],
         config: {
@@ -688,13 +637,12 @@ describe('createExtension', () => {
 
       const tester = createExtensionTester(overridden);
 
-      expect(tester.data(numberDataRef)).toBe(43);
+      expect(tester.get(numberDataRef)).toBe(43);
     });
 
     it('should work functionally with overrides', () => {
       const testExtension = createExtension({
         kind: 'thing',
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef],
         config: {
@@ -722,15 +670,386 @@ describe('createExtension', () => {
         },
       });
 
-      expect(createExtensionTester(overriden).data(stringDataRef)).toBe(
+      expect(createExtensionTester(overriden).get(stringDataRef)).toBe(
         'foo-boom-override-hello',
       );
 
       expect(
         createExtensionTester(overriden, {
           config: { foo: 'hello', bar: 'world' },
-        }).data(stringDataRef),
+        }).get(stringDataRef),
       ).toBe('foo-hello-override-world');
+    });
+
+    it('should be able to override input values', () => {
+      const outputRef = createExtensionDataRef<unknown>().with({
+        id: 'output',
+      });
+      const testDataRef1 = createExtensionDataRef<string>().with({
+        id: 'test1',
+      });
+      const testDataRef2 = createExtensionDataRef<string>().with({
+        id: 'test2',
+      });
+
+      const subject = createExtension({
+        name: 'subject',
+        attachTo: { id: 'ignored', input: 'ignored' },
+        inputs: {
+          opt: createExtensionInput([testDataRef1.optional()], {
+            singleton: true,
+            optional: true,
+          }),
+          single: createExtensionInput(
+            [testDataRef1, testDataRef2.optional()],
+            {
+              singleton: true,
+            },
+          ),
+          multi: createExtensionInput([testDataRef1]),
+        },
+        output: [outputRef],
+        factory({ inputs }) {
+          return [
+            outputRef({
+              opt: inputs.opt?.get(testDataRef1) ?? 'none',
+              single: inputs.single.get(testDataRef1),
+              singleOpt: inputs.single.get(testDataRef2) ?? 'none',
+              multi: inputs.multi
+                .map(i => `${i.node.spec.id}=${i.get(testDataRef1)}`)
+                .join(','),
+            }),
+          ];
+        },
+      });
+
+      const optExt = createExtension({
+        name: 'o',
+        attachTo: { id: 'subject', input: 'opt' },
+        output: [testDataRef1],
+        factory: () => [testDataRef1('orig-opt')],
+      });
+
+      const singleExt = createExtension({
+        name: 's',
+        attachTo: { id: 'subject', input: 'single' },
+        output: [testDataRef1, testDataRef2.optional()],
+        factory: () => [testDataRef1('orig-single')],
+      });
+
+      const multi1Ext = createExtension({
+        name: 'm1',
+        attachTo: { id: 'subject', input: 'multi' },
+        output: [testDataRef1],
+        factory: () => [testDataRef1('orig-multi1')],
+      });
+
+      const multi2Ext = createExtension({
+        name: 'm2',
+        attachTo: { id: 'subject', input: 'multi' },
+        output: [testDataRef1],
+        factory: () => [testDataRef1('orig-multi2')],
+      });
+
+      expect(
+        createExtensionTester(subject)
+          .add(optExt)
+          .add(singleExt)
+          .add(multi1Ext)
+          .add(multi2Ext)
+          .get(outputRef),
+      ).toEqual({
+        opt: 'orig-opt',
+        single: 'orig-single',
+        singleOpt: 'none',
+        multi: 'm1=orig-multi1,m2=orig-multi2',
+      });
+
+      // All values provided
+      expect(
+        createExtensionTester(
+          subject.override({
+            factory(originalFactory) {
+              return originalFactory({
+                inputs: {
+                  opt: [testDataRef1('opt')],
+                  single: [testDataRef1('single'), testDataRef2('singleOpt')],
+                  multi: [[testDataRef1('multi1')], [testDataRef1('multi2')]],
+                },
+              });
+            },
+          }),
+        )
+          .add(optExt)
+          .add(singleExt)
+          .add(multi1Ext)
+          .add(multi2Ext)
+          .get(outputRef),
+      ).toEqual({
+        opt: 'opt',
+        single: 'single',
+        singleOpt: 'singleOpt',
+        multi: 'm1=multi1,m2=multi2',
+      });
+
+      // Minimal values provided
+      expect(
+        createExtensionTester(
+          subject.override({
+            factory(originalFactory) {
+              return originalFactory({
+                inputs: {
+                  single: [testDataRef1('single')],
+                  multi: [],
+                },
+              });
+            },
+          }),
+        )
+          .add(optExt)
+          .add(singleExt)
+          .add(multi1Ext)
+          .add(multi2Ext)
+          .get(outputRef),
+      ).toEqual({
+        opt: 'none',
+        single: 'single',
+        singleOpt: 'none',
+        multi: '',
+      });
+
+      // Forward inputs directly
+      expect(
+        createExtensionTester(
+          subject.override({
+            factory(originalFactory, { inputs }) {
+              return originalFactory({
+                inputs,
+              });
+            },
+          }),
+        )
+          .add(optExt)
+          .add(singleExt)
+          .add(multi1Ext)
+          .add(multi2Ext)
+          .get(outputRef),
+      ).toEqual({
+        opt: 'orig-opt',
+        single: 'orig-single',
+        singleOpt: 'none',
+        multi: 'm1=orig-multi1,m2=orig-multi2',
+      });
+
+      // Forward inputs separately
+      expect(
+        createExtensionTester(
+          subject.override({
+            factory(originalFactory, { inputs }) {
+              return originalFactory({
+                inputs: {
+                  opt: inputs.opt,
+                  single: inputs.single,
+                  multi: inputs.multi,
+                },
+              });
+            },
+          }),
+        )
+          .add(optExt)
+          .add(singleExt)
+          .add(multi1Ext)
+          .add(multi2Ext)
+          .get(outputRef),
+      ).toEqual({
+        opt: 'orig-opt',
+        single: 'orig-single',
+        singleOpt: 'none',
+        multi: 'm1=orig-multi1,m2=orig-multi2',
+      });
+
+      // Reordering inputs
+      expect(
+        createExtensionTester(
+          subject.override({
+            factory(originalFactory, { inputs }) {
+              return originalFactory({
+                inputs: {
+                  opt: inputs.opt,
+                  single: inputs.single,
+                  multi: [inputs.multi[1], inputs.multi[0]],
+                },
+              });
+            },
+          }),
+        )
+          .add(optExt)
+          .add(singleExt)
+          .add(multi1Ext)
+          .add(multi2Ext)
+          .get(outputRef),
+      ).toEqual({
+        opt: 'orig-opt',
+        single: 'orig-single',
+        singleOpt: 'none',
+        multi: 'm2=orig-multi2,m1=orig-multi1',
+      });
+
+      // Filter out inputs
+      expect(
+        createExtensionTester(
+          subject.override({
+            factory(originalFactory, { inputs }) {
+              return originalFactory({
+                inputs: {
+                  opt: inputs.opt,
+                  single: inputs.single,
+                  multi: inputs.multi.filter(i => i.node.spec.id.endsWith('2')),
+                },
+              });
+            },
+          }),
+        )
+          .add(optExt)
+          .add(singleExt)
+          .add(multi1Ext)
+          .add(multi2Ext)
+          .get(outputRef),
+      ).toEqual({
+        opt: 'orig-opt',
+        single: 'orig-single',
+        singleOpt: 'none',
+        multi: 'm2=orig-multi2',
+      });
+
+      // Overriding based on original input
+      expect(
+        createExtensionTester(
+          subject.override({
+            factory(originalFactory, { inputs }) {
+              return originalFactory({
+                inputs: {
+                  single: [
+                    testDataRef1(`override-${inputs.single.get(testDataRef1)}`),
+                    testDataRef2('new-singleOpt'),
+                  ],
+                  multi: inputs.multi.map(i => [
+                    testDataRef1(`override-${i.get(testDataRef1)}`),
+                  ]),
+                },
+              });
+            },
+          }),
+        )
+          .add(optExt)
+          .add(singleExt)
+          .add(multi1Ext)
+          .add(multi2Ext)
+          .get(outputRef),
+      ).toEqual({
+        opt: 'none',
+        single: 'override-orig-single',
+        singleOpt: 'new-singleOpt',
+        multi: 'm1=override-orig-multi1,m2=override-orig-multi2',
+      });
+
+      // Mismatched input override length
+      expect(() =>
+        createExtensionTester(
+          subject.override({
+            factory(originalFactory, { inputs }) {
+              return originalFactory({
+                inputs: {
+                  ...inputs,
+                  multi: [[testDataRef1('multi1')]],
+                },
+              });
+            },
+          }),
+        )
+          .add(optExt)
+          .add(singleExt)
+          .add(multi1Ext)
+          .add(multi2Ext)
+          .get(outputRef),
+      ).toThrowErrorMatchingInlineSnapshot(
+        `"Failed to instantiate extension 'subject', override data provided for input 'multi' must match the length of the original inputs"`,
+      );
+
+      // Mix forward and data override
+      expect(() =>
+        createExtensionTester(
+          subject.override({
+            factory(originalFactory, { inputs }) {
+              return originalFactory({
+                inputs: {
+                  ...inputs,
+                  multi: [inputs.multi[0], [testDataRef1('multi2')]],
+                },
+              });
+            },
+          }),
+        )
+          .add(optExt)
+          .add(singleExt)
+          .add(multi1Ext)
+          .add(multi2Ext)
+          .get(outputRef),
+      ).toThrowErrorMatchingInlineSnapshot(
+        `"Failed to instantiate extension 'subject', override data for input 'multi' may not mix forwarded inputs with data overrides"`,
+      );
+
+      // Required input not provided
+      expect(() =>
+        createExtensionTester(
+          subject.override({
+            factory(originalFactory, { inputs }) {
+              return originalFactory({
+                inputs: {
+                  ...inputs,
+                  single: [testDataRef2('singleOpt')],
+                },
+              });
+            },
+          }),
+        )
+          .add(optExt)
+          .add(singleExt)
+          .add(multi1Ext)
+          .add(multi2Ext)
+          .get(outputRef),
+      ).toThrowErrorMatchingInlineSnapshot(
+        `"Failed to instantiate extension 'subject', missing required extension data value(s) 'test1'"`,
+      );
+
+      // Wrong value provided
+      expect(() =>
+        createExtensionTester(
+          subject.override({
+            factory(originalFactory) {
+              return originalFactory({
+                inputs: {
+                  // @ts-expect-error
+                  opt: [testDataRef2('opt')],
+                  // @ts-expect-error
+                  single: [testDataRef1('single'), outputRef({})],
+                  multi: [
+                    // @ts-expect-error
+                    [testDataRef2('multi1')],
+                  ],
+                },
+              });
+            },
+          }),
+        )
+          .add(optExt)
+          .add(singleExt)
+          .add(multi1Ext)
+          .add(multi2Ext)
+          .get(outputRef),
+      ).toThrowErrorMatchingInlineSnapshot(
+        `"Failed to instantiate extension 'subject', extension data 'test2' was provided but not declared"`,
+      );
     });
   });
 });

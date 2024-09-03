@@ -1,5 +1,46 @@
 # @backstage/create-app
 
+## 0.5.19-next.1
+
+### Patch Changes
+
+- d2d2313: Add `config.d.ts` files to the list of included file in `tsconfig.json`.
+
+  This allows ESLint to detect issues or deprecations in those files.
+
+- 97422b0: Update templates to not refer to backend-common
+- bf370c2: Remove references to the `@backstage/backend-tasks` in versions of the `create-app` package, as it has been deprecated.
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+
+## 0.5.19-next.0
+
+### Patch Changes
+
+- 019d9ad: Minor dockerfile syntax update
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+
+## 0.5.18
+
+### Patch Changes
+
+- c0a705d: Added the Kubernetes plugin to `create-app`
+- d7a0aa3: Bumped create-app version.
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- 6c1081c: Updated dockerfile and `app-config.production.yaml` to make it easier to get started with example data
+- bfeba46: Included permission config and enabled it out of the box
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+
+## 0.5.18-next.4
+
+### Patch Changes
+
+- bfeba46: Included permission config and enabled it out of the box
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+
 ## 0.5.18-next.3
 
 ### Patch Changes

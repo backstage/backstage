@@ -19,25 +19,18 @@ import {
   mockServices,
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
-import { tokenManagerServiceFactory } from '@backstage/backend-app-api';
 import { authServiceFactory } from './authServiceFactory';
 import { base64url, decodeJwt } from 'jose';
 import { discoveryServiceFactory } from '../discovery';
-import {
-  BackstageServicePrincipal,
-  BackstageUserPrincipal,
-} from '@backstage/backend-plugin-api';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { InternalBackstageCredentials } from './types';
 import { toInternalBackstageCredentials } from './helpers';
 
 const server = setupServer();
 
 // TODO: Ship discovery mock service in the service factory tester
 const mockDeps = [
-  discoveryServiceFactory(),
-  tokenManagerServiceFactory,
+  discoveryServiceFactory,
   mockServices.rootConfig.factory({
     data: {
       backend: {
@@ -74,10 +67,14 @@ describe('authServiceFactory', () => {
     jest.useRealTimers();
   });
 
-  it('should authenticate issued tokens with legacy auth', async () => {
+  it('should not support tokens issued with legacy auth', async () => {
     server.use(
       rest.get(
         'http://localhost:7007/api/catalog/.backstage/auth/v1/jwks.json',
+        (_req, res, ctx) => res(ctx.status(404)),
+      ),
+      rest.get(
+        'http://localhost:7007/api/search/.backstage/auth/v1/jwks.json',
         (_req, res, ctx) => res(ctx.status(404)),
       ),
     );
@@ -94,21 +91,15 @@ describe('authServiceFactory', () => {
       targetPluginId: 'catalog',
     });
 
-    await expect(searchAuth.authenticate(searchToken)).resolves.toEqual(
-      expect.objectContaining({
-        principal: {
-          type: 'service',
-          subject: 'external:backstage-plugin',
-        },
-      }),
+    await expect(
+      searchAuth.authenticate(searchToken),
+    ).rejects.toMatchInlineSnapshot(
+      `[AuthenticationError: Received a plugin token where the source 'search' plugin unexpectedly does not have a JWKS endpoint. The target plugin needs to be migrated to be installed in an app using the new backend system.]`,
     );
-    await expect(catalogAuth.authenticate(searchToken)).resolves.toEqual(
-      expect.objectContaining({
-        principal: {
-          type: 'service',
-          subject: 'external:backstage-plugin',
-        },
-      }),
+    await expect(
+      catalogAuth.authenticate(searchToken),
+    ).rejects.toMatchInlineSnapshot(
+      `[AuthenticationError: Received a plugin token where the source 'search' plugin unexpectedly does not have a JWKS endpoint. The target plugin needs to be migrated to be installed in an app using the new backend system.]`,
     );
   });
 
@@ -151,38 +142,7 @@ describe('authServiceFactory', () => {
     );
   });
 
-  it('should forward user token if target plugin does not support new auth service', async () => {
-    server.use(
-      rest.get(
-        'http://localhost:7007/api/permission/.backstage/auth/v1/jwks.json',
-        (_req, res, ctx) => res(ctx.status(404)),
-      ),
-    );
-
-    const tester = ServiceFactoryTester.from(authServiceFactory, {
-      dependencies: mockDeps,
-    });
-
-    const catalogAuth = await tester.getSubject('catalog');
-
-    await expect(
-      catalogAuth.getPluginRequestToken({
-        onBehalfOf: {
-          $$type: '@backstage/BackstageCredentials',
-          version: 'v1',
-          authMethod: 'token',
-          token: 'alice-token',
-          principal: {
-            type: 'user',
-            userEntityRef: 'user:default/alice',
-          },
-        } as InternalBackstageCredentials<BackstageUserPrincipal>,
-        targetPluginId: 'permission',
-      }),
-    ).resolves.toEqual({ token: 'alice-token' });
-  });
-
-  it('should issue a new service token with token manager if target plugin does not support new auth service', async () => {
+  it('should issue a service token for the new system even if the target plugin does not support it', async () => {
     server.use(
       rest.get(
         'http://localhost:7007/api/permission/.backstage/auth/v1/jwks.json',
@@ -197,22 +157,14 @@ describe('authServiceFactory', () => {
     const catalogAuth = await tester.getSubject('catalog');
 
     const { token } = await catalogAuth.getPluginRequestToken({
-      onBehalfOf: {
-        $$type: '@backstage/BackstageCredentials',
-        version: 'v1',
-        authMethod: 'token',
-        token: 'some-upstream-service-token',
-        principal: {
-          type: 'service',
-          subject: 'external:upstream-service',
-        },
-      } as InternalBackstageCredentials<BackstageServicePrincipal>,
+      onBehalfOf: await catalogAuth.getOwnServiceCredentials(),
       targetPluginId: 'permission',
     });
 
     expect(decodeJwt(token)).toEqual(
       expect.objectContaining({
-        sub: 'backstage-server',
+        sub: 'catalog',
+        aud: 'permission',
       }),
     );
   });
@@ -415,15 +367,6 @@ describe('authServiceFactory', () => {
       targetPluginId: 'permission',
     });
     expect(decodeJwt(oboToken2).obo).toBe(limitedToken);
-
-    await expect(
-      catalogAuth.getPluginRequestToken({
-        onBehalfOf: oboCredentials,
-        targetPluginId: 'kubernetes',
-      }),
-    ).rejects.toThrow(
-      "Unable to call 'kubernetes' plugin on behalf of user, because the target plugin does not support on-behalf-of tokens or the plugin doesn't exist",
-    );
   });
 
   it('should eagerly reject access to external access tokens based on plugin id', async () => {

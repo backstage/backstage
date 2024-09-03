@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { AppRootElementBlueprint } from './AppRootElementBlueprint';
 
@@ -26,6 +27,7 @@ describe('AppRootElementBlueprint', () => {
     expect(extension).toMatchInlineSnapshot(`
       {
         "$$type": "@backstage/ExtensionDefinition",
+        "T": undefined,
         "attachTo": {
           "id": "app/root",
           "input": "elements",

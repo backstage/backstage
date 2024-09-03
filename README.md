@@ -1,8 +1,5 @@
 [![headline](docs/assets/headline.png)](https://backstage.io/)
 
-> [!NOTE]
-> 🏖 From July 1st through 16th, due to maintainers being on summer vacations, expect the project to move a little slower than normal, and support to be limited. Normal service will resume after that! 🏝
-
 # [Backstage](https://backstage.io)
 
 English \| [한국어](README-ko_kr.md) \| [中文版](README-zh_Hans.md) \| [Français](README-fr_FR.md)

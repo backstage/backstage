@@ -31,7 +31,18 @@ import {
   TableColumn,
   TableOptions,
 } from '@backstage/core-components';
-import { catalogTranslationRef } from '../../translation';
+import {
+  asComponentEntities,
+  asResourceEntities,
+  asSystemEntities,
+  componentEntityColumns,
+  componentEntityHelpLink,
+  resourceEntityColumns,
+  resourceEntityHelpLink,
+  systemEntityColumns,
+  systemEntityHelpLink,
+} from './presets';
+import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
@@ -59,9 +70,9 @@ export type RelatedEntitiesCardProps<T extends Entity> = {
  *
  * @public
  */
-export function RelatedEntitiesCard<T extends Entity>(
+export const RelatedEntitiesCard = <T extends Entity>(
   props: RelatedEntitiesCardProps<T>,
-) {
+) => {
   const {
     variant = 'gridItem',
     title,
@@ -116,4 +127,14 @@ export function RelatedEntitiesCard<T extends Entity>(
       tableOptions={tableOptions}
     />
   );
-}
+};
+
+RelatedEntitiesCard.componentEntityColumns = componentEntityColumns;
+RelatedEntitiesCard.componentEntityHelpLink = componentEntityHelpLink;
+RelatedEntitiesCard.asComponentEntities = asComponentEntities;
+RelatedEntitiesCard.resourceEntityColumns = resourceEntityColumns;
+RelatedEntitiesCard.resourceEntityHelpLink = resourceEntityHelpLink;
+RelatedEntitiesCard.asResourceEntities = asResourceEntities;
+RelatedEntitiesCard.systemEntityColumns = systemEntityColumns;
+RelatedEntitiesCard.systemEntityHelpLink = systemEntityHelpLink;
+RelatedEntitiesCard.asSystemEntities = asSystemEntities;

@@ -1,5 +1,55 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 1.5.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.25.0-next.1
+  - @backstage/backend-plugin-api@0.9.0-next.1
+  - @backstage/config@1.2.0
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/plugin-search-backend-node@1.3.2-next.1
+  - @backstage/plugin-search-common@1.2.14
+
+## 1.5.6-next.0
+
+### Patch Changes
+
+- d425fc4: Modules, plugins, and services are now `BackendFeature`, not a function that returns a feature.
+- 5726390: Internal refactor to use `LoggerService` and `DatabaseService` instead of the legacy `Logger` and `PluginDatabaseManager` types.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.9.0-next.0
+  - @backstage/backend-common@0.25.0-next.0
+  - @backstage/plugin-search-backend-node@1.3.2-next.0
+  - @backstage/config@1.2.0
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/plugin-search-common@1.2.14
+
+## 1.5.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/backend-common@0.24.0
+  - @backstage/plugin-search-backend-node@1.3.0
+  - @backstage/plugin-search-common@1.2.14
+  - @backstage/config@1.2.0
+  - @backstage/integration-aws-node@0.1.12
+
+## 1.5.4-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.3
+  - @backstage/backend-common@0.23.4-next.3
+  - @backstage/config@1.2.0
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/plugin-search-backend-node@1.2.28-next.3
+  - @backstage/plugin-search-common@1.2.14-next.1
+
 ## 1.5.4-next.2
 
 ### Patch Changes

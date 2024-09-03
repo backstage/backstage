@@ -8,10 +8,10 @@ import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { JsonValue } from '@backstage/types';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { ResourceEntity } from '@backstage/catalog-model';
-import { TaskRunner } from '@backstage/backend-tasks';
-import { TaskScheduleDefinition } from '@backstage/backend-tasks';
+import { SchedulerService } from '@backstage/backend-plugin-api';
+import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
+import { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugin-api';
 
 // @public
 export const ANNOTATION_PUPPET_CERTNAME = 'puppet.com/certname';
@@ -30,8 +30,8 @@ export class PuppetDbEntityProvider implements EntityProvider {
     config: Config,
     deps: {
       logger: LoggerService;
-      schedule?: TaskRunner;
-      scheduler?: PluginTaskScheduler;
+      schedule?: SchedulerServiceTaskRunner;
+      scheduler?: SchedulerService;
       transformer?: ResourceTransformer;
     },
   ): PuppetDbEntityProvider[];
@@ -45,7 +45,7 @@ export type PuppetDbEntityProviderConfig = {
   id: string;
   baseUrl: string;
   query?: string;
-  schedule?: TaskScheduleDefinition;
+  schedule?: SchedulerServiceTaskScheduleDefinition;
 };
 
 // @public

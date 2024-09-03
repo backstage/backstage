@@ -1,5 +1,66 @@
 # @backstage/plugin-catalog-graph
 
+## 0.4.9-next.1
+
+### Patch Changes
+
+- da91078: Fixed a bug in the `CatalogGraphPage` component where, after clicking on some nodes, clicking the back button would break the navigation. This issue caused the entire navigation to fail and behaved differently across various browsers.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.8.0-next.1
+  - @backstage/core-compat-api@0.3.0-next.1
+  - @backstage/catalog-client@1.6.7-next.0
+  - @backstage/core-components@0.14.11-next.0
+  - @backstage/plugin-catalog-react@1.12.4-next.1
+  - @backstage/catalog-model@1.6.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/types@1.1.1
+
+## 0.4.9-next.0
+
+### Patch Changes
+
+- fec8b57: Updated exports to use the new type parameters for extensions and extension blueprints.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.8.0-next.0
+  - @backstage/core-compat-api@0.2.9-next.0
+  - @backstage/plugin-catalog-react@1.12.4-next.0
+  - @backstage/catalog-client@1.6.6
+  - @backstage/catalog-model@1.6.0
+  - @backstage/core-components@0.14.10
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/types@1.1.1
+
+## 0.4.8
+
+### Patch Changes
+
+- c7603e8: Deprecate the old pattern of `create*Extension`, and replace it with the equivalent Blueprint implementation instead
+- fba7537: Memoize entity graph nodes when applying an `entityFilter` to prevent repeated redraws
+- 4a529c2: Use `entityPresentationApi` for the node title and the icon.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.7.0
+  - @backstage/plugin-catalog-react@1.12.3
+  - @backstage/core-components@0.14.10
+  - @backstage/core-compat-api@0.2.8
+  - @backstage/catalog-model@1.6.0
+  - @backstage/catalog-client@1.6.6
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/types@1.1.1
+
+## 0.4.8-next.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.7.0-next.3
+  - @backstage/catalog-model@1.6.0-next.0
+  - @backstage/core-compat-api@0.2.8-next.3
+  - @backstage/plugin-catalog-react@1.12.3-next.3
+  - @backstage/catalog-client@1.6.6-next.0
+  - @backstage/core-components@0.14.10-next.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/types@1.1.1
+
 ## 0.4.8-next.3
 
 ### Patch Changes

@@ -22,7 +22,6 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-
 import {
   DocsBuildStrategy,
   Generators,
@@ -39,6 +38,7 @@ import {
   techdocsPublisherExtensionPoint,
 } from '@backstage/plugin-techdocs-node';
 import { createRouter } from '@backstage/plugin-techdocs-backend';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import * as winston from 'winston';
 
 /**
@@ -108,6 +108,7 @@ export const techdocsPlugin = createBackendPlugin({
         cache: coreServices.cache,
         httpAuth: coreServices.httpAuth,
         auth: coreServices.auth,
+        catalog: catalogServiceRef,
       },
       async init({
         config,
@@ -118,6 +119,7 @@ export const techdocsPlugin = createBackendPlugin({
         cache,
         httpAuth,
         auth,
+        catalog,
       }) {
         const winstonLogger = loggerToWinstonLogger(logger);
         // Preparers are responsible for fetching source files for documentation.
@@ -161,6 +163,7 @@ export const techdocsPlugin = createBackendPlugin({
             discovery,
             httpAuth,
             auth,
+            catalogClient: catalog,
           }),
         );
 

@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { PluginDatabaseManager } from '@backstage/backend-common';
-import { resolvePackagePath } from '@backstage/backend-plugin-api';
+import {
+  DatabaseService,
+  resolvePackagePath,
+} from '@backstage/backend-plugin-api';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Knex } from 'knex';
 import {
@@ -33,7 +35,7 @@ const migrationsDir = resolvePackagePath(
 /** @public */
 export class DatabaseDocumentStore implements DatabaseStore {
   static async create(
-    database: PluginDatabaseManager,
+    database: DatabaseService,
   ): Promise<DatabaseDocumentStore> {
     const knex = await database.getClient();
     try {

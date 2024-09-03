@@ -1,5 +1,54 @@
 # @backstage/repo-tools
 
+## 0.9.7-next.1
+
+### Patch Changes
+
+- 5c4aa2f: Updated dependency `@useoptic/openapi-utilities` to `^0.55.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.9.0-next.1
+  - @backstage/catalog-model@1.6.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.7
+  - @backstage/config-loader@1.9.0
+  - @backstage/errors@1.2.4
+
+## 0.9.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.9.0-next.0
+  - @backstage/catalog-model@1.6.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.7
+  - @backstage/config-loader@1.9.0
+  - @backstage/errors@1.2.4
+
+## 0.9.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/config-loader@1.9.0
+  - @backstage/catalog-model@1.6.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.7
+  - @backstage/errors@1.2.4
+
+## 0.9.5-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.3
+  - @backstage/catalog-model@1.6.0-next.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.7
+  - @backstage/config-loader@1.9.0-next.2
+  - @backstage/errors@1.2.4
+
 ## 0.9.5-next.2
 
 ### Patch Changes

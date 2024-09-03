@@ -176,7 +176,7 @@ catalog:
           - DESCENDANTS # Optional. Members of any descendant groups will also be considered members of the current group.
           - SHARED_FROM_GROUPS # Optional. Members of any invited groups will also be considered members of the current group.
         groupPattern: '[\s\S]*' # Optional. Filters found groups based on provided pattern. Defaults to `[\s\S]*`, which means to not filter anything
-        schedule: # Same options as in TaskScheduleDefinition. Optional for the Legacy Backend System.
+        schedule: # Same options as in SchedulerServiceTaskScheduleDefinition. Optional for the Legacy Backend System.
           # supports cron, ISO duration, "human duration" as used in code
           frequency: { minutes: 30 }
           # supports ISO duration, "human duration" as used in code

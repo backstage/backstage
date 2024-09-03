@@ -46,8 +46,9 @@ describe('TranslationBlueprint', () => {
     ).toMatchInlineSnapshot(`
       {
         "$$type": "@backstage/ExtensionDefinition",
+        "T": undefined,
         "attachTo": {
-          "id": "app",
+          "id": "api:app/translations",
           "input": "translations",
         },
         "configSchema": undefined,
@@ -76,7 +77,7 @@ describe('TranslationBlueprint', () => {
     });
 
     expect(
-      createExtensionTester(extension).data(
+      createExtensionTester(extension).get(
         TranslationBlueprint.dataRefs.translation,
       ),
     ).toBe(messages);

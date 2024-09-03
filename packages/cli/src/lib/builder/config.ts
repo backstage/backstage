@@ -118,6 +118,7 @@ export async function makeRollupConfigs(
       ),
       output,
       onwarn,
+      makeAbsoluteExternalsRelative: false,
       preserveEntrySignatures: 'strict',
       // All module imports are always marked as external
       external: (source, importer, isResolved) =>

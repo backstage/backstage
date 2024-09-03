@@ -1,5 +1,355 @@
 # @backstage/frontend-plugin-api
 
+## 0.8.0-next.1
+
+### Patch Changes
+
+- c816e2d: Added `createFrontendModule` as a replacement for `createExtensionOverrides`, which is now deprecated.
+
+  Deprecated the `BackstagePlugin` and `FrontendFeature` type in favor of `FrontendPlugin` and `FrontendFeature` from `@backstage/frontend-app-api` respectively.
+
+- 52f9c5a: Deprecated the `namespace` option for `createExtensionBlueprint` and `createExtension`, these are no longer required and will default to the `pluginId` instead.
+
+  You can migrate some of your extensions that use `createExtensionOverrides` to using `createFrontendModule` instead and providing a `pluginId` there.
+
+  ```ts
+  // Before
+  createExtensionOverrides({
+    extensions: [
+      createExtension({
+        name: 'my-extension',
+        namespace: 'my-namespace',
+        kind: 'test',
+        ...
+      })
+    ],
+  });
+
+  // After
+  createFrontendModule({
+    pluginId: 'my-namespace',
+    extensions: [
+      createExtension({
+        name: 'my-extension',
+        kind: 'test',
+        ...
+      })
+    ],
+  });
+  ```
+
+- 948d431: Removing deprecated `namespace` parameter in favour of `pluginId` instead
+- Updated dependencies
+  - @backstage/core-components@0.14.11-next.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
+## 0.8.0-next.0
+
+### Minor Changes
+
+- 5446061: **BREAKING**: Removed support for "v1" extensions. This means that it is no longer possible to declare inputs and outputs as objects when using `createExtension`. In addition, all extension creators except for `createComponentExtension` have been removed, use the equivalent blueprint instead. See the [1.30 migration documentation](https://backstage.io/docs/frontend-system/architecture/migrations/#130) for more information on this change.
+- fec8b57: **BREAKING**: Updated the type parameters for `ExtensionDefinition` and `ExtensionBlueprint` to only have a single object parameter. The base type parameter is exported as `ExtensionDefinitionParameters` and `ExtensionBlueprintParameters` respectively. This is shipped as an immediate breaking change as we expect usage of these types to be rare, and it does not affect the runtime behavior of the API.
+
+  This is a breaking change as it changes the type parameters. Existing usage can generally be updated as follows:
+
+  - `ExtensionDefinition<any>` -> `ExtensionDefinition`
+  - `ExtensionDefinition<any, any>` -> `ExtensionDefinition`
+  - `ExtensionDefinition<TConfig>` -> `ExtensionDefinition<{ config: TConfig }>`
+  - `ExtensionDefinition<TConfig, TConfigInput>` -> `ExtensionDefinition<{ config: TConfig, configInput: TConfigInput }>`
+
+  If you need to infer the parameter you can use `ExtensionDefinitionParameters`, for example:
+
+  ```ts
+  import {
+    ExtensionDefinition,
+    ExtensionDefinitionParameters,
+  } from '@backstage/frontend-plugin-api';
+
+  function myUtility<T extends ExtensionDefinitionParameters>(
+    ext: ExtensionDefinition<T>,
+  ): T['config'] {
+    // ...
+  }
+  ```
+
+  The same patterns apply to `ExtensionBlueprint`.
+
+  This change is made to improve the readability of API references and ability to evolve the type parameters in the future.
+
+### Patch Changes
+
+- 2bb9517: Introduce the `@backstage/plugin-app` package to hold all of the built-in extensions for easy consumption and overriding.
+- f3a2b91: Moved several implementations of built-in APIs from being hardcoded in the app to instead be provided as API extensions. This moves all API-related inputs from the `app` extension to the respective API extensions. For example, extensions created with `ThemeBlueprint` are now attached to the `themes` input of `api:app-theme` rather than the `app` extension.
+- 98850de: Added support for defining `replaces` in `createExtensionInput` which will allow extensions to redirect missing `attachTo` points to an input of the created extension.
+
+  ```ts
+  export const AppThemeApi = ApiBlueprint.makeWithOverrides({
+    name: 'app-theme',
+    inputs: {
+      themes: createExtensionInput([ThemeBlueprint.dataRefs.theme], {
+        // attachTo: { id: 'app', input: 'themes'} will be redirected to this input instead
+        replaces: [{ id: 'app', input: 'themes' }],
+      }),
+    },
+    factory: () {
+      ...
+    }
+  });
+  ```
+
+- 4a66456: A new `apis` parameter has been added to `factory` for extensions. This is a way to access utility APIs without being coupled to the React context.
+- Updated dependencies
+  - @backstage/core-components@0.14.10
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
+## 0.7.0
+
+### Minor Changes
+
+- 72754db: **BREAKING**: All types of route refs are always considered optional by `useRouteRef`, which means the caller must always handle a potential `undefined` return value. Related to this change, the `optional` option from `createExternalRouteRef` has been removed, since it is no longer necessary.
+
+  This is released as an immediate breaking change as we expect the usage of the new route refs to be extremely low or zero, since plugins that support the new system will still use route refs and `useRouteRef` from `@backstage/core-plugin-api` in combination with `convertLegacyRouteRef` from `@backstage/core-compat-api`.
+
+### Patch Changes
+
+- 6f72c2b: Fixing issue with extension blueprints `inputs` merging.
+- 210d066: Added support for using the `params` in other properties of the `createExtensionBlueprint` options by providing a callback.
+- 9b356dc: Renamed `createPlugin` to `createFrontendPlugin`. The old symbol is still exported but deprecated.
+- a376559: Correct the `TConfig` type of data references to only contain config
+- 4e53ad6: Introduce a new way to encapsulate extension kinds that replaces the extension creator pattern with `createExtensionBlueprint`
+
+  This allows the creation of extension instances with the following pattern:
+
+  ```tsx
+  // create the extension blueprint which is used to create instances
+  const EntityCardBlueprint = createExtensionBlueprint({
+    kind: 'entity-card',
+    attachTo: { id: 'test', input: 'default' },
+    output: [coreExtensionData.reactElement],
+    factory(params: { text: string }) {
+      return [coreExtensionData.reactElement(<h1>{params.text}</h1>)];
+    },
+  });
+
+  // create an instance of the extension blueprint with params
+  const testExtension = EntityCardBlueprint.make({
+    name: 'foo',
+    params: {
+      text: 'Hello World',
+    },
+  });
+  ```
+
+- 9b89b82: The `ExtensionBoundary` now by default infers whether it's routable from whether it outputs a route path.
+- e493020: Deprecated `inputs` and `configSchema` options for `createComponentExtenion`, these will be removed in a future release
+- 7777b5f: Added a new `IconBundleBlueprint` that lets you create icon bundle extensions that can be installed in an App in order to override or add new app icons.
+
+  ```tsx
+  import { IconBundleBlueprint } from '@backstage/frontend-plugin-api';
+
+  const exampleIconBundle = IconBundleBlueprint.make({
+    name: 'example-bundle',
+    params: {
+      icons: {
+        user: MyOwnUserIcon,
+      },
+    },
+  });
+  ```
+
+- 99abb6b: Support overriding of plugin extensions using the new `plugin.withOverrides` method.
+
+  ```tsx
+  import homePlugin from '@backstage/plugin-home';
+
+  export default homePlugin.withOverrides({
+    extensions: [
+      homePage.getExtension('page:home').override({
+        *factory(originalFactory) {
+          yield* originalFactory();
+          yield coreExtensionData.reactElement(<h1>My custom home page</h1>);
+        },
+      }),
+    ],
+  });
+  ```
+
+- 813cac4: Add an `ExtensionBoundary.lazy` function to create properly wrapped lazy-loading enabled elements, suitable for use with `coreExtensionData.reactElement`. The page blueprint now automatically leverages this.
+- a65cfc8: Add support for accessing extensions definitions provided by a plugin via `plugin.getExtension(...)`. For this to work the extensions must be defined using the v2 format, typically using an extension blueprint.
+- 3be9aeb: Extensions have been changed to be declared with an array of inputs and outputs, rather than a map of named data refs. This change was made to reduce confusion around the role of the input and output names, as well as enable more powerful APIs for overriding extensions.
+
+  An extension that was previously declared like this:
+
+  ```tsx
+  const exampleExtension = createExtension({
+    name: 'example',
+    inputs: {
+      items: createExtensionInput({
+        element: coreExtensionData.reactElement,
+      }),
+    },
+    output: {
+      element: coreExtensionData.reactElement,
+    },
+    factory({ inputs }) {
+      return {
+        element: (
+          <div>
+            Example
+            {inputs.items.map(item => {
+              return <div>{item.output.element}</div>;
+            })}
+          </div>
+        ),
+      };
+    },
+  });
+  ```
+
+  Should be migrated to the following:
+
+  ```tsx
+  const exampleExtension = createExtension({
+    name: 'example',
+    inputs: {
+      items: createExtensionInput([coreExtensionData.reactElement]),
+    },
+    output: [coreExtensionData.reactElement],
+    factory({ inputs }) {
+      return [
+        coreExtensionData.reactElement(
+          <div>
+            Example
+            {inputs.items.map(item => {
+              return <div>{item.get(coreExtensionData.reactElement)}</div>;
+            })}
+          </div>,
+        ),
+      ];
+    },
+  });
+  ```
+
+- 34f1b2a: Support merging of `inputs` in extension blueprints, but stop merging `output`. In addition, the original factory in extension blueprints now returns a data container that both provides access to the returned data, but can also be forwarded as output.
+- 3fb421d: Added support to be able to define `zod` config schema in Blueprints, with built in schema merging from the Blueprint and the extension instances.
+- 2d21599: Added support for being able to override extension definitions.
+
+  ```tsx
+  const TestCard = EntityCardBlueprint.make({
+    ...
+  });
+
+  TestCard.override({
+    // override attachment points
+    attachTo: { id: 'something-else', input: 'overridden' },
+    // extend the config schema
+    config: {
+      schema: {
+        newConfig: z => z.string().optional(),
+      }
+    },
+    // override factory
+    *factory(originalFactory, { inputs, config }){
+      const originalOutput = originalFactory();
+
+      yield coreExentsionData.reactElement(
+        <Wrapping>
+          {originalOutput.get(coreExentsionData.reactElement)}
+        </Wrapping>
+      );
+    }
+  });
+
+  ```
+
+- 31bfc44: Extension data references can now be defined in a way that encapsulates the ID string in the type, in addition to the data type itself. The old way of creating extension data references is deprecated and will be removed in a future release.
+
+  For example, the following code:
+
+  ```ts
+  export const myExtension =
+    createExtensionDataRef<MyType>('my-plugin.my-data');
+  ```
+
+  Should be updated to the following:
+
+  ```ts
+  export const myExtension = createExtensionDataRef<MyType>().with({
+    id: 'my-plugin.my-data',
+  });
+  ```
+
+- 6349099: Added config input type to the extensions
+- Updated dependencies
+  - @backstage/core-components@0.14.10
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
+## 0.7.0-next.3
+
+### Patch Changes
+
+- 6f72c2b: Fixing issue with extension blueprints `inputs` merging.
+- 99abb6b: Support overriding of plugin extensions using the new `plugin.withOverrides` method.
+
+  ```tsx
+  import homePlugin from '@backstage/plugin-home';
+
+  export default homePlugin.withOverrides({
+    extensions: [
+      homePage.getExtension('page:home').override({
+        *factory(originalFactory) {
+          yield* originalFactory();
+          yield coreExtensionData.reactElement(<h1>My custom home page</h1>);
+        },
+      }),
+    ],
+  });
+  ```
+
+- a65cfc8: Add support for accessing extensions definitions provided by a plugin via `plugin.getExtension(...)`. For this to work the extensions must be defined using the v2 format, typically using an extension blueprint.
+- 34f1b2a: Support merging of `inputs` in extension blueprints, but stop merging `output`. In addition, the original factory in extension blueprints now returns a data container that both provides access to the returned data, but can also be forwarded as output.
+- 2d21599: Added support for being able to override extension definitions.
+
+  ```tsx
+  const TestCard = EntityCardBlueprint.make({
+    ...
+  });
+
+  TestCard.override({
+    // override attachment points
+    attachTo: { id: 'something-else', input: 'overridden' },
+    // extend the config schema
+    config: {
+      schema: {
+        newConfig: z => z.string().optional(),
+      }
+    },
+    // override factory
+    *factory(originalFactory, { inputs, config }){
+      const originalOutput = originalFactory();
+
+      yield coreExentsionData.reactElement(
+        <Wrapping>
+          {originalOutput.get(coreExentsionData.reactElement)}
+        </Wrapping>
+      );
+    }
+  });
+
+  ```
+
+- Updated dependencies
+  - @backstage/core-components@0.14.10-next.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
 ## 0.7.0-next.2
 
 ### Minor Changes

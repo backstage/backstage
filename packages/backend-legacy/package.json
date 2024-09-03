@@ -1,6 +1,6 @@
 {
   "name": "example-backend-legacy",
-  "version": "0.2.101-next.2",
+  "version": "0.2.102-next.1",
   "backstage": {
     "role": "backend"
   },
@@ -29,7 +29,8 @@
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
-    "@backstage/backend-tasks": "workspace:^",
+    "@backstage/backend-defaults": "workspace:^",
+    "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",

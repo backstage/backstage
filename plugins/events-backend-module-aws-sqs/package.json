@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-events-backend-module-aws-sqs",
-  "version": "0.3.9-next.2",
+  "version": "0.4.2-next.1",
   "backstage": {
     "role": "backend-plugin-module",
     "pluginId": "events",
@@ -50,7 +50,6 @@
     "@aws-sdk/client-sqs": "^3.350.0",
     "@backstage/backend-common": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
-    "@backstage/backend-tasks": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/plugin-events-node": "workspace:^",
     "@backstage/types": "workspace:^",

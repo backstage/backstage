@@ -81,7 +81,7 @@ USER node
 WORKDIR /app
 
 # This switches many Node.js dependencies to production mode.
-ENV NODE_ENV production
+ENV NODE_ENV=production
 
 # Copy repo skeleton first, to avoid unnecessary docker cache invalidation.
 # The skeleton contains the package.json of each package in the monorepo,
@@ -246,6 +246,9 @@ WORKDIR /app
 
 # Copy the install dependencies from the build stage and context
 COPY --from=build --chown=node:node /app/yarn.lock /app/package.json /app/packages/backend/dist/skeleton/ ./
+# Note: The skeleton bundle only includes package.json files -- if your app has
+# plugins that define a `bin` export, the bin files need to be copied as well to
+# be linked in node_modules/.bin during yarn install.
 
 RUN --mount=type=cache,target=/home/node/.cache/yarn,sharing=locked,uid=1000,gid=1000 \
     yarn install --frozen-lockfile --production --network-timeout 600000
@@ -260,7 +263,7 @@ COPY --chown=node:node app-config*.yaml ./
 COPY --chown=node:node examples ./examples
 
 # This switches many Node.js dependencies to production mode.
-ENV NODE_ENV production
+ENV NODE_ENV=production
 
 CMD ["node", "packages/backend", "--config", "app-config.yaml", "--config", "app-config.production.yaml"]
 ```

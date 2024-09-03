@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { createExtensionInput } from '../wiring';
 import { ApiBlueprint } from './ApiBlueprint';
 import { createApiFactory, createApiRef } from '@backstage/core-plugin-api';
@@ -30,14 +31,15 @@ describe('ApiBlueprint', () => {
       params: {
         factory,
       },
-      namespace: 'test',
+      name: 'test',
     });
 
     expect(extension).toMatchInlineSnapshot(`
       {
         "$$type": "@backstage/ExtensionDefinition",
+        "T": undefined,
         "attachTo": {
-          "id": "app",
+          "id": "root",
           "input": "apis",
         },
         "configSchema": undefined,
@@ -45,8 +47,8 @@ describe('ApiBlueprint', () => {
         "factory": [Function],
         "inputs": {},
         "kind": "api",
-        "name": undefined,
-        "namespace": "test",
+        "name": "test",
+        "namespace": undefined,
         "output": [
           [Function],
         ],
@@ -70,7 +72,7 @@ describe('ApiBlueprint', () => {
       inputs: {
         test: createExtensionInput([ApiBlueprint.dataRefs.factory]),
       },
-      namespace: api.id,
+      name: api.id,
       factory(originalFactory, { config: _config, inputs: _inputs }) {
         return originalFactory({
           factory: createApiFactory({
@@ -85,8 +87,9 @@ describe('ApiBlueprint', () => {
     expect(extension).toMatchInlineSnapshot(`
       {
         "$$type": "@backstage/ExtensionDefinition",
+        "T": undefined,
         "attachTo": {
-          "id": "app",
+          "id": "root",
           "input": "apis",
         },
         "configSchema": {
@@ -115,11 +118,12 @@ describe('ApiBlueprint', () => {
             "extensionData": [
               [Function],
             ],
+            "replaces": undefined,
           },
         },
         "kind": "api",
-        "name": undefined,
-        "namespace": "test",
+        "name": "test",
+        "namespace": undefined,
         "output": [
           [Function],
         ],

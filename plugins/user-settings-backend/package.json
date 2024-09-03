@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-user-settings-backend",
-  "version": "0.2.22-next.2",
+  "version": "0.2.24-next.1",
   "description": "The Backstage backend plugin to manage user settings",
   "backstage": {
     "role": "backend-plugin",
@@ -52,7 +52,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
@@ -64,7 +64,6 @@
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "knex": "^3.0.0",
-    "winston": "^3.2.1",
     "yn": "^4.0.0"
   },
   "devDependencies": {

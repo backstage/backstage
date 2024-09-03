@@ -18,12 +18,12 @@ The first step in migrating an app is to switch out the `createApp` function for
 // highlight-remove-next-line
 import { createApp } from '@backstage/app-defaults';
 // highlight-add-next-line
-import { createApp } from '@backstage/frontend-app-api';
+import { createApp } from '@backstage/frontend-defaults';
 ```
 
 This immediate switch will lead to a lot of breakages that we need to fix.
 
-Let's start by addressing the change to `app.createRoot(...)`, which no longer accepts any arguments. This represents a fundamental change that the new frontend system introduces. In the old system the app element tree that you passed to `app.createRoot(...)` was the primary way that you installed and configured plugins and features in your app. In the new system this is instead replaced by extensions that are wired together into an extension tree. Much more responsibility has now been shifted to plugins, for example you no longer have to manually provide the route path for each plugin page, but instead only configure it if you want to override the default. For more information on how the new system works, see the [architecture](../architecture/01-index.md) section.
+Let's start by addressing the change to `app.createRoot(...)`, which no longer accepts any arguments. This represents a fundamental change that the new frontend system introduces. In the old system the app element tree that you passed to `app.createRoot(...)` was the primary way that you installed and configured plugins and features in your app. In the new system this is instead replaced by extensions that are wired together into an extension tree. Much more responsibility has now been shifted to plugins, for example you no longer have to manually provide the route path for each plugin page, but instead only configure it if you want to override the default. For more information on how the new system works, see the [architecture](../architecture/00-index.md) section.
 
 Given that the app element tree is most of what builds up the app, it's likely also going to be the majority of the migration effort. In order to make the migration as smooth as possible we have provided a helper that lets you convert an existing app element tree into plugins that you can install in a new app. This in turn allows for a gradual migration of individual plugins, rather than needing to migrate the entire app structure at once.
 
@@ -95,7 +95,7 @@ At this point the contents of your app should be past the initial migration stag
 
 ## Migrating `createApp` Options
 
-Many of the `createApp` options have been migrated to use extensions instead. Each will have their own [extension creator](../architecture/03-extensions.md#extension-creators) that you use to create a custom extension. To add these standalone extensions to the app they need to be passed to `createExtensionOverrides`, which bundles them into a _feature_ that you can install in the app. See the [standalone extensions](../architecture/05-extension-overrides.md#create-standalone-extensions) section for more information.
+Many of the `createApp` options have been migrated to use extensions instead. Each will have their own [extension blueprint](../architecture/23-extension-blueprints.md) that you use to create a custom extension. To add these standalone extensions to the app they need to be passed to `createExtensionOverrides`, which bundles them into a _feature_ that you can install in the app. See the [standalone extensions](../architecture/25-extension-overrides.md#creating-a-standalone-extension-bundle) section for more information.
 
 For example, assuming you have a `lightTheme` extension that you want to add to your app, you can use the following:
 
@@ -115,7 +115,7 @@ You can then also add any additional extensions that you may need to create as p
 
 ### `apis`
 
-[Utility API](../utility-apis/01-index.md) factories are now installed as extensions instead. Pass the existing factory to `createApiExtension` and install it in the app. For more information, see the section on [configuring Utility APIs](../utility-apis/04-configuring.md).
+[Utility API](../utility-apis/01-index.md) factories are now installed as extensions instead. Pass the existing factory to `ApiBlueprint` and install it in the app. For more information, see the section on [configuring Utility APIs](../utility-apis/04-configuring.md).
 
 For example, the following `apis` configuration:
 
@@ -134,12 +134,15 @@ const app = createApp({
 Can be converted to the following extension:
 
 ```ts
-const scmIntegrationsApi = createApiExtension({
-  factory: createApiFactory({
-    api: scmIntegrationsApiRef,
-    deps: { configApi: configApiRef },
-    factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
-  }),
+const scmIntegrationsApi = ApiBlueprint.make({
+  name: 'scm-integrations',
+  params: {
+    factory: createApiFactory({
+      api: scmIntegrationsApiRef,
+      deps: { configApi: configApiRef },
+      factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
+    }),
+  },
 });
 ```
 
@@ -176,7 +179,7 @@ createApp({
 });
 ```
 
-Plugins don't even have to be imported manually after installing their package if [features discovery](../architecture/02-app.md#feature-discovery) is enabled.
+Plugins don't even have to be imported manually after installing their package if [features discovery](../architecture/10-app.md#feature-discovery) is enabled.
 
 ```yaml title="in app-config.yaml"
 app:
@@ -207,7 +210,7 @@ createApp({
 Can be converted to the following plugin configuration:
 
 ```tsx
-createPlugin({
+createFrontendPlugin({
   id: 'tech-radar',
   // ...
   featureFlags: [{ name: 'tech-radar' }],
@@ -219,9 +222,9 @@ createPlugin({
 
 Many app components are now installed as extensions instead using `createComponentExtension`. See the section on [configuring app components](./01-index.md#configure-your-app) for more information.
 
-The `Router` component is now a built-in extension that you can [override](../architecture/05-extension-overrides.md) using `createRouterExtension`.
+The `Router` component is now a built-in extension that you can [override](../architecture/25-extension-overrides.md) using `createRouterExtension`.
 
-The Sign-in page is now installed as an extension using the `createSignInPageExtension` instead.
+The Sign-in page is now installed as an extension, created using the `SignInPageBlueprint` instead.
 
 For example, the following sign-in page configuration:
 
@@ -246,25 +249,27 @@ const app = createApp({
 Can be converted to the following extension:
 
 ```tsx
-const signInPage = createSignInPageExtension({
-  loader: async () => props =>
-    (
-      <SignInPage
-        {...props}
-        provider={{
-          id: 'github-auth-provider',
-          title: 'GitHub',
-          message: 'Sign in using GitHub',
-          apiRef: githubAuthApiRef,
-        }}
-      />
-    ),
+const signInPage = SignInPageBlueprint.make({
+  params: {
+    loader: async () => props =>
+      (
+        <SignInPage
+          {...props}
+          provider={{
+            id: 'github-auth-provider',
+            title: 'GitHub',
+            message: 'Sign in using GitHub',
+            apiRef: githubAuthApiRef,
+          }}
+        />
+      ),
+  },
 });
 ```
 
 ### `themes`
 
-Themes are now installed as extensions, using `createThemeExtension`.
+Themes are now installed as extensions, created using `ThemeBlueprint`.
 
 For example, the following theme configuration:
 
@@ -287,14 +292,19 @@ const app = createApp({
 Can be converted to the following extension:
 
 ```tsx
-const lightTheme = createThemeExtension({
-  id: 'light',
-  title: 'Light Theme',
-  variant: 'light',
-  icon: <LightIcon />,
-  Provider: ({ children }) => (
-    <UnifiedThemeProvider theme={builtinThemes.light} children={children} />
-  ),
+const lightTheme = ThemeBlueprint.make({
+  name: 'light',
+  params: {
+    theme: {
+      id: 'light',
+      title: 'Light Theme',
+      variant: 'light',
+      icon: <LightIcon />,
+      Provider: ({ children }) => (
+        <UnifiedThemeProvider theme={builtinThemes.light} children={children} />
+      ),
+    },
+  },
 });
 ```
 
@@ -341,7 +351,7 @@ const app = createApp({
 
 ### `bindRoutes`
 
-Route bindings can still be done using this option, but you now also have the ability to bind routes using static configuration instead. See the section on [binding routes](../architecture/07-routes.md#binding-external-route-references) for more information.
+Route bindings can still be done using this option, but you now also have the ability to bind routes using static configuration instead. See the section on [binding routes](../architecture/36-routes.md#binding-external-route-references) for more information.
 
 Note that if you are binding routes from a legacy plugin that was converted using `convertLegacyApp`, you will need to use the `convertLegacyRouteRefs` and/or `convertLegacyRouteRef` to convert the routes to be compatible with the new system.
 
@@ -360,7 +370,7 @@ const app = createApp({
 
 ### `__experimentalTranslations`
 
-Translations are now installed as extensions, using `createTranslationExtension`.
+Translations are now installed as extensions, created using `TranslationBlueprint`.
 
 For example, the following translations configuration:
 
@@ -383,11 +393,14 @@ createApp({
 Can be converted to the following extension:
 
 ```tsx
-createTranslationExtension({
-  resource: createTranslationMessages({
-    ref: catalogTranslationRef,
-    catalog_page_create_button_title: 'Create Software',
-  }),
+TranslationBlueprint.make({
+  name: 'catalog-overrides',
+  params: {
+    resource: createTranslationMessages({
+      ref: catalogTranslationRef,
+      catalog_page_create_button_title: 'Create Software',
+    }),
+  },
 });
 ```
 
@@ -470,7 +483,7 @@ const routes = (
 );
 ```
 
-If you are using [app feature discovery](../architecture/02-app.md#feature-discovery) the installation step is simple, it's already done! The new version of the scaffolder plugin was already discovered and present in the app, it was simply disabled because the plugin created from the legacy route had higher priority. If you do not use feature discovery, you will instead need to manually install the new scaffolder plugin in your app through the `features` option of `createApp`.
+If you are using [app feature discovery](../architecture/10-app.md#feature-discovery) the installation step is simple, it's already done! The new version of the scaffolder plugin was already discovered and present in the app, it was simply disabled because the plugin created from the legacy route had higher priority. If you do not use feature discovery, you will instead need to manually install the new scaffolder plugin in your app through the `features` option of `createApp`.
 
 Continue this process for each of your legacy routes until you have migrated all of them. For any plugin with additional extensions installed as children of the `Route`, refer to the plugin READMEs for more detailed instructions. For the entity pages, refer to the [separate section](#entity-pages).
 
@@ -482,24 +495,22 @@ The entity pages are typically defined in `packages/app/src/components/catalog` 
 
 New apps feature a built-in sidebar extension (`app/nav`) that will render all nav item extensions provided by plugins. This is a placeholder implementation and not intended as a long-term solution. In the future we will aim to provide a more flexible sidebar extension that allows for more customization out of the box.
 
-Because the built-in sidebar is quite limited you may want to override the sidebar with your own custom implementation. To do so, use `createExtension` directly and refer to the [original sidebar implementation](https://github.com/backstage/backstage/blob/master/packages/frontend-app-api/src/extensions/AppNav.tsx). The following is an example of how to take your existing sidebar from the `Root` component that you typically find in `packages/app/src/components/Root.tsx`, and use it in an [extension override](../architecture/05-extension-overrides.md):
+Because the built-in sidebar is quite limited you may want to override the sidebar with your own custom implementation. To do so, use `createExtension` directly and refer to the [original sidebar implementation](https://github.com/backstage/backstage/blob/master/plugins/app/src/extensions/AppNav.tsx). The following is an example of how to take your existing sidebar from the `Root` component that you typically find in `packages/app/src/components/Root.tsx`, and use it in an [extension override](../architecture/25-extension-overrides.md):
 
 ```tsx
 const nav = createExtension({
   namespace: 'app',
   name: 'nav',
   attachTo: { id: 'app/layout', input: 'nav' },
-  output: {
-    element: coreExtensionData.reactElement,
-  },
+  output: [coreExtensionData.reactElement],
   factory({ inputs }) {
-    return {
-      element: (
+    return [
+      coreExtensionData.reactElement(
         <Sidebar>
           {/* Sidebar contents from packages/app/src/components/Root.tsx go here */}
-        </Sidebar>
+        </Sidebar>,
       ),
-    };
+    ];
   },
 });
 ```
@@ -548,7 +559,7 @@ export default app.createRoot(
 );
 ```
 
-Any app root wrapper needs to be migrated to be an extension, using `createAppRootWrapperExtension`. Note that if you have multiple wrappers they must be completely independent of each other, i.e. the order in which they the appear in the React tree should not matter. If that is not the case then you should group them into a single wrapper.
+Any app root wrapper needs to be migrated to be an extension, created using `AppRootWrapperBlueprint`. Note that if you have multiple wrappers they must be completely independent of each other, i.e. the order in which they the appear in the React tree should not matter. If that is not the case then you should group them into a single wrapper.
 
 Here is an example converting the `CustomAppBarrier` into extension:
 
@@ -558,11 +569,13 @@ createApp({
   features: [
     createExtensionOverrides({
       extensions: [
-        createAppRootWrapperExtension({
-          name: 'CustomAppBarrier',
-          // Whenever your component uses legacy core packages, wrap it with "compatWrapper"
-          // e.g. props => compatWrapper(<CustomAppBarrier {...props} />)
-          Component: CustomAppBarrier,
+        AppRootWrapperBlueprint.make({
+          name: 'custom-app-barrier',
+          params: {
+            // Whenever your component uses legacy core packages, wrap it with "compatWrapper"
+            // e.g. props => compatWrapper(<CustomAppBarrier {...props} />)
+            Component: CustomAppBarrier,
+          },
         }),
       ],
     }),

@@ -49,7 +49,7 @@ import { CatalogTableColumnsFunc, CatalogTableRow } from './types';
 import { PaginatedCatalogTable } from './PaginatedCatalogTable';
 import { defaultCatalogTableColumnsFunc } from './defaultCatalogTableColumnsFunc';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { catalogTranslationRef } from '../../translation';
+import { catalogTranslationRef } from '../../alpha/translation';
 
 /**
  * Props for {@link CatalogTable}.

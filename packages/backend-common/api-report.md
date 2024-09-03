@@ -9,32 +9,19 @@
 import { AppConfig } from '@backstage/config';
 import { AuthCallback } from 'isomorphic-git';
 import { AuthService } from '@backstage/backend-plugin-api';
-import { AwsCredentialsManager } from '@backstage/integration-aws-node';
-import { AwsS3Integration } from '@backstage/integration';
-import { AzureDevOpsCredentialsProvider } from '@backstage/integration';
-import { AzureIntegration } from '@backstage/integration';
-import { BackendFeatureCompat } from '@backstage/backend-plugin-api';
-import { BitbucketCloudIntegration } from '@backstage/integration';
-import { BitbucketIntegration } from '@backstage/integration';
-import { BitbucketServerIntegration } from '@backstage/integration';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CacheService } from '@backstage/backend-plugin-api';
 import { CacheServiceOptions } from '@backstage/backend-plugin-api';
 import { CacheServiceSetOptions } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
+import { ConfigSchema } from '@backstage/config-loader';
 import cors from 'cors';
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import Docker from 'dockerode';
 import { ErrorRequestHandler } from 'express';
 import express from 'express';
-import { GerritIntegration } from '@backstage/integration';
-import { GiteaIntegration } from '@backstage/integration';
-import { GithubCredentialsProvider } from '@backstage/integration';
-import { GithubIntegration } from '@backstage/integration';
-import { GitLabIntegration } from '@backstage/integration';
-import { HarnessIntegration } from '@backstage/integration';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
-import { IdentityService } from '@backstage/backend-plugin-api';
 import { isChildPath as isChildPath_2 } from '@backstage/backend-plugin-api';
 import { isDatabaseConflictError as isDatabaseConflictError_2 } from '@backstage/backend-plugin-api';
 import { KubeConfig } from '@kubernetes/client-node';
@@ -46,34 +33,18 @@ import { MergeResult } from 'isomorphic-git';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { PluginMetadataService } from '@backstage/backend-plugin-api';
 import { PushResult } from 'isomorphic-git';
-import { Readable } from 'stream';
 import { ReadCommitResult } from 'isomorphic-git';
-import { ReadTreeOptions as ReadTreeOptions_2 } from '@backstage/backend-plugin-api';
-import { ReadTreeResponse as ReadTreeResponse_2 } from '@backstage/backend-plugin-api';
-import { ReadTreeResponseDirOptions as ReadTreeResponseDirOptions_2 } from '@backstage/backend-plugin-api';
-import { ReadTreeResponseFile as ReadTreeResponseFile_2 } from '@backstage/backend-plugin-api';
-import { ReadUrlOptions as ReadUrlOptions_2 } from '@backstage/backend-plugin-api';
-import { ReadUrlResponse as ReadUrlResponse_2 } from '@backstage/backend-plugin-api';
+import { Request as Request_2 } from 'express';
 import { RequestHandler } from 'express';
 import { resolvePackagePath as resolvePackagePath_2 } from '@backstage/backend-plugin-api';
 import { resolveSafeChildPath as resolveSafeChildPath_2 } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { Router } from 'express';
 import { SchedulerService } from '@backstage/backend-plugin-api';
-import { SearchOptions as SearchOptions_2 } from '@backstage/backend-plugin-api';
-import { SearchResponse as SearchResponse_2 } from '@backstage/backend-plugin-api';
-import { SearchResponseFile as SearchResponseFile_2 } from '@backstage/backend-plugin-api';
 import { Server } from 'http';
 import { ServiceRef } from '@backstage/backend-plugin-api';
-import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { TransportStreamOptions } from 'winston-transport';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
-import { UrlReaderServiceReadTreeOptions } from '@backstage/backend-plugin-api';
-import { UrlReaderServiceReadTreeResponse } from '@backstage/backend-plugin-api';
-import { UrlReaderServiceReadUrlOptions } from '@backstage/backend-plugin-api';
-import { UrlReaderServiceReadUrlResponse } from '@backstage/backend-plugin-api';
-import { UrlReaderServiceSearchOptions } from '@backstage/backend-plugin-api';
-import { UrlReaderServiceSearchResponse } from '@backstage/backend-plugin-api';
 import { UserInfoService } from '@backstage/backend-plugin-api';
 import { V1PodTemplateSpec } from '@kubernetes/client-node';
 import * as winston from 'winston';
@@ -85,31 +56,6 @@ export type AuthCallbackOptions = {
   logger?: LoggerService;
 };
 
-// Warning: (ae-forgotten-export) The symbol "AwsS3UrlReader_2" needs to be exported by the entry point index.d.ts
-//
-// @public @deprecated (undocumented)
-export class AwsS3UrlReader extends AwsS3UrlReader_2 {}
-
-// Warning: (ae-forgotten-export) The symbol "AzureUrlReader_2" needs to be exported by the entry point index.d.ts
-//
-// @public @deprecated (undocumented)
-export class AzureUrlReader extends AzureUrlReader_2 {}
-
-// Warning: (ae-forgotten-export) The symbol "BitbucketCloudUrlReader_2" needs to be exported by the entry point index.d.ts
-//
-// @public @deprecated (undocumented)
-export class BitbucketCloudUrlReader extends BitbucketCloudUrlReader_2 {}
-
-// Warning: (ae-forgotten-export) The symbol "BitbucketServerUrlReader_2" needs to be exported by the entry point index.d.ts
-//
-// @public @deprecated (undocumented)
-export class BitbucketServerUrlReader extends BitbucketServerUrlReader_2 {}
-
-// Warning: (ae-forgotten-export) The symbol "BitbucketUrlReader_2" needs to be exported by the entry point index.d.ts
-//
-// @public @deprecated (undocumented)
-export class BitbucketUrlReader extends BitbucketUrlReader_2 {}
-
 // @public @deprecated (undocumented)
 export type CacheClient = CacheService;
 
@@ -119,10 +65,15 @@ export type CacheClientOptions = CacheServiceOptions;
 // @public @deprecated (undocumented)
 export type CacheClientSetOptions = CacheServiceSetOptions;
 
-// Warning: (ae-forgotten-export) The symbol "CacheManager_2" needs to be exported by the entry point index.d.ts
-//
 // @public @deprecated (undocumented)
-export class CacheManager extends CacheManager_2 {}
+export class CacheManager {
+  // (undocumented)
+  forPlugin(pluginId: string): PluginCacheManager;
+  static fromConfig(
+    config: RootConfigService,
+    options?: CacheManagerOptions,
+  ): CacheManager;
+}
 
 // Warning: (ae-forgotten-export) The symbol "CacheManagerOptions_2" needs to be exported by the entry point index.d.ts
 //
@@ -142,13 +93,18 @@ export interface ContainerRunner {
   runContainer(opts: RunContainerOptions): Promise<void>;
 }
 
+// Warning: (ae-forgotten-export) The symbol "createConfigSecretEnumerator_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export const createConfigSecretEnumerator: typeof createConfigSecretEnumerator_2;
+
 // @public @deprecated
 export function createLegacyAuthAdapters<
   TOptions extends {
     auth?: AuthService;
     httpAuth?: HttpAuthService;
     userInfo?: UserInfoService;
-    identity?: IdentityService;
+    identity?: LegacyIdentityService;
     tokenManager?: TokenManager;
     discovery: PluginEndpointDiscovery;
   },
@@ -206,7 +162,10 @@ export class DatabaseManager implements LegacyRootDatabaseService {
   // (undocumented)
   static fromConfig(
     config: Config,
-    options?: DatabaseManagerOptions,
+    options?: {
+      migrations?: DatabaseService['migrations'];
+      logger?: LoggerService;
+    },
   ): DatabaseManager;
 }
 
@@ -222,11 +181,6 @@ export class DockerContainerRunner implements ContainerRunner {
   runContainer(options: RunContainerOptions): Promise<void>;
 }
 
-// Warning: (ae-forgotten-export) The symbol "dropDatabase_2" needs to be exported by the entry point index.d.ts
-//
-// @public @deprecated (undocumented)
-export const dropDatabase: typeof dropDatabase_2;
-
 // @public @deprecated
 export function errorHandler(
   options?: ErrorHandlerOptions,
@@ -238,21 +192,6 @@ export type ErrorHandlerOptions = {
   logger?: LoggerService;
   logClientErrors?: boolean;
 };
-
-// Warning: (ae-forgotten-export) The symbol "FetchUrlReader_2" needs to be exported by the entry point index.d.ts
-//
-// @public @deprecated (undocumented)
-export class FetchUrlReader extends FetchUrlReader_2 {}
-
-// Warning: (ae-forgotten-export) The symbol "FromReadableArrayOptions_2" needs to be exported by the entry point index.d.ts
-//
-// @public @deprecated (undocumented)
-export type FromReadableArrayOptions = FromReadableArrayOptions_2;
-
-// Warning: (ae-forgotten-export) The symbol "GerritUrlReader_2" needs to be exported by the entry point index.d.ts
-//
-// @public @deprecated (undocumented)
-export class GerritUrlReader extends GerritUrlReader_2 {}
 
 // @public @deprecated
 export function getRootLogger(): winston.Logger;
@@ -336,34 +275,9 @@ export class Git {
   resolveRef(options: { dir: string; ref: string }): Promise<string>;
 }
 
-// Warning: (ae-forgotten-export) The symbol "GiteaUrlReader_2" needs to be exported by the entry point index.d.ts
-//
-// @public @deprecated (undocumented)
-export class GiteaUrlReader extends GiteaUrlReader_2 {}
-
-// Warning: (ae-forgotten-export) The symbol "GithubUrlReader_2" needs to be exported by the entry point index.d.ts
-//
-// @public @deprecated (undocumented)
-export class GithubUrlReader extends GithubUrlReader_2 {}
-
-// Warning: (ae-forgotten-export) The symbol "GitlabUrlReader_2" needs to be exported by the entry point index.d.ts
-//
-// @public @deprecated (undocumented)
-export class GitlabUrlReader extends GitlabUrlReader_2 {}
-
-// Warning: (ae-forgotten-export) The symbol "HarnessUrlReader_2" needs to be exported by the entry point index.d.ts
-//
-// @public @deprecated (undocumented)
-export class HarnessUrlReader extends HarnessUrlReader_2 {}
-
 // @public @deprecated
 class HostDiscovery implements DiscoveryService {
-  static fromConfig(
-    config: Config,
-    options?: {
-      basePath?: string;
-    },
-  ): HostDiscovery;
+  static fromConfig(config: Config): HostDiscovery;
   // (undocumented)
   getBaseUrl(pluginId: string): Promise<string>;
   // (undocumented)
@@ -405,6 +319,23 @@ export type KubernetesContainerRunnerOptions = {
 export type LegacyCreateRouter<TEnv> = (deps: TEnv) => Promise<RequestHandler>;
 
 // @public @deprecated
+export interface LegacyIdentityService {
+  // (undocumented)
+  getIdentity(options: { request: Request_2<unknown> }): Promise<
+    | {
+        expiresInSeconds?: number;
+        token: string;
+        identity: {
+          type: 'user';
+          userEntityRef: string;
+          ownershipEntityRefs: string[];
+        };
+      }
+    | undefined
+  >;
+}
+
+// @public @deprecated
 export const legacyPlugin: (
   name: string,
   createRouterImport: Promise<{
@@ -418,9 +349,7 @@ export const legacyPlugin: (
           logger: LoggerService;
           permissions: PermissionsService;
           scheduler: SchedulerService;
-          tokenManager: TokenManagerService;
           reader: UrlReaderService;
-          identity: IdentityService;
         },
         {
           logger: (log: LoggerService) => Logger;
@@ -428,15 +357,18 @@ export const legacyPlugin: (
             getClient(options?: CacheServiceOptions | undefined): CacheService;
           };
         }
-      >
+      > & {
+        tokenManager: TokenManager;
+        identity: LegacyIdentityService;
+      }
     >;
   }>,
-) => BackendFeatureCompat;
+) => BackendFeature;
 
-// Warning: (ae-forgotten-export) The symbol "LegacyRootDatabaseService_2" needs to be exported by the entry point index.d.ts
-//
 // @public @deprecated (undocumented)
-export type LegacyRootDatabaseService = LegacyRootDatabaseService_2;
+export type LegacyRootDatabaseService = {
+  forPlugin(pluginId: string): DatabaseService;
+};
 
 // @public @deprecated
 export function loadBackendConfig(options: {
@@ -467,17 +399,22 @@ export function makeLegacyPlugin<
 ): (
   name: string,
   createRouterImport: Promise<{
-    default: LegacyCreateRouter<TransformedEnv<TEnv, TEnvTransforms>>;
+    default: LegacyCreateRouter<
+      TransformedEnv<TEnv, TEnvTransforms> & {
+        tokenManager: TokenManager;
+        identity: LegacyIdentityService;
+      }
+    >;
   }>,
-) => BackendFeatureCompat;
+) => BackendFeature;
 
 // @public @deprecated
 export function notFoundHandler(): RequestHandler;
 
-// Warning: (ae-forgotten-export) The symbol "PluginCacheManager_2" needs to be exported by the entry point index.d.ts
-//
 // @public @deprecated (undocumented)
-export type PluginCacheManager = PluginCacheManager_2;
+export type PluginCacheManager = {
+  getClient(options?: CacheServiceOptions): CacheService;
+};
 
 // @public @deprecated (undocumented)
 export type PluginDatabaseManager = DatabaseService;
@@ -499,50 +436,6 @@ export interface PullOptions {
     [key: string]: unknown;
   };
 }
-
-// Warning: (ae-forgotten-export) The symbol "ReaderFactory_2" needs to be exported by the entry point index.d.ts
-//
-// @public @deprecated (undocumented)
-export type ReaderFactory = ReaderFactory_2;
-
-// @public @deprecated (undocumented)
-export type ReadTreeOptions = ReadTreeOptions_2;
-
-// @public @deprecated (undocumented)
-export type ReadTreeResponse = ReadTreeResponse_2;
-
-// @public @deprecated (undocumented)
-export type ReadTreeResponseDirOptions = ReadTreeResponseDirOptions_2;
-
-// Warning: (ae-forgotten-export) The symbol "ReadTreeResponseFactory_2" needs to be exported by the entry point index.d.ts
-//
-// @public @deprecated (undocumented)
-export type ReadTreeResponseFactory = ReadTreeResponseFactory_2;
-
-// Warning: (ae-forgotten-export) The symbol "ReadTreeResponseFactoryOptions_2" needs to be exported by the entry point index.d.ts
-//
-// @public @deprecated (undocumented)
-export type ReadTreeResponseFactoryOptions = ReadTreeResponseFactoryOptions_2;
-
-// @public @deprecated (undocumented)
-export type ReadTreeResponseFile = ReadTreeResponseFile_2;
-
-// @public @deprecated (undocumented)
-export type ReadUrlOptions = ReadUrlOptions_2;
-
-// @public @deprecated (undocumented)
-export type ReadUrlResponse = ReadUrlResponse_2;
-
-// Warning: (ae-forgotten-export) The symbol "ReadUrlResponseFactory_2" needs to be exported by the entry point index.d.ts
-//
-// @public @deprecated (undocumented)
-export class ReadUrlResponseFactory extends ReadUrlResponseFactory_2 {}
-
-// Warning: (ae-forgotten-export) The symbol "ReadUrlResponseFactoryFromStreamOptions_2" needs to be exported by the entry point index.d.ts
-//
-// @public @deprecated (undocumented)
-export type ReadUrlResponseFactoryFromStreamOptions =
-  ReadUrlResponseFactoryFromStreamOptions_2;
 
 // @public @deprecated
 export function redactWinstonLogLine(
@@ -576,15 +469,6 @@ export type RunContainerOptions = {
   defaultUser?: boolean;
   pullOptions?: PullOptions;
 };
-
-// @public @deprecated (undocumented)
-export type SearchOptions = SearchOptions_2;
-
-// @public @deprecated (undocumented)
-export type SearchResponse = SearchResponse_2;
-
-// @public @deprecated (undocumented)
-export type SearchResponseFile = SearchResponseFile_2;
 
 // @public @deprecated
 export class ServerTokenManager implements TokenManager {
@@ -659,25 +543,12 @@ export interface StatusCheckHandlerOptions {
 }
 
 // @public @deprecated (undocumented)
-export type TokenManager = TokenManagerService;
-
-// @public @deprecated (undocumented)
-export type UrlReader = UrlReaderService;
-
-// Warning: (ae-forgotten-export) The symbol "UrlReaderPredicateTuple_2" needs to be exported by the entry point index.d.ts
-//
-// @public @deprecated (undocumented)
-export type UrlReaderPredicateTuple = UrlReaderPredicateTuple_2;
-
-// Warning: (ae-forgotten-export) The symbol "UrlReaders_2" needs to be exported by the entry point index.d.ts
-//
-// @public @deprecated (undocumented)
-export class UrlReaders extends UrlReaders_2 {}
-
-// Warning: (ae-forgotten-export) The symbol "UrlReadersOptions_2" needs to be exported by the entry point index.d.ts
-//
-// @public @deprecated (undocumented)
-export type UrlReadersOptions = UrlReadersOptions_2;
+export interface TokenManager {
+  authenticate(token: string): Promise<void>;
+  getToken(): Promise<{
+    token: string;
+  }>;
+}
 
 // @public @deprecated
 export function useHotCleanup(

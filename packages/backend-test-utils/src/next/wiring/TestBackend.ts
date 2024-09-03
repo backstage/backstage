@@ -14,15 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Backend,
-  createSpecializedBackend,
-  MiddlewareFactory,
-  createHttpServer,
-  ExtendedHttpServer,
-  HostDiscovery,
-  DefaultRootHttpRouter,
-} from '@backstage/backend-app-api';
+import { Backend, createSpecializedBackend } from '@backstage/backend-app-api';
 import {
   createServiceFactory,
   BackendFeature,
@@ -40,7 +32,14 @@ import {
   InternalBackendFeature,
   InternalBackendRegistrations,
 } from '@backstage/backend-plugin-api/src/wiring/types';
-import { createHealthRouter } from '@backstage/backend-defaults/rootHttpRouter';
+import {
+  DefaultRootHttpRouter,
+  ExtendedHttpServer,
+  MiddlewareFactory,
+  createHealthRouter,
+  createHttpServer,
+} from '@backstage/backend-defaults/rootHttpRouter';
+import { HostDiscovery } from '@backstage/backend-defaults/discovery';
 
 /** @public */
 export interface TestBackendOptions<TExtensionPoints extends any[]> {
@@ -73,7 +72,6 @@ export const defaultServiceFactories = [
   mockServices.database.factory(),
   mockServices.httpAuth.factory(),
   mockServices.httpRouter.factory(),
-  mockServices.identity.factory(),
   mockServices.lifecycle.factory(),
   mockServices.logger.factory(),
   mockServices.permissions.factory(),
@@ -81,7 +79,6 @@ export const defaultServiceFactories = [
   mockServices.rootLifecycle.factory(),
   mockServices.rootLogger.factory(),
   mockServices.scheduler.factory(),
-  mockServices.tokenManager.factory(),
   mockServices.userInfo.factory(),
   mockServices.urlReader.factory(),
   mockServices.events.factory(),

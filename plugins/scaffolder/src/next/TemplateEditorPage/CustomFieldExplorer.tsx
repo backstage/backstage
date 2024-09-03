@@ -33,6 +33,8 @@ import { Form } from '@backstage/plugin-scaffolder-react/alpha';
 import { TemplateEditorForm } from './TemplateEditorForm';
 import validator from '@rjsf/validator-ajv8';
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../translation';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -68,6 +70,7 @@ export const CustomFieldExplorer = ({
   onClose?: () => void;
 }) => {
   const classes = useStyles();
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const fieldOptions = customFieldExtensions.filter(field => !!field.schema);
   const [selectedField, setSelectedField] = useState(fieldOptions[0]);
   const [fieldFormState, setFieldFormState] = useState({});
@@ -120,11 +123,11 @@ export const CustomFieldExplorer = ({
       <div className={classes.controls}>
         <FormControl variant="outlined" size="small" fullWidth>
           <InputLabel id="select-field-label">
-            Choose Custom Field Extension
+            {t('templateEditorPage.customFieldExplorer.selectFieldLabel')}
           </InputLabel>
           <Select
             value={selectedField}
-            label="Choose Custom Field Extension"
+            label={t('templateEditorPage.customFieldExplorer.selectFieldLabel')}
             labelId="select-field-label"
             onChange={e =>
               handleSelectionChange(e.target.value as FieldExtensionOptions)
@@ -144,7 +147,9 @@ export const CustomFieldExplorer = ({
       </div>
       <div className={classes.fieldForm}>
         <Card>
-          <CardHeader title="Field Options" />
+          <CardHeader
+            title={t('templateEditorPage.customFieldExplorer.fieldForm.title')}
+          />
           <CardContent>
             <Form
               showErrorList={false}
@@ -165,7 +170,9 @@ export const CustomFieldExplorer = ({
                 type="submit"
                 disabled={!selectedField.schema?.uiOptions}
               >
-                Apply
+                {t(
+                  'templateEditorPage.customFieldExplorer.fieldForm.applyButtonTitle',
+                )}
               </Button>
             </Form>
           </CardContent>
@@ -173,7 +180,9 @@ export const CustomFieldExplorer = ({
       </div>
       <div className={classes.preview}>
         <Card>
-          <CardHeader title="Example Template Spec" />
+          <CardHeader
+            title={t('templateEditorPage.customFieldExplorer.preview.title')}
+          />
           <CardContent>
             <CodeMirror
               readOnly

@@ -16,13 +16,14 @@
 
 import React from 'react';
 import { GitlabRepoPicker } from './GitlabRepoPicker';
-import { render, fireEvent } from '@testing-library/react';
+import { fireEvent } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
 
 describe('GitlabRepoPicker', () => {
   describe('owner field', () => {
     it('renders a select if there is a list of allowed owners', async () => {
       const allowedOwners = ['owner1', 'owner2'];
-      const { findByText } = render(
+      const { findByText } = await renderInTestApp(
         <GitlabRepoPicker
           onChange={jest.fn()}
           rawErrors={[]}
@@ -38,7 +39,7 @@ describe('GitlabRepoPicker', () => {
     it('calls onChange when the owner is changed to a different owner', async () => {
       const onChange = jest.fn();
       const allowedOwners = ['owner1', 'owner2'];
-      const { getByRole } = render(
+      const { getByRole } = await renderInTestApp(
         <GitlabRepoPicker
           onChange={onChange}
           rawErrors={[]}
@@ -54,10 +55,10 @@ describe('GitlabRepoPicker', () => {
       expect(onChange).toHaveBeenCalledWith({ owner: 'owner2' });
     });
 
-    it('is disabled picked when only one allowed owner', () => {
+    it('is disabled picked when only one allowed owner', async () => {
       const onChange = jest.fn();
       const allowedOwners = ['owner1'];
-      const { getByRole } = render(
+      const { getByRole } = await renderInTestApp(
         <GitlabRepoPicker
           onChange={onChange}
           rawErrors={[]}
@@ -71,7 +72,7 @@ describe('GitlabRepoPicker', () => {
 
     it('should display free text if no allowed owners are passed', async () => {
       const onChange = jest.fn();
-      const { getAllByRole } = render(
+      const { getAllByRole } = await renderInTestApp(
         <GitlabRepoPicker
           onChange={onChange}
           rawErrors={[]}
