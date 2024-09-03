@@ -1,5 +1,22 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.12.0-next.1
+
+### Patch Changes
+
+- c2cbe1e: Updated dependency `use-immer` to `^0.10.0`.
+- Updated dependencies
+  - @backstage/catalog-client@1.6.7-next.0
+  - @backstage/core-components@0.14.11-next.0
+  - @backstage/plugin-catalog-react@1.12.4-next.1
+  - @backstage/catalog-model@1.6.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/theme@0.5.6
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+  - @backstage/plugin-permission-react@0.4.25
+  - @backstage/plugin-scaffolder-common@1.5.5
+
 ## 1.12.0-next.0
 
 ### Minor Changes

@@ -1,5 +1,26 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.18.6-next.1
+
+### Patch Changes
+
+- ca96b66: Skip start without proper config
+- Updated dependencies
+  - @backstage/backend-common@0.25.0-next.1
+  - @backstage/plugin-auth-node@0.5.2-next.1
+  - @backstage/catalog-client@1.6.7-next.0
+  - @backstage/backend-plugin-api@0.9.0-next.1
+  - @backstage/catalog-model@1.6.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-node@1.12.7-next.1
+  - @backstage/plugin-kubernetes-common@0.8.2
+  - @backstage/plugin-kubernetes-node@0.1.19-next.1
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-node@0.8.3-next.1
+
 ## 0.18.6-next.0
 
 ### Patch Changes

@@ -1,5 +1,22 @@
 # @backstage/plugin-notifications-backend-module-email
 
+## 0.3.0-next.1
+
+### Patch Changes
+
+- 5edd344: Refactor to use injected catalog client in the new backend system
+- Updated dependencies
+  - @backstage/backend-common@0.25.0-next.1
+  - @backstage/catalog-client@1.6.7-next.0
+  - @backstage/backend-plugin-api@0.9.0-next.1
+  - @backstage/catalog-model@1.6.0
+  - @backstage/config@1.2.0
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-node@1.12.7-next.1
+  - @backstage/plugin-notifications-common@0.0.5
+  - @backstage/plugin-notifications-node@0.2.6-next.1
+
 ## 0.3.0-next.0
 
 ### Minor Changes

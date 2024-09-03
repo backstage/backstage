@@ -1,5 +1,19 @@
 # @backstage/core-compat-api
 
+## 0.3.0-next.1
+
+### Minor Changes
+
+- 6db849e: **BREAKING**: The `namespace` parameter for API's is now defaulted to the `pluginId` which was discovered. This means that if you're overriding API's by using ID's directly, they might have changed to include the plugin ID too.
+
+### Patch Changes
+
+- c816e2d: Added support for new `FrontendPlugin` and `FrontendModule` types.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.8.0-next.1
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/version-bridge@1.0.8
+
 ## 0.2.9-next.0
 
 ### Patch Changes

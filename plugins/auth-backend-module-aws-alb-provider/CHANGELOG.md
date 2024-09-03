@@ -1,5 +1,17 @@
 # @backstage/plugin-auth-backend-module-aws-alb-provider
 
+## 0.2.0-next.1
+
+### Patch Changes
+
+- 8d1fb8d: Throw correct error when email is missing from the claims
+- Updated dependencies
+  - @backstage/backend-common@0.25.0-next.1
+  - @backstage/plugin-auth-node@0.5.2-next.1
+  - @backstage/backend-plugin-api@0.9.0-next.1
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-auth-backend@0.23.0-next.1
+
 ## 0.2.0-next.0
 
 ### Minor Changes

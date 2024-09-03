@@ -1,5 +1,27 @@
 # @backstage/frontend-app-api
 
+## 0.9.0-next.1
+
+### Minor Changes
+
+- 7c80650: **BREAKING**: The `createSpecializedApp` function now creates a bare-bones app without any of the default app structure or APIs. To re-introduce this functionality if you need to use `createSpecializedApp` you can install the `app` plugin from `@backstage/plugin-app`.
+
+  In addition, the `createApp` and `CreateAppFeatureLoader` exports are now deprecated as they are being moved to `@backstage/frontend-defaults`, which should be used instead.
+
+### Patch Changes
+
+- c816e2d: Added support for new `FrontendPlugin` and `FrontendModule` types.
+- 948d431: Removing deprecated `namespace` parameter in favour of `pluginId` instead
+- Updated dependencies
+  - @backstage/frontend-defaults@0.1.0-next.0
+  - @backstage/frontend-plugin-api@0.8.0-next.1
+  - @backstage/config@1.2.0
+  - @backstage/core-app-api@1.14.2
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
 ## 0.9.0-next.0
 
 ### Minor Changes
