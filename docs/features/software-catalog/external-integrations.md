@@ -1199,7 +1199,7 @@ export class MyIncrementalEntityProvider implements IncrementalEntityProvider<Cu
             [ANNOTATION_LOCATION]: this.getProviderName(),
             [ANNOTATION_ORIGIN_LOCATION]: this.getProviderName(),
           }
-        }
+        },
         spec: {
           type: 'service'
         }
