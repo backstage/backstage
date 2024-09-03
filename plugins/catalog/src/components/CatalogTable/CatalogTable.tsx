@@ -35,7 +35,6 @@ import {
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
 import Typography from '@material-ui/core/Typography';
-import { withStyles } from '@material-ui/core/styles';
 import { visuallyHidden } from '@mui/utils';
 import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
@@ -63,12 +62,6 @@ export interface CatalogTableProps {
   emptyContent?: ReactNode;
   subtitle?: string;
 }
-
-const YellowStar = withStyles({
-  root: {
-    color: '#f3ba37',
-  },
-})(Star);
 
 const refCompare = (a: Entity, b: Entity) => {
   const toRef = (entity: Entity) =>
@@ -163,7 +156,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
         icon: () => (
           <>
             <Typography style={visuallyHidden}>{title}</Typography>
-            {isStarred ? <YellowStar /> : <StarBorder />}
+            {isStarred ? <Star /> : <StarBorder />}
           </>
         ),
         tooltip: title,

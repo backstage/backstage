@@ -46,7 +46,7 @@ export const StarredEntityListItem = ({
             aria-label="unstar"
             onClick={() => onToggleStarredEntity(entity)}
           >
-            <StarIcon style={{ color: '#f3ba37' }} />
+            <StarIcon />
           </IconButton>
         </Tooltip>
       </ListItemIcon>
