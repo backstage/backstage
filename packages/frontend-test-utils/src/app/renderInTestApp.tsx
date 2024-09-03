@@ -32,7 +32,7 @@ import {
   IconComponent,
   RouterBlueprint,
   NavItemBlueprint,
-  createExtensionOverrides,
+  createFrontendPlugin,
 } from '@backstage/frontend-plugin-api';
 import appPlugin from '@backstage/plugin-app';
 
@@ -136,7 +136,6 @@ export function renderInTestApp(
 ): RenderResult {
   const extensions: Array<ExtensionDefinition> = [
     createExtension({
-      namespace: 'test',
       attachTo: { id: 'app/routes', input: 'routes' },
       output: [coreExtensionData.reactElement, coreExtensionData.routePath],
       factory: () => {
@@ -147,7 +146,6 @@ export function renderInTestApp(
       },
     }),
     RouterBlueprint.make({
-      namespace: 'test',
       params: {
         Component: ({ children }) => <MemoryRouter>{children}</MemoryRouter>,
       },
@@ -182,7 +180,8 @@ export function renderInTestApp(
   }
 
   const features: FrontendFeature[] = [
-    createExtensionOverrides({
+    createFrontendPlugin({
+      id: 'test',
       extensions,
     }),
     appPluginOverride,
