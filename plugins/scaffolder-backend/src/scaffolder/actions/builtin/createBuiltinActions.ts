@@ -62,6 +62,7 @@ import { createPublishBitbucketAction } from '@backstage/plugin-scaffolder-backe
 import {
   createPublishBitbucketCloudAction,
   createBitbucketPipelinesRunAction,
+  createPublishBitbucketCloudPullRequestAction,
 } from '@backstage/plugin-scaffolder-backend-module-bitbucket-cloud';
 
 import {
@@ -197,6 +198,7 @@ export const createBuiltinActions = (
       integrations,
       config,
     }),
+    createPublishBitbucketCloudPullRequestAction({ integrations, config }),
     createPublishBitbucketServerAction({
       integrations,
       config,
