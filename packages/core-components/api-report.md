@@ -1511,6 +1511,12 @@ export const useSidebarOpenState: () => SidebarOpenState;
 // @public
 export const useSidebarPinState: () => SidebarPinState;
 
+// @public
+export const useSignInProviderElements: (
+  providers: IdentityProviders,
+  onSignInSuccess: (userIdentity: UserIdentity) => void,
+) => (boolean | React_2.JSX.Element[])[];
+
 // Warning: (ae-missing-release-tag) "useSupportConfig" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)

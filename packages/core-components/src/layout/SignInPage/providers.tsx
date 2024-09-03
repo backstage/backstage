@@ -31,6 +31,7 @@ import { commonProvider } from './commonProvider';
 import { guestProvider } from './guestProvider';
 import { customProvider } from './customProvider';
 import { IdentityApiSignOutProxy } from './IdentityApiSignOutProxy';
+import { UserIdentity } from './UserIdentity';
 
 const PROVIDER_STORAGE_KEY = '@backstage/core:SignInPage:provider';
 
@@ -202,3 +203,32 @@ export const useSignInProviders = (
 
   return [loading, elements];
 };
+
+/**
+ * A react hook to use to create login elements for the provided providers.
+ *
+ * @param providers - The providers to create login elements for.
+ * @param onSignInSuccess - The callback to call when a user has successfully signed in.
+ *
+ * @returns An array with a boolean indicating if the providers are still loading and the login elements.
+ *
+ * @public
+ * @example
+ * ```tsx
+ * ...
+ * const providers = ['guest']
+ * const onSignInSuccess = (userIdentity: UserIdentity) => ...
+ *
+ * const [loading, providerElements] = useSignInProviderElements(
+ * providers,
+ *   onSignInSuccess,
+ * );
+ *
+ * return <Grid container>{providerElements}</Grid>;
+ * ...
+ * ```
+ * */
+export const useSignInProviderElements = (
+  providers: IdentityProviders,
+  onSignInSuccess: (userIdentity: UserIdentity) => void,
+) => useSignInProviders(getSignInProviders(providers), onSignInSuccess);
