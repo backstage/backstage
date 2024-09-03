@@ -15,10 +15,7 @@
  */
 
 import { InputError } from '@backstage/errors';
-import {
-  getBitbucketServerRequestOptions,
-  ScmIntegrationRegistry,
-} from '@backstage/integration';
+import { ScmIntegrationRegistry } from '@backstage/integration';
 import {
   createTemplateAction,
   getRepoSourceDirectory,
@@ -152,22 +149,30 @@ const findBranches = async (opts: {
   return undefined;
 };
 const createBranch = async (opts: {
-  project: string;
+  workspace: string;
   repo: string;
   branchName: string;
   authorization: string;
   apiBaseUrl: string;
-  startPoint: string;
+  startBranch: string;
 }) => {
-  const { project, repo, branchName, authorization, apiBaseUrl, startPoint } =
-    opts;
+  const {
+    workspace,
+    repo,
+    branchName,
+    authorization,
+    apiBaseUrl,
+    startBranch,
+  } = opts;
 
   let response: Response;
   const options: RequestInit = {
     method: 'POST',
     body: JSON.stringify({
       name: branchName,
-      startPoint,
+      target: {
+        hash: startBranch,
+      },
     }),
     headers: {
       Authorization: authorization,
@@ -177,16 +182,14 @@ const createBranch = async (opts: {
 
   try {
     response = await fetch(
-      `${apiBaseUrl}/projects/${encodeURIComponent(
-        project,
-      )}/repos/${encodeURIComponent(repo)}/branches`,
+      `${apiBaseUrl}/repositories/${workspace}/${repo}/refs/branches`,
       options,
     );
   } catch (e) {
     throw new Error(`Unable to create branch, ${e}`);
   }
 
-  if (response.status !== 200) {
+  if (response.status !== 201) {
     throw new Error(
       `Unable to create branch, ${response.status} ${
         response.statusText
@@ -354,102 +357,92 @@ export function createPublishBitbucketCloudPullRequestAction(options: {
         });
       }
 
-      // const toRef = await findBranches({
-      //   project,
-      //   repo,
-      //   branchName: finalTargetBranch!,
-      //   authorization,
-      //   apiBaseUrl,
-      // });
+      await createBranch({
+        workspace: workspace!,
+        repo,
+        branchName: sourceBranch,
+        authorization,
+        apiBaseUrl,
+        startBranch: finalTargetBranch,
+      });
 
-      // let fromRef = await findBranches({
-      //   project,
-      //   repo,
-      //   branchName: sourceBranch,
-      //   authorization,
-      //   apiBaseUrl,
-      // });
+      const remoteUrl = `https://${host}/${workspace}/${repo}.git`;
 
-      // if (!fromRef) {
-      //   // create branch
-      //   ctx.logger.info(
-      //     `source branch not found -> creating branch named: ${sourceBranch} lastCommit: ${toRef.latestCommit}`,
-      //   );
-      //   const latestCommit = toRef.latestCommit;
+      let auth;
 
-      //   fromRef = await createBranch({
-      //     project,
-      //     repo,
-      //     branchName: sourceBranch,
-      //     authorization,
-      //     apiBaseUrl,
-      //     startPoint: latestCommit,
-      //   });
+      if (ctx.input.token) {
+        auth = {
+          username: 'x-token-auth',
+          password: ctx.input.token,
+        };
+      } else {
+        if (
+          !integrationConfig.config.username ||
+          !integrationConfig.config.appPassword
+        ) {
+          throw new Error(
+            'Credentials for Bitbucket Cloud integration required for this action.',
+          );
+        }
 
-      //   const remoteUrl = `https://${host}/scm/${project}/${repo}.git`;
+        auth = {
+          username: integrationConfig.config.username,
+          password: integrationConfig.config.appPassword,
+        };
+      }
 
-      //   const auth = authConfig.token
-      //     ? {
-      //         token: token!,
-      //       }
-      //     : {
-      //         username: authConfig.username!,
-      //         password: authConfig.password!,
-      //       };
+      const gitAuthorInfo = {
+        name:
+          gitAuthorName ||
+          config.getOptionalString('scaffolder.defaultAuthor.name'),
+        email:
+          gitAuthorEmail ||
+          config.getOptionalString('scaffolder.defaultAuthor.email'),
+      };
 
-      //   const gitAuthorInfo = {
-      //     name:
-      //       gitAuthorName ||
-      //       config.getOptionalString('scaffolder.defaultAuthor.name'),
-      //     email:
-      //       gitAuthorEmail ||
-      //       config.getOptionalString('scaffolder.defaultAuthor.email'),
-      //   };
+      const tempDir = await ctx.createTemporaryDirectory();
+      const sourceDir = getRepoSourceDirectory(ctx.workspacePath, undefined);
+      await cloneRepo({
+        url: remoteUrl,
+        dir: tempDir,
+        auth,
+        logger: ctx.logger,
+        ref: sourceBranch,
+      });
 
-      //   const tempDir = await ctx.createTemporaryDirectory();
-      //   const sourceDir = getRepoSourceDirectory(ctx.workspacePath, undefined);
-      //   await cloneRepo({
-      //     url: remoteUrl,
-      //     dir: tempDir,
-      //     auth,
-      //     logger: ctx.logger,
-      //     ref: sourceBranch,
-      //   });
+      await createGitBranch({
+        dir: tempDir,
+        auth,
+        logger: ctx.logger,
+        ref: sourceBranch,
+      });
 
-      //   await createGitBranch({
-      //     dir: tempDir,
-      //     auth,
-      //     logger: ctx.logger,
-      //     ref: sourceBranch,
-      //   });
+      // copy files
+      fs.cpSync(sourceDir, tempDir, {
+        recursive: true,
+        filter: path => {
+          return !(path.indexOf('.git') > -1);
+        },
+      });
 
-      //   // copy files
-      //   fs.cpSync(sourceDir, tempDir, {
-      //     recursive: true,
-      //     filter: path => {
-      //       return !(path.indexOf('.git') > -1);
-      //     },
-      //   });
+      await addFiles({
+        dir: tempDir,
+        auth,
+        logger: ctx.logger,
+        filepath: '.',
+      });
 
-      //   await addFiles({
-      //     dir: tempDir,
-      //     auth,
-      //     logger: ctx.logger,
-      //     filepath: '.',
-      //   });
-
-      //   await commitAndPushBranch({
-      //     dir: tempDir,
-      //     auth,
-      //     logger: ctx.logger,
-      //     commitMessage:
-      //       description ??
-      //       config.getOptionalString('scaffolder.defaultCommitMessage') ??
-      //       '',
-      //     gitAuthorInfo,
-      //     branch: sourceBranch,
-      //   });
-      // }
+      await commitAndPushBranch({
+        dir: tempDir,
+        auth,
+        logger: ctx.logger,
+        commitMessage:
+          description ??
+          config.getOptionalString('scaffolder.defaultCommitMessage') ??
+          '',
+        gitAuthorInfo,
+        branch: sourceBranch,
+      });
 
       const pullRequestUrl = await createPullRequest({
         workspace: workspace!,
