@@ -26,6 +26,7 @@ import {
   FrontendPlugin,
   coreExtensionData,
   createExtension,
+  ExtensionOverrides,
   createExtensionInput,
   createFrontendModule,
 } from '@backstage/frontend-plugin-api';
@@ -61,7 +62,7 @@ function selectChildren(
 /** @public */
 export function convertLegacyApp(
   rootElement: React.JSX.Element,
-): (FrontendPlugin | FrontendModule)[] {
+): (FrontendPlugin | FrontendModule | ExtensionOverrides)[] {
   if (getComponentData(rootElement, 'core.type') === 'FlatRoutes') {
     return collectLegacyRoutes(rootElement);
   }
