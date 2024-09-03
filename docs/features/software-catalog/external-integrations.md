@@ -1157,7 +1157,9 @@ export class MyIncrementalEntityProvider
 The last step is to implement the actual `next` method that will accept the cursor, call the API, process the result and return the result.
 
 ```ts
-export class MyIncrementalEntityProvider implements IncrementalEntityProvider<Cursor, Context> {
+export class MyIncrementalEntityProvider
+  implements IncrementalEntityProvider<Cursor, Context>
+{
   private readonly token: string;
 
   constructor(token: string) {
@@ -1168,14 +1170,16 @@ export class MyIncrementalEntityProvider implements IncrementalEntityProvider<Cu
     return `MyIncrementalEntityProvider`;
   }
 
-
   async around(burst: (context: Context) => Promise<void>): Promise<void> {
-    const apiClient = new MyApiClient(this.token)
+    const apiClient = new MyApiClient(this.token);
 
-    await burst({ apiClient })
+    await burst({ apiClient });
   }
 
-  async next(context: Context, cursor?: Cursor = { page: 1 }): Promise<EntityIteratorResult<Cursor>> {
+  async next(
+    context: Context,
+    cursor?: Cursor = { page: 1 },
+  ): Promise<EntityIteratorResult<Cursor>> {
     const { apiClient } = context;
 
     // call your API with the current cursor
@@ -1198,26 +1202,26 @@ export class MyIncrementalEntityProvider implements IncrementalEntityProvider<Cu
             // You need to define these, otherwise they'll fail validation
             [ANNOTATION_LOCATION]: this.getProviderName(),
             [ANNOTATION_ORIGIN_LOCATION]: this.getProviderName(),
-          }
+          },
         },
         spec: {
           type: 'service',
           lifecycle: 'production', // Ideally your source has this information
           owner: 'unknown', // Ideally your source has this information
-        }
-      }
+        },
+      },
     }));
 
     // create the next cursor
     const nextCursor = {
-      page: nextPage
+      page: nextPage,
     };
 
     return {
       done,
       entities,
-      cursor: nextCursor
-    }
+      cursor: nextCursor,
+    };
   }
 }
 ```
