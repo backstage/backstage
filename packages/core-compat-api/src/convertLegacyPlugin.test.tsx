@@ -84,7 +84,7 @@ describe('convertLegacyPlugin', () => {
     });
     expect(internalConverted.featureFlags).toEqual([{ name: 'test-flag' }]);
     expect(internalConverted.extensions.map(e => e.id)).toEqual([
-      'api:plugin.test.client',
+      'api:test/plugin.test.client',
       'page:test',
     ]);
   });

@@ -72,7 +72,6 @@ describe('AppRootWrapperBlueprint', () => {
 
   it('should render the complex component wrapper', async () => {
     const extension = AppRootWrapperBlueprint.makeWithOverrides({
-      name: 'test',
       config: {
         schema: {
           name: z => z.string(),

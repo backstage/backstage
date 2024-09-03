@@ -269,7 +269,7 @@ export function collectLegacyRoutes(
         ...extensions,
         ...Array.from(plugin.getApis()).map(factory =>
           ApiBlueprint.make({
-            namespace: factory.api.id,
+            name: factory.api.id,
             params: { factory },
           }),
         ),

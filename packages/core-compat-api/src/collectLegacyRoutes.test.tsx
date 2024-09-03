@@ -73,7 +73,7 @@ describe('collectLegacyRoutes', () => {
             defaultConfig: {},
           },
           {
-            id: 'api:plugin.scoringdata.service',
+            id: 'api:score-card/plugin.scoringdata.service',
             attachTo: { id: 'root', input: 'apis' },
             disabled: false,
           },
@@ -89,7 +89,7 @@ describe('collectLegacyRoutes', () => {
             defaultConfig: {},
           },
           {
-            id: 'api:plugin.stackstorm.service',
+            id: 'api:stackstorm/plugin.stackstorm.service',
             attachTo: { id: 'root', input: 'apis' },
             disabled: false,
           },
@@ -111,7 +111,7 @@ describe('collectLegacyRoutes', () => {
             defaultConfig: {},
           },
           {
-            id: 'api:plugin.puppetdb.service',
+            id: 'api:puppetDb/plugin.puppetdb.service',
             attachTo: { id: 'root', input: 'apis' },
             disabled: false,
           },
@@ -209,7 +209,7 @@ describe('collectLegacyRoutes', () => {
             disabled: false,
           },
           {
-            id: 'api:plugin.catalog.service',
+            id: 'api:catalog/plugin.catalog.service',
             attachTo: {
               id: 'root',
               input: 'apis',
@@ -218,7 +218,7 @@ describe('collectLegacyRoutes', () => {
             disabled: false,
           },
           {
-            id: 'api:catalog-react.starred-entities',
+            id: 'api:catalog/catalog-react.starred-entities',
             attachTo: {
               id: 'root',
               input: 'apis',
@@ -227,7 +227,7 @@ describe('collectLegacyRoutes', () => {
             disabled: false,
           },
           {
-            id: 'api:plugin.catalog.entity-presentation',
+            id: 'api:catalog/plugin.catalog.entity-presentation',
             attachTo: {
               id: 'root',
               input: 'apis',
@@ -241,7 +241,7 @@ describe('collectLegacyRoutes', () => {
         id: 'score-card',
         extensions: [
           {
-            id: 'api:plugin.scoringdata.service',
+            id: 'api:score-card/plugin.scoringdata.service',
             attachTo: { id: 'root', input: 'apis' },
             disabled: false,
           },

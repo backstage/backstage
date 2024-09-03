@@ -31,7 +31,6 @@ function unused(..._any: any[]) {}
 describe('createExtension', () => {
   it('should create an extension with a simple output', () => {
     const baseConfig = {
-      namespace: 'test',
       attachTo: { id: 'root', input: 'default' },
       output: [stringDataRef],
     };
@@ -41,7 +40,7 @@ describe('createExtension', () => {
         return [stringDataRef('bar')];
       },
     });
-    expect(extension).toMatchObject({ version: 'v2', namespace: 'test' });
+    expect(extension).toMatchObject({ version: 'v2' });
 
     // Member arrow function declaration
     createExtension({
@@ -161,7 +160,6 @@ describe('createExtension', () => {
 
   it('should create an extension with a some optional output', () => {
     const baseConfig = {
-      namespace: 'test',
       attachTo: { id: 'root', input: 'default' },
       output: [stringDataRef, numberDataRef.optional()],
     };
@@ -169,7 +167,7 @@ describe('createExtension', () => {
       ...baseConfig,
       factory: () => [stringDataRef('bar')],
     });
-    expect(extension).toMatchObject({ version: 'v2', namespace: 'test' });
+    expect(extension).toMatchObject({ version: 'v2' });
 
     createExtension({
       ...baseConfig,
@@ -206,7 +204,6 @@ describe('createExtension', () => {
 
   it('should create an extension with input', () => {
     const extension = createExtension({
-      namespace: 'test',
       attachTo: { id: 'root', input: 'default' },
       inputs: {
         mixed: createExtensionInput([stringDataRef, numberDataRef.optional()]),
@@ -250,15 +247,14 @@ describe('createExtension', () => {
         return [stringDataRef('bar')];
       },
     });
-    expect(extension).toMatchObject({ version: 'v2', namespace: 'test' });
+    expect(extension).toMatchObject({ version: 'v2' });
     expect(String(extension)).toBe(
-      'ExtensionDefinition{namespace=test,attachTo=root@default}',
+      'ExtensionDefinition{attachTo=root@default}',
     );
   });
 
   it('should create an extension with config', () => {
     const extension = createExtension({
-      namespace: 'test',
       attachTo: { id: 'root', input: 'default' },
       config: {
         schema: {
@@ -284,9 +280,9 @@ describe('createExtension', () => {
         return [stringDataRef('bar')];
       },
     });
-    expect(extension).toMatchObject({ version: 'v2', namespace: 'test' });
+    expect(extension).toMatchObject({ version: 'v2' });
     expect(String(extension)).toBe(
-      'ExtensionDefinition{namespace=test,attachTo=root@default}',
+      'ExtensionDefinition{attachTo=root@default}',
     );
 
     expect(
@@ -330,7 +326,6 @@ describe('createExtension', () => {
     expect(
       // @ts-expect-error
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef],
         factory() {
@@ -342,7 +337,6 @@ describe('createExtension', () => {
     expect(
       // @ts-expect-error
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef],
         factory() {
@@ -354,7 +348,6 @@ describe('createExtension', () => {
     // Duplicate output, we won't attempt to handle this a compile time and instead error out at runtime
     expect(
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef],
         factory() {
@@ -366,7 +359,6 @@ describe('createExtension', () => {
     expect(
       // @ts-expect-error
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef],
         factory() {
@@ -377,7 +369,6 @@ describe('createExtension', () => {
 
     expect(
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef],
         factory() {
@@ -388,7 +379,6 @@ describe('createExtension', () => {
 
     expect(
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef.optional()],
         factory() {
@@ -399,7 +389,6 @@ describe('createExtension', () => {
 
     expect(
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef.optional()],
         factory() {
@@ -413,7 +402,6 @@ describe('createExtension', () => {
     expect(
       // @ts-expect-error
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef],
         *factory() {
@@ -425,7 +413,6 @@ describe('createExtension', () => {
     expect(
       // @ts-expect-error
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef],
         *factory() {
@@ -437,7 +424,6 @@ describe('createExtension', () => {
     // Duplicate output, we won't attempt to handle this a compile time and instead error out at runtime
     expect(
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef],
         *factory() {
@@ -450,7 +436,6 @@ describe('createExtension', () => {
     expect(
       // @ts-expect-error
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef],
         *factory() {
@@ -462,7 +447,6 @@ describe('createExtension', () => {
 
     expect(
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef],
         *factory() {
@@ -474,7 +458,6 @@ describe('createExtension', () => {
 
     expect(
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef.optional()],
         *factory() {
@@ -486,7 +469,6 @@ describe('createExtension', () => {
 
     expect(
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef.optional()],
         *factory() {
@@ -499,7 +481,6 @@ describe('createExtension', () => {
   it('should support new form of inputs', () => {
     expect(
       createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         inputs: {
           header: createExtensionInput([stringDataRef.optional()], {
@@ -534,7 +515,6 @@ describe('createExtension', () => {
   describe('overrides', () => {
     it('should allow overriding of config and merging', () => {
       const testExtension = createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'blob' },
         output: [stringDataRef],
         config: {
@@ -563,7 +543,6 @@ describe('createExtension', () => {
 
     it('should allow overriding of outputs', () => {
       const testExtension = createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'blob' },
         output: [stringDataRef],
         inputs: {
@@ -603,7 +582,6 @@ describe('createExtension', () => {
 
     it('should allow overriding the factory function and calling the original factory', () => {
       const testExtension = createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'blob' },
         output: [stringDataRef],
         config: {
@@ -635,7 +613,6 @@ describe('createExtension', () => {
     it('should allow overriding the returned values from the parent factory', () => {
       const testExtension = createExtension({
         kind: 'thing',
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef],
         config: {
@@ -666,7 +643,6 @@ describe('createExtension', () => {
     it('should work functionally with overrides', () => {
       const testExtension = createExtension({
         kind: 'thing',
-        namespace: 'test',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef],
         config: {

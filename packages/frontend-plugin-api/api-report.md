@@ -454,7 +454,7 @@ export function createComponentExtension<TProps extends {}>(options: {
     >;
   };
   kind: 'component';
-  namespace: string;
+  namespace: undefined;
   name: string;
 }>;
 

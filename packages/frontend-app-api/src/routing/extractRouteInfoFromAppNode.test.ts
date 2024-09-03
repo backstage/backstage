@@ -89,7 +89,9 @@ function routeInfoFromExtensions(extensions: ExtensionDefinition[]) {
     'root',
     resolveAppNodeSpecs({
       features: [appPlugin, plugin],
-      builtinExtensions: [resolveExtensionDefinition(Root)],
+      builtinExtensions: [
+        resolveExtensionDefinition(Root, { namespace: 'root' }),
+      ],
       parameters: readAppExtensionsConfig(new MockConfigApi({})),
       forbidden: new Set(['root']),
     }),
