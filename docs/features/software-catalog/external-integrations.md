@@ -1136,7 +1136,7 @@ If you need to pass a token to your API, then you can create a constructor that 
 export class MyIncrementalEntityProvider
   implements IncrementalEntityProvider<Cursor, Context>
 {
-  token: string;
+  private readonly token: string;
 
   constructor(token: string) {
     this.token = token;
