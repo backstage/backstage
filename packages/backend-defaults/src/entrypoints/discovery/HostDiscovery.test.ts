@@ -54,25 +54,6 @@ describe('HostDiscovery', () => {
     );
   });
 
-  it('can configure the base path', async () => {
-    const discovery = HostDiscovery.fromConfig(
-      new ConfigReader({
-        backend: {
-          baseUrl: 'http://localhost:40',
-          listen: { port: 80, host: 'localhost' },
-        },
-      }),
-      { basePath: '/service' },
-    );
-
-    await expect(discovery.getBaseUrl('catalog')).resolves.toBe(
-      'http://localhost:80/service/catalog',
-    );
-    await expect(discovery.getExternalBaseUrl('catalog')).resolves.toBe(
-      'http://localhost:40/service/catalog',
-    );
-  });
-
   it.each([
     [{ listen: ':80' }, 'http://localhost:80'],
     [{ listen: ':40', https: true }, 'https://localhost:40'],

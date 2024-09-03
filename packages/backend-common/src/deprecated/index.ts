@@ -96,11 +96,11 @@ export class HostDiscovery implements DiscoveryService {
    *      plugins: [search]
    * ```
    *
-   * The basePath defaults to `/api`, meaning the default full internal
+   * The fixed base path is `/api`, meaning the default full internal
    * path for the `catalog` plugin will be `http://localhost:7007/api/catalog`.
    */
-  static fromConfig(config: Config, options?: { basePath?: string }) {
-    return new HostDiscovery(_HostDiscovery.fromConfig(config, options));
+  static fromConfig(config: Config) {
+    return new HostDiscovery(_HostDiscovery.fromConfig(config));
   }
 
   private constructor(private readonly impl: _HostDiscovery) {}
