@@ -5,7 +5,6 @@
 ```ts
 import { AuthService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
-import { CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { DefaultTechDocsCollatorFactory as DefaultTechDocsCollatorFactory_2 } from '@backstage/plugin-search-backend-module-techdocs';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
@@ -66,7 +65,7 @@ export type OutOfTheBoxDeploymentOptions = {
   cache: PluginCacheManager;
   docsBuildStrategy?: DocsBuildStrategy_2;
   buildLogTransport?: winston.transport;
-  catalogClient?: CatalogClient;
+  catalogClient?: CatalogApi;
   httpAuth?: HttpAuthService;
   auth?: AuthService;
 };
@@ -80,7 +79,7 @@ export type RecommendedDeploymentOptions = {
   cache: PluginCacheManager;
   docsBuildStrategy?: DocsBuildStrategy_2;
   buildLogTransport?: winston.transport;
-  catalogClient?: CatalogClient;
+  catalogClient?: CatalogApi;
   httpAuth?: HttpAuthService;
   auth?: AuthService;
 };
