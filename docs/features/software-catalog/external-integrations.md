@@ -1158,8 +1158,7 @@ The last step is to implement the actual `next` method that will accept the curs
 
 ```ts
 export class MyIncrementalEntityProvider implements IncrementalEntityProvider<Cursor, Context> {
-
-  token: string;
+  private readonly token: string;
 
   constructor(token: string) {
     this.token = token;
