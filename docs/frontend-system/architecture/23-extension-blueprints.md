@@ -20,7 +20,7 @@ The following is a simple example of how one might use the blueprint `make` meth
 const myPageExtension = PageBlueprint.make({
   params: {
     defaultPath: '/my-page',
-    loader: () => import('./components/MyPage').them(m => <m.MyPage />),
+    loader: () => import('./components/MyPage').then(m => <m.MyPage />),
   },
 });
 ```
@@ -47,7 +47,7 @@ const myPageExtension = PageBlueprint.makeWithOverrides({
     return originalFactory({
       defaultPath: '/my-page',
       loader: () =>
-        import('./components/MyPage').them(m => (
+        import('./components/MyPage').then(m => (
           // We can now access values from the factory context when providing
           // the blueprint parameters, such as config values.
           <m.MyPage layout={config.layout} />
@@ -104,7 +104,7 @@ Most of the options provided to `createExtensionBlueprint` can be overridden whe
 
 In some cases you may want to define and provide [extension data reference](./20-extensions.md#extension-data-references) that are specific to your blueprint. In the above example we might want to forward the `title` as data for example, rather than encapsulating it into the `MyWidgetContainer` component. This gives the parent extension more flexibility in the rendering for our example widget extensions.
 
-To do that, we create a new extension data reference for our widget title. This references is provided via the `dataRefs` options when we create the blueprint, which makes it available for use via `MyWidgetBlueprint.dataRefs.widgetTitle`.
+To do that, we create a new extension data reference for our widget title. This reference is provided via the `dataRefs` options when we create the blueprint, which makes it available for use via `MyWidgetBlueprint.dataRefs.widgetTitle`.
 
 ```tsx
 export interface MyWidgetBlueprintParams {
