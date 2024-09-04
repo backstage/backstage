@@ -58,7 +58,7 @@ export type CreateExtensionBlueprintOptions<
 > = {
   kind: TKind;
   namespace?: TNamespace;
-  attachTo: { id: string; input: string };
+  attachTo: { id: string; input: string } | { id: string; input: string }[];
   disabled?: boolean;
   inputs?: TInputs;
   output: Array<UOutput>;
@@ -113,7 +113,7 @@ export interface ExtensionBlueprint<
   >(args: {
     namespace?: undefined;
     name?: TNewName;
-    attachTo?: { id: string; input: string };
+    attachTo?: { id: string; input: string } | { id: string; input: string }[];
     disabled?: boolean;
     params: T['params'];
   }): ExtensionDefinition<{
@@ -132,7 +132,7 @@ export interface ExtensionBlueprint<
   >(args: {
     namespace?: TNewNamespace;
     name?: TNewName;
-    attachTo?: { id: string; input: string };
+    attachTo?: { id: string; input: string } | { id: string; input: string }[];
     disabled?: boolean;
     params: T['params'];
   }): ExtensionDefinition<{
@@ -170,7 +170,7 @@ export interface ExtensionBlueprint<
   >(args: {
     namespace?: undefined;
     name?: TNewName;
-    attachTo?: { id: string; input: string };
+    attachTo?: { id: string; input: string } | { id: string; input: string }[];
     disabled?: boolean;
     inputs?: TExtraInputs & {
       [KName in keyof T['inputs']]?: `Error: Input '${KName &
@@ -251,7 +251,7 @@ export interface ExtensionBlueprint<
   >(args: {
     namespace: TNewNamespace;
     name?: TNewName;
-    attachTo?: { id: string; input: string };
+    attachTo?: { id: string; input: string } | { id: string; input: string }[];
     disabled?: boolean;
     inputs?: TExtraInputs & {
       [KName in keyof T['inputs']]?: `Error: Input '${KName &

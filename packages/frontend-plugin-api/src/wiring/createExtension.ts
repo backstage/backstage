@@ -124,7 +124,7 @@ export type CreateExtensionOptions<
   kind?: TKind;
   namespace?: TNamespace;
   name?: TName;
-  attachTo: { id: string; input: string };
+  attachTo: { id: string; input: string } | { id: string; input: string }[];
   disabled?: boolean;
   inputs?: TInputs;
   output: Array<UOutput>;
@@ -178,7 +178,9 @@ export type ExtensionDefinition<
     },
   >(
     args: {
-      attachTo?: { id: string; input: string };
+      attachTo?:
+        | { id: string; input: string }
+        | { id: string; input: string }[];
       disabled?: boolean;
       inputs?: TExtraInputs & {
         [KName in keyof T['inputs']]?: `Error: Input '${KName &
@@ -242,7 +244,9 @@ export type InternalExtensionDefinition<
   readonly kind?: string;
   readonly namespace?: string;
   readonly name?: string;
-  readonly attachTo: { id: string; input: string };
+  readonly attachTo:
+    | { id: string; input: string }
+    | { id: string; input: string }[];
   readonly disabled: boolean;
   readonly configSchema?: PortableSchema<T['config'], T['configInput']>;
 } & (
@@ -499,7 +503,14 @@ export function createExtension<
       if (options.name) {
         parts.push(`name=${options.name}`);
       }
-      parts.push(`attachTo=${options.attachTo.id}@${options.attachTo.input}`);
+
+      if (Array.isArray(options.attachTo)) {
+        for (const attachmentPoint of options.attachTo) {
+          parts.push(`attachTo=${attachmentPoint.id}@${attachmentPoint.input}`);
+        }
+      } else {
+        parts.push(`attachTo=${options.attachTo.id}@${options.attachTo.input}`);
+      }
       return `ExtensionDefinition{${parts.join(',')}}`;
     },
     override(overrideOptions) {

@@ -28,7 +28,9 @@ import { BackstagePlugin, Extension, ExtensionDataRef } from '../../wiring';
  */
 export interface AppNodeSpec {
   readonly id: string;
-  readonly attachTo: { id: string; input: string };
+  readonly attachTo:
+    | { id: string; input: string }
+    | { id: string; input: string }[];
   readonly extension: Extension<unknown, unknown>;
   readonly disabled: boolean;
   readonly config?: unknown;
@@ -45,7 +47,7 @@ export interface AppNodeSpec {
  * adjacent nodes are disabled or not. If no parent attachment is present or
  */
 export interface AppNodeEdges {
-  readonly attachedTo?: { node: AppNode; input: string };
+  readonly attachedTo?: { node: AppNode; input: string }[];
   readonly attachments: ReadonlyMap<string, AppNode[]>;
 }
 

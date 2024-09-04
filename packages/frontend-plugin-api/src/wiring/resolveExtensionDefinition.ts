@@ -32,7 +32,9 @@ import {
 export interface Extension<TConfig, TConfigInput = TConfig> {
   $$type: '@backstage/Extension';
   readonly id: string;
-  readonly attachTo: { id: string; input: string };
+  readonly attachTo:
+    | { id: string; input: string }
+    | { id: string; input: string }[];
   readonly disabled: boolean;
   readonly configSchema?: PortableSchema<TConfig, TConfigInput>;
 }
