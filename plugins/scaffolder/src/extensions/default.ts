@@ -53,6 +53,11 @@ import {
 import { RepoBranchPicker } from '../components/fields/RepoBranchPicker/RepoBranchPicker';
 import { RepoBranchPickerSchema } from '../components/fields/RepoBranchPicker/schema';
 
+/**
+ * The default scaffolder field extensions (component, name and schema).
+ *
+ * @public
+ */
 export const DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS = [
   {
     component: EntityPicker,

@@ -33,6 +33,7 @@ import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
+import { RJSFSchema } from '@rjsf/utils';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScaffolderApi as ScaffolderApi_2 } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderDryRunOptions as ScaffolderDryRunOptions_2 } from '@backstage/plugin-scaffolder-react';
@@ -40,6 +41,7 @@ import { ScaffolderDryRunResponse as ScaffolderDryRunResponse_2 } from '@backsta
 import { ScaffolderGetIntegrationsListOptions as ScaffolderGetIntegrationsListOptions_2 } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderGetIntegrationsListResponse as ScaffolderGetIntegrationsListResponse_2 } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderOutputLink } from '@backstage/plugin-scaffolder-react';
+import { ScaffolderRJSFFieldProps } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderScaffoldOptions as ScaffolderScaffoldOptions_2 } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderScaffoldResponse as ScaffolderScaffoldResponse_2 } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderStreamLogsOptions as ScaffolderStreamLogsOptions_2 } from '@backstage/plugin-scaffolder-react';
@@ -68,6 +70,165 @@ export type CustomFieldExtensionSchema = CustomFieldExtensionSchema_2;
 // @public @deprecated (undocumented)
 export type CustomFieldValidator<TReturnFieldData> =
   CustomFieldValidator_2<TReturnFieldData>;
+
+// @public
+export const DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS: (
+  | {
+      component: (
+        props: FieldExtensionComponentProps_2<
+          string,
+          {
+            defaultKind?: string | undefined;
+            defaultNamespace?: string | false | undefined;
+            catalogFilter?:
+              | Record<
+                  string,
+                  | string
+                  | string[]
+                  | {
+                      exists?: boolean | undefined;
+                    }
+                >
+              | Record<
+                  string,
+                  | string
+                  | string[]
+                  | {
+                      exists?: boolean | undefined;
+                    }
+                >[]
+              | undefined;
+            allowedKinds?: string[] | undefined;
+            allowArbitraryValues?: boolean | undefined;
+          }
+        >,
+      ) => JSX_2.Element;
+      name: string;
+      schema: CustomFieldExtensionSchema_2;
+      validation?: undefined;
+    }
+  | {
+      component: (
+        props: FieldExtensionComponentProps_2<
+          string[],
+          {
+            helperText?: string | undefined;
+            showCounts?: boolean | undefined;
+            kinds?: string[] | undefined;
+          }
+        >,
+      ) => JSX_2.Element;
+      name: string;
+      schema: CustomFieldExtensionSchema_2;
+      validation?: undefined;
+    }
+  | {
+      component: (
+        props: FieldExtensionComponentProps_2<
+          string,
+          {
+            allowedHosts?: string[] | undefined;
+            allowedOrganizations?: string[] | undefined;
+            allowedOwners?: string[] | undefined;
+            allowedProjects?: string[] | undefined;
+            allowedRepos?: string[] | undefined;
+            requestUserCredentials?:
+              | {
+                  secretsKey: string;
+                  additionalScopes?:
+                    | {
+                        azure?: string[] | undefined;
+                        github?: string[] | undefined;
+                        gitlab?: string[] | undefined;
+                        bitbucket?: string[] | undefined;
+                        gerrit?: string[] | undefined;
+                        gitea?: string[] | undefined;
+                      }
+                    | undefined;
+                }
+              | undefined;
+          }
+        >,
+      ) => JSX_2.Element;
+      name: string;
+      validation: (
+        value: string,
+        validation: FieldValidation,
+        context: {
+          apiHolder: ApiHolder;
+        },
+      ) => void;
+      schema: CustomFieldExtensionSchema_2;
+    }
+  | {
+      component: (
+        props: ScaffolderRJSFFieldProps<any, RJSFSchema, any>,
+      ) => JSX_2.Element;
+      name: string;
+      schema?: undefined;
+      validation?: undefined;
+    }
+  | {
+      component: (
+        props: FieldExtensionComponentProps_2<
+          string[],
+          {
+            defaultKind?: string | undefined;
+            defaultNamespace?: string | false | undefined;
+            catalogFilter?:
+              | Record<
+                  string,
+                  | string
+                  | string[]
+                  | {
+                      exists?: boolean | undefined;
+                    }
+                >
+              | Record<
+                  string,
+                  | string
+                  | string[]
+                  | {
+                      exists?: boolean | undefined;
+                    }
+                >[]
+              | undefined;
+            allowArbitraryValues?: boolean | undefined;
+          }
+        >,
+      ) => JSX_2.Element;
+      name: string;
+      schema: CustomFieldExtensionSchema_2;
+      validation: (values: string[], validation: FieldValidation) => void;
+    }
+  | {
+      component: (
+        props: FieldExtensionComponentProps_2<
+          string,
+          {
+            requestUserCredentials?:
+              | {
+                  secretsKey: string;
+                  additionalScopes?:
+                    | {
+                        azure?: string[] | undefined;
+                        github?: string[] | undefined;
+                        gitlab?: string[] | undefined;
+                        bitbucket?: string[] | undefined;
+                        gerrit?: string[] | undefined;
+                        gitea?: string[] | undefined;
+                      }
+                    | undefined;
+                }
+              | undefined;
+          }
+        >,
+      ) => JSX_2.Element;
+      name: string;
+      schema: CustomFieldExtensionSchema_2;
+      validation?: undefined;
+    }
+)[];
 
 // @public
 export const EntityNamePickerFieldExtension: FieldExtensionComponent_2<
