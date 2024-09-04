@@ -174,7 +174,7 @@ function getFullPath(node?: AppNode): string {
   if (!node) {
     return '';
   }
-  const parent = node.edges.attachedTo?.node;
+  const parent = node.edges.attachedTo?.[0]?.node;
   const part = node.instance?.getData(coreExtensionData.routePath);
   if (!part) {
     return getFullPath(parent);
@@ -284,13 +284,15 @@ function Attachments(props: {
 
 function ExtensionTooltip(props: { node: AppNode }) {
   const parts = [];
-  let node = props.node;
+  const node = props.node;
   parts.push(node.spec.id);
-  while (node.edges.attachedTo) {
-    const input = node.edges.attachedTo.input;
-    node = node.edges.attachedTo.node;
-    parts.push(`${node.spec.id} [${input}]`);
-  }
+
+  // todo(blam): need to fix this somehow?
+  // while (node.edges.attachedTo) {
+  //   const input = node.edges.attachedTo.input;
+  //   node = node.edges.attachedTo.node;
+  //   parts.push(`${node.spec.id} [${input}]`);
+  // }
   parts.reverse();
 
   return (

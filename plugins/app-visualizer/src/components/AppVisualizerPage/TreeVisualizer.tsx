@@ -71,10 +71,12 @@ function resolveGraphData(tree: AppTree): {
     edges: [
       ...nodes
         .filter(node => node.edges.attachedTo)
-        .map(node => ({
-          from: inputId(node.edges.attachedTo!),
-          to: node.spec.id,
-        })),
+        .flatMap(node =>
+          [node.edges.attachedTo].flat().map(attachedTo => ({
+            from: inputId(attachedTo!),
+            to: node.spec.id,
+          })),
+        ),
       ...nodes.flatMap(node =>
         [...node.edges.attachments.keys()].map(input => ({
           from: node.spec.id,
