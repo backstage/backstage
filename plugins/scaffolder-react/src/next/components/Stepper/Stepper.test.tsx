@@ -260,38 +260,16 @@ describe('Stepper', () => {
     expect(onCreate).toHaveBeenCalledWith({ moreInfo: false });
   });
 
-  it('should merge nested formData correctly in multiple steps', async () => {
-    const Repo = ({
-      onChange,
-    }: FieldExtensionComponentProps<{ repository: string }, any>) => (
-      <input
-        aria-label="repo"
-        type="text"
-        onChange={e => onChange({ repository: e.target.value })}
-        defaultValue=""
-      />
-    );
-
-    const Owner = ({
-      onChange,
-    }: FieldExtensionComponentProps<{ owner: string }, any>) => (
-      <input
-        aria-label="owner"
-        type="text"
-        onChange={e => onChange({ owner: e.target.value })}
-        defaultValue=""
-      />
-    );
-
+  it('should merge and overwrite nested formData correctly', async () => {
     const manifest: TemplateParameterSchema = {
       steps: [
         {
           title: 'Step 1',
           schema: {
             properties: {
-              first: {
-                type: 'object',
-                'ui:field': 'Repo',
+              foo: {
+                type: 'string',
+                title: 'Foo - 1',
               },
             },
           },
@@ -300,9 +278,13 @@ describe('Stepper', () => {
           title: 'Step 2',
           schema: {
             properties: {
-              second: {
-                type: 'object',
-                'ui:field': 'Owner',
+              foo: {
+                type: 'string',
+                title: 'Foo - 2',
+              },
+              bar: {
+                type: 'string',
+                title: 'Bar - 2',
               },
             },
           },
@@ -311,36 +293,27 @@ describe('Stepper', () => {
       title: 'React JSON Schema Form Test',
     };
 
-    const onCreate = jest.fn(async (values: Record<string, JsonValue>) => {
-      expect(values).toEqual({
-        first: { repository: 'Repo' },
-        second: { owner: 'Owner' },
-      });
-    });
+    const onCreate = jest.fn();
 
     const { getByRole } = await renderInTestApp(
       <SecretsContextProvider>
-        <Stepper
-          manifest={manifest}
-          onCreate={onCreate}
-          extensions={[
-            { name: 'Repo', component: Repo },
-            { name: 'Owner', component: Owner },
-          ]}
-        />
+        <Stepper manifest={manifest} onCreate={onCreate} extensions={[]} />
       </SecretsContextProvider>,
     );
 
     await act(async () => {
-      fireEvent.change(getByRole('textbox', { name: 'repo' }), {
-        target: { value: 'Repo' },
+      fireEvent.change(getByRole('textbox', { name: 'Foo - 1' }), {
+        target: { value: 'value 1' },
       });
       fireEvent.click(getByRole('button', { name: 'Next' }));
     });
 
     await act(async () => {
-      fireEvent.change(getByRole('textbox', { name: 'owner' }), {
-        target: { value: 'Owner' },
+      fireEvent.change(getByRole('textbox', { name: 'Foo - 2' }), {
+        target: { value: 'value 2' },
+      });
+      fireEvent.change(getByRole('textbox', { name: 'Bar - 2' }), {
+        target: { value: 'value 2' },
       });
       fireEvent.click(getByRole('button', { name: 'Review' }));
     });
@@ -349,7 +322,10 @@ describe('Stepper', () => {
       fireEvent.click(getByRole('button', { name: 'Create' }));
     });
 
-    expect(onCreate).toHaveBeenCalled();
+    expect(onCreate).toHaveBeenCalledWith({
+      foo: 'value 2',
+      bar: 'value 2',
+    });
   });
 
   it('should render custom field extensions properly', async () => {
