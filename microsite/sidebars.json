@@ -1,39 +1,4 @@
 {
-  "releases": {
-    "Release Notes": [
-      "releases/v1.30.0",
-      "releases/v1.29.0",
-      "releases/v1.28.0",
-      "releases/v1.27.0",
-      "releases/v1.26.0",
-      "releases/v1.25.0",
-      "releases/v1.24.0",
-      "releases/v1.23.0",
-      "releases/v1.22.0",
-      "releases/v1.21.0",
-      "releases/v1.20.0",
-      "releases/v1.19.0",
-      "releases/v1.18.0",
-      "releases/v1.17.0",
-      "releases/v1.16.0",
-      "releases/v1.15.0",
-      "releases/v1.14.0",
-      "releases/v1.13.0",
-      "releases/v1.12.0",
-      "releases/v1.11.0",
-      "releases/v1.10.0",
-      "releases/v1.9.0",
-      "releases/v1.8.0",
-      "releases/v1.7.0",
-      "releases/v1.6.0",
-      "releases/v1.5.0",
-      "releases/v1.4.0",
-      "releases/v1.3.0",
-      "releases/v1.2.0",
-      "releases/v1.1.0",
-      "releases/v1.0.0"
-    ]
-  },
   "docs": {
     "Overview": [
       "overview/what-is-backstage",
@@ -556,5 +521,40 @@
       "contribute/project-structure"
     ],
     "References": ["references/glossary"]
+  },
+  "releases": {
+    "Release Notes": [
+      "releases/v1.30.0",
+      "releases/v1.29.0",
+      "releases/v1.28.0",
+      "releases/v1.27.0",
+      "releases/v1.26.0",
+      "releases/v1.25.0",
+      "releases/v1.24.0",
+      "releases/v1.23.0",
+      "releases/v1.22.0",
+      "releases/v1.21.0",
+      "releases/v1.20.0",
+      "releases/v1.19.0",
+      "releases/v1.18.0",
+      "releases/v1.17.0",
+      "releases/v1.16.0",
+      "releases/v1.15.0",
+      "releases/v1.14.0",
+      "releases/v1.13.0",
+      "releases/v1.12.0",
+      "releases/v1.11.0",
+      "releases/v1.10.0",
+      "releases/v1.9.0",
+      "releases/v1.8.0",
+      "releases/v1.7.0",
+      "releases/v1.6.0",
+      "releases/v1.5.0",
+      "releases/v1.4.0",
+      "releases/v1.3.0",
+      "releases/v1.2.0",
+      "releases/v1.1.0",
+      "releases/v1.0.0"
+    ]
   }
 }
