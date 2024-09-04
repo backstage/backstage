@@ -239,7 +239,7 @@ describe('publish:bitbucketCloud:pull-request', () => {
         'https://api.bitbucket.org/2.0/repositories/workspace/repo/refs/branches',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe(
-            `Basic ${btoa('test-user:test-password')}`,
+            'Basic dGVzdC11c2VyOnRlc3QtcGFzc3dvcmQ=',
           );
           return res(
             ctx.status(200),
@@ -252,7 +252,7 @@ describe('publish:bitbucketCloud:pull-request', () => {
         'https://api.bitbucket.org/2.0/repositories/workspace/repo/pullrequests',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe(
-            `Basic ${btoa('test-user:test-password')}`,
+            'Basic dGVzdC11c2VyOnRlc3QtcGFzc3dvcmQ=',
           );
           return res(
             ctx.status(201),
@@ -279,7 +279,7 @@ describe('publish:bitbucketCloud:pull-request', () => {
         'https://api.bitbucket.org/2.0/repositories/workspace/repo/refs/branches',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe(
-            `Basic ${btoa('test-user:test-password')}`,
+            'Basic dGVzdC11c2VyOnRlc3QtcGFzc3dvcmQ=',
           );
           return res(
             ctx.status(200),
@@ -292,7 +292,7 @@ describe('publish:bitbucketCloud:pull-request', () => {
         'https://api.bitbucket.org/2.0/repositories/workspace/repo/pullrequests',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe(
-            `Basic ${btoa('test-user:test-password')}`,
+            'Basic dGVzdC11c2VyOnRlc3QtcGFzc3dvcmQ=',
           );
           return res(
             ctx.status(201),
@@ -319,7 +319,7 @@ describe('publish:bitbucketCloud:pull-request', () => {
         'https://api.bitbucket.org/2.0/repositories/workspace/repo/refs/branches',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe(
-            `Basic ${btoa('test-user:test-password')}`,
+            'Basic dGVzdC11c2VyOnRlc3QtcGFzc3dvcmQ=',
           );
           return res(
             ctx.status(200),
@@ -332,7 +332,7 @@ describe('publish:bitbucketCloud:pull-request', () => {
         'https://api.bitbucket.org/2.0/repositories/workspace/repo/pullrequests',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe(
-            `Basic ${btoa('test-user:test-password')}`,
+            'Basic dGVzdC11c2VyOnRlc3QtcGFzc3dvcmQ=',
           );
           return res(
             ctx.status(201),

@@ -29,6 +29,7 @@ import fetch, { RequestInit, Response } from 'node-fetch';
 import { Config } from '@backstage/config';
 import fs from 'fs-extra';
 import { getAuthorizationHeader } from './helpers';
+import { examples } from './bitbucketCloudPullRequest.examples';
 
 const createPullRequest = async (opts: {
   workspace: string;
@@ -244,7 +245,7 @@ export function createPublishBitbucketCloudPullRequestAction(options: {
     gitAuthorEmail?: string;
   }>({
     id: 'publish:bitbucketCloud:pull-request',
-    // examples,
+    examples,
     schema: {
       input: {
         type: 'object',
