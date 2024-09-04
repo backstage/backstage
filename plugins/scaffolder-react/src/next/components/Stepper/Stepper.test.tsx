@@ -13,16 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { renderInTestApp } from '@backstage/test-utils';
+import { JsonValue } from '@backstage/types';
+import { act, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
+
+import { FieldExtensionComponentProps } from '../../../extensions';
+import { LayoutTemplate } from '../../../layouts';
+import { SecretsContextProvider } from '../../../secrets';
 import { TemplateParameterSchema } from '../../../types';
 import { Stepper } from './Stepper';
-import { renderInTestApp } from '@backstage/test-utils';
-import { act, fireEvent } from '@testing-library/react';
+
 import type { RJSFValidationError } from '@rjsf/utils';
-import { JsonValue } from '@backstage/types';
-import { FieldExtensionComponentProps } from '../../../extensions';
-import { SecretsContextProvider } from '../../../secrets';
-import { LayoutTemplate } from '../../../layouts';
 
 describe('Stepper', () => {
   it('should render the step titles for each step of the manifest', async () => {
@@ -63,7 +65,7 @@ describe('Stepper', () => {
     expect(getByRole('button', { name: 'Next' })).toBeInTheDocument();
 
     await act(async () => {
-      await fireEvent.click(getByRole('button', { name: 'Next' }));
+      fireEvent.click(getByRole('button', { name: 'Next' }));
     });
 
     expect(getByRole('button', { name: 'Review' })).toBeInTheDocument();
@@ -102,16 +104,15 @@ describe('Stepper', () => {
       </SecretsContextProvider>,
     );
 
-    await fireEvent.change(getByRole('textbox', { name: 'name' }), {
-      target: { value: 'im a test value' },
+    await act(async () => {
+      fireEvent.change(getByRole('textbox', { name: 'name' }), {
+        target: { value: 'im a test value' },
+      });
+      fireEvent.click(getByRole('button', { name: 'Next' }));
     });
 
     await act(async () => {
-      await fireEvent.click(getByRole('button', { name: 'Next' }));
-    });
-
-    await act(async () => {
-      await fireEvent.click(getByRole('button', { name: 'Back' }));
+      fireEvent.click(getByRole('button', { name: 'Back' }));
     });
 
     expect(getByRole('textbox', { name: 'name' })).toHaveValue(
@@ -152,21 +153,111 @@ describe('Stepper', () => {
       </SecretsContextProvider>,
     );
 
-    await fireEvent.change(getByRole('textbox', { name: 'name' }), {
-      target: { value: 'im a test value' },
+    await act(async () => {
+      fireEvent.change(getByRole('textbox', { name: 'name' }), {
+        target: { value: 'im a test value' },
+      });
+      fireEvent.click(getByRole('button', { name: 'Next' }));
     });
 
     await act(async () => {
-      await fireEvent.click(getByRole('button', { name: 'Next' }));
-    });
-
-    await act(async () => {
-      await fireEvent.click(getByLabelText('Step 1'));
+      fireEvent.click(getByLabelText('Step 1'));
     });
 
     expect(getByRole('textbox', { name: 'name' })).toHaveValue(
       'im a test value',
     );
+  });
+
+  it('should omit properties that are no longer pertinent to the current step', async () => {
+    const manifest: TemplateParameterSchema = {
+      title: 'Conditional Input Form',
+      steps: [
+        {
+          title: 'Conditional Input step',
+          schema: {
+            type: 'object',
+            properties: {
+              moreInfo: {
+                type: 'boolean',
+                title: 'More info',
+              },
+            },
+            dependencies: {
+              moreInfo: {
+                oneOf: [
+                  {
+                    properties: {
+                      moreInfo: {
+                        const: true,
+                      },
+                      description: {
+                        type: 'string',
+                        title: 'Description',
+                      },
+                    },
+                    required: ['description'],
+                  },
+                  {
+                    properties: {
+                      moreInfo: {
+                        not: {
+                          const: true,
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        },
+      ],
+    };
+
+    const onCreate = jest.fn();
+
+    const { getByRole, queryByRole } = await renderInTestApp(
+      <SecretsContextProvider>
+        <Stepper
+          manifest={manifest}
+          onCreate={onCreate}
+          extensions={[]}
+          formProps={{ omitExtraData: true, liveOmit: true }}
+        />
+      </SecretsContextProvider>,
+    );
+
+    await act(async () => {
+      fireEvent.click(getByRole('checkbox', { name: 'More info' }));
+      fireEvent.change(getByRole('textbox', { name: 'Description' }), {
+        target: { value: 'My Test Description' },
+      });
+      fireEvent.click(getByRole('button', { name: 'Review' }));
+    });
+
+    expect(
+      getByRole('cell', { name: 'My Test Description' }),
+    ).toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.click(getByRole('button', { name: 'Back' }));
+    });
+
+    await act(async () => {
+      fireEvent.click(getByRole('checkbox', { name: 'More info' }));
+      fireEvent.click(getByRole('button', { name: 'Review' }));
+    });
+
+    expect(
+      queryByRole('cell', { name: 'My Test Description' }),
+    ).not.toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.click(getByRole('button', { name: 'Create' }));
+    });
+
+    expect(onCreate).toHaveBeenCalledWith({ moreInfo: false });
   });
 
   it('should merge nested formData correctly in multiple steps', async () => {
@@ -240,24 +331,22 @@ describe('Stepper', () => {
       </SecretsContextProvider>,
     );
 
-    await fireEvent.change(getByRole('textbox', { name: 'repo' }), {
-      target: { value: 'Repo' },
+    await act(async () => {
+      fireEvent.change(getByRole('textbox', { name: 'repo' }), {
+        target: { value: 'Repo' },
+      });
+      fireEvent.click(getByRole('button', { name: 'Next' }));
     });
 
     await act(async () => {
-      await fireEvent.click(getByRole('button', { name: 'Next' }));
-    });
-
-    await fireEvent.change(getByRole('textbox', { name: 'owner' }), {
-      target: { value: 'Owner' },
-    });
-
-    await act(async () => {
-      await fireEvent.click(getByRole('button', { name: 'Review' }));
+      fireEvent.change(getByRole('textbox', { name: 'owner' }), {
+        target: { value: 'Owner' },
+      });
+      fireEvent.click(getByRole('button', { name: 'Review' }));
     });
 
     await act(async () => {
-      await fireEvent.click(getByRole('button', { name: 'Create' }));
+      fireEvent.click(getByRole('button', { name: 'Create' }));
     });
 
     expect(onCreate).toHaveBeenCalled();
@@ -335,13 +424,11 @@ describe('Stepper', () => {
         />
       </SecretsContextProvider>,
     );
-
-    act(() => {
-      fireEvent.click(getByRole('button', { name: 'Review' }));
+    fireEvent.click(getByRole('button', { name: 'Review' }));
+    await waitFor(() => {
+      expect(getByRole('progressbar')).toBeInTheDocument(); // Check if progress bar is rendered
+      expect(getByRole('button', { name: 'Review' })).toBeDisabled(); // Check if the button is disabled
     });
-
-    expect(getByRole('progressbar')).toBeInTheDocument();
-    expect(getByRole('button', { name: 'Review' })).toBeDisabled();
   });
 
   it('should transform default error message', async () => {
@@ -381,12 +468,11 @@ describe('Stepper', () => {
       </SecretsContextProvider>,
     );
 
-    await fireEvent.change(getByRole('textbox', { name: 'postcode' }), {
-      target: { value: 'invalid' },
-    });
-
     await act(async () => {
-      await fireEvent.click(getByRole('button', { name: 'Review' }));
+      fireEvent.change(getByRole('textbox', { name: 'postcode' }), {
+        target: { value: 'invalid' },
+      });
+      fireEvent.click(getByRole('button', { name: 'Review' }));
     });
 
     expect(getByText('invalid postcode')).toBeInTheDocument();
@@ -421,12 +507,12 @@ describe('Stepper', () => {
       </SecretsContextProvider>,
     );
 
-    await fireEvent.change(getByRole('textbox', { name: 'postcode' }), {
-      target: { value: 'invalid' },
-    });
-
     await act(async () => {
-      await fireEvent.click(getByRole('button', { name: 'Review' }));
+      fireEvent.change(getByRole('textbox', { name: 'postcode' }), {
+        target: { value: 'invalid' },
+      });
+
+      fireEvent.click(getByRole('button', { name: 'Review' }));
     });
 
     expect(getByText('invalid postcode')).toBeInTheDocument();
@@ -494,13 +580,13 @@ describe('Stepper', () => {
     );
 
     await act(async () => {
-      await fireEvent.click(getByRole('button', { name: 'Review' }));
+      fireEvent.click(getByRole('button', { name: 'Review' }));
     });
 
     expect(getByRole('button', { name: 'Create' })).toBeInTheDocument();
 
     await act(async () => {
-      await fireEvent.click(getByRole('button', { name: 'Create' }));
+      fireEvent.click(getByRole('button', { name: 'Create' }));
     });
 
     // flush promises
@@ -539,13 +625,13 @@ describe('Stepper', () => {
     );
 
     await act(async () => {
-      await fireEvent.click(getByRole('button', { name: 'Inspect' }));
+      fireEvent.click(getByRole('button', { name: 'Inspect' }));
     });
 
     expect(getByRole('button', { name: 'Make' })).toBeInTheDocument();
 
     await act(async () => {
-      await fireEvent.click(getByRole('button', { name: 'Make' }));
+      fireEvent.click(getByRole('button', { name: 'Make' }));
     });
   });
 
