@@ -42,6 +42,62 @@ components:
         application/json; charset=utf-8:
           schema:
             $ref: '#/components/schemas/Error'
+    ValidationError:
+      description: Validation errors.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    path:
+                      type: array
+                      items:
+                        oneOf:
+                          - type: string
+                          - type: integer
+                    property:
+                      type: string
+                    schema:
+                      $ref: '#/components/schemas/Schema'
+                    stack:
+                      type: string
+                    instance:
+                      oneOf:
+                        - type: string
+                        - type: number
+                        - type: boolean
+                        - type: array
+                        - type: object
+                      nullable: true
+                    argument:
+                      oneOf:
+                        - type: string
+                        - type: number
+                        - type: boolean
+                        - type: array
+                        - type: object
+                      nullable: true
+                    name:
+                      type: string
+                    message:
+                      type: string
+                  required:
+                    - path
+                    - property
+                    - schema
+                    - instance
+                    - name
+                    - message
+                    - argument
+                    - stack
+                  additionalProperties: {}
+            required:
+              - errors
   schemas:
     Action:
       type: object
@@ -149,6 +205,154 @@ components:
           items:
             $ref: '#/components/schemas/SerializedTask'
       description: The response shape for the `listTasks` call to the `scaffolder-backend`
+    ScaffolderScaffoldOptions:
+      type: object
+      properties:
+        templateRef:
+          type: string
+        values:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/JsonValue'
+        secrets:
+          type: object
+          additionalProperties:
+            type: string
+      required:
+        - templateRef
+        - values
+      description: The input options to the `scaffold` method of the `ScaffolderClient`.
+    Schema:
+      type: object
+      properties:
+        $id:
+          type: string
+        id:
+          type: string
+        $schema:
+          type: string
+        $ref:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        multipleOf:
+          type: number
+        maximum:
+          type: number
+        exclusiveMaximum:
+          oneOf:
+            - type: number
+            - type: boolean
+        minimum:
+          type: number
+        exclusiveMinimum:
+          oneOf:
+            - type: number
+            - type: boolean
+        maxLength:
+          type: integer
+        minLength:
+          type: integer
+        pattern:
+          type: string
+        additionalItems:
+          oneOf:
+            - type: boolean
+            - $ref: '#/components/schemas/Schema'
+        items:
+          oneOf:
+            - $ref: '#/components/schemas/Schema'
+            - type: array
+              items:
+                $ref: '#/components/schemas/Schema'
+        maxItems:
+          type: integer
+        minItems:
+          type: integer
+        uniqueItems:
+          type: boolean
+        maxProperties:
+          type: integer
+        minProperties:
+          type: integer
+        required:
+          oneOf:
+            - type: array
+              items:
+                type: string
+            - type: boolean
+        additionalProperties:
+          oneOf:
+            - type: boolean
+            - $ref: '#/components/schemas/Schema'
+        definitions:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Schema'
+        properties:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Schema'
+        patternProperties:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Schema'
+        dependencies:
+          type: object
+          additionalProperties:
+            oneOf:
+              - $ref: '#/components/schemas/Schema'
+              - type: array
+                items:
+                  type: string
+        const:
+          oneOf:
+            - type: string
+            - type: number
+            - type: boolean
+            - type: array
+            - type: object
+          nullable: true
+        enum:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - type: number
+              - type: boolean
+              - type: array
+              - type: object
+            nullable: true
+        type:
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+        format:
+          type: string
+        allOf:
+          type: array
+          items:
+            $ref: '#/components/schemas/Schema'
+        anyOf:
+          type: array
+          items:
+            $ref: '#/components/schemas/Schema'
+        oneOf:
+          type: array
+          items:
+            $ref: '#/components/schemas/Schema'
+        not:
+          $ref: '#/components/schemas/Schema'
+        if:
+          $ref: '#/components/schemas/Schema'
+        then:
+          $ref: '#/components/schemas/Schema'
+        else:
+          $ref: '#/components/schemas/Schema'
     SerializedTask:
       type: object
       properties:
@@ -417,6 +621,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ListTasksResponse'
+      security:
+        - {}
+        - JWT: []
+      parameters: []
+    post:
+      operationId: Scaffold
+      description: |-
+        Executes the scaffolding of a component, given a template and its
+        parameter values.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScaffolderScaffoldOptions'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+        '400':
+          $ref: '#/components/responses/ValidationError'
       security:
         - {}
         - JWT: []
