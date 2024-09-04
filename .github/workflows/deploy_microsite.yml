@@ -28,7 +28,7 @@ jobs:
           egress-policy: audit
 
       - name: find latest release
-        uses: actions/github-script@v7
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7
         id: find-release
         with:
           script: |
@@ -73,7 +73,7 @@ jobs:
         run: yarn build:api-docs
 
       - name: upload API reference
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4
         with:
           name: stable-reference
           path: docs/reference/
@@ -113,7 +113,7 @@ jobs:
         run: yarn build:api-docs
 
       - name: upload API reference
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4
         with:
           name: next-reference
           path: docs/reference/
@@ -130,7 +130,7 @@ jobs:
         working-directory: storybook
 
       - name: storybook upload
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4
         with:
           name: storybook
           path: storybook/dist/
@@ -179,7 +179,7 @@ jobs:
         working-directory: microsite
 
       - name: download stable reference
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
         with:
           name: stable-reference
           path: docs/reference
@@ -202,7 +202,7 @@ jobs:
         working-directory: microsite
 
       - name: download next reference
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
         with:
           name: next-reference
           path: docs/reference
@@ -211,7 +211,7 @@ jobs:
         run: yarn build
         working-directory: microsite
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
         with:
           name: storybook
           path: microsite/build/storybook
