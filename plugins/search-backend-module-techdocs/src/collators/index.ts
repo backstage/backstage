@@ -22,8 +22,6 @@ export { defaultTechDocsCollatorEntityTransformer } from './defaultTechDocsColla
 
 export type { TechDocsCollatorEntityTransformer } from './TechDocsCollatorEntityTransformer';
 
-export { defaultTechDocsCollatorDocumentTransformer } from './defaultTechDocsCollatorDocumentTransformer';
-
 export type {
   TechDocsCollatorDocumentTransformer,
   MkSearchIndexDoc,

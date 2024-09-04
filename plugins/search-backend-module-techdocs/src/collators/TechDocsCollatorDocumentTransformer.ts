@@ -26,13 +26,15 @@ export interface MkSearchIndexDoc {
 /** @public */
 export type TechDocsCollatorDocumentTransformer = (
   doc: MkSearchIndexDoc,
-) => Omit<
-  TechDocsDocument,
-  | 'location'
-  | 'authorization'
-  | 'kind'
-  | 'namespace'
-  | 'name'
-  | 'lifecycle'
-  | 'owner'
+) => Partial<
+  Omit<
+    TechDocsDocument,
+    | 'location'
+    | 'authorization'
+    | 'kind'
+    | 'namespace'
+    | 'name'
+    | 'lifecycle'
+    | 'owner'
+  >
 >;
