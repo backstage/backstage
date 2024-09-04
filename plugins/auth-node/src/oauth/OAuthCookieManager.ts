@@ -88,17 +88,24 @@ export class OAuthCookieManager {
   }
 
   setNonce(res: Response, nonce: string, origin?: string): void {
-    this.setCookie(res, this.nonceCookie, nonce, {
-      maxAge: TEN_MINUTES_MS,
-      ...this.getConfig(origin, '/handler'),
-    });
+    this.setCookie(
+      res,
+      this.nonceCookie,
+      nonce,
+      TEN_MINUTES_MS,
+      origin,
+      '/handler',
+    );
   }
 
   setRefreshToken(res: Response, refreshToken: string, origin?: string): void {
-    this.setCookie(res, this.refreshTokenCookie, refreshToken, {
-      maxAge: THOUSAND_DAYS_MS,
-      ...this.getConfig(origin),
-    });
+    this.setCookie(
+      res,
+      this.refreshTokenCookie,
+      refreshToken,
+      THOUSAND_DAYS_MS,
+      origin,
+    );
   }
 
   removeRefreshToken(res: Response, origin?: string): void {
@@ -110,10 +117,13 @@ export class OAuthCookieManager {
   }
 
   setGrantedScopes(res: Response, scope: string, origin?: string): void {
-    this.setCookie(res, this.grantedScopeCookie, scope, {
-      maxAge: THOUSAND_DAYS_MS,
-      ...this.getConfig(origin),
-    });
+    this.setCookie(
+      res,
+      this.grantedScopeCookie,
+      scope,
+      THOUSAND_DAYS_MS,
+      origin,
+    );
   }
 
   getNonce(req: Request): string | undefined {
@@ -132,11 +142,23 @@ export class OAuthCookieManager {
     res: Response,
     name: string,
     val: string,
-    options: CookieOptions,
+    maxAge: number,
+    origin?: string,
+    pathSuffix: string = '',
   ): Response {
+    const options = {
+      maxAge,
+      ...this.getConfig(origin, pathSuffix),
+    };
+    const req = res.req;
+    let output = res;
     if (val.length > MAX_COOKIE_SIZE_CHARACTERS) {
+      const nonChunkedFormatExists = !!req.cookies[name];
+      if (nonChunkedFormatExists) {
+        output = output.cookie(name, '', this.getRemoveCookieOptions());
+      }
+
       const chunked = this.splitCookieToChunks(val, MAX_COOKIE_SIZE_CHARACTERS);
-      let output = res;
       chunked.forEach((value, chunkNumber) => {
         output = output.cookie(
           OAuthCookieManager.getCookieChunkName(name, chunkNumber),
@@ -146,12 +168,27 @@ export class OAuthCookieManager {
       });
       return output;
     }
-    return res.cookie(name, val, options);
+
+    const chunkedFormatExists = OAuthCookieManager.chunkedCookieExists(
+      req,
+      name,
+    );
+    if (chunkedFormatExists) {
+      for (let chunkNumber = 0; ; chunkNumber++) {
+        const key = OAuthCookieManager.getCookieChunkName(name, chunkNumber);
+        const exists = !!req.cookies[key];
+        if (!exists) {
+          break;
+        }
+        output = output.cookie(key, '', this.getRemoveCookieOptions());
+      }
+    }
+
+    return output.cookie(name, val, options);
   }
 
   private getCookie(req: Request, name: string): string | undefined {
-    const isChunked =
-      !!req.cookies[OAuthCookieManager.getCookieChunkName(name, 0)];
+    const isChunked = OAuthCookieManager.chunkedCookieExists(req, name);
     if (isChunked) {
       const chunks: string[] = [];
       let chunkNumber = 0;
@@ -170,15 +207,11 @@ export class OAuthCookieManager {
 
   private removeCookie(res: Response, name: string, origin?: string): Response {
     const req = res.req;
-    const options = {
-      maxAge: 0,
-      ...this.getConfig(origin),
-    };
-    const isChunked =
-      !!req.cookies[OAuthCookieManager.getCookieChunkName(name, 0)];
+    const options = this.getRemoveCookieOptions(origin);
+    const isChunked = OAuthCookieManager.chunkedCookieExists(req, name);
     if (isChunked) {
-      const oldFormatExists = !!req.cookies[name];
-      let output: Response = oldFormatExists
+      const nonChunkedFormatExists = !!req.cookies[name];
+      let output: Response = nonChunkedFormatExists
         ? res.cookie(name, '', options)
         : res;
       for (let chunkNumber = 0; ; chunkNumber++) {
@@ -206,7 +239,18 @@ export class OAuthCookieManager {
     return chunks;
   }
 
+  private static chunkedCookieExists(req: Request, name: string): boolean {
+    return !!req.cookies[OAuthCookieManager.getCookieChunkName(name, 0)];
+  }
+
   private static getCookieChunkName(name: string, chunkIndex: number): string {
     return `${name}-${chunkIndex}`;
+  }
+
+  private getRemoveCookieOptions(origin?: string): CookieOptions {
+    return {
+      maxAge: 0,
+      ...this.getConfig(origin),
+    };
   }
 }
