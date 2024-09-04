@@ -226,7 +226,6 @@ const getDefaultBranch = async (opts: {
   }
 
   const { mainbranch } = await response.json();
-  console.log(authorization);
   const defaultBranch = mainbranch.name;
   if (!defaultBranch) {
     throw new Error(`Could not fetch default branch for ${workspace}/${repo}`);
