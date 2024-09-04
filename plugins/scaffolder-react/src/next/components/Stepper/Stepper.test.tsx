@@ -18,7 +18,6 @@ import { JsonValue } from '@backstage/types';
 import { act, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 
-import { FieldExtensionComponentProps } from '../../../extensions';
 import { LayoutTemplate } from '../../../layouts';
 import { SecretsContextProvider } from '../../../secrets';
 import { TemplateParameterSchema } from '../../../types';
