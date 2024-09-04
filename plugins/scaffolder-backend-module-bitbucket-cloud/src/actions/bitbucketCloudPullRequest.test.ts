@@ -32,8 +32,6 @@ import { setupServer } from 'msw/node';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
-import yaml from 'yaml';
-import { examples } from './bitbucketCloudPullRequest.examples';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 describe('publish:bitbucketCloud:pull-request', () => {
@@ -168,6 +166,37 @@ describe('publish:bitbucketCloud:pull-request', () => {
     page: 1,
     next: 'https://api.bitbucket.org/2.0/repositories/atlassian/aui/refs/branches?pagelen=1&page=2',
   };
+  const responseOfDefaultBranch = {
+    type: '<string>',
+    links: {
+      self: { href: '<string>', name: '<string>' },
+      html: { href: '<string>', name: '<string>' },
+      avatar: { href: '<string>', name: '<string>' },
+      pullrequests: { href: '<string>', name: '<string>' },
+      commits: { href: '<string>', name: '<string>' },
+      forks: { href: '<string>', name: '<string>' },
+      watchers: { href: '<string>', name: '<string>' },
+      downloads: { href: '<string>', name: '<string>' },
+      clone: [{ href: '<string>', name: '<string>' }],
+      hooks: { href: '<string>', name: '<string>' },
+    },
+    uuid: '<string>',
+    full_name: '<string>',
+    is_private: true,
+    scm: 'git',
+    owner: { type: '<string>' },
+    name: '<string>',
+    description: '<string>',
+    created_on: '<string>',
+    updated_on: '<string>',
+    size: 2154,
+    language: '<string>',
+    has_issues: true,
+    has_wiki: true,
+    fork_policy: 'allow_forks',
+    project: { type: '<string>' },
+    mainbranch: { type: '<string>' },
+  };
   const responseOfPullRequests = {
     type: '<string>',
     links: {
@@ -224,6 +253,38 @@ describe('publish:bitbucketCloud:pull-request', () => {
     reviewers: [{ type: '<string>' }],
     participants: [{ type: '<string>' }],
   };
+  const handlers = [
+    rest.get(
+      'https://api.bitbucket.org/2.0/repositories/workspace/repo/refs/branches',
+      (_, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.set('Content-Type', 'application/json'),
+          ctx.json(responseOfBranches),
+        );
+      },
+    ),
+    rest.get(
+      'https://api.bitbucket.org/2.0/repositories/workspace/repo',
+      (_, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.set('Content-Type', 'application/json'),
+          ctx.json(responseOfDefaultBranch),
+        );
+      },
+    ),
+    rest.post(
+      'https://api.bitbucket.org/2.0/repositories/workspace/repo/pullrequests',
+      (_, res, ctx) => {
+        return res(
+          ctx.status(201),
+          ctx.set('Content-Type', 'application/json'),
+          ctx.json(responseOfPullRequests),
+        );
+      },
+    ),
+  ];
 
   const server = setupServer();
   registerMswTestHooks(server);
@@ -232,14 +293,48 @@ describe('publish:bitbucketCloud:pull-request', () => {
     jest.resetAllMocks();
   });
 
-  it(`should ${examples[0].description}`, async () => {
+  it('should throw an error when the repoUrl is not well formed', async () => {
+    await expect(
+      action.handler({
+        ...mockContext,
+        input: {
+          ...mockContext.input,
+          repoUrl: 'bitbucket.org?project=project&repo=repo',
+        },
+      }),
+    ).rejects.toThrow(/missing workspace/);
+
+    await expect(
+      action.handler({
+        ...mockContext,
+        input: {
+          ...mockContext.input,
+          repoUrl: 'bitbucket.org?workspace=workspace&project=project',
+        },
+      }),
+    ).rejects.toThrow(/missing repo/);
+  });
+
+  it('should throw if there is no integration config provided', async () => {
+    await expect(
+      action.handler({
+        ...mockContext,
+        input: {
+          ...mockContext.input,
+          repoUrl: 'missing.com?workspace=workspace&project=project&repo=repo',
+        },
+      }),
+    ).rejects.toThrow(/No matching integration configuration/);
+  });
+
+  it('should call the correct APIs with basic auth', async () => {
     expect.assertions(2);
     server.use(
       rest.get(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo/refs/branches',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe(
-            `Basic ${btoa('test-user:test-password')}`,
+            'Basic dGVzdC11c2VyOnRlc3QtcGFzc3dvcmQ=',
           );
           return res(
             ctx.status(200),
@@ -252,7 +347,7 @@ describe('publish:bitbucketCloud:pull-request', () => {
         'https://api.bitbucket.org/2.0/repositories/workspace/repo/pullrequests',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe(
-            `Basic ${btoa('test-user:test-password')}`,
+            'Basic dGVzdC11c2VyOnRlc3QtcGFzc3dvcmQ=',
           );
           return res(
             ctx.status(201),
@@ -267,20 +362,19 @@ describe('publish:bitbucketCloud:pull-request', () => {
       ...mockContext,
       input: {
         ...mockContext.input,
-        ...yaml.parse(examples[0].example).steps[0].input,
+        repoUrl: 'bitbucket.org?workspace=workspace&project=project&repo=repo',
       },
     });
   });
 
-  it(`should ${examples[1].description}`, async () => {
+  it('should work if the token is provided through ctx.input', async () => {
     expect.assertions(2);
+    const token = 'user-token';
     server.use(
       rest.get(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo/refs/branches',
         (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe(
-            `Basic ${btoa('test-user:test-password')}`,
-          );
+          expect(req.headers.get('Authorization')).toBe(`Bearer ${token}`);
           return res(
             ctx.status(200),
             ctx.set('Content-Type', 'application/json'),
@@ -291,9 +385,7 @@ describe('publish:bitbucketCloud:pull-request', () => {
       rest.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo/pullrequests',
         (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe(
-            `Basic ${btoa('test-user:test-password')}`,
-          );
+          expect(req.headers.get('Authorization')).toBe(`Bearer ${token}`);
           return res(
             ctx.status(201),
             ctx.set('Content-Type', 'application/json'),
@@ -307,128 +399,20 @@ describe('publish:bitbucketCloud:pull-request', () => {
       ...mockContext,
       input: {
         ...mockContext.input,
-        ...yaml.parse(examples[1].example).steps[0].input,
+        repoUrl: 'bitbucket.org?workspace=workspace&project=project&repo=repo',
+        token: token,
       },
     });
   });
 
-  it(`should ${examples[2].description}`, async () => {
-    expect.assertions(2);
-    server.use(
-      rest.get(
-        'https://api.bitbucket.org/2.0/repositories/workspace/repo/refs/branches',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe(
-            `Basic ${btoa('test-user:test-password')}`,
-          );
-          return res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseOfBranches),
-          );
-        },
-      ),
-      rest.post(
-        'https://api.bitbucket.org/2.0/repositories/workspace/repo/pullrequests',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe(
-            `Basic ${btoa('test-user:test-password')}`,
-          );
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseOfPullRequests),
-          );
-        },
-      ),
+  it('should call outputs with the correct urls', async () => {
+    server.use(...handlers);
+
+    await action.handler(mockContext);
+
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'pullRequestUrl',
+      'https://bitbucket.org/workspace/repo/pull-requests/1',
     );
-
-    await action.handler({
-      ...mockContext,
-      input: {
-        ...mockContext.input,
-        ...yaml.parse(examples[2].example).steps[0].input,
-      },
-    });
-  });
-
-  it(`should ${examples[3].description}`, async () => {
-    expect.assertions(2);
-    server.use(
-      rest.get(
-        'https://api.bitbucket.org/2.0/repositories/workspace/repo/refs/branches',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe(
-            `Bearer ${yaml.parse(examples[3].example).steps[0].input.token}`,
-          );
-          return res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseOfBranches),
-          );
-        },
-      ),
-      rest.post(
-        'https://api.bitbucket.org/2.0/repositories/workspace/repo/pullrequests',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe(
-            `Bearer ${yaml.parse(examples[3].example).steps[0].input.token}`,
-          );
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseOfPullRequests),
-          );
-        },
-      ),
-    );
-
-    await action.handler({
-      ...mockContext,
-      input: {
-        ...mockContext.input,
-        ...yaml.parse(examples[3].example).steps[0].input,
-      },
-    });
-  });
-
-  it(`should ${examples[4].description}`, async () => {
-    expect.assertions(2);
-    server.use(
-      rest.get(
-        'https://api.bitbucket.org/2.0/repositories/workspace/repo/refs/branches',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe(
-            `Bearer ${yaml.parse(examples[4].example).steps[0].input.token}`,
-          );
-          return res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseOfBranches),
-          );
-        },
-      ),
-      rest.post(
-        'https://api.bitbucket.org/2.0/repositories/workspace/repo/pullrequests',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe(
-            `Bearer ${yaml.parse(examples[4].example).steps[0].input.token}`,
-          );
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseOfPullRequests),
-          );
-        },
-      ),
-    );
-
-    await action.handler({
-      ...mockContext,
-      input: {
-        ...mockContext.input,
-        ...yaml.parse(examples[4].example).steps[0].input,
-      },
-    });
   });
 });

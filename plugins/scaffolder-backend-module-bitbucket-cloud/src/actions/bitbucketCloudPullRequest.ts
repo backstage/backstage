@@ -317,7 +317,7 @@ export function createPublishBitbucketCloudPullRequestAction(options: {
 
       if (!workspace) {
         throw new InputError(
-          `Invalid URL provider was included in the repo URL to create ${ctx.input.repoUrl}, missing project`,
+          `Invalid URL provider was included in the repo URL to create ${ctx.input.repoUrl}, missing workspace`,
         );
       }
 
