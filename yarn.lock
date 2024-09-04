@@ -37447,13 +37447,13 @@ __metadata:
   linkType: hard
 
 "postcss@npm:^8.1.0, postcss@npm:^8.4.27, postcss@npm:^8.4.33":
-  version: 8.4.41
-  resolution: "postcss@npm:8.4.41"
+  version: 8.4.45
+  resolution: "postcss@npm:8.4.45"
   dependencies:
     nanoid: ^3.3.7
     picocolors: ^1.0.1
     source-map-js: ^1.2.0
-  checksum: f865894929eb0f7fc2263811cc853c13b1c75103028b3f4f26df777e27b201f1abe21cb4aa4c2e901c80a04f6fb325ee22979688fe55a70e2ea82b0a517d3b6f
+  checksum: 3223cdad4a9392c0b334ee3ee7e4e8041c631cb6160609cef83c18d2b2580e931dd8068ab13cc6000c1a254d57492ac6c38717efc397c5dcc9756d06bc9c44f3
   languageName: node
   linkType: hard
 
