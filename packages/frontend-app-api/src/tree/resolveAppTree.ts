@@ -32,7 +32,7 @@ function indent(str: string) {
 class SerializableAppNode implements AppNode {
   public readonly spec: AppNodeSpec;
   public readonly edges = {
-    attachedTo: undefined as { node: AppNode; input: string } | undefined,
+    attachedTo: undefined as { node: AppNode; input: string }[] | undefined,
     attachments: new Map<string, SerializableAppNode[]>(),
   };
   public readonly instance?: AppNodeInstance;
@@ -41,8 +41,9 @@ class SerializableAppNode implements AppNode {
     this.spec = spec;
   }
 
-  setParent(parent: SerializableAppNode, input: string) {
-    this.edges.attachedTo = { node: parent, input };
+  addParent(parent: SerializableAppNode, input: string) {
+    this.edges.attachedTo ??= [];
+    this.edges.attachedTo.push({ node: parent, input });
 
     const parentInputEdges = parent.edges.attachments.get(input);
     if (parentInputEdges) {
@@ -156,18 +157,20 @@ export function resolveAppTree(
     if (spec.id === rootNodeId) {
       rootNode = node;
     } else {
-      let attachTo = node.spec.attachTo;
+      for (const attachmentPoint of [node.spec.attachTo].flat()) {
+        let attachTo = attachmentPoint;
+        if (!isValidAttachmentPoint(attachTo, nodes)) {
+          attachTo =
+            redirectTargetsByKey.get(makeRedirectKey(attachTo)) ?? attachTo;
+        }
 
-      if (!isValidAttachmentPoint(attachTo, nodes)) {
-        attachTo =
-          redirectTargetsByKey.get(makeRedirectKey(attachTo)) ?? attachTo;
-      }
+        const parent = nodes.get(attachTo.id);
 
-      const parent = nodes.get(attachTo.id);
-      if (parent) {
-        node.setParent(parent, attachTo.input);
-      } else {
-        orphans.push(node);
+        if (parent) {
+          node.addParent(parent, attachTo.input);
+        } else {
+          orphans.push(node);
+        }
       }
     }
   }

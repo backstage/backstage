@@ -28,6 +28,8 @@ import {
   createExtension,
   ApiBlueprint,
   createFrontendModule,
+  PageBlueprint,
+  createExtensionInput,
 } from '@backstage/frontend-plugin-api';
 import {
   techdocsPlugin,
@@ -52,6 +54,7 @@ import { signInPageModule } from './overrides/SignInPage';
 import { convertLegacyPlugin } from '@backstage/core-compat-api';
 import { convertLegacyPageExtension } from '@backstage/core-compat-api';
 import { convertLegacyEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
+import { Link } from 'react-router-dom';
 
 /*
 
@@ -108,6 +111,54 @@ const customHomePageModule = createFrontendModule({
           coreExtensionData.reactElement(homePage),
           titleExtensionDataRef('just a title'),
         ];
+      },
+    }),
+    PageBlueprint.makeWithOverrides({
+      name: 'test-1',
+      inputs: {
+        test: createExtensionInput([coreExtensionData.reactElement]),
+      },
+      factory(o, { inputs }) {
+        return o({
+          defaultPath: '/lols-1',
+          loader: async () => (
+            <div>
+              <Link to="/lols-2">Go to lols 2</Link>
+              {inputs.test.map(t => t.get(coreExtensionData.reactElement))}
+            </div>
+          ),
+        });
+      },
+    }),
+    PageBlueprint.makeWithOverrides({
+      name: 'test-2',
+      inputs: {
+        test: createExtensionInput([coreExtensionData.reactElement]),
+      },
+      factory(o, { inputs }) {
+        return o({
+          defaultPath: '/lols-2',
+          loader: async () => (
+            <div>
+              <Link to="/lols-1">Go to lols 1</Link>
+              {inputs.test.map(t => t.get(coreExtensionData.reactElement))}
+            </div>
+          ),
+        });
+      },
+    }),
+    createExtension({
+      kind: 'testy',
+      name: 'thing',
+      attachTo: [
+        { id: 'page:home/test-1', input: 'test' },
+        { id: 'page:home/test-2', input: 'test' },
+      ],
+      output: [coreExtensionData.reactElement],
+      *factory() {
+        yield coreExtensionData.reactElement(
+          <div>ITS WORKING {Date.now()}</div>,
+        );
       },
     }),
   ],

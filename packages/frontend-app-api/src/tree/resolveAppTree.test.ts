@@ -307,7 +307,7 @@ describe('buildAppTree', () => {
         { attachTo: e3.attachTo, id: e3.id, extension: e3, disabled: false },
       ]);
 
-      expect(tree.nodes.get('test-3')?.edges.attachedTo?.node).toBe(
+      expect(tree.nodes.get('test-3')?.edges.attachedTo?.[0].node).toBe(
         tree.nodes.get('test-2'),
       );
     });
