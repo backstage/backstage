@@ -99,13 +99,13 @@ const createPullRequest = async (opts: {
 };
 
 const findBranches = async (opts: {
-  project: string;
+  workspace: string;
   repo: string;
   branchName: string;
   authorization: string;
   apiBaseUrl: string;
 }) => {
-  const { project, repo, branchName, authorization, apiBaseUrl } = opts;
+  const { workspace, repo, branchName, authorization, apiBaseUrl } = opts;
 
   let response: Response;
   const options: RequestInit = {
@@ -118,12 +118,8 @@ const findBranches = async (opts: {
 
   try {
     response = await fetch(
-      `${apiBaseUrl}/projects/${encodeURIComponent(
-        project,
-      )}/repos/${encodeURIComponent(
-        repo,
-      )}/branches?boostMatches=true&filterText=${encodeURIComponent(
-        branchName,
+      `${apiBaseUrl}/repositories/${workspace}/${repo}/refs/branches?q=${encodeURIComponent(
+        `name = "${branchName}"`,
       )}`,
       options,
     );
@@ -140,13 +136,8 @@ const findBranches = async (opts: {
   }
 
   const r = await response.json();
-  for (const object of r.values) {
-    if (object.displayId === branchName) {
-      return object;
-    }
-  }
 
-  return undefined;
+  return r.values[0];
 };
 const createBranch = async (opts: {
   workspace: string;
@@ -353,94 +344,107 @@ export function createPublishBitbucketCloudPullRequestAction(options: {
         });
       }
 
-      // TODO: check if sourceBranch already exists and just create a pull request for it if so
-
-      await createBranch({
+      const sourceBranchRef = await findBranches({
         workspace,
         repo,
         branchName: sourceBranch,
         authorization,
         apiBaseUrl,
-        startBranch: finalTargetBranch,
       });
 
-      const remoteUrl = `https://${host}/${workspace}/${repo}.git`;
+      if (!sourceBranchRef) {
+        // create branch
+        ctx.logger.info(
+          `source branch not found -> creating branch named: ${sourceBranch}`,
+        );
 
-      let auth;
+        await createBranch({
+          workspace,
+          repo,
+          branchName: sourceBranch,
+          authorization,
+          apiBaseUrl,
+          startBranch: finalTargetBranch,
+        });
 
-      if (ctx.input.token) {
-        auth = {
-          username: 'x-token-auth',
-          password: ctx.input.token,
-        };
-      } else {
-        if (
-          !integrationConfig.config.username ||
-          !integrationConfig.config.appPassword
-        ) {
-          throw new Error(
-            'Credentials for Bitbucket Cloud integration required for this action.',
-          );
+        const remoteUrl = `https://${host}/${workspace}/${repo}.git`;
+
+        let auth;
+
+        if (ctx.input.token) {
+          auth = {
+            username: 'x-token-auth',
+            password: ctx.input.token,
+          };
+        } else {
+          if (
+            !integrationConfig.config.username ||
+            !integrationConfig.config.appPassword
+          ) {
+            throw new Error(
+              'Credentials for Bitbucket Cloud integration required for this action.',
+            );
+          }
+
+          auth = {
+            username: integrationConfig.config.username,
+            password: integrationConfig.config.appPassword,
+          };
         }
 
-        auth = {
-          username: integrationConfig.config.username,
-          password: integrationConfig.config.appPassword,
+        const gitAuthorInfo = {
+          name:
+            gitAuthorName ||
+            config.getOptionalString('scaffolder.defaultAuthor.name'),
+          email:
+            gitAuthorEmail ||
+            config.getOptionalString('scaffolder.defaultAuthor.email'),
         };
+
+        const tempDir = await ctx.createTemporaryDirectory();
+        const sourceDir = getRepoSourceDirectory(ctx.workspacePath, undefined);
+        await cloneRepo({
+          url: remoteUrl,
+          dir: tempDir,
+          auth,
+          logger: ctx.logger,
+          ref: sourceBranch,
+        });
+
+        await createGitBranch({
+          dir: tempDir,
+          auth,
+          logger: ctx.logger,
+          ref: sourceBranch,
+        });
+
+        // copy files
+        fs.cpSync(sourceDir, tempDir, {
+          recursive: true,
+          filter: path => {
+            return !(path.indexOf('.git') > -1);
+          },
+        });
+
+        await addFiles({
+          dir: tempDir,
+          auth,
+          logger: ctx.logger,
+          filepath: '.',
+        });
+
+        await commitAndPushBranch({
+          dir: tempDir,
+          auth,
+          logger: ctx.logger,
+          commitMessage:
+            description ??
+            config.getOptionalString('scaffolder.defaultCommitMessage') ??
+            '',
+          gitAuthorInfo,
+          branch: sourceBranch,
+        });
       }
-
-      const gitAuthorInfo = {
-        name:
-          gitAuthorName ||
-          config.getOptionalString('scaffolder.defaultAuthor.name'),
-        email:
-          gitAuthorEmail ||
-          config.getOptionalString('scaffolder.defaultAuthor.email'),
-      };
-
-      const tempDir = await ctx.createTemporaryDirectory();
-      const sourceDir = getRepoSourceDirectory(ctx.workspacePath, undefined);
-      await cloneRepo({
-        url: remoteUrl,
-        dir: tempDir,
-        auth,
-        logger: ctx.logger,
-        ref: sourceBranch,
-      });
-
-      await createGitBranch({
-        dir: tempDir,
-        auth,
-        logger: ctx.logger,
-        ref: sourceBranch,
-      });
-
-      // copy files
-      fs.cpSync(sourceDir, tempDir, {
-        recursive: true,
-        filter: path => {
-          return !(path.indexOf('.git') > -1);
-        },
-      });
-
-      await addFiles({
-        dir: tempDir,
-        auth,
-        logger: ctx.logger,
-        filepath: '.',
-      });
-
-      await commitAndPushBranch({
-        dir: tempDir,
-        auth,
-        logger: ctx.logger,
-        commitMessage:
-          description ??
-          config.getOptionalString('scaffolder.defaultCommitMessage') ??
-          '',
-        gitAuthorInfo,
-        branch: sourceBranch,
-      });
 
       const pullRequestUrl = await createPullRequest({
         workspace,
