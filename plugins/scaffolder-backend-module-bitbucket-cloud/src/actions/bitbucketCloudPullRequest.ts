@@ -323,12 +323,9 @@ export function createPublishBitbucketCloudPullRequestAction(options: {
         gitAuthorEmail,
       } = ctx.input;
 
-      const { project, repo, host, workspace } = parseRepoUrl(
-        repoUrl,
-        integrations,
-      );
+      const { workspace, repo, host } = parseRepoUrl(repoUrl, integrations);
 
-      if (!project) {
+      if (!workspace) {
         throw new InputError(
           `Invalid URL provider was included in the repo URL to create ${ctx.input.repoUrl}, missing project`,
         );
@@ -350,15 +347,17 @@ export function createPublishBitbucketCloudPullRequestAction(options: {
       let finalTargetBranch = targetBranch;
       if (!finalTargetBranch) {
         finalTargetBranch = await getDefaultBranch({
-          workspace: workspace!,
+          workspace,
           repo,
           authorization,
           apiBaseUrl,
         });
       }
 
+      // TODO: check if sourceBranch already exists and just create a pull request for it if so
+
       await createBranch({
-        workspace: workspace!,
+        workspace,
         repo,
         branchName: sourceBranch,
         authorization,
@@ -445,7 +444,7 @@ export function createPublishBitbucketCloudPullRequestAction(options: {
       });
 
       const pullRequestUrl = await createPullRequest({
-        workspace: workspace!,
+        workspace,
         repo,
         title,
         description,
