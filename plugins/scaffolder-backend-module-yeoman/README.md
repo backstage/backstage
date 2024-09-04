@@ -13,32 +13,14 @@ You need to configure the action in your backend:
 yarn --cwd packages/backend add @backstage/plugin-scaffolder-backend-module-yeoman
 ```
 
-Configure the action:
-(you can check the [docs](https://backstage.io/docs/features/software-templates/writing-custom-actions#registering-custom-actions) to see all options):
+Then ensure that both the scaffolder and this module are added to your backend:
 
 ```typescript
-// packages/backend/src/plugins/scaffolder.ts
-
-const actions = [
-  createRunYeomanAction(),
-  ...createBuiltInActions({
-    containerRunner,
-    catalogClient,
-    integrations,
-    config: env.config,
-    reader: env.reader,
-  }),
-];
-
-return await createRouter({
-  containerRunner,
-  catalogClient,
-  actions,
-  logger: env.logger,
-  config: env.config,
-  database: env.database,
-  reader: env.reader,
-});
+// In packages/backend/src/index.ts
+const backend = createBackend();
+// ...
+backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
+backend.add(import('@backstage/plugin-scaffolder-backend-module-yeoman'));
 ```
 
 After that you can use the action in your template:
