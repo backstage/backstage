@@ -7,6 +7,6 @@ _This plugin was created through the Backstage CLI_
 
 ## Actions
 
-* `publish:bitbucketCloud`
-* `bitbucket:pipelines:run`
-* `publish:bitbucketCloud:pull-request`
+- `publish:bitbucketCloud`
+- `bitbucket:pipelines:run`
+- `publish:bitbucketCloud:pull-request`
