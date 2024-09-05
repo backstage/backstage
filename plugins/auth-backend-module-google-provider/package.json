@@ -48,7 +48,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/plugin-auth-backend": "workspace:^",
     "@types/passport-google-oauth20": "^2.0.3",
-    "supertest": "^6.1.3"
+    "supertest": "^7.0.0"
   },
   "configSchema": "config.d.ts"
 }

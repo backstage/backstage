@@ -48,6 +48,6 @@
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-auth-backend": "workspace:^",
     "msw": "^2.0.8",
-    "supertest": "^6.3.3"
+    "supertest": "^7.0.0"
   }
 }
