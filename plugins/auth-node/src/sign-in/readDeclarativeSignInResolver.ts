@@ -66,6 +66,8 @@ export function readDeclarativeSignInResolver<TAuthResult>(
       }
     }
 
-    throw new Error('Failed to sign-in, unable to resolve user identity');
+    throw new Error(
+      'Failed to sign-in, unable to resolve user identity. Please verify that your catalog contains the expected User entities that would match your configured sign-in resolver.',
+    );
   };
 }

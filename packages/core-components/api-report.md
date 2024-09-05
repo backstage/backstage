@@ -19,6 +19,7 @@ import { default as CSS_2 } from 'csstype';
 import { CSSProperties } from 'react';
 import { ElementType } from 'react';
 import { ErrorInfo } from 'react';
+import IconButton from '@material-ui/core/IconButton';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { Icons } from '@material-table/core';
 import { IdentityApi } from '@backstage/core-plugin-api';
@@ -400,6 +401,24 @@ export type ErrorPanelProps = {
   titleFormat?: string;
   title?: string;
 };
+
+// @public
+export function FavoriteToggle(
+  props: ComponentProps<typeof IconButton> & {
+    id: string;
+    title: string;
+    isFavorite: boolean;
+    onToggle: (value: boolean) => void;
+  },
+): React_2.JSX.Element;
+
+// @public
+export function FavoriteToggleIcon(props: {
+  isFavorite: boolean;
+}): React_2.JSX.Element;
+
+// @public (undocumented)
+export type FavoriteToggleIconClassKey = 'icon' | 'iconBorder';
 
 // @public (undocumented)
 export type FeatureCalloutCircleClassKey =

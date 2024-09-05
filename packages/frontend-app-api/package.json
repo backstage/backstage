@@ -1,6 +1,6 @@
 {
   "name": "@backstage/frontend-app-api",
-  "version": "0.8.0",
+  "version": "0.9.0-next.1",
   "backstage": {
     "role": "web-library"
   },
@@ -34,20 +34,18 @@
   "dependencies": {
     "@backstage/config": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
-    "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
+    "@backstage/frontend-defaults": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
-    "@backstage/theme": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
-    "@material-ui/core": "^4.12.4",
-    "@material-ui/icons": "^4.11.3",
     "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
+    "@backstage/plugin-app": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^15.0.0"

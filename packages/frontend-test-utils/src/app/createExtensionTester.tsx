@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { MemoryRouter, Link } from 'react-router-dom';
-import { RenderResult, render } from '@testing-library/react';
-import { createSpecializedApp } from '@backstage/frontend-app-api';
 import {
   AnyExtensionDataRef,
   AppNode,
@@ -25,15 +21,8 @@ import {
   Extension,
   ExtensionDataRef,
   ExtensionDefinition,
-  IconComponent,
-  NavItemBlueprint,
-  RouteRef,
-  RouterBlueprint,
+  ExtensionDefinitionParameters,
   coreExtensionData,
-  createExtension,
-  createExtensionInput,
-  createExtensionOverrides,
-  useRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { Config, ConfigReader } from '@backstage/config';
 import { JsonArray, JsonObject, JsonValue } from '@backstage/types';
@@ -50,56 +39,6 @@ import { instantiateAppNodeTree } from '../../../frontend-app-api/src/tree/insta
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { readAppExtensionsConfig } from '../../../frontend-app-api/src/tree/readAppExtensionsConfig';
 import { TestApiRegistry } from '@backstage/test-utils';
-
-const NavItem = (props: {
-  routeRef: RouteRef<undefined>;
-  title: string;
-  icon: IconComponent;
-}) => {
-  const { routeRef, title, icon: Icon } = props;
-  const link = useRouteRef(routeRef);
-  if (!link) {
-    return null;
-  }
-  return (
-    <li>
-      <Link to={link()}>
-        <Icon /> {title}
-      </Link>
-    </li>
-  );
-};
-
-const TestAppNavExtension = createExtension({
-  namespace: 'app',
-  name: 'nav',
-  attachTo: { id: 'app/layout', input: 'nav' },
-  inputs: {
-    items: createExtensionInput([NavItemBlueprint.dataRefs.target]),
-  },
-  output: [coreExtensionData.reactElement],
-  factory({ inputs }) {
-    return [
-      coreExtensionData.reactElement(
-        <nav>
-          <ul>
-            {inputs.items.map((item, index) => {
-              const target = item.get(NavItemBlueprint.dataRefs.target);
-              return (
-                <NavItem
-                  key={index}
-                  icon={target.icon}
-                  title={target.title}
-                  routeRef={target.routeRef}
-                />
-              );
-            })}
-          </ul>
-        </nav>,
-      ),
-    ];
-  },
-});
 
 /** @public */
 export class ExtensionQuery<UOutput extends AnyExtensionDataRef> {
@@ -139,12 +78,12 @@ export class ExtensionQuery<UOutput extends AnyExtensionDataRef> {
 /** @public */
 export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
   /** @internal */
-  static forSubject<TConfig, TConfigInput, UOutput extends AnyExtensionDataRef>(
-    subject: ExtensionDefinition<TConfig, TConfigInput>,
-    options?: { config?: TConfigInput },
-  ): ExtensionTester<UOutput> {
+  static forSubject<T extends ExtensionDefinitionParameters>(
+    subject: ExtensionDefinition<T>,
+    options?: { config?: T['configInput'] },
+  ): ExtensionTester<NonNullable<T['output']>> {
     const tester = new ExtensionTester();
-    tester.add(subject, options as TConfigInput & {});
+    tester.add(subject, options as T['configInput'] & {});
     return tester;
   }
 
@@ -153,13 +92,13 @@ export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
   readonly #extensions = new Array<{
     id: string;
     extension: Extension<any>;
-    definition: ExtensionDefinition<any>;
+    definition: ExtensionDefinition;
     config?: JsonValue;
   }>();
 
-  add<TConfig, TConfigInput>(
-    extension: ExtensionDefinition<TConfig, TConfigInput>,
-    options?: { config?: TConfigInput },
+  add<T extends ExtensionDefinitionParameters>(
+    extension: ExtensionDefinition<T>,
+    options?: { config?: T['configInput'] },
   ): ExtensionTester<UOutput> {
     if (this.#tree) {
       throw new Error(
@@ -167,7 +106,7 @@ export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
       );
     }
 
-    const { name, namespace } = extension;
+    const { name, namespace } = toInternalExtensionDefinition(extension);
 
     const definition = {
       ...extension,
@@ -199,12 +138,18 @@ export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
     return new ExtensionQuery(tree.root).get(ref);
   }
 
-  query<UQueryExtensionOutput extends AnyExtensionDataRef>(
-    extension: ExtensionDefinition<any, any, UQueryExtensionOutput>,
-  ): ExtensionQuery<UQueryExtensionOutput> {
+  query<T extends ExtensionDefinitionParameters>(
+    extension: ExtensionDefinition<T>,
+  ): ExtensionQuery<NonNullable<T['output']>> {
     const tree = this.#resolveTree();
 
-    const actualId = resolveExtensionDefinition(extension).id;
+    // Same fallback logic as in .add
+    const { name, namespace } = toInternalExtensionDefinition(extension);
+    const definition = {
+      ...extension,
+      name: !namespace && !name ? 'test' : name,
+    };
+    const actualId = resolveExtensionDefinition(definition).id;
 
     const node = tree.nodes.get(actualId);
 
@@ -234,70 +179,6 @@ export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
     }
 
     return element;
-  }
-
-  /**
-   * @deprecated Switch to using `renderInTestApp` directly and using `.reactElement()` or `.get(...)` to get the component you w
-   */
-  render(options?: { config?: JsonObject }): RenderResult {
-    const { config = {} } = options ?? {};
-
-    const [subject] = this.#extensions;
-    if (!subject) {
-      throw new Error(
-        'No subject found. At least one extension should be added to the tester.',
-      );
-    }
-
-    const subjectInternal = toInternalExtensionDefinition(subject.definition);
-    let subjectOverride;
-    // attaching to app/routes to render as index route
-    if (subjectInternal.version === 'v1') {
-      throw new Error('The extension tester does not support v1 extensions');
-    } else if (subjectInternal.version === 'v2') {
-      subjectOverride = createExtension({
-        ...subjectInternal,
-        attachTo: { id: 'app/routes', input: 'routes' },
-        output: subjectInternal.output.find(
-          ref => ref.id === coreExtensionData.routePath.id,
-        )
-          ? subjectInternal.output
-          : [...subjectInternal.output, coreExtensionData.routePath],
-        factory: params => {
-          const parentOutput = Array.from(
-            subjectInternal.factory(params as any),
-          ).filter(val => val.id !== coreExtensionData.routePath.id);
-
-          return [...parentOutput, coreExtensionData.routePath('/')];
-        },
-      });
-      (subjectOverride as any).configSchema = subjectInternal.configSchema;
-    } else {
-      throw new Error('Unsupported extension version');
-    }
-
-    const app = createSpecializedApp({
-      features: [
-        createExtensionOverrides({
-          extensions: [
-            subjectOverride,
-            ...this.#extensions.slice(1).map(extension => extension.definition),
-            TestAppNavExtension,
-            RouterBlueprint.make({
-              namespace: 'test',
-              params: {
-                Component: ({ children }) => (
-                  <MemoryRouter>{children}</MemoryRouter>
-                ),
-              },
-            }),
-          ],
-        }),
-      ],
-      config: this.#getConfig(config),
-    });
-
-    return render(app.createRoot());
   }
 
   #resolveTree() {
@@ -360,13 +241,9 @@ export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
 }
 
 /** @public */
-export function createExtensionTester<
-  TConfig,
-  TConfigInput,
-  UOutput extends AnyExtensionDataRef,
->(
-  subject: ExtensionDefinition<TConfig, TConfigInput, UOutput>,
-  options?: { config?: TConfigInput },
-): ExtensionTester<UOutput> {
+export function createExtensionTester<T extends ExtensionDefinitionParameters>(
+  subject: ExtensionDefinition<T>,
+  options?: { config?: T['configInput'] },
+): ExtensionTester<NonNullable<T['output']>> {
   return ExtensionTester.forSubject(subject, options);
 }

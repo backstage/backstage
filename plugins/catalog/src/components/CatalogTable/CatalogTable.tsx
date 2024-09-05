@@ -37,7 +37,6 @@ import {
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
 import Typography from '@material-ui/core/Typography';
-import { withStyles } from '@material-ui/core/styles';
 import { visuallyHidden } from '@mui/utils';
 import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
@@ -50,6 +49,7 @@ import { PaginatedCatalogTable } from './PaginatedCatalogTable';
 import { defaultCatalogTableColumnsFunc } from './defaultCatalogTableColumnsFunc';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { catalogTranslationRef } from '../../alpha/translation';
+import { FavoriteToggleIcon } from '@backstage/core-components';
 
 /**
  * Props for {@link CatalogTable}.
@@ -63,12 +63,6 @@ export interface CatalogTableProps {
   emptyContent?: ReactNode;
   subtitle?: string;
 }
-
-const FilledStar = withStyles(theme => ({
-  root: {
-    color: theme.palette.entityStarButton.color,
-  },
-}))(StarIcon);
 
 const refCompare = (a: Entity, b: Entity) => {
   const toRef = (entity: Entity) =>
@@ -160,12 +154,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
 
       return {
         cellStyle: { paddingLeft: '1em' },
-        icon: () => (
-          <>
-            <Typography style={visuallyHidden}>{title}</Typography>
-            {isStarred ? <FilledStar /> : <UnstarredIcon />}
-          </>
-        ),
+        icon: () => <FavoriteToggleIcon isFavorite={isStarred} />,
         tooltip: title,
         onClick: () => toggleStarredEntity(entity),
       };

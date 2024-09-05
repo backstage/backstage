@@ -2,7 +2,7 @@
 
 Our vision for Backstage is for it to become the trusted standard toolbox (read: UX layer) for the open source infrastructure landscape. Think of it like Kubernetes for developer experience. We realize this is an ambitious goal. We can’t do it alone.
 
-Therefore we want to create a strong community of contributors -- all working together to create the kind of delightful experience that our developers deserve.
+Therefore, we want to create a strong community of contributors -- all working together to create the kind of delightful experience that our developers deserve.
 
 Contributions are welcome, and they are greatly appreciated! Every little bit helps, and credit will always be given. ❤️
 
@@ -41,7 +41,7 @@ We encourage you to catch any accessibility issues already in the development ph
 
 ## Get Started!
 
-So...feel ready to jump in? Let's do this. 👏🏻💯
+So... feel ready to jump in? Let's do this. 👏🏻💯
 
 ### Cloning the Repository
 
@@ -103,7 +103,7 @@ If you want to get a better understanding of the layout of the repo now that you
 
 ## Coding Guidelines
 
-All code is formatted with `prettier` using the configuration in the repo. If possible we recommend configuring your editor to format automatically, but you can also use the `yarn prettier --write <file>` command to format files.
+All code is formatted with `prettier` using the configuration in the repo. If possible, we recommend configuring your editor to format automatically, but you can also use the `yarn prettier --write <file>` command to format files.
 
 A consistent coding style is included via [EditorConfig](https://editorconfig.org/) with the file [`.editorconfig`](.editorconfig) at the root of the repo. Depending on your editor of choice, it will either support it out of the box or you can [download a plugin](https://editorconfig.org/#download) for the config to be applied.
 
@@ -184,7 +184,7 @@ Changesets **are** needed for new packages, as that is what triggers the package
 
 ### Writing changesets
 
-Changesets are an important part of the development process. They are used to generate Changelog entries for all changes to the project. Ultimately they are read by the end users to learn about important changes and fixes to the project. Some of these fixes might require manual intervention from users so it's important to write changesets that users understand and can take action on.
+Changesets are an important part of the development process. They are used to generate Changelog entries for all changes to the project. Ultimately, they are read by the end users to learn about important changes and fixes to the project. Some of these fixes might require manual intervention from users so it's important to write changesets that users understand and can take action on.
 
 Here are some important do's and don'ts when writing changesets:
 
@@ -274,7 +274,7 @@ These changes are **required** to `packages/backend/src/plugins/catalog.ts`
 
 As with other CNCF projects, Backstage has adopted a [Developers Certificate of Origin (DCO)](https://developercertificate.org/). A DCO is a lightweight way for a developer to certify that they wrote or otherwise have the right to submit code or documentation to a project.
 
-To certify the code you submit to the repository you'll need to add a `Signed-off-by` line to your commits.
+To certify the code you submit to the repository, you'll need to add a `Signed-off-by` line to your commits.
 
 `$ git commit -s -m 'Awesome commit message'`
 
@@ -330,9 +330,9 @@ There are two ways you can do this:
 1. You can run `yarn build:api-reports` from the root of the project and it will go through all of the existing API Reports and update them or create new ones as needed. This may take a while but is generally the best method if you are new to this.
 2. You can run `yarn build:api-reports plugins/<your-plugin-with-changes>` from the root and it will update the existing API Report or create a new one.
 
-> Note: the above commands assume you've run `yarn install` before hand or recently
+> Note: the above commands assume you've run `yarn install` beforehand or recently.
 
-Each plugin/package has its own API Report which means you might see more then one file updated or created depending on your changes. These changes will then need to be committed as well.
+Each plugin/package has its own API Report which means you might see more than one file updated or created depending on your changes. These changes will then need to be committed as well.
 
 ## Submitting a Pull Request
 
@@ -374,7 +374,7 @@ Once you've submitted a Pull Request (PR) the various bots will come out and do 
 - checking for commits for their DCO (Developer Certificate of Origin)
 - kick of the various CI builds
 
-Once these have been completed it's just a matter of being patient as the reviewers have time they will begin to review your PR. When the review begins there may be a few layers to this but the general rule is that you need approval from one of the core maintainers and one from the specific area impacted by your PR. You may also have someone from the community review your changes, this can really help speed things up as they may catch some early items making the review for the maintainers simpler. Once you have the two (2) approvals it's ready to be merged, this task is also done by the maintainers.
+Once these steps are completed, it's just a matter of being patient. As the reviewers have time, they will begin reviewing your PR. When the review process begins, there may be a few layers to this, but the general rule is that you need approval from one of the core maintainers and one from the specific area impacted by your PR. You may also have someone from the community review your changes. This can really help speed things up as they may catch some early items making the review for the maintainers simpler. Once you have the two (2) approvals, it's ready to be merged, a task that is also performed by the maintainers.
 
 ### Review Tips
 

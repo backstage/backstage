@@ -17,7 +17,7 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { CatalogClient } from '@backstage/catalog-client';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import { notificationsProcessingExtensionPoint } from '@backstage/plugin-notifications-node';
 import { NotificationsEmailProcessor } from './processor';
 import {
@@ -46,21 +46,17 @@ export const notificationsModuleEmail = createBackendModule({
       deps: {
         config: coreServices.rootConfig,
         notifications: notificationsProcessingExtensionPoint,
-        discovery: coreServices.discovery,
         logger: coreServices.logger,
         auth: coreServices.auth,
         cache: coreServices.cache,
+        catalog: catalogServiceRef,
       },
-      async init({ config, notifications, discovery, logger, auth, cache }) {
-        const catalogClient = new CatalogClient({
-          discoveryApi: discovery,
-        });
-
+      async init({ config, notifications, logger, auth, cache, catalog }) {
         notifications.addProcessor(
           new NotificationsEmailProcessor(
             logger,
             config,
-            catalogClient,
+            catalog,
             auth,
             cache,
             templateRenderer,

@@ -20,7 +20,10 @@ import {
   createExtension,
   createExtensionInput,
 } from '@backstage/frontend-plugin-api';
-import { createExtensionTester } from '@backstage/frontend-test-utils';
+import {
+  createExtensionTester,
+  renderInTestApp,
+} from '@backstage/frontend-test-utils';
 import { waitFor, screen } from '@testing-library/react';
 
 describe('CatalogFilterBlueprint', () => {
@@ -33,6 +36,7 @@ describe('CatalogFilterBlueprint', () => {
     expect(extension).toMatchInlineSnapshot(`
       {
         "$$type": "@backstage/ExtensionDefinition",
+        "T": undefined,
         "attachTo": {
           "id": "page:catalog",
           "input": "filters",
@@ -89,9 +93,11 @@ describe('CatalogFilterBlueprint', () => {
       },
     });
 
-    createExtensionTester(extension, { config: { test: 'mock test config' } })
-      .add(mockExtension)
-      .render();
+    renderInTestApp(
+      createExtensionTester(extension, { config: { test: 'mock test config' } })
+        .add(mockExtension)
+        .reactElement(),
+    );
 
     await waitFor(() => {
       expect(screen.getByTestId('test')).toBeInTheDocument();

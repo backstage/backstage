@@ -24,6 +24,7 @@ import { TemplateEditor } from './TemplateEditor';
 import { TemplateFormPreviewer } from './TemplateFormPreviewer';
 import {
   FieldExtensionOptions,
+  FormProps,
   type LayoutOptions,
 } from '@backstage/plugin-scaffolder-react';
 import { TemplateEditorIntro } from './TemplateEditorIntro';
@@ -54,6 +55,7 @@ interface TemplateEditorPageProps {
   defaultPreviewTemplate?: string;
   customFieldExtensions?: FieldExtensionOptions<any, any>[];
   layouts?: LayoutOptions[];
+  formProps?: FormProps;
 }
 
 export function TemplateEditorPage(props: TemplateEditorPageProps) {
@@ -79,6 +81,7 @@ export function TemplateEditorPage(props: TemplateEditorPageProps) {
         fieldExtensions={props.customFieldExtensions}
         onClose={() => setSelection(undefined)}
         layouts={props.layouts}
+        formProps={props.formProps}
       />
     );
   } else if (selection?.type === 'form') {
@@ -88,6 +91,7 @@ export function TemplateEditorPage(props: TemplateEditorPageProps) {
         customFieldExtensions={props.customFieldExtensions}
         onClose={() => setSelection(undefined)}
         layouts={props.layouts}
+        formProps={props.formProps}
       />
     );
   } else if (selection?.type === 'field-explorer') {

@@ -509,11 +509,11 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
       const output = this.render(task.spec.output, context, renderTemplate);
       await taskTrack.markSuccessful();
+      await task.cleanWorkspace?.();
 
       return { output };
     } finally {
       if (workspacePath) {
-        await task.cleanWorkspace?.();
         await fs.remove(workspacePath);
       }
     }

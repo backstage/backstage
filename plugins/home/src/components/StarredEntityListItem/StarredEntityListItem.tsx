@@ -17,15 +17,12 @@ import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { entityRouteParams } from '@backstage/plugin-catalog-react';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
 import ListItemText from '@material-ui/core/ListItemText';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { StarIcon } from '@backstage/core-components';
-import { withStyles } from '@material-ui/core/styles';
+import { FavoriteToggle } from '@backstage/core-components';
 
 type EntityListItemProps = {
   entity: Entity;
@@ -38,24 +35,15 @@ export const StarredEntityListItem = ({
 }: EntityListItemProps) => {
   const catalogEntityRoute = useRouteRef(entityRouteRef);
 
-  const FilledStar = withStyles(theme => ({
-    root: {
-      color: theme.palette.entityStarButton.color,
-    },
-  }))(StarIcon);
-
   return (
     <ListItem key={stringifyEntityRef(entity)}>
       <ListItemIcon>
-        <Tooltip title="Remove from starred">
-          <IconButton
-            edge="end"
-            aria-label="unstar"
-            onClick={() => onToggleStarredEntity(entity)}
-          >
-            <FilledStar />
-          </IconButton>
-        </Tooltip>
+        <FavoriteToggle
+          id={`remove-favorite-${entity.metadata.uid}`}
+          title="Remove entity from favorites"
+          isFavorite
+          onToggle={() => onToggleStarredEntity(entity)}
+        />
       </ListItemIcon>
       <Link to={catalogEntityRoute(entityRouteParams(entity))}>
         <ListItemText primary={entity.metadata.title ?? entity.metadata.name} />

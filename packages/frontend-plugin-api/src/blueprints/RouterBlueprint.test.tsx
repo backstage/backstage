@@ -17,15 +17,12 @@ import React from 'react';
 import { RouterBlueprint } from './RouterBlueprint';
 import { MemoryRouter } from 'react-router-dom';
 import { render, waitFor } from '@testing-library/react';
-import { createSpecializedApp } from '@backstage/frontend-app-api';
 import {
   coreExtensionData,
   createExtension,
   createExtensionInput,
-  createExtensionOverrides,
 } from '../wiring';
-import { MockConfigApi } from '@backstage/test-utils';
-import { PageBlueprint } from './PageBlueprint';
+import { createExtensionTester } from '@backstage/frontend-test-utils';
 
 describe('RouterBlueprint', () => {
   it('should return an extension when calling make with sensible defaults', () => {
@@ -38,6 +35,7 @@ describe('RouterBlueprint', () => {
     expect(extension).toMatchInlineSnapshot(`
       {
         "$$type": "@backstage/ExtensionDefinition",
+        "T": undefined,
         "attachTo": {
           "id": "app/root",
           "input": "router",
@@ -61,7 +59,6 @@ describe('RouterBlueprint', () => {
 
   it('should work with simple options', async () => {
     const extension = RouterBlueprint.make({
-      namespace: 'test',
       params: {
         Component: ({ children }) => (
           <MemoryRouter>
@@ -71,24 +68,14 @@ describe('RouterBlueprint', () => {
       },
     });
 
-    const app = createSpecializedApp({
-      features: [
-        createExtensionOverrides({
-          extensions: [
-            extension,
-            PageBlueprint.make({
-              namespace: 'test',
-              params: {
-                defaultPath: '/',
-                loader: async () => <div data-testid="test-contents" />,
-              },
-            }),
-          ],
-        }),
-      ],
-    });
+    const tester = createExtensionTester(extension);
+    const Component = tester.get(RouterBlueprint.dataRefs.component);
 
-    const { getByTestId } = render(app.createRoot());
+    const { getByTestId } = render(
+      <Component>
+        <div data-testid="test-contents" />
+      </Component>,
+    );
 
     await waitFor(() => {
       expect(getByTestId('test-contents')).toBeInTheDocument();
@@ -98,7 +85,6 @@ describe('RouterBlueprint', () => {
 
   it('should work with complex options and props', async () => {
     const extension = RouterBlueprint.makeWithOverrides({
-      namespace: 'test',
       name: 'test',
       config: {
         schema: {
@@ -123,44 +109,27 @@ describe('RouterBlueprint', () => {
       },
     });
 
-    const app = createSpecializedApp({
-      features: [
-        createExtensionOverrides({
-          extensions: [
-            extension,
-            createExtension({
-              namespace: 'test',
-              attachTo: {
-                id: 'app-router-component:test/test',
-                input: 'children',
-              },
-              output: [coreExtensionData.reactElement],
-              *factory() {
-                yield coreExtensionData.reactElement(<div />);
-              },
-            }),
-            PageBlueprint.make({
-              namespace: 'test',
-              params: {
-                defaultPath: '/',
-                loader: async () => <div data-testid="test-contents" />,
-              },
-            }),
-          ],
-        }),
-      ],
-      config: new MockConfigApi({
-        app: {
-          extensions: [
-            {
-              'app-router-component:test/test': { config: { name: 'Robin' } },
-            },
-          ],
+    const tester = createExtensionTester(extension, {
+      config: { name: 'Robin' },
+    }).add(
+      createExtension({
+        attachTo: {
+          id: 'app-router-component:test',
+          input: 'children',
+        },
+        output: [coreExtensionData.reactElement],
+        *factory() {
+          yield coreExtensionData.reactElement(<div />);
         },
       }),
-    });
+    );
+    const Component = tester.get(RouterBlueprint.dataRefs.component);
 
-    const { getByTestId } = render(app.createRoot());
+    const { getByTestId } = render(
+      <Component>
+        <div data-testid="test-contents" />
+      </Component>,
+    );
 
     await waitFor(() => {
       expect(getByTestId('test-contents')).toBeInTheDocument();

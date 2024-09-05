@@ -17,14 +17,7 @@
 import React from 'react';
 import ShareIcon from '@material-ui/icons/Share';
 import { DocsTableRow } from './types';
-import { withStyles } from '@material-ui/core/styles';
-import { StarIcon, UnstarredIcon } from '@backstage/core-components';
-
-const FilledStar = withStyles(theme => ({
-  root: {
-    color: theme.palette.entityStarButton.color,
-  },
-}))(StarIcon);
+import { FavoriteToggleIcon } from '@backstage/core-components';
 
 /**
  * Not directly exported, but through DocsTable.actions and EntityListDocsTable.actions
@@ -51,7 +44,7 @@ export const actionFactories = {
       const isStarred = isStarredEntity(entity);
       return {
         cellStyle: { paddingLeft: '1em' },
-        icon: () => (isStarred ? <FilledStar /> : <UnstarredIcon />),
+        icon: () => <FavoriteToggleIcon isFavorite={isStarred} />,
         tooltip: isStarred ? 'Remove from favorites' : 'Add to favorites',
         onClick: () => toggleStarredEntity(entity),
       };

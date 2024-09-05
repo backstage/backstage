@@ -16,7 +16,10 @@
 
 import React from 'react';
 import { SearchResultListItemBlueprint } from './SearchResultListItemBlueprint';
-import { createExtensionTester } from '@backstage/frontend-test-utils';
+import {
+  createExtensionTester,
+  renderInTestApp,
+} from '@backstage/frontend-test-utils';
 import {
   PageBlueprint,
   createExtensionInput,
@@ -37,6 +40,7 @@ describe('SearchResultListItemBlueprint', () => {
     expect(extension).toMatchInlineSnapshot(`
       {
         "$$type": "@backstage/ExtensionDefinition",
+        "T": undefined,
         "attachTo": {
           "id": "page:search",
           "input": "items",
@@ -83,7 +87,7 @@ describe('SearchResultListItemBlueprint', () => {
     });
 
     const mockSearchPage = PageBlueprint.makeWithOverrides({
-      namespace: 'search',
+      name: 'search',
       inputs: {
         items: createExtensionInput([searchResultListItemDataRef]),
       },
@@ -107,17 +111,17 @@ describe('SearchResultListItemBlueprint', () => {
     });
 
     await expect(
-      createExtensionTester(mockSearchPage)
-        .add(extension)
-        .render()
-        .findByText('noTrack: false'),
+      renderInTestApp(
+        createExtensionTester(mockSearchPage).add(extension).reactElement(),
+      ).findByText('noTrack: false'),
     ).resolves.toBeInTheDocument();
 
     await expect(
-      createExtensionTester(mockSearchPage)
-        .add(extension, { config: { noTrack: true } })
-        .render()
-        .findByText('noTrack: true'),
+      renderInTestApp(
+        createExtensionTester(mockSearchPage)
+          .add(extension, { config: { noTrack: true } })
+          .reactElement(),
+      ).findByText('noTrack: true'),
     ).resolves.toBeInTheDocument();
   });
 });

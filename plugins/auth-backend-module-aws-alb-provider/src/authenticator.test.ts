@@ -35,7 +35,6 @@ describe('AwsAlbProvider', () => {
     email: 'user.name@email.test',
     exp: Date.now() + 10000,
     iss: 'ISSUER_URL',
-    signer: 'SIGNER_ARN',
   };
   const signingKey = new TextEncoder().encode('signingKey');
   let mockJwt: string;
@@ -78,7 +77,7 @@ describe('AwsAlbProvider', () => {
 
   beforeEach(async () => {
     mockJwt = await new SignJWT(mockClaims)
-      .setProtectedHeader({ alg: 'HS256' })
+      .setProtectedHeader({ alg: 'HS256', signer: 'SIGNER_ARN' })
       .sign(signingKey);
   });
 
@@ -147,6 +146,34 @@ describe('AwsAlbProvider', () => {
       );
     });
 
+    it('Email is missing', async () => {
+      const jwt = await new SignJWT({ ...mockClaims, email: undefined })
+        .setProtectedHeader({ alg: 'HS256', signer: 'SIGNER_ARN' })
+        .sign(signingKey);
+      const req = {
+        header: jest.fn(name => {
+          if (name === ALB_JWT_HEADER) {
+            return jwt;
+          } else if (name === ALB_ACCESS_TOKEN_HEADER) {
+            return mockAccessToken;
+          }
+          return undefined;
+        }),
+      } as unknown as express.Request;
+      await expect(
+        awsAlbAuthenticator.authenticate(
+          { req },
+          {
+            issuer: 'ISSUER_URL',
+            signer: undefined,
+            getKey: jest.fn().mockResolvedValue(signingKey),
+          },
+        ),
+      ).rejects.toThrow(
+        'Exception occurred during JWT processing: AuthenticationError: Missing email in the JWT token',
+      );
+    });
+
     it('issuer is missing', async () => {
       const jwt = await new SignJWT({})
         .setProtectedHeader({ alg: 'HS256' })
@@ -206,8 +233,8 @@ describe('AwsAlbProvider', () => {
     });
 
     it('signer is invalid', async () => {
-      const jwt = await new SignJWT({ signer: 'INVALID_SIGNER_ARN' })
-        .setProtectedHeader({ alg: 'HS256' })
+      const jwt = await new SignJWT({})
+        .setProtectedHeader({ alg: 'HS256', signer: 'INVALID_SIGNER_ARN' })
         .sign(signingKey);
       const req = {
         header: jest.fn(name => {

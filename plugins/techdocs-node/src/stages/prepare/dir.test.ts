@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { TECHDOCS_ANNOTATION } from '@backstage/plugin-techdocs-common';
 import { ConfigReader } from '@backstage/config';
 import { DirectoryPreparer } from './dir';
@@ -31,7 +30,7 @@ jest.mock('../../helpers', () => ({
   ...jest.requireActual<{}>('../../helpers'),
 }));
 
-const logger = loggerToWinstonLogger(mockServices.logger.mock());
+const logger = mockServices.logger.mock();
 
 const createMockEntity = (annotations: {}) => {
   return {

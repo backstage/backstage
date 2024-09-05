@@ -106,7 +106,7 @@ function visitRouteChildren(options: {
   parentExtensionId: string;
   context: {
     pluginId: string;
-    extensions: ExtensionDefinition<any, any>[];
+    extensions: ExtensionDefinition[];
     getUniqueName: () => string;
     discoverPlugin: (plugin: LegacyBackstagePlugin) => void;
   };
@@ -159,7 +159,7 @@ export function collectLegacyRoutes(
 ): BackstagePlugin[] {
   const pluginExtensions = new Map<
     LegacyBackstagePlugin,
-    ExtensionDefinition<any, any>[]
+    ExtensionDefinition[]
   >();
 
   const getUniqueName = (() => {
@@ -268,7 +268,10 @@ export function collectLegacyRoutes(
       extensions: [
         ...extensions,
         ...Array.from(plugin.getApis()).map(factory =>
-          ApiBlueprint.make({ namespace: factory.api.id, params: { factory } }),
+          ApiBlueprint.make({
+            name: factory.api.id,
+            params: { factory },
+          }),
         ),
       ],
       routes: convertLegacyRouteRefs(plugin.routes ?? {}),

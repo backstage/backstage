@@ -1,5 +1,14 @@
 # @backstage/plugin-signals-react
 
+## 0.0.5-next.0
+
+### Patch Changes
+
+- 0389801: Fix for `useSignal` returning the inverse value for `isSignalsAvailable`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/types@1.1.1
+
 ## 0.0.4
 
 ### Patch Changes

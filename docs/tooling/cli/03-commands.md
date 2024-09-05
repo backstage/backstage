@@ -326,7 +326,7 @@ Options:
 ## versions\:bump
 
 Bump all `@backstage` packages to the latest versions. This checks for updates
-in the package registry, and will update entries `package.json` files when necessary.
+in the package registry, and will update entries `package.json` files when necessary. See more how this command can be configured and used [for keeping Backstage updated](../../getting-started/keeping-backstage-updated.md).
 
 ```text
 Usage: backstage-cli versions:bump [options]

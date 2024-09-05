@@ -16,24 +16,17 @@
 
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import { withStyles } from '@material-ui/core/styles';
-import { StarIcon, UnstarredIcon } from '@backstage/core-components';
 import React, { ComponentProps } from 'react';
 import { useStarredEntity } from '../../hooks/useStarredEntity';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { FavoriteToggle } from '@backstage/core-components';
 
 /** @public */
 export type FavoriteEntityProps = ComponentProps<typeof IconButton> & {
   entity: Entity;
 };
 
-const FilledStar = withStyles(theme => ({
-  root: {
-    color: theme.palette.entityStarButton.color,
-  },
-}))(StarIcon);
 /**
  * IconButton for showing if a current entity is starred and adding/removing it from the favorite entities
  * @param props - MaterialUI IconButton props extended by required `entity` prop
@@ -54,16 +47,12 @@ export const FavoriteEntity = (props: FavoriteEntityProps) => {
   )}`;
 
   return (
-    <IconButton
-      aria-label={title}
+    <FavoriteToggle
+      title={title}
       id={id}
-      color="inherit"
+      isFavorite={isStarredEntity}
+      onToggle={toggleStarredEntity}
       {...props}
-      onClick={() => toggleStarredEntity()}
-    >
-      <Tooltip id={id} title={title}>
-        {isStarredEntity ? <FilledStar /> : <UnstarredIcon />}
-      </Tooltip>
-    </IconButton>
+    />
   );
 };

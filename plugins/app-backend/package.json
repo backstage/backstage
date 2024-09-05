@@ -1,11 +1,12 @@
 {
   "name": "@backstage/plugin-app-backend",
-  "version": "0.3.72",
+  "version": "0.3.74-next.1",
   "description": "A Backstage backend plugin that serves the Backstage frontend app",
   "backstage": {
     "role": "backend-plugin",
     "pluginId": "app",
     "pluginPackages": [
+      "@backstage/plugin-app",
       "@backstage/plugin-app-backend",
       "@backstage/plugin-app-node"
     ]

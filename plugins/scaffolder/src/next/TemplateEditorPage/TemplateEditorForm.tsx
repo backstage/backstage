@@ -23,6 +23,7 @@ import {
   LayoutOptions,
   TemplateParameterSchema,
   FieldExtensionOptions,
+  FormProps,
 } from '@backstage/plugin-scaffolder-react';
 import {
   Stepper,
@@ -87,6 +88,7 @@ interface TemplateEditorFormProps {
   onDryRun?: (data: JsonObject) => Promise<void>;
   fieldExtensions?: FieldExtensionOptions<any, any>[];
   layouts?: LayoutOptions[];
+  formProps?: FormProps;
 }
 
 function isJsonObject(value: JsonValue | undefined): value is JsonObject {
@@ -195,6 +197,7 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
               await onDryRun?.(options);
             }}
             layouts={layouts}
+            formProps={props.formProps}
           />
         </ErrorBoundary>
       </div>
@@ -206,7 +209,7 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
 export function TemplateEditorFormDirectoryEditorDryRun(
   props: Pick<
     TemplateEditorFormProps,
-    'setErrorText' | 'fieldExtensions' | 'layouts'
+    'setErrorText' | 'fieldExtensions' | 'layouts' | 'formProps'
   >,
 ) {
   const { setErrorText, fieldExtensions = [], layouts } = props;
@@ -245,6 +248,7 @@ export function TemplateEditorFormDirectoryEditorDryRun(
       setErrorText={setErrorText}
       content={content}
       layouts={layouts}
+      formProps={props.formProps}
     />
   );
 }

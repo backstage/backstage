@@ -139,7 +139,7 @@ export default ({ theme }: RuleOptions) => `
   --md-typeset-color: var(--md-default-fg-color);
   --md-typeset-a-color: ${theme.palette.link};
   --md-typeset-table-color: ${theme.palette.text.primary};
-  --md-typeset-table-color--light: ${alpha(theme.palette.text.primary, 0.5)};
+  --md-typeset-table-color--light: ${alpha(theme.palette.text.primary, 0.05)};
   --md-typeset-del-color: ${
     theme.palette.type === 'dark'
       ? alpha(theme.palette.error.dark, 0.5)

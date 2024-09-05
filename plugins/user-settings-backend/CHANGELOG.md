@@ -1,5 +1,36 @@
 # @backstage/plugin-user-settings-backend
 
+## 0.2.24-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.5.0-next.1
+  - @backstage/plugin-auth-node@0.5.2-next.1
+  - @backstage/backend-plugin-api@0.9.0-next.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-signals-node@0.1.11-next.1
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.2.24-next.0
+
+### Patch Changes
+
+- 164ce3e: In preparation to stop supporting to the legacy backend system, the `createRouter` function is now deprecated and we strongly recommend you [migrate](https://backstage.io/docs/backend-system/building-backends/migrating) your backend to the new system.
+- d425fc4: Modules, plugins, and services are now `BackendFeature`, not a function that returns a feature.
+- 1b98099: Replaced usage of the deprecated identity service with the new HTTP auth service for the new backend system.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.9.0-next.0
+  - @backstage/backend-defaults@0.5.0-next.0
+  - @backstage/plugin-auth-node@0.5.2-next.0
+  - @backstage/plugin-signals-node@0.1.11-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-user-settings-common@0.0.1
+
 ## 0.2.22
 
 ### Patch Changes
