@@ -25722,16 +25722,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-notice@npm:^0.9.10":
-  version: 0.9.10
-  resolution: "eslint-plugin-notice@npm:0.9.10"
+"eslint-plugin-notice@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "eslint-plugin-notice@npm:1.0.0"
   dependencies:
     find-root: ^1.1.0
-    lodash: ^4.17.15
+    lodash: ^4.17.21
     metric-lcs: ^0.1.2
   peerDependencies:
     eslint: ">=3.0.0"
-  checksum: 0892ea3da8f31f57390941b6ae3472a34fe4037a21dfe73763c2e5011a08859bff4be6af50d1c54b04e16e43b10342458acb83874b806fcd5e2839be9f99c92e
+  checksum: 9a745463e89078d08d75cd13ce7d868b73aa3ca12e607bb2d0436512192a6c18398e47abf5e4b624fd8147d89052fe984529592c44c9b2ad836754bbf2cae5e5
   languageName: node
   linkType: hard
 
@@ -39286,7 +39286,7 @@ __metadata:
     cross-env: ^7.0.0
     e2e-test: "workspace:*"
     eslint: ^8.6.0
-    eslint-plugin-notice: ^0.9.10
+    eslint-plugin-notice: ^1.0.0
     eslint-plugin-react: ^7.28.0
     eslint-plugin-testing-library: ^6.0.0
     fs-extra: ^11.2.0
