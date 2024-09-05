@@ -214,6 +214,7 @@ export const useSignInProviders = (
  *
  * @public
  * @example
+ * Example wrapping the providers with a grid container.
  * ```tsx
  * ...
  * const providers = ['guest']
