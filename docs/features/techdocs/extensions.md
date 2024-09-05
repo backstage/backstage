@@ -10,15 +10,15 @@ description: How to use the built-in TechDocs extension points
 The TechDocs backend plugin provides the following extension points:
 
 - `techdocsPreparerExtensionPoint`
-  - Register a custom docs [PreparerBase extension](/docs/reference/plugin-techdocs-node.preparerbase/)
+  - Register a custom docs [PreparerBase extension](https://backstage.io/docs/reference/plugin-techdocs-node.preparerbase/)
   - Ideal for when you want a custom type of docs created for a specific entity type
 - `techdocsBuildsExtensionPoint`
   - Allows overriding the build phase Winston log transport (by default does not log to console)
-  - Allows overriding the [DocsBuildStrategy](/docs/reference/plugin-techdocs-node.docsbuildstrategy)
+  - Allows overriding the [DocsBuildStrategy](https://backstage.io/docs/reference/plugin-techdocs-node.docsbuildstrategy/)
 - `techdocsPublisherExtensionPoint`
   - Register a custom docs publisher
 - `techdocsGeneratorExtensionPoint`
-  - Register a custom [TechdocsGenerator](/docs/reference/plugin-techdocs-node.techdocsgenerator/)
+  - Register a custom [TechdocsGenerator](https://backstage.io/docs/reference/plugin-techdocs-node.techdocsgenerator/)
 
 Extension points are exported from `@backstage/plugin-techdocs-backend`.
 
