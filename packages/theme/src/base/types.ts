@@ -82,9 +82,6 @@ export type BackstagePaletteAdditions = {
     closeButtonColor?: string;
     warning?: string;
   };
-  entityStarButton: {
-    color: string;
-  };
 };
 
 /**

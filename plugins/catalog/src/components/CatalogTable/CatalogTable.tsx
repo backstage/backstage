@@ -23,8 +23,6 @@ import {
 } from '@backstage/catalog-model';
 import {
   CodeSnippet,
-  StarIcon,
-  UnstarredIcon,
   Table,
   TableColumn,
   TableProps,

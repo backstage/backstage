@@ -81,9 +81,6 @@ export type BackstagePaletteAdditions = {
     closeButtonColor?: string;
     warning?: string;
   };
-  entityStarButton: {
-    color: string;
-  };
 };
 
 // @public @deprecated
@@ -313,9 +310,6 @@ export const palettes: {
     tabbar: {
       indicator: string;
     };
-    entityStarButton: {
-      color: string;
-    };
   };
   dark: {
     type: 'dark';
@@ -389,9 +383,6 @@ export const palettes: {
     };
     tabbar: {
       indicator: string;
-    };
-    entityStarButton: {
-      color: string;
     };
   };
 };
