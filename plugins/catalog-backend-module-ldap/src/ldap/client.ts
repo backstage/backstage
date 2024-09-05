@@ -19,15 +19,9 @@ import { readFile } from 'fs/promises';
 import ldap, { Client, SearchEntry, SearchOptions } from 'ldapjs';
 import { cloneDeep } from 'lodash';
 import tlsLib from 'tls';
-import { BindConfig, TLSConfig } from './config';
+import { BindConfig, TLSConfig, VendorConfig } from './config';
 import { createOptions, errorString } from './util';
-import {
-  AEDirVendor,
-  ActiveDirectoryVendor,
-  DefaultLdapVendor,
-  FreeIpaVendor,
-  LdapVendor,
-} from './vendors';
+import { CreateLdapVendor, LdapVendor } from './vendors';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
@@ -232,20 +226,16 @@ export class LdapClient {
    *
    * @see https://ldapwiki.com/wiki/Determine%20LDAP%20Server%20Vendor
    */
-  async getVendor(): Promise<LdapVendor> {
+  async getVendor(vendorConfig: VendorConfig): Promise<LdapVendor> {
     if (this.vendor) {
       return this.vendor;
     }
     this.vendor = this.getRootDSE()
       .then(root => {
-        if (root && root.raw?.forestFunctionality) {
-          return ActiveDirectoryVendor;
-        } else if (root && root.raw?.ipaDomainLevel) {
-          return FreeIpaVendor;
-        } else if (root && 'aeRoot' in root.raw) {
-          return AEDirVendor;
-        }
-        return DefaultLdapVendor;
+        return CreateLdapVendor(
+          vendorConfig,
+          !!(root && root.raw?.forestFunctionality),
+        );
       })
       .catch(err => {
         this.vendor = undefined;

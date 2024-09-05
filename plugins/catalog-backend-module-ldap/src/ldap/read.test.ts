@@ -18,7 +18,7 @@ import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { SearchEntry } from 'ldapjs';
 import merge from 'lodash/merge';
 import { LdapClient } from './client';
-import { GroupConfig, UserConfig } from './config';
+import { GroupConfig, UserConfig, VendorConfig } from './config';
 import {
   LDAP_DN_ANNOTATION,
   LDAP_RDN_ANNOTATION,
@@ -32,11 +32,8 @@ import {
   resolveRelations,
 } from './read';
 import { RecursivePartial } from './util';
-import {
-  ActiveDirectoryVendor,
-  DefaultLdapVendor,
-  FreeIpaVendor,
-} from './vendors';
+
+import { CreateLdapVendor } from './vendors';
 
 function user(data: RecursivePartial<UserEntity>): UserEntity {
   return merge(
@@ -84,7 +81,11 @@ describe('readLdapUsers', () => {
   afterEach(() => jest.resetAllMocks());
 
   it('transfers all attributes from a default ldap vendor', async () => {
-    client.getVendor.mockResolvedValue(DefaultLdapVendor);
+    const vendorConfig: VendorConfig = {
+      dnAttributeName: 'entryDN',
+      uuidAttributeName: 'entryUUID',
+    };
+    client.getVendor.mockResolvedValue(CreateLdapVendor(vendorConfig, false));
     client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
       await fn(
         searchEntry({
@@ -99,7 +100,7 @@ describe('readLdapUsers', () => {
         }),
       );
     });
-    const config: UserConfig[] = [
+    const userConfig: UserConfig[] = [
       {
         dn: 'ddd',
         options: {},
@@ -114,7 +115,11 @@ describe('readLdapUsers', () => {
         },
       },
     ];
-    const { users, userMemberOf } = await readLdapUsers(client, config);
+    const { users, userMemberOf } = await readLdapUsers(
+      client,
+      userConfig,
+      vendorConfig,
+    );
     expect(users).toEqual([
       expect.objectContaining({
         metadata: {
@@ -142,7 +147,11 @@ describe('readLdapUsers', () => {
   });
 
   it('transfers all attributes from Microsoft Active Directory', async () => {
-    client.getVendor.mockResolvedValue(ActiveDirectoryVendor);
+    const vendorConfig: VendorConfig = {
+      dnAttributeName: 'distinguishedName',
+      uuidAttributeName: 'objectGUID',
+    };
+    client.getVendor.mockResolvedValue(CreateLdapVendor(vendorConfig, true));
     client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
       await fn(
         searchEntry({
@@ -162,7 +171,7 @@ describe('readLdapUsers', () => {
         }),
       );
     });
-    const config: UserConfig[] = [
+    const userConfig: UserConfig[] = [
       {
         dn: 'ddd',
         options: {},
@@ -177,7 +186,11 @@ describe('readLdapUsers', () => {
         },
       },
     ];
-    const { users, userMemberOf } = await readLdapUsers(client, config);
+    const { users, userMemberOf } = await readLdapUsers(
+      client,
+      userConfig,
+      vendorConfig,
+    );
     expect(users).toEqual([
       expect.objectContaining({
         metadata: {
@@ -205,7 +218,11 @@ describe('readLdapUsers', () => {
   });
 
   it('transfers all attributes from FreeIPA', async () => {
-    client.getVendor.mockResolvedValue(FreeIpaVendor);
+    const vendorConfig: VendorConfig = {
+      dnAttributeName: 'dn',
+      uuidAttributeName: 'ipaUniqueID',
+    };
+    client.getVendor.mockResolvedValue(CreateLdapVendor(vendorConfig, false));
     client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
       await fn(
         searchEntry({
@@ -220,7 +237,7 @@ describe('readLdapUsers', () => {
         }),
       );
     });
-    const config: UserConfig[] = [
+    const userConfig: UserConfig[] = [
       {
         dn: 'ddd',
         options: {},
@@ -235,7 +252,11 @@ describe('readLdapUsers', () => {
         },
       },
     ];
-    const { users, userMemberOf } = await readLdapUsers(client, config);
+    const { users, userMemberOf } = await readLdapUsers(
+      client,
+      userConfig,
+      vendorConfig,
+    );
     expect(users).toEqual([
       expect.objectContaining({
         metadata: {
@@ -262,7 +283,11 @@ describe('readLdapUsers', () => {
     );
   });
   it('can process a list of UserConfigs', async () => {
-    client.getVendor.mockResolvedValue(DefaultLdapVendor);
+    const vendorConfig: VendorConfig = {
+      dnAttributeName: 'entryDN',
+      uuidAttributeName: 'entryUUID',
+    };
+    client.getVendor.mockResolvedValue(CreateLdapVendor(vendorConfig, false));
     client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
       await fn(
         searchEntry({
@@ -277,7 +302,7 @@ describe('readLdapUsers', () => {
         }),
       );
     });
-    const config: UserConfig[] = [
+    const userConfig: UserConfig[] = [
       {
         dn: 'ddd',
         options: {},
@@ -305,12 +330,16 @@ describe('readLdapUsers', () => {
         },
       },
     ];
-    const { users } = await readLdapUsers(client, config);
+    const { users } = await readLdapUsers(client, userConfig, vendorConfig);
     expect(users).toHaveLength(2);
   });
   it('can process no UserConfigs', async () => {
-    const config: UserConfig[] = [];
-    const { users } = await readLdapUsers(client, config);
+    const userConfig: UserConfig[] = [];
+    const vendorConfig: VendorConfig = {
+      dnAttributeName: 'entryDN',
+      uuidAttributeName: 'entryUUID',
+    };
+    const { users } = await readLdapUsers(client, userConfig, vendorConfig);
     expect(users).toHaveLength(0);
   });
 });
@@ -324,7 +353,11 @@ describe('readLdapGroups', () => {
   afterEach(() => jest.resetAllMocks());
 
   it('transfers all attributes from a default ldap vendor', async () => {
-    client.getVendor.mockResolvedValue(DefaultLdapVendor);
+    const vendorConfig: VendorConfig = {
+      dnAttributeName: 'entryDN',
+      uuidAttributeName: 'entryUUID',
+    };
+    client.getVendor.mockResolvedValue(CreateLdapVendor(vendorConfig, false));
     client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
       await fn(
         searchEntry({
@@ -340,7 +373,7 @@ describe('readLdapGroups', () => {
         }),
       );
     });
-    const config: GroupConfig[] = [
+    const groupConfig: GroupConfig[] = [
       {
         dn: 'ddd',
         options: {},
@@ -359,7 +392,8 @@ describe('readLdapGroups', () => {
     ];
     const { groups, groupMember, groupMemberOf } = await readLdapGroups(
       client,
-      config,
+      groupConfig,
+      vendorConfig,
     );
     expect(groups).toEqual([
       expect.objectContaining({
@@ -392,7 +426,11 @@ describe('readLdapGroups', () => {
   });
 
   it('transfers all attributes from Microsoft Active Directory', async () => {
-    client.getVendor.mockResolvedValue(ActiveDirectoryVendor);
+    const vendorConfig: VendorConfig = {
+      dnAttributeName: 'distinguishedName',
+      uuidAttributeName: 'objectGUID',
+    };
+    client.getVendor.mockResolvedValue(CreateLdapVendor(vendorConfig, true));
     client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
       await fn(
         searchEntry({
@@ -413,7 +451,7 @@ describe('readLdapGroups', () => {
         }),
       );
     });
-    const config: GroupConfig[] = [
+    const groupConfig: GroupConfig[] = [
       {
         dn: 'ddd',
         options: {},
@@ -432,7 +470,8 @@ describe('readLdapGroups', () => {
     ];
     const { groups, groupMember, groupMemberOf } = await readLdapGroups(
       client,
-      config,
+      groupConfig,
+      vendorConfig,
     );
     expect(groups).toEqual([
       expect.objectContaining({
@@ -465,7 +504,11 @@ describe('readLdapGroups', () => {
   });
 
   it('can process a list of GroupConfigs', async () => {
-    client.getVendor.mockResolvedValue(DefaultLdapVendor);
+    const vendorConfig: VendorConfig = {
+      dnAttributeName: 'entryDN',
+      uuidAttributeName: 'entryUUID',
+    };
+    client.getVendor.mockResolvedValue(CreateLdapVendor(vendorConfig, false));
     client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
       await fn(
         searchEntry({
@@ -481,7 +524,7 @@ describe('readLdapGroups', () => {
         }),
       );
     });
-    const config: GroupConfig[] = [
+    const groupConfig: GroupConfig[] = [
       {
         dn: 'ddd',
         options: {},
@@ -513,13 +556,17 @@ describe('readLdapGroups', () => {
         },
       },
     ];
-    const { groups } = await readLdapGroups(client, config);
+    const { groups } = await readLdapGroups(client, groupConfig, vendorConfig);
     expect(groups).toHaveLength(2);
   });
 
   it('can process no GroupConfigs', async () => {
-    const config: GroupConfig[] = [];
-    const { groups } = await readLdapGroups(client, config);
+    const vendorConfig: VendorConfig = {
+      dnAttributeName: 'entryDN',
+      uuidAttributeName: 'entryUUID',
+    };
+    const groupConfig: GroupConfig[] = [];
+    const { groups } = await readLdapGroups(client, groupConfig, vendorConfig);
     expect(groups).toHaveLength(0);
   });
 });
@@ -679,8 +726,12 @@ describe('defaultUserTransformer', () => {
       entryDN: ['dn-value'],
       entryUUID: ['uuid-value'],
     });
-
-    let output = await defaultUserTransformer(DefaultLdapVendor, config, entry);
+    const vendorConfig: VendorConfig = {
+      dnAttributeName: 'entryDN',
+      uuidAttributeName: 'entryUUID',
+    };
+    const defaultLdapVendor = CreateLdapVendor(vendorConfig, false);
+    let output = await defaultUserTransformer(defaultLdapVendor, config, entry);
     expect(output).toEqual({
       apiVersion: 'backstage.io/v1beta1',
       kind: 'User',
@@ -703,7 +754,7 @@ describe('defaultUserTransformer', () => {
     (output!.metadata.annotations as any).c = 7;
 
     // exact same inputs again
-    output = await defaultUserTransformer(DefaultLdapVendor, config, entry);
+    output = await defaultUserTransformer(defaultLdapVendor, config, entry);
     expect(output).toEqual({
       apiVersion: 'backstage.io/v1beta1',
       kind: 'User',
@@ -757,8 +808,13 @@ describe('defaultGroupTransformer', () => {
       entryUUID: ['uuid-value'],
     });
 
+    const vendorConfig: VendorConfig = {
+      dnAttributeName: 'entryDN',
+      uuidAttributeName: 'entryUUID',
+    };
+    const defaultLdapVendor = CreateLdapVendor(vendorConfig, false);
     let output = await defaultGroupTransformer(
-      DefaultLdapVendor,
+      defaultLdapVendor,
       config,
       entry,
     );
@@ -786,7 +842,7 @@ describe('defaultGroupTransformer', () => {
     (output!.metadata.annotations as any).c = 7;
 
     // exact same inputs again
-    output = await defaultGroupTransformer(DefaultLdapVendor, config, entry);
+    output = await defaultGroupTransformer(defaultLdapVendor, config, entry);
     expect(output).toEqual({
       apiVersion: 'backstage.io/v1beta1',
       kind: 'Group',
