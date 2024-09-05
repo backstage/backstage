@@ -61,6 +61,7 @@ import {
   FiltersContainerClassKey,
   TableClassKey,
   WarningPanelClassKey,
+  FavoriteToggleIconClassKey,
 } from './components';
 
 import {
@@ -163,6 +164,7 @@ type BackstageComponentsNameToClassKey = {
   BackstageTabbedCard: TabbedCardClassKey;
   BackstageTabbedCardBoldHeader: BoldHeaderClassKey;
   BackstageCardTab: CardTabClassKey;
+  BackstageFavoriteToggleIcon: FavoriteToggleIconClassKey;
 };
 
 /** @public */
