@@ -34,10 +34,14 @@ const useStyles = makeStyles<Theme>(
   { name: 'BackstageFavoriteToggleIcon' },
 );
 
-// @public (undocumented)
+/**
+ * @public
+ */
 export type FavoriteToggleIconClassKey = 'icon' | 'iconBorder';
 
-// @public (undocumented)
+/**
+ * @public
+ */
 export type FavoriteToggleProps = ComponentProps<typeof IconButton> & {
   id: string;
   title: string;

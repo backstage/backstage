@@ -418,8 +418,6 @@ export function FavoriteToggleIcon({
   isFavorite: boolean;
 }): React_2.JSX.Element;
 
-// Warning: (ae-missing-release-tag) "FavoriteToggleProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type FavoriteToggleProps = ComponentProps<typeof IconButton> & {
   id: string;
