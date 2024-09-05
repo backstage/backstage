@@ -105,7 +105,7 @@ export async function defaultUserTransformer(
 export async function readLdapUsers(
   client: LdapClient,
   userConfig: UserConfig[],
-  vendorConfig: VendorConfig,
+  vendorConfig: VendorConfig | undefined,
   opts?: { transformer?: UserTransformer },
 ): Promise<{
   users: UserEntity[]; // With all relations empty
@@ -212,7 +212,7 @@ export async function defaultGroupTransformer(
 export async function readLdapGroups(
   client: LdapClient,
   groupConfig: GroupConfig[],
-  vendorConfig: VendorConfig,
+  vendorConfig: VendorConfig | undefined,
   opts?: {
     transformer?: GroupTransformer;
   },
@@ -277,7 +277,7 @@ export async function readLdapOrg(
   client: LdapClient,
   userConfig: UserConfig[],
   groupConfig: GroupConfig[],
-  vendorConfig: VendorConfig,
+  vendorConfig: VendorConfig | undefined,
   options: {
     groupTransformer?: GroupTransformer;
     userTransformer?: UserTransformer;

@@ -78,10 +78,6 @@ describe('readLdapConfig', () => {
             },
           },
         ],
-        vendor: {
-          dnAttributeName: 'entryDN',
-          uuidAttributeName: 'entryUUID',
-        },
       },
     ];
     expect(actual).toEqual(expected);
@@ -155,10 +151,6 @@ describe('readLdapConfig', () => {
             },
           },
         ],
-        vendor: {
-          dnAttributeName: 'entryDN',
-          uuidAttributeName: 'entryUUID',
-        },
       },
     ];
     expect(actual).toEqual(expected);
@@ -299,10 +291,6 @@ describe('readLdapConfig', () => {
             },
           },
         ],
-        vendor: {
-          dnAttributeName: 'entryDN',
-          uuidAttributeName: 'entryUUID',
-        },
       },
     ];
     expect(actual).toEqual(expected);

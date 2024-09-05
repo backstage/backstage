@@ -226,12 +226,47 @@ export class LdapClient {
    *
    * @see https://ldapwiki.com/wiki/Determine%20LDAP%20Server%20Vendor
    */
-  async getVendor(vendorConfig: VendorConfig): Promise<LdapVendor> {
+  async getVendor(vendorConfig: VendorConfig | undefined): Promise<LdapVendor> {
     if (this.vendor) {
       return this.vendor;
     }
     this.vendor = this.getRootDSE()
       .then(root => {
+        if (!vendorConfig) {
+          if (root && root.raw?.forestFunctionality) {
+            // ActiveDirectoryVendor
+            return CreateLdapVendor(
+              {
+                dnAttributeName: 'distinguishedName',
+                uuidAttributeName: 'objectGUID',
+              },
+              true,
+            );
+          } else if (root && root.raw?.ipaDomainLevel) {
+            // FreeIpaVendor
+            return CreateLdapVendor(
+              {
+                dnAttributeName: 'dn',
+                uuidAttributeName: 'ipaUniqueID',
+              },
+              false,
+            );
+          } else if (root && 'aeRoot' in root.raw) {
+            // AEDirVendor
+            return CreateLdapVendor(
+              { dnAttributeName: 'dn', uuidAttributeName: 'entryUUID' },
+              false,
+            );
+          }
+          // DefaultLdapVendor
+          return CreateLdapVendor(
+            {
+              dnAttributeName: 'entryDN',
+              uuidAttributeName: 'entryUUID',
+            },
+            !!(root && root.raw?.forestFunctionality),
+          );
+        }
         return CreateLdapVendor(
           vendorConfig,
           !!(root && root.raw?.forestFunctionality),

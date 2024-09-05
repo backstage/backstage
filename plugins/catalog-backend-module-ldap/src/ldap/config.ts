@@ -50,7 +50,7 @@ export type LdapProviderConfig = {
   // Configuration for LDAP vendor-specific attributes. If not specified, the default values will be used:
   // - `dnAttributeName`: `entryDN`
   // - `uuidAttributeName`: `entryUUID`
-  vendor: VendorConfig;
+  vendor?: VendorConfig;
 };
 
 /**
@@ -253,10 +253,7 @@ function readVendorConfig(
   c: Config | undefined,
 ): LdapProviderConfig['vendor'] | undefined {
   if (!c) {
-    return {
-      dnAttributeName: `entryDN`,
-      uuidAttributeName: `entryUUID`,
-    };
+    return undefined;
   }
   return {
     dnAttributeName: c.getString('dn'),
