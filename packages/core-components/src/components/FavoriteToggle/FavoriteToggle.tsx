@@ -40,23 +40,14 @@ const useStyles = makeStyles<Theme>(
 export type FavoriteToggleIconClassKey = 'icon' | 'iconBorder';
 
 /**
- * @public
- */
-export type FavoriteToggleProps = ComponentProps<typeof IconButton> & {
-  id: string;
-  title: string;
-  isFavorite: boolean;
-  onToggle: (value: boolean) => void;
-};
-
-/**
  * Icon used in FavoriteToggle component.
  *
  * Can be used independently, useful when used as {@link @material-table/core#MaterialTableProps.actions} in {@link @material-table/core#MaterialTable}
  *
  * @public
  */
-export function FavoriteToggleIcon({ isFavorite }: { isFavorite: boolean }) {
+export function FavoriteToggleIcon(props: { isFavorite: boolean }) {
+  const { isFavorite } = props;
   const classes = useStyles();
 
   return isFavorite ? (
@@ -74,13 +65,21 @@ export function FavoriteToggleIcon({ isFavorite }: { isFavorite: boolean }) {
  *
  * @public
  */
-export function FavoriteToggle({
-  id,
-  title,
-  isFavorite: value,
-  onToggle: onChange,
-  ...iconButtonProps
-}: FavoriteToggleProps) {
+export function FavoriteToggle(
+  props: ComponentProps<typeof IconButton> & {
+    id: string;
+    title: string;
+    isFavorite: boolean;
+    onToggle: (value: boolean) => void;
+  },
+) {
+  const {
+    id,
+    title,
+    isFavorite: value,
+    onToggle: onChange,
+    ...iconButtonProps
+  } = props;
   return (
     <Tooltip id={id} title={title}>
       <IconButton

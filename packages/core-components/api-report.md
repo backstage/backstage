@@ -403,28 +403,22 @@ export type ErrorPanelProps = {
 };
 
 // @public
-export function FavoriteToggle({
-  id,
-  title,
-  isFavorite: value,
-  onToggle: onChange,
-  ...iconButtonProps
-}: FavoriteToggleProps): React_2.JSX.Element;
+export function FavoriteToggle(
+  props: ComponentProps<typeof IconButton> & {
+    id: string;
+    title: string;
+    isFavorite: boolean;
+    onToggle: (value: boolean) => void;
+  },
+): React_2.JSX.Element;
 
 // @public
-export function FavoriteToggleIcon({
-  isFavorite,
-}: {
+export function FavoriteToggleIcon(props: {
   isFavorite: boolean;
 }): React_2.JSX.Element;
 
 // @public (undocumented)
-export type FavoriteToggleProps = ComponentProps<typeof IconButton> & {
-  id: string;
-  title: string;
-  isFavorite: boolean;
-  onToggle: (value: boolean) => void;
-};
+export type FavoriteToggleIconClassKey = 'icon' | 'iconBorder';
 
 // @public (undocumented)
 export type FeatureCalloutCircleClassKey =

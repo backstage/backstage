@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 import { render } from '@testing-library/react';
-import { FavoriteToggle, FavoriteToggleProps } from './FavoriteToggle';
+import { FavoriteToggle } from './FavoriteToggle';
 import React from 'react';
 import userEvent from '@testing-library/user-event';
 
 describe('<FavoriteToggle />', () => {
   const onToggle = jest.fn();
 
-  const props: FavoriteToggleProps = {
+  const props = {
     title: 'Favorite this thing',
     id: 'some-thing-favorite',
     onToggle,

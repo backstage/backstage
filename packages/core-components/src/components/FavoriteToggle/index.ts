@@ -15,4 +15,4 @@
  */
 
 export { FavoriteToggle, FavoriteToggleIcon } from './FavoriteToggle';
-export type { FavoriteToggleProps } from './FavoriteToggle';
+export type { FavoriteToggleIconClassKey } from './FavoriteToggle';
