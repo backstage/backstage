@@ -9,14 +9,22 @@ description: How to use the built-in TechDocs extension points
 
 The TechDocs backend plugin provides the following extension points:
 
-- `techdocsBuildsExtensionPoint`
-- `techdocsGeneratorExtensionPoint`
 - `techdocsPreparerExtensionPoint`
+  - Register a custom docs [PreparerBase extension](/docs/reference/plugin-techdocs-node.preparerbase/)
+  - Ideal for when you want a custom type of docs created for a specific entity type
+- `techdocsBuildsExtensionPoint`
+  - Allows overriding the build phase Winston log transport (by default does not log to console)
+  - Allows overriding the [DocsBuildStrategy](/docs/reference/plugin-techdocs-node.docsbuildstrategy)
 - `techdocsPublisherExtensionPoint`
+  - Register a custom docs publisher
+- `techdocsGeneratorExtensionPoint`
+  - Register a custom [TechdocsGenerator](/docs/reference/plugin-techdocs-node.techdocsgenerator/)
 
-## Build Extensions
+Extension points are exported from `@backstage/plugin-techdocs-backend`.
 
-### Set Log Transport
+## Examples
+
+### Log TechDocs Build phase details to console
 
 By default, the TechDocs build phase does not log out much information while building out TechDocs. However, the
 `techdocsBuildsExtensionPoint` can be used to setup a custom Winston transport for TechDocs build logs.
@@ -30,7 +38,7 @@ import { transports } from 'winston';
 
 export const techDocsExtension = createBackendModule({
   pluginId: 'techdocs',
-  moduleId: 'extension',
+  moduleId: 'techdocs-build-log-transport-extension',
   register(env) {
     env.registerInit({
       deps: {
@@ -50,5 +58,5 @@ And then of course register this extension with the backend:
 ```typescript jsx title="packages/backend/src/index.ts"
 import {techDocsExtension} from "./extensions/techDocsExtension";
 ...
-backend.add(techDocsExtension());
+backend.add(techDocsExtension);
 ```
