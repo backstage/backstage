@@ -25,6 +25,7 @@ export * from './DependencyGraph';
 export * from './DismissableBanner';
 export * from './EmptyState';
 export * from './ErrorPanel';
+export * from './FavoriteToggle';
 export * from './ResponseErrorPanel';
 export * from './FeatureDiscovery';
 export * from './HeaderIconLinkRow';

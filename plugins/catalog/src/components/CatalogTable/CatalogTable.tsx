@@ -35,12 +35,9 @@ import {
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
 import Typography from '@material-ui/core/Typography';
-import { withStyles } from '@material-ui/core/styles';
 import { visuallyHidden } from '@mui/utils';
 import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
-import Star from '@material-ui/icons/Star';
-import StarBorder from '@material-ui/icons/StarBorder';
 import { capitalize } from 'lodash';
 import pluralize from 'pluralize';
 import React, { ReactNode, useMemo } from 'react';
@@ -50,6 +47,7 @@ import { PaginatedCatalogTable } from './PaginatedCatalogTable';
 import { defaultCatalogTableColumnsFunc } from './defaultCatalogTableColumnsFunc';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { catalogTranslationRef } from '../../alpha/translation';
+import { FavoriteToggleIcon } from '@backstage/core-components';
 
 /**
  * Props for {@link CatalogTable}.
@@ -63,12 +61,6 @@ export interface CatalogTableProps {
   emptyContent?: ReactNode;
   subtitle?: string;
 }
-
-const YellowStar = withStyles({
-  root: {
-    color: '#f3ba37',
-  },
-})(Star);
 
 const refCompare = (a: Entity, b: Entity) => {
   const toRef = (entity: Entity) =>
@@ -160,12 +152,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
 
       return {
         cellStyle: { paddingLeft: '1em' },
-        icon: () => (
-          <>
-            <Typography style={visuallyHidden}>{title}</Typography>
-            {isStarred ? <YellowStar /> : <StarBorder />}
-          </>
-        ),
+        icon: () => <FavoriteToggleIcon isFavorite={isStarred} />,
         tooltip: title,
         onClick: () => toggleStarredEntity(entity),
       };

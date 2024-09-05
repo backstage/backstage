@@ -91,6 +91,7 @@ import {
   BoldHeaderClassKey,
   CardTabClassKey,
 } from './layout';
+import { FavoriteToggleIconClassKey } from './components/FavoriteToggle/FavoriteToggle';
 
 type BackstageComponentsNameToClassKey = {
   BackstageAvatar: AvatarClassKey;
@@ -163,6 +164,7 @@ type BackstageComponentsNameToClassKey = {
   BackstageTabbedCard: TabbedCardClassKey;
   BackstageTabbedCardBoldHeader: BoldHeaderClassKey;
   BackstageCardTab: CardTabClassKey;
+  BackstageFavoriteToggleIcon: FavoriteToggleIconClassKey;
 };
 
 /** @public */

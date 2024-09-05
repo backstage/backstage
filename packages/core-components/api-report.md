@@ -19,6 +19,7 @@ import { default as CSS_2 } from 'csstype';
 import { CSSProperties } from 'react';
 import { ElementType } from 'react';
 import { ErrorInfo } from 'react';
+import IconButton from '@material-ui/core/IconButton';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { Icons } from '@material-table/core';
 import { IdentityApi } from '@backstage/core-plugin-api';
@@ -399,6 +400,32 @@ export type ErrorPanelProps = {
   defaultExpanded?: boolean;
   titleFormat?: string;
   title?: string;
+};
+
+// @public
+export function FavoriteToggle({
+  id,
+  title,
+  isFavorite: value,
+  onToggle: onChange,
+  ...iconButtonProps
+}: FavoriteToggleProps): React_2.JSX.Element;
+
+// @public
+export function FavoriteToggleIcon({
+  isFavorite,
+}: {
+  isFavorite: boolean;
+}): React_2.JSX.Element;
+
+// Warning: (ae-missing-release-tag) "FavoriteToggleProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type FavoriteToggleProps = ComponentProps<typeof IconButton> & {
+  id: string;
+  title: string;
+  isFavorite: boolean;
+  onToggle: (value: boolean) => void;
 };
 
 // @public (undocumented)
