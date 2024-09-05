@@ -15,7 +15,10 @@
  */
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useState } from 'react';
-import type { LayoutOptions } from '@backstage/plugin-scaffolder-react';
+import type {
+  FormProps,
+  LayoutOptions,
+} from '@backstage/plugin-scaffolder-react';
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 import { TemplateDirectoryAccess } from '../../lib/filesystem';
 import { DirectoryEditorProvider } from './DirectoryEditorContext';
@@ -60,6 +63,7 @@ export const TemplateEditor = (props: {
   fieldExtensions?: FieldExtensionOptions<any, any>[];
   layouts?: LayoutOptions[];
   onClose?: () => void;
+  formProps?: FormProps;
 }) => {
   const classes = useStyles();
 
@@ -80,6 +84,7 @@ export const TemplateEditor = (props: {
               setErrorText={setErrorText}
               fieldExtensions={props.fieldExtensions}
               layouts={props.layouts}
+              formProps={props.formProps}
             />
           </section>
           <section className={classes.results}>
