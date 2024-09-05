@@ -24,7 +24,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import StarIcon from '@material-ui/icons/Star';
+import { StarIcon } from '@backstage/core-components';
+import { withStyles } from '@material-ui/core/styles';
 
 type EntityListItemProps = {
   entity: Entity;
@@ -37,6 +38,12 @@ export const StarredEntityListItem = ({
 }: EntityListItemProps) => {
   const catalogEntityRoute = useRouteRef(entityRouteRef);
 
+  const FilledStar = withStyles(theme => ({
+    root: {
+      color: theme.palette.entityStarButton.color,
+    },
+  }))(StarIcon);
+
   return (
     <ListItem key={stringifyEntityRef(entity)}>
       <ListItemIcon>
@@ -46,7 +53,7 @@ export const StarredEntityListItem = ({
             aria-label="unstar"
             onClick={() => onToggleStarredEntity(entity)}
           >
-            <StarIcon style={{ color: '#f3ba37' }} />
+            <FilledStar />
           </IconButton>
         </Tooltip>
       </ListItemIcon>

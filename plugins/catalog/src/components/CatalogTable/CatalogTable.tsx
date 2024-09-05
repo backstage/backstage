@@ -23,6 +23,8 @@ import {
 } from '@backstage/catalog-model';
 import {
   CodeSnippet,
+  StarIcon,
+  UnstarredIcon,
   Table,
   TableColumn,
   TableProps,
@@ -39,8 +41,6 @@ import { withStyles } from '@material-ui/core/styles';
 import { visuallyHidden } from '@mui/utils';
 import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
-import Star from '@material-ui/icons/Star';
-import StarBorder from '@material-ui/icons/StarBorder';
 import { capitalize } from 'lodash';
 import pluralize from 'pluralize';
 import React, { ReactNode, useMemo } from 'react';
@@ -64,11 +64,11 @@ export interface CatalogTableProps {
   subtitle?: string;
 }
 
-const YellowStar = withStyles({
+const FilledStar = withStyles(theme => ({
   root: {
-    color: '#f3ba37',
+    color: theme.palette.entityStarButton.color,
   },
-})(Star);
+}))(StarIcon);
 
 const refCompare = (a: Entity, b: Entity) => {
   const toRef = (entity: Entity) =>
@@ -163,7 +163,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
         icon: () => (
           <>
             <Typography style={visuallyHidden}>{title}</Typography>
-            {isStarred ? <YellowStar /> : <StarBorder />}
+            {isStarred ? <FilledStar /> : <UnstarredIcon />}
           </>
         ),
         tooltip: title,
