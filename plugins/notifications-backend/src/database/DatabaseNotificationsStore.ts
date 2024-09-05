@@ -41,6 +41,7 @@ const NOTIFICATION_COLUMNS = [
   'origin',
   'scope',
   'topic',
+  'icon',
   'created',
   'updated',
   'user',
@@ -119,6 +120,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       description: notification.payload?.description,
       severity: normalizeSeverity(notification.payload?.severity),
       scope: notification.payload?.scope,
+      icon: notification.payload.icon,
       saved: notification.saved,
       read: notification.read,
     };
@@ -134,6 +136,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       title: notification.payload?.title,
       description: notification.payload?.description,
       severity: normalizeSeverity(notification.payload?.severity),
+      icon: notification.payload.icon,
       scope: notification.payload?.scope,
     };
   };
