@@ -64,11 +64,19 @@ export class DockerContainerRunner implements ContainerRunner {
     if (pullImage) {
       await new Promise<void>((resolve, reject) => {
         this.dockerClient.pull(imageName, pullOptions, (err, stream) => {
-          if (err) return reject(err);
-          stream.pipe(logStream, { end: false });
-          stream.on('end', () => resolve());
-          stream.on('error', (error: Error) => reject(error));
-          return undefined;
+          if (err) {
+            reject(err);
+          } else if (!stream) {
+            reject(
+              new Error(
+                'Unexpeected error: no stream returned from Docker while pulling image',
+              ),
+            );
+          } else {
+            stream.pipe(logStream, { end: false });
+            stream.on('end', () => resolve());
+            stream.on('error', (error: Error) => reject(error));
+          }
         });
       });
     }
@@ -99,7 +107,7 @@ export class DockerContainerRunner implements ContainerRunner {
     }
 
     // Create docker environment variables array
-    const Env = [];
+    const Env = new Array<string>();
     for (const [key, value] of Object.entries(envVars)) {
       Env.push(`${key}=${value}`);
     }
