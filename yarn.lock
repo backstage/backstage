@@ -3511,7 +3511,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@google-cloud/storage": ^7.0.0
     "@keyv/memcache": ^1.3.5
-    "@keyv/redis": ^2.5.3
+    "@keyv/redis": ^3.0.0
     "@kubernetes/client-node": 0.20.0
     "@manypkg/get-packages": ^1.1.3
     "@octokit/rest": ^19.0.3
@@ -3613,7 +3613,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@google-cloud/storage": ^7.0.0
     "@keyv/memcache": ^1.3.5
-    "@keyv/redis": ^2.5.3
+    "@keyv/redis": ^3.0.0
     "@manypkg/get-packages": ^1.1.3
     "@octokit/rest": ^19.0.3
     "@opentelemetry/api": ^1.3.0
@@ -3773,7 +3773,7 @@ __metadata:
     "@backstage/plugin-events-node": "workspace:^"
     "@backstage/types": "workspace:^"
     "@keyv/memcache": ^1.3.5
-    "@keyv/redis": ^2.5.3
+    "@keyv/redis": ^3.0.0
     "@types/express": ^4.17.6
     "@types/express-serve-static-core": ^4.17.5
     "@types/keyv": ^4.2.0
@@ -10342,12 +10342,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@keyv/redis@npm:^2.5.3":
-  version: 2.8.5
-  resolution: "@keyv/redis@npm:2.8.5"
+"@keyv/redis@npm:^3.0.0":
+  version: 3.0.1
+  resolution: "@keyv/redis@npm:3.0.1"
   dependencies:
     ioredis: ^5.4.1
-  checksum: 87ffec61d31fa9de128ba3e5a7b616535ddbdaa4d92cbc9e1a9fab143adf967135e9cca16e192e8f52cc1ba00ed2a7f10eca9944d7550385530dab95333e81ef
+  checksum: b81009935d6eb0eae30c5a9a66b73f2cdf1a40e2b7c45f343fae4c887de1c9c10342358835933c62952d46bc11b96e68e7ed6b12549a3d33637b892e8e1d3760
   languageName: node
   linkType: hard
 
