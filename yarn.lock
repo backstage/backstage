@@ -9309,14 +9309,15 @@ __metadata:
   linkType: hard
 
 "@google-cloud/firestore@npm:^7.0.0":
-  version: 7.9.0
-  resolution: "@google-cloud/firestore@npm:7.9.0"
+  version: 7.10.0
+  resolution: "@google-cloud/firestore@npm:7.10.0"
   dependencies:
+    "@opentelemetry/api": ^1.3.0
     fast-deep-equal: ^3.1.1
     functional-red-black-tree: ^1.0.1
     google-gax: ^4.3.3
     protobufjs: ^7.2.6
-  checksum: 5d0657736f1e364cd110ea6083eb8b6aeb1605ea409ea5478d5c8430bfa568c62d472b41e892d0849dfb405b06d8aba412fd57a5d1e807429ba5264c48eb2673
+  checksum: c534e49c6b52b7b46366eba009e3f56e8ee10ca0501896a7794470cab32513c6a314f364ff5a3fe5a44b832ba39d1afc86d38b42be3826a615c0a59108185c7d
   languageName: node
   linkType: hard
 
