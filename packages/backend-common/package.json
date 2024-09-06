@@ -142,7 +142,7 @@
     "http-errors": "^2.0.0",
     "msw": "^1.0.0",
     "mysql2": "^3.0.0",
-    "supertest": "^6.1.3"
+    "supertest": "^7.0.0"
   },
   "peerDependencies": {
     "pg-connection-string": "^2.3.0"

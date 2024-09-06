@@ -96,7 +96,7 @@
     "@types/stoppable": "^1.1.0",
     "http-errors": "^2.0.0",
     "msw": "^1.0.0",
-    "supertest": "^6.1.3"
+    "supertest": "^7.0.0"
   },
   "configSchema": "config.d.ts"
 }

@@ -84,7 +84,7 @@
     "@backstage/types": "workspace:^",
     "@types/supertest": "^2.0.8",
     "node-fetch": "^2.7.0",
-    "supertest": "^6.1.3"
+    "supertest": "^7.0.0"
   },
   "configSchema": "config.d.ts"
 }

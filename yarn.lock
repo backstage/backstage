@@ -3479,7 +3479,7 @@ __metadata:
     path-to-regexp: ^6.2.1
     selfsigned: ^2.0.0
     stoppable: ^1.1.0
-    supertest: ^6.1.3
+    supertest: ^7.0.0
     triple-beam: ^1.4.1
     uuid: ^9.0.0
     winston: ^3.2.1
@@ -3568,7 +3568,7 @@ __metadata:
     raw-body: ^2.4.1
     selfsigned: ^2.0.0
     stoppable: ^1.1.0
-    supertest: ^6.1.3
+    supertest: ^7.0.0
     tar: ^6.1.12
     triple-beam: ^1.4.1
     uuid: ^9.0.0
@@ -3661,7 +3661,7 @@ __metadata:
     raw-body: ^2.4.1
     selfsigned: ^2.0.0
     stoppable: ^1.1.0
-    supertest: ^6.1.3
+    supertest: ^7.0.0
     tar: ^6.1.12
     triple-beam: ^1.4.1
     uuid: ^9.0.0
@@ -3735,7 +3735,7 @@ __metadata:
     lodash: ^4.17.21
     openapi-merge: ^1.3.2
     openapi3-ts: ^3.1.2
-    supertest: ^6.1.3
+    supertest: ^7.0.0
   languageName: unknown
   linkType: soft
 
@@ -3789,7 +3789,7 @@ __metadata:
     mysql2: ^3.0.0
     pg: ^8.11.3
     pg-connection-string: ^2.3.0
-    supertest: ^6.1.3
+    supertest: ^7.0.0
     testcontainers: ^10.0.0
     textextensions: ^5.16.0
     uuid: ^9.0.0
@@ -4714,7 +4714,7 @@ __metadata:
     lodash: ^4.17.21
     luxon: ^3.0.0
     node-fetch: ^2.7.0
-    supertest: ^6.1.3
+    supertest: ^7.0.0
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -4791,7 +4791,7 @@ __metadata:
     express: ^4.18.2
     passport: ^0.7.0
     passport-atlassian-oauth2: ^2.1.0
-    supertest: ^6.3.3
+    supertest: ^7.0.0
   languageName: unknown
   linkType: soft
 
@@ -4846,7 +4846,7 @@ __metadata:
     express: ^4.18.2
     passport: ^0.7.0
     passport-bitbucket-oauth2: ^0.1.2
-    supertest: ^6.3.3
+    supertest: ^7.0.0
   languageName: unknown
   linkType: soft
 
@@ -4898,7 +4898,7 @@ __metadata:
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     passport-github2: ^0.1.12
-    supertest: ^6.3.3
+    supertest: ^7.0.0
   languageName: unknown
   linkType: soft
 
@@ -4915,7 +4915,7 @@ __metadata:
     express: ^4.18.2
     passport: ^0.7.0
     passport-gitlab2: ^5.0.0
-    supertest: ^6.3.3
+    supertest: ^7.0.0
   languageName: unknown
   linkType: soft
 
@@ -4931,7 +4931,7 @@ __metadata:
     "@types/passport-google-oauth20": ^2.0.3
     google-auth-library: ^9.0.0
     passport-google-oauth20: ^2.0.0
-    supertest: ^6.1.3
+    supertest: ^7.0.0
   languageName: unknown
   linkType: soft
 
@@ -4969,7 +4969,7 @@ __metadata:
     msw: ^1.0.0
     node-fetch: ^2.7.0
     passport-microsoft: ^1.0.0
-    supertest: ^6.3.3
+    supertest: ^7.0.0
   languageName: unknown
   linkType: soft
 
@@ -4985,7 +4985,7 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     passport: ^0.7.0
     passport-oauth2: ^1.6.1
-    supertest: ^6.3.3
+    supertest: ^7.0.0
   languageName: unknown
   linkType: soft
 
@@ -5022,7 +5022,7 @@ __metadata:
     msw: ^1.3.1
     openid-client: ^5.5.0
     passport: ^0.7.0
-    supertest: ^6.3.3
+    supertest: ^7.0.0
   languageName: unknown
   linkType: soft
 
@@ -5039,7 +5039,7 @@ __metadata:
     "@davidzemon/passport-okta-oauth": ^0.0.5
     express: ^4.18.2
     passport: ^0.7.0
-    supertest: ^6.3.3
+    supertest: ^7.0.0
   languageName: unknown
   linkType: soft
 
@@ -5056,7 +5056,7 @@ __metadata:
     express: ^4.18.2
     passport: ^0.7.0
     passport-onelogin-oauth: ^0.0.1
-    supertest: ^6.3.3
+    supertest: ^7.0.0
   languageName: unknown
   linkType: soft
 
@@ -5079,7 +5079,7 @@ __metadata:
     msw: ^1.3.0
     openid-client: ^5.4.3
     passport: ^0.7.0
-    supertest: ^6.3.3
+    supertest: ^7.0.0
   languageName: unknown
   linkType: soft
 
@@ -5100,7 +5100,7 @@ __metadata:
     jose: ^5.0.0
     msw: ^2.0.8
     passport-oauth2: ^1.6.1
-    supertest: ^6.3.3
+    supertest: ^7.0.0
   languageName: unknown
   linkType: soft
 
@@ -5175,7 +5175,7 @@ __metadata:
     passport-microsoft: ^1.0.0
     passport-oauth2: ^1.6.1
     passport-onelogin-oauth: ^0.0.1
-    supertest: ^6.1.3
+    supertest: ^7.0.0
     uuid: ^9.0.0
     winston: ^3.2.1
     yn: ^4.0.0
@@ -5205,7 +5205,7 @@ __metadata:
     msw: ^1.0.0
     node-fetch: ^2.7.0
     passport: ^0.7.0
-    supertest: ^6.1.3
+    supertest: ^7.0.0
     uuid: ^9.0.0
     winston: ^3.2.1
     zod: ^3.22.4
@@ -5688,7 +5688,7 @@ __metadata:
     node-fetch: ^2.7.0
     p-limit: ^3.0.2
     prom-client: ^15.0.0
-    supertest: ^6.1.3
+    supertest: ^7.0.0
     uuid: ^9.0.0
     wait-for-expect: ^3.0.2
     winston: ^3.13.0
@@ -6033,7 +6033,7 @@ __metadata:
     node-fetch: ^2.7.0
     ping: ^0.4.1
     semver: ^7.5.3
-    supertest: ^6.2.4
+    supertest: ^7.0.0
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -6180,7 +6180,7 @@ __metadata:
     "@types/express": ^4.17.6
     express: ^4.17.1
     express-promise-router: ^4.1.0
-    supertest: ^6.1.3
+    supertest: ^7.0.0
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -6307,7 +6307,7 @@ __metadata:
     msw: ^1.0.0
     node-fetch: ^2.7.0
     stream-buffers: ^3.0.2
-    supertest: ^6.1.3
+    supertest: ^7.0.0
     winston: ^3.2.1
     ws: ^8.13.0
     yn: ^4.0.0
@@ -6380,7 +6380,7 @@ __metadata:
     "@kubernetes/client-node": ^0.20.0
     msw: ^1.3.1
     node-fetch: ^2.7.0
-    supertest: ^6.1.3
+    supertest: ^7.0.0
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -6516,7 +6516,7 @@ __metadata:
     knex: ^3.0.0
     msw: ^1.0.0
     node-fetch: ^2.7.0
-    supertest: ^6.2.4
+    supertest: ^7.0.0
     uuid: ^9.0.0
     winston: ^3.2.1
     yn: ^4.0.0
@@ -6691,7 +6691,7 @@ __metadata:
     lodash: ^4.17.21
     msw: ^1.0.0
     node-fetch: ^2.7.0
-    supertest: ^6.1.6
+    supertest: ^7.0.0
     yn: ^4.0.0
     zod: ^3.22.4
   languageName: unknown
@@ -6730,7 +6730,7 @@ __metadata:
     express: ^4.17.1
     express-promise-router: ^4.1.0
     msw: ^1.0.0
-    supertest: ^6.1.3
+    supertest: ^7.0.0
     zod: ^3.22.4
     zod-to-json-schema: ^3.20.4
   languageName: unknown
@@ -7142,7 +7142,7 @@ __metadata:
     p-queue: ^6.6.2
     prom-client: ^15.0.0
     strip-ansi: ^7.1.0
-    supertest: ^6.1.3
+    supertest: ^7.0.0
     tar: ^6.1.12
     triple-beam: ^1.4.1
     uuid: ^9.0.0
@@ -7501,7 +7501,7 @@ __metadata:
     express: ^4.17.1
     lodash: ^4.17.21
     qs: ^6.10.1
-    supertest: ^6.1.3
+    supertest: ^7.0.0
     yn: ^4.0.0
     zod: ^3.22.4
   languageName: unknown
@@ -7611,7 +7611,7 @@ __metadata:
     http-proxy-middleware: ^2.0.0
     msw: ^1.0.0
     node-fetch: ^2.7.0
-    supertest: ^6.2.4
+    supertest: ^7.0.0
     uuid: ^9.0.0
     winston: ^3.2.1
     ws: ^8.17.0
@@ -7736,7 +7736,7 @@ __metadata:
     msw: ^1.0.0
     node-fetch: ^2.7.0
     p-limit: ^3.1.0
-    supertest: ^6.1.3
+    supertest: ^7.0.0
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -7817,7 +7817,7 @@ __metadata:
     mime-types: ^2.1.27
     p-limit: ^3.1.0
     recursive-readdir: ^2.2.2
-    supertest: ^6.1.3
+    supertest: ^7.0.0
     winston: ^3.2.1
   languageName: unknown
   linkType: soft
@@ -7919,7 +7919,7 @@ __metadata:
     express: ^4.17.1
     express-promise-router: ^4.1.0
     knex: ^3.0.0
-    supertest: ^6.1.3
+    supertest: ^7.0.0
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -9900,7 +9900,7 @@ __metadata:
     "@types/uuid": ^9.0.0
     express: ^4.17.1
     express-promise-router: ^4.1.0
-    supertest: ^6.1.6
+    supertest: ^7.0.0
     uuid: ^9.0.0
     yn: ^4.0.0
   languageName: unknown
@@ -27223,15 +27223,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"formidable@npm:^2.1.2":
-  version: 2.1.2
-  resolution: "formidable@npm:2.1.2"
+"formidable@npm:^3.5.1":
+  version: 3.5.1
+  resolution: "formidable@npm:3.5.1"
   dependencies:
     dezalgo: ^1.0.4
     hexoid: ^1.0.0
     once: ^1.4.0
-    qs: ^6.11.0
-  checksum: 81c8e5d89f5eb873e992893468f0de22c01678ca3d315db62be0560f9de1c77d4faefc9b1f4575098eb2263b3c81ba1024833a9fc3206297ddbac88a4f69b7a8
+  checksum: 46b21496f9f985161cf7636163147b6728f9997c7e1d59433680d92619758bf6862330e6d105b5816bafcd1ab32f27ef183455991f93ef836ea731c68db62af9
   languageName: node
   linkType: hard
 
@@ -41155,31 +41154,30 @@ __metadata:
   languageName: node
   linkType: hard
 
-"superagent@npm:^8.1.2":
-  version: 8.1.2
-  resolution: "superagent@npm:8.1.2"
+"superagent@npm:^9.0.1":
+  version: 9.0.2
+  resolution: "superagent@npm:9.0.2"
   dependencies:
     component-emitter: ^1.3.0
     cookiejar: ^2.1.4
     debug: ^4.3.4
     fast-safe-stringify: ^2.1.1
     form-data: ^4.0.0
-    formidable: ^2.1.2
+    formidable: ^3.5.1
     methods: ^1.1.2
     mime: 2.6.0
     qs: ^6.11.0
-    semver: ^7.3.8
-  checksum: f3601c5ccae34d5ba684a03703394b5d25931f4ae2e1e31a1de809f88a9400e997ece037f9accf148a21c408f950dc829db1e4e23576a7f9fe0efa79fd5c9d2f
+  checksum: f471461b21f034d844fd0aca332128d61e3afb75c2ee5950f3339f2a3b5ca8b23e2861224f19ad9b43f21c9184d28b7d9384af5a4fde64fdef479efdb15036db
   languageName: node
   linkType: hard
 
-"supertest@npm:^6.1.3, supertest@npm:^6.1.6, supertest@npm:^6.2.4, supertest@npm:^6.3.3":
-  version: 6.3.4
-  resolution: "supertest@npm:6.3.4"
+"supertest@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "supertest@npm:7.0.0"
   dependencies:
     methods: ^1.1.2
-    superagent: ^8.1.2
-  checksum: 875c6fa7940f21e5be9bb646579cdb030d4057bf2da643e125e1f0480add1200395d2b17e10b8e54e1009efc63e047422501e9eb30e12828668498c0910f295f
+    superagent: ^9.0.1
+  checksum: 974743aa511ec0f387135dfca05e378f6202366c81f0850dfbcc2c3d6fc690e856dda27e175c70db38510e21d87f331c0f62e1a942afea4c447953c647c26c8b
   languageName: node
   linkType: hard
 
