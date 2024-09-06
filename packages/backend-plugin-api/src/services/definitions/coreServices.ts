@@ -251,4 +251,17 @@ export namespace coreServices {
   export const urlReader = createServiceRef<
     import('./UrlReaderService').UrlReaderService
   >({ id: 'core.urlReader' });
+
+  /**
+   * Reading content from external systems.
+   *
+   * See {@link UrlReaderService}
+   * and {@link https://backstage.io/docs/backend-system/core-services/url-reader | the service docs}
+   * for more information.
+   *
+   * @public
+   */
+  export const redactionService = createServiceRef<
+    import('./RedactionService').RedactionService
+  >({ id: 'core.redaction', scope: 'root' });
 }

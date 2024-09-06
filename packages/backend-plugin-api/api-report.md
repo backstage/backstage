@@ -194,6 +194,7 @@ export namespace coreServices {
   const rootLogger: ServiceRef<RootLoggerService, 'root', 'singleton'>;
   const scheduler: ServiceRef<SchedulerService, 'plugin', 'singleton'>;
   const urlReader: ServiceRef<UrlReaderService, 'plugin', 'singleton'>;
+  const redactionService: ServiceRef<RedactionService, 'root', 'singleton'>;
 }
 
 // @public
@@ -479,6 +480,15 @@ export interface PluginServiceFactoryOptions<
 export function readSchedulerServiceTaskScheduleDefinitionFromConfig(
   config: Config,
 ): SchedulerServiceTaskScheduleDefinition;
+
+// @public
+export interface RedactionService {
+  // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
+  addRedaction(options: { pattern: string }): void;
+  getRedactions(): Iterable<string>;
+  // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
+  redact(options: { input: string }): string;
+}
 
 // @public
 export function resolvePackagePath(name: string, ...paths: string[]): string;

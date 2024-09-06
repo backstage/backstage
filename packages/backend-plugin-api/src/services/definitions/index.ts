@@ -77,3 +77,4 @@ export type {
   UrlReaderService,
 } from './UrlReaderService';
 export type { BackstageUserInfo, UserInfoService } from './UserInfoService';
+export type { RedactionService } from './RedactionService';
