@@ -95,7 +95,6 @@ export class LdapClient {
     tls?: TLSConfig,
   ): Promise<LdapClient>;
   getRootDSE(): Promise<SearchEntry | undefined>;
-  // Warning: (ae-forgotten-export) The symbol "VendorConfig" needs to be exported by the entry point index.d.ts
   getVendor(vendorConfig: VendorConfig | undefined): Promise<LdapVendor>;
   search(dn: string, options: SearchOptions): Promise<SearchEntry[]>;
   searchStreaming(
@@ -272,4 +271,10 @@ export type UserTransformer = (
   config: UserConfig,
   user: SearchEntry,
 ) => Promise<UserEntity | undefined>;
+
+// @public
+export type VendorConfig = {
+  dnAttributeName: string;
+  uuidAttributeName: string;
+};
 ```
