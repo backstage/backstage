@@ -256,7 +256,7 @@ function readVendorConfig(
     return undefined;
   }
   return {
-    dnAttributeName: c.getString('dn'),
+    dnAttributeName: c.getString('dnAttributeName'),
     uuidAttributeName: c.getString('uuidAttributeName'),
   };
 }
@@ -433,7 +433,6 @@ export function readProviderConfigs(config: Config): LdapProviderConfig[] {
 
   return providersConfig.keys().map(id => {
     const c = providersConfig.getConfig(id);
-
     const schedule = c.has('schedule')
       ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
           c.getConfig('schedule'),
