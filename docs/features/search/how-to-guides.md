@@ -298,7 +298,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => {
   return <SidebarPage>
     <Sidebar>
       ...
-      <SidebarSearchModal searchResultChildren={[
+      <SidebarSearchModal resultItemComponents={[
         /* Provide a custom Extension search item renderer */
         <CustomSearchResultListItem icon={<CatalogIcon />} />,
         /* Provide an existing search item renderer */

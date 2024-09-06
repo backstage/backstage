@@ -25,18 +25,7 @@ import {
   createComponentExtension,
   fetchApiRef,
 } from '@backstage/core-plugin-api';
-import { ReactNode } from 'react';
-import { SearchResultSet } from '@backstage/plugin-search-common';
 import { SidebarSearchModalProps } from './components/SidebarSearchModal';
-
-/**
- * @public
- */
-export type SearchResultChildrenProvider = {
-  searchResultChildren?:
-    | ReactNode
-    | ((resultSet: SearchResultSet) => JSX.Element);
-};
 
 export const rootRouteRef = createRouteRef({
   id: 'search',

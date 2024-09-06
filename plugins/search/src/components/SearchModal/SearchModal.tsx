@@ -34,25 +34,33 @@ import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import CloseIcon from '@material-ui/icons/Close';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { ReactNode, useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { rootRouteRef, SearchResultChildrenProvider } from '../../plugin';
+import { rootRouteRef } from '../../plugin';
+import { SearchResultSet } from '@backstage/plugin-search-common';
 
 /**
  * @public
  */
-export interface SearchModalChildrenProps extends SearchResultChildrenProvider {
+export interface SearchModalChildrenProps {
   /**
    * A function that should be invoked when navigating away from the modal.
    */
   toggleModal: () => void;
+
+  /**
+   * Ability to provide custom components to render the result items
+   */
+  resultItemComponents?:
+    | ReactNode
+    | ((resultSet: SearchResultSet) => JSX.Element);
 }
 
 /**
  * @public
  */
-export interface SearchModalProps extends SearchResultChildrenProvider {
+export interface SearchModalProps {
   /**
    * If true, it renders the modal.
    */
@@ -74,6 +82,11 @@ export interface SearchModalProps extends SearchResultChildrenProvider {
    * place of the default.
    */
   children?: (props: SearchModalChildrenProps) => JSX.Element;
+
+  /**
+   * Optional ability to pass in result item component renderers.
+   */
+  resultItemComponents?: SearchModalChildrenProps['resultItemComponents'];
 }
 
 const useStyles = makeStyles(theme => ({
@@ -102,7 +115,7 @@ const useStyles = makeStyles(theme => ({
 
 export const Modal = ({
   toggleModal,
-  searchResultChildren,
+  resultItemComponents,
 }: SearchModalChildrenProps) => {
   const classes = useStyles();
   const navigate = useNavigate();
@@ -167,7 +180,7 @@ export const Modal = ({
           onClick={handleSearchResultClick}
           onKeyDown={handleSearchResultClick}
         >
-          {searchResultChildren}
+          {resultItemComponents}
         </SearchResult>
       </DialogContent>
       <DialogActions className={classes.dialogActionsContainer}>
@@ -190,7 +203,7 @@ export const SearchModal = (props: SearchModalProps) => {
     hidden,
     toggleModal,
     children,
-    searchResultChildren,
+    resultItemComponents,
   } = props;
 
   const classes = useStyles();
@@ -213,11 +226,11 @@ export const SearchModal = (props: SearchModalProps) => {
           {(children &&
             children({
               toggleModal,
-              searchResultChildren: searchResultChildren || [],
+              resultItemComponents: resultItemComponents || [],
             })) ?? (
             <Modal
               toggleModal={toggleModal}
-              searchResultChildren={searchResultChildren || []}
+              resultItemComponents={resultItemComponents || []}
             />
           )}
         </SearchContextProvider>
