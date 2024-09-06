@@ -34,10 +34,13 @@ export default ({ theme, sidebar }: RuleOptions) => `
 .md-nav {
   font-size: calc(var(--md-typeset-font-size) * 0.9);
 }
-.md-nav__link {
+.md-nav__link:not(:has(svg)) {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+.md-nav__link:has(svg) > .md-ellipsis {
+  flex-grow: 1;
 }
 .md-nav__icon {
   height: 20px !important;
@@ -53,10 +56,20 @@ export default ({ theme, sidebar }: RuleOptions) => `
   width: 20px !important;
   height: 20px !important;
 }
+.md-status--updated::after {
+  -webkit-mask-image: var(--md-status--updated);
+  mask-image: var(--md-status--updated);
+}
 
 .md-nav__item--active > .md-nav__link, a.md-nav__link--active {
   text-decoration: underline;
   color: var(--md-typeset-a-color);
+}
+.md-nav__link--active > .md-status:after {
+  background-color: var(--md-typeset-a-color);
+}
+.md-nav__link[href]:hover > .md-status:after {
+  background-color: var(--md-accent-fg-color);
 }
 
 .md-main__inner {
