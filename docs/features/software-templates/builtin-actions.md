@@ -45,13 +45,8 @@ backend.add(
 
 // scaffolder plugin
 backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
-{
-  /* highlight-add-start */
-}
+/* highlight-add-next-line */
 backend.add(import('@backstage/plugin-scaffolder-backend-module-github'));
-{
-  /* highlight-add-end */
-}
 
 backend.start();
 ```
