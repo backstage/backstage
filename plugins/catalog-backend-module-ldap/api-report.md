@@ -95,7 +95,8 @@ export class LdapClient {
     tls?: TLSConfig,
   ): Promise<LdapClient>;
   getRootDSE(): Promise<SearchEntry | undefined>;
-  getVendor(): Promise<LdapVendor>;
+  // Warning: (ae-forgotten-export) The symbol "VendorConfig" needs to be exported by the entry point index.d.ts
+  getVendor(vendorConfig: VendorConfig | undefined): Promise<LdapVendor>;
   search(dn: string, options: SearchOptions): Promise<SearchEntry[]>;
   searchStreaming(
     dn: string,
@@ -200,6 +201,7 @@ export type LdapProviderConfig = {
   users: UserConfig[];
   groups: GroupConfig[];
   schedule?: SchedulerServiceTaskScheduleDefinition;
+  vendor?: VendorConfig;
 };
 
 // @public
@@ -225,6 +227,7 @@ export function readLdapOrg(
   client: LdapClient,
   userConfig: UserConfig[],
   groupConfig: GroupConfig[],
+  vendorConfig: VendorConfig | undefined,
   options: {
     groupTransformer?: GroupTransformer;
     userTransformer?: UserTransformer;
