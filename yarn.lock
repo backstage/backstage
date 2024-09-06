@@ -26427,8 +26427,8 @@ __metadata:
   linkType: hard
 
 "express-openapi-validator@npm:^5.0.4":
-  version: 5.3.4
-  resolution: "express-openapi-validator@npm:5.3.4"
+  version: 5.3.5
+  resolution: "express-openapi-validator@npm:5.3.5"
   dependencies:
     "@apidevtools/json-schema-ref-parser": ^11.7.0
     "@types/multer": ^1.4.11
@@ -26445,7 +26445,7 @@ __metadata:
     path-to-regexp: ^6.2.2
   peerDependencies:
     express: "*"
-  checksum: 0c699e8f12d499d759e11c08009cc479d8748bb1adf9e31b72e7f1c0d56d6c6c2333e72124517724cb1d6c7bd428a1a6dfe241b15fbe16f513f373222baf2d77
+  checksum: 325636c456790ee909509ca43b90b4083436cbdca2cb4e3a2e959cb4f7b1ccd9af0ddf60bb588c31f005d05bdb2e7ad12de5ee5277e62462570bb09b3597b7ac
   languageName: node
   linkType: hard
 
