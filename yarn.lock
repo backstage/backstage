@@ -3510,7 +3510,7 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/types": "workspace:^"
     "@google-cloud/storage": ^7.0.0
-    "@keyv/memcache": ^1.3.5
+    "@keyv/memcache": ^2.0.0
     "@keyv/redis": ^2.5.3
     "@kubernetes/client-node": 0.20.0
     "@manypkg/get-packages": ^1.1.3
@@ -3612,7 +3612,7 @@ __metadata:
     "@backstage/plugin-permission-node": "workspace:^"
     "@backstage/types": "workspace:^"
     "@google-cloud/storage": ^7.0.0
-    "@keyv/memcache": ^1.3.5
+    "@keyv/memcache": ^2.0.0
     "@keyv/redis": ^2.5.3
     "@manypkg/get-packages": ^1.1.3
     "@octokit/rest": ^19.0.3
@@ -3772,7 +3772,7 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@keyv/memcache": ^1.3.5
+    "@keyv/memcache": ^2.0.0
     "@keyv/redis": ^2.5.3
     "@types/express": ^4.17.6
     "@types/express-serve-static-core": ^4.17.5
@@ -10332,13 +10332,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@keyv/memcache@npm:^1.3.5":
-  version: 1.3.7
-  resolution: "@keyv/memcache@npm:1.3.7"
+"@keyv/memcache@npm:^2.0.0":
+  version: 2.0.1
+  resolution: "@keyv/memcache@npm:2.0.1"
   dependencies:
-    json-buffer: ^3.0.1
-    memjs: ^1.3.1
-  checksum: 61c836c1b0c264c35281a38dbc380a102b2899eab46226a0e31614d3d7c4708ecdb06d8858f711893212ae5b357a79213c7a7b7a81b6196e56dd889dd1ca498b
+    "@keyv/serialize": "*"
+    buffer: ^6.0.3
+    memjs: ^1.3.2
+  checksum: 357b320fb3998e7bff9e3a5702da3cc0d4337586f1a04392dfb490cef7af2c039c3ecda922b18029cc9de6e9310a91cde1602b0851fb86acb93b629200458cc2
   languageName: node
   linkType: hard
 
@@ -10348,6 +10349,15 @@ __metadata:
   dependencies:
     ioredis: ^5.4.1
   checksum: 87ffec61d31fa9de128ba3e5a7b616535ddbdaa4d92cbc9e1a9fab143adf967135e9cca16e192e8f52cc1ba00ed2a7f10eca9944d7550385530dab95333e81ef
+  languageName: node
+  linkType: hard
+
+"@keyv/serialize@npm:*":
+  version: 1.0.1
+  resolution: "@keyv/serialize@npm:1.0.1"
+  dependencies:
+    buffer: ^6.0.3
+  checksum: ff3dd9a6246b17fca3d1b0aba312dea931059fdecc36027f4d8133e59dbb3554a0a516b1f3dfc7fb2b3ca7a3d6fa307804f299566ab214febd3fb9d0502eebed
   languageName: node
   linkType: hard
 
@@ -31100,7 +31110,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json-buffer@npm:3.0.1, json-buffer@npm:^3.0.1":
+"json-buffer@npm:3.0.1":
   version: 3.0.1
   resolution: "json-buffer@npm:3.0.1"
   checksum: 9026b03edc2847eefa2e37646c579300a1f3a4586cfb62bf857832b60c852042d0d6ae55d1afb8926163fa54c2b01d83ae24705f34990348bdac6273a29d4581
@@ -32998,10 +33008,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"memjs@npm:^1.3.1":
-  version: 1.3.1
-  resolution: "memjs@npm:1.3.1"
-  checksum: cb70879055151f15292e95ab57765e745c84d2fedd363b453afc3e2f48bf185e3771eecf9544f95009a3a374e810e34c1e18948134e814d791c2f0f35359ddeb
+"memjs@npm:^1.3.2":
+  version: 1.3.2
+  resolution: "memjs@npm:1.3.2"
+  checksum: f92c2a43725b70af69832f807d02b87a07609a1c1f2c8c37670dff5bae6ac5f0d767cc8b3a6a59626703538f96c0bd4f03f9d00ea3b28aeb33270d24e8782233
   languageName: node
   linkType: hard
 
