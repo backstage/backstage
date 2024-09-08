@@ -341,10 +341,10 @@ retryable
 reusability
 Reusability
 roadmaps
+Roboto
 rollbar
 Rollbar
 rollout
-Roboto
 Rollup
 routable
 Routable
@@ -381,9 +381,9 @@ Sonarqube
 sourcemaps
 sparklines
 Splunk
+Spotifiers
 spotify
 Spotify
-Spotifiers
 sqlite
 sqs
 squidfunk
