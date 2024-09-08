@@ -63,6 +63,12 @@ all: initialize install-all check-all
 .PHONY: changes
 changes: initialize install check
 
+.PHONY: changeset
+changeset:
+	@echo "Creating changeset..." \
+	&& yarn changeset \
+	&& echo "Successfully created changeset."
+
 .PHONY: initialize
 initialize:
 	@echo "Initializing..." \
