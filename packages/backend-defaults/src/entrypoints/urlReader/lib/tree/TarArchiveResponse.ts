@@ -25,7 +25,10 @@ import platformPath from 'path';
 import { pipeline as pipelineCb, Readable } from 'stream';
 import tar, { Parse, ParseStream, ReadEntry } from 'tar';
 import { promisify } from 'util';
-import { stripFirstDirectoryFromPath } from './util';
+import { exponentialRetry, stripFirstDirectoryFromPath } from './util';
+
+const RETRY_CLEAN_ARCHIVE_TEMP_DIR_COUNT = 5;
+const RETRY_CLEAN_ARCHIVE_TEMP_DIR_STEP_MS = 200;
 
 // Tar types for `Parse` is not a proper constructor, but it should be
 const TarParseStream = Parse as unknown as { new (): ParseStream };
@@ -138,7 +141,8 @@ export class TarArchiveResponse implements UrlReaderServiceReadTreeResponse {
       });
       return Readable.from(data);
     } finally {
-      await fs.remove(tmpDir);
+      // Attempt to handle any temporary file system locks and always clean up.
+      await exponentialRetry(() => fs.remove(tmpDir));
     }
   }
 

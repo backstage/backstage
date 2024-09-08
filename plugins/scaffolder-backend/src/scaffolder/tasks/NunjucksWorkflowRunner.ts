@@ -31,6 +31,7 @@ import {
   SecureTemplater,
   SecureTemplateRenderer,
 } from '../../lib/templating/SecureTemplater';
+import { exponentialRetry } from '../../util/retry';
 import {
   TaskRecovery,
   TaskSpec,
@@ -514,7 +515,8 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       return { output };
     } finally {
       if (workspacePath) {
-        await fs.remove(workspacePath);
+        // Attempt to handle any temporary file system locks and always clean up.
+        await exponentialRetry(() => fs.remove(workspacePath));
       }
     }
   }

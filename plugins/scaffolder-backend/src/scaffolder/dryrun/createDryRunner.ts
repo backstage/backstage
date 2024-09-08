@@ -31,6 +31,7 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import { TemplateActionRegistry } from '../actions';
 import { NunjucksWorkflowRunner } from '../tasks/NunjucksWorkflowRunner';
+import { exponentialRetry } from '../../util/retry';
 import { DecoratedActionsRegistry } from './DecoratedActionsRegistry';
 import fs from 'fs-extra';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
@@ -158,7 +159,8 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
         output: result.output,
       };
     } finally {
-      await fs.remove(contentsPath);
+      // Attempt to handle any temporary file system locks and always clean up.
+      await exponentialRetry(() => fs.remove(contentsPath));
     }
   };
 }

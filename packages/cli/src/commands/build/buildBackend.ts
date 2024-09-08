@@ -21,6 +21,7 @@ import tar, { CreateOptions } from 'tar';
 import { createDistWorkspace } from '../../lib/packager';
 import { getEnvironmentParallelism } from '../../lib/parallel';
 import { buildPackage, Output } from '../../lib/builder';
+import { exponentialRetry } from '../../lib/retry';
 
 const BUNDLE_FILE = 'bundle.tar.gz';
 const SKELETON_FILE = 'skeleton.tar.gz';
@@ -80,6 +81,7 @@ export async function buildBackend(options: BuildBackendOptions) {
       [''],
     );
   } finally {
-    await fs.remove(tmpDir);
+    // Attempt to handle any temporary file system locks and always clean up.
+    await exponentialRetry(() => fs.remove(tmpDir));
   }
 }

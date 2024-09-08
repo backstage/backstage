@@ -271,7 +271,8 @@ export async function readGitConfig(): Promise<GitConfig | undefined> {
   } catch (error) {
     return undefined;
   } finally {
-    await fs.rm(tempDir, { recursive: true });
+    // Attempt to handle any temporary file system locks and always clean up.
+    await fs.rm(tempDir, { recursive: true, force: true, maxRetries: 5 });
   }
 }
 
@@ -297,7 +298,8 @@ export async function tryInitGitRepository(dir: string) {
     return true;
   } catch (error) {
     try {
-      await fs.rm(resolvePath(dir, '.git'), { recursive: true, force: true });
+      const gitDir = resolvePath(dir, '.git');
+      await fs.rm(gitDir, { recursive: true, force: true, maxRetries: 5 });
     } catch {
       throw new Error('Failed to remove .git folder');
     }

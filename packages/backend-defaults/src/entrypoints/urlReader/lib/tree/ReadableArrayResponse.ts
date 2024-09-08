@@ -27,6 +27,7 @@ import { promisify } from 'util';
 import tar from 'tar';
 import { pipeline as pipelineCb, Readable } from 'stream';
 import { FromReadableArrayOptions } from '../types';
+import { exponentialRetry } from './util';
 
 const pipeline = promisify(pipelineCb);
 
@@ -82,7 +83,8 @@ export class ReadableArrayResponse implements UrlReaderServiceReadTreeResponse {
       });
       return Readable.from(data);
     } finally {
-      await fs.remove(tmpDir);
+      // Attempt to handle any temporary file system locks and always clean up.
+      await exponentialRetry(() => fs.remove(tmpDir));
     }
   }
 
