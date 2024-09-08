@@ -40,7 +40,13 @@ jobs:
           python-version: '3.9'
 
       # Setup caching to optimize task execution across runs.
-      - uses: google/wireit@setup-github-actions-caching/v2
+      # Note: Wireit documentation uses release tags, like "google/wireit@setup-github-actions-caching/v2.0".
+      #       However, Backstage uses commit hashes to ensure reproducibility.
+      #       Because Wireit uses a repo branch for their GitHub Actions code,
+      #       1. Find the appropriate release tag at https://github.com/google/wireit/tags
+      #       2. Click on the commit hash for the release tag e.g. "eea3c9f".
+      #       3. Use the full commit hash in the `uses` below.
+      - uses: google/wireit@eea3c9f0385a39e6eb4ff6a6daa273311381d436 # setup-github-actions-caching/v2.0
 
       - name: install dependencies
         run: yarn install --immutable
