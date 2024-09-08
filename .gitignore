@@ -174,3 +174,6 @@ knip.json
 # Schemathesis temporary files
 .hypothesis/
 .cassettes/
+
+# WireIt temporary files
+.wireit

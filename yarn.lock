@@ -21086,6 +21086,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"balanced-match@npm:^3.0.0":
+  version: 3.0.1
+  resolution: "balanced-match@npm:3.0.1"
+  checksum: 799bc086e80c5fe6c40e5bf486340d86ec76179017601a40dd0310ac92b44beaab19c55757a38bfd22e3b1572e5c3536e6f79050898f8fa9bbb7db4cfcf9e08e
+  languageName: node
+  linkType: hard
+
 "bare-events@npm:^2.0.0, bare-events@npm:^2.2.0":
   version: 2.2.0
   resolution: "bare-events@npm:2.2.0"
@@ -21415,6 +21422,15 @@ __metadata:
   dependencies:
     balanced-match: ^1.0.0
   checksum: a61e7cd2e8a8505e9f0036b3b6108ba5e926b4b55089eeb5550cd04a471fe216c96d4fe7e4c7f995c728c554ae20ddfc4244cad10aef255e72b62930afd233d1
+  languageName: node
+  linkType: hard
+
+"brace-expansion@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "brace-expansion@npm:4.0.0"
+  dependencies:
+    balanced-match: ^3.0.0
+  checksum: 5496dce65b1b843e2c236be65500d68234cfa3a068dd02b2aee4dcfb7b210fe114f83338bee95adb6bf8cbea1b8adf38dffe713f5785b390e5e72165ebce84c8
   languageName: node
   linkType: hard
 
@@ -31254,10 +31270,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsonc-parser@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "jsonc-parser@npm:3.2.0"
-  checksum: 946dd9a5f326b745aa326d48a7257e3f4a4b62c5e98ec8e49fa2bdd8d96cef7e6febf1399f5c7016114fd1f68a1c62c6138826d5d90bc650448e3cf0951c53c7
+"jsonc-parser@npm:^3.0.0, jsonc-parser@npm:^3.2.0":
+  version: 3.3.1
+  resolution: "jsonc-parser@npm:3.3.1"
+  checksum: 81ef19d98d9c6bd6e4a37a95e2753c51c21705cbeffd895e177f4b542cca9cda5fda12fb942a71a2e824a9132cf119dc2e642e9286386055e1365b5478f49a47
   languageName: node
   linkType: hard
 
@@ -39301,6 +39317,7 @@ __metadata:
     sloc: ^0.3.1
     sort-package-json: ^2.8.0
     typescript: ~5.2.0
+    wireit: ^0.14.9
   languageName: unknown
   linkType: soft
 
@@ -43836,6 +43853,21 @@ __metadata:
     triple-beam: ^1.3.0
     winston-transport: ^4.7.0
   checksum: 9021637d3ab1d1e639d64e7217ed5ae63fb0e5325defdbce439f708e9b4e26c7a31eb4a731106790aa8ac6f80a3a89242de18d1991ab3838f9d84e55101f4607
+  languageName: node
+  linkType: hard
+
+"wireit@npm:^0.14.9":
+  version: 0.14.9
+  resolution: "wireit@npm:0.14.9"
+  dependencies:
+    brace-expansion: ^4.0.0
+    chokidar: ^3.5.3
+    fast-glob: ^3.2.11
+    jsonc-parser: ^3.0.0
+    proper-lockfile: ^4.1.2
+  bin:
+    wireit: bin/wireit.js
+  checksum: 2e2d539bc37e0d68bde5a1fef0d9bdd393e88f525e514fa50885d96eb455dd58f8cf5d5ae8a9bc7f6ee4aba4e6006f0f1e10406a3e25171e16a8d6904e35617d
   languageName: node
   linkType: hard
 

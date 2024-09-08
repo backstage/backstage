@@ -51,8 +51,21 @@
     "test": "backstage-cli repo test",
     "test:all": "backstage-cli repo test --coverage",
     "test:e2e": "playwright test",
-    "tsc": "tsc",
+    "tsc": "wireit",
     "tsc:full": "backstage-cli repo clean && tsc --skipLibCheck false --incremental false"
+  },
+  "wireit": {
+    "tsc": {
+      "clean": "if-file-deleted",
+      "command": "tsc",
+      "files": [
+        "**/*.{ts,tsx}",
+        "**/tsconfig.json"
+      ],
+      "output": [
+        "./dist-types"
+      ]
+    }
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,mjs,cjs}": [
@@ -130,7 +143,8 @@
     "shx": "^0.3.2",
     "sloc": "^0.3.1",
     "sort-package-json": "^2.8.0",
-    "typescript": "~5.2.0"
+    "typescript": "~5.2.0",
+    "wireit": "^0.14.9"
   },
   "packageManager": "yarn@3.8.1",
   "engines": {
