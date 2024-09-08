@@ -42,7 +42,7 @@ jobs:
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       # Setup caching to optimize task execution across runs.
-      - uses: google/wireit@setup-github-actions-caching/v2@eea3c9f0385a39e6eb4ff6a6daa273311381d436
+      - uses: google/wireit@setup-github-actions-caching/v2
 
       # Windows file operation slowness means there's no point caching this
       - name: yarn install
