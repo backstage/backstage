@@ -152,6 +152,8 @@ yarn new # Create a new module
 
 > See [package.json](https://github.com/backstage/backstage/blob/master/package.json) for other yarn commands/options.
 
+If GNU `make` is installed, run an end-to-end installation with the command `make --file ./contrib/make/makefile`.
+
 ## Local configuration
 
 Backstage allows you to specify the configuration used while running the application on your computer. Local configuration is read from `app-config.local.yaml`. This file is ignored by Git, which means that you can safely use it to reference secrets like GitHub tokens without worrying about these secrets, inadvertently ending up in the Git repository. You do not need to copy everything from the default config to the local config. The `app-config.local.yaml` file will be merged with `app-config.yaml` and overwrite the default app configs.
