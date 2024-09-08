@@ -51,8 +51,9 @@
     "test": "backstage-cli repo test",
     "test:all": "backstage-cli repo test --coverage",
     "test:e2e": "playwright test",
-    "tsc": "wireit",
-    "tsc:full": "backstage-cli repo clean && tsc --skipLibCheck false --incremental false"
+    "tsc": "tsc",
+    "tsc:full": "wireit",
+    "tsc:simple": "wireit"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,mjs,cjs}": [
@@ -156,9 +157,20 @@
         "./.tasks/prettier-fix.log"
       ]
     },
-    "tsc": {
+    "tsc:simple": {
       "clean": "if-file-deleted",
       "command": "tsc",
+      "files": [
+        "**/*.{ts,tsx}",
+        "**/tsconfig.json"
+      ],
+      "output": [
+        "./dist-types"
+      ]
+    },
+    "tsc:full": {
+      "clean": "if-file-deleted",
+      "command": "backstage-cli repo clean && tsc --skipLibCheck false --incremental false",
       "files": [
         "**/*.{ts,tsx}",
         "**/tsconfig.json"

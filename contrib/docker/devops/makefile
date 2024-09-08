@@ -90,7 +90,7 @@ build-typescript: install
 		-w /app \
 		--entrypoint "" \
 		$(docker_tag) \
-		yarn tsc
+		yarn tsc:simple
 
 # build the project
 .PHONY: build

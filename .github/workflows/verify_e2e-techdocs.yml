@@ -52,7 +52,7 @@ jobs:
         run: yarn install --immutable
 
       - name: generate types
-        run: yarn tsc
+        run: yarn tsc:simple
 
       - name: build techdocs-cli
         working-directory: packages/techdocs-cli

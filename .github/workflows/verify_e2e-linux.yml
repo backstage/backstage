@@ -72,7 +72,7 @@ jobs:
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
-      - run: yarn tsc
+      - run: yarn tsc:simple
       - run: yarn backstage-cli repo build
       - name: run E2E test
         run: |
