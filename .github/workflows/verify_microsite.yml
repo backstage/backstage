@@ -34,9 +34,13 @@ jobs:
         uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
         with:
           node-version: 18.x
+
       - uses: actions/setup-python@f677139bbe7f9c59b41e40162b753c062f5d49a3 # v5
         with:
           python-version: '3.9'
+
+      # Setup caching to optimize task execution across runs.
+      - uses: google/wireit@setup-github-actions-caching/v2@eea3c9f0385a39e6eb4ff6a6daa273311381d436
 
       - name: Install MkDocs dependencies
         run: pip install mkdocs mkdocs-techdocs-core

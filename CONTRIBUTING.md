@@ -156,6 +156,30 @@ yarn new # Create a new module
 
 The [Wireit](https://github.com/google/wireit) project has been introduced to optimize task execution with local caching that can also be saved and loaded across continuous integration tasks and runs. For example, `yarn tsc` is wrapped with wireit to only clean and execute when specific source files have changed. This is also a "Green IT" approach to reducing overall compute consumption for every machine that interacts with this project.
 
+The first time a command is run on a machine, it will execute. If no changes are made and the same command is run again, execution will be skipped.
+
+For Wireit to properly cache command execution, it needs to be able to create a unique hash of the inputs and outputs along with the command itself. Commands like `tsc` that create a "./dist-types" directory based on specific file changes make it simple to configure these inputs and outputs. However, for commands that simply log to the standard streams "stdout" and / or "stderr", it is necessary to send the output to a log file. Unfortunately, the cross-platform support for redirecting these streams across terminals varies. These commands are proxied through the "./log-output.js" script to ensure their output is sent to both the terminal and the log file, so that Wireit can also be configured to support these tasks. For example, `prettier --check .` sends output to the standard streams; as a result, the command is sent to the script as `node ./scripts/log-output.js --log ./.tasks/prettier-check.log -- prettier --check .` to ensure output is logged to the "./.tasks/prettier-check.log" file.
+
+```shell
+$ yarn tsc
+🏃 [tsc] Running command "tsc"
+✅ [tsc] Executed successfully
+
+$ yarn tsc
+✅ [tsc] Already fresh
+
+$ yarn prettier:check
+🏃 [prettier:check] Running command "node ./log-output.js --log ./.tasks/prettier-check.log -- prettier --check ."
+Checking formatting...
+All matched files use Prettier code style!
+✅ [prettier:check] Executed successfully
+
+$ yarn prettier:check
+✅ [prettier:check] Already fresh
+```
+
+Wireit also offers built-in support for [GitHub Actions caching](https://github.com/google/wireit?tab=readme-ov-file#github-actions-caching). With local caching, it is possible to save and load the ".wireit" cache directories across multiple command executions, including across machines that share the cache, like Continuous Integration.
+
 ## Local configuration
 
 Backstage allows you to specify the configuration used while running the application on your computer. Local configuration is read from `app-config.local.yaml`. This file is ignored by Git, which means that you can safely use it to reference secrets like GitHub tokens without worrying about these secrets, inadvertently ending up in the Git repository. You do not need to copy everything from the default config to the local config. The `app-config.local.yaml` file will be merged with `app-config.yaml` and overwrite the default app configs.

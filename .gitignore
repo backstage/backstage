@@ -175,5 +175,7 @@ knip.json
 .hypothesis/
 .cassettes/
 
+# Temporary task execution log files
+.tasks
 # WireIt temporary files
 .wireit

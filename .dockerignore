@@ -1,4 +1,6 @@
 .git
+.tasks
+.wireit
 .yarn/cache
 .yarn/install-state.gz
 docs

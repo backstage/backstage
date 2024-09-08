@@ -5,6 +5,8 @@
 **/coverage/**
 **/build/**
 **/.git/**
+**/.tasks/**
+**/.wireit/**
 **/public/**
 **/microsite/**
 **/templates/**

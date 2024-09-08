@@ -34,8 +34,8 @@
     "lint:type-deps": "backstage-repo-tools type-deps",
     "new": "backstage-cli new --scope backstage --baseVersion 0.0.0 --no-private",
     "prepare": "husky",
-    "prettier:check": "prettier --check .",
-    "prettier:fix": "prettier --write .",
+    "prettier:check": "wireit",
+    "prettier:fix": "wireit",
     "release": "node scripts/prepare-release.js && changeset version && yarn prettier --write '{packages,plugins}/*/{package.json,CHANGELOG.md}' '.changeset/*.json' && yarn install --no-immutable",
     "snyk:test": "npx snyk test --yarn-workspaces --strict-out-of-sync=false",
     "snyk:test:package": "yarn snyk:test --include",
@@ -53,19 +53,6 @@
     "test:e2e": "playwright test",
     "tsc": "wireit",
     "tsc:full": "backstage-cli repo clean && tsc --skipLibCheck false --incremental false"
-  },
-  "wireit": {
-    "tsc": {
-      "clean": "if-file-deleted",
-      "command": "tsc",
-      "files": [
-        "**/*.{ts,tsx}",
-        "**/tsconfig.json"
-      ],
-      "output": [
-        "./dist-types"
-      ]
-    }
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,mjs,cjs}": [
@@ -149,5 +136,36 @@
   "packageManager": "yarn@3.8.1",
   "engines": {
     "node": "18 || 20"
+  },
+  "wireit": {
+    "prettier:check": {
+      "command": "node ./scripts/log-output.js --log ./.tasks/prettier-check.log -- prettier --check .",
+      "files": [
+        "**/*.{.dockerbuild,.dockerfile,css,html,js,json,jsx,md,mdx,mustache,ps1,scss,sh,ts,tsx,xml,yaml,yml}"
+      ],
+      "output": [
+        "./.tasks/prettier-check.log"
+      ]
+    },
+    "prettier:fix": {
+      "command": "node ./scripts/log-output.js --log ./.tasks/prettier-fix.log -- prettier --write .",
+      "files": [
+        "**/*.{.dockerbuild,.dockerfile,css,html,js,json,jsx,md,mdx,mustache,ps1,scss,sh,ts,tsx,xml,yaml,yml}"
+      ],
+      "output": [
+        "./.tasks/prettier-fix.log"
+      ]
+    },
+    "tsc": {
+      "clean": "if-file-deleted",
+      "command": "tsc",
+      "files": [
+        "**/*.{ts,tsx}",
+        "**/tsconfig.json"
+      ],
+      "output": [
+        "./dist-types"
+      ]
+    }
   }
 }
