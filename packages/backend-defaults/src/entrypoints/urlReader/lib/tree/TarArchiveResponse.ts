@@ -27,9 +27,6 @@ import tar, { Parse, ParseStream, ReadEntry } from 'tar';
 import { promisify } from 'util';
 import { exponentialRetry, stripFirstDirectoryFromPath } from './util';
 
-const RETRY_CLEAN_ARCHIVE_TEMP_DIR_COUNT = 5;
-const RETRY_CLEAN_ARCHIVE_TEMP_DIR_STEP_MS = 200;
-
 // Tar types for `Parse` is not a proper constructor, but it should be
 const TarParseStream = Parse as unknown as { new (): ParseStream };
 
