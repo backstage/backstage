@@ -50,6 +50,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-auth-backend-module-atlassian-provider": "workspace:^",
+    "@backstage/plugin-auth-backend-module-auth0-provider": "workspace:^",
     "@backstage/plugin-auth-backend-module-aws-alb-provider": "workspace:^",
     "@backstage/plugin-auth-backend-module-azure-easyauth-provider": "workspace:^",
     "@backstage/plugin-auth-backend-module-bitbucket-provider": "workspace:^",
