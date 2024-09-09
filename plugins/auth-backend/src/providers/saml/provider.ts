@@ -172,7 +172,7 @@ export const saml = createAuthProviderIntegration({
         logoutUrl: config.getOptionalString('logoutUrl'),
         audience: config.getString('audience'),
         issuer: config.getString('issuer'),
-        cert: config.getString('cert'),
+        idpCert: config.getString('cert'),
         privateKey: config.getOptionalString('privateKey'),
         authnContext: config.getOptionalStringArray('authnContext'),
         identifierFormat: config.getOptionalString('identifierFormat'),
