@@ -23,4 +23,3 @@
 export { bitbucketServerAuthenticator } from './authenticator';
 export { authModuleBitbucketServerProvider as default } from './module';
 export { bitbucketServerSignInResolvers } from './resolvers';
-export { type BitbucketServerOAuthResult } from './types';

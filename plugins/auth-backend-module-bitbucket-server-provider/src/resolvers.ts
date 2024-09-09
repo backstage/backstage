@@ -15,9 +15,10 @@
  */
 import {
   createSignInResolverFactory,
+  OAuthAuthenticatorResult,
+  PassportProfile,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
-import { BitbucketServerOAuthResult } from './types';
 
 /**
  * Available sign-in resolvers for the Bitbucket Server auth provider.
@@ -31,7 +32,10 @@ export namespace bitbucketServerSignInResolvers {
   export const emailMatchingUserEntityProfileEmail =
     createSignInResolverFactory({
       create() {
-        return async (info: SignInInfo<BitbucketServerOAuthResult>, ctx) => {
+        return async (
+          info: SignInInfo<OAuthAuthenticatorResult<PassportProfile>>,
+          ctx,
+        ) => {
           const { profile } = info;
 
           if (!profile.email) {

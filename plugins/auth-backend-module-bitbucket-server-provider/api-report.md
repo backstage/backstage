@@ -5,6 +5,7 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { OAuthAuthenticator } from '@backstage/plugin-auth-node';
+import { OAuthAuthenticatorResult } from '@backstage/plugin-auth-node';
 import { PassportOAuthAuthenticatorHelper } from '@backstage/plugin-auth-node';
 import { PassportProfile } from '@backstage/plugin-auth-node';
 import { SignInResolverFactory } from '@backstage/plugin-auth-node';
@@ -22,23 +23,10 @@ export const bitbucketServerAuthenticator: OAuthAuthenticator<
   PassportProfile
 >;
 
-// @public (undocumented)
-export type BitbucketServerOAuthResult = {
-  fullProfile: PassportProfile;
-  params: {
-    scope: string;
-    access_token?: string;
-    token_type?: string;
-    expires_in?: number;
-  };
-  accessToken: string;
-  refreshToken?: string;
-};
-
 // @public
 export namespace bitbucketServerSignInResolvers {
   const emailMatchingUserEntityProfileEmail: SignInResolverFactory<
-    BitbucketServerOAuthResult,
+    OAuthAuthenticatorResult<PassportProfile>,
     unknown
   >;
 }

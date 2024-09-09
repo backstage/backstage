@@ -85,5 +85,32 @@ export const bitbucketServer = createAuthProviderIntegration({
       signInResolver: adaptLegacyOAuthSignInResolver(options?.signIn?.resolver),
     });
   },
-  resolvers: bitbucketServerSignInResolvers,
+  resolvers: {
+    /**
+     * Looks up the user by matching their email to the entity email.
+     */
+    emailMatchingUserEntityProfileEmail:
+      (): SignInResolver<BitbucketServerOAuthResult> => {
+        const resolver =
+          bitbucketServerSignInResolvers.emailMatchingUserEntityProfileEmail();
+        return async (info, ctx) => {
+          return resolver(
+            {
+              profile: info.profile,
+              result: {
+                fullProfile: info.result.fullProfile,
+                session: {
+                  accessToken: info.result.accessToken,
+                  tokenType: info.result.params.token_type ?? 'bearer',
+                  scope: info.result.params.scope,
+                  expiresInSeconds: info.result.params.expires_in,
+                  refreshToken: info.result.refreshToken,
+                },
+              },
+            },
+            ctx,
+          );
+        };
+      },
+  },
 });
