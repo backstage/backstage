@@ -274,7 +274,7 @@ export type UserTransformer = (
 
 // @public
 export type VendorConfig = {
-  dnAttributeName: string;
-  uuidAttributeName: string;
+  dnAttributeName?: string;
+  uuidAttributeName?: string;
 };
 ```
