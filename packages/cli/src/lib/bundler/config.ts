@@ -349,10 +349,10 @@ export async function createConfig(
     profile: false,
     ...(isDev
       ? {
-        watchOptions: {
-          ignored: /node_modules\/(?!\@backstage)/,
-        },
-      }
+          watchOptions: {
+            ignored: /node_modules\/(?!\@backstage)/,
+          },
+        }
       : {}),
     optimization,
     bail: false,
