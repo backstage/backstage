@@ -13,6 +13,8 @@ import { AppNodeInstance } from '@backstage/frontend-plugin-api';
 import { ErrorWithContext } from '@backstage/test-utils';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
+import { ExtensionDefinitionParameters } from '@backstage/frontend-plugin-api';
+import { FrontendFeature } from '@backstage/frontend-app-api';
 import { JsonObject } from '@backstage/types';
 import { MockConfigApi } from '@backstage/test-utils';
 import { MockErrorApi } from '@backstage/test-utils';
@@ -31,16 +33,12 @@ import { TestApiRegistry } from '@backstage/test-utils';
 import { withLogCollector } from '@backstage/test-utils';
 
 // @public (undocumented)
-export function createExtensionTester<
-  TConfig,
-  TConfigInput,
-  UOutput extends AnyExtensionDataRef,
->(
-  subject: ExtensionDefinition<TConfig, TConfigInput, UOutput>,
+export function createExtensionTester<T extends ExtensionDefinitionParameters>(
+  subject: ExtensionDefinition<T>,
   options?: {
-    config?: TConfigInput;
+    config?: T['configInput'];
   },
-): ExtensionTester<UOutput>;
+): ExtensionTester<NonNullable<T['output']>>;
 
 export { ErrorWithContext };
 
@@ -64,10 +62,10 @@ export class ExtensionQuery<UOutput extends AnyExtensionDataRef> {
 // @public (undocumented)
 export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
   // (undocumented)
-  add<TConfig, TConfigInput>(
-    extension: ExtensionDefinition<TConfig, TConfigInput>,
+  add<T extends ExtensionDefinitionParameters>(
+    extension: ExtensionDefinition<T>,
     options?: {
-      config?: TConfigInput;
+      config?: T['configInput'];
     },
   ): ExtensionTester<UOutput>;
   // (undocumented)
@@ -79,13 +77,11 @@ export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
       : IData
     : never;
   // (undocumented)
-  query<UQueryExtensionOutput extends AnyExtensionDataRef>(
-    extension: ExtensionDefinition<any, any, UQueryExtensionOutput>,
-  ): ExtensionQuery<UQueryExtensionOutput>;
+  query<T extends ExtensionDefinitionParameters>(
+    extension: ExtensionDefinition<T>,
+  ): ExtensionQuery<NonNullable<T['output']>>;
   // (undocumented)
   reactElement(): JSX.Element;
-  // @deprecated (undocumented)
-  render(options?: { config?: JsonObject }): RenderResult;
 }
 
 // @public
@@ -139,6 +135,8 @@ export type TestAppOptions = {
     [path: string]: RouteRef;
   };
   config?: JsonObject;
+  extensions?: ExtensionDefinition<any>[];
+  features?: FrontendFeature[];
 };
 
 export { withLogCollector };

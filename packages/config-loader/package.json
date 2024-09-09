@@ -50,7 +50,7 @@
     "lodash": "^4.17.21",
     "minimist": "^1.2.5",
     "node-fetch": "^2.7.0",
-    "typescript-json-schema": "^0.63.0",
+    "typescript-json-schema": "^0.65.0",
     "yaml": "^2.0.0"
   },
   "devDependencies": {

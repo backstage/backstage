@@ -48,4 +48,19 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
+  {
+    description: 'List the workspace directory with file contents',
+    example: yaml.stringify({
+      steps: [
+        {
+          action: 'debug:log',
+          id: 'write-workspace-directory',
+          name: 'List the workspace directory with file contents',
+          input: {
+            listWorkspace: 'with-contents',
+          },
+        },
+      ],
+    }),
+  },
 ];

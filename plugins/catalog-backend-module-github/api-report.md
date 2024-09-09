@@ -5,6 +5,7 @@
 ```ts
 import { AnalyzeOptions } from '@backstage/plugin-catalog-node';
 import { AuthService } from '@backstage/backend-plugin-api';
+import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogProcessor } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
@@ -129,6 +130,7 @@ export type GithubLocationAnalyzerOptions = {
   tokenManager?: TokenManager;
   auth?: AuthService;
   githubCredentialsProvider?: GithubCredentialsProvider;
+  catalog?: CatalogApi;
 };
 
 // @public

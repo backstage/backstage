@@ -28,7 +28,7 @@ const translationDataRef = createExtensionDataRef<
  */
 export const TranslationBlueprint = createExtensionBlueprint({
   kind: 'translation',
-  attachTo: { id: 'api:translations', input: 'translations' },
+  attachTo: { id: 'api:app/translations', input: 'translations' },
   output: [translationDataRef],
   dataRefs: {
     translation: translationDataRef,

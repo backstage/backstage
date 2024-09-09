@@ -18,7 +18,7 @@ import { BackstagePlugin as LegacyBackstagePlugin } from '@backstage/core-plugin
 import {
   ApiBlueprint,
   ExtensionDefinition,
-  BackstagePlugin as NewBackstagePlugin,
+  FrontendPlugin as NewBackstagePlugin,
   createFrontendPlugin,
 } from '@backstage/frontend-plugin-api';
 import { convertLegacyRouteRefs } from './convertLegacyRouteRef';
@@ -26,10 +26,10 @@ import { convertLegacyRouteRefs } from './convertLegacyRouteRef';
 /** @public */
 export function convertLegacyPlugin(
   legacyPlugin: LegacyBackstagePlugin,
-  options: { extensions: ExtensionDefinition<any, any>[] },
+  options: { extensions: ExtensionDefinition[] },
 ): NewBackstagePlugin {
   const apiExtensions = Array.from(legacyPlugin.getApis()).map(factory =>
-    ApiBlueprint.make({ namespace: factory.api.id, params: { factory } }),
+    ApiBlueprint.make({ name: factory.api.id, params: { factory } }),
   );
   return createFrontendPlugin({
     id: legacyPlugin.getId(),

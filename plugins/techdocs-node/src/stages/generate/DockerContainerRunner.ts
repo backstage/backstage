@@ -76,12 +76,17 @@ export class DockerContainerRunner {
         this.dockerClient.pull(imageName, {}, (err, stream) => {
           if (err) {
             reject(err);
-            return;
+          } else if (!stream) {
+            reject(
+              new Error(
+                'Unexpeected error: no stream returned from Docker while pulling image',
+              ),
+            );
+          } else {
+            pipeline(stream, logStream, { end: false })
+              .then(resolve)
+              .catch(reject);
           }
-
-          pipeline(stream, logStream, { end: false })
-            .then(resolve)
-            .catch(reject);
         });
       });
     }
@@ -112,7 +117,7 @@ export class DockerContainerRunner {
     }
 
     // Create docker environment variables array
-    const Env = [];
+    const Env = new Array<string>();
     for (const [key, value] of Object.entries(envVars)) {
       Env.push(`${key}=${value}`);
     }

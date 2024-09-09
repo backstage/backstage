@@ -67,7 +67,7 @@ const SupportLink = ({ link }: { link: SupportItemLink }) => (
 
 const SupportListItem = ({ item }: { item: SupportItem }) => {
   return (
-    <MenuItem>
+    <MenuItem button={false}>
       <ListItemIcon>
         <SupportIcon icon={item.icon} />
       </ListItemIcon>
@@ -161,6 +161,7 @@ export function SupportButton(props: SupportButtonProps) {
           )}
           {React.Children.map(children, (child, i) => (
             <MenuItem
+              button={false}
               alignItems="flex-start"
               key={`child-${i}`}
               className={classes.menuItem}

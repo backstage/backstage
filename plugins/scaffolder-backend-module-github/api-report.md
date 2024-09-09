@@ -230,6 +230,11 @@ export function createGithubRepoCreateAction(options: {
         }
       | undefined;
     requireCommitSigning?: boolean | undefined;
+    customProperties?:
+      | {
+          [key: string]: string;
+        }
+      | undefined;
   },
   JsonObject
 >;
@@ -385,6 +390,11 @@ export function createPublishGithubAction(options: {
         }
       | undefined;
     requiredCommitSigning?: boolean | undefined;
+    customProperties?:
+      | {
+          [key: string]: string;
+        }
+      | undefined;
   },
   JsonObject
 >;

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   DatabaseManager,
   PluginDatabaseManager,
@@ -23,7 +24,9 @@ import request from 'supertest';
 import { createRouter } from './router';
 import { ConfigReader } from '@backstage/config';
 import { SignalsService } from '@backstage/plugin-signals-node';
-import { mockServices } from '@backstage/backend-test-utils';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
+import { NotificationSendOptions } from '@backstage/plugin-notifications-node';
+import { CatalogClient } from '@backstage/catalog-client';
 
 function createDatabase(): PluginDatabaseManager {
   return DatabaseManager.fromConfig(
@@ -45,20 +48,28 @@ describe('createRouter', () => {
     publish: jest.fn(),
   };
 
-  const discovery = mockServices.discovery();
   const userInfo = mockServices.userInfo();
-  const httpAuth = mockServices.httpAuth();
+  const httpAuth = mockServices.httpAuth({
+    defaultCredentials: mockCredentials.service(),
+  });
   const auth = mockServices.auth();
+  const config = mockServices.rootConfig({
+    data: { app: { baseUrl: 'http://localhost' } },
+  });
+  const catalog = new CatalogClient({
+    discoveryApi: mockServices.discovery.mock(),
+  });
 
   beforeAll(async () => {
     const router = await createRouter({
       logger: mockServices.logger.mock(),
       database: createDatabase(),
-      discovery,
       signals: signalService,
       userInfo,
+      config,
       httpAuth,
       auth,
+      catalog,
     });
     app = express().use(router);
   });
@@ -73,6 +84,82 @@ describe('createRouter', () => {
 
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({ status: 'ok' });
+    });
+  });
+
+  describe('POST /', () => {
+    const sendNotification = async (data: NotificationSendOptions) =>
+      request(app)
+        .post('/')
+        .send(data)
+        .set('Content-Type', 'application/json')
+        .set('Accept', 'application/json');
+
+    it('returns error on invalid link', async () => {
+      const javascriptXSS = await sendNotification({
+        recipients: {
+          type: 'broadcast',
+        },
+        payload: {
+          title: 'test notification',
+          // eslint-disable-next-line no-script-url
+          link: 'javascript:alert(document.domain)',
+        },
+      });
+
+      expect(javascriptXSS.status).toEqual(400);
+
+      const ftpLink = await sendNotification({
+        recipients: {
+          type: 'broadcast',
+        },
+        payload: {
+          title: 'test notification',
+          link: 'ftp://example.com',
+        },
+      });
+
+      expect(ftpLink.status).toEqual(400);
+    });
+
+    it('should accept absolute http links', async () => {
+      const httpLink = await sendNotification({
+        recipients: {
+          type: 'broadcast',
+        },
+        payload: {
+          title: 'test notification',
+          link: 'http://localhost/test',
+        },
+      });
+
+      expect(httpLink.status).toEqual(200);
+
+      const httpsLink = await sendNotification({
+        recipients: {
+          type: 'broadcast',
+        },
+        payload: {
+          title: 'test notification',
+          link: 'https://example.com',
+        },
+      });
+
+      expect(httpsLink.status).toEqual(200);
+    });
+
+    it('should accept relative links', async () => {
+      const catalogLink = await sendNotification({
+        recipients: {
+          type: 'broadcast',
+        },
+        payload: {
+          title: 'test notification',
+          link: '/catalog',
+        },
+      });
+
+      expect(catalogLink.status).toEqual(200);
     });
   });
 });

@@ -108,7 +108,7 @@ export type BitbucketPassportProfile = Profile & {
   };
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type BitbucketServerOAuthResult = {
   fullProfile: Profile;
   params: {
@@ -533,6 +533,7 @@ export const providers: Readonly<{
     resolvers: Readonly<{
       emailMatchingUserEntityProfileEmail: () => SignInResolver_2<OAuthResult>;
       emailLocalPartMatchingUserEntityName: () => SignInResolver_2<OAuthResult>;
+      userIdMatchingUserEntityAnnotation: () => SignInResolver_2<OAuthResult>;
       emailMatchingUserEntityAnnotation: () => SignInResolver_2<OAuthResult>;
     }>;
   }>;

@@ -667,7 +667,6 @@ describe('instantiateAppNodeTree', () => {
   describe('v2', () => {
     const simpleExtension = resolveExtensionDefinition(
       createExtension({
-        namespace: 'app',
         name: 'test',
         attachTo: { id: 'ignored', input: 'ignored' },
         output: [testDataRef, otherDataRef.optional()],
@@ -684,6 +683,7 @@ describe('instantiateAppNodeTree', () => {
           ];
         },
       }),
+      { namespace: 'app' },
     );
 
     function mirrorInputs(ctx: {
@@ -750,7 +750,6 @@ describe('instantiateAppNodeTree', () => {
         makeSpec(
           resolveExtensionDefinition(
             createExtension({
-              namespace: 'root-node',
               attachTo: { id: 'ignored', input: 'ignored' },
               inputs: {
                 test: createExtensionInput([testDataRef]),
@@ -758,6 +757,7 @@ describe('instantiateAppNodeTree', () => {
               output: [inputMirrorDataRef],
               factory: mirrorInputs,
             }),
+            { namespace: 'root-node' },
           ),
         ),
         makeSpec(simpleExtension, {
@@ -790,7 +790,6 @@ describe('instantiateAppNodeTree', () => {
           ...makeSpec(
             resolveExtensionDefinition(
               createExtension({
-                namespace: 'root-node',
                 attachTo: { id: 'ignored', input: 'ignored' },
                 inputs: {
                   test: createExtensionInput([testDataRef]),
@@ -798,6 +797,7 @@ describe('instantiateAppNodeTree', () => {
                 output: [inputMirrorDataRef],
                 factory: mirrorInputs,
               }),
+              { namespace: 'root-node' },
             ),
           ),
         },
@@ -873,7 +873,6 @@ describe('instantiateAppNodeTree', () => {
           node: makeNode(
             resolveExtensionDefinition(
               createExtension({
-                namespace: 'app',
                 name: 'test',
                 attachTo: { id: 'ignored', input: 'ignored' },
                 inputs: {
@@ -897,6 +896,7 @@ describe('instantiateAppNodeTree', () => {
                 output: [inputMirrorDataRef],
                 factory: mirrorInputs,
               }),
+              { namespace: 'app' },
             ),
           ),
         });
@@ -946,7 +946,6 @@ describe('instantiateAppNodeTree', () => {
             node: makeNode(
               resolveExtensionDefinition(
                 createExtension({
-                  namespace: 'app',
                   name: 'test',
                   attachTo: { id: 'ignored', input: 'ignored' },
                   output: [testDataRef],
@@ -956,6 +955,7 @@ describe('instantiateAppNodeTree', () => {
                     throw error;
                   },
                 }),
+                { namespace: 'app' },
               ),
             ),
             attachments: new Map(),
@@ -972,7 +972,6 @@ describe('instantiateAppNodeTree', () => {
             node: makeNode(
               resolveExtensionDefinition(
                 createExtension({
-                  namespace: 'app',
                   name: 'test',
                   attachTo: { id: 'ignored', input: 'ignored' },
                   output: [testDataRef, testDataRef],
@@ -980,6 +979,7 @@ describe('instantiateAppNodeTree', () => {
                     return [testDataRef('test'), testDataRef('test2')];
                   },
                 }),
+                { namespace: 'app' },
               ),
             ),
             attachments: new Map(),
@@ -996,7 +996,6 @@ describe('instantiateAppNodeTree', () => {
             node: makeNode(
               resolveExtensionDefinition(
                 createExtension({
-                  namespace: 'app',
                   name: 'test',
                   attachTo: { id: 'ignored', input: 'ignored' },
                   output: [testDataRef],
@@ -1004,6 +1003,7 @@ describe('instantiateAppNodeTree', () => {
                     return [] as any;
                   },
                 }),
+                { namespace: 'app' },
               ),
             ),
             attachments: new Map(),
@@ -1021,7 +1021,6 @@ describe('instantiateAppNodeTree', () => {
               resolveExtensionDefinition(
                 // @ts-expect-error
                 createExtension({
-                  namespace: 'app',
                   name: 'test',
                   attachTo: { id: 'ignored', input: 'ignored' },
                   output: [], // Output not declared
@@ -1029,6 +1028,7 @@ describe('instantiateAppNodeTree', () => {
                     return [testDataRef('test')] as any;
                   },
                 }),
+                { namespace: 'app' },
               ),
             ),
             attachments: new Map(),
@@ -1045,7 +1045,6 @@ describe('instantiateAppNodeTree', () => {
             node: makeNode(
               resolveExtensionDefinition(
                 createExtension({
-                  namespace: 'app',
                   name: 'test',
                   attachTo: { id: 'ignored', input: 'ignored' },
                   inputs: {
@@ -1056,6 +1055,7 @@ describe('instantiateAppNodeTree', () => {
                   output: [],
                   factory: () => [],
                 }),
+                { namespace: 'app' },
               ),
             ),
             attachments: new Map(),
@@ -1090,7 +1090,6 @@ describe('instantiateAppNodeTree', () => {
             node: makeNode(
               resolveExtensionDefinition(
                 createExtension({
-                  namespace: 'app',
                   name: 'parent',
                   attachTo: { id: 'ignored', input: 'ignored' },
                   inputs: {
@@ -1099,6 +1098,7 @@ describe('instantiateAppNodeTree', () => {
                   output: [],
                   factory: () => [],
                 }),
+                { namespace: 'app' },
               ),
             ),
           }),
@@ -1129,12 +1129,12 @@ describe('instantiateAppNodeTree', () => {
             node: makeNode(
               resolveExtensionDefinition(
                 createExtension({
-                  namespace: 'app',
                   name: 'parent',
                   attachTo: { id: 'ignored', input: 'ignored' },
                   output: [],
                   factory: () => [],
                 }),
+                { namespace: 'app' },
               ),
             ),
           }),
@@ -1162,7 +1162,6 @@ describe('instantiateAppNodeTree', () => {
             node: makeNode(
               resolveExtensionDefinition(
                 createExtension({
-                  namespace: 'app',
                   name: 'test',
                   attachTo: { id: 'ignored', input: 'ignored' },
                   inputs: {
@@ -1173,6 +1172,7 @@ describe('instantiateAppNodeTree', () => {
                   output: [],
                   factory: () => [],
                 }),
+                { namespace: 'app' },
               ),
             ),
           }),
@@ -1197,7 +1197,6 @@ describe('instantiateAppNodeTree', () => {
             node: makeNode(
               resolveExtensionDefinition(
                 createExtension({
-                  namespace: 'app',
                   name: 'test',
                   attachTo: { id: 'ignored', input: 'ignored' },
                   inputs: {
@@ -1209,6 +1208,7 @@ describe('instantiateAppNodeTree', () => {
                   output: [],
                   factory: () => [],
                 }),
+                { namespace: 'app' },
               ),
             ),
           }),
@@ -1227,7 +1227,6 @@ describe('instantiateAppNodeTree', () => {
             node: makeNode(
               resolveExtensionDefinition(
                 createExtension({
-                  namespace: 'app',
                   name: 'test',
                   attachTo: { id: 'ignored', input: 'ignored' },
                   inputs: {
@@ -1238,6 +1237,7 @@ describe('instantiateAppNodeTree', () => {
                   output: [],
                   factory: () => [],
                 }),
+                { namespace: 'app' },
               ),
             ),
           }),

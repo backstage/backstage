@@ -26,7 +26,6 @@ import express from 'express';
 import JSON5 from 'json5';
 import limiterFactory from 'p-limit';
 import { default as path, default as platformPath } from 'path';
-import { Logger } from 'winston';
 import {
   bulkStorageOperation,
   getCloudPathForLocalPath,
@@ -43,6 +42,7 @@ import {
   ReadinessResponse,
   TechDocsMetadata,
 } from './types';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 // The number of batches that may be ongoing at the same time.
 const BATCH_CONCURRENCY = 3;
@@ -51,13 +51,13 @@ export class AzureBlobStoragePublish implements PublisherBase {
   private readonly storageClient: BlobServiceClient;
   private readonly containerName: string;
   private readonly legacyPathCasing: boolean;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
 
   constructor(options: {
     storageClient: BlobServiceClient;
     containerName: string;
     legacyPathCasing: boolean;
-    logger: Logger;
+    logger: LoggerService;
   }) {
     this.storageClient = options.storageClient;
     this.containerName = options.containerName;
@@ -65,7 +65,7 @@ export class AzureBlobStoragePublish implements PublisherBase {
     this.logger = options.logger;
   }
 
-  static fromConfig(config: Config, logger: Logger): PublisherBase {
+  static fromConfig(config: Config, logger: LoggerService): PublisherBase {
     let storageClient: BlobServiceClient;
     let containerName = '';
     try {
@@ -421,7 +421,7 @@ export class AzureBlobStoragePublish implements PublisherBase {
 
     if (originalPath === newPath) return;
     try {
-      this.logger.verbose(`Migrating ${originalPath}`);
+      this.logger.debug(`Migrating ${originalPath}`);
       await this.renameBlob(originalPath, newPath, removeOriginal);
     } catch (e) {
       assertError(e);

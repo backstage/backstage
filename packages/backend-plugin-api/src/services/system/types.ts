@@ -17,7 +17,9 @@
 import { BackendFeature } from '../../types';
 
 /**
- * TODO
+ * A reference to a backend service. You can use these references to mark
+ * dependencies on services and having their implementations injected
+ * automatically.
  *
  * @public
  */
@@ -39,6 +41,11 @@ export type ServiceRef<
    */
   scope: TScope;
 
+  /**
+   * Marks whether the service is a multiton or not. Multiton services the
+   * opposite of singletons - they can be provided many times, and when depended
+   * on, you receive an array of all provided instances.
+   */
   multiton?: TInstances extends 'multiton' ? true : false;
 
   /**
@@ -142,6 +149,15 @@ export function createServiceRef<
     toString() {
       return `serviceRef{${options.id}}`;
     },
+    toJSON() {
+      // This avoids accidental calls to T happening e.g. in tests
+      return {
+        $$type: '@backstage/ServiceRef',
+        id,
+        scope,
+        multiton,
+      };
+    },
     $$type: '@backstage/ServiceRef',
     __defaultFactory: defaultFactory,
   } as ServiceRef<TService, typeof scope, TInstances> & {
@@ -165,7 +181,7 @@ type ServiceRefsToInstances<
 
 /** @public */
 export interface RootServiceFactoryOptions<
-  TService, // TODO(Rugvip): Can we forward the entire service ref type here instead of forwarding each type arg once the callback form is gone?
+  TService,
   TInstances extends 'singleton' | 'multiton',
   TImpl extends TService,
   TDeps extends { [name in string]: ServiceRef<unknown> },

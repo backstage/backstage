@@ -1,6 +1,6 @@
 {
   "name": "@internal/plugin-todo-list-backend",
-  "version": "1.0.30",
+  "version": "1.0.31-next.1",
   "backstage": {
     "role": "backend-plugin",
     "pluginId": "todo-list",
@@ -54,6 +54,6 @@
     "@backstage/cli": "workspace:^",
     "@types/supertest": "^2.0.8",
     "@types/uuid": "^9.0.0",
-    "supertest": "^6.1.6"
+    "supertest": "^7.0.0"
   }
 }

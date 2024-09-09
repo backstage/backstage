@@ -16,14 +16,13 @@
 
 import React from 'react';
 import { AppRootWrapperBlueprint } from './AppRootWrapperBlueprint';
-import { createExtensionTester } from '@backstage/frontend-test-utils';
-import { PageBlueprint } from './PageBlueprint';
-import { waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import {
   coreExtensionData,
   createExtension,
   createExtensionInput,
 } from '../wiring';
+import { renderInTestApp } from '@backstage/frontend-test-utils';
 
 describe('AppRootWrapperBlueprint', () => {
   it('should return an extension with sensible defaults', () => {
@@ -36,6 +35,7 @@ describe('AppRootWrapperBlueprint', () => {
     expect(extension).toMatchInlineSnapshot(`
       {
         "$$type": "@backstage/ExtensionDefinition",
+        "T": undefined,
         "attachTo": {
           "id": "app/root",
           "input": "wrappers",
@@ -59,29 +59,19 @@ describe('AppRootWrapperBlueprint', () => {
 
   it('should render the simple component wrapper', async () => {
     const extension = AppRootWrapperBlueprint.make({
+      name: 'test',
       params: {
         Component: () => <div>Hello</div>,
       },
     });
 
-    const { getByText } = createExtensionTester(
-      PageBlueprint.make({
-        params: {
-          defaultPath: '/',
-          loader: async () => <div />,
-        },
-      }),
-    )
-      .add(extension)
-      .render();
+    renderInTestApp(<div />, { extensions: [extension] });
 
-    await waitFor(() => expect(getByText('Hello')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText('Hello')).toBeInTheDocument());
   });
 
   it('should render the complex component wrapper', async () => {
     const extension = AppRootWrapperBlueprint.makeWithOverrides({
-      namespace: 'ns',
-      name: 'test',
       config: {
         schema: {
           name: z => z.string(),
@@ -104,28 +94,30 @@ describe('AppRootWrapperBlueprint', () => {
       },
     });
 
-    const { getByText, getByTestId } = createExtensionTester(
-      PageBlueprint.make({
-        params: {
-          defaultPath: '/',
-          loader: async () => <div>Hi</div>,
-        },
-      }),
-    )
-      .add(extension, { config: { name: 'Robin' } })
-      .add(
+    renderInTestApp(<div />, {
+      extensions: [
+        extension,
         createExtension({
-          attachTo: { id: 'app-root-wrapper:ns/test', input: 'children' },
+          name: 'test-child',
+          attachTo: { id: 'app-root-wrapper:test', input: 'children' },
           output: [coreExtensionData.reactElement],
           factory: () => [coreExtensionData.reactElement(<div>Its Me</div>)],
         }),
-      )
-      .render();
+      ],
+      config: {
+        app: {
+          extensions: [
+            {
+              'app-root-wrapper:test': { config: { name: 'Robin' } },
+            },
+          ],
+        },
+      },
+    });
 
     await waitFor(() => {
-      expect(getByText('Hi')).toBeInTheDocument();
-      expect(getByTestId('Robin-1')).toBeInTheDocument();
-      expect(getByText('Its Me')).toBeInTheDocument();
+      expect(screen.getByTestId('Robin-1')).toBeInTheDocument();
+      expect(screen.getByText('Its Me')).toBeInTheDocument();
     });
   });
 });

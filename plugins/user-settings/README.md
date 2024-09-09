@@ -91,7 +91,7 @@ To standardize the UI of all setting tabs,
 make sure you use a similar component structure as the other tabs.
 You can take a look at
 [the example extra tab](https://github.com/backstage/backstage/blob/master/packages/app/src/components/advancedSettings/AdvancedSettings.tsx)
-we have created in Backstage's demo app.
+we have created in Backstage's example app.
 
 To change the layout altogether, create a custom page in `packages/app/src/components/user-settings/SettingsPage.tsx`:
 

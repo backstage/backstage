@@ -15,11 +15,11 @@
  */
 
 import { AuthenticationError } from '@backstage/errors';
-import { AwsAlbClaims, AwsAlbResult } from './types';
+import { AwsAlbClaims, AwsAlbProtectedHeader, AwsAlbResult } from './types';
 import { jwtVerify } from 'jose';
 import {
-  PassportProfile,
   createProxyAuthenticator,
+  PassportProfile,
 } from '@backstage/plugin-auth-node';
 import NodeCache from 'node-cache';
 import { makeProfileInfo, provisionKeyCache } from './helpers';
@@ -60,12 +60,17 @@ export const awsAlbAuthenticator = createProxyAuthenticator({
 
     try {
       const verifyResult = await jwtVerify(jwt, getKey);
+      const header = verifyResult.protectedHeader as AwsAlbProtectedHeader;
       const claims = verifyResult.payload as AwsAlbClaims;
 
       if (claims?.iss !== issuer) {
         throw new AuthenticationError('Issuer mismatch on JWT token');
-      } else if (signer && claims?.signer !== signer) {
+      } else if (signer && header?.signer !== signer) {
         throw new AuthenticationError('Signer mismatch on JWT token');
+      }
+
+      if (!claims.email) {
+        throw new AuthenticationError(`Missing email in the JWT token`);
       }
 
       const fullProfile: PassportProfile = {

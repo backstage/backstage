@@ -122,25 +122,25 @@ export async function defaultUserTransformer(
   user: MicrosoftGraph.User,
   userPhoto?: string,
 ): Promise<UserEntity | undefined> {
-  if (!user.id || !user.displayName || !user.mail) {
+  if (!user.id || !user.displayName) {
     return undefined;
   }
 
-  const name = normalizeEntityName(user.mail);
+  const name = user.mail
+    ? normalizeEntityName(user.mail)
+    : normalizeEntityName(user.userPrincipalName!);
   const entity: UserEntity = {
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'User',
     metadata: {
       name,
       annotations: {
-        [MICROSOFT_EMAIL_ANNOTATION]: user.mail!,
         [MICROSOFT_GRAPH_USER_ID_ANNOTATION]: user.id!,
       },
     },
     spec: {
       profile: {
         displayName: user.displayName!,
-        email: user.mail!,
 
         // TODO: Additional fields?
         // jobTitle: user.jobTitle || undefined,
@@ -150,6 +150,11 @@ export async function defaultUserTransformer(
       memberOf: [],
     },
   };
+
+  if (user.mail) {
+    entity.metadata.annotations![MICROSOFT_EMAIL_ANNOTATION] = user.mail;
+    entity.spec.profile!.email = user.mail;
+  }
 
   if (userPhoto) {
     entity.spec.profile!.picture = userPhoto;

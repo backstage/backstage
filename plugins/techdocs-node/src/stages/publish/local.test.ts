@@ -13,10 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  loggerToWinstonLogger,
-  PluginEndpointDiscovery,
-} from '@backstage/backend-common';
 import { overridePackagePathResolution } from '@backstage/backend-plugin-api/testUtils';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
@@ -28,6 +24,7 @@ import {
   createMockDirectory,
   mockServices,
 } from '@backstage/backend-test-utils';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 
 const createMockEntity = (annotations = {}, lowerCase = false) => {
   return {
@@ -42,7 +39,7 @@ const createMockEntity = (annotations = {}, lowerCase = false) => {
   };
 };
 
-const testDiscovery: jest.Mocked<PluginEndpointDiscovery> = {
+const testDiscovery: jest.Mocked<DiscoveryService> = {
   getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7007/api/techdocs'),
   getExternalBaseUrl: jest.fn(),
 };
@@ -56,7 +53,7 @@ overridePackagePathResolution({
   },
 });
 
-const logger = loggerToWinstonLogger(mockServices.logger.mock());
+const logger = mockServices.logger.mock();
 
 describe('local publisher', () => {
   const mockDir = createMockDirectory();

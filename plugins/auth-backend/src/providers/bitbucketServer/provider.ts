@@ -14,40 +14,28 @@
  * limitations under the License.
  */
 
-import {
-  encodeState,
-  OAuthAdapter,
-  OAuthEnvironmentHandler,
-  OAuthHandlers,
-  OAuthProviderOptions,
-  OAuthRefreshRequest,
-  OAuthResponse,
-  OAuthStartRequest,
-} from '../../lib/oauth';
-import { Strategy as OAuth2Strategy, VerifyCallback } from 'passport-oauth2';
-import {
-  executeFetchUserProfileStrategy,
-  executeFrameHandlerStrategy,
-  executeRedirectStrategy,
-  executeRefreshTokenStrategy,
-  makeProfileInfo,
-} from '../../lib/passport';
-import { AuthHandler, OAuthStartResponse } from '../types';
-import express from 'express';
-import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 import { Profile as PassportProfile } from 'passport';
-import { commonByEmailResolver } from '../resolvers';
-import fetch from 'node-fetch';
 import {
   AuthResolverContext,
+  createOAuthProviderFactory,
   SignInResolver,
 } from '@backstage/plugin-auth-node';
+import {
+  bitbucketServerAuthenticator,
+  bitbucketServerSignInResolvers,
+} from '@backstage/plugin-auth-backend-module-bitbucket-server-provider';
+import { OAuthProviderOptions } from '../../lib/oauth';
+import {
+  adaptLegacyOAuthHandler,
+  adaptLegacyOAuthSignInResolver,
+} from '../../lib/legacy';
+import { AuthHandler } from '../types';
+import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 
-type PrivateInfo = {
-  refreshToken: string;
-};
-
-/** @public */
+/**
+ * @public
+ * @deprecated The Bitbucket Server auth provider was extracted to `@backstage/plugin-auth-backend-module-bitbucket-server-provider`.
+ */
 export type BitbucketServerOAuthResult = {
   fullProfile: PassportProfile;
   params: {
@@ -60,6 +48,10 @@ export type BitbucketServerOAuthResult = {
   refreshToken?: string;
 };
 
+/**
+ * @public
+ * @deprecated The Bitbucket Server auth provider was extracted to `@backstage/plugin-auth-backend-module-bitbucket-server-provider`.
+ */
 export type BitbucketServerAuthProviderOptions = OAuthProviderOptions & {
   host: string;
   authorizationUrl: string;
@@ -68,176 +60,6 @@ export type BitbucketServerAuthProviderOptions = OAuthProviderOptions & {
   signInResolver?: SignInResolver<BitbucketServerOAuthResult>;
   resolverContext: AuthResolverContext;
 };
-
-export class BitbucketServerAuthProvider implements OAuthHandlers {
-  private readonly signInResolver?: SignInResolver<BitbucketServerOAuthResult>;
-  private readonly authHandler: AuthHandler<BitbucketServerOAuthResult>;
-  private readonly resolverContext: AuthResolverContext;
-  private readonly strategy: OAuth2Strategy;
-  private readonly host: string;
-
-  constructor(options: BitbucketServerAuthProviderOptions) {
-    this.signInResolver = options.signInResolver;
-    this.authHandler = options.authHandler;
-    this.resolverContext = options.resolverContext;
-    this.strategy = new OAuth2Strategy(
-      {
-        authorizationURL: options.authorizationUrl,
-        tokenURL: options.tokenUrl,
-        clientID: options.clientId,
-        clientSecret: options.clientSecret,
-        callbackURL: options.callbackUrl,
-      },
-      (
-        accessToken: string,
-        refreshToken: string,
-        params: any,
-        fullProfile: PassportProfile,
-        done: VerifyCallback,
-      ) => {
-        done(undefined, { fullProfile, params, accessToken }, { refreshToken });
-      },
-    );
-    this.host = options.host;
-  }
-
-  async start(req: OAuthStartRequest): Promise<OAuthStartResponse> {
-    return await executeRedirectStrategy(req, this.strategy, {
-      accessType: 'offline',
-      prompt: 'consent',
-      scope: req.scope,
-      state: encodeState(req.state),
-    });
-  }
-
-  async handler(
-    req: express.Request,
-  ): Promise<{ response: OAuthResponse; refreshToken?: string }> {
-    const { result, privateInfo } = await executeFrameHandlerStrategy<
-      BitbucketServerOAuthResult,
-      PrivateInfo
-    >(req, this.strategy);
-
-    return {
-      response: await this.handleResult(result),
-      refreshToken: privateInfo.refreshToken,
-    };
-  }
-
-  async refresh(
-    req: OAuthRefreshRequest,
-  ): Promise<{ response: OAuthResponse; refreshToken?: string }> {
-    const { accessToken, refreshToken, params } =
-      await executeRefreshTokenStrategy(
-        this.strategy,
-        req.refreshToken,
-        req.scope,
-      );
-    const fullProfile = await executeFetchUserProfileStrategy(
-      this.strategy,
-      accessToken,
-    );
-    return {
-      response: await this.handleResult({
-        fullProfile,
-        params,
-        accessToken,
-      }),
-      refreshToken,
-    };
-  }
-
-  private async handleResult(
-    result: BitbucketServerOAuthResult,
-  ): Promise<OAuthResponse> {
-    // The OAuth2 strategy does not return a user profile -> let's fetch it before calling the auth handler
-    result.fullProfile = await this.fetchProfile(result);
-    const { profile } = await this.authHandler(result, this.resolverContext);
-
-    let backstageIdentity = undefined;
-    if (this.signInResolver) {
-      backstageIdentity = await this.signInResolver(
-        { result, profile },
-        this.resolverContext,
-      );
-    }
-
-    return {
-      providerInfo: {
-        accessToken: result.accessToken,
-        scope: result.params.scope,
-        expiresInSeconds: result.params.expires_in,
-      },
-      profile,
-      backstageIdentity,
-    };
-  }
-
-  private async fetchProfile(
-    result: BitbucketServerOAuthResult,
-  ): Promise<PassportProfile> {
-    // Get current user name
-    let whoAmIResponse;
-    try {
-      whoAmIResponse = await fetch(
-        `https://${this.host}/plugins/servlet/applinks/whoami`,
-        {
-          headers: {
-            Authorization: `Bearer ${result.accessToken}`,
-          },
-        },
-      );
-    } catch (e) {
-      throw new Error(`Failed to retrieve the username of the logged in user`);
-    }
-
-    // A response.ok check here would be worthless as the Bitbucket API always returns 200 OK for this call
-    const username = whoAmIResponse.headers.get('X-Ausername');
-    if (!username) {
-      throw new Error(`Failed to retrieve the username of the logged in user`);
-    }
-
-    let userResponse;
-    try {
-      userResponse = await fetch(
-        `https://${this.host}/rest/api/latest/users/${username}?avatarSize=256`,
-        {
-          headers: {
-            Authorization: `Bearer ${result.accessToken}`,
-          },
-        },
-      );
-    } catch (e) {
-      throw new Error(`Failed to retrieve the user '${username}'`);
-    }
-
-    if (!userResponse.ok) {
-      throw new Error(`Failed to retrieve the user '${username}'`);
-    }
-
-    const user = await userResponse.json();
-
-    const passportProfile = {
-      provider: 'bitbucketServer',
-      id: user.id.toString(),
-      displayName: user.displayName,
-      username: user.name,
-      emails: [
-        {
-          value: user.emailAddress,
-        },
-      ],
-    } as PassportProfile;
-
-    if (user.avatarUrl) {
-      passportProfile.photos = [
-        { value: `https://${this.host}${user.avatarUrl}` },
-      ];
-    }
-
-    return passportProfile;
-  }
-}
 
 export const bitbucketServer = createAuthProviderIntegration({
   create(options?: {
@@ -257,48 +79,38 @@ export const bitbucketServer = createAuthProviderIntegration({
       resolver: SignInResolver<BitbucketServerOAuthResult>;
     };
   }) {
-    return ({ providerId, globalConfig, config, resolverContext }) =>
-      OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-        const clientId = envConfig.getString('clientId');
-        const clientSecret = envConfig.getString('clientSecret');
-        const host = envConfig.getString('host');
-        const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
-        const callbackUrl =
-          customCallbackUrl ||
-          `${globalConfig.baseUrl}/${providerId}/handler/frame`;
-        const authorizationUrl = `https://${host}/rest/oauth2/latest/authorize`;
-        const tokenUrl = `https://${host}/rest/oauth2/latest/token`;
-
-        const authHandler: AuthHandler<BitbucketServerOAuthResult> =
-          options?.authHandler
-            ? options.authHandler
-            : async ({ fullProfile }) => ({
-                profile: makeProfileInfo(fullProfile),
-              });
-
-        const provider = new BitbucketServerAuthProvider({
-          callbackUrl,
-          clientId,
-          clientSecret,
-          host,
-          authorizationUrl,
-          tokenUrl,
-          authHandler,
-          signInResolver: options?.signIn?.resolver,
-          resolverContext,
-        });
-
-        return OAuthAdapter.fromConfig(globalConfig, provider, {
-          providerId,
-          callbackUrl,
-        });
-      });
+    return createOAuthProviderFactory({
+      authenticator: bitbucketServerAuthenticator,
+      profileTransform: adaptLegacyOAuthHandler(options?.authHandler),
+      signInResolver: adaptLegacyOAuthSignInResolver(options?.signIn?.resolver),
+    });
   },
   resolvers: {
     /**
      * Looks up the user by matching their email to the entity email.
      */
     emailMatchingUserEntityProfileEmail:
-      (): SignInResolver<BitbucketServerOAuthResult> => commonByEmailResolver,
+      (): SignInResolver<BitbucketServerOAuthResult> => {
+        const resolver =
+          bitbucketServerSignInResolvers.emailMatchingUserEntityProfileEmail();
+        return async (info, ctx) => {
+          return resolver(
+            {
+              profile: info.profile,
+              result: {
+                fullProfile: info.result.fullProfile,
+                session: {
+                  accessToken: info.result.accessToken,
+                  tokenType: info.result.params.token_type ?? 'bearer',
+                  scope: info.result.params.scope,
+                  expiresInSeconds: info.result.params.expires_in,
+                  refreshToken: info.result.refreshToken,
+                },
+              },
+            },
+            ctx,
+          );
+        };
+      },
   },
 });

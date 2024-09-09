@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { errorHandler } from '@backstage/backend-common';
 import { AuthenticationError, InputError } from '@backstage/errors';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import express, { Request } from 'express';
@@ -155,8 +154,6 @@ export async function createRouterInternal(
 
     res.status(204).end();
   });
-
-  router.use(errorHandler());
 
   return router;
 }

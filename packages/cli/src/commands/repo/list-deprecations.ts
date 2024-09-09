@@ -17,7 +17,7 @@
 import chalk from 'chalk';
 import { ESLint } from 'eslint';
 import { OptionValues } from 'commander';
-import { join as joinPath, relative as relativePath } from 'path';
+import { relative as relativePath } from 'path';
 import { PackageGraph } from '@backstage/cli-node';
 import { paths } from '../../lib/paths';
 
@@ -45,7 +45,7 @@ export async function command(opts: OptionValues) {
 
   const deprecations = [];
   for (const [index, pkg] of packages.entries()) {
-    const results = await eslint.lintFiles(joinPath(pkg.dir, 'src'));
+    const results = await eslint.lintFiles(pkg.dir);
     for (const result of results) {
       for (const message of result.messages) {
         if (message.ruleId !== 'deprecation/deprecation') {

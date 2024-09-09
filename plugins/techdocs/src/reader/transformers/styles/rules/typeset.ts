@@ -113,6 +113,7 @@ ${headings.reduce<string>((style, heading) => {
   border: 1px solid var(--md-default-fg-color);
   border-bottom: none;
   border-collapse: collapse;
+  border-radius: ${theme.shape.borderRadius}px;
 }
 .md-typeset table:not([class]) th {
   font-weight: bold;

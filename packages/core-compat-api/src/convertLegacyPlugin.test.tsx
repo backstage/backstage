@@ -24,7 +24,7 @@ import {
 import { convertLegacyPlugin } from './convertLegacyPlugin';
 import { PageBlueprint } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalBackstagePlugin } from '../../frontend-plugin-api/src/wiring/createFrontendPlugin';
+import { toInternalFrontendPlugin } from '../../frontend-plugin-api/src/wiring/createFrontendPlugin';
 
 describe('convertLegacyPlugin', () => {
   it('should convert a plain legacy plugin to a new plugin', () => {
@@ -34,7 +34,7 @@ describe('convertLegacyPlugin', () => {
       }),
     ).toMatchInlineSnapshot(`
       {
-        "$$type": "@backstage/BackstagePlugin",
+        "$$type": "@backstage/FrontendPlugin",
         "extensions": [],
         "externalRoutes": {},
         "featureFlags": [],
@@ -73,7 +73,7 @@ describe('convertLegacyPlugin', () => {
       },
     );
 
-    const internalConverted = toInternalBackstagePlugin(converted);
+    const internalConverted = toInternalFrontendPlugin(converted);
 
     expect(internalConverted.id).toBe('test');
     expect(internalConverted.routes).toEqual({
@@ -84,7 +84,7 @@ describe('convertLegacyPlugin', () => {
     });
     expect(internalConverted.featureFlags).toEqual([{ name: 'test-flag' }]);
     expect(internalConverted.extensions.map(e => e.id)).toEqual([
-      'api:plugin.test.client',
+      'api:test/plugin.test.client',
       'page:test',
     ]);
   });

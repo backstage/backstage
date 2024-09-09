@@ -132,21 +132,12 @@ export type SearchAutocompleteProps<Option> = Omit<
 
 // @public
 export const SearchBar: React_2.ForwardRefExoticComponent<
-  Omit<
-    Omit<Partial<SearchBarBaseProps>, 'ref'> &
-      React_2.RefAttributes<HTMLDivElement>,
-    'ref'
-  > &
-    React_2.RefAttributes<HTMLDivElement>
+  Omit<Partial<SearchBarBaseProps>, 'ref'> & React_2.RefAttributes<unknown>
 >;
 
 // @public
 export const SearchBarBase: React_2.ForwardRefExoticComponent<
-  Omit<
-    Omit<SearchBarBaseProps, 'ref'> & React_2.RefAttributes<HTMLDivElement>,
-    'ref'
-  > &
-    React_2.RefAttributes<HTMLDivElement>
+  Omit<SearchBarBaseProps, 'ref'> & React_2.RefAttributes<unknown>
 >;
 
 // @public

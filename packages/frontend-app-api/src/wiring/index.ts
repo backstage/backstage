@@ -18,4 +18,5 @@ export {
   createApp,
   createSpecializedApp,
   type CreateAppFeatureLoader,
-} from './createApp';
+} from './createSpecializedApp';
+export * from './types';

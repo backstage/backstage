@@ -43,6 +43,7 @@ describe('PageBlueprint', () => {
     expect(myPage).toMatchInlineSnapshot(`
       {
         "$$type": "@backstage/ExtensionDefinition",
+        "T": undefined,
         "attachTo": {
           "id": "app/routes",
           "input": "routes",
@@ -103,7 +104,7 @@ describe('PageBlueprint', () => {
 
     expect(tester.get(coreExtensionData.routeRef)).toBe(mockRouteRef);
 
-    const { getByTestId } = tester.render();
+    const { getByTestId } = renderInTestApp(tester.reactElement());
 
     await waitFor(() => expect(getByTestId('test')).toBeInTheDocument());
   });

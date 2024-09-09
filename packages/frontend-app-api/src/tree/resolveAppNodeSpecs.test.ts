@@ -16,6 +16,7 @@
 
 import {
   createExtensionOverrides,
+  createFrontendModule,
   createFrontendPlugin,
   Extension,
   ExtensionDefinition,
@@ -38,18 +39,19 @@ function makeExt(
 }
 
 function makeExtDef(
-  name: string,
+  name: string | undefined = undefined,
   status: 'disabled' | 'enabled' = 'enabled',
   attachId: string = 'root',
 ) {
   return {
     $$type: '@backstage/ExtensionDefinition',
+    T: undefined as any,
     version: 'v1',
     name,
     attachTo: { id: attachId, input: 'default' },
     disabled: status === 'disabled',
-    override: () => ({} as ExtensionDefinition<unknown>),
-  } as ExtensionDefinition<unknown>;
+    override: () => ({} as ExtensionDefinition),
+  } as ExtensionDefinition;
 }
 
 describe('resolveAppNodeSpecs', () => {
@@ -323,6 +325,56 @@ describe('resolveAppNodeSpecs', () => {
     ]);
   });
 
+  it('should apply module overrides', () => {
+    const plugin = createFrontendPlugin({
+      id: 'test',
+      extensions: [makeExtDef('a'), makeExtDef('b')],
+    });
+    const aOverride = makeExt('test/a', 'enabled', 'other');
+    const bOverride = makeExt('test/b', 'disabled', 'other');
+    const cOverride = makeExt('test/c');
+
+    expect(
+      resolveAppNodeSpecs({
+        features: [
+          plugin,
+          createFrontendModule({
+            pluginId: 'test',
+            extensions: [
+              makeExtDef('a', 'enabled', 'other'),
+              makeExtDef('b', 'disabled', 'other'),
+              makeExtDef('c'),
+            ],
+          }),
+        ],
+        builtinExtensions: [],
+        parameters: [],
+      }),
+    ).toEqual([
+      {
+        id: 'test/a',
+        extension: expect.objectContaining(aOverride),
+        attachTo: { id: 'other', input: 'default' },
+        source: plugin,
+        disabled: false,
+      },
+      {
+        id: 'test/b',
+        extension: expect.objectContaining(bOverride),
+        attachTo: { id: 'other', input: 'default' },
+        source: plugin,
+        disabled: true,
+      },
+      {
+        id: 'test/c',
+        extension: expect.objectContaining(cOverride),
+        attachTo: { id: 'root', input: 'default' },
+        source: plugin,
+        disabled: false,
+      },
+    ]);
+  });
+
   it('should use order from configuration when rather than overrides', () => {
     const result = resolveAppNodeSpecs({
       features: [
@@ -339,6 +391,40 @@ describe('resolveAppNodeSpecs', () => {
             makeExtDef('test/c', 'disabled'),
             makeExtDef('test/b', 'disabled'),
             makeExtDef('test/a', 'disabled'),
+          ],
+        }),
+      ],
+      builtinExtensions: [],
+      parameters: ['test/b', 'test/c', 'test/a'].map(id => ({
+        id,
+        disabled: false,
+      })),
+    });
+
+    expect(result.map(r => r.extension.id)).toEqual([
+      'test/b',
+      'test/c',
+      'test/a',
+    ]);
+  });
+
+  it('should use order from configuration when rather than modules', () => {
+    const result = resolveAppNodeSpecs({
+      features: [
+        createFrontendPlugin({
+          id: 'test',
+          extensions: [
+            makeExtDef('a', 'disabled'),
+            makeExtDef('b', 'disabled'),
+            makeExtDef('c', 'disabled'),
+          ],
+        }),
+        createFrontendModule({
+          pluginId: 'test',
+          extensions: [
+            makeExtDef('c', 'disabled'),
+            makeExtDef('b', 'disabled'),
+            makeExtDef('a', 'disabled'),
           ],
         }),
       ],
@@ -386,6 +472,28 @@ describe('resolveAppNodeSpecs', () => {
       }),
     ).toThrow(
       "It is forbidden to override the following extension(s): 'forbidden', which is done by one or more extension overrides",
+    );
+  });
+
+  it('throws an error when a forbidden extension is overridden by module', () => {
+    expect(() =>
+      resolveAppNodeSpecs({
+        features: [
+          createFrontendPlugin({
+            id: 'forbidden',
+            extensions: [],
+          }),
+          createFrontendModule({
+            pluginId: 'forbidden',
+            extensions: [makeExtDef()],
+          }),
+        ],
+        builtinExtensions: [],
+        parameters: [],
+        forbidden: new Set(['forbidden']),
+      }),
+    ).toThrow(
+      "It is forbidden to override the following extension(s): 'forbidden', which is done by a module for the following plugin(s): 'forbidden'",
     );
   });
 

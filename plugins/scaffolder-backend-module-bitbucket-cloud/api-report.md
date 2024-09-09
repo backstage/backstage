@@ -42,4 +42,22 @@ export function createPublishBitbucketCloudAction(options: {
   },
   JsonObject
 >;
+
+// @public
+export function createPublishBitbucketCloudPullRequestAction(options: {
+  integrations: ScmIntegrationRegistry;
+  config: Config;
+}): TemplateAction<
+  {
+    repoUrl: string;
+    title: string;
+    description?: string | undefined;
+    targetBranch?: string | undefined;
+    sourceBranch: string;
+    token?: string | undefined;
+    gitAuthorName?: string | undefined;
+    gitAuthorEmail?: string | undefined;
+  },
+  JsonObject
+>;
 ```

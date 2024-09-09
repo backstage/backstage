@@ -42,37 +42,41 @@ import { renderInTestApp as renderInOldTestApp } from '@backstage/test-utils';
 describe('BackwardsCompatProvider', () => {
   it('should convert the app context', () => {
     // TODO(Rugvip): Replace with the new renderInTestApp once it's available, and have some plugins
-    createExtensionTester(
-      createExtension({
-        attachTo: { id: 'ignored', input: 'ignored' },
-        output: [coreExtensionData.reactElement],
-        factory() {
-          function Component() {
-            const app = useApp();
-            return (
-              <div data-testid="ctx">
-                plugins:
-                {app
-                  .getPlugins()
-                  .map(p => p.getId())
-                  .join(', ')}
-                {'\n'}
-                components: {Object.keys(app.getComponents()).join(', ')}
-                {'\n'}
-                icons: {Object.keys(app.getSystemIcons()).join(', ')}
-              </div>
-            );
-          }
+    renderInNewTestApp(
+      createExtensionTester(
+        createExtension({
+          attachTo: { id: 'ignored', input: 'ignored' },
+          output: [coreExtensionData.reactElement],
+          factory() {
+            function Component() {
+              const app = useApp();
+              return (
+                <div data-testid="ctx">
+                  plugins:{' '}
+                  {app
+                    .getPlugins()
+                    .map(p => p.getId())
+                    .join(', ')}
+                  {'\n'}
+                  components: {Object.keys(app.getComponents()).join(', ')}
+                  {'\n'}
+                  icons: {Object.keys(app.getSystemIcons()).join(', ')}
+                </div>
+              );
+            }
 
-          return [coreExtensionData.reactElement(compatWrapper(<Component />))];
-        },
-      }),
-    ).render();
+            return [
+              coreExtensionData.reactElement(compatWrapper(<Component />)),
+            ];
+          },
+        }),
+      ).reactElement(),
+    );
 
     expect(screen.getByTestId('ctx').textContent).toMatchInlineSnapshot(`
-      "plugins:
+      "plugins: test, app
       components: NotFoundErrorPage, BootErrorPage, Progress, Router, ErrorBoundaryFallback
-      icons: brokenImage, catalog, scaffolder, techdocs, search, chat, dashboard, docs, email, github, group, help, kind:api, kind:component, kind:domain, kind:group, kind:location, kind:system, kind:user, kind:resource, kind:template, user, warning"
+      icons: brokenImage, catalog, scaffolder, techdocs, search, chat, dashboard, docs, email, github, group, help, kind:api, kind:component, kind:domain, kind:group, kind:location, kind:system, kind:user, kind:resource, kind:template, user, warning, star, unstarred"
     `);
   });
 
@@ -116,7 +120,7 @@ describe('ForwardsCompatProvider', () => {
 
     expect(screen.getByTestId('ctx').textContent).toMatchInlineSnapshot(`
       "components: progress=true, notFoundErrorPage=true, errorBoundaryFallback=true
-      icons: kind:api, kind:component, kind:domain, kind:group, kind:location, kind:system, kind:user, kind:resource, kind:template, brokenImage, catalog, scaffolder, techdocs, search, chat, dashboard, docs, email, github, group, help, user, warning"
+      icons: kind:api, kind:component, kind:domain, kind:group, kind:location, kind:system, kind:user, kind:resource, kind:template, brokenImage, catalog, scaffolder, techdocs, search, chat, dashboard, docs, email, github, group, help, user, warning, star, unstarred"
     `);
   });
 

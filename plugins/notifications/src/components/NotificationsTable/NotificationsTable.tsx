@@ -34,10 +34,9 @@ import {
 } from '@backstage/core-components';
 
 import { notificationsApiRef } from '../../api';
-
-import { SeverityIcon } from './SeverityIcon';
 import { SelectAll } from './SelectAll';
 import { BulkActions } from './BulkActions';
+import { NotificationIcon } from './NotificationIcon';
 
 const ThrottleDelayMs = 1000;
 
@@ -184,7 +183,6 @@ export const NotificationsTable = ({
 
   const compactColumns = React.useMemo((): TableColumn<Notification>[] => {
     const showToolbar = notifications.length > 0;
-
     return [
       {
         /* selection column */
@@ -220,7 +218,7 @@ export const NotificationsTable = ({
           return (
             <Grid container>
               <Grid item className={classes.severityItem}>
-                <SeverityIcon severity={notification.payload?.severity} />
+                <NotificationIcon notification={notification} />
               </Grid>
               <Grid item xs={11}>
                 <Box>
