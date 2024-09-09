@@ -15,7 +15,7 @@
  */
 
 import Auth0InternalStrategy from 'passport-auth0';
-import { StateStore } from 'passport-oauth2';
+import type { StateStore } from 'passport-oauth2';
 
 /** @public */
 export interface Auth0StrategyOptionsWithRequest {

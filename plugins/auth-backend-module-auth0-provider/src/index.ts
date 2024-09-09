@@ -20,9 +20,5 @@
  * @packageDocumentation
  */
 
-export {
-  Auth0Strategy,
-  type Auth0StrategyOptionsWithRequest,
-} from './strategy';
 export { auth0Authenticator } from './authenticator';
 export { authModuleAuth0Provider as default } from './module';
