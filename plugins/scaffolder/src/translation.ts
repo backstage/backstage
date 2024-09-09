@@ -261,7 +261,6 @@ export const scaffolderTranslationRef = createTranslationRef({
         otherTitle: 'Other Templates',
       },
       contentHeader: {
-        title: 'Available Templates',
         registerExistingButtonTitle: 'Register Existing Component',
         supportButtonTitle:
           'Create new software components using standard templates. Different templates create different kinds of components (services, websites, documentation, ...).',
