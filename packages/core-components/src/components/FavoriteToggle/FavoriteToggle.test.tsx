@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
 import { FavoriteToggle } from './FavoriteToggle';
 import React from 'react';
 import userEvent from '@testing-library/user-event';
@@ -33,20 +33,22 @@ describe('<FavoriteToggle />', () => {
   });
 
   it('renders with valid props', async () => {
-    const { getByRole } = render(<FavoriteToggle {...props} />);
+    const { getByRole } = await renderInTestApp(<FavoriteToggle {...props} />);
 
     expect(getByRole('button', { name: props.title })).toBeInTheDocument();
   });
 
   it('should return inverted value on toggle', async () => {
-    const { getByRole } = render(<FavoriteToggle {...props} />);
+    const { getByRole } = await renderInTestApp(<FavoriteToggle {...props} />);
 
     await userEvent.click(getByRole('button', { name: props.title }));
     expect(onToggle).toHaveBeenCalledWith(!props.isFavorite);
   });
 
   it('should show accessible tooltip', async () => {
-    const { findByRole, getByRole } = render(<FavoriteToggle {...props} />);
+    const { findByRole, getByRole } = await renderInTestApp(
+      <FavoriteToggle {...props} />,
+    );
 
     await userEvent.hover(getByRole('button', { name: props.title }));
 

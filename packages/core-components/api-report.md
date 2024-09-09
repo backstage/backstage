@@ -1205,6 +1205,9 @@ export function SimpleStepperStep(
 // @public (undocumented)
 export type SimpleStepperStepClassKey = 'end';
 
+// @public (undocumented)
+export function StarIcon(props: IconComponentProps): React_2.JSX.Element;
+
 // Warning: (ae-missing-release-tag) "StatusAborted" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -1473,6 +1476,9 @@ export function TrendLine(
       title?: string;
     },
 ): React_2.JSX.Element | null;
+
+// @public (undocumented)
+export function UnstarredIcon(props: IconComponentProps): React_2.JSX.Element;
 
 // @public
 export function useContent(): {
