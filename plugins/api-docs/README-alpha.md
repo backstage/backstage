@@ -733,7 +733,6 @@ import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha
 
 export default createFrontendModule({
   pluginId: 'api-docs',
-  pluginId: 'api-docs',
   extensions: [
     createEntityCardExtension({
       // Name is necessary so the system knows that this extension will override the default 'consuming-components' entity card extension provided by the 'api-docs' plugin
