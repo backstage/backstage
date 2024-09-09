@@ -34506,8 +34506,8 @@ __metadata:
   linkType: hard
 
 "node-mocks-http@npm:^1.0.0":
-  version: 1.15.1
-  resolution: "node-mocks-http@npm:1.15.1"
+  version: 1.16.0
+  resolution: "node-mocks-http@npm:1.16.0"
   dependencies:
     "@types/express": ^4.17.21
     "@types/node": "*"
@@ -34521,7 +34521,7 @@ __metadata:
     parseurl: ^1.3.3
     range-parser: ^1.2.0
     type-is: ^1.6.18
-  checksum: f6e64065abf0e1fbb6c4b954646d96fa77d4e6cd705f1c883e7147d192efed76a1e98aa2cafee77c299ba74e2563be75315cacc421527bb97917a5a48a242bbb
+  checksum: 21ccf1ecaaa6ee0f7c061a7063f59d59c9793a485a907c09c83ff73b12f205ef87537022a4ba8ad937d07454ee0450290093d4a66a4df21e7e8b3696d23e1a7d
   languageName: node
   linkType: hard
 
