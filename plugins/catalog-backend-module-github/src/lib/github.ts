@@ -169,7 +169,7 @@ export async function getOrganizationUsers(
     userTransformer,
     {
       org,
-      email: tokenType === 'token',
+      email: tokenType === 'token'|| tokenType === 'app',
     },
   );
 
