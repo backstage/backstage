@@ -20,7 +20,7 @@ import { HighlightedSearchResultTextClassKey } from './components';
 
 /** @public */
 export type CatalogReactComponentsNameToClassKey = {
-  BackstageHighlightedSearchResultText: HighlightedSearchResultTextClassKey;
+  SearchReactHighlightedSearchResultText: HighlightedSearchResultTextClassKey;
 };
 
 /** @public */

@@ -632,8 +632,8 @@ export type PluginCatalogComponentsNameToClassKey = {
   PluginCatalogEntityLinksEmptyState: EntityLinksEmptyStateClassKey;
   PluginCatalogSystemDiagramCard: SystemDiagramCardClassKey;
   PluginCatalogEntityContextMenu: EntityContextMenuClassKey;
-  CatalogSearchResultListItem: CatalogSearchResultListItemClassKey;
-  pluginCatalogTableToolbar: CatalogTableToolbarClassKey;
+  PluginCatalogSearchResultListItem: CatalogSearchResultListItemClassKey;
+  PluginCatalogTableToolbar: CatalogTableToolbarClassKey;
   PluginCatalogEntityLabelsEmptyState: EntityLabelsEmptyStateClassKey;
 };
 

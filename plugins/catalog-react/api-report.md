@@ -92,10 +92,10 @@ export type CatalogReactComponentsNameToClassKey = {
   CatalogReactEntitySearchBar: CatalogReactEntitySearchBarClassKey;
   CatalogReactEntityTagPicker: CatalogReactEntityTagPickerClassKey;
   CatalogReactEntityOwnerPicker: CatalogReactEntityOwnerPickerClassKey;
-  FixedWidthFormControlLabel: FixedWidthFormControlLabelClassKey;
+  CatalogReactFixedWidthFormControlLabel: FixedWidthFormControlLabelClassKey;
   CatalogReactEntityProcessingStatusPicker: CatalogReactEntityProcessingStatusPickerClassKey;
   CatalogReactEntityAutocompletePickerClassKey: CatalogReactEntityAutocompletePickerClassKey;
-  BackstageMissingAnnotationEmptyState: MissingAnnotationEmptyStateClassKey;
+  CatalogReactMissingAnnotationEmptyState: MissingAnnotationEmptyStateClassKey;
 };
 
 // @public (undocumented)

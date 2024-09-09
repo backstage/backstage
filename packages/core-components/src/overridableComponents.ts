@@ -25,7 +25,6 @@ import {
   DismissableBannerClassKey,
   EmptyStateClassKey,
   EmptyStateImageClassKey,
-  MissingAnnotationEmptyStateClassKey,
   ErrorPanelClassKey,
   FeatureCalloutCircleClassKey,
   HeaderIconLinkRowClassKey,
@@ -107,7 +106,6 @@ type BackstageComponentsNameToClassKey = {
   BackstageDismissableBanner: DismissableBannerClassKey;
   BackstageEmptyState: EmptyStateClassKey;
   BackstageEmptyStateImage: EmptyStateImageClassKey;
-  BackstageMissingAnnotationEmptyState: MissingAnnotationEmptyStateClassKey;
   BackstageErrorPanel: ErrorPanelClassKey;
   BackstageFeatureCalloutCircular: FeatureCalloutCircleClassKey;
   BackstageHeaderIconLinkRow: HeaderIconLinkRowClassKey;
@@ -117,7 +115,7 @@ type BackstageComponentsNameToClassKey = {
   BackstageMarkdownContent: MarkdownContentClassKey;
   BackstageLoginRequestListItem: LoginRequestListItemClassKey;
   BackstageLogViewer: LogViewerClassKey;
-  OAuthRequestDialog: OAuthRequestDialogClassKey;
+  BackstageOAuthRequestDialog: OAuthRequestDialogClassKey;
   BackstageOverflowTooltip: OverflowTooltipClassKey;
   BackstageGauge: GaugeClassKey;
   BackstageGaugeCard: GaugeCardClassKey;
@@ -173,7 +171,7 @@ type BackstageComponentsNameToClassKey = {
   BackstageTabbedCard: TabbedCardClassKey;
   BackstageTabbedCardBoldHeader: BoldHeaderClassKey;
   BackstageCardTab: CardTabClassKey;
-  Link: LinkClassKey;
+  BackstageLink: LinkClassKey;
   BackstageFavoriteToggleIcon: FavoriteToggleIconClassKey;
 };
 

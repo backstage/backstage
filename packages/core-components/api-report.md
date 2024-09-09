@@ -800,9 +800,6 @@ export function MissingAnnotationEmptyState(
   props: Props_3,
 ): React_2.JSX.Element;
 
-// @public @deprecated (undocumented)
-export type MissingAnnotationEmptyStateClassKey = 'code';
-
 // @public
 export const MobileSidebar: (
   props: MobileSidebarProps,
