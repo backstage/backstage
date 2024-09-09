@@ -26,6 +26,14 @@ import {
 import { scaffolderModule } from './scaffolderModule';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
+const backendIndexTsContent = `
+import { createBackend } from '@backstage/backend-defaults';
+
+const backend = createBackend();
+
+backend.start();
+`;
+
 describe('scaffolderModule factory', () => {
   const mockDir = createMockDirectory();
 
@@ -41,6 +49,14 @@ describe('scaffolderModule factory', () => {
 
   it('should create a scaffolder backend module package', async () => {
     mockDir.setContent({
+      packages: {
+        backend: {
+          'package.json': JSON.stringify({}),
+          src: {
+            'index.ts': backendIndexTsContent,
+          },
+        },
+      },
       plugins: {},
     });
 
@@ -84,7 +100,28 @@ describe('scaffolderModule factory', () => {
       'copying       module.ts',
       'Installing:',
       `moving        plugins${sep}scaffolder-backend-module-test`,
+      'backend       adding dependency',
+      'backend       adding module',
     ]);
+
+    await expect(
+      fs.readFile(mockDir.resolve('packages/backend/src/index.ts'), 'utf8'),
+    ).resolves.toBe(`
+import { createBackend } from '@backstage/backend-defaults';
+
+const backend = createBackend();
+
+backend.add(import('backstage-plugin-scaffolder-backend-module-test'));
+backend.start();
+`);
+
+    await expect(
+      fs.readJson(mockDir.resolve('packages/backend/package.json')),
+    ).resolves.toEqual({
+      dependencies: {
+        'backstage-plugin-scaffolder-backend-module-test': '^1.0.0',
+      },
+    });
 
     await expect(
       fs.readJson(
