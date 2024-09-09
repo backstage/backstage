@@ -48,6 +48,7 @@ nav:
           - External integrations: 'features/software-catalog/external-integrations.md'
           - Catalog Customization: 'features/software-catalog/catalog-customization.md'
           - API: 'features/software-catalog/api.md'
+          - FAQ: 'features/software-catalog/faq.md'
       - Kubernetes:
           - Overview: 'features/kubernetes/index.md'
           - Installation: 'features/kubernetes/installation.md'
