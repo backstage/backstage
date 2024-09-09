@@ -399,7 +399,7 @@ module.exports = {
           return;
         }
 
-        // Importing an internal inlined package, which that imports are inlined too
+        // Importing an internal inlined package, whose imports are inlined too
         if (
           imp.type === 'internal' &&
           imp.package.packageJson.backstage?.inline
