@@ -232,44 +232,44 @@ export class LdapClient {
     }
     this.vendor = this.getRootDSE()
       .then(root => {
-        if (!vendorConfig) {
-          if (root && root.raw?.forestFunctionality) {
-            // ActiveDirectoryVendor
-            return CreateLdapVendor(
-              {
-                dnAttributeName: 'distinguishedName',
-                uuidAttributeName: 'objectGUID',
-              },
-              true,
-            );
-          } else if (root && root.raw?.ipaDomainLevel) {
-            // FreeIpaVendor
-            return CreateLdapVendor(
-              {
-                dnAttributeName: 'dn',
-                uuidAttributeName: 'ipaUniqueID',
-              },
-              false,
-            );
-          } else if (root && 'aeRoot' in root.raw) {
-            // AEDirVendor
-            return CreateLdapVendor(
-              { dnAttributeName: 'dn', uuidAttributeName: 'entryUUID' },
-              false,
-            );
-          }
-          // DefaultLdapVendor
+        if (root && root.raw?.forestFunctionality) {
+          // ActiveDirectoryVendor
           return CreateLdapVendor(
             {
-              dnAttributeName: 'entryDN',
-              uuidAttributeName: 'entryUUID',
+              dnAttributeName:
+                vendorConfig?.dnAttributeName || 'distinguishedName',
+              uuidAttributeName:
+                vendorConfig?.uuidAttributeName || 'objectGUID',
             },
-            !!(root && root.raw?.forestFunctionality),
+            true,
+          );
+        } else if (root && root.raw?.ipaDomainLevel) {
+          // FreeIpaVendor
+          return CreateLdapVendor(
+            {
+              dnAttributeName: vendorConfig?.dnAttributeName || 'dn',
+              uuidAttributeName:
+                vendorConfig?.uuidAttributeName || 'ipaUniqueID',
+            },
+            false,
+          );
+        } else if (root && 'aeRoot' in root.raw) {
+          // AEDirVendor
+          return CreateLdapVendor(
+            {
+              dnAttributeName: vendorConfig?.dnAttributeName || 'dn',
+              uuidAttributeName: vendorConfig?.uuidAttributeName || 'entryUUID',
+            },
+            false,
           );
         }
+        // DefaultLdapVendor
         return CreateLdapVendor(
-          vendorConfig,
-          !!(root && root.raw?.forestFunctionality),
+          {
+            dnAttributeName: vendorConfig?.dnAttributeName,
+            uuidAttributeName: vendorConfig?.uuidAttributeName,
+          },
+          false,
         );
       })
       .catch(err => {

@@ -177,12 +177,12 @@ export type VendorConfig = {
   /**
    * Attribute name for the distinguished name (DN) of an entry,
    */
-  dnAttributeName: string;
+  dnAttributeName?: string;
 
   /**
    * Attribute name for the unique identifier (UUID) of an entry,
    */
-  uuidAttributeName: string;
+  uuidAttributeName?: string;
 };
 
 const defaultUserConfig = {
@@ -256,8 +256,8 @@ function readVendorConfig(
     return undefined;
   }
   return {
-    dnAttributeName: c.getString('dnAttributeName'),
-    uuidAttributeName: c.getString('uuidAttributeName'),
+    dnAttributeName: c.getOptionalString('dnAttributeName'),
+    uuidAttributeName: c.getOptionalString('uuidAttributeName'),
   };
 }
 

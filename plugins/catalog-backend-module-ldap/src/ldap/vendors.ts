@@ -45,8 +45,8 @@ export const CreateLdapVendor = (
   isActiveDirectoryVendor: boolean,
 ): LdapVendor => {
   return {
-    dnAttributeName: vendorConfig.dnAttributeName,
-    uuidAttributeName: vendorConfig.uuidAttributeName,
+    dnAttributeName: vendorConfig.dnAttributeName || `entryDN`,
+    uuidAttributeName: vendorConfig.uuidAttributeName || `entryUUID`,
     decodeStringAttribute: (entry, name) => {
       const decoder = (value: string | Buffer) => {
         if (
