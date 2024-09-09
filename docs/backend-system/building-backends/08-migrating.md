@@ -431,7 +431,7 @@ catalog:
         /* highlight-add-end */
 ```
 
-#### Github
+#### GitHub
 
 For `GithubDiscoveryProcessor`, `GithubMultiOrgReaderProcessor` and `GithubOrgReaderProcessor`, first migrate to the equivalent Entity Provider.
 
@@ -445,7 +445,7 @@ backend.add(import('@backstage/plugin-catalog-backend-module-github/alpha'));
 ```
 
 If you were providing a `schedule` in code, this now needs to be set via configuration.
-All other Github configuration in `app-config.yaml` remains the same.
+All other GitHub configuration in `app-config.yaml` remains the same.
 
 ```yaml title="app-config.yaml"
 catalog:

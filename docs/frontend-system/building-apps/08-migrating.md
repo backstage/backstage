@@ -287,6 +287,7 @@ const app = createApp({
       ),
     },
   ],
+});
 ```
 
 Can be converted to the following extension:

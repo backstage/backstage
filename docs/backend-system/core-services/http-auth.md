@@ -47,6 +47,7 @@ can do so like this:
 router.get('/some-request', async (req, res) => {
   const credentials = await httpAuth.credentials(req, { allow: ['user'] });
   // Do something with the credentials here
+});
 ```
 
 The second argument is optional, but in this example we specified that we only

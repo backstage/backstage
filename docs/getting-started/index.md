@@ -23,11 +23,11 @@ If you are planning to contribute a new feature or bug fix to the Backstage proj
 
 This guide assumes a basic understanding of working on a Linux based operating system and have some experience with the terminal, specifically, these commands: `npm`, `yarn`.
 
-- Access to a Unix-based operating system, such as Linux, MacOS or
+- Access to a Unix-based operating system, such as Linux, macOS or
   [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/)
 - A GNU-like build environment available at the command line.
   For example, on Debian/Ubuntu you will want to have the `make` and `build-essential` packages installed.
-  On MacOS, you will want to have run `xcode-select --install` to get the XCode command line build tooling in place.
+  On macOS, you will want to have run `xcode-select --install` to get the XCode command line build tooling in place.
 - An account with elevated rights to install the dependencies
 - `curl` or `wget` installed
 - Node.js [Active LTS Release](https://nodejs.org/en/about/previous-releases) installed using one of these

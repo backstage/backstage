@@ -4,7 +4,7 @@ title: Dry Run Testing
 description: How to enable and implement dry run testing in actions
 ---
 
-Scaffolder templates can be tested using the dry run feature of scaffolder actions. This allows you to simulate the effects of running a scaffolder action without making any actual changes to your environment, for example creating a webhook in Github. Once dry run is enabled in the scaffolder action, you can add handling to actions you use in your scaffolder templates to define how an action should operate in a dry run scenario.
+Scaffolder templates can be tested using the dry run feature of scaffolder actions. This allows you to simulate the effects of running a scaffolder action without making any actual changes to your environment, for example creating a webhook in GitHub. Once dry run is enabled in the scaffolder action, you can add handling to actions you use in your scaffolder templates to define how an action should operate in a dry run scenario.
 
 ## Enabling dry run testing
 

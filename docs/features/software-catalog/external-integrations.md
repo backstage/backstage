@@ -543,6 +543,7 @@ export class UserEntityProvider implements EntityProvider {
         locationKey: 'hr-user-https://www.hrurl.com/',
       })),
     })
+  }
 }
 
 ```

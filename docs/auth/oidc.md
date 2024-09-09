@@ -20,7 +20,7 @@ to your provider name.
 ## Summary
 
 To add providers not enabled by default like OIDC, we need to follow some steps, we
-assume you already have a sign in page to which we'll add the provider so users can
+assume you already have a sign-in page to which we'll add the provider so users can
 sign in through the provider. In simple steps here's how you enable the provider:
 
 - Create an API reference to identify the provider.
