@@ -200,11 +200,11 @@ describe('publish:bitbucketCloud:pull-request', () => {
   const responseOfPullRequests = {
     type: '<string>',
     links: {
-      self: {
+      self: { href: '<string>', name: '<string>' },
+      html: {
         href: 'https://bitbucket.org/workspace/repo/pull-requests/1',
         name: '<string>',
       },
-      html: { href: '<string>', name: '<string>' },
       commits: { href: '<string>', name: '<string>' },
       approve: { href: '<string>', name: '<string>' },
       diff: { href: '<string>', name: '<string>' },
