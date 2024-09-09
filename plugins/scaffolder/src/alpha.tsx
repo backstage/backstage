@@ -49,6 +49,9 @@ export {
   type FormProps,
   type TemplateListPageProps,
   type TemplateWizardPageProps,
+  type ScaffolderCustomFieldExplorerClassKey,
+  type ScaffolderTemplateEditorClassKey,
+  type ScaffolderTemplateFormPreviewerClassKey,
 } from './next';
 
 export { scaffolderTranslationRef } from './translation';
