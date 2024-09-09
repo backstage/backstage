@@ -302,3 +302,5 @@ const app = createApp({
 
 export default app.createRoot();
 ```
+
+You must define a `pluginId` when creating a frontend module, and the plugin must also be installed for the module to be loaded.
