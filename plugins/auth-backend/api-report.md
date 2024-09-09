@@ -108,7 +108,7 @@ export type BitbucketPassportProfile = Profile & {
   };
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type BitbucketServerOAuthResult = {
   fullProfile: Profile;
   params: {
