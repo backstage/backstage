@@ -40,6 +40,8 @@ export const DefaultImportPage = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const appTitle = configApi.getOptionalString('app.title') || 'Backstage';
 
+  const supportTitle = `Start tracking your component in ${appTitle} by adding it to the software catalog.`;
+
   const contentItems = [
     <Grid key={0} item xs={12} md={4} lg={6} xl={8}>
       <ImportInfoCard />
@@ -55,10 +57,7 @@ export const DefaultImportPage = () => {
       <Header title="Register an existing component" />
       <Content>
         <ContentHeader title={`Start tracking your component in ${appTitle}`}>
-          <SupportButton>
-            Start tracking your component in {appTitle} by adding it to the
-            software catalog.
-          </SupportButton>
+          <SupportButton>{supportTitle}</SupportButton>
         </ContentHeader>
 
         <Grid container spacing={2}>
