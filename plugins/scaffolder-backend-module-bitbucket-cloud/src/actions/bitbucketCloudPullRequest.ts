@@ -96,7 +96,7 @@ const createPullRequest = async (opts: {
   }
 
   const r = await response.json();
-  return r.links.self.href;
+  return r.links.html.href;
 };
 
 const findBranches = async (opts: {
