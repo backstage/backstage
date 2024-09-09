@@ -119,14 +119,14 @@ app:
 Use extension overrides for completely re-implementing the group-profile entity card extension:
 
 ```tsx
-import { createExtensionOverrides } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/backstage-plugin-api';
 import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
 
-export default createExtensionOverrides({
+export default createFrontendModule({
+  pluginId: 'org',
   extensions: [
     createEntityCardExtension({
-      // These namespace and name are necessary so the system knows that this extension will override the default 'group-profile' entity card extension provided by the 'org' plugin
-      namespace: 'org',
+      // Name is necessary so the system knows that this extension will override the default 'group-profile' entity card extension provided by the 'org' plugin
       name: 'group-profile',
       // By default, this card will show up only for groups
       filter: 'kind:group'
@@ -171,14 +171,14 @@ app:
 Use extension overrides for completely re-implementing the members-list entity card extension:
 
 ```tsx
-import { createExtensionOverrides } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/backstage-plugin-api';
 import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
 
-export default createExtensionOverrides({
+export default createFrontendModule({
+  pluginId: 'org',
   extensions: [
     createEntityCardExtension({
-      // These namespace and name are necessary so the system knows that this extension will override the default 'members-list' entity card extension provided by the 'org' plugin
-      namespace: 'org',
+      // Name is necessary so the system knows that this extension will override the default 'members-list' entity card extension provided by the 'org' plugin
       name: 'members-list',
       // By default, this card will show up only for groups
       filter: 'kind:group'
@@ -223,14 +223,14 @@ app:
 Use extension overrides for completely re-implementing the ownership entity card extension:
 
 ```tsx
-import { createExtensionOverrides } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/backstage-plugin-api';
 import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
 
-export default createExtensionOverrides({
+export default createFrontendModule({
+  pluginId: 'org',
   extensions: [
     createEntityCardExtension({
-      // These namespace and name are necessary so the system knows that this extension will override the default 'ownership' entity card extension provided by the 'org' plugin
-      namespace: 'org',
+      // Name is necessary so the system knows that this extension will override the default 'ownership' entity card extension provided by the 'org' plugin
       name: 'ownership',
       // By default, this card will show up only for groups or users
       filter: 'kind:group,user'
@@ -275,14 +275,14 @@ app:
 Use extension overrides for completely re-implementing the user-profile entity card extension:
 
 ```tsx
-import { createExtensionOverrides } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/backstage-plugin-api';
 import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
 
-export default createExtensionOverrides({
+export default createFrontendModule({
+  pluginId: 'org',
   extensions: [
     createEntityCardExtension({
-      // These namespace and name are necessary so the system knows that this extension will override the default 'user-profile' entity card extension provided by the 'org' plugin
-      namespace: 'org',
+      // Name is necessary so the system knows that this extension will override the default 'user-profile' entity card extension provided by the 'org' plugin
       name: 'user-profile',
       // By default, this card will show up only for groups or users
       filter: 'kind:user'
@@ -308,11 +308,11 @@ As the [NavItem](https://backstage.io/docs/reference/frontend-plugin-api.createn
 import { MyGroupsSidebarItem } from '@backstage/plugin-org';
 import GroupIcon from '@material-ui/icons/People';
 
-export default createExtensionOverrides({
+export default createFrontendModule({
+  pluginId: 'app',
   extensions: [
     createExtension({
-      // These namespace and name are necessary so the system knows that this extension will override the default app nav extension
-      namespace: 'app',
+      // Name is necessary so the system knows that this extension will override the default app nav extension
       name: 'nav',
       // Keeping the same attachment point as in the default App/Nav extension
       attachTo: { id: 'app/layout', input: 'nav' },
