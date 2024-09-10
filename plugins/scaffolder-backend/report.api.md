@@ -136,14 +136,6 @@ export function createDebugLogAction(): TemplateAction_2<
 >;
 
 // @public
-export function createFailAction(): TemplateAction_2<
-  {
-    timesToFail: number;
-  },
-  JsonObject
->;
-
-// @public
 export function createFetchCatalogEntityAction(options: {
   catalogClient: CatalogApi;
   auth?: AuthService;
