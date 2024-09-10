@@ -26275,7 +26275,6 @@ __metadata:
     "@types/react": "*"
     "@types/react-dom": "*"
     "@types/zen-observable": ^0.8.0
-    "@vitejs/plugin-react": ^4.3.1
     cross-env: ^7.0.0
     history: ^5.0.0
     react: ^18.0.2
@@ -26283,9 +26282,6 @@ __metadata:
     react-router: ^6.3.0
     react-router-dom: ^6.3.0
     react-use: ^17.2.4
-    vite: ^5.0.0
-    vite-plugin-html: ^3.2.2
-    vite-plugin-node-polyfills: ^0.22.0
     zen-observable: ^0.10.0
   languageName: unknown
   linkType: soft
@@ -26355,6 +26351,7 @@ __metadata:
     "@types/react": "*"
     "@types/react-dom": "*"
     "@types/zen-observable": ^0.8.0
+    "@vitejs/plugin-react": ^4.3.1
     cross-env: ^7.0.0
     history: ^5.0.0
     react: ^18.0.2
@@ -26362,6 +26359,9 @@ __metadata:
     react-router: ^6.3.0
     react-router-dom: ^6.3.0
     react-use: ^17.2.4
+    vite: ^5.0.0
+    vite-plugin-html: ^3.2.2
+    vite-plugin-node-polyfills: ^0.22.0
     zen-observable: ^0.10.0
   languageName: unknown
   linkType: soft
