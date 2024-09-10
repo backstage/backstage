@@ -6,7 +6,6 @@
 import { AddLocationRequest } from '@backstage/catalog-client';
 import { AddLocationResponse } from '@backstage/catalog-client';
 import { CatalogApi } from '@backstage/catalog-client';
-import { CatalogRequestOptions } from '@backstage/catalog-client';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
 import { GetEntitiesByRefsRequest } from '@backstage/catalog-client';
@@ -24,76 +23,49 @@ import { ValidateEntityResponse } from '@backstage/catalog-client';
 
 // @public (undocumented)
 export class InMemoryCatalogClient implements CatalogApi {
+  constructor(options?: { entities?: Entity[] });
   // (undocumented)
-  addLocation(
-    _location: AddLocationRequest,
-    _options?: CatalogRequestOptions | undefined,
-  ): Promise<AddLocationResponse>;
+  addLocation(_location: AddLocationRequest): Promise<AddLocationResponse>;
   // (undocumented)
-  getEntities(
-    _request?: GetEntitiesRequest | undefined,
-    _options?: CatalogRequestOptions | undefined,
-  ): Promise<GetEntitiesResponse>;
+  getEntities(_request?: GetEntitiesRequest): Promise<GetEntitiesResponse>;
   // (undocumented)
   getEntitiesByRefs(
-    _request: GetEntitiesByRefsRequest,
-    _options?: CatalogRequestOptions | undefined,
+    request: GetEntitiesByRefsRequest,
   ): Promise<GetEntitiesByRefsResponse>;
   // (undocumented)
   getEntityAncestors(
-    _request: GetEntityAncestorsRequest,
-    _options?: CatalogRequestOptions | undefined,
+    request: GetEntityAncestorsRequest,
   ): Promise<GetEntityAncestorsResponse>;
   // (undocumented)
   getEntityByRef(
-    _entityRef: string | CompoundEntityRef,
-    _options?: CatalogRequestOptions | undefined,
+    entityRef: string | CompoundEntityRef,
   ): Promise<Entity | undefined>;
   // (undocumented)
   getEntityFacets(
     _request: GetEntityFacetsRequest,
-    _options?: CatalogRequestOptions | undefined,
   ): Promise<GetEntityFacetsResponse>;
   // (undocumented)
   getLocationByEntity(
     _entityRef: string | CompoundEntityRef,
-    _options?: CatalogRequestOptions | undefined,
   ): Promise<Location_2 | undefined>;
   // (undocumented)
-  getLocationById(
-    _id: string,
-    _options?: CatalogRequestOptions | undefined,
-  ): Promise<Location_2 | undefined>;
+  getLocationById(_id: string): Promise<Location_2 | undefined>;
   // (undocumented)
-  getLocationByRef(
-    _locationRef: string,
-    _options?: CatalogRequestOptions | undefined,
-  ): Promise<Location_2 | undefined>;
+  getLocationByRef(_locationRef: string): Promise<Location_2 | undefined>;
   // (undocumented)
   queryEntities(
-    _request?: QueryEntitiesRequest | undefined,
-    _options?: CatalogRequestOptions | undefined,
+    _request?: QueryEntitiesRequest,
   ): Promise<QueryEntitiesResponse>;
   // (undocumented)
-  refreshEntity(
-    _entityRef: string,
-    _options?: CatalogRequestOptions | undefined,
-  ): Promise<void>;
+  refreshEntity(_entityRef: string): Promise<void>;
   // (undocumented)
-  removeEntityByUid(
-    _uid: string,
-    _options?: CatalogRequestOptions | undefined,
-  ): Promise<void>;
+  removeEntityByUid(uid: string): Promise<void>;
   // (undocumented)
-  removeLocationById(
-    _id: string,
-    _options?: CatalogRequestOptions | undefined,
-  ): Promise<void>;
+  removeLocationById(_id: string): Promise<void>;
   // (undocumented)
   validateEntity(
     _entity: Entity,
     _locationRef: string,
-    _options?: CatalogRequestOptions | undefined,
   ): Promise<ValidateEntityResponse>;
 }
 

@@ -18,7 +18,6 @@ import {
   AddLocationRequest,
   AddLocationResponse,
   CatalogApi,
-  CatalogRequestOptions,
   GetEntitiesByRefsRequest,
   GetEntitiesByRefsResponse,
   GetEntitiesRequest,
@@ -32,106 +31,111 @@ import {
   QueryEntitiesResponse,
   ValidateEntityResponse,
 } from '@backstage/catalog-client';
-import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
-import { NotImplementedError } from '@backstage/errors';
+import {
+  CompoundEntityRef,
+  Entity,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
+import { NotFoundError, NotImplementedError } from '@backstage/errors';
 
 /** @public */
 export class InMemoryCatalogClient implements CatalogApi {
-  getEntities(
-    _request?: GetEntitiesRequest | undefined,
-    _options?: CatalogRequestOptions | undefined,
+  #entities: Entity[];
+
+  constructor(options?: { entities?: Entity[] }) {
+    this.#entities = options?.entities ?? [];
+  }
+
+  async getEntities(
+    _request?: GetEntitiesRequest,
   ): Promise<GetEntitiesResponse> {
     throw new NotImplementedError('Method not implemented.');
   }
 
-  getEntitiesByRefs(
-    _request: GetEntitiesByRefsRequest,
-    _options?: CatalogRequestOptions | undefined,
+  async getEntitiesByRefs(
+    request: GetEntitiesByRefsRequest,
   ): Promise<GetEntitiesByRefsResponse> {
-    throw new NotImplementedError('Method not implemented.');
+    const entitiesByRef = new Map<string, Entity>();
+    for (const entity of this.#entities) {
+      entitiesByRef.set(stringifyEntityRef(entity), entity);
+    }
+
+    const items = request.entityRefs.map(candidateRef =>
+      entitiesByRef.get(candidateRef),
+    );
+
+    // TODO(freben): Fields, filters etc
+    return { items };
   }
 
-  queryEntities(
-    _request?: QueryEntitiesRequest | undefined,
-    _options?: CatalogRequestOptions | undefined,
+  async queryEntities(
+    _request?: QueryEntitiesRequest,
   ): Promise<QueryEntitiesResponse> {
     throw new NotImplementedError('Method not implemented.');
   }
 
-  getEntityAncestors(
-    _request: GetEntityAncestorsRequest,
-    _options?: CatalogRequestOptions | undefined,
+  async getEntityAncestors(
+    request: GetEntityAncestorsRequest,
   ): Promise<GetEntityAncestorsResponse> {
-    throw new NotImplementedError('Method not implemented.');
+    const entity = this.#entities.find(
+      e => stringifyEntityRef(e) === request.entityRef,
+    );
+    if (!entity) {
+      throw new NotFoundError(`Entity with ref ${request.entityRef} not found`);
+    }
+    return {
+      rootEntityRef: request.entityRef,
+      items: [{ entity, parentEntityRefs: [] }],
+    };
   }
 
-  getEntityByRef(
-    _entityRef: string | CompoundEntityRef,
-    _options?: CatalogRequestOptions | undefined,
+  async getEntityByRef(
+    entityRef: string | CompoundEntityRef,
   ): Promise<Entity | undefined> {
-    throw new NotImplementedError('Method not implemented.');
+    const ref =
+      typeof entityRef === 'string' ? entityRef : stringifyEntityRef(entityRef);
+    return this.#entities.find(e => stringifyEntityRef(e) === ref);
   }
 
-  removeEntityByUid(
-    _uid: string,
-    _options?: CatalogRequestOptions | undefined,
-  ): Promise<void> {
-    throw new NotImplementedError('Method not implemented.');
+  async removeEntityByUid(uid: string): Promise<void> {
+    this.#entities = this.#entities.filter(e => e.metadata.uid !== uid);
   }
 
-  refreshEntity(
-    _entityRef: string,
-    _options?: CatalogRequestOptions | undefined,
-  ): Promise<void> {
-    throw new NotImplementedError('Method not implemented.');
-  }
+  async refreshEntity(_entityRef: string): Promise<void> {}
 
-  getEntityFacets(
+  async getEntityFacets(
     _request: GetEntityFacetsRequest,
-    _options?: CatalogRequestOptions | undefined,
   ): Promise<GetEntityFacetsResponse> {
     throw new NotImplementedError('Method not implemented.');
   }
 
-  getLocationById(
-    _id: string,
-    _options?: CatalogRequestOptions | undefined,
-  ): Promise<Location | undefined> {
+  async getLocationById(_id: string): Promise<Location | undefined> {
     throw new NotImplementedError('Method not implemented.');
   }
 
-  getLocationByRef(
-    _locationRef: string,
-    _options?: CatalogRequestOptions | undefined,
-  ): Promise<Location | undefined> {
+  async getLocationByRef(_locationRef: string): Promise<Location | undefined> {
     throw new NotImplementedError('Method not implemented.');
   }
 
-  addLocation(
+  async addLocation(
     _location: AddLocationRequest,
-    _options?: CatalogRequestOptions | undefined,
   ): Promise<AddLocationResponse> {
     throw new NotImplementedError('Method not implemented.');
   }
 
-  removeLocationById(
-    _id: string,
-    _options?: CatalogRequestOptions | undefined,
-  ): Promise<void> {
+  async removeLocationById(_id: string): Promise<void> {
     throw new NotImplementedError('Method not implemented.');
   }
 
-  getLocationByEntity(
+  async getLocationByEntity(
     _entityRef: string | CompoundEntityRef,
-    _options?: CatalogRequestOptions | undefined,
   ): Promise<Location | undefined> {
     throw new NotImplementedError('Method not implemented.');
   }
 
-  validateEntity(
+  async validateEntity(
     _entity: Entity,
     _locationRef: string,
-    _options?: CatalogRequestOptions | undefined,
   ): Promise<ValidateEntityResponse> {
     throw new NotImplementedError('Method not implemented.');
   }
