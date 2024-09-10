@@ -47,9 +47,7 @@ export type LdapProviderConfig = {
   groups: GroupConfig[];
   // Schedule configuration for refresh tasks.
   schedule?: SchedulerServiceTaskScheduleDefinition;
-  // Configuration for LDAP vendor-specific attributes. If not specified, the default values will be used:
-  // - `dnAttributeName`: `entryDN`
-  // - `uuidAttributeName`: `entryUUID`
+  // Configuration for overriding the vendor-specific default attribute names.
   vendor?: VendorConfig;
 };
 
