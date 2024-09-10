@@ -34,6 +34,13 @@ components:
       allowReserved: true
       schema:
         type: string
+    taskId:
+      name: taskId
+      in: path
+      required: true
+      allowReserved: true
+      schema:
+        type: string
   requestBodies: {}
   responses:
     ErrorResponse:
@@ -652,3 +659,20 @@ paths:
         - {}
         - JWT: []
       parameters: []
+
+  /v2/tasks/{taskId}:
+    get:
+      operationId: GetTask
+      description: Get a task by ID.
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SerializedTask'
+      security:
+        - {}
+        - JWT: []
+      parameters:
+        - $ref: '#/components/parameters/taskId'
