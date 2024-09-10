@@ -230,7 +230,7 @@ export const SearchModal = (props: SearchModalProps) => {
             })) ?? (
             <Modal
               toggleModal={toggleModal}
-              resultItemComponents={resultItemComponents || []}
+              resultItemComponents={resultItemComponents}
             />
           )}
         </SearchContextProvider>
