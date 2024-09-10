@@ -146,7 +146,7 @@ const collectedLegacyPlugins = convertLegacyApp(
   </FlatRoutes>,
 );
 
-const app = createApp({
+export default createApp({
   features: [
     pagesPlugin,
     convertedTechdocsPlugin,
@@ -167,8 +167,6 @@ const app = createApp({
 });
 
 // const legacyApp = createLegacyApp({ plugins: [legacyGraphiqlPlugin] });
-
-export default app.createRoot();
 
 // const routes = (
 //   <FlatRoutes>

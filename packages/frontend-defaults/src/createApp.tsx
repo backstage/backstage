@@ -15,6 +15,7 @@
  */
 
 import React, { JSX, ReactNode } from 'react';
+import ReactDOM from 'react-dom/client';
 import { ConfigApi } from '@backstage/frontend-plugin-api';
 import { stringifyError } from '@backstage/errors';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -74,6 +75,7 @@ export interface CreateAppOptions {
  */
 export function createApp(options?: CreateAppOptions): {
   createRoot(): JSX.Element;
+  render(rootElement?: HTMLElement | null): void;
 } {
   let suspenseFallback = options?.loadingComponent;
   if (suspenseFallback === undefined) {
@@ -124,6 +126,18 @@ export function createApp(options?: CreateAppOptions): {
           <LazyApp />
         </React.Suspense>
       );
+    },
+    render(rootElement: HTMLElement | null) {
+      let el = rootElement;
+      if (!el) {
+        el = document.getElementById('root');
+        if (!el) {
+          throw new Error(
+            'No root element provided to app.render() and no element with id "root" found in the document',
+          );
+        }
+      }
+      ReactDOM.createRoot(el).render(this.createRoot());
     },
   };
 }
