@@ -25,7 +25,7 @@ import chalk from 'chalk';
 import ora from 'ora';
 import semver from 'semver';
 import { OptionValues } from 'commander';
-import yaml from 'js-yaml';
+import yaml from 'yaml';
 import z from 'zod';
 import { isError, NotFoundError } from '@backstage/errors';
 import { resolve as resolvePath } from 'path';
@@ -483,7 +483,7 @@ async function getHasYarnPlugin() {
     return false;
   }
 
-  const parseResult = yarnRcSchema.safeParse(yaml.load(yarnRcContent));
+  const parseResult = yarnRcSchema.safeParse(yaml.parse(yarnRcContent));
 
   if (!parseResult.success) {
     throw new Error(
