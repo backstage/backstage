@@ -94,8 +94,8 @@ export const AppRoot = createExtension({
       });
     }
 
-    let content: React.ReactNode = (
-      <>{inputs.children.get(coreExtensionData.reactElement)}</>
+    let content: React.ReactNode = inputs.children.get(
+      coreExtensionData.reactElement,
     );
 
     for (const wrapper of inputs.wrappers) {
