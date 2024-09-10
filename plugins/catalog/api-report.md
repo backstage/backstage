@@ -134,6 +134,12 @@ export const CatalogSearchResultListItem: (
   props: SearchResultListItemExtensionProps<CatalogSearchResultListItemProps>,
 ) => JSX.Element | null;
 
+// @public (undocumented)
+export type CatalogSearchResultListItemClassKey =
+  | 'item'
+  | 'flexContainer'
+  | 'itemText';
+
 // @public
 export interface CatalogSearchResultListItemProps {
   // (undocumented)
@@ -662,8 +668,4 @@ export type SystemDiagramCardClassKey =
   | 'componentNode'
   | 'apiNode'
   | 'resourceNode';
-
-// Warnings were encountered during analysis:
-//
-// src/overridableComponents.d.ts:14:5 - (ae-forgotten-export) The symbol "CatalogSearchResultListItemClassKey" needs to be exported by the entry point index.d.ts
 ```
