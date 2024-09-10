@@ -1,12 +1,9 @@
-import fs from 'node:fs';
-import path from 'node:path';
+const fs = require('fs');
+const path = require('path');
 
-const docsDir = path.resolve(
-  path.dirname(new URL(import.meta.url).pathname),
-  '../docs',
-);
+const docsDir = path.resolve(__dirname, '../docs');
 
-export const releases = fs
+exports.releases = fs
   .readdirSync(path.resolve(docsDir, 'releases'))
   .filter(doc => doc.match(/^v\d+\.\d+\.\d+\.md$/))
   .map(doc => doc.replace(/\.md$/, ''))

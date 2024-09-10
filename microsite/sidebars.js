@@ -1,6 +1,6 @@
-import { releases } from './releases';
+const { releases } = require('./releases');
 
-export default {
+module.exports = {
   docs: {
     Overview: [
       'overview/what-is-backstage',

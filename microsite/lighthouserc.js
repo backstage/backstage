@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import sidebars from './sidebars';
+const sidebars = require('./sidebars');
 
-export default {
+module.exports = {
   ci: {
     collect: {
       url: [
