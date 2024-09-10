@@ -191,7 +191,7 @@ export type ExtensionDefinition<
             string}' is already defined in parent schema`;
         };
       };
-      factory(
+      factory?(
         originalFactory: (context?: {
           config?: T['config'];
           inputs?: ResolveInputValueOverrides<NonNullable<T['inputs']>>;
@@ -517,6 +517,15 @@ export function createExtension<
         TConfigSchema,
         UFactoryOutput
       >;
+
+      // TODO(Rugvip): Making this a type check would be optimal, but it seems
+      //               like it's tricky to add that and still have the type
+      //               inference work correctly for the factory output.
+      if (overrideOptions.output && !overrideOptions.factory) {
+        throw new Error(
+          'Refused to override output without also overriding factory',
+        );
+      }
 
       return createExtension({
         kind: newOptions.kind,

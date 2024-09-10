@@ -213,11 +213,17 @@ export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
     const [subject, ...rest] = this.#extensions;
 
     const extensionsConfig: JsonArray = [
-      ...rest.map(extension => ({
-        [extension.id]: {
-          config: extension.config,
-        },
-      })),
+      ...rest.flatMap(extension =>
+        extension.config
+          ? [
+              {
+                [extension.id]: {
+                  config: extension.config,
+                },
+              },
+            ]
+          : [],
+      ),
       {
         [subject.id]: {
           config: subject.config,
