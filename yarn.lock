@@ -3476,7 +3476,7 @@ __metadata:
     msw: ^1.0.0
     node-fetch: ^2.7.0
     node-forge: ^1.3.1
-    path-to-regexp: ^6.2.1
+    path-to-regexp: ^8.0.0
     selfsigned: ^2.0.0
     stoppable: ^1.1.0
     supertest: ^7.0.0
@@ -3562,7 +3562,7 @@ __metadata:
     node-fetch: ^2.7.0
     node-forge: ^1.3.1
     p-limit: ^3.1.0
-    path-to-regexp: ^6.2.1
+    path-to-regexp: ^8.0.0
     pg: ^8.11.3
     pg-format: ^1.0.4
     raw-body: ^2.4.1
@@ -3654,7 +3654,7 @@ __metadata:
     node-fetch: ^2.7.0
     node-forge: ^1.3.1
     p-limit: ^3.1.0
-    path-to-regexp: ^6.2.1
+    path-to-regexp: ^8.0.0
     pg: ^8.11.3
     pg-connection-string: ^2.3.0
     pg-format: ^1.0.4
@@ -35948,10 +35948,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"path-to-regexp@npm:^6.2.0, path-to-regexp@npm:^6.2.1, path-to-regexp@npm:^6.2.2":
+"path-to-regexp@npm:^6.2.0, path-to-regexp@npm:^6.2.2":
   version: 6.2.2
   resolution: "path-to-regexp@npm:6.2.2"
   checksum: b7b0005c36f5099f9ed1fb20a820d2e4ed1297ffe683ea1d678f5e976eb9544f01debb281369dabdc26da82e6453901bf71acf2c7ed14b9243536c2a45286c33
+  languageName: node
+  linkType: hard
+
+"path-to-regexp@npm:^8.0.0":
+  version: 8.1.0
+  resolution: "path-to-regexp@npm:8.1.0"
+  checksum: 982b784f8dff704c04c79dc3e26d51d2dba340e6bd513a8bdc48559a8543d730547d9d2355122166171eb509236e7524802ed643f8a77d527e12c69ffc74f97f
   languageName: node
   linkType: hard
 
