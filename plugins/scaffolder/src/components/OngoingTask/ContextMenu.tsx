@@ -23,7 +23,8 @@ import Popover from '@material-ui/core/Popover';
 import { makeStyles, Theme, useTheme } from '@material-ui/core/styles';
 import { useAsync } from '@react-hookz/web';
 import Cancel from '@material-ui/icons/Cancel';
-import Retry from '@material-ui/icons/Repeat';
+import Repeat from '@material-ui/icons/Repeat';
+import Replay from '@material-ui/icons/Replay';
 import Toc from '@material-ui/icons/Toc';
 import ControlPointIcon from '@material-ui/icons/ControlPoint';
 import MoreVert from '@material-ui/icons/MoreVert';
@@ -151,7 +152,7 @@ export const ContextMenu = (props: ContextMenuProps) => {
             data-testid="start-over-task"
           >
             <ListItemIcon>
-              <Retry fontSize="small" />
+              <Repeat fontSize="small" />
             </ListItemIcon>
             <ListItemText primary={t('ongoingTask.contextMenu.startOver')} />
           </MenuItem>
@@ -161,9 +162,9 @@ export const ContextMenu = (props: ContextMenuProps) => {
             data-testid="retry-task"
           >
             <ListItemIcon>
-              <Retry fontSize="small" />
+              <Replay fontSize="small" />
             </ListItemIcon>
-            <ListItemText primary="Retry" />
+            <ListItemText primary={t('ongoingTask.contextMenu.retry')} />
           </MenuItem>
           <MenuItem
             onClick={cancel}

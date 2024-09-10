@@ -261,7 +261,7 @@ export const OngoingTask = (props: {
                     onClick={triggerRetry}
                     data-testid="retry-button"
                   >
-                    Retry
+                    {t('ongoingTask.retryButtonTitle')}
                   </Button>
                   <Button
                     className={classes.logsVisibilityButton}
