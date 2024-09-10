@@ -156,6 +156,26 @@ This field indicates that a package has been renamed and moved to a new location
 }
 ```
 
+### `backstage.inline`
+
+If set to `true` this field indicates that monorepo package is private and should be inlined into dependent packages rather than being treated as a dependency. This effectively means that all imported code from the inlined package will be copied into the consuming package, once for each package.
+
+This flag affects various parts of the Backstage tooling, for example the way the Backstage CLI builds work, the way that `@backstage/eslint-plugin` lints dependencies on the package, and how it's treated by `@backstage/repo-tools`.
+
+The `backstage.inline` field is primarily intended to aid in the implementation of the Backstage core framework in the main Backstage repository, but it can be used in other projects as well.
+
+Setting this flag also requires the top-level `private` field to be set as well, since inline packages should not be published.
+
+```js title="Example usage of the backstage.moved field"
+{
+  "name": "@internal/utils",
+  "backstage": {
+    "inline": true
+  }
+  ...
+}
+```
+
 ## Metadata for Published Packages
 
 When publishing a package with the help of the Backstage CLI, there are a number of metadata checks that are performed to ensure that the package is correctly set up for the Backstage ecosystem. These checks are performed by the `backstage-cli package prepack` command, which is used to prepare a package for publishing. These checks can all also be verified separately using the `backstage-cli repo fix --publish` command, and in many cases the required metadata can be generated automatically. It is therefore important to make running the `fix` command part of your workflow in any project that is publishing Backstage packages.
