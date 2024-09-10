@@ -24,11 +24,8 @@ import { DatabaseUserSettingsStore } from './database/DatabaseUserSettingsStore'
 
 /**
  * The user settings backend plugin.
- *
- * @alpha
- * @deprecated please use the default export from the package root instead
  */
-export default createBackendPlugin({
+export const userSettingsPlugin = createBackendPlugin({
   pluginId: 'user-settings',
   register(env) {
     env.registerInit({

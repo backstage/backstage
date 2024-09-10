@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export * from './deprecated';
 export * from './database';
+export { userSettingsPlugin as default } from './plugin';
