@@ -495,6 +495,12 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       ]);
     }
 
+    if (
+      isQueryEntitiesInitialRequest(request) &&
+      request.offset !== undefined
+    ) {
+      dbQuery.offset(request.offset);
+    }
     // fetch an extra item to check if there are more items.
     dbQuery.limit(isFetchingBackwards ? limit : limit + 1);
 
