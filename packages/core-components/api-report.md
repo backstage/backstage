@@ -19,6 +19,7 @@ import { default as CSS_2 } from 'csstype';
 import { CSSProperties } from 'react';
 import { ElementType } from 'react';
 import { ErrorInfo } from 'react';
+import IconButton from '@material-ui/core/IconButton';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { Icons } from '@material-table/core';
 import { IdentityApi } from '@backstage/core-plugin-api';
@@ -400,6 +401,24 @@ export type ErrorPanelProps = {
   titleFormat?: string;
   title?: string;
 };
+
+// @public
+export function FavoriteToggle(
+  props: ComponentProps<typeof IconButton> & {
+    id: string;
+    title: string;
+    isFavorite: boolean;
+    onToggle: (value: boolean) => void;
+  },
+): React_2.JSX.Element;
+
+// @public
+export function FavoriteToggleIcon(props: {
+  isFavorite: boolean;
+}): React_2.JSX.Element;
+
+// @public (undocumented)
+export type FavoriteToggleIconClassKey = 'icon' | 'iconBorder';
 
 // @public (undocumented)
 export type FeatureCalloutCircleClassKey =
@@ -1186,6 +1205,9 @@ export function SimpleStepperStep(
 // @public (undocumented)
 export type SimpleStepperStepClassKey = 'end';
 
+// @public (undocumented)
+export function StarIcon(props: IconComponentProps): React_2.JSX.Element;
+
 // Warning: (ae-missing-release-tag) "StatusAborted" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -1454,6 +1476,9 @@ export function TrendLine(
       title?: string;
     },
 ): React_2.JSX.Element | null;
+
+// @public (undocumented)
+export function UnstarredIcon(props: IconComponentProps): React_2.JSX.Element;
 
 // @public
 export function useContent(): {

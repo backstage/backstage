@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { trimStart } from 'lodash';
+import { join, takeWhile, trimEnd, trimStart } from 'lodash';
 import { GerritIntegrationConfig } from './config';
 
 const GERRIT_BODY_PREFIX = ")]}'";
@@ -79,6 +79,112 @@ export function parseGerritGitilesUrl(
     filePath: filePath === '' ? '/' : filePath,
     project,
   };
+}
+
+/**
+ * Parses Gitiles urls and returns the following:
+ *
+ * - The project
+ * - The type of ref. I.e: branch name, SHA, HEAD or tag.
+ * - The file path from the repo root.
+ * - The base path as the path that points to the repo root.
+ *
+ * Supported types of gitiles urls that point to:
+ *
+ * - Branches
+ * - Tags
+ * - A commit SHA
+ * - HEAD
+ *
+ * @param config - A Gerrit provider config.
+ * @param url - An url to a file or folder in Gitiles.
+ * @public
+ */
+export function parseGitilesUrlRef(
+  config: GerritIntegrationConfig,
+  url: string,
+): {
+  project: string;
+  path: string;
+  ref: string;
+  refType: 'sha' | 'branch' | 'tag' | 'head';
+  basePath: string;
+} {
+  const baseUrlParse = new URL(config.gitilesBaseUrl!);
+  const urlParse = new URL(url);
+  // Remove the gerrit authentication prefix '/a/' from the url
+  // In case of the gitilesBaseUrl is https://review.gerrit.com/plugins/gitiles
+  // and the url provided is https://review.gerrit.com/a/plugins/gitiles/...
+  // remove the prefix only if the pathname start with '/a/'
+  const urlPath = trimStart(
+    urlParse.pathname
+      .substring(urlParse.pathname.startsWith('/a/') ? 2 : 0)
+      .replace(baseUrlParse.pathname, ''),
+    '/',
+  );
+
+  // Find the project by taking everything up to "/+/".
+  const parts = urlPath.split('/').filter(p => !!p);
+  const projectParts = takeWhile(parts, p => p !== '+');
+  if (projectParts.length === 0) {
+    throw new Error(`Unable to parse gitiles url: ${url}`);
+  }
+  // Also remove the "+" after the project.
+  const rest = parts.slice(projectParts.length + 1);
+  const project = join(projectParts, '/');
+
+  // match <project>/+/HEAD/<path>
+  if (rest.length > 0 && rest[0] === 'HEAD') {
+    const ref = rest.shift()!;
+    const path = join(rest, '/');
+    return {
+      project,
+      ref,
+      refType: 'head' as const,
+      path: path || '/',
+      basePath: trimEnd(url.replace(path, ''), '/'),
+    };
+  }
+  // match <project>/+/<sha>/<path>
+  if (rest.length > 0 && rest[0].length === 40) {
+    const ref = rest.shift()!;
+    const path = join(rest, '/');
+    return {
+      project,
+      ref,
+      refType: 'sha' as const,
+      path: path || '/',
+      basePath: trimEnd(url.replace(path, ''), '/'),
+    };
+  }
+  const remainingPath = join(rest, '/');
+  // Regexp for matching "refs/tags/<tag>" or "refs/heads/<branch>/"
+  const refsRegexp = /^refs\/(?<refsReference>heads|tags)\/(?<ref>.*?)(\/|$)/;
+  const result = refsRegexp.exec(remainingPath);
+  if (result) {
+    const matchString = result[0];
+    let refType;
+    const { refsReference, ref } = result.groups || {};
+    const path = remainingPath.replace(matchString, '');
+    switch (refsReference) {
+      case 'heads':
+        refType = 'branch' as const;
+        break;
+      case 'tags':
+        refType = 'tag' as const;
+        break;
+      default:
+        throw new Error(`Unable to parse gitiles url: ${url}`);
+    }
+    return {
+      project,
+      ref,
+      refType,
+      path: path || '/',
+      basePath: trimEnd(url.replace(path, ''), '/'),
+    };
+  }
+  throw new Error(`Unable to parse gitiles : ${url}`);
 }
 
 /**

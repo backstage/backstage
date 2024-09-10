@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { errorHandler, PluginDatabaseManager } from '@backstage/backend-common';
 import express, { Request } from 'express';
 import Router from 'express-promise-router';
@@ -22,7 +23,7 @@ import {
   NotificationGetOptions,
 } from '../database';
 import { v4 as uuid } from 'uuid';
-import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
+import { CatalogApi } from '@backstage/catalog-client';
 import {
   NotificationProcessor,
   NotificationSendOptions,
@@ -30,7 +31,6 @@ import {
 import { InputError } from '@backstage/errors';
 import {
   AuthService,
-  DiscoveryService,
   HttpAuthService,
   LoggerService,
   UserInfoService,
@@ -53,12 +53,11 @@ export interface RouterOptions {
   logger: LoggerService;
   config: Config;
   database: PluginDatabaseManager;
-  discovery: DiscoveryService;
   auth: AuthService;
   httpAuth: HttpAuthService;
   userInfo: UserInfoService;
   signals?: SignalsService;
-  catalog?: CatalogApi;
+  catalog: CatalogApi;
   processors?: NotificationProcessor[];
 }
 
@@ -73,14 +72,11 @@ export async function createRouter(
     auth,
     httpAuth,
     userInfo,
-    discovery,
     catalog,
     processors = [],
     signals,
   } = options;
 
-  const catalogClient =
-    catalog ?? new CatalogClient({ discoveryApi: discovery });
   const store = await DatabaseNotificationsStore.create({ database });
   const frontendBaseUrl = config.getString('app.baseUrl');
 
@@ -474,7 +470,7 @@ export async function createRouter(
           users = await getUsersForEntityRef(
             entityRef,
             recipients.excludeEntityRef ?? [],
-            { auth, catalogClient },
+            { auth, catalogClient: catalog },
           );
         } catch (e) {
           logger.error(`Failed to resolve notification receivers: ${e}`);

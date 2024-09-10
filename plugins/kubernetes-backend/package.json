@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-kubernetes-backend",
-  "version": "0.18.6-next.0",
+  "version": "0.18.6-next.2",
   "description": "A Backstage backend plugin that integrates towards Kubernetes",
   "backstage": {
     "role": "backend-plugin",
@@ -106,7 +106,7 @@
     "@backstage/plugin-permission-backend-module-allow-all-policy": "workspace:^",
     "@types/aws4": "^1.5.1",
     "msw": "^1.0.0",
-    "supertest": "^6.1.3",
+    "supertest": "^7.0.0",
     "ws": "^8.13.0"
   },
   "configSchema": "config.d.ts"

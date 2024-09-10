@@ -110,6 +110,28 @@ export type FormProps = Pick<
   'transformErrors' | 'noHtml5Validate'
 >;
 
+// @public (undocumented)
+export type ScaffolderCustomFieldExplorerClassKey =
+  | 'root'
+  | 'controls'
+  | 'fieldForm'
+  | 'preview';
+
+// @public (undocumented)
+export type ScaffolderTemplateEditorClassKey =
+  | 'root'
+  | 'browser'
+  | 'editor'
+  | 'preview'
+  | 'results';
+
+// @public (undocumented)
+export type ScaffolderTemplateFormPreviewerClassKey =
+  | 'root'
+  | 'controls'
+  | 'textArea'
+  | 'preview';
+
 // @alpha (undocumented)
 export const scaffolderTranslationRef: TranslationRef<
   'scaffolder',
@@ -206,10 +228,10 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templateEditorPage.dryRunResultsView.tab.log': 'Log';
     readonly 'templateEditorPage.dryRunResultsView.tab.files': 'Files';
     readonly 'templateEditorPage.taskStatusStepper.skippedStepTitle': 'Skipped';
-    readonly 'templateEditorPage.customFieldExplorer.selectFieldLabel': 'Choose Custom Field Extension';
+    readonly 'templateEditorPage.customFieldExplorer.preview.title': 'Example Template Spec';
     readonly 'templateEditorPage.customFieldExplorer.fieldForm.title': 'Field Options';
     readonly 'templateEditorPage.customFieldExplorer.fieldForm.applyButtonTitle': 'Apply';
-    readonly 'templateEditorPage.customFieldExplorer.preview.title': 'Example Template Spec';
+    readonly 'templateEditorPage.customFieldExplorer.selectFieldLabel': 'Choose Custom Field Extension';
     readonly 'templateEditorPage.templateEditorBrowser.closeConfirmMessage': 'Are you sure? Unsaved changes will be lost';
     readonly 'templateEditorPage.templateEditorBrowser.saveIconTooltip': 'Save all files';
     readonly 'templateEditorPage.templateEditorBrowser.reloadIconTooltip': 'Reload directory';
@@ -230,7 +252,6 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templateListPage.pageTitle': 'Create a new component';
     readonly 'templateListPage.templateGroups.defaultTitle': 'Templates';
     readonly 'templateListPage.templateGroups.otherTitle': 'Other Templates';
-    readonly 'templateListPage.contentHeader.title': 'Available Templates';
     readonly 'templateListPage.contentHeader.registerExistingButtonTitle': 'Register Existing Component';
     readonly 'templateListPage.contentHeader.supportButtonTitle': 'Create new software components using standard templates. Different templates create different kinds of components (services, websites, documentation, ...).';
     readonly 'templateListPage.additionalLinksForEntity.viewTechDocsTitle': 'View TechDocs';

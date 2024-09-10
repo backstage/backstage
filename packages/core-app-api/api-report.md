@@ -196,6 +196,8 @@ export type AppIcons = {
   techdocs: IconComponent;
   user: IconComponent;
   warning: IconComponent;
+  star: IconComponent;
+  unstarred: IconComponent;
 };
 
 // @public

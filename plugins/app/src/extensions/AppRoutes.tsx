@@ -25,7 +25,6 @@ import {
 import { useRoutes } from 'react-router-dom';
 
 export const AppRoutes = createExtension({
-  namespace: 'app',
   name: 'routes',
   attachTo: { id: 'app/layout', input: 'content' },
   inputs: {

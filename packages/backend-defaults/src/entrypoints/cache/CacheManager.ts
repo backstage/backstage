@@ -15,17 +15,14 @@
  */
 
 import {
+  CacheService,
   CacheServiceOptions,
   LoggerService,
+  RootConfigService,
 } from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
 import Keyv from 'keyv';
 import { DefaultCacheClient } from './CacheClient';
-import {
-  CacheManagerOptions,
-  PluginCacheManager,
-  ttlToMilliseconds,
-} from './types';
+import { CacheManagerOptions, ttlToMilliseconds } from './types';
 import { durationToMilliseconds } from '@backstage/types';
 
 type StoreFactory = (pluginId: string, defaultTtl: number | undefined) => Keyv;
@@ -62,7 +59,7 @@ export class CacheManager {
    * @param config - The loaded application configuration.
    */
   static fromConfig(
-    config: Config,
+    config: RootConfigService,
     options: CacheManagerOptions = {},
   ): CacheManager {
     // If no `backend.cache` config is provided, instantiate the CacheManager
@@ -129,24 +126,16 @@ export class CacheManager {
    * @param pluginId - The plugin that the cache manager should be created for.
    *        Plugin names should be unique.
    */
-  forPlugin(pluginId: string): PluginCacheManager {
-    return {
-      getClient: (defaultOptions = {}) => {
-        const clientFactory = (options: CacheServiceOptions) => {
-          const ttl = options.defaultTtl ?? this.defaultTtl;
-          return this.getClientWithTtl(
-            pluginId,
-            ttl !== undefined ? ttlToMilliseconds(ttl) : undefined,
-          );
-        };
-
-        return new DefaultCacheClient(
-          clientFactory(defaultOptions),
-          clientFactory,
-          defaultOptions,
-        );
-      },
+  forPlugin(pluginId: string): CacheService {
+    const clientFactory = (options: CacheServiceOptions) => {
+      const ttl = options.defaultTtl ?? this.defaultTtl;
+      return this.getClientWithTtl(
+        pluginId,
+        ttl !== undefined ? ttlToMilliseconds(ttl) : undefined,
+      );
     };
+
+    return new DefaultCacheClient(clientFactory({}), clientFactory, {});
   }
 
   private getClientWithTtl(pluginId: string, ttl: number | undefined): Keyv {

@@ -33,7 +33,7 @@ Example of use-cases:
 
 ## Installation in Older Environments
 
-Newer versions of instances created by the create-app have both the notifications and signals plugins included by default, this section can be skipped right to the Configuration.
+Newer versions of instances created by the create-app have both the notifications and signals plugins included by default; this section can be skipped right to the Configuration.
 
 Following installation instructions are valid for enabling the plugins in older environments.
 
@@ -136,15 +136,15 @@ If the signals plugin is properly configured, it will be automatically discovere
 
 The Notifications backend plugin provides an API to create notifications, list notifications per logged-in user, and search based on parameters.
 
-The plugin uses a relational [database](https://backstage.io/docs/getting-started/config/database) for persistence, no specifics are introduced in this context.
+The plugin uses a relational [database](https://backstage.io/docs/getting-started/config/database) for persistence; no specifics are introduced in this context.
 
 No additional configuration in the app-config is needed, except for optional additional modules for `processors`.
 
 ### Notifications Frontend
 
-The recipients of notifications have to be entities in the catalog, e.g. of the User or Group kind.
+The recipients of notifications have to be entities in the catalog, e.g., of the User or Group kind.
 
-Otherwise no specific configuration is needed for the front-end notifications plugin.
+Otherwise, no specific configuration is needed for the front-end notifications plugin.
 
 All parametrization is done through component properties, such as the `NotificationsSidebarItem`, which can be used as an active left-side menu item in the front-end.
 

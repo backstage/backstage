@@ -4,6 +4,8 @@ title: 4. Authorizing access to paginated data
 description: Explains how to authorize access to paginated data in a Backstage plugin
 ---
 
+This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage [version 1.24](../../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](./04-authorizing-access-to-paginated-data--old.md) instead, and [consider migrating](../../backend-system/building-backends/08-migrating.md)!
+
 Authorizing `GET /todos` is similar to the update endpoint, in that it should be possible to authorize access based on the characteristics of each resource. However, we'll need to authorize a list of resources for this endpoint.
 
 One possible solution may leverage the batching functionality to authorize all of the todos, and then returning only the ones for which the decision was `ALLOW`:
@@ -11,7 +13,7 @@ One possible solution may leverage the batching functionality to authorize all o
 ```ts
 router.get('/todos', async (req, res) => {
   /* highlight-add-next-line */
-  const token = IdentityClient.getBearerToken(req.header('authorization'));
+  const credentials = await httpAuth.credentials(req, { allow: ['user'] });
 
   /* highlight-remove-next-line */
   res.json(getAll());
@@ -22,6 +24,7 @@ router.get('/todos', async (req, res) => {
       permission: todoListReadPermission,
       resourceRef: id,
     })),
+    { credentials },
   );
 
   const filteredItems = decisions.filter(
@@ -81,7 +84,7 @@ export const todoListPermissions = [
 
 ## Using conditional policy decisions
 
-So far we've only used the `PermissionEvaluator.authorize` method, which will evaluate conditional decisions before returning a result. In this step, we want to evaluate conditional decisions within our plugin, so we'll use `PermissionEvaluator.authorizeConditional` instead.
+So far we've only used the `PermissionsService.authorize` method, which will evaluate conditional decisions before returning a result. In this step, we want to evaluate conditional decisions within our plugin, so we'll use `PermissionsService.authorizeConditional` instead.
 
 ```ts title="plugins/todo-list-backend/src/service/router.ts"
 /* highlight-remove-next-line */
@@ -128,13 +131,11 @@ const transformConditions: ConditionTransformer<TodoFilter> = createConditionTra
 router.get('/todos', async (_req, res) => {
 /* highlight-add-start */
 router.get('/todos', async (req, res) => {
-  const token = getBearerTokenFromAuthorizationHeader(
-    req.header('authorization'),
-  );
+  const credentials = await httpAuth.credentials(req, { allow: ['user'] });
 
   const decision = (
     await permissions.authorizeConditional([{ permission: todoListReadPermission }], {
-      token,
+      credentials,
     })
   )[0];
 

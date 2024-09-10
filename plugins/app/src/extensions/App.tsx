@@ -27,7 +27,6 @@ import { ApiProvider } from '../../../../packages/core-app-api/src';
 import { AppThemeProvider } from '../../../../packages/core-app-api/src/app/AppThemeProvider';
 
 export const App = createExtension({
-  namespace: 'app',
   attachTo: { id: 'root', input: 'app' },
   inputs: {
     root: createExtensionInput([coreExtensionData.reactElement], {

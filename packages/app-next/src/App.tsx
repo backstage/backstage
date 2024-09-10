@@ -48,7 +48,7 @@ import {
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
 import kubernetesPlugin from '@backstage/plugin-kubernetes/alpha';
-import { signInPageOverrides } from './overrides/SignInPage';
+import { signInPageModule } from './overrides/SignInPage';
 import { convertLegacyPlugin } from '@backstage/core-compat-api';
 import { convertLegacyPageExtension } from '@backstage/core-compat-api';
 import { convertLegacyEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
@@ -154,7 +154,7 @@ const app = createApp({
     homePlugin,
     appVisualizerPlugin,
     kubernetesPlugin,
-    signInPageOverrides,
+    signInPageModule,
     scmModule,
     notFoundErrorPageModule,
     customHomePageModule,

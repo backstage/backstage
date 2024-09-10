@@ -1,5 +1,47 @@
 # @backstage/backend-common
 
+## 0.25.0-next.2
+
+### Patch Changes
+
+- 6ed9264: chore(deps): bump `path-to-regexp` from 6.2.2 to 8.0.0
+- c2b63ab: Updated dependency `supertest` to `^7.0.0`.
+- 3606843: Internal fixes to match `testcontainers` update
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.2-next.2
+  - @backstage/backend-plugin-api@1.0.0-next.2
+  - @backstage/integration@1.15.0-next.0
+  - @backstage/config-loader@1.9.1-next.0
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+
+## 0.25.0-next.1
+
+### Minor Changes
+
+- a4bac3c: **BREAKING**: You can no longer supply a `basePath` option to the host discovery implementation. In the new backend system, the ability to choose this path has been removed anyway at the plugin router level.
+- 988c145: **BREAKING**: Simplifications and cleanup as part of the Backend System 1.0 work.
+
+  - The deprecated `dropDatabase` function has now been removed, without replacement.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.2-next.1
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/backend-plugin-api@0.9.0-next.1
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.9.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.14.0
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+
 ## 0.25.0-next.0
 
 ### Minor Changes

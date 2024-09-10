@@ -4,15 +4,7 @@
 
 ```ts
 import { HttpRouterService } from '@backstage/backend-plugin-api';
-import { HumanDuration } from '@backstage/types';
-import { LifecycleService } from '@backstage/backend-plugin-api';
-import { RequestHandler } from 'express';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
-
-// @public
-export function createLifecycleMiddleware(
-  options: LifecycleMiddlewareOptions,
-): RequestHandler;
 
 // @public
 export const httpRouterServiceFactory: ServiceFactory<
@@ -20,13 +12,6 @@ export const httpRouterServiceFactory: ServiceFactory<
   'plugin',
   'singleton'
 >;
-
-// @public
-export interface LifecycleMiddlewareOptions {
-  // (undocumented)
-  lifecycle: LifecycleService;
-  startupRequestPauseTimeout?: HumanDuration;
-}
 
 // (No @packageDocumentation comment for this package)
 ```

@@ -263,23 +263,19 @@ const overrideExtension = exampleExtension.override({
 
 To install extension overrides in a Backstage app you should use `plugin.withOverrides` whenever you are overriding or adding extensions for a plugin. See the section on [overriding a plugin](./15-plugins.md#overriding-a-plugin) for more information.
 
-There is also a `createExtensionOverrides` function that can be used to install a collection of standalone extensions in an app. This method will be replaced with a different mechanism in the future, but for now remains the only way to override the built-in extensions in the app or to package extensions for a plugin package separate from the plugin itself.
-
 Note that while using either of these options you don't necessarily need to use the extension `.override(...)` method to create the overrides. You can also create new extensions with `createExtension` or a blueprint that are either completely net-new extensions, or override an existing extension by using the same `kind`, `namespace` and `name` to produce the same extension ID.
 
-### Creating a standalone extension bundle
+### Creating a frontend module
 
-The following example shows how to create a standalone extension bundle that overrides the search page from the search plugin:
+The following example shows how to create a frontend module that overrides the search page from the search plugin:
 
 ```tsx
 import {
   createPageExtension,
-  createExtensionOverrides,
+  createFrontendModule,
 } from '@backstage/frontend-plugin-api';
 
 const customSearchPage = PageBlueprint.make({
-  // Since this is a standalone extension we need to provide the namespace to match the search plugin
-  namespace: 'search',
   params: {
     defaultPath: '/search',
     loader: () =>
@@ -287,7 +283,8 @@ const customSearchPage = PageBlueprint.make({
   },
 });
 
-export default createExtensionOverrides({
+export default createFrontendModule({
+  pluginId: 'search',
   extensions: [customSearchPage],
 });
 ```
@@ -296,12 +293,14 @@ Assuming the above code resides in the `@internal/search-page` package, you can 
 
 ```tsx title="packages/app/src/App.tsx"
 import { createApp } from '@backstage/frontend-defaults';
-import searchPageOverride from '@internal/search-page';
+import searchPageModule from '@internal/search-page';
 
 const app = createApp({
   // highlight-next-line
-  features: [searchPageOverride],
+  features: [searchPageModule],
 });
 
 export default app.createRoot();
 ```
+
+You must define a `pluginId` when creating a frontend module, and the plugin must also be installed for the module to be loaded.

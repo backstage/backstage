@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   createLegacyAuthAdapters,
   PluginCacheManager,
 } from '@backstage/backend-common';
-import { CatalogClient } from '@backstage/catalog-client';
+import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
@@ -48,7 +49,6 @@ import {
  * deployment configuration (prepare/generate/publish all in the Backend).
  *
  * @public
- *
  */
 export type OutOfTheBoxDeploymentOptions = {
   preparers: PreparerBuilder;
@@ -61,7 +61,7 @@ export type OutOfTheBoxDeploymentOptions = {
   cache: PluginCacheManager;
   docsBuildStrategy?: DocsBuildStrategy;
   buildLogTransport?: winston.transport;
-  catalogClient?: CatalogClient;
+  catalogClient?: CatalogApi;
   httpAuth?: HttpAuthService;
   auth?: AuthService;
 };
@@ -81,7 +81,7 @@ export type RecommendedDeploymentOptions = {
   cache: PluginCacheManager;
   docsBuildStrategy?: DocsBuildStrategy;
   buildLogTransport?: winston.transport;
-  catalogClient?: CatalogClient;
+  catalogClient?: CatalogApi;
   httpAuth?: HttpAuthService;
   auth?: AuthService;
 };
@@ -112,7 +112,7 @@ function isOutOfTheBoxOption(
  * Creates a techdocs router.
  *
  * @public
- *@deprecated This function is only exported for legacy reasons and will be removed in the future.
+ * @deprecated This function is only exported for legacy reasons and will be removed in the future.
  * Please {@link https://backstage.io/docs/backend-system/building-backends/migrating | migrate } to use the new backend system and follow these {@link https://backstage.io/docs/features/techdocs/getting-started#new-backend-system | instructions } to install the user settings backend plugin.
  */
 export async function createRouter(

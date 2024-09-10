@@ -23,17 +23,12 @@ import { HostDiscovery as _HostDiscovery } from '../../../backend-defaults/src/e
 import { CacheManager as _CacheManager } from '../../../backend-defaults/src/entrypoints/cache/CacheManager';
 
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import {
-  type PluginCacheManager as _PluginCacheManager,
-  type CacheManagerOptions as _CacheManagerOptions,
-} from '../../../backend-defaults/src/entrypoints/cache/types';
+import { type CacheManagerOptions as _CacheManagerOptions } from '../../../backend-defaults/src/entrypoints/cache/types';
 
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
-  dropDatabase as _dropDatabase,
   DatabaseManager as _DatabaseManager,
   type DatabaseManagerOptions as _DatabaseManagerOptions,
-  type LegacyRootDatabaseService as _LegacyRootDatabaseService,
 } from '../../../backend-defaults/src/entrypoints/database/DatabaseManager';
 
 import {
@@ -48,6 +43,9 @@ import {
   isChildPath as _isChildPath,
   LifecycleService,
   PluginMetadataService,
+  DatabaseService,
+  LoggerService,
+  RootConfigService,
 } from '@backstage/backend-plugin-api';
 
 export * from './hot';
@@ -98,11 +96,11 @@ export class HostDiscovery implements DiscoveryService {
    *      plugins: [search]
    * ```
    *
-   * The basePath defaults to `/api`, meaning the default full internal
+   * The fixed base path is `/api`, meaning the default full internal
    * path for the `catalog` plugin will be `http://localhost:7007/api/catalog`.
    */
-  static fromConfig(config: Config, options?: { basePath?: string }) {
-    return new HostDiscovery(_HostDiscovery.fromConfig(config, options));
+  static fromConfig(config: Config) {
+    return new HostDiscovery(_HostDiscovery.fromConfig(config));
   }
 
   private constructor(private readonly impl: _HostDiscovery) {}
@@ -133,7 +131,31 @@ export { HostDiscovery as SingleHostDiscovery };
  * @public
  * @deprecated Use `CacheManager` from the `@backstage/backend-defaults` package instead
  */
-export class CacheManager extends _CacheManager {}
+export class CacheManager {
+  /**
+   * Creates a new {@link CacheManager} instance by reading from the `backend`
+   * config section, specifically the `.cache` key.
+   *
+   * @param config - The loaded application configuration.
+   */
+  static fromConfig(
+    config: RootConfigService,
+    options: CacheManagerOptions = {},
+  ): CacheManager {
+    return new CacheManager(_CacheManager.fromConfig(config, options));
+  }
+
+  private constructor(private readonly _impl: _CacheManager) {}
+
+  forPlugin(pluginId: string): PluginCacheManager {
+    return {
+      getClient: options => {
+        const result = this._impl.forPlugin(pluginId);
+        return options ? result.withOptions(options) : result;
+      },
+    };
+  }
+}
 
 /**
  * @public
@@ -145,7 +167,9 @@ export type CacheManagerOptions = _CacheManagerOptions;
  * @public
  * @deprecated Use `PluginCacheManager` from the `@backstage/backend-defaults` package instead
  */
-export type PluginCacheManager = _PluginCacheManager;
+export type PluginCacheManager = {
+  getClient(options?: CacheServiceOptions): CacheService;
+};
 
 /**
  * @public
@@ -170,14 +194,20 @@ export type CacheClientOptions = CacheServiceOptions;
  * @deprecated Use `DatabaseManager` from the `@backstage/backend-defaults` package instead
  */
 export class DatabaseManager implements LegacyRootDatabaseService {
-  private constructor(private readonly _databaseManager: _DatabaseManager) {}
+  private constructor(
+    private readonly _databaseManager: _DatabaseManager,
+    private readonly logger?: LoggerService,
+  ) {}
 
   static fromConfig(
     config: Config,
-    options?: DatabaseManagerOptions,
+    options?: {
+      migrations?: DatabaseService['migrations'];
+      logger?: LoggerService;
+    },
   ): DatabaseManager {
     const _databaseManager = _DatabaseManager.fromConfig(config, options);
-    return new DatabaseManager(_databaseManager);
+    return new DatabaseManager(_databaseManager, options?.logger);
   }
 
   forPlugin(
@@ -186,7 +216,20 @@ export class DatabaseManager implements LegacyRootDatabaseService {
       | { lifecycle: LifecycleService; pluginMetadata: PluginMetadataService }
       | undefined,
   ): PluginDatabaseManager {
-    return this._databaseManager.forPlugin(pluginId, deps);
+    const logger: LoggerService = this.logger ?? {
+      debug() {},
+      info() {},
+      warn() {},
+      error() {},
+      child() {
+        return this;
+      },
+    };
+    const lifecycle: LifecycleService = deps?.lifecycle ?? {
+      addShutdownHook() {},
+      addStartupHook() {},
+    };
+    return this._databaseManager.forPlugin(pluginId, { logger, lifecycle });
   }
 }
 
@@ -204,15 +247,11 @@ export type PluginDatabaseManager = _PluginDatabaseManager;
 
 /**
  * @public
- * @deprecated Use `LegacyRootDatabaseService` from the `@backstage/backend-defaults` package instead
+ * @deprecated Use `DatabaseManager` from `@backstage/backend-defaults/database` instead, or migrate to the new backend system and use `coreServices.database`
  */
-export type LegacyRootDatabaseService = _LegacyRootDatabaseService;
-
-/**
- * @public
- * @deprecated Use `dropDatabase` from the `@backstage/backend-defaults` package instead
- */
-export const dropDatabase = _dropDatabase;
+export type LegacyRootDatabaseService = {
+  forPlugin(pluginId: string): DatabaseService;
+};
 
 /**
  * @public

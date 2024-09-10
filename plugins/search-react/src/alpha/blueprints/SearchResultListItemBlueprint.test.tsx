@@ -87,7 +87,7 @@ describe('SearchResultListItemBlueprint', () => {
     });
 
     const mockSearchPage = PageBlueprint.makeWithOverrides({
-      namespace: 'search',
+      name: 'search',
       inputs: {
         items: createExtensionInput([searchResultListItemDataRef]),
       },

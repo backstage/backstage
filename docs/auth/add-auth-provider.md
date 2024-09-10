@@ -1,13 +1,12 @@
 ---
 id: add-auth-provider
-title: Contributing New Providers
+title: Contributing New Provider Modules
 description: Documentation on adding new authentication providers
 ---
 
 :::note Note
 
-The primary audience for this documentation are contributors to the main
-Backstage project that want to add support for new authentication providers.
+The primary audience for this documentation are contributors that want to add support for new authentication providers.
 While you can follow it to implement your own custom providers it is much
 more advanced than using our built-in providers.
 
@@ -122,191 +121,137 @@ due to its comprehensive set of supported authentication
 
 ### Quick guide
 
-[1.](#installing-the-dependencies) Install the passport-js based provider
-package.
+[1.](#create-new-auth-provider-module) Create a new auth provider module
 
-[2.](#create-implementation) Create a new folder structure for the provider.
+[3.](#adding-an-oauth-based-provider) or [adding a proxy auth based provider](#creating-proxy-auth-based-provider) depending on your needs.
 
-[3.](#adding-an-oauth-based-provider) Implement the provider, extending the
-suitable framework if needed.
+[4.](#add-the-provider-to-the-backend) Add the provider to the backend.
 
-[4.](#hook-it-up-to-the-backend) Add the provider to the backend.
+### Create new auth provider module
 
-### Installing the dependencies:
+In this example we will create auth module for a made up service named foobar.
+
+Create a new module using `yarn new`, pick `backend-module` and provide `auth-backend` as the plugin ID and `foobar-provider` as the module ID.
+
+Make sure that the module has the appropriate passport provider as a dependency.
 
 ```bash
-cd plugins/auth-backend
+cd plugins/auth-backend-backend-module-foobar-provider
 yarn add passport-provider-a
 yarn add @types/passport-provider-a
 ```
 
-### Create implementation
-
-Make a new folder with the name of the provider following the below file
-structure:
-
-```bash
-plugins/auth-backend/src/providers/providerA
-├── index.ts
-└── provider.ts
-```
-
-**`plugins/auth-backend/src/providers/providerA/provider.ts`** defines the
-provider class which implements a handler for the chosen framework.
-
 ### Adding an OAuth based provider
 
-If we're adding an `OAuth` based provider we would implement the
-`OAuthHandlers` interface. By implementing this
-interface we can use the `OAuthProvider` class provided by `lib/oauth`, meaning
-we don't need to implement the full
-`AuthProviderRouteHandlers` interface that providers
-otherwise need to implement.
+We're then creating a new module that can extend the Auth backend using the `authProvidersExtensionPoint`.
 
-The provider class takes the provider's options as a class parameter. It also
-imports the `Strategy` from the passport package.
+```ts title="plugins/auth-backend-foobar-provider/src/module.ts"
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import {
+  authProvidersExtensionPoint,
+  commonSignInResolvers,
+  createOAuthProviderFactory,
+} from '@backstage/plugin-auth-node';
+import { providerAuthenticator } from './authenticator';
 
-```ts
-import { Strategy as ProviderAStrategy } from 'passport-provider-a';
-
-export type ProviderAProviderOptions = OAuthProviderOptions & {
-  // extra options here
-}
-
-export class ProviderAAuthProvider implements OAuthHandlers {
-  private readonly _strategy: ProviderAStrategy;
-
-  constructor(options: ProviderAProviderOptions) {
-    this._strategy = new ProviderAStrategy(
-      {
-        clientID: options.clientId,
-        clientSecret: options.clientSecret,
-        callbackURL: options.callbackUrl,
-        passReqToCallback: false,
-        response_type: 'code',
-        /// ... etc
-      }
-      verifyFunction, // See the "Verify Callback" section
-    );
-  }
-
-  async start() {}
-  async handler() {}
-}
-```
-
-### Adding an non-OAuth based provider
-
-An non-`OAuth` based provider could implement
-`AuthProviderRouteHandlers` instead.
-
-```ts
-type ProviderAOptions = {
-  // ...
-};
-
-export class ProviderAAuthProvider implements AuthProviderRouteHandlers {
-  private readonly _strategy: ProviderAStrategy;
-
-  constructor(options: ProviderAOptions) {
-    this._strategy = new ProviderAStrategy(
-      {
-        // ...
+/** @public */
+export const authModuleFoobarProvider = createBackendModule({
+  pluginId: 'auth',
+  moduleId: 'foobar',
+  register(reg) {
+    reg.registerInit({
+      deps: {
+        providers: authProvidersExtensionPoint,
       },
-      verifyFunction, // See the "Verify Callback" section
-    );
-  }
-
-  async start() {}
-  async frameHandler() {}
-  async logout() {}
-  async refresh() {} // If supported
-}
-```
-
-#### Integration Wrapper
-
-Each provider exports an object that provides a way to create new instances
-of the provider, along with related utilities like predefined sign-in resolvers.
-
-The object is created using `createAuthProviderIntegration`, with the most
-important part being the `create` method that acts as the factory function
-for our provider.
-
-The factory should return an implementation of `AuthProviderFactory`, which
-passes in a object with utilities for configuration, logging, token issuing,
-etc. The factory should return an implementation of
-`AuthProviderRouteHandlers`.
-
-The factory is what decides the mapping from
-[static configuration](../conf/index.md) to the creation of auth providers. For
-example, OAuth providers use `OAuthEnvironmentHandler` to allow for multiple
-different configurations, one for each environment, which looks like this;
-
-```ts
-export const okta = createAuthProviderIntegration({
-  create(options?: {
-    /**
-     * The profile transformation function used to verify and convert the auth response
-     * into the profile that will be presented to the user.
-     */
-    authHandler?: AuthHandler<OAuthResult>;
-
-    /**
-     * Configure sign-in for this provider, without it the provider can not be used to sign users in.
-     */
-    signIn?: {
-      /**
-       * Maps an auth result to a Backstage identity for the user.
-       */
-      resolver: SignInResolver<OAuthResult>;
-    };
-  }) {
-    return ({ providerId, globalConfig, config, resolverContext }) =>
-      OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-        // read options from config
-        const clientId = envConfig.getString('clientId');
-        const clientSecret = envConfig.getString('clientSecret');
-
-        // Use provided auth handler, or create a default one
-        const authHandler: AuthHandler<OAuthResult> = options?.authHandler
-          ? options.authHandler
-          : async ({ fullProfile, params }) => ({
-              profile: makeProfileInfo(fullProfile, params.id_token),
-            });
-
-        // instantiate our OAuthHandlers implementation
-        const provider = new OktaAuthProvider({
-          audience,
-          clientId,
-          clientSecret,
-          callbackUrl,
-          authHandler,
-          signInResolver: options?.signIn?.resolver,
-          resolverContext,
+      async init({ providers }) {
+        providers.registerProvider({
+          providerId: 'foobar',
+          factory: createOAuthProviderFactory({
+            authenticator: providerAuthenticator,
+            signInResolverFactories: {
+              ...commonSignInResolvers,
+            },
+          }),
         });
-
-        // Wrap the OAuthHandlers with OAuthProvider, which implements AuthProviderRouteHandlers
-        return OAuthProvider.fromConfig(globalConfig, provider, {
-          providerId,
-          tokenIssuer,
-        });
-      });
-  },
-  resolvers: {
-    /**
-     * Looks up the user by matching their email local part to the entity name.
-     */
-    emailLocalPartMatchingUserEntityName: () => commonByEmailLocalPartResolver,
-
-    // ... additional predefined resolvers
+      },
+    });
   },
 });
 ```
 
-The purpose of the different environments is to allow for a single auth-backend
-to serve as the authentication service for multiple different frontend
-environments, such as local development, staging, and production.
+Now let's implement the actual authenticator for our provider using `Strategy` from a passport package.
+The authenticator is responsible for creating the passport strategy and handling the authentication flow using secrets from the config file.
+
+```ts title="plugins/auth-backend-foobar-provider/src/authenticator.ts"
+import { Strategy as ProviderStrategy } from 'passport-provider-a';
+import {
+  createOAuthAuthenticator,
+  PassportOAuthAuthenticatorHelper,
+  PassportOAuthDoneCallback,
+  PassportProfile,
+} from '@backstage/plugin-auth-node';
+
+/** @public */
+export const providerAuthenticator = createOAuthAuthenticator({
+  defaultProfileTransform:
+    PassportOAuthAuthenticatorHelper.defaultProfileTransform,
+  scopes: {
+    // Scopes required by the provider
+    required: ['openid', 'email', 'profile', 'offline_access'],
+  },
+  initialize({ callbackUrl, config }) {
+    const clientId = config.getString('clientId');
+    const clientSecret = config.getString('clientSecret');
+
+    return PassportOAuthAuthenticatorHelper.from(
+      new ProviderStrategy(
+        {
+          clientID: clientId,
+          clientSecret: clientSecret,
+          // ... other options
+        },
+        (
+          accessToken: string,
+          refreshToken: string,
+          params: any,
+          fullProfile: PassportProfile,
+          done: PassportOAuthDoneCallback,
+        ) => {
+          done(
+            undefined,
+            { fullProfile, params, accessToken },
+            { refreshToken },
+          );
+        },
+      ),
+    );
+  },
+
+  async start(input, helper) {
+    return helper.start(input);
+  },
+
+  async authenticate(input, helper) {
+    return helper.authenticate(input);
+  },
+
+  async refresh(input, helper) {
+    return helper.refresh(input);
+  },
+});
+```
+
+Here are some examples of authenticators that are already implemented in the codebase:
+
+- [Google](https://github.com/backstage/backstage/blob/master/plugins/auth-backend-module-google-provider/src/authenticator.ts)
+- [GitHub](https://github.com/backstage/backstage/blob/master/plugins/auth-backend-module-github-provider/src/authenticator.ts)
+- [Okta](https://github.com/backstage/backstage/blob/master/plugins/auth-backend-module-okta-provider/src/authenticator.ts)
+
+### Creating proxy auth based provider
+
+A proxy auth provider is a provider that uses another provider to authenticate for example Google IAP or AWS ALB, please note that those providers are already supported by Backstage.
+
+The implementation is similar to the OAuth provider, but the `authenticator` function is different. There are already some examples on how to implement a proxy provider in the codebase, for example [auth-backend-module-gcp-iap-provider](https://github.com/backstage/backstage/tree/master/plugins/auth-backend-module-gcp-iap-provider) and [auth-backend-module-aws-alb-provider](https://github.com/backstage/backstage/tree/master/plugins/auth-backend-module-aws-alb-provider)
 
 #### Verify Callback
 
@@ -323,27 +268,20 @@ environments, such as local development, staging, and production.
 >
 > http://www.passportjs.org/docs/configure/
 
-**`plugins/auth-backend/src/providers/providerA/index.ts`** is simply
-re-exporting the factory function to be used for hooking the provider up to the
-backend.
+### Add the provider to the backend
+
+The process for adding the new module is the same as for any other type of module or backend plugin.
+
+If this provider is internal to your installation the import path that you add to `packages/backend/src/index.ts` would be something like:
 
 ```ts
-export { createProviderAProvider } from './provider';
+backend.add(import('@internal/plugin-auth-backend-module-foobar-provider'));
 ```
 
-### Hook it up to the backend
-
-**`plugins/auth-backend/src/providers/factories.ts`** When the `auth-backend`
-starts it sets up routing for all the available providers by calling
-the factory function of each provider. You need to import the factory
-function from the provider and add it to the factory:
+But if this module is contributed directly to Backstage the module would be imported as
 
 ```ts
-import { createProviderAProvider } from './providerA';
-
-const factories: { [providerId: string]: AuthProviderFactory } = {
-  providerA: createProviderAProvider,
-};
+backend.add(import('@backstage/plugin-auth-backend-module-foobar-provider'));
 ```
 
 By doing this `auth-backend` automatically adds these endpoints:

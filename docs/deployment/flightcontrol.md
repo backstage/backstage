@@ -7,7 +7,7 @@ description: Deploying Backstage to AWS Fargate via Flightcontrol
 
 This guide explains how to deploy Backstage to [Flightcontrol](https://www.flightcontrol.dev?ref=backstage), a platform that fully automates deployments to Amazon Web Services (AWS). Flightcontrol supports git-driven and image registry deployments.
 
-Before you begin, make sure you have a [Flightcontrol account](https://app.flightcontrol.dev/signup?ref=backstage) and a [Github account](https://github.com/login) to follow this guide.
+Before you begin, make sure you have a [Flightcontrol account](https://app.flightcontrol.dev/signup?ref=backstage) and a [GitHub account](https://github.com/login) to follow this guide.
 
 # Creating a Dockerfile and .dockerignore
 

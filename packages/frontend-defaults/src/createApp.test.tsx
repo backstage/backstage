@@ -284,9 +284,9 @@ describe('createApp', () => {
           </api:app/app-theme>
           <api:app/components out=[core.api.factory]>
             components [
-              <component:core.components.progress out=[core.component.component] />
-              <component:core.components.notFoundErrorPage out=[core.component.component] />
-              <component:core.components.errorBoundaryFallback out=[core.component.component] />
+              <component:app/core.components.progress out=[core.component.component] />
+              <component:app/core.components.notFoundErrorPage out=[core.component.component] />
+              <component:app/core.components.errorBoundaryFallback out=[core.component.component] />
             ]
           </api:app/components>
           <api:app/icons out=[core.api.factory] />

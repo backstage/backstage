@@ -25,6 +25,7 @@ import {
   notificationsProcessingExtensionPoint,
   NotificationsProcessingExtensionPoint,
 } from '@backstage/plugin-notifications-node';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 
 class NotificationsProcessingExtensionPointImpl
   implements NotificationsProcessingExtensionPoint
@@ -65,9 +66,9 @@ export const notificationsPlugin = createBackendPlugin({
         httpRouter: coreServices.httpRouter,
         logger: coreServices.logger,
         database: coreServices.database,
-        discovery: coreServices.discovery,
         signals: signalsServiceRef,
         config: coreServices.rootConfig,
+        catalog: catalogServiceRef,
       },
       async init({
         auth,
@@ -76,9 +77,9 @@ export const notificationsPlugin = createBackendPlugin({
         httpRouter,
         logger,
         database,
-        discovery,
         signals,
         config,
+        catalog,
       }) {
         httpRouter.use(
           await createRouter({
@@ -88,7 +89,7 @@ export const notificationsPlugin = createBackendPlugin({
             logger,
             config,
             database,
-            discovery,
+            catalog,
             signals,
             processors: processingExtensions.processors,
           }),

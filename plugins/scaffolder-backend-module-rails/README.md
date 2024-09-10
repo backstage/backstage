@@ -18,26 +18,14 @@ You need to configure the action in your backend:
 yarn --cwd packages/backend add @backstage/plugin-scaffolder-backend-module-rails
 ```
 
-Configure the action (you can check
-the [docs](https://backstage.io/docs/features/software-templates/writing-custom-actions#registering-custom-actions) to
-see all options):
+Then ensure that both the scaffolder and this module are added to your backend:
 
 ```typescript
-const actions = [
-  createFetchRailsAction({
-    integrations,
-    reader: env.reader,
-  }),
-];
-
-return await createRouter({
-  catalogClient,
-  actions,
-  logger: env.logger,
-  config: env.config,
-  database: env.database,
-  reader: env.reader,
-});
+// In packages/backend/src/index.ts
+const backend = createBackend();
+// ...
+backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
+backend.add(import('@backstage/plugin-scaffolder-backend-module-rails'));
 ```
 
 After that you can use the action in your template:
@@ -243,17 +231,4 @@ steps:
         owner: ${{ parameters.owner }}
         system: ${{ parameters.system }}
         railsArguments: ${{ parameters.railsArguments }}
-```
-
-You also need to configure the list of allowed images as part of the creating the action for the scaffolder backend:
-
-```typescript
-const actions = [
-  createFetchRailsAction({
-    integrations,
-    reader: env.reader,
-    containerRunner,
-    allowedImageNames: ['repository/rails:tag'],
-  }),
-];
 ```

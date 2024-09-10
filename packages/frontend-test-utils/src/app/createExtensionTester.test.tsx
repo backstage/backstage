@@ -30,7 +30,6 @@ const stringDataRef = createExtensionDataRef<string>().with({
 describe('createExtensionTester', () => {
   it('should return the correct dataRef when called', () => {
     const extension = createExtension({
-      namespace: 'test',
       attachTo: { id: 'ignored', input: 'ignored' },
       output: [stringDataRef],
       factory: () => [stringDataRef('test-text')],
@@ -43,7 +42,6 @@ describe('createExtensionTester', () => {
 
   it('should throw an error if trying to access an instance not provided to the tester', () => {
     const extension = createExtension({
-      namespace: 'test',
       name: 'e1',
       attachTo: { id: 'ignored', input: 'ignored' },
       output: [stringDataRef],
@@ -51,7 +49,6 @@ describe('createExtensionTester', () => {
     });
 
     const extension2 = createExtension({
-      namespace: 'test',
       name: 'e2',
       attachTo: { id: 'ignored', input: 'ignored' },
       output: [stringDataRef],
@@ -61,13 +58,12 @@ describe('createExtensionTester', () => {
     const tester = createExtensionTester(extension);
 
     expect(() => tester.query(extension2)).toThrow(
-      "Extension with ID 'test/e2' not found, please make sure it's added to the tester",
+      "Extension with ID 'e2' not found, please make sure it's added to the tester",
     );
   });
 
   it('should throw an error if trying to access an instance which is not part of the tree', () => {
     const extension = createExtension({
-      namespace: 'test',
       name: 'e1',
       attachTo: { id: 'ignored', input: 'ignored' },
       output: [stringDataRef],
@@ -75,7 +71,6 @@ describe('createExtensionTester', () => {
     });
 
     const extension2 = createExtension({
-      namespace: 'test',
       name: 'e2',
       attachTo: { id: 'ignored', input: 'ignored' },
       output: [stringDataRef],
@@ -85,7 +80,7 @@ describe('createExtensionTester', () => {
     const tester = createExtensionTester(extension).add(extension2);
 
     expect(() => tester.query(extension2)).toThrow(
-      "Extension with ID 'test/e2' has not been instantiated, because it is not part of the test subject's extension tree",
+      "Extension with ID 'e2' has not been instantiated, because it is not part of the test subject's extension tree",
     );
   });
 
@@ -99,7 +94,6 @@ describe('createExtensionTester', () => {
     });
 
     const extension = createExtension({
-      namespace: 'test',
       name: 'e1',
       attachTo: { id: 'ignored', input: 'ignored' },
       output: [stringDataRef, internalRef.optional()],
@@ -129,7 +123,6 @@ describe('createExtensionTester', () => {
     });
 
     const extension = createExtension({
-      namespace: 'test',
       name: 'e1',
       inputs: {
         ignored: createExtensionInput([stringDataRef]),
@@ -140,9 +133,8 @@ describe('createExtensionTester', () => {
     });
 
     const extraExtension = createExtension({
-      namespace: 'test',
       name: 'e2',
-      attachTo: { id: 'test/e1', input: 'ignored' },
+      attachTo: { id: 'e1', input: 'ignored' },
       output: [stringDataRef, internalRef.optional()],
       factory: () => [stringDataRef('test-text')],
     });

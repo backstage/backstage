@@ -1,5 +1,74 @@
 # @backstage/backend-defaults
 
+## 0.5.0-next.2
+
+### Minor Changes
+
+- baeef13: **BREAKING** Removed `createLifecycleMiddleware` and `LifecycleMiddlewareOptions` to clean up API surface. These exports have no external usage and do not provide value in its current form. If you were using these exports, please reach out to the maintainers to discuss your use case.
+
+### Patch Changes
+
+- 6ed9264: chore(deps): bump `path-to-regexp` from 6.2.2 to 8.0.0
+- c2b63ab: Updated dependency `supertest` to `^7.0.0`.
+- Updated dependencies
+  - @backstage/backend-app-api@1.0.0-next.2
+  - @backstage/backend-common@0.25.0-next.2
+  - @backstage/plugin-auth-node@0.5.2-next.2
+  - @backstage/backend-plugin-api@1.0.0-next.2
+  - @backstage/cli-node@0.2.8-next.0
+  - @backstage/integration@1.15.0-next.0
+  - @backstage/config-loader@1.9.1-next.0
+  - @backstage/plugin-permission-node@0.8.3-next.2
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+  - @backstage/plugin-events-node@0.4.0-next.2
+
+## 0.5.0-next.1
+
+### Minor Changes
+
+- a4bac3c: **BREAKING**: You can no longer supply a `basePath` option to the host discovery implementation. In the new backend system, the ability to choose this path has been removed anyway at the plugin router level.
+- 055b75b: **BREAKING**: Simplifications and cleanup as part of the Backend System 1.0 work.
+
+  For the `/database` subpath exports:
+
+  - The deprecated `dropDatabase` function has now been removed, without replacement.
+  - The deprecated `LegacyRootDatabaseService` type has now been removed.
+  - The return type from `DatabaseManager.forPlugin` is now directly a `DatabaseService`, as arguably expected.
+  - `DatabaseManager.forPlugin` now requires the `deps` argument, with the logger and lifecycle services.
+
+  For the `/cache` subpath exports:
+
+  - The `PluginCacheManager` type has been removed. You can still import it from `@backstage/backend-common`, but it's deprecated there, and you should move off of that package by migrating fully to the new backend system.
+  - Accordingly, `CacheManager.forPlugin` immediately returns a `CacheService` instead of a `PluginCacheManager`. The outcome of this is that you no longer need to make the extra `.getClient()` call. The old `CacheManager` with the old behavior still exists on `@backstage/backend-common`, but the above recommendations apply.
+
+### Patch Changes
+
+- 622360e: Move down the discovery config to be in the root
+- fe6fd8c: Accept `ConfigService` instead of `Config` in constructors/factories
+- 5705424: Wrap scheduled tasks from the scheduler core service now in OpenTelemetry spans
+- b2a329d: Properly indent the config schema
+- Updated dependencies
+  - @backstage/backend-common@0.25.0-next.1
+  - @backstage/plugin-auth-node@0.5.2-next.1
+  - @backstage/backend-app-api@0.10.0-next.1
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/backend-plugin-api@0.9.0-next.1
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.7
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.9.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.14.0
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+  - @backstage/plugin-events-node@0.4.0-next.1
+  - @backstage/plugin-permission-node@0.8.3-next.1
+
 ## 0.5.0-next.0
 
 ### Minor Changes

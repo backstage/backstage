@@ -82,7 +82,6 @@ const SidebarNavItem = (
 };
 
 export const AppNav = createExtension({
-  namespace: 'app',
   name: 'nav',
   attachTo: { id: 'app/layout', input: 'nav' },
   inputs: {

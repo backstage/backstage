@@ -28,7 +28,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import SettingsIcon from '@material-ui/icons/Settings';
-import StarIcon from '@material-ui/icons/Star';
+import { StarIcon } from '@backstage/core-components';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { EntityUserFilter } from '../../filters';
 import { useEntityList } from '../../hooks';

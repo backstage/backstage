@@ -20,4 +20,9 @@
  * @packageDocumentation
  */
 
-export { createApp, type CreateAppFeatureLoader } from './createApp';
+export {
+  createApp,
+  type CreateAppOptions,
+  type CreateAppFeatureLoader,
+} from './createApp';
+export { createPublicSignInApp } from './createPublicSignInApp';

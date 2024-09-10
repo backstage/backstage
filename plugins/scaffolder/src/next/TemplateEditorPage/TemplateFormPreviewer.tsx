@@ -33,6 +33,7 @@ import yaml from 'yaml';
 import {
   LayoutOptions,
   FieldExtensionOptions,
+  FormProps,
 } from '@backstage/plugin-scaffolder-react';
 import { TemplateEditorForm } from './TemplateEditorForm';
 import { TemplateEditorTextArea } from './TemplateEditorTextArea';
@@ -83,42 +84,54 @@ type TemplateOption = {
   value: Entity;
 };
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    gridArea: 'pageContent',
-    display: 'grid',
-    gridTemplateAreas: `
+/** @public */
+export type ScaffolderTemplateFormPreviewerClassKey =
+  | 'root'
+  | 'controls'
+  | 'textArea'
+  | 'preview';
+
+const useStyles = makeStyles(
+  theme => ({
+    root: {
+      gridArea: 'pageContent',
+      display: 'grid',
+      gridTemplateAreas: `
       "controls controls"
       "textArea preview"
     `,
-    gridTemplateRows: 'auto 1fr',
-    gridTemplateColumns: '1fr 1fr',
-  },
-  controls: {
-    gridArea: 'controls',
-    display: 'flex',
-    flexFlow: 'row nowrap',
-    alignItems: 'center',
-    margin: theme.spacing(1),
-  },
-  textArea: {
-    gridArea: 'textArea',
-  },
-  preview: {
-    gridArea: 'preview',
-  },
-}));
+      gridTemplateRows: 'auto 1fr',
+      gridTemplateColumns: '1fr 1fr',
+    },
+    controls: {
+      gridArea: 'controls',
+      display: 'flex',
+      flexFlow: 'row nowrap',
+      alignItems: 'center',
+      margin: theme.spacing(1),
+    },
+    textArea: {
+      gridArea: 'textArea',
+    },
+    preview: {
+      gridArea: 'preview',
+    },
+  }),
+  { name: 'ScaffolderTemplateFormPreviewer' },
+);
 
 export const TemplateFormPreviewer = ({
   defaultPreviewTemplate = EXAMPLE_TEMPLATE_PARAMS_YAML,
   customFieldExtensions = [],
   onClose,
   layouts = [],
+  formProps,
 }: {
   defaultPreviewTemplate?: string;
   customFieldExtensions?: FieldExtensionOptions<any, any>[];
   onClose?: () => void;
   layouts?: LayoutOptions[];
+  formProps?: FormProps;
 }) => {
   const classes = useStyles();
   const { t } = useTranslationRef(scaffolderTranslationRef);
@@ -213,6 +226,7 @@ export const TemplateFormPreviewer = ({
             fieldExtensions={customFieldExtensions}
             setErrorText={setErrorText}
             layouts={layouts}
+            formProps={formProps}
           />
         </div>
       </main>

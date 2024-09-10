@@ -29,30 +29,6 @@ const appPlugin: FrontendPlugin<
   {},
   {},
   {
-    [x: `component:app/${string}`]: ExtensionDefinition<{
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        {
-          ref: ComponentRef;
-          impl: ComponentType;
-        },
-        'core.component.component',
-        {}
-      >;
-      inputs: {
-        [x: string]: ExtensionInput<
-          AnyExtensionDataRef,
-          {
-            optional: boolean;
-            singleton: boolean;
-          }
-        >;
-      };
-      kind: 'component';
-      namespace: string;
-      name: string;
-    }>;
     app: ExtensionDefinition<{
       config: {};
       configInput: {};
@@ -71,7 +47,7 @@ const appPlugin: FrontendPlugin<
         >;
       };
       kind: undefined;
-      namespace: 'app';
+      namespace: undefined;
       name: undefined;
     }>;
     'api:app/app-language': ExtensionDefinition<{
@@ -112,7 +88,7 @@ const appPlugin: FrontendPlugin<
         >;
       };
       kind: undefined;
-      namespace: 'app';
+      namespace: undefined;
       name: 'layout';
     }>;
     'app/nav': ExtensionDefinition<{
@@ -155,7 +131,7 @@ const appPlugin: FrontendPlugin<
         >;
       };
       kind: undefined;
-      namespace: 'app';
+      namespace: undefined;
       name: 'nav';
     }>;
     'app/root': ExtensionDefinition<{
@@ -220,7 +196,7 @@ const appPlugin: FrontendPlugin<
         >;
       };
       kind: undefined;
-      namespace: 'app';
+      namespace: undefined;
       name: 'root';
     }>;
     'app/routes': ExtensionDefinition<{
@@ -249,7 +225,7 @@ const appPlugin: FrontendPlugin<
         >;
       };
       kind: undefined;
-      namespace: 'app';
+      namespace: undefined;
       name: 'routes';
     }>;
     'api:app/app-theme': ExtensionDefinition<{
@@ -275,7 +251,7 @@ const appPlugin: FrontendPlugin<
     }>;
     'theme:app/light': ExtensionDefinition<{
       kind: 'theme';
-      namespace: 'app';
+      namespace: undefined;
       name: 'light';
       config: {};
       configInput: {};
@@ -284,7 +260,7 @@ const appPlugin: FrontendPlugin<
     }>;
     'theme:app/dark': ExtensionDefinition<{
       kind: 'theme';
-      namespace: 'app';
+      namespace: undefined;
       name: 'dark';
       config: {};
       configInput: {};
@@ -393,7 +369,7 @@ const appPlugin: FrontendPlugin<
     }>;
     'app-root-element:app/oauth-request-dialog': ExtensionDefinition<{
       kind: 'app-root-element';
-      namespace: 'app';
+      namespace: undefined;
       name: 'oauth-request-dialog';
       config: {};
       configInput: {};
@@ -436,7 +412,7 @@ const appPlugin: FrontendPlugin<
         >;
       };
       kind: 'app-root-element';
-      namespace: 'app';
+      namespace: undefined;
       name: 'alert-display';
     }>;
     'api:app/discovery': ExtensionDefinition<{

@@ -22,7 +22,6 @@ import {
 } from '@backstage/frontend-plugin-api';
 
 export const Root = createExtension({
-  namespace: 'root',
   attachTo: { id: 'ignored', input: 'ignored' },
   inputs: {
     app: createExtensionInput([coreExtensionData.reactElement], {

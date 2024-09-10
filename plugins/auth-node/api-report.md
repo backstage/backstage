@@ -503,6 +503,7 @@ export class PassportOAuthAuthenticatorHelper {
   // (undocumented)
   authenticate(
     input: OAuthAuthenticatorAuthenticateInput,
+    options?: Record<string, string>,
   ): Promise<OAuthAuthenticatorResult<PassportProfile>>;
   // (undocumented)
   static defaultProfileTransform: ProfileTransform<

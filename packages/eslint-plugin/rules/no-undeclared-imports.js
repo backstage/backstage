@@ -22,11 +22,11 @@ const visitImports = require('../lib/visitImports');
 const minimatch = require('minimatch');
 const { execFileSync } = require('child_process');
 
-const depFields = {
+const depFields = /** @type {const} */ ({
   dep: 'dependencies',
   dev: 'devDependencies',
   peer: 'peerDependencies',
-};
+});
 
 const devModulePatterns = [
   new minimatch.Minimatch('!src/**'),
@@ -154,6 +154,124 @@ function addVersionQuery(name, flag, packages) {
   return `${name}@${mostCommonRange}`;
 }
 
+/**
+ * Add missing package imports
+ * @param {Array<{name: string, flag: string, node: import('estree').Node}>} toAdd
+ * @param {import('../lib/getPackages').PackageMap} packages
+ * @param {import('../lib/getPackages').ExtendedPackage} localPkg
+ */
+function addMissingImports(toAdd, packages, localPkg) {
+  /** @type Record<string, Set<string>> */
+  const byFlag = {};
+
+  for (const { name, flag } of toAdd) {
+    byFlag[flag] = byFlag[flag] ?? new Set();
+    byFlag[flag].add(name);
+  }
+
+  for (const name of byFlag[''] ?? []) {
+    byFlag['--dev']?.delete(name);
+  }
+  for (const name of byFlag['--peer'] ?? []) {
+    byFlag['']?.delete(name);
+    byFlag['--dev']?.delete(name);
+  }
+
+  for (const [flag, names] of Object.entries(byFlag)) {
+    // Look up existing version queries in the repo for the same dependency
+    const namesWithQuery = [...names].map(name =>
+      addVersionQuery(name, flag, packages),
+    );
+
+    // The security implication of this is a bit interesting, as crafted add-import
+    // directives could be used to install malicious packages. However, the same is true
+    // for adding malicious packages to package.json, so there's no significant difference.
+    execFileSync('yarn', ['add', ...(flag ? [flag] : []), ...namesWithQuery], {
+      cwd: localPkg.dir,
+      stdio: 'inherit',
+    });
+  }
+}
+
+/**
+ * Removes dependency entries pointing to inlined workspace packages.
+ * @param {Array<{pkg: import('../lib/getPackages').ExtendedPackage, node: import('estree').Node}>} toInline
+ * @param {import('../lib/getPackages').ExtendedPackage} localPkg
+ */
+function removeInlineImports(toInline, localPkg) {
+  /** @type Set<string> */
+  const toRemove = new Set();
+
+  for (const { pkg } of toInline) {
+    const name = pkg.packageJson.name;
+    for (const depType of Object.values(depFields)) {
+      if (localPkg.packageJson[depType]?.[name]) {
+        toRemove.add(name);
+      }
+    }
+  }
+  if (toRemove.size > 0) {
+    execFileSync('yarn', ['remove', ...toRemove], {
+      cwd: localPkg.dir,
+      stdio: 'inherit',
+    });
+  }
+}
+
+/**
+ * Adds dependencies that are not properly forwarded from inline dependencies.
+ * @param {Array<{pkg: import('../lib/getPackages').ExtendedPackage, node: import('estree').Node}>} toInline
+ * @param {import('../lib/getPackages').ExtendedPackage} localPkg
+ */
+function addForwardedInlineImports(toInline, localPkg) {
+  const declaredProdDeps = new Set([
+    ...Object.keys(localPkg.packageJson.dependencies ?? {}),
+    ...Object.keys(localPkg.packageJson.peerDependencies ?? {}),
+    localPkg.packageJson.name, // include self
+  ]);
+
+  /** @type Map<string, Map<string, string>> */
+  const byFlagByName = new Map();
+
+  for (const { pkg } of toInline) {
+    for (const depType of /** @type {const} */ ([
+      'dependencies',
+      'peerDependencies',
+    ])) {
+      for (const [depName, depQuery] of Object.entries(
+        pkg.packageJson[depType] ?? {},
+      )) {
+        if (!declaredProdDeps.has(depName)) {
+          const flag = getAddFlagForDepsField(depType);
+          const byName = byFlagByName.get(flag);
+          if (byName) {
+            const query = byName.get(depName);
+            if (query && query !== depQuery) {
+              throw new Error(
+                `Conflicting dependency queries for inlined package dep ${depName}, got ${query} and ${depQuery}`,
+              );
+            } else {
+              byName.set(depName, depQuery);
+            }
+          } else {
+            byFlagByName.set(flag, new Map([[depName, depQuery]]));
+          }
+        }
+      }
+    }
+  }
+
+  for (const [flag, byName] of byFlagByName) {
+    const namesWithQuery = [...byName.entries()].map(
+      ([name, query]) => `${name}@${query}`,
+    );
+    execFileSync('yarn', ['add', ...(flag ? [flag] : []), ...namesWithQuery], {
+      cwd: localPkg.dir,
+      stdio: 'inherit',
+    });
+  }
+}
+
 /** @type {import('eslint').Rule.RuleModule} */
 module.exports = {
   meta: {
@@ -165,6 +283,8 @@ module.exports = {
       switch:
         '{{ packageName }} is declared in {{ oldDepsField }}, but should be moved to {{ depsField }} in {{ packageJsonPath }}.',
       switchBack: 'Switch back to import declaration',
+      inlineDirect: `The dependency on the inline package {{ packageName }} must not be declared in package dependencies.`,
+      inlineMissing: `Each production dependency from the inline package {{ packageName }} must be re-declared by this package, the following dependencies are missing: {{ missingDeps }}`,
     },
     docs: {
       description:
@@ -189,57 +309,48 @@ module.exports = {
     /** @type Array<{name: string, flag: string, node: import('estree').Node}> */
     const importsToAdd = [];
 
+    /** @type Array<{pkg: import('../lib/getPackages').ExtendedPackage, node: import('estree').Node}> */
+    const importsToInline = [];
+
     return {
       // All missing imports that we detect are collected as we traverse, and then we use
       // the program exit to execute all install directives that have been found.
       ['Program:exit']() {
-        /** @type Record<string, Set<string>> */
-        const byFlag = {};
+        if (importsToAdd.length > 0) {
+          addMissingImports(importsToAdd, packages, localPkg);
 
-        for (const { name, flag } of importsToAdd) {
-          byFlag[flag] = byFlag[flag] ?? new Set();
-          byFlag[flag].add(name);
+          // This switches all import directives back to the original import.
+          for (const added of importsToAdd) {
+            context.report({
+              node: added.node,
+              messageId: 'switchBack',
+              fix(fixer) {
+                return fixer.replaceText(added.node, `'${added.name}'`);
+              },
+            });
+          }
+          importsToAdd.length = 0;
         }
 
-        for (const name of byFlag[''] ?? []) {
-          byFlag['--dev']?.delete(name);
-        }
-        for (const name of byFlag['--peer'] ?? []) {
-          byFlag['']?.delete(name);
-          byFlag['--dev']?.delete(name);
-        }
+        if (importsToInline.length > 0) {
+          removeInlineImports(importsToInline, localPkg);
+          addForwardedInlineImports(importsToInline, localPkg);
 
-        for (const [flag, names] of Object.entries(byFlag)) {
-          // Look up existing version queries in the repo for the same dependency
-          const namesWithQuery = [...names].map(name =>
-            addVersionQuery(name, flag, packages),
-          );
-
-          // The security implication of this is a bit interesting, as crafted add-import
-          // directives could be used to install malicious packages. However, the same is true
-          // for adding malicious packages to package.json, so there's no significant difference.
-          execFileSync(
-            'yarn',
-            ['add', ...(flag ? [flag] : []), ...namesWithQuery],
-            {
-              cwd: localPkg.dir,
-              stdio: 'inherit',
-            },
-          );
+          for (const inlined of importsToInline) {
+            context.report({
+              node: inlined.node,
+              messageId: 'switchBack',
+              fix(fixer) {
+                return fixer.replaceText(
+                  inlined.node,
+                  `'${inlined.pkg.packageJson.name}'`,
+                );
+              },
+            });
+          }
+          importsToInline.length = 0;
         }
 
-        // This switches all import directives back to the original import.
-        for (const added of importsToAdd) {
-          context.report({
-            node: added.node,
-            messageId: 'switchBack',
-            fix(fixer) {
-              return fixer.replaceText(added.node, `'${added.name}'`);
-            },
-          });
-        }
-
-        importsToAdd.length = 0;
         packages.clearCache();
       },
       ...visitImports(context, (node, imp) => {
@@ -255,22 +366,99 @@ module.exports = {
 
         // Any import directive that is found is collected for processing later
         if (imp.type === 'directive') {
-          const parts = imp.path.split(':');
-          if (parts[1] !== 'add-import') {
-            return;
-          }
-          const [type, name] = parts.slice(2);
-          if (!name.match(/^(@[-\w\.~]+\/)?[-\w\.~]*$/i)) {
-            throw new Error(
-              `Invalid package name to add as dependency: '${name}'`,
-            );
+          const [, directive, ...args] = imp.path.split(':');
+
+          if (directive === 'add-import') {
+            const [type, name] = args;
+            if (!name.match(/^(@[-\w\.~]+\/)?[-\w\.~]*$/i)) {
+              throw new Error(
+                `Invalid package name to add as dependency: '${name}'`,
+              );
+            }
+
+            importsToAdd.push({
+              flag: getAddFlagForDepsField(type).trim(),
+              name,
+              node: imp.node,
+            });
           }
 
-          importsToAdd.push({
-            flag: getAddFlagForDepsField(type).trim(),
-            name,
-            node: imp.node,
-          });
+          if (directive === 'inline-imports') {
+            const [name] = args;
+            const pkg = packages.map.get(name);
+            if (!pkg) {
+              throw new Error(`Unexpectedly missing inline package: ${name}`);
+            }
+
+            importsToInline.push({
+              pkg: pkg,
+              node: imp.node,
+            });
+          }
+
+          return;
+        }
+
+        // Importing an internal inlined package, whose imports are inlined too
+        if (
+          imp.type === 'internal' &&
+          imp.package.packageJson.backstage?.inline
+        ) {
+          for (const depType of Object.values(depFields)) {
+            if (localPkg.packageJson[depType]?.[imp.packageName]) {
+              context.report({
+                node,
+                messageId: 'inlineDirect',
+                data: {
+                  packageName: imp.packageName,
+                },
+                fix: fixer => {
+                  return fixer.replaceText(
+                    imp.node,
+                    `'directive:inline-imports:${imp.packageName}'`,
+                  );
+                },
+              });
+              return;
+            }
+          }
+
+          const missingDeps = [];
+          const declaredProdDeps = new Set([
+            ...Object.keys(localPkg.packageJson.dependencies ?? {}),
+            ...Object.keys(localPkg.packageJson.peerDependencies ?? {}),
+            localPkg.packageJson.name, // include self
+          ]);
+          for (const depType of /** @type {const} */ ([
+            'dependencies',
+            'peerDependencies',
+          ])) {
+            for (const depName of Object.keys(
+              imp.package.packageJson[depType] ?? {},
+            )) {
+              if (!declaredProdDeps.has(depName)) {
+                missingDeps.push(depName);
+              }
+            }
+          }
+
+          if (missingDeps.length > 0) {
+            context.report({
+              node,
+              messageId: 'inlineMissing',
+              data: {
+                packageName: imp.packageName,
+                missingDeps: missingDeps.join(', '),
+              },
+              fix: fixer => {
+                return fixer.replaceText(
+                  imp.node,
+                  `'directive:inline-imports:${imp.packageName}'`,
+                );
+              },
+            });
+          }
+
           return;
         }
 

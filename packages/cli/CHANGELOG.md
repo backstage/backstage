@@ -1,5 +1,54 @@
 # @backstage/cli
 
+## 0.27.1-next.2
+
+### Patch Changes
+
+- 16ffdd6: Remove direct `vite` dependency
+- 8069f4a: Update Scaffolder module template to add itself to the backend
+- 0e1a817: The app build process now outputs an additional `index.html.tmpl` file. This is an non-templated version of the `index.html` file, which can be used to delay templating until runtime.
+
+  The new `index.html.tmpl` file also sets a `backstage-public-path` meta tag to be templated at runtime. The meta tag is in turn picked up by the new `@backstage/cli/config/webpack-public-path.js` entry point script, which uses it to set the runtime public path of the Webpack bundle.
+
+- d29fc1b: Updated dependency `@module-federation/enhanced` to `^0.6.0`.
+- 4ebf36f: Upgrade to `vite@v5`
+- 2d3caaf: The build commands now support the new `backstage.inline` flag in `package.json`, which causes the contents of private packages to be inlined into the consuming package, rather than be treated as an external dependency.
+- 3d88455: Add support for `backstage:^` version ranges to versions:bump when using the experimental yarn plugin
+- Updated dependencies
+  - @backstage/cli-node@0.2.8-next.0
+  - @backstage/integration@1.15.0-next.0
+  - @backstage/config-loader@1.9.1-next.0
+  - @backstage/eslint-plugin@0.1.9-next.0
+  - @backstage/catalog-model@1.6.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
+## 0.27.1-next.1
+
+### Patch Changes
+
+- d2d2313: Add `config.d.ts` files to the list of included file in `tsconfig.json`.
+
+  This allows ESLint to detect issues or deprecations in those files.
+
+- 97422b0: Update templates to not refer to backend-common
+- f865103: Updated dependency `esbuild` to `^0.23.0`.
+- 569c3f0: Fixed an issue where published frontend packages would end up with an invalid import structure if a single module imported both `.css` and `.svg` files.
+- Updated dependencies
+  - @backstage/catalog-model@1.6.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.7
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.9.0
+  - @backstage/errors@1.2.4
+  - @backstage/eslint-plugin@0.1.8
+  - @backstage/integration@1.14.0
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
 ## 0.27.1-next.0
 
 ### Patch Changes

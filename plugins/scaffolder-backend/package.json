@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-backend",
-  "version": "1.25.0-next.0",
+  "version": "1.25.0-next.2",
   "description": "The Backstage backend plugin that helps you create new things",
   "backstage": {
     "role": "backend-plugin",
@@ -126,7 +126,7 @@
     "@types/zen-observable": "^0.8.0",
     "esbuild": "^0.23.0",
     "strip-ansi": "^7.1.0",
-    "supertest": "^6.1.3",
+    "supertest": "^7.0.0",
     "wait-for-expect": "^3.0.2"
   },
   "configSchema": "config.d.ts"

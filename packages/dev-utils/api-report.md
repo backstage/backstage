@@ -16,6 +16,7 @@ import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { SignInProviderConfig } from '@backstage/core-components';
+import { TranslationResource } from '@backstage/core-plugin-api/alpha';
 
 // @public
 export function createDevApp(): DevAppBuilder;
@@ -27,6 +28,7 @@ export class DevAppBuilder {
   addSidebarItem(sidebarItem: JSX.Element): DevAppBuilder;
   addSignInProvider(provider: SignInProviderConfig): this;
   addThemes(themes: AppTheme[]): this;
+  addTranslationResource(resource: TranslationResource): this;
   build(): ComponentType<PropsWithChildren<{}>>;
   registerApi<
     Api,
@@ -37,6 +39,8 @@ export class DevAppBuilder {
   >(factory: ApiFactory<Api, Impl, Deps>): DevAppBuilder;
   registerPlugin(...plugins: BackstagePlugin[]): DevAppBuilder;
   render(): void;
+  setAvailableLanguages(languages: string[]): this;
+  setDefaultLanguage(language: string): this;
 }
 
 // @public (undocumented)
@@ -54,6 +58,9 @@ export const EntityGridItem: (
     entity: Entity;
   },
 ) => JSX.Element;
+
+// @public (undocumented)
+export const SidebarLanguageSwitcher: () => React_2.JSX.Element | null;
 
 // @public
 export const SidebarSignOutButton: (props: {

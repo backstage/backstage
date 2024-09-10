@@ -15,11 +15,11 @@
  */
 import { CacheService } from '@backstage/backend-plugin-api';
 import { CachedEntityLoader } from './CachedEntityLoader';
-import { CatalogClient } from '@backstage/catalog-client';
+import { CatalogApi } from '@backstage/catalog-client';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 
 describe('CachedEntityLoader', () => {
-  const catalog: jest.Mocked<CatalogClient> = {
+  const catalog: jest.Mocked<CatalogApi> = {
     getEntityByRef: jest.fn(),
   } as any;
 

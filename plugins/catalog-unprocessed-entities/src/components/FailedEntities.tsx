@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React, { useState } from 'react';
-
+import { DateTime } from 'luxon';
 import {
   ErrorPanel,
   MarkdownContent,
@@ -88,6 +88,24 @@ const RenderErrorContext = ({
   return null;
 };
 
+/**
+ * Converts input datetime which lacks timezone info into user's local time so that they can
+ * easily understand the times.
+ */
+const convertTimeToLocalTimezone = (strDateTime: string | Date) => {
+  const dateTime = DateTime.fromFormat(
+    strDateTime.toLocaleString(),
+    'yyyy-MM-dd hh:mm:ss',
+    {
+      zone: 'UTC',
+    },
+  );
+
+  const dateTimeLocalTz = dateTime.setZone(DateTime.local().zoneName);
+
+  return dateTimeLocalTz.toFormat('yyyy-MM-dd hh:mm:ss ZZZZ');
+};
+
 export const FailedEntities = () => {
   const classes = useStyles();
   const unprocessedApi = useApi(catalogUnprocessedEntitiesApiRef);
@@ -141,6 +159,13 @@ export const FailedEntities = () => {
         (rowData as UnprocessedEntity).entity_ref,
     },
     {
+      title: <Typography>Location Path</Typography>,
+      sorting: true,
+      field: 'location_key',
+      render: (rowData: UnprocessedEntity | {}) =>
+        (rowData as UnprocessedEntity).location_key,
+    },
+    {
       title: <Typography>Kind</Typography>,
       sorting: true,
       field: 'kind',
@@ -156,7 +181,25 @@ export const FailedEntities = () => {
         'unknown',
     },
     {
-      title: <Typography>Raw</Typography>,
+      title: <Typography>Last Discovery At</Typography>,
+      sorting: true,
+      field: 'last_discovery_at',
+      render: (rowData: UnprocessedEntity | {}) =>
+        convertTimeToLocalTimezone(
+          (rowData as UnprocessedEntity).last_discovery_at,
+        ) || 'unknown',
+    },
+    {
+      title: <Typography>Next Refresh At</Typography>,
+      sorting: true,
+      field: 'next_update_at',
+      render: (rowData: UnprocessedEntity | {}) =>
+        convertTimeToLocalTimezone(
+          (rowData as UnprocessedEntity).next_update_at,
+        ) || 'unknown',
+    },
+    {
+      title: <Typography>Raw Entity Definition</Typography>,
       sorting: false,
       render: (rowData: UnprocessedEntity | {}) => (
         <EntityDialog entity={rowData as UnprocessedEntity} />

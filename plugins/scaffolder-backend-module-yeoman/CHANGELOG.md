@@ -1,5 +1,26 @@
 # @backstage/plugin-scaffolder-backend-module-yeoman
 
+## 0.4.0-next.2
+
+### Patch Changes
+
+- 5d1670f: Update README installation instructions
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.0-next.2
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-node@0.4.11-next.2
+  - @backstage/plugin-scaffolder-node-test-utils@0.1.12-next.2
+
+## 0.4.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.9.0-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-node@0.4.11-next.1
+  - @backstage/plugin-scaffolder-node-test-utils@0.1.12-next.1
+
 ## 0.4.0-next.0
 
 ### Minor Changes

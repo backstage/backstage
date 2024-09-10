@@ -206,7 +206,9 @@ export function createSpecializedApp(options?: {
     'root',
     resolveAppNodeSpecs({
       features,
-      builtinExtensions: [resolveExtensionDefinition(Root)],
+      builtinExtensions: [
+        resolveExtensionDefinition(Root, { namespace: 'root' }),
+      ],
       parameters: readAppExtensionsConfig(config),
       forbidden: new Set(['root']),
     }),

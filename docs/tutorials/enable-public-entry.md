@@ -106,40 +106,12 @@ That's it!
 If your app uses the new frontend system, you can still use the public entry point feature. The `index-public-experimental.tsx` file does end up looking a bit different in this case:
 
 ```tsx title="in packages/app/src/index-public-experimental.tsx"
-import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { CookieAuthRedirect } from '@backstage/plugin-auth-react';
-import { createApp } from '@backstage/frontend-app-api';
-import {
-  coreExtensionData,
-  createExtension,
-  createExtensionOverrides,
-  createSignInPageExtension,
-} from '@backstage/frontend-plugin-api';
+import { signInPageModule } from './overrides/SignInPage';
+import { createPublicSignInApp } from '@backstage/frontend-defaults';
 
-const signInPage = createSignInPageExtension({
-  name: 'guest',
-  loader: async () => props => <SignInPage {...props} providers={['guest']} />,
-});
-
-const authRedirectExtension = createExtension({
-  namespace: 'app',
-  name: 'layout',
-  attachTo: { id: 'app/root', input: 'children' },
-  output: {
-    element: coreExtensionData.reactElement,
-  },
-  factory: () => ({
-    element: <CookieAuthRedirect />,
-  }),
-});
-
-const app = createApp({
-  features: [
-    createExtensionOverrides({
-      extensions: [signInPage, authRedirectExtension],
-    }),
-  ],
+const app = createPublicSignInApp({
+  features: [signInPageModule],
 });
 
 ReactDOM.createRoot(document.getElementById('root')!).render(app.createRoot());

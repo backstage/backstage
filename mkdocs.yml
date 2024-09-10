@@ -48,6 +48,7 @@ nav:
           - External integrations: 'features/software-catalog/external-integrations.md'
           - Catalog Customization: 'features/software-catalog/catalog-customization.md'
           - API: 'features/software-catalog/api.md'
+          - FAQ: 'features/software-catalog/faq.md'
       - Kubernetes:
           - Overview: 'features/kubernetes/index.md'
           - Installation: 'features/kubernetes/installation.md'
@@ -182,6 +183,7 @@ nav:
       - Local Development:
           - Linking in Local Packages: 'tooling/local-dev/linking-local-packages.md'
           - Debugging Backstage: 'tooling/local-dev/debugging.md'
+          - Profiling Backstage: 'tooling/local-dev/profiling.md'
       - Package Metadata: 'tooling/package-metadata.md'
   - Deployment:
       - Deploying Backstage: 'deployment/index.md'

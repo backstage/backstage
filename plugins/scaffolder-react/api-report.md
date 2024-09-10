@@ -128,7 +128,12 @@ export interface FieldExtensionUiSchema<TFieldReturnValue, TUiOptions>
 // @public
 export type FormProps = Pick<
   FormProps_2,
-  'transformErrors' | 'noHtml5Validate' | 'uiSchema' | 'formContext'
+  | 'transformErrors'
+  | 'noHtml5Validate'
+  | 'uiSchema'
+  | 'formContext'
+  | 'omitExtraData'
+  | 'liveOmit'
 >;
 
 // @public

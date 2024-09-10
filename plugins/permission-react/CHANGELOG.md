@@ -1,5 +1,15 @@
 # @backstage/plugin-permission-react
 
+## 0.4.26-next.0
+
+### Patch Changes
+
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.4-next.0
+  - @backstage/config@1.2.0
+  - @backstage/plugin-permission-common@0.8.1
+
 ## 0.4.25
 
 ### Patch Changes

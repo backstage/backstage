@@ -16,7 +16,6 @@
 
 import React, {
   ComponentType,
-  Fragment,
   PropsWithChildren,
   ReactNode,
   useState,
@@ -53,7 +52,6 @@ import { RouteTracker } from '../../../../packages/frontend-app-api/src/routing/
 import { getBasePath } from '../../../../packages/frontend-app-api/src/routing/getBasePath';
 
 export const AppRoot = createExtension({
-  namespace: 'app',
   name: 'root',
   attachTo: { id: 'app', input: 'root' },
   inputs: {
@@ -96,15 +94,8 @@ export const AppRoot = createExtension({
       });
     }
 
-    let content: React.ReactNode = (
-      <>
-        {inputs.elements.map(el => (
-          <Fragment key={el.node.spec.id}>
-            {el.get(coreExtensionData.reactElement)}
-          </Fragment>
-        ))}
-        {inputs.children.get(coreExtensionData.reactElement)}
-      </>
+    let content: React.ReactNode = inputs.children.get(
+      coreExtensionData.reactElement,
     );
 
     for (const wrapper of inputs.wrappers) {
@@ -120,6 +111,9 @@ export const AppRoot = createExtension({
           )}
           RouterComponent={inputs.router?.get(
             RouterBlueprint.dataRefs.component,
+          )}
+          extraElements={inputs.elements?.map(el =>
+            el.get(coreExtensionData.reactElement),
           )}
         >
           {content}
@@ -188,6 +182,7 @@ export interface AppRouterProps {
   children?: ReactNode;
   SignInPageComponent?: ComponentType<SignInPageProps>;
   RouterComponent?: ComponentType<PropsWithChildren<{}>>;
+  extraElements?: Array<React.JSX.Element>;
 }
 
 function DefaultRouter(props: PropsWithChildren<{}>) {
@@ -211,6 +206,7 @@ export function AppRouter(props: AppRouterProps) {
     children,
     SignInPageComponent,
     RouterComponent = DefaultRouter,
+    extraElements = [],
   } = props;
 
   const configApi = useApi(configApiRef);
@@ -261,6 +257,7 @@ export function AppRouter(props: AppRouterProps) {
 
   return (
     <RouterComponent>
+      {...extraElements}
       <RouteTracker routeObjects={routeObjects} />
       <SignInPageWrapper
         component={SignInPageComponent}

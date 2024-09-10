@@ -33,8 +33,7 @@ export function createComponentExtension<TProps extends {}>(options: {
 }) {
   return createExtension({
     kind: 'component',
-    namespace: options.ref.id,
-    name: options.name,
+    name: options.name ?? options.ref.id,
     attachTo: { id: 'api:app/components', input: 'components' },
     disabled: options.disabled,
     output: [createComponentExtension.componentDataRef],

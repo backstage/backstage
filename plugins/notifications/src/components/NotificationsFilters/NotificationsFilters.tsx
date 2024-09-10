@@ -249,10 +249,12 @@ export const NotificationsFilters = ({
 
         <Grid item xs={12}>
           <FormControl fullWidth variant="outlined" size="small">
-            <InputLabel id="notifications-filter-severity">Severity</InputLabel>
+            <InputLabel id="notifications-filter-severity">
+              Min severity
+            </InputLabel>
 
             <Select
-              label="Severity"
+              label="Min severity"
               labelId="notifications-filter-severity"
               value={severity}
               onChange={handleOnSeverityChanged}

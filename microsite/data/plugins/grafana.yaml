@@ -4,9 +4,9 @@ author: K-Phoen
 authorUrl: https://github.com/K-Phoen
 category: Monitoring
 description: Associate alerts and dashboards to components.
-documentation: https://github.com/K-Phoen/backstage-plugin-grafana/
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/grafana/plugins/grafana/docs/index.md
 iconUrl: https://avatars.githubusercontent.com/u/7195757?s=200&v=4
-npmPackageName: '@k-phoen/backstage-plugin-grafana'
+npmPackageName: '@backstage-community/plugin-grafana'
 tags:
   - dashboards
   - monitoring
