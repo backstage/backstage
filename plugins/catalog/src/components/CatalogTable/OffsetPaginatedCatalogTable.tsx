@@ -29,7 +29,7 @@ import {
 export function OffsetPaginatedCatalogTable(
   props: TableProps<CatalogTableRow>,
 ) {
-  const { columns, data } = props;
+  const { columns, data, isLoading } = props;
   const { updateFilters, setLimit, setOffset, limit, totalItems, offset } =
     useEntityList();
   const [page, setPage] = React.useState(
@@ -68,6 +68,7 @@ export function OffsetPaginatedCatalogTable(
       }}
       totalCount={totalItems}
       localization={{ pagination: { labelDisplayedRows: '' } }}
+      isLoading={isLoading}
     />
   );
 }
