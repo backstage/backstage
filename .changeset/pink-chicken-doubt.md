@@ -7,4 +7,4 @@ The plugin version that supports the new backend system has been moved from the 
 ```diff
 - backend.add(import('@backstage/plugin-user-settings-backend/alpha'));
 + backend.add(import('@backstage/plugin-user-settings-backend'));
-
+```
