@@ -2,4 +2,4 @@
 '@backstage/plugin-app': patch
 ---
 
-chore: need to render additional root components outside of SignInWrapper
+Fix issue with `AlertDisplay` and other components defined with `AppRootElementBlueprint` not being rendered when at the `SignInWrapper`
