@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - master
+  pull_request:
 
 permissions:
   contents: read
@@ -183,6 +184,22 @@ jobs:
         with:
           name: stable-reference
           path: docs/reference
+
+      - name: debug before
+        run: |
+          ls docs
+          ls docs/releases
+
+      - name: grab lastest releases docs
+        uses: actions/checkout@v4
+        with:
+          clean: false
+          sparse-checkout: docs/releases
+
+      - name: debug after
+        run: |
+          ls docs
+          ls docs/releases
 
       - name: generate stable docs
         run: yarn docusaurus docs:version stable
