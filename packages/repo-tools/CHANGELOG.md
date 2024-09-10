@@ -1,5 +1,18 @@
 # @backstage/repo-tools
 
+## 0.9.7-next.2
+
+### Patch Changes
+
+- 1a8837e: Avoid generating API reports for packages with `backstage.inline` set.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.0-next.2
+  - @backstage/cli-node@0.2.8-next.0
+  - @backstage/config-loader@1.9.1-next.0
+  - @backstage/catalog-model@1.6.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/errors@1.2.4
+
 ## 0.9.7-next.1
 
 ### Patch Changes

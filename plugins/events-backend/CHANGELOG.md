@@ -1,5 +1,16 @@
 # @backstage/plugin-events-backend
 
+## 0.3.12-next.2
+
+### Patch Changes
+
+- c2b63ab: Updated dependency `supertest` to `^7.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.25.0-next.2
+  - @backstage/backend-plugin-api@1.0.0-next.2
+  - @backstage/config@1.2.0
+  - @backstage/plugin-events-node@0.4.0-next.2
+
 ## 0.3.12-next.1
 
 ### Patch Changes

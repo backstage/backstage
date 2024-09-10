@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs-react
 
+## 1.2.8-next.2
+
+### Patch Changes
+
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.14.11-next.1
+  - @backstage/core-plugin-api@1.9.4-next.0
+  - @backstage/version-bridge@1.0.9-next.0
+  - @backstage/catalog-model@1.6.0
+  - @backstage/config@1.2.0
+
 ## 1.2.8-next.1
 
 ### Patch Changes

@@ -1,5 +1,32 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.4.2-next.2
+
+### Patch Changes
+
+- 0476be3: Add the `relations` array to allow Backstage to mirror GitLab's membership behavior, including descendant, inherited, and shared-from-group memberships.
+
+  The previous `allowInherited` config option will be deprecated in future versions. Use the `relations` array with the `INHERITED` option instead.
+
+  ```yaml
+  catalog:
+    providers:
+      gitlab:
+        development:
+          relations:
+            - INHERITED
+  ```
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.5.0-next.2
+  - @backstage/backend-plugin-api@1.0.0-next.2
+  - @backstage/integration@1.15.0-next.0
+  - @backstage/catalog-model@1.6.0
+  - @backstage/config@1.2.0
+  - @backstage/plugin-catalog-common@1.0.26
+  - @backstage/plugin-catalog-node@1.12.7-next.2
+  - @backstage/plugin-events-node@0.4.0-next.2
+
 ## 0.4.2-next.1
 
 ### Patch Changes

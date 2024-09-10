@@ -1,5 +1,14 @@
 # @backstage/backend-openapi-utils
 
+## 0.1.18-next.2
+
+### Patch Changes
+
+- c2b63ab: Updated dependency `supertest` to `^7.0.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.0-next.2
+  - @backstage/errors@1.2.4
+
 ## 0.1.18-next.1
 
 ### Patch Changes

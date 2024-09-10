@@ -1,5 +1,16 @@
 # @backstage/plugin-auth-backend-module-oidc-provider
 
+## 0.3.0-next.2
+
+### Patch Changes
+
+- c2b63ab: Updated dependency `supertest` to `^7.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.25.0-next.2
+  - @backstage/plugin-auth-node@0.5.2-next.2
+  - @backstage/plugin-auth-backend@0.23.0-next.2
+  - @backstage/backend-plugin-api@1.0.0-next.2
+
 ## 0.3.0-next.1
 
 ### Patch Changes

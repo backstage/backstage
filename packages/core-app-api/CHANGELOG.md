@@ -1,5 +1,18 @@
 # @backstage/core-app-api
 
+## 1.14.3-next.0
+
+### Patch Changes
+
+- ea69e46: The `defaultConfigLoader` now also reads configuration from scripts tags with `type="backstage.io/config"`. The tag is expected to contain a JSON-serialized array of `AppConfig` objects. If any of these script tags are present, the injected runtime configuration in the static assets will no longer be used.
+- b537bd7: Allow custom star icons to be provided via the `star` and `unstarred` icon overrides. See how to override existing icons in the [Backstage documentation](https://backstage.io/docs/getting-started/app-custom-theme/#custom-icons).
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.4-next.0
+  - @backstage/version-bridge@1.0.9-next.0
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
 ## 1.14.2
 
 ### Patch Changes

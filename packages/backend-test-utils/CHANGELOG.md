@@ -1,5 +1,29 @@
 # @backstage/backend-test-utils
 
+## 1.0.0-next.2
+
+### Major Changes
+
+- ec1b4be: Release 1.0 of the new backend system! :tada:
+
+  The backend system is finally getting promoted to 1.0.0. This means that the API is now stable and breaking changes should not occur until version 2.0.0, see our [package versioning policy](https://backstage.io/docs/overview/versioning-policy/#package-versioning-policy) for more information what this means.
+
+  This release also marks the end of the old backend system based on `createRouter` exports. Going forward backend plugins packages will start to deprecate and later this year remove exports supporting the old backend system. If you would like to help out with this transition, see https://github.com/backstage/backstage/issues/26353 or consult the [migration guide](https://backstage.io/docs/backend-system/building-plugins-and-modules/migrating/#remove-support-for-the-old-backend-system).
+
+### Patch Changes
+
+- f421d2a: Make MySQL pool settings a bit more lax
+- c2b63ab: Updated dependency `supertest` to `^7.0.0`.
+- Updated dependencies
+  - @backstage/backend-app-api@1.0.0-next.2
+  - @backstage/backend-defaults@0.5.0-next.2
+  - @backstage/plugin-auth-node@0.5.2-next.2
+  - @backstage/backend-plugin-api@1.0.0-next.2
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-events-node@0.4.0-next.2
+
 ## 0.6.0-next.1
 
 ### Patch Changes

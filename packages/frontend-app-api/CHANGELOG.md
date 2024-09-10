@@ -1,5 +1,20 @@
 # @backstage/frontend-app-api
 
+## 0.9.0-next.2
+
+### Patch Changes
+
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/core-app-api@1.14.3-next.0
+  - @backstage/core-plugin-api@1.9.4-next.0
+  - @backstage/frontend-defaults@0.1.0-next.1
+  - @backstage/frontend-plugin-api@0.8.0-next.2
+  - @backstage/version-bridge@1.0.9-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.9.0-next.1
 
 ### Minor Changes
