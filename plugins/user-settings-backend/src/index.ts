@@ -15,4 +15,5 @@
  */
 
 export * from './database';
+export * from './deprecated';
 export { userSettingsPlugin as default } from './plugin';
