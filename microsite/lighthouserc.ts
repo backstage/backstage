@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-var sidebars = require('./sidebars.json');
+import sidebars from './sidebars';
 
-module.exports = {
+export default {
   ci: {
     collect: {
       url: [
