@@ -1,8 +1,8 @@
 ---
-'@backstage/catalog-client': patch
-'@backstage/plugin-catalog-backend': patch
-'@backstage/plugin-catalog-react': patch
-'@backstage/plugin-catalog': patch
+'@backstage/catalog-client': minor
+'@backstage/plugin-catalog-backend': minor
+'@backstage/plugin-catalog-react': minor
+'@backstage/plugin-catalog': minor
 ---
 
 Allow offset mode paging in entity list provider
