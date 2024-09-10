@@ -1,5 +1,5 @@
 ---
-'@backstage/core-components': patch
+'@backstage/core-components': minor
 ---
 
 Added missing items to `overridableComponents`
