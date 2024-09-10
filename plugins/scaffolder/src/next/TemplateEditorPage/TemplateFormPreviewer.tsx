@@ -84,31 +84,41 @@ type TemplateOption = {
   value: Entity;
 };
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    gridArea: 'pageContent',
-    display: 'grid',
-    gridTemplateAreas: `
+/** @public */
+export type ScaffolderTemplateFormPreviewerClassKey =
+  | 'root'
+  | 'controls'
+  | 'textArea'
+  | 'preview';
+
+const useStyles = makeStyles(
+  theme => ({
+    root: {
+      gridArea: 'pageContent',
+      display: 'grid',
+      gridTemplateAreas: `
       "controls controls"
       "textArea preview"
     `,
-    gridTemplateRows: 'auto 1fr',
-    gridTemplateColumns: '1fr 1fr',
-  },
-  controls: {
-    gridArea: 'controls',
-    display: 'flex',
-    flexFlow: 'row nowrap',
-    alignItems: 'center',
-    margin: theme.spacing(1),
-  },
-  textArea: {
-    gridArea: 'textArea',
-  },
-  preview: {
-    gridArea: 'preview',
-  },
-}));
+      gridTemplateRows: 'auto 1fr',
+      gridTemplateColumns: '1fr 1fr',
+    },
+    controls: {
+      gridArea: 'controls',
+      display: 'flex',
+      flexFlow: 'row nowrap',
+      alignItems: 'center',
+      margin: theme.spacing(1),
+    },
+    textArea: {
+      gridArea: 'textArea',
+    },
+    preview: {
+      gridArea: 'preview',
+    },
+  }),
+  { name: 'ScaffolderTemplateFormPreviewer' },
+);
 
 export const TemplateFormPreviewer = ({
   defaultPreviewTemplate = EXAMPLE_TEMPLATE_PARAMS_YAML,
