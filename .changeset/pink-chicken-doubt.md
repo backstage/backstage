@@ -2,4 +2,9 @@
 '@backstage/plugin-user-settings-backend': minor
 ---
 
-remove `createRouter` in user-settings-backend and add default export
+The plugin version that supports the new backend system has been moved from the `alpha` subpath to the `root` path. Here's how you import it now:
+
+```diff
+- backend.add(import('@backstage/plugin-user-settings-backend/alpha'));
++ backend.add(import('@backstage/plugin-user-settings-backend'));
+
