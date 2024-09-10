@@ -36,8 +36,7 @@ Backstage comes with many common authentication providers in the core library:
 - [OneLogin](onelogin/provider.md)
 - [VMware Cloud](vmware-cloud/provider.md)
 
-These built-in providers handle the authentication flow for a particular service
-including required scopes, callbacks, etc. These providers are each added to a
+These built-in providers handle the authentication flow for a particular service, including required scopes, callbacks, etc. These providers are each added to a
 Backstage app in a similar way.
 
 ## Configuring Authentication Providers
@@ -58,7 +57,7 @@ auth:
 See the documentation for a particular provider to see what configuration is
 needed.
 
-The `providers` key may have several authentication providers, if multiple
+The `providers` key may have several authentication providers if multiple
 authentication methods are supported. Each provider may also have configuration
 for different authentication environments (development, production, etc). This
 allows a single auth backend to serve multiple environments, such as running a
@@ -68,15 +67,14 @@ the local `auth.environment` setting will be selected.
 ## Sign-In Configuration
 
 Using an authentication provider for sign-in is something you need to configure
-both in the frontend app, as well as the `auth` backend plugin. For information
+both in the frontend app as well as the `auth` backend plugin. For information
 on how to configure the backend app, see [Sign-in Identities and Resolvers](./identity-resolver.md).
 The rest of this section will focus on how to configure sign-in for the frontend app.
 
 Sign-in is configured by providing a custom `SignInPage` app component. It will be
 rendered before any other routes in the app and is responsible for providing the
 identity of the current user. The `SignInPage` can render any number of pages and
-components, or just blank space with logic running in the background. In the end
-however it must provide a valid Backstage user identity through the `onSignInSuccess`
+components, or just blank space with logic running in the background. In the end, however, it must provide a valid Backstage user identity through the `onSignInSuccess`
 callback prop, at which point the rest of the app is rendered.
 
 If you want to, you can use the `SignInPage` component that is provided by `@backstage/core-components`,
