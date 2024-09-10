@@ -562,6 +562,8 @@ export class ScaffolderClient implements ScaffolderApi_2 {
     tasks: ScaffolderTask_2[];
   }>;
   // (undocumented)
+  retry?(taskId: string): Promise<void>;
+  // (undocumented)
   scaffold(
     options: ScaffolderScaffoldOptions_2,
   ): Promise<ScaffolderScaffoldResponse_2>;

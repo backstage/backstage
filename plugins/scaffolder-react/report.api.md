@@ -213,6 +213,7 @@ export interface ScaffolderApi {
   listTasks?(options: { filterByOwnership: 'owned' | 'all' }): Promise<{
     tasks: ScaffolderTask[];
   }>;
+  retry?(taskId: string): Promise<void>;
   scaffold(
     options: ScaffolderScaffoldOptions,
   ): Promise<ScaffolderScaffoldResponse>;
@@ -431,6 +432,8 @@ export type ScaffolderStep = {
 export interface ScaffolderStreamLogsOptions {
   // (undocumented)
   after?: number;
+  // (undocumented)
+  isTaskRecoverable?: boolean;
   // (undocumented)
   taskId: string;
 }

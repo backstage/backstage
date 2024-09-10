@@ -216,6 +216,7 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'ongoingTask.title': 'Run of';
     readonly 'ongoingTask.contextMenu.cancel': 'Cancel';
     readonly 'ongoingTask.contextMenu.startOver': 'Start Over';
+    readonly 'ongoingTask.contextMenu.retry': 'Retry';
     readonly 'ongoingTask.contextMenu.hideLogs': 'Hide Logs';
     readonly 'ongoingTask.contextMenu.showLogs': 'Show Logs';
     readonly 'ongoingTask.contextMenu.hideButtonBar': 'Hide Button Bar';
@@ -224,6 +225,7 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'ongoingTask.pageTitle.hasTemplateName': 'Run of {{templateName}}';
     readonly 'ongoingTask.pageTitle.noTemplateName': 'Scaffolder Run';
     readonly 'ongoingTask.cancelButtonTitle': 'Cancel';
+    readonly 'ongoingTask.retryButtonTitle': 'Retry';
     readonly 'ongoingTask.startOverButtonTitle': 'Start Over';
     readonly 'ongoingTask.hideLogsButtonTitle': 'Hide Logs';
     readonly 'ongoingTask.showLogsButtonTitle': 'Show Logs';

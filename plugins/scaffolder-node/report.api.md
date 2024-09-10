@@ -292,6 +292,7 @@ export type SerializedTask = {
 // @public
 export type SerializedTaskEvent = {
   id: number;
+  isTaskRecoverable?: boolean;
   taskId: string;
   body: JsonObject;
   type: TaskEventType;
@@ -339,6 +340,8 @@ export interface TaskBroker {
   }>;
   // (undocumented)
   recoverTasks?(): Promise<void>;
+  // (undocumented)
+  retry?(taskId: string): Promise<void>;
   // (undocumented)
   vacuumTasks(options: { timeoutS: number }): Promise<void>;
 }

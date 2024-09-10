@@ -207,6 +207,7 @@ export const OngoingTask = (props: {
         <ContextMenu
           cancelEnabled={cancelEnabled}
           canRetry={canRetry}
+          isRetryableTask={isRetryableTask}
           logsVisible={logsVisible}
           buttonBarVisible={buttonBarVisible}
           onStartOver={startOver}
@@ -255,14 +256,16 @@ export const OngoingTask = (props: {
                   >
                     {t('ongoingTask.cancelButtonTitle')}
                   </Button>
-                  <Button
-                    className={classes.retryButton}
-                    disabled={cancelEnabled || !canRetry}
-                    onClick={triggerRetry}
-                    data-testid="retry-button"
-                  >
-                    {t('ongoingTask.retryButtonTitle')}
-                  </Button>
+                  {isRetryableTask && (
+                    <Button
+                      className={classes.retryButton}
+                      disabled={cancelEnabled || !canRetry}
+                      onClick={triggerRetry}
+                      data-testid="retry-button"
+                    >
+                      {t('ongoingTask.retryButtonTitle')}
+                    </Button>
+                  )}
                   <Button
                     className={classes.logsVisibilityButton}
                     color="primary"

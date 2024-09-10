@@ -136,6 +136,14 @@ export function createDebugLogAction(): TemplateAction_2<
 >;
 
 // @public
+export function createFailAction(): TemplateAction_2<
+  {
+    timesToFail: number;
+  },
+  JsonObject
+>;
+
+// @public
 export function createFetchCatalogEntityAction(options: {
   catalogClient: CatalogApi;
   auth?: AuthService;
@@ -398,7 +406,6 @@ export interface CurrentClaimedTask {
   spec: TaskSpec;
   state?: JsonObject;
   taskId: string;
-  // (undocumented)
   workspace?: Promise<Buffer>;
 }
 
@@ -487,6 +494,8 @@ export class DatabaseTaskStore implements TaskStore {
     taskId: string;
     targetPath: string;
   }): Promise<void>;
+  // (undocumented)
+  retryTask?(options: { taskId: string }): Promise<void>;
   // (undocumented)
   saveTaskState(options: { taskId: string; state?: JsonObject }): Promise<void>;
   // (undocumented)
@@ -740,6 +749,8 @@ export interface TaskStore {
     targetPath: string;
   }): Promise<void>;
   // (undocumented)
+  retryTask?(options: { taskId: string }): Promise<void>;
+  // (undocumented)
   saveTaskState?(options: {
     taskId: string;
     state?: JsonObject;
@@ -776,6 +787,7 @@ export type TaskStoreEmitOptions<TBody = JsonObject> = {
 
 // @public
 export type TaskStoreListEventsOptions = {
+  isTaskRecoverable?: boolean;
   taskId: string;
   after?: number | undefined;
 };

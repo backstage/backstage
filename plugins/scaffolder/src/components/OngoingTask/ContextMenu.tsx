@@ -43,6 +43,7 @@ import { scaffolderTranslationRef } from '../../translation';
 type ContextMenuProps = {
   cancelEnabled?: boolean;
   canRetry: boolean;
+  isRetryableTask: boolean;
   logsVisible?: boolean;
   buttonBarVisible?: boolean;
   onRetry?: () => void;
@@ -62,6 +63,7 @@ export const ContextMenu = (props: ContextMenuProps) => {
   const {
     cancelEnabled,
     canRetry,
+    isRetryableTask,
     logsVisible,
     buttonBarVisible,
     onRetry,
@@ -156,16 +158,18 @@ export const ContextMenu = (props: ContextMenuProps) => {
             </ListItemIcon>
             <ListItemText primary={t('ongoingTask.contextMenu.startOver')} />
           </MenuItem>
-          <MenuItem
-            onClick={onRetry}
-            disabled={cancelEnabled || !canRetry}
-            data-testid="retry-task"
-          >
-            <ListItemIcon>
-              <Replay fontSize="small" />
-            </ListItemIcon>
-            <ListItemText primary={t('ongoingTask.contextMenu.retry')} />
-          </MenuItem>
+          {isRetryableTask && (
+            <MenuItem
+              onClick={onRetry}
+              disabled={cancelEnabled || !canRetry}
+              data-testid="retry-task"
+            >
+              <ListItemIcon>
+                <Replay fontSize="small" />
+              </ListItemIcon>
+              <ListItemText primary={t('ongoingTask.contextMenu.retry')} />
+            </MenuItem>
+          )}
           <MenuItem
             onClick={cancel}
             disabled={
