@@ -24,6 +24,7 @@ import { DatabaseUserSettingsStore } from './database/DatabaseUserSettingsStore'
 
 /**
  * The user settings backend plugin.
+ * @public
  */
 export const userSettingsPlugin = createBackendPlugin({
   pluginId: 'user-settings',

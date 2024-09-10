@@ -5,8 +5,6 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 
-// Warning: (ae-missing-release-tag) "userSettingsPlugin" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 const userSettingsPlugin: BackendFeature;
 export default userSettingsPlugin;
