@@ -85,7 +85,7 @@ const config: Config = {
         docs: {
           editUrl: 'https://github.com/backstage/backstage/edit/master/docs/',
           path: '../docs',
-          sidebarPath: 'sidebars.json',
+          sidebarPath: 'sidebars.mjs',
           ...(useVersionedDocs
             ? {
                 includeCurrentVersion: true,
