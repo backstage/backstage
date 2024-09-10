@@ -1,5 +1,16 @@
 # @backstage/config-loader
 
+## 1.9.1-next.0
+
+### Patch Changes
+
+- ef3c507: Updated dependency `typescript-json-schema` to `^0.65.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 1.9.0
 
 ### Minor Changes

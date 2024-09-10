@@ -1,5 +1,20 @@
 # @backstage/plugin-scaffolder-backend-module-cookiecutter
 
+## 0.3.0-next.2
+
+### Patch Changes
+
+- 5d1670f: Update README installation instructions
+- Updated dependencies
+  - @backstage/backend-common@0.25.0-next.2
+  - @backstage/backend-defaults@0.5.0-next.2
+  - @backstage/backend-plugin-api@1.0.0-next.2
+  - @backstage/integration@1.15.0-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-node@0.4.11-next.2
+
 ## 0.3.0-next.1
 
 ### Patch Changes

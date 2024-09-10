@@ -1,5 +1,31 @@
 # @backstage/plugin-catalog-backend
 
+## 1.26.0-next.2
+
+### Minor Changes
+
+- 78475c3: Allow offset mode paging in entity list provider
+
+### Patch Changes
+
+- c2b63ab: Updated dependency `supertest` to `^7.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.25.0-next.2
+  - @backstage/backend-plugin-api@1.0.0-next.2
+  - @backstage/catalog-client@1.7.0-next.1
+  - @backstage/integration@1.15.0-next.0
+  - @backstage/backend-openapi-utils@0.1.18-next.2
+  - @backstage/plugin-permission-node@0.8.3-next.2
+  - @backstage/catalog-model@1.6.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.26
+  - @backstage/plugin-catalog-node@1.12.7-next.2
+  - @backstage/plugin-events-node@0.4.0-next.2
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-search-backend-module-catalog@0.2.2-next.2
+
 ## 1.25.3-next.1
 
 ### Patch Changes

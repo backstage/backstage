@@ -1,5 +1,21 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 1.0.38-next.2
+
+### Patch Changes
+
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.13.0-next.2
+  - @backstage/plugin-techdocs@1.10.9-next.2
+  - @backstage/plugin-catalog@1.23.0-next.2
+  - @backstage/core-app-api@1.14.3-next.0
+  - @backstage/integration-react@1.1.31-next.0
+  - @backstage/test-utils@1.6.0-next.1
+  - @backstage/plugin-search-react@1.8.0-next.2
+  - @backstage/core-plugin-api@1.9.4-next.0
+  - @backstage/plugin-techdocs-react@1.2.8-next.2
+
 ## 1.0.38-next.1
 
 ### Patch Changes

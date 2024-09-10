@@ -1,5 +1,20 @@
 # @backstage/plugin-auth-node
 
+## 0.5.2-next.2
+
+### Patch Changes
+
+- d908d8c: Accepts an optional options object in the `PassportOAuthAuthenticatorHelper.authenticate` method.
+- c2b63ab: Updated dependency `supertest` to `^7.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.25.0-next.2
+  - @backstage/backend-plugin-api@1.0.0-next.2
+  - @backstage/catalog-client@1.7.0-next.1
+  - @backstage/catalog-model@1.6.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.5.2-next.1
 
 ### Patch Changes

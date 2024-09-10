@@ -4361,7 +4361,25 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/core-plugin-api@^1.8.2, @backstage/core-plugin-api@^1.9.3, @backstage/core-plugin-api@workspace:^, @backstage/core-plugin-api@workspace:packages/core-plugin-api":
+"@backstage/core-plugin-api@npm:^1.8.2, @backstage/core-plugin-api@npm:^1.9.3":
+  version: 1.9.3
+  resolution: "@backstage/core-plugin-api@npm:1.9.3"
+  dependencies:
+    "@backstage/config": ^1.2.0
+    "@backstage/errors": ^1.2.4
+    "@backstage/types": ^1.1.1
+    "@backstage/version-bridge": ^1.0.8
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
+    history: ^5.0.0
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
+  checksum: 490295c126eff7f7f3107565097bc3dbdda5b72e52301a6c47fab91429961aff5757ba91208cbe12c37f90d429703919ab6067a30c394249ec792d900308d309
+  languageName: node
+  linkType: hard
+
+"@backstage/core-plugin-api@workspace:^, @backstage/core-plugin-api@workspace:packages/core-plugin-api":
   version: 0.0.0-use.local
   resolution: "@backstage/core-plugin-api@workspace:packages/core-plugin-api"
   dependencies:
@@ -4614,7 +4632,25 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/integration-react@^1.1.30, @backstage/integration-react@workspace:^, @backstage/integration-react@workspace:packages/integration-react":
+"@backstage/integration-react@npm:^1.1.30":
+  version: 1.1.30
+  resolution: "@backstage/integration-react@npm:1.1.30"
+  dependencies:
+    "@backstage/config": ^1.2.0
+    "@backstage/core-plugin-api": ^1.9.3
+    "@backstage/integration": ^1.14.0
+    "@material-ui/core": ^4.12.2
+    "@material-ui/icons": ^4.9.1
+    "@types/react": ^16.13.1 || ^17.0.0
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
+  checksum: cfee15603c8e609b1d4a8b7ea83e42ea1635b99aee1d5110a1c2361dcb976a84b6591e0b5d867a9c4004d27c163362b24f57686ce5652f697b5ba2ae780a628e
+  languageName: node
+  linkType: hard
+
+"@backstage/integration-react@workspace:^, @backstage/integration-react@workspace:packages/integration-react":
   version: 0.0.0-use.local
   resolution: "@backstage/integration-react@workspace:packages/integration-react"
   dependencies:
@@ -4637,6 +4673,23 @@ __metadata:
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
+
+"@backstage/integration@npm:^1.14.0":
+  version: 1.14.0
+  resolution: "@backstage/integration@npm:1.14.0"
+  dependencies:
+    "@azure/identity": ^4.0.0
+    "@backstage/config": ^1.2.0
+    "@backstage/errors": ^1.2.4
+    "@octokit/auth-app": ^4.0.0
+    "@octokit/rest": ^19.0.3
+    cross-fetch: ^4.0.0
+    git-url-parse: ^14.0.0
+    lodash: ^4.17.21
+    luxon: ^3.0.0
+  checksum: 3dc2272eda0205e880469aa2a68f390ba9f7a36b5ca41bc2bcb693c46fa7f99e057748c9aab1f88637dda3d8e2dec6b82ffab2aea6d3f12781c563502f0ed4d1
+  languageName: node
+  linkType: hard
 
 "@backstage/integration@workspace:^, @backstage/integration@workspace:packages/integration":
   version: 0.0.0-use.local
@@ -6803,7 +6856,24 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-permission-react@^0.4.25, @backstage/plugin-permission-react@workspace:^, @backstage/plugin-permission-react@workspace:plugins/permission-react":
+"@backstage/plugin-permission-react@npm:^0.4.25":
+  version: 0.4.25
+  resolution: "@backstage/plugin-permission-react@npm:0.4.25"
+  dependencies:
+    "@backstage/config": ^1.2.0
+    "@backstage/core-plugin-api": ^1.9.3
+    "@backstage/plugin-permission-common": ^0.8.1
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
+    swr: ^2.0.0
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
+  checksum: 162e2d12ec6dfe2e54097972944ca4f13c121d5f077f80feeab1279dbf7d741b531ce8b2000628923f599c2fa2b08610fa6ebadd99741e1d4bfe70b3511a9d89
+  languageName: node
+  linkType: hard
+
+"@backstage/plugin-permission-react@workspace:^, @backstage/plugin-permission-react@workspace:plugins/permission-react":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-permission-react@workspace:plugins/permission-react"
   dependencies:
@@ -8134,7 +8204,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/theme@^0.5.0, @backstage/theme@^0.5.6, @backstage/theme@workspace:^, @backstage/theme@workspace:packages/theme":
+"@backstage/theme@npm:^0.5.0, @backstage/theme@npm:^0.5.6":
+  version: 0.5.6
+  resolution: "@backstage/theme@npm:0.5.6"
+  dependencies:
+    "@emotion/react": ^11.10.5
+    "@emotion/styled": ^11.10.5
+    "@mui/material": ^5.12.2
+  peerDependencies:
+    "@material-ui/core": ^4.12.2
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
+    react: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
+  checksum: 44df17faa1a41ff9922fef425a6b846cc7bde55af41183f48c6993fb8b8c2b2177a4219faa66cb258c15df6d9500a1c7ae9ff47b51c4b79740739726704d1150
+  languageName: node
+  linkType: hard
+
+"@backstage/theme@workspace:^, @backstage/theme@workspace:packages/theme":
   version: 0.0.0-use.local
   resolution: "@backstage/theme@workspace:packages/theme"
   dependencies:
@@ -8165,7 +8251,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/version-bridge@^1.0.7, @backstage/version-bridge@^1.0.8, @backstage/version-bridge@workspace:^, @backstage/version-bridge@workspace:packages/version-bridge":
+"@backstage/version-bridge@npm:^1.0.7, @backstage/version-bridge@npm:^1.0.8":
+  version: 1.0.8
+  resolution: "@backstage/version-bridge@npm:1.0.8"
+  dependencies:
+    "@types/react": ^16.13.1 || ^17.0.0
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
+  checksum: bf74cd70af7c23558d26637a90ed1ffe52449396a9759cbbb0f87f3517c6a2a760140c2723c8aabeb2e94b436e02110e78763e262293a88b37e15e622753f23a
+  languageName: node
+  linkType: hard
+
+"@backstage/version-bridge@workspace:^, @backstage/version-bridge@workspace:packages/version-bridge":
   version: 0.0.0-use.local
   resolution: "@backstage/version-bridge@workspace:packages/version-bridge"
   dependencies:

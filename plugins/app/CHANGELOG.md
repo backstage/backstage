@@ -1,5 +1,18 @@
 # @backstage/plugin-app
 
+## 0.1.0-next.2
+
+### Patch Changes
+
+- 57bf6ae: Fix issue with `AlertDisplay` and other components defined with `AppRootElementBlueprint` not being rendered when at the `SignInWrapper`
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.14.11-next.1
+  - @backstage/core-plugin-api@1.9.4-next.0
+  - @backstage/frontend-plugin-api@0.8.0-next.2
+  - @backstage/theme@0.5.7-next.0
+  - @backstage/plugin-permission-react@0.4.26-next.0
+
 ## 0.1.0-next.1
 
 ### Patch Changes

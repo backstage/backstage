@@ -1,5 +1,23 @@
 # @backstage/integration
 
+## 1.15.0-next.0
+
+### Minor Changes
+
+- 1573014: The Gerrit integration can now resolve Gitiles urls that point to the following
+  refs:
+
+  - HEAD
+  - A SHA
+  - Tag
+  - Branch
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 1.14.0
 
 ### Minor Changes

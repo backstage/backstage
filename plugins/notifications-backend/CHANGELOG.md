@@ -1,5 +1,25 @@
 # @backstage/plugin-notifications-backend
 
+## 0.4.0-next.2
+
+### Patch Changes
+
+- 4a53dd0: Implement icon in backend and show icon in table if available.
+- c2b63ab: Updated dependency `supertest` to `^7.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.25.0-next.2
+  - @backstage/plugin-auth-node@0.5.2-next.2
+  - @backstage/backend-plugin-api@1.0.0-next.2
+  - @backstage/catalog-client@1.7.0-next.1
+  - @backstage/catalog-model@1.6.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-catalog-node@1.12.7-next.2
+  - @backstage/plugin-events-node@0.4.0-next.2
+  - @backstage/plugin-notifications-common@0.0.5
+  - @backstage/plugin-notifications-node@0.2.6-next.2
+  - @backstage/plugin-signals-node@0.1.11-next.2
+
 ## 0.4.0-next.1
 
 ### Patch Changes

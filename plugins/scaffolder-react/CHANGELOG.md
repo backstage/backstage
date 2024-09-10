@@ -1,5 +1,31 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.12.0-next.2
+
+### Minor Changes
+
+- 4baad34: Added support for `omitExtraData` and `liveOmit` for rjsf in the scaffolder
+
+### Patch Changes
+
+- 1f3c5aa: Fix scaffolder review step issue where schema options are not handled for fields on multi-step templates.
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- fa9d8da: Updated dependency `@rjsf/utils` to `5.20.1`.
+  Updated dependency `@rjsf/core` to `5.20.1`.
+  Updated dependency `@rjsf/material-ui` to `5.20.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.20.1`.
+- Updated dependencies
+  - @backstage/core-components@0.14.11-next.1
+  - @backstage/plugin-catalog-react@1.13.0-next.2
+  - @backstage/catalog-client@1.7.0-next.1
+  - @backstage/core-plugin-api@1.9.4-next.0
+  - @backstage/theme@0.5.7-next.0
+  - @backstage/version-bridge@1.0.9-next.0
+  - @backstage/plugin-permission-react@0.4.26-next.0
+  - @backstage/catalog-model@1.6.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-common@1.5.5
+
 ## 1.12.0-next.1
 
 ### Patch Changes
