@@ -53,8 +53,10 @@ import {
   HttpAuthService,
   LoggerService,
   SchedulerService,
+  PermissionsService,
 } from '@backstage/backend-plugin-api';
 import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
+import { AuthorizedValidationService } from './AuthorizedValidationService';
 
 /**
  * Options used by {@link createRouter}.
@@ -74,6 +76,7 @@ export interface RouterOptions {
   permissionIntegrationRouter?: express.Router;
   auth: AuthService;
   httpAuth: HttpAuthService;
+  permissionsService: PermissionsService;
 }
 
 /**
@@ -98,6 +101,7 @@ export async function createRouter(
     config,
     logger,
     permissionIntegrationRouter,
+    permissionsService,
     auth,
     httpAuth,
   } = options;
@@ -346,20 +350,26 @@ export async function createRouter(
       }
 
       const credentials = await httpAuth.credentials(req);
-      const processingResult = await orchestrator.process({
-        entity: {
-          ...entity,
-          metadata: {
-            ...entity.metadata,
-            annotations: {
-              [ANNOTATION_LOCATION]: body.location,
-              [ANNOTATION_ORIGIN_LOCATION]: body.location,
-              ...entity.metadata.annotations,
+      const authorizedValidationService = new AuthorizedValidationService(
+        orchestrator,
+        permissionsService,
+      );
+      const processingResult = await authorizedValidationService.process(
+        {
+          entity: {
+            ...entity,
+            metadata: {
+              ...entity.metadata,
+              annotations: {
+                [ANNOTATION_LOCATION]: body.location,
+                [ANNOTATION_ORIGIN_LOCATION]: body.location,
+                ...entity.metadata.annotations,
+              },
             },
           },
         },
-        credentials: credentials,
-      });
+        credentials,
+      );
 
       if (!processingResult.ok)
         res.status(400).json({

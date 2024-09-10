@@ -20,7 +20,6 @@ import {
   DeferredEntity,
   EntityRelationSpec,
 } from '@backstage/plugin-catalog-node';
-import { BackstageCredentials } from '@backstage/backend-plugin-api';
 
 /**
  * The request to process an entity.
@@ -29,7 +28,6 @@ import { BackstageCredentials } from '@backstage/backend-plugin-api';
 export type EntityProcessingRequest = {
   entity: Entity;
   state?: JsonObject; // Versions for multiple deployments etc
-  credentials?: BackstageCredentials;
 };
 
 /**

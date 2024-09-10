@@ -74,7 +74,6 @@ import { DefaultCatalogProcessingEngine } from '../processing/DefaultCatalogProc
 import { DefaultLocationService } from './DefaultLocationService';
 import { DefaultEntitiesCatalog } from './DefaultEntitiesCatalog';
 import { DefaultCatalogProcessingOrchestrator } from '../processing/DefaultCatalogProcessingOrchestrator';
-import { AuthorizedCatalogProcessingOrchestrator } from './AuthorizedCatalogProcessingOrchestrator';
 import { DefaultStitcher } from '../stitching/DefaultStitcher';
 import { createRouter } from './createRouter';
 import { DefaultRefreshService } from './DefaultRefreshService';
@@ -534,18 +533,15 @@ export class CatalogBuilder {
       permissionsService = toPermissionEvaluator(permissions);
     }
 
-    const orchestrator = new AuthorizedCatalogProcessingOrchestrator(
-      new DefaultCatalogProcessingOrchestrator({
-        processors,
-        integrations,
-        rulesEnforcer,
-        logger,
-        parser,
-        policy,
-        legacySingleProcessorValidation: this.legacySingleProcessorValidation,
-      }),
-      permissionsService,
-    );
+    const orchestrator = new DefaultCatalogProcessingOrchestrator({
+      processors,
+      integrations,
+      rulesEnforcer,
+      logger,
+      parser,
+      policy,
+      legacySingleProcessorValidation: this.legacySingleProcessorValidation,
+    });
 
     const entitiesCatalog = new AuthorizedEntitiesCatalog(
       unauthorizedEntitiesCatalog,
@@ -632,6 +628,7 @@ export class CatalogBuilder {
       permissionIntegrationRouter,
       auth,
       httpAuth,
+      permissionsService,
     });
 
     await connectEntityProviders(providerDatabase, entityProviders);

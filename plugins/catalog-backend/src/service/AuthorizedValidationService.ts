@@ -26,23 +26,16 @@ import {
   PermissionsService,
 } from '@backstage/backend-plugin-api';
 
-export class AuthorizedCatalogProcessingOrchestrator
-  implements CatalogProcessingOrchestrator
-{
+export class AuthorizedValidationService {
   constructor(
     private readonly service: CatalogProcessingOrchestrator,
     private readonly permissionApi: PermissionsService,
   ) {}
+
   async process(
     request: EntityProcessingRequest,
+    credentials: BackstageCredentials,
   ): Promise<EntityProcessingResult> {
-    if (request.credentials) {
-      await this.ensureAuthorized(request.credentials);
-    }
-    return this.service.process(request);
-  }
-
-  private async ensureAuthorized(credentials: BackstageCredentials) {
     const authorizeDecision = (
       await this.permissionApi.authorize(
         [
@@ -57,5 +50,6 @@ export class AuthorizedCatalogProcessingOrchestrator
     if (authorizeDecision.result !== AuthorizeResult.ALLOW) {
       throw new NotAllowedError();
     }
+    return this.service.process(request);
   }
 }

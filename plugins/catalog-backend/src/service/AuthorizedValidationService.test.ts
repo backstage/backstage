@@ -18,9 +18,9 @@ import { NotAllowedError } from '@backstage/errors';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { mockCredentials } from '@backstage/backend-test-utils';
-import { AuthorizedCatalogProcessingOrchestrator } from './AuthorizedCatalogProcessingOrchestrator';
+import { AuthorizedValidationService } from './AuthorizedValidationService';
 
-describe('AuthorizedCatalogProcessingOrchestrator', () => {
+describe('AuthorizedValidationService', () => {
   const orchestratorService = {
     process: jest.fn(),
   };
@@ -38,7 +38,7 @@ describe('AuthorizedCatalogProcessingOrchestrator', () => {
         result: AuthorizeResult.DENY,
       },
     ]);
-    const authorizedService = new AuthorizedCatalogProcessingOrchestrator(
+    const authorizedService = new AuthorizedValidationService(
       orchestratorService,
       permissionApi as unknown as ServerPermissionClient,
     );
@@ -56,10 +56,12 @@ describe('AuthorizedCatalogProcessingOrchestrator', () => {
           owner: 'team-a',
         },
       },
-      credentials: mockCredentials.none(),
     };
     await expect(() =>
-      authorizedService.process(entityProcessingRequest),
+      authorizedService.process(
+        entityProcessingRequest,
+        mockCredentials.none(),
+      ),
     ).rejects.toThrow(NotAllowedError);
   });
 
@@ -69,7 +71,7 @@ describe('AuthorizedCatalogProcessingOrchestrator', () => {
         result: AuthorizeResult.ALLOW,
       },
     ]);
-    const authorizedService = new AuthorizedCatalogProcessingOrchestrator(
+    const authorizedService = new AuthorizedValidationService(
       orchestratorService,
       permissionApi as unknown as ServerPermissionClient,
     );
@@ -87,9 +89,11 @@ describe('AuthorizedCatalogProcessingOrchestrator', () => {
           owner: 'team-a',
         },
       },
-      credentials: mockCredentials.none(),
     };
-    await authorizedService.process(entityProcessingRequest);
+    await authorizedService.process(
+      entityProcessingRequest,
+      mockCredentials.none(),
+    );
     expect(orchestratorService.process).toHaveBeenCalledWith(
       entityProcessingRequest,
     );
