@@ -22,7 +22,8 @@
     "lint": "backstage-cli repo lint --since origin/{{defaultBranch}}",
     "lint:all": "backstage-cli repo lint",
     "prettier:check": "prettier --check .",
-    "new": "backstage-cli new --scope internal"
+    "new": "backstage-cli new --scope internal",
+    "classic-dedupe": "yarn-deduplicate yarn.lock"
   },
   "workspaces": {
     "packages": [
@@ -39,7 +40,8 @@
     "lerna": "^7.3.0",
     "node-gyp": "^10.0.0",
     "prettier": "^2.3.2",
-    "typescript": "~5.4.0"
+    "typescript": "~5.4.0",
+    "yarn-deduplicate": "^6.0.2"
   },
   "resolutions": {
     "@types/react": "^18",
