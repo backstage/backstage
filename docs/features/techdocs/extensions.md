@@ -26,7 +26,7 @@ Extension points are exported from `@backstage/plugin-techdocs-backend`.
 
 ### Log TechDocs Build phase details to console
 
-By default, the TechDocs build phase does not log out much information while building out TechDocs. However, the
+By default, the TechDocs build phase logs to the UI, but does not log to the console. However, the
 `techdocsBuildsExtensionPoint` can be used to setup a custom Winston transport for TechDocs build logs.
 
 Here is an example of logging to console:
