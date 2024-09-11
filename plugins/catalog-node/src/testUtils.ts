@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export * from './testUtils';
+export { catalogServiceMock } from './testUtils/catalogServiceMock';

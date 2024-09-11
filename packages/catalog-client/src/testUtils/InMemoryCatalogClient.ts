@@ -49,7 +49,8 @@ export class InMemoryCatalogClient implements CatalogApi {
   async getEntities(
     _request?: GetEntitiesRequest,
   ): Promise<GetEntitiesResponse> {
-    throw new NotImplementedError('Method not implemented.');
+    // TODO(freben): Fields, filters etc
+    return { items: this.#entities };
   }
 
   async getEntitiesByRefs(
@@ -71,7 +72,12 @@ export class InMemoryCatalogClient implements CatalogApi {
   async queryEntities(
     _request?: QueryEntitiesRequest,
   ): Promise<QueryEntitiesResponse> {
-    throw new NotImplementedError('Method not implemented.');
+    // TODO(freben): Fields, filters etc
+    return {
+      items: this.#entities,
+      totalItems: this.#entities.length,
+      pageInfo: {},
+    };
   }
 
   async getEntityAncestors(
