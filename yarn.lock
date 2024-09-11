@@ -32736,13 +32736,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lru-cache@npm:^8.0.0":
-  version: 8.0.5
-  resolution: "lru-cache@npm:8.0.5"
-  checksum: 87d72196d8f46e8299c4ab576ed2ec8a07e3cbef517dc9874399c0b2470bd9bf62aacec3b67f84ed6d74aaa1ef31636d048edf996f76248fd17db72bfb631609
-  languageName: node
-  linkType: hard
-
 "lru-cache@npm:^9.0.0":
   version: 9.1.2
   resolution: "lru-cache@npm:9.1.2"
@@ -32756,6 +32749,13 @@ __metadata:
   dependencies:
     es5-ext: ~0.10.2
   checksum: 7f2c53c5e7f2de20efb6ebb3086b7aea88d6cf9ae91ac5618ece974122960c4e8ed04988e81d92c3e63d60b12c556b14d56ef7a9c5a4627b23859b813e39b1a2
+  languageName: node
+  linkType: hard
+
+"lru.min@npm:^1.0.0":
+  version: 1.1.0
+  resolution: "lru.min@npm:1.1.0"
+  checksum: c03dcc83f031387f254856bccc8418daff716b79b67886eceb110e3af57f593f752821a7b019ea382f8f48927767ddb1869087586f4bfc5bf9c90674ca80dfa2
   languageName: node
   linkType: hard
 
@@ -34340,19 +34340,19 @@ __metadata:
   linkType: hard
 
 "mysql2@npm:^3.0.0":
-  version: 3.11.0
-  resolution: "mysql2@npm:3.11.0"
+  version: 3.11.2
+  resolution: "mysql2@npm:3.11.2"
   dependencies:
     aws-ssl-profiles: ^1.1.1
     denque: ^2.1.0
     generate-function: ^2.3.1
     iconv-lite: ^0.6.3
     long: ^5.2.1
-    lru-cache: ^8.0.0
+    lru.min: ^1.0.0
     named-placeholders: ^1.1.3
     seq-queue: ^0.0.5
     sqlstring: ^2.3.2
-  checksum: 0a3e80c95ca9e26821bc11658cbd065704d5f07f76efd952fc84115cc28f8a0100f14646fb3dd577f28831b8d6d2bfe0ef46fd4273ba5dcbfbeabb311302874d
+  checksum: 75d48fc83c7d193d23cda8c88c6a803a46d543e6ef3272feeab71ef3dc551d6ae1827258165d2394158e3f6fa439fdff1eb4532a97f255c58a61c8e0b24fa637
   languageName: node
   linkType: hard
 
