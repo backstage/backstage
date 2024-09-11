@@ -50,6 +50,10 @@ export function registerRepoCommand(program: Command) {
       '--since <ref>',
       'Only build packages and their dev dependents that changed since the specified ref',
     )
+    .option(
+      '--minify',
+      'Minify the generated code. Does not apply to app package (app is minified by default).',
+    )
     .action(lazy(() => import('./repo/build').then(m => m.command)));
 
   command
