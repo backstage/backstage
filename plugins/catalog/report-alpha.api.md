@@ -113,7 +113,7 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'hasSubdomainsCard.emptyMessage': 'No subdomain is part of this domain';
     readonly 'hasSystemsCard.title': 'Has systems';
     readonly 'hasSystemsCard.emptyMessage': 'No system is part of this domain';
-    readonly 'relatedEntitiesCard.emptyHelpLinkTitle': 'Learn how to change this.';
+    readonly 'relatedEntitiesCard.emptyHelpLinkTitle': 'Learn how to change this';
     readonly 'systemDiagramCard.title': 'System Diagram';
     readonly 'systemDiagramCard.description': 'Use pinch & zoo to move around the diagram.';
     readonly 'systemDiagramCard.edgeLabels.dependsOn': 'depends on';

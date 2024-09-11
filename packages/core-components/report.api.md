@@ -706,6 +706,7 @@ export type LinkProps = Omit<LinkProps_2, 'to'> &
     to: string;
     component?: ElementType<any>;
     noTrack?: boolean;
+    externalLinkIcon?: React_2.ReactNode;
   };
 
 // Warning: (ae-missing-release-tag) "LoginRequestListItemClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
