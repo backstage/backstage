@@ -90,6 +90,7 @@ export type LinkProps = Omit<MaterialLinkProps, 'to'> &
     to: string;
     component?: ElementType<any>;
     noTrack?: boolean;
+    externalLinkIcon?: React.ReactNode;
   };
 
 /**
@@ -161,7 +162,7 @@ const getNodeText = (node: React.ReactNode): string => {
  * - Captures Link clicks as analytics events.
  */
 export const Link = React.forwardRef<any, LinkProps>(
-  ({ onClick, noTrack, ...props }, ref) => {
+  ({ onClick, noTrack, externalLinkIcon, ...props }, ref) => {
     const classes = useStyles();
     const analytics = useAnalytics();
 
@@ -201,6 +202,7 @@ export const Link = React.forwardRef<any, LinkProps>(
         className={classnames(classes.externalLink, props.className)}
       >
         {props.children}
+        {externalLinkIcon && externalLinkIcon}
         <Typography component="span" className={classes.visuallyHidden}>
           , Opens in a new window
         </Typography>
