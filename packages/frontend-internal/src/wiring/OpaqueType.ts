@@ -99,18 +99,16 @@ export class OpaqueType<
     }
 
     if (!this.#versions.has(value.version)) {
-      const expected = [];
-      if (this.#versions.has(undefined)) {
-        expected.push('undefined');
+      const versions = Array.from(this.#versions).map(this.#stringifyVersion);
+      if (versions.length > 1) {
+        versions[versions.length - 1] = `or ${versions[versions.length - 1]}`;
       }
-      const versions = Array.from(this.#versions).filter(Boolean);
-      if (versions.length > 0) {
-        expected.push(`one of ['${versions.join("', '")}']`);
-      }
+      const expected =
+        versions.length > 2 ? versions.join(', ') : versions.join(' ');
       throw new TypeError(
-        `Invalid opaque type instance, got version '${
-          value.version
-        }', expected ${expected.join(' or ')}`,
+        `Invalid opaque type instance, got version ${this.#stringifyVersion(
+          value.version,
+        )}, expected ${expected}`,
       );
     }
 
@@ -147,4 +145,8 @@ export class OpaqueType<
     }
     return String(value);
   }
+
+  #stringifyVersion = (version: string | undefined) => {
+    return version ? `'${version}'` : 'undefined';
+  };
 }
