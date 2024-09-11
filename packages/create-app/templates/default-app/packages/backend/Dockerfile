@@ -3,7 +3,7 @@
 #
 # Before building this image, be sure to have run the following commands in the repo root:
 #
-# yarn install
+# yarn install --immutable
 # yarn tsc
 # yarn build:backend
 #
@@ -26,7 +26,8 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     apt-get update && \
-    apt-get install -y --no-install-recommends libsqlite3-dev
+    apt-get install -y --no-install-recommends libsqlite3-dev && \
+    rm -rf /var/lib/apt/lists/*
 
 # From here on we use the least-privileged `node` user to run the backend.
 USER node
