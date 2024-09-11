@@ -235,14 +235,14 @@ describe('BuiltinKindsEntityProcessor', () => {
           lifecycle: 'l',
           providesApis: ['b'],
           consumesApis: ['c'],
-          dependencyOf: ['m'],
+          dependencyOf: ['y'],
           system: 's',
         },
       };
       await expect(
         processor.postProcessEntity(entity, location, emit),
       ).rejects.toThrow(
-        'Entity reference "m" had missing or empty kind (e.g. did not start with "component:" or similar)',
+        'Entity reference "y" had missing or empty kind (e.g. did not start with "component:" or similar)',
       );
     });
 
