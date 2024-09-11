@@ -76,6 +76,9 @@ jobs:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
+      - name: install setup tools
+        run: pip3 install -U setuptools
+
       - name: yarn install
         uses: backstage/actions/yarn-install@3c138326f7fcbf253b88170c1f29bae8e975d47c # v0.6.14
         with:
