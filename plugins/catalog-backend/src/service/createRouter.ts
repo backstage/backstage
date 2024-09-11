@@ -53,8 +53,10 @@ import {
   HttpAuthService,
   LoggerService,
   SchedulerService,
+  PermissionsService,
 } from '@backstage/backend-plugin-api';
 import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
+import { AuthorizedValidationService } from './AuthorizedValidationService';
 
 /**
  * Options used by {@link createRouter}.
@@ -74,6 +76,7 @@ export interface RouterOptions {
   permissionIntegrationRouter?: express.Router;
   auth: AuthService;
   httpAuth: HttpAuthService;
+  permissionsService: PermissionsService;
 }
 
 /**
@@ -98,6 +101,7 @@ export async function createRouter(
     config,
     logger,
     permissionIntegrationRouter,
+    permissionsService,
     auth,
     httpAuth,
   } = options;
@@ -301,9 +305,13 @@ export async function createRouter(
         location: locationInput,
         catalogFilename: z.string().optional(),
       });
+      const credentials = await httpAuth.credentials(req);
       const parsedBody = schema.parse(body);
       try {
-        const output = await locationAnalyzer.analyzeLocation(parsedBody);
+        const output = await locationAnalyzer.analyzeLocation(
+          parsedBody,
+          credentials,
+        );
         res.status(200).json(output);
       } catch (err) {
         if (
@@ -342,19 +350,27 @@ export async function createRouter(
         });
       }
 
-      const processingResult = await orchestrator.process({
-        entity: {
-          ...entity,
-          metadata: {
-            ...entity.metadata,
-            annotations: {
-              [ANNOTATION_LOCATION]: body.location,
-              [ANNOTATION_ORIGIN_LOCATION]: body.location,
-              ...entity.metadata.annotations,
+      const credentials = await httpAuth.credentials(req);
+      const authorizedValidationService = new AuthorizedValidationService(
+        orchestrator,
+        permissionsService,
+      );
+      const processingResult = await authorizedValidationService.process(
+        {
+          entity: {
+            ...entity,
+            metadata: {
+              ...entity.metadata,
+              annotations: {
+                [ANNOTATION_LOCATION]: body.location,
+                [ANNOTATION_ORIGIN_LOCATION]: body.location,
+                ...entity.metadata.annotations,
+              },
             },
           },
         },
-      });
+        credentials,
+      );
 
       if (!processingResult.ok)
         res.status(400).json({
