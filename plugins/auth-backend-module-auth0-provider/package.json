@@ -47,7 +47,7 @@
     "@backstage/plugin-auth-backend": "workspace:^",
     "@types/passport-auth0": "^1.0.5",
     "@types/passport-oauth2": "^1.4.15",
-    "supertest": "^6.3.3"
+    "supertest": "^7.0.0"
   },
   "configSchema": "config.d.ts"
 }
