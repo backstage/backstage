@@ -1519,14 +1519,8 @@ export const IconBundleBlueprint: ExtensionBlueprint<{
     {}
   >;
   inputs: {};
-  config: {
-    icons: string;
-    test: string;
-  };
-  configInput: {
-    test: string;
-    icons?: string | undefined;
-  };
+  config: {};
+  configInput: {};
   dataRefs: {
     icons: ConfigurableExtensionDataRef<
       {
