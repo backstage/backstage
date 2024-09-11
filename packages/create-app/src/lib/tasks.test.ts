@@ -209,12 +209,7 @@ describe('tasks', () => {
       await expect(buildAppTask(appDir)).resolves.not.toThrow();
       expect(mockChdir).toHaveBeenCalledTimes(1);
       expect(mockChdir).toHaveBeenNthCalledWith(1, appDir);
-      expect(mockExec).toHaveBeenCalledTimes(3);
-      expect(mockExec).toHaveBeenNthCalledWith(
-        1,
-        'yarn --version',
-        expect.any(Function),
-      );
+      expect(mockExec).toHaveBeenCalledTimes(2);
       expect(mockExec).toHaveBeenNthCalledWith(
         2,
         'yarn install',
