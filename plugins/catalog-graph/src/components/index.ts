@@ -14,3 +14,5 @@
  * limitations under the License.
  */
 export * from './EntityRelationsGraph';
+export type { PluginCatalogGraphCatalogGraphCardClassKey } from './CatalogGraphCard';
+export type { PluginCatalogGraphCatalogGraphPageClassKey } from './CatalogGraphPage';

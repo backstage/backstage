@@ -51,6 +51,16 @@ import { SelectedRelationsFilter } from './SelectedRelationsFilter';
 import { SwitchFilter } from './SwitchFilter';
 import { useCatalogGraphPage } from './useCatalogGraphPage';
 
+/** @public */
+export type PluginCatalogGraphCatalogGraphPageClassKey =
+  | 'content'
+  | 'container'
+  | 'fullHeight'
+  | 'graphWrapper'
+  | 'graph'
+  | 'legend'
+  | 'filters';
+
 const useStyles = makeStyles(
   theme => ({
     content: {

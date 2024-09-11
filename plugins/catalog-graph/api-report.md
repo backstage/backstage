@@ -127,6 +127,28 @@ export type EntityRelationsGraphProps = {
   showArrowHeads?: boolean;
 };
 
+// @public (undocumented)
+export type PluginCatalogGraphCatalogGraphCardClassKey = 'card' | 'graph';
+
+// @public (undocumented)
+export type PluginCatalogGraphCatalogGraphPageClassKey =
+  | 'content'
+  | 'container'
+  | 'fullHeight'
+  | 'graphWrapper'
+  | 'graph'
+  | 'legend'
+  | 'filters';
+
+// @public (undocumented)
+export type PluginCatalogGraphCustomLabelClassKey = 'text' | 'secondary';
+
+// @public (undocumented)
+export type PluginCatalogGraphCustomNodeClassKey =
+  | 'node'
+  | 'text'
+  | 'clickable';
+
 // @public
 export type RelationPairs = [string, string][];
 ```

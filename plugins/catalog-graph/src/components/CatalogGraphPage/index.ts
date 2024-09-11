@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export { CatalogGraphPage } from './CatalogGraphPage';
+export type { PluginCatalogGraphCatalogGraphPageClassKey } from './CatalogGraphPage';

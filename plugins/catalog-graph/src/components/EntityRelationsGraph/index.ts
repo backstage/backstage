@@ -24,3 +24,5 @@ export type {
   EntityNodeData,
   EntityNode,
 } from './types';
+export type { PluginCatalogGraphCustomNodeClassKey } from './DefaultRenderNode';
+export type { PluginCatalogGraphCustomLabelClassKey } from './DefaultRenderLabel';
