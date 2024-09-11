@@ -97,7 +97,9 @@ function findAllDeps(declSrc: string) {
  * missing or incorrect in package.json
  */
 function checkTypes(pkg: Package) {
-  const allDeps = getPackageExportDetails(pkg.packageJson).flatMap(exp => {
+  const allDeps = getPackageExportDetails(
+    JSON.parse(JSON.stringify(pkg.packageJson)),
+  ).flatMap(exp => {
     const typeDecl = fs.readFileSync(
       resolvePath(pkg.dir, 'dist', exp.distPath),
       'utf8',

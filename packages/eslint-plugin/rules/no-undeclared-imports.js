@@ -493,7 +493,10 @@ module.exports = {
             return;
           }
 
-          const packagePath = path.relative(packages.root.dir, localPkg.dir);
+          const packagePath = path.relative(
+            packages.root?.dir ?? context.getCwd(),
+            localPkg.dir,
+          );
           const packageJsonPath = path.join(packagePath, 'package.json');
 
           context.report({
