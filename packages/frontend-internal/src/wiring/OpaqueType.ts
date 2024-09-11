@@ -116,14 +116,27 @@ export class OpaqueType<
   }
 
   /**
-   * Creates an instance of the opaque type, returning the public public type.
+   * Creates an instance of the opaque type, returning the public type.
    *
-   * By providing a type argument you can narrow the return to specific type parameters.
+   * @param version The version of the instance to create
+   * @param value The remaining public and internal properties of the instance
+   * @returns An instance of the opaque type
    */
-  createInstance<TBase extends T['public'] = T['public']>(
-    value: T['public'] & T['versions'] & Object, // & Object to allow for object properties too, e.g. toString()
-  ): TBase {
-    return value as unknown as TBase;
+  createInstance<TVersion extends T['versions']['version']>(
+    version: TVersion,
+    props: Omit<T['public'], '$$type'> &
+      (T['versions'] extends infer UVersion
+        ? UVersion extends { version: TVersion }
+          ? Omit<UVersion, 'version'>
+          : never
+        : never) &
+      Object, // & Object to allow for object properties too, e.g. toString()
+  ): T['public'] {
+    return {
+      ...(props as object),
+      $$type: this.#type,
+      ...(version && { version }),
+    } as T['public'];
   }
 
   #isThisInternalType(value: unknown): value is T['public'] & T['versions'] {
