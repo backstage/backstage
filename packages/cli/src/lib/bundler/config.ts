@@ -350,7 +350,7 @@ export async function createConfig(
     ...(isDev
       ? {
           watchOptions: {
-            ignored: /node_modules\/(?!\@backstage)/,
+            ignored: /node_modules/,
           },
         }
       : {}),
