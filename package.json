@@ -110,7 +110,7 @@
     "@spotify/eslint-plugin": "^15.0.0",
     "@spotify/prettier-config": "^15.0.0",
     "@techdocs/cli": "workspace:*",
-    "@types/node": "^18.17.8",
+    "@types/node": "^20.16.0",
     "@types/webpack": "^5.28.0",
     "array-to-table": "^1.0.1",
     "command-exists": "^1.2.9",
@@ -138,6 +138,6 @@
   },
   "packageManager": "yarn@3.8.1",
   "engines": {
-    "node": "18 || 20"
+    "node": "20 || 22"
   }
 }
