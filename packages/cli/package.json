@@ -83,7 +83,7 @@
     "@yarnpkg/parsers": "^3.0.0",
     "bfj": "^8.0.0",
     "buffer": "^6.0.3",
-    "chalk": "^4.0.0",
+    "chalk": "^5.0.0",
     "chokidar": "^3.3.1",
     "commander": "^12.0.0",
     "cross-fetch": "^4.0.0",
