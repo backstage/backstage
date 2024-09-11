@@ -134,7 +134,7 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'Component', namespace: 'default', name: 'n' },
         },
       });
-            expect(emit).toHaveBeenCalledWith({
+      expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Component', namespace: 'default', name: 'n' },
