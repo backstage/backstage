@@ -80,6 +80,8 @@ describe('OpaqueType', () => {
 
     expect(OpaqueMyType.isType(myInstance)).toBe(true);
     expect(OpaqueMyType.isType('hello')).toBe(false);
+    expect(OpaqueMyType.isType({ $$type: 'some-other' })).toBe(false);
+    expect(OpaqueMyType.isType({ $$type: 'my-type' })).toBe(true);
 
     const myInternal = OpaqueMyType.toInternal(myInstance);
     expect(myInternal).toBe(myInstance);
@@ -125,6 +127,21 @@ describe('OpaqueType', () => {
       OpaqueMyType.toInternal({ an: 'object' }),
     ).toThrowErrorMatchingInlineSnapshot(
       `"Invalid opaque type, expected 'my-type', but got '[object Object]'"`,
+    );
+    expect(() =>
+      OpaqueMyType.toInternal({ $$type: 'my-type' }),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid opaque type instance, got version 'undefined', expected one of ['v1']"`,
+    );
+    expect(() =>
+      OpaqueMyType.toInternal({ $$type: 'my-type', version: 'v3' }),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid opaque type instance, got version 'v3', expected one of ['v1']"`,
+    );
+    expect(() =>
+      OpaqueMyType.toInternal({ $$type: 'my-type', version: { foo: 'bar' } }),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid opaque type instance, got version '[object Object]', expected one of ['v1']"`,
     );
   });
 
@@ -243,6 +260,17 @@ describe('OpaqueType', () => {
     // Narrowing the version allows access to internal fields
     expect(myInternalV1.version === 'v1' && myInternalV1.foo).toBe('bar');
     expect(myInternalV2.version === 'v2' && myInternalV2.bar).toBe('foo');
+
+    expect(() =>
+      OpaqueMyType.toInternal({ $$type: 'my-type' }),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid opaque type instance, got version 'undefined', expected one of ['v1', 'v2']"`,
+    );
+    expect(() =>
+      OpaqueMyType.toInternal({ $$type: 'my-type', version: 'v3' }),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid opaque type instance, got version 'v3', expected one of ['v1', 'v2']"`,
+    );
   });
 
   it('should support undefined version for backwards compatibility', () => {
@@ -308,6 +336,13 @@ describe('OpaqueType', () => {
     expect(myInternal.$$type).toBe('my-type');
     expect(myInternal.version).toBe(undefined);
     expect(myInternal.foo).toBe('bar');
+
+    expect(OpaqueMyType.toInternal({ $$type: 'my-type' })).toBeDefined();
+    expect(() =>
+      OpaqueMyType.toInternal({ $$type: 'my-type', version: 'v3' }),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid opaque type instance, got version 'v3', expected undefined"`,
+    );
   });
 
   it('should support undefined version mixed with defined versions', () => {
@@ -425,5 +460,12 @@ describe('OpaqueType', () => {
     // Narrowing the version allows access to internal fields
     expect(myInternalV1.version === 'v1' && myInternalV1.foo).toBe('bar');
     expect(myInternalV2.version === undefined && myInternalV2.bar).toBe('foo');
+
+    expect(OpaqueMyType.toInternal({ $$type: 'my-type' })).toBeDefined();
+    expect(() =>
+      OpaqueMyType.toInternal({ $$type: 'my-type', version: 'v3' }),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid opaque type instance, got version 'v3', expected undefined or one of ['v1']"`,
+    );
   });
 });
