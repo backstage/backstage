@@ -33,14 +33,14 @@ describe('OpaqueType', () => {
       versions: ['v1'],
     });
 
-    OpaqueMyType.create({
+    OpaqueMyType.createInstance({
       // @ts-expect-error - wrong type
       $$type: 'wrong-type',
       version: 'v1',
       foo: 'bar',
     });
 
-    OpaqueMyType.create({
+    OpaqueMyType.createInstance({
       $$type: 'my-type',
       // @ts-expect-error - unsupported version
       version: 'v2',
@@ -48,25 +48,25 @@ describe('OpaqueType', () => {
     });
 
     // @ts-expect-error - missing version
-    OpaqueMyType.create({
+    OpaqueMyType.createInstance({
       $$type: 'my-type',
       foo: 'bar',
     });
 
     // @ts-expect-error - missing internal field
-    OpaqueMyType.create({
+    OpaqueMyType.createInstance({
       $$type: 'my-type',
       version: 'v1',
     });
 
-    OpaqueMyType.create({
+    OpaqueMyType.createInstance({
       $$type: 'my-type',
       version: 'v1',
       // @ts-expect-error - invalid internal field
       foo: 3,
     });
 
-    const myInstance = OpaqueMyType.create({
+    const myInstance = OpaqueMyType.createInstance({
       $$type: 'my-type',
       version: 'v1',
       foo: 'bar',
@@ -170,14 +170,14 @@ describe('OpaqueType', () => {
       versions: ['v1', 'v2', 'v3'],
     });
 
-    OpaqueMyType.create({
+    OpaqueMyType.createInstance({
       // @ts-expect-error - wrong type
       $$type: 'wrong-type',
       version: 'v1',
       foo: 'bar',
     });
 
-    OpaqueMyType.create({
+    OpaqueMyType.createInstance({
       $$type: 'my-type',
       // @ts-expect-error - unsupported version
       version: 'v0',
@@ -185,45 +185,45 @@ describe('OpaqueType', () => {
     });
 
     // @ts-expect-error - missing version
-    OpaqueMyType.create({
+    OpaqueMyType.createInstance({
       $$type: 'my-type',
       foo: 'bar',
     });
 
     // @ts-expect-error - missing internal field
-    OpaqueMyType.create({
+    OpaqueMyType.createInstance({
       $$type: 'my-type',
       version: 'v1',
     });
 
-    OpaqueMyType.create({
+    OpaqueMyType.createInstance({
       $$type: 'my-type',
       version: 'v1',
       // @ts-expect-error - invalid internal field
       foo: 3,
     });
 
-    OpaqueMyType.create({
+    OpaqueMyType.createInstance({
       $$type: 'my-type',
       version: 'v2',
       // @ts-expect-error - version mismatch
       foo: 'bar',
     });
 
-    OpaqueMyType.create({
+    OpaqueMyType.createInstance({
       $$type: 'my-type',
       version: 'v1',
       // @ts-expect-error - version mismatch
       bar: 'foo',
     });
 
-    const myInstanceV1 = OpaqueMyType.create({
+    const myInstanceV1 = OpaqueMyType.createInstance({
       $$type: 'my-type',
       version: 'v1',
       foo: 'bar',
     });
 
-    const myInstanceV2 = OpaqueMyType.create({
+    const myInstanceV2 = OpaqueMyType.createInstance({
       $$type: 'my-type',
       version: 'v2',
       bar: 'foo',
@@ -293,13 +293,13 @@ describe('OpaqueType', () => {
       versions: [undefined],
     });
 
-    OpaqueMyType.create({
+    OpaqueMyType.createInstance({
       // @ts-expect-error - wrong type
       $$type: 'wrong-type',
       foo: 'bar',
     });
 
-    OpaqueMyType.create({
+    OpaqueMyType.createInstance({
       $$type: 'my-type',
       // @ts-expect-error - unsupported version
       version: 'v1',
@@ -307,19 +307,19 @@ describe('OpaqueType', () => {
     });
 
     // @ts-expect-error - missing internal field
-    OpaqueMyType.create({
+    OpaqueMyType.createInstance({
       $$type: 'my-type',
       version: undefined,
     });
 
-    OpaqueMyType.create({
+    OpaqueMyType.createInstance({
       $$type: 'my-type',
       version: undefined,
       // @ts-expect-error - invalid internal field
       foo: 3,
     });
 
-    const myInstance = OpaqueMyType.create({
+    const myInstance = OpaqueMyType.createInstance({
       $$type: 'my-type',
       version: undefined,
       foo: 'bar',
@@ -370,14 +370,14 @@ describe('OpaqueType', () => {
       versions: [undefined, 'v1'],
     });
 
-    OpaqueMyType.create({
+    OpaqueMyType.createInstance({
       // @ts-expect-error - wrong type
       $$type: 'wrong-type',
       version: 'v1',
       foo: 'bar',
     });
 
-    OpaqueMyType.create({
+    OpaqueMyType.createInstance({
       $$type: 'my-type',
       // @ts-expect-error - unsupported version
       version: 'v3',
@@ -385,45 +385,45 @@ describe('OpaqueType', () => {
     });
 
     // @ts-expect-error - missing version
-    OpaqueMyType.create({
+    OpaqueMyType.createInstance({
       $$type: 'my-type',
       foo: 'bar',
     });
 
     // @ts-expect-error - missing internal field
-    OpaqueMyType.create({
+    OpaqueMyType.createInstance({
       $$type: 'my-type',
       version: 'v1',
     });
 
-    OpaqueMyType.create({
+    OpaqueMyType.createInstance({
       $$type: 'my-type',
       version: 'v1',
       // @ts-expect-error - invalid internal field
       foo: 3,
     });
 
-    OpaqueMyType.create({
+    OpaqueMyType.createInstance({
       $$type: 'my-type',
       version: undefined,
       // @ts-expect-error - version mismatch
       foo: 'bar',
     });
 
-    OpaqueMyType.create({
+    OpaqueMyType.createInstance({
       $$type: 'my-type',
       version: 'v1',
       // @ts-expect-error - version mismatch
       bar: 'foo',
     });
 
-    const myInstanceV1 = OpaqueMyType.create({
+    const myInstanceV1 = OpaqueMyType.createInstance({
       $$type: 'my-type',
       version: 'v1',
       foo: 'bar',
     });
 
-    const myInstanceV2 = OpaqueMyType.create({
+    const myInstanceV2 = OpaqueMyType.createInstance({
       $$type: 'my-type',
       version: undefined,
       bar: 'foo',

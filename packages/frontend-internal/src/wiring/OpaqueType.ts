@@ -120,7 +120,7 @@ export class OpaqueType<
    *
    * By providing a type argument you can narrow the return to specific type parameters.
    */
-  create<TBase extends T['public'] = T['public']>(
+  createInstance<TBase extends T['public'] = T['public']>(
     value: T['public'] & T['versions'] & Object, // & Object to allow for object properties too, e.g. toString()
   ): TBase {
     return value as unknown as TBase;

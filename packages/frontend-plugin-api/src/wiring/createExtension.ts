@@ -377,7 +377,7 @@ export function createExtension<
       ),
     );
 
-  return OpaqueExtensionDefinition.create({
+  return OpaqueExtensionDefinition.createInstance({
     $$type: '@backstage/ExtensionDefinition',
     version: 'v2',
     T: undefined as unknown as {
