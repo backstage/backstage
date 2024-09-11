@@ -25,19 +25,19 @@ import {
   PortableSchema,
   ResolvedExtensionInputs,
 } from '@backstage/frontend-plugin-api';
+import { OpaqueType } from './OpaqueType';
 
-export type InternalExtensionDefinition<
-  T extends ExtensionDefinitionParameters = ExtensionDefinitionParameters,
-> = ExtensionDefinition<T> & {
-  readonly kind?: string;
-  readonly namespace?: string;
-  readonly name?: string;
-  readonly attachTo: { id: string; input: string };
-  readonly disabled: boolean;
-  readonly configSchema?: PortableSchema<T['config'], T['configInput']>;
-} & (
+export const OpaqueExtensionDefinition = OpaqueType.create<{
+  public: ExtensionDefinition<ExtensionDefinitionParameters>;
+  versions:
     | {
         readonly version: 'v1';
+        readonly kind?: string;
+        readonly namespace?: string;
+        readonly name?: string;
+        readonly attachTo: { id: string; input: string };
+        readonly disabled: boolean;
+        readonly configSchema?: PortableSchema<any, any>;
         readonly inputs: {
           [inputName in string]: {
             $$type: '@backstage/ExtensionInput';
@@ -63,6 +63,12 @@ export type InternalExtensionDefinition<
       }
     | {
         readonly version: 'v2';
+        readonly kind?: string;
+        readonly namespace?: string;
+        readonly name?: string;
+        readonly attachTo: { id: string; input: string };
+        readonly disabled: boolean;
+        readonly configSchema?: PortableSchema<any, any>;
         readonly inputs: {
           [inputName in string]: ExtensionInput<
             AnyExtensionDataRef,
@@ -81,24 +87,8 @@ export type InternalExtensionDefinition<
             >;
           }>;
         }): Iterable<ExtensionDataValue<any, any>>;
-      }
-  );
-
-/** @internal */
-export function toInternalExtensionDefinition<
-  T extends ExtensionDefinitionParameters,
->(overrides: ExtensionDefinition<T>): InternalExtensionDefinition<T> {
-  const internal = overrides as InternalExtensionDefinition<T>;
-  if (internal.$$type !== '@backstage/ExtensionDefinition') {
-    throw new Error(
-      `Invalid extension definition instance, bad type '${internal.$$type}'`,
-    );
-  }
-  const version = internal.version;
-  if (version !== 'v1' && version !== 'v2') {
-    throw new Error(
-      `Invalid extension definition instance, bad version '${version}'`,
-    );
-  }
-  return internal;
-}
+      };
+}>({
+  type: '@backstage/ExtensionDefinition',
+  versions: ['v1', 'v2'],
+});

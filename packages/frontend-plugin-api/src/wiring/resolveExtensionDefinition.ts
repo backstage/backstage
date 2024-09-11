@@ -26,7 +26,7 @@ import {
   AnyExtensionDataRef,
   ExtensionDataValue,
 } from './createExtensionDataRef';
-import { toInternalExtensionDefinition } from '@internal/frontend';
+import { OpaqueExtensionDefinition } from '@internal/frontend';
 
 /** @public */
 export interface Extension<TConfig, TConfigInput = TConfig> {
@@ -141,7 +141,7 @@ export function resolveExtensionDefinition<
   definition: ExtensionDefinition<T>,
   context?: { namespace?: string },
 ): Extension<T['config'], T['configInput']> {
-  const internalDefinition = toInternalExtensionDefinition(definition);
+  const internalDefinition = OpaqueExtensionDefinition.toInternal(definition);
   const {
     name,
     kind,

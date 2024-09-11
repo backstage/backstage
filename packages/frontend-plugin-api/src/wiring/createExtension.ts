@@ -31,7 +31,7 @@ import {
 import { ExtensionInput } from './createExtensionInput';
 import { z } from 'zod';
 import { createSchemaFromZod } from '../schema/createSchemaFromZod';
-import { InternalExtensionDefinition } from '@internal/frontend';
+import { OpaqueExtensionDefinition } from '@internal/frontend';
 
 /**
  * Convert a single extension input into a matching resolved input.
@@ -366,26 +366,6 @@ export function createExtension<
   namespace: string | undefined extends TNamespace ? undefined : TNamespace;
   name: string | undefined extends TName ? undefined : TName;
 }> {
-  type T = {
-    config: string extends keyof TConfigSchema
-      ? {}
-      : {
-          [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
-        };
-    configInput: string extends keyof TConfigSchema
-      ? {}
-      : z.input<
-          z.ZodObject<{
-            [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
-          }>
-        >;
-    output: UOutput;
-    inputs: TInputs;
-    kind: string | undefined extends TKind ? undefined : TKind;
-    namespace: string | undefined extends TNamespace ? undefined : TNamespace;
-    name: string | undefined extends TName ? undefined : TName;
-  };
-
   const schemaDeclaration = options.config?.schema;
   const configSchema =
     schemaDeclaration &&
@@ -397,10 +377,30 @@ export function createExtension<
       ),
     );
 
-  return {
+  return OpaqueExtensionDefinition.create({
     $$type: '@backstage/ExtensionDefinition',
     version: 'v2',
-    T: undefined as unknown as T,
+    T: undefined as unknown as {
+      config: string extends keyof TConfigSchema
+        ? {}
+        : {
+            [key in keyof TConfigSchema]: z.infer<
+              ReturnType<TConfigSchema[key]>
+            >;
+          };
+      configInput: string extends keyof TConfigSchema
+        ? {}
+        : z.input<
+            z.ZodObject<{
+              [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
+            }>
+          >;
+      output: UOutput;
+      inputs: TInputs;
+      kind: string | undefined extends TKind ? undefined : TKind;
+      namespace: string | undefined extends TNamespace ? undefined : TNamespace;
+      name: string | undefined extends TName ? undefined : TName;
+    },
     kind: options.kind,
     namespace: options.namespace,
     name: options.name,
@@ -512,5 +512,5 @@ export function createExtension<
         },
       }) as ExtensionDefinition<any>;
     },
-  } as InternalExtensionDefinition<T>;
+  });
 }

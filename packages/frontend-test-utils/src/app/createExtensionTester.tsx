@@ -37,7 +37,7 @@ import { instantiateAppNodeTree } from '../../../frontend-app-api/src/tree/insta
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { readAppExtensionsConfig } from '../../../frontend-app-api/src/tree/readAppExtensionsConfig';
 import { TestApiRegistry } from '@backstage/test-utils';
-import { toInternalExtensionDefinition } from '@internal/frontend';
+import { OpaqueExtensionDefinition } from '@internal/frontend';
 
 /** @public */
 export class ExtensionQuery<UOutput extends AnyExtensionDataRef> {
@@ -105,7 +105,7 @@ export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
       );
     }
 
-    const { name, namespace } = toInternalExtensionDefinition(extension);
+    const { name, namespace } = OpaqueExtensionDefinition.toInternal(extension);
 
     const definition = {
       ...extension,
@@ -143,7 +143,7 @@ export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
     const tree = this.#resolveTree();
 
     // Same fallback logic as in .add
-    const { name, namespace } = toInternalExtensionDefinition(extension);
+    const { name, namespace } = OpaqueExtensionDefinition.toInternal(extension);
     const definition = {
       ...extension,
       name: !namespace && !name ? 'test' : name,
