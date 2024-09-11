@@ -28,7 +28,7 @@
 export class OpaqueType<
   T extends {
     public: { $$type: string };
-    versions: { version?: string } & Object;
+    versions: { version: string | undefined };
   },
 > {
   /**
@@ -41,7 +41,7 @@ export class OpaqueType<
   static create<
     T extends {
       public: { $$type: string };
-      versions: { version?: string } & Object;
+      versions: { version: string | undefined };
     },
   >(options: {
     type: T['public']['$$type'];
@@ -78,48 +78,43 @@ export class OpaqueType<
 
   /**
    * @param value Input value expected to be an instance of this opaque type
-   * @throws If the value is not an instance of this opaque type
+   * @returns True if the value matches this opaque type
+   */
+  isType(value: unknown): value is T['public'] {
+    return this.#isThisInternalType(value);
+  }
+
+  /**
+   * @param value Input value expected to be an instance of this opaque type
+   * @throws If the value is not an instance of this opaque type or is of an unsupported version
    * @returns The internal version of the opaque type
    */
   toInternal(value: unknown): T['public'] & T['versions'] {
-    if (!this.#isThisType(value)) {
+    if (!this.#isThisInternalType(value)) {
       throw new TypeError(
         `Invalid opaque type, expected '${
           this.#type
         }', but got '${this.#stringifyUnknown(value)}'`,
       );
     }
-    this.#throwIfInvalidVersion(value.version);
-    return value;
-  }
 
-  /**
-   * @param value Input value expected to be an instance of this opaque type
-   * @returns True if the value matches this opaque type
-   */
-  isInternal(value: unknown): value is T['public'] & T['versions'] {
-    if (!this.#isThisType(value)) {
-      return false;
+    if (!this.#versions.has(value.version)) {
+      const expected = [];
+      if (this.#versions.has(undefined)) {
+        expected.push('undefined');
+      }
+      const versions = Array.from(this.#versions).filter(Boolean);
+      if (versions.length > 0) {
+        expected.push(`one of ['${versions.join("', '")}']`);
+      }
+      throw new TypeError(
+        `Invalid opaque type instance, got version '${
+          value.version
+        }', expected ${expected.join(' or ')}`,
+      );
     }
-    this.#throwIfInvalidVersion(value.version);
-    return true;
-  }
 
-  /**
-   * @param version The expected version of the opaque type
-   * @param value Input value expected to be an instance of this opaque type
-   * @returns True if the value matches this opaque type and is the expected version
-   */
-  isVersion<TVersion extends T['versions']['version']>(
-    version: TVersion,
-    value: unknown,
-  ): value is T['public'] &
-    (T['versions'] extends infer UVersion
-      ? UVersion extends { version: TVersion }
-        ? UVersion
-        : never
-      : never) {
-    return this.#isThisType(value) && value.version === version;
+    return value;
   }
 
   /**
@@ -133,25 +128,7 @@ export class OpaqueType<
     return value as unknown as TBase;
   }
 
-  #throwIfInvalidVersion(version: string | undefined) {
-    if (!this.#versions.has(version)) {
-      const expected = [];
-      if (this.#versions.has(undefined)) {
-        expected.push('undefined');
-      }
-      const versions = Array.from(this.#versions).filter(Boolean);
-      if (versions.length > 0) {
-        expected.push(`one of ['${versions.join("', '")}']`);
-      }
-      throw new TypeError(
-        `Invalid opaque type instance, got version '${version}', expected ${expected.join(
-          ' or ',
-        )}`,
-      );
-    }
-  }
-
-  #isThisType(value: unknown): value is T['public'] & T['versions'] {
+  #isThisInternalType(value: unknown): value is T['public'] & T['versions'] {
     if (value === null || typeof value !== 'object') {
       return false;
     }

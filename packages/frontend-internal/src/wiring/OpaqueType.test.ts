@@ -78,7 +78,8 @@ describe('OpaqueType', () => {
     // @ts-expect-error - internal field not accessible
     expect(myInstance.foo).toBe('bar');
 
-    expect(OpaqueMyType.isInternal(myInstance)).toBe(true);
+    expect(OpaqueMyType.isType(myInstance)).toBe(true);
+    expect(OpaqueMyType.isType('hello')).toBe(false);
 
     const myInternal = OpaqueMyType.toInternal(myInstance);
     expect(myInternal).toBe(myInstance);
@@ -86,12 +87,6 @@ describe('OpaqueType', () => {
     expect(myInternal.$$type).toBe('my-type');
     expect(myInternal.version).toBe('v1');
     expect(myInternal.foo).toBe('bar');
-
-    expect(OpaqueMyType.isVersion('v1', myInstance)).toBe(true);
-    expect(OpaqueMyType.isVersion('v2' as any, myInstance)).toBe(false);
-
-    expect(OpaqueMyType.isInternal('hello')).toBe(false);
-    expect(OpaqueMyType.isVersion('v1', 'hello')).toBe(false);
 
     expect(() =>
       OpaqueMyType.toInternal('hello'),
@@ -225,8 +220,9 @@ describe('OpaqueType', () => {
     // @ts-expect-error - internal field not accessible
     expect(myInstanceV2.bar).toBe('foo');
 
-    expect(OpaqueMyType.isInternal(myInstanceV1)).toBe(true);
-    expect(OpaqueMyType.isInternal(myInstanceV2)).toBe(true);
+    expect(OpaqueMyType.isType(myInstanceV1)).toBe(true);
+    expect(OpaqueMyType.isType(myInstanceV2)).toBe(true);
+    expect(OpaqueMyType.isType('hello')).toBe(false);
 
     const myInternalV1 = OpaqueMyType.toInternal(myInstanceV1);
     expect(myInternalV1).toBe(myInstanceV1);
@@ -247,20 +243,6 @@ describe('OpaqueType', () => {
     // Narrowing the version allows access to internal fields
     expect(myInternalV1.version === 'v1' && myInternalV1.foo).toBe('bar');
     expect(myInternalV2.version === 'v2' && myInternalV2.bar).toBe('foo');
-
-    expect(OpaqueMyType.isVersion('v1', myInstanceV1)).toBe(true);
-    expect(OpaqueMyType.isVersion('v2', myInstanceV1)).toBe(false);
-
-    expect(OpaqueMyType.isVersion('v1', myInstanceV2)).toBe(false);
-    expect(OpaqueMyType.isVersion('v2', myInstanceV2)).toBe(true);
-
-    // Narrowing the version allows access to internal fields
-    expect(OpaqueMyType.isVersion('v1', myInstanceV1) && myInstanceV1.foo).toBe(
-      'bar',
-    );
-    expect(OpaqueMyType.isVersion('v2', myInstanceV2) && myInstanceV2.bar).toBe(
-      'foo',
-    );
   });
 
   it('should support undefined version for backwards compatibility', () => {
@@ -317,7 +299,8 @@ describe('OpaqueType', () => {
     // @ts-expect-error - internal field not accessible
     expect(myInstance.foo).toBe('bar');
 
-    expect(OpaqueMyType.isInternal(myInstance)).toBe(true);
+    expect(OpaqueMyType.isType(myInstance)).toBe(true);
+    expect(OpaqueMyType.isType('hello')).toBe(false);
 
     const myInternal = OpaqueMyType.toInternal(myInstance);
     expect(myInternal).toBe(myInstance);
@@ -325,12 +308,6 @@ describe('OpaqueType', () => {
     expect(myInternal.$$type).toBe('my-type');
     expect(myInternal.version).toBe(undefined);
     expect(myInternal.foo).toBe('bar');
-
-    expect(OpaqueMyType.isVersion(undefined, myInstance)).toBe(true);
-    expect(OpaqueMyType.isVersion('v1' as any, myInstance)).toBe(false);
-
-    expect(OpaqueMyType.isInternal('hello')).toBe(false);
-    expect(OpaqueMyType.isVersion(undefined, 'hello')).toBe(false);
   });
 
   it('should support undefined version mixed with defined versions', () => {
@@ -425,8 +402,9 @@ describe('OpaqueType', () => {
     // @ts-expect-error - internal field not accessible
     expect(myInstanceV2.bar).toBe('foo');
 
-    expect(OpaqueMyType.isInternal(myInstanceV1)).toBe(true);
-    expect(OpaqueMyType.isInternal(myInstanceV2)).toBe(true);
+    expect(OpaqueMyType.isType(myInstanceV1)).toBe(true);
+    expect(OpaqueMyType.isType(myInstanceV2)).toBe(true);
+    expect(OpaqueMyType.isType('hello')).toBe(false);
 
     const myInternalV1 = OpaqueMyType.toInternal(myInstanceV1);
     expect(myInternalV1).toBe(myInstanceV1);
@@ -447,19 +425,5 @@ describe('OpaqueType', () => {
     // Narrowing the version allows access to internal fields
     expect(myInternalV1.version === 'v1' && myInternalV1.foo).toBe('bar');
     expect(myInternalV2.version === undefined && myInternalV2.bar).toBe('foo');
-
-    expect(OpaqueMyType.isVersion('v1', myInstanceV1)).toBe(true);
-    expect(OpaqueMyType.isVersion(undefined, myInstanceV1)).toBe(false);
-
-    expect(OpaqueMyType.isVersion('v1', myInstanceV2)).toBe(false);
-    expect(OpaqueMyType.isVersion(undefined, myInstanceV2)).toBe(true);
-
-    // Narrowing the version allows access to internal fields
-    expect(OpaqueMyType.isVersion('v1', myInstanceV1) && myInstanceV1.foo).toBe(
-      'bar',
-    );
-    expect(
-      OpaqueMyType.isVersion(undefined, myInstanceV2) && myInstanceV2.bar,
-    ).toBe('foo');
   });
 });
