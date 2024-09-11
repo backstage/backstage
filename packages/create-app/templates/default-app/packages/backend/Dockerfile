@@ -50,7 +50,7 @@ COPY --chown=node:node yarn.lock package.json packages/backend/dist/skeleton.tar
 RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
 
 RUN --mount=type=cache,target=/home/node/.cache/yarn,sharing=locked,uid=1000,gid=1000 \
-    yarn workspaces focus --all --production
+    yarn workspaces focus --all --production && rm -rf "$(yarn cache clean)"
 
 # This will include the examples, if you don't need these simply remove this line
 COPY --chown=node:node examples ./examples
