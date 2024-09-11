@@ -33,6 +33,16 @@ import {
   TableOptions,
   WarningPanel,
 } from '@backstage/core-components';
+import { useApp } from '@backstage/core-plugin-api';
+import OpenInNew from '@material-ui/icons/OpenInNew';
+import { makeStyles, Theme } from '@material-ui/core/styles';
+
+const useStyles = makeStyles((theme: Theme) => ({
+  externalLink: {
+    verticalAlign: 'bottom',
+    marginLeft: theme.spacing(0.5),
+  },
+}));
 
 /**
  * @public
@@ -53,6 +63,9 @@ export const ProvidedApisCard = (props: {
   const { entities, loading, error } = useRelatedEntities(entity, {
     type: RELATION_PROVIDES_API,
   });
+  const app = useApp();
+  const ExternalLinkIcon = app.getSystemIcon('externalLink') || OpenInNew;
+  const classes = useStyles();
 
   if (loading) {
     return (
@@ -84,11 +97,17 @@ export const ProvidedApisCard = (props: {
             This {entity.kind.toLocaleLowerCase('en-US')} does not provide any
             APIs.
           </Typography>
-          <Typography variant="body2">
-            <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specprovidesapis-optional">
-              Learn how to change this.
-            </Link>
-          </Typography>
+          <Link
+            to="https://backstage.io/docs/features/software-catalog/descriptor-format#specprovidesapis-optional"
+            externalLinkIcon={
+              <ExternalLinkIcon
+                fontSize="small"
+                className={classes.externalLink}
+              />
+            }
+          >
+            Learn how to change this
+          </Link>
         </div>
       }
       columns={columns}

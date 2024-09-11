@@ -33,6 +33,16 @@ import {
   TableOptions,
   WarningPanel,
 } from '@backstage/core-components';
+import OpenInNew from '@material-ui/icons/OpenInNew';
+import { useApp } from '@backstage/core-plugin-api';
+import { makeStyles, Theme } from '@material-ui/core/styles';
+
+const useStyles = makeStyles((theme: Theme) => ({
+  externalLink: {
+    verticalAlign: 'bottom',
+    marginLeft: theme.spacing(0.5),
+  },
+}));
 
 /**
  * @public
@@ -53,6 +63,9 @@ export const ConsumedApisCard = (props: {
   const { entities, loading, error } = useRelatedEntities(entity, {
     type: RELATION_CONSUMES_API,
   });
+  const app = useApp();
+  const ExternalLinkIcon = app.getSystemIcon('externalLink') || OpenInNew;
+  const classes = useStyles();
 
   if (loading) {
     return (
@@ -85,8 +98,16 @@ export const ConsumedApisCard = (props: {
             APIs.
           </Typography>
           <Typography variant="body2">
-            <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specconsumesapis-optional">
-              Learn how to change this.
+            <Link
+              to="https://backstage.io/docs/features/software-catalog/descriptor-format#specconsumesapis-optional"
+              externalLinkIcon={
+                <ExternalLinkIcon
+                  fontSize="small"
+                  className={classes.externalLink}
+                />
+              }
+            >
+              Learn how to change this
             </Link>
           </Typography>
         </div>
