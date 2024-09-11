@@ -30,6 +30,8 @@ const targetPackageRoles: PackageRole[] = [
   'backend-plugin-module',
   'frontend-plugin',
   'frontend-plugin-module',
+  'web-library',
+  'node-library',
 ];
 
 // A list of the feature types we want to extract from the project

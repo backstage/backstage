@@ -27,12 +27,12 @@ describe('features', () => {
       'backend-plugin-module': true,
       'frontend-plugin': true,
       'frontend-plugin-module': true,
+      'web-library': true,
+      'node-library': true,
       // Disallowed
       frontend: false,
       backend: false,
       cli: false,
-      'web-library': false,
-      'node-library': false,
       'common-library': false,
     };
 
