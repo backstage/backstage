@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { useOutlet } from 'react-router-dom';
 import { TableColumn, TableProps } from '@backstage/core-components';
 import {
@@ -34,6 +34,7 @@ export type TechDocsIndexPageProps = {
   columns?: TableColumn<DocsTableRow>[];
   actions?: TableProps<DocsTableRow>['actions'];
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
+  filters?: ReactNode;
 };
 
 export const TechDocsIndexPage = (props: TechDocsIndexPageProps) => {

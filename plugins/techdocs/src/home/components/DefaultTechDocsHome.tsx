@@ -24,6 +24,7 @@ import {
   CatalogFilterLayout,
   EntityListProvider,
   EntityOwnerPicker,
+  EntityOwnerPickerProps,
   EntityTagPicker,
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
@@ -31,6 +32,29 @@ import { TechDocsPageWrapper } from './TechDocsPageWrapper';
 import { TechDocsPicker } from './TechDocsPicker';
 import { EntityListDocsTable } from './Tables';
 import { TechDocsIndexPageProps } from './TechDocsIndexPage';
+
+/**
+ * Props for default filters.
+ *
+ * @public
+ */
+export type DefaultFiltersProps = {
+  initialFilter?: TechDocsIndexPageProps['initialFilter'];
+  ownerPickerMode?: EntityOwnerPickerProps['mode'];
+};
+
+/** @public */
+export const DefaultFilters = (props: DefaultFiltersProps) => {
+  const { initialFilter, ownerPickerMode } = props;
+  return (
+    <>
+      <TechDocsPicker />
+      <UserListPicker initialFilter={initialFilter} />
+      <EntityOwnerPicker mode={ownerPickerMode} />
+      <EntityTagPicker />
+    </>
+  );
+};
 
 /**
  * Props for {@link DefaultTechDocsHome}
@@ -46,7 +70,13 @@ export type DefaultTechDocsHomeProps = TechDocsIndexPageProps;
  * @public
  */
 export const DefaultTechDocsHome = (props: TechDocsIndexPageProps) => {
-  const { initialFilter = 'owned', columns, actions, ownerPickerMode } = props;
+  const {
+    initialFilter = 'owned',
+    columns,
+    actions,
+    ownerPickerMode,
+    filters,
+  } = props;
   return (
     <TechDocsPageWrapper>
       <Content>
@@ -58,10 +88,12 @@ export const DefaultTechDocsHome = (props: TechDocsIndexPageProps) => {
         <EntityListProvider>
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>
-              <TechDocsPicker />
-              <UserListPicker initialFilter={initialFilter} />
-              <EntityOwnerPicker mode={ownerPickerMode} />
-              <EntityTagPicker />
+              {filters ?? (
+                <DefaultFilters
+                  initialFilter={initialFilter}
+                  ownerPickerMode={ownerPickerMode}
+                />
+              )}
             </CatalogFilterLayout.Filters>
             <CatalogFilterLayout.Content>
               <EntityListDocsTable actions={actions} columns={columns} />
