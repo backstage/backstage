@@ -211,12 +211,12 @@ describe('tasks', () => {
       expect(mockChdir).toHaveBeenNthCalledWith(1, appDir);
       expect(mockExec).toHaveBeenCalledTimes(2);
       expect(mockExec).toHaveBeenNthCalledWith(
-        2,
+        1,
         'yarn install',
         expect.any(Function),
       );
       expect(mockExec).toHaveBeenNthCalledWith(
-        3,
+        2,
         'yarn tsc',
         expect.any(Function),
       );
