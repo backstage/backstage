@@ -49,14 +49,14 @@ export class InMemoryCatalogClient implements CatalogApi {
   #entities: Entity[];
 
   constructor(options?: { entities?: Entity[] }) {
-    this.#entities = options?.entities ?? [];
+    this.#entities = options?.entities?.slice() ?? [];
   }
 
   async getEntities(
     _request?: GetEntitiesRequest,
   ): Promise<GetEntitiesResponse> {
     // TODO(freben): Fields, filters etc
-    return { items: this.#entities };
+    return { items: this.#entities.slice() };
   }
 
   async getEntitiesByRefs(
@@ -80,7 +80,7 @@ export class InMemoryCatalogClient implements CatalogApi {
   ): Promise<QueryEntitiesResponse> {
     // TODO(freben): Fields, filters etc
     return {
-      items: this.#entities,
+      items: this.#entities.slice(),
       totalItems: this.#entities.length,
       pageInfo: {},
     };
