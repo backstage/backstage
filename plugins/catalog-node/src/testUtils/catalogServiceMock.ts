@@ -50,19 +50,38 @@ function simpleMock<TService>(
   };
 }
 
-/** @public */
+/**
+ * Creates a fake catalog client that handles entities in memory storage. Note
+ * that this client may be severely limited in functionality, and advanced
+ * functions may not be available at all.
+ *
+ * @public
+ */
 export function catalogServiceMock(options?: { entities?: Entity[] }) {
   return new InMemoryCatalogClient(options);
 }
 
-/** @public */
+/**
+ * A collection of mock functionality for the catalog service.
+ *
+ * @public
+ */
 export namespace catalogServiceMock {
+  /**
+   * Creates a fake catalog client that handles entities in memory storage. Note
+   * that this client may be severely limited in functionality, and advanced
+   * functions may not be available at all.
+   */
   export const factory = (options?: { entities?: Entity[] }) =>
     createServiceFactory({
       service: catalogServiceRef,
       deps: {},
       factory: () => new InMemoryCatalogClient(options),
     });
+  /**
+   * Creates a catalog client whose methods are mock functions, possibly with
+   * some of them overloaded by the caller.
+   */
   export const mock = simpleMock(catalogServiceRef, () => ({
     getEntities: jest.fn(),
     getEntitiesByRefs: jest.fn(),

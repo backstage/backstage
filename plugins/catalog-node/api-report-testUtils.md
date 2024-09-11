@@ -9,21 +9,19 @@ import { InMemoryCatalogClient } from '@backstage/catalog-client/testUtils';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceMock } from '@backstage/backend-test-utils';
 
-// @public (undocumented)
+// @public
 export function catalogServiceMock(options?: {
   entities?: Entity[];
 }): InMemoryCatalogClient;
 
-// @public (undocumented)
+// @public
 export namespace catalogServiceMock {
-  const // (undocumented)
-    factory: (options?: {
-      entities?: Entity[];
-    }) => ServiceFactory<CatalogApi, 'plugin', 'singleton'>;
-  const // (undocumented)
-    mock: (
-      partialImpl?: Partial<CatalogApi> | undefined,
-    ) => ServiceMock<CatalogApi>;
+  const factory: (options?: {
+    entities?: Entity[];
+  }) => ServiceFactory<CatalogApi, 'plugin', 'singleton'>;
+  const mock: (
+    partialImpl?: Partial<CatalogApi> | undefined,
+  ) => ServiceMock<CatalogApi>;
 }
 
 // (No @packageDocumentation comment for this package)

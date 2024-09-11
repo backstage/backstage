@@ -21,7 +21,7 @@ import { QueryEntitiesRequest } from '@backstage/catalog-client';
 import { QueryEntitiesResponse } from '@backstage/catalog-client';
 import { ValidateEntityResponse } from '@backstage/catalog-client';
 
-// @public (undocumented)
+// @public
 export class InMemoryCatalogClient implements CatalogApi {
   constructor(options?: { entities?: Entity[] });
   // (undocumented)

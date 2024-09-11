@@ -38,7 +38,13 @@ import {
 } from '@backstage/catalog-model';
 import { NotFoundError, NotImplementedError } from '@backstage/errors';
 
-/** @public */
+/**
+ * Implements a VERY basic fake catalog client that stores entities in memory.
+ * It has severely limited functionality, and is only useful under certain
+ * circumstances in tests.
+ *
+ * @public
+ */
 export class InMemoryCatalogClient implements CatalogApi {
   #entities: Entity[];
 
