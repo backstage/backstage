@@ -53,6 +53,12 @@ export type FeaturedDocsCardProps = {
   subLinkText?: string;
 };
 
+/** @public */
+export type FeaturedDocsCardClassKey =
+  | 'docDescription'
+  | 'docSubLink'
+  | 'docsTitleLink';
+
 const useStyles = makeStyles(
   theme => ({
     docDescription: {

@@ -134,6 +134,12 @@ export const CatalogSearchResultListItem: (
   props: SearchResultListItemExtensionProps<CatalogSearchResultListItemProps>,
 ) => JSX.Element | null;
 
+// @public (undocumented)
+export type CatalogSearchResultListItemClassKey =
+  | 'item'
+  | 'flexContainer'
+  | 'itemText';
+
 // @public
 export interface CatalogSearchResultListItemProps {
   // (undocumented)
@@ -222,6 +228,9 @@ export interface CatalogTableRow {
     ownedByRelations: CompoundEntityRef[];
   };
 }
+
+// @public (undocumented)
+export type CatalogTableToolbarClassKey = 'root' | 'text';
 
 // @public (undocumented)
 export type ColumnBreakpoints = Record<Breakpoint, number>;
@@ -390,6 +399,9 @@ export interface EntityLabelsCardProps {
   // (undocumented)
   variant?: InfoCardVariants;
 }
+
+// @public (undocumented)
+export type EntityLabelsEmptyStateClassKey = 'code';
 
 // @public
 export const EntityLayout: {
@@ -626,6 +638,9 @@ export type PluginCatalogComponentsNameToClassKey = {
   PluginCatalogEntityLinksEmptyState: EntityLinksEmptyStateClassKey;
   PluginCatalogSystemDiagramCard: SystemDiagramCardClassKey;
   PluginCatalogEntityContextMenu: EntityContextMenuClassKey;
+  PluginCatalogSearchResultListItem: CatalogSearchResultListItemClassKey;
+  PluginCatalogTableToolbar: CatalogTableToolbarClassKey;
+  PluginCatalogEntityLabelsEmptyState: EntityLabelsEmptyStateClassKey;
 };
 
 // @public (undocumented)

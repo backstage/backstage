@@ -65,6 +65,9 @@ export const HighlightedSearchResultText: (
   props: HighlightedSearchResultTextProps,
 ) => React_2.JSX.Element;
 
+// @public (undocumented)
+export type HighlightedSearchResultTextClassKey = 'highlight';
+
 // @public
 export type HighlightedSearchResultTextProps = {
   text: string;
