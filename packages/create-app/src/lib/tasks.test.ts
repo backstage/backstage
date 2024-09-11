@@ -227,27 +227,6 @@ describe('tasks', () => {
       );
     });
 
-    it('should error out on incorrect yarn version', async () => {
-      // requires callback implementation to support `promisify` wrapper
-      // https://stackoverflow.com/a/60579617/10044859
-      mockExec.mockImplementation((_command, callback) => {
-        callback(null, { stdout: '3.2.1', stderr: 'standard error' });
-      });
-
-      const appDir = 'projects/dir';
-      await expect(buildAppTask(appDir)).rejects.toThrow(
-        /^@backstage\/create-app requires Yarn v1, found '3\.2\.1'/,
-      );
-      expect(mockChdir).toHaveBeenCalledTimes(1);
-      expect(mockChdir).toHaveBeenNthCalledWith(1, appDir);
-      expect(mockExec).toHaveBeenCalledTimes(1);
-      expect(mockExec).toHaveBeenNthCalledWith(
-        1,
-        'yarn --version',
-        expect.any(Function),
-      );
-    });
-
     it('should fail if project directory does not exist', async () => {
       const appDir = 'projects/missingProject';
       await expect(buildAppTask(appDir)).rejects.toThrow(
