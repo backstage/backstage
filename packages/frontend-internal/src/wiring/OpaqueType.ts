@@ -28,7 +28,7 @@
 export class OpaqueType<
   T extends {
     public: { $$type: string };
-    versions: { version: string };
+    versions: { version?: string } & Object;
   },
 > {
   /**
@@ -41,7 +41,7 @@ export class OpaqueType<
   static create<
     T extends {
       public: { $$type: string };
-      versions: { version: string };
+      versions: { version?: string } & Object;
     },
   >(options: {
     type: T['public']['$$type'];
@@ -51,9 +51,9 @@ export class OpaqueType<
   }
 
   #type: string;
-  #versions: Set<string>;
+  #versions: Set<string | undefined>;
 
-  private constructor(type: string, versions: Set<string>) {
+  private constructor(type: string, versions: Set<string | undefined>) {
     this.#type = type;
     this.#versions = versions;
   }
@@ -83,7 +83,7 @@ export class OpaqueType<
    */
   toInternal(value: unknown): T['public'] & T['versions'] {
     if (!this.#isThisType(value)) {
-      throw new Error(
+      throw new TypeError(
         `Invalid opaque type, expected '${
           this.#type
         }', but got '${this.#stringifyUnknown(value)}'`,
@@ -133,11 +133,20 @@ export class OpaqueType<
     return value as unknown as TBase;
   }
 
-  #throwIfInvalidVersion(version: string) {
+  #throwIfInvalidVersion(version: string | undefined) {
     if (!this.#versions.has(version)) {
-      const versionsStr = Array.from(this.#versions).join("', '");
-      throw new Error(
-        `Invalid opaque type instance, bad version '${version}', expected one of '${versionsStr}'`,
+      const expected = [];
+      if (this.#versions.has(undefined)) {
+        expected.push('undefined');
+      }
+      const versions = Array.from(this.#versions).filter(Boolean);
+      if (versions.length > 0) {
+        expected.push(`one of ['${versions.join("', '")}']`);
+      }
+      throw new TypeError(
+        `Invalid opaque type instance, got version '${version}', expected ${expected.join(
+          ' or ',
+        )}`,
       );
     }
   }

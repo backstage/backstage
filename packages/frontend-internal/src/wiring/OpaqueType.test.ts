@@ -262,4 +262,204 @@ describe('OpaqueType', () => {
       'foo',
     );
   });
+
+  it('should support undefined version for backwards compatibility', () => {
+    type MyType = {
+      $$type: 'my-type';
+    };
+
+    const OpaqueMyType = OpaqueType.create<{
+      public: MyType;
+      versions: {
+        version: undefined;
+        foo: string;
+      };
+    }>({
+      type: 'my-type',
+      versions: [undefined],
+    });
+
+    OpaqueMyType.create({
+      // @ts-expect-error - wrong type
+      $$type: 'wrong-type',
+      foo: 'bar',
+    });
+
+    OpaqueMyType.create({
+      $$type: 'my-type',
+      // @ts-expect-error - unsupported version
+      version: 'v1',
+      foo: 'bar',
+    });
+
+    // @ts-expect-error - missing internal field
+    OpaqueMyType.create({
+      $$type: 'my-type',
+      version: undefined,
+    });
+
+    OpaqueMyType.create({
+      $$type: 'my-type',
+      version: undefined,
+      // @ts-expect-error - invalid internal field
+      foo: 3,
+    });
+
+    const myInstance = OpaqueMyType.create({
+      $$type: 'my-type',
+      version: undefined,
+      foo: 'bar',
+    });
+
+    expect(myInstance.$$type).toBe('my-type');
+    // @ts-expect-error - version field not accessible
+    expect(myInstance.version).toBe(undefined);
+    // @ts-expect-error - internal field not accessible
+    expect(myInstance.foo).toBe('bar');
+
+    expect(OpaqueMyType.isInternal(myInstance)).toBe(true);
+
+    const myInternal = OpaqueMyType.toInternal(myInstance);
+    expect(myInternal).toBe(myInstance);
+    // All fields accessible
+    expect(myInternal.$$type).toBe('my-type');
+    expect(myInternal.version).toBe(undefined);
+    expect(myInternal.foo).toBe('bar');
+
+    expect(OpaqueMyType.isVersion(undefined, myInstance)).toBe(true);
+    expect(OpaqueMyType.isVersion('v1' as any, myInstance)).toBe(false);
+
+    expect(OpaqueMyType.isInternal('hello')).toBe(false);
+    expect(OpaqueMyType.isVersion(undefined, 'hello')).toBe(false);
+  });
+
+  it('should support undefined version mixed with defined versions', () => {
+    type MyType = {
+      $$type: 'my-type';
+    };
+
+    const OpaqueMyType = OpaqueType.create<{
+      public: MyType;
+      versions:
+        | {
+            version: 'v1';
+            foo: string;
+          }
+        | {
+            version: undefined;
+            bar: string;
+          };
+    }>({
+      type: 'my-type',
+      versions: ['v1', undefined],
+    });
+
+    OpaqueMyType.create({
+      // @ts-expect-error - wrong type
+      $$type: 'wrong-type',
+      version: 'v1',
+      foo: 'bar',
+    });
+
+    OpaqueMyType.create({
+      $$type: 'my-type',
+      // @ts-expect-error - unsupported version
+      version: 'v3',
+      foo: 'bar',
+    });
+
+    // @ts-expect-error - missing version
+    OpaqueMyType.create({
+      $$type: 'my-type',
+      foo: 'bar',
+    });
+
+    // @ts-expect-error - missing internal field
+    OpaqueMyType.create({
+      $$type: 'my-type',
+      version: 'v1',
+    });
+
+    OpaqueMyType.create({
+      $$type: 'my-type',
+      version: 'v1',
+      // @ts-expect-error - invalid internal field
+      foo: 3,
+    });
+
+    OpaqueMyType.create({
+      $$type: 'my-type',
+      version: undefined,
+      // @ts-expect-error - version mismatch
+      foo: 'bar',
+    });
+
+    OpaqueMyType.create({
+      $$type: 'my-type',
+      version: 'v1',
+      // @ts-expect-error - version mismatch
+      bar: 'foo',
+    });
+
+    const myInstanceV1 = OpaqueMyType.create({
+      $$type: 'my-type',
+      version: 'v1',
+      foo: 'bar',
+    });
+
+    const myInstanceV2 = OpaqueMyType.create({
+      $$type: 'my-type',
+      version: undefined,
+      bar: 'foo',
+    });
+
+    expect(myInstanceV1.$$type).toBe('my-type');
+    // @ts-expect-error - version field not accessible
+    expect(myInstanceV1.version).toBe('v1');
+    // @ts-expect-error - internal field not accessible
+    expect(myInstanceV1.foo).toBe('bar');
+
+    expect(myInstanceV2.$$type).toBe('my-type');
+    // @ts-expect-error - version field not accessible
+    expect(myInstanceV2.version).toBe(undefined);
+    // @ts-expect-error - internal field not accessible
+    expect(myInstanceV2.bar).toBe('foo');
+
+    expect(OpaqueMyType.isInternal(myInstanceV1)).toBe(true);
+    expect(OpaqueMyType.isInternal(myInstanceV2)).toBe(true);
+
+    const myInternalV1 = OpaqueMyType.toInternal(myInstanceV1);
+    expect(myInternalV1).toBe(myInstanceV1);
+    // All fields accessible
+    expect(myInternalV1.$$type).toBe('my-type');
+    expect(myInternalV1.version).toBe('v1');
+    // @ts-expect-error - version has not been narrowed down
+    expect(myInternalV1.foo).toBe('bar');
+
+    const myInternalV2 = OpaqueMyType.toInternal(myInstanceV2);
+    expect(myInternalV2).toBe(myInstanceV2);
+    // All fields accessible
+    expect(myInternalV2.$$type).toBe('my-type');
+    expect(myInternalV2.version).toBe(undefined);
+    // @ts-expect-error - version has not been narrowed down
+    expect(myInternalV2.bar).toBe('foo');
+
+    // Narrowing the version allows access to internal fields
+    expect(myInternalV1.version === 'v1' && myInternalV1.foo).toBe('bar');
+    expect(myInternalV2.version === undefined && myInternalV2.bar).toBe('foo');
+
+    expect(OpaqueMyType.isVersion('v1', myInstanceV1)).toBe(true);
+    expect(OpaqueMyType.isVersion(undefined, myInstanceV1)).toBe(false);
+
+    expect(OpaqueMyType.isVersion('v1', myInstanceV2)).toBe(false);
+    expect(OpaqueMyType.isVersion(undefined, myInstanceV2)).toBe(true);
+
+    // Narrowing the version allows access to internal fields
+    expect(OpaqueMyType.isVersion('v1', myInstanceV1) && myInstanceV1.foo).toBe(
+      'bar',
+    );
+    expect(
+      OpaqueMyType.isVersion(undefined, myInstanceV2) && myInstanceV2.bar,
+    ).toBe('foo');
+  });
 });
