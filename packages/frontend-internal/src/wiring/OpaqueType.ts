@@ -122,7 +122,10 @@ export class OpaqueType<
    * @param value The remaining public and internal properties of the instance
    * @returns An instance of the opaque type
    */
-  createInstance<TVersion extends T['versions']['version']>(
+  createInstance<
+    TVersion extends T['versions']['version'],
+    TPublic extends T['public'],
+  >(
     version: TVersion,
     props: Omit<T['public'], '$$type'> &
       (T['versions'] extends infer UVersion
@@ -131,12 +134,12 @@ export class OpaqueType<
           : never
         : never) &
       Object, // & Object to allow for object properties too, e.g. toString()
-  ): T['public'] {
+  ): TPublic {
     return {
       ...(props as object),
       $$type: this.#type,
       ...(version && { version }),
-    } as T['public'];
+    } as unknown as TPublic;
   }
 
   #isThisInternalType(value: unknown): value is T['public'] & T['versions'] {
