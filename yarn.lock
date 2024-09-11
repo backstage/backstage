@@ -3866,7 +3866,7 @@ __metadata:
   resolution: "@backstage/cli-common@workspace:packages/cli-common"
   dependencies:
     "@backstage/cli": "workspace:^"
-    "@types/node": ^18.17.8
+    "@types/node": ^20.16.0
   languageName: unknown
   linkType: soft
 
@@ -3941,7 +3941,7 @@ __metadata:
     "@types/http-proxy": ^1.17.4
     "@types/inquirer": ^8.1.3
     "@types/jest": ^29.5.11
-    "@types/node": ^18.17.8
+    "@types/node": ^20.16.0
     "@types/npm-packlist": ^3.0.0
     "@types/recursive-readdir": ^2.2.0
     "@types/rollup-plugin-peer-deps-external": ^2.2.0
@@ -4062,7 +4062,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/cli-common": "workspace:^"
     "@types/jscodeshift": ^0.11.0
-    "@types/node": ^18.17.8
+    "@types/node": ^20.16.0
     chalk: ^4.0.0
     commander: ^12.0.0
     jscodeshift: ^0.16.0
@@ -4413,7 +4413,7 @@ __metadata:
     "@types/command-exists": ^1.2.0
     "@types/fs-extra": ^11.0.0
     "@types/inquirer": ^8.1.3
-    "@types/node": ^18.17.8
+    "@types/node": ^20.16.0
     "@types/recursive-readdir": ^2.2.0
     chalk: ^4.0.0
     commander: ^12.0.0
@@ -6453,7 +6453,7 @@ __metadata:
     "@testing-library/dom": ^10.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^16.0.0
-    "@types/node": ^16.11.26
+    "@types/node": ^20.16.0
     "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     cronstrue: ^2.2.0
     js-yaml: ^4.0.0
@@ -7179,7 +7179,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@types/command-exists": ^1.2.0
     "@types/fs-extra": ^11.0.0
-    "@types/node": ^18.17.8
+    "@types/node": ^20.16.0
     command-exists: ^1.2.9
     fs-extra: ^11.0.0
     jest-when: ^3.1.0
@@ -8144,7 +8144,7 @@ __metadata:
     "@stoplight/spectral-runtime": ^1.1.2
     "@stoplight/types": ^14.0.0
     "@types/is-glob": ^4.0.2
-    "@types/node": ^18.17.8
+    "@types/node": ^20.16.0
     "@types/prettier": ^2.0.0
     "@useoptic/openapi-utilities": ^0.55.0
     chalk: ^4.0.0
@@ -16727,7 +16727,7 @@ __metadata:
     "@types/commander": ^2.12.2
     "@types/fs-extra": ^11.0.0
     "@types/http-proxy": ^1.17.4
-    "@types/node": ^18.17.8
+    "@types/node": ^20.16.0
     "@types/serve-handler": ^6.1.0
     "@types/webpack-env": ^1.15.3
     commander: ^12.0.0
@@ -17903,7 +17903,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^16.11.26, @types/node@npm:^16.7.10":
+"@types/node@npm:^16.7.10":
   version: 16.18.108
   resolution: "@types/node@npm:16.18.108"
   checksum: 5029ce7b0d247690360f2698da4fe765ef5cd5e2409b63b3a45e90bbf7bbaaf3497e769336fb7725be04a221d6e934e3a4616ec7fc205812943def3ea9d70862
@@ -17917,7 +17917,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^18.11.9, @types/node@npm:^18.17.15, @types/node@npm:^18.17.8":
+"@types/node@npm:^18.11.9, @types/node@npm:^18.17.15":
   version: 18.19.50
   resolution: "@types/node@npm:18.19.50"
   dependencies:
@@ -17926,7 +17926,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^20.1.1, @types/node@npm:^20.11.16":
+"@types/node@npm:^20.1.1, @types/node@npm:^20.11.16, @types/node@npm:^20.16.0":
   version: 20.16.5
   resolution: "@types/node@npm:20.16.5"
   dependencies:
@@ -25064,7 +25064,7 @@ __metadata:
     "@backstage/create-app": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@types/fs-extra": ^11.0.0
-    "@types/node": ^18.17.8
+    "@types/node": ^20.16.0
     chalk: ^4.0.0
     commander: ^12.0.0
     cross-fetch: ^4.0.0
@@ -39610,7 +39610,7 @@ __metadata:
     "@spotify/prettier-config": ^15.0.0
     "@techdocs/cli": "workspace:*"
     "@types/global-agent": ^2.1.3
-    "@types/node": ^18.17.8
+    "@types/node": ^20.16.0
     "@types/webpack": ^5.28.0
     "@useoptic/optic": ^0.50.10
     array-to-table: ^1.0.1

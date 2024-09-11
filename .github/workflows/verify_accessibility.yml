@@ -25,14 +25,14 @@ jobs:
           egress-policy: audit
 
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
-      - name: Use Node.js 18.x
+      - name: Use Node.js 20.x
         uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
         with:
-          node-version: 18.x
+          node-version: 20.x
       - name: yarn install
         uses: backstage/actions/yarn-install@3c138326f7fcbf253b88170c1f29bae8e975d47c # v0.6.14
         with:
-          cache-prefix: ${{ runner.os }}-v18.x
+          cache-prefix: ${{ runner.os }}-v20.x
       - name: run Lighthouse CI
         run: |
           yarn dlx @lhci/cli@0.11.x autorun
