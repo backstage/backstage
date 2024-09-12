@@ -116,8 +116,14 @@ export async function readLdapUsers(
   }
   const entities: UserEntity[] = [];
   const userMemberOf: Map<string, Set<string>> = new Map();
-
-  const vendor = await client.getVendor(vendorConfig);
+  const vendorDefaults = await client.getVendor();
+  const vendor: LdapVendor = {
+    dnAttributeName:
+      vendorConfig?.dnAttributeName ?? vendorDefaults.dnAttributeName,
+    uuidAttributeName:
+      vendorConfig?.uuidAttributeName ?? vendorDefaults.uuidAttributeName,
+    decodeStringAttribute: vendorDefaults.decodeStringAttribute,
+  };
   const transformer = opts?.transformer ?? defaultUserTransformer;
 
   for (const cfg of userConfig) {
@@ -228,7 +234,15 @@ export async function readLdapGroups(
   const groupMemberOf: Map<string, Set<string>> = new Map();
   const groupMember: Map<string, Set<string>> = new Map();
 
-  const vendor = await client.getVendor(vendorConfig);
+  const vendorDefaults = await client.getVendor();
+  const vendor: LdapVendor = {
+    dnAttributeName:
+      vendorConfig?.dnAttributeName ?? vendorDefaults.dnAttributeName,
+    uuidAttributeName:
+      vendorConfig?.uuidAttributeName ?? vendorDefaults.uuidAttributeName,
+    decodeStringAttribute: vendorDefaults.decodeStringAttribute,
+  };
+
   const transformer = opts?.transformer ?? defaultGroupTransformer;
 
   for (const cfg of groupConfig) {

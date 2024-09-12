@@ -15,7 +15,6 @@
  */
 
 import { SearchEntry } from 'ldapjs';
-import { VendorConfig } from './config';
 
 /**
  * An LDAP Vendor handles unique nuances between different vendors.
@@ -40,26 +39,48 @@ export type LdapVendor = {
   decodeStringAttribute: (entry: SearchEntry, name: string) => string[];
 };
 
-export const CreateLdapVendor = (
-  vendorConfig: VendorConfig,
-  isActiveDirectoryVendor: boolean,
-): LdapVendor => {
-  return {
-    dnAttributeName: vendorConfig.dnAttributeName || `entryDN`,
-    uuidAttributeName: vendorConfig.uuidAttributeName || `entryUUID`,
-    decodeStringAttribute: (entry, name) => {
-      const decoder = (value: string | Buffer) => {
-        if (
-          isActiveDirectoryVendor &&
-          name === vendorConfig.uuidAttributeName
-        ) {
-          return formatGUID(value);
-        }
-        return value.toString();
-      };
-      return decode(entry, name, decoder);
-    },
-  };
+export const DefaultLdapVendor: LdapVendor = {
+  dnAttributeName: 'entryDN',
+  uuidAttributeName: 'entryUUID',
+  decodeStringAttribute: (entry, name) => {
+    return decode(entry, name, value => {
+      return value.toString();
+    });
+  },
+};
+
+export const ActiveDirectoryVendor: LdapVendor = {
+  dnAttributeName: 'distinguishedName',
+  uuidAttributeName: 'objectGUID',
+  decodeStringAttribute: (entry, name) => {
+    const decoder = (value: string | Buffer) => {
+      if (name === ActiveDirectoryVendor.uuidAttributeName) {
+        return formatGUID(value);
+      }
+      return value.toString();
+    };
+    return decode(entry, name, decoder);
+  },
+};
+
+export const FreeIpaVendor: LdapVendor = {
+  dnAttributeName: 'dn',
+  uuidAttributeName: 'ipaUniqueID',
+  decodeStringAttribute: (entry, name) => {
+    return decode(entry, name, value => {
+      return value.toString();
+    });
+  },
+};
+
+export const AEDirVendor: LdapVendor = {
+  dnAttributeName: 'dn',
+  uuidAttributeName: 'entryUUID',
+  decodeStringAttribute: (entry, name) => {
+    return decode(entry, name, value => {
+      return value.toString();
+    });
+  },
 };
 
 // Decode an attribute to a consumer

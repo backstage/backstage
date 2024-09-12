@@ -19,9 +19,15 @@ import { readFile } from 'fs/promises';
 import ldap, { Client, SearchEntry, SearchOptions } from 'ldapjs';
 import { cloneDeep } from 'lodash';
 import tlsLib from 'tls';
-import { BindConfig, TLSConfig, VendorConfig } from './config';
+import { BindConfig, TLSConfig } from './config';
 import { createOptions, errorString } from './util';
-import { CreateLdapVendor, LdapVendor } from './vendors';
+import {
+  AEDirVendor,
+  ActiveDirectoryVendor,
+  DefaultLdapVendor,
+  FreeIpaVendor,
+  LdapVendor,
+} from './vendors';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
@@ -226,51 +232,20 @@ export class LdapClient {
    *
    * @see https://ldapwiki.com/wiki/Determine%20LDAP%20Server%20Vendor
    */
-  async getVendor(vendorConfig: VendorConfig | undefined): Promise<LdapVendor> {
+  async getVendor(): Promise<LdapVendor> {
     if (this.vendor) {
       return this.vendor;
     }
     this.vendor = this.getRootDSE()
       .then(root => {
         if (root && root.raw?.forestFunctionality) {
-          // ActiveDirectoryVendor
-          return CreateLdapVendor(
-            {
-              dnAttributeName:
-                vendorConfig?.dnAttributeName || 'distinguishedName',
-              uuidAttributeName:
-                vendorConfig?.uuidAttributeName || 'objectGUID',
-            },
-            true,
-          );
+          return ActiveDirectoryVendor;
         } else if (root && root.raw?.ipaDomainLevel) {
-          // FreeIpaVendor
-          return CreateLdapVendor(
-            {
-              dnAttributeName: vendorConfig?.dnAttributeName || 'dn',
-              uuidAttributeName:
-                vendorConfig?.uuidAttributeName || 'ipaUniqueID',
-            },
-            false,
-          );
+          return FreeIpaVendor;
         } else if (root && 'aeRoot' in root.raw) {
-          // AEDirVendor
-          return CreateLdapVendor(
-            {
-              dnAttributeName: vendorConfig?.dnAttributeName || 'dn',
-              uuidAttributeName: vendorConfig?.uuidAttributeName || 'entryUUID',
-            },
-            false,
-          );
+          return AEDirVendor;
         }
-        // DefaultLdapVendor
-        return CreateLdapVendor(
-          {
-            dnAttributeName: vendorConfig?.dnAttributeName,
-            uuidAttributeName: vendorConfig?.uuidAttributeName,
-          },
-          false,
-        );
+        return DefaultLdapVendor;
       })
       .catch(err => {
         this.vendor = undefined;
