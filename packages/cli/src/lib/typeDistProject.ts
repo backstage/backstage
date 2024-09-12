@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 import { findPaths } from '@backstage/cli-common';
-import {
-  BackstagePackageFeatureType,
-  isValidPackageFeatureType,
-  PackageGraph,
-  PackageRole,
-} from '@backstage/cli-node';
+import { PackageGraph, PackageRole } from '@backstage/cli-node';
 import { builtinModules } from 'module';
 import { resolve as resolvePath } from 'path';
 import { Project, SourceFile, SyntaxKind, ts, Type } from 'ts-morph';
@@ -134,12 +129,14 @@ const targetPackageRoles: PackageRole[] = [
 
 // A list of the feature types we want to extract from the project
 // and include in the metadata
-const targetFeatureTypes: BackstagePackageFeatureType[] = [
+const targetFeatureTypes = [
   '@backstage/BackendFeature',
   '@backstage/BackstagePlugin',
   '@backstage/FrontendPlugin',
   '@backstage/FrontendModule',
-];
+] as const;
+
+export type BackstagePackageFeatureType = (typeof targetFeatureTypes)[number];
 
 export const getEntryPointDefaultFeatureType = (
   role: PackageRole,
@@ -157,25 +154,13 @@ export const getEntryPointDefaultFeatureType = (
       project.addSourceFileAtPath(dtsPath),
     );
 
-    if (isTargetFeatureType(defaultFeatureType)) {
+    if (defaultFeatureType) {
       return defaultFeatureType;
     }
   }
 
   return null;
 };
-
-// Condition for a package role matches a target package role
-function isTargetPackageRole(role: PackageRole): boolean {
-  return !!role && targetPackageRoles.includes(role);
-}
-
-// Returns whether an export is a valid Backstage package feature type
-function isTargetFeatureType(
-  type: BackstagePackageFeatureType | null,
-): boolean {
-  return !!type && targetFeatureTypes.includes(type);
-}
 
 // Returns all exports (default and named) from an entry point
 // that are valid Backstage package features
@@ -230,11 +215,25 @@ function getBackstagePackageFeature$$TypeFromType(
         ?.getText()
         .match(/(?<type>@backstage\/\w+)/)?.groups?.type;
 
-      if ($$type && isValidPackageFeatureType($$type)) {
+      if ($$type && isTargetFeatureType($$type)) {
         return $$type;
       }
     }
   }
 
   return null;
+}
+
+// Condition for a package role matches a target package role
+function isTargetPackageRole(role: PackageRole): boolean {
+  return !!role && targetPackageRoles.includes(role);
+}
+
+// Returns whether an export is a valid Backstage package feature type
+function isTargetFeatureType(
+  type: string | BackstagePackageFeatureType,
+): type is BackstagePackageFeatureType {
+  return (
+    !!type && targetFeatureTypes.includes(type as BackstagePackageFeatureType)
+  );
 }

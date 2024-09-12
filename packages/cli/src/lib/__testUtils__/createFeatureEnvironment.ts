@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-import { BackstagePackageFeatureType, PackageRole } from '@backstage/cli-node';
+import { PackageRole } from '@backstage/cli-node';
 import { resolve as resolvePath } from 'path';
 import { Project } from 'ts-morph';
 import { EntryPoint } from '../entryPoints';
-import { getDistTypeRoot } from '../typeDistProject';
+import {
+  getDistTypeRoot,
+  BackstagePackageFeatureType,
+} from '../typeDistProject';
 
 const mockEntryPoint = {
   mount: '.',

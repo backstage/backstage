@@ -13,15 +13,6 @@ export type BackstagePackage = {
 };
 
 // @public
-export type BackstagePackageFeature = {
-  path?: string;
-  type: BackstagePackageFeatureType;
-};
-
-// @public
-export type BackstagePackageFeatureType = (typeof packageFeatureTypes)[number];
-
-// @public
 export interface BackstagePackageJson {
   // (undocumented)
   backstage?: {
@@ -31,7 +22,6 @@ export interface BackstagePackageJson {
     pluginId?: string | null;
     pluginPackage?: string;
     pluginPackages?: string[];
-    features?: BackstagePackageFeature[];
   };
   // (undocumented)
   bundled?: boolean;
@@ -99,31 +89,6 @@ export class GitUtils {
 export function isMonoRepo(): Promise<boolean>;
 
 // @public
-export const isValidPackageFeatureType: (
-  value: string,
-) => value is
-  | '@backstage/TranslationResource'
-  | '@backstage/TranslationMessages'
-  | '@backstage/TranslationRef'
-  | '@backstage/RouteRef'
-  | '@backstage/SubRouteRef'
-  | '@backstage/ExternalRouteRef'
-  | '@backstage/ExtensionDataValue'
-  | '@backstage/ExtensionDataRef'
-  | '@backstage/ExtensionInput'
-  | '@backstage/ExtensionDefinition'
-  | '@backstage/Extension'
-  | '@backstage/ExtensionOverrides'
-  | '@backstage/FrontendPlugin'
-  | '@backstage/BackstagePlugin'
-  | '@backstage/FrontendModule'
-  | '@backstage/BackendFeatureFactory'
-  | '@backstage/BackendFeature'
-  | '@backstage/ServiceRef'
-  | '@backstage/BackstageCredentials'
-  | '@backstage/ExtensionPoint';
-
-// @public
 export class Lockfile {
   createSimplifiedDependencyGraph(): Map<string, Set<string>>;
   diff(otherLockfile: Lockfile): LockfileDiff;
@@ -143,30 +108,6 @@ export type LockfileDiffEntry = {
   name: string;
   range: string;
 };
-
-// @public
-export const packageFeatureTypes: readonly [
-  '@backstage/BackendFeature',
-  '@backstage/BackendFeatureFactory',
-  '@backstage/BackstageCredentials',
-  '@backstage/BackstagePlugin',
-  '@backstage/Extension',
-  '@backstage/ExtensionDataRef',
-  '@backstage/ExtensionDataValue',
-  '@backstage/ExtensionDefinition',
-  '@backstage/ExtensionInput',
-  '@backstage/ExtensionOverrides',
-  '@backstage/ExtensionPoint',
-  '@backstage/ExternalRouteRef',
-  '@backstage/FrontendPlugin',
-  '@backstage/FrontendModule',
-  '@backstage/RouteRef',
-  '@backstage/ServiceRef',
-  '@backstage/SubRouteRef',
-  '@backstage/TranslationMessages',
-  '@backstage/TranslationRef',
-  '@backstage/TranslationResource',
-];
 
 // @public
 export class PackageGraph extends Map<string, PackageGraphNode> {

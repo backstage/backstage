@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import { BackstagePackageFeatureType, PackageRole } from '@backstage/cli-node';
+import { PackageRole } from '@backstage/cli-node';
 import createFeatureEnvironment from './__testUtils__/createFeatureEnvironment';
-import { getEntryPointDefaultFeatureType } from './typeDistProject';
+import {
+  getEntryPointDefaultFeatureType,
+  BackstagePackageFeatureType,
+} from './typeDistProject';
 
 describe('typeDistProject', () => {
   describe('for package role', () => {
@@ -67,30 +70,17 @@ describe('typeDistProject', () => {
 
   describe('for feature $$type', () => {
     // This Record makes sure we're checking all feature types
-    const featureTypes: Record<BackstagePackageFeatureType, boolean> = {
-      // Allowed
-      '@backstage/BackendFeature': true,
-      '@backstage/BackstagePlugin': true,
-      '@backstage/FrontendPlugin': true,
-      '@backstage/FrontendModule': true,
-      // Disallowed
-      '@backstage/BackendFeatureFactory': false,
-      '@backstage/BackstageCredentials': false,
-      '@backstage/Extension': false,
-      '@backstage/ExtensionDataRef': false,
-      '@backstage/ExtensionDataValue': false,
-      '@backstage/ExtensionDefinition': false,
-      '@backstage/ExtensionInput': false,
-      '@backstage/ExtensionOverrides': false,
-      '@backstage/ExtensionPoint': false,
-      '@backstage/ExternalRouteRef': false,
-      '@backstage/RouteRef': false,
-      '@backstage/ServiceRef': false,
-      '@backstage/SubRouteRef': false,
-      '@backstage/TranslationMessages': false,
-      '@backstage/TranslationRef': false,
-      '@backstage/TranslationResource': false,
-    };
+    const featureTypes: Record<BackstagePackageFeatureType | string, boolean> =
+      {
+        // Allowed
+        '@backstage/BackendFeature': true,
+        '@backstage/BackstagePlugin': true,
+        '@backstage/FrontendPlugin': true,
+        '@backstage/FrontendModule': true,
+        // Disallowed
+        '@backstage/Extension': false,
+        '@backstage/RouteRef': false,
+      };
 
     const allowedFeatureTypes = Object.keys(featureTypes).filter(
       $$type => featureTypes[$$type as BackstagePackageFeatureType],

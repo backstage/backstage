@@ -1,6 +1,5 @@
 ---
-'@backstage/cli-node': patch
 '@backstage/cli': patch
 ---
 
-Added a new step to the `backstage-cli repo fix --publish` command that will annotate default export features to the 'backstage' metadata within plugin package.json. This is to help with identifying the declarative integration points for plugins without needing to fetch or run the plugins first.
+Added functionality to the prepack script that will append the default export type for entry points to the `exports` object before publishing. This is to help with identifying the declarative integration points for plugins without needing to fetch or run the plugins first.
