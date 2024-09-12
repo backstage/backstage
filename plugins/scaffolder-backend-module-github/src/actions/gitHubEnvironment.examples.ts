@@ -302,4 +302,61 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
+  {
+    description: 'Create a GitHub Environment with Wait Timer',
+    example: yaml.stringify({
+      steps: [
+        {
+          action: 'github:environment:create',
+          name: 'Create Environment',
+          input: {
+            repoUrl: 'github.com?repo=repository&owner=owner',
+            name: 'envname',
+            wait_timer: 1000,
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description: 'Create a GitHub Environment with Prevent Self Review',
+    example: yaml.stringify({
+      steps: [
+        {
+          action: 'github:environment:create',
+          name: 'Create Environment',
+          input: {
+            repoUrl: 'github.com?repo=repository&owner=owner',
+            name: 'envname',
+            prevent_self_review: true,
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description: 'Create a GitHub Environment with Reviewers',
+    example: yaml.stringify({
+      steps: [
+        {
+          action: 'github:environment:create',
+          name: 'Create Environment',
+          input: {
+            repoUrl: 'github.com?repo=repository&owner=owner',
+            name: 'envname',
+            reviewers: [
+              {
+                Type: 'User',
+                ID: 1,
+              },
+              {
+                Type: 'Team',
+                ID: 2,
+              },
+            ],
+          },
+        },
+      ],
+    }),
+  },
 ];

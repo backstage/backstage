@@ -94,6 +94,9 @@ describe('github:environment:create', () => {
       repo: 'repository',
       environment_name: 'envname',
       deployment_branch_policy: null,
+      reviewers: null,
+      wait_timer: 0,
+      prevent_self_review: false,
     });
   });
 
@@ -119,6 +122,9 @@ describe('github:environment:create', () => {
         protected_branches: true,
         custom_branch_policies: false,
       },
+      reviewers: null,
+      wait_timer: 0,
+      prevent_self_review: false,
     });
   });
 
@@ -145,6 +151,9 @@ describe('github:environment:create', () => {
         protected_branches: false,
         custom_branch_policies: true,
       },
+      reviewers: null,
+      wait_timer: 0,
+      prevent_self_review: false,
     });
 
     expect(
@@ -190,6 +199,9 @@ describe('github:environment:create', () => {
         protected_branches: false,
         custom_branch_policies: true,
       },
+      reviewers: null,
+      wait_timer: 0,
+      prevent_self_review: false,
     });
 
     expect(
@@ -231,6 +243,9 @@ describe('github:environment:create', () => {
       repo: 'repository',
       environment_name: 'envname',
       deployment_branch_policy: null,
+      reviewers: null,
+      wait_timer: 0,
+      prevent_self_review: false,
     });
 
     expect(
@@ -277,6 +292,9 @@ describe('github:environment:create', () => {
       repo: 'repository',
       environment_name: 'envname',
       deployment_branch_policy: null,
+      reviewers: null,
+      wait_timer: 0,
+      prevent_self_review: false,
     });
 
     expect(
@@ -314,6 +332,112 @@ describe('github:environment:create', () => {
       owner: 'owner',
       repo: 'repository',
       environment_name: 'envname',
+    });
+  });
+
+  it('should work with wait_timer', async () => {
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        wait_timer: 1000,
+      },
+    });
+
+    expect(
+      mockOctokit.rest.repos.createOrUpdateEnvironment,
+    ).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repository',
+      environment_name: 'envname',
+      deployment_branch_policy: null,
+      reviewers: null,
+      wait_timer: 1000,
+      prevent_self_review: false,
+    });
+  });
+
+  it('should work with prevent_self_review set to true', async () => {
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        prevent_self_review: true,
+      },
+    });
+
+    expect(
+      mockOctokit.rest.repos.createOrUpdateEnvironment,
+    ).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repository',
+      environment_name: 'envname',
+      deployment_branch_policy: null,
+      reviewers: null,
+      wait_timer: 0,
+      prevent_self_review: true,
+    });
+  });
+
+  it('should work with prevent_self_review set to false', async () => {
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        prevent_self_review: false,
+      },
+    });
+
+    expect(
+      mockOctokit.rest.repos.createOrUpdateEnvironment,
+    ).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repository',
+      environment_name: 'envname',
+      deployment_branch_policy: null,
+      reviewers: null,
+      wait_timer: 0,
+      prevent_self_review: false,
+    });
+  });
+
+  it('should work with reviewers', async () => {
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        reviewers: [
+          {
+            Type: 'User',
+            ID: 1,
+          },
+          {
+            Type: 'Team',
+            ID: 2,
+          },
+        ],
+      },
+    });
+
+    expect(
+      mockOctokit.rest.repos.createOrUpdateEnvironment,
+    ).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repository',
+      environment_name: 'envname',
+      deployment_branch_policy: null,
+      wait_timer: 0,
+      prevent_self_review: false,
+      reviewers: [
+        {
+          Type: 'User',
+          ID: 1,
+        },
+        {
+          Type: 'Team',
+          ID: 2,
+        },
+      ],
     });
   });
 });

@@ -48,6 +48,9 @@ export function createGithubEnvironmentAction(options: {
     environmentVariables?: { [key: string]: string };
     secrets?: { [key: string]: string };
     token?: string;
+    wait_timer?: number;
+    prevent_self_review?: boolean;
+    reviewers?: Array<{ type?: 'User' | 'Team'; id?: number }> | null;
   }>({
     id: 'github:environment:create',
     description: 'Creates Deployment Environments',
@@ -120,6 +123,35 @@ export function createGithubEnvironmentAction(options: {
             type: 'string',
             description: 'The token to use for authorization to GitHub',
           },
+          wait_timer: {
+            title: 'Wait Timer',
+            type: 'integer',
+            description:
+              'The time to wait before creating or updating the environment (in milliseconds)',
+          },
+          prevent_self_review: {
+            title: 'Prevent Self Review',
+            type: 'boolean',
+            description: 'Whether to prevent self-review for this environment',
+          },
+          reviewers: {
+            title: 'Reviewers',
+            type: 'array',
+            description: 'Reviewers for this environment',
+            items: {
+              type: 'object',
+              properties: {
+                type: {
+                  title: 'Type',
+                  type: 'string',
+                },
+                id: {
+                  title: 'ID',
+                  type: 'integer',
+                },
+              },
+            },
+          },
         },
       },
     },
@@ -133,7 +165,15 @@ export function createGithubEnvironmentAction(options: {
         environmentVariables,
         secrets,
         token: providedToken,
+        wait_timer,
+        prevent_self_review,
+        reviewers,
       } = ctx.input;
+
+      // Wait for the specified time before creating or updating the environment
+      if (wait_timer) {
+        await new Promise(resolve => setTimeout(resolve, wait_timer));
+      }
 
       const octokitOptions = await getOctokitOptions({
         integrations,
@@ -158,6 +198,9 @@ export function createGithubEnvironmentAction(options: {
         repo: repo,
         environment_name: name,
         deployment_branch_policy: deploymentBranchPolicy ?? null,
+        wait_timer: wait_timer ?? 0,
+        prevent_self_review: prevent_self_review ?? false,
+        reviewers: reviewers ?? null,
       });
 
       if (customBranchPolicyNames) {

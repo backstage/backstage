@@ -95,6 +95,9 @@ describe('github:environment:create examples', () => {
       repo: 'repository',
       environment_name: 'envname',
       deployment_branch_policy: null,
+      wait_timer: 0,
+      reviewers: null,
+      prevent_self_review: false,
     });
     expect(
       mockOctokit.rest.repos.createDeploymentBranchPolicy,
@@ -128,6 +131,9 @@ describe('github:environment:create examples', () => {
         protected_branches: true,
         custom_branch_policies: false,
       },
+      wait_timer: 0,
+      reviewers: null,
+      prevent_self_review: false,
     });
 
     expect(
@@ -162,6 +168,9 @@ describe('github:environment:create examples', () => {
         protected_branches: false,
         custom_branch_policies: true,
       },
+      wait_timer: 0,
+      reviewers: null,
+      prevent_self_review: false,
     });
 
     expect(
@@ -208,6 +217,9 @@ describe('github:environment:create examples', () => {
       repo: 'repository',
       environment_name: 'envname',
       deployment_branch_policy: null,
+      wait_timer: 0,
+      reviewers: null,
+      prevent_self_review: false,
     });
 
     expect(
@@ -280,6 +292,9 @@ describe('github:environment:create examples', () => {
       repo: 'repository',
       environment_name: 'envname',
       deployment_branch_policy: null,
+      wait_timer: 0,
+      reviewers: null,
+      prevent_self_review: false,
     });
 
     expect(
@@ -331,6 +346,9 @@ describe('github:environment:create examples', () => {
         custom_branch_policies: true,
         protected_branches: false,
       },
+      wait_timer: 0,
+      reviewers: null,
+      prevent_self_review: false,
     });
 
     expect(
@@ -382,6 +400,9 @@ describe('github:environment:create examples', () => {
         custom_branch_policies: true,
         protected_branches: false,
       },
+      wait_timer: 0,
+      reviewers: null,
+      prevent_self_review: false,
     });
 
     expect(
@@ -473,6 +494,9 @@ describe('github:environment:create examples', () => {
       repo: 'repository',
       environment_name: 'envname',
       deployment_branch_policy: null,
+      wait_timer: 0,
+      reviewers: null,
+      prevent_self_review: false,
     });
 
     expect(
@@ -503,6 +527,9 @@ describe('github:environment:create examples', () => {
       repo: 'repository',
       environment_name: 'envname',
       deployment_branch_policy: null,
+      wait_timer: 0,
+      reviewers: null,
+      prevent_self_review: false,
     });
 
     expect(
@@ -536,6 +563,9 @@ describe('github:environment:create examples', () => {
         custom_branch_policies: true,
         protected_branches: false,
       },
+      wait_timer: 0,
+      reviewers: null,
+      prevent_self_review: false,
     });
 
     expect(
@@ -593,6 +623,9 @@ describe('github:environment:create examples', () => {
       repo: 'repository',
       environment_name: 'envname',
       deployment_branch_policy: null,
+      wait_timer: 0,
+      reviewers: null,
+      prevent_self_review: false,
     });
 
     expect(
@@ -643,6 +676,9 @@ describe('github:environment:create examples', () => {
       repo: 'repository',
       environment_name: 'envname',
       deployment_branch_policy: null,
+      wait_timer: 0,
+      reviewers: null,
+      prevent_self_review: false,
     });
 
     expect(
@@ -697,6 +733,9 @@ describe('github:environment:create examples', () => {
         custom_branch_policies: false,
         protected_branches: true,
       },
+      wait_timer: 0,
+      reviewers: null,
+      prevent_self_review: false,
     });
 
     expect(
@@ -726,6 +765,9 @@ describe('github:environment:create examples', () => {
       repo: 'repository',
       environment_name: 'envname',
       deployment_branch_policy: null,
+      wait_timer: 0,
+      reviewers: null,
+      prevent_self_review: false,
     });
 
     expect(
@@ -781,5 +823,113 @@ describe('github:environment:create examples', () => {
       repository_id: 'repoid',
       secret_name: 'SECRET2',
     });
+  });
+
+  it(`should ${examples[14].description}`, async () => {
+    const input = yaml.parse(examples[14].example).steps[0].input;
+
+    await action.handler({
+      ...mockContext,
+      input,
+    });
+
+    expect(
+      mockOctokit.rest.repos.createOrUpdateEnvironment,
+    ).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repository',
+      environment_name: 'envname',
+      deployment_branch_policy: null,
+      wait_timer: 1000,
+      reviewers: null,
+      prevent_self_review: false,
+    });
+    expect(
+      mockOctokit.rest.repos.createDeploymentBranchPolicy,
+    ).not.toHaveBeenCalled();
+    expect(
+      mockOctokit.rest.actions.createEnvironmentVariable,
+    ).not.toHaveBeenCalled();
+    expect(
+      mockOctokit.rest.actions.getEnvironmentPublicKey,
+    ).not.toHaveBeenCalled();
+    expect(
+      mockOctokit.rest.actions.createOrUpdateEnvironmentSecret,
+    ).not.toHaveBeenCalled();
+  });
+
+  it(`should ${examples[15].description}`, async () => {
+    const input = yaml.parse(examples[15].example).steps[0].input;
+
+    await action.handler({
+      ...mockContext,
+      input,
+    });
+
+    expect(
+      mockOctokit.rest.repos.createOrUpdateEnvironment,
+    ).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repository',
+      environment_name: 'envname',
+      deployment_branch_policy: null,
+      wait_timer: 0,
+      reviewers: null,
+      prevent_self_review: true,
+    });
+    expect(
+      mockOctokit.rest.repos.createDeploymentBranchPolicy,
+    ).not.toHaveBeenCalled();
+    expect(
+      mockOctokit.rest.actions.createEnvironmentVariable,
+    ).not.toHaveBeenCalled();
+    expect(
+      mockOctokit.rest.actions.getEnvironmentPublicKey,
+    ).not.toHaveBeenCalled();
+    expect(
+      mockOctokit.rest.actions.createOrUpdateEnvironmentSecret,
+    ).not.toHaveBeenCalled();
+  });
+
+  it(`should ${examples[16].description}`, async () => {
+    const input = yaml.parse(examples[16].example).steps[0].input;
+
+    await action.handler({
+      ...mockContext,
+      input,
+    });
+
+    expect(
+      mockOctokit.rest.repos.createOrUpdateEnvironment,
+    ).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repository',
+      environment_name: 'envname',
+      deployment_branch_policy: null,
+      wait_timer: 0,
+      reviewers: [
+        {
+          Type: 'User',
+          ID: 1,
+        },
+        {
+          Type: 'Team',
+          ID: 2,
+        },
+      ],
+      prevent_self_review: false,
+    });
+    expect(
+      mockOctokit.rest.repos.createDeploymentBranchPolicy,
+    ).not.toHaveBeenCalled();
+    expect(
+      mockOctokit.rest.actions.createEnvironmentVariable,
+    ).not.toHaveBeenCalled();
+    expect(
+      mockOctokit.rest.actions.getEnvironmentPublicKey,
+    ).not.toHaveBeenCalled();
+    expect(
+      mockOctokit.rest.actions.createOrUpdateEnvironmentSecret,
+    ).not.toHaveBeenCalled();
   });
 });
