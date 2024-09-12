@@ -12,12 +12,6 @@
       "@backstage/plugin-scaffolder-node",
       "@backstage/plugin-scaffolder-node-test-utils",
       "@backstage/plugin-scaffolder-react"
-    ],
-    "features": [
-      {
-        "type": "@backstage/FrontendPlugin",
-        "path": "./alpha"
-      }
     ]
   },
   "publishConfig": {

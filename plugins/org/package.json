@@ -8,12 +8,6 @@
     "pluginPackages": [
       "@backstage/plugin-org",
       "@backstage/plugin-org-react"
-    ],
-    "features": [
-      {
-        "type": "@backstage/FrontendPlugin",
-        "path": "./alpha"
-      }
     ]
   },
   "publishConfig": {

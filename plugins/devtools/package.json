@@ -8,12 +8,6 @@
       "@backstage/plugin-devtools",
       "@backstage/plugin-devtools-backend",
       "@backstage/plugin-devtools-common"
-    ],
-    "features": [
-      {
-        "type": "@backstage/FrontendPlugin",
-        "path": "./alpha"
-      }
     ]
   },
   "publishConfig": {

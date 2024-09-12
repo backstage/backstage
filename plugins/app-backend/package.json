@@ -9,12 +9,6 @@
       "@backstage/plugin-app",
       "@backstage/plugin-app-backend",
       "@backstage/plugin-app-node"
-    ],
-    "features": [
-      {
-        "type": "@backstage/BackendFeature",
-        "path": "./alpha"
-      }
     ]
   },
   "publishConfig": {

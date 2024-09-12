@@ -11,12 +11,6 @@
       "@backstage/plugin-catalog-common",
       "@backstage/plugin-catalog-node",
       "@backstage/plugin-catalog-react"
-    ],
-    "features": [
-      {
-        "type": "@backstage/FrontendPlugin",
-        "path": "./alpha"
-      }
     ]
   },
   "publishConfig": {

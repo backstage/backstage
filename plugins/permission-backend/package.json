@@ -9,12 +9,6 @@
       "@backstage/plugin-permission-common",
       "@backstage/plugin-permission-node",
       "@backstage/plugin-permission-react"
-    ],
-    "features": [
-      {
-        "type": "@backstage/BackendFeature",
-        "path": "./alpha"
-      }
     ]
   },
   "publishConfig": {

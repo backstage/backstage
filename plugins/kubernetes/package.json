@@ -11,12 +11,6 @@
       "@backstage/plugin-kubernetes-common",
       "@backstage/plugin-kubernetes-node",
       "@backstage/plugin-kubernetes-react"
-    ],
-    "features": [
-      {
-        "type": "@backstage/FrontendPlugin",
-        "path": "./alpha"
-      }
     ]
   },
   "publishConfig": {
