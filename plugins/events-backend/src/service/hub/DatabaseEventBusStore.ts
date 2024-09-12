@@ -26,7 +26,7 @@ import {
 import { ForwardedError, NotFoundError } from '@backstage/errors';
 import { HumanDuration, durationToMilliseconds } from '@backstage/types';
 
-const WINDOW_SIZE_DEFAULT = 10000;
+const WINDOW_SIZE_DEFAULT = 10_000;
 const WINDOW_MIN_AGE_DEFAULT = { minutes: 10 };
 const WINDOW_MAX_AGE_DEFAULT = { days: 1 };
 

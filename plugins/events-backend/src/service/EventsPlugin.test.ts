@@ -233,7 +233,7 @@ describe('eventsPlugin', () => {
           events: [{ topic: 'test', payload: { n: 1 } }],
         });
 
-        // Two clients for subscriber 2, only one  gets the event
+        // Two clients for subscriber 2, only one gets the event
         const res1 = helper.readEvents('tester-2');
         const res2 = helper.readEvents('tester-2');
 
@@ -261,7 +261,7 @@ describe('eventsPlugin', () => {
     );
 
     it.each(databases.eachSupportedId())(
-      'should should not notify subscribers that have already consumed the event, %p',
+      'should not notify subscribers that have already consumed the event, %p',
       async databaseId => {
         const backend = await startTestBackend({
           features: [eventsPlugin(), await mockKnexFactory(databaseId)],
@@ -296,7 +296,7 @@ describe('eventsPlugin', () => {
         await helper.readEvents('tester-1').expect(200, {
           events: [{ topic: 'test', payload: { for: 'tester-1' } }],
         });
-        // Single client for subscriber 1 gets the event
+        // Single client for subscriber 2 gets the event
         await helper.readEvents('tester-2').expect(200, {
           events: [{ topic: 'test', payload: { for: 'tester-2' } }],
         });
@@ -316,7 +316,7 @@ describe('eventsPlugin', () => {
         // 2 subscribers
         await helper.subscribe('tester', ['test']).expect(201);
 
-        // A single event for each subscriber, that should not be sent to the other one
+        // A sequence of events published one at a time
         for (let n = 0; n < 15; ++n) {
           await helper.publish('test', { n }).expect(201);
         }

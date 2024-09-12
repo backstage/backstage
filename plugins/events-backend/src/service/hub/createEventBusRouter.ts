@@ -203,14 +203,14 @@ export async function createEventBusRouter(options: {
 
       // By setting up the listener first we make sure we don't miss any events
       // that are published while reading. If an event is published we'll receive
-      // a notification, which depending on the outcome of the read we may ignore
+      // a notification, which we may ignore depending on the outcome of the read
       const listener = await store.setupListener(id, {
         signal: controller.signal,
       });
 
       // By timing out requests we make sure they don't stall or that events get stuck.
       // For the caller there's no difference between a timeout and a
-      // notifications, either way they should try reading again.
+      // notification, either way they should try reading again.
       const timeout = setTimeout(() => {
         controller.abort();
       }, notifyTimeoutMs);
