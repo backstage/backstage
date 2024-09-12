@@ -62,6 +62,7 @@ export function CursorPaginatedCatalogTable(props: PaginatedCatalogTableProps) {
       /* this will enable the next button accordingly */
       totalCount={next ? Number.MAX_VALUE : Number.MAX_SAFE_INTEGER}
       localization={{ pagination: { labelDisplayedRows: '' } }}
+      isLoading={isLoading}
       {...restProps}
     />
   );
