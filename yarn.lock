@@ -6936,7 +6936,7 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
-    azure-devops-node-api: ^12.0.0
+    azure-devops-node-api: ^14.0.0
     yaml: ^2.0.0
   languageName: unknown
   linkType: soft
@@ -21084,13 +21084,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"azure-devops-node-api@npm:^12.0.0":
-  version: 12.5.0
-  resolution: "azure-devops-node-api@npm:12.5.0"
+"azure-devops-node-api@npm:^14.0.0":
+  version: 14.0.2
+  resolution: "azure-devops-node-api@npm:14.0.2"
   dependencies:
     tunnel: 0.0.6
-    typed-rest-client: ^1.8.4
-  checksum: 7c2c3ae21eaf1bc3627ba4ea87bdac1085a3594eacf40eb6d7b11292f057988db38f718f4597733c6861d854c28bfe146bcf3964a13adddebe1085270bb63097
+    typed-rest-client: ^2.0.1
+  checksum: 26f39c7772d313befd49696fe2a1e91a8ffd75cfeb0c7f305a7102867f1090d299544361663b14e99bbebbf5855d1fc56ead0e4e32ee53bc83b487cdbe30d254
   languageName: node
   linkType: hard
 
@@ -24510,13 +24510,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"des.js@npm:^1.0.0":
-  version: 1.0.1
-  resolution: "des.js@npm:1.0.1"
+"des.js@npm:^1.0.0, des.js@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "des.js@npm:1.1.0"
   dependencies:
     inherits: ^2.0.1
     minimalistic-assert: ^1.0.0
-  checksum: 1ec2eedd7ed6bd61dd5e0519fd4c96124e93bb22de8a9d211b02d63e5dd152824853d919bb2090f965cc0e3eb9c515950a9836b332020d810f9c71feb0fd7df4
+  checksum: 0e9c1584b70d31e20f20a613fc9ef60fbc6a147dfec9e448a168794a4b97ac04d8dc47ea008f1fa93b0f8aaf7c1ead632a5e59ce1913a6079d2d244c9f5ebe33
   languageName: node
   linkType: hard
 
@@ -26467,7 +26467,7 @@ __metadata:
     "@types/express": ^4.17.6
     "@types/express-serve-static-core": ^4.17.5
     "@types/luxon": ^3.0.0
-    azure-devops-node-api: ^12.0.0
+    azure-devops-node-api: ^14.0.0
     better-sqlite3: ^11.0.0
     dockerode: ^4.0.0
     example-app: "link:../app"
@@ -31102,6 +31102,13 @@ __metadata:
   version: 1.1.6
   resolution: "js-levenshtein@npm:1.1.6"
   checksum: 409f052a7f1141be4058d97da7860e08efd97fc588b7a4c5cfa0548bc04f6d576644dae65ab630266dff685d56fb90d494e03d4d79cb484c287746b4f1bf0694
+  languageName: node
+  linkType: hard
+
+"js-md4@npm:^0.3.2":
+  version: 0.3.2
+  resolution: "js-md4@npm:0.3.2"
+  checksum: aa7b7cbd738b105f86fc0fa50ce2a7a6b6b329ff3f713d1bd38b12c2a72929bab5a16e658a03830faa8d656356aa89b4f77f1fbf05ffa8d095bda6d831441c2d
   languageName: node
   linkType: hard
 
@@ -37562,7 +37569,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qs@npm:6.13.0, qs@npm:^6.10.1, qs@npm:^6.10.2, qs@npm:^6.11.0, qs@npm:^6.11.2, qs@npm:^6.12.2, qs@npm:^6.9.1, qs@npm:^6.9.4":
+"qs@npm:6.13.0, qs@npm:^6.10.1, qs@npm:^6.10.2, qs@npm:^6.10.3, qs@npm:^6.11.0, qs@npm:^6.11.2, qs@npm:^6.12.2, qs@npm:^6.9.4":
   version: 6.13.0
   resolution: "qs@npm:6.13.0"
   dependencies:
@@ -42634,14 +42641,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typed-rest-client@npm:^1.8.4":
-  version: 1.8.4
-  resolution: "typed-rest-client@npm:1.8.4"
+"typed-rest-client@npm:^2.0.1":
+  version: 2.0.2
+  resolution: "typed-rest-client@npm:2.0.2"
   dependencies:
-    qs: ^6.9.1
+    des.js: ^1.1.0
+    js-md4: ^0.3.2
+    qs: ^6.10.3
     tunnel: 0.0.6
     underscore: ^1.12.1
-  checksum: 238e2139724310fed39756ae734fbc811e803abaa7598720ad6cc5ab7f160d415d8107551422b186f6b2e08c5761c0e7b66ca47d60b2ccd952bb5e20d3b92f3c
+  checksum: f1d9a0ffd5b7266f01df9ea4eb08b8da04793cf6902d82b3c6a46d1328cdefe80bb0cfc8f96afa645077c234ec218d8b16f642da35c1e2f1adf3d61a5904d8d1
   languageName: node
   linkType: hard
 
