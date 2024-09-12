@@ -98,7 +98,7 @@
     "eslint-formatter-friendly": "^7.0.0",
     "eslint-plugin-deprecation": "^2.0.0",
     "eslint-plugin-import": "^2.25.4",
-    "eslint-plugin-jest": "^27.0.0",
+    "eslint-plugin-jest": "^28.0.0",
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-react": "^7.28.0",
     "eslint-plugin-react-hooks": "^4.3.0",
