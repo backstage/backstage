@@ -23,6 +23,7 @@ import { Entity } from '@backstage/catalog-model';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 // eslint-disable-next-line @backstage/no-undeclared-imports
 import { ServiceMock } from '@backstage/backend-test-utils';
+import { CatalogApi } from '@backstage/catalog-client';
 
 /** @internal */
 function simpleMock<TService>(
@@ -57,7 +58,9 @@ function simpleMock<TService>(
  *
  * @public
  */
-export function catalogServiceMock(options?: { entities?: Entity[] }) {
+export function catalogServiceMock(options?: {
+  entities?: Entity[];
+}): CatalogApi {
   return new InMemoryCatalogClient(options);
 }
 

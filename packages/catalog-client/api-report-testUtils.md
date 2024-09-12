@@ -27,7 +27,9 @@ export class InMemoryCatalogClient implements CatalogApi {
   // (undocumented)
   addLocation(_location: AddLocationRequest): Promise<AddLocationResponse>;
   // (undocumented)
-  getEntities(_request?: GetEntitiesRequest): Promise<GetEntitiesResponse>;
+  getEntities(
+    request?: GetEntitiesRequest | undefined,
+  ): Promise<GetEntitiesResponse>;
   // (undocumented)
   getEntitiesByRefs(
     request: GetEntitiesByRefsRequest,
@@ -42,7 +44,7 @@ export class InMemoryCatalogClient implements CatalogApi {
   ): Promise<Entity | undefined>;
   // (undocumented)
   getEntityFacets(
-    _request: GetEntityFacetsRequest,
+    request: GetEntityFacetsRequest,
   ): Promise<GetEntityFacetsResponse>;
   // (undocumented)
   getLocationByEntity(
@@ -54,7 +56,7 @@ export class InMemoryCatalogClient implements CatalogApi {
   getLocationByRef(_locationRef: string): Promise<Location_2 | undefined>;
   // (undocumented)
   queryEntities(
-    _request?: QueryEntitiesRequest,
+    request?: QueryEntitiesRequest | undefined,
   ): Promise<QueryEntitiesResponse>;
   // (undocumented)
   refreshEntity(_entityRef: string): Promise<void>;

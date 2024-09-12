@@ -43,6 +43,9 @@ describe('InMemoryCatalogClient', () => {
   it('getEntities', async () => {
     const client = new InMemoryCatalogClient({ entities });
     await expect(client.getEntities()).resolves.toEqual({ items: entities });
+    await expect(
+      client.getEntities({ filter: { 'metadata.uid': 'u2' } }),
+    ).resolves.toEqual({ items: [entity2] });
   });
 
   it('getEntitiesByRefs', async () => {
@@ -56,6 +59,16 @@ describe('InMemoryCatalogClient', () => {
         ],
       }),
     ).resolves.toEqual({ items: [entity2, undefined, entity1] });
+    await expect(
+      client.getEntitiesByRefs({
+        entityRefs: [
+          'customkind:default/e2',
+          'customkind:missing/missing',
+          'customkind:default/e1',
+        ],
+        filter: { 'metadata.uid': 'u1' },
+      }),
+    ).resolves.toEqual({ items: [undefined, undefined, entity1] });
   });
 
   it('queryEntities', async () => {
@@ -63,6 +76,13 @@ describe('InMemoryCatalogClient', () => {
     await expect(client.queryEntities()).resolves.toEqual({
       items: entities,
       totalItems: 2,
+      pageInfo: {},
+    });
+    await expect(
+      client.queryEntities({ filter: { 'metadata.uid': 'u2' } }),
+    ).resolves.toEqual({
+      items: [entity2],
+      totalItems: 1,
       pageInfo: {},
     });
   });

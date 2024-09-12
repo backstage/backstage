@@ -46,17 +46,17 @@ function pick(obj: JsonObject, key: string): JsonValue | undefined {
   const parts = key.split('.');
 
   return parts.reduce((acc, part, index) => {
-    if (!acc) {
+    if (acc === undefined) {
       return acc;
     }
     if (typeof acc === 'object' && acc !== null && !Array.isArray(acc)) {
       const value = acc[part];
-      if (value) {
+      if (value !== undefined) {
         return value;
       }
       const rest = parts.slice(index).join('.');
       const restValue = acc[rest];
-      if (restValue) {
+      if (restValue !== undefined) {
         return restValue;
       }
     }
@@ -80,9 +80,8 @@ function createFilter(
   if (!filterOrFilters) {
     return () => true;
   }
-  const filters = Array.isArray(filterOrFilters)
-    ? filterOrFilters
-    : [filterOrFilters];
+
+  const filters = [filterOrFilters].flat();
 
   return entity => {
     return filters.some(filter => {
@@ -133,9 +132,13 @@ export class InMemoryCatalogClient implements CatalogApi {
   ): Promise<GetEntitiesByRefsResponse> {
     const filter = createFilter(request.filter);
     return {
-      items: request.entityRefs
-        .map(ref => this.#entitiesByRef.get(ref))
-        .filter(e => (e ? filter(e) : true)),
+      items: request.entityRefs.map(ref => {
+        const entity = this.#entitiesByRef.get(ref);
+        if (entity && filter(entity)) {
+          return entity;
+        }
+        return undefined;
+      }),
     };
   }
 
@@ -146,11 +149,12 @@ export class InMemoryCatalogClient implements CatalogApi {
       return { items: [], pageInfo: {}, totalItems: 0 };
     }
     const filter = createFilter(request?.filter);
+    const items = this.#entities.filter(filter);
     // TODO(Rugvip): Pagination
     return {
-      items: this.#entities.filter(filter),
+      items,
       pageInfo: {},
-      totalItems: this.#entities.length,
+      totalItems: items.length,
     };
   }
 
