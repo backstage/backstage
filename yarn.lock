@@ -7113,7 +7113,7 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
-    "@octokit/webhooks": ^10.0.0
+    "@octokit/webhooks": ^10.9.2
     "@types/libsodium-wrappers": ^0.7.10
     fs-extra: ^11.2.0
     jsonschema: ^1.2.6
@@ -12477,7 +12477,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/webhooks@npm:^10.0.0":
+"@octokit/webhooks@npm:^10.9.2":
   version: 10.9.2
   resolution: "@octokit/webhooks@npm:10.9.2"
   dependencies:

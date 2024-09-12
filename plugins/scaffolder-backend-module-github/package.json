@@ -48,7 +48,7 @@
     "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
-    "@octokit/webhooks": "^10.0.0",
+    "@octokit/webhooks": "^10.9.2",
     "libsodium-wrappers": "^0.7.11",
     "octokit": "^3.0.0",
     "octokit-plugin-create-pull-request": "^5.0.0",
