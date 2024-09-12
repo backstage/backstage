@@ -299,7 +299,17 @@ export class DatabaseEventBusStore implements EventBusStore {
   }
 
   /** @internal */
-  static async forTest({ db, logger }: { db: Knex; logger: LoggerService }) {
+  static async forTest({
+    db,
+    logger,
+    minAge = 0,
+    maxAge = 10_000,
+  }: {
+    db: Knex;
+    logger: LoggerService;
+    minAge?: number;
+    maxAge?: number;
+  }) {
     await db.migrate.latest({ directory: migrationsDir });
 
     const store = new DatabaseEventBusStore(
@@ -307,8 +317,8 @@ export class DatabaseEventBusStore implements EventBusStore {
       logger,
       new DatabaseEventBusListener(db.client, logger),
       5,
-      0,
-      10,
+      minAge,
+      maxAge,
     );
 
     return Object.assign(store, { clean: () => store.#cleanup() });
@@ -404,15 +414,13 @@ export class DatabaseEventBusStore implements EventBusStore {
   }
 
   async upsertSubscription(id: string, topics: string[]): Promise<void> {
+    const [{ max: maxId }] = await this.#db(TABLE_EVENTS).max('id');
     const result = await this.#db<SubscriptionsRow>(TABLE_SUBSCRIPTIONS)
       .insert({
         id,
         updated_at: this.#db.fn.now(),
         topics,
-        // TODO(Rugvip): Might be that there's a more performant way to do this
-        read_until: this.#db.raw(`( SELECT COALESCE(MAX("id"), 0) FROM ?? )`, [
-          TABLE_EVENTS,
-        ]),
+        read_until: maxId || 0,
       })
       .onConflict('id')
       .merge(['topics', 'updated_at'])
@@ -526,26 +534,21 @@ export class DatabaseEventBusStore implements EventBusStore {
 
   #cleanup = async () => {
     try {
-      const eventCount = await this.#db
+      const eventCount = await this.#db(TABLE_EVENTS)
         .delete()
-        .from(TABLE_EVENTS)
         // Delete any events that are outside both the min age and size window
-        .where('created_at', '<', new Date(Date.now() - this.#windowMinAge))
-        .andWhere(
+        .whereIn(
           'id',
-          '=',
           this.#db
-            .raw(
-              this.#db
-                .select('id')
-                .from(TABLE_EVENTS)
-                .orderBy('id', 'desc')
-                .offset(this.#windowMaxCount),
-            )
-            .wrap('ANY(ARRAY(', '))'),
+            .select('id')
+            .from(TABLE_EVENTS)
+            .orderBy('id', 'desc')
+            .offset(this.#windowMaxCount),
         )
+        .andWhere('created_at', '<', new Date(Date.now() - this.#windowMinAge))
         // If events are outside the max age they will always be deleted
         .orWhere('created_at', '<', new Date(Date.now() - this.#windowMaxAge));
+
       this.#logger.info(
         `Event cleanup resulted in ${eventCount} old events being deleted`,
       );
@@ -555,12 +558,19 @@ export class DatabaseEventBusStore implements EventBusStore {
 
     try {
       // Delete any subscribers that aren't keeping up with current events
-      const subscriberCount = await this.#db
-        .delete()
-        .from(TABLE_SUBSCRIPTIONS)
-        .where('read_until', '<', (q: Knex.QueryBuilder) =>
-          q.select(this.#db.raw('MIN(id)')).from(TABLE_EVENTS),
-        );
+      const [{ min: minId }] = await this.#db(TABLE_EVENTS).min('id');
+
+      let subscriberCount;
+      if (minId === null) {
+        // No events left, remove all subscribers. This can happen if no events
+        // are published within the max age window.
+        subscriberCount = await this.#db(TABLE_SUBSCRIPTIONS).delete();
+      } else {
+        subscriberCount = await this.#db(TABLE_SUBSCRIPTIONS)
+          .delete()
+          // Read pointer points to the ID that has been read, so we need an additional offset
+          .where('read_until', '<', minId - 1);
+      }
 
       this.#logger.info(
         `Subscription cleanup resulted in ${subscriberCount} stale subscribers being deleted`,

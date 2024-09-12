@@ -59,4 +59,69 @@ describe('DatabaseEventBusStore', () => {
       expect(events3.length).toBe(5);
     },
   );
+
+  it.each(databases.eachSupportedId())(
+    'should always clean up events outside the max age window, %p',
+    async databaseId => {
+      const db = await databases.init(databaseId);
+      const store = await DatabaseEventBusStore.forTest({
+        logger,
+        db,
+        maxAge: 0,
+      });
+
+      await store.upsertSubscription('tester-1', ['test']);
+      await store.upsertSubscription('tester-2', ['test']);
+
+      for (let i = 0; i < 10; ++i) {
+        await store.publish({
+          params: { topic: 'test', eventPayload: { n: i } },
+        });
+      }
+
+      const { events: events1 } = await store.readSubscription('tester-1');
+      expect(events1.length).toBe(10);
+
+      await store.clean();
+
+      await expect(store.readSubscription('tester-2')).rejects.toThrow(
+        "Subscription with ID 'tester-2' not found",
+      );
+
+      await store.upsertSubscription('tester-3', ['test']);
+
+      // Reset read pointer to read form the beginning
+      await db('event_bus_subscriptions').select({ id: 'tester-3' }).update({
+        read_until: 0,
+      });
+
+      const { events: events3 } = await store.readSubscription('tester-3');
+      expect(events3.length).toBe(0);
+    },
+  );
+
+  it.each(databases.eachSupportedId())(
+    'should not clean up events within the min age window, %p',
+    async databaseId => {
+      const db = await databases.init(databaseId);
+      const store = await DatabaseEventBusStore.forTest({
+        logger,
+        db,
+        minAge: 1000,
+      });
+
+      await store.upsertSubscription('tester-1', ['test']);
+
+      for (let i = 0; i < 10; ++i) {
+        await store.publish({
+          params: { topic: 'test', eventPayload: { n: i } },
+        });
+      }
+
+      await store.clean();
+
+      const { events: events1 } = await store.readSubscription('tester-1');
+      expect(events1.length).toBe(10);
+    },
+  );
 });
