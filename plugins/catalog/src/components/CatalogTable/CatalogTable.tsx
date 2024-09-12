@@ -61,6 +61,8 @@ export interface CatalogTableProps {
   tableOptions?: TableProps<CatalogTableRow>['options'];
   emptyContent?: ReactNode;
   subtitle?: string;
+  calculateCounterFunction?: Function,
+  buildSubtitleFunction?: Function
 }
 
 const refCompare = (a: Entity, b: Entity) => {
@@ -79,6 +81,8 @@ export const CatalogTable = (props: CatalogTableProps) => {
     columns = defaultCatalogTableColumnsFunc,
     tableOptions,
     subtitle,
+    calculateCounterFunction,
+    buildSubtitleFunction,
     emptyContent,
   } = props;
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
@@ -170,7 +174,14 @@ export const CatalogTable = (props: CatalogTableProps) => {
 
   const currentKind = filters.kind?.value || '';
   const currentType = filters.type?.value || '';
-  const currentCount = typeof totalItems === 'number' ? `(${totalItems})` : '';
+  let currentCount = typeof totalItems === 'number' ? `(${totalItems})` : '';
+  if (calculateCounterFunction) {
+    currentCount = `(${calculateCounterFunction(entities)})`;
+  }
+  let finalSubtitle = subtitle
+  if (buildSubtitleFunction) {
+    finalSubtitle = buildSubtitleFunction(entities)
+  }
   // TODO(timbonicus): remove the title from the CatalogTable once using EntitySearchBar
   const titlePreamble = capitalize(filters.user?.value ?? 'all');
   const title = [
@@ -199,7 +210,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
         isLoading={loading}
         title={title}
         actions={actions}
-        subtitle={subtitle}
+        subtitle={finalSubtitle}
         options={options}
         data={entities.map(toEntityRow)}
         next={pageInfo?.next}
@@ -214,7 +225,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
         isLoading={loading}
         title={title}
         actions={actions}
-        subtitle={subtitle}
+        subtitle={finalSubtitle}
         options={options}
         data={entities.map(toEntityRow)}
       />
@@ -238,7 +249,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
       title={title}
       data={rows}
       actions={actions}
-      subtitle={subtitle}
+      subtitle={finalSubtitle}
       emptyContent={emptyContent}
     />
   );
