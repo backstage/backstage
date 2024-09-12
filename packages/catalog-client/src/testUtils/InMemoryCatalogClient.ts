@@ -35,43 +35,41 @@ import {
 } from '@backstage/catalog-client';
 import {
   CompoundEntityRef,
+  DEFAULT_NAMESPACE,
   Entity,
   parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { NotFoundError, NotImplementedError } from '@backstage/errors';
-import { JsonObject, JsonValue } from '@backstage/types';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { traverse } from '../../../../plugins/catalog-backend/src/database/operations/stitcher/buildEntitySearch';
 
-function pick(obj: JsonObject, key: string): JsonValue | undefined {
-  const parts = key.split('.');
+function buildEntitySearch(entity: Entity) {
+  const rows = traverse(entity);
 
-  return parts.reduce((acc, part, index) => {
-    if (acc === undefined) {
-      return acc;
-    }
-    if (typeof acc === 'object' && acc !== null && !Array.isArray(acc)) {
-      const value = acc[part];
-      if (value !== undefined) {
-        return value;
-      }
-      const rest = parts.slice(index).join('.');
-      const restValue = acc[rest];
-      if (restValue !== undefined) {
-        return restValue;
-      }
-    }
-    return undefined;
-  }, obj as JsonValue | undefined);
-}
+  if (entity.metadata?.name) {
+    rows.push({ key: 'metadata.name', value: entity.metadata.name });
+  }
+  if (entity.metadata?.namespace) {
+    rows.push({ key: 'metadata.namespace', value: entity.metadata.namespace });
+  }
+  if (entity.metadata?.uid) {
+    rows.push({ key: 'metadata.uid', value: entity.metadata.uid });
+  }
 
-function filterCompare(
-  expected: (string | symbol) | (string | symbol)[],
-  value: JsonValue,
-) {
-  const expect = (Array.isArray(expected) ? expected : [expected]).map(e =>
-    e.toString().toLocaleLowerCase('en-US'),
-  );
-  return expect.includes(String(value).toLocaleLowerCase('en-US'));
+  if (!entity.metadata.namespace) {
+    rows.push({ key: 'metadata.namespace', value: DEFAULT_NAMESPACE });
+  }
+
+  // Visit relations
+  for (const relation of entity.relations ?? []) {
+    rows.push({
+      key: `relations.${relation.type}`,
+      value: relation.targetRef,
+    });
+  }
+
+  return rows;
 }
 
 function createFilter(
@@ -84,16 +82,25 @@ function createFilter(
   const filters = [filterOrFilters].flat();
 
   return entity => {
+    const rows = buildEntitySearch(entity);
+
     return filters.some(filter => {
       for (const [key, expectedValue] of Object.entries(filter)) {
-        const entityValue = pick(entity, key);
-        if (entityValue === undefined) {
+        const searchValues = rows
+          .filter(row => row.key === key.toLocaleLowerCase('en-US'))
+          .map(row => row.value?.toString().toLocaleLowerCase('en-US'));
+
+        if (searchValues.length === 0) {
           return false;
         }
         if (expectedValue === CATALOG_FILTER_EXISTS) {
           continue;
         }
-        if (!filterCompare(expectedValue, entityValue)) {
+        if (
+          !searchValues?.includes(
+            String(expectedValue).toLocaleLowerCase('en-US'),
+          )
+        ) {
           return false;
         }
       }
@@ -111,17 +118,13 @@ function createFilter(
  */
 export class InMemoryCatalogClient implements CatalogApi {
   #entities: Entity[];
-  #entitiesByRef: Map<string, Entity>;
 
   constructor(options?: { entities?: Entity[] }) {
     this.#entities = options?.entities?.slice() ?? [];
-    this.#entitiesByRef = new Map(
-      this.#entities.map(e => [stringifyEntityRef(e), e]),
-    );
   }
 
   async getEntities(
-    request?: GetEntitiesRequest | undefined,
+    request?: GetEntitiesRequest,
   ): Promise<GetEntitiesResponse> {
     const filter = createFilter(request?.filter);
     return { items: this.#entities.filter(filter) };
@@ -131,19 +134,16 @@ export class InMemoryCatalogClient implements CatalogApi {
     request: GetEntitiesByRefsRequest,
   ): Promise<GetEntitiesByRefsResponse> {
     const filter = createFilter(request.filter);
+    const refMap = this.#createEntityRefMap();
     return {
-      items: request.entityRefs.map(ref => {
-        const entity = this.#entitiesByRef.get(ref);
-        if (entity && filter(entity)) {
-          return entity;
-        }
-        return undefined;
-      }),
+      items: request.entityRefs
+        .map(ref => refMap.get(ref))
+        .map(e => (e && filter(e) ? e : undefined)),
     };
   }
 
   async queryEntities(
-    request?: QueryEntitiesRequest | undefined,
+    request?: QueryEntitiesRequest,
   ): Promise<QueryEntitiesResponse> {
     if (request && 'cursor' in request) {
       return { items: [], pageInfo: {}, totalItems: 0 };
@@ -161,7 +161,7 @@ export class InMemoryCatalogClient implements CatalogApi {
   async getEntityAncestors(
     request: GetEntityAncestorsRequest,
   ): Promise<GetEntityAncestorsResponse> {
-    const entity = this.#entitiesByRef.get(request.entityRef);
+    const entity = this.#createEntityRefMap().get(request.entityRef);
     if (!entity) {
       throw new NotFoundError(`Entity with ref ${request.entityRef} not found`);
     }
@@ -174,7 +174,7 @@ export class InMemoryCatalogClient implements CatalogApi {
   async getEntityByRef(
     entityRef: string | CompoundEntityRef,
   ): Promise<Entity | undefined> {
-    return this.#entitiesByRef.get(
+    return this.#createEntityRefMap().get(
       stringifyEntityRef(parseEntityRef(entityRef)),
     );
   }
@@ -182,8 +182,6 @@ export class InMemoryCatalogClient implements CatalogApi {
   async removeEntityByUid(uid: string): Promise<void> {
     const index = this.#entities.findIndex(e => e.metadata.uid === uid);
     if (index !== -1) {
-      const entity = this.#entities[index];
-      this.#entitiesByRef.delete(stringifyEntityRef(entity));
       this.#entities.splice(index, 1);
     }
   }
@@ -199,7 +197,10 @@ export class InMemoryCatalogClient implements CatalogApi {
       request.facets.map(facet => {
         const facetValues = new Map<string, number>();
         for (const entity of filteredEntities) {
-          const value = pick(entity, facet);
+          const rows = buildEntitySearch(entity);
+          const value = rows.find(
+            row => row.key === facet.toLocaleLowerCase('en-US'),
+          )?.value;
           if (value) {
             facetValues.set(
               String(value),
@@ -247,5 +248,9 @@ export class InMemoryCatalogClient implements CatalogApi {
     _locationRef: string,
   ): Promise<ValidateEntityResponse> {
     throw new NotImplementedError('Method not implemented.');
+  }
+
+  #createEntityRefMap() {
+    return new Map(this.#entities.map(e => [stringifyEntityRef(e), e]));
   }
 }
