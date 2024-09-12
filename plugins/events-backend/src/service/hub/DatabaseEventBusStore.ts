@@ -298,6 +298,22 @@ export class DatabaseEventBusStore implements EventBusStore {
     return store;
   }
 
+  /** @internal */
+  static async forTest({ db, logger }: { db: Knex; logger: LoggerService }) {
+    await db.migrate.latest({ directory: migrationsDir });
+
+    const store = new DatabaseEventBusStore(
+      db,
+      logger,
+      new DatabaseEventBusListener(db.client, logger),
+      5,
+      0,
+      10,
+    );
+
+    return Object.assign(store, { clean: () => store.#cleanup() });
+  }
+
   readonly #db: Knex;
   readonly #logger: LoggerService;
   readonly #listener: DatabaseEventBusListener;
