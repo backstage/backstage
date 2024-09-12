@@ -5,14 +5,13 @@
 ```ts
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
-import { InMemoryCatalogClient } from '@backstage/catalog-client/testUtils';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceMock } from '@backstage/backend-test-utils';
 
 // @public
 export function catalogServiceMock(options?: {
   entities?: Entity[];
-}): InMemoryCatalogClient;
+}): CatalogApi;
 
 // @public
 export namespace catalogServiceMock {
