@@ -26,7 +26,7 @@ import {
 import { ForwardedError, NotFoundError } from '@backstage/errors';
 import { HumanDuration, durationToMilliseconds } from '@backstage/types';
 
-const WINDOW_SIZE_DEFAULT = 10_000;
+const WINDOW_MAX_COUNT_DEFAULT = 10_000;
 const WINDOW_MIN_AGE_DEFAULT = { minutes: 10 };
 const WINDOW_MAX_AGE_DEFAULT = { days: 1 };
 
@@ -254,7 +254,7 @@ export class DatabaseEventBusStore implements EventBusStore {
       /** Events outside of this age will always be deleted */
       maxAge?: HumanDuration;
       /** Events outside of this count will be deleted if they are outside the minAge window */
-      size?: number;
+      maxCount?: number;
     };
   }): Promise<DatabaseEventBusStore> {
     const db = await options.database.getClient();
@@ -278,12 +278,12 @@ export class DatabaseEventBusStore implements EventBusStore {
       db,
       options.logger,
       listener,
-      options.window?.size ?? WINDOW_SIZE_DEFAULT,
+      options.window?.maxCount ?? WINDOW_MAX_COUNT_DEFAULT,
       durationToMilliseconds(options.window?.minAge ?? WINDOW_MIN_AGE_DEFAULT),
       durationToMilliseconds(options.window?.maxAge ?? WINDOW_MAX_AGE_DEFAULT),
     );
 
-    options.scheduler.scheduleTask({
+    await options.scheduler.scheduleTask({
       id: 'event-bus-cleanup',
       frequency: { seconds: 10 },
       timeout: { minutes: 1 },
@@ -301,7 +301,7 @@ export class DatabaseEventBusStore implements EventBusStore {
   readonly #db: Knex;
   readonly #logger: LoggerService;
   readonly #listener: DatabaseEventBusListener;
-  readonly #windowSize: number;
+  readonly #windowMaxCount: number;
   readonly #windowMinAge: number;
   readonly #windowMaxAge: number;
 
@@ -309,14 +309,14 @@ export class DatabaseEventBusStore implements EventBusStore {
     db: Knex,
     logger: LoggerService,
     listener: DatabaseEventBusListener,
-    windowSize: number,
+    windowMaxCount: number,
     windowMinAge: number,
     windowMaxAge: number,
   ) {
     this.#db = db;
     this.#logger = logger;
     this.#listener = listener;
-    this.#windowSize = windowSize;
+    this.#windowMaxCount = windowMaxCount;
     this.#windowMinAge = windowMinAge;
     this.#windowMaxAge = windowMaxAge;
   }
@@ -393,9 +393,10 @@ export class DatabaseEventBusStore implements EventBusStore {
         id,
         updated_at: this.#db.fn.now(),
         topics,
-        read_until: this.#db.raw(
-          `( SELECT COALESCE(MAX("id"), 0) FROM "${TABLE_EVENTS}" )`,
-        ),
+        // TODO(Rugvip): Might be that there's a more performant way to do this
+        read_until: this.#db.raw(`( SELECT COALESCE(MAX("id"), 0) FROM ?? )`, [
+          TABLE_EVENTS,
+        ]),
       })
       .onConflict('id')
       .merge(['topics', 'updated_at'])
@@ -523,7 +524,7 @@ export class DatabaseEventBusStore implements EventBusStore {
                 .select('id')
                 .from(TABLE_EVENTS)
                 .orderBy('id', 'desc')
-                .offset(this.#windowSize),
+                .offset(this.#windowMaxCount),
             )
             .wrap('ANY(ARRAY(', '))'),
         )

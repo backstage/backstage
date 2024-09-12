@@ -114,6 +114,23 @@ cause unnecessary storage of events.
 
 */
 
+async function createEventBusStore(deps: {
+  logger: LoggerService;
+  database: DatabaseService;
+  scheduler: SchedulerService;
+  lifecycle: LifecycleService;
+  httpAuth: HttpAuthService;
+}): Promise<EventBusStore> {
+  const db = await deps.database.getClient();
+  if (db.client.config.client === 'pg') {
+    deps.logger.info('Database is PostgreSQL, using database store');
+    return await DatabaseEventBusStore.create(deps);
+  }
+
+  deps.logger.info('Database is not PostgreSQL, using memory store');
+  return new MemoryEventBusStore();
+}
+
 /**
  * Creates a new event bus router
  * @internal
@@ -126,30 +143,11 @@ export async function createEventBusRouter(options: {
   httpAuth: HttpAuthService;
   notifyTimeoutMs?: number; // for testing
 }): Promise<Handler> {
-  const {
-    database,
-    httpAuth,
-    scheduler,
-    lifecycle,
-    notifyTimeoutMs = DEFAULT_NOTIFY_TIMEOUT_MS,
-  } = options;
+  const { httpAuth, notifyTimeoutMs = DEFAULT_NOTIFY_TIMEOUT_MS } = options;
   const logger = options.logger.child({ type: 'EventBus' });
   const router = Router();
 
-  let store: EventBusStore;
-  const db = await database.getClient();
-  if (db.client.config.client === 'pg') {
-    logger.info('Database is PostgreSQL, using database store');
-    store = await DatabaseEventBusStore.create({
-      database,
-      logger,
-      scheduler,
-      lifecycle,
-    });
-  } else {
-    logger.info('Database is not PostgreSQL, using memory store');
-    store = new MemoryEventBusStore();
-  }
+  const store = await createEventBusStore(options);
 
   const apiRouter = await createOpenApiRouter();
 

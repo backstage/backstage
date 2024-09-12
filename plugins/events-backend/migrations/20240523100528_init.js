@@ -82,6 +82,7 @@ exports.up = async function up(knex) {
  */
 exports.down = async function down(knex) {
   if (knex.client.config.client === 'pg') {
-    await knex.schema.dropTable('events');
+    await knex.schema.dropTable('event_bus_subscriptions');
+    await knex.schema.dropTable('event_bus_events');
   }
 };

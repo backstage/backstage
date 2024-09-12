@@ -150,7 +150,7 @@ describe('eventsPlugin', () => {
       'should be possible to publish events as a service, %p',
       async databaseId => {
         const backend = await startTestBackend({
-          features: [eventsPlugin(), await mockKnexFactory(databaseId)],
+          features: [eventsPlugin, await mockKnexFactory(databaseId)],
         });
         const helper = new ReqHelper(backend);
 
@@ -177,7 +177,7 @@ describe('eventsPlugin', () => {
       'should be possible to subscribe as a service and receive an event, %p',
       async databaseId => {
         const backend = await startTestBackend({
-          features: [eventsPlugin(), await mockKnexFactory(databaseId)],
+          features: [eventsPlugin, await mockKnexFactory(databaseId)],
         });
         const helper = new ReqHelper(backend);
 
@@ -217,7 +217,7 @@ describe('eventsPlugin', () => {
       'should only send an event for each subscriber once, %p',
       async databaseId => {
         const backend = await startTestBackend({
-          features: [eventsPlugin(), await mockKnexFactory(databaseId)],
+          features: [eventsPlugin, await mockKnexFactory(databaseId)],
         });
         const helper = new ReqHelper(backend);
 
@@ -264,7 +264,7 @@ describe('eventsPlugin', () => {
       'should not notify subscribers that have already consumed the event, %p',
       async databaseId => {
         const backend = await startTestBackend({
-          features: [eventsPlugin(), await mockKnexFactory(databaseId)],
+          features: [eventsPlugin, await mockKnexFactory(databaseId)],
         });
         const helper = new ReqHelper(backend);
 
@@ -309,7 +309,7 @@ describe('eventsPlugin', () => {
       'should return multiple events in order, %p',
       async databaseId => {
         const backend = await startTestBackend({
-          features: [eventsPlugin(), await mockKnexFactory(databaseId)],
+          features: [eventsPlugin, await mockKnexFactory(databaseId)],
         });
         const helper = new ReqHelper(backend);
 
@@ -355,7 +355,7 @@ describe('eventsPlugin', () => {
       'should skip publishing if all subscribers have already consumed the event, %p',
       async databaseId => {
         const backend = await startTestBackend({
-          features: [eventsPlugin(), await mockKnexFactory(databaseId)],
+          features: [eventsPlugin, await mockKnexFactory(databaseId)],
         });
         const helper = new ReqHelper(backend);
 
@@ -373,7 +373,7 @@ describe('eventsPlugin', () => {
       'should time out when no events are available, %p',
       async databaseId => {
         const backend = await startTestBackend({
-          features: [eventsPlugin(), await mockKnexFactory(databaseId)],
+          features: [eventsPlugin, await mockKnexFactory(databaseId)],
         });
         const helper = new ReqHelper(backend);
         await helper.subscribe('tester', ['test']).expect(201);
@@ -423,7 +423,7 @@ describe('eventsPlugin', () => {
       'should refuse listen without a subscription, %p',
       async databaseId => {
         const backend = await startTestBackend({
-          features: [eventsPlugin(), await mockKnexFactory(databaseId)],
+          features: [eventsPlugin, await mockKnexFactory(databaseId)],
         });
         const helper = new ReqHelper(backend);
 
