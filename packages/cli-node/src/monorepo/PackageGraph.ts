@@ -69,18 +69,6 @@ export const isValidPackageFeatureType = (
 export type BackstagePackageFeatureType = (typeof packageFeatureTypes)[number];
 
 /**
- * Metadata relating to an exported Backstage system component
- *
- * @public
- */
-export type BackstagePackageFeature = {
-  // The export path, if omitted then it is the default package export
-  path?: string;
-  // The type of the export
-  type: BackstagePackageFeatureType;
-};
-
-/**
  * Known fields in Backstage package.json files.
  *
  * @public
@@ -128,11 +116,6 @@ export interface BackstagePackageJson {
      * All packages that are part of the plugin. Must always and only be set for plugin packages and plugin library packages.
      */
     pluginPackages?: string[];
-
-    /**
-     * The Backstage system components exported from this package
-     */
-    features?: BackstagePackageFeature[];
   };
 
   exports?: JsonValue;

@@ -22,7 +22,6 @@ export {
   type PackageGraphNode,
   type BackstagePackage,
   type BackstagePackageJson,
-  type BackstagePackageFeature,
   type BackstagePackageFeatureType,
 } from './PackageGraph';
 export {

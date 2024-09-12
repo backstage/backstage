@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { findPaths } from '@backstage/cli-common';
 import {
   BackstagePackage,
   BackstagePackageJson,
@@ -24,13 +23,9 @@ import {
 } from '@backstage/cli-node';
 import { OptionValues } from 'commander';
 import fs from 'fs-extra';
-import isEqual from 'lodash/isEqual';
 import { resolve as resolvePath, posix, relative as relativePath } from 'path';
-import { Project } from 'ts-morph';
 import { paths } from '../../lib/paths';
 import { publishPreflightCheck } from '../../lib/publishing';
-import { getFeaturesMetadata } from '../../lib/features';
-import { readEntryPoints } from '../../lib/entryPoints';
 
 /**
  * A mutable object representing a package.json file with potential fixes.
@@ -431,46 +426,7 @@ export function fixPluginPackages(
   }
 }
 
-// For each of the defined export locations, we want to annotate
-// the backstage field with the exported system components. The
-// "exports" field in package.json is a mapping of import paths to file paths.
-//
-// While the exports field is really flexible, this function will enforce a
-// particular structure, which is a Record<string, string> where the key is the
-// import path and the value is the file path.
-export function fixPluginFeatures(
-  pkg: FixablePackage,
-  _packages: FixablePackage[],
-  project: Project,
-) {
-  const { dir, packageJson } = pkg;
-
-  if (
-    !packageJson.backstage ||
-    !packageJson.backstage.role ||
-    !packageJson.exports
-  ) {
-    return;
-  }
-
-  const entryPoints = readEntryPoints(packageJson);
-  const { role } = packageJson.backstage;
-  const featuresMetadata = getFeaturesMetadata(project, role, dir, entryPoints);
-
-  if (
-    featuresMetadata.length &&
-    !isEqual(packageJson.backstage.features, featuresMetadata)
-  ) {
-    packageJson.backstage.features = featuresMetadata;
-    pkg.changed = true;
-  }
-}
-
-type PackageFixer = (
-  pkg: FixablePackage,
-  packages: FixablePackage[],
-  project: Project,
-) => void;
+type PackageFixer = (pkg: FixablePackage, packages: FixablePackage[]) => void;
 
 export async function command(opts: OptionValues): Promise<void> {
   const packages = await readFixablePackages();
@@ -484,20 +440,14 @@ export async function command(opts: OptionValues): Promise<void> {
       fixRepositoryField,
       fixPluginId,
       fixPluginPackages,
-      fixPluginFeatures,
       // Run the publish preflight check too, to make sure we don't uncover errors during publishing
       publishPreflightCheck,
     );
   }
 
-  const workspaceRoot = findPaths(process.cwd()).targetRoot;
-  const project = new Project({
-    tsConfigFilePath: resolvePath(workspaceRoot, 'tsconfig.json'),
-  });
-
   for (const fixer of fixers) {
     for (const pkg of packages) {
-      fixer(pkg, packages, project);
+      fixer(pkg, packages);
     }
   }
 
