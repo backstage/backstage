@@ -69,6 +69,41 @@ describe('resolveRouteBindings', () => {
     expect(result.get(mySource)).toBe(myTarget);
   });
 
+  it('prioritizes callback routes over config', () => {
+    const mySource = createExternalRouteRef();
+    const myTarget = createRouteRef();
+
+    expect(
+      resolveRouteBindings(
+        ({ bind }) => {
+          bind({ mySource }, { mySource: false });
+        },
+        new ConfigReader({
+          app: { routes: { bindings: { mySource: 'myTarget' } } },
+        }),
+        {
+          routes: new Map([['myTarget', myTarget]]),
+          externalRoutes: new Map([['mySource', mySource]]),
+        },
+      ).get(mySource),
+    ).toBe(undefined);
+
+    expect(
+      resolveRouteBindings(
+        ({ bind }) => {
+          bind({ mySource }, { mySource: myTarget });
+        },
+        new ConfigReader({
+          app: { routes: { bindings: { mySource: false } } },
+        }),
+        {
+          routes: new Map([['myTarget', myTarget]]),
+          externalRoutes: new Map([['mySource', mySource]]),
+        },
+      ).get(mySource),
+    ).toBe(myTarget);
+  });
+
   it('throws on invalid config', () => {
     expect(() =>
       resolveRouteBindings(

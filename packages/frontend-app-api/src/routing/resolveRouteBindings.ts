@@ -55,7 +55,7 @@ type TargetRouteMap<
   [name in keyof ExternalRoutes]: ExternalRoutes[name] extends ExternalRouteRef<
     infer Params
   >
-    ? RouteRef<Params> | SubRouteRef<Params>
+    ? RouteRef<Params> | SubRouteRef<Params> | false
     : never;
 };
 
@@ -82,6 +82,7 @@ export function resolveRouteBindings(
   routesById: RouteRefsById,
 ): Map<ExternalRouteRef, RouteRef | SubRouteRef> {
   const result = new Map<ExternalRouteRef, RouteRef | SubRouteRef>();
+  const disabledExternalRefs = new Set<ExternalRouteRef>();
 
   // Perform callback bindings first with highest priority
   if (bindRoutes) {
@@ -96,6 +97,8 @@ export function resolveRouteBindings(
         }
         if (value) {
           result.set(externalRoute, value);
+        } else if (value === false) {
+          disabledExternalRefs.add(externalRoute);
         }
       }
     };
@@ -106,7 +109,6 @@ export function resolveRouteBindings(
   const bindings = config
     .getOptionalConfig('app.routes.bindings')
     ?.get<JsonObject>();
-  const disabledExternalRefs = new Set<ExternalRouteRef>();
   if (bindings) {
     for (const [externalRefId, targetRefId] of Object.entries(bindings)) {
       if (!isValidTargetRefId(targetRefId)) {
@@ -122,11 +124,14 @@ export function resolveRouteBindings(
         );
       }
 
+      // Skip if binding was already defined in code
+      if (result.has(externalRef) || disabledExternalRefs.has(externalRef)) {
+        continue;
+      }
+
       if (targetRefId === false) {
         disabledExternalRefs.add(externalRef);
-
-        result.delete(externalRef);
-      } else if (!result.has(externalRef)) {
+      } else {
         const targetRef = routesById.routes.get(targetRefId);
         if (!targetRef) {
           throw new Error(
