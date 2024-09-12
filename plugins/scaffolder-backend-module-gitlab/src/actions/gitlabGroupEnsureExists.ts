@@ -17,10 +17,9 @@
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { GroupSchema } from '@gitbeaker/core/dist/types/resources/Groups';
-import { Gitlab } from '@gitbeaker/node';
 import { z } from 'zod';
 import commonGitlabConfig from '../commonGitlabConfig';
-import { getToken } from '../util';
+import { getClient } from '../util';
 import { examples } from './gitlabGroupEnsureExists.examples';
 
 /**
@@ -60,13 +59,8 @@ export const createGitlabGroupEnsureExistsAction = (options: {
         return;
       }
 
-      const { path } = ctx.input;
-      const { token, integrationConfig } = getToken(ctx.input, integrations);
-
-      const api = new Gitlab({
-        host: integrationConfig.config.baseUrl,
-        token: token,
-      });
+      const { token, repoUrl, path } = ctx.input;
+      const api = getClient({ host: repoUrl, token, integrations });
 
       let currentPath: string | null = null;
       let parent: GroupSchema | null = null;
@@ -82,15 +76,15 @@ export const createGitlabGroupEnsureExistsAction = (options: {
         );
         if (!subGroup) {
           ctx.logger.info(`creating missing group ${fullPath}`);
-          parent = await api.Groups.create(
+          parent = (await api.Groups.create(
             pathElement,
             pathElement,
             parent
               ? {
-                  parent_id: parent.id,
+                  parentId: parent.id,
                 }
               : {},
-          );
+          )) as GroupSchema;
         } else {
           parent = subGroup;
         }

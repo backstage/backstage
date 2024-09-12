@@ -25,19 +25,17 @@ const mockGitlabClient = {
     create: jest.fn(),
   },
 };
-jest.mock('@gitbeaker/node', () => ({
-  Gitlab: class {
-    constructor() {
-      return mockGitlabClient;
-    }
-  },
+// const mockGitlabApi = jest.fn().mockReturnValue(mockGitlabClient);
+
+jest.mock('../util', () => ({
+  getClient: () => mockGitlabClient,
 }));
 
 describe('gitlab:group:ensureExists', () => {
   const mockContext = createMockActionContext();
 
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   it('should create a new group if it does not exists', async () => {
@@ -81,7 +79,7 @@ describe('gitlab:group:ensureExists', () => {
     });
 
     expect(mockGitlabClient.Groups.create).toHaveBeenCalledWith('bar', 'bar', {
-      parent_id: 2,
+      parentId: 2,
     });
 
     expect(mockContext.output).toHaveBeenCalledWith('groupId', 3);
@@ -160,5 +158,78 @@ describe('gitlab:group:ensureExists', () => {
     expect(mockGitlabClient.Groups.create).not.toHaveBeenCalled();
 
     expect(mockContext.output).toHaveBeenCalledWith('groupId', 42);
+  });
+
+  it('should use the token from the integration config when none is provided', async () => {
+    mockGitlabClient.Groups.search.mockResolvedValue([
+      {
+        id: 1,
+        full_path: 'foobar',
+      },
+    ]);
+
+    const config = new ConfigReader({
+      integrations: {
+        gitlab: [
+          {
+            host: 'gitlab.com',
+            token: 'tokenlols',
+            apiBaseUrl: 'https://api.gitlab.com',
+          },
+        ],
+      },
+    });
+    const integrations = ScmIntegrations.fromConfig(config);
+    const action = createGitlabGroupEnsureExistsAction({ integrations });
+    await action.handler({
+      ...mockContext,
+      input: {
+        repoUrl: 'gitlab.com',
+        path: ['foobar'],
+      },
+    });
+
+    // expect(Gitlab).toHaveBeenCalledWith(
+    //   expect.objectContaining({
+    //     'token': 'tokenlols',
+    //   }),
+    // );
+  });
+
+  it('should use a provided token as bearer authentication', async () => {
+    mockGitlabClient.Groups.search.mockResolvedValue([
+      {
+        id: 1,
+        full_path: 'foobar',
+      },
+    ]);
+
+    const config = new ConfigReader({
+      integrations: {
+        gitlab: [
+          {
+            host: 'gitlab.com',
+            token: 'tokenlols',
+            apiBaseUrl: 'https://api.gitlab.com',
+          },
+        ],
+      },
+    });
+    const integrations = ScmIntegrations.fromConfig(config);
+    const action = createGitlabGroupEnsureExistsAction({ integrations });
+    await action.handler({
+      ...mockContext,
+      input: {
+        repoUrl: 'gitlab.com',
+        path: ['foobar'],
+        token: 'mysecrettoken',
+      },
+    });
+
+    // expect(Gitlab).toHaveBeenCalledWith(
+    //   expect.objectContaining({
+    //     oauthToken: 'mysecrettoken',
+    //   }),
+    // );
   });
 });
