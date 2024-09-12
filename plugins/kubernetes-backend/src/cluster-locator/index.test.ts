@@ -15,7 +15,11 @@
  */
 
 import { Config, ConfigReader } from '@backstage/config';
-import { ANNOTATION_KUBERNETES_AUTH_PROVIDER } from '@backstage/plugin-kubernetes-common';
+import {
+  ANNOTATION_KUBERNETES_API_SERVER,
+  ANNOTATION_KUBERNETES_API_SERVER_CA,
+  ANNOTATION_KUBERNETES_AUTH_PROVIDER,
+} from '@backstage/plugin-kubernetes-common';
 import { getCombinedClusterSupplier } from './index';
 import { ClusterDetails } from '../types/types';
 import { AuthenticationStrategy, DispatchStrategy } from '../auth';
@@ -146,7 +150,22 @@ describe('getCombinedClusterSupplier', () => {
     const clusterSupplier = getCombinedClusterSupplier(
       config,
       catalogServiceMock({
-        entities: [{ metadata: { annotations: {}, name: 'cluster' } } as any],
+        entities: [
+          {
+            kind: 'Resource',
+            metadata: {
+              name: 'cluster',
+              annotations: {
+                [ANNOTATION_KUBERNETES_API_SERVER]: 'mock',
+                [ANNOTATION_KUBERNETES_API_SERVER_CA]: 'mock',
+                [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'mock',
+              },
+            },
+            spec: {
+              type: 'kubernetes-cluster',
+            },
+          } as any,
+        ],
       }),
       mockStrategy,
       logger,

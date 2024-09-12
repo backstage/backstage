@@ -45,6 +45,9 @@ const entities: Entity[] = [
       title: 'title',
       namespace: 'default',
     },
+    spec: {
+      type: 'kubernetes-cluster',
+    },
   },
   {
     apiVersion: 'backstage.io/v1alpha1',
@@ -62,6 +65,9 @@ const entities: Entity[] = [
       },
       name: 'owned',
       namespace: 'default',
+    },
+    spec: {
+      type: 'kubernetes-cluster',
     },
   },
 ];
