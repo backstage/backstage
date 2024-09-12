@@ -305,7 +305,7 @@ function createApiHolder(options: {
 }): ApiHolder {
   const factoryRegistry = new ApiFactoryRegistry();
 
-  for (const factory of options.factories) {
+  for (const factory of options.factories.slice().reverse()) {
     factoryRegistry.register('default', factory);
   }
 
