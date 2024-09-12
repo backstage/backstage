@@ -95,7 +95,7 @@ export class LdapClient {
     tls?: TLSConfig,
   ): Promise<LdapClient>;
   getRootDSE(): Promise<SearchEntry | undefined>;
-  getVendor(vendorConfig: VendorConfig | undefined): Promise<LdapVendor>;
+  getVendor(): Promise<LdapVendor>;
   search(dn: string, options: SearchOptions): Promise<SearchEntry[]>;
   searchStreaming(
     dn: string,
