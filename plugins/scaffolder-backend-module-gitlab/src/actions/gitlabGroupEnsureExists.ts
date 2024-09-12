@@ -19,7 +19,7 @@ import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { GroupSchema } from '@gitbeaker/core/dist/types/resources/Groups';
 import { z } from 'zod';
 import commonGitlabConfig from '../commonGitlabConfig';
-import { getClient } from '../util';
+import { getClient, parseRepoUrl } from '../util';
 import { examples } from './gitlabGroupEnsureExists.examples';
 
 /**
@@ -60,7 +60,10 @@ export const createGitlabGroupEnsureExistsAction = (options: {
       }
 
       const { token, repoUrl, path } = ctx.input;
-      const api = getClient({ host: repoUrl, token, integrations });
+
+      const { host } = parseRepoUrl(repoUrl, integrations);
+
+      const api = getClient({ host, integrations, token });
 
       let currentPath: string | null = null;
       let parent: GroupSchema | null = null;

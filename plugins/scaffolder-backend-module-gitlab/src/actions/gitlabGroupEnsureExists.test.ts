@@ -25,18 +25,36 @@ const mockGitlabClient = {
     create: jest.fn(),
   },
 };
-// const mockGitlabApi = jest.fn().mockReturnValue(mockGitlabClient);
 
-jest.mock('../util', () => ({
-  getClient: () => mockGitlabClient,
+jest.mock('@gitbeaker/rest', () => ({
+  Gitlab: class {
+    constructor() {
+      return mockGitlabClient;
+    }
+  },
 }));
 
 describe('gitlab:group:ensureExists', () => {
-  const mockContext = createMockActionContext();
-
-  afterEach(() => {
+  beforeEach(() => {
     jest.clearAllMocks();
   });
+
+  const config = new ConfigReader({
+    integrations: {
+      gitlab: [
+        {
+          host: 'gitlab.com',
+          token: 'tokenlols',
+          apiBaseUrl: 'https://gitlab.com/api/v4',
+        },
+      ],
+    },
+  });
+  const integrations = ScmIntegrations.fromConfig(config);
+
+  const action = createGitlabGroupEnsureExistsAction({ integrations });
+
+  const mockContext = createMockActionContext();
 
   it('should create a new group if it does not exists', async () => {
     mockGitlabClient.Groups.search.mockResolvedValue([
@@ -55,25 +73,10 @@ describe('gitlab:group:ensureExists', () => {
       full_path: 'foo/bar',
     });
 
-    const config = new ConfigReader({
-      integrations: {
-        gitlab: [
-          {
-            host: 'gitlab.com',
-            token: 'tokenlols',
-            apiBaseUrl: 'https://api.gitlab.com',
-          },
-        ],
-      },
-    });
-    const integrations = ScmIntegrations.fromConfig(config);
-
-    const action = createGitlabGroupEnsureExistsAction({ integrations });
-
     await action.handler({
       ...mockContext,
       input: {
-        repoUrl: 'gitlab.com',
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
         path: ['foo', 'bar'],
       },
     });
@@ -101,25 +104,10 @@ describe('gitlab:group:ensureExists', () => {
       },
     ]);
 
-    const config = new ConfigReader({
-      integrations: {
-        gitlab: [
-          {
-            host: 'gitlab.com',
-            token: 'tokenlols',
-            apiBaseUrl: 'https://api.gitlab.com',
-          },
-        ],
-      },
-    });
-    const integrations = ScmIntegrations.fromConfig(config);
-
-    const action = createGitlabGroupEnsureExistsAction({ integrations });
-
     await action.handler({
       ...mockContext,
       input: {
-        repoUrl: 'gitlab.com',
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
         path: ['foo', 'bar'],
       },
     });
@@ -130,26 +118,11 @@ describe('gitlab:group:ensureExists', () => {
   });
 
   it('should not call API on dryRun', async () => {
-    const config = new ConfigReader({
-      integrations: {
-        gitlab: [
-          {
-            host: 'gitlab.com',
-            token: 'tokenlols',
-            apiBaseUrl: 'https://api.gitlab.com',
-          },
-        ],
-      },
-    });
-    const integrations = ScmIntegrations.fromConfig(config);
-
-    const action = createGitlabGroupEnsureExistsAction({ integrations });
-
     await action.handler({
       ...mockContext,
       isDryRun: true,
       input: {
-        repoUrl: 'gitlab.com',
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
         path: ['foo', 'bar'],
       },
     });
@@ -168,23 +141,10 @@ describe('gitlab:group:ensureExists', () => {
       },
     ]);
 
-    const config = new ConfigReader({
-      integrations: {
-        gitlab: [
-          {
-            host: 'gitlab.com',
-            token: 'tokenlols',
-            apiBaseUrl: 'https://api.gitlab.com',
-          },
-        ],
-      },
-    });
-    const integrations = ScmIntegrations.fromConfig(config);
-    const action = createGitlabGroupEnsureExistsAction({ integrations });
     await action.handler({
       ...mockContext,
       input: {
-        repoUrl: 'gitlab.com',
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
         path: ['foobar'],
       },
     });
@@ -204,23 +164,10 @@ describe('gitlab:group:ensureExists', () => {
       },
     ]);
 
-    const config = new ConfigReader({
-      integrations: {
-        gitlab: [
-          {
-            host: 'gitlab.com',
-            token: 'tokenlols',
-            apiBaseUrl: 'https://api.gitlab.com',
-          },
-        ],
-      },
-    });
-    const integrations = ScmIntegrations.fromConfig(config);
-    const action = createGitlabGroupEnsureExistsAction({ integrations });
     await action.handler({
       ...mockContext,
       input: {
-        repoUrl: 'gitlab.com',
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
         path: ['foobar'],
         token: 'mysecrettoken',
       },
