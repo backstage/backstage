@@ -3978,7 +3978,7 @@ __metadata:
     eslint-plugin-jsx-a11y: ^6.5.1
     eslint-plugin-react: ^7.28.0
     eslint-plugin-react-hooks: ^4.3.0
-    eslint-plugin-unused-imports: ^3.0.0
+    eslint-plugin-unused-imports: ^4.0.0
     eslint-webpack-plugin: ^4.0.0
     express: ^4.17.1
     fork-ts-checker-webpack-plugin: ^9.0.0
@@ -26054,25 +26054,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-unused-imports@npm:^3.0.0":
-  version: 3.2.0
-  resolution: "eslint-plugin-unused-imports@npm:3.2.0"
-  dependencies:
-    eslint-rule-composer: ^0.3.0
+"eslint-plugin-unused-imports@npm:^4.0.0":
+  version: 4.1.3
+  resolution: "eslint-plugin-unused-imports@npm:4.1.3"
   peerDependencies:
-    "@typescript-eslint/eslint-plugin": 6 - 7
-    eslint: 8
+    "@typescript-eslint/eslint-plugin": ^8.0.0-0 || ^7.0.0 || ^6.0.0 || ^5.0.0
+    eslint: ^9.0.0 || ^8.0.0
   peerDependenciesMeta:
     "@typescript-eslint/eslint-plugin":
       optional: true
-  checksum: e85ae4f3af489294ef5e0969ab904fa87f9fa7c959ca0804f30845438db4aeb0428ddad7ab06a70608e93121626799977241b442fdf126a4d0667be57390c3d6
-  languageName: node
-  linkType: hard
-
-"eslint-rule-composer@npm:^0.3.0":
-  version: 0.3.0
-  resolution: "eslint-rule-composer@npm:0.3.0"
-  checksum: c2f57cded8d1c8f82483e0ce28861214347e24fd79fd4144667974cd334d718f4ba05080aaef2399e3bbe36f7d6632865110227e6b176ed6daa2d676df9281b1
+  checksum: 3a2d51e84db5b55af3ec8540fa48943c218f32496bcec9f390edb49322999069c1aac09ec7e43fd5aa05ec0156484d4684ebb85cc8ab07e94ccba38079689ee0
   languageName: node
   linkType: hard
 
