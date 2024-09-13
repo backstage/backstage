@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { WinstonLogger } from '@backstage/backend-app-api';
+import { WinstonLogger } from '@backstage/backend-defaults/rootLogger';
 import { createBackend } from '@backstage/backend-defaults';
 import {
   coreServices,
