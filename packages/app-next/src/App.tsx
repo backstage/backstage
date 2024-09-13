@@ -83,7 +83,7 @@ TODO:
 /* app.tsx */
 
 /**
- * TechDocs does support the new frontend systme so this conversion is not
+ * TechDocs does support the new frontend system so this conversion is not
  * strictly necessary, but it's left here to provide a demo of the utilities for
  * converting legacy plugins.
  */
