@@ -36,6 +36,7 @@ export const EntityOwnershipCard: (props: {
   relationsType?: EntityRelationAggregation | undefined;
   relationAggregation?: EntityRelationAggregation | undefined;
   entityLimit?: number | undefined;
+  title?: string | undefined;
 }) => JSX_2.Element;
 
 // @public (undocumented)
@@ -95,6 +96,7 @@ export const OwnershipCard: (props: {
   relationsType?: EntityRelationAggregation;
   relationAggregation?: EntityRelationAggregation;
   entityLimit?: number;
+  title?: string;
 }) => React_2.JSX.Element;
 
 // @public (undocumented)

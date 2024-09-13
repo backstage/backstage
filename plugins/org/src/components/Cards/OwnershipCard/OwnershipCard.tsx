@@ -71,6 +71,7 @@ export const OwnershipCard = (props: {
   relationsType?: EntityRelationAggregation;
   relationAggregation?: EntityRelationAggregation;
   entityLimit?: number;
+  title?: string;
 }) => {
   const {
     variant,
@@ -98,7 +99,7 @@ export const OwnershipCard = (props: {
 
   return (
     <InfoCard
-      title="Ownership"
+      title={props.title ?? 'Ownership'}
       variant={variant}
       className={classes.card}
       cardClassName={classes.cardContent}
