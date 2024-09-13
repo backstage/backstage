@@ -33,7 +33,7 @@ export class MemoryEventBusStore implements EventBusStore {
   async publish(options: {
     params: EventParams;
     consumedBy: string[];
-  }): Promise<{ id: string } | undefined> {
+  }): Promise<{ eventId: string } | undefined> {
     const topic = options.params.topic;
     const consumedBy = new Set(options.consumedBy);
 
@@ -57,7 +57,7 @@ export class MemoryEventBusStore implements EventBusStore {
         this.#listeners.delete(listener);
       }
     }
-    return { id: String(nextSeq) };
+    return { eventId: String(nextSeq) };
   }
 
   #getMaxSeq() {

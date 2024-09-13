@@ -350,7 +350,7 @@ export class DatabaseEventBusStore implements EventBusStore {
   async publish(options: {
     params: EventParams;
     consumedBy?: string[];
-  }): Promise<{ id: string } | undefined> {
+  }): Promise<{ eventId: string } | undefined> {
     const topic = options.params.topic;
     const consumedBy = options.consumedBy ?? [];
     // This query inserts a new event into the database, but only if there are
@@ -410,7 +410,7 @@ export class DatabaseEventBusStore implements EventBusStore {
       );
     }
 
-    return { id };
+    return { eventId: id };
   }
 
   async upsertSubscription(id: string, topics: string[]): Promise<void> {

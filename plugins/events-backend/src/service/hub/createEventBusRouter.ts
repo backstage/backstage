@@ -167,7 +167,7 @@ export async function createEventBusRouter(options: {
       consumedBy: req.body.consumedBy,
     });
     if (result) {
-      logger.info(`Published event to '${topic}' with ID '${result.id}'`, {
+      logger.info(`Published event to '${topic}' with ID '${result.eventId}'`, {
         subject: credentials.principal.subject,
       });
       res.status(201).end();

@@ -20,11 +20,11 @@ export type EventBusStore = {
   publish(options: {
     params: EventParams;
     consumedBy?: string[];
-  }): Promise<{ id: string } | undefined>;
+  }): Promise<{ eventId: string } | undefined>;
 
-  upsertSubscription(id: string, topics: string[]): Promise<void>;
+  upsertSubscription(subscriptionId: string, topics: string[]): Promise<void>;
 
-  readSubscription(id: string): Promise<{ events: EventParams[] }>;
+  readSubscription(subscriptionId: string): Promise<{ events: EventParams[] }>;
 
   setupListener(
     subscriptionId: string,
