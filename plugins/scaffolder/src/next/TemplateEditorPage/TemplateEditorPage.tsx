@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 import React, { useState } from 'react';
-import { Content, Header, Page } from '@backstage/core-components';
+import { Breadcrumbs, Content, Header, Page } from '@backstage/core-components';
 import {
+  createExampleTemplate,
   TemplateDirectoryAccess,
   WebFileSystemAccess,
 } from '../../lib/filesystem';
@@ -49,6 +50,10 @@ type Selection =
     }
   | {
       type: 'field-explorer';
+    }
+  | {
+      type: 'create-template';
+      directory: TemplateDirectoryAccess;
     };
 
 interface TemplateEditorPageProps {
@@ -101,6 +106,16 @@ export function TemplateEditorPage(props: TemplateEditorPageProps) {
         onClose={() => setSelection(undefined)}
       />
     );
+  } else if (selection?.type === 'create-template') {
+    content = (
+      <TemplateEditor
+        directory={selection.directory}
+        fieldExtensions={props.customFieldExtensions}
+        onClose={() => setSelection(undefined)}
+        layouts={props.layouts}
+        formProps={props.formProps}
+      />
+    );
   } else {
     content = (
       <Content>
@@ -114,6 +129,17 @@ export function TemplateEditorPage(props: TemplateEditorPageProps) {
               setSelection({ type: 'form' });
             } else if (option === 'field-explorer') {
               setSelection({ type: 'field-explorer' });
+            } else if (option === 'create-template') {
+              WebFileSystemAccess.requestDirectoryAccess().then(directory =>
+                createExampleTemplate(directory)
+                  .then(() => {
+                    // TODO: Fix this race. It is what it is.
+                    setTimeout(() => {
+                      setSelection({ type: 'create-template', directory });
+                    }, 1);
+                  })
+                  .catch(() => {}),
+              );
             }
           }}
         />
@@ -124,8 +150,10 @@ export function TemplateEditorPage(props: TemplateEditorPageProps) {
   return (
     <Page themeId="home">
       <Header
-        title={t('templateEditorPage.title')}
+        title="Manage Templates"
+        type="Scaffolder"
         subtitle={t('templateEditorPage.subtitle')}
+        typeLink={createLink()}
       >
         <ScaffolderPageContextMenu {...scaffolderPageContextMenuProps} />
       </Header>

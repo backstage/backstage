@@ -232,8 +232,14 @@ export const scaffolderTranslationRef = createTranslationRef({
             'Load a local template directory, allowing you to both edit and try executing your own template.',
           unsupportedTooltip: 'Only supported in some Chromium-based browsers',
         },
+        createTemplate: {
+          title: 'Create new template',
+          description:
+            'Select a local directory to create a new action, allowing you to both edit and try executing your own template.',
+          unsupportedTooltip: 'Only supported in some Chromium-based browsers',
+        },
         formEditor: {
-          title: 'Edit Template Form',
+          title: 'Template playground',
           description:
             'Preview and edit a template form, either using a sample template or by loading a template from the catalog.',
         },
@@ -241,6 +247,11 @@ export const scaffolderTranslationRef = createTranslationRef({
           title: 'Custom Field Explorer',
           description:
             'View and play around with available installed custom field extensions.',
+        },
+        installedActions: {
+          title: 'Installed Actions',
+          description:
+            'View list of available scaffolder actions available to use in templates.',
         },
       },
       templateEditorTextArea: {

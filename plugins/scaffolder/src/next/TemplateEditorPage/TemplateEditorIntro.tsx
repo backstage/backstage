@@ -25,6 +25,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import { WebFileSystemAccess } from '../../lib/filesystem';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../translation';
+import { useNavigate } from 'react-router-dom';
+import { useRouteRef } from '@backstage/core-plugin-api';
+import { actionsRouteRef } from '../../routes';
 
 const useStyles = makeStyles(theme => ({
   introText: {
@@ -46,11 +49,15 @@ const useStyles = makeStyles(theme => ({
 
 interface EditorIntroProps {
   style?: JSX.IntrinsicElements['div']['style'];
-  onSelect?: (option: 'local' | 'form' | 'field-explorer') => void;
+  onSelect?: (
+    option: 'local' | 'form' | 'field-explorer' | 'create-template',
+  ) => void;
 }
 
 export function TemplateEditorIntro(props: EditorIntroProps) {
   const classes = useStyles();
+  const navigate = useNavigate();
+  const actionsLink = useRouteRef(actionsRouteRef);
   const supportsLoad = WebFileSystemAccess.isSupported();
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
@@ -93,6 +100,47 @@ export function TemplateEditorIntro(props: EditorIntroProps) {
     </Card>
   );
 
+  const cardCreateTemplate = (
+    <Card className={classes.card} elevation={4}>
+      <CardActionArea
+        disabled={!supportsLoad}
+        onClick={() => props.onSelect?.('create-template')}
+      >
+        <CardContent>
+          <Typography
+            variant="h4"
+            component="h3"
+            gutterBottom
+            color={supportsLoad ? undefined : 'textSecondary'}
+            style={{ display: 'flex', flexFlow: 'row nowrap' }}
+          >
+            {t('templateEditorPage.templateEditorIntro.createTemplate.title')}
+          </Typography>
+          <Typography
+            variant="body1"
+            color={supportsLoad ? undefined : 'textSecondary'}
+          >
+            {t(
+              'templateEditorPage.templateEditorIntro.createTemplate.description',
+            )}
+          </Typography>
+        </CardContent>
+      </CardActionArea>
+      {!supportsLoad && (
+        <div className={classes.infoIcon}>
+          <Tooltip
+            placement="top"
+            title={t(
+              'templateEditorPage.templateEditorIntro.createTemplate.unsupportedTooltip',
+            )}
+          >
+            <InfoOutlinedIcon />
+          </Tooltip>
+        </div>
+      )}
+    </Card>
+  );
+
   const cardFormEditor = (
     <Card className={classes.card} elevation={4}>
       <CardActionArea onClick={() => props.onSelect?.('form')}>
@@ -125,6 +173,23 @@ export function TemplateEditorIntro(props: EditorIntroProps) {
     </Card>
   );
 
+  const cardInstalledActions = (
+    <Card className={classes.card} elevation={4}>
+      <CardActionArea onClick={() => navigate(actionsLink())}>
+        <CardContent>
+          <Typography variant="h4" component="h3" gutterBottom>
+            {t('templateEditorPage.templateEditorIntro.installedActions.title')}
+          </Typography>
+          <Typography variant="body1">
+            {t(
+              'templateEditorPage.templateEditorIntro.installedActions.description',
+            )}
+          </Typography>
+        </CardContent>
+      </CardActionArea>
+    </Card>
+  );
+
   return (
     <div style={props.style}>
       <Typography variant="h4" component="h2" className={classes.introText}>
@@ -139,10 +204,12 @@ export function TemplateEditorIntro(props: EditorIntroProps) {
           alignContent: 'flex-start',
         }}
       >
+        {supportsLoad && cardCreateTemplate}
         {supportsLoad && cardLoadLocal}
         {cardFormEditor}
         {!supportsLoad && cardLoadLocal}
         {cardFieldExplorer}
+        {cardInstalledActions}
       </div>
     </div>
   );
