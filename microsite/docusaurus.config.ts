@@ -22,6 +22,7 @@ import { themes } from 'prism-react-renderer';
 import type * as Preset from '@docusaurus/preset-classic';
 import { Config } from '@docusaurus/types';
 import RedirectPlugin from '@docusaurus/plugin-client-redirects';
+import { releases } from './releases';
 
 const backstageTheme = themes.vsDark;
 backstageTheme.plain.backgroundColor = '#232323';
@@ -85,7 +86,7 @@ const config: Config = {
         docs: {
           editUrl: 'https://github.com/backstage/backstage/edit/master/docs/',
           path: '../docs',
-          sidebarPath: 'sidebars.json',
+          sidebarPath: 'sidebars.js',
           ...(useVersionedDocs
             ? {
                 includeCurrentVersion: true,
@@ -295,7 +296,7 @@ const config: Config = {
           position: 'left',
         },
         {
-          to: 'docs/releases/v1.30.0',
+          to: `docs/releases/${releases[0]}`,
           label: 'Releases',
           position: 'left',
         },

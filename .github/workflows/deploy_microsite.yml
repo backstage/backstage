@@ -184,6 +184,11 @@ jobs:
           name: stable-reference
           path: docs/reference
 
+      - name: grab lastest releases docs
+        run: |
+          git fetch origin master --depth 1
+          git checkout FETCH_HEAD -- docs/releases
+
       - name: generate stable docs
         run: yarn docusaurus docs:version stable
         working-directory: microsite
