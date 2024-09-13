@@ -220,7 +220,9 @@ export async function createRouter(
           req.method = 'GET';
           next('router');
         } else {
-          throw new InputError('Invalid POST request to /');
+          throw new InputError(
+            'Invalid POST request to app-backend wildcard endpoint',
+          );
         }
       },
     );
