@@ -398,22 +398,21 @@ describe('eventsPlugin', () => {
 
           expect(res.status).toBe(202);
 
-          const { closed } = res.body!.getReader();
-          const checkNotClosed = () =>
+          const reader = res.body!.getReader();
+          const isClosed = () =>
             Promise.race([
-              closed.then(() => {
-                throw new Error('Closed');
-              }),
-              new Promise(r => process.nextTick(r)),
+              reader
+                .read()
+                .then(() => reader.closed)
+                .then(() => true),
+              new Promise<boolean>(r => setTimeout(r, 100, false)),
             ]);
 
-          await checkNotClosed();
-
+          await expect(isClosed()).resolves.toBe(false);
           await jest.advanceTimersByTimeAsync(30000);
-          await checkNotClosed();
-
+          await expect(isClosed()).resolves.toBe(false);
           await jest.advanceTimersByTimeAsync(30000);
-          await closed;
+          await expect(isClosed()).resolves.toBe(true);
         } finally {
           jest.useRealTimers();
         }
