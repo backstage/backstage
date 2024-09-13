@@ -373,7 +373,7 @@ export class BackendInitializer {
 
   // It's fine to call .stop() multiple times, which for example can happen with manual stop + process exit
   async stop(): Promise<void> {
-    instanceRegistry.register(this);
+    instanceRegistry.unregister(this);
 
     if (!this.#stopPromise) {
       this.#stopPromise = this.#doStop();
