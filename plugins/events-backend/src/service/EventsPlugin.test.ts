@@ -149,10 +149,18 @@ describe('eventsPlugin', () => {
       }).factory;
     }
 
+    let backend: TestBackend | undefined = undefined;
+    afterEach(async () => {
+      if (backend) {
+        await backend.stop();
+        backend = undefined;
+      }
+    });
+
     it.each(databases.eachSupportedId())(
       'should be possible to publish events as a service, %p',
       async databaseId => {
-        const backend = await startTestBackend({
+        backend = await startTestBackend({
           features: [eventsPlugin, await mockKnexFactory(databaseId)],
         });
         const helper = new ReqHelper(backend);
@@ -171,15 +179,13 @@ describe('eventsPlugin', () => {
           .publish('test', { n: 1 })
           .set('authorization', mockCredentials.service.header())
           .expect(204); // 204, since there are no subscribers
-
-        await backend.stop();
       },
     );
 
     it.each(databases.eachSupportedId())(
       'should be possible to subscribe as a service and receive an event, %p',
       async databaseId => {
-        const backend = await startTestBackend({
+        backend = await startTestBackend({
           features: [eventsPlugin, await mockKnexFactory(databaseId)],
         });
         const helper = new ReqHelper(backend);
@@ -211,15 +217,13 @@ describe('eventsPlugin', () => {
         await helper.readEvents('tester').expect(200, {
           events: [{ topic: 'test', payload: { n: 1 } }],
         });
-
-        await backend.stop();
       },
     );
 
     it.each(databases.eachSupportedId())(
       'should only send an event for each subscriber once, %p',
       async databaseId => {
-        const backend = await startTestBackend({
+        backend = await startTestBackend({
           features: [eventsPlugin, await mockKnexFactory(databaseId)],
         });
         const helper = new ReqHelper(backend);
@@ -258,15 +262,13 @@ describe('eventsPlugin', () => {
         await helper.readEvents('tester-2').expect(200, {
           events: [{ topic: 'test', payload: { n: 2 } }],
         });
-
-        await backend.stop();
       },
     );
 
     it.each(databases.eachSupportedId())(
       'should not notify subscribers that have already consumed the event, %p',
       async databaseId => {
-        const backend = await startTestBackend({
+        backend = await startTestBackend({
           features: [eventsPlugin, await mockKnexFactory(databaseId)],
         });
         const helper = new ReqHelper(backend);
@@ -303,15 +305,13 @@ describe('eventsPlugin', () => {
         await helper.readEvents('tester-2').expect(200, {
           events: [{ topic: 'test', payload: { for: 'tester-2' } }],
         });
-
-        await backend.stop();
       },
     );
 
     it.each(databases.eachSupportedId())(
       'should return multiple events in order, %p',
       async databaseId => {
-        const backend = await startTestBackend({
+        backend = await startTestBackend({
           features: [eventsPlugin, await mockKnexFactory(databaseId)],
         });
         const helper = new ReqHelper(backend);
@@ -349,15 +349,13 @@ describe('eventsPlugin', () => {
             { topic: 'test', payload: { n: 14 } },
           ],
         });
-
-        await backend.stop();
       },
     );
 
     it.each(databases.eachSupportedId())(
       'should skip publishing if all subscribers have already consumed the event, %p',
       async databaseId => {
-        const backend = await startTestBackend({
+        backend = await startTestBackend({
           features: [eventsPlugin, await mockKnexFactory(databaseId)],
         });
         const helper = new ReqHelper(backend);
@@ -371,15 +369,13 @@ describe('eventsPlugin', () => {
             { notifiedSubscribers: ['tester'] },
           )
           .expect(204);
-
-        await backend.stop();
       },
     );
 
     it.each(databases.eachSupportedId())(
       'should time out when no events are available, %p',
       async databaseId => {
-        const backend = await startTestBackend({
+        backend = await startTestBackend({
           features: [eventsPlugin, await mockKnexFactory(databaseId)],
         });
         const helper = new ReqHelper(backend);
@@ -408,35 +404,31 @@ describe('eventsPlugin', () => {
               closed.then(() => {
                 throw new Error('Closed');
               }),
-              new Promise(r => process.nextTick(() => r(false))),
+              new Promise(r => process.nextTick(r)),
             ]);
 
-          await expect(checkNotClosed()).resolves.toBe(false);
+          await checkNotClosed();
 
           await jest.advanceTimersByTimeAsync(30000);
-          await expect(checkNotClosed()).resolves.toBe(false);
+          await checkNotClosed();
 
           await jest.advanceTimersByTimeAsync(30000);
           await closed;
         } finally {
           jest.useRealTimers();
         }
-
-        await backend.stop();
       },
     );
 
     it.each(databases.eachSupportedId())(
       'should refuse listen without a subscription, %p',
       async databaseId => {
-        const backend = await startTestBackend({
+        backend = await startTestBackend({
           features: [eventsPlugin, await mockKnexFactory(databaseId)],
         });
         const helper = new ReqHelper(backend);
 
         await helper.readEvents('nonexistent').expect(404);
-
-        await backend.stop();
       },
     );
   });
