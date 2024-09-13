@@ -35,7 +35,7 @@ describe('DatabaseEventBusStore', () => {
 
       for (let i = 0; i < 10; ++i) {
         await store.publish({
-          params: { topic: 'test', eventPayload: { n: i } },
+          event: { topic: 'test', eventPayload: { n: i } },
         });
       }
 
@@ -75,7 +75,7 @@ describe('DatabaseEventBusStore', () => {
 
       for (let i = 0; i < 10; ++i) {
         await store.publish({
-          params: { topic: 'test', eventPayload: { n: i } },
+          event: { topic: 'test', eventPayload: { n: i } },
         });
       }
 
@@ -114,7 +114,7 @@ describe('DatabaseEventBusStore', () => {
 
       for (let i = 0; i < 10; ++i) {
         await store.publish({
-          params: { topic: 'test', eventPayload: { n: i } },
+          event: { topic: 'test', eventPayload: { n: i } },
         });
       }
 

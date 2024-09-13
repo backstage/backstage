@@ -160,7 +160,7 @@ export async function createEventBusRouter(options: {
     const topic = req.body.event.topic;
     const notifiedSubscribers = req.body.notifiedSubscribers;
     const result = await store.publish({
-      params: {
+      event: {
         topic,
         eventPayload: req.body.event.payload,
       } as EventParams,

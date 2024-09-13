@@ -348,10 +348,10 @@ export class DatabaseEventBusStore implements EventBusStore {
   }
 
   async publish(options: {
-    params: EventParams;
+    event: EventParams;
     notifiedSubscribers?: string[];
   }): Promise<{ eventId: string } | undefined> {
-    const topic = options.params.topic;
+    const topic = options.event.topic;
     const notifiedSubscribers = options.notifiedSubscribers ?? [];
     // This query inserts a new event into the database, but only if there are
     // subscribers to the topic that have not already been notified
@@ -374,8 +374,8 @@ export class DatabaseEventBusStore implements EventBusStore {
               this.#db.raw('?', [topic]),
               this.#db.raw('?', [
                 JSON.stringify({
-                  payload: options.params.eventPayload,
-                  metadata: options.params.metadata,
+                  payload: options.event.eventPayload,
+                  metadata: options.event.metadata,
                 }),
               ]),
               this.#db.raw('?', [notifiedSubscribers]),

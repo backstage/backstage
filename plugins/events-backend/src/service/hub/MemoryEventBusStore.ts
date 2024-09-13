@@ -33,10 +33,10 @@ export class MemoryEventBusStore implements EventBusStore {
   }>();
 
   async publish(options: {
-    params: EventParams;
+    event: EventParams;
     notifiedSubscribers: string[];
   }): Promise<{ eventId: string } | undefined> {
-    const topic = options.params.topic;
+    const topic = options.event.topic;
     const notifiedSubscribers = new Set(options.notifiedSubscribers);
 
     let hasOtherSubscribers = false;
@@ -51,7 +51,7 @@ export class MemoryEventBusStore implements EventBusStore {
     }
 
     const nextSeq = this.#getMaxSeq() + 1;
-    this.#events.push({ ...options.params, notifiedSubscribers, seq: nextSeq });
+    this.#events.push({ ...options.event, notifiedSubscribers, seq: nextSeq });
 
     for (const listener of this.#listeners) {
       if (listener.topics.has(topic)) {

@@ -18,7 +18,7 @@ import { EventParams } from '@backstage/plugin-events-node';
 
 export type EventBusStore = {
   publish(options: {
-    params: EventParams;
+    event: EventParams;
     notifiedSubscribers?: string[];
   }): Promise<{ eventId: string } | undefined>;
 
