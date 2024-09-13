@@ -1,5 +1,23 @@
 # @backstage/core-components
 
+## 0.14.11-next.1
+
+### Patch Changes
+
+- c891b69: Add `FavoriteToggle` in `core-components` to standardise favorite marking
+- 0944334: Removed default title set to Unknown page on `ContentHeaderTitle` component to support usage of component without title prop.
+- f325258: Use getOptionalString for optional app.support.items[].links[].title
+- af4c146: Support menu items should not be buttons in favour of links
+- b537bd7: Allow custom star icons to be provided via the `star` and `unstarred` icon overrides. See how to override existing icons in the [Backstage documentation](https://backstage.io/docs/getting-started/app-custom-theme/#custom-icons).
+- dbbd93e: Internal update to match recent React types
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.4-next.0
+  - @backstage/theme@0.5.7-next.0
+  - @backstage/version-bridge@1.0.9-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 0.14.11-next.0
 
 ### Patch Changes

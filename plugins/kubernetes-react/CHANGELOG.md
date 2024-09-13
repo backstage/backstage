@@ -1,5 +1,18 @@
 # @backstage/plugin-kubernetes-react
 
+## 0.4.3-next.1
+
+### Patch Changes
+
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.14.11-next.1
+  - @backstage/core-plugin-api@1.9.4-next.0
+  - @backstage/catalog-model@1.6.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.8.2
+
 ## 0.4.3-next.0
 
 ### Patch Changes

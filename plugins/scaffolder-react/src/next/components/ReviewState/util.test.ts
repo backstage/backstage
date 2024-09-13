@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { isJsonObject, formatKey } from './util';
+import { isJsonObject, formatKey, findSchemaForKey } from './util';
+import { ParsedTemplateSchema } from '../../hooks/useTemplateSchema';
 
 describe('isJsonObject', () => {
   it('should return true for non-null objects', () => {
@@ -76,5 +77,97 @@ describe('formatKey', () => {
 
   it('should remove special characters', () => {
     expect(formatKey('parent/child@!#$%^&*()')).toBe('Parent > Child');
+  });
+});
+
+describe('findSchemaForKey', () => {
+  const schemas: ParsedTemplateSchema[] = [
+    {
+      mergedSchema: {
+        type: 'object',
+        properties: {
+          foo: {
+            type: 'string',
+          },
+        },
+      },
+      schema: {},
+      title: 'Schema 1',
+      uiSchema: {},
+    },
+    {
+      mergedSchema: {
+        type: 'object',
+        properties: {
+          bar: {
+            type: 'string',
+          },
+          hello: {
+            type: 'object',
+            properties: {
+              world: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      },
+      schema: {},
+      title: 'Schema 2',
+      uiSchema: {},
+    },
+    {
+      mergedSchema: {
+        type: 'object',
+        dependencies: {
+          foo: {
+            oneOf: [
+              {
+                properties: {
+                  artifact: {
+                    type: 'string',
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
+      schema: {},
+      title: 'Schema 3',
+      uiSchema: {},
+    },
+  ];
+
+  const formState = {
+    foo: 'value',
+    bar: 'value',
+    hello: { world: 'value' },
+    artifact: 'value',
+  };
+
+  it('should return the schema for the direct key', () => {
+    const result = findSchemaForKey('foo', schemas, formState);
+    expect(result).toBe(schemas[0]);
+  });
+
+  it('should return the schema for a key in dependencies', () => {
+    const result = findSchemaForKey('artifact', schemas, formState);
+    expect(result).toBe(schemas[2]);
+  });
+
+  it('should return null if the key does not exist', () => {
+    const result = findSchemaForKey('nonexistentKey', schemas, formState);
+    expect(result).toBeNull();
+  });
+
+  it('should return the schema for a key in the second schema', () => {
+    const result = findSchemaForKey('bar', schemas, formState);
+    expect(result).toBe(schemas[1]);
+  });
+
+  it('should return the schema for an object key', () => {
+    const result = findSchemaForKey('hello', schemas, formState);
+    expect(result).toBe(schemas[1]);
   });
 });

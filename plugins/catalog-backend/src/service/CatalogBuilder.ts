@@ -56,6 +56,7 @@ import {
 import { ConfigLocationEntityProvider } from '../modules/core/ConfigLocationEntityProvider';
 import { DefaultLocationStore } from '../modules/core/DefaultLocationStore';
 import { RepoLocationAnalyzer } from '../ingestion/LocationAnalyzer';
+import { AuthorizedLocationAnalyzer } from './AuthorizedLocationAnalyzer';
 import {
   jsonPlaceholderResolver,
   textPlaceholderResolver,
@@ -515,15 +516,7 @@ export class CatalogBuilder {
     });
     const integrations = ScmIntegrations.fromConfig(config);
     const rulesEnforcer = DefaultCatalogRulesEnforcer.fromConfig(config);
-    const orchestrator = new DefaultCatalogProcessingOrchestrator({
-      processors,
-      integrations,
-      rulesEnforcer,
-      logger,
-      parser,
-      policy,
-      legacySingleProcessorValidation: this.legacySingleProcessorValidation,
-    });
+
     const unauthorizedEntitiesCatalog = new DefaultEntitiesCatalog({
       database: dbClient,
       logger,
@@ -539,6 +532,16 @@ export class CatalogBuilder {
       );
       permissionsService = toPermissionEvaluator(permissions);
     }
+
+    const orchestrator = new DefaultCatalogProcessingOrchestrator({
+      processors,
+      integrations,
+      rulesEnforcer,
+      logger,
+      parser,
+      policy,
+      legacySingleProcessorValidation: this.legacySingleProcessorValidation,
+    });
 
     const entitiesCatalog = new AuthorizedEntitiesCatalog(
       unauthorizedEntitiesCatalog,
@@ -599,7 +602,10 @@ export class CatalogBuilder {
 
     const locationAnalyzer =
       this.locationAnalyzer ??
-      new RepoLocationAnalyzer(logger, integrations, this.locationAnalyzers);
+      new AuthorizedLocationAnalyzer(
+        new RepoLocationAnalyzer(logger, integrations, this.locationAnalyzers),
+        permissionsService,
+      );
     const locationService = new AuthorizedLocationService(
       new DefaultLocationService(locationStore, orchestrator, {
         allowedLocationTypes: this.allowedLocationType,
@@ -622,6 +628,7 @@ export class CatalogBuilder {
       permissionIntegrationRouter,
       auth,
       httpAuth,
+      permissionsService,
     });
 
     await connectEntityProviders(providerDatabase, entityProviders);

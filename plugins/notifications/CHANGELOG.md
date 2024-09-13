@@ -1,5 +1,21 @@
 # @backstage/plugin-notifications
 
+## 0.3.1-next.2
+
+### Patch Changes
+
+- 653f60b: Severity filter label newly contains "Min severity" to better describe range instead of exact value.
+- 4a53dd0: Implement icon in backend and show icon in table if available.
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.14.11-next.1
+  - @backstage/core-plugin-api@1.9.4-next.0
+  - @backstage/theme@0.5.7-next.0
+  - @backstage/plugin-signals-react@0.0.5-next.1
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-notifications-common@0.0.5
+
 ## 0.3.1-next.1
 
 ### Patch Changes

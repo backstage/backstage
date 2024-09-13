@@ -162,7 +162,7 @@ export class ScmAuth implements ScmAuthApi {
    *
    * If the additional `repoWrite` permission is requested, these scopes are added:
    *
-   * `write_repository api`
+   * `write_repository`
    */
   static forGitlab(
     gitlabAuthApi: OAuthApi,
@@ -173,7 +173,7 @@ export class ScmAuth implements ScmAuthApi {
     const host = options?.host ?? 'gitlab.com';
     return new ScmAuth('gitlab', gitlabAuthApi, host, {
       default: ['read_user', 'read_api', 'read_repository'],
-      repoWrite: ['write_repository', 'api'],
+      repoWrite: ['write_repository'],
     });
   }
 

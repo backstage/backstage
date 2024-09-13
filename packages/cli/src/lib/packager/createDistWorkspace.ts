@@ -211,6 +211,7 @@ export async function createDistWorkspace(
           outputs: outputs,
           logPrefix: `${chalk.cyan(relativePath(paths.targetRoot, pkg.dir))}: `,
           minify: options.minify,
+          workspacePackages: packages,
         });
       }
     }

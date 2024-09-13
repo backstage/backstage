@@ -33,6 +33,7 @@ export type {
   DefaultEntityFilters,
   EntityListContextProps,
   EntityListProviderProps,
+  PaginationMode,
 } from './useEntityListProvider';
 export { useEntityTypeFilter } from './useEntityTypeFilter';
 export { useRelatedEntities } from './useRelatedEntities';

@@ -95,7 +95,7 @@ At this point the contents of your app should be past the initial migration stag
 
 ## Migrating `createApp` Options
 
-Many of the `createApp` options have been migrated to use extensions instead. Each will have their own [extension blueprint](../architecture/23-extension-blueprints.md) that you use to create a custom extension. To add these standalone extensions to the app they need to be passed to `createExtensionOverrides`, which bundles them into a _feature_ that you can install in the app. See the [standalone extensions](../architecture/25-extension-overrides.md#creating-a-standalone-extension-bundle) section for more information.
+Many of the `createApp` options have been migrated to use extensions instead. Each will have their own [extension blueprint](../architecture/23-extension-blueprints.md) that you use to create a custom extension. To add these standalone extensions to the app they need to be passed to `createFrontendModule`, which bundles them into a _feature_ that you can install in the app. See the [frontend module](../architecture/25-extension-overrides.md#creating-a-frontend-module) section for more information.
 
 For example, assuming you have a `lightTheme` extension that you want to add to your app, you can use the following:
 
@@ -103,7 +103,8 @@ For example, assuming you have a `lightTheme` extension that you want to add to 
 const app = createApp({
   features: [
     // highlight-add-start
-    createExtensionOverrides({
+    createFrontendModule({
+      pluginId: 'app',
       extensions: [lightTheme],
     }),
     // highlight-add-end
@@ -343,7 +344,8 @@ const exampleIconBundle = IconBundleBlueprint.make({
 
 const app = createApp({
   features: [
-    createExtensionOverrides({
+    createFrontendModule({
+      pluginId: 'app',
       extensions: [exampleIconBundle],
     }),
   ],
@@ -568,7 +570,8 @@ Here is an example converting the `CustomAppBarrier` into extension:
 createApp({
   // ...
   features: [
-    createExtensionOverrides({
+    createFrontendModule({
+      pluginId: 'app',
       extensions: [
         AppRootWrapperBlueprint.make({
           name: 'custom-app-barrier',

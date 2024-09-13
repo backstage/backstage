@@ -1232,6 +1232,12 @@ export async function categorizePackageDirs(packageDirs: string[]) {
           if (!role) {
             return; // Ignore packages without roles
           }
+          // TODO(Rugvip): Inlined packages are ignored because we can't handle @internal exports
+          //               gracefully, and we don't want to have to mark all exports @public etc.
+          //               It would be good if we could include these packages though.
+          if (pkgJson?.backstage?.inline) {
+            return;
+          }
           if (role === 'cli') {
             cliPackageDirs.push(dir);
           } else if (role !== 'frontend' && role !== 'backend') {

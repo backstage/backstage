@@ -25,6 +25,7 @@ import {
   createComponentExtension,
   fetchApiRef,
 } from '@backstage/core-plugin-api';
+import { SidebarSearchModalProps } from './components/SidebarSearchModal';
 
 export const rootRouteRef = createRouteRef({
   id: 'search',
@@ -63,7 +64,9 @@ export const SearchPage = searchPlugin.provide(
 /**
  * @public
  */
-export const SidebarSearchModal = searchPlugin.provide(
+export const SidebarSearchModal = searchPlugin.provide<
+  (props: SidebarSearchModalProps) => JSX.Element | null
+>(
   createComponentExtension({
     name: 'SidebarSearchModal',
     component: {

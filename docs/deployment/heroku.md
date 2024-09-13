@@ -126,7 +126,7 @@ heroku stack:set container -a <your-app>
 Locally run the [host build commands](https://backstage.io/docs/deployment/docker/#host-build), they must be run whenever you are going to publish a new image:
 
 ```shell
-yarn install --frozen-lockfile
+yarn install --immutable
 yarn tsc
 yarn build:backend --config ../../app-config.yaml --config ../../app-config.production.yaml
 ```

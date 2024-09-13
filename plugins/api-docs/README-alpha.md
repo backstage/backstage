@@ -203,21 +203,23 @@ The apis nav item icon can only be changed by overriding the extension, as the i
 Here is an example overriding the nav item extension with a custom icon component:
 
 ```tsx
-import { createExtensionOverrides, createNavItemExtension } from '@backstage/backstage-plugin-api';
+import {
+  createFrontendModule,
+  createNavItemExtension,
+} from '@backstage/backstage-plugin-api';
 import { MyCustomApiDocsIcon } from './components';
 
-export default createExtensionOverrides(
+export default createFrontendModule({
+  pluginId: 'api-docs',
   extensions: [
     createNavItemExtension({
-      // These namespace is necessary so the system knows that this extension will override the default nav item provided by the 'api-docs' plugin
-      namespace: 'api-docs',
       // It's your choice whether to use the original extension's title or a different one
       title: 'APIs',
       // Setting a custom icon component
       icon: MyCustomApiDocsIcon,
-    })
-  ]
-);
+    }),
+  ],
+});
 ```
 
 For more information about where to place extension overrides, see the official [documentation](https://backstage.io/docs/frontend-system/architecture/extension-overrides).
@@ -273,24 +275,27 @@ The explorer page implementation can be [overridden](https://backstage.io/docs/f
 Here is an example overriding the APIs Explorer page component:
 
 ```tsx
-import { createExtensionOverrides, createPageExtension } from '@backstage/backstage-plugin-api';
+import {
+  createFrontendModule,
+  createPageExtension,
+} from '@backstage/backstage-plugin-api';
 import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 
-export default createExtensionOverrides(
+export default createFrontendModule({
+  pluginId: 'api-docs',
   extensions: [
     createPageExtension({
-      // These namespace is necessary so the system knows that this extension will override the default explorer page provided by the 'api-docs' plugin
-      namespace: 'api-docs',
       // Ommitting name since we are overriding a plugin index page
       // It's up to you whether to use the original default path or not, but links that are hardcoded to the default path won't work if you change it
       defaultPath: '/api-docs',
       // Associating the page with a different route ref may result in the sidebar item or external plugin route pointing to an unreachable page
       routeRef: convertLegacyRouteRef(rootRoute),
       // Custom page components are loaded here
-      loader: () => import('./components').then(m => <m.MyCustomApiExplorerPage />)
-    })
-  ]
-);
+      loader: () =>
+        import('./components').then(m => <m.MyCustomApiExplorerPage />),
+    }),
+  ],
+});
 ```
 
 #### Apis Entities Cards
@@ -356,14 +361,14 @@ app:
 Use extension overrides for completely re-implementing the has apis entity card extension:
 
 ```tsx
-import { createExtensionOverrides } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/backstage-plugin-api';
 import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
 
-export default createExtensionOverrides({
+export default createFrontendModule({
+  pluginId: 'api-docs',
   extensions: [
     createEntityCardExtension({
-      // These namespace and name necessary so the system knows that this extension will override the default 'has-apis' entity card extension provided by the 'api-docs' plugin
-      namespace: 'api-docs',
+      // Name is necessary so the system knows that this extension will override the default 'has-apis' entity card extension provided by the 'api-docs' plugin
       name: 'has-apis',
       // Returing a custom card component
       loader: () =>
@@ -429,14 +434,14 @@ app:
 Use extension overrides for completely re-implementing the has apis entity card extension:
 
 ```tsx
-import { createExtensionOverrides } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/backstage-plugin-api';
 import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
 
-export default createExtensionOverrides({
+export default createFrontendModule({
+  pluginId: 'api-docs',
   extensions: [
     createEntityCardExtension({
-      // These namespace and name necessary so the system knows that this extension will override the default 'definition' entity card extension provided by the 'api-docs' plugin
-      namespace: 'api-docs',
+      // Name is necessary so the system knows that this extension will override the default 'definition' entity card extension provided by the 'api-docs' plugin
       name: 'definition',
       // Returing a custom card component
       loader: () =>
@@ -502,14 +507,14 @@ app:
 Use extension overrides for completely re-implementing the has apis entity card extension:
 
 ```tsx
-import { createExtensionOverrides } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/backstage-plugin-api';
 import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
 
-export default createExtensionOverrides({
+export default createFrontendModule({
+  pluginId: 'api-docs',
   extensions: [
     createEntityCardExtension({
-      // These namespace and name necessary so the system knows that this extension will override the default 'provided-apis' entity card extension provided by the 'api-docs' plugin
-      namespace: 'api-docs',
+      // Name is necessary so the system knows that this extension will override the default 'provided-apis' entity card extension provided by the 'api-docs' plugin
       name: 'provided-apis',
       // Returing a custom card component
       loader: () =>
@@ -575,14 +580,14 @@ app:
 Use extension overrides for completely re-implementing the has apis entity card extension:
 
 ```tsx
-import { createExtensionOverrides } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/backstage-plugin-api';
 import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
 
-export default createExtensionOverrides({
+export default createFrontendModule({
+  pluginId: 'api-docs',
   extensions: [
     createEntityCardExtension({
-      // These namespace and name necessary so the system knows that this extension will override the default 'consumed-apis' entity card extension provided by the 'api-docs' plugin
-      namespace: 'api-docs',
+      // Name is necessary so the system knows that this extension will override the default 'consumed-apis' entity card extension provided by the 'api-docs' plugin
       name: 'consumed-apis',
       // Returing a custom card component
       loader: () =>
@@ -648,14 +653,14 @@ app:
 Use extension overrides for completely re-implementing the has apis entity card extension:
 
 ```tsx
-import { createExtensionOverrides } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/backstage-plugin-api';
 import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
 
-export default createExtensionOverrides({
+export default createFrontendModule({
+  pluginId: 'api-docs',
   extensions: [
     createEntityCardExtension({
-      // These namespace and name necessary so the system knows that this extension will override the default 'providing-components' entity card extension provided by the 'api-docs' plugin
-      namespace: 'api-docs',
+      // Name is necessary so the system knows that this extension will override the default 'providing-components' entity card extension provided by the 'api-docs' plugin
       name: 'providing-components',
       // Returing a custom card component
       loader: () =>
@@ -723,14 +728,14 @@ app:
 Use extension overrides for completely re-implementing the has apis entity card extension:
 
 ```tsx
-import { createExtensionOverrides } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/backstage-plugin-api';
 import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
 
-export default createExtensionOverrides({
+export default createFrontendModule({
+  pluginId: 'api-docs',
   extensions: [
     createEntityCardExtension({
-      // These namespace and name necessary so the system knows that this extension will override the default 'consuming-components' entity card extension provided by the 'api-docs' plugin
-      namespace: 'api-docs',
+      // Name is necessary so the system knows that this extension will override the default 'consuming-components' entity card extension provided by the 'api-docs' plugin
       name: 'consuming-components',
       // Returing a custom card component
       loader: () =>
@@ -812,14 +817,14 @@ app:
 Use extension overrides for completely re-implementing the has apis entity card extension:
 
 ```tsx
-import { createExtensionOverrides } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/backstage-plugin-api';
 import { createEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
 
-export default createExtensionOverrides({
+export default createFrontendModule({
+  pluginId: 'api-docs',
   extensions: [
     createEntityContentExtension({
-      // These namespace and name necessary so the system knows that this extension will override the default 'definition' entity content extension provided by the 'api-docs' plugin
-      namespace: 'api-docs',
+      // Name is necessary so the system knows that this extension will override the default 'definition' entity content extension provided by the 'api-docs' plugin
       name: 'definition',
       // Returing a custom content component
       loader: () =>
@@ -892,14 +897,14 @@ app:
 Use extension overrides for completely re-implementing the apis entity content extension:
 
 ```tsx
-import { createExtensionOverrides } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/backstage-plugin-api';
 import { createEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
 
-export default createExtensionOverrides({
+export default createFrontendModule({
+  pluginId: 'api-docs',
   extensions: [
     createEntityContentExtension({
-      // These namespace and name necessary so the system knows that this extension will override the default 'apis' entity content extension provided by the 'api-docs' plugin
-      namespace: 'api-docs',
+      // Name is necessary so the system knows that this extension will override the default 'apis' entity content extension provided by the 'api-docs' plugin
       name: 'apis',
       // Returing a custom content component
       loader: () =>
@@ -929,7 +934,7 @@ This is an example with a made-up renderer for SQL schemas:
 
 ```tsx
 import {
-  createExtensionOverrides,
+  createFrontendModule,
   createApiExtenion,
   createApiFactory,
 } from '@backstage/frontend-plugin-api';
@@ -941,7 +946,8 @@ import {
 } from '@backstage/plugin-api-docs';
 import { SqlRenderer } from '...';
 
-export default createExtensionOverrides({
+export default createFrontendModule({
+  pluginId: 'api-docs',
   extensions: [
     createApiExtenion({
       factory: createApiFactory({
@@ -982,7 +988,7 @@ Override the config api to configure a [`requestInterceptor` for Swagger UI](htt
 
 ```tsx
 import {
-  createExtensionOverrides,
+  createFrontendModule,
   createApiExtenion,
   createApiFactory,
 } from '@backstage/frontend-plugin-api';
@@ -993,7 +999,8 @@ import {
 } from '@backstage/plugin-api-docs';
 import { ApiEntity } from '@backstage/catalog-model';
 
-export default createExtensionOverrides({
+export default createFrontendModule({
+  pluginId: 'api-docs',
   extensions: [
     createApiExtenion({
       factory: createApiFactory({
@@ -1043,7 +1050,7 @@ If you want to limit the HTTP methods available for the `Try It Out` feature of 
 
 ```tsx
 import {
-  createExtensionOverrides,
+  createFrontendModule,
   createApiExtenion,
   createApiFactory,
 } from '@backstage/frontend-plugin-api';
@@ -1054,7 +1061,8 @@ import {
 } from '@backstage/plugin-api-docs';
 import { ApiEntity } from '@backstage/catalog-model';
 
-export default createExtensionOverrides({
+export default createFrontendModule({
+  pluginId: 'api-docs',
   extensions: [
     createApiExtenion({
       factory: createApiFactory({

@@ -14,6 +14,60 @@ This section provides migration guides for different versions of the frontend sy
 
 This guide is intended for app and plugin authors who have already migrated their code to the new frontend system, and are looking to keep it up to date with the latest changes. These guides do not cover trivial migrations that can be explained in a deprecation message, such as a renamed export.
 
+## 1.31.0
+
+### `namespace` parameter should be removed
+
+The `namespace` parameter to all `createExtension`, `createExtensionBlueprint` or any `.make()` or `.makeWithOverrides()` method can be removed. This will now default to the `id` of the `plugin` which should already be the case.
+
+### `createExtensionOverrides` -> `createFrontendModule`
+
+Extensions will need to be wrapped in a module in order to be installed in the frontend. This means that the `createExtensionOverrides` function should be replaced with `createFrontendModule`, and the `pluginId` parameter should be set with the target `pluginId` that you're overriding.
+
+For example:
+
+```tsx
+import {
+  createPageExtension,
+  createExtensionOverrides,
+} from '@backstage/frontend-plugin-api';
+
+const customSearchPage = PageBlueprint.make({
+  namespace: 'search',
+  params: {
+    defaultPath: '/search',
+    loader: () =>
+      import('./CustomSearchPage').then(m => <m.CustomSearchPage />),
+  },
+});
+
+export default createExtensionOverrides({
+  extensions: [customSearchPage],
+});
+```
+
+Should now look like this:
+
+```tsx
+import {
+  createPageExtension,
+  createFrontendModule,
+} from '@backstage/frontend-plugin-api';
+
+const customSearchPage = PageBlueprint.make({
+  params: {
+    defaultPath: '/search',
+    loader: () =>
+      import('./CustomSearchPage').then(m => <m.CustomSearchPage />),
+  },
+});
+
+export default createFrontendModule({
+  pluginId: 'search',
+  extensions: [customSearchPage],
+});
+```
+
 ## 1.30
 
 ### Reworked extension inputs and outputs

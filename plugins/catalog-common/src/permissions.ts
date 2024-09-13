@@ -92,6 +92,15 @@ export const catalogEntityRefreshPermission = createPermission({
 });
 
 /**
+ * This permission is used to authorize validating catalog entities.
+ * @alpha
+ */
+export const catalogEntityValidatePermission = createPermission({
+  name: 'catalog.entity.validate',
+  attributes: {},
+});
+
+/**
  * This permission is used to designate actions that involve reading one or more
  * locations from the catalog.
  *
@@ -119,6 +128,15 @@ export const catalogLocationCreatePermission = createPermission({
 });
 
 /**
+ * This permission is used to authorize analyzing catalog locations.
+ * @alpha
+ */
+export const catalogLocationAnalyzePermission = createPermission({
+  name: 'catalog.location.analyze',
+  attributes: {},
+});
+
+/**
  * This permission is used to designate actions that involve deleting locations
  * from the catalog.
  * @alpha
@@ -139,7 +157,9 @@ export const catalogPermissions = [
   catalogEntityCreatePermission,
   catalogEntityDeletePermission,
   catalogEntityRefreshPermission,
+  catalogEntityValidatePermission,
   catalogLocationReadPermission,
   catalogLocationCreatePermission,
   catalogLocationDeletePermission,
+  catalogLocationAnalyzePermission,
 ];

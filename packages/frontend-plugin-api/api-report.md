@@ -1323,7 +1323,7 @@ export type ExtensionDefinition<
             string}' is already defined in parent schema`;
         };
       };
-      factory(
+      factory?(
         originalFactory: (context?: {
           config?: T['config'];
           inputs?: ResolveInputValueOverrides<NonNullable<T['inputs']>>;
@@ -1519,14 +1519,8 @@ export const IconBundleBlueprint: ExtensionBlueprint<{
     {}
   >;
   inputs: {};
-  config: {
-    icons: string;
-    test: string;
-  };
-  configInput: {
-    test: string;
-    icons?: string | undefined;
-  };
+  config: {};
+  configInput: {};
   dataRefs: {
     icons: ConfigurableExtensionDataRef<
       {

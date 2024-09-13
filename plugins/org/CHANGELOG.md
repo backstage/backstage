@@ -1,5 +1,20 @@
 # @backstage/plugin-org
 
+## 0.6.29-next.2
+
+### Patch Changes
+
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- 8a474f2: Updating docs to use `createFrontendModule` instead
+- Updated dependencies
+  - @backstage/core-components@0.14.11-next.1
+  - @backstage/plugin-catalog-react@1.13.0-next.2
+  - @backstage/core-compat-api@0.3.0-next.2
+  - @backstage/core-plugin-api@1.9.4-next.0
+  - @backstage/frontend-plugin-api@0.8.0-next.2
+  - @backstage/catalog-model@1.6.0
+  - @backstage/plugin-catalog-common@1.0.26
+
 ## 0.6.29-next.1
 
 ### Patch Changes

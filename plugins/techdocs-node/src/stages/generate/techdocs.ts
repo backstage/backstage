@@ -43,7 +43,7 @@ import {
 import { ForwardedError } from '@backstage/errors';
 import { DockerContainerRunner } from './DockerContainerRunner';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { TechDocsContainerRunner } from '../publish/types';
+import { TechDocsContainerRunner } from './types';
 
 /**
  * Generates documentation files

@@ -28,35 +28,45 @@ import { TemplateEditorTextArea } from './TemplateEditorTextArea';
 import { TemplateEditorForm } from './TemplateEditorForm';
 import { DryRunResults } from './DryRunResults';
 
-const useStyles = makeStyles({
-  // Reset and fix sizing to make sure scrolling behaves correctly
-  root: {
-    gridArea: 'pageContent',
+/** @public */
+export type ScaffolderTemplateEditorClassKey =
+  | 'root'
+  | 'browser'
+  | 'editor'
+  | 'preview'
+  | 'results';
 
-    display: 'grid',
-    gridTemplateAreas: `
+const useStyles = makeStyles(
+  {
+    // Reset and fix sizing to make sure scrolling behaves correctly
+    root: {
+      gridArea: 'pageContent',
+      display: 'grid',
+      gridTemplateAreas: `
       "browser editor preview"
       "results results results"
     `,
-    gridTemplateColumns: '1fr 3fr 2fr',
-    gridTemplateRows: '1fr auto',
+      gridTemplateColumns: '1fr 3fr 2fr',
+      gridTemplateRows: '1fr auto',
+    },
+    browser: {
+      gridArea: 'browser',
+      overflow: 'auto',
+    },
+    editor: {
+      gridArea: 'editor',
+      overflow: 'auto',
+    },
+    preview: {
+      gridArea: 'preview',
+      overflow: 'auto',
+    },
+    results: {
+      gridArea: 'results',
+    },
   },
-  browser: {
-    gridArea: 'browser',
-    overflow: 'auto',
-  },
-  editor: {
-    gridArea: 'editor',
-    overflow: 'auto',
-  },
-  preview: {
-    gridArea: 'preview',
-    overflow: 'auto',
-  },
-  results: {
-    gridArea: 'results',
-  },
-});
+  { name: 'ScaffolderTemplateEditor' },
+);
 
 export const TemplateEditor = (props: {
   directory: TemplateDirectoryAccess;

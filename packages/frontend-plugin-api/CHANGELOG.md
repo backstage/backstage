@@ -1,5 +1,18 @@
 # @backstage/frontend-plugin-api
 
+## 0.8.0-next.2
+
+### Patch Changes
+
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- 043d7cd: Internal refactor
+- 2a61422: The `factory` option is no longer required when overriding an extension.
+- Updated dependencies
+  - @backstage/core-components@0.14.11-next.1
+  - @backstage/core-plugin-api@1.9.4-next.0
+  - @backstage/version-bridge@1.0.9-next.0
+  - @backstage/types@1.1.1
+
 ## 0.8.0-next.1
 
 ### Patch Changes

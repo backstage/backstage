@@ -29,8 +29,6 @@ import { JsonArray, JsonObject, JsonValue } from '@backstage/types';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/createExtension';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { resolveAppTree } from '../../../frontend-app-api/src/tree/resolveAppTree';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { resolveAppNodeSpecs } from '../../../frontend-app-api/src/tree/resolveAppNodeSpecs';
@@ -39,6 +37,7 @@ import { instantiateAppNodeTree } from '../../../frontend-app-api/src/tree/insta
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { readAppExtensionsConfig } from '../../../frontend-app-api/src/tree/readAppExtensionsConfig';
 import { TestApiRegistry } from '@backstage/test-utils';
+import { toInternalExtensionDefinition } from '@internal/frontend';
 
 /** @public */
 export class ExtensionQuery<UOutput extends AnyExtensionDataRef> {
@@ -213,11 +212,17 @@ export class ExtensionTester<UOutput extends AnyExtensionDataRef> {
     const [subject, ...rest] = this.#extensions;
 
     const extensionsConfig: JsonArray = [
-      ...rest.map(extension => ({
-        [extension.id]: {
-          config: extension.config,
-        },
-      })),
+      ...rest.flatMap(extension =>
+        extension.config
+          ? [
+              {
+                [extension.id]: {
+                  config: extension.config,
+                },
+              },
+            ]
+          : [],
+      ),
       {
         [subject.id]: {
           config: subject.config,

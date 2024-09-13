@@ -1,5 +1,21 @@
 # @backstage/frontend-test-utils
 
+## 0.2.0-next.2
+
+### Patch Changes
+
+- 2a61422: The extension tester will no longer unconditionally enable any additional extensions that have been added.
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- 043d7cd: Internal refactor
+- Updated dependencies
+  - @backstage/test-utils@1.6.0-next.1
+  - @backstage/plugin-app@0.1.0-next.2
+  - @backstage/frontend-app-api@0.9.0-next.2
+  - @backstage/frontend-plugin-api@0.8.0-next.2
+  - @backstage/version-bridge@1.0.9-next.0
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
 ## 0.2.0-next.1
 
 ### Patch Changes

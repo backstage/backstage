@@ -35,6 +35,9 @@ export function isReactRouterBeta(): boolean {
   return !obj.index;
 }
 
+/** @public */
+export type LinkClassKey = 'visuallyHidden' | 'externalLink';
+
 const useStyles = makeStyles(
   {
     visuallyHidden: {

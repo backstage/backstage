@@ -1,5 +1,17 @@
 # @backstage/plugin-signals
 
+## 0.0.10-next.2
+
+### Patch Changes
+
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.14.11-next.1
+  - @backstage/core-plugin-api@1.9.4-next.0
+  - @backstage/theme@0.5.7-next.0
+  - @backstage/plugin-signals-react@0.0.5-next.1
+  - @backstage/types@1.1.1
+
 ## 0.0.10-next.1
 
 ### Patch Changes

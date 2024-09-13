@@ -1,5 +1,28 @@
 # @backstage/plugin-home
 
+## 0.7.10-next.2
+
+### Patch Changes
+
+- c891b69: Add `FavoriteToggle` in `core-components` to standardise favorite marking
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- fa9d8da: Updated dependency `@rjsf/utils` to `5.20.1`.
+  Updated dependency `@rjsf/core` to `5.20.1`.
+  Updated dependency `@rjsf/material-ui` to `5.20.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.20.1`.
+- Updated dependencies
+  - @backstage/core-components@0.14.11-next.1
+  - @backstage/plugin-catalog-react@1.13.0-next.2
+  - @backstage/core-app-api@1.14.3-next.0
+  - @backstage/catalog-client@1.7.0-next.1
+  - @backstage/core-compat-api@0.3.0-next.2
+  - @backstage/core-plugin-api@1.9.4-next.0
+  - @backstage/frontend-plugin-api@0.8.0-next.2
+  - @backstage/theme@0.5.7-next.0
+  - @backstage/plugin-home-react@0.1.17-next.1
+  - @backstage/catalog-model@1.6.0
+  - @backstage/config@1.2.0
+
 ## 0.7.10-next.1
 
 ### Patch Changes
