@@ -49,8 +49,56 @@ export interface BackendRegisterInit {
   };
 }
 
+/**
+ * A registry of backend instances, used to manage process shutdown hooks across all instances.
+ */
+const instanceRegistry = new (class InstanceRegistry {
+  #registered = false;
+  #instances = new Set<BackendInitializer>();
+
+  register(instance: BackendInitializer) {
+    if (!this.#registered) {
+      this.#registered = true;
+
+      process.addListener('SIGTERM', this.#exitHandler);
+      process.addListener('SIGINT', this.#exitHandler);
+      process.addListener('beforeExit', this.#exitHandler);
+    }
+
+    this.#instances.add(instance);
+  }
+
+  unregister(instance: BackendInitializer) {
+    this.#instances.delete(instance);
+  }
+
+  #exitHandler = async () => {
+    try {
+      const results = await Promise.allSettled(
+        Array.from(this.#instances).map(b => b.stop()),
+      );
+      const errors = results.flatMap(r =>
+        r.status === 'rejected' ? [r.reason] : [],
+      );
+
+      if (errors.length > 0) {
+        for (const error of errors) {
+          console.error(error);
+        }
+        process.exit(1);
+      } else {
+        process.exit(0);
+      }
+    } catch (error) {
+      console.error(error);
+      process.exit(1);
+    }
+  };
+})();
+
 export class BackendInitializer {
   #startPromise?: Promise<void>;
+  #stopPromise?: Promise<void>;
   #registrations = new Array<InternalBackendRegistrations>();
   #extensionPoints = new Map<string, { impl: unknown; pluginId: string }>();
   #serviceRegistry: ServiceRegistry;
@@ -129,24 +177,11 @@ export class BackendInitializer {
     if (this.#startPromise) {
       throw new Error('Backend has already started');
     }
+    if (this.#stopPromise) {
+      throw new Error('Backend has already stopped');
+    }
 
-    const exitHandler = async () => {
-      process.removeListener('SIGTERM', exitHandler);
-      process.removeListener('SIGINT', exitHandler);
-      process.removeListener('beforeExit', exitHandler);
-
-      try {
-        await this.stop();
-        process.exit(0);
-      } catch (error) {
-        console.error(error);
-        process.exit(1);
-      }
-    };
-
-    process.addListener('SIGTERM', exitHandler);
-    process.addListener('SIGINT', exitHandler);
-    process.addListener('beforeExit', exitHandler);
+    instanceRegistry.register(this);
 
     this.#startPromise = this.#doStart();
     await this.#startPromise;
@@ -336,7 +371,17 @@ export class BackendInitializer {
     }
   }
 
+  // It's fine to call .stop() multiple times, which for example can happen with manual stop + process exit
   async stop(): Promise<void> {
+    instanceRegistry.unregister(this);
+
+    if (!this.#stopPromise) {
+      this.#stopPromise = this.#doStop();
+    }
+    await this.#stopPromise;
+  }
+
+  async #doStop(): Promise<void> {
     if (!this.#startPromise) {
       return;
     }
