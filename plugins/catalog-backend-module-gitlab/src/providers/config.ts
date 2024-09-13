@@ -60,6 +60,9 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
   const restrictUsersToGroup =
     config.getOptionalBoolean('restrictUsersToGroup') ?? false;
 
+  const includeUsersWithoutSeat =
+    config.getOptionalBoolean('includeUsersWithoutSeat') ?? false;
+
   return {
     id,
     group,
@@ -77,6 +80,7 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
     skipForkedRepos,
     excludeRepos,
     restrictUsersToGroup,
+    includeUsersWithoutSeat,
   };
 }
 

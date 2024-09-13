@@ -137,12 +137,24 @@ export class GitLabClient {
   async listSaaSUsers(
     groupPath: string,
     options?: CommonListOptions,
+    includeUsersWithoutSeat?: boolean | false,
   ): Promise<PagedResponse<GitLabUser>> {
     return this.listGroupMembers(groupPath, {
       ...options,
+      active: true, // Users with seat are always active but for users without seat we need to filter
       show_seat_info: true,
     }).then(resp => {
-      resp.items = resp.items.filter(user => user.is_using_seat);
+      // Filter is optional to allow to import Gitlab Free users without seats
+      // https://github.com/backstage/backstage/issues/26438
+      // Filter out API tokens https://docs.gitlab.com/ee/user/project/settings/project_access_tokens.html#bot-users-for-projects
+      if (includeUsersWithoutSeat) {
+        const regex = /^(?:project|group)_(\w+)_bot_(\w+)$/;
+        resp.items = resp.items.filter(user => {
+          return !regex.test(user.username);
+        });
+      } else {
+        resp.items = resp.items.filter(user => user.is_using_seat);
+      }
       return resp;
     });
   }

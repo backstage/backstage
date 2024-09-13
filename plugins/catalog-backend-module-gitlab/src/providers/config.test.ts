@@ -63,6 +63,7 @@ describe('config', () => {
         skipForkedRepos: false,
         excludeRepos: [],
         restrictUsersToGroup: false,
+        includeUsersWithoutSeat: false,
       }),
     );
   });
@@ -78,6 +79,7 @@ describe('config', () => {
               branch: 'not-master',
               fallbackBranch: 'main',
               entityFilename: 'custom-file.yaml',
+              includeUsersWithoutSeat: true,
             },
           },
         },
@@ -104,6 +106,7 @@ describe('config', () => {
         skipForkedRepos: false,
         excludeRepos: [],
         restrictUsersToGroup: false,
+        includeUsersWithoutSeat: true,
       }),
     );
   });
@@ -146,6 +149,7 @@ describe('config', () => {
         restrictUsersToGroup: false,
         excludeRepos: [],
         skipForkedRepos: true,
+        includeUsersWithoutSeat: false,
       }),
     );
   });
@@ -189,6 +193,7 @@ describe('config', () => {
         restrictUsersToGroup: false,
         skipForkedRepos: false,
         excludeRepos: ['foo/bar', 'quz/qux'],
+        includeUsersWithoutSeat: false,
       }),
     );
   });
@@ -232,6 +237,7 @@ describe('config', () => {
         skipForkedRepos: false,
         restrictUsersToGroup: false,
         excludeRepos: [],
+        includeUsersWithoutSeat: false,
         schedule: {
           frequency: { minutes: 30 },
           timeout: {

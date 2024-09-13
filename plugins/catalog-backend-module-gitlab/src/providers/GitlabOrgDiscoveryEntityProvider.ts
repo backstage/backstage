@@ -400,7 +400,12 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
         ? rootGroupSplit[rootGroupSplit.length - 1]
         : rootGroupSplit[0];
       users = paginated<GitLabUser>(
-        options => this.gitLabClient.listSaaSUsers(rootGroup, options),
+        options =>
+          this.gitLabClient.listSaaSUsers(
+            rootGroup,
+            options,
+            this.config.includeUsersWithoutSeat,
+          ),
         {
           page: 1,
           per_page: 100,

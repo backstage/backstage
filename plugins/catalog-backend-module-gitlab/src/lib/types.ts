@@ -237,6 +237,13 @@ export type GitlabProviderConfig = {
    * Paths should not start or end with a slash.
    */
   excludeRepos?: string[];
+
+  /**
+   * If true, users without a seat will be included in the catalog.
+   * Group/Application Access Tokens are still filtered out but you might find service accounts or other users without a seat.
+   * Defaults to `false`
+   */
+  includeUsersWithoutSeat?: boolean;
 };
 
 /**
