@@ -32,6 +32,7 @@ import {
   KubernetesRequestAuth,
 } from '@backstage/plugin-kubernetes-common';
 import { getMockReq, getMockRes } from '@jest-mock/express';
+import type { Request } from 'express';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Server } from 'http';
@@ -43,8 +44,8 @@ import { Config } from '@kubernetes/client-node';
 
 import { LocalKubectlProxyClusterLocator } from '../cluster-locator/LocalKubectlProxyLocator';
 import {
-  AuthenticationStrategy,
   AnonymousStrategy,
+  AuthenticationStrategy,
   KubernetesCredential,
 } from '../auth';
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
@@ -54,8 +55,6 @@ import {
   HEADER_KUBERNETES_CLUSTER,
   KubernetesProxy,
 } from './KubernetesProxy';
-
-import type { Request } from 'express';
 import {
   BackstageCredentials,
   DiscoveryService,
@@ -82,6 +81,7 @@ describe('KubernetesProxy', () => {
 
   const permissionApi: jest.Mocked<PermissionEvaluator> = {
     authorize: jest.fn(),
+    authorizeBatch: jest.fn(),
     authorizeConditional: jest.fn(),
   };
 

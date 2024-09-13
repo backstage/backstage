@@ -248,6 +248,14 @@ export interface PermissionEvaluator {
   ): Promise<AuthorizePermissionResponse[]>;
 
   /**
+   * Evaluates batch of {@link Permission | Permissions} and returns a definitive decision for each.
+   */
+  authorizeBatch(
+    request: EvaluatePermissionRequestBatch,
+    options?: EvaluatorRequestOptions & { _ignored?: never }, // Since the options are empty we add this placeholder to reject all options
+  ): Promise<EvaluatePermissionResponseBatch>;
+
+  /**
    * Evaluates {@link ResourcePermission | ResourcePermissions} and returns both definitive and
    * conditional decisions, depending on the configured
    * {@link @backstage/plugin-permission-node#PermissionPolicy}. This method is useful when the

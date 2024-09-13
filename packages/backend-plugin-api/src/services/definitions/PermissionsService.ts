@@ -17,6 +17,8 @@
 import {
   AuthorizePermissionRequest,
   AuthorizePermissionResponse,
+  EvaluatePermissionRequestBatch,
+  EvaluatePermissionResponseBatch,
   EvaluatorRequestOptions,
   PermissionEvaluator,
   QueryPermissionRequest,
@@ -58,6 +60,16 @@ export interface PermissionsService extends PermissionEvaluator {
     requests: AuthorizePermissionRequest[],
     options: PermissionsServiceRequestOptions,
   ): Promise<AuthorizePermissionResponse[]>;
+
+  /**
+   * Evaluates batch of
+   * {@link backstage/plugin-permission-common#Permission | Permissions} and
+   * returns a definitive decision for each.
+   */
+  authorizeBatch(
+    request: EvaluatePermissionRequestBatch,
+    options: PermissionsServiceRequestOptions,
+  ): Promise<EvaluatePermissionResponseBatch>;
 
   /**
    * Evaluates {@link @backstage/plugin-permission-common#ResourcePermission | ResourcePermissions} and returns both definitive and

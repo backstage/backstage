@@ -9,7 +9,9 @@ import { AuthorizePermissionResponse } from '@backstage/plugin-permission-common
 import { Config } from '@backstage/config';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { EvaluatePermissionRequest } from '@backstage/plugin-permission-common';
+import { EvaluatePermissionRequestBatch } from '@backstage/plugin-permission-common';
 import { EvaluatePermissionResponse } from '@backstage/plugin-permission-common';
+import { EvaluatePermissionResponseBatch } from '@backstage/plugin-permission-common';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { Permission } from '@backstage/plugin-permission-common';
 import { default as React_2 } from 'react';
@@ -31,6 +33,10 @@ export class IdentityPermissionApi implements PermissionApi {
     request: AuthorizePermissionRequest,
   ): Promise<AuthorizePermissionResponse>;
   // (undocumented)
+  authorizeBatch(
+    request: EvaluatePermissionRequestBatch,
+  ): Promise<EvaluatePermissionResponseBatch>;
+  // (undocumented)
   static create(options: {
     config: Config;
     discovery: DiscoveryApi;
@@ -43,6 +49,9 @@ export type PermissionApi = {
   authorize(
     request: EvaluatePermissionRequest,
   ): Promise<EvaluatePermissionResponse>;
+  authorizeBatch(
+    request: EvaluatePermissionRequestBatch,
+  ): Promise<EvaluatePermissionResponseBatch>;
 };
 
 // @public

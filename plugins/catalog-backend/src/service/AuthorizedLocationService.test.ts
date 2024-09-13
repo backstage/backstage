@@ -29,6 +29,7 @@ describe('AuthorizedLocationService', () => {
   };
   const fakePermissionApi = {
     authorize: jest.fn(),
+    authorizeBatch: jest.fn(),
     authorizeConditional: jest.fn(),
   };
 

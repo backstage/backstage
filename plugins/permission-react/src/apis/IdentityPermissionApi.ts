@@ -19,6 +19,8 @@ import { PermissionApi } from './PermissionApi';
 import {
   AuthorizePermissionRequest,
   AuthorizePermissionResponse,
+  EvaluatePermissionRequestBatch,
+  EvaluatePermissionResponseBatch,
   PermissionClient,
 } from '@backstage/plugin-permission-common';
 import { Config } from '@backstage/config';
@@ -52,5 +54,14 @@ export class IdentityPermissionApi implements PermissionApi {
       await this.identityApi.getCredentials(),
     );
     return response[0];
+  }
+
+  async authorizeBatch(
+    request: EvaluatePermissionRequestBatch,
+  ): Promise<EvaluatePermissionResponseBatch> {
+    return this.permissionClient.authorizeBatch(
+      request,
+      await this.identityApi.getCredentials(),
+    );
   }
 }

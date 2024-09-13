@@ -17,8 +17,8 @@
 import { cacheServiceFactory } from '@backstage/backend-defaults/cache';
 import { databaseServiceFactory } from '@backstage/backend-defaults/database';
 import {
-  HostDiscovery,
   discoveryServiceFactory,
+  HostDiscovery,
 } from '@backstage/backend-defaults/discovery';
 import { httpRouterServiceFactory } from '@backstage/backend-defaults/httpRouter';
 import { lifecycleServiceFactory } from '@backstage/backend-defaults/lifecycle';
@@ -33,6 +33,8 @@ import {
   AuthService,
   BackstageCredentials,
   BackstageUserInfo,
+  coreServices,
+  createServiceFactory,
   DiscoveryService,
   HttpAuthService,
   LoggerService,
@@ -40,8 +42,6 @@ import {
   ServiceFactory,
   ServiceRef,
   UserInfoService,
-  coreServices,
-  createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import {
@@ -384,6 +384,7 @@ export namespace mockServices {
     export const factory = () => permissionsServiceFactory;
     export const mock = simpleMock(coreServices.permissions, () => ({
       authorize: jest.fn(),
+      authorizeBatch: jest.fn(),
       authorizeConditional: jest.fn(),
     }));
   }

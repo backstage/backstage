@@ -18,6 +18,8 @@ import {
   AuthorizePermissionRequest,
   AuthorizePermissionResponse,
   DefinitivePolicyDecision,
+  EvaluatePermissionRequestBatch,
+  EvaluatePermissionResponseBatch,
   EvaluatorRequestOptions,
   Permission,
   PermissionAuthorizer,
@@ -103,6 +105,20 @@ export function toPermissionEvaluator(
       const response = await permissionAuthorizer.authorize(requests, options);
 
       return response as DefinitivePolicyDecision[];
+    },
+    async authorizeBatch(
+      request: EvaluatePermissionRequestBatch,
+      options?: EvaluatorRequestOptions, // Since the options are empty we add this placeholder to reject all options
+    ): Promise<EvaluatePermissionResponseBatch> {
+      const resp: EvaluatePermissionResponseBatch = { items: [] };
+      for (const item of request.items) {
+        const response = await permissionAuthorizer.authorize([item], options);
+        resp.items.push({
+          id: item.id,
+          ...(response[0] as DefinitivePolicyDecision),
+        });
+      }
+      return resp;
     },
     authorizeConditional(
       requests: QueryPermissionRequest[],

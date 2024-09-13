@@ -16,7 +16,9 @@
 
 import {
   EvaluatePermissionRequest,
+  EvaluatePermissionRequestBatch,
   EvaluatePermissionResponse,
+  EvaluatePermissionResponseBatch,
 } from '@backstage/plugin-permission-common';
 import { ApiRef, createApiRef } from '@backstage/core-plugin-api';
 
@@ -30,6 +32,9 @@ export type PermissionApi = {
   authorize(
     request: EvaluatePermissionRequest,
   ): Promise<EvaluatePermissionResponse>;
+  authorizeBatch(
+    request: EvaluatePermissionRequestBatch,
+  ): Promise<EvaluatePermissionResponseBatch>;
 };
 
 /**

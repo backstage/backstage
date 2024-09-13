@@ -15,6 +15,8 @@ import { ConditionalPolicyDecision } from '@backstage/plugin-permission-common';
 import { Config } from '@backstage/config';
 import { DefinitivePolicyDecision } from '@backstage/plugin-permission-common';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
+import { EvaluatePermissionRequestBatch } from '@backstage/plugin-permission-common';
+import { EvaluatePermissionResponseBatch } from '@backstage/plugin-permission-common';
 import express from 'express';
 import { IdentifiedPermissionMessage } from '@backstage/plugin-permission-common';
 import { MetadataResponse as MetadataResponse_2 } from '@backstage/plugin-permission-common';
@@ -280,6 +282,11 @@ export class ServerPermissionClient implements PermissionsService {
     requests: AuthorizePermissionRequest[],
     options?: PermissionsServiceRequestOptions,
   ): Promise<AuthorizePermissionResponse[]>;
+  // (undocumented)
+  authorizeBatch(
+    request: EvaluatePermissionRequestBatch,
+    options: PermissionsServiceRequestOptions,
+  ): Promise<EvaluatePermissionResponseBatch>;
   // (undocumented)
   authorizeConditional(
     queries: QueryPermissionRequest[],

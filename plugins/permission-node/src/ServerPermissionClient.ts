@@ -15,8 +15,8 @@
  */
 
 import {
-  TokenManager,
   createLegacyAuthAdapters,
+  TokenManager,
 } from '@backstage/backend-common';
 import {
   AuthService,
@@ -32,6 +32,8 @@ import {
   AuthorizePermissionResponse,
   AuthorizeResult,
   DefinitivePolicyDecision,
+  EvaluatePermissionRequestBatch,
+  EvaluatePermissionResponseBatch,
   Permission,
   PermissionClient,
   PolicyDecision,
@@ -126,6 +128,28 @@ export class ServerPermissionClient implements PermissionsService {
     );
   }
 
+  async authorizeBatch(
+    request: EvaluatePermissionRequestBatch,
+    options: PermissionsServiceRequestOptions,
+  ): Promise<EvaluatePermissionResponseBatch> {
+    const credentials = await this.#getIncomingCredentials(options);
+    if (credentials && this.#auth.isPrincipal(credentials, 'service')) {
+      return this.#servicePrincipalBatchDecision(request, credentials);
+    } else if (!this.#permissionEnabled) {
+      return {
+        items: request.items.map(p => ({
+          id: p.id,
+          result: AuthorizeResult.ALLOW,
+        })),
+      };
+    }
+
+    return this.#permissionClient.authorizeBatch(
+      request,
+      await this.#getRequestOptions(options),
+    );
+  }
+
   async #getRequestOptions(
     options?: PermissionsServiceRequestOptions,
   ): Promise<{ token?: string } | undefined> {
@@ -178,5 +202,33 @@ export class ServerPermissionClient implements PermissionsService {
 
       return { result: AuthorizeResult.ALLOW };
     });
+  }
+
+  #servicePrincipalBatchDecision(
+    input: EvaluatePermissionRequestBatch,
+    credentials: BackstageCredentials<BackstageServicePrincipal>,
+  ): EvaluatePermissionResponseBatch {
+    const { permissionNames, permissionAttributes } =
+      credentials.principal.accessRestrictions ?? {};
+
+    return {
+      items: input.items.map(item => {
+        if (
+          permissionNames &&
+          !permissionNames.includes(item.permission.name)
+        ) {
+          return { id: item.id, result: AuthorizeResult.DENY };
+        }
+
+        if (permissionAttributes?.action) {
+          const action = item.permission.attributes?.action;
+          if (!action || !permissionAttributes.action.includes(action)) {
+            return { id: item.id, result: AuthorizeResult.DENY };
+          }
+        }
+
+        return { id: item.id, result: AuthorizeResult.ALLOW };
+      }),
+    };
   }
 }

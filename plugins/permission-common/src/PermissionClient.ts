@@ -20,14 +20,16 @@ import fetch from 'cross-fetch';
 import * as uuid from 'uuid';
 import { z } from 'zod';
 import {
-  AuthorizeResult,
-  PermissionMessageBatch,
-  PermissionCriteria,
-  PermissionCondition,
-  PermissionEvaluator,
-  QueryPermissionRequest,
   AuthorizePermissionRequest,
   AuthorizePermissionResponse,
+  AuthorizeResult,
+  EvaluatePermissionRequestBatch,
+  EvaluatePermissionResponseBatch,
+  PermissionCondition,
+  PermissionCriteria,
+  PermissionEvaluator,
+  PermissionMessageBatch,
+  QueryPermissionRequest,
   QueryPermissionResponse,
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
@@ -130,6 +132,20 @@ export class PermissionClient implements PermissionEvaluator {
   }
 
   /**
+   * {@inheritdoc PermissionEvaluator.authorize}
+   */
+  async authorizeBatch(
+    request: EvaluatePermissionRequestBatch,
+    options?: PermissionClientRequestOptions,
+  ): Promise<EvaluatePermissionResponseBatch> {
+    return this.makeRequest(
+      request,
+      authorizePermissionResponseSchema,
+      options,
+    );
+  }
+
+  /**
    * {@inheritdoc PermissionEvaluator.authorizeConditional}
    */
   async authorizeConditional(
@@ -140,20 +156,29 @@ export class PermissionClient implements PermissionEvaluator {
   }
 
   private async makeRequest<TQuery, TResult>(
-    queries: TQuery[],
+    queries: TQuery[] | PermissionMessageBatch<TQuery>,
     itemSchema: z.ZodSchema<TResult>,
     options?: AuthorizeRequestOptions,
   ) {
     if (!this.enabled) {
+      if ('items' in queries) {
+        return queries.items.map(q => ({
+          id: q.id,
+          result: AuthorizeResult.ALLOW as const,
+        }));
+      }
       return queries.map(_ => ({ result: AuthorizeResult.ALLOW as const }));
     }
 
-    const request: PermissionMessageBatch<TQuery> = {
-      items: queries.map(query => ({
-        id: uuid.v4(),
-        ...query,
-      })),
-    };
+    const request: PermissionMessageBatch<TQuery> =
+      'items' in queries
+        ? queries
+        : {
+            items: queries.map(query => ({
+              id: uuid.v4(),
+              ...query,
+            })),
+          };
 
     const permissionApi = await this.discovery.getBaseUrl('permission');
     const response = await fetch(`${permissionApi}/authorize`, {
@@ -169,6 +194,10 @@ export class PermissionClient implements PermissionEvaluator {
     }
 
     const responseBody = await response.json();
+
+    if ('items' in queries) {
+      return responseBody;
+    }
 
     const parsedResponse = responseSchema(
       itemSchema,

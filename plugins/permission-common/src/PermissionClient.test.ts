@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { RestContext, rest } from 'msw';
+import { rest, RestContext } from 'msw';
 import { setupServer } from 'msw/node';
 import { ConfigReader } from '@backstage/config';
 import { PermissionClient } from './PermissionClient';
 import {
-  EvaluatePermissionRequest,
   AuthorizeResult,
-  IdentifiedPermissionMessage,
   ConditionalPolicyDecision,
+  EvaluatePermissionRequest,
+  IdentifiedPermissionMessage,
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
 import { createPermission } from './permissions';
@@ -95,6 +95,16 @@ describe('PermissionClient', () => {
           }),
         ],
       });
+    });
+
+    it('should allow batch authorize', async () => {
+      const id = '1';
+      const resp = await client.authorizeBatch({
+        items: [{ id, ...mockAuthorizeConditional }],
+      });
+      expect(mockAuthorizeHandler).toHaveBeenCalled();
+      expect(resp.items[0].id).toBe(id);
+      expect(resp.items[0].result).toBe(AuthorizeResult.ALLOW);
     });
 
     it('should return the response from the fetch request', async () => {

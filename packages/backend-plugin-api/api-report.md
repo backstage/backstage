@@ -9,6 +9,8 @@ import { AuthorizePermissionRequest } from '@backstage/plugin-permission-common'
 import { AuthorizePermissionResponse } from '@backstage/plugin-permission-common';
 import { Config } from '@backstage/config';
 import { Duration } from 'luxon';
+import { EvaluatePermissionRequestBatch } from '@backstage/plugin-permission-common';
+import { EvaluatePermissionResponseBatch } from '@backstage/plugin-permission-common';
 import { EvaluatorRequestOptions } from '@backstage/plugin-permission-common';
 import { Handler } from 'express';
 import { HumanDuration } from '@backstage/types';
@@ -431,6 +433,10 @@ export interface PermissionsService extends PermissionEvaluator {
     requests: AuthorizePermissionRequest[],
     options: PermissionsServiceRequestOptions,
   ): Promise<AuthorizePermissionResponse[]>;
+  authorizeBatch(
+    request: EvaluatePermissionRequestBatch,
+    options: PermissionsServiceRequestOptions,
+  ): Promise<EvaluatePermissionResponseBatch>;
   authorizeConditional(
     requests: QueryPermissionRequest[],
     options: PermissionsServiceRequestOptions,

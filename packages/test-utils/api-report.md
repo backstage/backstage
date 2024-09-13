@@ -19,7 +19,9 @@ import { ErrorApi } from '@backstage/core-plugin-api';
 import { ErrorApiError } from '@backstage/core-plugin-api';
 import { ErrorApiErrorContext } from '@backstage/core-plugin-api';
 import { EvaluatePermissionRequest } from '@backstage/plugin-permission-common';
+import { EvaluatePermissionRequestBatch } from '@backstage/plugin-permission-common';
 import { EvaluatePermissionResponse } from '@backstage/plugin-permission-common';
+import { EvaluatePermissionResponseBatch } from '@backstage/plugin-permission-common';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
@@ -174,6 +176,10 @@ export class MockPermissionApi implements PermissionApi {
   authorize(
     request: EvaluatePermissionRequest,
   ): Promise<EvaluatePermissionResponse>;
+  // (undocumented)
+  authorizeBatch(
+    request: EvaluatePermissionRequestBatch,
+  ): Promise<EvaluatePermissionResponseBatch>;
 }
 
 // @public

@@ -64,6 +64,7 @@ const catalogApi: Partial<CatalogApi> = {
 
 const permissionApi: typeof permissionApiRef.T = {
   authorize: async () => ({ result: AuthorizeResult.ALLOW }),
+  authorizeBatch: jest.fn(),
 };
 
 export const Default = () => (

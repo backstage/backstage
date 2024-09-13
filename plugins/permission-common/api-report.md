@@ -177,6 +177,10 @@ export class PermissionClient implements PermissionEvaluator {
     requests: AuthorizePermissionRequest[],
     options?: PermissionClientRequestOptions,
   ): Promise<AuthorizePermissionResponse[]>;
+  authorizeBatch(
+    request: EvaluatePermissionRequestBatch,
+    options?: PermissionClientRequestOptions,
+  ): Promise<EvaluatePermissionResponseBatch>;
   authorizeConditional(
     queries: QueryPermissionRequest[],
     options?: PermissionClientRequestOptions,
@@ -213,6 +217,12 @@ export interface PermissionEvaluator {
       _ignored?: never;
     },
   ): Promise<AuthorizePermissionResponse[]>;
+  authorizeBatch(
+    request: EvaluatePermissionRequestBatch,
+    options?: EvaluatorRequestOptions & {
+      _ignored?: never;
+    },
+  ): Promise<EvaluatePermissionResponseBatch>;
   authorizeConditional(
     requests: QueryPermissionRequest[],
     options?: EvaluatorRequestOptions & {

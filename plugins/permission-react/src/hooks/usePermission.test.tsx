@@ -52,7 +52,10 @@ function renderComponent(mockApi: PermissionApi) {
 }
 
 describe('usePermission', () => {
-  const mockPermissionApi = { authorize: jest.fn() };
+  const mockPermissionApi = {
+    authorize: jest.fn(),
+    authorizeBatch: jest.fn(),
+  };
 
   it('Returns loading when permissionApi has not yet responded.', () => {
     mockPermissionApi.authorize.mockReturnValueOnce(new Promise(() => {}));

@@ -23,12 +23,16 @@ import { mockServices } from '@backstage/backend-test-utils';
 
 const mockedAuthorize: jest.MockedFunction<PermissionEvaluator['authorize']> =
   jest.fn();
+const mockedAuthorizeBatch: jest.MockedFunction<
+  PermissionEvaluator['authorizeBatch']
+> = jest.fn();
 const mockedPermissionQuery: jest.MockedFunction<
   PermissionEvaluator['authorizeConditional']
 > = jest.fn();
 
 const permissionEvaluator: PermissionEvaluator = {
   authorize: mockedAuthorize,
+  authorizeBatch: mockedAuthorizeBatch,
   authorizeConditional: mockedPermissionQuery,
 };
 

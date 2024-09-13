@@ -16,11 +16,11 @@
 
 import { ConfigReader } from '@backstage/config';
 import {
-  EvaluatePermissionResponse,
   AuthorizeResult,
   createPermission,
-  PolicyDecision,
+  EvaluatePermissionResponse,
   PermissionEvaluator,
+  PolicyDecision,
 } from '@backstage/plugin-permission-common';
 import {
   DocumentTypeInfo,
@@ -28,9 +28,9 @@ import {
 } from '@backstage/plugin-search-common';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
 import {
-  encodePageCursor,
-  decodePageCursor,
   AuthorizedSearchEngine,
+  decodePageCursor,
+  encodePageCursor,
 } from './AuthorizedSearchEngine';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 
@@ -74,12 +74,16 @@ describe('AuthorizedSearchEngine', () => {
 
   const mockedAuthorize: jest.MockedFunction<PermissionEvaluator['authorize']> =
     jest.fn();
+  const mockedAuthorizeBatch: jest.MockedFunction<
+    PermissionEvaluator['authorizeBatch']
+  > = jest.fn();
   const mockedPermissionQuery: jest.MockedFunction<
     PermissionEvaluator['authorizeConditional']
   > = jest.fn();
 
   const permissionEvaluator: PermissionEvaluator = {
     authorize: mockedAuthorize,
+    authorizeBatch: mockedAuthorizeBatch,
     authorizeConditional: mockedPermissionQuery,
   };
 

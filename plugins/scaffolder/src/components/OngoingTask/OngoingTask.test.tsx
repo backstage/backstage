@@ -17,9 +17,9 @@
 import { OngoingTask } from './OngoingTask';
 import React from 'react';
 import {
+  MockPermissionApi,
   renderInTestApp,
   TestApiProvider,
-  MockPermissionApi,
 } from '@backstage/test-utils';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import { act, fireEvent, waitFor, within } from '@testing-library/react';
@@ -149,7 +149,10 @@ describe('OngoingTask', () => {
     const mockAuthorize = jest
       .fn()
       .mockImplementation(async () => ({ result: AuthorizeResult.DENY }));
-    const permissionApi: PermissionApi = { authorize: mockAuthorize };
+    const permissionApi: PermissionApi = {
+      authorize: mockAuthorize,
+      authorizeBatch: jest.fn(),
+    };
     const rendered = await render(permissionApi);
 
     const { getByTestId } = rendered;

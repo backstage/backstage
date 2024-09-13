@@ -75,6 +75,7 @@ describe('createRouter readonly disabled', () => {
     };
     permissionsService = {
       authorize: jest.fn(),
+      authorizeBatch: jest.fn(),
       authorizeConditional: jest.fn(),
     };
 

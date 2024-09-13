@@ -36,6 +36,9 @@ const mockPermissionEvaluator: PermissionEvaluator = {
   authorize: () => {
     throw new Error('Not implemented');
   },
+  authorizeBatch: () => {
+    throw new Error('Not implemented');
+  },
   authorizeConditional: () => {
     throw new Error('Not implemented');
   },

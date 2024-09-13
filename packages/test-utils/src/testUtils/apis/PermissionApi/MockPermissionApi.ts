@@ -16,9 +16,11 @@
 
 import { PermissionApi } from '@backstage/plugin-permission-react';
 import {
-  EvaluatePermissionResponse,
-  EvaluatePermissionRequest,
   AuthorizeResult,
+  EvaluatePermissionRequest,
+  EvaluatePermissionRequestBatch,
+  EvaluatePermissionResponse,
+  EvaluatePermissionResponseBatch,
 } from '@backstage/plugin-permission-common';
 
 /**
@@ -40,5 +42,16 @@ export class MockPermissionApi implements PermissionApi {
     request: EvaluatePermissionRequest,
   ): Promise<EvaluatePermissionResponse> {
     return { result: this.requestHandler(request) };
+  }
+
+  async authorizeBatch(
+    request: EvaluatePermissionRequestBatch,
+  ): Promise<EvaluatePermissionResponseBatch> {
+    return {
+      items: request.items.map(permission => ({
+        id: permission.id,
+        result: this.requestHandler(permission),
+      })),
+    };
   }
 }
