@@ -137,7 +137,7 @@ export class GitLabClient {
   async listSaaSUsers(
     groupPath: string,
     options?: CommonListOptions,
-    includeUsersWithoutSeat?: boolean | false,
+    includeUsersWithoutSeat?: boolean,
   ): Promise<PagedResponse<GitLabUser>> {
     return this.listGroupMembers(groupPath, {
       ...options,
