@@ -158,13 +158,13 @@ export async function createEventBusRouter(options: {
       allow: ['service'],
     });
     const topic = req.body.event.topic;
-    const consumedBy = req.body.consumedBy;
+    const notifiedSubscribers = req.body.notifiedSubscribers;
     const result = await store.publish({
       params: {
         topic,
         eventPayload: req.body.event.payload,
       } as EventParams,
-      consumedBy: req.body.consumedBy,
+      notifiedSubscribers: req.body.notifiedSubscribers,
     });
     if (result) {
       logger.info(`Published event to '${topic}' with ID '${result.eventId}'`, {
@@ -172,8 +172,8 @@ export async function createEventBusRouter(options: {
       });
       res.status(201).end();
     } else {
-      if (consumedBy) {
-        const notified = `'${consumedBy.join("', '")}'`;
+      if (notifiedSubscribers) {
+        const notified = `'${notifiedSubscribers.join("', '")}'`;
         logger.info(
           `Skipped publishing of event to '${topic}', subscribers have already been notified: ${notified}`,
           { subject: credentials.principal.subject },

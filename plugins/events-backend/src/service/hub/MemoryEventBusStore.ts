@@ -20,7 +20,9 @@ import { NotFoundError } from '@backstage/errors';
 const MAX_BATCH_SIZE = 10;
 
 export class MemoryEventBusStore implements EventBusStore {
-  #events = new Array<EventParams & { seq: number; consumedBy: Set<string> }>();
+  #events = new Array<
+    EventParams & { seq: number; notifiedSubscribers: Set<string> }
+  >();
   #subscribers = new Map<
     string,
     { id: string; seq: number; topics: Set<string> }
@@ -32,14 +34,14 @@ export class MemoryEventBusStore implements EventBusStore {
 
   async publish(options: {
     params: EventParams;
-    consumedBy: string[];
+    notifiedSubscribers: string[];
   }): Promise<{ eventId: string } | undefined> {
     const topic = options.params.topic;
-    const consumedBy = new Set(options.consumedBy);
+    const notifiedSubscribers = new Set(options.notifiedSubscribers);
 
     let hasOtherSubscribers = false;
     for (const sub of this.#subscribers.values()) {
-      if (sub.topics.has(topic) && !consumedBy.has(sub.id)) {
+      if (sub.topics.has(topic) && !notifiedSubscribers.has(sub.id)) {
         hasOtherSubscribers = true;
         break;
       }
@@ -49,7 +51,7 @@ export class MemoryEventBusStore implements EventBusStore {
     }
 
     const nextSeq = this.#getMaxSeq() + 1;
-    this.#events.push({ ...options.params, consumedBy, seq: nextSeq });
+    this.#events.push({ ...options.params, notifiedSubscribers, seq: nextSeq });
 
     for (const listener of this.#listeners) {
       if (listener.topics.has(topic)) {
@@ -88,7 +90,7 @@ export class MemoryEventBusStore implements EventBusStore {
         event =>
           event.seq > sub.seq &&
           sub.topics.has(event.topic) &&
-          !event.consumedBy.has(id),
+          !event.notifiedSubscribers.has(id),
       )
       .slice(0, MAX_BATCH_SIZE);
 

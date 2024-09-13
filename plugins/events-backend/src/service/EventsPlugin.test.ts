@@ -119,12 +119,15 @@ describe('eventsPlugin', () => {
       publish(
         topic: string,
         payload: unknown,
-        options?: { consumedBy?: string[] },
+        options?: { notifiedSubscribers?: string[] },
       ) {
         return request(this.backend.server)
           .post('/api/events/bus/v1/events')
           .set('authorization', mockCredentials.service.header())
-          .send({ event: { topic, payload }, consumedBy: options?.consumedBy });
+          .send({
+            event: { topic, payload },
+            notifiedSubscribers: options?.notifiedSubscribers,
+          });
       }
 
       readEvents(id: string) {
@@ -278,7 +281,7 @@ describe('eventsPlugin', () => {
             'test',
             { for: 'tester-2' },
             {
-              consumedBy: ['tester-1'],
+              notifiedSubscribers: ['tester-1'],
             },
           )
           .expect(201);
@@ -287,7 +290,7 @@ describe('eventsPlugin', () => {
             'test',
             { for: 'tester-1' },
             {
-              consumedBy: ['tester-2'],
+              notifiedSubscribers: ['tester-2'],
             },
           )
           .expect(201);
@@ -362,7 +365,11 @@ describe('eventsPlugin', () => {
         await helper.subscribe('tester', ['test']).expect(201);
 
         await helper
-          .publish('test', { for: 'tester-2' }, { consumedBy: ['tester'] })
+          .publish(
+            'test',
+            { for: 'tester-2' },
+            { notifiedSubscribers: ['tester'] },
+          )
           .expect(204);
 
         await backend.stop();

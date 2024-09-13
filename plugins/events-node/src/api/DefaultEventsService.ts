@@ -127,7 +127,7 @@ class PluginEventsService implements EventsService {
         {
           body: {
             event: { payload: params.eventPayload, topic: params.topic },
-            consumedBy: notifiedSubscribers,
+            notifiedSubscribers,
           },
         },
         { token },

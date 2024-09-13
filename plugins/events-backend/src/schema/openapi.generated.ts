@@ -159,7 +159,7 @@ export const spec = {
                   event: {
                     $ref: '#/components/schemas/Event',
                   },
-                  consumedBy: {
+                  notifiedSubscribers: {
                     type: 'array',
                     description:
                       'The IDs of subscriptions that have already received this event',
