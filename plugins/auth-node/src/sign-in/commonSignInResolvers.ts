@@ -19,7 +19,7 @@ import { createSignInResolverFactory } from './createSignInResolverFactory';
 // This splits an email "joe+work@acme.com" into ["joe", "+work", "@acme.com"]
 // so that we can remove the plus addressing. May output a shorter array:
 // ["joe", "@acme.com"], if no plus addressing was found.
-const reEmail = /([^@+]+)(\+[^@]+)?(@.*)/;
+const reEmail = /^([^@+]+)(\+[^@]+)?(@.*)$/;
 
 /**
  * A collection of common sign-in resolvers that work with any auth provider.
@@ -50,17 +50,19 @@ export namespace commonSignInResolvers {
               },
             });
           } catch (err) {
-            // Try removing the plus addressing from the email address
-            const m = profile.email.match(reEmail);
-            if (m?.length === 4) {
-              const [_, name, _plus, domain] = m;
-              const noPlusEmail = `${name}${domain}`;
+            if (err?.name === 'NotFoundError') {
+              // Try removing the plus addressing from the email address
+              const m = profile.email.match(reEmail);
+              if (m?.length === 4) {
+                const [_, name, _plus, domain] = m;
+                const noPlusEmail = `${name}${domain}`;
 
-              return ctx.signInWithCatalogUser({
-                filter: {
-                  'spec.profile.email': noPlusEmail,
-                },
-              });
+                return ctx.signInWithCatalogUser({
+                  filter: {
+                    'spec.profile.email': noPlusEmail,
+                  },
+                });
+              }
             }
             // Email had no plus addressing or is missing in the catalog, forward failure
             throw err;

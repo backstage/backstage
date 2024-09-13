@@ -2,4 +2,4 @@
 '@backstage/plugin-auth-node': patch
 ---
 
-[emailMatchingUserEntityProfileEmail resolver]: Try also matching emails with plus addressing removed.
+The `emailMatchingUserEntityProfileEmail` sign-in resolver will now also try matching emails with plus addressing removed.
