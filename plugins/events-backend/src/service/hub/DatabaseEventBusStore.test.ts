@@ -124,4 +124,39 @@ describe('DatabaseEventBusStore', () => {
       expect(events1.length).toBe(10);
     },
   );
+
+  it.each(databases.eachSupportedId())(
+    'should clean up a large number of events, %p',
+    async databaseId => {
+      const db = await databases.init(databaseId);
+      const store = await DatabaseEventBusStore.forTest({
+        logger,
+        db,
+      });
+
+      const COUNT = '100000';
+
+      await db.raw(`
+        INSERT INTO event_bus_events (id, topic, data_json)
+        SELECT id, 'test', '{}'
+        FROM generate_series(1, ${COUNT}) AS id
+      `);
+
+      await expect(db('event_bus_events').count()).resolves.toEqual([
+        { count: COUNT },
+      ]);
+
+      const start = Date.now();
+
+      await store.clean();
+
+      // Local testing shows this takes about 80ms, but if this is flaky we can
+      // reduce the count down to 10_000.
+      expect(Date.now() - start).toBeLessThan(500);
+
+      await expect(db('event_bus_events').count()).resolves.toEqual([
+        { count: '5' },
+      ]);
+    },
+  );
 });
