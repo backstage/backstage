@@ -350,6 +350,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
     onStateChange,
     components,
     isLoading: loading,
+    style,
     ...restProps
   } = props;
   const tableClasses = useTableStyles();
@@ -483,7 +484,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
           </>
         }
         data={tableData}
-        style={{ width: '100%' }}
+        style={{ width: '100%', ...style }}
         localization={{
           toolbar: { searchPlaceholder: 'Filter', searchTooltip: 'Filter' },
           ...localization,
