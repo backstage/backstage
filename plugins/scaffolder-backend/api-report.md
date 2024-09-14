@@ -203,6 +203,26 @@ export function createFetchTemplateAction(options: {
 >;
 
 // @public
+export function createFetchTemplateFileAction(options: {
+  reader: UrlReaderService;
+  integrations: ScmIntegrations;
+  additionalTemplateFilters?: Record<string, TemplateFilter_2>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
+}): TemplateAction_2<
+  {
+    url: string;
+    targetPath: string;
+    values: any;
+    cookiecutterCompat?: boolean | undefined;
+    replace?: boolean | undefined;
+    trimBlocks?: boolean | undefined;
+    lstripBlocks?: boolean | undefined;
+    token?: string | undefined;
+  },
+  JsonObject
+>;
+
+// @public
 export const createFilesystemDeleteAction: () => TemplateAction_2<
   {
     files: string[];
