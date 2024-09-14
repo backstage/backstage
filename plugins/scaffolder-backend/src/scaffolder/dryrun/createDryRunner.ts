@@ -38,10 +38,11 @@ import {
   BackstageCredentials,
   resolveSafeChildPath,
 } from '@backstage/backend-plugin-api';
-import type { UserEntity } from '@backstage/catalog-model';
+import type { EntityMeta, UserEntity } from '@backstage/catalog-model';
 
 interface DryRunInput {
   spec: TaskSpec;
+  templateMetadata: EntityMeta;
   secrets?: TaskSecrets;
   directoryContents: SerializedFile[];
   credentials: BackstageCredentials;
@@ -105,7 +106,6 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
       await deserializeDirectoryContents(contentsPath, input.directoryContents);
 
       const abortSignal = new AbortController().signal;
-
       const result = await workflowRunner.execute({
         spec: {
           ...input.spec,
@@ -119,6 +119,9 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
           ],
           templateInfo: {
             entityRef: 'template:default/dry-run',
+            entity: {
+              metadata: input.templateMetadata,
+            },
             baseUrl: pathToFileURL(
               resolveSafeChildPath(contentsPath, 'template.yaml'),
             ).toString(),

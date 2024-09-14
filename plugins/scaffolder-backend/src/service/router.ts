@@ -825,6 +825,7 @@ export async function createRouter(
             ref: userEntityRef,
           },
         },
+        templateMetadata: template.metadata,
         directoryContents: (body.directoryContents ?? []).map(file => ({
           path: file.path,
           content: Buffer.from(file.base64Content, 'base64'),
