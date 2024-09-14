@@ -17,7 +17,7 @@
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
-import { examples } from './plainFile.examples';
+import { examples } from './templateFile.examples';
 import {
   createTemplateAction,
   fetchFile,
