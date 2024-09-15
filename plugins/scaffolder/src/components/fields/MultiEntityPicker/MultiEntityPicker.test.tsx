@@ -704,4 +704,79 @@ describe('<MultiEntityPicker />', () => {
       expect(onChange).toHaveBeenCalledWith([]);
     });
   });
+
+  describe('Multiselect maxNoOfEntities option', () => {
+    beforeEach(() => {
+      const testEntities = [
+        makeEntity('Group', 'default', 'team-a'),
+        makeEntity('Group', 'default', 'squad-b'),
+        makeEntity('User', 'default', 'user-a'),
+        makeEntity('User', 'default', 'user-b'),
+      ];
+
+      uiSchema = {
+        'ui:options': {
+          maxNoOfEntities: 2,
+          catalogFilter: [
+            {
+              kind: ['Group'],
+              'metadata.name': 'test-entity',
+            },
+            {
+              kind: ['User'],
+              'metadata.name': 'test-entity',
+            },
+          ],
+        },
+        allowArbitraryValues: true,
+      };
+      props = {
+        onChange,
+        schema,
+        required: false,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+
+      catalogApi.getEntities.mockResolvedValue({ items: testEntities });
+    });
+
+    it('User selects item', async () => {
+      await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = screen.getByRole('textbox');
+
+      fireEvent.mouseDown(input);
+      const optionsBefore = screen.getAllByRole('option');
+
+      // Check that all options are enabled
+      optionsBefore.forEach(option => {
+        expect(option).toHaveAttribute('aria-disabled', 'false');
+      });
+
+      fireEvent.mouseDown(input);
+
+      // Select two options from the dropdown
+      fireEvent.change(input, { target: { value: 'team-a' } });
+      fireEvent.blur(input);
+
+      fireEvent.change(input, { target: { value: 'user-a' } });
+      fireEvent.blur(input);
+
+      expect(onChange).toHaveBeenCalledWith(['team-a']);
+
+      fireEvent.mouseDown(input);
+      const optionsAfter = screen.getAllByRole('option');
+
+      // Check that all options are disabled when macNoOfEntities is reached
+      optionsAfter.forEach(option => {
+        expect(option).toHaveAttribute('aria-disabled', 'true');
+      });
+    });
+  });
 });
