@@ -44,9 +44,11 @@
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/catalog-client": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
+    "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
     "@octokit/webhooks": "^10.0.0",
     "libsodium-wrappers": "^0.7.11",

@@ -909,11 +909,11 @@ describe('github:environment:create examples', () => {
       wait_timer: 0,
       reviewers: [
         {
-          Type: 'User',
+          Type: 'Team',
           ID: 1,
         },
         {
-          Type: 'Team',
+          Type: 'User',
           ID: 2,
         },
       ],

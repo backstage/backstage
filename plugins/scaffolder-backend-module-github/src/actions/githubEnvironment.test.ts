@@ -19,6 +19,7 @@ import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
+import { CatalogClient } from '@backstage/catalog-client';
 
 const mockOctokit = {
   rest: {
@@ -32,14 +33,29 @@ const mockOctokit = {
       createOrUpdateEnvironment: jest.fn(),
       get: jest.fn(),
     },
+    teams: {
+      getByName: jest.fn(),
+    },
+    users: {
+      getByUsername: jest.fn(),
+    },
   },
 };
+
+const mockCatalogClient: Partial<CatalogClient> = {
+  getEntitiesByRefs: jest.fn(),
+};
+
 jest.mock('octokit', () => ({
   Octokit: class {
     constructor() {
       return mockOctokit;
     }
   },
+}));
+
+jest.mock('@backstage/catalog-client', () => ({
+  CatalogClient: mockCatalogClient,
 }));
 
 const publicKey = '2Sg8iYjAxxmI2LvUXpJjkYrMxURPc8r+dB7TJyvvcCU=';
@@ -76,9 +92,36 @@ describe('github:environment:create', () => {
         id: 'repoid',
       },
     });
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: {
+        id: 1,
+      },
+    });
+    mockOctokit.rest.teams.getByName.mockResolvedValue({
+      data: {
+        id: 2,
+      },
+    });
+    (mockCatalogClient.getEntitiesByRefs as jest.Mock).mockResolvedValue({
+      items: [
+        {
+          kind: 'User',
+          metadata: {
+            name: 'johndoe',
+          },
+        },
+        {
+          kind: 'Group',
+          metadata: {
+            name: 'team-a',
+          },
+        },
+      ],
+    });
 
     action = createGithubEnvironmentAction({
       integrations,
+      catalog: mockCatalogClient as unknown as CatalogClient,
     });
   });
 
@@ -340,7 +383,7 @@ describe('github:environment:create', () => {
       ...mockContext,
       input: {
         ...mockContext.input,
-        wait_timer: 1000,
+        waitTimer: 1000,
       },
     });
 
@@ -357,12 +400,12 @@ describe('github:environment:create', () => {
     });
   });
 
-  it('should work with prevent_self_review set to true', async () => {
+  it('should work with preventSelfReview set to true', async () => {
     await action.handler({
       ...mockContext,
       input: {
         ...mockContext.input,
-        prevent_self_review: true,
+        preventSelfReview: true,
       },
     });
 
@@ -379,12 +422,12 @@ describe('github:environment:create', () => {
     });
   });
 
-  it('should work with prevent_self_review set to false', async () => {
+  it('should work with preventSelfReview set to false', async () => {
     await action.handler({
       ...mockContext,
       input: {
         ...mockContext.input,
-        prevent_self_review: false,
+        preventSelfReview: false,
       },
     });
 
@@ -406,16 +449,7 @@ describe('github:environment:create', () => {
       ...mockContext,
       input: {
         ...mockContext.input,
-        reviewers: [
-          {
-            Type: 'User',
-            ID: 1,
-          },
-          {
-            Type: 'Team',
-            ID: 2,
-          },
-        ],
+        reviewers: ['group:defautl/team-a', 'user:defautl/johndoe'],
       },
     });
 
@@ -430,12 +464,12 @@ describe('github:environment:create', () => {
       prevent_self_review: false,
       reviewers: [
         {
-          Type: 'User',
-          ID: 1,
+          id: 1,
+          type: 'User',
         },
         {
-          Type: 'Team',
-          ID: 2,
+          id: 2,
+          type: 'Team',
         },
       ],
     });

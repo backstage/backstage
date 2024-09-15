@@ -328,7 +328,7 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl: 'github.com?repo=repository&owner=owner',
             name: 'envname',
-            prevent_self_review: true,
+            preventSelfReview: true,
           },
         },
       ],
@@ -344,16 +344,7 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl: 'github.com?repo=repository&owner=owner',
             name: 'envname',
-            reviewers: [
-              {
-                Type: 'User',
-                ID: 1,
-              },
-              {
-                Type: 'Team',
-                ID: 2,
-              },
-            ],
+            reviewers: ['group:defautl/team-a', 'user:defautl/johndoe'],
           },
         },
       ],

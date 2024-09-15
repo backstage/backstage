@@ -35,6 +35,7 @@ import {
   DefaultGithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 
 /**
  * @public
@@ -48,8 +49,9 @@ export const githubModule = createBackendModule({
       deps: {
         scaffolder: scaffolderActionsExtensionPoint,
         config: coreServices.rootConfig,
+        catalog: catalogServiceRef,
       },
-      async init({ scaffolder, config }) {
+      async init({ scaffolder, config, catalog }) {
         const integrations = ScmIntegrations.fromConfig(config);
         const githubCredentialsProvider =
           DefaultGithubCredentialsProvider.fromIntegrations(integrations);
@@ -68,6 +70,7 @@ export const githubModule = createBackendModule({
           }),
           createGithubEnvironmentAction({
             integrations,
+            catalog,
           }),
           createGithubIssuesLabelAction({
             integrations,
