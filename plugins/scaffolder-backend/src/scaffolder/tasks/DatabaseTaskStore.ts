@@ -618,6 +618,12 @@ export class DatabaseTaskStore implements TaskStore {
       for (const { id, spec } of result) {
         const taskSpec = JSON.parse(spec as string) as TaskSpec;
 
+        /**
+         * Once task is picked up, all event types are replayed.
+         * We have to remove cancelled or completion event_type as these are as actions for frontend to perform.
+         * In contrary, we send 'recovered' event_type to reset the state on the frontend side.
+         *
+         */
         await tx<RawDbTaskEventRow>('task_events')
           .where('task_id', id)
           .andWhere(q => q.whereIn('event_type', ['cancelled', 'completion']))
