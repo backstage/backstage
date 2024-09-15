@@ -264,6 +264,6 @@ module.exports = {
     },
   ],
   settings: {
-		'testing-library/custom-queries': 'off',
-	},
+    'testing-library/custom-queries': 'off',
+  },
 };
