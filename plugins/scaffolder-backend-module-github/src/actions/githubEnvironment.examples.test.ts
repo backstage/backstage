@@ -20,6 +20,7 @@ import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import yaml from 'yaml';
 import { examples } from './gitHubEnvironment.examples';
+import { CatalogApi } from '@backstage/catalog-client';
 
 const mockOctokit = {
   rest: {
@@ -33,7 +34,16 @@ const mockOctokit = {
       createOrUpdateEnvironment: jest.fn(),
       get: jest.fn(),
     },
+    teams: {
+      getByName: jest.fn(),
+    },
+    users: {
+      getByUsername: jest.fn(),
+    },
   },
+};
+const mockCatalogClient: Partial<CatalogApi> = {
+  getEntitiesByRefs: jest.fn(),
 };
 jest.mock('octokit', () => ({
   Octokit: class {
@@ -41,6 +51,9 @@ jest.mock('octokit', () => ({
       return mockOctokit;
     }
   },
+}));
+jest.mock('@backstage/catalog-client', () => ({
+  CatalogClient: mockCatalogClient,
 }));
 
 const publicKey = '2Sg8iYjAxxmI2LvUXpJjkYrMxURPc8r+dB7TJyvvcCU=';
@@ -72,9 +85,36 @@ describe('github:environment:create examples', () => {
         id: 'repoid',
       },
     });
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: {
+        id: 1,
+      },
+    });
+    mockOctokit.rest.teams.getByName.mockResolvedValue({
+      data: {
+        id: 2,
+      },
+    });
+    (mockCatalogClient.getEntitiesByRefs as jest.Mock).mockResolvedValue({
+      items: [
+        {
+          kind: 'User',
+          metadata: {
+            name: 'johndoe',
+          },
+        },
+        {
+          kind: 'Group',
+          metadata: {
+            name: 'team-a',
+          },
+        },
+      ],
+    });
 
     action = createGithubEnvironmentAction({
       integrations,
+      catalogClient: mockCatalogClient as CatalogApi,
     });
   });
 
@@ -909,12 +949,12 @@ describe('github:environment:create examples', () => {
       wait_timer: 0,
       reviewers: [
         {
-          Type: 'Team',
-          ID: 1,
+          type: 'User',
+          id: 1,
         },
         {
-          Type: 'User',
-          ID: 2,
+          type: 'Team',
+          id: 2,
         },
       ],
       prevent_self_review: false,

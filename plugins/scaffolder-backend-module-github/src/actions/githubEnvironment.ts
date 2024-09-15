@@ -24,7 +24,7 @@ import { getOctokitOptions } from './helpers';
 import { Octokit } from 'octokit';
 import Sodium from 'libsodium-wrappers';
 import { examples } from './gitHubEnvironment.examples';
-import { CatalogClient } from '@backstage/catalog-client';
+import { CatalogApi } from '@backstage/catalog-client';
 
 /**
  * Creates an `github:environment:create` Scaffolder action that creates a Github Environment.
@@ -33,9 +33,9 @@ import { CatalogClient } from '@backstage/catalog-client';
  */
 export function createGithubEnvironmentAction(options: {
   integrations: ScmIntegrationRegistry;
-  catalog: CatalogClient;
+  catalogClient: CatalogApi;
 }) {
-  const { integrations, catalog } = options;
+  const { integrations, catalogClient } = options;
   // For more information on how to define custom actions, see
   //   https://backstage.io/docs/features/software-templates/writing-custom-actions
   return createTemplateAction<{
@@ -188,9 +188,10 @@ export function createGithubEnvironmentAction(options: {
       const githubReviewers: { type: 'User' | 'Team'; id: number }[] = [];
       if (reviewers) {
         // Fetch reviewers from Catalog
-        const { items: reviewersEntityRefs } = await catalog.getEntitiesByRefs({
-          entityRefs: reviewers,
-        });
+        const { items: reviewersEntityRefs } =
+          await catalogClient.getEntitiesByRefs({
+            entityRefs: reviewers,
+          });
         for (const reviewerEntityRef of reviewersEntityRefs) {
           if (reviewerEntityRef?.kind === 'User') {
             try {

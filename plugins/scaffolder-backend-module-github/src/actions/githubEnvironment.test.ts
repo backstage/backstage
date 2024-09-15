@@ -19,7 +19,7 @@ import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
-import { CatalogClient } from '@backstage/catalog-client';
+import { CatalogApi } from '@backstage/catalog-client';
 
 const mockOctokit = {
   rest: {
@@ -42,7 +42,7 @@ const mockOctokit = {
   },
 };
 
-const mockCatalogClient: Partial<CatalogClient> = {
+const mockCatalogClient: Partial<CatalogApi> = {
   getEntitiesByRefs: jest.fn(),
 };
 
@@ -121,7 +121,7 @@ describe('github:environment:create', () => {
 
     action = createGithubEnvironmentAction({
       integrations,
-      catalog: mockCatalogClient as unknown as CatalogClient,
+      catalogClient: mockCatalogClient as CatalogApi,
     });
   });
 
@@ -449,7 +449,7 @@ describe('github:environment:create', () => {
       ...mockContext,
       input: {
         ...mockContext.input,
-        reviewers: ['group:defautl/team-a', 'user:defautl/johndoe'],
+        reviewers: ['group:default/team-a', 'user:default/johndoe'],
       },
     });
 

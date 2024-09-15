@@ -35,7 +35,7 @@ import {
   DefaultGithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
-import { catalogServiceRef } from '@backstage/plugin-catalog-node';
+import { CatalogClient } from '@backstage/catalog-client';
 
 /**
  * @public
@@ -49,12 +49,15 @@ export const githubModule = createBackendModule({
       deps: {
         scaffolder: scaffolderActionsExtensionPoint,
         config: coreServices.rootConfig,
-        catalog: catalogServiceRef,
+        discovery: coreServices.discovery,
       },
-      async init({ scaffolder, config, catalog }) {
+      async init({ scaffolder, config, discovery }) {
         const integrations = ScmIntegrations.fromConfig(config);
         const githubCredentialsProvider =
           DefaultGithubCredentialsProvider.fromIntegrations(integrations);
+        const catalogClient = new CatalogClient({
+          discoveryApi: discovery,
+        });
 
         scaffolder.addActions(
           createGithubActionsDispatchAction({
@@ -70,7 +73,7 @@ export const githubModule = createBackendModule({
           }),
           createGithubEnvironmentAction({
             integrations,
-            catalog,
+            catalogClient,
           }),
           createGithubIssuesLabelAction({
             integrations,

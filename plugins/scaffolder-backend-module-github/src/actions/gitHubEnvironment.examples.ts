@@ -312,7 +312,7 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl: 'github.com?repo=repository&owner=owner',
             name: 'envname',
-            wait_timer: 1000,
+            waitTimer: 1000,
           },
         },
       ],
@@ -344,7 +344,7 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl: 'github.com?repo=repository&owner=owner',
             name: 'envname',
-            reviewers: ['group:defautl/team-a', 'user:defautl/johndoe'],
+            reviewers: ['group:default/team-a', 'user:default/johndoe'],
           },
         },
       ],
