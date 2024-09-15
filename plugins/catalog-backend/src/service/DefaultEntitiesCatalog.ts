@@ -188,6 +188,79 @@ function parseFilter(
   });
 }
 
+function parseFilter2(
+  filterRoot: EntityFilter,
+  queryRoot: Knex.QueryBuilder,
+  db: Knex,
+  entityIdField = 'entity_id',
+): Knex.QueryBuilder {
+  // First we traverse the entire query tree to gather up all of the unique keys
+  // that are tested against, and make sure to make an outer join on the search
+  // table for each of them. As we do so, collect the table aliases made along
+  // the way. In the end, this map may contain for example
+  // `{ 'kind': 'search_filter_0', 'metadata.name': 'search_filter_1' }`
+  const keyToSearchTableAlias = new Map<string, string>();
+  function recursiveMakeJoinAliases(filterNode: EntityFilter) {
+    if (isNegationEntityFilter(filterNode)) {
+      recursiveMakeJoinAliases(filterNode.not);
+    } else if (isOrEntityFilter(filterNode)) {
+      filterNode.anyOf.forEach(recursiveMakeJoinAliases);
+    } else if (!isEntitiesSearchFilter(filterNode)) {
+      filterNode.allOf.forEach(recursiveMakeJoinAliases);
+    } else {
+      const key = filterNode.key.toLowerCase();
+      if (!keyToSearchTableAlias.has(key)) {
+        const alias = `filter_${keyToSearchTableAlias.size}`;
+        keyToSearchTableAlias.set(key, alias);
+        queryRoot.leftOuterJoin({ [alias]: 'search' }, inner =>
+          inner
+            .on(`${alias}.entity_id`, entityIdField)
+            .andOnVal(`${alias}.key`, key),
+        );
+      }
+    }
+  }
+  recursiveMakeJoinAliases(filterRoot);
+
+  function recursiveBuildQuery(
+    queryBuilder: Knex.QueryBuilder,
+    filterNode: EntityFilter,
+  ) {
+    if (isNegationEntityFilter(filterNode)) {
+      queryBuilder.whereNot(inner =>
+        recursiveBuildQuery(inner, filterNode.not),
+      );
+    } else if (isOrEntityFilter(filterNode)) {
+      // This extra nesting is needed to make sure that the ORs are grouped
+      // separately and not "leak" next to ANDs in the caller's query.
+      queryBuilder.andWhere(inner => {
+        for (const subFilter of filterNode.anyOf) {
+          inner.orWhere(inner2 => recursiveBuildQuery(inner2, subFilter));
+        }
+      });
+    } else if (!isEntitiesSearchFilter(filterNode)) {
+      for (const subFilter of filterNode.allOf) {
+        queryBuilder.andWhere(inner => recursiveBuildQuery(inner, subFilter));
+      }
+    } else {
+      const key = filterNode.key.toLowerCase();
+      const values = filterNode.values?.map(v => v.toLowerCase());
+      const column = `${keyToSearchTableAlias.get(key)}.value`;
+      if (!values) {
+        queryBuilder.whereNotNull(column);
+      } else if (values.length === 1) {
+        // Null check needed since NULL = 'string' evaluates to NULL, not FALSE
+        queryBuilder.whereNotNull(column).andWhere(column, values[0]);
+      } else {
+        queryBuilder.whereIn(column, values);
+      }
+    }
+  }
+  recursiveBuildQuery(queryRoot, filterRoot);
+
+  return queryRoot;
+}
+
 export class DefaultEntitiesCatalog implements EntitiesCatalog {
   private readonly database: Knex;
   private readonly logger: LoggerService;
@@ -224,11 +297,10 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     entitiesQuery = entitiesQuery.whereNotNull('final_entities.final_entity');
 
     if (request?.filter) {
-      entitiesQuery = parseFilter(
+      entitiesQuery = parseFilter2(
         request.filter,
         entitiesQuery,
         db,
-        false,
         'final_entities.entity_id',
       );
     }
