@@ -26,9 +26,18 @@ import { TechDocsReaderPage } from './plugin';
 import { TechDocsReaderPageContent } from './reader/components/TechDocsReaderPageContent';
 import { TechDocsReaderPageSubheader } from './reader/components/TechDocsReaderPageSubheader';
 
-type EntityPageDocsProps = { entity: Entity };
+type EntityPageDocsProps = {
+  entity: Entity;
+  /**
+   * Show or hide the content search bar, defaults to true.
+   */
+  withSearch?: boolean;
+};
 
-export const EntityPageDocs = ({ entity }: EntityPageDocsProps) => {
+export const EntityPageDocs = ({
+  entity,
+  withSearch = true,
+}: EntityPageDocsProps) => {
   let entityRef = getCompoundEntityRef(entity);
 
   if (entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION]) {
@@ -44,7 +53,7 @@ export const EntityPageDocs = ({ entity }: EntityPageDocsProps) => {
   return (
     <TechDocsReaderPage entityRef={entityRef}>
       <TechDocsReaderPageSubheader />
-      <TechDocsReaderPageContent withSearch={false} />
+      <TechDocsReaderPageContent withSearch={withSearch} redirectToEntityPage />
     </TechDocsReaderPage>
   );
 };
