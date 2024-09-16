@@ -24,6 +24,7 @@ import {
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 
 import { fireEvent, screen } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
 import React from 'react';
 import { MultiEntityPicker } from './MultiEntityPicker';
 import { MultiEntityPickerProps } from './schema';
@@ -716,7 +717,6 @@ describe('<MultiEntityPicker />', () => {
 
       uiSchema = {
         'ui:options': {
-          maxNoOfEntities: 2,
           catalogFilter: [
             {
               kind: ['Group'],
@@ -742,7 +742,11 @@ describe('<MultiEntityPicker />', () => {
       catalogApi.getEntities.mockResolvedValue({ items: testEntities });
     });
 
-    it('User selects item', async () => {
+    it('limit the number of selected entities when maxNoOfEntities is specified', async () => {
+      const uiOptions = props.uiSchema['ui:options'];
+      if (uiOptions) {
+        uiOptions.maxNoOfEntities = 2;
+      }
       await renderInTestApp(
         <Wrapper>
           <MultiEntityPicker {...props} />
@@ -752,31 +756,74 @@ describe('<MultiEntityPicker />', () => {
       const input = screen.getByRole('textbox');
 
       fireEvent.mouseDown(input);
-      const optionsBefore = screen.getAllByRole('option');
-
-      // Check that all options are enabled
-      optionsBefore.forEach(option => {
-        expect(option).toHaveAttribute('aria-disabled', 'false');
-      });
+      const optionA = screen.getByText('team-a');
+      await userEvent.click(optionA as HTMLElement);
 
       fireEvent.mouseDown(input);
-
-      // Select two options from the dropdown
-      fireEvent.change(input, { target: { value: 'team-a' } });
-      fireEvent.blur(input);
-
-      fireEvent.change(input, { target: { value: 'user-a' } });
-      fireEvent.blur(input);
-
-      expect(onChange).toHaveBeenCalledWith(['team-a']);
+      const optionB = screen.getByText('user-b');
+      await userEvent.click(optionB as HTMLElement);
 
       fireEvent.mouseDown(input);
-      const optionsAfter = screen.getAllByRole('option');
+      const optionC = screen.getByText('user-a');
+      await expect(() =>
+        userEvent.click(optionC as HTMLElement),
+      ).rejects.toThrow(/pointer-events: none/);
 
-      // Check that all options are disabled when macNoOfEntities is reached
-      optionsAfter.forEach(option => {
-        expect(option).toHaveAttribute('aria-disabled', 'true');
-      });
+      expect(onChange).toHaveBeenCalledTimes(2);
+      expect(onChange).toHaveBeenNthCalledWith(1, ['group:default/team-a']);
+      expect(onChange).toHaveBeenNthCalledWith(2, [
+        'group:default/team-a',
+        'user:default/user-b',
+      ]);
+      expect(onChange).not.toHaveBeenNthCalledWith(3, [
+        'group:default/team-a',
+        'user:default/user-b',
+        'user:default/user-a',
+      ]);
+    });
+
+    it('does not limit the number of selected entities when maxNoOfEntities is not specified', async () => {
+      await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = screen.getByRole('textbox');
+
+      fireEvent.mouseDown(input);
+      const optionA = screen.getByText('team-a');
+      await userEvent.click(optionA as HTMLElement);
+
+      fireEvent.mouseDown(input);
+      const optionB = screen.getByText('user-b');
+      await userEvent.click(optionB as HTMLElement);
+
+      fireEvent.mouseDown(input);
+      const optionC = screen.getByText('user-a');
+      await userEvent.click(optionC as HTMLElement);
+
+      fireEvent.mouseDown(input);
+      const optionD = screen.getByText('squad-b');
+      await userEvent.click(optionD as HTMLElement);
+
+      expect(onChange).toHaveBeenCalledTimes(4);
+      expect(onChange).toHaveBeenNthCalledWith(1, ['group:default/team-a']);
+      expect(onChange).toHaveBeenNthCalledWith(2, [
+        'group:default/team-a',
+        'user:default/user-b',
+      ]);
+      expect(onChange).toHaveBeenNthCalledWith(3, [
+        'group:default/team-a',
+        'user:default/user-b',
+        'user:default/user-a',
+      ]);
+      expect(onChange).toHaveBeenNthCalledWith(4, [
+        'group:default/team-a',
+        'user:default/user-b',
+        'user:default/user-a',
+        'group:default/squad-b',
+      ]);
     });
   });
 });
