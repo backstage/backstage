@@ -102,7 +102,11 @@ module.exports = {
       {
         type: 'category',
         label: 'Notifications',
-        items: ['notifications/index'],
+        items: [
+          'notifications/index',
+          'notifications/processors',
+          'notifications/usage',
+        ],
       },
       {
         type: 'category',
