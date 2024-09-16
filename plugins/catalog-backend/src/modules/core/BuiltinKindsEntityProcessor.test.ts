@@ -46,13 +46,14 @@ describe('BuiltinKindsEntityProcessor', () => {
           providesApis: ['b'],
           consumesApis: ['c'],
           dependsOn: ['Resource:r', 'Component:d'],
+          dependencyOf: ['Resource:f', 'Component:g'],
           system: 's',
         },
       };
 
       await processor.postProcessEntity(entity, location, emit);
 
-      expect(emit).toHaveBeenCalledTimes(14);
+      expect(emit).toHaveBeenCalledTimes(18);
       expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
@@ -136,6 +137,38 @@ describe('BuiltinKindsEntityProcessor', () => {
       expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
+          source: { kind: 'Component', namespace: 'default', name: 'n' },
+          type: 'dependencyOf',
+          target: { kind: 'Resource', namespace: 'default', name: 'f' },
+        },
+      });
+      expect(emit).toHaveBeenCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Resource', namespace: 'default', name: 'f' },
+          type: 'dependsOn',
+          target: { kind: 'Component', namespace: 'default', name: 'n' },
+        },
+      });
+      expect(emit).toHaveBeenCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Component', namespace: 'default', name: 'n' },
+          type: 'dependencyOf',
+          target: { kind: 'Component', namespace: 'default', name: 'g' },
+        },
+      });
+      expect(emit).toHaveBeenCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Component', namespace: 'default', name: 'g' },
+          type: 'dependsOn',
+          target: { kind: 'Component', namespace: 'default', name: 'n' },
+        },
+      });
+      expect(emit).toHaveBeenCalledWith({
+        type: 'relation',
+        relation: {
           source: { kind: 'Component', namespace: 'default', name: 's' },
           type: 'hasPart',
           target: { kind: 'Component', namespace: 'default', name: 'n' },
@@ -187,6 +220,29 @@ describe('BuiltinKindsEntityProcessor', () => {
         processor.postProcessEntity(entity, location, emit),
       ).rejects.toThrow(
         'Entity reference "r" had missing or empty kind (e.g. did not start with "component:" or similar)',
+      );
+    });
+
+    it('generates an error for component entities with unspecified dependencyOf entity reference kinds', async () => {
+      const entity: ComponentEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: { name: 'n' },
+        spec: {
+          type: 'service',
+          owner: 'o',
+          subcomponentOf: 's',
+          lifecycle: 'l',
+          providesApis: ['b'],
+          consumesApis: ['c'],
+          dependencyOf: ['y'],
+          system: 's',
+        },
+      };
+      await expect(
+        processor.postProcessEntity(entity, location, emit),
+      ).rejects.toThrow(
+        'Entity reference "y" had missing or empty kind (e.g. did not start with "component:" or similar)',
       );
     });
 

@@ -15,8 +15,12 @@
  */
 
 import { Descriptor, Workspace, structUtils } from '@yarnpkg/core';
+import { some } from 'lodash';
 import { getCurrentBackstageVersion, getPackageVersion } from '../util';
 import { PROTOCOL } from '../constants';
+
+const hasBackstageVersion = (range: string) =>
+  structUtils.parseRange(range).protocol === PROTOCOL;
 
 const getFinalDependencyType = (
   dependencyType: string,
@@ -68,5 +72,16 @@ export const beforeWorkspacePacking = async (
         ),
       )}`;
     }
+  }
+
+  if (
+    some(
+      ['dependencies', 'devDependencies', 'optionalDependencies'],
+      dependencyType => some(rawManifest[dependencyType], hasBackstageVersion),
+    )
+  ) {
+    throw new Error(
+      `Failed to replace all "backstage:" ranges in manifest for ${rawManifest.name}`,
+    );
   }
 };

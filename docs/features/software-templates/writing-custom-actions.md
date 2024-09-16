@@ -43,6 +43,7 @@ After running the command, the CLI will create a new directory with your new sca
 Let's create a simple action that adds a new file and some contents that are passed as `input` to the function. Within the generated directory, locate the file at `src/actions/example/example.ts`. Feel free to rename this file along with its generated unit test. We will replace the existing placeholder code with our custom action code as follows:
 
 ```ts title="With Zod"
+import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import fs from 'fs-extra';
 import { z } from 'zod';
@@ -62,7 +63,7 @@ export const createNewFileAction = () => {
 
     async handler(ctx) {
       await fs.outputFile(
-        `${ctx.workspacePath}/${ctx.input.filename}`,
+        resolveSafeChildPath(ctx.workspacePath, ctx.input.filename),
         ctx.input.contents,
       );
     },
@@ -90,6 +91,7 @@ The `createTemplateAction` takes an object which specifies the following:
 You can also choose to define your custom action using JSON schema instead of `zod`:
 
 ```ts title="With JSON Schema"
+import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { writeFile } from 'fs';
 
@@ -118,7 +120,7 @@ export const createNewFileAction = () => {
     async handler(ctx) {
       const { signal } = ctx;
       await writeFile(
-        `${ctx.workspacePath}/${ctx.input.filename}`,
+        resolveSafeChildPath(ctx.workspacePath, ctx.input.filename),
         ctx.input.contents,
         { signal },
         _ => {},
