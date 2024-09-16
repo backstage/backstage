@@ -25,6 +25,7 @@ import { Octokit } from 'octokit';
 import Sodium from 'libsodium-wrappers';
 import { examples } from './gitHubEnvironment.examples';
 import { CatalogApi } from '@backstage/catalog-client';
+import { Entity } from '@backstage/catalog-model';
 
 /**
  * Creates an `github:environment:create` Scaffolder action that creates a Github Environment.
@@ -33,7 +34,7 @@ import { CatalogApi } from '@backstage/catalog-client';
  */
 export function createGithubEnvironmentAction(options: {
   integrations: ScmIntegrationRegistry;
-  catalogClient: CatalogApi;
+  catalogClient?: CatalogApi;
 }) {
   const { integrations, catalogClient } = options;
   // For more information on how to define custom actions, see
@@ -187,11 +188,15 @@ export function createGithubEnvironmentAction(options: {
       // convert reviewers from catalog entity to Github user or team
       const githubReviewers: { type: 'User' | 'Team'; id: number }[] = [];
       if (reviewers) {
+        let reviewersEntityRefs: Array<Entity | undefined> = [];
         // Fetch reviewers from Catalog
-        const { items: reviewersEntityRefs } =
-          await catalogClient.getEntitiesByRefs({
-            entityRefs: reviewers,
-          });
+        const catalogResponse = await catalogClient?.getEntitiesByRefs({
+          entityRefs: reviewers,
+        });
+        if (catalogResponse?.items?.length) {
+          reviewersEntityRefs = catalogResponse.items;
+        }
+
         for (const reviewerEntityRef of reviewersEntityRefs) {
           if (reviewerEntityRef?.kind === 'User') {
             try {
@@ -203,7 +208,7 @@ export function createGithubEnvironmentAction(options: {
                 id: user.data.id,
               });
             } catch (error) {
-              console.log('User not found:', error);
+              ctx.logger.error('User not found:', error);
             }
           } else if (reviewerEntityRef?.kind === 'Group') {
             try {
@@ -216,7 +221,7 @@ export function createGithubEnvironmentAction(options: {
                 id: team.data.id,
               });
             } catch (error) {
-              console.log('Team not found:', error);
+              ctx.logger.error('Team not found:', error);
             }
           }
         }

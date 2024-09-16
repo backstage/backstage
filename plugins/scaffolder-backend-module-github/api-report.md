@@ -67,7 +67,7 @@ export function createGithubDeployKeyAction(options: {
 // @public
 export function createGithubEnvironmentAction(options: {
   integrations: ScmIntegrationRegistry;
-  catalogClient: CatalogApi;
+  catalogClient?: CatalogApi;
 }): TemplateAction<
   {
     repoUrl: string;
