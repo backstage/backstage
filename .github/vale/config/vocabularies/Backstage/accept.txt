@@ -376,6 +376,7 @@ sdks
 seb
 semlas
 semver
+sendmail
 serializable
 Serverless
 shoutout
