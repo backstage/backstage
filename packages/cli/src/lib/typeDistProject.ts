@@ -158,12 +158,19 @@ export const getEntryPointDefaultFeatureType = (
       entryPoint.path.replace(entryPoint.ext, '.d.ts'),
     );
 
-    const defaultFeatureType = getSourceFileDefaultFeatureType(
-      project.addSourceFileAtPath(dtsPath),
-    );
+    try {
+      const defaultFeatureType = getSourceFileDefaultFeatureType(
+        project.addSourceFileAtPath(dtsPath),
+      );
 
-    if (defaultFeatureType) {
-      return defaultFeatureType;
+      if (defaultFeatureType) {
+        return defaultFeatureType;
+      }
+    } catch (error) {
+      console.error(
+        `Failed to extract default feature type from ${dtsPath}, ${error}. ` +
+          'Your package will publish fine but it may be missing metadata about its default feature.',
+      );
     }
   }
 
