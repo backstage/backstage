@@ -250,29 +250,6 @@ const _default: FrontendPlugin<
 export default _default;
 
 // @alpha (undocumented)
-export const TechDocsEntityContentEmptyState: ExtensionDefinition<{
-  config: {};
-  configInput: {};
-  output: ConfigurableExtensionDataRef<
-    React_2.JSX.Element,
-    'core.reactElement',
-    {}
-  >;
-  inputs: {
-    [x: string]: ExtensionInput<
-      AnyExtensionDataRef,
-      {
-        optional: boolean;
-        singleton: boolean;
-      }
-    >;
-  };
-  kind: 'element';
-  namespace: undefined;
-  name: 'entity-content-empty-state';
-}>;
-
-// @alpha (undocumented)
 export const techDocsSearchResultListItemExtension: ExtensionDefinition<{
   config: {
     title: string | undefined;

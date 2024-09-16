@@ -185,8 +185,7 @@ const techDocsEntityContent = EntityContentBlueprint.makeWithOverrides({
   },
 });
 
-/** @alpha */
-export const TechDocsEntityContentEmptyState = createExtension({
+const TechDocsEntityContentEmptyState = createExtension({
   kind: 'element',
   name: 'entity-content-empty-state',
   attachTo: { id: 'entity-content:techdocs', input: 'emptyState' },
