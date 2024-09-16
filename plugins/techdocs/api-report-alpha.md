@@ -224,7 +224,7 @@ const _default: FrontendPlugin<
       namespace: undefined;
       name: undefined;
     }>;
-    'element:techdocs/entity-content-empty-state': ExtensionDefinition<{
+    'empty-state:techdocs/entity-content': ExtensionDefinition<{
       config: {};
       configInput: {};
       output: ConfigurableExtensionDataRef<
@@ -241,9 +241,9 @@ const _default: FrontendPlugin<
           }
         >;
       };
-      kind: 'element';
+      kind: 'empty-state';
       namespace: undefined;
-      name: 'entity-content-empty-state';
+      name: 'entity-content';
     }>;
   }
 >;
