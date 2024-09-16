@@ -6429,7 +6429,7 @@ __metadata:
     stream-buffers: ^3.0.2
     supertest: ^7.0.0
     winston: ^3.2.1
-    ws: ^8.13.0
+    ws: ^8.18.0
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -7751,7 +7751,7 @@ __metadata:
     supertest: ^7.0.0
     uuid: ^9.0.0
     winston: ^3.2.1
-    ws: ^8.17.0
+    ws: ^8.18.0
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -7770,7 +7770,7 @@ __metadata:
     "@types/express": ^4.17.21
     express: ^4.17.1
     uuid: ^9.0.0
-    ws: ^8.14.2
+    ws: ^8.18.0
   languageName: unknown
   linkType: soft
 
@@ -44352,7 +44352,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:*, ws@npm:^8.11.0, ws@npm:^8.12.0, ws@npm:^8.13.0, ws@npm:^8.14.2, ws@npm:^8.17.0, ws@npm:^8.18.0, ws@npm:^8.8.0":
+"ws@npm:*, ws@npm:^8.11.0, ws@npm:^8.12.0, ws@npm:^8.13.0, ws@npm:^8.18.0, ws@npm:^8.8.0":
   version: 8.18.0
   resolution: "ws@npm:8.18.0"
   peerDependencies:
