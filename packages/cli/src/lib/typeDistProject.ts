@@ -54,6 +54,7 @@ const getPackagesDistTypeMap = async () => {
 
 export const createTypeDistProject = async () => {
   const distTypeMap = await getPackagesDistTypeMap();
+  const assetTypeExtensions = await getAssetTypeExtensions();
   const workspaceRoot = findPaths(process.cwd()).targetRoot;
 
   return new Project({
@@ -66,7 +67,14 @@ export const createTypeDistProject = async () => {
           const resolvedModules: ts.ResolvedModule[] = [];
 
           for (let moduleName of moduleNames) {
-            // Handle resolve internal plugins and package entry points to dist-types folder
+            // Handle resolving asset-type modules
+            for (const ext of assetTypeExtensions) {
+              if (moduleName.endsWith(ext)) {
+                moduleName = '@backstage/cli/asset-types';
+              }
+            }
+
+            // Handle resolving internal plugins and package entry points to dist-types folder
             if (distTypeMap[moduleName]) {
               resolvedModules.push({
                 resolvedFileName: distTypeMap[moduleName],
@@ -94,7 +102,7 @@ export const createTypeDistProject = async () => {
               }
             }
 
-            // Handle resolve relative paths and external node_modules.
+            // Handle resolving relative paths and external node_modules.
             const result = ts.resolveModuleName(
               moduleName,
               containingFile,
@@ -236,4 +244,28 @@ function isTargetFeatureType(
   return (
     !!type && targetFeatureTypes.includes(type as BackstagePackageFeatureType)
   );
+}
+
+// Returns an array of the ending extensions fro the asset-types
+// that are supported by the Backstage CLI
+async function getAssetTypeExtensions() {
+  const assetTypes: string[] = [];
+  const assetTypesDts = await getAssetTypesDtsFilePath();
+  const project = new Project({});
+  const sourceFile = project.addSourceFileAtPath(assetTypesDts);
+
+  for (const module of sourceFile.getModules()) {
+    assetTypes.push(
+      module
+        .getName()
+        .replace(/'/g, '') // remove surrounding single quotes
+        .replace(/^\*/g, ''), // remove leading *
+    );
+  }
+
+  return assetTypes;
+}
+
+async function getAssetTypesDtsFilePath() {
+  return require.resolve('@backstage/cli/asset-types/asset-types.d.ts');
 }
