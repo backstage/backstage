@@ -18256,12 +18256,12 @@ __metadata:
   linkType: hard
 
 "@types/react@npm:^18":
-  version: 18.3.5
-  resolution: "@types/react@npm:18.3.5"
+  version: 18.3.6
+  resolution: "@types/react@npm:18.3.6"
   dependencies:
     "@types/prop-types": "*"
     csstype: ^3.0.2
-  checksum: 63d2ff473b348c902b68c20be55d2c5124d078c4336c2d1778f316c27789ed596657e8e714022ce14fb24994b0960fc64c913e629bb0bf85815355b0c31eb46b
+  checksum: 66cf1ea408b63c518e2d36c5a8c425e856885c62160d85cfa653c061bbf744f7858b102da04d2bad72bd93a5469e016538e0723f57ef56de512c79712d209add
   languageName: node
   linkType: hard
 
