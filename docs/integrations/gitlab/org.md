@@ -242,7 +242,7 @@ catalog:
         orgEnabled: true
         group: org/teams # Required for gitlab.com when `orgEnabled: true`. Optional for self managed. Must not end with slash. Accepts only groups under the provided path (which will be stripped)
         restrictUsersToGroup: true # Optional: Backstage will ingest only users directly assigned to org/teams.
-        includeUsersWithoutSeat: true # Optional: Include users without paid seat, only valid for SaaS
+        includeUsersWithoutSeat: false # Optional: Set to true to include users without paid seat, only applicable for SaaS
 ```
 
 ### Limiting `User` and `Group` entity ingestion in the provider

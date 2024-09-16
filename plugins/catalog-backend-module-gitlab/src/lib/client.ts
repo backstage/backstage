@@ -139,6 +139,8 @@ export class GitLabClient {
     options?: CommonListOptions,
     includeUsersWithoutSeat?: boolean,
   ): Promise<PagedResponse<GitLabUser>> {
+    const botFilterRegex = /^(?:project|group)_(\w+)_bot_(\w+)$/;
+
     return this.listGroupMembers(groupPath, {
       ...options,
       active: true, // Users with seat are always active but for users without seat we need to filter
@@ -148,9 +150,8 @@ export class GitLabClient {
       // https://github.com/backstage/backstage/issues/26438
       // Filter out API tokens https://docs.gitlab.com/ee/user/project/settings/project_access_tokens.html#bot-users-for-projects
       if (includeUsersWithoutSeat) {
-        const regex = /^(?:project|group)_(\w+)_bot_(\w+)$/;
         resp.items = resp.items.filter(user => {
-          return !regex.test(user.username);
+          return !botFilterRegex.test(user.username);
         });
       } else {
         resp.items = resp.items.filter(user => user.is_using_seat);
