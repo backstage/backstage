@@ -230,7 +230,9 @@ const _default: FrontendPlugin<
       output: ConfigurableExtensionDataRef<
         React_2.JSX.Element,
         'core.reactElement',
-        {}
+        {
+          optional: true;
+        }
       >;
       inputs: {
         [x: string]: ExtensionInput<

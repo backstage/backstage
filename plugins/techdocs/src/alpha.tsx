@@ -37,9 +37,7 @@ import {
   convertLegacyRouteRefs,
 } from '@backstage/core-compat-api';
 import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
-import { MissingAnnotationEmptyState } from '@backstage/plugin-catalog-react';
 import { SearchResultListItemBlueprint } from '@backstage/plugin-search-react/alpha';
-import { TECHDOCS_ANNOTATION } from '@backstage/plugin-techdocs-common';
 import {
   techdocsApiRef,
   techdocsStorageApiRef,
@@ -189,12 +187,8 @@ const TechDocsEntityContentEmptyState = createExtension({
   kind: 'empty-state',
   name: 'entity-content',
   attachTo: { id: 'entity-content:techdocs', input: 'emptyState' },
-  output: [coreExtensionData.reactElement],
-  factory: () => [
-    coreExtensionData.reactElement(
-      <MissingAnnotationEmptyState annotation={[TECHDOCS_ANNOTATION]} />,
-    ),
-  ],
+  output: [coreExtensionData.reactElement.optional()],
+  factory: () => [],
 });
 
 /** @alpha */
