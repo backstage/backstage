@@ -94,7 +94,6 @@ describe('readGerritConfigs', () => {
     const actual = readGerritConfigs(new ConfigReader(config));
     expect(actual).toHaveLength(1);
     expect(actual[0]).toEqual({
-      branch: 'master',
       catalogPath: 'catalog-info.yaml',
       id: 'active-g1',
       ...provider,

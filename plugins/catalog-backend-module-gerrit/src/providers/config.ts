@@ -19,7 +19,7 @@ import { Config } from '@backstage/config';
 import { GerritProviderConfig } from './types';
 
 function readGerritConfig(id: string, config: Config): GerritProviderConfig {
-  const branch = config.getOptionalString('branch') ?? 'master';
+  const branch = config.getOptionalString('branch');
   const catalogPath =
     config.getOptionalString('catalogPath') ?? 'catalog-info.yaml';
   const host = config.getString('host');
