@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React, { useState } from 'react';
-import { Breadcrumbs, Content, Header, Page } from '@backstage/core-components';
+import { Content, Header, Page } from '@backstage/core-components';
 import {
   createExampleTemplate,
   TemplateDirectoryAccess,

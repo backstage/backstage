@@ -22,8 +22,8 @@ apiVersion: scaffolder.backstage.io/v1beta3
 # https://backstage.io/docs/features/software-catalog/descriptor-format#kind-template
 kind: Template
 metadata:
-  name: example-nodejs-template
-  title: Example Node.js Template
+  name: generated-example-template
+  title: Scaffolder Example Template
   description: An example template for the scaffolder that creates a simple Node.js service
 spec:
   owner: user:guest
@@ -64,9 +64,26 @@ spec:
       name: Fetch Base
       action: fetch:template
       input:
-        url: ./template
+        url: ./skeleton
         values:
-          name: \${{parameters.name}}`,
+          name: \${{parameters.name}}
+          owner: \${{parameters.owner}}
+          destination: \${{ parameters.repoUrl | parseRepoUrl }}`,
+  'skeleton/README.md': `# This service is named \${{values.name}}!.`,
+  'skeleton/catalog-info.yaml': `apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: \${{values.component_id | dump}}
+  {%- if values.description %}
+  description: \${{values.description | dump}}
+  {%- endif %}
+  annotations:
+    github.com/project-slug: \${{values.destination.owner + "/" + values.destination.repo}}
+    backstage.io/techdocs-ref: dir:.
+spec:
+  type: service
+  lifecycle: experimental
+  owner: \${{values.owner | dump}}`,
 };
 
 export async function createExampleTemplate(

@@ -35,9 +35,6 @@ const showDirectoryPicker = (window as any).showDirectoryPicker as
   | (() => Promise<IterableDirectoryHandle>)
   | undefined;
 
-const picker = (window as any).showDirectoryPicker;
-// https://developer.mozilla.org/en-US/docs/Web/API/Window/showDirectoryPicker
-
 class WebFileAccess implements TemplateFileAccess {
   constructor(
     readonly path: string,
@@ -60,35 +57,22 @@ class WebDirectoryAccess implements TemplateDirectoryAccess {
 
   async createFile(options: { filename: string; data: string }): Promise<void> {
     const { filename, data } = options;
-    const fileHandle = await this.handle.getFileHandle(filename, {
-      create: true,
-    });
+    let fileHandle: FileSystemFileHandle;
 
+    if (filename.includes('/')) {
+      const [dir, name] = filename.split('/');
+      const handle = await this.handle.getDirectoryHandle(dir, {
+        create: true,
+      });
+      fileHandle = await handle.getFileHandle(name, { create: true });
+    } else {
+      fileHandle = await this.handle.getFileHandle(filename, {
+        create: true,
+      });
+    }
     const writable = await fileHandle.createWritable();
     await writable.write(data);
-
     await writable.close();
-
-    // const draftHandle = await root.getFileHandle("draft.txt", { create: true });
-    // // Get sync access handle
-    // const accessHandle = await draftHandle.createSyncAccessHandle();
-
-    // // Get size of the file.
-    // const fileSize = accessHandle.getSize();
-    // // Read file content to a buffer.
-    // const buffer = new DataView(new ArrayBuffer(fileSize));
-    // const readBuffer = accessHandle.read(buffer, { at: 0 });
-
-    // // Write the message to the end of the file.
-    // const encoder = new TextEncoder();
-    // const encodedMessage = encoder.encode(message);
-    // const writeBuffer = accessHandle.write(encodedMessage, { at: readBuffer });
-
-    // // Persist changes to disk.
-    // accessHandle.flush();
-
-    // // Always close FileSystemSyncAccessHandle if done.
-    // accessHandle.close();
   }
 
   async listFiles(): Promise<TemplateFileAccess[]> {
