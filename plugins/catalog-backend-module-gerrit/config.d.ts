@@ -40,7 +40,7 @@ export interface Config {
           query: string;
           /**
            * (Optional) Branch.
-           * The branch where the provider will try to find entities. Defaults to "master".
+           * The branch where the provider will try to find entities. Uses the default branch where HEAD points to.
            */
           branch?: string;
           /**
