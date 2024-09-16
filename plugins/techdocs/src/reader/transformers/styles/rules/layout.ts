@@ -121,6 +121,10 @@ export default ({ theme, sidebar }: RuleOptions) => `
   margin-bottom: 50px;
 }
 
+.md-content > .md-sidebar {
+  left: 16rem;
+}
+
 .md-footer {
   position: fixed;
   bottom: 0px;
