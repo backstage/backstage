@@ -235,6 +235,7 @@ export const MultiEntityPickerFieldExtension: FieldExtensionComponent_2<
         >[]
       | undefined;
     allowArbitraryValues?: boolean | undefined;
+    maxNoOfEntities?: number | undefined;
   }
 >;
 
