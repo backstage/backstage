@@ -47,10 +47,6 @@ export const MultiEntityPickerFieldSchema = makeFieldSchemaFromZod(
       .or(entityQueryFilterExpressionSchema)
       .optional()
       .describe('List of key-value filter expression for entities'),
-    maxNoOfEntities: z
-      .number()
-      .optional()
-      .describe('The maximum number of entities that can be selected'),
   }),
 );
 

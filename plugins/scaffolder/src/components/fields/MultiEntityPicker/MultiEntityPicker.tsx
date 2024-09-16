@@ -93,8 +93,8 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
   const allowArbitraryValues =
     uiSchema['ui:options']?.allowArbitraryValues ?? true;
 
-  // if not specified, default to undefined
-  const maxNoOfEntities = uiSchema['ui:options']?.maxNoOfEntities ?? undefined;
+  // if not specified, maxItems defaults to undefined
+  const maxItems = props.schema.maxItems;
 
   const onSelect = useCallback(
     (_: any, refs: (string | Entity)[], reason: AutocompleteChangeReason) => {
@@ -164,7 +164,7 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
                 ?.entityRef!
         }
         getOptionDisabled={_options =>
-          maxNoOfEntities ? noOfItemsSelected >= maxNoOfEntities : false
+          maxItems ? noOfItemsSelected >= maxItems : false
         }
         autoSelect
         freeSolo={allowArbitraryValues}

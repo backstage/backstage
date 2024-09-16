@@ -743,10 +743,7 @@ describe('<MultiEntityPicker />', () => {
     });
 
     it('limit the number of selected entities when maxNoOfEntities is specified', async () => {
-      const uiOptions = props.uiSchema['ui:options'];
-      if (uiOptions) {
-        uiOptions.maxNoOfEntities = 2;
-      }
+      props.schema.maxItems = 2;
       await renderInTestApp(
         <Wrapper>
           <MultiEntityPicker {...props} />
@@ -782,7 +779,8 @@ describe('<MultiEntityPicker />', () => {
       ]);
     });
 
-    it('does not limit the number of selected entities when maxNoOfEntities is not specified', async () => {
+    it('does not limit the number of selected entities when maxItems is not specified', async () => {
+      props.schema.maxItems = undefined;
       await renderInTestApp(
         <Wrapper>
           <MultiEntityPicker {...props} />
