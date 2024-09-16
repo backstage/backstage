@@ -238,7 +238,7 @@ const getDefaultBranch = async (opts: {
   return defaultBranch;
 };
 const parseProtocol = (apiBaseUrl: string) => {
-  const url = new Url(apiBaseUrl);
+  const url = new URL(apiBaseUrl);
   return url.protocol || 'https';
 };
 /**
