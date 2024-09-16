@@ -183,7 +183,7 @@ const techDocsEntityContent = EntityContentBlueprint.makeWithOverrides({
   },
 });
 
-const TechDocsEntityContentEmptyState = createExtension({
+const techDocsEntityContentEmptyState = createExtension({
   kind: 'empty-state',
   name: 'entity-content',
   attachTo: { id: 'entity-content:techdocs', input: 'emptyState' },
@@ -210,7 +210,7 @@ export default createFrontendPlugin({
     techDocsPage,
     techDocsReaderPage,
     techDocsEntityContent,
-    TechDocsEntityContentEmptyState,
+    techDocsEntityContentEmptyState,
     techDocsSearchResultListItemExtension,
   ],
   routes: convertLegacyRouteRefs({
