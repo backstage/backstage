@@ -16,7 +16,6 @@
 
 import { PackageRole } from '@backstage/cli-node';
 import { Project } from 'ts-morph';
-import { EntryPoint } from '../entryPoints';
 import { BackstagePackageFeatureType } from '../typeDistProject';
 
 const mockEntryPoint = 'dist/index.d.ts';
