@@ -184,12 +184,17 @@ export const scaffolderTranslationRef = createTranslationRef({
         cancel: 'Cancel',
       },
     },
+    templateEditorForm: {
+      stepper: {
+        emptyText: 'There is no spec parameters in the template to preview.',
+      },
+    },
     templateTypePicker: {
       title: 'Categories',
     },
     templateEditorPage: {
       title: 'Template Editor',
-      subtitle: 'Edit, preview, and try out templates and template forms',
+      subtitle: 'Edit, preview, and try out templates',
       dryRunResults: {
         title: 'Dry-run results',
       },
@@ -210,12 +215,15 @@ export const scaffolderTranslationRef = createTranslationRef({
       },
       customFieldExplorer: {
         selectFieldLabel: 'Choose Custom Field Extension',
+        preview: {
+          title: 'Template Spec',
+        },
+        fieldPreview: {
+          title: 'Field Preview',
+        },
         fieldForm: {
           title: 'Field Options',
           applyButtonTitle: 'Apply',
-        },
-        preview: {
-          title: 'Example Template Spec',
         },
       },
       templateEditorBrowser: {
@@ -225,17 +233,17 @@ export const scaffolderTranslationRef = createTranslationRef({
         closeIconTooltip: 'Close directory',
       },
       templateEditorIntro: {
-        title: 'Get started by choosing one of the options below',
+        title: 'Get started by choosing one of the options below:',
         loadLocal: {
           title: 'Load Template Directory',
           description:
-            'Load a local template directory, allowing you to both edit and try executing your own template.',
+            'Load a local template directory to both edit and try executing your own template.',
           unsupportedTooltip: 'Only supported in some Chromium-based browsers',
         },
         createTemplate: {
-          title: 'Create new template',
+          title: 'Create New Template',
           description:
-            'Select a local directory to create a new action, allowing you to both edit and try executing your own template.',
+            'Create a local template directory to both edit and try executing your own template.',
           unsupportedTooltip: 'Only supported in some Chromium-based browsers',
         },
         formEditor: {

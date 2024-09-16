@@ -55,22 +55,22 @@ class WebFileAccess implements TemplateFileAccess {
 class WebDirectoryAccess implements TemplateDirectoryAccess {
   constructor(private readonly handle: IterableDirectoryHandle) {}
 
-  async createFile(options: { filename: string; data: string }): Promise<void> {
-    const { filename, data } = options;
-    let fileHandle: FileSystemFileHandle;
+  async createFile(options: { name: string; data: string }): Promise<void> {
+    const { name, data } = options;
+    let file: FileSystemFileHandle;
 
-    if (filename.includes('/')) {
-      const [dir, name] = filename.split('/');
+    if (name.includes('/')) {
+      const [dir, path] = name.split('/');
       const handle = await this.handle.getDirectoryHandle(dir, {
         create: true,
       });
-      fileHandle = await handle.getFileHandle(name, { create: true });
+      file = await handle.getFileHandle(path, { create: true });
     } else {
-      fileHandle = await this.handle.getFileHandle(filename, {
+      file = await this.handle.getFileHandle(name, {
         create: true,
       });
     }
-    const writable = await fileHandle.createWritable();
+    const writable = await file.createWritable();
     await writable.write(data);
     await writable.close();
   }

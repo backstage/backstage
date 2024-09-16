@@ -115,7 +115,7 @@ const ExamplesTable = (props: { examples: ActionExample[] }) => {
   );
 };
 
-const ActionPageContent = () => {
+export const ActionPageContent = () => {
   const api = useApi(scaffolderApiRef);
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
@@ -295,13 +295,13 @@ const ActionPageContent = () => {
     );
     return (
       <Box pb={4} key={action.id}>
-        <Typography variant="h4" component="h2" className={classes.code}>
+        <Typography variant="h6" component="h2" className={classes.code}>
           {action.id}
         </Typography>
         {action.description && <MarkdownContent content={action.description} />}
         {action.schema?.input && (
           <Box pb={2}>
-            <Typography variant="h5" component="h3">
+            <Typography variant="h6" component="h3">
               {t('actionsPage.action.input')}
             </Typography>
             {renderTable(
@@ -312,7 +312,7 @@ const ActionPageContent = () => {
         )}
         {action.schema?.output && (
           <Box pb={2}>
-            <Typography variant="h5" component="h3">
+            <Typography variant="h6" component="h3">
               {t('actionsPage.action.output')}
             </Typography>
             {renderTable(
@@ -323,7 +323,7 @@ const ActionPageContent = () => {
         {action.examples && (
           <Accordion>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="h5" component="h3">
+              <Typography variant="h6" component="h3">
                 {t('actionsPage.action.examples')}
               </Typography>
             </AccordionSummary>

@@ -89,7 +89,7 @@ spec:
 export async function createExampleTemplate(
   directory: TemplateDirectoryAccess,
 ) {
-  for await (const [filename, data] of Object.entries(files)) {
-    await directory.createFile({ filename, data });
+  for (const [name, data] of Object.entries(files)) {
+    await directory.createFile({ name, data });
   }
 }

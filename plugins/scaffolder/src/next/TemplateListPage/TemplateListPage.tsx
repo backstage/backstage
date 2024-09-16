@@ -44,10 +44,8 @@ import {
 
 import { RegisterExistingButton } from './RegisterExistingButton';
 import {
-  actionsRouteRef,
   editRouteRef,
   registerComponentRouteRef,
-  scaffolderListTaskRouteRef,
   selectedTemplateRouteRef,
   viewTechDocRouteRef,
 } from '../../routes';
@@ -104,8 +102,6 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
   } = props;
   const navigate = useNavigate();
   const editorLink = useRouteRef(editRouteRef);
-  const actionsLink = useRouteRef(actionsRouteRef);
-  const tasksLink = useRouteRef(scaffolderListTaskRouteRef);
   const viewTechDocsLink = useRouteRef(viewTechDocRouteRef);
   const templateRoute = useRouteRef(selectedTemplateRouteRef);
   const app = useApp();
@@ -124,14 +120,6 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
     onEditorClicked:
       props?.contextMenu?.editor !== false
         ? () => navigate(editorLink())
-        : undefined,
-    onActionsClicked:
-      props?.contextMenu?.actions !== false
-        ? () => navigate(actionsLink())
-        : undefined,
-    onTasksClicked:
-      props?.contextMenu?.tasks !== false
-        ? () => navigate(tasksLink())
         : undefined,
   };
 

@@ -13,36 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import { makeStyles } from '@material-ui/core/styles';
-import CloseIcon from '@material-ui/icons/Close';
-import RefreshIcon from '@material-ui/icons/Refresh';
-import SaveIcon from '@material-ui/icons/Save';
 import React from 'react';
-import { useDirectoryEditor } from './DirectoryEditorContext';
-import { FileBrowser } from '../../components/FileBrowser';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { scaffolderTranslationRef } from '../../translation';
+import { makeStyles } from '@material-ui/core/styles';
+import Tooltip from '@material-ui/core/Tooltip';
+import IconButton from '@material-ui/core/IconButton';
+import Divider from '@material-ui/core/Divider';
+import SaveIcon from '@material-ui/icons/Save';
+import RefreshIcon from '@material-ui/icons/Refresh';
+import CloseIcon from '@material-ui/icons/Close';
 
-const useStyles = makeStyles(theme => ({
-  button: {
-    padding: theme.spacing(1),
-  },
-  buttons: {
-    display: 'flex',
-    flexFlow: 'row nowrap',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  buttonsGap: {
-    flex: '1 1 auto',
-  },
-  buttonsDivider: {
-    marginBottom: theme.spacing(1),
-  },
-}));
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+
+import { scaffolderTranslationRef } from '../../translation';
+import { FileBrowser } from '../../components/FileBrowser';
+
+import { useDirectoryEditor } from './DirectoryEditorContext';
+import Grid from '@material-ui/core/Grid';
+
+const useStyles = makeStyles(
+  theme => ({
+    grid: {
+      '& svg': {
+        margin: theme.spacing(1),
+      },
+    },
+    closeButton: {
+      marginLeft: 'auto',
+    },
+  }),
+  { name: 'ScaffolderTemplateEditorBrowser' },
+);
 
 /** The local file browser for the template editor */
 export function TemplateEditorBrowser(props: { onClose?: () => void }) {
@@ -69,12 +69,12 @@ export function TemplateEditorBrowser(props: { onClose?: () => void }) {
 
   return (
     <>
-      <div className={classes.buttons}>
+      <Grid className={classes.grid} container spacing={0} alignItems="center">
         <Tooltip
           title={t('templateEditorPage.templateEditorBrowser.saveIconTooltip')}
         >
           <IconButton
-            className={classes.button}
+            size="small"
             disabled={directoryEditor.files.every(file => !file.dirty)}
             onClick={() => directoryEditor.save()}
           >
@@ -86,27 +86,29 @@ export function TemplateEditorBrowser(props: { onClose?: () => void }) {
             'templateEditorPage.templateEditorBrowser.reloadIconTooltip',
           )}
         >
-          <IconButton
-            className={classes.button}
-            onClick={() => directoryEditor.reload()}
-          >
+          <IconButton size="small" onClick={() => directoryEditor.reload()}>
             <RefreshIcon />
           </IconButton>
         </Tooltip>
-        <div className={classes.buttonsGap} />
         <Tooltip
           title={t('templateEditorPage.templateEditorBrowser.closeIconTooltip')}
         >
-          <IconButton className={classes.button} onClick={handleClose}>
+          <IconButton
+            className={classes.closeButton}
+            size="small"
+            onClick={handleClose}
+          >
             <CloseIcon />
           </IconButton>
         </Tooltip>
-      </div>
-      <Divider className={classes.buttonsDivider} />
+      </Grid>
+      <Divider />
       <FileBrowser
         selected={directoryEditor.selectedFile?.path ?? ''}
         onSelect={directoryEditor.setSelectedFile}
-        filePaths={directoryEditor.files.map(file => file.path)}
+        filePaths={directoryEditor.files
+          .filter(file => file.path.match(/\.ya?ml$/))
+          .map(file => file.path)}
       />
     </>
   );

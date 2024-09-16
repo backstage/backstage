@@ -14,31 +14,26 @@
  * limitations under the License.
  */
 import React, { useState } from 'react';
+
 import { Content, Header, Page } from '@backstage/core-components';
-import {
-  createExampleTemplate,
-  TemplateDirectoryAccess,
-  WebFileSystemAccess,
-} from '../../lib/filesystem';
-import { CustomFieldExplorer } from './CustomFieldExplorer';
-import { TemplateEditor } from './TemplateEditor';
-import { TemplateFormPreviewer } from './TemplateFormPreviewer';
 import {
   FieldExtensionOptions,
   FormProps,
   type LayoutOptions,
 } from '@backstage/plugin-scaffolder-react';
-import { TemplateEditorIntro } from './TemplateEditorIntro';
-import { ScaffolderPageContextMenu } from '@backstage/plugin-scaffolder-react/alpha';
-import { useNavigate } from 'react-router-dom';
 import { useRouteRef } from '@backstage/core-plugin-api';
+
+import { rootRouteRef } from '../../routes';
 import {
-  actionsRouteRef,
-  rootRouteRef,
-  scaffolderListTaskRouteRef,
-} from '../../routes';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { scaffolderTranslationRef } from '../../translation';
+  createExampleTemplate,
+  TemplateDirectoryAccess,
+  WebFileSystemAccess,
+} from '../../lib/filesystem';
+
+import { TemplateEditor } from './TemplateEditor';
+import { TemplateFormPreviewer } from './TemplateFormPreviewer';
+import { TemplateEditorIntro } from './TemplateEditorIntro';
+import { CustomFieldExplorer } from './CustomFieldExplorer';
 
 type Selection =
   | {
@@ -65,18 +60,7 @@ interface TemplateEditorPageProps {
 
 export function TemplateEditorPage(props: TemplateEditorPageProps) {
   const [selection, setSelection] = useState<Selection>();
-  const navigate = useNavigate();
-  const actionsLink = useRouteRef(actionsRouteRef);
-  const tasksLink = useRouteRef(scaffolderListTaskRouteRef);
   const createLink = useRouteRef(rootRouteRef);
-  const { t } = useTranslationRef(scaffolderTranslationRef);
-
-  const scaffolderPageContextMenuProps = {
-    onEditorClicked: undefined,
-    onActionsClicked: () => navigate(actionsLink()),
-    onTasksClicked: () => navigate(tasksLink()),
-    onCreateClicked: () => navigate(createLink()),
-  };
 
   let content: JSX.Element | null = null;
   if (selection?.type === 'local') {
@@ -87,6 +71,7 @@ export function TemplateEditorPage(props: TemplateEditorPageProps) {
         onClose={() => setSelection(undefined)}
         layouts={props.layouts}
         formProps={props.formProps}
+        customFieldExtensions={props.customFieldExtensions}
       />
     );
   } else if (selection?.type === 'form') {
@@ -114,6 +99,7 @@ export function TemplateEditorPage(props: TemplateEditorPageProps) {
         onClose={() => setSelection(undefined)}
         layouts={props.layouts}
         formProps={props.formProps}
+        customFieldExtensions={props.customFieldExtensions}
       />
     );
   } else {
@@ -151,12 +137,9 @@ export function TemplateEditorPage(props: TemplateEditorPageProps) {
     <Page themeId="home">
       <Header
         title="Manage Templates"
-        type="Scaffolder"
-        subtitle={t('templateEditorPage.subtitle')}
+        type="Create Components"
         typeLink={createLink()}
-      >
-        <ScaffolderPageContextMenu {...scaffolderPageContextMenuProps} />
-      </Header>
+      />
       {content}
     </Page>
   );

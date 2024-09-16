@@ -13,12 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useApiHolder } from '@backstage/core-plugin-api';
-import { JsonObject, JsonValue } from '@backstage/types';
-import { makeStyles } from '@material-ui/core/styles';
+import yaml from 'yaml';
 import React, { Component, ReactNode, useMemo, useState } from 'react';
 import useDebounce from 'react-use/esm/useDebounce';
-import yaml from 'yaml';
+
+import { makeStyles } from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+
+import { JsonObject, JsonValue } from '@backstage/types';
+import { useApiHolder } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import {
   LayoutOptions,
   TemplateParameterSchema,
@@ -29,22 +34,14 @@ import {
   Stepper,
   createAsyncValidators,
 } from '@backstage/plugin-scaffolder-react/alpha';
+
 import { useDryRun } from './DryRunContext';
 import { useDirectoryEditor } from './DirectoryEditorContext';
+import { scaffolderTranslationRef } from '../../translation';
 
 const useStyles = makeStyles({
   containerWrapper: {
-    position: 'relative',
     width: '100%',
-    height: '100%',
-  },
-  container: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    overflow: 'auto',
   },
 });
 
@@ -107,6 +104,7 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
   } = props;
   const classes = useStyles();
   const apiHolder = useApiHolder();
+  const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const [steps, setSteps] = useState<TemplateParameterSchema['steps']>();
 
@@ -181,26 +179,28 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
     [contentIsSpec, content, apiHolder],
   );
 
-  if (!steps) {
-    return null;
-  }
-
   return (
     <div className={classes.containerWrapper}>
-      <div className={classes.container}>
-        <ErrorBoundary invalidator={steps} setErrorText={setErrorText}>
-          <Stepper
-            manifest={{ steps, title: 'Template Editor' }}
-            extensions={fieldExtensions}
-            components={fields}
-            onCreate={async options => {
-              await onDryRun?.(options);
-            }}
-            layouts={layouts}
-            formProps={props.formProps}
-          />
-        </ErrorBoundary>
-      </div>
+      {steps ? (
+        <Paper variant="outlined">
+          <ErrorBoundary invalidator={steps} setErrorText={setErrorText}>
+            <Stepper
+              manifest={{ steps, title: 'Template Editor' }}
+              extensions={fieldExtensions}
+              components={fields}
+              onCreate={async options => {
+                await onDryRun?.(options);
+              }}
+              layouts={layouts}
+              formProps={props.formProps}
+            />
+          </ErrorBoundary>
+        </Paper>
+      ) : (
+        <Typography variant="body1" color="textSecondary">
+          {t('templateEditorForm.stepper.emptyText')}
+        </Typography>
+      )}
     </div>
   );
 }

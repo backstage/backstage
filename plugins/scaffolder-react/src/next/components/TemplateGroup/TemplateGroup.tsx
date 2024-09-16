@@ -15,6 +15,7 @@
  */
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
 import {
   Content,
   ContentHeader,
@@ -23,6 +24,12 @@ import {
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { TemplateCardProps, TemplateCard } from '../TemplateCard';
 import { IconComponent } from '@backstage/core-plugin-api';
+
+const useStyles = makeStyles({
+  content: {
+    padding: 0,
+  },
+});
 
 /**
  * The props for the {@link TemplateGroup} component.
@@ -55,6 +62,7 @@ export const TemplateGroup = (props: TemplateGroupProps) => {
     components: { CardComponent } = {},
     onSelected,
   } = props;
+  const classes = useStyles();
   const titleComponent =
     typeof title === 'string' ? <ContentHeader title={title} /> : title;
 
@@ -65,7 +73,7 @@ export const TemplateGroup = (props: TemplateGroupProps) => {
   const Card = CardComponent || TemplateCard;
 
   return (
-    <Content>
+    <Content className={classes.content}>
       {titleComponent}
       <ItemCardGrid>
         {templates.map(({ template, additionalLinks }) => (

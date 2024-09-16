@@ -13,6 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import useAsync from 'react-use/esm/useAsync';
+
 import {
   Content,
   EmptyState,
@@ -24,31 +29,34 @@ import {
   Table,
 } from '@backstage/core-components';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
-import { CatalogFilterLayout } from '@backstage/plugin-catalog-react';
-import useAsync from 'react-use/esm/useAsync';
-import React, { useState } from 'react';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import {
   ScaffolderTask,
   scaffolderApiRef,
 } from '@backstage/plugin-scaffolder-react';
-import { OwnerListPicker } from './OwnerListPicker';
+import { ScaffolderPageContextMenu } from '@backstage/plugin-scaffolder-react/alpha';
+
+import {
+  CatalogFilterLayout,
+  EntityListProvider,
+  EntitySearchBar,
+} from '@backstage/plugin-catalog-react';
+import { editRouteRef, rootRouteRef } from '../../routes';
+import { scaffolderTranslationRef } from '../../translation';
+
 import {
   CreatedAtColumn,
   OwnerEntityColumn,
   TaskStatusColumn,
   TemplateTitleColumn,
 } from './columns';
-import { actionsRouteRef, editRouteRef, rootRouteRef } from '../../routes';
-import { ScaffolderPageContextMenu } from '@backstage/plugin-scaffolder-react/alpha';
-import { useNavigate } from 'react-router-dom';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { scaffolderTranslationRef } from '../../translation';
+import { OwnerListPicker } from './OwnerListPicker';
 
 export interface MyTaskPageProps {
   initiallySelectedFilter?: 'owned' | 'all';
 }
 
-const ListTaskPageContent = (props: MyTaskPageProps) => {
+export const ListTaskPageContent = (props: MyTaskPageProps) => {
   const { initiallySelectedFilter = 'owned' } = props;
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
@@ -87,70 +95,68 @@ const ListTaskPageContent = (props: MyTaskPageProps) => {
   }
 
   return (
-    <CatalogFilterLayout>
-      <CatalogFilterLayout.Filters>
-        <OwnerListPicker
-          filter={ownerFilter}
-          onSelectOwner={id => setOwnerFilter(id)}
-        />
-      </CatalogFilterLayout.Filters>
-      <CatalogFilterLayout.Content>
-        <Table<ScaffolderTask>
-          data={value?.tasks ?? []}
-          title={t('listTaskPage.content.tableTitle')}
-          columns={[
-            {
-              title: t('listTaskPage.content.tableCell.taskID'),
-              field: 'id',
-              render: row => (
-                <Link to={`${rootLink()}/tasks/${row.id}`}>{row.id}</Link>
-              ),
-            },
-            {
-              title: t('listTaskPage.content.tableCell.template'),
-              field: 'spec.templateInfo.entity.metadata.title',
-              render: row => (
-                <TemplateTitleColumn
-                  entityRef={row.spec.templateInfo?.entityRef}
-                />
-              ),
-            },
-            {
-              title: t('listTaskPage.content.tableCell.created'),
-              field: 'createdAt',
-              render: row => <CreatedAtColumn createdAt={row.createdAt} />,
-            },
-            {
-              title: t('listTaskPage.content.tableCell.owner'),
-              field: 'createdBy',
-              render: row => (
-                <OwnerEntityColumn entityRef={row.spec?.user?.ref} />
-              ),
-            },
-            {
-              title: t('listTaskPage.content.tableCell.status'),
-              field: 'status',
-              render: row => <TaskStatusColumn status={row.status} />,
-            },
-          ]}
-        />
-      </CatalogFilterLayout.Content>
-    </CatalogFilterLayout>
+    <EntityListProvider>
+      <CatalogFilterLayout>
+        <CatalogFilterLayout.Filters>
+          <EntitySearchBar />
+          <OwnerListPicker
+            filter={ownerFilter}
+            onSelectOwner={id => setOwnerFilter(id)}
+          />
+        </CatalogFilterLayout.Filters>
+        <CatalogFilterLayout.Content>
+          <Table<ScaffolderTask>
+            data={value?.tasks ?? []}
+            title={t('listTaskPage.content.tableTitle')}
+            columns={[
+              {
+                title: t('listTaskPage.content.tableCell.taskID'),
+                field: 'id',
+                render: row => (
+                  <Link to={`${rootLink()}/tasks/${row.id}`}>{row.id}</Link>
+                ),
+              },
+              {
+                title: t('listTaskPage.content.tableCell.template'),
+                field: 'spec.templateInfo.entity.metadata.title',
+                render: row => (
+                  <TemplateTitleColumn
+                    entityRef={row.spec.templateInfo?.entityRef}
+                  />
+                ),
+              },
+              {
+                title: t('listTaskPage.content.tableCell.created'),
+                field: 'createdAt',
+                render: row => <CreatedAtColumn createdAt={row.createdAt} />,
+              },
+              {
+                title: t('listTaskPage.content.tableCell.owner'),
+                field: 'createdBy',
+                render: row => (
+                  <OwnerEntityColumn entityRef={row.spec?.user?.ref} />
+                ),
+              },
+              {
+                title: t('listTaskPage.content.tableCell.status'),
+                field: 'status',
+                render: row => <TaskStatusColumn status={row.status} />,
+              },
+            ]}
+          />
+        </CatalogFilterLayout.Content>
+      </CatalogFilterLayout>
+    </EntityListProvider>
   );
 };
 
 export const ListTasksPage = (props: MyTaskPageProps) => {
   const navigate = useNavigate();
   const editorLink = useRouteRef(editRouteRef);
-  const actionsLink = useRouteRef(actionsRouteRef);
-  const createLink = useRouteRef(rootRouteRef);
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const scaffolderPageContextMenuProps = {
     onEditorClicked: () => navigate(editorLink()),
-    onActionsClicked: () => navigate(actionsLink()),
-    onTasksClicked: undefined,
-    onCreateClicked: () => navigate(createLink()),
   };
   return (
     <Page themeId="home">

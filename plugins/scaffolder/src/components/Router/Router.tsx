@@ -109,6 +109,7 @@ export const Router = (props: PropsWithChildren<RouterProps>) => {
         TemplateWizardPageComponent = TemplateWizardPage,
     } = {},
   } = props;
+
   const outlet = useOutlet() || props.children;
   const customFieldExtensions =
     useCustomFieldExtensions<FieldExtensionOptions>(outlet);

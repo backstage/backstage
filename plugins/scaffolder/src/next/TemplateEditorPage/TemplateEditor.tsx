@@ -13,20 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { makeStyles } from '@material-ui/core/styles';
 import React, { useState } from 'react';
+
+import { makeStyles } from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
+
 import type {
   FormProps,
   LayoutOptions,
 } from '@backstage/plugin-scaffolder-react';
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
+
 import { TemplateDirectoryAccess } from '../../lib/filesystem';
+
 import { DirectoryEditorProvider } from './DirectoryEditorContext';
-import { TemplateEditorBrowser } from './TemplateEditorBrowser';
 import { DryRunProvider } from './DryRunContext';
+import { DryRunResults } from './DryRunResults';
+import { TemplateEditorBrowser } from './TemplateEditorBrowser';
+import { TemplateEditorToolbar } from './TemplateEditorToolbar';
 import { TemplateEditorTextArea } from './TemplateEditorTextArea';
 import { TemplateEditorForm } from './TemplateEditorForm';
-import { DryRunResults } from './DryRunResults';
 
 /** @public */
 export type ScaffolderTemplateEditorClassKey =
@@ -37,17 +43,22 @@ export type ScaffolderTemplateEditorClassKey =
   | 'results';
 
 const useStyles = makeStyles(
-  {
+  theme => ({
     // Reset and fix sizing to make sure scrolling behaves correctly
     root: {
       gridArea: 'pageContent',
       display: 'grid',
       gridTemplateAreas: `
+      "toolbar toolbar toolbar"
       "browser editor preview"
       "results results results"
     `,
       gridTemplateColumns: '1fr 3fr 2fr',
-      gridTemplateRows: '1fr auto',
+      gridTemplateRows: 'auto 1fr auto',
+    },
+    toolbar: {
+      gridArea: 'toolbar',
+      borderBottom: `1px solid ${theme.palette.divider}`,
     },
     browser: {
       gridArea: 'browser',
@@ -56,15 +67,27 @@ const useStyles = makeStyles(
     editor: {
       gridArea: 'editor',
       overflow: 'auto',
+      borderLeft: `1px solid ${theme.palette.divider}`,
     },
     preview: {
       gridArea: 'preview',
+      position: 'relative',
+      borderLeft: `1px solid ${theme.palette.divider}`,
+      backgroundColor: theme.palette.background.default,
+    },
+    scroll: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      padding: theme.spacing(1.5),
       overflow: 'auto',
     },
     results: {
       gridArea: 'results',
     },
-  },
+  }),
   { name: 'ScaffolderTemplateEditor' },
 );
 
@@ -74,33 +97,48 @@ export const TemplateEditor = (props: {
   layouts?: LayoutOptions[];
   onClose?: () => void;
   formProps?: FormProps;
+  customFieldExtensions?: FieldExtensionOptions<any, any>[];
 }) => {
+  const {
+    directory,
+    fieldExtensions,
+    layouts,
+    onClose,
+    formProps,
+    customFieldExtensions = [],
+  } = props;
   const classes = useStyles();
-
   const [errorText, setErrorText] = useState<string>();
 
   return (
-    <DirectoryEditorProvider directory={props.directory}>
+    <DirectoryEditorProvider directory={directory}>
       <DryRunProvider>
-        <main className={classes.root}>
+        <Paper className={classes.root} variant="outlined" square>
+          <section className={classes.toolbar}>
+            <TemplateEditorToolbar
+              customFieldExtensions={customFieldExtensions}
+            />
+          </section>
           <section className={classes.browser}>
-            <TemplateEditorBrowser onClose={props.onClose} />
+            <TemplateEditorBrowser onClose={onClose} />
           </section>
           <section className={classes.editor}>
             <TemplateEditorTextArea.DirectoryEditor errorText={errorText} />
           </section>
           <section className={classes.preview}>
-            <TemplateEditorForm.DirectoryEditorDryRun
-              setErrorText={setErrorText}
-              fieldExtensions={props.fieldExtensions}
-              layouts={props.layouts}
-              formProps={props.formProps}
-            />
+            <div className={classes.scroll}>
+              <TemplateEditorForm.DirectoryEditorDryRun
+                setErrorText={setErrorText}
+                fieldExtensions={fieldExtensions}
+                layouts={layouts}
+                formProps={formProps}
+              />
+            </div>
           </section>
           <section className={classes.results}>
             <DryRunResults />
           </section>
-        </main>
+        </Paper>
       </DryRunProvider>
     </DirectoryEditorProvider>
   );

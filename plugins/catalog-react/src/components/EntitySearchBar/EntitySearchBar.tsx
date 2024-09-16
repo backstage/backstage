@@ -37,6 +37,7 @@ const useStyles = makeStyles(
     searchToolbar: {
       paddingLeft: 0,
       paddingRight: 0,
+      minHeight: 'auto',
     },
     input: {},
   }),
