@@ -43,6 +43,7 @@ import {
   scaffolderListTaskRouteRef,
   actionsRouteRef,
   editRouteRef,
+  editTemplateRouteRef,
 } from './routes';
 
 export {
@@ -104,6 +105,7 @@ export default createFrontendPlugin({
     actions: actionsRouteRef,
     listTasks: scaffolderListTaskRouteRef,
     edit: editRouteRef,
+    editTemplate: editTemplateRouteRef,
   }),
   externalRoutes: convertLegacyRouteRefs({
     registerComponent: registerComponentRouteRef,

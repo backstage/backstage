@@ -35,6 +35,7 @@ import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../extensions/default';
 import {
   actionsRouteRef,
   editRouteRef,
+  editTemplateRouteRef,
   scaffolderListTaskRouteRef,
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
@@ -51,6 +52,7 @@ import {
 import { TemplateListPage, TemplateWizardPage } from '../../next';
 import { OngoingTask } from '../OngoingTask';
 import { TemplateEditorPage } from '../../next/TemplateEditorPage';
+import { EditTemplate } from '../EditTemplate/EditTemplate';
 
 /**
  * The Props for the Scaffolder Router
@@ -176,6 +178,17 @@ export const Router = (props: PropsWithChildren<RouterProps>) => {
       <Route
         path={scaffolderListTaskRouteRef.path}
         element={<ListTasksPage />}
+      />
+
+      <Route
+        path={editTemplateRouteRef.path}
+        element={
+          <EditTemplate
+            customFieldExtensions={fieldExtensions}
+            layouts={customLayouts}
+            formProps={props.formProps}
+          />
+        }
       />
       <Route
         path="*"
