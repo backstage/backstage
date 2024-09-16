@@ -16,10 +16,8 @@ import { EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
-import { JSXElementConstructor } from 'react';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
-import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
@@ -135,10 +133,8 @@ export type DocsTableRow = {
 
 // @public
 export const EmbeddedDocsRouter: (
-  props: PropsWithChildren<{
-    emptyState?: React_2.ReactElement;
-  }>,
-) => React_2.JSX.Element | null;
+  props: PropsWithChildren<{}>,
+) => React_2.JSX.Element;
 
 // @public
 export const EntityListDocsGrid: (
@@ -194,13 +190,9 @@ export type EntityListDocsTableProps = {
 };
 
 // @public
-export const EntityTechdocsContent: (
-  props: PropsWithChildren<{
-    emptyState?:
-      | ReactElement<any, string | JSXElementConstructor<any>>
-      | undefined;
-  }>,
-) => JSX_2.Element | null;
+export const EntityTechdocsContent: (props: {
+  children?: ReactNode;
+}) => JSX_2.Element;
 
 // @public
 export const isTechDocsAvailable: (entity: Entity) => boolean;

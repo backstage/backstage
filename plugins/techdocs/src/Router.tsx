@@ -56,11 +56,6 @@ export const Router = () => {
   );
 };
 
-/**
- * Responsible for registering route to view docs on Entity page
- *
- * @public
- */
 export const EmbeddedDocsRouter = (
   props: PropsWithChildren<{ emptyState?: React.ReactElement }>,
 ) => {
@@ -94,4 +89,15 @@ export const EmbeddedDocsRouter = (
   }
 
   return element;
+};
+
+/**
+ * Responsible for registering route to view docs on Entity page
+ *
+ * @public
+ */
+export const LegacyEmbeddedDocsRouter = (props: PropsWithChildren<{}>) => {
+  // Wrap the Router to avoid exposing the emptyState prop in the non-alpha
+  // public API and make it easier for us to change later.
+  return <EmbeddedDocsRouter children={props.children} />;
 };
