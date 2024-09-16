@@ -26701,8 +26701,8 @@ __metadata:
   linkType: hard
 
 "express-openapi-validator@npm:^5.0.4":
-  version: 5.3.5
-  resolution: "express-openapi-validator@npm:5.3.5"
+  version: 5.3.6
+  resolution: "express-openapi-validator@npm:5.3.6"
   dependencies:
     "@apidevtools/json-schema-ref-parser": ^11.7.0
     "@types/multer": ^1.4.11
@@ -26716,10 +26716,10 @@ __metadata:
     media-typer: ^1.1.0
     multer: ^1.4.5-lts.1
     ono: ^7.1.3
-    path-to-regexp: ^6.2.2
+    path-to-regexp: ^6.3.0
   peerDependencies:
     express: "*"
-  checksum: 325636c456790ee909509ca43b90b4083436cbdca2cb4e3a2e959cb4f7b1ccd9af0ddf60bb588c31f005d05bdb2e7ad12de5ee5277e62462570bb09b3597b7ac
+  checksum: 3833bc2351fe099aed5777c1254514316425d9188ad5002e6604259b36953d8304b8804b835cddc518e8a63f1d1c2288e7a83006400c2dc7e644f2e3cadfb755
   languageName: node
   linkType: hard
 
@@ -36218,10 +36218,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"path-to-regexp@npm:^6.2.0, path-to-regexp@npm:^6.2.2":
-  version: 6.2.2
-  resolution: "path-to-regexp@npm:6.2.2"
-  checksum: b7b0005c36f5099f9ed1fb20a820d2e4ed1297ffe683ea1d678f5e976eb9544f01debb281369dabdc26da82e6453901bf71acf2c7ed14b9243536c2a45286c33
+"path-to-regexp@npm:^6.2.0, path-to-regexp@npm:^6.3.0":
+  version: 6.3.0
+  resolution: "path-to-regexp@npm:6.3.0"
+  checksum: eca78602e6434a1b6799d511d375ec044e8d7e28f5a48aa5c28d57d8152fb52f3fc62fb1cfc5dfa2198e1f041c2a82ed14043d75740a2fe60e91b5089a153250
   languageName: node
   linkType: hard
 
