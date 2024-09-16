@@ -9,7 +9,7 @@
 #
 # Once the commands have been run, you can build the image using `yarn build-image`
 
-FROM node:18-bookworm-slim
+FROM node:20-bookworm-slim
 
 # Set Python interpreter for `node-gyp` to use
 ENV PYTHON=/usr/bin/python3
@@ -43,6 +43,9 @@ COPY --chown=node:node .yarnrc.yml ./
 
 # This switches many Node.js dependencies to production mode.
 ENV NODE_ENV=production
+
+# This disables node snapshot for Node 20 to work with the Scaffolder
+ENV NODE_OPTIONS "--no-node-snapshot"
 
 # Copy repo skeleton first, to avoid unnecessary docker cache invalidation.
 # The skeleton contains the package.json of each package in the monorepo,
