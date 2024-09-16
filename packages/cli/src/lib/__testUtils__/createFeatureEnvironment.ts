@@ -15,20 +15,11 @@
  */
 
 import { PackageRole } from '@backstage/cli-node';
-import { resolve as resolvePath } from 'path';
 import { Project } from 'ts-morph';
 import { EntryPoint } from '../entryPoints';
-import {
-  getDistTypeRoot,
-  BackstagePackageFeatureType,
-} from '../typeDistProject';
+import { BackstagePackageFeatureType } from '../typeDistProject';
 
-const mockEntryPoint = {
-  mount: '.',
-  path: './src/index.d.ts',
-  name: 'index',
-  ext: '.d.ts',
-};
+const mockEntryPoint = 'dist/index.d.ts';
 
 type CreateFeatureEnvironmentOptions = {
   $$type?: BackstagePackageFeatureType;
@@ -44,7 +35,7 @@ type FeatureEnvironment = {
   project: Project;
   role: PackageRole;
   dir: string;
-  entryPoint: EntryPoint;
+  entryPoint: string;
 };
 
 type File = {
@@ -54,7 +45,7 @@ type File = {
 
 const createTestType = ($$type: BackstagePackageFeatureType): File[] => [
   {
-    path: './src/createTestType.d.ts',
+    path: './dist/createTestType.d.ts',
     content: `
 export interface TestType {
   readonly $$type: '${$$type}';
@@ -71,7 +62,7 @@ export function createTestType(): TestType {
 
 const createMockDefaultExportAssignment = (): File[] => [
   {
-    path: mockEntryPoint.path,
+    path: mockEntryPoint,
     content: `
 declare const _default: import("./createTestType").TestType;
 export default _default;
@@ -81,11 +72,11 @@ export default _default;
 
 const createMockDefaultExportFromFile = (): File[] => [
   {
-    path: mockEntryPoint.path,
+    path: mockEntryPoint,
     content: `export { default } from './linked';`,
   },
   {
-    path: './src/linked.d.ts',
+    path: './dist/linked.d.ts',
     content: `
 declare const _default: import("./createTestType").TestType;
 export default _default;    
@@ -95,11 +86,11 @@ export default _default;
 
 const createMockDefaultExportFromFileAsDefault = (): File[] => [
   {
-    path: mockEntryPoint.path,
+    path: mockEntryPoint,
     content: `export { test as default } from './linked';`,
   },
   {
-    path: './src/linked.d.ts',
+    path: './dist/linked.d.ts',
     content: `
 export declare const test: import("./createTestType").TestType; 
   `,
@@ -108,11 +99,11 @@ export declare const test: import("./createTestType").TestType;
 
 const createMockDefaultExportFromFileWithSibling = (): File[] => [
   {
-    path: mockEntryPoint.path,
+    path: mockEntryPoint,
     content: `export { default, test } from './linked';`,
   },
   {
-    path: './src/linked.d.ts',
+    path: './dist/linked.d.ts',
     content: `
 import { createTestType } from './createTestType';
 
@@ -143,10 +134,7 @@ export default function createFeatureEnvironment(
   const files = [...createTestType($$type), ...formatToFiles[format]()];
 
   for (const file of files) {
-    project.createSourceFile(
-      resolvePath(getDistTypeRoot(''), file.path),
-      file.content,
-    );
+    project.createSourceFile(file.path, file.content);
   }
 
   return {

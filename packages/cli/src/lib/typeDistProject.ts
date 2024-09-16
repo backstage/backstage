@@ -14,114 +14,16 @@
  * limitations under the License.
  */
 import { findPaths } from '@backstage/cli-common';
-import { PackageGraph, PackageRole } from '@backstage/cli-node';
-import { builtinModules } from 'module';
+import { PackageRole } from '@backstage/cli-node';
 import { resolve as resolvePath } from 'path';
 import { Project, SourceFile, SyntaxKind, ts, Type } from 'ts-morph';
-import { EntryPoint, readEntryPoints } from './entryPoints';
-
-export const getDistTypeRoot = (dir: string) => {
-  const workspaceRoot = findPaths(process.cwd()).targetRoot;
-  const relativeDirectory = dir.replace(workspaceRoot, '');
-  const distTypeRoot = resolvePath(
-    workspaceRoot,
-    `./dist-types${relativeDirectory}`,
-  );
-
-  return distTypeRoot;
-};
-
-const getPackagesDistTypeMap = async () => {
-  const packages = await PackageGraph.listTargetPackages();
-  const distTypeMap: Record<string, string> = {};
-
-  for (const { dir, packageJson } of packages) {
-    const distTypeRoot = getDistTypeRoot(dir);
-
-    for (const { name, path, ext } of readEntryPoints(packageJson)) {
-      const dtsPath = resolvePath(distTypeRoot, path.replace(ext, '.d.ts'));
-
-      if (name === 'index') {
-        distTypeMap[packageJson.name] = dtsPath;
-      } else {
-        distTypeMap[`${packageJson.name}/${name}`] = dtsPath;
-      }
-    }
-  }
-
-  return distTypeMap;
-};
 
 export const createTypeDistProject = async () => {
-  const distTypeMap = await getPackagesDistTypeMap();
-  const assetTypeExtensions = await getAssetTypeExtensions();
   const workspaceRoot = findPaths(process.cwd()).targetRoot;
 
   return new Project({
     tsConfigFilePath: resolvePath(workspaceRoot, 'tsconfig.json'),
     skipAddingFilesFromTsConfig: true,
-    resolutionHost: (moduleResolutionHost, getCompilerOptions) => {
-      return {
-        resolveModuleNames: (moduleNames, containingFile) => {
-          const compilerOptions = getCompilerOptions();
-          const resolvedModules: ts.ResolvedModule[] = [];
-
-          for (let moduleName of moduleNames) {
-            // Handle resolving asset-type modules
-            for (const ext of assetTypeExtensions) {
-              if (moduleName.endsWith(ext)) {
-                moduleName = '@backstage/cli/asset-types';
-              }
-            }
-
-            // Handle resolving internal plugins and package entry points to dist-types folder
-            if (distTypeMap[moduleName]) {
-              resolvedModules.push({
-                resolvedFileName: distTypeMap[moduleName],
-                isExternalLibraryImport: false,
-                resolvedUsingTsExtension: false,
-              });
-              continue;
-            }
-
-            // Handle resolving builtin node modules to @types/node
-            if (moduleName.startsWith('node:')) {
-              moduleName = moduleName.slice(5);
-            }
-            if (builtinModules.includes(moduleName)) {
-              const result = ts.resolveModuleName(
-                `@types/node/${moduleName}`,
-                containingFile,
-                compilerOptions,
-                moduleResolutionHost,
-              );
-
-              if (result.resolvedModule) {
-                resolvedModules.push(result.resolvedModule);
-                continue;
-              }
-            }
-
-            // Handle resolving relative paths and external node_modules.
-            const result = ts.resolveModuleName(
-              moduleName,
-              containingFile,
-              compilerOptions,
-              moduleResolutionHost,
-            );
-
-            if (result.resolvedModule) {
-              resolvedModules.push(result.resolvedModule);
-              continue;
-            }
-
-            throw new Error(`Failed to resolve module: ${moduleName}`);
-          }
-
-          return resolvedModules;
-        },
-      };
-    },
   });
 };
 
@@ -150,17 +52,14 @@ export const getEntryPointDefaultFeatureType = (
   role: PackageRole,
   packageDir: string,
   project: Project,
-  entryPoint: EntryPoint,
+  entryPoint: string,
 ): BackstagePackageFeatureType | null => {
   if (isTargetPackageRole(role)) {
-    const dtsPath = resolvePath(
-      getDistTypeRoot(packageDir),
-      entryPoint.path.replace(entryPoint.ext, '.d.ts'),
-    );
+    const distPath = resolvePath(packageDir, entryPoint);
 
     try {
       const defaultFeatureType = getSourceFileDefaultFeatureType(
-        project.addSourceFileAtPath(dtsPath),
+        project.addSourceFileAtPath(distPath),
       );
 
       if (defaultFeatureType) {
@@ -168,7 +67,7 @@ export const getEntryPointDefaultFeatureType = (
       }
     } catch (error) {
       console.error(
-        `Failed to extract default feature type from ${dtsPath}, ${error}. ` +
+        `Failed to extract default feature type from ${distPath}, ${error}. ` +
           'Your package will publish fine but it may be missing metadata about its default feature.',
       );
     }
@@ -251,28 +150,4 @@ function isTargetFeatureType(
   return (
     !!type && targetFeatureTypes.includes(type as BackstagePackageFeatureType)
   );
-}
-
-// Returns an array of the ending extensions fro the asset-types
-// that are supported by the Backstage CLI
-async function getAssetTypeExtensions() {
-  const assetTypes: string[] = [];
-  const assetTypesDts = await getAssetTypesDtsFilePath();
-  const project = new Project({});
-  const sourceFile = project.addSourceFileAtPath(assetTypesDts);
-
-  for (const module of sourceFile.getModules()) {
-    assetTypes.push(
-      module
-        .getName()
-        .replace(/'/g, '') // remove surrounding single quotes
-        .replace(/^\*/g, ''), // remove leading *
-    );
-  }
-
-  return assetTypes;
-}
-
-async function getAssetTypesDtsFilePath() {
-  return require.resolve('@backstage/cli/asset-types/asset-types.d.ts');
 }

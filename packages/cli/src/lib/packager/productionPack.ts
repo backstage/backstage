@@ -166,19 +166,22 @@ async function prepareExportsEntryPoints(
         exp[key] = `./${posixPath.join(`dist`, name)}`;
       }
     }
+
     exp.default = exp.require ?? exp.import;
 
-    const defaultFeatureType =
-      pkg.backstage?.role &&
-      getEntryPointDefaultFeatureType(
-        pkg.backstage?.role,
-        packageDir,
-        project,
-        entryPoint,
-      );
+    if (exp.types) {
+      const defaultFeatureType =
+        pkg.backstage?.role &&
+        getEntryPointDefaultFeatureType(
+          pkg.backstage?.role,
+          packageDir,
+          project,
+          exp.types,
+        );
 
-    if (defaultFeatureType) {
-      exp.backstage = defaultFeatureType;
+      if (defaultFeatureType) {
+        exp.backstage = defaultFeatureType;
+      }
     }
 
     // This creates a directory with a lone package.json for backwards compatibility
