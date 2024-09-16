@@ -85,6 +85,7 @@ nav:
           - Configuring CI/CD to generate and publish TechDocs sites: 'features/techdocs/configuring-ci-cd.md'
           - CLI: 'features/techdocs/cli.md'
           - HOW TO guides: 'features/techdocs/how-to-guides.md'
+          - Extensions: 'features/techdocs/extensions.md'
           - Troubleshooting: 'features/techdocs/troubleshooting.md'
           - FAQ: 'features/techdocs/FAQ.md'
   - Integrations:

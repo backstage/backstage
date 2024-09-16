@@ -116,6 +116,7 @@ module.exports = {
           'features/techdocs/concepts',
           'features/techdocs/addons',
           'features/techdocs/architecture',
+          'features/techdocs/extensions',
           'features/techdocs/creating-and-publishing',
           'features/techdocs/configuration',
           'features/techdocs/using-cloud-storage',
