@@ -11019,24 +11019,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@module-federation/bridge-react-webpack-plugin@npm:0.6.3":
-  version: 0.6.3
-  resolution: "@module-federation/bridge-react-webpack-plugin@npm:0.6.3"
+"@module-federation/bridge-react-webpack-plugin@npm:0.6.4":
+  version: 0.6.4
+  resolution: "@module-federation/bridge-react-webpack-plugin@npm:0.6.4"
   dependencies:
-    "@module-federation/sdk": 0.6.3
+    "@module-federation/sdk": 0.6.4
     "@types/semver": 7.5.8
     semver: 7.6.3
-  checksum: a1ea6eb1482f01af7faa942ffd43190bb516a795665bed404a2bc8e536d2f2a1b191505beb5e6a8199b4867a1fc37ab3b81873b10b186c5aacf6de457cf60306
+  checksum: aa5a8362501eb0f132cc9a730f6ae782f19df116a101737642460feeade3f2197f8e12adb10900568e7f02ba630ea4598e15438a8eabac8df7d4a04bc563142e
   languageName: node
   linkType: hard
 
-"@module-federation/dts-plugin@npm:0.6.3":
-  version: 0.6.3
-  resolution: "@module-federation/dts-plugin@npm:0.6.3"
+"@module-federation/dts-plugin@npm:0.6.4":
+  version: 0.6.4
+  resolution: "@module-federation/dts-plugin@npm:0.6.4"
   dependencies:
-    "@module-federation/managers": 0.6.3
-    "@module-federation/sdk": 0.6.3
-    "@module-federation/third-party-dts-extractor": 0.6.3
+    "@module-federation/managers": 0.6.4
+    "@module-federation/sdk": 0.6.4
+    "@module-federation/third-party-dts-extractor": 0.6.4
     adm-zip: ^0.5.10
     ansi-colors: ^4.1.3
     axios: ^1.7.4
@@ -11055,21 +11055,21 @@ __metadata:
   peerDependenciesMeta:
     vue-tsc:
       optional: true
-  checksum: 8b2d187a3349481fd6979a4580274e5e852d03a43cc895708637ab5e7e349fd9662c0ae025e7802194383062dbeec5b56e3bddccd39efe246acf6e9653d79520
+  checksum: 9c96301c256e88bab8c7188542927aa5ec20d2c4fcc0dfa896a6c582fb0450c1ec75ec6e7b63bd91cee1cb8e163c8a736d174f29db8ec5c401e8608d684ca94f
   languageName: node
   linkType: hard
 
 "@module-federation/enhanced@npm:^0.6.0":
-  version: 0.6.3
-  resolution: "@module-federation/enhanced@npm:0.6.3"
+  version: 0.6.4
+  resolution: "@module-federation/enhanced@npm:0.6.4"
   dependencies:
-    "@module-federation/bridge-react-webpack-plugin": 0.6.3
-    "@module-federation/dts-plugin": 0.6.3
-    "@module-federation/managers": 0.6.3
-    "@module-federation/manifest": 0.6.3
-    "@module-federation/rspack": 0.6.3
-    "@module-federation/runtime-tools": 0.6.3
-    "@module-federation/sdk": 0.6.3
+    "@module-federation/bridge-react-webpack-plugin": 0.6.4
+    "@module-federation/dts-plugin": 0.6.4
+    "@module-federation/managers": 0.6.4
+    "@module-federation/manifest": 0.6.4
+    "@module-federation/rspack": 0.6.4
+    "@module-federation/runtime-tools": 0.6.4
+    "@module-federation/sdk": 0.6.4
     btoa: ^1.2.1
     upath: 2.0.1
   peerDependencies:
@@ -11083,44 +11083,44 @@ __metadata:
       optional: true
     webpack:
       optional: true
-  checksum: 4b6240423bc69787620925cdcc5e36985eb8b2243a7d4f7d3fd3c02d485266dd03570a0695f9ae708dc5d7f0a4654c297f2e26c2e9df3d9a375165554604699d
+  checksum: 457787b3a6bfddace6c2aa9555eecad830118b1a5b9165007935f8103fb40ca3e2fc9982b22142c323aba79c71d2d62d9b267f17f70fbaef80a22ed7753b23d1
   languageName: node
   linkType: hard
 
-"@module-federation/managers@npm:0.6.3":
-  version: 0.6.3
-  resolution: "@module-federation/managers@npm:0.6.3"
+"@module-federation/managers@npm:0.6.4":
+  version: 0.6.4
+  resolution: "@module-federation/managers@npm:0.6.4"
   dependencies:
-    "@module-federation/sdk": 0.6.3
+    "@module-federation/sdk": 0.6.4
     find-pkg: 2.0.0
     fs-extra: 9.1.0
-  checksum: aa51f3e348ddaa32ed865c816302e947979d75a904a1b938e51afad566d405934bd39422c3e619d60f714f3d12b3e5352d0cf844137ece69e062fde1da3c8669
+  checksum: b1d56910d0370093112af4117c7a868912b327d39cf61180c5373f5e4b3e0efb81759688758b1dfc0e0ee37ab9c2b408f5b88d6bb5af9cde3654ad17d7d8333e
   languageName: node
   linkType: hard
 
-"@module-federation/manifest@npm:0.6.3":
-  version: 0.6.3
-  resolution: "@module-federation/manifest@npm:0.6.3"
+"@module-federation/manifest@npm:0.6.4":
+  version: 0.6.4
+  resolution: "@module-federation/manifest@npm:0.6.4"
   dependencies:
-    "@module-federation/dts-plugin": 0.6.3
-    "@module-federation/managers": 0.6.3
-    "@module-federation/sdk": 0.6.3
+    "@module-federation/dts-plugin": 0.6.4
+    "@module-federation/managers": 0.6.4
+    "@module-federation/sdk": 0.6.4
     chalk: 3.0.0
     find-pkg: 2.0.0
-  checksum: 63a2bf1d3602bec44cbd2ac12887f67a54626530e563017b00b17c571f9a60af1491b6a210843149c9ed07bc12e208f45f892d983c6f6f69d87c90770b02185d
+  checksum: 4ea5e6372af3f5110e0c13120a71b7721f2bf7d2b01efa4bb67acf665bc09517bd8c87e07c0a759a1a17ed0569d273ff0fb585dd67c99c848d3e355d57def832
   languageName: node
   linkType: hard
 
-"@module-federation/rspack@npm:0.6.3":
-  version: 0.6.3
-  resolution: "@module-federation/rspack@npm:0.6.3"
+"@module-federation/rspack@npm:0.6.4":
+  version: 0.6.4
+  resolution: "@module-federation/rspack@npm:0.6.4"
   dependencies:
-    "@module-federation/bridge-react-webpack-plugin": 0.6.3
-    "@module-federation/dts-plugin": 0.6.3
-    "@module-federation/managers": 0.6.3
-    "@module-federation/manifest": 0.6.3
-    "@module-federation/runtime-tools": 0.6.3
-    "@module-federation/sdk": 0.6.3
+    "@module-federation/bridge-react-webpack-plugin": 0.6.4
+    "@module-federation/dts-plugin": 0.6.4
+    "@module-federation/managers": 0.6.4
+    "@module-federation/manifest": 0.6.4
+    "@module-federation/runtime-tools": 0.6.4
+    "@module-federation/sdk": 0.6.4
   peerDependencies:
     typescript: ^4.9.0 || ^5.0.0
     vue-tsc: ">=1.0.24"
@@ -11129,54 +11129,54 @@ __metadata:
       optional: true
     vue-tsc:
       optional: true
-  checksum: 6c15d8c1c9fd2562565e32c9cbc4dbc24be901cb175595886cfea179a666d0176b16f224695ebeabf9d900cf9c057ce7fa98a322f0908f17f4d0120622bb5428
+  checksum: c5797728ebdffdf340348d5616d8f0aed0e24cc82cbaaa5b9795afb303c3ebf83219336f77c58a4b79caeff9d753c3a5c403d18863239f67d8c0715899abdada
   languageName: node
   linkType: hard
 
-"@module-federation/runtime-tools@npm:0.6.3":
-  version: 0.6.3
-  resolution: "@module-federation/runtime-tools@npm:0.6.3"
+"@module-federation/runtime-tools@npm:0.6.4":
+  version: 0.6.4
+  resolution: "@module-federation/runtime-tools@npm:0.6.4"
   dependencies:
-    "@module-federation/runtime": 0.6.3
-    "@module-federation/webpack-bundler-runtime": 0.6.3
-  checksum: 0bebb567b23dd9a6d55092a461cfbab5da6fd59475f362d0d387b860f07868c4ef49f090ed3d534f90fb7f66cd36a62fa08b26dca33722f6fa009b2d3ae49f8c
+    "@module-federation/runtime": 0.6.4
+    "@module-federation/webpack-bundler-runtime": 0.6.4
+  checksum: 836f28a2a7f0a2cc349d0bf2d08e6f1bee330d8bb10afeab771ea3dbdc193b621c8411085a88bf6032fa86c7286ac3607caeb6f4d4ad29bba9fc21600e64fb42
   languageName: node
   linkType: hard
 
-"@module-federation/runtime@npm:0.6.3":
-  version: 0.6.3
-  resolution: "@module-federation/runtime@npm:0.6.3"
+"@module-federation/runtime@npm:0.6.4":
+  version: 0.6.4
+  resolution: "@module-federation/runtime@npm:0.6.4"
   dependencies:
-    "@module-federation/sdk": 0.6.3
-  checksum: 47e0a436326c4579bacc2d97ccd32d1ef9cf74164d2b9c05a62c81a0e9a11c7110793e681558cdcc8ee7be0ba096a20c93e31adc75d8a103d024205e90742409
+    "@module-federation/sdk": 0.6.4
+  checksum: 93c74937fded491d249c5a462ecb856e37ead07e11b74dffff871ccde5a819ca7ce5c2df64160d59baaa0eebde9c0a3976a1347a41106fdb29644d8a2dee4f6b
   languageName: node
   linkType: hard
 
-"@module-federation/sdk@npm:0.6.3":
-  version: 0.6.3
-  resolution: "@module-federation/sdk@npm:0.6.3"
-  checksum: ff234ea8ad2cc8320e9818423830e1aeef9571cd8b129e2a5ccaf6b7916aa17bde1f52fabd70b670013f95c76548e7fd03dd9d1315ee6d1e94ac7a22fce0cf19
+"@module-federation/sdk@npm:0.6.4":
+  version: 0.6.4
+  resolution: "@module-federation/sdk@npm:0.6.4"
+  checksum: 37ef2c2b794b8705b7d9b9da66adad95874987c5404b8d22baa617eabb29b8061e586879ada62b3e7207898dde1528897c3196c1f0c2bbf7526076ca6fa61672
   languageName: node
   linkType: hard
 
-"@module-federation/third-party-dts-extractor@npm:0.6.3":
-  version: 0.6.3
-  resolution: "@module-federation/third-party-dts-extractor@npm:0.6.3"
+"@module-federation/third-party-dts-extractor@npm:0.6.4":
+  version: 0.6.4
+  resolution: "@module-federation/third-party-dts-extractor@npm:0.6.4"
   dependencies:
     find-pkg: 2.0.0
     fs-extra: 9.1.0
     resolve: 1.22.8
-  checksum: ff6fb338b2a4c2921a2095143594589607d8de08765d635e5d1b978a1a08d8195cfd2f72a853323732b605f07529b63e3894c54c8d40cec7bdc0e029c14ffb1a
+  checksum: de4126122643840528a584367808f51771d1554e0d4ae55040cd1976d9e9e28bcd80eade5a72b736f35af5ae458955c3c0d0fd46dcca6c478a4c4a589da801fe
   languageName: node
   linkType: hard
 
-"@module-federation/webpack-bundler-runtime@npm:0.6.3":
-  version: 0.6.3
-  resolution: "@module-federation/webpack-bundler-runtime@npm:0.6.3"
+"@module-federation/webpack-bundler-runtime@npm:0.6.4":
+  version: 0.6.4
+  resolution: "@module-federation/webpack-bundler-runtime@npm:0.6.4"
   dependencies:
-    "@module-federation/runtime": 0.6.3
-    "@module-federation/sdk": 0.6.3
-  checksum: 6ea1ebb13cf6bfc0e48570f210ed18c65385475fd8be264d52b8fddeafc03ba1eaba10102810210440265c9c2348dc798f4103235af2226c45427d10b54fa93a
+    "@module-federation/runtime": 0.6.4
+    "@module-federation/sdk": 0.6.4
+  checksum: b701873384c00ee2af8cb58ff46714b1686e664c9416566865edd21d868a7a8c1c1325d23da917a67c9847244f7570777ab000b357ecc61e643965e32a5db04a
   languageName: node
   linkType: hard
 
