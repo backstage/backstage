@@ -4030,7 +4030,7 @@ __metadata:
     vite-plugin-html: ^3.2.2
     vite-plugin-node-polyfills: ^0.22.0
     webpack: ^5.70.0
-    webpack-dev-server: ^5.0.0
+    webpack-dev-server: ^5.1.0
     webpack-node-externals: ^3.0.0
     yaml: ^2.0.0
     yml-loader: ^2.1.0
@@ -43920,7 +43920,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack-dev-server@npm:^5.0.0":
+"webpack-dev-server@npm:^5.1.0":
   version: 5.1.0
   resolution: "webpack-dev-server@npm:5.1.0"
   dependencies:
