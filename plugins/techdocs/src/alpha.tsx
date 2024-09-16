@@ -21,8 +21,10 @@ import {
   ApiBlueprint,
   PageBlueprint,
   NavItemBlueprint,
+  createExtensionInput,
+  coreExtensionData,
+  createExtension,
 } from '@backstage/frontend-plugin-api';
-import { SearchResultListItemBlueprint } from '@backstage/plugin-search-react/alpha';
 import {
   configApiRef,
   createApiFactory,
@@ -34,6 +36,8 @@ import {
   convertLegacyRouteRef,
   convertLegacyRouteRefs,
 } from '@backstage/core-compat-api';
+import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
+import { SearchResultListItemBlueprint } from '@backstage/plugin-search-react/alpha';
 import {
   techdocsApiRef,
   techdocsStorageApiRef,
@@ -44,7 +48,6 @@ import {
   rootDocsRouteRef,
   rootRouteRef,
 } from './routes';
-import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
 /** @alpha */
 const techDocsStorageApi = ApiBlueprint.make({
@@ -152,13 +155,40 @@ const techDocsReaderPage = PageBlueprint.make({
  *
  * @alpha
  */
-const techDocsEntityContent = EntityContentBlueprint.make({
-  params: {
-    defaultPath: 'docs',
-    defaultTitle: 'TechDocs',
-    loader: () =>
-      import('./Router').then(m => compatWrapper(<m.EmbeddedDocsRouter />)),
+const techDocsEntityContent = EntityContentBlueprint.makeWithOverrides({
+  inputs: {
+    emptyState: createExtensionInput([coreExtensionData.reactElement], {
+      singleton: true,
+      optional: true,
+    }),
   },
+  factory(originalFactory, context) {
+    return originalFactory(
+      {
+        defaultPath: 'docs',
+        defaultTitle: 'TechDocs',
+        loader: () =>
+          import('./Router').then(({ EmbeddedDocsRouter }) =>
+            compatWrapper(
+              <EmbeddedDocsRouter
+                emptyState={context.inputs.emptyState?.get(
+                  coreExtensionData.reactElement,
+                )}
+              />,
+            ),
+          ),
+      },
+      context,
+    );
+  },
+});
+
+const techDocsEntityContentEmptyState = createExtension({
+  kind: 'empty-state',
+  name: 'entity-content',
+  attachTo: { id: 'entity-content:techdocs', input: 'emptyState' },
+  output: [coreExtensionData.reactElement.optional()],
+  factory: () => [],
 });
 
 /** @alpha */
@@ -180,6 +210,7 @@ export default createFrontendPlugin({
     techDocsPage,
     techDocsReaderPage,
     techDocsEntityContent,
+    techDocsEntityContentEmptyState,
     techDocsSearchResultListItemExtension,
   ],
   routes: convertLegacyRouteRefs({

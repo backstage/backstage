@@ -134,7 +134,7 @@ export type DocsTableRow = {
 // @public
 export const EmbeddedDocsRouter: (
   props: PropsWithChildren<{}>,
-) => React_2.JSX.Element | null;
+) => React_2.JSX.Element;
 
 // @public
 export const EntityListDocsGrid: (
@@ -192,7 +192,7 @@ export type EntityListDocsTableProps = {
 // @public
 export const EntityTechdocsContent: (props: {
   children?: ReactNode;
-}) => JSX_2.Element | null;
+}) => JSX_2.Element;
 
 // @public
 export const isTechDocsAvailable: (entity: Entity) => boolean;
