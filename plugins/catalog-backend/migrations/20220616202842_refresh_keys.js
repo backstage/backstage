@@ -38,7 +38,6 @@ exports.up = async function up(knex) {
         'A reference to a key which should be used to trigger a refresh on this entity',
       );
     table.index('entity_id', 'refresh_keys_entity_id_idx');
-    table.index('key', 'refresh_keys_key_idx');
   });
 };
 
