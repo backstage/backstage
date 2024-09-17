@@ -4,24 +4,10 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import express from 'express';
-import { HttpAuthService } from '@backstage/backend-plugin-api';
-import { LoggerService } from '@backstage/backend-plugin-api';
-
-// @public
-export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public
 const exampleTodoListPlugin: BackendFeature;
 export default exampleTodoListPlugin;
-
-// @public
-export interface RouterOptions {
-  // (undocumented)
-  httpAuth: HttpAuthService;
-  // (undocumented)
-  logger: LoggerService;
-}
 
 // (No @packageDocumentation comment for this package)
 ```
