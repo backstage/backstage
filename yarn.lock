@@ -15709,21 +15709,23 @@ __metadata:
   linkType: hard
 
 "@stoplight/spectral-formatters@npm:^1.1.0":
-  version: 1.3.0
-  resolution: "@stoplight/spectral-formatters@npm:1.3.0"
+  version: 1.4.0
+  resolution: "@stoplight/spectral-formatters@npm:1.4.0"
   dependencies:
     "@stoplight/path": ^1.3.2
     "@stoplight/spectral-core": ^1.15.1
     "@stoplight/spectral-runtime": ^1.1.0
     "@stoplight/types": ^13.15.0
+    "@types/markdown-escape": ^1.1.3
     chalk: 4.1.2
     cliui: 7.0.4
     lodash: ^4.17.21
+    markdown-escape: ^2.0.0
     node-sarif-builder: ^2.0.3
     strip-ansi: 6.0
     text-table: ^0.2.0
     tslib: ^2.5.0
-  checksum: d56757f5204571c5d86551bb8ea56183236c9dab69d95104abcf639a4ff3a465efa5e393f68fd9032c852e0078c514b343a9eaa3aea3ecb8e465f4eeb92bd29f
+  checksum: fd8b0c96df54b1afa1e2c325edac6a95df0ce4c9a14e3cd46786d229259417eeec7795e7c7ccf4e896a343c5dbd06e62f8692214985acd786d19485bd512958d
   languageName: node
   linkType: hard
 
@@ -17742,6 +17744,13 @@ __metadata:
   version: 3.4.2
   resolution: "@types/luxon@npm:3.4.2"
   checksum: 6f92d5bd02e89f310395753506bcd9cef3a56f5940f7a50db2a2b9822bce753553ac767d143cb5b4f9ed5ddd4a84e64f89ff538082ceb4d18739af7781b56925
+  languageName: node
+  linkType: hard
+
+"@types/markdown-escape@npm:^1.1.3":
+  version: 1.1.3
+  resolution: "@types/markdown-escape@npm:1.1.3"
+  checksum: cb2e410993271f0ccc526190391a08344f4f602be69e06fee989d36d5886866ba9ba2184054895d0ad2a12d57b02f3ccf86d7a1fe8904be48bcc1ee61b98e32f
   languageName: node
   linkType: hard
 
@@ -32930,6 +32939,13 @@ __metadata:
   dependencies:
     p-defer: ^1.0.0
   checksum: 13a6810b76b0067efa7f4b0f3dc58b58b4a4b5faa4cae5a0e8d5d59eda04d7074724eee426c9b5890a1d7e14d1e2902a090587acc8e2430198e79ab1556a2dad
+  languageName: node
+  linkType: hard
+
+"markdown-escape@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "markdown-escape@npm:2.0.0"
+  checksum: 74c66d817636ac5f6a275fdc79ecb1e208d907ca85289d660b515256fbc3e380eb18d29b6bbbd6a77968ee4fb5872d40ecf31e52bc9f17855bb01bb723569fa0
   languageName: node
   linkType: hard
 
