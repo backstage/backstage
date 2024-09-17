@@ -163,6 +163,7 @@ Heroku
 hoc
 horizontalpodautoscalers
 Hostname
+hotspot
 hotspots
 howto
 http
@@ -454,6 +455,7 @@ unmount
 unregister
 unregistering
 unregistration
+unstarred
 untracked
 upsert
 upstreams
