@@ -241,6 +241,7 @@ export const createBuiltinActions = (
     }),
     createGithubEnvironmentAction({
       integrations,
+      catalogClient,
     }),
     createGithubDeployKeyAction({
       integrations,
