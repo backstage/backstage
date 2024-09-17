@@ -23,6 +23,7 @@ import { RootHttpRouterService } from '@backstage/backend-plugin-api';
 import { Router } from 'express';
 import type { Server } from 'node:http';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
+import type { Store } from 'express-rate-limit';
 
 // @public (undocumented)
 export function createHealthRouter(options: {
@@ -96,6 +97,7 @@ export class MiddlewareFactory {
   helmet(): RequestHandler;
   logging(): RequestHandler;
   notFound(): RequestHandler;
+  rateLimit(): RequestHandler;
 }
 
 // @public
@@ -110,6 +112,15 @@ export interface MiddlewareFactoryOptions {
   config: RootConfigService;
   // (undocumented)
   logger: LoggerService;
+}
+
+// @public
+export class RateLimitStoreFactory {
+  constructor(config: Config);
+  // (undocumented)
+  create(): Store | undefined;
+  // (undocumented)
+  redis(): Store;
 }
 
 // @public

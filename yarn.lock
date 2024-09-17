@@ -3627,6 +3627,7 @@ __metadata:
     cron: ^3.0.0
     express: ^4.17.1
     express-promise-router: ^4.1.0
+    express-rate-limit: ^7.4.0
     fs-extra: ^11.2.0
     git-url-parse: ^15.0.0
     helmet: ^6.0.0
@@ -3651,6 +3652,7 @@ __metadata:
     pg: ^8.11.3
     pg-connection-string: ^2.3.0
     pg-format: ^1.0.4
+    rate-limit-redis: ^4.2.0
     raw-body: ^2.4.1
     selfsigned: ^2.0.0
     supertest: ^7.0.0
@@ -29244,6 +29246,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"express-rate-limit@npm:^7.4.0":
+  version: 7.4.0
+  resolution: "express-rate-limit@npm:7.4.0"
+  peerDependencies:
+    express: 4 || 5 || ^5.0.0-beta.1
+  checksum: 81ddba751b401ff7f04207155dd0559938b5614754f73950d86acc1463dd7ea6a458a5ba941bcf108e8913b786bca6cde94c19ba504cf61f864edf92cc1bdbae
+  languageName: node
+  linkType: hard
+
 "express-session@npm:^1.17.1, express-session@npm:^1.17.3":
   version: 1.18.1
   resolution: "express-session@npm:1.18.1"
@@ -40833,6 +40844,15 @@ __metadata:
   version: 1.2.1
   resolution: "range-parser@npm:1.2.1"
   checksum: 0a268d4fea508661cf5743dfe3d5f47ce214fd6b7dec1de0da4d669dd4ef3d2144468ebe4179049eff253d9d27e719c88dae55be64f954e80135a0cada804ec9
+  languageName: node
+  linkType: hard
+
+"rate-limit-redis@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "rate-limit-redis@npm:4.2.0"
+  peerDependencies:
+    express-rate-limit: ">= 6"
+  checksum: 0e66f2a0bc64f23e7bb331db0465198c894738f856cc73e66ab45fb9933ce37fec29ea3b7b9ec12e501e663fa9184d60a5d64983b89296f842fce4b21872d5c0
   languageName: node
   linkType: hard
 

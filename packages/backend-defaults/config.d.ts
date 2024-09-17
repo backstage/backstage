@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { HumanDuration } from '@backstage/types';
+import { HumanDuration, JsonValue } from '@backstage/types';
 
 export interface Config {
   app: {
@@ -603,6 +603,72 @@ export interface Config {
        * and set the `x-envoy-upstream-healthchecked-cluster` header to a matching value.
        */
       headers?: { [name: string]: string };
+    };
+
+    /**
+     * Rate limiting options
+     */
+    rateLimit?: {
+      /**
+       * Store to use for rate limiting. If not defined, the store will be automatically
+       * decided based on `backend.cache.store` value. If
+       * redis is not available, the store will be memory.
+       */
+      store?: 'memory' | 'redis';
+      /**
+       * Rate limiting enabled. Defaults to false.
+       */
+      enabled?: boolean;
+      /**
+       * Time frame in milliseconds or as human duration for which requests are checked/remembered.
+       * Defaults to 6000ms.
+       */
+      window?: number | HumanDuration;
+      /**
+       * The maximum number of connections to allow during the `window` before rate limiting the client.
+       * Defaults to 5.
+       */
+      limit?: number;
+      /**
+       * The response body to send back when a client is rate limited.
+       * Defaults to 'Too many requests, please try again later.'.
+       */
+      message?: JsonValue;
+      /**
+       * The HTTP status code to send back when a client is rate limited.
+       * Defaults to 429.
+       */
+      statusCode?: number;
+      /**
+       * Whether to send the legacy rate limit headers for the limit.
+       * Defaults to true.
+       */
+      legacyHeaders?: boolean;
+      /**
+       * Whether to enable support for headers conforming the RateLimit header fields for HTTP
+       * standardization. Defaults to undefined.
+       */
+      standardHeaders?: 'draft-6' | 'draft-7';
+      /**
+       * Whether to pass requests in case of store failure.
+       * Defaults to false.
+       */
+      passOnStoreError?: boolean;
+      /**
+       * List of allowed IP addresses that are not rate limited.
+       * Defaults to [127.0.0.1].
+       */
+      ipAllowList?: string[];
+      /**
+       * Skip rate limiting for requests that have been successful.
+       * Defaults to false.
+       */
+      skipSuccessfulRequests?: boolean;
+      /**
+       * Skip rate limiting for requests that have failed.
+       * Defaults to false.
+       */
+      skipFailedRequests?: boolean;
     };
 
     /**
