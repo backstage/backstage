@@ -28,3 +28,4 @@ export type {
   HttpServerCertificateOptions,
   HttpServerOptions,
 } from './types';
+export { RateLimitStoreFactory } from './RateLimitStoreFactory';
