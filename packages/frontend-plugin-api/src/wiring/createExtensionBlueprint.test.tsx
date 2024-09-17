@@ -29,12 +29,12 @@ import { createExtensionInput } from './createExtensionInput';
 import { RouteRef } from '../routing';
 import { ExtensionDefinition } from './createExtension';
 import { createExtensionDataContainer } from './createExtensionDataContainer';
-import { toInternalExtensionDefinition } from '@internal/frontend';
+import { OpaqueExtensionDefinition } from '@internal/frontend';
 
 function unused(..._any: any[]) {}
 
 function factoryOutput(ext: ExtensionDefinition, inputs: unknown = undefined) {
-  const int = toInternalExtensionDefinition(ext);
+  const int = OpaqueExtensionDefinition.toInternal(ext);
   if (int.version !== 'v2') {
     throw new Error('Expected v2 extension');
   }
@@ -680,7 +680,7 @@ describe('createExtensionBlueprint', () => {
       },
     });
 
-    const ext = toInternalExtensionDefinition(
+    const ext = OpaqueExtensionDefinition.toInternal(
       blueprint.makeWithOverrides({
         output: [testDataRef2],
         factory(origFactory) {

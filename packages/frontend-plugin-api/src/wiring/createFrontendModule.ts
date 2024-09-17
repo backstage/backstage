@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  InternalExtensionDefinition,
-  toInternalExtensionDefinition,
-} from '@internal/frontend';
+import { OpaqueExtensionDefinition } from '@internal/frontend';
 import { ExtensionDefinition } from './createExtension';
 import {
   Extension,
@@ -58,11 +55,11 @@ export function createFrontendModule<
   const extensions = new Array<Extension<any>>();
   const extensionDefinitionsById = new Map<
     string,
-    InternalExtensionDefinition
+    typeof OpaqueExtensionDefinition.TInternal
   >();
 
   for (const def of options.extensions ?? []) {
-    const internal = toInternalExtensionDefinition(def);
+    const internal = OpaqueExtensionDefinition.toInternal(def);
     const ext = resolveExtensionDefinition(def, { namespace: pluginId });
     extensions.push(ext);
     extensionDefinitionsById.set(ext.id, {
