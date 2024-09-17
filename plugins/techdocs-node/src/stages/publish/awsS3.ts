@@ -48,6 +48,7 @@ import {
   getFileTreeRecursively,
   getHeadersForFileExtension,
   getStaleFiles,
+  isValidContentPath,
   lowerCaseEntityTriplet,
   lowerCaseEntityTripletInStoragePath,
   normalizeExternalStorageRootPath,
@@ -398,6 +399,12 @@ export class AwsS3Publish implements PublisherBase {
           : lowerCaseEntityTriplet(entityTriplet);
 
         const entityRootDir = path.posix.join(this.bucketRootPath, entityDir);
+        if (!isValidContentPath(this.bucketRootPath, entityRootDir)) {
+          this.logger.error(
+            `Invalid content path found while fetching TechDocs metadata: ${entityRootDir}`,
+          );
+          throw new Error(`Metadata Not Found`);
+        }
 
         try {
           const resp = await this.storageClient.send(
@@ -446,6 +453,13 @@ export class AwsS3Publish implements PublisherBase {
 
       // Prepend the root path to the relative file path
       const filePath = path.posix.join(this.bucketRootPath, filePathNoRoot);
+      if (!isValidContentPath(this.bucketRootPath, filePath)) {
+        this.logger.error(
+          `Attempted to fetch TechDocs content for a file outside of the bucket root: ${filePathNoRoot}`,
+        );
+        res.status(404).send('File Not Found');
+        return;
+      }
 
       // Files with different extensions (CSS, HTML) need to be served with different headers
       const fileExtension = path.extname(filePath);
@@ -486,6 +500,12 @@ export class AwsS3Publish implements PublisherBase {
         : lowerCaseEntityTriplet(entityTriplet);
 
       const entityRootDir = path.posix.join(this.bucketRootPath, entityDir);
+      if (!isValidContentPath(this.bucketRootPath, entityRootDir)) {
+        this.logger.error(
+          `Invalid content path found while checking if docs have been generated: ${entityRootDir}`,
+        );
+        return Promise.resolve(false);
+      }
 
       await this.storageClient.send(
         new HeadObjectCommand({

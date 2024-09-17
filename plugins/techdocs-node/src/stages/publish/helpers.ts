@@ -230,3 +230,20 @@ export const bulkStorageOperation = async <T>(
   const limiter = createLimiter(concurrencyLimit);
   await Promise.all(args.map(arg => limiter(operation, arg)));
 };
+
+// Checks content path is the same as or a child path of bucketRoot, specifically for posix paths.
+export const isValidContentPath = (
+  bucketRoot: string,
+  contentPath: string,
+): boolean => {
+  const relativePath = path.posix.relative(bucketRoot, contentPath);
+  if (relativePath === '') {
+    // The same directory
+    return true;
+  }
+
+  const outsideBase = relativePath.startsWith('..'); // not outside base
+  const differentDrive = path.posix.isAbsolute(relativePath); // on Windows, this means dir is on a different drive from base.
+
+  return !outsideBase && !differentDrive;
+};
