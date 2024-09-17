@@ -112,6 +112,7 @@ export type GitlabProviderConfig = {
   schedule?: SchedulerServiceTaskScheduleDefinition;
   skipForkedRepos?: boolean;
   excludeRepos?: string[];
+  includeUsersWithoutSeat?: boolean;
 };
 
 // @public

@@ -231,6 +231,8 @@ of the top-level group for the configured group path will be ingested.
 
 In both cases (SaaS & self hosted), you can limit the ingested users to users directly assigned to the group defined in your `app-config.yaml` by setting the configuration key `restrictUsersToGroup: true`. This is especially useful when you have a large user base that you don't want to import by default.
 
+On SaaS, you can choose to include users to be ingested that do not have a paid seat. This can be useful when using a free version of Gitlab, or when you use Guest Users on Gitlab Ultimate. Unfortunately, this will also lead to some technical users that might be imported into your user base. While project & group access tokens are filtered, service accounts will remain. [Learn more about Billable Users](https://docs.gitlab.com/ee/subscriptions/self_managed/index.html#billable-users).
+
 ```yaml
 catalog:
   providers:
@@ -239,7 +241,8 @@ catalog:
         host: gitlab.com ## Could also be self hosted.
         orgEnabled: true
         group: org/teams # Required for gitlab.com when `orgEnabled: true`. Optional for self managed. Must not end with slash. Accepts only groups under the provided path (which will be stripped)
-        restrictUsersToGroup: true # Backstage will ingest only users directly assigned to org/teams.
+        restrictUsersToGroup: true # Optional: Backstage will ingest only users directly assigned to org/teams.
+        includeUsersWithoutSeat: false # Optional: Set to true to include users without paid seat, only applicable for SaaS
 ```
 
 ### Limiting `User` and `Group` entity ingestion in the provider
