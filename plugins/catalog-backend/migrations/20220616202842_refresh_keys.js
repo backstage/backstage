@@ -32,7 +32,7 @@ exports.up = async function up(knex) {
       .onDelete('CASCADE')
       .comment('A reference to the entity that the refresh key is tied to');
     table
-      .string('key')
+      .text('key')
       .notNullable()
       .comment(
         'A reference to a key which should be used to trigger a refresh on this entity',
