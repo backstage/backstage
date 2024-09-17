@@ -4,16 +4,15 @@
 
 ```ts
 import { CacheService } from '@backstage/backend-plugin-api';
-import { CacheServiceOptions } from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { RootConfigService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 
 // @public
 export class CacheManager {
-  forPlugin(pluginId: string): PluginCacheManager;
+  forPlugin(pluginId: string): CacheService;
   static fromConfig(
-    config: Config,
+    config: RootConfigService,
     options?: CacheManagerOptions,
   ): CacheManager;
 }
@@ -30,12 +29,6 @@ export const cacheServiceFactory: ServiceFactory<
   'plugin',
   'singleton'
 >;
-
-// @public (undocumented)
-export interface PluginCacheManager {
-  // (undocumented)
-  getClient(options?: CacheServiceOptions): CacheService;
-}
 
 // (No @packageDocumentation comment for this package)
 ```

@@ -1,0 +1,10 @@
+---
+title: GitHub Copilot Adoption Metrics
+author: ESW
+authorUrl: https://esw.com
+category: Reporting
+description: Github Copilot plugin integrates with the Copilot API to provide metrics on Copilot adoption within your organization.
+documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/copilot/plugins/copilot
+iconUrl: https://platformnewsletter.blob.core.windows.net/$web/copilot.png
+npmPackageName: '@backstage-community/plugin-copilot'
+addedDate: '2024-10-21'

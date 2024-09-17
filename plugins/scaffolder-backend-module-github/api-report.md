@@ -4,6 +4,7 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { GithubCredentialsProvider } from '@backstage/integration';
@@ -66,6 +67,7 @@ export function createGithubDeployKeyAction(options: {
 // @public
 export function createGithubEnvironmentAction(options: {
   integrations: ScmIntegrationRegistry;
+  catalogClient?: CatalogApi;
 }): TemplateAction<
   {
     repoUrl: string;
@@ -89,6 +91,9 @@ export function createGithubEnvironmentAction(options: {
         }
       | undefined;
     token?: string | undefined;
+    waitTimer?: number | undefined;
+    preventSelfReview?: boolean | undefined;
+    reviewers?: string[] | undefined;
   },
   JsonObject
 >;
@@ -230,6 +235,11 @@ export function createGithubRepoCreateAction(options: {
         }
       | undefined;
     requireCommitSigning?: boolean | undefined;
+    customProperties?:
+      | {
+          [key: string]: string;
+        }
+      | undefined;
   },
   JsonObject
 >;
@@ -385,6 +395,11 @@ export function createPublishGithubAction(options: {
         }
       | undefined;
     requiredCommitSigning?: boolean | undefined;
+    customProperties?:
+      | {
+          [key: string]: string;
+        }
+      | undefined;
   },
   JsonObject
 >;

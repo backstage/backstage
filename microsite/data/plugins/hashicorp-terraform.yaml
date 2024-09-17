@@ -1,0 +1,10 @@
+---
+title: Hashicorp Terraform
+author: GlobalLogic UK&I
+authorUrl: https://www.globallogic.com
+category: Infrastructure
+description: Easily view Hashicorp Terraform runs for a specific workspace.
+documentation: https://github.com/globallogicuki/globallogic-backstage-plugins/tree/main/plugins/terraform
+iconUrl: /img/terraform-logo.svg
+npmPackageName: '@globallogicuki/backstage-plugin-terraform'
+addedDate: '2024-07-17'

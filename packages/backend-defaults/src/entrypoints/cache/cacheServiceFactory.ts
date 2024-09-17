@@ -40,6 +40,6 @@ export const cacheServiceFactory = createServiceFactory({
     return CacheManager.fromConfig(config, { logger });
   },
   async factory({ plugin }, manager) {
-    return manager.forPlugin(plugin.getId()).getClient();
+    return manager.forPlugin(plugin.getId());
   },
 });

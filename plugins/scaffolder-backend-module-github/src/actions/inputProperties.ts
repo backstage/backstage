@@ -304,6 +304,13 @@ const oidcCustomization = {
   },
 };
 
+const customProperties = {
+  title: 'Custom Repository Properties',
+  description:
+    'Custom properties to be added to the repository (note, this only works for organization repositories)',
+  type: 'object',
+};
+
 export { access };
 export { allowMergeCommit };
 export { allowRebaseMerge };
@@ -342,3 +349,4 @@ export { requiredCommitSigning };
 export { repoVariables };
 export { secrets };
 export { oidcCustomization };
+export { customProperties };

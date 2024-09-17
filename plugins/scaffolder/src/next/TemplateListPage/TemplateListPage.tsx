@@ -177,7 +177,7 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
           <ScaffolderPageContextMenu {...scaffolderPageContextMenuProps} />
         </Header>
         <Content>
-          <ContentHeader title={t('templateListPage.contentHeader.title')}>
+          <ContentHeader>
             <RegisterExistingButton
               title={t(
                 'templateListPage.contentHeader.registerExistingButtonTitle',

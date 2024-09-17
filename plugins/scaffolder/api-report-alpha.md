@@ -5,13 +5,13 @@
 ```ts
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
-import { BackstagePlugin } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 import type { FormProps as FormProps_2 } from '@rjsf/core';
 import { FormProps as FormProps_3 } from '@backstage/plugin-scaffolder-react';
+import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { LayoutOptions } from '@backstage/plugin-scaffolder-react';
 import { PathParams } from '@backstage/core-plugin-api';
@@ -24,7 +24,7 @@ import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
 // @alpha (undocumented)
-const _default: BackstagePlugin<
+const _default: FrontendPlugin<
   {
     root: RouteRef<undefined>;
     selectedTemplate: SubRouteRef<
@@ -44,48 +44,52 @@ const _default: BackstagePlugin<
     }>;
   },
   {
-    'api:scaffolder': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>,
-      {},
-      {
-        kind: 'api';
-        namespace: undefined;
-        name: undefined;
-      }
-    >;
-    'page:scaffolder': ExtensionDefinition<
-      {
+    'api:scaffolder': ExtensionDefinition<{
+      kind: 'api';
+      namespace: undefined;
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+    }>;
+    'page:scaffolder': ExtensionDefinition<{
+      kind: 'page';
+      namespace: undefined;
+      name: undefined;
+      config: {
         path: string | undefined;
-      },
-      {
+      };
+      configInput: {
         path?: string | undefined;
-      },
-      | ConfigurableExtensionDataRef<
-          React_2.JSX.Element,
-          'core.reactElement',
-          {}
-        >
-      | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-      | ConfigurableExtensionDataRef<
-          RouteRef<AnyRouteRefParams>,
-          'core.routing.ref',
-          {
-            optional: true;
-          }
-        >,
-      {},
-      {
-        kind: 'page';
-        namespace: undefined;
-        name: undefined;
-      }
-    >;
-    'nav-item:scaffolder': ExtensionDefinition<
-      {},
-      {},
-      ConfigurableExtensionDataRef<
+      };
+      output:
+        | ConfigurableExtensionDataRef<
+            React_2.JSX.Element,
+            'core.reactElement',
+            {}
+          >
+        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+        | ConfigurableExtensionDataRef<
+            RouteRef<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+    }>;
+    'nav-item:scaffolder': ExtensionDefinition<{
+      kind: 'nav-item';
+      namespace: undefined;
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
         {
           title: string;
           icon: IconComponent;
@@ -93,14 +97,9 @@ const _default: BackstagePlugin<
         },
         'core.nav-item.target',
         {}
-      >,
-      {},
-      {
-        kind: 'nav-item';
-        namespace: undefined;
-        name: undefined;
-      }
-    >;
+      >;
+      inputs: {};
+    }>;
   }
 >;
 export default _default;
@@ -110,6 +109,28 @@ export type FormProps = Pick<
   FormProps_2,
   'transformErrors' | 'noHtml5Validate'
 >;
+
+// @public (undocumented)
+export type ScaffolderCustomFieldExplorerClassKey =
+  | 'root'
+  | 'controls'
+  | 'fieldForm'
+  | 'preview';
+
+// @public (undocumented)
+export type ScaffolderTemplateEditorClassKey =
+  | 'root'
+  | 'browser'
+  | 'editor'
+  | 'preview'
+  | 'results';
+
+// @public (undocumented)
+export type ScaffolderTemplateFormPreviewerClassKey =
+  | 'root'
+  | 'controls'
+  | 'textArea'
+  | 'preview';
 
 // @alpha (undocumented)
 export const scaffolderTranslationRef: TranslationRef<
@@ -207,10 +228,10 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templateEditorPage.dryRunResultsView.tab.log': 'Log';
     readonly 'templateEditorPage.dryRunResultsView.tab.files': 'Files';
     readonly 'templateEditorPage.taskStatusStepper.skippedStepTitle': 'Skipped';
-    readonly 'templateEditorPage.customFieldExplorer.selectFieldLabel': 'Choose Custom Field Extension';
+    readonly 'templateEditorPage.customFieldExplorer.preview.title': 'Example Template Spec';
     readonly 'templateEditorPage.customFieldExplorer.fieldForm.title': 'Field Options';
     readonly 'templateEditorPage.customFieldExplorer.fieldForm.applyButtonTitle': 'Apply';
-    readonly 'templateEditorPage.customFieldExplorer.preview.title': 'Example Template Spec';
+    readonly 'templateEditorPage.customFieldExplorer.selectFieldLabel': 'Choose Custom Field Extension';
     readonly 'templateEditorPage.templateEditorBrowser.closeConfirmMessage': 'Are you sure? Unsaved changes will be lost';
     readonly 'templateEditorPage.templateEditorBrowser.saveIconTooltip': 'Save all files';
     readonly 'templateEditorPage.templateEditorBrowser.reloadIconTooltip': 'Reload directory';
@@ -231,7 +252,6 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templateListPage.pageTitle': 'Create a new component';
     readonly 'templateListPage.templateGroups.defaultTitle': 'Templates';
     readonly 'templateListPage.templateGroups.otherTitle': 'Other Templates';
-    readonly 'templateListPage.contentHeader.title': 'Available Templates';
     readonly 'templateListPage.contentHeader.registerExistingButtonTitle': 'Register Existing Component';
     readonly 'templateListPage.contentHeader.supportButtonTitle': 'Create new software components using standard templates. Different templates create different kinds of components (services, websites, documentation, ...).';
     readonly 'templateListPage.additionalLinksForEntity.viewTechDocsTitle': 'View TechDocs';

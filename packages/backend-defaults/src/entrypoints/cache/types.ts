@@ -15,10 +15,6 @@
  */
 
 import { LoggerService } from '@backstage/backend-plugin-api';
-import {
-  CacheService,
-  CacheServiceOptions,
-} from '@backstage/backend-plugin-api';
 import { HumanDuration, durationToMilliseconds } from '@backstage/types';
 
 /**
@@ -38,13 +34,6 @@ export type CacheManagerOptions = {
    */
   onError?: (err: Error) => void;
 };
-
-/**
- * @public
- */
-export interface PluginCacheManager {
-  getClient(options?: CacheServiceOptions): CacheService;
-}
 
 export function ttlToMilliseconds(ttl: number | HumanDuration): number {
   return typeof ttl === 'number' ? ttl : durationToMilliseconds(ttl);

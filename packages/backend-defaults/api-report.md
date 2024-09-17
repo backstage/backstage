@@ -4,7 +4,11 @@
 
 ```ts
 import { Backend } from '@backstage/backend-app-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
 export function createBackend(): Backend;
+
+// @public
+export const discoveryFeatureLoader: BackendFeature;
 ```

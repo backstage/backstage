@@ -41,7 +41,11 @@ export {
   techdocsPlugin as plugin,
   techdocsPlugin,
 } from './plugin';
-export * from './Router';
+export {
+  isTechDocsAvailable,
+  LegacyEmbeddedDocsRouter as EmbeddedDocsRouter,
+  Router,
+} from './Router';
 
 export type { TechDocsSearchResultListItemProps } from './search/components/TechDocsSearchResultListItem';
 

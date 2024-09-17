@@ -52,10 +52,10 @@ describe('CacheManager integration', () => {
         }),
       );
 
-      manager.forPlugin('p1').getClient();
-      manager.forPlugin('p1').getClient({ defaultTtl: 200 });
-      manager.forPlugin('p2').getClient();
-      manager.forPlugin('p3').getClient({});
+      manager.forPlugin('p1');
+      manager.forPlugin('p1').withOptions({ defaultTtl: 200 });
+      manager.forPlugin('p2');
+      manager.forPlugin('p3').withOptions({});
 
       if (store === 'redis') {
         // eslint-disable-next-line jest/no-conditional-expect
@@ -80,9 +80,11 @@ describe('CacheManager integration', () => {
         }),
       );
 
-      const plugin1 = manager.forPlugin('p1').getClient();
-      const plugin2a = manager.forPlugin('p2').getClient();
-      const plugin2b = manager.forPlugin('p2').getClient({ defaultTtl: 2000 });
+      const plugin1 = manager.forPlugin('p1');
+      const plugin2a = manager.forPlugin('p2');
+      const plugin2b = manager
+        .forPlugin('p2')
+        .withOptions({ defaultTtl: 2000 });
 
       await plugin1.set('a', 'plugin1');
       await plugin2a.set('a', 'plugin2a');
@@ -114,9 +116,9 @@ describe('CacheManager integration', () => {
           }),
         ).forPlugin('p');
 
-        const defaultClient = manager.getClient();
-        const numberOverrideClient = manager.getClient({ defaultTtl: 400 });
-        const durationOverrideClient = manager.getClient({
+        const defaultClient = manager;
+        const numberOverrideClient = manager.withOptions({ defaultTtl: 400 });
+        const durationOverrideClient = manager.withOptions({
           defaultTtl: { milliseconds: 400 },
         });
 

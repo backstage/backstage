@@ -65,10 +65,15 @@ export type CacheClientOptions = CacheServiceOptions;
 // @public @deprecated (undocumented)
 export type CacheClientSetOptions = CacheServiceSetOptions;
 
-// Warning: (ae-forgotten-export) The symbol "CacheManager_2" needs to be exported by the entry point index.d.ts
-//
 // @public @deprecated (undocumented)
-export class CacheManager extends CacheManager_2 {}
+export class CacheManager {
+  // (undocumented)
+  forPlugin(pluginId: string): PluginCacheManager;
+  static fromConfig(
+    config: RootConfigService,
+    options?: CacheManagerOptions,
+  ): CacheManager;
+}
 
 // Warning: (ae-forgotten-export) The symbol "CacheManagerOptions_2" needs to be exported by the entry point index.d.ts
 //
@@ -157,7 +162,10 @@ export class DatabaseManager implements LegacyRootDatabaseService {
   // (undocumented)
   static fromConfig(
     config: Config,
-    options?: DatabaseManagerOptions,
+    options?: {
+      migrations?: DatabaseService['migrations'];
+      logger?: LoggerService;
+    },
   ): DatabaseManager;
 }
 
@@ -172,11 +180,6 @@ export class DockerContainerRunner implements ContainerRunner {
   // (undocumented)
   runContainer(options: RunContainerOptions): Promise<void>;
 }
-
-// Warning: (ae-forgotten-export) The symbol "dropDatabase_2" needs to be exported by the entry point index.d.ts
-//
-// @public @deprecated (undocumented)
-export const dropDatabase: typeof dropDatabase_2;
 
 // @public @deprecated
 export function errorHandler(
@@ -274,12 +277,7 @@ export class Git {
 
 // @public @deprecated
 class HostDiscovery implements DiscoveryService {
-  static fromConfig(
-    config: Config,
-    options?: {
-      basePath?: string;
-    },
-  ): HostDiscovery;
+  static fromConfig(config: Config): HostDiscovery;
   // (undocumented)
   getBaseUrl(pluginId: string): Promise<string>;
   // (undocumented)
@@ -367,10 +365,10 @@ export const legacyPlugin: (
   }>,
 ) => BackendFeature;
 
-// Warning: (ae-forgotten-export) The symbol "LegacyRootDatabaseService_2" needs to be exported by the entry point index.d.ts
-//
 // @public @deprecated (undocumented)
-export type LegacyRootDatabaseService = LegacyRootDatabaseService_2;
+export type LegacyRootDatabaseService = {
+  forPlugin(pluginId: string): DatabaseService;
+};
 
 // @public @deprecated
 export function loadBackendConfig(options: {
@@ -413,10 +411,10 @@ export function makeLegacyPlugin<
 // @public @deprecated
 export function notFoundHandler(): RequestHandler;
 
-// Warning: (ae-forgotten-export) The symbol "PluginCacheManager_2" needs to be exported by the entry point index.d.ts
-//
 // @public @deprecated (undocumented)
-export type PluginCacheManager = PluginCacheManager_2;
+export type PluginCacheManager = {
+  getClient(options?: CacheServiceOptions): CacheService;
+};
 
 // @public @deprecated (undocumented)
 export type PluginDatabaseManager = DatabaseService;

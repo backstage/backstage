@@ -24,5 +24,4 @@ export type {
   MigrateRequest,
   ReadinessResponse,
   TechDocsMetadata,
-  TechDocsContainerRunner,
 } from './types';

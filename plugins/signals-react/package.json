@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-signals-react",
-  "version": "0.0.4",
+  "version": "0.0.5-next.1",
   "description": "Web library for the signals plugin",
   "backstage": {
     "role": "web-library",
@@ -47,7 +47,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^15.0.0"
+    "@testing-library/react": "^16.0.0"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0"

@@ -36,31 +36,41 @@ import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../translation';
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    gridArea: 'pageContent',
-    display: 'grid',
-    gridTemplateAreas: `
+/** @public */
+export type ScaffolderCustomFieldExplorerClassKey =
+  | 'root'
+  | 'controls'
+  | 'fieldForm'
+  | 'preview';
+
+const useStyles = makeStyles(
+  theme => ({
+    root: {
+      gridArea: 'pageContent',
+      display: 'grid',
+      gridTemplateAreas: `
       "controls controls"
       "fieldForm preview"
     `,
-    gridTemplateRows: 'auto 1fr',
-    gridTemplateColumns: '1fr 1fr',
-  },
-  controls: {
-    gridArea: 'controls',
-    display: 'flex',
-    flexFlow: 'row nowrap',
-    alignItems: 'center',
-    margin: theme.spacing(1),
-  },
-  fieldForm: {
-    gridArea: 'fieldForm',
-  },
-  preview: {
-    gridArea: 'preview',
-  },
-}));
+      gridTemplateRows: 'auto 1fr',
+      gridTemplateColumns: '1fr 1fr',
+    },
+    controls: {
+      gridArea: 'controls',
+      display: 'flex',
+      flexFlow: 'row nowrap',
+      alignItems: 'center',
+      margin: theme.spacing(1),
+    },
+    fieldForm: {
+      gridArea: 'fieldForm',
+    },
+    preview: {
+      gridArea: 'preview',
+    },
+  }),
+  { name: 'ScaffolderCustomFieldExplorer' },
+);
 
 export const CustomFieldExplorer = ({
   customFieldExtensions = [],

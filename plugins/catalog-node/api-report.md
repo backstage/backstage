@@ -8,6 +8,7 @@
 import { AnalyzeLocationExistingEntity } from '@backstage/plugin-catalog-common';
 import { AnalyzeLocationRequest } from '@backstage/plugin-catalog-common';
 import { AnalyzeLocationResponse } from '@backstage/plugin-catalog-common';
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
@@ -172,6 +173,7 @@ export type EntityRelationSpec = {
 export type LocationAnalyzer = {
   analyzeLocation(
     location: AnalyzeLocationRequest,
+    credentials: BackstageCredentials,
   ): Promise<AnalyzeLocationResponse>;
 };
 

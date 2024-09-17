@@ -19,6 +19,7 @@ import { default as CSS_2 } from 'csstype';
 import { CSSProperties } from 'react';
 import { ElementType } from 'react';
 import { ErrorInfo } from 'react';
+import IconButton from '@material-ui/core/IconButton';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { Icons } from '@material-table/core';
 import { IdentityApi } from '@backstage/core-plugin-api';
@@ -401,6 +402,24 @@ export type ErrorPanelProps = {
   title?: string;
 };
 
+// @public
+export function FavoriteToggle(
+  props: ComponentProps<typeof IconButton> & {
+    id: string;
+    title: string;
+    isFavorite: boolean;
+    onToggle: (value: boolean) => void;
+  },
+): React_2.JSX.Element;
+
+// @public
+export function FavoriteToggleIcon(props: {
+  isFavorite: boolean;
+}): React_2.JSX.Element;
+
+// @public (undocumented)
+export type FavoriteToggleIconClassKey = 'icon' | 'iconBorder';
+
 // @public (undocumented)
 export type FeatureCalloutCircleClassKey =
   | '@keyframes pulsateSlightly'
@@ -676,6 +695,9 @@ export const LinkButton: (props: LinkButtonProps) => JSX.Element;
 export type LinkButtonProps = ButtonProps_2 &
   Omit<LinkProps, 'variant' | 'color'>;
 
+// @public (undocumented)
+export type LinkClassKey = 'visuallyHidden' | 'externalLink';
+
 // Warning: (ae-missing-release-tag) "LinkProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -777,9 +799,6 @@ export type MicDropClassKey = 'micDrop';
 export function MissingAnnotationEmptyState(
   props: Props_3,
 ): React_2.JSX.Element;
-
-// @public @deprecated (undocumented)
-export type MissingAnnotationEmptyStateClassKey = 'code';
 
 // @public
 export const MobileSidebar: (
@@ -1111,10 +1130,25 @@ export const SidebarSubmenu: (
   props: SidebarSubmenuProps,
 ) => React_2.JSX.Element;
 
+// @public (undocumented)
+export type SidebarSubmenuClassKey = 'root' | 'drawer' | 'drawerOpen' | 'title';
+
 // @public
 export const SidebarSubmenuItem: (
   props: SidebarSubmenuItemProps,
 ) => React_2.JSX.Element;
+
+// @public (undocumented)
+export type SidebarSubmenuItemClassKey =
+  | 'item'
+  | 'itemContainer'
+  | 'selected'
+  | 'label'
+  | 'subtitle'
+  | 'dropdownArrow'
+  | 'dropdown'
+  | 'dropdownItem'
+  | 'textContent';
 
 // @public
 export type SidebarSubmenuItemDropdownItem = {
@@ -1185,6 +1219,12 @@ export function SimpleStepperStep(
 //
 // @public (undocumented)
 export type SimpleStepperStepClassKey = 'end';
+
+// @public (undocumented)
+export type StackDetailsClassKey = 'title';
+
+// @public (undocumented)
+export function StarIcon(props: IconComponentProps): React_2.JSX.Element;
 
 // Warning: (ae-missing-release-tag) "StatusAborted" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1454,6 +1494,9 @@ export function TrendLine(
       title?: string;
     },
 ): React_2.JSX.Element | null;
+
+// @public (undocumented)
+export function UnstarredIcon(props: IconComponentProps): React_2.JSX.Element;
 
 // @public
 export function useContent(): {

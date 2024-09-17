@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-unprocessed-entities",
-  "version": "0.2.7",
+  "version": "0.2.8-next.1",
   "backstage": {
     "role": "frontend-plugin",
     "pluginId": "catalog-unprocessed-entities",
@@ -45,13 +45,14 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.60",
     "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "luxon": "^3.5.0",
     "react-use": "^17.2.4"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
     "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^15.0.0"
+    "@testing-library/react": "^16.0.0"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0 || ^18.0.0",

@@ -17,14 +17,13 @@
 import React from 'react';
 import { createApp } from '@backstage/frontend-app-api';
 import { screen } from '@testing-library/react';
-import { createFrontendPlugin } from './createFrontendPlugin';
+import { FrontendPlugin, createFrontendPlugin } from './createFrontendPlugin';
 import { JsonObject } from '@backstage/types';
 import { createExtension } from './createExtension';
 import { createExtensionDataRef } from './createExtensionDataRef';
 import { coreExtensionData } from './coreExtensionData';
 import { MockConfigApi, renderWithEffects } from '@backstage/test-utils';
 import { createExtensionInput } from './createExtensionInput';
-import { BackstagePlugin } from './types';
 
 const nameExtensionDataRef = createExtensionDataRef<string>().with({
   id: 'name',
@@ -123,11 +122,11 @@ function createTestAppRoot({
   features,
   config = {},
 }: {
-  features: BackstagePlugin[];
+  features: FrontendPlugin[];
   config: JsonObject;
 }) {
   return createApp({
-    features,
+    features: [...features],
     configLoader: async () => ({ config: new MockConfigApi(config) }),
   }).createRoot();
 }
@@ -150,6 +149,7 @@ describe('createFrontendPlugin', () => {
     expect(plugin.getExtension('test/1')).toMatchInlineSnapshot(`
       {
         "$$type": "@backstage/ExtensionDefinition",
+        "T": undefined,
         "attachTo": {
           "id": "test/output",
           "input": "names",
@@ -281,6 +281,7 @@ describe('createFrontendPlugin', () => {
       expect(plugin.getExtension('test/1')).toMatchInlineSnapshot(`
         {
           "$$type": "@backstage/ExtensionDefinition",
+          "T": undefined,
           "attachTo": {
             "id": "test/output",
             "input": "names",

@@ -12,6 +12,7 @@ import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SearchBarBaseProps } from '@backstage/plugin-search-react';
+import { SearchResultSet } from '@backstage/plugin-search-common';
 
 // @public (undocumented)
 export const HomePageSearchBar: (
@@ -31,6 +32,9 @@ export const SearchModal: (props: SearchModalProps) => React_2.JSX.Element;
 
 // @public (undocumented)
 export interface SearchModalChildrenProps {
+  resultItemComponents?:
+    | ReactNode
+    | ((resultSet: SearchResultSet) => JSX.Element);
   toggleModal: () => void;
 }
 
@@ -39,6 +43,7 @@ export interface SearchModalProps {
   children?: (props: SearchModalChildrenProps) => JSX.Element;
   hidden?: boolean;
   open?: boolean;
+  resultItemComponents?: SearchModalChildrenProps['resultItemComponents'];
   toggleModal: () => void;
 }
 
@@ -118,12 +123,14 @@ export const SidebarSearch: (props: SidebarSearchProps) => React_2.JSX.Element;
 // @public (undocumented)
 export const SidebarSearchModal: (
   props: SidebarSearchModalProps,
-) => JSX_2.Element;
+) => JSX.Element | null;
 
 // @public
-export type SidebarSearchModalProps = {
+export type SidebarSearchModalProps = Pick<
+  SearchModalProps,
+  'children' | 'resultItemComponents'
+> & {
   icon?: IconComponent;
-  children?: (props: SearchModalChildrenProps) => JSX.Element;
 };
 
 // @public

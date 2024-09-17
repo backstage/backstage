@@ -249,7 +249,18 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
         ]);
       }
     });
-    entitiesQuery = entitiesQuery.orderBy('final_entities.entity_id', 'asc'); // stable sort
+
+    if (!request?.order) {
+      entitiesQuery = entitiesQuery
+        .leftOuterJoin(
+          'refresh_state',
+          'refresh_state.entity_id',
+          'final_entities.entity_id',
+        )
+        .orderBy('refresh_state.entity_ref', 'asc'); // default sort
+    } else {
+      entitiesQuery.orderBy('final_entities.entity_id', 'asc'); // stable sort
+    }
 
     const { limit, offset } = parsePagination(request?.pagination);
     if (limit !== undefined) {
@@ -484,6 +495,12 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       ]);
     }
 
+    if (
+      isQueryEntitiesInitialRequest(request) &&
+      request.offset !== undefined
+    ) {
+      dbQuery.offset(request.offset);
+    }
     // fetch an extra item to check if there are more items.
     dbQuery.limit(isFetchingBackwards ? limit : limit + 1);
 

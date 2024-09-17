@@ -434,4 +434,172 @@ describe('ReviewState', () => {
       queryByRole('row', { name: 'Name > Example > Test type6' }),
     ).not.toBeInTheDocument();
   });
+
+  it('should allow using the title property', async () => {
+    const formState = {
+      foo: 'test',
+    };
+
+    const schemas: ParsedTemplateSchema[] = [
+      {
+        mergedSchema: {
+          type: 'object',
+          properties: {
+            foo: {
+              type: 'string',
+              title: 'Test Thing',
+            },
+          },
+        },
+        schema: {},
+        title: 'test',
+        uiSchema: {},
+      },
+    ];
+
+    const { queryByRole } = render(
+      <ReviewState formState={formState} schemas={schemas} />,
+    );
+
+    expect(queryByRole('row', { name: 'Test Thing test' })).toBeInTheDocument();
+  });
+
+  it('should allow custom review name', async () => {
+    const formState = {
+      foo: 'test',
+    };
+
+    const schemas: ParsedTemplateSchema[] = [
+      {
+        mergedSchema: {
+          type: 'object',
+          properties: {
+            foo: {
+              type: 'string',
+              'ui:backstage': {
+                review: {
+                  name: 'bar',
+                },
+              },
+            },
+          },
+        },
+        schema: {},
+        title: 'test',
+        uiSchema: {},
+      },
+    ];
+
+    const { queryByRole } = render(
+      <ReviewState formState={formState} schemas={schemas} />,
+    );
+
+    expect(queryByRole('row', { name: 'Bar test' })).toBeInTheDocument();
+    expect(queryByRole('row', { name: 'Foo test' })).not.toBeInTheDocument();
+  });
+
+  it('should handle options in multiple schemas', async () => {
+    const formState = {
+      foo1: 'bar1',
+      foo2: 'bar2',
+      foo3: {
+        foo4: 'bar4',
+      },
+      foo5: 'bar5',
+    };
+
+    const schemas: ParsedTemplateSchema[] = [
+      {
+        mergedSchema: {
+          type: 'object',
+          properties: {
+            foo1: {
+              type: 'string',
+              'ui:backstage': {
+                review: {
+                  name: 'Test 1',
+                },
+              },
+            },
+          },
+        },
+        schema: {},
+        title: 'Schema 1',
+        uiSchema: {},
+      },
+      {
+        mergedSchema: {
+          type: 'object',
+          properties: {
+            foo2: {
+              type: 'string',
+              'ui:backstage': {
+                review: {
+                  name: 'Test 2',
+                },
+              },
+            },
+            foo3: {
+              type: 'object',
+              properties: {
+                foo4: {
+                  type: 'string',
+                  'ui:backstage': {
+                    review: {
+                      name: 'Test 4',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        schema: {},
+        title: 'Schema 2',
+        uiSchema: {},
+      },
+      {
+        mergedSchema: {
+          type: 'object',
+          dependencies: {
+            foo1: {
+              oneOf: [
+                {
+                  properties: {
+                    foo5: {
+                      type: 'string',
+                      'ui:backstage': {
+                        review: {
+                          name: 'Test 5',
+                        },
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        },
+        schema: {},
+        title: 'Schema 3',
+        uiSchema: {},
+      },
+    ];
+
+    const { queryByRole } = render(
+      <ReviewState formState={formState} schemas={schemas} />,
+    );
+
+    // handles options in first schema
+    expect(queryByRole('row', { name: 'Test 1 bar1' })).toBeInTheDocument();
+
+    // handles options in second schema
+    expect(queryByRole('row', { name: 'Test 2 bar2' })).toBeInTheDocument();
+
+    // handles options for nested object in second schema
+    expect(queryByRole('row', { name: 'Test 4 bar4' })).toBeInTheDocument();
+
+    // handles options for property in dependencies in third schema
+    expect(queryByRole('row', { name: 'Test 5 bar5' })).toBeInTheDocument();
+  });
 });

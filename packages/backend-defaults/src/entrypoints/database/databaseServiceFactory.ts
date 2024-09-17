@@ -35,6 +35,7 @@ export const databaseServiceFactory = createServiceFactory({
   deps: {
     config: coreServices.rootConfig,
     lifecycle: coreServices.lifecycle,
+    logger: coreServices.logger,
     pluginMetadata: coreServices.pluginMetadata,
   },
   async createRootContext({ config }) {
@@ -48,10 +49,10 @@ export const databaseServiceFactory = createServiceFactory({
           }),
         );
   },
-  async factory({ pluginMetadata, lifecycle }, databaseManager) {
+  async factory({ pluginMetadata, lifecycle, logger }, databaseManager) {
     return databaseManager.forPlugin(pluginMetadata.getId(), {
-      pluginMetadata,
       lifecycle,
+      logger,
     });
   },
 });

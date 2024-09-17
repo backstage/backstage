@@ -26,7 +26,6 @@ import express from 'express';
 import Router from 'express-promise-router';
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
-import { injectConfig, readConfigs } from '../lib/config';
 import {
   createStaticAssetMiddleware,
   findStaticAssets,
@@ -43,7 +42,8 @@ import {
   HttpAuthService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
-import { AuthenticationError } from '@backstage/errors';
+import { AuthenticationError, InputError } from '@backstage/errors';
+import { injectConfig, readFrontendConfig } from '../lib/config';
 
 // express uses mime v1 while we only have types for mime v2
 type Mime = { lookup(arg0: string): string };
@@ -147,7 +147,7 @@ export async function createRouter(
 
   const appConfigs = disableConfigInjection
     ? undefined
-    : await readConfigs({
+    : await readFrontendConfig({
         config,
         appDistDir,
         env: process.env,
@@ -220,7 +220,9 @@ export async function createRouter(
           req.method = 'GET';
           next('router');
         } else {
-          throw new Error('Invalid POST request to /');
+          throw new InputError(
+            'Invalid POST request to app-backend wildcard endpoint',
+          );
         }
       },
     );
@@ -266,7 +268,8 @@ async function createEntryPointRouter({
   const staticDir = resolvePath(rootDir, 'static');
 
   const injectedConfigPath =
-    appConfigs && (await injectConfig({ appConfigs, logger, staticDir }));
+    appConfigs &&
+    (await injectConfig({ appConfigs, logger, rootDir, staticDir }));
 
   const router = Router();
 

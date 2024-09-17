@@ -115,6 +115,8 @@ export type AppIcons = {
   techdocs: IconComponent;
   user: IconComponent;
   warning: IconComponent;
+  star: IconComponent;
+  unstarred: IconComponent;
 };
 
 /**
@@ -158,7 +160,7 @@ type TargetRouteMap<
     infer Params,
     any
   >
-    ? RouteRef<Params> | SubRouteRef<Params>
+    ? RouteRef<Params> | SubRouteRef<Params> | false
     : never;
 };
 

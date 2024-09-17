@@ -52,7 +52,7 @@ describe('BackwardsCompatProvider', () => {
               const app = useApp();
               return (
                 <div data-testid="ctx">
-                  plugins:
+                  plugins:{' '}
                   {app
                     .getPlugins()
                     .map(p => p.getId())
@@ -74,9 +74,9 @@ describe('BackwardsCompatProvider', () => {
     );
 
     expect(screen.getByTestId('ctx').textContent).toMatchInlineSnapshot(`
-      "plugins:
+      "plugins: test, app
       components: NotFoundErrorPage, BootErrorPage, Progress, Router, ErrorBoundaryFallback
-      icons: brokenImage, catalog, scaffolder, techdocs, search, chat, dashboard, docs, email, github, group, help, kind:api, kind:component, kind:domain, kind:group, kind:location, kind:system, kind:user, kind:resource, kind:template, user, warning"
+      icons: brokenImage, catalog, scaffolder, techdocs, search, chat, dashboard, docs, email, github, group, help, kind:api, kind:component, kind:domain, kind:group, kind:location, kind:system, kind:user, kind:resource, kind:template, user, warning, star, unstarred"
     `);
   });
 
@@ -120,7 +120,7 @@ describe('ForwardsCompatProvider', () => {
 
     expect(screen.getByTestId('ctx').textContent).toMatchInlineSnapshot(`
       "components: progress=true, notFoundErrorPage=true, errorBoundaryFallback=true
-      icons: kind:api, kind:component, kind:domain, kind:group, kind:location, kind:system, kind:user, kind:resource, kind:template, brokenImage, catalog, scaffolder, techdocs, search, chat, dashboard, docs, email, github, group, help, user, warning"
+      icons: kind:api, kind:component, kind:domain, kind:group, kind:location, kind:system, kind:user, kind:resource, kind:template, brokenImage, catalog, scaffolder, techdocs, search, chat, dashboard, docs, email, github, group, help, user, warning, star, unstarred"
     `);
   });
 

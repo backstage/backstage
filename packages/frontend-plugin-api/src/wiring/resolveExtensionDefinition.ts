@@ -17,8 +17,8 @@
 import { ApiHolder, AppNode } from '../apis';
 import {
   ExtensionDefinition,
+  ExtensionDefinitionParameters,
   ResolvedExtensionInputs,
-  toInternalExtensionDefinition,
 } from './createExtension';
 import { PortableSchema } from '../schema';
 import { ExtensionInput } from './createExtensionInput';
@@ -26,6 +26,7 @@ import {
   AnyExtensionDataRef,
   ExtensionDataValue,
 } from './createExtensionDataRef';
+import { toInternalExtensionDefinition } from '@internal/frontend';
 
 /** @public */
 export interface Extension<TConfig, TConfigInput = TConfig> {
@@ -109,19 +110,13 @@ export function toInternalExtension<TConfig, TConfigInput>(
 
 /** @ignore */
 export type ResolveExtensionId<
-  TExtension extends ExtensionDefinition<any>,
+  TExtension extends ExtensionDefinition,
   TDefaultNamespace extends string | undefined,
-> = TExtension extends ExtensionDefinition<
-  any,
-  any,
-  any,
-  any,
-  {
-    kind: infer IKind extends string | undefined;
-    namespace: infer INamespace extends string | undefined;
-    name: infer IName extends string | undefined;
-  }
->
+> = TExtension extends ExtensionDefinition<{
+  kind: infer IKind extends string | undefined;
+  namespace: infer INamespace extends string | undefined;
+  name: infer IName extends string | undefined;
+}>
   ? [string | undefined] extends [IKind | INamespace | IName]
     ? never
     : (
@@ -140,10 +135,12 @@ export type ResolveExtensionId<
   : never;
 
 /** @internal */
-export function resolveExtensionDefinition<TConfig, TConfigInput>(
-  definition: ExtensionDefinition<TConfig, TConfigInput>,
+export function resolveExtensionDefinition<
+  T extends ExtensionDefinitionParameters,
+>(
+  definition: ExtensionDefinition<T>,
   context?: { namespace?: string },
-): Extension<TConfig, TConfigInput> {
+): Extension<T['config'], T['configInput']> {
   const internalDefinition = toInternalExtensionDefinition(definition);
   const {
     name,
@@ -152,6 +149,7 @@ export function resolveExtensionDefinition<TConfig, TConfigInput>(
     override: _skip2,
     ...rest
   } = internalDefinition;
+
   const namespace = internalDefinition.namespace ?? context?.namespace;
 
   const namePart =
@@ -172,5 +170,5 @@ export function resolveExtensionDefinition<TConfig, TConfigInput>(
     toString() {
       return `Extension{id=${id}}`;
     },
-  } as InternalExtension<TConfig, TConfigInput>;
+  } as InternalExtension<T['config'], T['configInput']> & Object;
 }

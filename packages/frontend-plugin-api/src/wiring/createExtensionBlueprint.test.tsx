@@ -27,18 +27,13 @@ import {
 } from './createExtensionDataRef';
 import { createExtensionInput } from './createExtensionInput';
 import { RouteRef } from '../routing';
-import {
-  ExtensionDefinition,
-  toInternalExtensionDefinition,
-} from './createExtension';
+import { ExtensionDefinition } from './createExtension';
 import { createExtensionDataContainer } from './createExtensionDataContainer';
+import { toInternalExtensionDefinition } from '@internal/frontend';
 
 function unused(..._any: any[]) {}
 
-function factoryOutput(
-  ext: ExtensionDefinition<any, any>,
-  inputs: unknown = undefined,
-) {
+function factoryOutput(ext: ExtensionDefinition, inputs: unknown = undefined) {
   const int = toInternalExtensionDefinition(ext);
   if (int.version !== 'v2') {
     throw new Error('Expected v2 extension');

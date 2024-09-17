@@ -64,8 +64,8 @@ export const rootRouteRef = createRouteRef();
 ```tsx title="in src/plugin.ts"
 import {
   createFrontendPlugin,
-  createPageExtension,
-  createNavItemExtension,
+  PageBlueprint,
+  NavItemBlueprint,
 } from '@backstage/frontend-plugin-api';
 import { rootRouteRef } from './routes';
 
@@ -155,10 +155,7 @@ export function ExamplePage() {
 ```
 
 ```tsx title="in src/plugin.ts - Registering a factory for our API"
-import {
-  createApiFactory,
-  createApiExtension,
-} from '@backstage/frontend-plugin-api';
+import { createApiFactory, ApiBlueprint } from '@backstage/frontend-plugin-api';
 import { exampleApiRef, DefaultExampleApi } from './api';
 
 // highlight-add-start

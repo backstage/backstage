@@ -94,7 +94,7 @@ function buildEntityPickerUISchema(
   // Note: This is typed to avoid es-lint rule TS2698
   const uiOptions: EntityPickerProps['uiSchema']['ui:options'] =
     uiSchema?.['ui:options'] || {};
-  const allowedKinds = uiOptions.allowedKinds;
+  const { allowedKinds, ...extraOptions } = uiOptions;
 
   const catalogFilter = asArray(uiOptions.catalogFilter).map(e => ({
     ...e,
@@ -104,6 +104,7 @@ function buildEntityPickerUISchema(
 
   return {
     'ui:options': {
+      ...extraOptions,
       catalogFilter,
     },
   };

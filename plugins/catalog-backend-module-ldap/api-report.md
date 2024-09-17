@@ -200,6 +200,7 @@ export type LdapProviderConfig = {
   users: UserConfig[];
   groups: GroupConfig[];
   schedule?: SchedulerServiceTaskScheduleDefinition;
+  vendor?: VendorConfig;
 };
 
 // @public
@@ -225,6 +226,7 @@ export function readLdapOrg(
   client: LdapClient,
   userConfig: UserConfig[],
   groupConfig: GroupConfig[],
+  vendorConfig: VendorConfig | undefined,
   options: {
     groupTransformer?: GroupTransformer;
     userTransformer?: UserTransformer;
@@ -269,4 +271,10 @@ export type UserTransformer = (
   config: UserConfig,
   user: SearchEntry,
 ) => Promise<UserEntity | undefined>;
+
+// @public
+export type VendorConfig = {
+  dnAttributeName?: string;
+  uuidAttributeName?: string;
+};
 ```

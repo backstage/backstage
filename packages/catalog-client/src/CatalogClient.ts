@@ -18,7 +18,6 @@ import {
   CompoundEntityRef,
   Entity,
   parseEntityRef,
-  stringifyEntityRef,
   stringifyLocationRef,
 } from '@backstage/catalog-model';
 import { ResponseError } from '@backstage/errors';
@@ -142,35 +141,7 @@ export class CatalogClient implements CatalogApi {
         options,
       ),
     );
-
-    // do not sort entities, if order is provided
-    if (encodedOrder.length) {
-      return { items: entities };
-    }
-
-    const refCompare = (a: Entity, b: Entity) => {
-      // in case field filtering is used, these fields might not be part of the response
-      if (
-        a.metadata?.name === undefined ||
-        a.kind === undefined ||
-        b.metadata?.name === undefined ||
-        b.kind === undefined
-      ) {
-        return 0;
-      }
-
-      const aRef = stringifyEntityRef(a);
-      const bRef = stringifyEntityRef(b);
-      if (aRef < bRef) {
-        return -1;
-      }
-      if (aRef > bRef) {
-        return 1;
-      }
-      return 0;
-    };
-
-    return { items: entities.sort(refCompare) };
+    return { items: entities };
   }
 
   /**
@@ -220,6 +191,7 @@ export class CatalogClient implements CatalogApi {
         fields = [],
         filter,
         limit,
+        offset,
         orderFields,
         fullTextFilter,
       } = request;
@@ -227,6 +199,9 @@ export class CatalogClient implements CatalogApi {
 
       if (limit !== undefined) {
         params.limit = limit;
+      }
+      if (offset !== undefined) {
+        params.offset = offset;
       }
       if (orderFields !== undefined) {
         params.orderField = (

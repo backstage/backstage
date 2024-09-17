@@ -14,87 +14,17 @@
  * limitations under the License.
  */
 
-import {
-  LifecycleService,
-  PluginMetadataService,
-} from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
+import { LifecycleService, LoggerService } from '@backstage/backend-plugin-api';
 import { Knex } from 'knex';
 
 export type { DatabaseService as PluginDatabaseManager } from '@backstage/backend-plugin-api';
 
-/**
- * Manages an underlying Knex database driver.
- */
-export interface DatabaseConnector {
-  /**
-   * Provides an instance of a knex database connector.
-   */
-  createClient(
-    dbConfig: Config,
-    overrides?: Partial<Knex.Config>,
-    deps?: {
-      lifecycle: LifecycleService;
-      pluginMetadata: PluginMetadataService;
-    },
-  ): Knex;
-
-  /**
-   * Provides a partial knex config sufficient to override a database name.
-   */
-  createNameOverride(name: string): Partial<Knex.Config>;
-
-  /**
-   * Provides a partial knex config sufficient to override a PostgreSQL schema
-   * name within utilizing the `searchPath` knex configuration.
-   */
-  createSchemaOverride?(name: string): Partial<Knex.Config>;
-
-  /**
-   * Produces a knex connection config object representing a database connection
-   * string.
-   */
-  parseConnectionString(
-    connectionString: string,
-    client?: string,
-  ): Knex.StaticConnectionConfig;
-
-  /**
-   * Performs a side-effect to ensure database names passed in are present.
-   *
-   * Calling this function on databases which already exist should do nothing.
-   * Missing databases should be created if needed.
-   */
-  ensureDatabaseExists?(
-    dbConfig: Config,
-    ...databases: Array<string>
-  ): Promise<void>;
-
-  /**
-   * Performs a side-effect to ensure schema names passed in are present.
-   *
-   * Calling this function on schemas which already exist should do nothing.
-   * Missing schemas should be created if needed.
-   */
-  ensureSchemaExists?(
-    dbConfig: Config,
-    ...schemas: Array<string>
-  ): Promise<void>;
-
-  /**
-   * Deletes databases.
-   */
-  dropDatabase?(dbConfig: Config, ...databases: Array<string>): Promise<void>;
-}
-
 export interface Connector {
   getClient(
     pluginId: string,
-    deps?: {
+    deps: {
+      logger: LoggerService;
       lifecycle: LifecycleService;
-      pluginMetadata: PluginMetadataService;
     },
   ): Promise<Knex>;
-
-  dropDatabase(...databaseNames: string[]): Promise<void>;
 }

@@ -22,7 +22,6 @@ import {
 } from '@backstage/frontend-plugin-api';
 
 export const Root = createExtension({
-  namespace: 'root',
   attachTo: { id: 'ignored', input: 'ignored' },
   inputs: {
     app: createExtensionInput([coreExtensionData.reactElement], {
@@ -32,6 +31,6 @@ export const Root = createExtension({
       replaces: [{ id: 'app', input: 'apis' }],
     }),
   },
-  output: [],
-  factory: () => [],
+  output: [coreExtensionData.reactElement],
+  factory: ({ inputs }) => inputs.app,
 });

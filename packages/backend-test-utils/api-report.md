@@ -36,7 +36,6 @@ import { ParsedQs } from 'qs';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { RootHealthService } from '@backstage/backend-plugin-api';
-import { RootHttpRouterFactoryOptions } from '@backstage/backend-defaults/rootHttpRouter';
 import { RootHttpRouterService } from '@backstage/backend-plugin-api';
 import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
@@ -267,6 +266,10 @@ export namespace mockServices {
       factory: (
         options?: Options | undefined,
       ) => ServiceFactory<RootConfigService, 'root', 'singleton' | 'multiton'>;
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<RootConfigService> | undefined,
+      ) => ServiceMock<RootConfigService>;
   }
   // (undocumented)
   export namespace rootHealth {
@@ -280,10 +283,7 @@ export namespace mockServices {
   // (undocumented)
   export namespace rootHttpRouter {
     const // (undocumented)
-      factory: () => ((
-        options?: RootHttpRouterFactoryOptions | undefined,
-      ) => ServiceFactory<RootHttpRouterService, 'root', 'singleton'>) &
-        ServiceFactory<RootHttpRouterService, 'root', 'singleton'>;
+      factory: () => ServiceFactory<RootHttpRouterService, 'root', 'singleton'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<RootHttpRouterService> | undefined,

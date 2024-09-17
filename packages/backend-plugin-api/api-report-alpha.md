@@ -14,7 +14,7 @@ export interface FeatureDiscoveryService {
   }>;
 }
 
-// @alpha
+// @alpha @deprecated
 export const featureDiscoveryServiceRef: ServiceRef<
   FeatureDiscoveryService,
   'root',

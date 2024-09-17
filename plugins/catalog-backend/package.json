@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend",
-  "version": "1.25.0",
+  "version": "1.26.0-next.2",
   "description": "The Backstage backend plugin that provides the Backstage catalog",
   "backstage": {
     "role": "backend-plugin",
@@ -112,7 +112,7 @@
     "better-sqlite3": "^11.0.0",
     "luxon": "^3.0.0",
     "msw": "^1.0.0",
-    "supertest": "^6.1.3",
+    "supertest": "^7.0.0",
     "wait-for-expect": "^3.0.2",
     "winston": "^3.13.0"
   },

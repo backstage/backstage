@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-signals-node",
-  "version": "0.1.9",
+  "version": "0.1.11-next.2",
   "description": "Node.js library for the signals plugin",
   "backstage": {
     "role": "node-library",
@@ -45,7 +45,7 @@
     "@backstage/types": "workspace:^",
     "express": "^4.17.1",
     "uuid": "^9.0.0",
-    "ws": "^8.14.2"
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

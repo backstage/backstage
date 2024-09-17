@@ -166,6 +166,7 @@ export const Router = (props: PropsWithChildren<RouterProps>) => {
             <TemplateEditorPage
               customFieldExtensions={fieldExtensions}
               layouts={customLayouts}
+              formProps={props.formProps}
             />
           </SecretsContextProvider>
         }

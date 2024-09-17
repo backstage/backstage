@@ -40,6 +40,7 @@ describe('SearchResultListItemBlueprint', () => {
     expect(extension).toMatchInlineSnapshot(`
       {
         "$$type": "@backstage/ExtensionDefinition",
+        "T": undefined,
         "attachTo": {
           "id": "page:search",
           "input": "items",
@@ -86,7 +87,7 @@ describe('SearchResultListItemBlueprint', () => {
     });
 
     const mockSearchPage = PageBlueprint.makeWithOverrides({
-      namespace: 'search',
+      name: 'search',
       inputs: {
         items: createExtensionInput([searchResultListItemDataRef]),
       },

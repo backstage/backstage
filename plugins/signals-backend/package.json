@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-signals-backend",
-  "version": "0.1.9",
+  "version": "0.2.0-next.2",
   "backstage": {
     "role": "backend-plugin",
     "pluginId": "signals",
@@ -51,7 +51,7 @@
     "node-fetch": "^2.7.0",
     "uuid": "^9.0.0",
     "winston": "^3.2.1",
-    "ws": "^8.17.0",
+    "ws": "^8.18.0",
     "yn": "^4.0.0"
   },
   "devDependencies": {
@@ -64,6 +64,6 @@
     "@types/supertest": "^2.0.8",
     "@types/ws": "^8.5.10",
     "msw": "^1.0.0",
-    "supertest": "^6.2.4"
+    "supertest": "^7.0.0"
   }
 }

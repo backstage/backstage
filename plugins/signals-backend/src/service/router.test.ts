@@ -24,8 +24,7 @@ import {
   UserInfoService,
 } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
-import { mockServices } from '@backstage/backend-test-utils';
-import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
+import { mockErrorHandler, mockServices } from '@backstage/backend-test-utils';
 
 const eventsServiceMock: jest.Mocked<EventsService> = {
   subscribe: jest.fn(),
@@ -53,11 +52,7 @@ describe('createRouter', () => {
       config: new ConfigReader({}),
       auth: mockServices.auth(),
     });
-    const errorHandler = MiddlewareFactory.create({
-      config: mockServices.rootConfig(),
-      logger: mockServices.rootLogger(),
-    }).error();
-    app = express().use(router).use(errorHandler);
+    app = express().use(router).use(mockErrorHandler());
   });
 
   beforeEach(() => {

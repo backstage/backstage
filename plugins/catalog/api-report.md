@@ -12,6 +12,7 @@ import { ComponentEntity } from '@backstage/catalog-model';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
 import { EntityListContextProps } from '@backstage/plugin-catalog-react';
+import { EntityListPagination } from '@backstage/plugin-catalog-react';
 import { EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
 import { EntityPresentationApi } from '@backstage/plugin-catalog-react';
 import { EntityRefPresentation } from '@backstage/plugin-catalog-react';
@@ -133,6 +134,12 @@ export const CatalogSearchResultListItem: (
   props: SearchResultListItemExtensionProps<CatalogSearchResultListItemProps>,
 ) => JSX.Element | null;
 
+// @public (undocumented)
+export type CatalogSearchResultListItemClassKey =
+  | 'item'
+  | 'flexContainer'
+  | 'itemText';
+
 // @public
 export interface CatalogSearchResultListItemProps {
   // (undocumented)
@@ -223,6 +230,9 @@ export interface CatalogTableRow {
 }
 
 // @public (undocumented)
+export type CatalogTableToolbarClassKey = 'root' | 'text';
+
+// @public (undocumented)
 export type ColumnBreakpoints = Record<Breakpoint, number>;
 
 // @public
@@ -244,11 +254,7 @@ export interface DefaultCatalogPageProps {
   // (undocumented)
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
   // (undocumented)
-  pagination?:
-    | boolean
-    | {
-        limit?: number;
-      };
+  pagination?: EntityListPagination;
   // (undocumented)
   tableOptions?: TableProps<CatalogTableRow>['options'];
 }
@@ -393,6 +399,9 @@ export interface EntityLabelsCardProps {
   // (undocumented)
   variant?: InfoCardVariants;
 }
+
+// @public (undocumented)
+export type EntityLabelsEmptyStateClassKey = 'code';
 
 // @public
 export const EntityLayout: {
@@ -629,6 +638,9 @@ export type PluginCatalogComponentsNameToClassKey = {
   PluginCatalogEntityLinksEmptyState: EntityLinksEmptyStateClassKey;
   PluginCatalogSystemDiagramCard: SystemDiagramCardClassKey;
   PluginCatalogEntityContextMenu: EntityContextMenuClassKey;
+  PluginCatalogSearchResultListItem: CatalogSearchResultListItemClassKey;
+  PluginCatalogTableToolbar: CatalogTableToolbarClassKey;
+  PluginCatalogEntityLabelsEmptyState: EntityLabelsEmptyStateClassKey;
 };
 
 // @public (undocumented)

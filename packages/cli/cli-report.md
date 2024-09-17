@@ -424,6 +424,7 @@ Usage: backstage-cli repo build [options]
 Options:
   --all
   --since <ref>
+  --minify
   -h, --help
 ```
 

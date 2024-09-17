@@ -130,7 +130,7 @@ export function createCatalogWriteAction(): TemplateAction_2<
 export function createDebugLogAction(): TemplateAction_2<
   {
     message?: string | undefined;
-    listWorkspace?: boolean | undefined;
+    listWorkspace?: boolean | 'with-contents' | 'with-filenames' | undefined;
   },
   JsonObject
 >;
