@@ -1,5 +1,72 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.4.0
+
+### Minor Changes
+
+- 9080f57: **BREAKING**: `dynamicPluginsServiceFactory` is no longer callable as a function. If you need to provide options to make a custom factory, use `dynamicPluginsSchemasServiceFactoryWithOptions` instead.
+
+### Patch Changes
+
+- cd38da8: Deprecate the `dynamicPluginsServiceRef`, `dynamicPluginsServiceFactory` and `dynamicPluginsServiceFactoryWithOptions` in favor of using the `dynamicPluginsFeatureDiscoveryLoader` to discover dynamic features in a new backend system.
+
+  See usage examples below:
+
+  Example using the `dynamicPluginsFeatureDiscoveryLoader` loader in a backend instance:
+
+  ```ts
+  import { createBackend } from '@backstage/backend-defaults';
+  import { dynamicPluginsFeatureDiscoveryLoader } from '@backstage/backend-dynamic-feature-service';
+  //...
+
+  const backend = createBackend();
+  backend.add(dynamicPluginsFeatureDiscoveryLoader);
+  //...
+  backend.start();
+  ```
+
+  Passing options to the `dynamicPluginsFeatureDiscoveryLoader` loader in a backend instance:
+
+  ```ts
+  import { createBackend } from '@backstage/backend-defaults';
+  import { dynamicPluginsFeatureDiscoveryLoader } from '@backstage/backend-dynamic-feature-service';
+  import { myCustomModuleLoader } from './myCustomModuleLoader';
+  //...
+
+  const backend = createBackend();
+  backend.add(
+    dynamicPluginsFeatureDiscoveryLoader({
+      moduleLoader: myCustomModuleLoader,
+    }),
+  );
+  //...
+  backend.start();
+  ```
+
+- e27f889: Relax type check for a plugin's default export to also accept a BackendFeature defined as a function instead of an object
+- d425fc4: Modules, plugins, and services are now `BackendFeature`, not a function that returns a feature.
+- Updated dependencies
+  - @backstage/backend-defaults@0.5.0
+  - @backstage/backend-common@0.25.0
+  - @backstage/backend-app-api@1.0.0
+  - @backstage/backend-plugin-api@1.0.0
+  - @backstage/plugin-auth-node@0.5.2
+  - @backstage/plugin-catalog-backend@1.26.0
+  - @backstage/plugin-app-node@0.1.25
+  - @backstage/cli-node@0.2.8
+  - @backstage/plugin-permission-node@0.8.3
+  - @backstage/plugin-events-backend@0.3.12
+  - @backstage/config-loader@1.9.1
+  - @backstage/plugin-events-node@0.4.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-scaffolder-node@0.4.11
+  - @backstage/plugin-search-backend-node@1.3.2
+  - @backstage/plugin-search-common@1.2.14
+
 ## 0.4.0-next.2
 
 ### Patch Changes

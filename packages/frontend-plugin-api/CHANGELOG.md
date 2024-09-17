@@ -1,5 +1,105 @@
 # @backstage/frontend-plugin-api
 
+## 0.8.0
+
+### Minor Changes
+
+- 5446061: **BREAKING**: Removed support for "v1" extensions. This means that it is no longer possible to declare inputs and outputs as objects when using `createExtension`. In addition, all extension creators except for `createComponentExtension` have been removed, use the equivalent blueprint instead. See the [1.30 migration documentation](https://backstage.io/docs/frontend-system/architecture/migrations/#130) for more information on this change.
+- fec8b57: **BREAKING**: Updated the type parameters for `ExtensionDefinition` and `ExtensionBlueprint` to only have a single object parameter. The base type parameter is exported as `ExtensionDefinitionParameters` and `ExtensionBlueprintParameters` respectively. This is shipped as an immediate breaking change as we expect usage of these types to be rare, and it does not affect the runtime behavior of the API.
+
+  This is a breaking change as it changes the type parameters. Existing usage can generally be updated as follows:
+
+  - `ExtensionDefinition<any>` -> `ExtensionDefinition`
+  - `ExtensionDefinition<any, any>` -> `ExtensionDefinition`
+  - `ExtensionDefinition<TConfig>` -> `ExtensionDefinition<{ config: TConfig }>`
+  - `ExtensionDefinition<TConfig, TConfigInput>` -> `ExtensionDefinition<{ config: TConfig, configInput: TConfigInput }>`
+
+  If you need to infer the parameter you can use `ExtensionDefinitionParameters`, for example:
+
+  ```ts
+  import {
+    ExtensionDefinition,
+    ExtensionDefinitionParameters,
+  } from '@backstage/frontend-plugin-api';
+
+  function myUtility<T extends ExtensionDefinitionParameters>(
+    ext: ExtensionDefinition<T>,
+  ): T['config'] {
+    // ...
+  }
+  ```
+
+  The same patterns apply to `ExtensionBlueprint`.
+
+  This change is made to improve the readability of API references and ability to evolve the type parameters in the future.
+
+### Patch Changes
+
+- 2bb9517: Introduce the `@backstage/plugin-app` package to hold all of the built-in extensions for easy consumption and overriding.
+- c816e2d: Added `createFrontendModule` as a replacement for `createExtensionOverrides`, which is now deprecated.
+
+  Deprecated the `BackstagePlugin` and `FrontendFeature` type in favor of `FrontendPlugin` and `FrontendFeature` from `@backstage/frontend-app-api` respectively.
+
+- 52f9c5a: Deprecated the `namespace` option for `createExtensionBlueprint` and `createExtension`, these are no longer required and will default to the `pluginId` instead.
+
+  You can migrate some of your extensions that use `createExtensionOverrides` to using `createFrontendModule` instead and providing a `pluginId` there.
+
+  ```ts
+  // Before
+  createExtensionOverrides({
+    extensions: [
+      createExtension({
+        name: 'my-extension',
+        namespace: 'my-namespace',
+        kind: 'test',
+        ...
+      })
+    ],
+  });
+
+  // After
+  createFrontendModule({
+    pluginId: 'my-namespace',
+    extensions: [
+      createExtension({
+        name: 'my-extension',
+        kind: 'test',
+        ...
+      })
+    ],
+  });
+  ```
+
+- f3a2b91: Moved several implementations of built-in APIs from being hardcoded in the app to instead be provided as API extensions. This moves all API-related inputs from the `app` extension to the respective API extensions. For example, extensions created with `ThemeBlueprint` are now attached to the `themes` input of `api:app-theme` rather than the `app` extension.
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- 948d431: Removing deprecated `namespace` parameter in favour of `pluginId` instead
+- 043d7cd: Internal refactor
+- 220f4f7: Remove unnecessary config object on IconBundleBlueprint
+- 2a61422: The `factory` option is no longer required when overriding an extension.
+- 98850de: Added support for defining `replaces` in `createExtensionInput` which will allow extensions to redirect missing `attachTo` points to an input of the created extension.
+
+  ```ts
+  export const AppThemeApi = ApiBlueprint.makeWithOverrides({
+    name: 'app-theme',
+    inputs: {
+      themes: createExtensionInput([ThemeBlueprint.dataRefs.theme], {
+        // attachTo: { id: 'app', input: 'themes'} will be redirected to this input instead
+        replaces: [{ id: 'app', input: 'themes' }],
+      }),
+    },
+    factory: () {
+      ...
+    }
+  });
+  ```
+
+- 4a66456: A new `apis` parameter has been added to `factory` for extensions. This is a way to access utility APIs without being coupled to the React context.
+- Updated dependencies
+  - @backstage/core-components@0.15.0
+  - @backstage/core-plugin-api@1.9.4
+  - @backstage/version-bridge@1.0.9
+  - @backstage/types@1.1.1
+
 ## 0.8.0-next.2
 
 ### Patch Changes

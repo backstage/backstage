@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
+## 1.1.14
+
+### Patch Changes
+
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.15.0
+  - @backstage/plugin-techdocs-react@1.2.8
+  - @backstage/integration-react@1.1.31
+  - @backstage/integration@1.15.0
+  - @backstage/core-plugin-api@1.9.4
+
 ## 1.1.14-next.2
 
 ### Patch Changes

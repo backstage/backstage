@@ -1,5 +1,21 @@
 # @backstage/core-compat-api
 
+## 0.3.0
+
+### Minor Changes
+
+- 6db849e: **BREAKING**: The `namespace` parameter for API's is now defaulted to the `pluginId` which was discovered. This means that if you're overriding API's by using ID's directly, they might have changed to include the plugin ID too.
+
+### Patch Changes
+
+- fec8b57: Updated exports to use the new type parameters for extensions and extension blueprints.
+- c816e2d: Added support for new `FrontendPlugin` and `FrontendModule` types.
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.8.0
+  - @backstage/core-plugin-api@1.9.4
+  - @backstage/version-bridge@1.0.9
+
 ## 0.3.0-next.2
 
 ### Patch Changes

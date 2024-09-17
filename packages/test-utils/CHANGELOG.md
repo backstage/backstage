@@ -1,5 +1,24 @@
 # @backstage/test-utils
 
+## 1.6.0
+
+### Minor Changes
+
+- d47be30: Added the icons option to the renderInTestApp function's TestAppOptions to be forwarded to the icons option of `createApp`.
+
+### Patch Changes
+
+- b537bd7: Allow custom star icons to be provided via the `star` and `unstarred` icon overrides. See how to override existing icons in the [Backstage documentation](https://backstage.io/docs/getting-started/app-custom-theme/#custom-icons).
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/core-app-api@1.15.0
+  - @backstage/core-plugin-api@1.9.4
+  - @backstage/theme@0.5.7
+  - @backstage/plugin-permission-react@0.4.26
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.8.1
+
 ## 1.6.0-next.1
 
 ### Patch Changes

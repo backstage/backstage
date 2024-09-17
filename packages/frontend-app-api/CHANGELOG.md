@@ -1,5 +1,54 @@
 # @backstage/frontend-app-api
 
+## 0.9.0
+
+### Minor Changes
+
+- 7c80650: **BREAKING**: The `createSpecializedApp` function now creates a bare-bones app without any of the default app structure or APIs. To re-introduce this functionality if you need to use `createSpecializedApp` you can install the `app` plugin from `@backstage/plugin-app`.
+
+  In addition, the `createApp` and `CreateAppFeatureLoader` exports are now deprecated as they are being moved to `@backstage/frontend-defaults`, which should be used instead.
+
+- 62cce6c: Removed deprecated `icons` property passing to `createApp` and `createSpecializedApp`. Use `IconBundleBlueprint.make` to create extensions instead and include them in the app.
+
+### Patch Changes
+
+- fec8b57: Updated exports to use the new type parameters for extensions and extension blueprints.
+- 2bb9517: Introduce the `@backstage/plugin-app` package to hold all of the built-in extensions for easy consumption and overriding.
+- c816e2d: Added support for new `FrontendPlugin` and `FrontendModule` types.
+- f3a2b91: Moved several implementations of built-in APIs from being hardcoded in the app to instead be provided as API extensions. This moves all API-related inputs from the `app` extension to the respective API extensions. For example, extensions created with `ThemeBlueprint` are now attached to the `themes` input of `api:app-theme` rather than the `app` extension.
+- 0c70949: Reverse the order of API factory initialization in order to make sure that overrides from modules take priority
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- 5446061: Internal refactor following removal of v1 extension support. The app implementation itself still supports v1 extensions at runtime.
+- 948d431: Removing deprecated `namespace` parameter in favour of `pluginId` instead
+- ddbeace: Added the ability to explicitly disable routes through the `bindRoutes` option by passing `false` as the route target. This also fixes a bug where route bindings in config were incorrectly prioritized above the ones in code in certain situations.
+- 98850de: Added support for defining `replaces` in `createExtensionInput` which will allow extensions to redirect missing `attachTo` points to an input of the created extension.
+
+  ```ts
+  export const AppThemeApi = ApiBlueprint.makeWithOverrides({
+    name: 'app-theme',
+    inputs: {
+      themes: createExtensionInput([ThemeBlueprint.dataRefs.theme], {
+        // attachTo: { id: 'app', input: 'themes'} will be redirected to this input instead
+        replaces: [{ id: 'app', input: 'themes' }],
+      }),
+    },
+    factory: () {
+      ...
+    }
+  });
+  ```
+
+- 4a66456: Added the `root` extension the replace the `app` extension as the root of the app.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.8.0
+  - @backstage/core-app-api@1.15.0
+  - @backstage/frontend-defaults@0.1.0
+  - @backstage/core-plugin-api@1.9.4
+  - @backstage/version-bridge@1.0.9
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.9.0-next.2
 
 ### Patch Changes

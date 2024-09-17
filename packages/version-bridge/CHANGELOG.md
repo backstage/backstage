@@ -1,5 +1,11 @@
 # @backstage/version-bridge
 
+## 1.0.9
+
+### Patch Changes
+
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+
 ## 1.0.9-next.0
 
 ### Patch Changes

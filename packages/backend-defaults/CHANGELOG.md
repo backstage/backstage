@@ -1,5 +1,140 @@
 # @backstage/backend-defaults
 
+## 0.5.0
+
+### Minor Changes
+
+- a4bac3c: **BREAKING**: You can no longer supply a `basePath` option to the host discovery implementation. In the new backend system, the ability to choose this path has been removed anyway at the plugin router level.
+- 359fcd7: **BREAKING**: The backwards compatibility with plugins using legacy auth through the token manager service has been removed. This means that instead of falling back to using the old token manager, requests towards plugins that don't support the new auth system will simply fail. Please make sure that all plugins in your deployment are hosted within a backend instance from the new backend system.
+- baeef13: **BREAKING** Removed `createLifecycleMiddleware` and `LifecycleMiddlewareOptions` to clean up API surface. These exports have no external usage and do not provide value in its current form. If you were using these exports, please reach out to the maintainers to discuss your use case.
+- d425fc4: **BREAKING**: The return values from `createBackendPlugin`, `createBackendModule`, and `createServiceFactory` are now simply `BackendFeature` and `ServiceFactory`, instead of the previously deprecated form of a function that returns them. For this reason, `createServiceFactory` also no longer accepts the callback form where you provide direct options to the service. This also affects all `coreServices.*` service refs.
+
+  This may in particular affect tests; if you were effectively doing `createBackendModule({...})()` (note the parentheses), you can now remove those extra parentheses at the end. You may encounter cases of this in your `packages/backend/src/index.ts` too, where you add plugins, modules, and services. If you were using `createServiceFactory` with a function as its argument for the purpose of passing in options, this pattern has been deprecated for a while and is no longer supported. You may want to explore the new multiton patterns to achieve your goals, or moving settings to app-config.
+
+  As part of this change, the `IdentityFactoryOptions` type was removed, and can no longer be used to tweak that service. The identity service was also deprecated some time ago, and you will want to [migrate to the new auth system](https://backstage.io/docs/tutorials/auth-service-migration) if you still rely on it.
+
+- 19ff127: **BREAKING**: The default backend instance no longer provides implementations for the identity and token manager services, which have been removed from `@backstage/backend-plugin-api`.
+
+  If you rely on plugins that still require these services, you can add them to your own backend by re-creating the service reference and factory.
+
+  The following can be used to implement the identity service:
+
+  ```ts
+  import {
+    coreServices,
+    createServiceFactory,
+    createServiceRef,
+  } from '@backstage/backend-plugin-api';
+  import {
+    DefaultIdentityClient,
+    IdentityApi,
+  } from '@backstage/plugin-auth-node';
+
+  backend.add(
+    createServiceFactory({
+      service: createServiceRef<IdentityApi>({ id: 'core.identity' }),
+      deps: {
+        discovery: coreServices.discovery,
+      },
+      async factory({ discovery }) {
+        return DefaultIdentityClient.create({ discovery });
+      },
+    }),
+  );
+  ```
+
+  The following can be used to implement the token manager service:
+
+  ```ts
+  import { ServerTokenManager, TokenManager } from '@backstage/backend-common';
+  import { createBackend } from '@backstage/backend-defaults';
+  import {
+    coreServices,
+    createServiceFactory,
+    createServiceRef,
+  } from '@backstage/backend-plugin-api';
+
+  backend.add(
+    createServiceFactory({
+      service: createServiceRef<TokenManager>({ id: 'core.tokenManager' }),
+      deps: {
+        config: coreServices.rootConfig,
+        logger: coreServices.rootLogger,
+      },
+      createRootContext({ config, logger }) {
+        return ServerTokenManager.fromConfig(config, {
+          logger,
+          allowDisabledTokenManager: true,
+        });
+      },
+      async factory(_deps, tokenManager) {
+        return tokenManager;
+      },
+    }),
+  );
+  ```
+
+- 055b75b: **BREAKING**: Simplifications and cleanup as part of the Backend System 1.0 work.
+
+  For the `/database` subpath exports:
+
+  - The deprecated `dropDatabase` function has now been removed, without replacement.
+  - The deprecated `LegacyRootDatabaseService` type has now been removed.
+  - The return type from `DatabaseManager.forPlugin` is now directly a `DatabaseService`, as arguably expected.
+  - `DatabaseManager.forPlugin` now requires the `deps` argument, with the logger and lifecycle services.
+
+  For the `/cache` subpath exports:
+
+  - The `PluginCacheManager` type has been removed. You can still import it from `@backstage/backend-common`, but it's deprecated there, and you should move off of that package by migrating fully to the new backend system.
+  - Accordingly, `CacheManager.forPlugin` immediately returns a `CacheService` instead of a `PluginCacheManager`. The outcome of this is that you no longer need to make the extra `.getClient()` call. The old `CacheManager` with the old behavior still exists on `@backstage/backend-common`, but the above recommendations apply.
+
+### Patch Changes
+
+- 213664e: Fixed an issue where the `useRedisSets` configuration for the cache service would have no effect.
+- 6ed9264: chore(deps): bump `path-to-regexp` from 6.2.2 to 8.0.0
+- 622360e: Move down the discovery config to be in the root
+- 7f779c7: `auth.externalAccess` should be optional in the config schema
+- fe6fd8c: Accept `ConfigService` instead of `Config` in constructors/factories
+- 82539fe: Updated dependency `archiver` to `^7.0.0`.
+- c2b63ab: Updated dependency `supertest` to `^7.0.0`.
+- 5705424: Wrap scheduled tasks from the scheduler core service now in OpenTelemetry spans
+- 7a72ec8: Exports the `discoveryFeatureLoader` as a replacement for the deprecated `featureDiscoveryService`.
+  The `discoveryFeatureLoader` is a new backend system [feature loader](https://backstage.io/docs/backend-system/architecture/feature-loaders/) that discovers backend features from the current `package.json` and its dependencies.
+  Here is an example using the `discoveryFeatureLoader` loader in a new backend instance:
+
+  ```ts
+  import { createBackend } from '@backstage/backend-defaults';
+  import { discoveryFeatureLoader } from '@backstage/backend-defaults';
+  //...
+
+  const backend = createBackend();
+  //...
+  backend.add(discoveryFeatureLoader);
+  //...
+  backend.start();
+  ```
+
+- b2a329d: Properly indent the config schema
+- 66dbf0a: Allow the cache service to accept the human duration format for TTL
+- 5a8fcb4: Added the option to skip database migrations by setting `skipMigrations: true` in config. This can be done globally in the database config or by plugin id.
+- 0b2a402: Updates to the config schema to match reality
+- Updated dependencies
+  - @backstage/backend-common@0.25.0
+  - @backstage/backend-app-api@1.0.0
+  - @backstage/backend-plugin-api@1.0.0
+  - @backstage/plugin-auth-node@0.5.2
+  - @backstage/cli-node@0.2.8
+  - @backstage/plugin-permission-node@0.8.3
+  - @backstage/integration@1.15.0
+  - @backstage/config-loader@1.9.1
+  - @backstage/plugin-events-node@0.4.0
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+
 ## 0.5.0-next.2
 
 ### Minor Changes

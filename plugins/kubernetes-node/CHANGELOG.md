@@ -1,5 +1,16 @@
 # @backstage/plugin-kubernetes-node
 
+## 0.1.19
+
+### Patch Changes
+
+- c2b63ab: Updated dependency `supertest` to `^7.0.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.8.3
+
 ## 0.1.19-next.2
 
 ### Patch Changes

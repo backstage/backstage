@@ -1,5 +1,50 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.25.0
+
+### Minor Changes
+
+- df9ae9e: Added scaffolder action publish:bitbucketCloud:pull-request
+- 62898bd: `createRouter` and its related types has been marked as deprecared. This backend should instead be initialized using the new backend system.
+
+### Patch Changes
+
+- f0c6b25: Allow listing file contents with `debug:log` scaffolder action
+- c160951: Found the issue during testing the clean up of the workspace for the database implementation.
+- d425fc4: Modules, plugins, and services are now `BackendFeature`, not a function that returns a feature.
+- f865103: Updated dependency `esbuild` to `^0.23.0`.
+- c2b63ab: Updated dependency `supertest` to `^7.0.0`.
+- 7976081: Added support for all request parameters in the Github create/update environment API in the Github environment create scaffolder action.
+
+  Disable MultiEntityPicker when `maxItems` limit is reached defined in `JSONSchema`
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.5.0
+  - @backstage/backend-common@0.25.0
+  - @backstage/backend-plugin-api@1.0.0
+  - @backstage/plugin-auth-node@0.5.2
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.5.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.0
+  - @backstage/catalog-client@1.7.0
+  - @backstage/plugin-permission-node@0.8.3
+  - @backstage/plugin-catalog-node@1.13.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.5.0
+  - @backstage/integration@1.15.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-bitbucket-cloud-common@0.2.23
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-scaffolder-common@1.5.6
+  - @backstage/plugin-scaffolder-node@0.4.11
+
 ## 1.25.0-next.2
 
 ### Minor Changes

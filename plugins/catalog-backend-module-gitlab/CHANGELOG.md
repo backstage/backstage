@@ -1,5 +1,36 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.4.2
+
+### Patch Changes
+
+- 53b24d9: Internal update to use the new cache manager
+- 0476be3: Add the `relations` array to allow Backstage to mirror GitLab's membership behavior, including descendant, inherited, and shared-from-group memberships.
+
+  The previous `allowInherited` config option will be deprecated in future versions. Use the `relations` array with the `INHERITED` option instead.
+
+  ```yaml
+  catalog:
+    providers:
+      gitlab:
+        development:
+          relations:
+            - INHERITED
+  ```
+
+- d425fc4: Modules, plugins, and services are now `BackendFeature`, not a function that returns a feature.
+- b446954: Remove dependency on backend-common
+- 06cc084: Added a `includeUsersWithoutSeat` config option that allow import of users without a paid seat, e.g. for Gitlab Free on SaaS. Defaults to false
+- Updated dependencies
+  - @backstage/backend-defaults@0.5.0
+  - @backstage/backend-plugin-api@1.0.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-catalog-node@1.13.0
+  - @backstage/integration@1.15.0
+  - @backstage/plugin-events-node@0.4.0
+  - @backstage/config@1.2.0
+
 ## 0.4.2-next.2
 
 ### Patch Changes

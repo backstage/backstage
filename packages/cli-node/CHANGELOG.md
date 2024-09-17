@@ -1,5 +1,15 @@
 # @backstage/cli-node
 
+## 0.2.8
+
+### Patch Changes
+
+- 0c70f43: Add definition for the new `backstage.inline` field in `package.json`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.2.8-next.0
 
 ### Patch Changes

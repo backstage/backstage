@@ -1,5 +1,16 @@
 # @backstage/plugin-config-schema
 
+## 0.1.59
+
+### Patch Changes
+
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.15.0
+  - @backstage/core-plugin-api@1.9.4
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.1.59-next.1
 
 ### Patch Changes

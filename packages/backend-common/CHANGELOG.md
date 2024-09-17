@@ -1,5 +1,44 @@
 # @backstage/backend-common
 
+## 0.25.0
+
+### Minor Changes
+
+- a4bac3c: **BREAKING**: You can no longer supply a `basePath` option to the host discovery implementation. In the new backend system, the ability to choose this path has been removed anyway at the plugin router level.
+- 988c145: **BREAKING**: Simplifications and cleanup as part of the Backend System 1.0 work.
+
+  - The deprecated `dropDatabase` function has now been removed, without replacement.
+
+- d425fc4: **BREAKING**: The return values from `createBackendPlugin`, `createBackendModule`, and `createServiceFactory` are now simply `BackendFeature` and `ServiceFactory`, instead of the previously deprecated form of a function that returns them. For this reason, `createServiceFactory` also no longer accepts the callback form where you provide direct options to the service. This also affects all `coreServices.*` service refs.
+
+  This may in particular affect tests; if you were effectively doing `createBackendModule({...})()` (note the parentheses), you can now remove those extra parentheses at the end. You may encounter cases of this in your `packages/backend/src/index.ts` too, where you add plugins, modules, and services. If you were using `createServiceFactory` with a function as its argument for the purpose of passing in options, this pattern has been deprecated for a while and is no longer supported. You may want to explore the new multiton patterns to achieve your goals, or moving settings to app-config.
+
+  As part of this change, the `IdentityFactoryOptions` type was removed, and can no longer be used to tweak that service. The identity service was also deprecated some time ago, and you will want to [migrate to the new auth system](https://backstage.io/docs/tutorials/auth-service-migration) if you still rely on it.
+
+### Patch Changes
+
+- 6ed9264: chore(deps): bump `path-to-regexp` from 6.2.2 to 8.0.0
+- 8ba77ed: The `legacyPlugin` and `makeLegacyPlugin` helpers now provide their own shim implementation of the identity and token manager services, as these services are being removed from the new backend system.
+- d425fc4: Modules, plugins, and services are now `BackendFeature`, not a function that returns a feature.
+- 2e9ec14: Add `pg-format` as a dependency
+- 82539fe: Updated dependency `archiver` to `^7.0.0`.
+- c2b63ab: Updated dependency `supertest` to `^7.0.0`.
+- 3606843: Internal fixes to match `testcontainers` update
+- 19ff127: Internal refactor to re-declare the token manager service which was removed from `@backstage/backend-plugin-api`, but is still supported in this package for backwards compatibility.
+- 66dbf0a: Allow the cache service to accept the human duration format for TTL
+- 0b2a402: Updates to the config schema to match reality
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.0
+  - @backstage/plugin-auth-node@0.5.2
+  - @backstage/integration@1.15.0
+  - @backstage/config-loader@1.9.1
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+
 ## 0.25.0-next.2
 
 ### Patch Changes

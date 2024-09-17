@@ -1,5 +1,24 @@
 # @backstage/dev-utils
 
+## 1.1.0
+
+### Minor Changes
+
+- 10b1452: Allow using translations in `createDevApp`
+
+### Patch Changes
+
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.15.0
+  - @backstage/plugin-catalog-react@1.13.0
+  - @backstage/core-app-api@1.15.0
+  - @backstage/integration-react@1.1.31
+  - @backstage/catalog-model@1.7.0
+  - @backstage/app-defaults@1.5.11
+  - @backstage/core-plugin-api@1.9.4
+  - @backstage/theme@0.5.7
+
 ## 1.1.0-next.2
 
 ### Minor Changes

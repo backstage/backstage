@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-backend-module-azure
 
+## 0.2.2
+
+### Patch Changes
+
+- d425fc4: Modules, plugins, and services are now `BackendFeature`, not a function that returns a feature.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.0
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-catalog-node@1.13.0
+  - @backstage/integration@1.15.0
+  - @backstage/config@1.2.0
+
 ## 0.2.2-next.2
 
 ### Patch Changes

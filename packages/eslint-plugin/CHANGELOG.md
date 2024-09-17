@@ -1,5 +1,11 @@
 # @backstage/eslint-plugin
 
+## 0.1.9
+
+### Patch Changes
+
+- 08895e3: Added support for linting dependencies on workspace packages with the `backstage.inline` flag.
+
 ## 0.1.9-next.0
 
 ### Patch Changes

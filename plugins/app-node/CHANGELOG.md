@@ -1,5 +1,14 @@
 # @backstage/plugin-app-node
 
+## 0.1.25
+
+### Patch Changes
+
+- d3f79d1: Fixing dependency metadata with the new `@backstage/plugin-app` package
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.0
+  - @backstage/config-loader@1.9.1
+
 ## 0.1.25-next.2
 
 ### Patch Changes
