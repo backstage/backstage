@@ -21,46 +21,28 @@ import { RedisStore } from 'rate-limit-redis';
 /**
  * Creates a store for `express-rate-limit` based on the configuration.
  *
- * @public
+ * @internal
  */
 export class RateLimitStoreFactory {
   constructor(private readonly config: Config) {}
 
   create(): Store | undefined {
-    const storeType = this.config.getOptionalString('backend.rateLimit.store');
-    if (!storeType) {
-      return this.auto();
+    const store = this.config.getOptionalConfig('backend.rateLimit.store');
+    if (!store) {
+      return undefined;
     }
-    switch (storeType) {
+    const client = store.getString('client');
+    switch (client) {
       case 'redis':
-        return this.redis();
+        return this.redis(store);
       default:
-        throw new Error(
-          `Invalid 'backend.rateLimit.store' provided: ${storeType}`,
-        );
+        return undefined;
     }
   }
 
-  private auto(): Store | undefined {
-    const cacheStore =
-      this.config.getOptionalString('backend.cache.store') || 'memory';
-    // Use redis as primary if available
-    if (cacheStore === 'redis') {
-      return this.redis();
-    }
-
-    // Fallback to undefined (memory)
-    return undefined;
-  }
-
-  redis(): Store {
-    const connectionString =
-      this.config.getOptionalString('backend.cache.connection') || '';
-    const useRedisSets =
-      this.config.getOptionalBoolean('backend.cache.useRedisSets') ?? true;
-    const keyv = new KeyvRedis(connectionString, {
-      useRedisSets,
-    });
+  redis(storeConfig: Config): Store {
+    const connectionString = storeConfig.getString('connection');
+    const keyv = new KeyvRedis(connectionString);
     return new RedisStore({
       // Keyv uses ioredis under the hood
       sendCommand: (...args: string[]) => keyv.redis.call(...args),
