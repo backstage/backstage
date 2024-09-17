@@ -9,7 +9,6 @@ Rate limiting can be turned on by adding the following configuration to `app-con
 ```yaml
 backend:
   rateLimit:
-    enabled: true
-    windowMs: 60000
-    limit: 100
+    window: 60000
+    incomingRequestLimit: 100
 ```

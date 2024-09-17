@@ -43,12 +43,9 @@ import {
   ServiceUnavailableError,
 } from '@backstage/errors';
 import { applyInternalErrorFilter } from './applyInternalErrorFilter';
-import { DraftHeadersVersion, rateLimit } from 'express-rate-limit';
-import {
-  durationToMilliseconds,
-  HumanDuration,
-  JsonValue,
-} from '@backstage/types';
+import { rateLimit } from 'express-rate-limit';
+import { Config } from '@backstage/config';
+import { durationToMilliseconds, HumanDuration } from '@backstage/types';
 import { RateLimitStoreFactory } from './RateLimitStoreFactory';
 
 type LogMeta = {
@@ -245,15 +242,15 @@ export class MiddlewareFactory {
    * @returns An Express request handler
    */
   rateLimit(): RequestHandler {
-    const rateLimitOptions =
-      this.#config.getOptionalConfig('backend.rateLimit');
-    const enabled = rateLimitOptions?.getOptionalBoolean('enabled') ?? false;
-    if (!rateLimitOptions || !enabled) {
+    const conf = this.#config.getOptional<boolean | Config>(
+      'backend.rateLimit',
+    );
+    if (!conf || typeof conf !== 'object') {
       return (_req: Request, _res: Response, next: NextFunction) => {
         next();
       };
     }
-
+    const rateLimitOptions = conf as Config;
     const window = rateLimitOptions.getOptional<number | HumanDuration>(
       'window',
     );
@@ -272,32 +269,34 @@ export class MiddlewareFactory {
 
     const ipAllowList = rateLimitOptions.getOptionalStringArray(
       'ipAllowList',
-    ) ?? ['127.0.0.1'];
+    ) ?? ['127.0.0.1', '0:0:0:0:0:0:0:1', '::1'];
 
     return rateLimit({
       windowMs,
-      limit: rateLimitOptions.getOptionalNumber('limit'),
-      message: rateLimitOptions.getOptional<string | JsonValue>('message'),
-      statusCode: rateLimitOptions.getOptionalNumber('statusCode'),
+      limit: rateLimitOptions.getOptionalNumber('incomingRequestLimit'),
       skipSuccessfulRequests: rateLimitOptions.getOptionalBoolean(
         'skipSuccessfulRequests',
       ),
       skipFailedRequests:
         rateLimitOptions.getOptionalBoolean('skipFailedRequests'),
-      legacyHeaders: rateLimitOptions.getOptionalBoolean('legacyHeaders'),
-      standardHeaders: rateLimitOptions.getOptionalString(
-        'standardHeaders',
-      ) as DraftHeadersVersion,
       passOnStoreError: rateLimitOptions.getOptionalBoolean('passOnStoreError'),
       keyGenerator(req, _res): string {
         if (!req.ip) {
           return req.socket.remoteAddress!;
         }
-
-        return req.ip.replace(/:\d+[^:]*$/, '');
+        return req.ip;
       },
       skip: (req, _res) => {
-        return Boolean(req.ip && ipAllowList.includes(req.ip));
+        return (
+          Boolean(req.ip && ipAllowList.includes(req.ip)) ||
+          Boolean(
+            req.socket.remoteAddress &&
+              ipAllowList.includes(req.socket.remoteAddress),
+          )
+        );
+      },
+      validate: {
+        trustProxy: false,
       },
       store: new RateLimitStoreFactory(this.#config).create(),
     });
