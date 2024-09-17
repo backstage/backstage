@@ -87,6 +87,13 @@ const rootHttpRouterServiceFactoryWithOptions = (
       const logger = rootLogger.child({ service: 'rootHttpRouter' });
       const app = express();
 
+      const trustProxy = config.getOptional<boolean | number>(
+        'backend.trustProxy',
+      );
+      if (trustProxy) {
+        app.set('trust proxy', trustProxy);
+      }
+
       const router = DefaultRootHttpRouter.create({ indexPath });
       const middleware = MiddlewareFactory.create({ config, logger });
       const routes = router.handler();
