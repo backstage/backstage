@@ -4,8 +4,6 @@
 '@backstage/plugin-scaffolder': patch
 ---
 
-'@backstage/plugin-scaffolder-backend-module-github'
 Added support for all request parameters in the Github create/update environment API in the Github environment create scaffolder action.
 
-'@backstage/plugin-scaffolder'
-Uses schema maxItems parameter when specified to disable the MultiEntityPicker when the maxItesm limit is reached.
+Disable MultiEntityPicker when `maxItems` limit is reached defined in `JSONSchema`
