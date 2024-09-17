@@ -1,5 +1,12 @@
 # e2e-test
 
+## 0.2.21
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/create-app@0.5.20
+
 ## 0.2.20
 
 ### Patch Changes

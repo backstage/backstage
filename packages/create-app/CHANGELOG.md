@@ -1,5 +1,11 @@
 # @backstage/create-app
 
+## 0.5.20
+
+### Patch Changes
+
+- f19dc83: Fixed lack of `.yarnrc.yml` in the template.
+
 ## 0.5.19
 
 ### Patch Changes
