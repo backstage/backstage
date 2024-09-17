@@ -1,5 +1,25 @@
 # @backstage/plugin-catalog-node
 
+## 1.13.0
+
+### Minor Changes
+
+- bd35cdb: The `analyze-location` endpoint is now protected by the `catalog.location.analyze` permission.
+  The `validate-entity` endpoint is now protected by the `catalog.entity.validate` permission.
+- 29e57c7: Add catalog service mocks under the `/testUtils` subpath export.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/catalog-client@1.7.0
+  - @backstage/plugin-permission-node@0.8.3
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.8.1
+
 ## 1.12.7-next.2
 
 ### Patch Changes

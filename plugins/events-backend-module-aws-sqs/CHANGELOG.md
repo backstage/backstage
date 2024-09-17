@@ -1,5 +1,17 @@
 # @backstage/plugin-events-backend-module-aws-sqs
 
+## 0.4.2
+
+### Patch Changes
+
+- d425fc4: Modules, plugins, and services are now `BackendFeature`, not a function that returns a feature.
+- Updated dependencies
+  - @backstage/backend-common@0.25.0
+  - @backstage/backend-plugin-api@1.0.0
+  - @backstage/plugin-events-node@0.4.0
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
 ## 0.4.2-next.2
 
 ### Patch Changes

@@ -1,5 +1,22 @@
 # @backstage/create-app
 
+## 0.5.19
+
+### Patch Changes
+
+- d2d2313: Add `config.d.ts` files to the list of included file in `tsconfig.json`.
+
+  This allows ESLint to detect issues or deprecations in those files.
+
+- 4975e63: Yarn 4 is now the default for `create-app`. Also updated `yarn dev` script to use `yarn workspaces foreach` and removed unused Lerna and Concurrently dependencies.
+- 4735881: Bumped create-app version.
+- 97422b0: Update templates to not refer to backend-common
+- 019d9ad: Minor dockerfile syntax update
+- e03acd8: Updated Dockerfile base image to `node:20-bookworm-slim` from `node:18-bookworm-slim`
+- bf370c2: Remove references to the `@backstage/backend-tasks` in versions of the `create-app` package, as it has been deprecated.
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+
 ## 0.5.19-next.2
 
 ### Patch Changes

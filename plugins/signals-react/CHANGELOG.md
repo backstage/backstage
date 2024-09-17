@@ -1,5 +1,15 @@
 # @backstage/plugin-signals-react
 
+## 0.0.5
+
+### Patch Changes
+
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- 0389801: Fix for `useSignal` returning the inverse value for `isSignalsAvailable`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.4
+  - @backstage/types@1.1.1
+
 ## 0.0.5-next.1
 
 ### Patch Changes

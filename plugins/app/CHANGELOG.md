@@ -1,5 +1,52 @@
 # @backstage/plugin-app
 
+## 0.1.0
+
+### Minor Changes
+
+- 2bb9517: Introduce the `@backstage/plugin-app` package to hold all of the built-in extensions for easy consumption and overriding.
+
+### Patch Changes
+
+- 52f9c5a: Deprecated the `namespace` option for `createExtensionBlueprint` and `createExtension`, these are no longer required and will default to the `pluginId` instead.
+
+  You can migrate some of your extensions that use `createExtensionOverrides` to using `createFrontendModule` instead and providing a `pluginId` there.
+
+  ```ts
+  // Before
+  createExtensionOverrides({
+    extensions: [
+      createExtension({
+        name: 'my-extension',
+        namespace: 'my-namespace',
+        kind: 'test',
+        ...
+      })
+    ],
+  });
+
+  // After
+  createFrontendModule({
+    pluginId: 'my-namespace',
+    extensions: [
+      createExtension({
+        name: 'my-extension',
+        kind: 'test',
+        ...
+      })
+    ],
+  });
+  ```
+
+- 57bf6ae: Fix issue with `AlertDisplay` and other components defined with `AppRootElementBlueprint` not being rendered when at the `SignInWrapper`
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.15.0
+  - @backstage/frontend-plugin-api@0.8.0
+  - @backstage/core-plugin-api@1.9.4
+  - @backstage/theme@0.5.7
+  - @backstage/plugin-permission-react@0.4.26
+
 ## 0.1.0-next.2
 
 ### Patch Changes

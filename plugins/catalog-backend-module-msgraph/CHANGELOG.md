@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.6.2
+
+### Patch Changes
+
+- d425fc4: Modules, plugins, and services are now `BackendFeature`, not a function that returns a feature.
+- 3c2d690: Allow users without defined email to be ingested by the `msgraph` catalog plugin and add `userIdMatchingUserEntityAnnotation` sign-in resolver for the Microsoft auth provider to support sign-in for users without defined email.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-catalog-node@1.13.0
+  - @backstage/config@1.2.0
+
 ## 0.6.2-next.2
 
 ### Patch Changes

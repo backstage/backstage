@@ -1,5 +1,23 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.7.3
+
+### Patch Changes
+
+- d425fc4: Modules, plugins, and services are now `BackendFeature`, not a function that returns a feature.
+- 5edd344: Refactor to use injected catalog client in the new backend system
+- Updated dependencies
+  - @backstage/backend-common@0.25.0
+  - @backstage/backend-plugin-api@1.0.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/plugin-catalog-backend@1.26.0
+  - @backstage/catalog-client@1.7.0
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-catalog-node@1.13.0
+  - @backstage/integration@1.15.0
+  - @backstage/plugin-events-node@0.4.0
+  - @backstage/config@1.2.0
+
 ## 0.7.3-next.2
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @backstage/plugin-events-backend-module-gitlab
 
+## 0.2.11
+
+### Patch Changes
+
+- d425fc4: Modules, plugins, and services are now `BackendFeature`, not a function that returns a feature.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.0
+  - @backstage/plugin-events-node@0.4.0
+  - @backstage/config@1.2.0
+
 ## 0.2.11-next.2
 
 ### Patch Changes

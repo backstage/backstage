@@ -1,5 +1,21 @@
 # @backstage/plugin-catalog-unprocessed-entities
 
+## 0.2.8
+
+### Patch Changes
+
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- 4f08c85: Show additional info on DevTools unprocessed entities table
+
+  - Location path (so that it's easier to search the failed entity from the YAML URL)
+  - Time info of last discovery and next refresh time so that users can be aware of it and can sort the errors based on the time.
+
+- Updated dependencies
+  - @backstage/core-components@0.15.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-plugin-api@1.9.4
+  - @backstage/errors@1.2.4
+
 ## 0.2.8-next.1
 
 ### Patch Changes

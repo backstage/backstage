@@ -1,5 +1,22 @@
 # @backstage/plugin-auth-node
 
+## 0.5.2
+
+### Patch Changes
+
+- c46eb0f: Extend the "unable to resolve user identity" message
+- d908d8c: Accepts an optional options object in the `PassportOAuthAuthenticatorHelper.authenticate` method.
+- c2b63ab: Updated dependency `supertest` to `^7.0.0`.
+- 6f409b7: The `emailMatchingUserEntityProfileEmail` sign-in resolver will now also try matching emails with plus addressing removed.
+- Updated dependencies
+  - @backstage/backend-common@0.25.0
+  - @backstage/backend-plugin-api@1.0.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/catalog-client@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.5.2-next.2
 
 ### Patch Changes

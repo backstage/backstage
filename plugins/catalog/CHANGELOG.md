@@ -1,5 +1,37 @@
 # @backstage/plugin-catalog
 
+## 1.23.0
+
+### Minor Changes
+
+- 78475c3: Allow offset mode paging in entity list provider
+
+### Patch Changes
+
+- c891b69: Add `FavoriteToggle` in `core-components` to standardise favorite marking
+- fec8b57: Updated exports to use the new type parameters for extensions and extension blueprints.
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- 5446061: The `/alpha` export no longer export extension creators for the new frontend system, existing usage should be switched to use the equivalent extension blueprint instead. For more information see the [new frontend system 1.30 migration documentation](https://backstage.io/docs/frontend-system/architecture/migrations#130).
+- 0ff53c8: Enable loading state for paginated catalog tables by passing `isLoading` prop
+- 180a45f: Entity presentation api now only fetches fields that are required to display entity title
+- a159180: Added missing items to `overridableComponents`
+- Updated dependencies
+  - @backstage/core-components@0.15.0
+  - @backstage/plugin-catalog-react@1.13.0
+  - @backstage/frontend-plugin-api@0.8.0
+  - @backstage/core-compat-api@0.3.0
+  - @backstage/plugin-search-react@1.8.0
+  - @backstage/integration-react@1.1.31
+  - @backstage/catalog-model@1.7.0
+  - @backstage/catalog-client@1.7.0
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/core-plugin-api@1.9.4
+  - @backstage/plugin-permission-react@0.4.26
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-common@1.5.6
+  - @backstage/plugin-search-common@1.2.14
+
 ## 1.23.0-next.2
 
 ### Minor Changes

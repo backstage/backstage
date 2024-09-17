@@ -1,5 +1,26 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.5.0
+
+### Minor Changes
+
+- d425fc4: **BREAKING**: The return values from `createBackendPlugin`, `createBackendModule`, and `createServiceFactory` are now simply `BackendFeature` and `ServiceFactory`, instead of the previously deprecated form of a function that returns them. For this reason, `createServiceFactory` also no longer accepts the callback form where you provide direct options to the service. This also affects all `coreServices.*` service refs.
+
+  This may in particular affect tests; if you were effectively doing `createBackendModule({...})()` (note the parentheses), you can now remove those extra parentheses at the end. You may encounter cases of this in your `packages/backend/src/index.ts` too, where you add plugins, modules, and services. If you were using `createServiceFactory` with a function as its argument for the purpose of passing in options, this pattern has been deprecated for a while and is no longer supported. You may want to explore the new multiton patterns to achieve your goals, or moving settings to app-config.
+
+  As part of this change, the `IdentityFactoryOptions` type was removed, and can no longer be used to tweak that service. The identity service was also deprecated some time ago, and you will want to [migrate to the new auth system](https://backstage.io/docs/tutorials/auth-service-migration) if you still rely on it.
+
+### Patch Changes
+
+- 5d1670f: Update README installation instructions
+- Updated dependencies
+  - @backstage/backend-common@0.25.0
+  - @backstage/backend-plugin-api@1.0.0
+  - @backstage/integration@1.15.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-scaffolder-node@0.4.11
+
 ## 0.5.0-next.2
 
 ### Patch Changes

@@ -1,5 +1,44 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.12.0
+
+### Minor Changes
+
+- 4512f71: Add `ui:backstage.review.name` option for custom item names on scaffolder review page, and also add support for rendering the `title` property instead of the key name.
+- 4baad34: Added support for `omitExtraData` and `liveOmit` for rjsf in the scaffolder
+
+### Patch Changes
+
+- 1f3c5aa: Fix scaffolder review step issue where schema options are not handled for fields on multi-step templates.
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- 0a50d44: Updated dependency `@rjsf/utils` to `5.21.1`.
+  Updated dependency `@rjsf/core` to `5.21.1`.
+  Updated dependency `@rjsf/material-ui` to `5.21.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.21.1`.
+- fa9d8da: Updated dependency `@rjsf/utils` to `5.20.1`.
+  Updated dependency `@rjsf/core` to `5.20.1`.
+  Updated dependency `@rjsf/material-ui` to `5.20.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.20.1`.
+- c2cbe1e: Updated dependency `use-immer` to `^0.10.0`.
+- b0f0118: Remove unnecessary singleton wrapping of `scaffolderApiRef`.
+- 3ebb64f: - Fix secret widget field not displaying as required.
+  - Fix secret widget not able to be required inside nested objects.
+  - Fix secret widget not able to be disabled.
+  - Support `minLength` and `maxLength` properties for secret widget.
+- 8dd6ef6: Fix an issue where keys with duplicate final key parts are not all displayed in the `ReviewState`. Change the way the keys are formatted to include the full schema path, separated by `>`.
+- 9a0672a: Scaffolder review page shows static amount of asterisks for secret fields.
+- Updated dependencies
+  - @backstage/core-components@0.15.0
+  - @backstage/plugin-catalog-react@1.13.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/catalog-client@1.7.0
+  - @backstage/core-plugin-api@1.9.4
+  - @backstage/theme@0.5.7
+  - @backstage/version-bridge@1.0.9
+  - @backstage/plugin-permission-react@0.4.26
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-common@1.5.6
+
 ## 1.12.0-next.2
 
 ### Minor Changes

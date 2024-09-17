@@ -1,5 +1,22 @@
 # @backstage/plugin-catalog-backend-module-incremental-ingestion
 
+## 0.5.3
+
+### Patch Changes
+
+- d425fc4: Modules, plugins, and services are now `BackendFeature`, not a function that returns a feature.
+- 4b28e39: Updated the README to include documentation for the new backend support
+- Updated dependencies
+  - @backstage/backend-common@0.25.0
+  - @backstage/backend-plugin-api@1.0.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/plugin-catalog-backend@1.26.0
+  - @backstage/plugin-catalog-node@1.13.0
+  - @backstage/plugin-events-node@0.4.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-permission-common@0.8.1
+
 ## 0.5.3-next.2
 
 ### Patch Changes

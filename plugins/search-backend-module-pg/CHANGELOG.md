@@ -1,5 +1,18 @@
 # @backstage/plugin-search-backend-module-pg
 
+## 0.5.35
+
+### Patch Changes
+
+- d425fc4: Modules, plugins, and services are now `BackendFeature`, not a function that returns a feature.
+- 5726390: Internal refactor to use `LoggerService` and `DatabaseService` instead of the legacy `Logger` and `PluginDatabaseManager` types.
+- Updated dependencies
+  - @backstage/backend-common@0.25.0
+  - @backstage/backend-plugin-api@1.0.0
+  - @backstage/config@1.2.0
+  - @backstage/plugin-search-backend-node@1.3.2
+  - @backstage/plugin-search-common@1.2.14
+
 ## 0.5.35-next.2
 
 ### Patch Changes

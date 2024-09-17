@@ -1,5 +1,45 @@
 # @backstage/backend-app-api
 
+## 1.0.0
+
+### Major Changes
+
+- ec1b4be: Release 1.0 of the new backend system! :tada:
+
+  The backend system is finally getting promoted to 1.0.0. This means that the API is now stable and breaking changes should not occur until version 2.0.0, see our [package versioning policy](https://backstage.io/docs/overview/versioning-policy/#package-versioning-policy) for more information what this means.
+
+  This release also marks the end of the old backend system based on `createRouter` exports. Going forward backend plugins packages will start to deprecate and later this year remove exports supporting the old backend system. If you would like to help out with this transition, see https://github.com/backstage/backstage/issues/26353 or consult the [migration guide](https://backstage.io/docs/backend-system/building-plugins-and-modules/migrating/#remove-support-for-the-old-backend-system).
+
+### Minor Changes
+
+- 19ff127: **BREAKING**: The deprecated `identityServiceFactory` and `tokenManagerServiceFactory` have been removed.
+- d425fc4: **BREAKING**: The return values from `createBackendPlugin`, `createBackendModule`, and `createServiceFactory` are now simply `BackendFeature` and `ServiceFactory`, instead of the previously deprecated form of a function that returns them. For this reason, `createServiceFactory` also no longer accepts the callback form where you provide direct options to the service. This also affects all `coreServices.*` service refs.
+
+  This may in particular affect tests; if you were effectively doing `createBackendModule({...})()` (note the parentheses), you can now remove those extra parentheses at the end. You may encounter cases of this in your `packages/backend/src/index.ts` too, where you add plugins, modules, and services. If you were using `createServiceFactory` with a function as its argument for the purpose of passing in options, this pattern has been deprecated for a while and is no longer supported. You may want to explore the new multiton patterns to achieve your goals, or moving settings to app-config.
+
+  As part of this change, the `IdentityFactoryOptions` type was removed, and can no longer be used to tweak that service. The identity service was also deprecated some time ago, and you will want to [migrate to the new auth system](https://backstage.io/docs/tutorials/auth-service-migration) if you still rely on it.
+
+### Patch Changes
+
+- cd38da8: Deprecate the `featureDiscoveryServiceFactory` in favor of using `@backstage/backend-defaults#discoveryFeatureLoader` instead.
+- 8ccf784: All created backend instances now share a the same `process` exit listeners, and on exit the process will wait for all backend instances to shut down before exiting. This fixes the `EventEmitter` leak warnings in tests.
+- 6ed9264: chore(deps): bump `path-to-regexp` from 6.2.2 to 8.0.0
+- c246372: Updated the error message for missing service dependencies to include the plugin and module IDs.
+- 7f779c7: `auth.externalAccess` should be optional in the config schema
+- c2b63ab: Updated dependency `supertest` to `^7.0.0`.
+- 51a69b5: Fix feature loaders in CJS double-default nested builds
+- 0b2a402: Updates to the config schema to match reality
+- Updated dependencies
+  - @backstage/backend-common@0.25.0
+  - @backstage/backend-plugin-api@1.0.0
+  - @backstage/plugin-auth-node@0.5.2
+  - @backstage/plugin-permission-node@0.8.3
+  - @backstage/config-loader@1.9.1
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 1.0.0-next.2
 
 ### Major Changes

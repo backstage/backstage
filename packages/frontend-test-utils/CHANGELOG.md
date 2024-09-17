@@ -1,5 +1,31 @@
 # @backstage/frontend-test-utils
 
+## 0.2.0
+
+### Minor Changes
+
+- 5446061: Removed support for testing "v1" extensions, where outputs are defined as an object rather than an array.
+- e6e488c: **BREAKING**: The deprecated `.render()` method has been removed from the extension tester.
+
+### Patch Changes
+
+- 2a61422: The extension tester will no longer unconditionally enable any additional extensions that have been added.
+- fec8b57: Updated exports to use the new type parameters for extensions and extension blueprints.
+- 4a66456: Internal update to add support for passing an `ApiRegistry` when creating the node tree
+- 2bb9517: Introduce the `@backstage/plugin-app` package to hold all of the built-in extensions for easy consumption and overriding.
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- 948d431: Removing deprecated `namespace` parameter in favour of `pluginId` instead
+- 043d7cd: Internal refactor
+- f6d1874: Added the ability to provide additional `extensions` and `features` to `renderInTestApp`
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.8.0
+  - @backstage/frontend-app-api@0.9.0
+  - @backstage/plugin-app@0.1.0
+  - @backstage/test-utils@1.6.0
+  - @backstage/version-bridge@1.0.9
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
 ## 0.2.0-next.2
 
 ### Patch Changes
