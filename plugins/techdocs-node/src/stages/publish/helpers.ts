@@ -25,10 +25,37 @@ import recursiveReadDir from 'recursive-readdir';
  */
 const getContentTypeForExtension = (ext: string): string => {
   const defaultContentType = 'text/plain; charset=utf-8';
+  const excludedTypes = [
+    'text/html',
+    'text/xml',
+    'image/svg+xml',
+    'text/xsl',
+    'application/vnd.wap.xhtml+xml',
+    'multipart/x-mixed-replace',
+    'text/rdf',
+    'application/mathml+xml',
+    'application/octet-stream',
+    'application/rdf+xml',
+    'application/xhtml+xml',
+    'application/xml',
+    'text/cache-manifest',
+    'text/vtt',
+  ];
 
   // Prevent sanitization bypass by preventing browsers from directly rendering
   // the contents of untrusted files.
-  if (ext.match(/htm|xml|svg/i)) {
+  if (
+    ext.match(
+      /htm|xml|svg|appcache|manifest|mathml|owl|rdf|rng|vtt|xht|xsd|xsl/i,
+    )
+  ) {
+    return defaultContentType;
+  }
+
+  // Check again to make sure that the content type is not in the excluded mime-type list
+  // We use .lookup here to avoid the "; charset=..." addition
+  const contentType = mime.lookup(ext);
+  if (contentType && excludedTypes.includes(contentType)) {
     return defaultContentType;
   }
 
