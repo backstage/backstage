@@ -13,49 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { mockServices } from '@backstage/backend-test-utils';
+import { mockServices, TestCaches } from '@backstage/backend-test-utils';
 import { RateLimitStoreFactory } from './RateLimitStoreFactory';
 import { RedisStore } from 'rate-limit-redis';
-import KeyvRedis from '@keyv/redis';
-
-jest.mock('@keyv/redis');
-(KeyvRedis as jest.Mocked<any>).mockImplementation(() => {
-  return {
-    redis: {
-      call: jest.fn().mockResolvedValue('OK'),
-    },
-  };
-});
 
 describe('CacheRateLimitStoreFactory', () => {
-  it('should return redis store with auto configuration', () => {
-    const config = mockServices.rootConfig({
-      data: {
-        backend: {
-          cache: {
-            store: 'redis',
-          },
-          rateLimit: {
-            store: undefined,
-          },
-        },
-      },
-    });
-    const factory = new RateLimitStoreFactory(config);
-    const store = factory.create();
-    expect(store).toBeInstanceOf(RedisStore);
-  });
+  const caches = TestCaches.create();
+
+  afterEach(jest.clearAllMocks);
 
   it('should return undefined store with auto configuration if redis is not available', () => {
     const config = mockServices.rootConfig({
       data: {
         backend: {
-          cache: {
-            store: 'memory',
-          },
-          database: {
-            client: 'sqlite3',
-          },
           rateLimit: {
             store: undefined,
           },
@@ -67,12 +37,20 @@ describe('CacheRateLimitStoreFactory', () => {
     expect(store).toBeUndefined();
   });
 
-  it('should return redis store if configured explicitly', () => {
+  it('should return redis store if configured explicitly', async () => {
+    if (!caches.supports('REDIS_7')) {
+      return;
+    }
+    const conf = await caches.init('REDIS_7');
+
     const config = mockServices.rootConfig({
       data: {
         backend: {
           rateLimit: {
-            store: 'redis',
+            store: {
+              client: 'redis',
+              connection: conf.connection,
+            },
           },
         },
       },
