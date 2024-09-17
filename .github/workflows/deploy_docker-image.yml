@@ -45,6 +45,7 @@ jobs:
         run: npx @backstage/create-app
         env:
           BACKSTAGE_APP_NAME: example-app
+          YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
       - name: yarn build
         run: yarn build:backend
