@@ -152,5 +152,6 @@
       "optional": true
     }
   },
-  "configSchema": "config.d.ts"
+  "configSchema": "config.d.ts",
+  "deprecated": "This package is deprecated, please follow the deprecation instructions for the exports you still use"
 }
