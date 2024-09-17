@@ -18,6 +18,7 @@ import { ConfigReader } from '@backstage/core-app-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { createGitlabGroupEnsureExistsAction } from './gitlabGroupEnsureExists';
+import { getClient } from '../util';
 
 const mockGitlabClient = {
   Groups: {
@@ -32,6 +33,11 @@ jest.mock('@gitbeaker/rest', () => ({
       return mockGitlabClient;
     }
   },
+}));
+
+jest.mock('../util', () => ({
+  getClient: jest.fn().mockImplementation(() => mockGitlabClient),
+  parseRepoUrl: () => ({ host: 'gitlab.com', owner: 'owner', repo: 'repo' }),
 }));
 
 describe('gitlab:group:ensureExists', () => {
@@ -149,11 +155,11 @@ describe('gitlab:group:ensureExists', () => {
       },
     });
 
-    // expect(Gitlab).toHaveBeenCalledWith(
-    //   expect.objectContaining({
-    //     'token': 'tokenlols',
-    //   }),
-    // );
+    expect(getClient).toHaveBeenCalledWith(
+      expect.not.objectContaining({
+        token: expect.anything(),
+      }),
+    );
   });
 
   it('should use a provided token as bearer authentication', async () => {
@@ -173,10 +179,10 @@ describe('gitlab:group:ensureExists', () => {
       },
     });
 
-    // expect(Gitlab).toHaveBeenCalledWith(
-    //   expect.objectContaining({
-    //     oauthToken: 'mysecrettoken',
-    //   }),
-    // );
+    expect(getClient).toHaveBeenCalledWith(
+      expect.objectContaining({
+        token: 'mysecrettoken',
+      }),
+    );
   });
 });
