@@ -47,6 +47,7 @@ const useStyles = makeStyles(
     // Reset and fix sizing to make sure scrolling behaves correctly
     root: {
       gridArea: 'pageContent',
+      height: '100%',
       display: 'grid',
       gridTemplateAreas: `
       "toolbar toolbar toolbar"
