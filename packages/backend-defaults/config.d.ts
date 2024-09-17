@@ -51,6 +51,14 @@ export interface Config {
       serverShutdownDelay?: string | HumanDuration;
     };
 
+    /**
+     * Determines if the backend should trust the X-Forwarded-For header or not.
+     * If set to true, unlimited amount of proxies will be trusted. If set to a
+     * number, that amount of proxies will be trusted. If set to false, no proxies
+     * are trusted. Required to make the rate limiting work behind proxy.
+     */
+    trustProxy?: boolean | number;
+
     /** Address that the backend should listen to. */
     listen?:
       | string
