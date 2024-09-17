@@ -70,4 +70,33 @@ describe('injectConfigIntoHtml', () => {
 </head></html>`,
     });
   });
+
+  it('should trim script tag endings from injected config', async () => {
+    mockDir.setContent({
+      'index.html.tmpl': '<html><head></head></html>',
+    });
+    await injectConfigIntoHtml({
+      ...baseOptions,
+      appConfigs: [
+        {
+          context: 'mock',
+          data: { x: "</script><script>alert('hi')</script><!-- Hi -->" },
+        },
+      ],
+    });
+    expect(mockDir.content()).toMatchObject({
+      'index.html': `<html><head>
+<script type="backstage.io/config">
+[
+  {
+    "context": "mock",
+    "data": {
+      "x": "><script>alert('hi')> Hi -->"
+    }
+  }
+]
+</script>
+</head></html>`,
+    });
+  });
 });
