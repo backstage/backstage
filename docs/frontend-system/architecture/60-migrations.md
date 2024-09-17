@@ -68,6 +68,10 @@ export default createFrontendModule({
 });
 ```
 
+### Moved `createApp`
+
+The `createApp` function has been moved to the new `@backstage/frontend-defaults` package. The old export from `@backstage/frontend-app-api` is now deprecated and should be replaced with the new one.
+
 ### Removed support for "v1" extensions
 
 Extensions created with `@backstage/frontend-plugin-api` from before the 1.30 release are no longer supported by `createApp`. To be able to use extensions in a new app, they need to be created with `@backstage/frontend-plugin-api` version 0.7.0 or later.
