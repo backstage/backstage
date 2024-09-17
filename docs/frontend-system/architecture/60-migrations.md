@@ -14,7 +14,7 @@ This section provides migration guides for different versions of the frontend sy
 
 This guide is intended for app and plugin authors who have already migrated their code to the new frontend system, and are looking to keep it up to date with the latest changes. These guides do not cover trivial migrations that can be explained in a deprecation message, such as a renamed export.
 
-## 1.31.0
+## 1.31
 
 ### `namespace` parameter should be removed
 
@@ -66,6 +66,40 @@ export default createFrontendModule({
   pluginId: 'search',
   extensions: [customSearchPage],
 });
+```
+
+### Moved `createApp`
+
+The `createApp` function has been moved to the new `@backstage/frontend-defaults` package. The old export from `@backstage/frontend-app-api` is now deprecated and should be replaced with the new one.
+
+### Removed support for "v1" extensions
+
+Extensions created with `@backstage/frontend-plugin-api` from before the 1.30 release are no longer supported by `createApp`. To be able to use extensions in a new app, they need to be created with `@backstage/frontend-plugin-api` version 0.7.0 or later.
+
+### New type parameters for `ExtensionDefinition` and `ExtensionBlueprint`
+
+The type parameters of `ExtensionDefinition` and `ExtensionBlueprint` have been updated to use a single type parameter with an object, in order to make them easier to read and evolve.
+
+Existing usage can generally be updated as follows:
+
+`ExtensionDefinition<any>` -> `ExtensionDefinition`
+`ExtensionDefinition<any, any>` -> `ExtensionDefinition`
+`ExtensionDefinition<TConfig>` -> `ExtensionDefinition<{ config: TConfig }>`
+`ExtensionDefinition<TConfig, TConfigInput>` -> `ExtensionDefinition<{ config: TConfig, configInput: TConfigInput }>`
+
+If you need to infer the parameter you can use `ExtensionDefinitionParameters` and `ExtensionBlueprintParameters`, for example:
+
+```tsx
+import {
+  ExtensionDefinition,
+  ExtensionDefinitionParameters,
+} from '@backstage/frontend-plugin-api';
+
+function myUtility<T extends ExtensionDefinitionParameters>(
+  ext: ExtensionDefinition<T>,
+): T['config'] {
+  // ...
+}
 ```
 
 ## 1.30
