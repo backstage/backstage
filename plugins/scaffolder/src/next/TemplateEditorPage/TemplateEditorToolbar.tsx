@@ -17,17 +17,20 @@
 import React, { useState } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
 import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
+import ButtonGroup from '@material-ui/core/ButtonGroup';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
 import Drawer from '@material-ui/core/Drawer';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogActions from '@material-ui/core/DialogActions';
 import ExtensionIcon from '@material-ui/icons/Extension';
 import DescriptionIcon from '@material-ui/icons/Description';
-import PublishIcon from '@material-ui/icons/Publish';
 
 import { Link } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
@@ -39,19 +42,18 @@ import { CustomFieldPlaygroud } from './CustomFieldPlaygroud';
 
 const useStyles = makeStyles(
   theme => ({
-    grid: {
-      color: theme.palette.text.secondary,
-      width: 'fit-content',
-      marginLeft: 'auto',
-      backgroundColor: theme.palette.background.paper,
-      '& svg': {
-        margin: theme.spacing(1),
-      },
-    },
     paper: {
       width: '40%',
       padding: theme.spacing(2),
       backgroundColor: theme.palette.background.default,
+    },
+    toolbar: {
+      zIndex: 'auto',
+      display: 'grid',
+      justifyContent: 'flex-end',
+      gridTemplateColumns: '1fr auto auto auto',
+      padding: theme.spacing(0, 1.5),
+      backgroundColor: theme.palette.background.paper,
     },
   }),
   { name: 'ScaffolderTemplateEditorToolbar' },
@@ -69,69 +71,85 @@ export function TemplateEditorToolbar(props: {
   const [showPublishModal, setShowPublishModal] = useState(false);
 
   return (
-    <>
-      <Grid className={classes.grid} container spacing={0} alignItems="center">
-        <Tooltip title="Custom Fields Explorer">
-          <IconButton size="small" onClick={() => setShowFieldsDrawer(true)}>
-            <ExtensionIcon />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Installed Actions Documentation">
-          <IconButton size="small" onClick={() => setShowActionsDrawer(true)}>
-            <DescriptionIcon />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Add to catalog">
-          <IconButton size="small" onClick={() => setShowPublishModal(true)}>
-            <PublishIcon />
-          </IconButton>
-        </Tooltip>
-      </Grid>
-      <Drawer
-        classes={{ paper: classes.paper }}
-        anchor="right"
-        open={showFieldsDrawer}
-        onClose={() => setShowFieldsDrawer(false)}
-      >
-        <CustomFieldPlaygroud extensions={customFieldExtensions} />
-      </Drawer>
-      <Drawer
-        classes={{ paper: classes.paper }}
-        anchor="right"
-        open={showActionsDrawer}
-        onClose={() => setShowActionsDrawer(false)}
-      >
-        <ActionPageContent />
-      </Drawer>
-      <Dialog
-        onClose={() => setShowPublishModal(false)}
-        open={showPublishModal}
-        aria-labelledby="publish-dialog-title"
-        aria-describedby="publish-dialog-description"
-      >
-        <DialogTitle id="publish-dialog-title">
-          Add template to Catalog
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="publish-dialog-slide-description">
-            Follow the instructions to add your template to the catalog:
-            <ol>
-              <li>Make sure you saved the file;</li>
-              <li>Push the template to a git repository;</li>
-              <li>
-                Register the template <code>catalog-info.yaml</code> file
-                {registerComponentLink ? (
-                  <>
-                    {' '}
-                    <Link to={registerComponentLink()}>here</Link>
-                  </>
-                ) : null}
-                .
-              </li>
-            </ol>
-          </DialogContentText>
-        </DialogContent>
-      </Dialog>
-    </>
+    <AppBar position="sticky">
+      <Toolbar className={classes.toolbar}>
+        <Typography variant="h6" color="textSecondary">
+          Template Editor
+        </Typography>
+        <ButtonGroup variant="outlined" color="primary">
+          <Tooltip title="Custom Fields Explorer">
+            <Button size="small" onClick={() => setShowFieldsDrawer(true)}>
+              <ExtensionIcon />
+            </Button>
+          </Tooltip>
+          <Tooltip title="Installed Actions Documentation">
+            <Button size="small" onClick={() => setShowActionsDrawer(true)}>
+              <DescriptionIcon />
+            </Button>
+          </Tooltip>
+          <Button onClick={() => setShowPublishModal(true)}>Publish</Button>
+        </ButtonGroup>
+        <Drawer
+          classes={{ paper: classes.paper }}
+          anchor="right"
+          open={showFieldsDrawer}
+          onClose={() => setShowFieldsDrawer(false)}
+        >
+          <CustomFieldPlaygroud extensions={customFieldExtensions} />
+        </Drawer>
+        <Drawer
+          classes={{ paper: classes.paper }}
+          anchor="right"
+          open={showActionsDrawer}
+          onClose={() => setShowActionsDrawer(false)}
+        >
+          <ActionPageContent />
+        </Drawer>
+        <Dialog
+          onClose={() => setShowPublishModal(false)}
+          open={showPublishModal}
+          aria-labelledby="publish-dialog-title"
+          aria-describedby="publish-dialog-description"
+        >
+          <DialogTitle id="publish-dialog-title">
+            Add template to Catalog
+          </DialogTitle>
+          <DialogContent dividers>
+            <DialogContentText id="publish-dialog-slide-description">
+              Follow the instructions below to add templates as software catalog
+              components:
+              <ol>
+                <li>Save the template files in a local git directory</li>
+                <li>
+                  Commit and push the template files to its remote repository
+                </li>
+                <li>
+                  Register each template as a component in the software catalog
+                  by entering the template remote <em>catalog-info.yaml</em>{' '}
+                  file url in the{' '}
+                  {registerComponentLink ? (
+                    <Link to={registerComponentLink()}>
+                      registering existing component
+                    </Link>
+                  ) : (
+                    'registering existing component'
+                  )}{' '}
+                  page
+                </li>
+                <li>
+                  As soon as the newly registered components are processed, they
+                  appear in the templates list page, it may take a few minutes
+                </li>
+              </ol>
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button color="primary" onClick={() => setShowPublishModal(false)}>
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Toolbar>
+    </AppBar>
   );
 }
