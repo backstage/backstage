@@ -74,7 +74,7 @@ Extensions created with `@backstage/frontend-plugin-api` from before the 1.30 re
 
 ### New type parameters for `ExtensionDefinition` and `ExtensionBlueprint`
 
-The type parameters of `ExtensionDefinition` and `ExtensionBlueprint` have been updated to use a single type parameter with a object, in order by make them easier to read and evolve.
+The type parameters of `ExtensionDefinition` and `ExtensionBlueprint` have been updated to use a single type parameter with an object, in order to make them easier to read and evolve.
 
 Existing usage can generally be updated as follows:
 
