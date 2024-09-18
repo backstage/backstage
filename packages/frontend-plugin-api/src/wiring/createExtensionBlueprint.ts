@@ -124,6 +124,7 @@ export interface ExtensionBlueprint<
     configInput: T['configInput'];
     output: T['output'];
     inputs: T['inputs'];
+    params: T['params'];
   }>;
   /** @deprecated namespace is no longer required, you can safely remove this option and it will default to the `pluginId`. It will be removed in a future release. */
   make<
@@ -232,6 +233,7 @@ export interface ExtensionBlueprint<
     kind: T['kind'];
     namespace: undefined;
     name: string | undefined extends TNewName ? T['name'] : TNewName;
+    params: T['params'];
   }>;
   /** @deprecated namespace is no longer required, you can safely remove this option and it will default to the `pluginId`. It will be removed in a future release. */
   makeWithOverrides<
@@ -479,9 +481,13 @@ export function createExtensionBlueprint<
         output: options.output as AnyExtensionDataRef[],
         config: options.config,
         factory: ctx =>
-          options.factory(args.params, ctx) as Iterable<
-            ExtensionDataValue<any, any>
-          >,
+          options.factory(
+            // TODO(Rugvip): The `ctx` here might actually have a `params` key
+            // when the extension has been overridden. It's currently hidden in
+            // the types and there might be a better way to do this.
+            { ...args.params, ...(ctx as any).params },
+            ctx,
+          ) as Iterable<ExtensionDataValue<any, any>>,
       }) as ExtensionDefinition;
     },
     makeWithOverrides(args) {
