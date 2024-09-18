@@ -21,6 +21,7 @@ import {
   ResolvedExtensionInputs,
   VerifyExtensionFactoryOutput,
   createExtension,
+  ctxParamsSymbol,
 } from './createExtension';
 import { z } from 'zod';
 import { ExtensionInput } from './createExtensionInput';
@@ -482,10 +483,7 @@ export function createExtensionBlueprint<
         config: options.config,
         factory: ctx =>
           options.factory(
-            // TODO(Rugvip): The `ctx` here might actually have a `params` key
-            // when the extension has been overridden. It's currently hidden in
-            // the types and there might be a better way to do this.
-            { ...args.params, ...(ctx as any).params },
+            { ...args.params, ...(ctx as any)[ctxParamsSymbol] },
             ctx,
           ) as Iterable<ExtensionDataValue<any, any>>,
       }) as ExtensionDefinition;
@@ -514,8 +512,7 @@ export function createExtensionBlueprint<
             (innerParams, innerContext) => {
               return createExtensionDataContainer<UOutput>(
                 options.factory(
-                  // TODO(Rugvip): Same as ctx.params from .make
-                  { ...innerParams, ...(ctx as any).params },
+                  { ...innerParams, ...(ctx as any)[ctxParamsSymbol] },
                   {
                     apis,
                     node,

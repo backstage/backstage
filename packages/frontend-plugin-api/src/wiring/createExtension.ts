@@ -34,6 +34,12 @@ import { createSchemaFromZod } from '../schema/createSchemaFromZod';
 import { OpaqueExtensionDefinition } from '@internal/frontend';
 
 /**
+ * This symbol is used to pass parameter overrides from the extension override to the blueprint factory
+ * @internal
+ */
+export const ctxParamsSymbol = Symbol('params');
+
+/**
  * Convert a single extension input into a matching resolved input.
  * @public
  */
@@ -484,11 +490,8 @@ export function createExtension<
               apis,
               config: config as any,
               inputs: inputs as any,
-              params: overrideOptions.params,
-              // TODO(Rugvip): This is a bit of a hack to send the params
-              // through to the blueprint factory, might be that there's a
-              // better way to do this
-            } as Parameters<typeof options.factory>[0]);
+              [ctxParamsSymbol as any]: overrideOptions.params,
+            });
           }
           const parentResult = overrideOptions.factory(
             (innerContext): ExtensionDataContainer<UOutput> => {
@@ -502,9 +505,8 @@ export function createExtension<
                     inputs,
                     innerContext?.inputs,
                   ) as any,
-                  params: innerContext?.params,
-                  // TODO(Rugvip): Same as above
-                } as Parameters<typeof options.factory>[0]) as Iterable<any>,
+                  [ctxParamsSymbol as any]: innerContext?.params,
+                }) as Iterable<any>,
                 options.output,
               );
             },
