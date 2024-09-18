@@ -269,7 +269,6 @@ export class DatabaseEventBusStore implements EventBusStore {
       await db.migrate.latest({
         directory: migrationsDir,
       });
-      options.logger.info('DatabaseEventBusStore migrations ran successfully');
     }
 
     const listener = new DatabaseEventBusListener(db.client, options.logger);
@@ -288,7 +287,7 @@ export class DatabaseEventBusStore implements EventBusStore {
       frequency: { seconds: 10 },
       timeout: { minutes: 1 },
       initialDelay: { seconds: 10 },
-      fn: store.#cleanup,
+      fn: () => store.#cleanup(),
     });
 
     options.lifecycle.addShutdownHook(async () => {
@@ -532,7 +531,7 @@ export class DatabaseEventBusStore implements EventBusStore {
     );
   }
 
-  #cleanup = async () => {
+  async #cleanup() {
     try {
       const eventCount = await this.#db(TABLE_EVENTS)
         .delete()
@@ -549,9 +548,11 @@ export class DatabaseEventBusStore implements EventBusStore {
         // If events are outside the max age they will always be deleted
         .orWhere('created_at', '<', new Date(Date.now() - this.#windowMaxAge));
 
-      this.#logger.info(
-        `Event cleanup resulted in ${eventCount} old events being deleted`,
-      );
+      if (eventCount > 0) {
+        this.#logger.info(
+          `Event cleanup resulted in ${eventCount} old events being deleted`,
+        );
+      }
     } catch (error) {
       this.#logger.error('Event cleanup failed', error);
     }
@@ -572,11 +573,13 @@ export class DatabaseEventBusStore implements EventBusStore {
           .where('read_until', '<', minId - 1);
       }
 
-      this.#logger.info(
-        `Subscription cleanup resulted in ${subscriberCount} stale subscribers being deleted`,
-      );
+      if (subscriberCount > 0) {
+        this.#logger.info(
+          `Subscription cleanup resulted in ${subscriberCount} stale subscribers being deleted`,
+        );
+      }
     } catch (error) {
       this.#logger.error('Subscription cleanup failed', error);
     }
-  };
+  }
 }

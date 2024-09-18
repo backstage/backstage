@@ -22,7 +22,6 @@ import {
   SchedulerService,
 } from '@backstage/backend-plugin-api';
 import { Handler } from 'express';
-import Router from 'express-promise-router';
 import { createOpenApiRouter } from '../../schema/openapi.generated';
 import { MemoryEventBusStore } from './MemoryEventBusStore';
 import { DatabaseEventBusStore } from './DatabaseEventBusStore';
@@ -145,13 +144,10 @@ export async function createEventBusRouter(options: {
 }): Promise<Handler> {
   const { httpAuth, notifyTimeoutMs = DEFAULT_NOTIFY_TIMEOUT_MS } = options;
   const logger = options.logger.child({ type: 'EventBus' });
-  const router = Router();
 
   const store = await createEventBusStore(options);
 
   const apiRouter = await createOpenApiRouter();
-
-  router.use(apiRouter);
 
   apiRouter.post('/bus/v1/events', async (req, res) => {
     const credentials = await httpAuth.credentials(req, {
@@ -164,22 +160,25 @@ export async function createEventBusRouter(options: {
         topic,
         eventPayload: req.body.event.payload,
       } as EventParams,
-      notifiedSubscribers: req.body.notifiedSubscribers,
+      notifiedSubscribers,
     });
     if (result) {
-      logger.info(`Published event to '${topic}' with ID '${result.eventId}'`, {
-        subject: credentials.principal.subject,
-      });
+      logger.debug(
+        `Published event to '${topic}' with ID '${result.eventId}'`,
+        {
+          subject: credentials.principal.subject,
+        },
+      );
       res.status(201).end();
     } else {
       if (notifiedSubscribers) {
         const notified = `'${notifiedSubscribers.join("', '")}'`;
-        logger.info(
+        logger.debug(
           `Skipped publishing of event to '${topic}', subscribers have already been notified: ${notified}`,
           { subject: credentials.principal.subject },
         );
       } else {
-        logger.info(
+        logger.debug(
           `Skipped publishing of event to '${topic}', no subscribers present`,
           { subject: credentials.principal.subject },
         );
@@ -216,7 +215,7 @@ export async function createEventBusRouter(options: {
       try {
         const { events } = await store.readSubscription(id);
 
-        logger.info(
+        logger.debug(
           `Reading subscription '${id}' resulted in ${events.length} events`,
           { subject: credentials.principal.subject },
         );
@@ -234,7 +233,7 @@ export async function createEventBusRouter(options: {
 
           try {
             const { topic } = await listener.waitForUpdate();
-            logger.info(
+            logger.debug(
               `Received notification for subscription '${id}' for topic '${topic}'`,
               { subject: credentials.principal.subject },
             );
@@ -266,7 +265,7 @@ export async function createEventBusRouter(options: {
 
     await store.upsertSubscription(id, req.body.topics);
 
-    logger.info(
+    logger.debug(
       `New subscription '${id}' for topics '${req.body.topics.join("', '")}'`,
       { subject: credentials.principal.subject },
     );
