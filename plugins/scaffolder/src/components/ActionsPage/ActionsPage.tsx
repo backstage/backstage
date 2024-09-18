@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import {
   ActionExample,
@@ -38,6 +38,7 @@ import { JSONSchema7, JSONSchema7Definition } from 'json-schema';
 import classNames from 'classnames';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import LinkIcon from '@material-ui/icons/Link';
 
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
@@ -46,13 +47,14 @@ import {
   EmptyState,
   ErrorPanel,
   Header,
+  Link,
   MarkdownContent,
   Page,
   Progress,
 } from '@backstage/core-components';
 import Chip from '@material-ui/core/Chip';
 import { ScaffolderPageContextMenu } from '@backstage/plugin-scaffolder-react/alpha';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   editRouteRef,
   rootRouteRef,
@@ -84,6 +86,9 @@ const useStyles = makeStyles(theme => ({
       fontWeight: 'bolder',
       color: theme.palette.error.light,
     },
+  },
+  link: {
+    paddingLeft: theme.spacing(1),
   },
 }));
 
@@ -122,8 +127,15 @@ const ActionPageContent = () => {
   const classes = useStyles();
   const { loading, value, error } = useAsync(async () => {
     return api.listActions();
-  });
+  }, [api]);
+
   const [isExpanded, setIsExpanded] = useState<{ [key: string]: boolean }>({});
+
+  useEffect(() => {
+    if (value && window.location.hash) {
+      document.querySelector(window.location.hash)?.scrollIntoView();
+    }
+  }, [value]);
 
   if (loading) {
     return <Progress />;
@@ -295,9 +307,20 @@ const ActionPageContent = () => {
     );
     return (
       <Box pb={4} key={action.id}>
-        <Typography variant="h4" component="h2" className={classes.code}>
+        <Typography
+          id={action.id.replaceAll(':', '-')}
+          variant="h4"
+          component="h2"
+          className={classes.code}
+        >
           {action.id}
         </Typography>
+        <Link
+          className={classes.link}
+          to={`#${action.id.replaceAll(':', '-')}`}
+        >
+          <LinkIcon />
+        </Link>
         {action.description && <MarkdownContent content={action.description} />}
         {action.schema?.input && (
           <Box pb={2}>
