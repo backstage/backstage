@@ -18,8 +18,10 @@ import { EventBusStore } from './types';
 import { NotFoundError } from '@backstage/errors';
 
 const MAX_BATCH_SIZE = 10;
+const MAX_EVENTS_DEFAULT = 1_000;
 
 export class MemoryEventBusStore implements EventBusStore {
+  #maxEvents: number;
   #events = new Array<
     EventParams & { seq: number; notifiedSubscribers: Set<string> }
   >();
@@ -31,6 +33,10 @@ export class MemoryEventBusStore implements EventBusStore {
     topics: Set<string>;
     resolve(result: { topic: string }): void;
   }>();
+
+  constructor(options: { maxEvents?: number } = {}) {
+    this.#maxEvents = options.maxEvents ?? MAX_EVENTS_DEFAULT;
+  }
 
   async publish(options: {
     event: EventParams;
@@ -59,6 +65,12 @@ export class MemoryEventBusStore implements EventBusStore {
         this.#listeners.delete(listener);
       }
     }
+
+    // Trim old events
+    if (this.#events.length > this.#maxEvents) {
+      this.#events.shift();
+    }
+
     return { eventId: String(nextSeq) };
   }
 
@@ -96,7 +108,12 @@ export class MemoryEventBusStore implements EventBusStore {
 
     sub.seq = events[events.length - 1]?.seq ?? sub.seq;
 
-    return { events: events.map(event => ({ ...event, seq: undefined })) };
+    return {
+      events: events.map(({ topic, eventPayload }) => ({
+        topic,
+        eventPayload,
+      })),
+    };
   }
 
   async setupListener(
