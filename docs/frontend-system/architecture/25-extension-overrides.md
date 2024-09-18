@@ -79,6 +79,48 @@ const myOverrideExtension = myExtension.override({
 
 Note the `yield*` expression, which forwards all values from the provided iterable to the generator, in this case the original factory output.
 
+## Overriding blueprint parameters
+
+If you are overriding an extension that was originally created from an [extension blueprint](./23-extension-blueprints.md), you are able to override the parameters that were originally provided for the blueprint. This can be done directly as an option to `.override`, or when calling the original factory in the override factory. The provided parameter overrides will be merged with the existing parameters that where provided when creating the extension from the blueprint.
+
+For example, consider the following extension created from the `PageBlueprint`:
+
+```tsx
+const exampleExtension = PageBlueprint.make({
+  params: {
+    loader: () =>
+      import('./components/ExamplePage').then(m => <m.ExamplePage />),
+    defaultPath: '/example',
+  },
+});
+```
+
+You can immediately override parameters through the `params` option:
+
+```tsx
+const overrideExtension = exampleExtension.override({
+  params: {
+    loader: () =>
+      import('./components/OverridePage').then(m => <m.OverridePage />),
+  },
+});
+```
+
+It is also possible to pass parameter overrides when calling the original factory in the override factory:
+
+```tsx
+const overrideExtension = exampleExtension.override({
+  factory(originalFactory) {
+    return originalFactory({
+      params: {
+        loader: () =>
+          import('./components/OverridePage').then(m => <m.OverridePage />),
+      },
+    });
+  },
+});
+```
+
 ## Overriding declared outputs
 
 When overriding an extension you can provide a new output declaration. This **replaces** any existing output declaration, which means that if you want to forward any of the original output you will need to declare it again. The following example shows how to override an extension and replace the output declaration:
