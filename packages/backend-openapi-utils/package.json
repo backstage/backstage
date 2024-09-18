@@ -1,10 +1,10 @@
 {
   "name": "@backstage/backend-openapi-utils",
-  "description": "OpenAPI typescript support.",
   "version": "0.1.18",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "license": "Apache-2.0",
+  "description": "OpenAPI typescript support.",
+  "backstage": {
+    "role": "node-library"
+  },
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",
@@ -17,25 +17,21 @@
     "url": "https://github.com/backstage/backstage",
     "directory": "packages/backend-openapi-utils"
   },
-  "backstage": {
-    "role": "node-library"
-  },
-  "scripts": {
-    "start": "backstage-cli package start",
-    "build": "backstage-cli package build",
-    "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
-    "clean": "backstage-cli package clean",
-    "prepack": "backstage-cli package prepack",
-    "postpack": "backstage-cli package postpack"
-  },
-  "devDependencies": {
-    "@backstage/cli": "workspace:^",
-    "supertest": "^7.0.0"
-  },
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "files": [
     "dist"
   ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
   "dependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
@@ -48,5 +44,9 @@
     "lodash": "^4.17.21",
     "openapi-merge": "^1.3.2",
     "openapi3-ts": "^3.1.2"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "supertest": "^7.0.0"
   }
 }

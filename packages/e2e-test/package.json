@@ -1,31 +1,36 @@
 {
   "name": "e2e-test",
-  "description": "E2E test for verifying Backstage packages",
   "version": "0.2.20",
-  "private": true,
+  "description": "E2E test for verifying Backstage packages",
   "backstage": {
     "role": "cli"
   },
+  "private": true,
+  "keywords": [
+    "backstage"
+  ],
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
     "directory": "packages/e2e-test"
   },
-  "keywords": [
-    "backstage"
-  ],
   "license": "Apache-2.0",
   "main": "src/index.ts",
-  "scripts": {
-    "start": "yarn nodemon --",
-    "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
-    "test:e2e": "yarn start",
-    "build": "backstage-cli package build",
-    "clean": "backstage-cli package clean"
-  },
   "bin": "bin/e2e-test",
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "start": "yarn nodemon --",
+    "test": "backstage-cli package test",
+    "test:e2e": "yarn start"
+  },
+  "nodemonConfig": {
+    "exec": "bin/e2e-test",
+    "ext": "ts",
+    "watch": "./src"
+  },
   "dependencies": {
     "@backstage/cli-common": "workspace:^",
     "@backstage/create-app": "workspace:^",
@@ -44,10 +49,5 @@
     "@types/fs-extra": "^11.0.0",
     "@types/node": "^18.17.8",
     "nodemon": "^3.0.1"
-  },
-  "nodemonConfig": {
-    "watch": "./src",
-    "exec": "bin/e2e-test",
-    "ext": "ts"
   }
 }

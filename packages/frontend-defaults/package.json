@@ -1,9 +1,9 @@
 {
   "name": "@backstage/frontend-defaults",
   "version": "0.1.0",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "license": "Apache-2.0",
+  "backstage": {
+    "role": "web-library"
+  },
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
@@ -14,29 +14,22 @@
     "url": "https://github.com/backstage/backstage",
     "directory": "packages/frontend-defaults"
   },
-  "backstage": {
-    "role": "web-library"
-  },
+  "license": "Apache-2.0",
   "sideEffects": false,
-  "scripts": {
-    "start": "backstage-cli package start",
-    "build": "backstage-cli package build",
-    "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
-    "clean": "backstage-cli package clean",
-    "prepack": "backstage-cli package prepack",
-    "postpack": "backstage-cli package postpack"
-  },
-  "devDependencies": {
-    "@backstage/cli": "workspace:^",
-    "@backstage/core-plugin-api": "workspace:^",
-    "@backstage/test-utils": "workspace:^",
-    "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^16.0.0"
-  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "files": [
     "dist"
   ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
   "dependencies": {
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
@@ -45,6 +38,13 @@
     "@backstage/plugin-app": "workspace:^",
     "@react-hookz/web": "^24.0.0",
     "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/react": "^16.0.0"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0 || ^18.0.0"

@@ -1,17 +1,36 @@
 {
   "name": "techdocs-cli-embedded-app",
   "version": "0.2.100",
-  "private": true,
   "backstage": {
     "role": "frontend"
   },
-  "bundled": true,
+  "private": true,
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
     "directory": "packages/techdocs-cli-embedded-app"
   },
+  "scripts": {
+    "build": "backstage-cli package build --config ./app-config.yaml",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "start": "backstage-cli package start --config ./app-config.yaml",
+    "test": "backstage-cli package test"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "prettier": "@spotify/prettier-config",
   "dependencies": {
     "@backstage/app-defaults": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
@@ -44,24 +63,5 @@
     "@types/react-dom": "*",
     "cross-env": "^7.0.0"
   },
-  "scripts": {
-    "start": "backstage-cli package start --config ./app-config.yaml",
-    "build": "backstage-cli package build --config ./app-config.yaml",
-    "clean": "backstage-cli package clean",
-    "test": "backstage-cli package test",
-    "lint": "backstage-cli package lint"
-  },
-  "prettier": "@spotify/prettier-config",
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  }
+  "bundled": true
 }
