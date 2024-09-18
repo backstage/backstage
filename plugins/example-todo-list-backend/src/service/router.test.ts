@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
+import { mockServices } from '@backstage/backend-test-utils';
 import express from 'express';
 import request from 'supertest';
-
 import { createRouter } from './router';
-import { mockServices } from '@backstage/backend-test-utils';
 
 describe('createRouter', () => {
   let app: express.Express;
