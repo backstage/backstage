@@ -553,15 +553,22 @@ export class DatabaseEventBusStore implements EventBusStore {
       const eventCount = await this.#db(TABLE_EVENTS)
         .delete()
         // Delete any events that are outside both the min age and size window
-        .whereIn(
-          'id',
-          this.#db
-            .select('id')
-            .from(TABLE_EVENTS)
-            .orderBy('id', 'desc')
-            .offset(this.#windowMaxCount),
+        .orWhere(inner =>
+          inner
+            .whereIn(
+              'id',
+              this.#db
+                .select('id')
+                .from(TABLE_EVENTS)
+                .orderBy('id', 'desc')
+                .offset(this.#windowMaxCount),
+            )
+            .andWhere(
+              'created_at',
+              '<',
+              new Date(Date.now() - this.#windowMinAge),
+            ),
         )
-        .andWhere('created_at', '<', new Date(Date.now() - this.#windowMinAge))
         // If events are outside the max age they will always be deleted
         .orWhere('created_at', '<', new Date(Date.now() - this.#windowMaxAge));
 
