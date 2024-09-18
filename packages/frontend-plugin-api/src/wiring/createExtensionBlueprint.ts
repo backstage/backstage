@@ -508,20 +508,25 @@ export function createExtensionBlueprint<
                 },
               }
             : undefined,
-        factory: ({ node, config, inputs, apis }) => {
+        factory: ctx => {
+          const { node, config, inputs, apis } = ctx;
           return args.factory(
             (innerParams, innerContext) => {
               return createExtensionDataContainer<UOutput>(
-                options.factory(innerParams, {
-                  apis,
-                  node,
-                  config: (innerContext?.config ?? config) as any,
-                  inputs: resolveInputOverrides(
-                    options.inputs,
-                    inputs,
-                    innerContext?.inputs,
-                  ) as any,
-                }) as Iterable<any>,
+                options.factory(
+                  // TODO(Rugvip): Same as ctx.params from .make
+                  { ...innerParams, ...(ctx as any).params },
+                  {
+                    apis,
+                    node,
+                    config: (innerContext?.config ?? config) as any,
+                    inputs: resolveInputOverrides(
+                      options.inputs,
+                      inputs,
+                      innerContext?.inputs,
+                    ) as any,
+                  },
+                ) as Iterable<any>,
                 options.output,
               );
             },
