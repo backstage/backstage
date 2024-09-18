@@ -28,8 +28,7 @@ import {
 import { toInternalExternalRouteRef } from '../../../frontend-plugin-api/src/routing/ExternalRouteRef';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalSubRouteRef } from '../../../frontend-plugin-api/src/routing/SubRouteRef';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { isInternalFrontendPlugin } from '../../../frontend-plugin-api/src/wiring/createFrontendPlugin';
+import { OpaqueFrontendPlugin } from '@internal/frontend';
 import { FrontendFeature } from '../wiring';
 
 /** @internal */
@@ -44,7 +43,7 @@ export function collectRouteIds(features: FrontendFeature[]): RouteRefsById {
   const externalRoutesById = new Map<string, ExternalRouteRef>();
 
   for (const feature of features) {
-    if (!isInternalFrontendPlugin(feature)) {
+    if (!OpaqueFrontendPlugin.isType(feature)) {
       continue;
     }
 

@@ -26,7 +26,6 @@ import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 // @alpha
 export const CatalogFilterBlueprint: ExtensionBlueprint<{
   kind: 'catalog-filter';
-  namespace: undefined;
   name: undefined;
   params: {
     loader: () => Promise<JSX.Element>;
@@ -149,7 +148,6 @@ const _default: FrontendPlugin<
   {
     'api:catalog': ExtensionDefinition<{
       kind: 'api';
-      namespace: undefined;
       name: undefined;
       config: {};
       configInput: {};
@@ -165,7 +163,6 @@ const _default: FrontendPlugin<
     }>;
     'nav-item:catalog': ExtensionDefinition<{
       kind: 'nav-item';
-      namespace: undefined;
       name: undefined;
       config: {};
       configInput: {};
@@ -187,7 +184,6 @@ const _default: FrontendPlugin<
     }>;
     'api:catalog/starred-entities': ExtensionDefinition<{
       kind: 'api';
-      namespace: undefined;
       name: 'starred-entities';
       config: {};
       configInput: {};
@@ -203,7 +199,6 @@ const _default: FrontendPlugin<
     }>;
     'api:catalog/entity-presentation': ExtensionDefinition<{
       kind: 'api';
-      namespace: undefined;
       name: 'entity-presentation';
       config: {};
       configInput: {};
@@ -219,7 +214,6 @@ const _default: FrontendPlugin<
     }>;
     'entity-card:catalog/about': ExtensionDefinition<{
       kind: 'entity-card';
-      namespace: undefined;
       name: 'about';
       config: {
         filter: string | undefined;
@@ -251,7 +245,6 @@ const _default: FrontendPlugin<
     }>;
     'entity-card:catalog/links': ExtensionDefinition<{
       kind: 'entity-card';
-      namespace: undefined;
       name: 'links';
       config: {
         filter: string | undefined;
@@ -283,7 +276,6 @@ const _default: FrontendPlugin<
     }>;
     'entity-card:catalog/labels': ExtensionDefinition<{
       kind: 'entity-card';
-      namespace: undefined;
       name: 'labels';
       config: {
         filter: string | undefined;
@@ -315,7 +307,6 @@ const _default: FrontendPlugin<
     }>;
     'entity-card:catalog/depends-on-components': ExtensionDefinition<{
       kind: 'entity-card';
-      namespace: undefined;
       name: 'depends-on-components';
       config: {
         filter: string | undefined;
@@ -347,7 +338,6 @@ const _default: FrontendPlugin<
     }>;
     'entity-card:catalog/depends-on-resources': ExtensionDefinition<{
       kind: 'entity-card';
-      namespace: undefined;
       name: 'depends-on-resources';
       config: {
         filter: string | undefined;
@@ -379,7 +369,6 @@ const _default: FrontendPlugin<
     }>;
     'entity-card:catalog/has-components': ExtensionDefinition<{
       kind: 'entity-card';
-      namespace: undefined;
       name: 'has-components';
       config: {
         filter: string | undefined;
@@ -411,7 +400,6 @@ const _default: FrontendPlugin<
     }>;
     'entity-card:catalog/has-resources': ExtensionDefinition<{
       kind: 'entity-card';
-      namespace: undefined;
       name: 'has-resources';
       config: {
         filter: string | undefined;
@@ -443,7 +431,6 @@ const _default: FrontendPlugin<
     }>;
     'entity-card:catalog/has-subcomponents': ExtensionDefinition<{
       kind: 'entity-card';
-      namespace: undefined;
       name: 'has-subcomponents';
       config: {
         filter: string | undefined;
@@ -475,7 +462,6 @@ const _default: FrontendPlugin<
     }>;
     'entity-card:catalog/has-subdomains': ExtensionDefinition<{
       kind: 'entity-card';
-      namespace: undefined;
       name: 'has-subdomains';
       config: {
         filter: string | undefined;
@@ -507,7 +493,6 @@ const _default: FrontendPlugin<
     }>;
     'entity-card:catalog/has-systems': ExtensionDefinition<{
       kind: 'entity-card';
-      namespace: undefined;
       name: 'has-systems';
       config: {
         filter: string | undefined;
@@ -601,7 +586,6 @@ const _default: FrontendPlugin<
         >;
       };
       kind: 'entity-content';
-      namespace: undefined;
       name: 'overview';
       params: {
         loader: () => Promise<JSX.Element>;
@@ -613,7 +597,6 @@ const _default: FrontendPlugin<
     }>;
     'catalog-filter:catalog/tag': ExtensionDefinition<{
       kind: 'catalog-filter';
-      namespace: undefined;
       name: 'tag';
       config: {};
       configInput: {};
@@ -649,7 +632,6 @@ const _default: FrontendPlugin<
         >;
       };
       kind: 'catalog-filter';
-      namespace: undefined;
       name: 'kind';
       params: {
         loader: () => Promise<JSX.Element>;
@@ -657,7 +639,6 @@ const _default: FrontendPlugin<
     }>;
     'catalog-filter:catalog/type': ExtensionDefinition<{
       kind: 'catalog-filter';
-      namespace: undefined;
       name: 'type';
       config: {};
       configInput: {};
@@ -693,7 +674,6 @@ const _default: FrontendPlugin<
         >;
       };
       kind: 'catalog-filter';
-      namespace: undefined;
       name: 'mode';
       params: {
         loader: () => Promise<JSX.Element>;
@@ -701,7 +681,6 @@ const _default: FrontendPlugin<
     }>;
     'catalog-filter:catalog/namespace': ExtensionDefinition<{
       kind: 'catalog-filter';
-      namespace: undefined;
       name: 'namespace';
       config: {};
       configInput: {};
@@ -717,7 +696,6 @@ const _default: FrontendPlugin<
     }>;
     'catalog-filter:catalog/lifecycle': ExtensionDefinition<{
       kind: 'catalog-filter';
-      namespace: undefined;
       name: 'lifecycle';
       config: {};
       configInput: {};
@@ -733,7 +711,6 @@ const _default: FrontendPlugin<
     }>;
     'catalog-filter:catalog/processing-status': ExtensionDefinition<{
       kind: 'catalog-filter';
-      namespace: undefined;
       name: 'processing-status';
       config: {};
       configInput: {};
@@ -769,7 +746,6 @@ const _default: FrontendPlugin<
         >;
       };
       kind: 'catalog-filter';
-      namespace: undefined;
       name: 'list';
       params: {
         loader: () => Promise<JSX.Element>;
@@ -802,7 +778,6 @@ const _default: FrontendPlugin<
         >;
       };
       kind: 'page';
-      namespace: undefined;
       name: undefined;
       params: {
         defaultPath: string;
@@ -864,7 +839,6 @@ const _default: FrontendPlugin<
         >;
       };
       kind: 'page';
-      namespace: undefined;
       name: 'entity';
       params: {
         defaultPath: string;
@@ -874,7 +848,6 @@ const _default: FrontendPlugin<
     }>;
     'search-result-list-item:catalog': ExtensionDefinition<{
       kind: 'search-result-list-item';
-      namespace: undefined;
       name: undefined;
       config: {
         noTrack: boolean;

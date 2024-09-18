@@ -32,7 +32,6 @@ export type SearchResultItemExtensionPredicate = (
 // @alpha
 export const SearchResultListItemBlueprint: ExtensionBlueprint<{
   kind: 'search-result-list-item';
-  namespace: undefined;
   name: undefined;
   params: SearchResultListItemBlueprintParams;
   output: ConfigurableExtensionDataRef<

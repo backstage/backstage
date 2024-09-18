@@ -23,8 +23,9 @@ import {
 } from '@backstage/core-plugin-api';
 import { convertLegacyPlugin } from './convertLegacyPlugin';
 import { PageBlueprint } from '@backstage/frontend-plugin-api';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalFrontendPlugin } from '../../frontend-plugin-api/src/wiring/createFrontendPlugin';
+// TODO(rugvip): this should take into account that this is a test file, so these deps don't need to be in the dependencies
+// eslint-disable-next-line @backstage/no-undeclared-imports
+import { OpaqueFrontendPlugin } from '@internal/frontend';
 
 describe('convertLegacyPlugin', () => {
   it('should convert a plain legacy plugin to a new plugin', () => {
@@ -73,7 +74,7 @@ describe('convertLegacyPlugin', () => {
       },
     );
 
-    const internalConverted = toInternalFrontendPlugin(converted);
+    const internalConverted = OpaqueFrontendPlugin.toInternal(converted);
 
     expect(internalConverted.id).toBe('test');
     expect(internalConverted.routes).toEqual({

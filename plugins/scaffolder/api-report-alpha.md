@@ -46,7 +46,6 @@ const _default: FrontendPlugin<
   {
     'api:scaffolder': ExtensionDefinition<{
       kind: 'api';
-      namespace: undefined;
       name: undefined;
       config: {};
       configInput: {};
@@ -62,7 +61,6 @@ const _default: FrontendPlugin<
     }>;
     'page:scaffolder': ExtensionDefinition<{
       kind: 'page';
-      namespace: undefined;
       name: undefined;
       config: {
         path: string | undefined;
@@ -93,7 +91,6 @@ const _default: FrontendPlugin<
     }>;
     'nav-item:scaffolder': ExtensionDefinition<{
       kind: 'nav-item';
-      namespace: undefined;
       name: undefined;
       config: {};
       configInput: {};

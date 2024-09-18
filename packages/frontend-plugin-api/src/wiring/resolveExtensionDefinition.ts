@@ -111,22 +111,15 @@ export function toInternalExtension<TConfig, TConfigInput>(
 /** @ignore */
 export type ResolveExtensionId<
   TExtension extends ExtensionDefinition,
-  TDefaultNamespace extends string | undefined,
+  TNamespace extends string,
 > = TExtension extends ExtensionDefinition<{
   kind: infer IKind extends string | undefined;
-  namespace: infer INamespace extends string | undefined;
   name: infer IName extends string | undefined;
 }>
-  ? [string | undefined] extends [IKind | INamespace | IName]
+  ? [string] extends [IKind | IName]
     ? never
     : (
-        (
-          undefined extends TDefaultNamespace ? INamespace : TDefaultNamespace
-        ) extends infer ISelectedNamespace extends string
-          ? undefined extends IName
-            ? ISelectedNamespace
-            : `${ISelectedNamespace}/${IName}`
-          : IName
+        undefined extends IName ? TNamespace : `${TNamespace}/${IName}`
       ) extends infer INamePart extends string
     ? IKind extends string
       ? `${IKind}:${INamePart}`

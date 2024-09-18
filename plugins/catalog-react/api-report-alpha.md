@@ -101,7 +101,6 @@ export function convertLegacyEntityContentExtension(
 // @alpha
 export const EntityCardBlueprint: ExtensionBlueprint<{
   kind: 'entity-card';
-  namespace: undefined;
   name: undefined;
   params: {
     loader: () => Promise<JSX.Element>;
@@ -147,7 +146,6 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
 // @alpha
 export const EntityContentBlueprint: ExtensionBlueprint<{
   kind: 'entity-content';
-  namespace: undefined;
   name: undefined;
   params: {
     loader: () => Promise<JSX.Element>;

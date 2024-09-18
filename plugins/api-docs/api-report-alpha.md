@@ -27,7 +27,6 @@ const _default: FrontendPlugin<
   {
     'nav-item:api-docs': ExtensionDefinition<{
       kind: 'nav-item';
-      namespace: undefined;
       name: undefined;
       config: {};
       configInput: {};
@@ -49,7 +48,6 @@ const _default: FrontendPlugin<
     }>;
     'api:api-docs/config': ExtensionDefinition<{
       kind: 'api';
-      namespace: undefined;
       name: 'config';
       config: {};
       configInput: {};
@@ -98,7 +96,6 @@ const _default: FrontendPlugin<
         >;
       };
       kind: 'page';
-      namespace: undefined;
       name: undefined;
       params: {
         defaultPath: string;
@@ -108,7 +105,6 @@ const _default: FrontendPlugin<
     }>;
     'entity-card:api-docs/has-apis': ExtensionDefinition<{
       kind: 'entity-card';
-      namespace: undefined;
       name: 'has-apis';
       config: {
         filter: string | undefined;
@@ -144,7 +140,6 @@ const _default: FrontendPlugin<
     }>;
     'entity-card:api-docs/definition': ExtensionDefinition<{
       kind: 'entity-card';
-      namespace: undefined;
       name: 'definition';
       config: {
         filter: string | undefined;
@@ -180,7 +175,6 @@ const _default: FrontendPlugin<
     }>;
     'entity-card:api-docs/consumed-apis': ExtensionDefinition<{
       kind: 'entity-card';
-      namespace: undefined;
       name: 'consumed-apis';
       config: {
         filter: string | undefined;
@@ -216,7 +210,6 @@ const _default: FrontendPlugin<
     }>;
     'entity-card:api-docs/provided-apis': ExtensionDefinition<{
       kind: 'entity-card';
-      namespace: undefined;
       name: 'provided-apis';
       config: {
         filter: string | undefined;
@@ -252,7 +245,6 @@ const _default: FrontendPlugin<
     }>;
     'entity-card:api-docs/consuming-components': ExtensionDefinition<{
       kind: 'entity-card';
-      namespace: undefined;
       name: 'consuming-components';
       config: {
         filter: string | undefined;
@@ -288,7 +280,6 @@ const _default: FrontendPlugin<
     }>;
     'entity-card:api-docs/providing-components': ExtensionDefinition<{
       kind: 'entity-card';
-      namespace: undefined;
       name: 'providing-components';
       config: {
         filter: string | undefined;
@@ -324,7 +315,6 @@ const _default: FrontendPlugin<
     }>;
     'entity-content:api-docs/definition': ExtensionDefinition<{
       kind: 'entity-content';
-      namespace: undefined;
       name: 'definition';
       config: {
         path: string | undefined;
@@ -380,7 +370,6 @@ const _default: FrontendPlugin<
     }>;
     'entity-content:api-docs/apis': ExtensionDefinition<{
       kind: 'entity-content';
-      namespace: undefined;
       name: 'apis';
       config: {
         path: string | undefined;

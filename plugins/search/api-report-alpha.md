@@ -24,7 +24,6 @@ const _default: FrontendPlugin<
   {
     'api:search': ExtensionDefinition<{
       kind: 'api';
-      namespace: undefined;
       name: undefined;
       config: {};
       configInput: {};
@@ -40,7 +39,6 @@ const _default: FrontendPlugin<
     }>;
     'nav-item:search': ExtensionDefinition<{
       kind: 'nav-item';
-      namespace: undefined;
       name: undefined;
       config: {};
       configInput: {};
@@ -102,7 +100,6 @@ const _default: FrontendPlugin<
         >;
       };
       kind: 'page';
-      namespace: undefined;
       name: undefined;
       params: {
         defaultPath: string;
@@ -117,7 +114,6 @@ export default _default;
 // @alpha (undocumented)
 export const searchApi: ExtensionDefinition<{
   kind: 'api';
-  namespace: undefined;
   name: undefined;
   config: {};
   configInput: {};
@@ -131,7 +127,6 @@ export const searchApi: ExtensionDefinition<{
 // @alpha (undocumented)
 export const searchNavItem: ExtensionDefinition<{
   kind: 'nav-item';
-  namespace: undefined;
   name: undefined;
   config: {};
   configInput: {};
@@ -191,7 +186,6 @@ export const searchPage: ExtensionDefinition<{
     >;
   };
   kind: 'page';
-  namespace: undefined;
   name: undefined;
   params: {
     defaultPath: string;

@@ -18,7 +18,6 @@ const visualizerPlugin: FrontendPlugin<
   {
     'page:app-visualizer': ExtensionDefinition<{
       kind: 'page';
-      namespace: undefined;
       name: undefined;
       config: {
         path: string | undefined;
@@ -49,7 +48,6 @@ const visualizerPlugin: FrontendPlugin<
     }>;
     'nav-item:app-visualizer': ExtensionDefinition<{
       kind: 'nav-item';
-      namespace: undefined;
       name: undefined;
       config: {};
       configInput: {};

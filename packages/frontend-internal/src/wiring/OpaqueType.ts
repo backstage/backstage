@@ -80,16 +80,16 @@ export class OpaqueType<
    * @param value Input value expected to be an instance of this opaque type
    * @returns True if the value matches this opaque type
    */
-  isType(value: unknown): value is T['public'] {
+  isType = (value: unknown): value is T['public'] => {
     return this.#isThisInternalType(value);
-  }
+  };
 
   /**
    * @param value Input value expected to be an instance of this opaque type
    * @throws If the value is not an instance of this opaque type or is of an unsupported version
    * @returns The internal version of the opaque type
    */
-  toInternal(value: unknown): T['public'] & T['versions'] {
+  toInternal = (value: unknown): T['public'] & T['versions'] => {
     if (!this.#isThisInternalType(value)) {
       throw new TypeError(
         `Invalid opaque type, expected '${
@@ -113,7 +113,7 @@ export class OpaqueType<
     }
 
     return value;
-  }
+  };
 
   /**
    * Creates an instance of the opaque type, returning the public type.

@@ -22,7 +22,6 @@ const _default: FrontendPlugin<
   {
     'nav-item:user-settings': ExtensionDefinition<{
       kind: 'nav-item';
-      namespace: undefined;
       name: undefined;
       config: {};
       configInput: {};
@@ -77,7 +76,6 @@ const _default: FrontendPlugin<
         >;
       };
       kind: 'page';
-      namespace: undefined;
       name: undefined;
       params: {
         defaultPath: string;
@@ -92,7 +90,6 @@ export default _default;
 // @alpha (undocumented)
 export const settingsNavItem: ExtensionDefinition<{
   kind: 'nav-item';
-  namespace: undefined;
   name: undefined;
   config: {};
   configInput: {};

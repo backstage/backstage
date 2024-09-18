@@ -89,7 +89,6 @@ const _default: FrontendPlugin<
         >;
       };
       kind: 'entity-card';
-      namespace: undefined;
       name: 'relations';
       params: {
         loader: () => Promise<JSX.Element>;
@@ -155,7 +154,6 @@ const _default: FrontendPlugin<
         >;
       };
       kind: 'page';
-      namespace: undefined;
       name: undefined;
       params: {
         defaultPath: string;

@@ -23,7 +23,6 @@ const _default: FrontendPlugin<
   {
     'api:kubernetes': ExtensionDefinition<{
       kind: 'api';
-      namespace: undefined;
       name: undefined;
       config: {};
       configInput: {};
@@ -39,7 +38,6 @@ const _default: FrontendPlugin<
     }>;
     'page:kubernetes': ExtensionDefinition<{
       kind: 'page';
-      namespace: undefined;
       name: undefined;
       config: {
         path: string | undefined;
@@ -66,7 +64,6 @@ const _default: FrontendPlugin<
     }>;
     'entity-content:kubernetes/kubernetes': ExtensionDefinition<{
       kind: 'entity-content';
-      namespace: undefined;
       name: 'kubernetes';
       config: {
         path: string | undefined;
@@ -118,7 +115,6 @@ const _default: FrontendPlugin<
     }>;
     'api:kubernetes/proxy': ExtensionDefinition<{
       kind: 'api';
-      namespace: undefined;
       name: 'proxy';
       config: {};
       configInput: {};
@@ -134,7 +130,6 @@ const _default: FrontendPlugin<
     }>;
     'api:kubernetes/auth-providers': ExtensionDefinition<{
       kind: 'api';
-      namespace: undefined;
       name: 'auth-providers';
       config: {};
       configInput: {};
@@ -150,7 +145,6 @@ const _default: FrontendPlugin<
     }>;
     'api:kubernetes/cluster-link-formatter': ExtensionDefinition<{
       kind: 'api';
-      namespace: undefined;
       name: 'cluster-link-formatter';
       config: {};
       configInput: {};

@@ -20,7 +20,6 @@ const _default: FrontendPlugin<
   {
     'api:catalog-import': ExtensionDefinition<{
       kind: 'api';
-      namespace: undefined;
       name: undefined;
       config: {};
       configInput: {};
@@ -36,7 +35,6 @@ const _default: FrontendPlugin<
     }>;
     'page:catalog-import': ExtensionDefinition<{
       kind: 'page';
-      namespace: undefined;
       name: undefined;
       config: {
         path: string | undefined;

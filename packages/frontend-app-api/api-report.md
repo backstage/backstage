@@ -4,20 +4,12 @@
 
 ```ts
 import { ConfigApi } from '@backstage/core-plugin-api';
-import { createApp as createApp_2 } from '@backstage/frontend-defaults';
-import { CreateAppFeatureLoader as CreateAppFeatureLoader_2 } from '@backstage/frontend-defaults';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { FrontendModule } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SubRouteRef } from '@backstage/frontend-plugin-api';
-
-// @public @deprecated (undocumented)
-export const createApp: typeof createApp_2;
-
-// @public @deprecated (undocumented)
-export type CreateAppFeatureLoader = CreateAppFeatureLoader_2;
 
 // @public
 export type CreateAppRouteBinder = <
