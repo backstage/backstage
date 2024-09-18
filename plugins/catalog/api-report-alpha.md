@@ -20,6 +20,7 @@ import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
+import { SearchResultListItemBlueprintParams } from '@backstage/plugin-search-react/alpha';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
 // @alpha
@@ -158,6 +159,9 @@ const _default: FrontendPlugin<
         {}
       >;
       inputs: {};
+      params: {
+        factory: AnyApiFactory;
+      };
     }>;
     'nav-item:catalog': ExtensionDefinition<{
       kind: 'nav-item';
@@ -175,6 +179,11 @@ const _default: FrontendPlugin<
         {}
       >;
       inputs: {};
+      params: {
+        title: string;
+        icon: IconComponent;
+        routeRef: RouteRef<undefined>;
+      };
     }>;
     'api:catalog/starred-entities': ExtensionDefinition<{
       kind: 'api';
@@ -188,6 +197,9 @@ const _default: FrontendPlugin<
         {}
       >;
       inputs: {};
+      params: {
+        factory: AnyApiFactory;
+      };
     }>;
     'api:catalog/entity-presentation': ExtensionDefinition<{
       kind: 'api';
@@ -201,6 +213,9 @@ const _default: FrontendPlugin<
         {}
       >;
       inputs: {};
+      params: {
+        factory: AnyApiFactory;
+      };
     }>;
     'entity-card:catalog/about': ExtensionDefinition<{
       kind: 'entity-card';
@@ -229,6 +244,10 @@ const _default: FrontendPlugin<
             }
           >;
       inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+        filter?: string | ((entity: Entity) => boolean) | undefined;
+      };
     }>;
     'entity-card:catalog/links': ExtensionDefinition<{
       kind: 'entity-card';
@@ -257,6 +276,10 @@ const _default: FrontendPlugin<
             }
           >;
       inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+        filter?: string | ((entity: Entity) => boolean) | undefined;
+      };
     }>;
     'entity-card:catalog/labels': ExtensionDefinition<{
       kind: 'entity-card';
@@ -285,6 +308,10 @@ const _default: FrontendPlugin<
             }
           >;
       inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+        filter?: string | ((entity: Entity) => boolean) | undefined;
+      };
     }>;
     'entity-card:catalog/depends-on-components': ExtensionDefinition<{
       kind: 'entity-card';
@@ -313,6 +340,10 @@ const _default: FrontendPlugin<
             }
           >;
       inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+        filter?: string | ((entity: Entity) => boolean) | undefined;
+      };
     }>;
     'entity-card:catalog/depends-on-resources': ExtensionDefinition<{
       kind: 'entity-card';
@@ -341,6 +372,10 @@ const _default: FrontendPlugin<
             }
           >;
       inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+        filter?: string | ((entity: Entity) => boolean) | undefined;
+      };
     }>;
     'entity-card:catalog/has-components': ExtensionDefinition<{
       kind: 'entity-card';
@@ -369,6 +404,10 @@ const _default: FrontendPlugin<
             }
           >;
       inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+        filter?: string | ((entity: Entity) => boolean) | undefined;
+      };
     }>;
     'entity-card:catalog/has-resources': ExtensionDefinition<{
       kind: 'entity-card';
@@ -397,6 +436,10 @@ const _default: FrontendPlugin<
             }
           >;
       inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+        filter?: string | ((entity: Entity) => boolean) | undefined;
+      };
     }>;
     'entity-card:catalog/has-subcomponents': ExtensionDefinition<{
       kind: 'entity-card';
@@ -425,6 +468,10 @@ const _default: FrontendPlugin<
             }
           >;
       inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+        filter?: string | ((entity: Entity) => boolean) | undefined;
+      };
     }>;
     'entity-card:catalog/has-subdomains': ExtensionDefinition<{
       kind: 'entity-card';
@@ -453,6 +500,10 @@ const _default: FrontendPlugin<
             }
           >;
       inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+        filter?: string | ((entity: Entity) => boolean) | undefined;
+      };
     }>;
     'entity-card:catalog/has-systems': ExtensionDefinition<{
       kind: 'entity-card';
@@ -481,6 +532,10 @@ const _default: FrontendPlugin<
             }
           >;
       inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+        filter?: string | ((entity: Entity) => boolean) | undefined;
+      };
     }>;
     'entity-content:catalog/overview': ExtensionDefinition<{
       config: {
@@ -548,6 +603,13 @@ const _default: FrontendPlugin<
       kind: 'entity-content';
       namespace: undefined;
       name: 'overview';
+      params: {
+        loader: () => Promise<JSX.Element>;
+        defaultPath: string;
+        defaultTitle: string;
+        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
+        filter?: string | ((entity: Entity) => boolean) | undefined;
+      };
     }>;
     'catalog-filter:catalog/tag': ExtensionDefinition<{
       kind: 'catalog-filter';
@@ -561,6 +623,9 @@ const _default: FrontendPlugin<
         {}
       >;
       inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+      };
     }>;
     'catalog-filter:catalog/kind': ExtensionDefinition<{
       config: {
@@ -586,6 +651,9 @@ const _default: FrontendPlugin<
       kind: 'catalog-filter';
       namespace: undefined;
       name: 'kind';
+      params: {
+        loader: () => Promise<JSX.Element>;
+      };
     }>;
     'catalog-filter:catalog/type': ExtensionDefinition<{
       kind: 'catalog-filter';
@@ -599,6 +667,9 @@ const _default: FrontendPlugin<
         {}
       >;
       inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+      };
     }>;
     'catalog-filter:catalog/mode': ExtensionDefinition<{
       config: {
@@ -624,6 +695,9 @@ const _default: FrontendPlugin<
       kind: 'catalog-filter';
       namespace: undefined;
       name: 'mode';
+      params: {
+        loader: () => Promise<JSX.Element>;
+      };
     }>;
     'catalog-filter:catalog/namespace': ExtensionDefinition<{
       kind: 'catalog-filter';
@@ -637,6 +711,9 @@ const _default: FrontendPlugin<
         {}
       >;
       inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+      };
     }>;
     'catalog-filter:catalog/lifecycle': ExtensionDefinition<{
       kind: 'catalog-filter';
@@ -650,6 +727,9 @@ const _default: FrontendPlugin<
         {}
       >;
       inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+      };
     }>;
     'catalog-filter:catalog/processing-status': ExtensionDefinition<{
       kind: 'catalog-filter';
@@ -663,6 +743,9 @@ const _default: FrontendPlugin<
         {}
       >;
       inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+      };
     }>;
     'catalog-filter:catalog/list': ExtensionDefinition<{
       config: {
@@ -688,6 +771,9 @@ const _default: FrontendPlugin<
       kind: 'catalog-filter';
       namespace: undefined;
       name: 'list';
+      params: {
+        loader: () => Promise<JSX.Element>;
+      };
     }>;
     'page:catalog': ExtensionDefinition<{
       config: {
@@ -718,6 +804,11 @@ const _default: FrontendPlugin<
       kind: 'page';
       namespace: undefined;
       name: undefined;
+      params: {
+        defaultPath: string;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
+      };
     }>;
     'page:catalog/entity': ExtensionDefinition<{
       config: {
@@ -775,6 +866,11 @@ const _default: FrontendPlugin<
       kind: 'page';
       namespace: undefined;
       name: 'entity';
+      params: {
+        defaultPath: string;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
+      };
     }>;
     'search-result-list-item:catalog': ExtensionDefinition<{
       kind: 'search-result-list-item';
@@ -795,6 +891,7 @@ const _default: FrontendPlugin<
         {}
       >;
       inputs: {};
+      params: SearchResultListItemBlueprintParams;
     }>;
   }
 >;

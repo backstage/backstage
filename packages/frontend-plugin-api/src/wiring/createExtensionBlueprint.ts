@@ -21,6 +21,7 @@ import {
   ResolvedExtensionInputs,
   VerifyExtensionFactoryOutput,
   createExtension,
+  ctxParamsSymbol,
 } from './createExtension';
 import { z } from 'zod';
 import { ExtensionInput } from './createExtensionInput';
@@ -124,6 +125,7 @@ export interface ExtensionBlueprint<
     configInput: T['configInput'];
     output: T['output'];
     inputs: T['inputs'];
+    params: T['params'];
   }>;
   /** @deprecated namespace is no longer required, you can safely remove this option and it will default to the `pluginId`. It will be removed in a future release. */
   make<
@@ -232,6 +234,7 @@ export interface ExtensionBlueprint<
     kind: T['kind'];
     namespace: undefined;
     name: string | undefined extends TNewName ? T['name'] : TNewName;
+    params: T['params'];
   }>;
   /** @deprecated namespace is no longer required, you can safely remove this option and it will default to the `pluginId`. It will be removed in a future release. */
   makeWithOverrides<
@@ -479,9 +482,10 @@ export function createExtensionBlueprint<
         output: options.output as AnyExtensionDataRef[],
         config: options.config,
         factory: ctx =>
-          options.factory(args.params, ctx) as Iterable<
-            ExtensionDataValue<any, any>
-          >,
+          options.factory(
+            { ...args.params, ...(ctx as any)[ctxParamsSymbol] },
+            ctx,
+          ) as Iterable<ExtensionDataValue<any, any>>,
       }) as ExtensionDefinition;
     },
     makeWithOverrides(args) {
@@ -502,20 +506,24 @@ export function createExtensionBlueprint<
                 },
               }
             : undefined,
-        factory: ({ node, config, inputs, apis }) => {
+        factory: ctx => {
+          const { node, config, inputs, apis } = ctx;
           return args.factory(
             (innerParams, innerContext) => {
               return createExtensionDataContainer<UOutput>(
-                options.factory(innerParams, {
-                  apis,
-                  node,
-                  config: (innerContext?.config ?? config) as any,
-                  inputs: resolveInputOverrides(
-                    options.inputs,
-                    inputs,
-                    innerContext?.inputs,
-                  ) as any,
-                }) as Iterable<any>,
+                options.factory(
+                  { ...innerParams, ...(ctx as any)[ctxParamsSymbol] },
+                  {
+                    apis,
+                    node,
+                    config: (innerContext?.config ?? config) as any,
+                    inputs: resolveInputOverrides(
+                      options.inputs,
+                      inputs,
+                      innerContext?.inputs,
+                    ) as any,
+                  },
+                ) as Iterable<any>,
                 options.output,
               );
             },

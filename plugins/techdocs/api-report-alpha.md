@@ -16,6 +16,7 @@ import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
+import { SearchResultListItemBlueprintParams } from '@backstage/plugin-search-react/alpha';
 
 // @alpha (undocumented)
 const _default: FrontendPlugin<
@@ -42,6 +43,9 @@ const _default: FrontendPlugin<
         {}
       >;
       inputs: {};
+      params: {
+        factory: AnyApiFactory;
+      };
     }>;
     'page:techdocs': ExtensionDefinition<{
       kind: 'page';
@@ -68,6 +72,11 @@ const _default: FrontendPlugin<
             }
           >;
       inputs: {};
+      params: {
+        defaultPath: string;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
+      };
     }>;
     'nav-item:techdocs': ExtensionDefinition<{
       kind: 'nav-item';
@@ -85,6 +94,11 @@ const _default: FrontendPlugin<
         {}
       >;
       inputs: {};
+      params: {
+        title: string;
+        icon: IconComponent;
+        routeRef: RouteRef<undefined>;
+      };
     }>;
     'api:techdocs/storage': ExtensionDefinition<{
       kind: 'api';
@@ -98,6 +112,9 @@ const _default: FrontendPlugin<
         {}
       >;
       inputs: {};
+      params: {
+        factory: AnyApiFactory;
+      };
     }>;
     'search-result-list-item:techdocs': ExtensionDefinition<{
       config: {
@@ -136,6 +153,7 @@ const _default: FrontendPlugin<
       kind: 'search-result-list-item';
       namespace: undefined;
       name: undefined;
+      params: SearchResultListItemBlueprintParams;
     }>;
     'page:techdocs/reader': ExtensionDefinition<{
       kind: 'page';
@@ -162,6 +180,11 @@ const _default: FrontendPlugin<
             }
           >;
       inputs: {};
+      params: {
+        defaultPath: string;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
+      };
     }>;
     'entity-content:techdocs': ExtensionDefinition<{
       config: {
@@ -223,6 +246,13 @@ const _default: FrontendPlugin<
       kind: 'entity-content';
       namespace: undefined;
       name: undefined;
+      params: {
+        loader: () => Promise<JSX.Element>;
+        defaultPath: string;
+        defaultTitle: string;
+        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
+        filter?: string | ((entity: Entity) => boolean) | undefined;
+      };
     }>;
     'empty-state:techdocs/entity-content': ExtensionDefinition<{
       config: {};
@@ -243,6 +273,7 @@ const _default: FrontendPlugin<
           }
         >;
       };
+      params: never;
       kind: 'empty-state';
       namespace: undefined;
       name: 'entity-content';
@@ -289,6 +320,7 @@ export const techDocsSearchResultListItemExtension: ExtensionDefinition<{
   kind: 'search-result-list-item';
   namespace: undefined;
   name: undefined;
+  params: SearchResultListItemBlueprintParams;
 }>;
 
 // (No @packageDocumentation comment for this package)
