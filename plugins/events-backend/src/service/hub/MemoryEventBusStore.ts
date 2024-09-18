@@ -115,13 +115,26 @@ export class MemoryEventBusStore implements EventBusStore {
         }
 
         return new Promise<{ topic: string }>((resolve, reject) => {
-          const listener = { topics: sub.topics, resolve };
+          const listener = {
+            topics: sub.topics,
+            resolve(result: { topic: string }) {
+              resolve(result);
+              cleanup();
+            },
+          };
           this.#listeners.add(listener);
 
-          options.signal.addEventListener('abort', () => {
+          const onAbort = () => {
             this.#listeners.delete(listener);
             reject(options.signal.reason);
-          });
+            cleanup();
+          };
+
+          function cleanup() {
+            options.signal.removeEventListener('abort', onAbort);
+          }
+
+          options.signal.addEventListener('abort', onAbort);
         });
       },
     };

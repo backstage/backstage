@@ -109,14 +109,31 @@ class DatabaseEventBusListener {
     await this.#ensureConnection();
 
     const updatePromise = new Promise<{ topic: string }>((resolve, reject) => {
-      const listener = { topics, resolve, reject };
+      const listener = {
+        topics,
+        resolve(result: { topic: string }) {
+          resolve(result);
+          cleanup();
+        },
+        reject(err: Error) {
+          reject(err);
+          cleanup();
+        },
+      };
       this.#listeners.add(listener);
 
-      signal.addEventListener('abort', () => {
+      const onAbort = () => {
         this.#listeners.delete(listener);
         this.#maybeTimeoutConnection();
         reject(signal.reason);
-      });
+        cleanup();
+      };
+
+      function cleanup() {
+        signal.removeEventListener('abort', onAbort);
+      }
+
+      signal.addEventListener('abort', onAbort);
     });
 
     // Ignore unhandled rejections
