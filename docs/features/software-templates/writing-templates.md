@@ -891,7 +891,7 @@ const scaffolderModuleCustomFilters = createBackendModule({
 const backend = createBackend();
 backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
 /* highlight-add-next-line */
-backend.add(scaffolderModuleCustomFilters());
+backend.add(scaffolderModuleCustomFilters);
 ```
 
 If you still use the legacy backend system, then you will use the `createRouter()` function of the `Scaffolder plugin`

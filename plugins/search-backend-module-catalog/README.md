@@ -20,8 +20,8 @@ import { searchPlugin } from '@backstage/plugin-search-backend/alpha';
 import { searchModuleCatalogCollator } from '@backstage/plugin-search-backend-module-catalog/alpha';
 
 const backend = createBackend();
-backend.add(searchPlugin());
-backend.add(searchModuleCatalogCollator());
+backend.add(searchPlugin);
+backend.add(searchModuleCatalogCollator);
 backend.start();
 ```
 
@@ -54,8 +54,8 @@ const customTransformer: CatalogCollatorEntityTransformer = entity => ({
 });
 
 const backend = createBackend();
-backend.add(searchPlugin());
-backend.add(searchModuleCatalogCollator());
+backend.add(searchPlugin);
+backend.add(searchModuleCatalogCollator);
 backend.add(
   createBackendModule({
     pluginId: 'search',
