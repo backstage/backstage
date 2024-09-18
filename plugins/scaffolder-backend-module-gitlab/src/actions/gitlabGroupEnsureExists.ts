@@ -66,7 +66,7 @@ export const createGitlabGroupEnsureExistsAction = (options: {
       const api = getClient({ host, integrations, token });
 
       let currentPath: string | null = null;
-      let parent: GroupSchema | null = null;
+      let parentId: number | null = null;
       for (const pathElement of path) {
         const fullPath: string = currentPath
           ? `${currentPath}/${pathElement}`
@@ -79,22 +79,24 @@ export const createGitlabGroupEnsureExistsAction = (options: {
         );
         if (!subGroup) {
           ctx.logger.info(`creating missing group ${fullPath}`);
-          parent = (await api.Groups.create(
-            pathElement,
-            pathElement,
-            parent
-              ? {
-                  parentId: parent.id,
-                }
-              : {},
-          )) as GroupSchema;
+          parentId = (
+            await api.Groups.create(
+              pathElement,
+              pathElement,
+              parentId
+                ? {
+                    parentId: parentId,
+                  }
+                : {},
+            )
+          )?.id;
         } else {
-          parent = subGroup;
+          parentId = subGroup.id;
         }
         currentPath = fullPath;
       }
-      if (parent !== null) {
-        ctx.output('groupId', parent?.id);
+      if (parentId !== null) {
+        ctx.output('groupId', parentId);
       }
     },
   });
