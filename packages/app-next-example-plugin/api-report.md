@@ -40,6 +40,11 @@ const examplePlugin: FrontendPlugin<
             }
           >;
       inputs: {};
+      params: {
+        defaultPath: string;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
+      };
     }>;
   }
 >;

@@ -30,6 +30,9 @@ const _default: FrontendPlugin<
         {}
       >;
       inputs: {};
+      params: {
+        factory: AnyApiFactory;
+      };
     }>;
     'page:catalog-import': ExtensionDefinition<{
       kind: 'page';
@@ -56,6 +59,11 @@ const _default: FrontendPlugin<
             }
           >;
       inputs: {};
+      params: {
+        defaultPath: string;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
+      };
     }>;
   }
 >;

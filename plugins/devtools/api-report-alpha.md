@@ -31,6 +31,9 @@ const _default: FrontendPlugin<
         {}
       >;
       inputs: {};
+      params: {
+        factory: AnyApiFactory;
+      };
     }>;
     'page:devtools': ExtensionDefinition<{
       kind: 'page';
@@ -57,6 +60,11 @@ const _default: FrontendPlugin<
             }
           >;
       inputs: {};
+      params: {
+        defaultPath: string;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
+      };
     }>;
     'nav-item:devtools': ExtensionDefinition<{
       kind: 'nav-item';
@@ -74,6 +82,11 @@ const _default: FrontendPlugin<
         {}
       >;
       inputs: {};
+      params: {
+        title: string;
+        icon: IconComponent;
+        routeRef: RouteRef<undefined>;
+      };
     }>;
   }
 >;

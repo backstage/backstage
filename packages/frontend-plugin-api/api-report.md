@@ -453,6 +453,7 @@ export function createComponentExtension<TProps extends {}>(options: {
       }
     >;
   };
+  params: never;
   kind: 'component';
   namespace: undefined;
   name: string;
@@ -520,6 +521,7 @@ export function createExtension<
       >;
   output: UOutput;
   inputs: TInputs;
+  params: never;
   kind: string | undefined extends TKind ? undefined : TKind;
   namespace: string | undefined extends TNamespace ? undefined : TNamespace;
   name: string | undefined extends TName ? undefined : TName;
@@ -569,6 +571,7 @@ export function createExtension<
       >;
   output: UOutput;
   inputs: TInputs;
+  params: never;
   kind: string | undefined extends TKind ? undefined : TKind;
   namespace: string | undefined extends TNamespace ? undefined : TNamespace;
   name: string | undefined extends TName ? undefined : TName;
@@ -983,6 +986,7 @@ export interface ExtensionBlueprint<
     configInput: T['configInput'];
     output: T['output'];
     inputs: T['inputs'];
+    params: T['params'];
   }>;
   // @deprecated (undocumented)
   make<
@@ -1093,6 +1097,7 @@ export interface ExtensionBlueprint<
     kind: T['kind'];
     namespace: undefined;
     name: string | undefined extends TNewName ? T['name'] : TNewName;
+    params: T['params'];
   }>;
   // @deprecated (undocumented)
   makeWithOverrides<
@@ -1306,45 +1311,60 @@ export type ExtensionDefinition<
       >;
     },
   >(
-    args: {
-      attachTo?: {
-        id: string;
-        input: string;
-      };
-      disabled?: boolean;
-      inputs?: TExtraInputs & {
-        [KName in keyof T['inputs']]?: `Error: Input '${KName &
-          string}' is already defined in parent definition`;
-      };
-      output?: Array<UNewOutput>;
-      config?: {
-        schema: TExtensionConfigSchema & {
-          [KName in keyof T['config']]?: `Error: Config key '${KName &
-            string}' is already defined in parent schema`;
+    args: Expand<
+      {
+        attachTo?: {
+          id: string;
+          input: string;
         };
-      };
-      factory?(
-        originalFactory: (context?: {
-          config?: T['config'];
-          inputs?: ResolveInputValueOverrides<NonNullable<T['inputs']>>;
-        }) => ExtensionDataContainer<NonNullable<T['output']>>,
-        context: {
-          node: AppNode;
-          apis: ApiHolder;
-          config: T['config'] & {
-            [key in keyof TExtensionConfigSchema]: z.infer<
-              ReturnType<TExtensionConfigSchema[key]>
-            >;
+        disabled?: boolean;
+        inputs?: TExtraInputs & {
+          [KName in keyof T['inputs']]?: `Error: Input '${KName &
+            string}' is already defined in parent definition`;
+        };
+        output?: Array<UNewOutput>;
+        config?: {
+          schema: TExtensionConfigSchema & {
+            [KName in keyof T['config']]?: `Error: Config key '${KName &
+              string}' is already defined in parent schema`;
           };
-          inputs: Expand<ResolvedExtensionInputs<T['inputs'] & TExtraInputs>>;
-        },
-      ): Iterable<UFactoryOutput>;
-    } & VerifyExtensionFactoryOutput<
-      AnyExtensionDataRef extends UNewOutput
-        ? NonNullable<T['output']>
-        : UNewOutput,
-      UFactoryOutput
-    >,
+        };
+        factory?(
+          originalFactory: (
+            context?: Expand<
+              {
+                config?: T['config'];
+                inputs?: ResolveInputValueOverrides<NonNullable<T['inputs']>>;
+              } & ([T['params']] extends [never]
+                ? {}
+                : {
+                    params?: Partial<T['params']>;
+                  })
+            >,
+          ) => ExtensionDataContainer<NonNullable<T['output']>>,
+          context: {
+            node: AppNode;
+            apis: ApiHolder;
+            config: T['config'] & {
+              [key in keyof TExtensionConfigSchema]: z.infer<
+                ReturnType<TExtensionConfigSchema[key]>
+              >;
+            };
+            inputs: Expand<ResolvedExtensionInputs<T['inputs'] & TExtraInputs>>;
+          },
+        ): Iterable<UFactoryOutput>;
+      } & ([T['params']] extends [never]
+        ? {}
+        : {
+            params?: Partial<T['params']>;
+          })
+    > &
+      VerifyExtensionFactoryOutput<
+        AnyExtensionDataRef extends UNewOutput
+          ? NonNullable<T['output']>
+          : UNewOutput,
+        UFactoryOutput
+      >,
   ): ExtensionDefinition<{
     kind: T['kind'];
     namespace: T['namespace'];
@@ -1388,6 +1408,7 @@ export type ExtensionDefinitionParameters = {
       }
     >;
   };
+  params?: object;
 };
 
 // @public (undocumented)

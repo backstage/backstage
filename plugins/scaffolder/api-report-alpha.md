@@ -56,6 +56,9 @@ const _default: FrontendPlugin<
         {}
       >;
       inputs: {};
+      params: {
+        factory: AnyApiFactory;
+      };
     }>;
     'page:scaffolder': ExtensionDefinition<{
       kind: 'page';
@@ -82,6 +85,11 @@ const _default: FrontendPlugin<
             }
           >;
       inputs: {};
+      params: {
+        defaultPath: string;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
+      };
     }>;
     'nav-item:scaffolder': ExtensionDefinition<{
       kind: 'nav-item';
@@ -99,6 +107,11 @@ const _default: FrontendPlugin<
         {}
       >;
       inputs: {};
+      params: {
+        title: string;
+        icon: IconComponent;
+        routeRef: RouteRef<undefined>;
+      };
     }>;
   }
 >;
