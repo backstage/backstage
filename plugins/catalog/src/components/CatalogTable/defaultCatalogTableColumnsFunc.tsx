@@ -31,11 +31,13 @@ export const defaultCatalogTableColumnsFunc: CatalogTableColumnsFunc = ({
     columnFactories.createTitleColumn({ hidden: true }),
     columnFactories.createNameColumn({ defaultKind: filters.kind?.value }),
     ...createEntitySpecificColumns(),
-    columnFactories.createMetadataDescriptionColumn(),
-    columnFactories.createTagsColumn(),
   ];
 
   function createEntitySpecificColumns(): TableColumn<CatalogTableRow>[] {
+    const descriptionTagColumns = [
+      columnFactories.createMetadataDescriptionColumn(),
+      columnFactories.createTagsColumn(),
+    ];
     const baseColumns = [
       columnFactories.createSystemColumn(),
       columnFactories.createOwnerColumn(),
@@ -44,14 +46,15 @@ export const defaultCatalogTableColumnsFunc: CatalogTableColumnsFunc = ({
     ];
     switch (filters.kind?.value) {
       case 'user':
-        return [];
+        return [...descriptionTagColumns];
       case 'domain':
       case 'system':
-        return [columnFactories.createOwnerColumn()];
+        return [columnFactories.createOwnerColumn(), ...descriptionTagColumns];
       case 'group':
       case 'template':
         return [
           columnFactories.createSpecTypeColumn({ hidden: !showTypeColumn }),
+          ...descriptionTagColumns,
         ];
       case 'location':
         return [
@@ -60,8 +63,12 @@ export const defaultCatalogTableColumnsFunc: CatalogTableColumnsFunc = ({
         ];
       default:
         return entities.every(entity => entity.metadata.namespace === 'default')
-          ? baseColumns
-          : [...baseColumns, columnFactories.createNamespaceColumn()];
+          ? [...baseColumns, ...descriptionTagColumns]
+          : [
+              ...baseColumns,
+              columnFactories.createNamespaceColumn(),
+              ...descriptionTagColumns,
+            ];
     }
   }
 };
