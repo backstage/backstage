@@ -15,15 +15,50 @@
  */
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import { ContentHeader } from '@backstage/core-components';
+import { makeStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+
+import { ContentHeader, TableColumn } from '@backstage/core-components';
+import { useRouteRef } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { CatalogTable, CatalogTableRow } from '@backstage/plugin-catalog';
+import {
+  EntityKindPicker,
+  EntityLifecyclePicker,
+  EntityListProvider,
+  EntityOwnerPicker,
+  EntityTagPicker,
+  EntityTypePicker,
+  UserListPicker,
+  CatalogFilterLayout,
+} from '@backstage/plugin-catalog-react';
 
+import { scaffolderListTaskRouteRef as tasksRouteRef } from '../../routes';
 import { scaffolderTranslationRef } from '../../translation';
 import { WebFileSystemAccess } from '../../lib/filesystem';
-import { ListTaskPageContent } from '../../components/ListTasksPage/ListTasksPage';
-import ButtonGroup from '@material-ui/core/ButtonGroup';
-import Button from '@material-ui/core/Button';
+
+const defaultColumns: TableColumn<CatalogTableRow>[] = [
+  CatalogTable.columns.createTitleColumn({ hidden: true }),
+  CatalogTable.columns.createNameColumn({ defaultKind: 'Template' }),
+  CatalogTable.columns.createOwnerColumn(),
+  CatalogTable.columns.createSpecTypeColumn(),
+  CatalogTable.columns.createMetadataDescriptionColumn(),
+  CatalogTable.columns.createTagsColumn(),
+];
+
+const useStyles = makeStyles(
+  theme => ({
+    contentHeader: {
+      display: 'grid',
+      gridAutoFlow: 'column',
+      gridGap: theme.spacing(2),
+      justifyContent: 'end',
+    },
+  }),
+  { name: 'ScaffolderTemplateEditorIntro' },
+);
 
 interface EditorIntroProps {
   style?: JSX.IntrinsicElements['div']['style'];
@@ -33,32 +68,63 @@ interface EditorIntroProps {
 }
 
 export function TemplateEditorIntro(props: EditorIntroProps) {
-  const supportsLoad = WebFileSystemAccess.isSupported();
+  const classes = useStyles();
+  const navigate = useNavigate();
+  const tasksLink = useRouteRef(tasksRouteRef);
   const { t } = useTranslationRef(scaffolderTranslationRef);
+
+  const supportsLoad = WebFileSystemAccess.isSupported();
 
   return (
     <div style={props.style}>
       <ContentHeader>
-        <ButtonGroup
-          variant="contained"
-          color="primary"
-          aria-label="text primary button group"
-        >
+        <div className={classes.contentHeader}>
           <Button
+            variant="contained"
+            color="primary"
+            disabled={!supportsLoad}
+            onClick={() => props.onSelect?.('create-template')}
+          >
+            {t('templateEditorPage.templateEditorIntro.createTemplate.title')}
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
             disabled={!supportsLoad}
             onClick={() => props.onSelect?.('local')}
           >
             {t('templateEditorPage.templateEditorIntro.loadLocal.title')}
           </Button>
           <Button
+            variant="contained"
+            color="primary"
             disabled={!supportsLoad}
-            onClick={() => props.onSelect?.('create-template')}
+            onClick={() => {
+              navigate(tasksLink());
+            }}
           >
-            {t('templateEditorPage.templateEditorIntro.createTemplate.title')}
+            {t('templateEditorPage.templateEditorIntro.viewTasks.title')}
           </Button>
-        </ButtonGroup>
+        </div>
       </ContentHeader>
-      <ListTaskPageContent />
+      <EntityListProvider>
+        <CatalogFilterLayout>
+          <CatalogFilterLayout.Filters>
+            <EntityKindPicker initialFilter="Template" hidden />
+            <EntityTypePicker />
+            <UserListPicker initialFilter="all" />
+            <EntityOwnerPicker />
+            <EntityLifecyclePicker />
+            <EntityTagPicker />
+          </CatalogFilterLayout.Filters>
+          <CatalogFilterLayout.Content>
+            <CatalogTable
+              columns={defaultColumns}
+              // actions={actions}
+            />
+          </CatalogFilterLayout.Content>
+        </CatalogFilterLayout>
+      </EntityListProvider>
     </div>
   );
 }

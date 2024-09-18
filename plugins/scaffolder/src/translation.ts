@@ -235,7 +235,7 @@ export const scaffolderTranslationRef = createTranslationRef({
       templateEditorIntro: {
         title: 'Get started by choosing one of the options below:',
         loadLocal: {
-          title: 'Load Template Directory',
+          title: 'Open Local Template',
           description:
             'Load a local template directory to both edit and try executing your own template.',
           unsupportedTooltip: 'Only supported in some Chromium-based browsers',
@@ -244,6 +244,10 @@ export const scaffolderTranslationRef = createTranslationRef({
           title: 'Create New Template',
           description:
             'Create a local template directory to both edit and try executing your own template.',
+          unsupportedTooltip: 'Only supported in some Chromium-based browsers',
+        },
+        viewTasks: {
+          title: 'View Template Tasks',
           unsupportedTooltip: 'Only supported in some Chromium-based browsers',
         },
         formEditor: {

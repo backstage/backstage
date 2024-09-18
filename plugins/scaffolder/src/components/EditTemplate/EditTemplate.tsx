@@ -15,10 +15,10 @@
  */
 
 import React, { useCallback, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import ButtonGroup from '@material-ui/core/ButtonGroup';
 import Drawer from '@material-ui/core/Drawer';
 import Typography from '@material-ui/core/Typography';
 
@@ -28,6 +28,7 @@ import {
   HelpIcon,
   Content,
   ContentHeader,
+  TableColumn,
   Link,
 } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
@@ -37,19 +38,47 @@ import {
   FormProps,
   LayoutOptions,
 } from '@backstage/plugin-scaffolder-react';
+import { CatalogTable, CatalogTableRow } from '@backstage/plugin-catalog';
+import {
+  EntityKindPicker,
+  EntityLifecyclePicker,
+  EntityListProvider,
+  EntityOwnerPicker,
+  EntityTagPicker,
+  EntityTypePicker,
+  UserListPicker,
+  CatalogFilterLayout,
+} from '@backstage/plugin-catalog-react';
 
+import {
+  actionsRouteRef,
+  scaffolderListTaskRouteRef as tasksRouteRef,
+} from '../../routes';
+import { scaffolderTranslationRef } from '../../translation';
 import {
   createExampleTemplate,
   TemplateDirectoryAccess,
   WebFileSystemAccess,
 } from '../../lib/filesystem';
-import { scaffolderTranslationRef } from '../../translation';
-import { ListTaskPageContent } from '../ListTasksPage/ListTasksPage';
 import { TemplateEditor } from '../../next/TemplateEditorPage/TemplateEditor';
-import { actionsRouteRef } from '../../routes';
+
+const defaultColumns: TableColumn<CatalogTableRow>[] = [
+  CatalogTable.columns.createTitleColumn({ hidden: true }),
+  CatalogTable.columns.createNameColumn({ defaultKind: 'Template' }),
+  CatalogTable.columns.createOwnerColumn(),
+  CatalogTable.columns.createSpecTypeColumn(),
+  CatalogTable.columns.createMetadataDescriptionColumn(),
+  CatalogTable.columns.createTagsColumn(),
+];
 
 const useStyles = makeStyles(
   theme => ({
+    contentHeader: {
+      display: 'grid',
+      gridAutoFlow: 'column',
+      gridGap: theme.spacing(2),
+      justifyContent: 'end',
+    },
     drawerPaper: {
       width: 400,
       padding: theme.spacing(3),
@@ -76,6 +105,8 @@ interface EditTemplateProps {
 
 export function EditTemplate(props: EditTemplateProps) {
   const classes = useStyles();
+  const navigate = useNavigate();
+  const tasksLink = useRouteRef(tasksRouteRef);
   const actionsLink = useRouteRef(actionsRouteRef);
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
@@ -141,18 +172,34 @@ export function EditTemplate(props: EditTemplateProps) {
       />
       <Content>
         <ContentHeader>
-          <ButtonGroup
-            variant="contained"
-            color="primary"
-            aria-label="Load or create a template"
-          >
-            <Button disabled={!supportsLoad} onClick={handleLoadDirectory}>
+          <div className={classes.contentHeader}>
+            <Button
+              variant="contained"
+              color="primary"
+              disabled={!supportsLoad}
+              onClick={handleLoadDirectory}
+            >
               {t('templateEditorPage.templateEditorIntro.loadLocal.title')}
             </Button>
-            <Button disabled={!supportsLoad} onClick={handleCreateTemplate}>
+            <Button
+              variant="contained"
+              color="primary"
+              disabled={!supportsLoad}
+              onClick={handleCreateTemplate}
+            >
               {t('templateEditorPage.templateEditorIntro.createTemplate.title')}
             </Button>
-          </ButtonGroup>
+            <Button
+              variant="contained"
+              color="primary"
+              disabled={!supportsLoad}
+              onClick={() => {
+                navigate(tasksLink());
+              }}
+            >
+              {t('templateEditorPage.templateEditorIntro.viewTasks.title')}
+            </Button>
+          </div>
           <Button
             onClick={() => setShowDrawer(true)}
             data-testid="support-button"
@@ -161,20 +208,37 @@ export function EditTemplate(props: EditTemplateProps) {
             Support
             <HelpIcon />
           </Button>
+          <Drawer
+            classes={{ paper: classes.drawerPaper }}
+            anchor="right"
+            open={showDrawer}
+            onClose={() => setShowDrawer(false)}
+          >
+            <h1>Support</h1>
+            <Typography gutterBottom>
+              For seeing a complete list of installed actions, please visit this{' '}
+              <Link to={actionsLink()}>page</Link>.
+            </Typography>
+          </Drawer>
         </ContentHeader>
-        <ListTaskPageContent />
-        <Drawer
-          classes={{ paper: classes.drawerPaper }}
-          anchor="right"
-          open={showDrawer}
-          onClose={() => setShowDrawer(false)}
-        >
-          <h1>Support</h1>
-          <Typography gutterBottom>
-            For seeing a complete list of installed actions, please visit this{' '}
-            <Link to={actionsLink()}>page</Link>.
-          </Typography>
-        </Drawer>
+        <EntityListProvider>
+          <CatalogFilterLayout>
+            <CatalogFilterLayout.Filters>
+              <EntityKindPicker initialFilter="Template" hidden />
+              <EntityTypePicker />
+              <UserListPicker initialFilter="all" />
+              <EntityOwnerPicker />
+              <EntityLifecyclePicker />
+              <EntityTagPicker />
+            </CatalogFilterLayout.Filters>
+            <CatalogFilterLayout.Content>
+              <CatalogTable
+                columns={defaultColumns}
+                // actions={actions}
+              />
+            </CatalogFilterLayout.Content>
+          </CatalogFilterLayout>
+        </EntityListProvider>
       </Content>
     </Page>
   );
