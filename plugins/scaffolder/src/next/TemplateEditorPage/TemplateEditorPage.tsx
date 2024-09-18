@@ -20,7 +20,6 @@ import {
   WebFileSystemAccess,
 } from '../../lib/filesystem';
 import { CustomFieldExplorer } from './CustomFieldExplorer';
-import { TemplateEditor } from './TemplateEditor';
 import { TemplateFormPreviewer } from './TemplateFormPreviewer';
 import {
   FieldExtensionOptions,
@@ -33,11 +32,13 @@ import { useNavigate } from 'react-router-dom';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import {
   actionsRouteRef,
+  editorRouteRef,
   rootRouteRef,
   scaffolderListTaskRouteRef,
 } from '../../routes';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../translation';
+import { WebFileSystemStore } from '../../lib/filesystem/WebFileSystemAccess';
 
 type Selection =
   | {
@@ -64,6 +65,7 @@ export function TemplateEditorPage(props: TemplateEditorPageProps) {
   const actionsLink = useRouteRef(actionsRouteRef);
   const tasksLink = useRouteRef(scaffolderListTaskRouteRef);
   const createLink = useRouteRef(rootRouteRef);
+  const editorLink = useRouteRef(editorRouteRef);
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const scaffolderPageContextMenuProps = {
@@ -74,17 +76,7 @@ export function TemplateEditorPage(props: TemplateEditorPageProps) {
   };
 
   let content: JSX.Element | null = null;
-  if (selection?.type === 'local') {
-    content = (
-      <TemplateEditor
-        directory={selection.directory}
-        fieldExtensions={props.customFieldExtensions}
-        onClose={() => setSelection(undefined)}
-        layouts={props.layouts}
-        formProps={props.formProps}
-      />
-    );
-  } else if (selection?.type === 'form') {
+  if (selection?.type === 'form') {
     content = (
       <TemplateFormPreviewer
         defaultPreviewTemplate={props.defaultPreviewTemplate}
@@ -108,7 +100,8 @@ export function TemplateEditorPage(props: TemplateEditorPageProps) {
           onSelect={option => {
             if (option === 'local') {
               WebFileSystemAccess.requestDirectoryAccess()
-                .then(directory => setSelection({ type: 'local', directory }))
+                .then(directory => WebFileSystemStore.setDirectory(directory))
+                .then(() => navigate(editorLink()))
                 .catch(() => {});
             } else if (option === 'form') {
               setSelection({ type: 'form' });

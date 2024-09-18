@@ -88,11 +88,12 @@ const useStyles = makeStyles(
 );
 
 export const TemplateEditor = (props: {
-  directory: TemplateDirectoryAccess;
+  directory?: TemplateDirectoryAccess;
   fieldExtensions?: FieldExtensionOptions<any, any>[];
   layouts?: LayoutOptions[];
   onClose?: () => void;
   formProps?: FormProps;
+  onLoad?: () => void;
 }) => {
   const classes = useStyles();
   const [errorText, setErrorText] = useState<string>();
@@ -113,7 +114,10 @@ export const TemplateEditor = (props: {
             <TemplateEditorBrowser onClose={props.onClose} />
           </section>
           <section className={classes.editor}>
-            <TemplateEditorTextArea.DirectoryEditor errorText={errorText} />
+            <TemplateEditorTextArea.DirectoryEditor
+              errorText={errorText}
+              onLoad={props.onLoad}
+            />
           </section>
           <section className={classes.preview}>
             <div className={classes.scroll}>
