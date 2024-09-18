@@ -161,6 +161,7 @@ export async function createEventBusRouter(options: {
         eventPayload: req.body.event.payload,
       } as EventParams,
       notifiedSubscribers,
+      credentials,
     });
     if (result) {
       logger.debug(
@@ -263,7 +264,7 @@ export async function createEventBusRouter(options: {
     });
     const id = req.params.subscriptionId;
 
-    await store.upsertSubscription(id, req.body.topics);
+    await store.upsertSubscription(id, req.body.topics, credentials);
 
     logger.debug(
       `New subscription '${id}' for topics '${req.body.topics.join("', '")}'`,

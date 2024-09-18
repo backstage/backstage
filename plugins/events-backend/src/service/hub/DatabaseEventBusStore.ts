@@ -17,6 +17,8 @@ import { EventParams } from '@backstage/plugin-events-node';
 import { EventBusStore } from './types';
 import { Knex } from 'knex';
 import {
+  BackstageCredentials,
+  BackstageServicePrincipal,
   DatabaseService,
   LifecycleService,
   LoggerService,
@@ -40,6 +42,7 @@ const TOPIC_PUBLISH = 'event_bus_publish';
 
 type EventsRow = {
   id: string;
+  created_by: string;
   created_at: Date;
   topic: string;
   data_json: string;
@@ -48,11 +51,18 @@ type EventsRow = {
 
 type SubscriptionsRow = {
   id: string;
+  created_by: string;
   created_at: Date;
   updated_at: Date;
   read_until: string;
   topics: string[];
 };
+
+function creatorId(
+  credentials: BackstageCredentials<BackstageServicePrincipal>,
+) {
+  return `service=${credentials.principal.subject}`;
+}
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-events-backend',
@@ -366,6 +376,7 @@ export class DatabaseEventBusStore implements EventBusStore {
   async publish(options: {
     event: EventParams;
     notifiedSubscribers?: string[];
+    credentials: BackstageCredentials<BackstageServicePrincipal>;
   }): Promise<{ eventId: string } | undefined> {
     const topic = options.event.topic;
     const notifiedSubscribers = options.notifiedSubscribers ?? [];
@@ -374,9 +385,10 @@ export class DatabaseEventBusStore implements EventBusStore {
     const result = await this.#db
       // There's no clean way to create a INSERT INTO .. SELECT with knex, so we end up with quite a lot of .raw(...)
       .into(
-        this.#db.raw('?? (??, ??, ??)', [
+        this.#db.raw('?? (??, ??, ??, ??)', [
           TABLE_EVENTS,
           // These are the rows that we insert, and should match the SELECT below
+          'created_by',
           'topic',
           'data_json',
           'consumed_by',
@@ -387,6 +399,7 @@ export class DatabaseEventBusStore implements EventBusStore {
           q
             // We're not reading data to insert from anywhere else, just raw data
             .select(
+              this.#db.raw('?', [creatorId(options.credentials)]),
               this.#db.raw('?', [topic]),
               this.#db.raw('?', [
                 JSON.stringify({
@@ -429,17 +442,22 @@ export class DatabaseEventBusStore implements EventBusStore {
     return { eventId: id };
   }
 
-  async upsertSubscription(id: string, topics: string[]): Promise<void> {
+  async upsertSubscription(
+    id: string,
+    topics: string[],
+    credentials: BackstageCredentials<BackstageServicePrincipal>,
+  ): Promise<void> {
     const [{ max: maxId }] = await this.#db(TABLE_EVENTS).max('id');
     const result = await this.#db<SubscriptionsRow>(TABLE_SUBSCRIPTIONS)
       .insert({
         id,
+        created_by: creatorId(credentials),
         updated_at: this.#db.fn.now(),
         topics,
         read_until: maxId || 0,
       })
       .onConflict('id')
-      .merge(['topics', 'updated_at'])
+      .merge(['created_by', 'topics', 'updated_at'])
       .returning('*');
 
     if (result.length !== 1) {

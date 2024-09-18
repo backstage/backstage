@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { TestDatabases, mockServices } from '@backstage/backend-test-utils';
+import {
+  TestDatabases,
+  mockCredentials,
+  mockServices,
+} from '@backstage/backend-test-utils';
 import { DatabaseEventBusStore } from './DatabaseEventBusStore';
 
 const logger = mockServices.logger.mock();
@@ -30,12 +34,21 @@ describe('DatabaseEventBusStore', () => {
       const db = await databases.init(databaseId);
       const store = await DatabaseEventBusStore.forTest({ logger, db });
 
-      await store.upsertSubscription('tester-1', ['test']);
-      await store.upsertSubscription('tester-2', ['test']);
+      await store.upsertSubscription(
+        'tester-1',
+        ['test'],
+        mockCredentials.service(),
+      );
+      await store.upsertSubscription(
+        'tester-2',
+        ['test'],
+        mockCredentials.service(),
+      );
 
       for (let i = 0; i < 10; ++i) {
         await store.publish({
           event: { topic: 'test', eventPayload: { n: i } },
+          credentials: mockCredentials.service(),
         });
       }
 
@@ -48,7 +61,11 @@ describe('DatabaseEventBusStore', () => {
         "Subscription with ID 'tester-2' not found",
       );
 
-      await store.upsertSubscription('tester-3', ['test']);
+      await store.upsertSubscription(
+        'tester-3',
+        ['test'],
+        mockCredentials.service(),
+      );
 
       // Reset read pointer to read form the beginning
       await db('event_bus_subscriptions').select({ id: 'tester-3' }).update({
@@ -70,12 +87,21 @@ describe('DatabaseEventBusStore', () => {
         maxAge: 0,
       });
 
-      await store.upsertSubscription('tester-1', ['test']);
-      await store.upsertSubscription('tester-2', ['test']);
+      await store.upsertSubscription(
+        'tester-1',
+        ['test'],
+        mockCredentials.service(),
+      );
+      await store.upsertSubscription(
+        'tester-2',
+        ['test'],
+        mockCredentials.service(),
+      );
 
       for (let i = 0; i < 10; ++i) {
         await store.publish({
           event: { topic: 'test', eventPayload: { n: i } },
+          credentials: mockCredentials.service(),
         });
       }
 
@@ -88,7 +114,11 @@ describe('DatabaseEventBusStore', () => {
         "Subscription with ID 'tester-2' not found",
       );
 
-      await store.upsertSubscription('tester-3', ['test']);
+      await store.upsertSubscription(
+        'tester-3',
+        ['test'],
+        mockCredentials.service(),
+      );
 
       // Reset read pointer to read form the beginning
       await db('event_bus_subscriptions').select({ id: 'tester-3' }).update({
@@ -110,11 +140,16 @@ describe('DatabaseEventBusStore', () => {
         minAge: 1000,
       });
 
-      await store.upsertSubscription('tester-1', ['test']);
+      await store.upsertSubscription(
+        'tester-1',
+        ['test'],
+        mockCredentials.service(),
+      );
 
       for (let i = 0; i < 10; ++i) {
         await store.publish({
           event: { topic: 'test', eventPayload: { n: i } },
+          credentials: mockCredentials.service(),
         });
       }
 
@@ -137,8 +172,8 @@ describe('DatabaseEventBusStore', () => {
       const COUNT = '100000';
 
       await db.raw(`
-        INSERT INTO event_bus_events (id, topic, data_json)
-        SELECT id, 'test', '{}'
+        INSERT INTO event_bus_events (id, created_by, topic, data_json)
+        SELECT id, 'abc', 'test', '{}'
         FROM generate_series(1, ${COUNT}) AS id
       `);
 

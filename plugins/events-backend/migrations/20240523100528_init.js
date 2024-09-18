@@ -30,6 +30,10 @@ exports.up = async function up(knex) {
         .primary()
         .comment('The unique ID of this event');
       table
+        .text('created_by')
+        .notNullable()
+        .comment('The principal that published the event');
+      table
         .dateTime('created_at')
         .defaultTo(knex.fn.now())
         .notNullable()
@@ -53,6 +57,10 @@ exports.up = async function up(knex) {
         .primary()
         .notNullable()
         .comment('The unique ID of this particular subscription');
+      table
+        .text('created_by')
+        .notNullable()
+        .comment('The principal that created the subscription');
       table
         .dateTime('created_at')
         .defaultTo(knex.fn.now())

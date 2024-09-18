@@ -14,15 +14,24 @@
  * limitations under the License.
  */
 
+import {
+  BackstageCredentials,
+  BackstageServicePrincipal,
+} from '@backstage/backend-plugin-api';
 import { EventParams } from '@backstage/plugin-events-node';
 
 export type EventBusStore = {
   publish(options: {
     event: EventParams;
     notifiedSubscribers?: string[];
+    credentials: BackstageCredentials<BackstageServicePrincipal>;
   }): Promise<{ eventId: string } | undefined>;
 
-  upsertSubscription(subscriptionId: string, topics: string[]): Promise<void>;
+  upsertSubscription(
+    subscriptionId: string,
+    topics: string[],
+    credentials: BackstageCredentials<BackstageServicePrincipal>,
+  ): Promise<void>;
 
   readSubscription(subscriptionId: string): Promise<{ events: EventParams[] }>;
 

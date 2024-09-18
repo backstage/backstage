@@ -16,6 +16,10 @@
 import { EventParams } from '@backstage/plugin-events-node';
 import { EventBusStore } from './types';
 import { NotFoundError } from '@backstage/errors';
+import {
+  BackstageCredentials,
+  BackstageServicePrincipal,
+} from '@backstage/backend-plugin-api';
 
 const MAX_BATCH_SIZE = 10;
 const MAX_EVENTS_DEFAULT = 1_000;
@@ -41,6 +45,7 @@ export class MemoryEventBusStore implements EventBusStore {
   async publish(options: {
     event: EventParams;
     notifiedSubscribers: string[];
+    credentials: BackstageCredentials<BackstageServicePrincipal>;
   }): Promise<{ eventId: string } | undefined> {
     const topic = options.event.topic;
     const notifiedSubscribers = new Set(options.notifiedSubscribers);

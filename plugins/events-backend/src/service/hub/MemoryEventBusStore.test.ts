@@ -15,6 +15,7 @@
  */
 import { EventParams } from '@backstage/plugin-events-node';
 import { MemoryEventBusStore } from './MemoryEventBusStore';
+import { mockCredentials } from '@backstage/backend-test-utils';
 
 function mkEvent(message: string): EventParams {
   return {
@@ -31,6 +32,7 @@ describe('MemoryEventBusStore', () => {
       store.publish({
         event: mkEvent('hello'),
         notifiedSubscribers: [],
+        credentials: mockCredentials.service(),
       }),
     ).resolves.toEqual(undefined);
 
@@ -44,6 +46,7 @@ describe('MemoryEventBusStore', () => {
       store.publish({
         event: mkEvent('hello'),
         notifiedSubscribers: [],
+        credentials: mockCredentials.service(),
       }),
     ).resolves.toEqual({ eventId: '1' });
 
@@ -51,6 +54,7 @@ describe('MemoryEventBusStore', () => {
       store.publish({
         event: mkEvent('ignored'),
         notifiedSubscribers: ['tester'],
+        credentials: mockCredentials.service(),
       }),
     ).resolves.toEqual(undefined);
 
@@ -69,6 +73,7 @@ describe('MemoryEventBusStore', () => {
         store.publish({
           event: mkEvent(`hello ${i}`),
           notifiedSubscribers: [],
+          credentials: mockCredentials.service(),
         }),
       ).resolves.toEqual({ eventId: String(i + 1) });
     }

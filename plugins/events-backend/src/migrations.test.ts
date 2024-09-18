@@ -56,11 +56,13 @@ describe('migrations', () => {
 
       await knex('event_bus_events').insert({
         topic: 'test',
+        created_by: 'abc',
         data_json: JSON.stringify({ message: 'hello' }),
         consumed_by: ['tester'],
       });
       await knex('event_bus_subscriptions').insert({
         id: 'tester',
+        created_by: 'abc',
         read_until: '5',
         topics: ['test', 'test2'],
       });
@@ -68,6 +70,7 @@ describe('migrations', () => {
       await expect(knex('event_bus_events')).resolves.toEqual([
         {
           id: '1',
+          created_by: 'abc',
           topic: 'test',
           data_json: JSON.stringify({ message: 'hello' }),
           created_at: expect.anything(),
@@ -77,6 +80,7 @@ describe('migrations', () => {
       await expect(knex('event_bus_subscriptions')).resolves.toEqual([
         {
           id: 'tester',
+          created_by: 'abc',
           created_at: expect.anything(),
           updated_at: expect.anything(),
           read_until: '5',
