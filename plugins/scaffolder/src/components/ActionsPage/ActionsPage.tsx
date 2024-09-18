@@ -54,7 +54,7 @@ import {
 } from '@backstage/core-components';
 import Chip from '@material-ui/core/Chip';
 import { ScaffolderPageContextMenu } from '@backstage/plugin-scaffolder-react/alpha';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
   editRouteRef,
   rootRouteRef,
