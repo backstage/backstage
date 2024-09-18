@@ -47,6 +47,9 @@ const useStyles = makeStyles(
       padding: theme.spacing(2),
       backgroundColor: theme.palette.background.default,
     },
+    appbar: {
+      zIndex: 'unset',
+    },
     toolbar: {
       zIndex: 'auto',
       display: 'grid',
@@ -71,7 +74,7 @@ export function TemplateEditorToolbar(props: {
   const [showPublishModal, setShowPublishModal] = useState(false);
 
   return (
-    <AppBar position="sticky">
+    <AppBar className={classes.appbar} position="relative">
       <Toolbar className={classes.toolbar}>
         <Typography variant="h6" color="textSecondary">
           Template Editor

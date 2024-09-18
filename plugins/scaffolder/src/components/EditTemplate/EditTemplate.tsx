@@ -15,11 +15,11 @@
  */
 
 import React, { useCallback, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
 import Drawer from '@material-ui/core/Drawer';
+import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
 import {
@@ -50,10 +50,7 @@ import {
   CatalogFilterLayout,
 } from '@backstage/plugin-catalog-react';
 
-import {
-  actionsRouteRef,
-  scaffolderListTaskRouteRef as tasksRouteRef,
-} from '../../routes';
+import { actionsRouteRef } from '../../routes';
 import { scaffolderTranslationRef } from '../../translation';
 import {
   createExampleTemplate,
@@ -105,8 +102,6 @@ interface EditTemplateProps {
 
 export function EditTemplate(props: EditTemplateProps) {
   const classes = useStyles();
-  const navigate = useNavigate();
-  const tasksLink = useRouteRef(tasksRouteRef);
   const actionsLink = useRouteRef(actionsRouteRef);
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
@@ -172,34 +167,30 @@ export function EditTemplate(props: EditTemplateProps) {
       />
       <Content>
         <ContentHeader>
-          <div className={classes.contentHeader}>
-            <Button
-              variant="contained"
-              color="primary"
-              disabled={!supportsLoad}
-              onClick={handleLoadDirectory}
-            >
-              {t('templateEditorPage.templateEditorIntro.loadLocal.title')}
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              disabled={!supportsLoad}
-              onClick={handleCreateTemplate}
-            >
-              {t('templateEditorPage.templateEditorIntro.createTemplate.title')}
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              disabled={!supportsLoad}
-              onClick={() => {
-                navigate(tasksLink());
-              }}
-            >
-              {t('templateEditorPage.templateEditorIntro.viewTasks.title')}
-            </Button>
-          </div>
+          <Grid container spacing={2}>
+            <Grid item>
+              <Button
+                variant="contained"
+                color="primary"
+                disabled={!supportsLoad}
+                onClick={handleLoadDirectory}
+              >
+                {t('templateEditorPage.templateEditorIntro.loadLocal.title')}
+              </Button>
+            </Grid>
+            <Grid item>
+              <Button
+                variant="contained"
+                color="primary"
+                disabled={!supportsLoad}
+                onClick={handleCreateTemplate}
+              >
+                {t(
+                  'templateEditorPage.templateEditorIntro.createTemplate.title',
+                )}
+              </Button>
+            </Grid>
+          </Grid>
           <Button
             onClick={() => setShowDrawer(true)}
             data-testid="support-button"
@@ -232,10 +223,7 @@ export function EditTemplate(props: EditTemplateProps) {
               <EntityTagPicker />
             </CatalogFilterLayout.Filters>
             <CatalogFilterLayout.Content>
-              <CatalogTable
-                columns={defaultColumns}
-                // actions={actions}
-              />
+              <CatalogTable columns={defaultColumns} />
             </CatalogFilterLayout.Content>
           </CatalogFilterLayout>
         </EntityListProvider>

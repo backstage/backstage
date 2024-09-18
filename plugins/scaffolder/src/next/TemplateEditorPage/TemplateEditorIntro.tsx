@@ -15,18 +15,15 @@
  */
 
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 
-import { makeStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 
 import { ContentHeader, TableColumn } from '@backstage/core-components';
-import { useRouteRef } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { CatalogTable, CatalogTableRow } from '@backstage/plugin-catalog';
 import {
   EntityKindPicker,
-  EntityLifecyclePicker,
   EntityListProvider,
   EntityOwnerPicker,
   EntityTagPicker,
@@ -35,7 +32,6 @@ import {
   CatalogFilterLayout,
 } from '@backstage/plugin-catalog-react';
 
-import { scaffolderListTaskRouteRef as tasksRouteRef } from '../../routes';
 import { scaffolderTranslationRef } from '../../translation';
 import { WebFileSystemAccess } from '../../lib/filesystem';
 
@@ -48,18 +44,6 @@ const defaultColumns: TableColumn<CatalogTableRow>[] = [
   CatalogTable.columns.createTagsColumn(),
 ];
 
-const useStyles = makeStyles(
-  theme => ({
-    contentHeader: {
-      display: 'grid',
-      gridAutoFlow: 'column',
-      gridGap: theme.spacing(2),
-      justifyContent: 'end',
-    },
-  }),
-  { name: 'ScaffolderTemplateEditorIntro' },
-);
-
 interface EditorIntroProps {
   style?: JSX.IntrinsicElements['div']['style'];
   onSelect?: (
@@ -68,9 +52,6 @@ interface EditorIntroProps {
 }
 
 export function TemplateEditorIntro(props: EditorIntroProps) {
-  const classes = useStyles();
-  const navigate = useNavigate();
-  const tasksLink = useRouteRef(tasksRouteRef);
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const supportsLoad = WebFileSystemAccess.isSupported();
@@ -78,34 +59,28 @@ export function TemplateEditorIntro(props: EditorIntroProps) {
   return (
     <div style={props.style}>
       <ContentHeader>
-        <div className={classes.contentHeader}>
-          <Button
-            variant="contained"
-            color="primary"
-            disabled={!supportsLoad}
-            onClick={() => props.onSelect?.('create-template')}
-          >
-            {t('templateEditorPage.templateEditorIntro.createTemplate.title')}
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            disabled={!supportsLoad}
-            onClick={() => props.onSelect?.('local')}
-          >
-            {t('templateEditorPage.templateEditorIntro.loadLocal.title')}
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            disabled={!supportsLoad}
-            onClick={() => {
-              navigate(tasksLink());
-            }}
-          >
-            {t('templateEditorPage.templateEditorIntro.viewTasks.title')}
-          </Button>
-        </div>
+        <Grid container spacing={2}>
+          <Grid item>
+            <Button
+              variant="contained"
+              color="primary"
+              disabled={!supportsLoad}
+              onClick={() => props.onSelect?.('local')}
+            >
+              {t('templateEditorPage.templateEditorIntro.loadLocal.title')}
+            </Button>
+          </Grid>
+          <Grid item>
+            <Button
+              variant="contained"
+              color="primary"
+              disabled={!supportsLoad}
+              onClick={() => props.onSelect?.('create-template')}
+            >
+              {t('templateEditorPage.templateEditorIntro.createTemplate.title')}
+            </Button>
+          </Grid>
+        </Grid>
       </ContentHeader>
       <EntityListProvider>
         <CatalogFilterLayout>
@@ -114,14 +89,10 @@ export function TemplateEditorIntro(props: EditorIntroProps) {
             <EntityTypePicker />
             <UserListPicker initialFilter="all" />
             <EntityOwnerPicker />
-            <EntityLifecyclePicker />
             <EntityTagPicker />
           </CatalogFilterLayout.Filters>
           <CatalogFilterLayout.Content>
-            <CatalogTable
-              columns={defaultColumns}
-              // actions={actions}
-            />
+            <CatalogTable columns={defaultColumns} />
           </CatalogFilterLayout.Content>
         </CatalogFilterLayout>
       </EntityListProvider>

@@ -241,13 +241,9 @@ export const scaffolderTranslationRef = createTranslationRef({
           unsupportedTooltip: 'Only supported in some Chromium-based browsers',
         },
         createTemplate: {
-          title: 'Create New Template',
+          title: 'Create Local Template',
           description:
             'Create a local template directory to both edit and try executing your own template.',
-          unsupportedTooltip: 'Only supported in some Chromium-based browsers',
-        },
-        viewTasks: {
-          title: 'View Template Tasks',
           unsupportedTooltip: 'Only supported in some Chromium-based browsers',
         },
         formEditor: {

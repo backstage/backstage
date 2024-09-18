@@ -92,6 +92,14 @@ export function ScaffolderPageContextMenu(
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
         <MenuList>
+          {onTasksClicked && (
+            <MenuItem onClick={onTasksClicked}>
+              <ListItemIcon>
+                <List fontSize="small" />
+              </ListItemIcon>
+              <ListItemText primary="View Tasks" />
+            </MenuItem>
+          )}
           {onCreateClicked && (
             <MenuItem onClick={onCreateClicked}>
               <ListItemIcon>
@@ -105,7 +113,7 @@ export function ScaffolderPageContextMenu(
               <ListItemIcon>
                 <Edit fontSize="small" />
               </ListItemIcon>
-              <ListItemText primary="Manage Templates" />
+              <ListItemText primary="Manage templates" />
             </MenuItem>
           )}
           {onActionsClicked && (
@@ -114,14 +122,6 @@ export function ScaffolderPageContextMenu(
                 <Description fontSize="small" />
               </ListItemIcon>
               <ListItemText primary="Installed Actions" />
-            </MenuItem>
-          )}
-          {onTasksClicked && (
-            <MenuItem onClick={onTasksClicked}>
-              <ListItemIcon>
-                <List fontSize="small" />
-              </ListItemIcon>
-              <ListItemText primary="Task List" />
             </MenuItem>
           )}
         </MenuList>
