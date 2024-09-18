@@ -174,7 +174,7 @@ class PluginEventsService implements EventsService {
     if (!res.ok) {
       if (res.status === 404) {
         this.logger.warn(
-          `Event subscribe request failed with status 404, events backend not found. Future events will not be persisted.`,
+          `Event subscribe request failed with status 404, events backend not found. Will only receive events that were sent locally on this process.`,
         );
         delete this.client;
         return;
