@@ -1,12 +1,12 @@
 {
   "name": "@backstage/repo-tools",
-  "description": "CLI for Backstage repo tooling ",
   "version": "0.9.7",
-  "publishConfig": {
-    "access": "public"
-  },
+  "description": "CLI for Backstage repo tooling ",
   "backstage": {
     "role": "cli"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "keywords": [
     "backstage"

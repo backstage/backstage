@@ -1,16 +1,38 @@
 {
   "name": "example-app-next",
   "version": "0.0.15",
+  "backstage": {
+    "role": "frontend"
+  },
   "private": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
     "directory": "packages/app-next"
   },
-  "backstage": {
-    "role": "frontend"
+  "license": "Apache-2.0",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "start": "backstage-cli package start --config ../../app-config.yaml --config app-config.yaml",
+    "test": "backstage-cli package test"
   },
-  "bundled": true,
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
   "dependencies": {
     "@backstage/app-defaults": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
@@ -75,27 +97,5 @@
     "@types/zen-observable": "^0.8.0",
     "cross-env": "^7.0.0"
   },
-  "scripts": {
-    "start": "backstage-cli package start --config ../../app-config.yaml --config app-config.yaml",
-    "build": "backstage-cli package build",
-    "clean": "backstage-cli package clean",
-    "test": "backstage-cli package test",
-    "lint": "backstage-cli package lint"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "files": [
-    "dist"
-  ],
-  "license": "Apache-2.0"
+  "bundled": true
 }

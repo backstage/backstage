@@ -1,12 +1,12 @@
 {
   "name": "@backstage/core-components",
-  "description": "Core components used by Backstage plugins and apps",
   "version": "0.15.0",
-  "publishConfig": {
-    "access": "public"
-  },
+  "description": "Core components used by Backstage plugins and apps",
   "backstage": {
     "role": "web-library"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "keywords": [
     "backstage"
