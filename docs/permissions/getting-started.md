@@ -81,16 +81,11 @@ To help validate the permission framework is setup we'll create a Test Permissio
    });
    ```
 
-6. We now need to register this in the backend. We will do this by adding the new module and remove the existing allow all policy module as we can't have two modules setting the policy:
+6. We now need to register this in the backend. We will do this by adding the follow line:
 
    ```ts title="packages/backend/src/index.ts"
    // permission plugin
    backend.add(import('@backstage/plugin-permission-backend/alpha'));
-   /* highlight-remove-start */
-   backend.add(
-     import('@backstage/plugin-permission-backend-module-allow-all-policy'),
-   );
-   /* highlight-remove-end */
    /* highlight-add-next-line */
    backend.add(import('./extensions/permissionsPolicyExtension'));
    ```
