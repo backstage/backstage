@@ -120,7 +120,9 @@ export function createFetchTemplateFileAction(options: {
       );
 
       if (fs.existsSync(outputPath) && !ctx.input.replace) {
-        ctx.logger.info('File already exists in workspace, not replacing.');
+        ctx.logger.info(
+          `File ${ctx.input.targetPath} already exists in workspace, not replacing.`,
+        );
         return;
       }
 
@@ -161,7 +163,7 @@ export function createFetchTemplateFileAction(options: {
       await fs.ensureDir(path.dirname(outputPath));
       await fs.outputFile(outputPath, result);
 
-      ctx.logger.info(`Template result written to ${outputPath}`);
+      ctx.logger.info(`Template file has been written to ${outputPath}`);
     },
   });
 }
