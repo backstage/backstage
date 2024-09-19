@@ -40,6 +40,7 @@ import {
   scaffolderListTaskRouteRef,
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
+  templateFormRouteRef,
 } from '../../routes';
 import { ErrorPage } from '@backstage/core-components';
 
@@ -54,6 +55,7 @@ import { TemplateListPage, TemplateWizardPage } from '../../next';
 import { OngoingTask } from '../OngoingTask';
 import {
   TemplatePage,
+  TemplateFormPage,
   TemplateEditorPage,
   CustomFieldsPage,
 } from '../../next/TemplateEditorPage';
@@ -169,11 +171,7 @@ export const Router = (props: PropsWithChildren<RouterProps>) => {
         path={editRouteRef.path}
         element={
           <SecretsContextProvider>
-            <TemplateEditorPage
-              customFieldExtensions={fieldExtensions}
-              layouts={customLayouts}
-              formProps={props.formProps}
-            />
+            <TemplateEditorPage />
           </SecretsContextProvider>
         }
       />
@@ -182,6 +180,18 @@ export const Router = (props: PropsWithChildren<RouterProps>) => {
         element={
           <SecretsContextProvider>
             <CustomFieldsPage fieldExtensions={fieldExtensions} />
+          </SecretsContextProvider>
+        }
+      />
+      <Route
+        path={templateFormRouteRef.path}
+        element={
+          <SecretsContextProvider>
+            <TemplateFormPage
+              layouts={customLayouts}
+              formProps={props.formProps}
+              fieldExtensions={fieldExtensions}
+            />
           </SecretsContextProvider>
         }
       />

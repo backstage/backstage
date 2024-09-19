@@ -13,18 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState } from 'react';
+import React from 'react';
 import { Content, Header, Page } from '@backstage/core-components';
-import {
-  TemplateDirectoryAccess,
-  WebFileSystemAccess,
-} from '../../lib/filesystem';
-import { TemplateFormPreviewer } from './TemplateFormPreviewer';
-import {
-  FieldExtensionOptions,
-  FormProps,
-  type LayoutOptions,
-} from '@backstage/plugin-scaffolder-react';
+import { WebFileSystemAccess } from '../../lib/filesystem';
 import { TemplateEditorIntro } from './TemplateEditorIntro';
 import { ScaffolderPageContextMenu } from '@backstage/plugin-scaffolder-react/alpha';
 import { useNavigate } from 'react-router-dom';
@@ -35,42 +26,21 @@ import {
   customFieldsRouteRef,
   rootRouteRef,
   scaffolderListTaskRouteRef,
+  templateFormRouteRef,
 } from '../../routes';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../translation';
 import { WebFileSystemStore } from '../../lib/filesystem/WebFileSystemAccess';
 import { createExampleTemplate } from '../../lib/filesystem/createExampleTemplate';
 
-type Selection =
-  | {
-      type: 'local';
-      directory: TemplateDirectoryAccess;
-    }
-  | {
-      type: 'create-template';
-    }
-  | {
-      type: 'form';
-    }
-  | {
-      type: 'field-explorer';
-    };
-
-interface TemplateEditorPageProps {
-  defaultPreviewTemplate?: string;
-  customFieldExtensions?: FieldExtensionOptions<any, any>[];
-  layouts?: LayoutOptions[];
-  formProps?: FormProps;
-}
-
-export function TemplateEditorPage(props: TemplateEditorPageProps) {
-  const [selection, setSelection] = useState<Selection>();
+export function TemplateEditorPage() {
   const navigate = useNavigate();
   const actionsLink = useRouteRef(actionsRouteRef);
   const tasksLink = useRouteRef(scaffolderListTaskRouteRef);
   const createLink = useRouteRef(rootRouteRef);
   const editorLink = useRouteRef(editorRouteRef);
   const customFieldsLink = useRouteRef(customFieldsRouteRef);
+  const templateFormLink = useRouteRef(templateFormRouteRef);
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const scaffolderPageContextMenuProps = {
@@ -80,19 +50,14 @@ export function TemplateEditorPage(props: TemplateEditorPageProps) {
     onCreateClicked: () => navigate(createLink()),
   };
 
-  let content: JSX.Element | null = null;
-  if (selection?.type === 'form') {
-    content = (
-      <TemplateFormPreviewer
-        defaultPreviewTemplate={props.defaultPreviewTemplate}
-        customFieldExtensions={props.customFieldExtensions}
-        onClose={() => setSelection(undefined)}
-        layouts={props.layouts}
-        formProps={props.formProps}
-      />
-    );
-  } else {
-    content = (
+  return (
+    <Page themeId="home">
+      <Header
+        title={t('templateEditorPage.title')}
+        subtitle={t('templateEditorPage.subtitle')}
+      >
+        <ScaffolderPageContextMenu {...scaffolderPageContextMenuProps} />
+      </Header>
       <Content>
         <TemplateEditorIntro
           onSelect={option => {
@@ -111,25 +76,13 @@ export function TemplateEditorPage(props: TemplateEditorPageProps) {
                 })
                 .catch(() => {});
             } else if (option === 'form') {
-              setSelection({ type: 'form' });
+              navigate(templateFormLink());
             } else if (option === 'field-explorer') {
               navigate(customFieldsLink());
             }
           }}
         />
       </Content>
-    );
-  }
-
-  return (
-    <Page themeId="home">
-      <Header
-        title={t('templateEditorPage.title')}
-        subtitle={t('templateEditorPage.subtitle')}
-      >
-        <ScaffolderPageContextMenu {...scaffolderPageContextMenuProps} />
-      </Header>
-      {content}
     </Page>
   );
 }
