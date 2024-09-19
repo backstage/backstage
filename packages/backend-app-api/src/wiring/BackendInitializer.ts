@@ -275,7 +275,7 @@ export class BackendInitializer {
     );
 
     // All plugins are initialized in parallel
-    await Promise.all(
+    const results = await Promise.allSettled(
       allPluginIds.map(async pluginId => {
         // Initialize all eager services
         await this.#serviceRegistry.initializeEagerServicesWithScope(
@@ -344,6 +344,16 @@ export class BackendInitializer {
         await lifecycleService.startup();
       }),
     );
+
+    const initErrors = results.flatMap(r =>
+      r.status === 'rejected' ? [r.reason] : [],
+    );
+    if (initErrors.length === 1) {
+      throw initErrors[0];
+    } else if (initErrors.length > 1) {
+      // TODO(Rugvip): Seems like there aren't proper types for AggregateError yet
+      throw new (AggregateError as any)(initErrors, 'Backend startup failed');
+    }
 
     // Once all plugins and modules have been initialized, we can signal that the backend has started up successfully
     const lifecycleService = await this.#getRootLifecycleImpl();
