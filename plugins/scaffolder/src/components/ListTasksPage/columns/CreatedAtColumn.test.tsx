@@ -23,12 +23,16 @@ import { DateTime } from 'luxon';
 describe('<CreatedAtColumn />', () => {
   it('should render the column with the time', async () => {
     const props = {
-      createdAt: DateTime.now().toISO()!,
+      createdAt: DateTime.now().toISO(),
     };
+
+    const formattedTime = DateTime.fromISO(props.createdAt).toLocaleString(
+      DateTime.DATETIME_SHORT_WITH_SECONDS,
+    );
 
     const { getByText } = await renderInTestApp(<CreatedAtColumn {...props} />);
 
-    const text = getByText('0 seconds ago');
+    const text = getByText(formattedTime);
     expect(text).toBeDefined();
   });
 });
