@@ -16,6 +16,7 @@
 
 export { TemplatePage } from './TemplatePage';
 export { TemplateEditorPage } from './TemplateEditorPage';
+export { CustomFieldsPage } from './CustomFieldsPage';
 export type { ScaffolderCustomFieldExplorerClassKey } from './CustomFieldExplorer';
 export type { ScaffolderTemplateEditorClassKey } from './TemplateEditor';
 export type { ScaffolderTemplateFormPreviewerClassKey } from './TemplateFormPreviewer';

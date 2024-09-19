@@ -84,3 +84,9 @@ export const editorRouteRef = createSubRouteRef({
   parent: rootRouteRef,
   path: '/template',
 });
+
+export const customFieldsRouteRef = createSubRouteRef({
+  id: 'scaffolder/edit',
+  parent: rootRouteRef,
+  path: '/custom-fields',
+});
