@@ -33,7 +33,7 @@ yarn --cwd packages/backend add @backstage/plugin-events-backend-module-github
 // packages/backend/src/index.ts
 import { eventsModuleGithubEventRouter } from '@backstage/plugin-events-backend-module-github/alpha';
 // ...
-backend.add(eventsModuleGithubEventRouter());
+backend.add(eventsModuleGithubEventRouter);
 ```
 
 #### Legacy Backend System
@@ -50,7 +50,7 @@ await eventRouter.subscribe();
 // packages/backend/src/index.ts
 import { eventsModuleGithubWebhook } from '@backstage/plugin-events-backend-module-github/alpha';
 // ...
-backend.add(eventsModuleGithubWebhook());
+backend.add(eventsModuleGithubWebhook);
 ```
 
 #### Legacy Backend System

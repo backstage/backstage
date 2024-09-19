@@ -169,7 +169,7 @@ const backend = createBackend();
 
 backend.add(import('@backstage/plugin-catalog-backend/alpha'));
 
-backend.add(githubOrgModule());
+backend.add(githubOrgModule);
 
 backend.start();
 ```
