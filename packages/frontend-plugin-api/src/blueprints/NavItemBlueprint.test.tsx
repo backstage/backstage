@@ -56,7 +56,6 @@ describe('NavItemBlueprint', () => {
         "inputs": {},
         "kind": "nav-item",
         "name": undefined,
-        "namespace": undefined,
         "output": [
           [Function],
         ],

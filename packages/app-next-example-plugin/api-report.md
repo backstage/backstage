@@ -17,7 +17,6 @@ const examplePlugin: FrontendPlugin<
   {
     'page:example': ExtensionDefinition<{
       kind: 'page';
-      namespace: undefined;
       name: undefined;
       config: {
         path: string | undefined;

@@ -718,7 +718,6 @@ describe('createExtension', () => {
 
     it('should complain when overriding with incompatible output', () => {
       const testExtension = createExtension({
-        namespace: 'test',
         attachTo: { id: 'root', input: 'blob' },
         output: [stringDataRef],
         factory() {

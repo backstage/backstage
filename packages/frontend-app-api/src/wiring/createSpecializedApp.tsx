@@ -41,13 +41,8 @@ import {
   identityApiRef,
 } from '@backstage/core-plugin-api';
 import { ApiFactoryRegistry, ApiResolver } from '@backstage/core-app-api';
+import { OpaqueFrontendPlugin } from '@internal/frontend';
 
-// TODO: Get rid of all of these
-
-import {
-  createApp as _createApp,
-  CreateAppFeatureLoader as _CreateAppFeatureLoader,
-} from '@backstage/frontend-defaults';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 
@@ -59,16 +54,9 @@ import { resolveRouteBindings } from '../routing/resolveRouteBindings';
 import { collectRouteIds } from '../routing/collectRouteIds';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
-  toInternalFrontendPlugin,
-  isInternalFrontendPlugin,
-} from '../../../frontend-plugin-api/src/wiring/createFrontendPlugin';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import {
   toInternalFrontendModule,
   isInternalFrontendModule,
 } from '../../../frontend-plugin-api/src/wiring/createFrontendModule';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalExtensionOverrides } from '../../../frontend-plugin-api/src/wiring/createExtensionOverrides';
 import { getBasePath } from '../routing/getBasePath';
 import { Root } from '../extensions/Root';
 import { resolveAppTree } from '../tree/resolveAppTree';
@@ -93,7 +81,7 @@ function deduplicateFeatures(
   return features
     .reverse()
     .filter(feature => {
-      if (!isInternalFrontendPlugin(feature)) {
+      if (!OpaqueFrontendPlugin.isType(feature)) {
         return true;
       }
       if (seenIds.has(feature.id)) {
@@ -174,19 +162,6 @@ class RouteResolutionApiProxy implements RouteResolutionApi {
     return this.#routeObjects;
   }
 }
-
-/**
- * @public
- * @deprecated Import from `@backstage/frontend-defaults` instead.
- */
-export const createApp = _createApp;
-
-/**
- * @public
- * @deprecated Import from `@backstage/frontend-defaults` instead.
- */
-export type CreateAppFeatureLoader = _CreateAppFeatureLoader;
-
 /**
  * Creates an empty app without any default features. This is a low-level API is
  * intended for use in tests or specialized setups. Typically wou want to use
@@ -240,8 +215,8 @@ export function createSpecializedApp(options?: {
   const featureFlagApi = apiHolder.get(featureFlagsApiRef);
   if (featureFlagApi) {
     for (const feature of features) {
-      if (isInternalFrontendPlugin(feature)) {
-        toInternalFrontendPlugin(feature).featureFlags.forEach(flag =>
+      if (OpaqueFrontendPlugin.isType(feature)) {
+        OpaqueFrontendPlugin.toInternal(feature).featureFlags.forEach(flag =>
           featureFlagApi.registerFlag({
             name: flag.name,
             pluginId: feature.id,
@@ -254,11 +229,6 @@ export function createSpecializedApp(options?: {
             name: flag.name,
             pluginId: feature.pluginId,
           }),
-        );
-      }
-      if (feature.$$type === '@backstage/ExtensionOverrides') {
-        toInternalExtensionOverrides(feature).featureFlags.forEach(flag =>
-          featureFlagApi.registerFlag({ name: flag.name, pluginId: '' }),
         );
       }
     }

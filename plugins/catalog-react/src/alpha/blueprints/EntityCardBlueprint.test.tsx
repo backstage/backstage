@@ -63,7 +63,6 @@ describe('EntityCardBlueprint', () => {
         "inputs": {},
         "kind": "entity-card",
         "name": "test",
-        "namespace": undefined,
         "output": [
           [Function],
           {

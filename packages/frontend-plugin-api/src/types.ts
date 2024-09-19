@@ -15,7 +15,7 @@
  */
 
 import { ReactNode } from 'react';
-import { BackstagePlugin } from './wiring';
+import { FrontendPlugin } from './wiring';
 
 // TODO(Rugvip): This might be a quite useful utility type, maybe add to @backstage/types?
 /**
@@ -34,7 +34,7 @@ export type CoreNotFoundErrorPageProps = {
 
 /** @public */
 export type CoreErrorBoundaryFallbackProps = {
-  plugin?: BackstagePlugin;
+  plugin?: FrontendPlugin;
   error: Error;
   resetError: () => void;
 };

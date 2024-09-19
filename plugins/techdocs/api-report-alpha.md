@@ -33,7 +33,6 @@ const _default: FrontendPlugin<
   {
     'api:techdocs': ExtensionDefinition<{
       kind: 'api';
-      namespace: undefined;
       name: undefined;
       config: {};
       configInput: {};
@@ -49,7 +48,6 @@ const _default: FrontendPlugin<
     }>;
     'page:techdocs': ExtensionDefinition<{
       kind: 'page';
-      namespace: undefined;
       name: undefined;
       config: {
         path: string | undefined;
@@ -80,7 +78,6 @@ const _default: FrontendPlugin<
     }>;
     'nav-item:techdocs': ExtensionDefinition<{
       kind: 'nav-item';
-      namespace: undefined;
       name: undefined;
       config: {};
       configInput: {};
@@ -102,7 +99,6 @@ const _default: FrontendPlugin<
     }>;
     'api:techdocs/storage': ExtensionDefinition<{
       kind: 'api';
-      namespace: undefined;
       name: 'storage';
       config: {};
       configInput: {};
@@ -151,13 +147,11 @@ const _default: FrontendPlugin<
         >;
       };
       kind: 'search-result-list-item';
-      namespace: undefined;
       name: undefined;
       params: SearchResultListItemBlueprintParams;
     }>;
     'page:techdocs/reader': ExtensionDefinition<{
       kind: 'page';
-      namespace: undefined;
       name: 'reader';
       config: {
         path: string | undefined;
@@ -244,7 +238,6 @@ const _default: FrontendPlugin<
         >;
       };
       kind: 'entity-content';
-      namespace: undefined;
       name: undefined;
       params: {
         loader: () => Promise<JSX.Element>;
@@ -275,7 +268,6 @@ const _default: FrontendPlugin<
       };
       params: never;
       kind: 'empty-state';
-      namespace: undefined;
       name: 'entity-content';
     }>;
   }
@@ -318,7 +310,6 @@ export const techDocsSearchResultListItemExtension: ExtensionDefinition<{
     >;
   };
   kind: 'search-result-list-item';
-  namespace: undefined;
   name: undefined;
   params: SearchResultListItemBlueprintParams;
 }>;

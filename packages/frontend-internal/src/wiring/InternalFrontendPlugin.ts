@@ -14,5 +14,21 @@
  * limitations under the License.
  */
 
-export { OpaqueExtensionDefinition } from './InternalExtensionDefinition';
-export { OpaqueFrontendPlugin } from './InternalFrontendPlugin';
+import {
+  Extension,
+  FeatureFlagConfig,
+  FrontendPlugin,
+} from '@backstage/frontend-plugin-api';
+import { OpaqueType } from './OpaqueType';
+
+export const OpaqueFrontendPlugin = OpaqueType.create<{
+  public: FrontendPlugin;
+  versions: {
+    readonly version: 'v1';
+    readonly extensions: Extension<unknown>[];
+    readonly featureFlags: FeatureFlagConfig[];
+  };
+}>({
+  type: '@backstage/FrontendPlugin',
+  versions: ['v1'],
+});
