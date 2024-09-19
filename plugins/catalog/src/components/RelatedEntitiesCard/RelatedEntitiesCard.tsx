@@ -44,9 +44,6 @@ import {
 } from './presets';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { useApp } from '@backstage/core-plugin-api';
-import OpenInNew from '@material-ui/icons/OpenInNew';
-import { makeStyles, Theme } from '@material-ui/core/styles';
 
 /** @public */
 export type RelatedEntitiesCardProps<T extends Entity> = {
@@ -60,13 +57,6 @@ export type RelatedEntitiesCardProps<T extends Entity> = {
   asRenderableEntities: (entities: Entity[]) => T[];
   tableOptions?: TableOptions;
 };
-
-const useStyles = makeStyles((theme: Theme) => ({
-  externalLink: {
-    verticalAlign: 'bottom',
-    marginLeft: theme.spacing(0.5),
-  },
-}));
 
 /**
  * A low level card component that can be used as a building block for more
@@ -94,9 +84,6 @@ export const RelatedEntitiesCard = <T extends Entity>(
     asRenderableEntities,
     tableOptions = {},
   } = props;
-  const classes = useStyles();
-  const app = useApp();
-  const ExternalLinkIcon = app.getSystemIcon('externalLink') || OpenInNew;
   const { t } = useTranslationRef(catalogTranslationRef);
   const { entity } = useEntity();
   const { entities, loading, error } = useRelatedEntities(entity, {
@@ -128,16 +115,7 @@ export const RelatedEntitiesCard = <T extends Entity>(
         <div style={{ textAlign: 'center' }}>
           <Typography variant="body1">{emptyMessage}</Typography>
           <Typography variant="body2">
-            <Link
-              className={classes.externalLink}
-              to={emptyHelpLink}
-              externalLinkIcon={
-                <ExternalLinkIcon
-                  fontSize="small"
-                  className={classes.externalLink}
-                />
-              }
-            >
+            <Link to={emptyHelpLink} externalLinkIcon>
               {t('relatedEntitiesCard.emptyHelpLinkTitle')}
             </Link>
           </Typography>

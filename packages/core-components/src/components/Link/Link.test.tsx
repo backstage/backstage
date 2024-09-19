@@ -25,7 +25,6 @@ import { analyticsApiRef, configApiRef } from '@backstage/core-plugin-api';
 import { isExternalUri, Link, useResolvedPath } from './Link';
 import { Route, Routes } from 'react-router-dom';
 import { ConfigReader } from '@backstage/config';
-import OpenInNew from '@material-ui/icons/OpenInNew';
 
 describe('<Link />', () => {
   it('navigates using react-router', async () => {
@@ -59,7 +58,7 @@ describe('<Link />', () => {
 
   it('renders external link icon if externalLinkIcon prop is passed', async () => {
     const { container } = await renderInTestApp(
-      <Link to="http://something.external" externalLinkIcon={<OpenInNew />}>
+      <Link to="http://something.external" externalLinkIcon>
         External Link
       </Link>,
     );
