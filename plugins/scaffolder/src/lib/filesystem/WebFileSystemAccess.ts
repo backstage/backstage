@@ -80,6 +80,27 @@ class WebDirectoryAccess implements TemplateDirectoryAccess {
       }
     }
   }
+
+  async createFile(options: { name: string; data: string }): Promise<void> {
+    const { name, data } = options;
+    let file: FileSystemFileHandle;
+
+    // Current create template does not require support for nested directories
+    if (name.includes('/')) {
+      const [dir, path] = name.split('/');
+      const handle = await this.handle.getDirectoryHandle(dir, {
+        create: true,
+      });
+      file = await handle.getFileHandle(path, { create: true });
+    } else {
+      file = await this.handle.getFileHandle(name, {
+        create: true,
+      });
+    }
+    const writable = await file.createWritable();
+    await writable.write(data);
+    await writable.close();
+  }
 }
 
 /** @internal */

@@ -240,6 +240,12 @@ export const scaffolderTranslationRef = createTranslationRef({
             'Load a local template directory, allowing you to both edit and try executing your own template.',
           unsupportedTooltip: 'Only supported in some Chromium-based browsers',
         },
+        createLocal: {
+          title: 'Create New Template',
+          description:
+            'Create a local template directory, allowing you to both edit and try executing your own template.',
+          unsupportedTooltip: 'Only supported in some Chromium-based browsers',
+        },
         formEditor: {
           title: 'Edit Template Form',
           description:

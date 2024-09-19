@@ -42,6 +42,10 @@ class MockDirectoryAccess implements TemplateDirectoryAccess {
     );
   }
 
+  createFile(options: { name: string; data: string }): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+
   async listFiles(): Promise<TemplateFileAccess[]> {
     return this.files;
   }

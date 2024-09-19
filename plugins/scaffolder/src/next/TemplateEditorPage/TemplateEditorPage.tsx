@@ -39,11 +39,15 @@ import {
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../translation';
 import { WebFileSystemStore } from '../../lib/filesystem/WebFileSystemAccess';
+import { createExampleTemplate } from '../../lib/filesystem/createExampleTemplate';
 
 type Selection =
   | {
       type: 'local';
       directory: TemplateDirectoryAccess;
+    }
+  | {
+      type: 'create-template';
     }
   | {
       type: 'form';
@@ -102,6 +106,15 @@ export function TemplateEditorPage(props: TemplateEditorPageProps) {
               WebFileSystemAccess.requestDirectoryAccess()
                 .then(directory => WebFileSystemStore.setDirectory(directory))
                 .then(() => navigate(editorLink()))
+                .catch(() => {});
+            } else if (option === 'create-template') {
+              WebFileSystemAccess.requestDirectoryAccess()
+                .then(directory => {
+                  createExampleTemplate(directory).then(() => {
+                    WebFileSystemStore.setDirectory(directory);
+                    navigate(editorLink());
+                  });
+                })
                 .catch(() => {});
             } else if (option === 'form') {
               setSelection({ type: 'form' });
