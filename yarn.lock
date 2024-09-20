@@ -9872,9 +9872,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@internal/opaque@workspace:packages/internal-opaque":
+"@internal/opaque@workspace:packages/opaque-internal":
   version: 0.0.0-use.local
-  resolution: "@internal/opaque@workspace:packages/internal-opaque"
+  resolution: "@internal/opaque@workspace:packages/opaque-internal"
   dependencies:
     "@backstage/cli": "workspace:^"
     "@testing-library/jest-dom": ^6.0.0
