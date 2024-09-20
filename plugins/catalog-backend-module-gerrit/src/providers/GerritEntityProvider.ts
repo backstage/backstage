@@ -218,7 +218,7 @@ export class GerritEntityProvider implements EntityProvider {
     // Gerrit responds with something like `refs/heads/master`
     const projectHeadResponse = (await parseGerritJsonResponse(
       response as any,
-    )) as GerritProjectQueryResult;
+    )) as string;
 
     return {
       type: 'url',
