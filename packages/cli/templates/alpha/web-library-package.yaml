@@ -1,0 +1,8 @@
+# lib/new/factories/webLibraryPackage.ts
+description: A new web-library package, exporting shared functionality for frontend plugins
+template: ../web-library-package
+targetPath: packages
+prompts:
+  - id: test
+    prompt: Test prompt
+    default: test-default

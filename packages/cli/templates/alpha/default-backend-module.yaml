@@ -1,0 +1,8 @@
+# lib/new/factories/backendModule.ts
+description: A new backend module that extends an existing backend plugin with additional features
+template: ../default-backend-module
+targetPath: plugins
+prompts:
+  - id: test
+    prompt: Test prompt
+    default: test-default
