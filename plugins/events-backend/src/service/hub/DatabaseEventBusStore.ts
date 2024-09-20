@@ -468,53 +468,62 @@ export class DatabaseEventBusStore implements EventBusStore {
   }
 
   async readSubscription(id: string): Promise<{ events: EventParams[] }> {
-    const result = await this.#db<SubscriptionsRow>(TABLE_SUBSCRIPTIONS)
-      // Read the target subscription so that we can use the read marker and topics
-      .with('sub', q =>
-        q.select().from(TABLE_SUBSCRIPTIONS).where({ id }).forUpdate(),
+    // The below query selects the subscription we're reading from, locks it for
+    // an update, reads events for the subscription up to the limit, and then
+    // updates the pointer to the last read event.
+    //
+    // The query for selected_events is written in this particular way to force
+    // evaluation of the notified subscribers last. Without this, the query
+    // planner loves to first do a sequential scan of the events table to filter
+    // out the events that have already been consumed, but that is often a small
+    // subset and extremely wasteful. We instead want to make sure that the
+    // query is executed such that we select the events that are relevant to the
+    // subscription first, and then filter out any events that have already been
+    // consumed last.
+    //
+    // This is written as a plain SQL query to spare us all the horrors of
+    // expressing this in knex.
+
+    const { rows: result } = await this.#db.raw<{
+      rows: [] | [{ events: EventsRow[] }];
+    }>(
+      `
+      WITH subscription AS (
+        SELECT topics, read_until
+        FROM event_bus_subscriptions
+        WHERE id = :id
+        FOR UPDATE
+      ),
+      selected_events AS (
+        SELECT event_bus_events.*
+        FROM event_bus_events
+        INNER JOIN subscription
+        ON event_bus_events.topic = ANY(subscription.topics)
+        WHERE (
+          CASE WHEN event_bus_events.id > subscription.read_until THEN
+            CASE WHEN NOT :id = ANY(event_bus_events.consumed_by)
+              THEN 1
+            END
+          END
+        ) = 1
+        ORDER BY event_bus_events.id ASC LIMIT :limit
+      ),
+      last_event_id AS (
+        SELECT max(id) AS last_event_id
+        FROM selected_events
+      ),
+      events_array AS (
+        SELECT json_agg(row_to_json(selected_events)) AS events
+        FROM selected_events
       )
-      // Read the next batch of events for the subscription from its read marker
-      .with('events', q =>
-        q
-          .select('event.*')
-          .from({ event: 'event_bus_events', sub: 'sub' })
-          // For each event, check if it matches any of the topics that we're subscribed to
-          .where(
-            'event.topic',
-            '=',
-            this.#db.ref('topics').withSchema('sub').wrap('ANY(', ')'),
-          )
-          // Skip events that have already been consumed by this subscription
-          .whereNot(
-            this.#db.raw('?', id),
-            '=',
-            this.#db.ref('consumed_by').withSchema('event').wrap('ANY(', ')'),
-          )
-          .where('event.id', '>', this.#db.ref('read_until').withSchema('sub'))
-          .orderBy('event.id', 'asc')
-          .limit(MAX_BATCH_SIZE),
-      )
-      // Find the ID of the last event in the batch, for use as the new read_until marker
-      .with('last_event_id', q => q.max({ last_event_id: 'id' }).from('events'))
-      // Aggregate the events into a JSON array so that we can return all of them with the UPDATE
-      .with('events_array', q =>
-        q
-          .select({ events: this.#db.raw('json_agg(row_to_json(events))') })
-          .from('events'),
-      )
-      // Update the read_until marker to the ID of the last event, or if no
-      // events where read, the last ID out of all events
-      .update({
-        read_until: this.#db.raw(
-          'COALESCE(last_event_id, (SELECT MAX(id) FROM event_bus_events), 0)',
-        ),
-      })
-      .updateFrom({
-        events_array: 'events_array',
-        last_event_id: 'last_event_id',
-      })
-      .where(`${TABLE_SUBSCRIPTIONS}.id`, id)
-      .returning<[{ events: EventsRow[] }]>('events_array.events');
+      UPDATE event_bus_subscriptions
+      SET read_until = COALESCE(last_event_id, (SELECT MAX(id) FROM event_bus_events), 0)
+      FROM events_array, last_event_id
+      WHERE event_bus_subscriptions.id = :id
+      RETURNING events_array.events
+    `,
+      { id, limit: MAX_BATCH_SIZE },
+    );
 
     if (result.length === 0) {
       throw new NotFoundError(`Subscription with ID '${id}' not found`);
@@ -530,7 +539,7 @@ export class DatabaseEventBusStore implements EventBusStore {
     }
 
     return {
-      events: result[0].events.map(row => {
+      events: rows.map(row => {
         const { payload, metadata } = JSON.parse(row.data_json);
         return {
           topic: row.topic,

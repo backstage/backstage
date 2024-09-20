@@ -194,4 +194,44 @@ describe('DatabaseEventBusStore', () => {
       ]);
     },
   );
+
+  it.each(databases.eachSupportedId())(
+    'should perform well when looking up events by topic, %p',
+    async databaseId => {
+      const db = await databases.init(databaseId);
+      const store = await DatabaseEventBusStore.forTest({
+        logger,
+        db,
+      });
+
+      const COUNT = '100000';
+
+      // Insert 100,000 events, a lot more than we'd expect to ever have
+      // in a real-world scenario given our count window size is 10,000.
+      await db.raw(`
+        INSERT INTO event_bus_events (id, created_by, topic, data_json, consumed_by)
+        SELECT id, 'abc', CONCAT('test-', id), '{}', '{"${String(
+          Math.random(),
+        ).slice(2, 6)}"}'
+        FROM generate_series(1, ${COUNT}) AS id
+      `);
+      await db('event_bus_subscriptions').insert({
+        id: 'tester',
+        created_by: 'abc',
+        read_until: 0,
+        topics: ['test-1000'],
+      });
+
+      const start = Date.now();
+      const { events } = await store.readSubscription('tester');
+      const duration = Date.now() - start;
+
+      expect(events).toEqual([{ topic: 'test-1000', eventPayload: undefined }]);
+
+      // When not run in an optimized way this takes anywhere from 10ms to
+      // 100ms. When optimized it's closed to 1ms, but we leave a bit of room
+      // for CI load spikes.
+      expect(duration).toBeLessThan(20);
+    },
+  );
 });
