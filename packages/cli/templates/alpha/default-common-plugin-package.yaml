@@ -1,0 +1,8 @@
+# lib/new/factories/pluginCommon.ts
+description: A new isomorphic common plugin package
+template: ../default-common-plugin-package
+targetPath: plugins
+prompts:
+  - id: test
+    prompt: Test prompt
+    default: test-default
