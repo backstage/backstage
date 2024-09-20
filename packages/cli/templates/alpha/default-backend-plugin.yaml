@@ -1,0 +1,8 @@
+# lib/new/factories/backendPlugin.ts
+description: A new backend plugin
+template: ../default-backend-plugin
+targetPath: plugins
+prompts:
+  - id: test
+    prompt: Test prompt
+    default: test-default

@@ -1,0 +1,8 @@
+# lib/new/factories/pluginNode.ts
+description: A new Node.js library plugin package
+template: ../default-node-plugin-package
+targetPath: plugins
+prompts:
+  - id: test
+    prompt: Test prompt
+    default: test-default
