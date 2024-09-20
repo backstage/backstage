@@ -134,7 +134,7 @@ describe('createExtensionTester', () => {
 
     const extraExtension = createExtension({
       name: 'e2',
-      attachTo: { id: 'e1', input: 'ignored' },
+      attachTo: extension.inputs.ignored,
       output: [stringDataRef, internalRef.optional()],
       factory: () => [stringDataRef('test-text')],
     });

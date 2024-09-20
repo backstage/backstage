@@ -31,7 +31,10 @@ import {
 import { ExtensionInput } from './createExtensionInput';
 import { z } from 'zod';
 import { createSchemaFromZod } from '../schema/createSchemaFromZod';
-import { OpaqueExtensionDefinition } from '@internal/frontend';
+import {
+  OpaqueExtensionDefinition,
+  OpaqueExtensionInput,
+} from '@internal/frontend';
 
 /**
  * This symbol is used to pass parameter overrides from the extension override to the blueprint factory
@@ -91,26 +94,47 @@ type JoinStringUnion<
   : TResult;
 
 /** @ignore */
+type RequiredDataIds<UData extends AnyExtensionDataRef> = UData extends any
+  ? UData['config']['optional'] extends true
+    ? never
+    : UData['id']
+  : never;
+
+/** @ignore */
 export type VerifyExtensionFactoryOutput<
   UDeclaredOutput extends AnyExtensionDataRef,
   UFactoryOutput extends ExtensionDataValue<any, any>,
-> = (
-  UDeclaredOutput extends any
-    ? UDeclaredOutput['config']['optional'] extends true
-      ? never
-      : UDeclaredOutput['id']
-    : never
-) extends infer IRequiredOutputIds
-  ? [IRequiredOutputIds] extends [UFactoryOutput['id']]
-    ? [UFactoryOutput['id']] extends [UDeclaredOutput['id']]
-      ? {}
-      : `Error: The extension factory has undeclared output(s): ${JoinStringUnion<
-          Exclude<UFactoryOutput['id'], UDeclaredOutput['id']>
-        >}`
-    : `Error: The extension factory is missing the following output(s): ${JoinStringUnion<
-        Exclude<IRequiredOutputIds, UFactoryOutput['id']>
+> = [RequiredDataIds<UDeclaredOutput>] extends [UFactoryOutput['id']]
+  ? [UFactoryOutput['id']] extends [UDeclaredOutput['id']]
+    ? {}
+    : `Error: The extension factory has undeclared output(s): ${JoinStringUnion<
+        Exclude<UFactoryOutput['id'], UDeclaredOutput['id']>
       >}`
-  : never;
+  : `Error: The extension factory is missing the following output(s): ${JoinStringUnion<
+      Exclude<RequiredDataIds<UDeclaredOutput>, UFactoryOutput['id']>
+    >}`;
+
+/** @ignore */
+type NeverAsNull<T> = [T] extends [never] ? null : T;
+
+/** @ignore */
+type VerifyExtensionAttachmentInput<
+  UDeclaredOutput extends AnyExtensionDataRef,
+  UAttachmentInput extends AnyExtensionDataRef,
+> =
+  // First check if we have an attachment point declared in the types
+  AnyExtensionDataRef extends UAttachmentInput
+    ? {}
+    : [NeverAsNull<RequiredDataIds<UDeclaredOutput>>] extends [
+        NeverAsNull<RequiredDataIds<UAttachmentInput>>,
+      ]
+    ? {}
+    : `Error: The extension is missing the following guaranteed outputs that are required by the attachment point: ${JoinStringUnion<
+        Exclude<
+          RequiredDataIds<UAttachmentInput>,
+          RequiredDataIds<UDeclaredOutput>
+        >
+      >}`;
 
 /** @public */
 export type CreateExtensionOptions<
@@ -125,10 +149,11 @@ export type CreateExtensionOptions<
   },
   TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
   UFactoryOutput extends ExtensionDataValue<any, any>,
+  UAttachmentInput extends AnyExtensionDataRef,
 > = {
   kind?: TKind;
   name?: TName;
-  attachTo: { id: string; input: string };
+  attachTo: { id: string; input: string } | ExtensionInput<UAttachmentInput>;
   disabled?: boolean;
   inputs?: TInputs;
   output: Array<UOutput>;
@@ -143,7 +168,8 @@ export type CreateExtensionOptions<
     };
     inputs: Expand<ResolvedExtensionInputs<TInputs>>;
   }): Iterable<UFactoryOutput>;
-} & VerifyExtensionFactoryOutput<UOutput, UFactoryOutput>;
+} & VerifyExtensionFactoryOutput<UOutput, UFactoryOutput> &
+  VerifyExtensionAttachmentInput<UOutput, UAttachmentInput>;
 
 /** @public */
 export type ExtensionDefinitionParameters = {
@@ -168,6 +194,8 @@ export type ExtensionDefinition<
   $$type: '@backstage/ExtensionDefinition';
   readonly T: T;
 
+  inputs: T['inputs'];
+
   override<
     TExtensionConfigSchema extends {
       [key in string]: (zImpl: typeof z) => z.ZodType;
@@ -183,6 +211,8 @@ export type ExtensionDefinition<
   >(
     args: Expand<
       {
+        // Note, we don't support passing an ExtensionInput here, since we can't
+        // guarantee type safety and it's likely to be of limited use
         attachTo?: { id: string; input: string };
         disabled?: boolean;
         inputs?: TExtraInputs & {
@@ -260,6 +290,7 @@ export function createExtension<
   },
   TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
   UFactoryOutput extends ExtensionDataValue<any, any>,
+  UAttachmentInput extends AnyExtensionDataRef,
   const TKind extends string | undefined = undefined,
   const TName extends string | undefined = undefined,
 >(
@@ -269,7 +300,8 @@ export function createExtension<
     UOutput,
     TInputs,
     TConfigSchema,
-    UFactoryOutput
+    UFactoryOutput,
+    UAttachmentInput
   >,
 ): ExtensionDefinition<{
   config: string extends keyof TConfigSchema
@@ -290,6 +322,26 @@ export function createExtension<
   kind: string | undefined extends TKind ? undefined : TKind;
   name: string | undefined extends TName ? undefined : TName;
 }> {
+  const { kind, name } = options;
+
+  const inputsWithMeta: {
+    [inputName in string]: ExtensionInput<
+      AnyExtensionDataRef,
+      { optional: boolean; singleton: boolean }
+    >;
+  } = options.inputs
+    ? Object.fromEntries(
+        Object.entries(options.inputs).map(([inputName, input]) => [
+          inputName,
+          OpaqueExtensionInput.toInternal(input).withMeta({
+            kind,
+            name,
+            inputName,
+          }),
+        ]),
+      )
+    : {};
+
   const schemaDeclaration = options.config?.schema;
   const configSchema =
     schemaDeclaration &&
@@ -322,23 +374,22 @@ export function createExtension<
       kind: string | undefined extends TKind ? undefined : TKind;
       name: string | undefined extends TName ? undefined : TName;
     },
-    kind: options.kind,
-    name: options.name,
+    kind,
+    name,
     attachTo: options.attachTo,
     disabled: options.disabled ?? false,
-    inputs: options.inputs ?? {},
+    inputs: inputsWithMeta,
     output: options.output,
     configSchema,
     factory: options.factory,
     toString() {
       const parts: string[] = [];
-      if (options.kind) {
-        parts.push(`kind=${options.kind}`);
+      if (kind) {
+        parts.push(`kind=${kind}`);
       }
-      if (options.name) {
-        parts.push(`name=${options.name}`);
+      if (name) {
+        parts.push(`name=${name}`);
       }
-      parts.push(`attachTo=${options.attachTo.id}@${options.attachTo.input}`);
       return `ExtensionDefinition{${parts.join(',')}}`;
     },
     override(overrideOptions) {
@@ -364,9 +415,10 @@ export function createExtension<
       }
 
       return createExtension({
-        kind: options.kind,
-        name: options.name,
-        attachTo: overrideOptions.attachTo ?? options.attachTo,
+        kind,
+        name,
+        attachTo: (overrideOptions.attachTo ??
+          options.attachTo) as (typeof options)['attachTo'],
         disabled: overrideOptions.disabled ?? options.disabled,
         inputs: { ...overrideOptions.inputs, ...options.inputs },
         output: (overrideOptions.output ??

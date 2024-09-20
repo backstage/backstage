@@ -24,6 +24,7 @@ describe('resolveExtensionDefinition', () => {
   const baseDef = {
     $$type: '@backstage/ExtensionDefinition',
     T: undefined as any,
+    inputs: {},
     version: 'v2',
     attachTo: { id: '', input: '' },
     disabled: false,
@@ -51,14 +52,10 @@ describe('resolveExtensionDefinition', () => {
         ...baseDef,
         kind: 'k',
       } as ExtensionDefinition),
-    ).toThrow(
-      'Extension must declare an explicit namespace or name as it could not be resolved from context, kind=k namespace=undefined name=undefined',
-    );
+    ).toThrow('Extension resolution failed, missing both namespace and name');
     expect(() =>
       resolveExtensionDefinition(baseDef as ExtensionDefinition),
-    ).toThrow(
-      'Extension must declare an explicit namespace or name as it could not be resolved from context, kind=undefined namespace=undefined name=undefined',
-    );
+    ).toThrow('Extension resolution failed, missing both namespace and name');
   });
 });
 
@@ -66,6 +63,7 @@ describe('old resolveExtensionDefinition', () => {
   const baseDef = {
     $$type: '@backstage/ExtensionDefinition',
     T: undefined as any,
+    inputs: {},
     version: 'v1',
     attachTo: { id: '', input: '' },
     disabled: false,
@@ -93,14 +91,10 @@ describe('old resolveExtensionDefinition', () => {
         ...baseDef,
         kind: 'k',
       } as ExtensionDefinition),
-    ).toThrow(
-      'Extension must declare an explicit namespace or name as it could not be resolved from context, kind=k namespace=undefined name=undefined',
-    );
+    ).toThrow('Extension resolution failed, missing both namespace and name');
     expect(() =>
       resolveExtensionDefinition(baseDef as ExtensionDefinition),
-    ).toThrow(
-      'Extension must declare an explicit namespace or name as it could not be resolved from context, kind=undefined namespace=undefined name=undefined',
-    );
+    ).toThrow('Extension resolution failed, missing both namespace and name');
   });
 });
 

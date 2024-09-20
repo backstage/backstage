@@ -21,10 +21,11 @@ import {
   createExtensionInput,
 } from '@backstage/frontend-plugin-api';
 import { SidebarPage } from '@backstage/core-components';
+import { AppRoot } from './AppRoot';
 
 export const AppLayout = createExtension({
   name: 'layout',
-  attachTo: { id: 'app/root', input: 'children' },
+  attachTo: AppRoot.inputs.children,
   inputs: {
     nav: createExtensionInput([coreExtensionData.reactElement], {
       singleton: true,

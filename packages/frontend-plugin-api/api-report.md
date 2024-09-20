@@ -480,6 +480,7 @@ export function createExtension<
     [key: string]: (zImpl: typeof z) => z.ZodType;
   },
   UFactoryOutput extends ExtensionDataValue<any, any>,
+  UAttachmentInput extends AnyExtensionDataRef,
   const TKind extends string | undefined = undefined,
   const TName extends string | undefined = undefined,
 >(
@@ -489,7 +490,8 @@ export function createExtension<
     UOutput,
     TInputs,
     TConfigSchema,
-    UFactoryOutput
+    UFactoryOutput,
+    UAttachmentInput
   >,
 ): ExtensionDefinition<{
   config: string extends keyof TConfigSchema
@@ -673,13 +675,16 @@ export type CreateExtensionOptions<
     [key: string]: (zImpl: typeof z) => z.ZodType;
   },
   UFactoryOutput extends ExtensionDataValue<any, any>,
+  UAttachmentInput extends AnyExtensionDataRef,
 > = {
   kind?: TKind;
   name?: TName;
-  attachTo: {
-    id: string;
-    input: string;
-  };
+  attachTo:
+    | {
+        id: string;
+        input: string;
+      }
+    | ExtensionInput<UAttachmentInput>;
   disabled?: boolean;
   inputs?: TInputs;
   output: Array<UOutput>;
@@ -694,7 +699,8 @@ export type CreateExtensionOptions<
     };
     inputs: Expand<ResolvedExtensionInputs<TInputs>>;
   }): Iterable<UFactoryOutput>;
-} & VerifyExtensionFactoryOutput<UOutput, UFactoryOutput>;
+} & VerifyExtensionFactoryOutput<UOutput, UFactoryOutput> &
+  VerifyExtensionAttachmentInput<UOutput, UAttachmentInput>;
 
 // @public
 export function createExternalRouteRef<
@@ -1004,7 +1010,7 @@ export type ExtensionDataContainer<UExtensionData extends AnyExtensionDataRef> =
 
 // @public (undocumented)
 export type ExtensionDataRef<
-  TData,
+  TData = unknown,
   TId extends string = string,
   TConfig extends {
     optional?: true;
@@ -1035,6 +1041,7 @@ export type ExtensionDefinition<
 > = {
   $$type: '@backstage/ExtensionDefinition';
   readonly T: T;
+  inputs: T['inputs'];
   override<
     TExtensionConfigSchema extends {
       [key in string]: (zImpl: typeof z) => z.ZodType;
@@ -1151,14 +1158,11 @@ export type ExtensionDefinitionParameters = {
 
 // @public (undocumented)
 export interface ExtensionInput<
-  UExtensionData extends ExtensionDataRef<
-    unknown,
-    string,
-    {
-      optional?: true;
-    }
-  >,
+  UExtensionData extends ExtensionDataRef = ExtensionDataRef,
   TConfig extends {
+    singleton: boolean;
+    optional: boolean;
+  } = {
     singleton: boolean;
     optional: boolean;
   },

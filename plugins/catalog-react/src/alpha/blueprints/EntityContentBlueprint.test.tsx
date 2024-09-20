@@ -207,7 +207,7 @@ describe('EntityContentBlueprint', () => {
     });
 
     const mockExtension = createExtension({
-      attachTo: { id: 'entity-content:test', input: 'mock' },
+      attachTo: extension.inputs.mock,
       output: [coreExtensionData.reactElement],
       factory() {
         return [coreExtensionData.reactElement(<div>im a mock</div>)];

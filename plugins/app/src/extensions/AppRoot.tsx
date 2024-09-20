@@ -43,6 +43,7 @@ import {
   identityApiRef,
   useApi,
 } from '@backstage/core-plugin-api';
+import { App } from './App';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { isProtectedApp } from '../../../../packages/core-app-api/src/app/isProtectedApp';
 import { BrowserRouter } from 'react-router-dom';
@@ -53,7 +54,7 @@ import { getBasePath } from '../../../../packages/frontend-app-api/src/routing/g
 
 export const AppRoot = createExtension({
   name: 'root',
-  attachTo: { id: 'app', input: 'root' },
+  attachTo: App.inputs.root,
   inputs: {
     router: createExtensionInput([RouterBlueprint.dataRefs.component], {
       singleton: true,

@@ -23,7 +23,7 @@ export type ExtensionDataValue<TData, TId extends string> = {
 
 /** @public */
 export type ExtensionDataRef<
-  TData,
+  TData = unknown,
   TId extends string = string,
   TConfig extends { optional?: true } = {},
 > = {

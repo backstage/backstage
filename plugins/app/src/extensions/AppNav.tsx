@@ -36,6 +36,7 @@ import {
 import LogoIcon from '../../../../packages/app/src/components/Root/LogoIcon';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import LogoFull from '../../../../packages/app/src/components/Root/LogoFull';
+import { AppLayout } from './AppLayout';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -83,7 +84,7 @@ const SidebarNavItem = (
 
 export const AppNav = createExtension({
   name: 'nav',
-  attachTo: { id: 'app/layout', input: 'nav' },
+  attachTo: AppLayout.inputs.nav,
   inputs: {
     items: createExtensionInput([NavItemBlueprint.dataRefs.target]),
     logos: createExtensionInput([NavLogoBlueprint.dataRefs.logoElements], {

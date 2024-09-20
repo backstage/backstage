@@ -23,10 +23,11 @@ import {
   useComponentRef,
 } from '@backstage/frontend-plugin-api';
 import { useRoutes } from 'react-router-dom';
+import { AppLayout } from './AppLayout';
 
 export const AppRoutes = createExtension({
   name: 'routes',
-  attachTo: { id: 'app/layout', input: 'content' },
+  attachTo: AppLayout.inputs.content,
   inputs: {
     routes: createExtensionInput([
       coreExtensionData.routePath,

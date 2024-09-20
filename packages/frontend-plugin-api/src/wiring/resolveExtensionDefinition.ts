@@ -27,6 +27,7 @@ import {
   ExtensionDataValue,
 } from './createExtensionDataRef';
 import { OpaqueExtensionDefinition } from '@internal/frontend';
+import { OpaqueExtensionInput } from '@internal/frontend';
 
 /** @public */
 export interface Extension<TConfig, TConfigInput = TConfig> {
@@ -127,6 +128,38 @@ export type ResolveExtensionId<
     : never
   : never;
 
+function resolveExtensionId(
+  kind: string | undefined,
+  namespace: string | undefined,
+  name: string | undefined,
+) {
+  const namePart =
+    name && namespace ? `${namespace}/${name}` : namespace || name;
+  if (!namePart) {
+    throw new Error(
+      'Extension resolution failed, missing both namespace and name',
+    );
+  }
+
+  return kind ? `${kind}:${namePart}` : namePart;
+}
+
+function resolveAttachTo(
+  attachToDecl: (typeof OpaqueExtensionDefinition.TInternal)['attachTo'],
+  namespace: string | undefined,
+) {
+  if ('input' in attachToDecl) {
+    return attachToDecl;
+  }
+
+  const { kind, name, inputName } =
+    OpaqueExtensionInput.toInternal(attachToDecl).getMeta();
+  return {
+    id: resolveExtensionId(kind, namespace, name),
+    input: inputName,
+  };
+}
+
 /** @internal */
 export function resolveExtensionDefinition<
   T extends ExtensionDefinitionParameters,
@@ -138,28 +171,23 @@ export function resolveExtensionDefinition<
   const {
     name,
     kind,
-    namespace: _skip1,
+    attachTo: definedAttachTo,
+    namespace: definedNamespace,
     override: _skip2,
     ...rest
   } = internalDefinition;
 
-  const namespace = internalDefinition.namespace ?? context?.namespace;
+  const namespace = definedNamespace ?? context?.namespace;
 
-  const namePart =
-    name && namespace ? `${namespace}/${name}` : namespace || name;
-  if (!namePart) {
-    throw new Error(
-      `Extension must declare an explicit namespace or name as it could not be resolved from context, kind=${kind} namespace=${namespace} name=${name}`,
-    );
-  }
-
-  const id = kind ? `${kind}:${namePart}` : namePart;
+  const id = resolveExtensionId(kind, namespace, name);
+  const attachTo = resolveAttachTo(definedAttachTo, context?.namespace);
 
   return {
     ...rest,
     $$type: '@backstage/Extension',
     version: internalDefinition.version,
     id,
+    attachTo,
     toString() {
       return `Extension{id=${id}}`;
     },

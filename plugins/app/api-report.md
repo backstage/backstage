@@ -65,6 +65,71 @@ const appPlugin: FrontendPlugin<
         factory: AnyApiFactory;
       };
     }>;
+    'app/root': ExtensionDefinition<{
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        JSX_2.Element,
+        'core.reactElement',
+        {}
+      >;
+      inputs: {
+        router: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            ComponentType<{
+              children?: ReactNode;
+            }>,
+            'app.router.wrapper',
+            {}
+          >,
+          {
+            singleton: true;
+            optional: true;
+          }
+        >;
+        signInPage: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            ComponentType<SignInPageProps>,
+            'core.sign-in-page.component',
+            {}
+          >,
+          {
+            singleton: true;
+            optional: true;
+          }
+        >;
+        children: ExtensionInput<
+          ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
+          {
+            singleton: true;
+            optional: false;
+          }
+        >;
+        elements: ExtensionInput<
+          ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
+          {
+            singleton: false;
+            optional: false;
+          }
+        >;
+        wrappers: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            ComponentType<{
+              children?: ReactNode;
+            }>,
+            'app.root.wrapper',
+            {}
+          >,
+          {
+            singleton: false;
+            optional: false;
+          }
+        >;
+      };
+      params: never;
+      kind: undefined;
+      name: 'root';
+    }>;
     'app/layout': ExtensionDefinition<{
       config: {};
       configInput: {};
@@ -135,71 +200,6 @@ const appPlugin: FrontendPlugin<
       params: never;
       kind: undefined;
       name: 'nav';
-    }>;
-    'app/root': ExtensionDefinition<{
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        JSX_2.Element,
-        'core.reactElement',
-        {}
-      >;
-      inputs: {
-        router: ExtensionInput<
-          ConfigurableExtensionDataRef<
-            ComponentType<{
-              children?: ReactNode;
-            }>,
-            'app.router.wrapper',
-            {}
-          >,
-          {
-            singleton: true;
-            optional: true;
-          }
-        >;
-        signInPage: ExtensionInput<
-          ConfigurableExtensionDataRef<
-            ComponentType<SignInPageProps>,
-            'core.sign-in-page.component',
-            {}
-          >,
-          {
-            singleton: true;
-            optional: true;
-          }
-        >;
-        children: ExtensionInput<
-          ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
-          {
-            singleton: true;
-            optional: false;
-          }
-        >;
-        elements: ExtensionInput<
-          ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
-          {
-            singleton: false;
-            optional: false;
-          }
-        >;
-        wrappers: ExtensionInput<
-          ConfigurableExtensionDataRef<
-            ComponentType<{
-              children?: ReactNode;
-            }>,
-            'app.root.wrapper',
-            {}
-          >,
-          {
-            singleton: false;
-            optional: false;
-          }
-        >;
-      };
-      params: never;
-      kind: undefined;
-      name: 'root';
     }>;
     'app/routes': ExtensionDefinition<{
       config: {};

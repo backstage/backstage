@@ -85,7 +85,7 @@ describe('CatalogFilterBlueprint', () => {
     });
 
     const mockExtension = createExtension({
-      attachTo: { id: 'catalog-filter:test-name', input: 'mock' },
+      attachTo: extension.inputs.mock,
       output: [coreExtensionData.reactElement],
       factory() {
         return [coreExtensionData.reactElement(<div>im a mock</div>)];

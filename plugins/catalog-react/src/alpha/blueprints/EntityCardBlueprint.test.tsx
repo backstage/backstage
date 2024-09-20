@@ -159,7 +159,7 @@ describe('EntityCardBlueprint', () => {
     });
 
     const mockExtension = createExtension({
-      attachTo: { id: 'entity-card:test', input: 'mock' },
+      attachTo: extension.inputs.mock,
       output: [coreExtensionData.reactElement],
       factory() {
         return [coreExtensionData.reactElement(<div>im a mock</div>)];
