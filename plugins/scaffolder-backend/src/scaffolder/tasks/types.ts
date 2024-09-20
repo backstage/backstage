@@ -191,9 +191,33 @@ export interface TaskStore {
   }>;
 
   list?(options: {
+    filters?: {
+      createdBy?: string | string[];
+      status?: TaskStatus | TaskStatus[];
+    };
+    pagination?: {
+      limit?: number;
+      offset?: number;
+    };
+    order?: { order: 'asc' | 'desc'; field: string }[];
+  }): Promise<{ tasks: SerializedTask[]; totalTasks?: number }>;
+
+  /**
+   * @deprecated Make sure to pass `createdBy` and `status` in the `filters` parameter instead
+   */
+  list?(options: {
     createdBy?: string;
     status?: TaskStatus;
-  }): Promise<{ tasks: SerializedTask[] }>;
+    filters?: {
+      createdBy?: string | string[];
+      status?: TaskStatus | TaskStatus[];
+    };
+    pagination?: {
+      limit?: number;
+      offset?: number;
+    };
+    order?: { order: 'asc' | 'desc'; field: string }[];
+  }): Promise<{ tasks: SerializedTask[]; totalTasks?: number }>;
 
   emitLogEvent(options: TaskStoreEmitOptions): Promise<void>;
 

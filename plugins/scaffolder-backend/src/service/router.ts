@@ -69,7 +69,13 @@ import {
 } from '../scaffolder';
 import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
-import { findTemplate, getEntityBaseUrl, getWorkingDirectory } from './helpers';
+import {
+  findTemplate,
+  getEntityBaseUrl,
+  getWorkingDirectory,
+  parseNumberParam,
+  parseStringsParam,
+} from './helpers';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import {
   createConditionAuthorizer,
@@ -81,13 +87,13 @@ import { Duration } from 'luxon';
 import {
   AuthService,
   BackstageCredentials,
+  DatabaseService,
   DiscoveryService,
   HttpAuthService,
   LifecycleService,
   PermissionsService,
-  UrlReaderService,
   SchedulerService,
-  DatabaseService,
+  UrlReaderService,
 } from '@backstage/backend-plugin-api';
 import {
   IdentityApi,
@@ -576,31 +582,42 @@ export async function createRouter(
         permissionService: permissions,
       });
 
-      const [userEntityRef] = [req.query.createdBy].flat();
-      if (
-        typeof userEntityRef !== 'string' &&
-        typeof userEntityRef !== 'undefined'
-      ) {
-        throw new InputError('createdBy query parameter must be a string');
-      }
-
       if (!taskBroker.list) {
         throw new Error(
           'TaskBroker does not support listing tasks, please implement the list method on the TaskBroker.',
         );
       }
 
-      const [statusQuery] = [req.query.status].flat();
-      if (
-        typeof statusQuery !== 'string' &&
-        typeof statusQuery !== 'undefined'
-      ) {
-        throw new InputError('status query parameter must be a string');
-      }
+      const createdBy = parseStringsParam(req.query.createdBy, 'createdBy');
+      const status = parseStringsParam(req.query.status, 'status');
+
+      const order = parseStringsParam(req.query.order, 'order')?.map(item => {
+        const match = item.match(/^(asc|desc):(.+)$/);
+        if (!match) {
+          throw new InputError(
+            `Invalid order parameter "${item}", expected "<asc or desc>:<field name>"`,
+          );
+        }
+
+        return {
+          order: match[1] as 'asc' | 'desc',
+          field: match[2],
+        };
+      });
+
+      const limit = parseNumberParam(req.query.limit, 'limit');
+      const offset = parseNumberParam(req.query.offset, 'offset');
 
       const tasks = await taskBroker.list({
-        createdBy: userEntityRef,
-        status: statusQuery ? (statusQuery as TaskStatus) : undefined,
+        filters: {
+          createdBy,
+          status: status ? (status as TaskStatus[]) : undefined,
+        },
+        order,
+        pagination: {
+          limit: limit ? limit[0] : undefined,
+          offset: offset ? offset[0] : undefined,
+        },
       });
 
       res.status(200).json(tasks);

@@ -397,11 +397,13 @@ describe('createRouter', () => {
               createdBy: '',
             },
           ],
+          totalTasks: 1,
         });
 
         const response = await request(app).get(`/v2/tasks`);
         expect(taskBroker.list).toHaveBeenCalledWith({
-          createdBy: undefined,
+          filters: {},
+          pagination: {},
         });
         expect(response.status).toEqual(200);
         expect(response.body).toStrictEqual({
@@ -414,6 +416,7 @@ describe('createRouter', () => {
               createdBy: '',
             },
           ],
+          totalTasks: 1,
         });
       });
 
@@ -430,15 +433,12 @@ describe('createRouter', () => {
               createdBy: 'user:default/foo',
             },
           ],
+          totalTasks: 1,
         });
 
         const response = await request(app).get(
-          `/v2/tasks?createdBy=user:default/foo&status=completed`,
+          `/v2/tasks?createdBy=user:default/foo&createdBy=user:default/bar&status=completed&status=open&limit=1&offset=0&order=desc:created_at`,
         );
-        expect(taskBroker.list).toHaveBeenCalledWith({
-          createdBy: 'user:default/foo',
-          status: 'completed',
-        });
 
         expect(response.status).toEqual(200);
         expect(response.body).toStrictEqual({
@@ -451,6 +451,18 @@ describe('createRouter', () => {
               createdBy: 'user:default/foo',
             },
           ],
+          totalTasks: 1,
+        });
+        expect(taskBroker.list).toHaveBeenCalledWith({
+          filters: {
+            createdBy: ['user:default/foo', 'user:default/bar'],
+            status: ['completed', 'open'],
+          },
+          pagination: {
+            limit: 1,
+            offset: 0,
+          },
+          order: [{ order: 'desc', field: 'created_at' }],
         });
       });
     });
@@ -1192,11 +1204,13 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
               createdBy: '',
             },
           ],
+          totalTasks: 1,
         });
 
         const response = await request(app).get(`/v2/tasks`);
         expect(taskBroker.list).toHaveBeenCalledWith({
-          createdBy: undefined,
+          pagination: {},
+          filters: {},
         });
         expect(response.status).toEqual(200);
         expect(response.body).toStrictEqual({
@@ -1209,6 +1223,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
               createdBy: '',
             },
           ],
+          totalTasks: 1,
         });
       });
 
@@ -1225,13 +1240,17 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
               createdBy: 'user:default/foo',
             },
           ],
+          totalTasks: 1,
         });
 
         const response = await request(app).get(
           `/v2/tasks?createdBy=user:default/foo`,
         );
         expect(taskBroker.list).toHaveBeenCalledWith({
-          createdBy: 'user:default/foo',
+          filters: {
+            createdBy: ['user:default/foo'],
+          },
+          pagination: {},
         });
 
         expect(response.status).toEqual(200);
@@ -1245,6 +1264,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
               createdBy: 'user:default/foo',
             },
           ],
+          totalTasks: 1,
         });
       });
     });
