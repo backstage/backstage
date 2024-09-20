@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
   root: {
     whiteSpace: 'nowrap',
     overflowY: 'auto',
-    padding: theme.spacing(1.5),
+    padding: theme.spacing(1),
   },
 }));
 

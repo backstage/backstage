@@ -50,7 +50,7 @@ const useStyles = makeStyles(
     toolbar: {
       display: 'grid',
       justifyItems: 'flex-end',
-      padding: theme.spacing(0, 1.5),
+      padding: theme.spacing(0, 1),
       backgroundColor: theme.palette.background.paper,
     },
   }),

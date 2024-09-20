@@ -186,7 +186,7 @@ export const scaffolderTranslationRef = createTranslationRef({
     },
     templateEditorForm: {
       stepper: {
-        emptyText: 'There is no spec parameters in the template to preview.',
+        emptyText: 'There are no spec parameters in the template to preview.',
       },
     },
     templateTypePicker: {

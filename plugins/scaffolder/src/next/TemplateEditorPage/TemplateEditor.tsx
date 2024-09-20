@@ -44,7 +44,6 @@ const useStyles = makeStyles(
     root: {
       height: '100%',
       gridArea: 'pageContent',
-      height: '100%',
       display: 'grid',
       gridTemplateAreas: `
       "toolbar toolbar toolbar"
@@ -78,7 +77,7 @@ const useStyles = makeStyles(
       left: 0,
       right: 0,
       bottom: 0,
-      padding: theme.spacing(1.5),
+      padding: theme.spacing(1),
       overflow: 'auto',
     },
     results: {
