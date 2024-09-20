@@ -48,6 +48,8 @@ exports.up = async function up(knex) {
         .comment(
           'The IDs of the subscribers that have already consumed this event',
         );
+
+      table.index('topic', 'event_bus_events_topic_idx');
     });
 
     await knex.schema.createTable('event_bus_subscriptions', table => {
