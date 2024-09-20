@@ -9872,6 +9872,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@internal/opaque@workspace:packages/internal-opaque":
+  version: 0.0.0-use.local
+  resolution: "@internal/opaque@workspace:packages/internal-opaque"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@testing-library/jest-dom": ^6.0.0
+    "@testing-library/react": ^16.0.0
+  languageName: unknown
+  linkType: soft
+
 "@internal/plugin-todo-list-backend@workspace:plugins/example-todo-list-backend":
   version: 0.0.0-use.local
   resolution: "@internal/plugin-todo-list-backend@workspace:plugins/example-todo-list-backend"

@@ -25,7 +25,7 @@ import {
   PortableSchema,
   ResolvedExtensionInputs,
 } from '@backstage/frontend-plugin-api';
-import { OpaqueType } from './OpaqueType';
+import { OpaqueType } from '@internal/opaque';
 
 export const OpaqueExtensionDefinition = OpaqueType.create<{
   public: ExtensionDefinition<ExtensionDefinitionParameters>;
