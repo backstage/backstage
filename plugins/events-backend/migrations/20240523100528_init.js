@@ -44,7 +44,7 @@ exports.up = async function up(knex) {
         .notNullable()
         .comment('The payload data of this event');
       table
-        .specificType('consumed_by', 'text ARRAY')
+        .specificType('notified_subscribers', 'text ARRAY')
         .comment(
           'The IDs of the subscribers that have already consumed this event',
         );

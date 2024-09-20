@@ -58,7 +58,7 @@ describe('migrations', () => {
         topic: 'test',
         created_by: 'abc',
         data_json: JSON.stringify({ message: 'hello' }),
-        consumed_by: ['tester'],
+        notified_subscribers: ['tester'],
       });
       await knex('event_bus_subscriptions').insert({
         id: 'tester',
@@ -74,7 +74,7 @@ describe('migrations', () => {
           topic: 'test',
           data_json: JSON.stringify({ message: 'hello' }),
           created_at: expect.anything(),
-          consumed_by: ['tester'],
+          notified_subscribers: ['tester'],
         },
       ]);
       await expect(knex('event_bus_subscriptions')).resolves.toEqual([

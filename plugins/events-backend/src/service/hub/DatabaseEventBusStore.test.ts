@@ -209,7 +209,7 @@ describe('DatabaseEventBusStore', () => {
       // Insert 100,000 events, a lot more than we'd expect to ever have
       // in a real-world scenario given our count window size is 10,000.
       await db.raw(`
-        INSERT INTO event_bus_events (id, created_by, topic, data_json, consumed_by)
+        INSERT INTO event_bus_events (id, created_by, topic, data_json, notified_subscribers)
         SELECT id, 'abc', CONCAT('test-', id), '{}', '{"${String(
           Math.random(),
         ).slice(2, 6)}"}'

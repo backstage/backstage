@@ -46,7 +46,7 @@ type EventsRow = {
   created_at: Date;
   topic: string;
   data_json: string;
-  consumed_by: string[];
+  notified_subscribers: string[];
 };
 
 type SubscriptionsRow = {
@@ -391,7 +391,7 @@ export class DatabaseEventBusStore implements EventBusStore {
           'created_by',
           'topic',
           'data_json',
-          'consumed_by',
+          'notified_subscribers',
         ]),
       )
       .insert<EventsRow>(
@@ -501,7 +501,7 @@ export class DatabaseEventBusStore implements EventBusStore {
         ON event_bus_events.topic = ANY(subscription.topics)
         WHERE (
           CASE WHEN event_bus_events.id > subscription.read_until THEN
-            CASE WHEN NOT :id = ANY(event_bus_events.consumed_by)
+            CASE WHEN NOT :id = ANY(event_bus_events.notified_subscribers)
               THEN 1
             END
           END
