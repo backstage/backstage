@@ -210,7 +210,7 @@ describe('DatabaseEventBusStore', () => {
       // in a real-world scenario given our count window size is 10,000.
       await db.raw(`
         INSERT INTO event_bus_events (id, created_by, topic, data_json, notified_subscribers)
-        SELECT id, 'abc', CONCAT('test-', id), '{}', '{"${String(
+        SELECT id, 'abc', CONCAT('test-', MOD(id, 10)), CONCAT('{"payload":{"id":"', id, '"}}'), '{"${String(
           Math.random(),
         ).slice(2, 6)}"}'
         FROM generate_series(1, ${COUNT}) AS id
@@ -219,18 +219,26 @@ describe('DatabaseEventBusStore', () => {
         id: 'tester',
         created_by: 'abc',
         read_until: 0,
-        topics: ['test-1000'],
+        topics: ['test-5'],
       });
 
       const start = Date.now();
       const { events } = await store.readSubscription('tester');
       const duration = Date.now() - start;
 
-      expect(events).toEqual([{ topic: 'test-1000', eventPayload: undefined }]);
+      expect(events).toEqual([
+        { topic: 'test-5', eventPayload: { id: '5' } },
+        { topic: 'test-5', eventPayload: { id: '15' } },
+        { topic: 'test-5', eventPayload: { id: '25' } },
+        { topic: 'test-5', eventPayload: { id: '35' } },
+        { topic: 'test-5', eventPayload: { id: '45' } },
+        { topic: 'test-5', eventPayload: { id: '55' } },
+        { topic: 'test-5', eventPayload: { id: '65' } },
+        { topic: 'test-5', eventPayload: { id: '75' } },
+        { topic: 'test-5', eventPayload: { id: '85' } },
+        { topic: 'test-5', eventPayload: { id: '95' } },
+      ]);
 
-      // When not run in an optimized way this takes anywhere from 10ms to
-      // 100ms. When optimized it's closed to 1ms, but we leave a bit of room
-      // for CI load spikes.
       expect(duration).toBeLessThan(20);
     },
   );

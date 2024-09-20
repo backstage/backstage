@@ -472,15 +472,6 @@ export class DatabaseEventBusStore implements EventBusStore {
     // an update, reads events for the subscription up to the limit, and then
     // updates the pointer to the last read event.
     //
-    // The query for selected_events is written in this particular way to force
-    // evaluation of the notified subscribers last. Without this, the query
-    // planner loves to first do a sequential scan of the events table to filter
-    // out the events that have already been consumed, but that is often a small
-    // subset and extremely wasteful. We instead want to make sure that the
-    // query is executed such that we select the events that are relevant to the
-    // subscription first, and then filter out any events that have already been
-    // consumed last.
-    //
     // This is written as a plain SQL query to spare us all the horrors of
     // expressing this in knex.
 
@@ -499,13 +490,8 @@ export class DatabaseEventBusStore implements EventBusStore {
         FROM event_bus_events
         INNER JOIN subscription
         ON event_bus_events.topic = ANY(subscription.topics)
-        WHERE (
-          CASE WHEN event_bus_events.id > subscription.read_until THEN
-            CASE WHEN NOT :id = ANY(event_bus_events.notified_subscribers)
-              THEN 1
-            END
-          END
-        ) = 1
+        WHERE event_bus_events.id > subscription.read_until
+        AND NOT :id = ANY(event_bus_events.notified_subscribers)
         ORDER BY event_bus_events.id ASC LIMIT :limit
       ),
       last_event_id AS (
