@@ -22,10 +22,11 @@ import {
 } from 'child_process';
 import { ExitCodeError } from './errors';
 import { promisify } from 'util';
-import { LogFunc } from './logging';
 import { assertError, ForwardedError } from '@backstage/errors';
 
 export const execFile = promisify(execFileCb);
+
+type LogFunc = (data: Buffer) => void;
 
 type SpawnOptionsPartialEnv = Omit<SpawnOptions, 'env'> & {
   env?: Partial<NodeJS.ProcessEnv>;
