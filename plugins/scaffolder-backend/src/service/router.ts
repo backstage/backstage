@@ -94,6 +94,7 @@ import {
   PermissionsService,
   SchedulerService,
   UrlReaderService,
+  resolveSafeChildPath,
 } from '@backstage/backend-plugin-api';
 import {
   IdentityApi,
@@ -105,6 +106,8 @@ import {
   AutocompleteHandler,
   WorkspaceProvider,
 } from '@backstage/plugin-scaffolder-node/alpha';
+import { pathToFileURL } from 'url';
+import { v4 as uuid } from 'uuid';
 
 /**
  *
@@ -814,6 +817,23 @@ export async function createRouter(
         name: step.name ?? step.action,
       }));
 
+      const dryRunId = uuid();
+      const contentsPath = resolveSafeChildPath(
+        workingDirectory,
+        `dry-run-content-${dryRunId}`,
+      );
+      console.log('Mark: contentsPath', contentsPath);
+
+      const templateInfo = {
+        entityRef: 'template:default/dry-run',
+        entity: {
+          metadata: template.metadata,
+        },
+        baseUrl: pathToFileURL(
+          resolveSafeChildPath(contentsPath, 'template.yaml'),
+        ).toString(),
+      };
+
       const result = await dryRunner({
         spec: {
           apiVersion: template.apiVersion,
@@ -825,7 +845,7 @@ export async function createRouter(
             ref: userEntityRef,
           },
         },
-        templateMetadata: template.metadata,
+        templateInfo: templateInfo,
         directoryContents: (body.directoryContents ?? []).map(file => ({
           path: file.path,
           content: Buffer.from(file.base64Content, 'base64'),

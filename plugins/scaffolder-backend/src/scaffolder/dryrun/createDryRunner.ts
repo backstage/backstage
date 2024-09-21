@@ -15,10 +15,10 @@
  */
 
 import { ScmIntegrations } from '@backstage/integration';
-import { TaskSpec } from '@backstage/plugin-scaffolder-common';
+import { TaskSpec, TemplateInfo } from '@backstage/plugin-scaffolder-common';
 import { JsonObject } from '@backstage/types';
 import { v4 as uuid } from 'uuid';
-import { pathToFileURL } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import { Logger } from 'winston';
 import {
   createTemplateAction,
@@ -38,11 +38,12 @@ import {
   BackstageCredentials,
   resolveSafeChildPath,
 } from '@backstage/backend-plugin-api';
-import type { EntityMeta, UserEntity } from '@backstage/catalog-model';
+import type { UserEntity } from '@backstage/catalog-model';
+import { template } from 'lodash';
 
 interface DryRunInput {
   spec: TaskSpec;
-  templateMetadata: EntityMeta;
+  templateInfo: TemplateInfo;
   secrets?: TaskSecrets;
   directoryContents: SerializedFile[];
   credentials: BackstageCredentials;
@@ -95,12 +96,18 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
       ]),
     });
 
-    const dryRunId = uuid();
+    // Extracting contentsPath and dryRunId from the baseUrl
+    const baseUrl = input.templateInfo.baseUrl;
+    if (!baseUrl) {
+      throw new Error('baseUrl is required');
+    }
+    const basePath = fileURLToPath(new URL(baseUrl));
+    const contentsPath = basePath.replace('template.yaml', '');
+    const dryRunId = contentsPath
+      .replace(options.workingDirectory, '')
+      .replace('dry-run-content-', '');
+
     const log = new Array<{ body: JsonObject }>();
-    const contentsPath = resolveSafeChildPath(
-      options.workingDirectory,
-      `dry-run-content-${dryRunId}`,
-    );
 
     try {
       await deserializeDirectoryContents(contentsPath, input.directoryContents);
@@ -117,15 +124,7 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
               action: 'dry-run:extract',
             },
           ],
-          templateInfo: {
-            entityRef: 'template:default/dry-run',
-            entity: {
-              metadata: input.templateMetadata,
-            },
-            baseUrl: pathToFileURL(
-              resolveSafeChildPath(contentsPath, 'template.yaml'),
-            ).toString(),
-          },
+          templateInfo: input.templateInfo,
         },
         secrets: input.secrets,
         getInitiatorCredentials: () => Promise.resolve(input.credentials),
