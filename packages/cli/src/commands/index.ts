@@ -266,63 +266,6 @@ export function registerCommands(program: Command) {
     .action(lazy(() => import('./new/new').then(m => m.default)));
 
   program
-    .command('create', { hidden: true })
-    .storeOptionsAsProperties(false)
-    .description(
-      'Open up an interactive guide to creating new things in your app [DEPRECATED]',
-    )
-    .option(
-      '--select <name>',
-      'Select the thing you want to be creating upfront',
-    )
-    .option(
-      '--option <name>=<value>',
-      'Pre-fill options for the creation process',
-      (opt, arr: string[]) => [...arr, opt],
-      [],
-    )
-    .option('--scope <scope>', 'The scope to use for new packages')
-    .option(
-      '--npm-registry <URL>',
-      'The package registry to use for new packages',
-    )
-    .option('--no-private', 'Do not mark new packages as private')
-    .action(lazy(() => import('./new/new').then(m => m.default)));
-
-  program
-    .command('create-plugin', { hidden: true })
-    .option(
-      '--backend',
-      'Create plugin with the backend dependencies as default',
-    )
-    .description('Creates a new plugin in the current repository [DEPRECATED]')
-    .option('--scope <scope>', 'npm scope')
-    .option('--npm-registry <URL>', 'npm registry URL')
-    .option('--no-private', 'Public npm package')
-    .action(
-      lazy(() => import('./create-plugin/createPlugin').then(m => m.default)),
-    );
-
-  program
-    .command('plugin:diff', { hidden: true })
-    .option('--check', 'Fail if changes are required')
-    .option('--yes', 'Apply all changes')
-    .description(
-      'Diff an existing plugin with the creation template [DEPRECATED]',
-    )
-    .action(lazy(() => import('./plugin/diff').then(m => m.default)));
-
-  // TODO(Rugvip): Deprecate in favor of package variant
-  program
-    .command('test')
-    .allowUnknownOption(true) // Allows the command to run, but we still need to parse raw args
-    .helpOption(', --backstage-cli-help') // Let Jest handle help
-    .description(
-      'Run tests, forwarding args to Jest, defaulting to watch mode [DEPRECATED]',
-    )
-    .action(lazy(() => import('./test').then(m => m.default)));
-
-  program
     .command('config:docs')
     .option(
       '--package <name>',
@@ -404,12 +347,6 @@ export function registerCommands(program: Command) {
     .action(lazy(() => import('./versions/bump').then(m => m.default)));
 
   program
-    .command('versions:check', { hidden: true })
-    .option('--fix', 'Fix any auto-fixable versioning problems')
-    .description('Check Backstage package versioning')
-    .action(lazy(() => import('./versions/lint').then(m => m.default)));
-
-  program
     .command('versions:migrate')
     .option(
       '--pattern <glob>',
@@ -423,12 +360,6 @@ export function registerCommands(program: Command) {
       'Migrate any plugins that have been moved to the @backstage-community namespace automatically',
     )
     .action(lazy(() => import('./versions/migrate').then(m => m.default)));
-
-  // TODO(Rugvip): Deprecate in favor of package variant
-  program
-    .command('clean')
-    .description('Delete cache directories [DEPRECATED]')
-    .action(lazy(() => import('./clean/clean').then(m => m.default)));
 
   program
     .command('build-workspace <workspace-dir> [packages...]')
