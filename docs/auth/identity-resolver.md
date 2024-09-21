@@ -145,7 +145,7 @@ remove that last import and instead construct your own provider using the
 facilities from the same package.
 
 Make sure that your `auth` config in your `app-config.yaml` does not contain
-any `resolvers` field.
+any `resolvers` field - otherwise, they take priority.
 
 ```yaml title="in e.g. app-config.yaml"
 auth:
