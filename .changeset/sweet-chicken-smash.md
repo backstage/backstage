@@ -10,3 +10,5 @@
 - `test`: Use `backstage-cli repo test` or `backstage-cli package test` instead
 - `versions:check`: Use `yarn dedupe` or `yarn-deduplicate` instead
 - `clean`: Use `backstage-cli package clean` instead
+
+In addition, the experimental `install` command has been removed since it has not received any updates since its introduction and we're expecting usage to be low. If you where relying on this command, please let us know by opening an issue towards the main Backstage repository.
