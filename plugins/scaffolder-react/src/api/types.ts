@@ -125,7 +125,7 @@ export type LogEvent = {
 export interface ScaffolderScaffoldOptions {
   templateRef: string;
   values: Record<string, JsonValue>;
-  secrets?: Record<string, string>;
+  secrets?: JsonObject;
 }
 
 /**

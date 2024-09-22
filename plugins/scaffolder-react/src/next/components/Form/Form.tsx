@@ -64,6 +64,11 @@ export const Form = (props: PropsWithChildren<ScaffolderRJSFFormProps>) => {
   );
 
   return (
-    <WrappedForm {...props} templates={templates} fields={wrappedFields} />
+    <WrappedForm
+      {...props}
+      templates={templates}
+      fields={wrappedFields}
+      idSeparator="/"
+    />
   );
 };

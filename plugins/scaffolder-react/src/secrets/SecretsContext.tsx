@@ -23,6 +23,8 @@ import React, {
   useContext,
   PropsWithChildren,
 } from 'react';
+import merge from 'lodash/merge';
+import { JsonObject } from '@backstage/types';
 
 /**
  * The contents of the `SecretsContext`
@@ -65,8 +67,8 @@ export const SecretsContextProvider = (
  * @public
  */
 export interface ScaffolderUseTemplateSecrets {
-  setSecrets: (input: Record<string, string>) => void;
-  secrets: Record<string, string>;
+  setSecrets: (input: JsonObject) => void;
+  secrets: JsonObject;
 }
 
 /**
@@ -86,8 +88,11 @@ export const useTemplateSecrets = (): ScaffolderUseTemplateSecrets => {
   const { setSecrets: updateSecrets, secrets = {} } = value;
 
   const setSecrets = useCallback(
-    (input: Record<string, string>) => {
-      updateSecrets(currentSecrets => ({ ...currentSecrets, ...input }));
+    (input: JsonObject) => {
+      updateSecrets(currentSecrets => {
+        const newSecrets = merge({}, currentSecrets, input);
+        return newSecrets;
+      });
     },
     [updateSecrets],
   );

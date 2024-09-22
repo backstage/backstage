@@ -219,7 +219,7 @@ describe('RepoUrlPicker', () => {
 
       const SecretsComponent = () => {
         const { secrets } = useTemplateSecrets();
-        const secret = secrets[secretsKey];
+        const secret = secrets[secretsKey] as string;
         return secret ? <div>{secret}</div> : null;
       };
       const { getByText } = await renderInTestApp(
@@ -317,7 +317,7 @@ describe('RepoUrlPicker', () => {
 
       const SecretsComponent = () => {
         const { secrets } = useTemplateSecrets();
-        const secret = secrets[secretsKey];
+        const secret = secrets[secretsKey] as string;
         return secret ? <div>{secret}</div> : null;
       };
       const allowedHosts = ['github.com', 'gitlab.example.com'];

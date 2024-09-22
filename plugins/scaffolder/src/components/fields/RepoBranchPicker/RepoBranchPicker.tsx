@@ -119,6 +119,17 @@ export const RepoBranchPicker = (props: RepoBranchPickerProps) => {
 
   const hostType = (host && integrationApi.byHost(host)?.type) ?? null;
 
+  const getAccessToken = (): string | undefined => {
+    const secretsKey =
+      uiSchema?.['ui:options']?.requestUserCredentials?.secretsKey;
+    if (!secretsKey) return undefined;
+
+    const secret = secrets[secretsKey];
+    if (typeof secret !== 'string') return undefined;
+
+    return secret;
+  };
+
   const renderRepoBranchPicker = () => {
     switch (hostType) {
       case 'bitbucket':
@@ -127,10 +138,7 @@ export const RepoBranchPicker = (props: RepoBranchPickerProps) => {
             onChange={updateLocalState}
             state={state}
             rawErrors={rawErrors}
-            accessToken={
-              uiSchema?.['ui:options']?.requestUserCredentials?.secretsKey &&
-              secrets[uiSchema['ui:options'].requestUserCredentials.secretsKey]
-            }
+            accessToken={getAccessToken()}
             required={required}
           />
         );

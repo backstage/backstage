@@ -161,6 +161,18 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
 
   const hostType =
     (state.host && integrationApi.byHost(state.host)?.type) ?? null;
+
+  const getAccessToken = (): string | undefined => {
+    const secretsKey =
+      uiSchema?.['ui:options']?.requestUserCredentials?.secretsKey;
+    if (!secretsKey) return undefined;
+
+    const secret = secrets[secretsKey];
+    if (typeof secret !== 'string') return undefined;
+
+    return secret;
+  };
+
   return (
     <>
       {schema.title && (
@@ -210,10 +222,7 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
           rawErrors={rawErrors}
           state={state}
           onChange={updateLocalState}
-          accessToken={
-            uiSchema?.['ui:options']?.requestUserCredentials?.secretsKey &&
-            secrets[uiSchema['ui:options'].requestUserCredentials.secretsKey]
-          }
+          accessToken={getAccessToken()}
         />
       )}
       {hostType === 'azure' && (
