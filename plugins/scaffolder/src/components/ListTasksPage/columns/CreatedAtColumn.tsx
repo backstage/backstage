@@ -17,11 +17,22 @@ import { DateTime } from 'luxon';
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 
-export const CreatedAtColumn = ({ createdAt }: { createdAt: string }) => {
+interface CreatedAtColumnProps {
+  createdAt: string;
+  locale?: string;
+}
+
+export const CreatedAtColumn: React.FC<CreatedAtColumnProps> = ({
+  createdAt,
+  locale,
+}) => {
   const createdAtTime = DateTime.fromISO(createdAt);
-  const formatted = createdAtTime.toLocaleString(
-    DateTime.DATETIME_SHORT_WITH_SECONDS,
-  );
+
+  const userLocale = locale || window.navigator.language || 'en-US';
+
+  const formatted = createdAtTime.setLocale(userLocale).toLocaleString({
+    ...DateTime.DATETIME_SHORT_WITH_SECONDS,
+  });
 
   return <Typography paragraph>{formatted}</Typography>;
 };
