@@ -17,8 +17,7 @@
 import { ScmIntegrations } from '@backstage/integration';
 import { TaskSpec, TemplateInfo } from '@backstage/plugin-scaffolder-common';
 import { JsonObject } from '@backstage/types';
-import { v4 as uuid } from 'uuid';
-import { fileURLToPath, pathToFileURL } from 'url';
+import { fileURLToPath } from 'url';
 import { Logger } from 'winston';
 import {
   createTemplateAction,
@@ -34,12 +33,8 @@ import { NunjucksWorkflowRunner } from '../tasks/NunjucksWorkflowRunner';
 import { DecoratedActionsRegistry } from './DecoratedActionsRegistry';
 import fs from 'fs-extra';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import {
-  BackstageCredentials,
-  resolveSafeChildPath,
-} from '@backstage/backend-plugin-api';
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import type { UserEntity } from '@backstage/catalog-model';
-import { template } from 'lodash';
 
 interface DryRunInput {
   spec: TaskSpec;
