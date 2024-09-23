@@ -13,18 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Entity } from '@backstage/catalog-model';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
   humanizeEntityRef,
 } from '@backstage/plugin-catalog-react';
-import FormControl from '@material-ui/core/FormControl';
-import IconButton from '@material-ui/core/IconButton';
-import InputLabel from '@material-ui/core/InputLabel';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import MenuItem from '@material-ui/core/MenuItem';
+import Paper from '@material-ui/core/Paper';
+import FormControl from '@material-ui/core/FormControl';
+import Input from '@material-ui/core/Input';
 import Select from '@material-ui/core/Select';
+import Tooltip from '@material-ui/core/Tooltip';
+import IconButton from '@material-ui/core/IconButton';
+import MenuItem from '@material-ui/core/MenuItem';
 import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 import React, { useCallback, useState } from 'react';
@@ -35,6 +38,7 @@ import {
   FieldExtensionOptions,
   FormProps,
 } from '@backstage/plugin-scaffolder-react';
+import { TemplateEditorToolbar } from './TemplateEditorToolbar';
 import { TemplateEditorForm } from './TemplateEditorForm';
 import { TemplateEditorTextArea } from './TemplateEditorTextArea';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -94,27 +98,40 @@ export type ScaffolderTemplateFormPreviewerClassKey =
 const useStyles = makeStyles(
   theme => ({
     root: {
+      height: '100%',
       gridArea: 'pageContent',
       display: 'grid',
       gridTemplateAreas: `
-      "controls controls"
+      "toolbar toolbar"
       "textArea preview"
     `,
       gridTemplateRows: 'auto 1fr',
       gridTemplateColumns: '1fr 1fr',
     },
-    controls: {
-      gridArea: 'controls',
-      display: 'flex',
-      flexFlow: 'row nowrap',
-      alignItems: 'center',
-      margin: theme.spacing(1),
+    toolbar: {
+      gridArea: 'toolbar',
     },
     textArea: {
       gridArea: 'textArea',
+      height: '100%',
     },
     preview: {
       gridArea: 'preview',
+      position: 'relative',
+      borderLeft: `1px solid ${theme.palette.divider}`,
+      backgroundColor: theme.palette.background.default,
+    },
+    scroll: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      padding: theme.spacing(1),
+    },
+    formControl: {
+      minWidth: 120,
+      maxWidth: 300,
     },
   }),
   { name: 'ScaffolderTemplateFormPreviewer' },
@@ -137,8 +154,9 @@ export const TemplateFormPreviewer = ({
   const { t } = useTranslationRef(scaffolderTranslationRef);
   const alertApi = useApi(alertApiRef);
   const catalogApi = useApi(catalogApiRef);
-  const [selectedTemplate, setSelectedTemplate] = useState('');
   const [errorText, setErrorText] = useState<string>();
+  const [selectedTemplate, setSelectedTemplate] =
+    useState<TemplateOption | null>(null);
   const [templateOptions, setTemplateOptions] = useState<TemplateOption[]>([]);
   const [templateYaml, setTemplateYaml] = useState(defaultPreviewTemplate);
 
@@ -188,29 +206,45 @@ export const TemplateFormPreviewer = ({
   return (
     <>
       {loading && <LinearProgress />}
-      <main className={classes.root}>
-        <div className={classes.controls}>
-          <FormControl variant="outlined" size="small" fullWidth>
-            <InputLabel id="select-template-label">
-              {t('templateEditorPage.templateFormPreviewer.title')}
-            </InputLabel>
-            <Select
-              value={selectedTemplate}
-              label={t('templateEditorPage.templateFormPreviewer.title')}
-              labelId="select-template-label"
-              onChange={e => handleSelectChange(e.target.value)}
-            >
-              {templateOptions.map((option, idx) => (
-                <MenuItem key={idx} value={option.value as any}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <IconButton size="medium" onClick={onClose}>
-            <CloseIcon />
-          </IconButton>
+      <Paper
+        className={classes.root}
+        component="main"
+        variant="outlined"
+        square
+      >
+        <div className={classes.toolbar}>
+          <TemplateEditorToolbar fieldExtensions={customFieldExtensions}>
+            <Tooltip title="Close editor">
+              <IconButton onClick={onClose}>
+                <CloseIcon />
+              </IconButton>
+            </Tooltip>
+            <FormControl className={classes.formControl}>
+              <Select
+                displayEmpty
+                value={selectedTemplate}
+                onChange={e => handleSelectChange(e.target.value)}
+                input={<Input />}
+                renderValue={selected => {
+                  if (!selected) {
+                    return t('templateEditorPage.templateFormPreviewer.title');
+                  }
+                  return (selected as Entity).metadata.title;
+                }}
+                inputProps={{
+                  'aria-label': t(
+                    'templateEditorPage.templateFormPreviewer.title',
+                  ),
+                }}
+              >
+                {templateOptions.map((option, index) => (
+                  <MenuItem key={index} value={option.value as any}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </TemplateEditorToolbar>
         </div>
         <div className={classes.textArea}>
           <TemplateEditorTextArea
@@ -220,16 +254,18 @@ export const TemplateFormPreviewer = ({
           />
         </div>
         <div className={classes.preview}>
-          <TemplateEditorForm
-            content={templateYaml}
-            contentIsSpec
-            fieldExtensions={customFieldExtensions}
-            setErrorText={setErrorText}
-            layouts={layouts}
-            formProps={formProps}
-          />
+          <div className={classes.scroll}>
+            <TemplateEditorForm
+              content={templateYaml}
+              contentIsSpec
+              fieldExtensions={customFieldExtensions}
+              setErrorText={setErrorText}
+              layouts={layouts}
+              formProps={formProps}
+            />
+          </div>
         </div>
-      </main>
+      </Paper>
     </>
   );
 };

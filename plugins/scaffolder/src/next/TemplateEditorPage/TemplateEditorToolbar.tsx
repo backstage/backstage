@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -49,18 +49,29 @@ const useStyles = makeStyles(
     },
     toolbar: {
       display: 'grid',
-      justifyItems: 'flex-end',
+      gridTemplateColumns: 'auto 1fr',
+      gridGap: theme.spacing(1),
       padding: theme.spacing(0, 1),
       backgroundColor: theme.palette.background.paper,
+    },
+    toolbarCustomActions: {
+      display: 'grid',
+      alignItems: 'center',
+      gridAutoFlow: 'Column',
+      gridGap: theme.spacing(1),
+    },
+    toolbarDefaultActions: {
+      justifySelf: 'end',
     },
   }),
   { name: 'ScaffolderTemplateEditorToolbar' },
 );
 
 export function TemplateEditorToolbar(props: {
+  children?: ReactNode;
   fieldExtensions?: FieldExtensionOptions<any, any>[];
 }) {
-  const { fieldExtensions } = props;
+  const { children, fieldExtensions } = props;
   const classes = useStyles();
   const [showFieldsDrawer, setShowFieldsDrawer] = useState(false);
   const [showActionsDrawer, setShowActionsDrawer] = useState(false);
@@ -69,14 +80,19 @@ export function TemplateEditorToolbar(props: {
   return (
     <AppBar className={classes.appbar} position="relative">
       <Toolbar className={classes.toolbar}>
-        <ButtonGroup variant="outlined" color="primary">
+        <div className={classes.toolbarCustomActions}>{children}</div>
+        <ButtonGroup
+          className={classes.toolbarDefaultActions}
+          variant="outlined"
+          color="primary"
+        >
           <Tooltip title="Custom Fields Explorer">
-            <Button size="small" onClick={() => setShowFieldsDrawer(true)}>
+            <Button onClick={() => setShowFieldsDrawer(true)}>
               <ExtensionIcon />
             </Button>
           </Tooltip>
           <Tooltip title="Installed Actions Documentation">
-            <Button size="small" onClick={() => setShowActionsDrawer(true)}>
+            <Button onClick={() => setShowActionsDrawer(true)}>
               <DescriptionIcon />
             </Button>
           </Tooltip>

@@ -157,10 +157,13 @@ const techDocsReaderPage = PageBlueprint.make({
  */
 const techDocsEntityContent = EntityContentBlueprint.makeWithOverrides({
   inputs: {
-    emptyState: createExtensionInput([coreExtensionData.reactElement], {
-      singleton: true,
-      optional: true,
-    }),
+    emptyState: createExtensionInput(
+      [coreExtensionData.reactElement.optional()],
+      {
+        singleton: true,
+        optional: true,
+      },
+    ),
   },
   factory(originalFactory, context) {
     return originalFactory(
