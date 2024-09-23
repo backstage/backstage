@@ -531,7 +531,7 @@ describe('DefaultProcessingDatabase', () => {
 
         expect(refreshKeys[0]).toEqual({
           entity_id: id,
-          key: 'protocol:foo-bar.com',
+          key: '1fae60d52c9630ddcacb375c1789ed33055ebe6565da6b3446369fb9a1044b47',
         });
       },
     );
