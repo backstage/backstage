@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-import { BitbucketCloudIntegrationConfig } from '@backstage/integration';
-import fetch, { Request } from 'cross-fetch';
+import {
+  BitbucketCloudIntegrationConfig,
+  BitbucketFetchFunction,
+  BitbucketFetchService,
+} from '@backstage/integration';
+import { Request, Response } from 'node-fetch';
 import { Models } from './models';
 import { WithPagination } from './pagination';
 import {
@@ -32,9 +36,13 @@ export class BitbucketCloudClient {
     return new BitbucketCloudClient(config);
   }
 
+  private readonly fetch: BitbucketFetchFunction;
+
   private constructor(
     private readonly config: BitbucketCloudIntegrationConfig,
-  ) {}
+  ) {
+    this.fetch = BitbucketFetchService.get(config);
+  }
 
   searchCode(
     workspace: string,
@@ -137,7 +145,7 @@ export class BitbucketCloudClient {
   }
 
   private async request(req: Request): Promise<Response> {
-    return fetch(req, { headers: this.getAuthHeaders() }).then(
+    return await this.fetch(req, { headers: this.getAuthHeaders() }).then(
       (response: Response) => {
         if (!response.ok) {
           throw new Error(

@@ -33,6 +33,7 @@ export * from './gitlab';
 export * from './googleGcs';
 export * from './harness';
 export { defaultScmResolveUrl } from './helpers';
+export type { FetchConfig, ThrottlingConfig } from './helpers';
 export { ScmIntegrations } from './ScmIntegrations';
 export type { IntegrationsByType } from './ScmIntegrations';
 export type {

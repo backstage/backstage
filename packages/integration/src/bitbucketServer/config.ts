@@ -16,7 +16,7 @@
 
 import { Config } from '@backstage/config';
 import { trimEnd } from 'lodash';
-import { isValidHost } from '../helpers';
+import { FetchConfig, isValidHost, readFetchConfig } from '../helpers';
 
 /**
  * The configuration parameters for a single Bitbucket Server API provider.
@@ -64,6 +64,13 @@ export type BitbucketServerIntegrationConfig = {
    * See https://developer.atlassian.com/server/bitbucket/how-tos/command-line-rest/#authentication
    */
   password?: string;
+
+  /**
+   * The fetch configuration for requests to Bitbucket Server.
+   *
+   * If not specified, the default fetch configuration will be used.
+   */
+  fetch?: FetchConfig;
 };
 
 /**
@@ -80,6 +87,10 @@ export function readBitbucketServerIntegrationConfig(
   const token = config.getOptionalString('token')?.trim();
   const username = config.getOptionalString('username');
   const password = config.getOptionalString('password');
+
+  const fetch = config.has('fetch')
+    ? readFetchConfig(config.getConfig('fetch'))
+    : undefined;
 
   if (!isValidHost(host)) {
     throw new Error(
@@ -99,6 +110,7 @@ export function readBitbucketServerIntegrationConfig(
     token,
     username,
     password,
+    fetch,
   };
 }
 

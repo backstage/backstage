@@ -26,13 +26,15 @@ import {
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import {
   BitbucketCloudIntegration,
+  BitbucketFetchFunction,
+  BitbucketFetchService,
   getBitbucketCloudDefaultBranch,
   getBitbucketCloudDownloadUrl,
   getBitbucketCloudFileFetchUrl,
   getBitbucketCloudRequestOptions,
   ScmIntegrations,
 } from '@backstage/integration';
-import fetch, { Response } from 'node-fetch';
+import { Response } from 'node-fetch';
 import parseGitUrl from 'git-url-parse';
 import { trimEnd } from 'lodash';
 import { Minimatch } from 'minimatch';
@@ -58,6 +60,8 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
     });
   };
 
+  private readonly fetch: BitbucketFetchFunction;
+
   constructor(
     private readonly integration: BitbucketCloudIntegration,
     private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
@@ -69,6 +73,8 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
         `Bitbucket Cloud integration for '${host}' has configured a username but is missing a required appPassword.`,
       );
     }
+
+    this.fetch = BitbucketFetchService.get(this.integration.config);
   }
 
   async read(url: string): Promise<Buffer> {
@@ -91,7 +97,7 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
 
     let response: Response;
     try {
-      response = await fetch(bitbucketUrl.toString(), {
+      response = await this.fetch(bitbucketUrl.toString(), {
         headers: {
           ...requestOptions.headers,
           ...(etag && { 'If-None-Match': etag }),
@@ -146,7 +152,7 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
       url,
       this.integration.config,
     );
-    const archiveResponse = await fetch(
+    const archiveResponse = await this.fetch(
       downloadUrl,
       getBitbucketCloudRequestOptions(this.integration.config),
     );
@@ -217,7 +223,7 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
 
     const commitsApiUrl = `${this.integration.config.apiBaseUrl}/repositories/${project}/${repoName}/commits/${branch}`;
 
-    const commitsResponse = await fetch(
+    const commitsResponse = await this.fetch(
       commitsApiUrl,
       getBitbucketCloudRequestOptions(this.integration.config),
     );

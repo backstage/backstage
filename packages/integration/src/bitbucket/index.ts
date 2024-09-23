@@ -26,3 +26,4 @@ export {
   getBitbucketFileFetchUrl,
   getBitbucketRequestOptions,
 } from './core';
+export * from './BitbucketFetchService';
