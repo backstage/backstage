@@ -120,7 +120,7 @@ const ExamplesTable = (props: { examples: ActionExample[] }) => {
   );
 };
 
-const ActionPageContent = () => {
+export const ActionPageContent = () => {
   const api = useApi(scaffolderApiRef);
   const { t } = useTranslationRef(scaffolderTranslationRef);
 

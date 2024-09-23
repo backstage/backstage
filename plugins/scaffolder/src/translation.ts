@@ -184,6 +184,11 @@ export const scaffolderTranslationRef = createTranslationRef({
         cancel: 'Cancel',
       },
     },
+    templateEditorForm: {
+      stepper: {
+        emptyText: 'There are no spec parameters in the template to preview.',
+      },
+    },
     templateTypePicker: {
       title: 'Categories',
     },
@@ -214,8 +219,11 @@ export const scaffolderTranslationRef = createTranslationRef({
           title: 'Field Options',
           applyButtonTitle: 'Apply',
         },
+        fieldPreview: {
+          title: 'Field Preview',
+        },
         preview: {
-          title: 'Example Template Spec',
+          title: 'Template Spec',
         },
       },
       templateEditorBrowser: {

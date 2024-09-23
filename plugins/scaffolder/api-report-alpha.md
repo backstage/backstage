@@ -227,6 +227,7 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'ongoingTask.startOverButtonTitle': 'Start Over';
     readonly 'ongoingTask.hideLogsButtonTitle': 'Hide Logs';
     readonly 'ongoingTask.showLogsButtonTitle': 'Show Logs';
+    readonly 'templateEditorForm.stepper.emptyText': 'There are no spec parameters in the template to preview.';
     readonly 'templateTypePicker.title': 'Categories';
     readonly 'templateEditorPage.title': 'Template Editor';
     readonly 'templateEditorPage.subtitle': 'Edit, preview, and try out templates and template forms';
@@ -238,10 +239,11 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templateEditorPage.dryRunResultsView.tab.log': 'Log';
     readonly 'templateEditorPage.dryRunResultsView.tab.files': 'Files';
     readonly 'templateEditorPage.taskStatusStepper.skippedStepTitle': 'Skipped';
-    readonly 'templateEditorPage.customFieldExplorer.preview.title': 'Example Template Spec';
+    readonly 'templateEditorPage.customFieldExplorer.preview.title': 'Template Spec';
     readonly 'templateEditorPage.customFieldExplorer.fieldForm.title': 'Field Options';
     readonly 'templateEditorPage.customFieldExplorer.fieldForm.applyButtonTitle': 'Apply';
     readonly 'templateEditorPage.customFieldExplorer.selectFieldLabel': 'Choose Custom Field Extension';
+    readonly 'templateEditorPage.customFieldExplorer.fieldPreview.title': 'Field Preview';
     readonly 'templateEditorPage.templateEditorBrowser.closeConfirmMessage': 'Are you sure? Unsaved changes will be lost';
     readonly 'templateEditorPage.templateEditorBrowser.saveIconTooltip': 'Save all files';
     readonly 'templateEditorPage.templateEditorBrowser.reloadIconTooltip': 'Reload directory';
