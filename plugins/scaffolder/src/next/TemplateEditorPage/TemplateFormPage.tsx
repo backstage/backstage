@@ -59,8 +59,8 @@ export function TemplateFormPage(props: TemplateFormPageProps) {
   return (
     <Page themeId="home">
       <Header
-        title={t('templateEditorPage.title')}
-        subtitle={t('templateEditorPage.subtitle')}
+        title={t('templateFormPage.title')}
+        subtitle={t('templateFormPage.subtitle')}
       />
       <Content className={classes.root}>
         <TemplateFormPreviewer
