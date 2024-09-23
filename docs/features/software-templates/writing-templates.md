@@ -803,7 +803,7 @@ The `projectSlug` filter generates a project slug from a repository URL
 
 ## Custom Filters and Globals
 
-You may with to extend the filters and globals with your own custom ones. For example `${{ myGlobal | myFilter | myOtherFilter }}` or `${{ myFunctionGlobal(1,2) | myFilter }}`.
+You may wish to extend the filters and globals with your own custom ones. For example `${{ myGlobal | myFilter | myOtherFilter }}` or `${{ myFunctionGlobal(1,2) | myFilter }}`.
 This can be achieved using the `additionalTemplateFilters` and `additionalTemplateGlobals` properties respectively.
 
 These properties accept a `Record`
