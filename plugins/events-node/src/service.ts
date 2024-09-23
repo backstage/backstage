@@ -38,11 +38,23 @@ export const eventsServiceFactory = createServiceFactory({
   deps: {
     pluginMetadata: coreServices.pluginMetadata,
     rootLogger: coreServices.rootLogger,
+    discovery: coreServices.discovery,
+    logger: coreServices.logger,
+    lifecycle: coreServices.lifecycle,
+    auth: coreServices.auth,
   },
   async createRootContext({ rootLogger }) {
     return DefaultEventsService.create({ logger: rootLogger });
   },
-  async factory({ pluginMetadata }, eventsService) {
-    return eventsService.forPlugin(pluginMetadata.getId());
+  async factory(
+    { pluginMetadata, discovery, logger, lifecycle, auth },
+    eventsService,
+  ) {
+    return eventsService.forPlugin(pluginMetadata.getId(), {
+      discovery,
+      logger,
+      lifecycle,
+      auth,
+    });
   },
 });
