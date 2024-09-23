@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,8 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './components';
-export * from './lib';
-export * from './hooks';
-export * from './overridableComponents';
-export * from './blueprints';
+
+import { OpaqueType } from '@internal/opaque';
+import { z } from 'zod';
+
+import { FormFieldExtensionData } from '@backstage/plugin-scaffolder-react/alpha';
+
+/** @alpha */
+export interface FormField {
+  readonly $$type: '@backstage/scaffolder/FormField';
+}
+
+/** @alpha */
+export const OpaqueFormField = OpaqueType.create<{
+  public: FormField;
+  versions: FormFieldExtensionData<z.ZodType, z.ZodType> & {
+    readonly version: 'v1';
+  };
+}>({ type: '@backstage/scaffolder/FormField', versions: ['v1'] });
