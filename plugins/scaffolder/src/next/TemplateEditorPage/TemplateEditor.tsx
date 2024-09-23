@@ -15,6 +15,7 @@
  */
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useState } from 'react';
+import Paper from '@material-ui/core/Paper';
 import type {
   FormProps,
   LayoutOptions,
@@ -22,75 +23,116 @@ import type {
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 import { TemplateDirectoryAccess } from '../../lib/filesystem';
 import { DirectoryEditorProvider } from './DirectoryEditorContext';
+import { TemplateEditorToolbar } from './TemplateEditorToolbar';
 import { TemplateEditorBrowser } from './TemplateEditorBrowser';
 import { DryRunProvider } from './DryRunContext';
 import { TemplateEditorTextArea } from './TemplateEditorTextArea';
 import { TemplateEditorForm } from './TemplateEditorForm';
 import { DryRunResults } from './DryRunResults';
 
-const useStyles = makeStyles({
-  // Reset and fix sizing to make sure scrolling behaves correctly
-  root: {
-    gridArea: 'pageContent',
+/** @public */
+export type ScaffolderTemplateEditorClassKey =
+  | 'root'
+  | 'browser'
+  | 'editor'
+  | 'preview'
+  | 'results';
 
-    display: 'grid',
-    gridTemplateAreas: `
+const useStyles = makeStyles(
+  theme => ({
+    // Reset and fix sizing to make sure scrolling behaves correctly
+    root: {
+      height: '100%',
+      gridArea: 'pageContent',
+      display: 'grid',
+      gridTemplateAreas: `
+      "toolbar toolbar toolbar"
       "browser editor preview"
       "results results results"
     `,
-    gridTemplateColumns: '1fr 3fr 2fr',
-    gridTemplateRows: '1fr auto',
-  },
-  browser: {
-    gridArea: 'browser',
-    overflow: 'auto',
-  },
-  editor: {
-    gridArea: 'editor',
-    overflow: 'auto',
-  },
-  preview: {
-    gridArea: 'preview',
-    overflow: 'auto',
-  },
-  results: {
-    gridArea: 'results',
-  },
-});
+      gridTemplateColumns: '1fr 3fr 2fr',
+      gridTemplateRows: 'auto 1fr auto',
+    },
+    toolbar: {
+      gridArea: 'toolbar',
+    },
+    browser: {
+      gridArea: 'browser',
+      overflow: 'auto',
+    },
+    editor: {
+      gridArea: 'editor',
+      overflow: 'auto',
+      borderLeft: `1px solid ${theme.palette.divider}`,
+    },
+    preview: {
+      gridArea: 'preview',
+      position: 'relative',
+      borderLeft: `1px solid ${theme.palette.divider}`,
+      backgroundColor: theme.palette.background.default,
+    },
+    scroll: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      padding: theme.spacing(1),
+      overflow: 'auto',
+    },
+    results: {
+      gridArea: 'results',
+    },
+  }),
+  { name: 'ScaffolderTemplateEditor' },
+);
 
 export const TemplateEditor = (props: {
-  directory: TemplateDirectoryAccess;
+  directory?: TemplateDirectoryAccess;
   fieldExtensions?: FieldExtensionOptions<any, any>[];
   layouts?: LayoutOptions[];
   onClose?: () => void;
   formProps?: FormProps;
+  onLoad?: () => void;
 }) => {
   const classes = useStyles();
-
   const [errorText, setErrorText] = useState<string>();
 
   return (
     <DirectoryEditorProvider directory={props.directory}>
       <DryRunProvider>
-        <main className={classes.root}>
+        <Paper
+          className={classes.root}
+          component="main"
+          variant="outlined"
+          square
+        >
+          <section className={classes.toolbar}>
+            <TemplateEditorToolbar fieldExtensions={props.fieldExtensions} />
+          </section>
           <section className={classes.browser}>
             <TemplateEditorBrowser onClose={props.onClose} />
           </section>
           <section className={classes.editor}>
-            <TemplateEditorTextArea.DirectoryEditor errorText={errorText} />
+            <TemplateEditorTextArea.DirectoryEditor
+              errorText={errorText}
+              onLoad={props.onLoad}
+            />
           </section>
           <section className={classes.preview}>
-            <TemplateEditorForm.DirectoryEditorDryRun
-              setErrorText={setErrorText}
-              fieldExtensions={props.fieldExtensions}
-              layouts={props.layouts}
-              formProps={props.formProps}
-            />
+            <div className={classes.scroll}>
+              <TemplateEditorForm.DirectoryEditorDryRun
+                setErrorText={setErrorText}
+                fieldExtensions={props.fieldExtensions}
+                layouts={props.layouts}
+                formProps={props.formProps}
+              />
+            </div>
           </section>
           <section className={classes.results}>
             <DryRunResults />
           </section>
-        </main>
+        </Paper>
       </DryRunProvider>
     </DirectoryEditorProvider>
   );

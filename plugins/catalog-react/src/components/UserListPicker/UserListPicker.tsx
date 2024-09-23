@@ -74,9 +74,7 @@ const useStyles = makeStyles(
       margin: theme.spacing(1, 1, 2, 1),
     },
   }),
-  {
-    name: 'CatalogReactUserListPicker',
-  },
+  { name: 'CatalogReactUserListPicker' },
 );
 
 export type ButtonGroup = {

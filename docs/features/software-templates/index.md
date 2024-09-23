@@ -91,19 +91,29 @@ There could be situations where you would like to disable the
 
 ![Disable Button](../../assets/software-templates/disable-register-existing-component-button.png)
 
-To do so, you will un-register / remove the `catalogImportPlugin.routes.importPage`
-from `backstage/packages/app/src/App.tsx`:
+To do so, you need to explicitly disable the default route binding from the `scaffolderPlugin.registerComponent` to the Catalog Import page.
+
+This can be done in `backstage/packages/app/src/App.tsx`:
 
 ```diff
  const app = createApp({
    apis,
    bindRoutes({ bind }) {
--    bind(scaffolderPlugin.externalRoutes, {
+     bind(scaffolderPlugin.externalRoutes, {
++      registerComponent: false,
 -      registerComponent: catalogImportPlugin.routes.importPage,
--    });
-     bind(orgPlugin.externalRoutes, {
-       catalogIndex: catalogPlugin.routes.catalogIndex,
+       viewTechDoc: techdocsPlugin.routes.docRoot,
      });
+})
+```
+
+OR in `app-config.yaml`:
+
+```yaml
+app:
+  routes:
+    bindings:
+      scaffolder.registerComponent: false
 ```
 
 After the change, you should no longer see the button.

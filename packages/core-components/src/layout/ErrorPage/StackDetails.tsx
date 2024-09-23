@@ -26,6 +26,9 @@ interface IStackDetailsProps {
   stack: string;
 }
 
+/** @public */
+export type StackDetailsClassKey = 'title';
+
 const useStyles = makeStyles(
   theme => ({
     title: {

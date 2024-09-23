@@ -1,5 +1,14 @@
 # yarn-plugin-backstage
 
+## 0.0.2
+
+### Patch Changes
+
+- bd32d5a: Add additional check before packing workspace to verify that all backstage:^ versions have been removed.
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+  - @backstage/release-manifests@0.0.11
+
 ## 0.0.1
 
 ### Patch Changes

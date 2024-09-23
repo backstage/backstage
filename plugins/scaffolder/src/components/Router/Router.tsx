@@ -34,10 +34,13 @@ import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../extensions/default';
 
 import {
   actionsRouteRef,
+  editorRouteRef,
+  customFieldsRouteRef,
   editRouteRef,
   scaffolderListTaskRouteRef,
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
+  templateFormRouteRef,
 } from '../../routes';
 import { ErrorPage } from '@backstage/core-components';
 
@@ -50,7 +53,12 @@ import {
 } from '@backstage/plugin-scaffolder/alpha';
 import { TemplateListPage, TemplateWizardPage } from '../../next';
 import { OngoingTask } from '../OngoingTask';
-import { TemplateEditorPage } from '../../next/TemplateEditorPage';
+import {
+  TemplatePage,
+  TemplateFormPage,
+  TemplateEditorPage,
+  CustomFieldsPage,
+} from '../../next/TemplateEditorPage';
 
 /**
  * The Props for the Scaffolder Router
@@ -163,10 +171,26 @@ export const Router = (props: PropsWithChildren<RouterProps>) => {
         path={editRouteRef.path}
         element={
           <SecretsContextProvider>
-            <TemplateEditorPage
-              customFieldExtensions={fieldExtensions}
+            <TemplateEditorPage />
+          </SecretsContextProvider>
+        }
+      />
+      <Route
+        path={customFieldsRouteRef.path}
+        element={
+          <SecretsContextProvider>
+            <CustomFieldsPage fieldExtensions={fieldExtensions} />
+          </SecretsContextProvider>
+        }
+      />
+      <Route
+        path={templateFormRouteRef.path}
+        element={
+          <SecretsContextProvider>
+            <TemplateFormPage
               layouts={customLayouts}
               formProps={props.formProps}
+              fieldExtensions={fieldExtensions}
             />
           </SecretsContextProvider>
         }
@@ -176,6 +200,18 @@ export const Router = (props: PropsWithChildren<RouterProps>) => {
       <Route
         path={scaffolderListTaskRouteRef.path}
         element={<ListTasksPage />}
+      />
+      <Route
+        path={editorRouteRef.path}
+        element={
+          <SecretsContextProvider>
+            <TemplatePage
+              layouts={customLayouts}
+              formProps={props.formProps}
+              fieldExtensions={fieldExtensions}
+            />
+          </SecretsContextProvider>
+        }
       />
       <Route
         path="*"

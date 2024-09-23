@@ -79,6 +79,48 @@ const myOverrideExtension = myExtension.override({
 
 Note the `yield*` expression, which forwards all values from the provided iterable to the generator, in this case the original factory output.
 
+## Overriding blueprint parameters
+
+If you are overriding an extension that was originally created from an [extension blueprint](./23-extension-blueprints.md), you are able to override the parameters that were originally provided for the blueprint. This can be done directly as an option to `.override`, or when calling the original factory in the override factory. The provided parameter overrides will be merged with the existing parameters that where provided when creating the extension from the blueprint.
+
+For example, consider the following extension created from the `PageBlueprint`:
+
+```tsx
+const exampleExtension = PageBlueprint.make({
+  params: {
+    loader: () =>
+      import('./components/ExamplePage').then(m => <m.ExamplePage />),
+    defaultPath: '/example',
+  },
+});
+```
+
+You can immediately override parameters through the `params` option:
+
+```tsx
+const overrideExtension = exampleExtension.override({
+  params: {
+    loader: () =>
+      import('./components/OverridePage').then(m => <m.OverridePage />),
+  },
+});
+```
+
+It is also possible to pass parameter overrides when calling the original factory in the override factory:
+
+```tsx
+const overrideExtension = exampleExtension.override({
+  factory(originalFactory) {
+    return originalFactory({
+      params: {
+        loader: () =>
+          import('./components/OverridePage').then(m => <m.OverridePage />),
+      },
+    });
+  },
+});
+```
+
 ## Overriding declared outputs
 
 When overriding an extension you can provide a new output declaration. This **replaces** any existing output declaration, which means that if you want to forward any of the original output you will need to declare it again. The following example shows how to override an extension and replace the output declaration:
@@ -263,23 +305,19 @@ const overrideExtension = exampleExtension.override({
 
 To install extension overrides in a Backstage app you should use `plugin.withOverrides` whenever you are overriding or adding extensions for a plugin. See the section on [overriding a plugin](./15-plugins.md#overriding-a-plugin) for more information.
 
-There is also a `createExtensionOverrides` function that can be used to install a collection of standalone extensions in an app. This method will be replaced with a different mechanism in the future, but for now remains the only way to override the built-in extensions in the app or to package extensions for a plugin package separate from the plugin itself.
-
 Note that while using either of these options you don't necessarily need to use the extension `.override(...)` method to create the overrides. You can also create new extensions with `createExtension` or a blueprint that are either completely net-new extensions, or override an existing extension by using the same `kind`, `namespace` and `name` to produce the same extension ID.
 
-### Creating a standalone extension bundle
+### Creating a frontend module
 
-The following example shows how to create a standalone extension bundle that overrides the search page from the search plugin:
+The following example shows how to create a frontend module that overrides the search page from the search plugin:
 
 ```tsx
 import {
   createPageExtension,
-  createExtensionOverrides,
+  createFrontendModule,
 } from '@backstage/frontend-plugin-api';
 
 const customSearchPage = PageBlueprint.make({
-  // Since this is a standalone extension we need to provide the namespace to match the search plugin
-  namespace: 'search',
   params: {
     defaultPath: '/search',
     loader: () =>
@@ -287,7 +325,8 @@ const customSearchPage = PageBlueprint.make({
   },
 });
 
-export default createExtensionOverrides({
+export default createFrontendModule({
+  pluginId: 'search',
   extensions: [customSearchPage],
 });
 ```
@@ -296,12 +335,14 @@ Assuming the above code resides in the `@internal/search-page` package, you can 
 
 ```tsx title="packages/app/src/App.tsx"
 import { createApp } from '@backstage/frontend-defaults';
-import searchPageOverride from '@internal/search-page';
+import searchPageModule from '@internal/search-page';
 
 const app = createApp({
   // highlight-next-line
-  features: [searchPageOverride],
+  features: [searchPageModule],
 });
 
 export default app.createRoot();
 ```
+
+You must define a `pluginId` when creating a frontend module, and the plugin must also be installed for the module to be loaded.

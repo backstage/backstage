@@ -142,8 +142,28 @@ backend.add(import('@backstage/plugin-auth-backend-module-github-provider'));
 
 When you want to supply a custom sign-in resolver, as a general pattern you
 remove that last import and instead construct your own provider using the
-facilities from the same package. You can leave the config unchanged from
-before.
+facilities from the same package.
+
+Make sure that your `auth` config in your `app-config.yaml` does not contain
+any `resolvers` field - otherwise, they take priority.
+
+```yaml title="in e.g. app-config.yaml"
+auth:
+  environment: development
+  providers:
+    github:
+      development:
+        clientId: ${AUTH_GITHUB_CLIENT_ID}
+        clientSecret: ${AUTH_GITHUB_CLIENT_SECRET}
+        enterpriseInstanceUrl: ${AUTH_GITHUB_ENTERPRISE_INSTANCE_URL}
+/* highlight-remove-start */
+        signIn:
+          resolvers:
+            - resolver: usernameMatchingUserEntityName
+            - resolver: emailMatchingUserEntityProfileEmail
+            - resolver: emailLocalPartMatchingUserEntityName
+/* highlight-remove-end */
+```
 
 ```ts title="in packages/backend/src/index.ts"
 /* highlight-add-start */

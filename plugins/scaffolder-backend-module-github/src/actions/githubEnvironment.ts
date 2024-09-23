@@ -24,6 +24,8 @@ import { getOctokitOptions } from './helpers';
 import { Octokit } from 'octokit';
 import Sodium from 'libsodium-wrappers';
 import { examples } from './gitHubEnvironment.examples';
+import { CatalogApi } from '@backstage/catalog-client';
+import { Entity } from '@backstage/catalog-model';
 
 /**
  * Creates an `github:environment:create` Scaffolder action that creates a Github Environment.
@@ -32,8 +34,9 @@ import { examples } from './gitHubEnvironment.examples';
  */
 export function createGithubEnvironmentAction(options: {
   integrations: ScmIntegrationRegistry;
+  catalogClient?: CatalogApi;
 }) {
-  const { integrations } = options;
+  const { integrations, catalogClient } = options;
   // For more information on how to define custom actions, see
   //   https://backstage.io/docs/features/software-templates/writing-custom-actions
   return createTemplateAction<{
@@ -48,6 +51,9 @@ export function createGithubEnvironmentAction(options: {
     environmentVariables?: { [key: string]: string };
     secrets?: { [key: string]: string };
     token?: string;
+    waitTimer?: number;
+    preventSelfReview?: boolean;
+    reviewers?: string[];
   }>({
     id: 'github:environment:create',
     description: 'Creates Deployment Environments',
@@ -120,6 +126,25 @@ export function createGithubEnvironmentAction(options: {
             type: 'string',
             description: 'The token to use for authorization to GitHub',
           },
+          waitTimer: {
+            title: 'Wait Timer',
+            type: 'integer',
+            description:
+              'The time to wait before creating or updating the environment (in milliseconds)',
+          },
+          preventSelfReview: {
+            title: 'Prevent Self Review',
+            type: 'boolean',
+            description: 'Whether to prevent self-review for this environment',
+          },
+          reviewers: {
+            title: 'Reviewers',
+            type: 'array',
+            description: 'Reviewers for this environment',
+            items: {
+              type: 'string',
+            },
+          },
         },
       },
     },
@@ -133,7 +158,14 @@ export function createGithubEnvironmentAction(options: {
         environmentVariables,
         secrets,
         token: providedToken,
+        waitTimer,
+        preventSelfReview,
+        reviewers,
       } = ctx.input;
+
+      // When environment creation step is executed right after a repo publish step, the repository might not be available immediately.
+      // Add a 2-second delay before initiating the steps in this action.
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
       const octokitOptions = await getOctokitOptions({
         integrations,
@@ -153,11 +185,56 @@ export function createGithubEnvironmentAction(options: {
         repo: repo,
       });
 
+      // convert reviewers from catalog entity to Github user or team
+      const githubReviewers: { type: 'User' | 'Team'; id: number }[] = [];
+      if (reviewers) {
+        let reviewersEntityRefs: Array<Entity | undefined> = [];
+        // Fetch reviewers from Catalog
+        const catalogResponse = await catalogClient?.getEntitiesByRefs({
+          entityRefs: reviewers,
+        });
+        if (catalogResponse?.items?.length) {
+          reviewersEntityRefs = catalogResponse.items;
+        }
+
+        for (const reviewerEntityRef of reviewersEntityRefs) {
+          if (reviewerEntityRef?.kind === 'User') {
+            try {
+              const user = await client.rest.users.getByUsername({
+                username: reviewerEntityRef.metadata.name,
+              });
+              githubReviewers.push({
+                type: 'User',
+                id: user.data.id,
+              });
+            } catch (error) {
+              ctx.logger.error('User not found:', error);
+            }
+          } else if (reviewerEntityRef?.kind === 'Group') {
+            try {
+              const team = await client.rest.teams.getByName({
+                org: owner,
+                team_slug: reviewerEntityRef.metadata.name,
+              });
+              githubReviewers.push({
+                type: 'Team',
+                id: team.data.id,
+              });
+            } catch (error) {
+              ctx.logger.error('Team not found:', error);
+            }
+          }
+        }
+      }
+
       await client.rest.repos.createOrUpdateEnvironment({
         owner: owner,
         repo: repo,
         environment_name: name,
         deployment_branch_policy: deploymentBranchPolicy ?? null,
+        wait_timer: waitTimer ?? 0,
+        prevent_self_review: preventSelfReview ?? false,
+        reviewers: githubReviewers.length ? githubReviewers : null,
       });
 
       if (customBranchPolicyNames) {

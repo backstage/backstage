@@ -207,13 +207,10 @@ export function createPublishAzureAction(options: {
           : config.getOptionalString('scaffolder.defaultAuthor.email'),
       };
 
-      const auth =
-        ctx.input.token || credentials?.type === 'pat'
-          ? {
-              username: 'notempty',
-              password: ctx.input.token ?? credentials!.token,
-            }
-          : { token: credentials!.token };
+      const auth = {
+        username: 'notempty',
+        password: ctx.input.token ?? credentials!.token,
+      };
 
       const commitResult = await initRepoAndPush({
         dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),

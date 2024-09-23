@@ -25,6 +25,7 @@ import {
   createExternalRouteRef,
   createExtensionInput,
   useRouteRef,
+  analyticsApiRef,
 } from '@backstage/frontend-plugin-api';
 import { screen, render } from '@testing-library/react';
 import { createSpecializedApp } from './createSpecializedApp';
@@ -165,6 +166,75 @@ describe('createSpecializedApp', () => {
     render(app.createRoot());
 
     expect(screen.getByText('flags:test=a,test=b')).toBeInTheDocument();
+  });
+
+  it('should intitialize the APIs in the correct order to allow for overrides', () => {
+    const mockAnalyticsApi = jest.fn(() => ({ captureEvent: jest.fn() }));
+
+    const app = createSpecializedApp({
+      features: [
+        createFrontendPlugin({
+          id: 'first',
+          extensions: [
+            ApiBlueprint.make({
+              params: {
+                factory: createApiFactory({
+                  api: analyticsApiRef,
+                  deps: {},
+                  factory: () => {
+                    throw new Error('BROKEN');
+                  },
+                }),
+              },
+            }),
+          ],
+        }),
+        createFrontendPlugin({
+          id: 'test',
+          featureFlags: [{ name: 'a' }, { name: 'b' }],
+          extensions: [
+            createExtension({
+              attachTo: { id: 'root', input: 'app' },
+              output: [coreExtensionData.reactElement],
+              factory: ({ apis }) => {
+                const Component = () => {
+                  const analytics = apis.get(analyticsApiRef);
+                  return (
+                    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+                    <div
+                      onClick={() =>
+                        analytics!.captureEvent({
+                          action: 'asd',
+                          subject: 'asd',
+                          context: { extensionId: 'asd', pluginId: 'asd' },
+                        })
+                      }
+                    >
+                      Click me
+                    </div>
+                  );
+                };
+
+                return [coreExtensionData.reactElement(<Component />)];
+              },
+            }),
+            ApiBlueprint.make({
+              params: {
+                factory: createApiFactory({
+                  api: analyticsApiRef,
+                  deps: {},
+                  factory: mockAnalyticsApi,
+                }),
+              },
+            }),
+          ],
+        }),
+      ],
+    });
+
+    render(app.createRoot());
+
+    expect(mockAnalyticsApi).toHaveBeenCalled();
   });
 
   it('should make the app structure available through the AppTreeApi', async () => {

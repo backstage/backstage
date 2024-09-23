@@ -23,7 +23,7 @@ export const DEFAULT_TIMEOUT = { seconds: 5 };
 
 /**
  * Options for {@link createLifecycleMiddleware}.
- * @public
+ * @internal
  */
 export interface LifecycleMiddlewareOptions {
   lifecycle: LifecycleService;
@@ -47,7 +47,7 @@ export interface LifecycleMiddlewareOptions {
  * If the service is shutting down, all requests will be rejected with a
  * {@link @backstage/errors#ServiceUnavailableError}.
  *
- * @public
+ * @internal
  */
 export function createLifecycleMiddleware(
   options: LifecycleMiddlewareOptions,

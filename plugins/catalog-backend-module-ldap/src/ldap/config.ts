@@ -47,6 +47,8 @@ export type LdapProviderConfig = {
   groups: GroupConfig[];
   // Schedule configuration for refresh tasks.
   schedule?: SchedulerServiceTaskScheduleDefinition;
+  // Configuration for overriding the vendor-specific default attribute names.
+  vendor?: VendorConfig;
 };
 
 /**
@@ -161,6 +163,26 @@ export type GroupConfig = {
   };
 };
 
+/**
+ * Configuration for LDAP vendor-specific attributes.
+ *
+ * Allows custom attribute names for distinguished names (DN) and
+ * universally unique identifiers (UUID) in LDAP directories.
+ *
+ * @public
+ */
+export type VendorConfig = {
+  /**
+   * Attribute name for the distinguished name (DN) of an entry,
+   */
+  dnAttributeName?: string;
+
+  /**
+   * Attribute name for the unique identifier (UUID) of an entry,
+   */
+  uuidAttributeName?: string;
+};
+
 const defaultUserConfig = {
   options: {
     scope: 'one',
@@ -222,6 +244,18 @@ function readBindConfig(
   return {
     dn: c.getString('dn'),
     secret: c.getString('secret'),
+  };
+}
+
+function readVendorConfig(
+  c: Config | undefined,
+): LdapProviderConfig['vendor'] | undefined {
+  if (!c) {
+    return undefined;
+  }
+  return {
+    dnAttributeName: c.getOptionalString('dnAttributeName'),
+    uuidAttributeName: c.getOptionalString('uuidAttributeName'),
   };
 }
 
@@ -375,6 +409,7 @@ export function readLdapLegacyConfig(config: Config): LdapProviderConfig[] {
       groups: readGroupConfig(c.getConfig('groups')).map(it => {
         return mergeWith({}, defaultGroupConfig, it, replaceArraysIfPresent);
       }),
+      vendor: readVendorConfig(c.getOptionalConfig('vendor')),
     };
 
     return freeze(newConfig) as LdapProviderConfig;
@@ -396,7 +431,6 @@ export function readProviderConfigs(config: Config): LdapProviderConfig[] {
 
   return providersConfig.keys().map(id => {
     const c = providersConfig.getConfig(id);
-
     const schedule = c.has('schedule')
       ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
           c.getConfig('schedule'),
@@ -426,6 +460,7 @@ export function readProviderConfigs(config: Config): LdapProviderConfig[] {
         return mergeWith({}, defaultGroupConfig, it, replaceArraysIfPresent);
       }),
       schedule,
+      vendor: readVendorConfig(c.getOptionalConfig('vendor')),
     };
 
     return freeze(newConfig) as LdapProviderConfig;

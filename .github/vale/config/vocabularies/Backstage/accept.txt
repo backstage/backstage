@@ -163,6 +163,7 @@ Heroku
 hoc
 horizontalpodautoscalers
 Hostname
+hotspot
 hotspots
 howto
 http
@@ -279,6 +280,8 @@ OpenSearch
 OpenShift
 openssl
 orgs
+Overridable
+overridable
 padding
 paddings
 pagerduty
@@ -452,6 +455,7 @@ unmount
 unregister
 unregistering
 unregistration
+unstarred
 untracked
 upsert
 upstreams

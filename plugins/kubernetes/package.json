@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-kubernetes",
-  "version": "0.11.14-next.1",
+  "version": "0.11.14",
   "description": "A Backstage plugin that integrates towards Kubernetes",
   "backstage": {
     "role": "frontend-plugin",
@@ -86,7 +86,7 @@
     "@backstage/test-utils": "workspace:^",
     "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^15.0.0"
+    "@testing-library/react": "^16.0.0"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0 || ^18.0.0",

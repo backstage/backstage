@@ -87,7 +87,7 @@ To help validate the permission framework is setup we'll create a Test Permissio
    // permission plugin
    backend.add(import('@backstage/plugin-permission-backend/alpha'));
    /* highlight-add-next-line */
-   backend.add(import('./extensions/permissionPolicyExtension'));
+   backend.add(import('./extensions/permissionsPolicyExtension'));
    ```
 
 You now have a Test Permission Policy in place, this will help us test that the permission framework is working in the next section.

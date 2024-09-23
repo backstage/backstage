@@ -103,7 +103,7 @@ export const TechdocsPage = techdocsPlugin.provide(
 export const EntityTechdocsContent = techdocsPlugin.provide(
   createRoutableExtension({
     name: 'EntityTechdocsContent',
-    component: () => import('./Router').then(m => m.EmbeddedDocsRouter),
+    component: () => import('./Router').then(m => m.LegacyEmbeddedDocsRouter),
     mountPoint: rootCatalogDocsRouteRef,
   }),
 );

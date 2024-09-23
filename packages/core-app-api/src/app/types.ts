@@ -160,7 +160,7 @@ type TargetRouteMap<
     infer Params,
     any
   >
-    ? RouteRef<Params> | SubRouteRef<Params>
+    ? RouteRef<Params> | SubRouteRef<Params> | false
     : never;
 };
 

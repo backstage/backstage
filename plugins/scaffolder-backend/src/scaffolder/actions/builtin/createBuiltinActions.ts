@@ -37,6 +37,7 @@ import {
   createFetchPlainAction,
   createFetchPlainFileAction,
   createFetchTemplateAction,
+  createFetchTemplateFileAction,
 } from './fetch';
 import {
   createFilesystemDeleteAction,
@@ -158,6 +159,12 @@ export const createBuiltinActions = (
       additionalTemplateFilters,
       additionalTemplateGlobals,
     }),
+    createFetchTemplateFileAction({
+      integrations,
+      reader,
+      additionalTemplateFilters,
+      additionalTemplateGlobals,
+    }),
     createPublishGerritAction({
       integrations,
       config,
@@ -241,6 +248,7 @@ export const createBuiltinActions = (
     }),
     createGithubEnvironmentAction({
       integrations,
+      catalogClient,
     }),
     createGithubDeployKeyAction({
       integrations,

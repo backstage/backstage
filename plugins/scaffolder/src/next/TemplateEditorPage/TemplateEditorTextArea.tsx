@@ -20,6 +20,8 @@ import { showPanel } from '@codemirror/view';
 import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
 import Tooltip from '@material-ui/core/Tooltip';
+import Link from '@material-ui/core/Link';
+import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import SaveIcon from '@material-ui/icons/Save';
@@ -35,6 +37,12 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
     width: '100%',
     height: '100%',
+  },
+  typography: {
+    padding: theme.spacing(1.5),
+  },
+  button: {
+    verticalAlign: 'top',
   },
   codeMirror: {
     position: 'absolute',
@@ -142,10 +150,33 @@ export function TemplateEditorTextArea(props: {
 /** A version of the TemplateEditorTextArea that is connected to the DirectoryEditor context */
 export function TemplateEditorDirectoryEditorTextArea(props: {
   errorText?: string;
+  onLoad?: () => void;
 }) {
+  const classes = useStyles();
   const directoryEditor = useDirectoryEditor();
 
-  const actions = directoryEditor.selectedFile?.dirty
+  if (!directoryEditor) {
+    return (
+      <Typography
+        className={classes.typography}
+        color="textSecondary"
+        align="center"
+      >
+        Please{' '}
+        <Link
+          className={classes.button}
+          component="button"
+          variant="body1"
+          onClick={props.onLoad}
+        >
+          load
+        </Link>{' '}
+        a template directory.
+      </Typography>
+    );
+  }
+
+  const actions = directoryEditor?.selectedFile?.dirty
     ? {
         onSave: () => directoryEditor.save(),
         onReload: () => directoryEditor.reload(),
@@ -158,7 +189,9 @@ export function TemplateEditorDirectoryEditorTextArea(props: {
     <TemplateEditorTextArea
       errorText={props.errorText}
       content={directoryEditor.selectedFile?.content}
-      onUpdate={content => directoryEditor.selectedFile?.updateContent(content)}
+      onUpdate={content =>
+        directoryEditor?.selectedFile?.updateContent(content)
+      }
       {...actions}
     />
   );

@@ -28,6 +28,14 @@ jest.mock('@backstage/release-manifests', () => ({
         name: '@backstage/core',
         version: '3.2.1',
       },
+      {
+        name: '@backstage/plugin-1',
+        version: '6.5.4',
+      },
+      {
+        name: '@backstage/plugin-2',
+        version: '9.8.7',
+      },
     ],
   }),
 }));
@@ -100,7 +108,29 @@ describe('beforeWorkspacePacking', () => {
 
       await expect(() =>
         beforeWorkspacePacking(makeWorkspace(result), result),
-      ).rejects.toThrow();
+      ).rejects.toThrow(/unexpected version range/i);
+    });
+
+    it(`throws an error if the final manifest unexpectedly contains backstage: versions`, async () => {
+      const result = {
+        name: 'test-package',
+        [dependencyType]: {
+          get ['@backstage/core']() {
+            return 'backstage:^';
+          },
+          set ['@backstage/core'](_value: unknown) {
+            // ignore the attempt to set the value to
+            // allow testing the validation logic at
+            // the end of the hook.
+          },
+          '@backstage/plugin-1': 'backstage:^',
+          '@backstage/plugin-2': 'backstage:^',
+        },
+      };
+
+      await expect(() =>
+        beforeWorkspacePacking(makeWorkspace(result), result),
+      ).rejects.toThrow(/failed to replace all "backstage:" ranges/i);
     });
 
     it('converts backstage:^ versions to the corresponding package version prefixed by ^', async () => {

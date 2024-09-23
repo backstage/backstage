@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-signals-backend",
-  "version": "0.2.0-next.1",
+  "version": "0.2.0",
   "backstage": {
     "role": "backend-plugin",
     "pluginId": "signals",
@@ -37,7 +37,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
@@ -51,7 +51,7 @@
     "node-fetch": "^2.7.0",
     "uuid": "^9.0.0",
     "winston": "^3.2.1",
-    "ws": "^8.17.0",
+    "ws": "^8.18.0",
     "yn": "^4.0.0"
   },
   "devDependencies": {

@@ -675,7 +675,7 @@ backend.add(
   import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
 );
 /* highlight-add-next-line */
-backend.add(catalogModuleCustomExtensions());
+backend.add(catalogModuleCustomExtensions);
 ```
 
 This also requires that you have a dependency on the corresponding node package,
@@ -762,9 +762,9 @@ const otherPluginModuleCustomExtensions = createBackendModule({
 const backend = createBackend();
 backend.add(import('@backstage/plugin-events-backend/alpha'));
 /* highlight-add-next-line */
-backend.add(eventsModuleCustomExtensions());
+backend.add(eventsModuleCustomExtensions);
 /* highlight-add-next-line */
-backend.add(otherPluginModuleCustomExtensions());
+backend.add(otherPluginModuleCustomExtensions);
 ```
 
 Here we've placed the module directly in the backend index file just to get
@@ -841,7 +841,7 @@ const scaffolderModuleCustomExtensions = createBackendModule({
 const backend = createBackend();
 backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
 /* highlight-add-next-line */
-backend.add(scaffolderModuleCustomExtensions());
+backend.add(scaffolderModuleCustomExtensions);
 ```
 
 This also requires that you have a dependency on the corresponding node package,

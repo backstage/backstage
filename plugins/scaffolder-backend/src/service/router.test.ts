@@ -19,7 +19,6 @@ import {
   loggerToWinstonLogger,
   PluginDatabaseManager,
 } from '@backstage/backend-common';
-import { CatalogApi } from '@backstage/catalog-client';
 import { ConfigReader } from '@backstage/config';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import express from 'express';
@@ -51,6 +50,7 @@ import {
 } from '@backstage/backend-test-utils';
 import { AutocompleteHandler } from '@backstage/plugin-scaffolder-node/alpha';
 import { UrlReaders } from '@backstage/backend-defaults/urlReader';
+import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 
 const mockAccess = jest.fn();
 
@@ -91,7 +91,7 @@ describe('createRouter', () => {
   let app: express.Express;
   let loggerSpy: jest.SpyInstance;
   let taskBroker: TaskBroker;
-  const catalogClient = { getEntityByRef: jest.fn() } as unknown as CatalogApi;
+  const catalogClient = catalogServiceMock.mock();
   const permissionApi = {
     authorize: jest.fn(),
     authorizeConditional: jest.fn(),
@@ -214,21 +214,19 @@ describe('createRouter', () => {
       });
       app = express().use(router);
 
-      jest
-        .spyOn(catalogClient, 'getEntityByRef')
-        .mockImplementation(async ref => {
-          const { kind } = parseEntityRef(ref);
+      catalogClient.getEntityByRef.mockImplementation(async ref => {
+        const { kind } = parseEntityRef(ref);
 
-          if (kind.toLocaleLowerCase() === 'template') {
-            return getMockTemplate();
-          }
+        if (kind.toLocaleLowerCase() === 'template') {
+          return getMockTemplate();
+        }
 
-          if (kind.toLocaleLowerCase() === 'user') {
-            return mockUser;
-          }
+        if (kind.toLocaleLowerCase() === 'user') {
+          return mockUser;
+        }
 
-          throw new Error(`no mock found for kind: ${kind}`);
-        });
+        throw new Error(`no mock found for kind: ${kind}`);
+      });
 
       jest
         .spyOn(permissionApi, 'authorizeConditional')
@@ -399,11 +397,13 @@ describe('createRouter', () => {
               createdBy: '',
             },
           ],
+          totalTasks: 1,
         });
 
         const response = await request(app).get(`/v2/tasks`);
         expect(taskBroker.list).toHaveBeenCalledWith({
-          createdBy: undefined,
+          filters: {},
+          pagination: {},
         });
         expect(response.status).toEqual(200);
         expect(response.body).toStrictEqual({
@@ -416,6 +416,7 @@ describe('createRouter', () => {
               createdBy: '',
             },
           ],
+          totalTasks: 1,
         });
       });
 
@@ -432,15 +433,12 @@ describe('createRouter', () => {
               createdBy: 'user:default/foo',
             },
           ],
+          totalTasks: 1,
         });
 
         const response = await request(app).get(
-          `/v2/tasks?createdBy=user:default/foo&status=completed`,
+          `/v2/tasks?createdBy=user:default/foo&createdBy=user:default/bar&status=completed&status=open&limit=1&offset=0&order=desc:created_at`,
         );
-        expect(taskBroker.list).toHaveBeenCalledWith({
-          createdBy: 'user:default/foo',
-          status: 'completed',
-        });
 
         expect(response.status).toEqual(200);
         expect(response.body).toStrictEqual({
@@ -453,6 +451,18 @@ describe('createRouter', () => {
               createdBy: 'user:default/foo',
             },
           ],
+          totalTasks: 1,
+        });
+        expect(taskBroker.list).toHaveBeenCalledWith({
+          filters: {
+            createdBy: ['user:default/foo', 'user:default/bar'],
+            status: ['completed', 'open'],
+          },
+          pagination: {
+            limit: 1,
+            offset: 0,
+          },
+          order: [{ order: 'desc', field: 'created_at' }],
         });
       });
       it('disallows users from seeing tasks they do not own', async () => {
@@ -900,8 +910,6 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         const mockToken = mockCredentials.user.token();
         const mockTemplate = getMockTemplate();
 
-        const catalogSpy = jest.spyOn(catalogClient, 'getEntityByRef');
-
         await request(app)
           .post('/v2/dry-run')
           .set('Authorization', `Bearer ${mockToken}`)
@@ -914,9 +922,9 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             directoryContents: [],
           });
 
-        expect(catalogSpy).toHaveBeenCalledTimes(1);
+        expect(catalogClient.getEntityByRef).toHaveBeenCalledTimes(1);
 
-        expect(catalogSpy).toHaveBeenCalledWith(
+        expect(catalogClient.getEntityByRef).toHaveBeenCalledWith(
           'user:default/mock',
           expect.anything(),
         );
@@ -952,20 +960,18 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       });
       app = express().use(router);
 
-      jest
-        .spyOn(catalogClient, 'getEntityByRef')
-        .mockImplementation(async ref => {
-          const { kind } = parseEntityRef(ref);
+      catalogClient.getEntityByRef.mockImplementation(async ref => {
+        const { kind } = parseEntityRef(ref);
 
-          if (kind.toLocaleLowerCase() === 'template') {
-            return getMockTemplate();
-          }
+        if (kind.toLocaleLowerCase() === 'template') {
+          return getMockTemplate();
+        }
 
-          if (kind.toLocaleLowerCase() === 'user') {
-            return mockUser;
-          }
-          throw new Error(`no mock found for kind: ${kind}`);
-        });
+        if (kind.toLocaleLowerCase() === 'user') {
+          return mockUser;
+        }
+        throw new Error(`no mock found for kind: ${kind}`);
+      });
 
       jest
         .spyOn(permissionApi, 'authorizeConditional')
@@ -1395,11 +1401,13 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
               createdBy: '',
             },
           ],
+          totalTasks: 1,
         });
 
         const response = await request(app).get(`/v2/tasks`);
         expect(taskBroker.list).toHaveBeenCalledWith({
-          createdBy: undefined,
+          pagination: {},
+          filters: {},
         });
         expect(response.status).toEqual(200);
         expect(response.body).toStrictEqual({
@@ -1412,6 +1420,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
               createdBy: '',
             },
           ],
+          totalTasks: 1,
         });
       });
 
@@ -1428,13 +1437,17 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
               createdBy: 'user:default/foo',
             },
           ],
+          totalTasks: 1,
         });
 
         const response = await request(app).get(
           `/v2/tasks?createdBy=user:default/foo`,
         );
         expect(taskBroker.list).toHaveBeenCalledWith({
-          createdBy: 'user:default/foo',
+          filters: {
+            createdBy: ['user:default/foo'],
+          },
+          pagination: {},
         });
 
         expect(response.status).toEqual(200);
@@ -1448,6 +1461,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
               createdBy: 'user:default/foo',
             },
           ],
+          totalTasks: 1,
         });
       });
       it('disallows users from seeing tasks they do not own', async () => {

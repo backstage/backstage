@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import Grid from '@material-ui/core/Grid';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -26,36 +27,32 @@ import { FileBrowser } from '../../components/FileBrowser';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../translation';
 
-const useStyles = makeStyles(theme => ({
-  button: {
-    padding: theme.spacing(1),
-  },
-  buttons: {
-    display: 'flex',
-    flexFlow: 'row nowrap',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  buttonsGap: {
-    flex: '1 1 auto',
-  },
-  buttonsDivider: {
-    marginBottom: theme.spacing(1),
-  },
-}));
+const useStyles = makeStyles(
+  theme => ({
+    grid: {
+      '& svg': {
+        margin: theme.spacing(1),
+      },
+    },
+    closeButton: {
+      marginLeft: 'auto',
+    },
+  }),
+  { name: 'ScaffolderTemplateEditorBrowser' },
+);
 
 /** The local file browser for the template editor */
 export function TemplateEditorBrowser(props: { onClose?: () => void }) {
   const classes = useStyles();
   const directoryEditor = useDirectoryEditor();
-  const changedFiles = directoryEditor.files.filter(file => file.dirty);
+  const changedFiles = directoryEditor?.files.filter(file => file.dirty);
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const handleClose = () => {
     if (!props.onClose) {
       return;
     }
-    if (changedFiles.length > 0) {
+    if (changedFiles?.length) {
       // eslint-disable-next-line no-alert
       const accepted = window.confirm(
         t('templateEditorPage.templateEditorBrowser.closeConfirmMessage'),
@@ -69,14 +66,14 @@ export function TemplateEditorBrowser(props: { onClose?: () => void }) {
 
   return (
     <>
-      <div className={classes.buttons}>
+      <Grid className={classes.grid} container spacing={0} alignItems="center">
         <Tooltip
           title={t('templateEditorPage.templateEditorBrowser.saveIconTooltip')}
         >
           <IconButton
-            className={classes.button}
-            disabled={directoryEditor.files.every(file => !file.dirty)}
-            onClick={() => directoryEditor.save()}
+            size="small"
+            disabled={directoryEditor?.files.every(file => !file.dirty)}
+            onClick={() => directoryEditor?.save()}
           >
             <SaveIcon />
           </IconButton>
@@ -86,27 +83,27 @@ export function TemplateEditorBrowser(props: { onClose?: () => void }) {
             'templateEditorPage.templateEditorBrowser.reloadIconTooltip',
           )}
         >
-          <IconButton
-            className={classes.button}
-            onClick={() => directoryEditor.reload()}
-          >
+          <IconButton size="small" onClick={() => directoryEditor?.reload()}>
             <RefreshIcon />
           </IconButton>
         </Tooltip>
-        <div className={classes.buttonsGap} />
         <Tooltip
           title={t('templateEditorPage.templateEditorBrowser.closeIconTooltip')}
         >
-          <IconButton className={classes.button} onClick={handleClose}>
+          <IconButton
+            size="small"
+            className={classes.closeButton}
+            onClick={handleClose}
+          >
             <CloseIcon />
           </IconButton>
         </Tooltip>
-      </div>
-      <Divider className={classes.buttonsDivider} />
+      </Grid>
+      <Divider />
       <FileBrowser
-        selected={directoryEditor.selectedFile?.path ?? ''}
-        onSelect={directoryEditor.setSelectedFile}
-        filePaths={directoryEditor.files.map(file => file.path)}
+        selected={directoryEditor?.selectedFile?.path ?? ''}
+        onSelect={directoryEditor?.setSelectedFile}
+        filePaths={directoryEditor?.files.map(file => file.path) ?? []}
       />
     </>
   );

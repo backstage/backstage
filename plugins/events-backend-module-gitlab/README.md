@@ -32,7 +32,7 @@ yarn --cwd packages/backend add @backstage/plugin-events-backend-module-gitlab
 // packages/backend/src/index.ts
 import { eventsModuleGitlabEventRouter } from '@backstage/plugin-events-backend-module-gitlab/alpha';
 // ...
-backend.add(eventsModuleGitlabEventRouter());
+backend.add(eventsModuleGitlabEventRouter);
 ```
 
 #### Legacy Backend System
@@ -49,7 +49,7 @@ await eventRouter.subscribe();
 // packages/backend/src/index.ts
 import { eventsModuleGitlabWebhook } from '@backstage/plugin-events-backend-module-gitlab/alpha';
 // ...
-backend.add(eventsModuleGitlabWebhook());
+backend.add(eventsModuleGitlabWebhook);
 ```
 
 #### Legacy Backend System

@@ -73,6 +73,7 @@ auth:
             - resolver: emailMatchingUserEntityProfileEmail
             - resolver: emailLocalPartMatchingUserEntityName
             - resolver: emailMatchingUserEntityAnnotation
+            - resolver: userIdMatchingUserEntityAnnotation
 ```
 
 The Microsoft provider is a structure with three mandatory configuration keys:
@@ -93,6 +94,7 @@ This provider includes several resolvers out of the box that you can use:
 - `emailMatchingUserEntityProfileEmail`: Matches the email address from the auth provider with the User entity that has a matching `spec.profile.email`. If no match is found it will throw a `NotFoundError`.
 - `emailLocalPartMatchingUserEntityName`: Matches the [local part](https://en.wikipedia.org/wiki/Email_address#Local-part) of the email address from the auth provider with the User entity that has a matching `name`. If no match is found it will throw a `NotFoundError`.
 - `emailMatchingUserEntityAnnotation`: Matches the email address from the auth provider with the User entity where the value of the `microsoft.com/email` annotation matches. If no match is found it will throw a `NotFoundError`.
+- `userIdMatchingUserEntityAnnotation`: Matches the user profile ID from the auth provider with the User entity where the value of the `graph.microsoft.com/user-id` annotation matches. This resolver is recommended to resolve users without an email in their profile. If no match is found it will throw a `NotFoundError`.
 
 :::note Note
 

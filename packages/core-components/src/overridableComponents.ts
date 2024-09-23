@@ -25,7 +25,6 @@ import {
   DismissableBannerClassKey,
   EmptyStateClassKey,
   EmptyStateImageClassKey,
-  MissingAnnotationEmptyStateClassKey,
   ErrorPanelClassKey,
   FeatureCalloutCircleClassKey,
   HeaderIconLinkRowClassKey,
@@ -61,6 +60,7 @@ import {
   FiltersContainerClassKey,
   TableClassKey,
   WarningPanelClassKey,
+  LinkClassKey,
   FavoriteToggleIconClassKey,
 } from './components';
 
@@ -91,6 +91,10 @@ import {
   TabbedCardClassKey,
   BoldHeaderClassKey,
   CardTabClassKey,
+  SidebarSubmenuClassKey,
+  SidebarSubmenuItemClassKey,
+  StackDetailsClassKey,
+  BreadcrumbsCurrentPageClassKey,
 } from './layout';
 
 type BackstageComponentsNameToClassKey = {
@@ -102,7 +106,6 @@ type BackstageComponentsNameToClassKey = {
   BackstageDismissableBanner: DismissableBannerClassKey;
   BackstageEmptyState: EmptyStateClassKey;
   BackstageEmptyStateImage: EmptyStateImageClassKey;
-  BackstageMissingAnnotationEmptyState: MissingAnnotationEmptyStateClassKey;
   BackstageErrorPanel: ErrorPanelClassKey;
   BackstageFeatureCalloutCircular: FeatureCalloutCircleClassKey;
   BackstageHeaderIconLinkRow: HeaderIconLinkRowClassKey;
@@ -112,7 +115,7 @@ type BackstageComponentsNameToClassKey = {
   BackstageMarkdownContent: MarkdownContentClassKey;
   BackstageLoginRequestListItem: LoginRequestListItemClassKey;
   BackstageLogViewer: LogViewerClassKey;
-  OAuthRequestDialog: OAuthRequestDialogClassKey;
+  BackstageOAuthRequestDialog: OAuthRequestDialogClassKey;
   BackstageOverflowTooltip: OverflowTooltipClassKey;
   BackstageGauge: GaugeClassKey;
   BackstageGaugeCard: GaugeCardClassKey;
@@ -141,10 +144,12 @@ type BackstageComponentsNameToClassKey = {
   BackstageBottomLink: BottomLinkClassKey;
   BackstageBreadcrumbsClickableText: BreadcrumbsClickableTextClassKey;
   BackstageBreadcrumbsStyledBox: BreadcrumbsStyledBoxClassKey;
+  BreadcrumbsCurrentPage: BreadcrumbsCurrentPageClassKey;
   BackstageContent: BackstageContentClassKey;
   BackstageContentHeader: ContentHeaderClassKey;
   BackstageErrorPage: ErrorPageClassKey;
   BackstageErrorPageMicDrop: MicDropClassKey;
+  BackstageErrorPageStackDetails: StackDetailsClassKey;
   BackstageHeader: HeaderClassKey;
   BackstageHeaderLabel: HeaderLabelClassKey;
   BackstageHeaderTabs: HeaderTabsClassKey;
@@ -158,12 +163,15 @@ type BackstageComponentsNameToClassKey = {
   BackstageSidebarSpacer: SidebarSpacerClassKey;
   BackstageSidebarDivider: SidebarDividerClassKey;
   BackstageSidebarItem: SidebarItemClassKey;
+  BackstageSidebarSubmenu: SidebarSubmenuClassKey;
+  BackstageSidebarSubmenuItem: SidebarSubmenuItemClassKey;
   BackstageSidebarPage: SidebarPageClassKey;
   BackstageCustomProvider: CustomProviderClassKey;
   BackstageSignInPage: SignInPageClassKey;
   BackstageTabbedCard: TabbedCardClassKey;
   BackstageTabbedCardBoldHeader: BoldHeaderClassKey;
   BackstageCardTab: CardTabClassKey;
+  BackstageLink: LinkClassKey;
   BackstageFavoriteToggleIcon: FavoriteToggleIconClassKey;
 };
 

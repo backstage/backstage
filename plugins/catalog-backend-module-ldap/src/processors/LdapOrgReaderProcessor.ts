@@ -109,6 +109,7 @@ export class LdapOrgReaderProcessor implements CatalogProcessor {
       client,
       provider.users,
       provider.groups,
+      provider.vendor,
       {
         groupTransformer: this.groupTransformer,
         userTransformer: this.userTransformer,

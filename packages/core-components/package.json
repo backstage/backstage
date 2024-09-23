@@ -1,12 +1,12 @@
 {
   "name": "@backstage/core-components",
+  "version": "0.15.0",
   "description": "Core components used by Backstage plugins and apps",
-  "version": "0.14.11-next.0",
-  "publishConfig": {
-    "access": "public"
-  },
   "backstage": {
     "role": "web-library"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "keywords": [
     "backstage"
@@ -99,7 +99,7 @@
     "@backstage/test-utils": "workspace:^",
     "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^15.0.0",
+    "@testing-library/react": "^16.0.0",
     "@testing-library/user-event": "^14.0.0",
     "@types/ansi-regex": "^5.0.0",
     "@types/classnames": "^2.2.9",
