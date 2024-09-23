@@ -20,12 +20,7 @@
  * @packageDocumentation
  */
 
-export { BitbucketServerClient } from './lib';
-export type {
-  BitbucketServerProject,
-  BitbucketServerRepository,
-  BitbucketServerPagedResponse,
-  BitbucketServerListOptions,
-} from './lib';
+export * from './lib';
+
 export { BitbucketServerEntityProvider } from './providers';
 export type { BitbucketServerLocationParser } from './providers';
