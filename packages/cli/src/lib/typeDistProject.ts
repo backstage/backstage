@@ -125,7 +125,7 @@ function getBackstagePackageFeature$$TypeFromType(
       const $$type = property
         .getValueDeclaration()
         ?.getText()
-        .match(/(?<type>@backstage\/\w+)/)?.groups?.type;
+        .match(/(\$\$type: '(?<type>.+)')/)?.groups?.type;
 
       if ($$type && isTargetFeatureType($$type)) {
         return $$type;
