@@ -19,7 +19,6 @@ import {
   TemplateDirectoryAccess,
   WebFileSystemAccess,
 } from '../../lib/filesystem';
-import { CustomFieldExplorer } from './CustomFieldExplorer';
 import { TemplateFormPreviewer } from './TemplateFormPreviewer';
 import {
   FieldExtensionOptions,
@@ -33,6 +32,7 @@ import { useRouteRef } from '@backstage/core-plugin-api';
 import {
   actionsRouteRef,
   editorRouteRef,
+  customFieldsRouteRef,
   rootRouteRef,
   scaffolderListTaskRouteRef,
 } from '../../routes';
@@ -70,6 +70,7 @@ export function TemplateEditorPage(props: TemplateEditorPageProps) {
   const tasksLink = useRouteRef(scaffolderListTaskRouteRef);
   const createLink = useRouteRef(rootRouteRef);
   const editorLink = useRouteRef(editorRouteRef);
+  const customFieldsLink = useRouteRef(customFieldsRouteRef);
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const scaffolderPageContextMenuProps = {
@@ -88,13 +89,6 @@ export function TemplateEditorPage(props: TemplateEditorPageProps) {
         onClose={() => setSelection(undefined)}
         layouts={props.layouts}
         formProps={props.formProps}
-      />
-    );
-  } else if (selection?.type === 'field-explorer') {
-    content = (
-      <CustomFieldExplorer
-        customFieldExtensions={props.customFieldExtensions}
-        onClose={() => setSelection(undefined)}
       />
     );
   } else {
@@ -119,7 +113,7 @@ export function TemplateEditorPage(props: TemplateEditorPageProps) {
             } else if (option === 'form') {
               setSelection({ type: 'form' });
             } else if (option === 'field-explorer') {
-              setSelection({ type: 'field-explorer' });
+              navigate(customFieldsLink());
             }
           }}
         />
