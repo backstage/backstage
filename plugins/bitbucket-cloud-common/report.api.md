@@ -12,6 +12,12 @@ export class BitbucketCloudClient {
     config: BitbucketCloudIntegrationConfig,
   ): BitbucketCloudClient;
   // (undocumented)
+  listBranchesByRepository(
+    repository: string,
+    workspace: string,
+    options?: FilterAndSortOptions & PartialResponseOptions,
+  ): WithPagination<Models.PaginatedBranches, Models.Branch>;
+  // (undocumented)
   listProjectsByWorkspace(
     workspace: string,
     options?: FilterAndSortOptions & PartialResponseOptions,
@@ -208,6 +214,9 @@ export namespace Models {
     previous?: string;
     size?: number;
     values?: Array<TResultItem> | Set<TResultItem>;
+  }
+  export interface PaginatedBranches extends Paginated<Branch> {
+    values?: Set<Branch>;
   }
   export interface PaginatedProjects extends Paginated<Project> {
     values?: Set<Project>;
@@ -482,6 +491,7 @@ export class WithPagination<
 // src/BitbucketCloudClient.d.ts:11:5 - (ae-undocumented) Missing documentation for "listRepositoriesByWorkspace".
 // src/BitbucketCloudClient.d.ts:12:5 - (ae-undocumented) Missing documentation for "listProjectsByWorkspace".
 // src/BitbucketCloudClient.d.ts:13:5 - (ae-undocumented) Missing documentation for "listWorkspaces".
+// src/BitbucketCloudClient.d.ts:14:5 - (ae-undocumented) Missing documentation for "listBranchesByRepository".
 // src/events/index.d.ts:3:1 - (ae-undocumented) Missing documentation for "Events".
 // src/events/index.d.ts:5:5 - (ae-undocumented) Missing documentation for "RepoEvent".
 // src/events/index.d.ts:6:9 - (ae-undocumented) Missing documentation for "repository".
@@ -534,86 +544,86 @@ export class WithPagination<
 // src/models/index.d.ts:168:9 - (ae-undocumented) Missing documentation for "name".
 // src/models/index.d.ts:175:9 - (ae-undocumented) Missing documentation for "__index".
 // src/models/index.d.ts:176:9 - (ae-undocumented) Missing documentation for "type".
-// src/models/index.d.ts:243:9 - (ae-undocumented) Missing documentation for "approved".
-// src/models/index.d.ts:248:9 - (ae-undocumented) Missing documentation for "role".
-// src/models/index.d.ts:249:9 - (ae-undocumented) Missing documentation for "state".
-// src/models/index.d.ts:250:9 - (ae-undocumented) Missing documentation for "user".
-// src/models/index.d.ts:255:11 - (ae-undocumented) Missing documentation for "ParticipantRoleEnum".
-// src/models/index.d.ts:262:5 - (ae-undocumented) Missing documentation for "ParticipantRoleEnum".
-// src/models/index.d.ts:266:11 - (ae-undocumented) Missing documentation for "ParticipantStateEnum".
-// src/models/index.d.ts:274:5 - (ae-undocumented) Missing documentation for "ParticipantStateEnum".
-// src/models/index.d.ts:281:9 - (ae-undocumented) Missing documentation for "created_on".
-// src/models/index.d.ts:282:9 - (ae-undocumented) Missing documentation for "description".
-// src/models/index.d.ts:300:9 - (ae-undocumented) Missing documentation for "links".
-// src/models/index.d.ts:305:9 - (ae-undocumented) Missing documentation for "owner".
-// src/models/index.d.ts:306:9 - (ae-undocumented) Missing documentation for "updated_on".
-// src/models/index.d.ts:315:5 - (ae-undocumented) Missing documentation for "ProjectLinks".
-// src/models/index.d.ts:316:9 - (ae-undocumented) Missing documentation for "avatar".
-// src/models/index.d.ts:317:9 - (ae-undocumented) Missing documentation for "html".
-// src/models/index.d.ts:322:5 - (ae-undocumented) Missing documentation for "RefLinks".
-// src/models/index.d.ts:323:9 - (ae-undocumented) Missing documentation for "commits".
-// src/models/index.d.ts:324:9 - (ae-undocumented) Missing documentation for "html".
-// src/models/index.d.ts:325:9 - (ae-undocumented) Missing documentation for "self".
-// src/models/index.d.ts:332:9 - (ae-undocumented) Missing documentation for "created_on".
-// src/models/index.d.ts:333:9 - (ae-undocumented) Missing documentation for "description".
-// src/models/index.d.ts:362:9 - (ae-undocumented) Missing documentation for "is_private".
-// src/models/index.d.ts:363:9 - (ae-undocumented) Missing documentation for "language".
-// src/models/index.d.ts:364:9 - (ae-undocumented) Missing documentation for "links".
-// src/models/index.d.ts:365:9 - (ae-undocumented) Missing documentation for "mainbranch".
-// src/models/index.d.ts:366:9 - (ae-undocumented) Missing documentation for "name".
-// src/models/index.d.ts:367:9 - (ae-undocumented) Missing documentation for "owner".
-// src/models/index.d.ts:368:9 - (ae-undocumented) Missing documentation for "parent".
-// src/models/index.d.ts:369:9 - (ae-undocumented) Missing documentation for "project".
-// src/models/index.d.ts:370:9 - (ae-undocumented) Missing documentation for "scm".
-// src/models/index.d.ts:371:9 - (ae-undocumented) Missing documentation for "size".
-// src/models/index.d.ts:376:9 - (ae-undocumented) Missing documentation for "updated_on".
-// src/models/index.d.ts:411:11 - (ae-undocumented) Missing documentation for "RepositoryScmEnum".
-// src/models/index.d.ts:417:5 - (ae-undocumented) Missing documentation for "RepositoryScmEnum".
-// src/models/index.d.ts:421:5 - (ae-undocumented) Missing documentation for "RepositoryLinks".
-// src/models/index.d.ts:422:9 - (ae-undocumented) Missing documentation for "avatar".
-// src/models/index.d.ts:423:9 - (ae-undocumented) Missing documentation for "clone".
-// src/models/index.d.ts:424:9 - (ae-undocumented) Missing documentation for "commits".
-// src/models/index.d.ts:425:9 - (ae-undocumented) Missing documentation for "downloads".
-// src/models/index.d.ts:426:9 - (ae-undocumented) Missing documentation for "forks".
-// src/models/index.d.ts:427:9 - (ae-undocumented) Missing documentation for "hooks".
-// src/models/index.d.ts:428:9 - (ae-undocumented) Missing documentation for "html".
-// src/models/index.d.ts:429:9 - (ae-undocumented) Missing documentation for "pullrequests".
-// src/models/index.d.ts:430:9 - (ae-undocumented) Missing documentation for "self".
-// src/models/index.d.ts:431:9 - (ae-undocumented) Missing documentation for "watchers".
-// src/models/index.d.ts:436:5 - (ae-undocumented) Missing documentation for "SearchCodeSearchResult".
-// src/models/index.d.ts:437:9 - (ae-undocumented) Missing documentation for "content_match_count".
-// src/models/index.d.ts:438:9 - (ae-undocumented) Missing documentation for "content_matches".
-// src/models/index.d.ts:439:9 - (ae-undocumented) Missing documentation for "file".
-// src/models/index.d.ts:440:9 - (ae-undocumented) Missing documentation for "path_matches".
-// src/models/index.d.ts:441:9 - (ae-undocumented) Missing documentation for "type".
-// src/models/index.d.ts:446:5 - (ae-undocumented) Missing documentation for "SearchContentMatch".
-// src/models/index.d.ts:447:9 - (ae-undocumented) Missing documentation for "lines".
-// src/models/index.d.ts:452:5 - (ae-undocumented) Missing documentation for "SearchLine".
-// src/models/index.d.ts:453:9 - (ae-undocumented) Missing documentation for "line".
-// src/models/index.d.ts:454:9 - (ae-undocumented) Missing documentation for "segments".
-// src/models/index.d.ts:459:5 - (ae-undocumented) Missing documentation for "SearchResultPage".
-// src/models/index.d.ts:460:9 - (ae-undocumented) Missing documentation for "query_substituted".
-// src/models/index.d.ts:469:5 - (ae-undocumented) Missing documentation for "SearchSegment".
-// src/models/index.d.ts:470:9 - (ae-undocumented) Missing documentation for "match".
-// src/models/index.d.ts:471:9 - (ae-undocumented) Missing documentation for "text".
-// src/models/index.d.ts:478:9 - (ae-undocumented) Missing documentation for "links".
-// src/models/index.d.ts:485:9 - (ae-undocumented) Missing documentation for "html".
-// src/models/index.d.ts:486:9 - (ae-undocumented) Missing documentation for "members".
-// src/models/index.d.ts:487:9 - (ae-undocumented) Missing documentation for "projects".
-// src/models/index.d.ts:488:9 - (ae-undocumented) Missing documentation for "repositories".
-// src/models/index.d.ts:489:9 - (ae-undocumented) Missing documentation for "self".
-// src/models/index.d.ts:497:9 - (ae-undocumented) Missing documentation for "created_on".
-// src/models/index.d.ts:503:9 - (ae-undocumented) Missing documentation for "links".
-// src/models/index.d.ts:512:9 - (ae-undocumented) Missing documentation for "updated_on".
-// src/models/index.d.ts:521:5 - (ae-undocumented) Missing documentation for "WorkspaceLinks".
-// src/models/index.d.ts:522:9 - (ae-undocumented) Missing documentation for "avatar".
-// src/models/index.d.ts:523:9 - (ae-undocumented) Missing documentation for "html".
-// src/models/index.d.ts:524:9 - (ae-undocumented) Missing documentation for "members".
-// src/models/index.d.ts:525:9 - (ae-undocumented) Missing documentation for "owners".
-// src/models/index.d.ts:526:9 - (ae-undocumented) Missing documentation for "projects".
-// src/models/index.d.ts:527:9 - (ae-undocumented) Missing documentation for "repositories".
-// src/models/index.d.ts:528:9 - (ae-undocumented) Missing documentation for "self".
-// src/models/index.d.ts:529:9 - (ae-undocumented) Missing documentation for "snippets".
+// src/models/index.d.ts:253:9 - (ae-undocumented) Missing documentation for "approved".
+// src/models/index.d.ts:258:9 - (ae-undocumented) Missing documentation for "role".
+// src/models/index.d.ts:259:9 - (ae-undocumented) Missing documentation for "state".
+// src/models/index.d.ts:260:9 - (ae-undocumented) Missing documentation for "user".
+// src/models/index.d.ts:265:11 - (ae-undocumented) Missing documentation for "ParticipantRoleEnum".
+// src/models/index.d.ts:272:5 - (ae-undocumented) Missing documentation for "ParticipantRoleEnum".
+// src/models/index.d.ts:276:11 - (ae-undocumented) Missing documentation for "ParticipantStateEnum".
+// src/models/index.d.ts:284:5 - (ae-undocumented) Missing documentation for "ParticipantStateEnum".
+// src/models/index.d.ts:291:9 - (ae-undocumented) Missing documentation for "created_on".
+// src/models/index.d.ts:292:9 - (ae-undocumented) Missing documentation for "description".
+// src/models/index.d.ts:310:9 - (ae-undocumented) Missing documentation for "links".
+// src/models/index.d.ts:315:9 - (ae-undocumented) Missing documentation for "owner".
+// src/models/index.d.ts:316:9 - (ae-undocumented) Missing documentation for "updated_on".
+// src/models/index.d.ts:325:5 - (ae-undocumented) Missing documentation for "ProjectLinks".
+// src/models/index.d.ts:326:9 - (ae-undocumented) Missing documentation for "avatar".
+// src/models/index.d.ts:327:9 - (ae-undocumented) Missing documentation for "html".
+// src/models/index.d.ts:332:5 - (ae-undocumented) Missing documentation for "RefLinks".
+// src/models/index.d.ts:333:9 - (ae-undocumented) Missing documentation for "commits".
+// src/models/index.d.ts:334:9 - (ae-undocumented) Missing documentation for "html".
+// src/models/index.d.ts:335:9 - (ae-undocumented) Missing documentation for "self".
+// src/models/index.d.ts:342:9 - (ae-undocumented) Missing documentation for "created_on".
+// src/models/index.d.ts:343:9 - (ae-undocumented) Missing documentation for "description".
+// src/models/index.d.ts:372:9 - (ae-undocumented) Missing documentation for "is_private".
+// src/models/index.d.ts:373:9 - (ae-undocumented) Missing documentation for "language".
+// src/models/index.d.ts:374:9 - (ae-undocumented) Missing documentation for "links".
+// src/models/index.d.ts:375:9 - (ae-undocumented) Missing documentation for "mainbranch".
+// src/models/index.d.ts:376:9 - (ae-undocumented) Missing documentation for "name".
+// src/models/index.d.ts:377:9 - (ae-undocumented) Missing documentation for "owner".
+// src/models/index.d.ts:378:9 - (ae-undocumented) Missing documentation for "parent".
+// src/models/index.d.ts:379:9 - (ae-undocumented) Missing documentation for "project".
+// src/models/index.d.ts:380:9 - (ae-undocumented) Missing documentation for "scm".
+// src/models/index.d.ts:381:9 - (ae-undocumented) Missing documentation for "size".
+// src/models/index.d.ts:386:9 - (ae-undocumented) Missing documentation for "updated_on".
+// src/models/index.d.ts:421:11 - (ae-undocumented) Missing documentation for "RepositoryScmEnum".
+// src/models/index.d.ts:427:5 - (ae-undocumented) Missing documentation for "RepositoryScmEnum".
+// src/models/index.d.ts:431:5 - (ae-undocumented) Missing documentation for "RepositoryLinks".
+// src/models/index.d.ts:432:9 - (ae-undocumented) Missing documentation for "avatar".
+// src/models/index.d.ts:433:9 - (ae-undocumented) Missing documentation for "clone".
+// src/models/index.d.ts:434:9 - (ae-undocumented) Missing documentation for "commits".
+// src/models/index.d.ts:435:9 - (ae-undocumented) Missing documentation for "downloads".
+// src/models/index.d.ts:436:9 - (ae-undocumented) Missing documentation for "forks".
+// src/models/index.d.ts:437:9 - (ae-undocumented) Missing documentation for "hooks".
+// src/models/index.d.ts:438:9 - (ae-undocumented) Missing documentation for "html".
+// src/models/index.d.ts:439:9 - (ae-undocumented) Missing documentation for "pullrequests".
+// src/models/index.d.ts:440:9 - (ae-undocumented) Missing documentation for "self".
+// src/models/index.d.ts:441:9 - (ae-undocumented) Missing documentation for "watchers".
+// src/models/index.d.ts:446:5 - (ae-undocumented) Missing documentation for "SearchCodeSearchResult".
+// src/models/index.d.ts:447:9 - (ae-undocumented) Missing documentation for "content_match_count".
+// src/models/index.d.ts:448:9 - (ae-undocumented) Missing documentation for "content_matches".
+// src/models/index.d.ts:449:9 - (ae-undocumented) Missing documentation for "file".
+// src/models/index.d.ts:450:9 - (ae-undocumented) Missing documentation for "path_matches".
+// src/models/index.d.ts:451:9 - (ae-undocumented) Missing documentation for "type".
+// src/models/index.d.ts:456:5 - (ae-undocumented) Missing documentation for "SearchContentMatch".
+// src/models/index.d.ts:457:9 - (ae-undocumented) Missing documentation for "lines".
+// src/models/index.d.ts:462:5 - (ae-undocumented) Missing documentation for "SearchLine".
+// src/models/index.d.ts:463:9 - (ae-undocumented) Missing documentation for "line".
+// src/models/index.d.ts:464:9 - (ae-undocumented) Missing documentation for "segments".
+// src/models/index.d.ts:469:5 - (ae-undocumented) Missing documentation for "SearchResultPage".
+// src/models/index.d.ts:470:9 - (ae-undocumented) Missing documentation for "query_substituted".
+// src/models/index.d.ts:479:5 - (ae-undocumented) Missing documentation for "SearchSegment".
+// src/models/index.d.ts:480:9 - (ae-undocumented) Missing documentation for "match".
+// src/models/index.d.ts:481:9 - (ae-undocumented) Missing documentation for "text".
+// src/models/index.d.ts:488:9 - (ae-undocumented) Missing documentation for "links".
+// src/models/index.d.ts:495:9 - (ae-undocumented) Missing documentation for "html".
+// src/models/index.d.ts:496:9 - (ae-undocumented) Missing documentation for "members".
+// src/models/index.d.ts:497:9 - (ae-undocumented) Missing documentation for "projects".
+// src/models/index.d.ts:498:9 - (ae-undocumented) Missing documentation for "repositories".
+// src/models/index.d.ts:499:9 - (ae-undocumented) Missing documentation for "self".
+// src/models/index.d.ts:507:9 - (ae-undocumented) Missing documentation for "created_on".
+// src/models/index.d.ts:513:9 - (ae-undocumented) Missing documentation for "links".
+// src/models/index.d.ts:522:9 - (ae-undocumented) Missing documentation for "updated_on".
+// src/models/index.d.ts:531:5 - (ae-undocumented) Missing documentation for "WorkspaceLinks".
+// src/models/index.d.ts:532:9 - (ae-undocumented) Missing documentation for "avatar".
+// src/models/index.d.ts:533:9 - (ae-undocumented) Missing documentation for "html".
+// src/models/index.d.ts:534:9 - (ae-undocumented) Missing documentation for "members".
+// src/models/index.d.ts:535:9 - (ae-undocumented) Missing documentation for "owners".
+// src/models/index.d.ts:536:9 - (ae-undocumented) Missing documentation for "projects".
+// src/models/index.d.ts:537:9 - (ae-undocumented) Missing documentation for "repositories".
+// src/models/index.d.ts:538:9 - (ae-undocumented) Missing documentation for "self".
+// src/models/index.d.ts:539:9 - (ae-undocumented) Missing documentation for "snippets".
 // src/pagination.d.ts:3:1 - (ae-undocumented) Missing documentation for "PaginationOptions".
 // src/pagination.d.ts:8:1 - (ae-undocumented) Missing documentation for "WithPagination".
 // src/pagination.d.ts:12:5 - (ae-undocumented) Missing documentation for "getPage".

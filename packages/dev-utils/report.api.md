@@ -71,5 +71,6 @@ export const SidebarSignOutButton: (props: {
 // Warnings were encountered during analysis:
 //
 // src/components/EntityGridItem/EntityGridItem.d.ts:5:22 - (ae-undocumented) Missing documentation for "EntityGridItem".
-// src/devApp/render.d.ts:7:1 - (ae-undocumented) Missing documentation for "DevAppPageOptions".
+// src/components/SidebarLanguageSwitcher/SidebarLanguageSwitcher.d.ts:3:22 - (ae-undocumented) Missing documentation for "SidebarLanguageSwitcher".
+// src/devApp/render.d.ts:8:1 - (ae-undocumented) Missing documentation for "DevAppPageOptions".
 ```

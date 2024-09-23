@@ -118,11 +118,11 @@ export * from '@backstage/plugin-techdocs-node';
 // src/index.d.ts:16:1 - (ae-undocumented) Missing documentation for "DocsBuildStrategy".
 // src/index.d.ts:21:1 - (ae-undocumented) Missing documentation for "ShouldBuildParameters".
 // src/index.d.ts:28:1 - (ae-undocumented) Missing documentation for "TechDocsDocument".
-// src/search/DefaultTechDocsCollator.d.ts:31:5 - (ae-undocumented) Missing documentation for "type".
-// src/search/DefaultTechDocsCollator.d.ts:32:5 - (ae-undocumented) Missing documentation for "visibilityPermission".
-// src/search/DefaultTechDocsCollator.d.ts:34:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/search/DefaultTechDocsCollator.d.ts:35:5 - (ae-undocumented) Missing documentation for "execute".
-// src/search/DefaultTechDocsCollator.d.ts:36:5 - (ae-undocumented) Missing documentation for "applyArgsToFormat".
+// src/search/DefaultTechDocsCollator.d.ts:32:5 - (ae-undocumented) Missing documentation for "type".
+// src/search/DefaultTechDocsCollator.d.ts:33:5 - (ae-undocumented) Missing documentation for "visibilityPermission".
+// src/search/DefaultTechDocsCollator.d.ts:35:5 - (ae-undocumented) Missing documentation for "fromConfig".
+// src/search/DefaultTechDocsCollator.d.ts:36:5 - (ae-undocumented) Missing documentation for "execute".
+// src/search/DefaultTechDocsCollator.d.ts:37:5 - (ae-undocumented) Missing documentation for "applyArgsToFormat".
 // src/search/index.d.ts:12:1 - (ae-undocumented) Missing documentation for "TechDocsCollatorFactoryOptions".
 // src/search/index.d.ts:17:22 - (ae-undocumented) Missing documentation for "DefaultTechDocsCollatorFactory".
 ```

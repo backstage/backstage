@@ -516,10 +516,10 @@ export class UrlReaderProcessor implements CatalogProcessor_2 {
 // src/deprecated.d.ts:207:22 - (ae-undocumented) Missing documentation for "defaultCatalogCollatorEntityTransformer".
 // src/deprecated.d.ts:212:1 - (ae-undocumented) Missing documentation for "DefaultCatalogCollatorFactoryOptions".
 // src/deprecated.d.ts:217:1 - (ae-undocumented) Missing documentation for "CatalogCollatorEntityTransformer".
-// src/modules/codeowners/CodeOwnersProcessor.d.ts:9:1 - (ae-undocumented) Missing documentation for "CodeOwnersProcessor".
-// src/modules/codeowners/CodeOwnersProcessor.d.ts:13:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/modules/codeowners/CodeOwnersProcessor.d.ts:22:5 - (ae-undocumented) Missing documentation for "getProcessorName".
-// src/modules/codeowners/CodeOwnersProcessor.d.ts:23:5 - (ae-undocumented) Missing documentation for "preProcessEntity".
+// src/modules/codeowners/CodeOwnersProcessor.d.ts:8:1 - (ae-undocumented) Missing documentation for "CodeOwnersProcessor".
+// src/modules/codeowners/CodeOwnersProcessor.d.ts:12:5 - (ae-undocumented) Missing documentation for "fromConfig".
+// src/modules/codeowners/CodeOwnersProcessor.d.ts:21:5 - (ae-undocumented) Missing documentation for "getProcessorName".
+// src/modules/codeowners/CodeOwnersProcessor.d.ts:22:5 - (ae-undocumented) Missing documentation for "preProcessEntity".
 // src/modules/core/AnnotateLocationEntityProcessor.d.ts:6:1 - (ae-undocumented) Missing documentation for "AnnotateLocationEntityProcessor".
 // src/modules/core/AnnotateLocationEntityProcessor.d.ts:11:5 - (ae-undocumented) Missing documentation for "getProcessorName".
 // src/modules/core/AnnotateLocationEntityProcessor.d.ts:12:5 - (ae-undocumented) Missing documentation for "preProcessEntity".
@@ -540,9 +540,9 @@ export class UrlReaderProcessor implements CatalogProcessor_2 {
 // src/modules/core/PlaceholderProcessor.d.ts:8:1 - (ae-undocumented) Missing documentation for "PlaceholderProcessorOptions".
 // src/modules/core/PlaceholderProcessor.d.ts:21:5 - (ae-undocumented) Missing documentation for "getProcessorName".
 // src/modules/core/PlaceholderProcessor.d.ts:22:5 - (ae-undocumented) Missing documentation for "preProcessEntity".
-// src/modules/core/UrlReaderProcessor.d.ts:6:1 - (ae-undocumented) Missing documentation for "UrlReaderProcessor".
-// src/modules/core/UrlReaderProcessor.d.ts:12:5 - (ae-undocumented) Missing documentation for "getProcessorName".
-// src/modules/core/UrlReaderProcessor.d.ts:13:5 - (ae-undocumented) Missing documentation for "readLocation".
+// src/modules/core/UrlReaderProcessor.d.ts:5:1 - (ae-undocumented) Missing documentation for "UrlReaderProcessor".
+// src/modules/core/UrlReaderProcessor.d.ts:11:5 - (ae-undocumented) Missing documentation for "getProcessorName".
+// src/modules/core/UrlReaderProcessor.d.ts:12:5 - (ae-undocumented) Missing documentation for "readLocation".
 // src/modules/util/parse.d.ts:5:1 - (ae-undocumented) Missing documentation for "parseEntityYaml".
 // src/processing/types.d.ts:31:5 - (ae-undocumented) Missing documentation for "start".
 // src/processing/types.d.ts:32:5 - (ae-undocumented) Missing documentation for "stop".
@@ -558,5 +558,5 @@ export class UrlReaderProcessor implements CatalogProcessor_2 {
 // src/search/DefaultCatalogCollator.d.ts:31:5 - (ae-undocumented) Missing documentation for "applyArgsToFormat".
 // src/search/DefaultCatalogCollator.d.ts:33:5 - (ae-undocumented) Missing documentation for "execute".
 // src/service/CatalogBuilder.d.ts:19:1 - (ae-undocumented) Missing documentation for "CatalogEnvironment".
-// src/service/CatalogBuilder.d.ts:232:5 - (ae-undocumented) Missing documentation for "subscribe".
+// src/service/CatalogBuilder.d.ts:233:5 - (ae-undocumented) Missing documentation for "subscribe".
 ```

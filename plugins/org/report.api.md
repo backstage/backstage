@@ -106,7 +106,9 @@ export const UserProfileCard: (props: {
 // Warnings were encountered during analysis:
 //
 // src/components/Cards/Group/GroupProfile/GroupProfileCard.d.ts:4:22 - (ae-undocumented) Missing documentation for "GroupProfileCard".
-// src/components/Cards/Group/MembersList/MembersListCard.d.ts:4:22 - (ae-undocumented) Missing documentation for "MembersListCard".
+// src/components/Cards/Group/MembersList/MembersListCard.d.ts:4:1 - (ae-undocumented) Missing documentation for "MemberComponentClassKey".
+// src/components/Cards/Group/MembersList/MembersListCard.d.ts:6:1 - (ae-undocumented) Missing documentation for "MembersListCardClassKey".
+// src/components/Cards/Group/MembersList/MembersListCard.d.ts:8:22 - (ae-undocumented) Missing documentation for "MembersListCard".
 // src/components/Cards/OwnershipCard/OwnershipCard.d.ts:5:22 - (ae-undocumented) Missing documentation for "OwnershipCard".
 // src/components/Cards/User/UserProfileCard/UserProfileCard.d.ts:4:22 - (ae-undocumented) Missing documentation for "UserProfileCard".
 // src/components/Cards/types.d.ts:2:1 - (ae-undocumented) Missing documentation for "EntityRelationAggregation".

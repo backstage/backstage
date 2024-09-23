@@ -44,6 +44,7 @@ export const signalsPlugin: BackstagePlugin<{}, {}>;
 // src/api/SignalClient.d.ts:16:5 - (ae-undocumented) Missing documentation for "create".
 // src/api/SignalClient.d.ts:23:5 - (ae-undocumented) Missing documentation for "subscribe".
 // src/plugin.d.ts:2:22 - (ae-undocumented) Missing documentation for "signalsPlugin".
+// src/plugin.d.ts:4:22 - (ae-undocumented) Missing documentation for "SignalsDisplay".
 
 // (No @packageDocumentation comment for this package)
 ```

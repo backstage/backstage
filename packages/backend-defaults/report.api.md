@@ -11,4 +11,8 @@ export function createBackend(): Backend;
 
 // @public
 export const discoveryFeatureLoader: BackendFeature;
+
+// Warnings were encountered during analysis:
+//
+// src/CreateBackend.d.ts:6:1 - (ae-undocumented) Missing documentation for "createBackend".
 ```

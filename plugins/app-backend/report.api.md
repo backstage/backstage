@@ -33,10 +33,10 @@ export interface RouterOptions {
 
 // Warnings were encountered during analysis:
 //
-// src/service/router.d.ts:7:1 - (ae-undocumented) Missing documentation for "RouterOptions".
-// src/service/router.d.ts:8:5 - (ae-undocumented) Missing documentation for "config".
-// src/service/router.d.ts:9:5 - (ae-undocumented) Missing documentation for "logger".
-// src/service/router.d.ts:10:5 - (ae-undocumented) Missing documentation for "auth".
-// src/service/router.d.ts:11:5 - (ae-undocumented) Missing documentation for "httpAuth".
-// src/service/router.d.ts:56:1 - (ae-undocumented) Missing documentation for "createRouter".
+// src/service/router.d.ts:9:1 - (ae-undocumented) Missing documentation for "RouterOptions".
+// src/service/router.d.ts:10:5 - (ae-undocumented) Missing documentation for "config".
+// src/service/router.d.ts:11:5 - (ae-undocumented) Missing documentation for "logger".
+// src/service/router.d.ts:12:5 - (ae-undocumented) Missing documentation for "auth".
+// src/service/router.d.ts:13:5 - (ae-undocumented) Missing documentation for "httpAuth".
+// src/service/router.d.ts:61:1 - (ae-undocumented) Missing documentation for "createRouter".
 ```

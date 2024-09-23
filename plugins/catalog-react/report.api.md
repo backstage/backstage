@@ -859,8 +859,9 @@ export function useStarredEntity(
 // src/components/EntityNamespacePicker/EntityNamespacePicker.d.ts:10:5 - (ae-undocumented) Missing documentation for "initiallySelectedNamespaces".
 // src/components/EntityNamespacePicker/EntityNamespacePicker.d.ts:13:22 - (ae-undocumented) Missing documentation for "EntityNamespacePicker".
 // src/components/EntityOwnerPicker/EntityOwnerPicker.d.ts:3:1 - (ae-undocumented) Missing documentation for "CatalogReactEntityOwnerPickerClassKey".
-// src/components/EntityOwnerPicker/EntityOwnerPicker.d.ts:7:1 - (ae-undocumented) Missing documentation for "EntityOwnerPickerProps".
-// src/components/EntityOwnerPicker/EntityOwnerPicker.d.ts:11:22 - (ae-undocumented) Missing documentation for "EntityOwnerPicker".
+// src/components/EntityOwnerPicker/EntityOwnerPicker.d.ts:5:1 - (ae-undocumented) Missing documentation for "FixedWidthFormControlLabelClassKey".
+// src/components/EntityOwnerPicker/EntityOwnerPicker.d.ts:9:1 - (ae-undocumented) Missing documentation for "EntityOwnerPickerProps".
+// src/components/EntityOwnerPicker/EntityOwnerPicker.d.ts:13:22 - (ae-undocumented) Missing documentation for "EntityOwnerPicker".
 // src/components/EntityProcessingStatusPicker/EntityProcessingStatusPicker.d.ts:3:1 - (ae-undocumented) Missing documentation for "CatalogReactEntityProcessingStatusPickerClassKey".
 // src/components/EntityProcessingStatusPicker/EntityProcessingStatusPicker.d.ts:5:22 - (ae-undocumented) Missing documentation for "EntityProcessingStatusPicker".
 // src/components/EntityRefLink/humanize.d.ts:8:1 - (ae-undocumented) Missing documentation for "humanizeEntityRef".
@@ -938,16 +939,18 @@ export function useStarredEntity(
 // src/hooks/useEntity.d.ts:20:5 - (ae-undocumented) Missing documentation for "refresh".
 // src/hooks/useEntity.d.ts:34:5 - (ae-undocumented) Missing documentation for "children".
 // src/hooks/useEntity.d.ts:35:5 - (ae-undocumented) Missing documentation for "entity".
-// src/hooks/useEntityListProvider.d.ts:5:1 - (ae-undocumented) Missing documentation for "DefaultEntityFilters".
-// src/hooks/useEntityListProvider.d.ts:18:1 - (ae-undocumented) Missing documentation for "EntityListContextProps".
-// src/hooks/useEntityListProvider.d.ts:57:1 - (ae-undocumented) Missing documentation for "EntityListProviderProps".
+// src/hooks/useEntityListProvider.d.ts:6:1 - (ae-undocumented) Missing documentation for "DefaultEntityFilters".
+// src/hooks/useEntityListProvider.d.ts:19:1 - (ae-undocumented) Missing documentation for "PaginationMode".
+// src/hooks/useEntityListProvider.d.ts:21:1 - (ae-undocumented) Missing documentation for "EntityListContextProps".
+// src/hooks/useEntityListProvider.d.ts:65:1 - (ae-undocumented) Missing documentation for "EntityListProviderProps".
 // src/hooks/useStarredEntities.d.ts:3:1 - (ae-undocumented) Missing documentation for "useStarredEntities".
 // src/hooks/useStarredEntity.d.ts:3:1 - (ae-undocumented) Missing documentation for "useStarredEntity".
 // src/overridableComponents.d.ts:6:1 - (ae-undocumented) Missing documentation for "CatalogReactComponentsNameToClassKey".
-// src/overridableComponents.d.ts:17:1 - (ae-undocumented) Missing documentation for "BackstageOverrides".
+// src/overridableComponents.d.ts:19:1 - (ae-undocumented) Missing documentation for "BackstageOverrides".
 // src/testUtils/providers.d.ts:4:1 - (ae-undocumented) Missing documentation for "MockEntityListContextProvider".
 // src/types.d.ts:3:1 - (ae-undocumented) Missing documentation for "EntityFilter".
 // src/types.d.ts:25:1 - (ae-undocumented) Missing documentation for "UserListFilterKind".
+// src/types.d.ts:27:1 - (ae-undocumented) Missing documentation for "EntityListPagination".
 // src/utils/getEntitySourceLocation.d.ts:4:1 - (ae-undocumented) Missing documentation for "EntitySourceLocation".
 // src/utils/getEntitySourceLocation.d.ts:9:1 - (ae-undocumented) Missing documentation for "getEntitySourceLocation".
 ```

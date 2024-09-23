@@ -39,7 +39,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
 
 // Warnings were encountered during analysis:
 //
-// src/providers/BitbucketCloudEntityProvider.d.ts:29:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/providers/BitbucketCloudEntityProvider.d.ts:45:5 - (ae-undocumented) Missing documentation for "refresh".
-// src/providers/BitbucketCloudEntityProvider.d.ts:48:5 - (ae-undocumented) Missing documentation for "onRepoPush".
+// src/providers/BitbucketCloudEntityProvider.d.ts:28:5 - (ae-undocumented) Missing documentation for "fromConfig".
+// src/providers/BitbucketCloudEntityProvider.d.ts:44:5 - (ae-undocumented) Missing documentation for "refresh".
+// src/providers/BitbucketCloudEntityProvider.d.ts:47:5 - (ae-undocumented) Missing documentation for "onRepoPush".
 ```

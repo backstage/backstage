@@ -43,16 +43,16 @@ export default signalsPlugin;
 
 // Warnings were encountered during analysis:
 //
-// src/service/router.d.ts:8:1 - (ae-undocumented) Missing documentation for "RouterOptions".
-// src/service/router.d.ts:9:5 - (ae-undocumented) Missing documentation for "logger".
-// src/service/router.d.ts:10:5 - (ae-undocumented) Missing documentation for "events".
-// src/service/router.d.ts:11:5 - (ae-undocumented) Missing documentation for "identity".
-// src/service/router.d.ts:12:5 - (ae-undocumented) Missing documentation for "discovery".
-// src/service/router.d.ts:13:5 - (ae-undocumented) Missing documentation for "config".
-// src/service/router.d.ts:14:5 - (ae-undocumented) Missing documentation for "lifecycle".
-// src/service/router.d.ts:15:5 - (ae-undocumented) Missing documentation for "auth".
-// src/service/router.d.ts:16:5 - (ae-undocumented) Missing documentation for "userInfo".
-// src/service/router.d.ts:19:1 - (ae-undocumented) Missing documentation for "createRouter".
+// src/deprecated.d.ts:10:1 - (ae-undocumented) Missing documentation for "RouterOptions".
+// src/deprecated.d.ts:11:5 - (ae-undocumented) Missing documentation for "logger".
+// src/deprecated.d.ts:12:5 - (ae-undocumented) Missing documentation for "events".
+// src/deprecated.d.ts:13:5 - (ae-undocumented) Missing documentation for "identity".
+// src/deprecated.d.ts:14:5 - (ae-undocumented) Missing documentation for "discovery".
+// src/deprecated.d.ts:15:5 - (ae-undocumented) Missing documentation for "config".
+// src/deprecated.d.ts:16:5 - (ae-undocumented) Missing documentation for "lifecycle".
+// src/deprecated.d.ts:17:5 - (ae-undocumented) Missing documentation for "auth".
+// src/deprecated.d.ts:18:5 - (ae-undocumented) Missing documentation for "userInfo".
+// src/deprecated.d.ts:24:1 - (ae-undocumented) Missing documentation for "createRouter".
 
 // (No @packageDocumentation comment for this package)
 ```

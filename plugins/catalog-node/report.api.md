@@ -254,11 +254,11 @@ export type ScmLocationAnalyzer = {
 // src/api/processor.d.ts:122:1 - (ae-undocumented) Missing documentation for "CatalogProcessorErrorResult".
 // src/api/processor.d.ts:128:1 - (ae-undocumented) Missing documentation for "CatalogProcessorRefreshKeysResult".
 // src/api/processor.d.ts:133:1 - (ae-undocumented) Missing documentation for "CatalogProcessorResult".
-// src/processing/types.d.ts:15:1 - (ae-undocumented) Missing documentation for "PlaceholderResolverRead".
-// src/processing/types.d.ts:17:1 - (ae-undocumented) Missing documentation for "PlaceholderResolverResolveUrl".
-// src/processing/types.d.ts:19:1 - (ae-undocumented) Missing documentation for "PlaceholderResolverParams".
-// src/processing/types.d.ts:28:1 - (ae-undocumented) Missing documentation for "PlaceholderResolver".
-// src/processing/types.d.ts:30:1 - (ae-undocumented) Missing documentation for "LocationAnalyzer".
-// src/processing/types.d.ts:40:1 - (ae-undocumented) Missing documentation for "AnalyzeOptions".
-// src/processing/types.d.ts:45:1 - (ae-undocumented) Missing documentation for "ScmLocationAnalyzer".
+// src/processing/types.d.ts:16:1 - (ae-undocumented) Missing documentation for "PlaceholderResolverRead".
+// src/processing/types.d.ts:18:1 - (ae-undocumented) Missing documentation for "PlaceholderResolverResolveUrl".
+// src/processing/types.d.ts:20:1 - (ae-undocumented) Missing documentation for "PlaceholderResolverParams".
+// src/processing/types.d.ts:29:1 - (ae-undocumented) Missing documentation for "PlaceholderResolver".
+// src/processing/types.d.ts:31:1 - (ae-undocumented) Missing documentation for "LocationAnalyzer".
+// src/processing/types.d.ts:41:1 - (ae-undocumented) Missing documentation for "AnalyzeOptions".
+// src/processing/types.d.ts:46:1 - (ae-undocumented) Missing documentation for "ScmLocationAnalyzer".
 ```

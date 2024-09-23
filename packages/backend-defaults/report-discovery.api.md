@@ -25,8 +25,8 @@ export class HostDiscovery implements DiscoveryService {
 
 // Warnings were encountered during analysis:
 //
-// src/entrypoints/discovery/HostDiscovery.d.ts:46:5 - (ae-undocumented) Missing documentation for "getBaseUrl".
-// src/entrypoints/discovery/HostDiscovery.d.ts:47:5 - (ae-undocumented) Missing documentation for "getExternalBaseUrl".
+// src/entrypoints/discovery/HostDiscovery.d.ts:44:5 - (ae-undocumented) Missing documentation for "getBaseUrl".
+// src/entrypoints/discovery/HostDiscovery.d.ts:45:5 - (ae-undocumented) Missing documentation for "getExternalBaseUrl".
 
 // (No @packageDocumentation comment for this package)
 ```

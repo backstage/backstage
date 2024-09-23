@@ -167,7 +167,7 @@ export default _default;
 
 // Warnings were encountered during analysis:
 //
-// src/alpha.d.ts:1:15 - (ae-undocumented) Missing documentation for "_default".
+// src/alpha.d.ts:3:15 - (ae-undocumented) Missing documentation for "_default".
 
 // (No @packageDocumentation comment for this package)
 ```

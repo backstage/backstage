@@ -31,11 +31,11 @@ export class GerritEntityProvider implements EntityProvider {
 
 // Warnings were encountered during analysis:
 //
-// src/providers/GerritEntityProvider.d.ts:6:1 - (ae-undocumented) Missing documentation for "GerritEntityProvider".
-// src/providers/GerritEntityProvider.d.ts:12:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/providers/GerritEntityProvider.d.ts:18:5 - (ae-undocumented) Missing documentation for "getProviderName".
-// src/providers/GerritEntityProvider.d.ts:19:5 - (ae-undocumented) Missing documentation for "connect".
-// src/providers/GerritEntityProvider.d.ts:21:5 - (ae-undocumented) Missing documentation for "refresh".
+// src/providers/GerritEntityProvider.d.ts:5:1 - (ae-undocumented) Missing documentation for "GerritEntityProvider".
+// src/providers/GerritEntityProvider.d.ts:11:5 - (ae-undocumented) Missing documentation for "fromConfig".
+// src/providers/GerritEntityProvider.d.ts:17:5 - (ae-undocumented) Missing documentation for "getProviderName".
+// src/providers/GerritEntityProvider.d.ts:18:5 - (ae-undocumented) Missing documentation for "connect".
+// src/providers/GerritEntityProvider.d.ts:20:5 - (ae-undocumented) Missing documentation for "refresh".
 
 // (No @packageDocumentation comment for this package)
 ```

@@ -313,9 +313,13 @@ export type TemplateWizardPageProps = {
 
 // Warnings were encountered during analysis:
 //
-// src/alpha.d.ts:3:15 - (ae-undocumented) Missing documentation for "_default".
+// src/alpha.d.ts:5:15 - (ae-undocumented) Missing documentation for "_default".
+// src/next/TemplateEditorPage/CustomFieldExplorer.d.ts:4:1 - (ae-undocumented) Missing documentation for "ScaffolderCustomFieldExplorerClassKey".
+// src/next/TemplateEditorPage/TemplateEditor.d.ts:6:1 - (ae-undocumented) Missing documentation for "ScaffolderTemplateEditorClassKey".
+// src/next/TemplateEditorPage/TemplateFormPreviewer.d.ts:4:1 - (ae-undocumented) Missing documentation for "ScaffolderTemplateFormPreviewerClassKey".
 // src/next/TemplateListPage/TemplateListPage.d.ts:7:1 - (ae-undocumented) Missing documentation for "TemplateListPageProps".
 // src/next/TemplateWizardPage/TemplateWizardPage.d.ts:6:1 - (ae-undocumented) Missing documentation for "TemplateWizardPageProps".
+// src/translation.d.ts:2:22 - (ae-undocumented) Missing documentation for "scaffolderTranslationRef".
 
 // (No @packageDocumentation comment for this package)
 ```

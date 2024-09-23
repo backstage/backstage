@@ -57,10 +57,10 @@ export type TechDocsCollatorFactoryOptions = {
 
 // Warnings were encountered during analysis:
 //
-// src/collators/DefaultTechDocsCollatorFactory.d.ts:34:5 - (ae-undocumented) Missing documentation for "type".
-// src/collators/DefaultTechDocsCollatorFactory.d.ts:35:5 - (ae-undocumented) Missing documentation for "visibilityPermission".
-// src/collators/DefaultTechDocsCollatorFactory.d.ts:45:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/collators/DefaultTechDocsCollatorFactory.d.ts:46:5 - (ae-undocumented) Missing documentation for "getCollator".
+// src/collators/DefaultTechDocsCollatorFactory.d.ts:36:5 - (ae-undocumented) Missing documentation for "type".
+// src/collators/DefaultTechDocsCollatorFactory.d.ts:37:5 - (ae-undocumented) Missing documentation for "visibilityPermission".
+// src/collators/DefaultTechDocsCollatorFactory.d.ts:47:5 - (ae-undocumented) Missing documentation for "fromConfig".
+// src/collators/DefaultTechDocsCollatorFactory.d.ts:48:5 - (ae-undocumented) Missing documentation for "getCollator".
 // src/collators/TechDocsCollatorEntityTransformer.d.ts:4:1 - (ae-undocumented) Missing documentation for "TechDocsCollatorEntityTransformer".
 // src/collators/defaultTechDocsCollatorEntityTransformer.d.ts:3:22 - (ae-undocumented) Missing documentation for "defaultTechDocsCollatorEntityTransformer".
 ```

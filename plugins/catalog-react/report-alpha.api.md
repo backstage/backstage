@@ -223,9 +223,8 @@ export function useEntityPermission(
 
 // Warnings were encountered during analysis:
 //
-// src/alpha.d.ts:9:22 - (ae-undocumented) Missing documentation for "catalogExtensionData".
-// src/alpha.d.ts:15:1 - (ae-undocumented) Missing documentation for "createEntityCardExtension".
-// src/alpha.d.ts:34:1 - (ae-undocumented) Missing documentation for "createEntityContentExtension".
+// src/alpha/converters/convertLegacyEntityCardExtension.d.ts:5:1 - (ae-undocumented) Missing documentation for "convertLegacyEntityCardExtension".
+// src/alpha/converters/convertLegacyEntityContentExtension.d.ts:5:1 - (ae-undocumented) Missing documentation for "convertLegacyEntityContentExtension".
 // src/translation.d.ts:2:22 - (ae-undocumented) Missing documentation for "catalogReactTranslationRef".
 
 // (No @packageDocumentation comment for this package)

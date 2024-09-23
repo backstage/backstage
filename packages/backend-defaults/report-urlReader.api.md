@@ -516,9 +516,9 @@ export type UrlReadersOptions = {
 // src/entrypoints/urlReader/lib/HarnessUrlReader.d.ts:20:5 - (ae-undocumented) Missing documentation for "readTree".
 // src/entrypoints/urlReader/lib/HarnessUrlReader.d.ts:21:5 - (ae-undocumented) Missing documentation for "search".
 // src/entrypoints/urlReader/lib/HarnessUrlReader.d.ts:22:5 - (ae-undocumented) Missing documentation for "toString".
-// src/entrypoints/urlReader/lib/types.d.ts:75:5 - (ae-undocumented) Missing documentation for "fromTarArchive".
-// src/entrypoints/urlReader/lib/types.d.ts:82:5 - (ae-undocumented) Missing documentation for "fromZipArchive".
-// src/entrypoints/urlReader/lib/types.d.ts:83:5 - (ae-undocumented) Missing documentation for "fromReadableArray".
+// src/entrypoints/urlReader/lib/types.d.ts:74:5 - (ae-undocumented) Missing documentation for "fromTarArchive".
+// src/entrypoints/urlReader/lib/types.d.ts:81:5 - (ae-undocumented) Missing documentation for "fromZipArchive".
+// src/entrypoints/urlReader/lib/types.d.ts:82:5 - (ae-undocumented) Missing documentation for "fromReadableArray".
 
 // (No @packageDocumentation comment for this package)
 ```

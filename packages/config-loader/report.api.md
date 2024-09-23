@@ -298,18 +298,18 @@ export type TransformFunc<T extends number | string | boolean> = (
 // src/sources/ConfigSources.d.ts:74:5 - (ae-undocumented) Missing documentation for "env".
 // src/sources/EnvConfigSource.d.ts:46:5 - (ae-undocumented) Missing documentation for "readConfigData".
 // src/sources/EnvConfigSource.d.ts:47:5 - (ae-undocumented) Missing documentation for "toString".
-// src/sources/FileConfigSource.d.ts:40:5 - (ae-undocumented) Missing documentation for "readConfigData".
-// src/sources/FileConfigSource.d.ts:41:5 - (ae-undocumented) Missing documentation for "toString".
+// src/sources/FileConfigSource.d.ts:44:5 - (ae-undocumented) Missing documentation for "readConfigData".
+// src/sources/FileConfigSource.d.ts:45:5 - (ae-undocumented) Missing documentation for "toString".
 // src/sources/MutableConfigSource.d.ts:9:5 - (ae-undocumented) Missing documentation for "data".
 // src/sources/MutableConfigSource.d.ts:10:5 - (ae-undocumented) Missing documentation for "context".
 // src/sources/MutableConfigSource.d.ts:27:5 - (ae-undocumented) Missing documentation for "readConfigData".
 // src/sources/MutableConfigSource.d.ts:38:5 - (ae-undocumented) Missing documentation for "toString".
-// src/sources/RemoteConfigSource.d.ts:39:5 - (ae-undocumented) Missing documentation for "readConfigData".
-// src/sources/RemoteConfigSource.d.ts:40:5 - (ae-undocumented) Missing documentation for "toString".
+// src/sources/RemoteConfigSource.d.ts:43:5 - (ae-undocumented) Missing documentation for "readConfigData".
+// src/sources/RemoteConfigSource.d.ts:44:5 - (ae-undocumented) Missing documentation for "toString".
 // src/sources/StaticConfigSource.d.ts:9:5 - (ae-undocumented) Missing documentation for "data".
 // src/sources/StaticConfigSource.d.ts:10:5 - (ae-undocumented) Missing documentation for "context".
 // src/sources/StaticConfigSource.d.ts:28:5 - (ae-undocumented) Missing documentation for "readConfigData".
 // src/sources/StaticConfigSource.d.ts:29:5 - (ae-undocumented) Missing documentation for "toString".
-// src/sources/types.d.ts:19:5 - (ae-undocumented) Missing documentation for "signal".
-// src/sources/types.d.ts:54:5 - (ae-undocumented) Missing documentation for "readConfigData".
+// src/sources/types.d.ts:20:5 - (ae-undocumented) Missing documentation for "signal".
+// src/sources/types.d.ts:55:5 - (ae-undocumented) Missing documentation for "readConfigData".
 ```

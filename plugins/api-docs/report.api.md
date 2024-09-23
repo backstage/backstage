@@ -239,10 +239,11 @@ export type TrpcApiDefinitionWidgetProps = {
 // src/components/ApisCards/ConsumedApisCard.d.ts:7:22 - (ae-undocumented) Missing documentation for "ConsumedApisCard".
 // src/components/ApisCards/HasApisCard.d.ts:7:22 - (ae-undocumented) Missing documentation for "HasApisCard".
 // src/components/ApisCards/ProvidedApisCard.d.ts:7:22 - (ae-undocumented) Missing documentation for "ProvidedApisCard".
-// src/components/AsyncApiDefinitionWidget/AsyncApiDefinitionWidget.d.ts:3:1 - (ae-undocumented) Missing documentation for "AsyncApiDefinitionWidgetProps".
-// src/components/AsyncApiDefinitionWidget/AsyncApiDefinitionWidget.d.ts:7:22 - (ae-undocumented) Missing documentation for "AsyncApiDefinitionWidget".
-// src/components/ComponentsCards/ConsumingComponentsCard.d.ts:6:22 - (ae-undocumented) Missing documentation for "ConsumingComponentsCard".
-// src/components/ComponentsCards/ProvidingComponentsCard.d.ts:4:22 - (ae-undocumented) Missing documentation for "ProvidingComponentsCard".
+// src/components/AsyncApiDefinitionWidget/AsyncApiDefinition.d.ts:4:1 - (ae-undocumented) Missing documentation for "AsyncApiResolver".
+// src/components/AsyncApiDefinitionWidget/AsyncApiDefinitionWidget.d.ts:4:1 - (ae-undocumented) Missing documentation for "AsyncApiDefinitionWidgetProps".
+// src/components/AsyncApiDefinitionWidget/AsyncApiDefinitionWidget.d.ts:9:22 - (ae-undocumented) Missing documentation for "AsyncApiDefinitionWidget".
+// src/components/ComponentsCards/ConsumingComponentsCard.d.ts:7:22 - (ae-undocumented) Missing documentation for "ConsumingComponentsCard".
+// src/components/ComponentsCards/ProvidingComponentsCard.d.ts:5:22 - (ae-undocumented) Missing documentation for "ProvidingComponentsCard".
 // src/components/GraphQlDefinitionWidget/GraphQlDefinitionWidget.d.ts:3:1 - (ae-undocumented) Missing documentation for "GraphQlDefinitionWidgetProps".
 // src/components/GraphQlDefinitionWidget/GraphQlDefinitionWidget.d.ts:7:22 - (ae-undocumented) Missing documentation for "GraphQlDefinitionWidget".
 // src/components/OpenApiDefinitionWidget/OpenApiDefinitionWidget.d.ts:3:1 - (ae-undocumented) Missing documentation for "OpenApiDefinitionWidgetProps".
@@ -258,8 +259,8 @@ export type TrpcApiDefinitionWidgetProps = {
 // src/plugin.d.ts:10:22 - (ae-undocumented) Missing documentation for "ApiExplorerPage".
 // src/plugin.d.ts:12:22 - (ae-undocumented) Missing documentation for "EntityApiDefinitionCard".
 // src/plugin.d.ts:14:22 - (ae-undocumented) Missing documentation for "EntityConsumedApisCard".
-// src/plugin.d.ts:19:22 - (ae-undocumented) Missing documentation for "EntityConsumingComponentsCard".
-// src/plugin.d.ts:23:22 - (ae-undocumented) Missing documentation for "EntityProvidedApisCard".
-// src/plugin.d.ts:28:22 - (ae-undocumented) Missing documentation for "EntityProvidingComponentsCard".
-// src/plugin.d.ts:32:22 - (ae-undocumented) Missing documentation for "EntityHasApisCard".
+// src/plugin.d.ts:21:22 - (ae-undocumented) Missing documentation for "EntityConsumingComponentsCard".
+// src/plugin.d.ts:26:22 - (ae-undocumented) Missing documentation for "EntityProvidedApisCard".
+// src/plugin.d.ts:33:22 - (ae-undocumented) Missing documentation for "EntityProvidingComponentsCard".
+// src/plugin.d.ts:38:22 - (ae-undocumented) Missing documentation for "EntityHasApisCard".
 ```

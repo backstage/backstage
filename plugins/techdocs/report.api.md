@@ -537,5 +537,5 @@ export class TechDocsStorageClient implements TechDocsStorageApi_2 {
 // src/home/components/TechDocsCustomHome.d.ts:29:5 - (ae-undocumented) Missing documentation for "panels".
 // src/index.d.ts:21:1 - (ae-undocumented) Missing documentation for "DeprecatedTechDocsMetadata".
 // src/index.d.ts:27:1 - (ae-undocumented) Missing documentation for "DeprecatedTechDocsEntityMetadata".
-// src/reader/components/TechDocsReaderPage/TechDocsReaderPage.d.ts:26:1 - (ae-undocumented) Missing documentation for "TechDocsReaderPageProps".
+// src/reader/components/TechDocsReaderPage/TechDocsReaderPage.d.ts:27:1 - (ae-undocumented) Missing documentation for "TechDocsReaderPageProps".
 ```

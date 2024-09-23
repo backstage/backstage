@@ -191,14 +191,14 @@ export interface RawDocumentRow {
 
 // Warnings were encountered during analysis:
 //
-// src/PgSearchEngine/PgSearchEngine.d.ts:52:1 - (ae-undocumented) Missing documentation for "PgSearchEngine".
-// src/PgSearchEngine/PgSearchEngine.d.ts:64:5 - (ae-undocumented) Missing documentation for "from".
-// src/PgSearchEngine/PgSearchEngine.d.ts:69:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/PgSearchEngine/PgSearchEngine.d.ts:70:5 - (ae-undocumented) Missing documentation for "supported".
-// src/PgSearchEngine/PgSearchEngine.d.ts:71:5 - (ae-undocumented) Missing documentation for "translator".
-// src/PgSearchEngine/PgSearchEngine.d.ts:72:5 - (ae-undocumented) Missing documentation for "setTranslator".
-// src/PgSearchEngine/PgSearchEngine.d.ts:73:5 - (ae-undocumented) Missing documentation for "getIndexer".
-// src/PgSearchEngine/PgSearchEngine.d.ts:74:5 - (ae-undocumented) Missing documentation for "query".
+// src/PgSearchEngine/PgSearchEngine.d.ts:51:1 - (ae-undocumented) Missing documentation for "PgSearchEngine".
+// src/PgSearchEngine/PgSearchEngine.d.ts:63:5 - (ae-undocumented) Missing documentation for "from".
+// src/PgSearchEngine/PgSearchEngine.d.ts:68:5 - (ae-undocumented) Missing documentation for "fromConfig".
+// src/PgSearchEngine/PgSearchEngine.d.ts:69:5 - (ae-undocumented) Missing documentation for "supported".
+// src/PgSearchEngine/PgSearchEngine.d.ts:70:5 - (ae-undocumented) Missing documentation for "translator".
+// src/PgSearchEngine/PgSearchEngine.d.ts:71:5 - (ae-undocumented) Missing documentation for "setTranslator".
+// src/PgSearchEngine/PgSearchEngine.d.ts:72:5 - (ae-undocumented) Missing documentation for "getIndexer".
+// src/PgSearchEngine/PgSearchEngine.d.ts:73:5 - (ae-undocumented) Missing documentation for "query".
 // src/PgSearchEngine/PgSearchEngineIndexer.d.ts:6:1 - (ae-undocumented) Missing documentation for "PgSearchEngineIndexerOptions".
 // src/PgSearchEngine/PgSearchEngineIndexer.d.ts:13:1 - (ae-undocumented) Missing documentation for "PgSearchEngineIndexer".
 // src/PgSearchEngine/PgSearchEngineIndexer.d.ts:20:5 - (ae-undocumented) Missing documentation for "initialize".

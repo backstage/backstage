@@ -213,9 +213,9 @@ export type TestPipelineResult = {
 
 // Warnings were encountered during analysis:
 //
-// src/collators/NewlineDelimitedJsonCollatorFactory.d.ts:52:5 - (ae-undocumented) Missing documentation for "type".
-// src/collators/NewlineDelimitedJsonCollatorFactory.d.ts:53:5 - (ae-undocumented) Missing documentation for "visibilityPermission".
-// src/collators/NewlineDelimitedJsonCollatorFactory.d.ts:65:5 - (ae-undocumented) Missing documentation for "getCollator".
+// src/collators/NewlineDelimitedJsonCollatorFactory.d.ts:51:5 - (ae-undocumented) Missing documentation for "type".
+// src/collators/NewlineDelimitedJsonCollatorFactory.d.ts:52:5 - (ae-undocumented) Missing documentation for "visibilityPermission".
+// src/collators/NewlineDelimitedJsonCollatorFactory.d.ts:64:5 - (ae-undocumented) Missing documentation for "getCollator".
 // src/engines/LunrSearchEngine.d.ts:25:5 - (ae-undocumented) Missing documentation for "lunrIndices".
 // src/engines/LunrSearchEngine.d.ts:26:5 - (ae-undocumented) Missing documentation for "docStore".
 // src/engines/LunrSearchEngine.d.ts:27:5 - (ae-undocumented) Missing documentation for "logger".

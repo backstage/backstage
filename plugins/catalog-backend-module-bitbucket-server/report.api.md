@@ -122,6 +122,6 @@ export type BitbucketServerRepository = {
 // src/lib/BitbucketServerClient.d.ts:56:1 - (ae-undocumented) Missing documentation for "BitbucketServerPagedResponse".
 // src/lib/types.d.ts:2:1 - (ae-undocumented) Missing documentation for "BitbucketServerRepository".
 // src/lib/types.d.ts:14:1 - (ae-undocumented) Missing documentation for "BitbucketServerProject".
-// src/providers/BitbucketServerEntityProvider.d.ts:21:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/providers/BitbucketServerEntityProvider.d.ts:33:5 - (ae-undocumented) Missing documentation for "refresh".
+// src/providers/BitbucketServerEntityProvider.d.ts:20:5 - (ae-undocumented) Missing documentation for "fromConfig".
+// src/providers/BitbucketServerEntityProvider.d.ts:32:5 - (ae-undocumented) Missing documentation for "refresh".
 ```

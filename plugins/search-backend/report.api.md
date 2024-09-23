@@ -31,6 +31,6 @@ export type RouterOptions = {
 
 // Warnings were encountered during analysis:
 //
-// src/service/router.d.ts:10:1 - (ae-undocumented) Missing documentation for "RouterOptions".
-// src/service/router.d.ts:23:1 - (ae-undocumented) Missing documentation for "createRouter".
+// src/service/router.d.ts:11:1 - (ae-undocumented) Missing documentation for "RouterOptions".
+// src/service/router.d.ts:25:1 - (ae-undocumented) Missing documentation for "createRouter".
 ```

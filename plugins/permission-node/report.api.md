@@ -298,8 +298,8 @@ export class ServerPermissionClient implements PermissionsService {
 
 // Warnings were encountered during analysis:
 //
-// src/ServerPermissionClient.d.ts:12:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/ServerPermissionClient.d.ts:18:5 - (ae-undocumented) Missing documentation for "authorizeConditional".
-// src/ServerPermissionClient.d.ts:19:5 - (ae-undocumented) Missing documentation for "authorize".
+// src/ServerPermissionClient.d.ts:13:5 - (ae-undocumented) Missing documentation for "fromConfig".
+// src/ServerPermissionClient.d.ts:20:5 - (ae-undocumented) Missing documentation for "authorizeConditional".
+// src/ServerPermissionClient.d.ts:21:5 - (ae-undocumented) Missing documentation for "authorize".
 // src/policy/types.d.ts:67:5 - (ae-undocumented) Missing documentation for "handle".
 ```

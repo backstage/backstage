@@ -123,6 +123,6 @@ export type EksClusterEntityTransformer = (
 // src/processors/AwsOrganizationCloudAccountProcessor.d.ts:22:5 - (ae-undocumented) Missing documentation for "readLocation".
 // src/processors/AwsS3DiscoveryProcessor.d.ts:15:5 - (ae-undocumented) Missing documentation for "getProcessorName".
 // src/processors/AwsS3DiscoveryProcessor.d.ts:16:5 - (ae-undocumented) Missing documentation for "readLocation".
-// src/providers/AwsS3EntityProvider.d.ts:21:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/providers/AwsS3EntityProvider.d.ts:32:5 - (ae-undocumented) Missing documentation for "refresh".
+// src/providers/AwsS3EntityProvider.d.ts:20:5 - (ae-undocumented) Missing documentation for "fromConfig".
+// src/providers/AwsS3EntityProvider.d.ts:31:5 - (ae-undocumented) Missing documentation for "refresh".
 ```
