@@ -237,9 +237,9 @@ const getDefaultBranch = async (opts: {
   }
   return defaultBranch;
 };
-const parseProtocol = (apiBaseUrl: string) => {
+const isApiBaseUrlHttps = (apiBaseUrl: string) : boolean => {
   const url = new URL(apiBaseUrl);
-  return url.protocol || 'https';
+  return url.protocol === 'https:';
 };
 /**
  * Creates a BitbucketServer Pull Request action.
@@ -405,8 +405,8 @@ export function createPublishBitbucketServerPullRequestAction(options: {
           startPoint: latestCommit,
         });
 
-        const protocol = parseProtocol(apiBaseUrl);
-        const remoteUrl = `${protocol}://${host}/scm/${project}/${repo}.git`;
+        const isHttps: boolean = isApiBaseUrlHttps(apiBaseUrl);
+        const remoteUrl = `${isHttps ? 'https' : 'http' }://${host}/scm/${project}/${repo}.git`;
 
         const auth = authConfig.token
           ? {
