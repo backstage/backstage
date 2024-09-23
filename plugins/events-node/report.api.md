@@ -143,8 +143,8 @@ export abstract class SubTopicEventRouter extends EventRouter {
 // Warnings were encountered during analysis:
 //
 // src/api/DefaultEventsService.d.ts:16:5 - (ae-undocumented) Missing documentation for "create".
-// src/api/DefaultEventsService.d.ts:26:5 - (ae-undocumented) Missing documentation for "publish".
-// src/api/DefaultEventsService.d.ts:27:5 - (ae-undocumented) Missing documentation for "subscribe".
+// src/api/DefaultEventsService.d.ts:31:5 - (ae-undocumented) Missing documentation for "publish".
+// src/api/DefaultEventsService.d.ts:32:5 - (ae-undocumented) Missing documentation for "subscribe".
 // src/api/EventParams.d.ts:4:1 - (ae-undocumented) Missing documentation for "EventParams".
 // src/api/EventPublisher.d.ts:15:5 - (ae-undocumented) Missing documentation for "setEventBroker".
 // src/api/EventRouter.d.ts:18:5 - (ae-undocumented) Missing documentation for "getSubscriberId".
