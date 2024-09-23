@@ -159,7 +159,8 @@ async function prepareExportsEntryPoints(
       continue;
     }
 
-    const exp = {} as Record<string, string>;
+    let exp = {} as Record<string, string>;
+
     for (const [key, ext] of Object.entries(EXPORT_MAP)) {
       const name = `${entryPoint.name}${ext}`;
       if (distFiles.includes(name)) {
@@ -169,6 +170,7 @@ async function prepareExportsEntryPoints(
 
     exp.default = exp.require ?? exp.import;
 
+    // Find the default export type for the entry point
     if (exp.types) {
       const defaultFeatureType =
         pkg.backstage?.role &&
@@ -180,7 +182,10 @@ async function prepareExportsEntryPoints(
         );
 
       if (defaultFeatureType) {
-        exp.backstage = defaultFeatureType;
+        // This ensures that the `backstage` field is at the top of the
+        // `exports` field in the package.json because order is important.
+        // https://nodejs.org/docs/latest-v20.x/api/packages.html#conditional-exports
+        exp = { backstage: defaultFeatureType, ...exp };
       }
     }
 
