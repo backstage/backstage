@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { findPaths } from '@backstage/cli-common';
 import { PackageRole } from '@backstage/cli-node';
 import { resolve as resolvePath } from 'path';
 import { Project, SourceFile, SyntaxKind, ts, Type } from 'ts-morph';
+import { paths } from './paths';
 
 export const createTypeDistProject = async () => {
-  const workspaceRoot = findPaths(process.cwd()).targetRoot;
-
   return new Project({
-    tsConfigFilePath: resolvePath(workspaceRoot, 'tsconfig.json'),
+    tsConfigFilePath: paths.resolveTargetRoot('tsconfig.json'),
     skipAddingFilesFromTsConfig: true,
   });
 };
