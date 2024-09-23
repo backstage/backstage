@@ -32,12 +32,13 @@ exports.up = async function up(knex) {
       .onDelete('CASCADE')
       .comment('A reference to the entity that the refresh key is tied to');
     table
-      .text('key')
+      .string('key')
       .notNullable()
       .comment(
         'A reference to a key which should be used to trigger a refresh on this entity',
       );
     table.index('entity_id', 'refresh_keys_entity_id_idx');
+    table.index('key', 'refresh_keys_key_idx');
   });
 };
 
