@@ -371,6 +371,49 @@ export function registerCommands(program: Command) {
     .command('info')
     .description('Show helpful information for debugging and reporting bugs')
     .action(lazy(() => import('./info').then(m => m.default)));
+
+  // Notifications for removed commands
+  program
+    .command('create')
+    .allowUnknownOption(true)
+    .action(removed("use 'backstage-cli new' instead"));
+  program
+    .command('create-plugin')
+    .allowUnknownOption(true)
+    .action(removed("use 'backstage-cli new' instead"));
+  program
+    .command('plugin:diff')
+    .allowUnknownOption(true)
+    .action(removed("use 'backstage-cli fix' instead"));
+  program
+    .command('test')
+    .allowUnknownOption(true)
+    .action(
+      removed(
+        "use 'backstage-cli repo test' or 'backstage-cli package test' instead",
+      ),
+    );
+  program
+    .command('clean')
+    .allowUnknownOption(true)
+    .action(removed("use 'backstage-cli package clean' instead"));
+  program
+    .command('versions:check')
+    .allowUnknownOption(true)
+    .action(removed("use 'yarn dedupe' or 'yarn-deduplicate' instead"));
+  program.command('install').allowUnknownOption(true).action(removed());
+  program.command('onboard').allowUnknownOption(true).action(removed());
+}
+
+function removed(message?: string) {
+  return () => {
+    console.error(
+      message
+        ? `This command has been removed, ${message}`
+        : 'This command has been removed',
+    );
+    process.exit(1);
+  };
 }
 
 // Wraps an action function so that it always exits and handles errors
