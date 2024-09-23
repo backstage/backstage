@@ -192,6 +192,10 @@ export const scaffolderTranslationRef = createTranslationRef({
     templateTypePicker: {
       title: 'Categories',
     },
+    templateFormPage: {
+      title: 'Template Form Playground',
+      subtitle: 'Edit, preview, and try out templates and template forms',
+    },
     templateEditorPage: {
       title: 'Template Editor',
       subtitle: 'Edit, preview, and try out templates and template forms',

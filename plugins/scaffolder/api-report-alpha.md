@@ -229,6 +229,8 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'ongoingTask.showLogsButtonTitle': 'Show Logs';
     readonly 'templateEditorForm.stepper.emptyText': 'There are no spec parameters in the template to preview.';
     readonly 'templateTypePicker.title': 'Categories';
+    readonly 'templateFormPage.title': 'Template Form Playground';
+    readonly 'templateFormPage.subtitle': 'Edit, preview, and try out templates and template forms';
     readonly 'templateEditorPage.title': 'Template Editor';
     readonly 'templateEditorPage.subtitle': 'Edit, preview, and try out templates and template forms';
     readonly 'templateEditorPage.dryRunResults.title': 'Dry-run results';
