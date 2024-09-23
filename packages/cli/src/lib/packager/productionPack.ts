@@ -19,6 +19,10 @@ import npmPackList from 'npm-packlist';
 import { resolve as resolvePath, posix as posixPath } from 'path';
 import { BackstagePackageJson } from '@backstage/cli-node';
 import { readEntryPoints } from '../entryPoints';
+import {
+  createTypeDistProject,
+  getEntryPointDefaultFeatureType,
+} from '../typeDistProject';
 
 const PKG_PATH = 'package.json';
 const PKG_BACKUP_PATH = 'package.json-prepack';
@@ -147,19 +151,43 @@ async function prepareExportsEntryPoints(
   >();
 
   const entryPoints = readEntryPoints(pkg);
+  const project = await createTypeDistProject();
+
   for (const entryPoint of entryPoints) {
     if (!SCRIPT_EXTS.includes(entryPoint.ext)) {
       outputExports[entryPoint.mount] = entryPoint.path;
       continue;
     }
-    const exp = {} as Record<string, string>;
+
+    let exp = {} as Record<string, string>;
+
     for (const [key, ext] of Object.entries(EXPORT_MAP)) {
       const name = `${entryPoint.name}${ext}`;
       if (distFiles.includes(name)) {
         exp[key] = `./${posixPath.join(`dist`, name)}`;
       }
     }
+
     exp.default = exp.require ?? exp.import;
+
+    // Find the default export type for the entry point
+    if (exp.types) {
+      const defaultFeatureType =
+        pkg.backstage?.role &&
+        getEntryPointDefaultFeatureType(
+          pkg.backstage?.role,
+          packageDir,
+          project,
+          exp.types,
+        );
+
+      if (defaultFeatureType) {
+        // This ensures that the `backstage` field is at the top of the
+        // `exports` field in the package.json because order is important.
+        // https://nodejs.org/docs/latest-v20.x/api/packages.html#conditional-exports
+        exp = { backstage: defaultFeatureType, ...exp };
+      }
+    }
 
     // This creates a directory with a lone package.json for backwards compatibility
     if (entryPoint.mount === '.') {
