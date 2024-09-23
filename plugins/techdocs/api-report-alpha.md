@@ -229,7 +229,9 @@ const _default: FrontendPlugin<
           ConfigurableExtensionDataRef<
             React_2.JSX.Element,
             'core.reactElement',
-            {}
+            {
+              optional: true;
+            }
           >,
           {
             singleton: true;
