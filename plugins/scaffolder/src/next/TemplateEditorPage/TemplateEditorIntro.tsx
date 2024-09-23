@@ -46,7 +46,9 @@ const useStyles = makeStyles(theme => ({
 
 interface EditorIntroProps {
   style?: JSX.IntrinsicElements['div']['style'];
-  onSelect?: (option: 'local' | 'form' | 'field-explorer') => void;
+  onSelect?: (
+    option: 'create-template' | 'local' | 'form' | 'field-explorer',
+  ) => void;
 }
 
 export function TemplateEditorIntro(props: EditorIntroProps) {
@@ -84,6 +86,47 @@ export function TemplateEditorIntro(props: EditorIntroProps) {
             placement="top"
             title={t(
               'templateEditorPage.templateEditorIntro.loadLocal.unsupportedTooltip',
+            )}
+          >
+            <InfoOutlinedIcon />
+          </Tooltip>
+        </div>
+      )}
+    </Card>
+  );
+
+  const cardCreateLocal = (
+    <Card className={classes.card} elevation={4}>
+      <CardActionArea
+        disabled={!supportsLoad}
+        onClick={() => props.onSelect?.('create-template')}
+      >
+        <CardContent>
+          <Typography
+            variant="h4"
+            component="h3"
+            gutterBottom
+            color={supportsLoad ? undefined : 'textSecondary'}
+            style={{ display: 'flex', flexFlow: 'row nowrap' }}
+          >
+            {t('templateEditorPage.templateEditorIntro.createLocal.title')}
+          </Typography>
+          <Typography
+            variant="body1"
+            color={supportsLoad ? undefined : 'textSecondary'}
+          >
+            {t(
+              'templateEditorPage.templateEditorIntro.createLocal.description',
+            )}
+          </Typography>
+        </CardContent>
+      </CardActionArea>
+      {!supportsLoad && (
+        <div className={classes.infoIcon}>
+          <Tooltip
+            placement="top"
+            title={t(
+              'templateEditorPage.templateEditorIntro.createLocal.unsupportedTooltip',
             )}
           >
             <InfoOutlinedIcon />
@@ -140,6 +183,7 @@ export function TemplateEditorIntro(props: EditorIntroProps) {
         }}
       >
         {supportsLoad && cardLoadLocal}
+        {supportsLoad && cardCreateLocal}
         {cardFormEditor}
         {!supportsLoad && cardLoadLocal}
         {cardFieldExplorer}
