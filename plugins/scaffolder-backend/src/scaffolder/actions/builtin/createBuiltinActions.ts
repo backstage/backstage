@@ -37,6 +37,7 @@ import {
   createFetchPlainAction,
   createFetchPlainFileAction,
   createFetchTemplateAction,
+  createFetchTemplateFileAction,
 } from './fetch';
 import {
   createFilesystemDeleteAction,
@@ -153,6 +154,12 @@ export const createBuiltinActions = (
       integrations,
     }),
     createFetchTemplateAction({
+      integrations,
+      reader,
+      additionalTemplateFilters,
+      additionalTemplateGlobals,
+    }),
+    createFetchTemplateFileAction({
       integrations,
       reader,
       additionalTemplateFilters,
