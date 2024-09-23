@@ -213,7 +213,7 @@ export function TemplateEditorFormDirectoryEditorDryRun(
   const dryRun = useDryRun();
 
   const directoryEditor = useDirectoryEditor();
-  const { selectedFile } = directoryEditor;
+  const { selectedFile } = directoryEditor ?? {};
 
   const handleDryRun = async (data: JsonObject) => {
     if (!selectedFile) {
@@ -224,7 +224,7 @@ export function TemplateEditorFormDirectoryEditorDryRun(
       await dryRun.execute({
         templateContent: selectedFile.content,
         values: data,
-        files: directoryEditor.files,
+        files: directoryEditor?.files ?? [],
       });
       setErrorText();
     } catch (e) {
@@ -238,7 +238,7 @@ export function TemplateEditorFormDirectoryEditorDryRun(
       ? selectedFile.content
       : undefined;
 
-  return (
+  return directoryEditor ? (
     <TemplateEditorForm
       onDryRun={handleDryRun}
       fieldExtensions={fieldExtensions}
@@ -247,7 +247,7 @@ export function TemplateEditorFormDirectoryEditorDryRun(
       layouts={layouts}
       formProps={props.formProps}
     />
-  );
+  ) : null;
 }
 
 TemplateEditorForm.DirectoryEditorDryRun =

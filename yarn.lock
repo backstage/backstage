@@ -7286,6 +7286,7 @@ __metadata:
     classnames: ^2.2.6
     git-url-parse: ^14.0.0
     humanize-duration: ^3.25.1
+    idb-keyval: 5.0.2
     json-schema: ^0.4.0
     json-schema-library: ^9.0.0
     jszip: ^3.10.1
@@ -29003,6 +29004,13 @@ __metadata:
   peerDependencies:
     postcss: ^8.1.0
   checksum: 5c324d283552b1269cfc13a503aaaa172a280f914e5b81544f3803bc6f06a3b585fb79f66f7c771a2c052db7982c18bf92d001e3b47282e3abbbb4c4cc488d68
+  languageName: node
+  linkType: hard
+
+"idb-keyval@npm:5.0.2":
+  version: 5.0.2
+  resolution: "idb-keyval@npm:5.0.2"
+  checksum: 64ce4049fcfa9ffc8ddd23897a59278bd60420bcaff88ca653c63b725f8d6228a956bd7f474cea21befedd5abdb1bc8058ca1db5a12c4145605291dadadedbf1
   languageName: node
   linkType: hard
 

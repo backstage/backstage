@@ -45,14 +45,14 @@ const useStyles = makeStyles(
 export function TemplateEditorBrowser(props: { onClose?: () => void }) {
   const classes = useStyles();
   const directoryEditor = useDirectoryEditor();
-  const changedFiles = directoryEditor.files.filter(file => file.dirty);
+  const changedFiles = directoryEditor?.files.filter(file => file.dirty);
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const handleClose = () => {
     if (!props.onClose) {
       return;
     }
-    if (changedFiles.length > 0) {
+    if (changedFiles?.length) {
       // eslint-disable-next-line no-alert
       const accepted = window.confirm(
         t('templateEditorPage.templateEditorBrowser.closeConfirmMessage'),
@@ -72,8 +72,8 @@ export function TemplateEditorBrowser(props: { onClose?: () => void }) {
         >
           <IconButton
             size="small"
-            disabled={directoryEditor.files.every(file => !file.dirty)}
-            onClick={() => directoryEditor.save()}
+            disabled={directoryEditor?.files.every(file => !file.dirty)}
+            onClick={() => directoryEditor?.save()}
           >
             <SaveIcon />
           </IconButton>
@@ -83,7 +83,7 @@ export function TemplateEditorBrowser(props: { onClose?: () => void }) {
             'templateEditorPage.templateEditorBrowser.reloadIconTooltip',
           )}
         >
-          <IconButton size="small" onClick={() => directoryEditor.reload()}>
+          <IconButton size="small" onClick={() => directoryEditor?.reload()}>
             <RefreshIcon />
           </IconButton>
         </Tooltip>
@@ -101,9 +101,9 @@ export function TemplateEditorBrowser(props: { onClose?: () => void }) {
       </Grid>
       <Divider />
       <FileBrowser
-        selected={directoryEditor.selectedFile?.path ?? ''}
-        onSelect={directoryEditor.setSelectedFile}
-        filePaths={directoryEditor.files.map(file => file.path)}
+        selected={directoryEditor?.selectedFile?.path ?? ''}
+        onSelect={directoryEditor?.setSelectedFile}
+        filePaths={directoryEditor?.files.map(file => file.path) ?? []}
       />
     </>
   );

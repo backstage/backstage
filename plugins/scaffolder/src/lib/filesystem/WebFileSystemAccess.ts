@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { get, set } from 'idb-keyval';
 import { TemplateDirectoryAccess, TemplateFileAccess } from './types';
 
 type WritableFileHandle = FileSystemFileHandle & {
@@ -87,6 +88,10 @@ export class WebFileSystemAccess {
     return Boolean(showDirectoryPicker);
   }
 
+  static fromHandle(handle: IterableDirectoryHandle) {
+    return new WebDirectoryAccess(handle);
+  }
+
   static async requestDirectoryAccess(): Promise<TemplateDirectoryAccess> {
     if (!showDirectoryPicker) {
       throw new Error('File system access is not supported');
@@ -96,4 +101,17 @@ export class WebFileSystemAccess {
   }
 
   private constructor() {}
+}
+
+export class WebFileSystemStore {
+  private static readonly key = 'scalfolder-template-editor-directory';
+
+  static async getDirectory(): Promise<IterableDirectoryHandle | undefined> {
+    const directory = await get(WebFileSystemStore.key);
+    return directory.handle;
+  }
+
+  static async setDirectory(directory: TemplateDirectoryAccess | undefined) {
+    return set(WebFileSystemStore.key, directory);
+  }
 }

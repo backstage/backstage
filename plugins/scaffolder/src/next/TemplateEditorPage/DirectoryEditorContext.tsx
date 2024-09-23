@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ErrorPanel, Progress } from '@backstage/core-components';
+import { ErrorPanel } from '@backstage/core-components';
 import { useAsync, useRerender } from '@react-hookz/web';
 import React, { createContext, ReactNode, useContext, useEffect } from 'react';
 import {
@@ -191,20 +191,17 @@ const DirectoryEditorContext = createContext<DirectoryEditor | undefined>(
   undefined,
 );
 
-export function useDirectoryEditor(): DirectoryEditor {
+export function useDirectoryEditor(): DirectoryEditor | undefined {
   const value = useContext(DirectoryEditorContext);
   const rerender = useRerender();
 
   useEffect(() => value?.subscribe(rerender), [value, rerender]);
 
-  if (!value) {
-    throw new Error('must be used within a DirectoryEditorProvider');
-  }
   return value;
 }
 
 interface DirectoryEditorProviderProps {
-  directory: TemplateDirectoryAccess;
+  directory?: TemplateDirectoryAccess;
   children?: ReactNode;
 }
 
@@ -226,13 +223,13 @@ export function DirectoryEditorProvider(props: DirectoryEditorProviderProps) {
   );
 
   useEffect(() => {
-    execute(directory);
+    if (directory) {
+      execute(directory);
+    }
   }, [execute, directory]);
 
   if (error) {
     return <ErrorPanel error={error} />;
-  } else if (!result) {
-    return <Progress />;
   }
 
   return (
