@@ -39,6 +39,8 @@ Brex
 broadcasted
 bugfixes
 builtins
+bundler
+bundlers
 callout
 CDNs
 Chai
@@ -112,6 +114,7 @@ DOMPurify
 don'ts
 dynatrace
 Dynatrace
+dyno
 ecco
 elasticsearch
 Entra
@@ -200,6 +203,7 @@ Knex
 knip
 Koyeb
 KPIs
+kroki
 Kuang
 kubectl
 kubernetes
