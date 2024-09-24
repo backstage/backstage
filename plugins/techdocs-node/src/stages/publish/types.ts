@@ -30,6 +30,10 @@ export type PublisherFactory = {
   publisherSettings?: PublisherSettings;
 };
 
+/**
+ * Additional configurations for publishers.
+ * @public
+ */
 export interface PublisherSettings {
   googleGcs?: StorageOptions;
 }

@@ -15,6 +15,7 @@ import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Logger } from 'winston';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { StorageOptions } from '@google-cloud/storage';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import * as winston from 'winston';
 import { Writable } from 'stream';
@@ -217,7 +218,14 @@ export type PublisherFactory = {
   logger: LoggerService;
   discovery: DiscoveryService;
   customPublisher?: PublisherBase | undefined;
+  publisherSettings?: PublisherSettings;
 };
+
+// @public
+export interface PublisherSettings {
+  // (undocumented)
+  googleGcs?: StorageOptions;
+}
 
 // @public
 export type PublisherType =
@@ -344,6 +352,11 @@ export const techdocsPreparerExtensionPoint: ExtensionPoint<TechdocsPreparerExte
 export interface TechdocsPublisherExtensionPoint {
   // (undocumented)
   registerPublisher(type: PublisherType, publisher: PublisherBase): void;
+  // (undocumented)
+  registerPublisherSettings<T extends keyof PublisherSettings>(
+    publisher: T,
+    settings: PublisherSettings[T],
+  ): void;
 }
 
 // @public
