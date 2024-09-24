@@ -46,7 +46,6 @@ import { useNavigate } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
 import { TemplateFilters } from './TemplateFilters';
 import { TemplateGlobals } from './TemplateGlobals';
-import { Xlate } from './types';
 
 const useStyles = makeStyles(theme => ({
   code: {
@@ -74,14 +73,10 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const TemplateExtensionsPageContent = ({
-  t,
-}: {
-  t: Xlate<typeof scaffolderTranslationRef>;
-}) => {
+export const TemplateExtensionsPageContent = () => {
   const api = useApi(scaffolderApiRef);
-
   const classes = useStyles();
+  const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const { loading, value, error } = useAsync(async () => {
     return api.listTemplateExtensions();
@@ -143,7 +138,7 @@ export const TemplateExtensionsPage = () => {
         <ScaffolderPageContextMenu {...scaffolderPageContextMenuProps} />
       </Header>
       <Content>
-        <TemplateExtensionsPageContent {...{ t }} />
+        <TemplateExtensionsPageContent />
       </Content>
     </Page>
   );

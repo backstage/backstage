@@ -354,6 +354,8 @@ export const scaffolderTranslationRef = createTranslationRef({
     templateEditorToolbar: {
       customFieldExplorerTooltip: 'Custom Fields Explorer',
       installedActionsDocumentationTooltip: 'Installed Actions Documentation',
+      templateExtensionsDocumentationTooltip:
+        'Template Extensions Documentation',
       addToCatalogButton: 'Publish',
       addToCatalogDialogTitle: 'Publish changes',
       addToCatalogDialogContent: {
