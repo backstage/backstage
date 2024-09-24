@@ -1,5 +1,18 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 1.5.7-next.0
+
+### Patch Changes
+
+- d78b07c: Align the configuration schema with the docs and actual behavior of the code
+- 094eaa3: Remove references to in-repo backend-common
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.3.3-next.0
+  - @backstage/backend-plugin-api@1.0.1-next.0
+  - @backstage/config@1.2.0
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/plugin-search-common@1.2.14
+
 ## 1.5.6
 
 ### Patch Changes

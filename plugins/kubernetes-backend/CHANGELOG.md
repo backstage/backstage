@@ -1,5 +1,25 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.18.7-next.0
+
+### Patch Changes
+
+- 094eaa3: Remove references to in-repo backend-common
+- Updated dependencies
+  - @backstage/plugin-kubernetes-node@0.1.20-next.0
+  - @backstage/plugin-permission-node@0.8.4-next.0
+  - @backstage/plugin-auth-node@0.5.3-next.0
+  - @backstage/backend-plugin-api@1.0.1-next.0
+  - @backstage/catalog-client@1.7.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-node@1.13.1-next.0
+  - @backstage/plugin-kubernetes-common@0.8.3
+  - @backstage/plugin-permission-common@0.8.1
+
 ## 0.18.6
 
 ### Patch Changes

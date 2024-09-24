@@ -1,5 +1,15 @@
 # @backstage/core-app-api
 
+## 1.15.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.0-next.0
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.9
+
 ## 1.15.0
 
 ### Minor Changes

@@ -1,5 +1,21 @@
 # @backstage/plugin-api-docs
 
+## 0.11.10-next.0
+
+### Patch Changes
+
+- 46b5a20: Empty states updated with external link icon for learn more links
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.0-next.0
+  - @backstage/plugin-catalog@1.24.0-next.0
+  - @backstage/core-compat-api@0.3.1-next.0
+  - @backstage/core-components@0.15.1-next.0
+  - @backstage/core-plugin-api@1.10.0-next.0
+  - @backstage/plugin-catalog-react@1.13.1-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-permission-react@0.4.27-next.0
+
 ## 0.11.9
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # @backstage/plugin-search-backend-module-stack-overflow-collator
 
+## 0.3.1-next.0
+
+### Patch Changes
+
+- 094eaa3: Remove references to in-repo backend-common
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.3.3-next.0
+  - @backstage/backend-plugin-api@1.0.1-next.0
+  - @backstage/config@1.2.0
+  - @backstage/plugin-search-common@1.2.14
+
 ## 0.3.0
 
 ### Minor Changes

@@ -1,5 +1,39 @@
 # @backstage/plugin-scaffolder
 
+## 1.26.0-next.0
+
+### Minor Changes
+
+- bf6eaf3: Added support for `FormFieldBlueprint` to create field extensions in the Scaffolder plugin
+- cc3f80c: Added ability to create a new local scaffolder template to ease onboarding when creating new templates.
+- 5492eb6: Added ability to link to a specific action on the actions page
+
+### Patch Changes
+
+- b2b2aa8: Fix extra divider displayed in owner list picker on list tasks page
+- 7f1f483: Create a separate route for the Scaffolder template editor and add the ability to refresh the page without closing the directory. Also, when the directory is closed, the user will stay on the editor page and can load a template folder from there.
+- 7a3d622: Create a separate route for the template form editor so we refresh it without being redirected to scaffolder edit page.
+- 4698646: Change task list created at column to show timestamp
+- 4130291: Create a separate route for the custom fields explorer so we refresh it without being redirected to scaffolder edit page.
+- 11e0752: Make it possible to manually retry the scaffolder template from the step it failed
+- 09fcd95: Update the Scaffolder template editor to quickly access installed custom fields and actions when editing a template.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.0-next.0
+  - @backstage/plugin-scaffolder-react@1.13.0-next.0
+  - @backstage/core-compat-api@0.3.1-next.0
+  - @backstage/core-components@0.15.1-next.0
+  - @backstage/core-plugin-api@1.10.0-next.0
+  - @backstage/plugin-catalog-react@1.13.1-next.0
+  - @backstage/catalog-client@1.7.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.15.0
+  - @backstage/integration-react@1.1.32-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-permission-react@0.4.27-next.0
+  - @backstage/plugin-scaffolder-common@1.5.6
+
 ## 1.25.0
 
 ### Minor Changes
