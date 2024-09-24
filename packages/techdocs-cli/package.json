@@ -35,8 +35,8 @@
     "prepack": "./scripts/prepack.sh",
     "start": "nodemon --",
     "test": "backstage-cli package test",
-    "test:e2e": "backstage-cli test --config cli-e2e-test.config.js",
-    "test:e2e:ci": "backstage-cli test --config cli-e2e-test.config.js --watchAll=false --ci"
+    "test:e2e": "backstage-cli package test --config cli-e2e-test.config.js",
+    "test:e2e:ci": "backstage-cli package test --config cli-e2e-test.config.js --watchAll=false --ci"
   },
   "nodemonConfig": {
     "exec": "bin/techdocs-cli",
