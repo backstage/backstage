@@ -23,6 +23,7 @@ import {
   createTypeDistProject,
   getEntryPointDefaultFeatureType,
 } from '../typeDistProject';
+import { Project } from 'ts-morph';
 
 const PKG_PATH = 'package.json';
 const PKG_BACKUP_PATH = 'package.json-prepack';
@@ -33,6 +34,10 @@ const SCRIPT_EXTS = ['.js', '.jsx', '.ts', '.tsx'];
 interface ProductionPackOptions {
   packageDir: string;
   targetDir?: string;
+  /**
+   * A ts-morph project to share across packages
+   */
+  project?: Project;
 }
 
 export async function productionPack(options: ProductionPackOptions) {
@@ -50,6 +55,7 @@ export async function productionPack(options: ProductionPackOptions) {
   const writeCompatibilityEntryPoints = await prepareExportsEntryPoints(
     pkg,
     packageDir,
+    options.project,
   );
 
   // TODO(Rugvip): Once exports are rolled out more broadly we should deprecate and remove this behavior
@@ -138,6 +144,7 @@ const EXPORT_MAP = {
 async function prepareExportsEntryPoints(
   pkg: BackstagePackageJson,
   packageDir: string,
+  commonProject?: Project,
 ) {
   const distPath = resolvePath(packageDir, 'dist');
   if (!(await fs.pathExists(distPath))) {
@@ -151,7 +158,7 @@ async function prepareExportsEntryPoints(
   >();
 
   const entryPoints = readEntryPoints(pkg);
-  const project = await createTypeDistProject();
+  const project = commonProject || (await createTypeDistProject());
 
   for (const entryPoint of entryPoints) {
     if (!SCRIPT_EXTS.includes(entryPoint.ext)) {
