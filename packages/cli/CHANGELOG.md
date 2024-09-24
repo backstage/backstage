@@ -1,5 +1,37 @@
 # @backstage/cli
 
+## 0.28.0-next.0
+
+### Minor Changes
+
+- 6129076: **BREAKING**: Removed the following deprecated commands:
+
+  - `create`: Use `backstage-cli new` instead
+  - `create-plugin`: Use `backstage-cli new` instead
+  - `plugin:diff`: Use `backstage-cli fix` instead
+  - `test`: Use `backstage-cli repo test` or `backstage-cli package test` instead
+  - `versions:check`: Use `yarn dedupe` or `yarn-deduplicate` instead
+  - `clean`: Use `backstage-cli package clean` instead
+
+  In addition, the experimental `install` and `onboard` commands have been removed since they have not received any updates since their introduction and we're expecting usage to be low. If you where relying on these commands, please let us know by opening an issue towards the main Backstage repository.
+
+### Patch Changes
+
+- 520a383: Added functionality to the prepack script that will append the default export type for entry points to the `exports` object before publishing. This is to help with identifying the declarative integration points for plugins without needing to fetch or run the plugins first.
+- 094eaa3: Remove references to in-repo backend-common
+- 79ba5a8: The `LEGACY_BACKEND_START` flag is now deprecated.
+- Updated dependencies
+  - @backstage/catalog-model@1.7.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.8
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.9.1
+  - @backstage/errors@1.2.4
+  - @backstage/eslint-plugin@0.1.9
+  - @backstage/integration@1.15.0
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
 ## 0.27.1
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @backstage/core-components
 
+## 0.15.1-next.0
+
+### Patch Changes
+
+- 46b5a20: `Link` component now accepts `externalLinkIcon` prop
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.0-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/theme@0.5.7
+  - @backstage/version-bridge@1.0.9
+
 ## 0.15.0
 
 ### Minor Changes

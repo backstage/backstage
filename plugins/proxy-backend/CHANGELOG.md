@@ -1,5 +1,15 @@
 # @backstage/plugin-proxy-backend
 
+## 0.5.7-next.0
+
+### Patch Changes
+
+- 094eaa3: Remove references to in-repo backend-common
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.1-next.0
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
 ## 0.5.6
 
 ### Patch Changes

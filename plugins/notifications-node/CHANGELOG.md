@@ -1,5 +1,17 @@
 # @backstage/plugin-notifications-node
 
+## 0.2.7-next.0
+
+### Patch Changes
+
+- 094eaa3: Remove references to in-repo backend-common
+- Updated dependencies
+  - @backstage/plugin-signals-node@0.1.12-next.0
+  - @backstage/backend-plugin-api@1.0.1-next.0
+  - @backstage/catalog-client@1.7.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/plugin-notifications-common@0.0.5
+
 ## 0.2.6
 
 ### Patch Changes
