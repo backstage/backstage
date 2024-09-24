@@ -685,9 +685,6 @@ type SchemaRef<Doc extends RequiredDoc, Schema> = Schema extends {
     };
 
 // @public
-export function setupProxyHooks(): void;
-
-// @public
 type TemplateToDocPath<
   Doc extends PathDoc,
   Path extends DocPathTemplate<Doc>,
