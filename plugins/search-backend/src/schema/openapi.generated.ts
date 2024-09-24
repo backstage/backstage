@@ -207,8 +207,7 @@ export const spec = {
             name: 'filters',
             in: 'query',
             required: false,
-            style: 'form',
-            explode: true,
+            style: 'deepObject',
             allowReserved: true,
             schema: {
               $ref: '#/components/schemas/JsonObject',
@@ -242,6 +241,18 @@ export const spec = {
             allowReserved: true,
             schema: {
               type: 'integer',
+            },
+          },
+          {
+            name: 'unknown',
+            in: 'query',
+            required: false,
+            style: 'form',
+            explode: true,
+            allowReserved: true,
+            schema: {
+              type: 'object',
+              additionalProperties: true,
             },
           },
         ],

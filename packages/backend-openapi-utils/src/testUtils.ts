@@ -17,21 +17,7 @@ import { Express } from 'express';
 import { Server } from 'http';
 import { Proxy } from './proxy/setup';
 
-const proxy = new Proxy();
-
-/**
- * Setup the proxy hooks for the test suite. This will start the proxy before all tests and stop it after all tests.
- * @public
- */
-export function setupProxyHooks() {
-  beforeAll(async () => {
-    await proxy.setup();
-  });
-
-  afterAll(() => {
-    proxy.stop();
-  });
-}
+const proxiesToCleanup: Proxy[] = [];
 
 /**
  * !!! THIS CURRENTLY ONLY SUPPORTS SUPERTEST !!!
@@ -42,10 +28,32 @@ export function setupProxyHooks() {
  * @public
  */
 export async function wrapServer(app: Express): Promise<Server> {
+  const proxy = new Proxy();
+  await proxy.setup();
   const server = app.listen(proxy.forwardTo.port);
   await proxy.initialize(`http://localhost:${proxy.forwardTo.port}`, server);
+
   return { ...server, address: () => new URL(proxy.url) } as any;
 }
+
+let registered = false;
+function registerHooks() {
+  if (typeof afterAll !== 'function' || typeof beforeAll !== 'function') {
+    return;
+  }
+  if (registered) {
+    return;
+  }
+  registered = true;
+
+  afterAll(() => {
+    for (const proxy of proxiesToCleanup) {
+      proxy.stop();
+    }
+  });
+}
+
+registerHooks();
 
 /**
  * !!! THIS CURRENTLY ONLY SUPPORTS SUPERTEST !!!
