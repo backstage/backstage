@@ -29,7 +29,9 @@ const proxiesToCleanup: Proxy[] = [];
  */
 export async function wrapServer(app: Express): Promise<Server> {
   const proxy = new Proxy();
+  proxiesToCleanup.push(proxy);
   await proxy.setup();
+
   const server = app.listen(proxy.forwardTo.port);
   await proxy.initialize(`http://localhost:${proxy.forwardTo.port}`, server);
 
