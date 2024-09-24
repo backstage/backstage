@@ -93,11 +93,6 @@ async function generate(abortSignal?: AbortController) {
     OPENAPI_IGNORE_FILES.join('\n'),
   );
 
-  const additionalProperties = [];
-  if (clientImport) {
-    additionalProperties.push(`clientImport=${clientImport}`);
-  }
-
   await exec(
     'node',
     [
@@ -114,7 +109,6 @@ async function generate(abortSignal?: AbortController) {
         '@backstage/repo-tools',
         'templates/typescript-backstage-server.yaml',
       ),
-      `--additional-properties=${additionalProperties.join(',')}`,
       '--generator-key',
       'v3.0',
     ],
