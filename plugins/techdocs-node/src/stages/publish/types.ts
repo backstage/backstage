@@ -17,6 +17,7 @@ import express from 'express';
 import { Config } from '@backstage/config';
 import { DiscoveryService, LoggerService } from '@backstage/backend-plugin-api';
 import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
+import { StorageOptions } from '@google-cloud/storage';
 
 /**
  * Options for building publishers
@@ -26,7 +27,12 @@ export type PublisherFactory = {
   logger: LoggerService;
   discovery: DiscoveryService;
   customPublisher?: PublisherBase | undefined;
+  publisherSettings?: PublisherSettings;
 };
+
+export interface PublisherSettings {
+  googleGcs?: StorageOptions;
+}
 
 /**
  * Key for all the different types of TechDocs publishers that are supported.

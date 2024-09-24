@@ -68,7 +68,11 @@ export class GoogleGCSPublish implements PublisherBase {
     this.bucketRootPath = options.bucketRootPath;
   }
 
-  static fromConfig(config: Config, logger: LoggerService): PublisherBase {
+  static fromConfig(
+    config: Config,
+    logger: LoggerService,
+    options?: StorageOptions,
+  ): PublisherBase {
     let bucketName = '';
     try {
       bucketName = config.getString('techdocs.publisher.googleGcs.bucketName');
@@ -103,7 +107,7 @@ export class GoogleGCSPublish implements PublisherBase {
       }
     }
 
-    const clientOpts: StorageOptions = {};
+    const clientOpts: StorageOptions = options ?? {};
     if (projectId) {
       clientOpts.projectId = projectId;
     }
