@@ -32,11 +32,11 @@ our users.
 
 ### Transparent
 
-There are a lot of exciting things coming up and we want to keep you in the
+There are a lot of exciting things coming up, and we want to keep you in the
 loop! Keep an eye on our
 [Milestones in GitHub](https://github.com/backstage/backstage/milestones) to see
 where we're headed and review the
-[open design issues](https://github.com/backstage/backstage/issues?q=is%3Aopen+is%3Aissue+label%3Adesign),
+[open design issues](https://github.com/backstage/backstage/issues?q=is%3Aopen+is%3Aissue+label%3Adesign)
 to see if you can help. We'll also be posting updates in the _#design_ channel
 on [Discord](https://discord.gg/backstage-687207715902193673). Not only that, we want to keep you
 informed on the decisions we've made and why we've made them.
@@ -110,7 +110,7 @@ contributors and will send you virtual
 Create an issue (label it design and assign it to katz95) or send us a message
 on [Discord](https://discord.gg/backstage-687207715902193673) (_#design_ channel) with details of
 what the component is and its relevant use cases. Your request will be reviewed
-by our design team and you should hear back from us within 1-2 business days.
+by our design team, and you should hear back from us within 1-2 business days.
 We’ll get back to you and let you know whether your requested component will get
 picked up by our team as something to be added to our design system.
 

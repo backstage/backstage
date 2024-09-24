@@ -4,7 +4,7 @@ title: Component Design Guidelines
 description: Documentation on Design
 ---
 
-Be it a new component contribution, or plugin specific components, you'll want
+Be it a new component contribution or plugin specific components, you'll want
 to follow these guidelines. We'll cover the three main subjects that define the
 general look and feel of your components, all of which build on top of the
 Material UI theme features:
@@ -17,7 +17,7 @@ Material UI theme features:
 
 Layout refers to how you organize or stack content. Whenever possible, we want
 to use Backstage's components (check the [Storybook][1] for a list and demo)
-first, and otherwise fall back to Material UI components (check the [Material UI docs][2]).
+first and otherwise fall back to Material UI components (check the [Material UI docs][2]).
 
 If none of these fit your layout needs, then you can build your own components.
 However, using HTML+CSS directly is not recommended; it's better to use Material UI
@@ -39,17 +39,17 @@ color palette and typography:
 
 If you're using an existing component and want to tweak the colors it uses in
 general in the whole application, you can use a [Custom Theme][10] to override
-specific styles for that component, that includes paddings, margins and colors.
+specific styles for that component, that includes paddings, margins, and colors.
 
-However when making a component from scratch you'll need to reference the theme
-as much as possible, make sure to use the theme's color palette. Most Backstage
+However, when making a component from scratch, you'll need to reference the theme
+as much as possible; make sure to use the theme's color palette. Most Backstage
 components and all Material UI components should use the theme's color palette by default,
 so unless you need explicit control on the color of a component (say when the
 component was designed to use the primary color but you want to use the
 secondary color instead), then the easiest way to access the color palette is
 to [Override the Component Styles][11] as suggested by Backstage.
 
-It's not a very common use case to override a theme color in a Material UI component
+It's not a very common use case to override a theme color in a Material UI component,
 but let's say you have a custom Sidebar component with a Paper component that
 highlights its content with a different color for a side menu or something
 (usually you use the elevation, but maybe the designer wanted a colorful app).
@@ -78,20 +78,20 @@ which tokens you can use as reference from the compiled theme.
 
 ## Typography
 
-Most of the time the components from Material UI will use the `<Typography />` component
-which will use the theme's typography properties like font family, size, weight
-and appropriate color from the palette for the context of that component. This applies for example to
-buttons that use white font color for contained buttons, or the respective color
+Most of the time the components from Material UI will use the `<Typography />` component,
+which will use the theme's typography properties like font family, size, weight,
+and appropriate color from the palette for the context of that component. This applies, for example, to
+buttons that use white font color for contained buttons or the respective color
 passed on via props when not outlined for proper contrast (buttons in dark
 theme adapt properly by using a dark font instead of white).
 
-However for those cases where the parent component of the content doesn't handle
+However, for those cases where the parent component of the content doesn't handle
 the text, like when the parent component is a layout one, you use typography
-component instead of the HTML counterparts, usually used for titles and
+component instead of the HTML counterparts, usually used for titles and,
 paragraphs but it is valid for any type of text.
 
 Check the [Typography docs][9] for information on how to install, use,
-customize semantic elements and specially the recommendations about
+customize semantic elements, and specially the recommendations about
 accessibility.
 
 [1]: http://backstage.io/storybook
