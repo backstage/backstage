@@ -95,10 +95,6 @@ class BaseParameterParser {
   }
 }
 
-const PLACE_A_BEFORE_B = -1;
-const PLACE_A_AFTER_B = 1;
-const EQUAL = 0;
-
 export class QueryParameterParser
   extends BaseParameterParser
   implements RequestParser<Record<string, any>>
@@ -111,51 +107,36 @@ export class QueryParameterParser
     const remainingQueryParameters = new Set<string>(searchParams.keys());
     const queryParameters: Record<string, any> = {};
 
-    const parameterIterator = Object.entries(this.parameters);
+    let parameterIterator = Object.entries(this.parameters);
 
-    // object parameters with form/explode style should be processed last as they collect all remaining parameters.
-    parameterIterator.sort(([_, parameterA], [_B, parameterB]) => {
-      if (
-        parameterA.schema.type !== 'object' &&
-        parameterB.schema.type !== 'object'
-      ) {
-        return EQUAL;
-      }
-      if (
-        parameterA.schema.type === 'object' &&
-        parameterB.schema.type !== 'object'
-      ) {
-        return PLACE_A_AFTER_B;
-      }
-      if (
-        parameterA.schema.type !== 'object' &&
-        parameterB.schema.type === 'object'
-      ) {
-        return PLACE_A_BEFORE_B;
-      }
-      const isParameterAForm = parameterA.style === 'form' || !parameterA.style;
-      const isParameterAFormExplode =
-        isParameterAForm &&
-        (parameterA.explode || typeof parameterA.explode === 'undefined');
-      const isParameterBForm = parameterB.style === 'form' || !parameterB.style;
-      const isParameterBFormExplode =
-        isParameterBForm &&
-        (parameterB.explode || typeof parameterB.explode === 'undefined');
-      // Sort the form explode to the bottom of the array.
-      if (isParameterAFormExplode && isParameterBFormExplode) {
-        throw new OperationError(
-          this.operation,
-          'Ambiguous query parameters, you cannot have 2 form explode parameters',
-        );
-      }
-      if (isParameterAFormExplode) {
-        return PLACE_A_AFTER_B;
-      }
-      if (isParameterBFormExplode) {
-        return PLACE_A_BEFORE_B;
-      }
-      return EQUAL;
-    });
+    const isFormExplode = (parameter: ReferencelessParameterObject) => {
+      return (
+        parameter.schema?.type === 'object' &&
+        (parameter.style === 'form' || !parameter.style) &&
+        parameter.explode
+      );
+    };
+
+    const regularParameters = parameterIterator.filter(
+      ([_, parameter]) => !isFormExplode(parameter),
+    );
+
+    const formExplodeParameters = parameterIterator.filter(([_, parameter]) =>
+      isFormExplode(parameter),
+    );
+
+    if (formExplodeParameters.length > 1) {
+      throw new OperationError(
+        this.operation,
+        'Ambiguous query parameters, you cannot have 2 form explode parameters',
+      );
+    }
+
+    // Sort the parameters so that form explode parameters are processed last.
+    parameterIterator = [...regularParameters, ...formExplodeParameters];
+
+    console.log(parameterIterator);
+
     for (const [name, parameter] of parameterIterator) {
       if (!parameter.schema) {
         throw new OperationError(
