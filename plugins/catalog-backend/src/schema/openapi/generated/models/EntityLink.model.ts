@@ -19,22 +19,24 @@
 // ******************************************************************
 
 /**
+ * A link to external information that is related to the entity.
  * @public
  */
-export type Query = {
-  query: {
-    term?: string;
-    filters?: { [key: string]: any };
-    types?: Array<string>;
-    pageCursor?: string;
-    pageLimit?: number;
-  };
-};
-
-/**
- * no description
- */
-
-export type EndpointMap = {
-  '#get|/query': Query;
-};
+export interface EntityLink {
+  /**
+   * An optional value to categorize links into specific groups
+   */
+  type?: string;
+  /**
+   * An optional semantic key that represents a visual icon.
+   */
+  icon?: string;
+  /**
+   * An optional descriptive title for the link.
+   */
+  title?: string;
+  /**
+   * The url to the external site, document, etc.
+   */
+  url: string;
+}

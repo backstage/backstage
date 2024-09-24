@@ -19,22 +19,13 @@
 // ******************************************************************
 
 /**
+ * Options for requesting a refresh of entities in the catalog.
  * @public
  */
-export type Query = {
-  query: {
-    term?: string;
-    filters?: { [key: string]: any };
-    types?: Array<string>;
-    pageCursor?: string;
-    pageLimit?: number;
-  };
-};
-
-/**
- * no description
- */
-
-export type EndpointMap = {
-  '#get|/query': Query;
-};
+export interface RefreshEntityRequest {
+  authorizationToken?: string;
+  /**
+   * The reference to a single entity that should be refreshed
+   */
+  entityRef: string;
+}

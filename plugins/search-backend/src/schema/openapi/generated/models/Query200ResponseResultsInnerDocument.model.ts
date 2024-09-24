@@ -19,22 +19,20 @@
 // ******************************************************************
 
 /**
+ * The raw value of the document, as indexed.
  * @public
  */
-export type Query = {
-  query: {
-    term?: string;
-    filters?: { [key: string]: any };
-    types?: Array<string>;
-    pageCursor?: string;
-    pageLimit?: number;
-  };
-};
-
-/**
- * no description
- */
-
-export type EndpointMap = {
-  '#get|/query': Query;
-};
+export interface Query200ResponseResultsInnerDocument {
+  /**
+   * The primary name of the document (e.g. name, title, identifier, etc).
+   */
+  title?: string;
+  /**
+   * Free-form text of the document (e.g. description, content, etc).
+   */
+  text?: string;
+  /**
+   * The relative or absolute URL of the document (target when a search result is clicked).
+   */
+  location?: string;
+}

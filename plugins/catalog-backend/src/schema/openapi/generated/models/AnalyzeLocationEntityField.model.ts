@@ -21,20 +21,26 @@
 /**
  * @public
  */
-export type Query = {
-  query: {
-    term?: string;
-    filters?: { [key: string]: any };
-    types?: Array<string>;
-    pageCursor?: string;
-    pageLimit?: number;
-  };
-};
+export interface AnalyzeLocationEntityField {
+  /**
+   * A text to show to the user to inform about the choices made. Like, it could say \"Found a CODEOWNERS file that covers this target, so we suggest leaving this field empty; which would currently make it owned by X\" where X is taken from the codeowners file.
+   */
+  description: string;
+  value: string | null;
+  /**
+   * The outcome of the analysis for this particular field
+   */
+  state: AnalyzeLocationEntityFieldStateEnum;
+  /**
+   * e.g. \"spec.owner\"? The frontend needs to know how to \"inject\" the field into the entity again if the user wants to change it
+   */
+  field: string;
+}
 
 /**
- * no description
+ * @public
  */
-
-export type EndpointMap = {
-  '#get|/query': Query;
-};
+export type AnalyzeLocationEntityFieldStateEnum =
+  | 'analysisSuggestedValue'
+  | 'analysisSuggestedNoValue'
+  | 'needsUserInput';

@@ -1,14 +1,43 @@
 {{>licenseInfo}}
-import type {
-    {{#operations}}
-    {{#operation}}
-    {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}},
-    {{/operation}}
-    {{/operations}}
-} from '{{clientImport}}';
-
+{{#imports}}
+import { {{classname}} } from '{{filename}}.model{{importFileExtension}}';
+{{/imports}}
 
 {{#operations}}
+
+{{#operation}}
+/**
+  * @public
+  */
+export type {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}} = {
+    {{#hasPathParams}}
+    path: {
+        {{#pathParams}}
+            {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
+        {{/pathParams}}
+    },
+    {{/hasPathParams}}
+    {{#hasBodyParam}}
+        {{#bodyParam}}
+        body: {{{dataType}}},
+        {{/bodyParam}}
+    {{/hasBodyParam}}
+    {{#hasQueryParams}}
+    query: {
+        {{#queryParams}}
+        {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
+        {{/queryParams}}
+    },
+    {{/hasQueryParams}}
+    {{#hasHeaderParams}}
+    header: {
+        {{#headerParams}}
+        {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
+        {{/headerParams}}
+    },
+    {{/hasHeaderParams}}
+}
+{{/operation}}
 
 /**
  * {{{description}}}{{^description}}no description{{/description}}

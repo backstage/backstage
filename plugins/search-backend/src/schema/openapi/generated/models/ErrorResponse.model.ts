@@ -21,20 +21,6 @@
 /**
  * @public
  */
-export type Query = {
-  query: {
-    term?: string;
-    filters?: { [key: string]: any };
-    types?: Array<string>;
-    pageCursor?: string;
-    pageLimit?: number;
-  };
-};
-
-/**
- * no description
- */
-
-export type EndpointMap = {
-  '#get|/query': Query;
-};
+export interface ErrorResponse {
+  statusCode: number;
+}

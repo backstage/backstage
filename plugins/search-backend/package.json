@@ -47,13 +47,13 @@
   "scripts": {
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
+    "fuzz": "backstage-repo-tools package schema openapi fuzz",
+    "generate": "backstage-repo-tools package schema openapi generate --server --client-package plugins/search-common",
     "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
     "start": "backstage-cli package start",
-    "test": "backstage-cli package test",
-    "generate": "backstage-repo-tools package schema openapi generate --server --client-package plugins/search-common --server-client-import \"@backstage/plugin-search-common/client\"",
-    "fuzz": "backstage-repo-tools package schema openapi fuzz"
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/backend-common": "^0.25.0",
