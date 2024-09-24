@@ -398,7 +398,6 @@ export interface CurrentClaimedTask {
   spec: TaskSpec;
   state?: JsonObject;
   taskId: string;
-  // (undocumented)
   workspace?: Promise<Buffer>;
 }
 
@@ -487,6 +486,8 @@ export class DatabaseTaskStore implements TaskStore {
     taskId: string;
     targetPath: string;
   }): Promise<void>;
+  // (undocumented)
+  retryTask?(options: { taskId: string }): Promise<void>;
   // (undocumented)
   saveTaskState(options: { taskId: string; state?: JsonObject }): Promise<void>;
   // (undocumented)
@@ -740,6 +741,8 @@ export interface TaskStore {
     targetPath: string;
   }): Promise<void>;
   // (undocumented)
+  retryTask?(options: { taskId: string }): Promise<void>;
+  // (undocumented)
   saveTaskState?(options: {
     taskId: string;
     state?: JsonObject;
@@ -776,6 +779,7 @@ export type TaskStoreEmitOptions<TBody = JsonObject> = {
 
 // @public
 export type TaskStoreListEventsOptions = {
+  isTaskRecoverable?: boolean;
   taskId: string;
   after?: number | undefined;
 };
@@ -884,7 +888,8 @@ export type TemplatePermissionRuleInput<
 // src/scaffolder/tasks/DatabaseTaskStore.d.ts:104:5 - (ae-undocumented) Missing documentation for "cleanWorkspace".
 // src/scaffolder/tasks/DatabaseTaskStore.d.ts:107:5 - (ae-undocumented) Missing documentation for "serializeWorkspace".
 // src/scaffolder/tasks/DatabaseTaskStore.d.ts:111:5 - (ae-undocumented) Missing documentation for "cancelTask".
-// src/scaffolder/tasks/DatabaseTaskStore.d.ts:114:5 - (ae-undocumented) Missing documentation for "recoverTasks".
+// src/scaffolder/tasks/DatabaseTaskStore.d.ts:114:5 - (ae-undocumented) Missing documentation for "retryTask".
+// src/scaffolder/tasks/DatabaseTaskStore.d.ts:117:5 - (ae-undocumented) Missing documentation for "recoverTasks".
 // src/scaffolder/tasks/StorageTaskBroker.d.ts:24:5 - (ae-undocumented) Missing documentation for "create".
 // src/scaffolder/tasks/StorageTaskBroker.d.ts:26:5 - (ae-undocumented) Missing documentation for "spec".
 // src/scaffolder/tasks/StorageTaskBroker.d.ts:27:5 - (ae-undocumented) Missing documentation for "cancelSignal".
@@ -900,31 +905,31 @@ export type TemplatePermissionRuleInput<
 // src/scaffolder/tasks/StorageTaskBroker.d.ts:52:5 - (ae-undocumented) Missing documentation for "cleanWorkspace".
 // src/scaffolder/tasks/StorageTaskBroker.d.ts:53:5 - (ae-undocumented) Missing documentation for "complete".
 // src/scaffolder/tasks/StorageTaskBroker.d.ts:55:5 - (ae-undocumented) Missing documentation for "getInitiatorCredentials".
-// src/scaffolder/tasks/StorageTaskBroker.d.ts:83:5 - (ae-undocumented) Missing documentation for "workspace".
 // src/scaffolder/tasks/TaskWorker.d.ts:60:5 - (ae-undocumented) Missing documentation for "create".
 // src/scaffolder/tasks/TaskWorker.d.ts:61:5 - (ae-undocumented) Missing documentation for "recoverTasks".
 // src/scaffolder/tasks/TaskWorker.d.ts:62:5 - (ae-undocumented) Missing documentation for "start".
 // src/scaffolder/tasks/TaskWorker.d.ts:63:5 - (ae-undocumented) Missing documentation for "stop".
 // src/scaffolder/tasks/TaskWorker.d.ts:64:5 - (ae-undocumented) Missing documentation for "onReadyToClaimTask".
 // src/scaffolder/tasks/TaskWorker.d.ts:65:5 - (ae-undocumented) Missing documentation for "runOneTask".
-// src/scaffolder/tasks/types.d.ts:123:5 - (ae-undocumented) Missing documentation for "cancelTask".
-// src/scaffolder/tasks/types.d.ts:124:5 - (ae-undocumented) Missing documentation for "createTask".
-// src/scaffolder/tasks/types.d.ts:125:5 - (ae-undocumented) Missing documentation for "recoverTasks".
-// src/scaffolder/tasks/types.d.ts:128:5 - (ae-undocumented) Missing documentation for "getTask".
-// src/scaffolder/tasks/types.d.ts:129:5 - (ae-undocumented) Missing documentation for "claimTask".
-// src/scaffolder/tasks/types.d.ts:130:5 - (ae-undocumented) Missing documentation for "completeTask".
-// src/scaffolder/tasks/types.d.ts:135:5 - (ae-undocumented) Missing documentation for "heartbeatTask".
-// src/scaffolder/tasks/types.d.ts:136:5 - (ae-undocumented) Missing documentation for "listStaleTasks".
-// src/scaffolder/tasks/types.d.ts:143:5 - (ae-undocumented) Missing documentation for "list".
-// src/scaffolder/tasks/types.d.ts:163:5 - (ae-undocumented) Missing documentation for "list".
-// src/scaffolder/tasks/types.d.ts:182:5 - (ae-undocumented) Missing documentation for "emitLogEvent".
-// src/scaffolder/tasks/types.d.ts:183:5 - (ae-undocumented) Missing documentation for "getTaskState".
-// src/scaffolder/tasks/types.d.ts:188:5 - (ae-undocumented) Missing documentation for "saveTaskState".
-// src/scaffolder/tasks/types.d.ts:192:5 - (ae-undocumented) Missing documentation for "listEvents".
-// src/scaffolder/tasks/types.d.ts:195:5 - (ae-undocumented) Missing documentation for "shutdownTask".
-// src/scaffolder/tasks/types.d.ts:196:5 - (ae-undocumented) Missing documentation for "rehydrateWorkspace".
-// src/scaffolder/tasks/types.d.ts:200:5 - (ae-undocumented) Missing documentation for "cleanWorkspace".
-// src/scaffolder/tasks/types.d.ts:203:5 - (ae-undocumented) Missing documentation for "serializeWorkspace".
+// src/scaffolder/tasks/types.d.ts:124:5 - (ae-undocumented) Missing documentation for "cancelTask".
+// src/scaffolder/tasks/types.d.ts:125:5 - (ae-undocumented) Missing documentation for "createTask".
+// src/scaffolder/tasks/types.d.ts:126:5 - (ae-undocumented) Missing documentation for "retryTask".
+// src/scaffolder/tasks/types.d.ts:129:5 - (ae-undocumented) Missing documentation for "recoverTasks".
+// src/scaffolder/tasks/types.d.ts:132:5 - (ae-undocumented) Missing documentation for "getTask".
+// src/scaffolder/tasks/types.d.ts:133:5 - (ae-undocumented) Missing documentation for "claimTask".
+// src/scaffolder/tasks/types.d.ts:134:5 - (ae-undocumented) Missing documentation for "completeTask".
+// src/scaffolder/tasks/types.d.ts:139:5 - (ae-undocumented) Missing documentation for "heartbeatTask".
+// src/scaffolder/tasks/types.d.ts:140:5 - (ae-undocumented) Missing documentation for "listStaleTasks".
+// src/scaffolder/tasks/types.d.ts:147:5 - (ae-undocumented) Missing documentation for "list".
+// src/scaffolder/tasks/types.d.ts:167:5 - (ae-undocumented) Missing documentation for "list".
+// src/scaffolder/tasks/types.d.ts:186:5 - (ae-undocumented) Missing documentation for "emitLogEvent".
+// src/scaffolder/tasks/types.d.ts:187:5 - (ae-undocumented) Missing documentation for "getTaskState".
+// src/scaffolder/tasks/types.d.ts:192:5 - (ae-undocumented) Missing documentation for "saveTaskState".
+// src/scaffolder/tasks/types.d.ts:196:5 - (ae-undocumented) Missing documentation for "listEvents".
+// src/scaffolder/tasks/types.d.ts:199:5 - (ae-undocumented) Missing documentation for "shutdownTask".
+// src/scaffolder/tasks/types.d.ts:200:5 - (ae-undocumented) Missing documentation for "rehydrateWorkspace".
+// src/scaffolder/tasks/types.d.ts:204:5 - (ae-undocumented) Missing documentation for "cleanWorkspace".
+// src/scaffolder/tasks/types.d.ts:207:5 - (ae-undocumented) Missing documentation for "serializeWorkspace".
 // src/service/router.d.ts:17:1 - (ae-undocumented) Missing documentation for "TemplatePermissionRuleInput".
 // src/service/router.d.ts:22:1 - (ae-undocumented) Missing documentation for "ActionPermissionRuleInput".
 // src/service/router.d.ts:30:5 - (ae-undocumented) Missing documentation for "logger".
