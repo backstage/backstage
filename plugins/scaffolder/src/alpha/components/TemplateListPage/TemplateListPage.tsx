@@ -59,6 +59,8 @@ import {
 } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
 
+import { convertLegacyRouteRef } from '@backstage/core-compat-api';
+
 /**
  * @alpha
  */
@@ -103,9 +105,11 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
     headerOptions,
   } = props;
   const navigate = useNavigate();
-  const editorLink = useRouteRef(editRouteRef);
-  const actionsLink = useRouteRef(actionsRouteRef);
-  const tasksLink = useRouteRef(scaffolderListTaskRouteRef);
+  const editorLink = useRouteRef(convertLegacyRouteRef(editRouteRef));
+  const actionsLink = useRouteRef(convertLegacyRouteRef(actionsRouteRef));
+  const tasksLink = useRouteRef(
+    convertLegacyRouteRef(scaffolderListTaskRouteRef),
+  );
   const viewTechDocsLink = useRouteRef(viewTechDocRouteRef);
   const templateRoute = useRouteRef(selectedTemplateRouteRef);
   const app = useApp();
@@ -160,6 +164,10 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
     (template: TemplateEntityV1beta3) => {
       const { namespace, name } = parseEntityRef(stringifyEntityRef(template));
 
+      console.log(
+        `DEBUG: templateRoute({ namespace, templateName: name })=`,
+        templateRoute({ namespace, templateName: name }),
+      );
       navigate(templateRoute({ namespace, templateName: name }));
     },
     [navigate, templateRoute],

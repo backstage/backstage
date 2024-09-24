@@ -27,12 +27,19 @@ import {
   viewTechDocRouteRef,
 } from '../routes';
 import { scaffolderApi } from './api';
-import {
-  repoUrlPickerFormField,
-  scaffolderNavItem,
-  scaffolderPage,
-} from './extensions';
+
 import { formFieldsApi } from './api/FormFieldsApi';
+import {
+  scaffolderPage,
+  scaffolderNavItem,
+  repoUrlPickerFormField,
+  templateListPage,
+  selectedTemplatePage,
+  scaffolderTaskPage,
+  scaffolderListTaskPage,
+  actionsPage,
+  editPage,
+} from './extensions';
 
 /** @alpha */
 export default createFrontendPlugin({
@@ -51,9 +58,15 @@ export default createFrontendPlugin({
   }),
   extensions: [
     scaffolderApi,
+    formFieldsApi,
     scaffolderPage,
     scaffolderNavItem,
-    formFieldsApi,
     repoUrlPickerFormField,
+    templateListPage,
+    selectedTemplatePage,
+    scaffolderTaskPage,
+    scaffolderListTaskPage,
+    actionsPage,
+    editPage,
   ],
 });

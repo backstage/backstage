@@ -52,6 +52,7 @@ import { signInPageModule } from './overrides/SignInPage';
 import { convertLegacyPlugin } from '@backstage/core-compat-api';
 import { convertLegacyPageExtension } from '@backstage/core-compat-api';
 import { convertLegacyEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
+import scaffolderPlugin from '@backstage/plugin-scaffolder/alpha';
 
 /*
 
@@ -163,6 +164,7 @@ const app = createApp({
     scmModule,
     notFoundErrorPageModule,
     customHomePageModule,
+    scaffolderPlugin,
     ...collectedLegacyPlugins,
   ],
   /* Handled through config instead */

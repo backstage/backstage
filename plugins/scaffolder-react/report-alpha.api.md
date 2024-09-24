@@ -132,9 +132,66 @@ export type FormFieldExtensionData<
 };
 
 // @alpha (undocumented)
+export interface FormField {
+  // (undocumented)
+  $$type: '@backstage/scaffolder/FormField';
+}
+
+// @alpha
+export const FormFieldBlueprint: ExtensionBlueprint<{
+  kind: 'scaffolder-form-field';
+  namespace: undefined;
+  name: undefined;
+  params: {
+    field: () => Promise<FormField>;
+  };
+  output: ConfigurableExtensionDataRef<
+    () => Promise<FormField>,
+    'scaffolder.form-field-loader',
+    {}
+  >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
+    formFieldLoader: ConfigurableExtensionDataRef<
+      () => Promise<FormField>,
+      'scaffolder.form-field-loader',
+      {}
+    >;
+  };
+}>;
+
+// @alpha (undocumented)
+export type FormFieldExtensionData<
+  TReturnValue extends z.ZodType = z.ZodType,
+  TUiOptions extends z.ZodType = z.ZodType,
+> = {
+  name: string;
+  component: (
+    props: FieldExtensionComponentProps<
+      z.output<TReturnValue>,
+      z.output<TUiOptions>
+    >,
+  ) => JSX.Element | null;
+  validation?: CustomFieldValidator<
+    z.output<TReturnValue>,
+    z.output<TUiOptions>
+  >;
+  schema?: FieldSchema<z.output<TReturnValue>, z.output<TUiOptions>>;
+};
+
+// @alpha (undocumented)
 export type FormValidation = {
   [name: string]: FieldValidation | FormValidation;
 };
+
+// @alpha (undocumented)
+export interface InternalFormField<
+  TReturnValue extends z.ZodType = z.ZodType,
+  TUiOptions extends z.ZodType = z.ZodType,
+> extends FormField,
+    FormFieldExtensionData<TReturnValue, TUiOptions> {}
 
 // @alpha
 export interface ParsedTemplateSchema {
