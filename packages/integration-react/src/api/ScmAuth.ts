@@ -252,6 +252,41 @@ export class ScmAuth implements ScmAuthApi {
   }
 
   /**
+   * Creates a new ScmAuth instance that handles authentication towards Bitbucket Server.
+   *
+   * The host option determines which URLs that are handled by this instance.
+   *
+   * The default scopes are:
+   *
+   * `PUBLIC_REPOS REPOS_READ`
+   *
+   * If the additional `repoWrite` permission is requested, these scopes are added:
+   *
+   * `REPO_WRITE`
+   */
+  static forBitbucketServer(
+    bitbucketAuthApi: OAuthApi,
+    options: {
+      host: string;
+      scopeMapping?: {
+        default?: string[];
+        repoWrite?: string[];
+      };
+    },
+  ): ScmAuth {
+    return this.forBitbucket(bitbucketAuthApi, {
+      host: options.host,
+      scopeMapping: {
+        default: options.scopeMapping?.default ?? [
+          'PUBLIC_REPOS',
+          'REPOS_READ',
+        ],
+        repoWrite: options.scopeMapping?.repoWrite ?? ['REPO_WRITE'],
+      },
+    });
+  }
+
+  /**
    * Merges together multiple ScmAuth instances into one that
    * routes requests to the correct instance based on the URL.
    */
