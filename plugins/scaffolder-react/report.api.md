@@ -6,7 +6,7 @@
 /// <reference types="react" />
 
 import { ApiHolder } from '@backstage/core-plugin-api';
-import { ApiRef } from '@backstage/core-plugin-api';
+import { ApiRef } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
 import { CustomValidator } from '@rjsf/utils';
 import { ElementType } from 'react';
@@ -44,6 +44,7 @@ import { TemplatesType } from '@rjsf/utils';
 import { UIOptionsType } from '@rjsf/utils';
 import { UiSchema } from '@rjsf/utils';
 import { ValidatorType } from '@rjsf/utils';
+import { z } from 'zod';
 
 // @public
 export type Action = {
@@ -126,6 +127,18 @@ export interface FieldExtensionUiSchema<TFieldReturnValue, TUiOptions>
 }
 
 // @public
+export interface FieldSchema<TReturn, TUiOptions> {
+  // (undocumented)
+  readonly schema: CustomFieldExtensionSchema;
+  // (undocumented)
+  readonly TProps: FieldExtensionComponentProps<TReturn, TUiOptions>;
+  // @deprecated (undocumented)
+  readonly type: FieldExtensionComponentProps<TReturn, TUiOptions>;
+  // @deprecated (undocumented)
+  readonly uiOptionsType: TUiOptions;
+}
+
+// @public
 export type FormProps = Pick<
   FormProps_2,
   | 'transformErrors'
@@ -167,6 +180,15 @@ export type LogEvent = {
   id: string;
   taskId: string;
 };
+
+// @public (undocumented)
+export function makeFieldSchema<
+  TReturnType extends z.ZodType,
+  TUiOptions extends z.ZodType,
+>(options: {
+  output: (zImpl: typeof z) => TReturnType;
+  uiOptions?: (zImpl: typeof z) => TUiOptions;
+}): FieldSchema<z.output<TReturnType>, z.output<TUiOptions>>;
 
 // @public
 export type ReviewStepProps = {
@@ -566,6 +588,11 @@ export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets;
 // src/layouts/createScaffolderLayout.d.ts:17:5 - (ae-undocumented) Missing documentation for "component".
 // src/secrets/SecretsContext.d.ts:14:5 - (ae-undocumented) Missing documentation for "setSecrets".
 // src/secrets/SecretsContext.d.ts:15:5 - (ae-undocumented) Missing documentation for "secrets".
+// src/utils.d.ts:4:1 - (ae-undocumented) Missing documentation for "makeFieldSchema".
+// src/utils.d.ts:15:5 - (ae-undocumented) Missing documentation for "type".
+// src/utils.d.ts:17:5 - (ae-undocumented) Missing documentation for "uiOptionsType".
+// src/utils.d.ts:18:5 - (ae-undocumented) Missing documentation for "schema".
+// src/utils.d.ts:19:5 - (ae-undocumented) Missing documentation for "TProps".
 
 // (No @packageDocumentation comment for this package)
 ```

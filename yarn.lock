@@ -7200,6 +7200,7 @@ __metadata:
     "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/plugin-catalog": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
@@ -9944,6 +9945,16 @@ __metadata:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
+  languageName: unknown
+  linkType: soft
+
+"@internal/scaffolder@workspace:packages/scaffolder-internal":
+  version: 0.0.0-use.local
+  resolution: "@internal/scaffolder@workspace:packages/scaffolder-internal"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/plugin-scaffolder-react": "workspace:^"
+    zod: ^3.22.4
   languageName: unknown
   linkType: soft
 
