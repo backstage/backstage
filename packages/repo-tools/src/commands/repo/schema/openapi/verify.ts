@@ -22,6 +22,7 @@ import { relative as relativePath, resolve as resolvePath } from 'path';
 import { runner } from '../../../../lib/runner';
 import { paths as cliPaths } from '../../../../lib/paths';
 import {
+  OLD_SCHEMA_PATH,
   TS_MODULE,
   TS_SCHEMA_PATH,
   YAML_SCHEMA_PATH,
@@ -41,9 +42,17 @@ async function verify(directoryPath: string) {
   }
   const yaml = await loadAndValidateOpenApiYaml(openapiPath);
 
-  const schemaPath = join(directoryPath, TS_SCHEMA_PATH);
-  if (!(await fs.pathExists(schemaPath))) {
+  let schemaPath = join(directoryPath, TS_SCHEMA_PATH);
+  if (
+    !(await fs.pathExists(schemaPath)) &&
+    !(await fs.pathExists(join(directoryPath, OLD_SCHEMA_PATH)))
+  ) {
     throw new Error(`No \`${TS_SCHEMA_PATH}\` file found.`);
+  } else if (await fs.pathExists(join(directoryPath, OLD_SCHEMA_PATH))) {
+    console.warn(
+      `\`${OLD_SCHEMA_PATH}\` is deprecated. Please re-run \`yarn backstage-repo-tools package schema openapi generate\` to update it.`,
+    );
+    schemaPath = join(directoryPath, OLD_SCHEMA_PATH);
   }
 
   const schema = await import(resolvePath(join(directoryPath, TS_MODULE)));
