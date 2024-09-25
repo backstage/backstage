@@ -276,33 +276,36 @@ which uses additional API calls in order to detect whether to 'create', 'update'
         }
       }
 
-      const actions: Types.CommitAction[] = (
-        (
-          await Promise.all(
-            fileContents.map(async file =>
-              getFileAction(
-                { file, targetPath },
-                { repoID, branch: targetBranch! },
-                api,
-                ctx,
-                remoteFiles,
-                ctx.input.commitAction,
-              ).then(action => ({ file, action })),
-            ),
-          )
-        ).filter(o => o.action !== 'skip') as {
-          file: SerializedFile;
-          action: Types.CommitAction['action'];
-        }[]
-      ).map(({ file, action }) => ({
-        action,
-        filePath: targetPath
-          ? path.posix.join(targetPath, file.path)
-          : file.path,
-        encoding: 'base64',
-        content: file.content.toString('base64'),
-        execute_filemode: file.executable,
-      }));
+      const actions: Types.CommitAction[] =
+        ctx.input.commitAction === 'skip'
+          ? []
+          : (
+              (
+                await Promise.all(
+                  fileContents.map(async file =>
+                    getFileAction(
+                      { file, targetPath },
+                      { repoID, branch: targetBranch! },
+                      api,
+                      ctx,
+                      remoteFiles,
+                      ctx.input.commitAction,
+                    ).then(action => ({ file, action })),
+                  ),
+                )
+              ).filter(o => o.action !== 'skip') as {
+                file: SerializedFile;
+                action: Types.CommitAction['action'];
+              }[]
+            ).map(({ file, action }) => ({
+              action,
+              filePath: targetPath
+                ? path.posix.join(targetPath, file.path)
+                : file.path,
+              encoding: 'base64',
+              content: file.content.toString('base64'),
+              execute_filemode: file.executable,
+            }));
 
       let createBranch: boolean;
       if (actions.length) {
