@@ -3743,6 +3743,7 @@ __metadata:
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/errors": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/express": ^4.17.6
     "@types/express-serve-static-core": ^4.17.5
@@ -10311,16 +10312,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@httptoolkit/httpolyglot@npm:^2.0.1, @httptoolkit/httpolyglot@npm:^2.1.1":
-  version: 2.1.1
-  resolution: "@httptoolkit/httpolyglot@npm:2.1.1"
-  dependencies:
-    "@types/node": ^16.7.10
-  checksum: 138ccd61355de334c509e2fc4ac9ade9e1aa6aa770ed2271e0bd1d883ed815eb742d0a4de37837edd03a9a243c05d6da32c5febe970f4518c46e2d76e6ff10d5
-  languageName: node
-  linkType: hard
-
-"@httptoolkit/httpolyglot@npm:^2.2.1":
+"@httptoolkit/httpolyglot@npm:^2.0.1, @httptoolkit/httpolyglot@npm:^2.2.1":
   version: 2.2.1
   resolution: "@httptoolkit/httpolyglot@npm:2.2.1"
   dependencies:
@@ -18283,7 +18275,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^16.11.26, @types/node@npm:^16.7.10":
+"@types/node@npm:^16.11.26":
   version: 16.18.112
   resolution: "@types/node@npm:16.18.112"
   checksum: d634729e60d2e7bd951843fddf5fb59ae786ca707f384e8f90881b011076962b4e3fee3393e3be4be4fb7d86943893e0bda9650aea24ac692bdf407bf1a5d84d
@@ -21373,7 +21365,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"async@npm:^2.6.2, async@npm:^2.6.4":
+"async@npm:^2.6.4":
   version: 2.6.4
   resolution: "async@npm:2.6.4"
   dependencies:
@@ -22126,13 +22118,6 @@ __metadata:
   version: 1.1.0
   resolution: "brorand@npm:1.1.0"
   checksum: 8a05c9f3c4b46572dec6ef71012b1946db6cae8c7bb60ccd4b7dd5a84655db49fe043ecc6272e7ef1f69dc53d6730b9e2a3a03a8310509a3d797a618cbee52be
-  languageName: node
-  linkType: hard
-
-"brotli-wasm@npm:^1.1.0":
-  version: 1.3.1
-  resolution: "brotli-wasm@npm:1.3.1"
-  checksum: ec2931a989ee6f0bb52c2aabf23a0d230232d3bd69fb68ee3dab9542fc9ae2d4085d0e5338f71520c25a4a26cf1cfc991ce02910c24d63d42c7915c5722a3713
   languageName: node
   linkType: hard
 
@@ -24703,7 +24688,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:^3.1.1, debug@npm:^3.2.7":
+"debug@npm:^3.2.7":
   version: 3.2.7
   resolution: "debug@npm:3.2.7"
   dependencies:
@@ -25015,15 +25000,6 @@ __metadata:
   version: 1.2.0
   resolution: "destroy@npm:1.2.0"
   checksum: 0acb300b7478a08b92d810ab229d5afe0d2f4399272045ab22affa0d99dbaf12637659411530a6fcd597a9bdac718fc94373a61a95b4651bbc7b83684a565e38
-  languageName: node
-  linkType: hard
-
-"destroyable-server@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "destroyable-server@npm:1.0.0"
-  dependencies:
-    "@types/node": "*"
-  checksum: ac81b26f616a9d0aaa9cb759fa5a5a186f887025362329f7ddc909f53090f4aea0d1b75c4dda23e210faee536e2d7352de017261e1625b7b18108f0e630efa1f
   languageName: node
   linkType: hard
 
@@ -29331,17 +29307,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"http-encoding@npm:^1.5.1":
-  version: 1.5.1
-  resolution: "http-encoding@npm:1.5.1"
-  dependencies:
-    brotli-wasm: ^1.1.0
-    pify: ^5.0.0
-    zstd-codec: ^0.1.4
-  checksum: 534aa2facb0ae529fa88b9778867472247711626b90030fd4351572c6147fb5e895d9d2e305e7dc5cc993345f2fbdb17ca99345651bf76dbac39a07f552af2ac
-  languageName: node
-  linkType: hard
-
 "http-encoding@npm:^2.0.1":
   version: 2.0.1
   resolution: "http-encoding@npm:2.0.1"
@@ -29498,16 +29463,6 @@ __metadata:
     quick-lru: ^5.1.1
     resolve-alpn: ^1.0.0
   checksum: c2b572ded523dbf52d8107f61791b527f85e9ce03e811f452e7e3c9e59925ebd1e757c60f8b46a549778675546e8ace189091a1764eb4601db46aa51292b84d0
-  languageName: node
-  linkType: hard
-
-"http2-wrapper@npm:^2.2.0":
-  version: 2.2.0
-  resolution: "http2-wrapper@npm:2.2.0"
-  dependencies:
-    quick-lru: ^5.1.1
-    resolve-alpn: ^1.2.0
-  checksum: 6fd20e5cb6a58151715b3581e06a62a47df943187d2d1f69e538a50cccb7175dd334ecfde7900a37d18f3e13a1a199518a2c211f39860e81e9a16210c199cfaa
   languageName: node
   linkType: hard
 
@@ -34561,7 +34516,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mkdirp@npm:^0.5.1, mkdirp@npm:^0.5.4, mkdirp@npm:^0.5.5, mkdirp@npm:^0.5.6":
+"mkdirp@npm:^0.5.1, mkdirp@npm:^0.5.4, mkdirp@npm:^0.5.6":
   version: 0.5.6
   resolution: "mkdirp@npm:0.5.6"
   dependencies:
@@ -34597,7 +34552,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mockttp@npm:^3.13.0":
+"mockttp@npm:^3.13.0, mockttp@npm:^3.9.1":
   version: 3.15.2
   resolution: "mockttp@npm:3.15.2"
   dependencies:
@@ -34646,55 +34601,6 @@ __metadata:
   bin:
     mockttp: dist/admin/admin-bin.js
   checksum: 96b90e0515e7ac1b73954e9e01010424d51d9563f8e850e620b06ba864bf064401e1a1af89e103724b956bfa3bee790cb452366df100bf01122f333e04c3aee8
-  languageName: node
-  linkType: hard
-
-"mockttp@npm:^3.9.1":
-  version: 3.9.4
-  resolution: "mockttp@npm:3.9.4"
-  dependencies:
-    "@graphql-tools/schema": ^8.5.0
-    "@graphql-tools/utils": ^8.8.0
-    "@httptoolkit/httpolyglot": ^2.1.1
-    "@httptoolkit/subscriptions-transport-ws": ^0.11.2
-    "@httptoolkit/websocket-stream": ^6.0.1
-    "@types/cors": ^2.8.6
-    "@types/node": "*"
-    base64-arraybuffer: ^0.1.5
-    body-parser: ^1.15.2
-    cacheable-lookup: ^6.0.0
-    common-tags: ^1.8.0
-    connect: ^3.7.0
-    cors: ^2.8.4
-    cors-gate: ^1.1.3
-    cross-fetch: ^3.1.5
-    destroyable-server: ^1.0.0
-    express: ^4.14.0
-    graphql: ^14.0.2 || ^15.5
-    graphql-http: ^1.22.0
-    graphql-subscriptions: ^1.1.0
-    graphql-tag: ^2.12.6
-    http-encoding: ^1.5.1
-    http2-wrapper: ^2.2.0
-    https-proxy-agent: ^5.0.1
-    isomorphic-ws: ^4.0.1
-    lodash: ^4.16.4
-    lru-cache: ^7.14.0
-    native-duplexpair: ^1.0.0
-    node-forge: ^1.2.1
-    pac-proxy-agent: ^7.0.0
-    parse-multipart-data: ^1.4.0
-    performance-now: ^2.1.0
-    portfinder: 1.0.28
-    read-tls-client-hello: ^1.0.0
-    semver: ^7.5.3
-    socks-proxy-agent: ^7.0.0
-    typed-error: ^3.0.2
-    uuid: ^8.3.2
-    ws: ^8.8.0
-  bin:
-    mockttp: dist/admin/admin-bin.js
-  checksum: 2e0b984d77a94e6a754e44c85a7ff2ded13ba42fd6cabf125b677a8a57eff543c896bf3ecb522799d3efbe18733bf019fbe707044f098fdd5e8e4bc2c0b1df4f
   languageName: node
   linkType: hard
 
@@ -37200,17 +37106,6 @@ __metadata:
   version: 1.16.1-lts
   resolution: "popper.js@npm:1.16.1-lts"
   checksum: 27c00b5b07afa91a5e9f9db78a9a61b50f44ca156d09c851cd29d79cd359e54cfde4288ae555b88801438227e452e56cb4b56bd79fd45ab17dac780a70a7e9ac
-  languageName: node
-  linkType: hard
-
-"portfinder@npm:1.0.28":
-  version: 1.0.28
-  resolution: "portfinder@npm:1.0.28"
-  dependencies:
-    async: ^2.6.2
-    debug: ^3.1.1
-    mkdirp: ^0.5.5
-  checksum: 91fef602f13f8f4c64385d0ad2a36cc9dc6be0b8d10a2628ee2c3c7b9917ab4fefb458815b82cea2abf4b785cd11c9b4e2d917ac6fa06f14b6fa880ca8f8928c
   languageName: node
   linkType: hard
 
@@ -45370,13 +45265,6 @@ __metadata:
   version: 3.23.8
   resolution: "zod@npm:3.23.8"
   checksum: 15949ff82118f59c893dacd9d3c766d02b6fa2e71cf474d5aa888570c469dbf5446ac5ad562bb035bf7ac9650da94f290655c194f4a6de3e766f43febd432c5c
-  languageName: node
-  linkType: hard
-
-"zstd-codec@npm:^0.1.4":
-  version: 0.1.4
-  resolution: "zstd-codec@npm:0.1.4"
-  checksum: 8689bc0defc4f387d1be990b8b8ca8ca56690d17dfc8dd4703db798465b92a21e64e54e886acfaa376147d9d07d879a68627b09fddc34a0c93f0dc5c610a790c
   languageName: node
   linkType: hard
 
