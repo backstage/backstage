@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import fetch from 'node-fetch';
+import { overridePackagePathResolution } from '@backstage/backend-plugin-api/testUtils';
 import {
   createMockDirectory,
   mockServices,
   startTestBackend,
 } from '@backstage/backend-test-utils';
+import fetch from 'node-fetch';
 import { appPlugin } from './appPlugin';
-import { createRootLogger } from '@backstage/backend-common';
-import { overridePackagePathResolution } from '@backstage/backend-plugin-api/testUtils';
 
 const mockDir = createMockDirectory();
 overridePackagePathResolution({
@@ -31,7 +30,7 @@ overridePackagePathResolution({
 });
 
 // Make sure root logger is initialized ahead of FS mock
-createRootLogger();
+mockServices.rootLogger();
 
 describe('appPlugin', () => {
   beforeEach(() => {

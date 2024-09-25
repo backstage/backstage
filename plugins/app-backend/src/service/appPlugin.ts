@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-import express from 'express';
 import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { createRouter } from './router';
+import { ConfigSchema } from '@backstage/config-loader';
 import {
   configSchemaExtensionPoint,
   staticFallbackHandlerExtensionPoint,
 } from '@backstage/plugin-app-node';
-import { ConfigSchema } from '@backstage/config-loader';
+import express from 'express';
+import { createRouter } from './router';
 
 /**
  * The App plugin is responsible for serving the frontend app bundle and static assets.
- * @public
  */
 export const appPlugin = createBackendPlugin({
   pluginId: 'app',
