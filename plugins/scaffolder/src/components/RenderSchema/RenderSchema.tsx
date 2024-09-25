@@ -58,6 +58,7 @@ import {
   useTranslationRef,
 } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../translation';
+import { makeStyles } from '@material-ui/core/styles';
 
 const getTypes = (properties: JSONSchema7) => {
   if (!properties.type) {
@@ -105,6 +106,20 @@ const getSubschemas = (
   );
 };
 
+const useColumnStyles = makeStyles({
+  description: {
+    width: '40%',
+    whiteSpace: 'normal',
+    wordWrap: 'break-word',
+    '&.MuiTableCell-root': {
+      whiteSpace: 'normal',
+    },
+  },
+  standard: {
+    whiteSpace: 'normal',
+  },
+});
+
 type SchemaRenderElement = {
   schema: JSONSchema7Definition;
   key?: string;
@@ -124,6 +139,7 @@ type Column = {
   key: string;
   title: (t: Xlate<typeof scaffolderTranslationRef>) => string;
   render: RenderColumn;
+  className?: keyof ReturnType<typeof useColumnStyles>;
 };
 
 const generateId = (
@@ -167,6 +183,7 @@ const descriptionColumn = {
       content={get(element.schema as JSONSchema7, 'description') ?? ''}
     />
   ),
+  className: 'description',
 } as Column;
 
 const enumFrom = (schema: JSONSchema7) => {
@@ -286,6 +303,17 @@ export const RenderEnum: React.FC<{
   );
 };
 
+const useTableStyles = makeStyles({
+  schema: {
+    width: '100%',
+    overflowX: 'hidden',
+    '& table': {
+      width: '100%',
+      tableLayout: 'fixed',
+    },
+  },
+});
+
 export const RenderSchema = ({
   strategy,
   context,
@@ -296,6 +324,8 @@ export const RenderSchema = ({
   schema?: JSONSchema7Definition;
 }) => {
   const { t } = useTranslationRef(scaffolderTranslationRef);
+  const tableStyles = useTableStyles();
+  const columnStyles = useColumnStyles();
   const result = (() => {
     if (typeof schema === 'object') {
       const subschemas =
@@ -326,7 +356,7 @@ export const RenderSchema = ({
       return (
         <>
           {columns && elements && (
-            <TableContainer component={Paper}>
+            <TableContainer component={Paper} className={tableStyles.schema}>
               <Table
                 data-testid={`${strategy}_${context.parentId}`}
                 size="small"
@@ -334,7 +364,12 @@ export const RenderSchema = ({
                 <TableHead>
                   <TableRow>
                     {columns.map((col, index) => (
-                      <TableCell key={index}>{col.title(t)}</TableCell>
+                      <TableCell
+                        key={index}
+                        className={columnStyles[col.className ?? 'standard']}
+                      >
+                        {col.title(t)}
+                      </TableCell>
                     ))}
                   </TableRow>
                 </TableHead>
@@ -346,7 +381,12 @@ export const RenderSchema = ({
                       <React.Fragment key={id}>
                         <TableRow data-testid={`${strategy}-row_${id}`}>
                           {columns!.map(col => (
-                            <TableCell key={col.key}>
+                            <TableCell
+                              key={col.key}
+                              className={
+                                columnStyles[col.className ?? 'standard']
+                              }
+                            >
                               {col.render(el, context)}
                             </TableCell>
                           ))}
