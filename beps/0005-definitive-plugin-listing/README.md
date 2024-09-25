@@ -118,42 +118,6 @@ interface InstanceMetadataService {
 
 Currently, this would need to be bootstrapped directly in `BackendInitializer` or `BackstageBackend`. It may make sense to create a new `FeatureRegistry` class that can expose this instead similar to the `PluginMetadataService`.
 
-### New `DeploymentMetadataService`
-
-This will be a new service that can be provided either as a core service or a new package. The idea is that it will show all information across your entire deployment. One can imagine this hosting aggregate information around instances in the deployment, like their internal and external URLs.
-
-```ts
-interface DeploymentMetadataService {
-  getInstalledFeatures: () => BackendFeatureMeta[];
-}
-```
-
-By default, this will either
-a. be the exact same as `InstanceMetadataService` if we are not using `HostDiscovery` static config, or
-b. this will be pulled from that `HostDiscovery` static config.
-
-That would look something like,
-
-```yaml
-discovery:
-  endpoints:
-    - target: https://internal.example.com/internal-catalog
-      plugins: [catalog]
-    - target: https://internal.example.com/secure/api/{{pluginId}}
-      plugins: [auth, permission]
-    - target:
-        internal: https://internal.example.com/search
-        external: https://example.com/search
-      plugins: [search]
-```
-
-So, the above interface would return for the above config,
-
-```ts
-const installedFeatures = deploymentMetadataService.getInstalledFeatures();
-// installedFeatures = [{type: 'plugin', pluginId: 'catalog'}, {type: 'plugin', pluginId: 'auth'}, {type: 'plugin', pluginId: 'permission'}, {type: 'plugin', pluginId: 'search'}]
-```
-
 ### New HTTP API to expose `InstanceMetadataService`
 
 We also propose exposing the new services through an HTTP API, so that these can be queried.
@@ -190,7 +154,50 @@ paths:
                         moduleId: { type: string }
 ```
 
-### New HTTP API to expose `DeploymentMetadataService`
+### New `DeploymentMetadataPlugin`
+
+This will be a new core plugin that will be provided through a new package. The idea is that it will show all information across your entire deployment. One can imagine this hosting aggregate information around instances in the deployment, like their internal and external URLs.
+
+```ts
+interface DeploymentMetadataPluginExtensionPoint {
+  setInstalledFeatures: (features: BackendFeatureMeta[]) -> Promise<void>;
+}
+```
+
+By default, this will either
+a. be the exact same as `InstanceMetadataService` if we are not using `HostDiscovery` static config, or
+b. this will be pulled from the `HostDiscovery` static config.
+
+That would look something like,
+
+```yaml
+discovery:
+  endpoints:
+    - target: https://internal.example.com/internal-catalog
+      plugins: [catalog]
+    - target: https://internal.example.com/secure/api/{{pluginId}}
+      plugins: [auth, permission]
+    - target:
+        internal: https://internal.example.com/search
+        external: https://example.com/search
+      plugins: [search]
+```
+
+So, the above interface would return for the above config,
+
+```ts
+const installedFeatures = deploymentMetadataService.getInstalledFeatures();
+// installedFeatures = [{type: 'plugin', pluginId: 'catalog'}, {type: 'plugin', pluginId: 'auth'}, {type: 'plugin', pluginId: 'permission'}, {type: 'plugin', pluginId: 'search'}]
+```
+
+Of note, modules will **NOT** be returned by default with the static configuration. The default `HostDiscovery` implementation only deals with plugins, not modules.
+
+This new plugin would be designed as follows:
+
+1. `@backstage/plugin-deployment-metadata-backend`: Provides an extension point for custom deployment metadata implementations, if no module is installed, we fall back to instance metadata provided by `InstanceMetadataService`.
+2. `@backstage/plugin-deployment-metadata-backend-module-host-discovery-provider`: Provides the default implementation of the `HostDiscovery`-based static deployment metadata.
+
+### `DeploymentMetadataPlugin` API
 
 ```yaml
 paths:
@@ -232,8 +239,8 @@ This section should describe the rollout process for any new features. It must t
 If there is any particular feedback to be gathered during the rollout, this should be described here as well.
 -->
 
-- Implement the 2 new services.
-- Create a new plugin to host the HTTP APIs.
+- Implement the proposed service + plugin.
+- Create a new plugin to host the instance service HTTP API.
 
 ## Dependencies
 
