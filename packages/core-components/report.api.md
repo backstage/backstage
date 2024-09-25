@@ -15,6 +15,7 @@ import { CardHeaderProps } from '@material-ui/core/CardHeader';
 import { Column } from '@material-table/core';
 import { ComponentClass } from 'react';
 import { ComponentProps } from 'react';
+import { ComponentType } from 'react';
 import { default as CSS_2 } from 'csstype';
 import { CSSProperties } from 'react';
 import { ElementType } from 'react';
@@ -876,6 +877,9 @@ export const ProxiedSignInPage: (
 export type ProxiedSignInPageProps = SignInPageProps & {
   provider: string;
   headers?: HeadersInit | (() => HeadersInit) | (() => Promise<HeadersInit>);
+  ErrorComponent?: ComponentType<{
+    error?: Error;
+  }>;
 };
 
 // Warning: (ae-missing-release-tag) "ResponseErrorPanel" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -1748,7 +1752,7 @@ export type WarningPanelClassKey =
 // src/layout/Sidebar/config.d.ts:8:1 - (ae-undocumented) Missing documentation for "SubmenuOptions".
 // src/layout/Sidebar/config.d.ts:12:22 - (ae-undocumented) Missing documentation for "sidebarConfig".
 // src/layout/Sidebar/config.d.ts:52:22 - (ae-undocumented) Missing documentation for "SIDEBAR_INTRO_LOCAL_STORAGE".
-// src/layout/SignInPage/SignInPage.d.ts:17:1 - (ae-undocumented) Missing documentation for "SignInPage".
+// src/layout/SignInPage/SignInPage.d.ts:26:1 - (ae-undocumented) Missing documentation for "SignInPage".
 // src/layout/SignInPage/customProvider.d.ts:3:1 - (ae-undocumented) Missing documentation for "CustomProviderClassKey".
 // src/layout/SignInPage/styles.d.ts:2:1 - (ae-undocumented) Missing documentation for "SignInPageClassKey".
 // src/layout/SignInPage/types.d.ts:3:1 - (ae-undocumented) Missing documentation for "SignInProviderConfig".

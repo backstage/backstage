@@ -24,7 +24,7 @@ import { UserIdentity } from './UserIdentity';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import React, { ReactNode, useState } from 'react';
+import React, { ComponentType, ReactNode, useState } from 'react';
 import { useMountEffect } from '@react-hookz/web';
 import { Progress } from '../../components/Progress';
 import { Content } from '../Content/Content';
@@ -38,14 +38,22 @@ import { IdentityProviders, SignInProviderConfig } from './types';
 import { coreComponentsTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
-type MultiSignInPageProps = SignInPageProps & {
+type CommonSignInPageProps = SignInPageProps & {
+  /**
+   * Error component to be rendered instead of the default error panel in case
+   * sign in fails.
+   */
+  ErrorComponent?: ComponentType<{ error?: Error }>;
+};
+
+type MultiSignInPageProps = CommonSignInPageProps & {
   providers: IdentityProviders;
   title?: string;
   titleComponent?: ReactNode;
   align?: 'center' | 'left';
 };
 
-type SingleSignInPageProps = SignInPageProps & {
+type SingleSignInPageProps = CommonSignInPageProps & {
   provider: SignInProviderConfig;
   auto?: boolean;
 };
@@ -101,6 +109,7 @@ export const SingleSignInPage = ({
   provider,
   auto,
   onSignInSuccess,
+  ErrorComponent,
 }: SingleSignInPageProps) => {
   const classes = useStyles();
   const authApi = useApi(provider.apiRef);
@@ -190,11 +199,15 @@ export const SingleSignInPage = ({
               }
             >
               <Typography variant="body1">{provider.message}</Typography>
-              {error && error.name !== 'PopupRejectedError' && (
-                <Typography variant="body1" color="error">
-                  {error.message}
-                </Typography>
-              )}
+              {error &&
+                error.name !== 'PopupRejectedError' &&
+                (ErrorComponent ? (
+                  <ErrorComponent error={error} />
+                ) : (
+                  <Typography variant="body1" color="error">
+                    {error.message}
+                  </Typography>
+                ))}
             </InfoCard>
           </GridItem>
         </Grid>
