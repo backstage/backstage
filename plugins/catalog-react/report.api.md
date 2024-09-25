@@ -944,7 +944,7 @@ export function useStarredEntity(
 // src/hooks/useEntityListProvider.d.ts:6:1 - (ae-undocumented) Missing documentation for "DefaultEntityFilters".
 // src/hooks/useEntityListProvider.d.ts:19:1 - (ae-undocumented) Missing documentation for "PaginationMode".
 // src/hooks/useEntityListProvider.d.ts:21:1 - (ae-undocumented) Missing documentation for "EntityListContextProps".
-// src/hooks/useEntityListProvider.d.ts:65:1 - (ae-undocumented) Missing documentation for "EntityListProviderProps".
+// src/hooks/useEntityListProvider.d.ts:70:1 - (ae-undocumented) Missing documentation for "EntityListProviderProps".
 // src/hooks/useStarredEntities.d.ts:3:1 - (ae-undocumented) Missing documentation for "useStarredEntities".
 // src/hooks/useStarredEntity.d.ts:3:1 - (ae-undocumented) Missing documentation for "useStarredEntity".
 // src/overridableComponents.d.ts:6:1 - (ae-undocumented) Missing documentation for "CatalogReactComponentsNameToClassKey".
