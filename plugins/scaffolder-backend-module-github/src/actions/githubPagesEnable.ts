@@ -55,25 +55,31 @@ export function createGithubPagesEnableAction(options: {
         properties: {
           repoUrl: {
             title: 'Repository Location',
-            description: `Accepts the format 'github.com?repo=reponame&owner=owner' where 'reponame' is the new repository name and 'owner' is an organization or username`,
+            description:
+              'Accepts the format `github.com?repo=reponame&owner=owner` where `reponame` is the new repository name and `owner` is an organization or username',
             type: 'string',
           },
           buildType: {
             title: 'Build Type',
             type: 'string',
+            default: 'workflow',
             description:
-              'The GitHub Pages build type - "legacy" or "workflow". Default is "workflow',
+              'The GitHub Pages build type - `legacy` or `workflow`. Default is `workflow`',
+            enum: ['legacy', 'workflow'],
           },
           sourceBranch: {
             title: 'Source Branch',
             type: 'string',
+            default: 'main',
             description: 'The GitHub Pages source branch. Default is "main"',
           },
           sourcePath: {
             title: 'Source Path',
             type: 'string',
+            default: '/',
             description:
               'The GitHub Pages source path - "/" or "/docs". Default is "/"',
+            enum: ['/', '/docs'],
           },
           token: {
             title: 'Authorization Token',
