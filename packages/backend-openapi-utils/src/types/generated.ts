@@ -22,7 +22,7 @@ import { PathTemplate, ValueOf } from './common';
  */
 export type EndpointMap = Record<
   string,
-  { query?: object; body?: object; response?: object; path?: object }
+  { query?: object; body?: object; response?: object | void; path?: object }
 >;
 
 // OpenAPI generator doesn't emit regular lowercase 'delete'.

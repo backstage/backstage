@@ -23,7 +23,7 @@ import { decodeCursor } from '../util';
 import { parseEntityFilterParams } from './parseEntityFilterParams';
 import { parseEntityOrderFieldParams } from './parseEntityOrderFieldParams';
 import { parseEntityTransformParams } from './parseEntityTransformParams';
-import { GetEntitiesByQuery } from '@backstage/plugin-catalog-common/client';
+import { GetEntitiesByQuery } from '../../schema/openapi';
 
 export function parseQueryEntitiesParams(
   params: GetEntitiesByQuery['query'],

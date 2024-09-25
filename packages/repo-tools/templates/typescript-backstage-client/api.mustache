@@ -92,6 +92,7 @@ export class {{classname}}Client {
      {{/allParams}}
      */
     public async {{nickname}}(
+        // @ts-ignore
         request: {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}},
         options?: RequestOptions
     ): Promise<TypedResponse<{{{returnType}}} {{^returnType}}void{{/returnType}}>> {

@@ -30,7 +30,6 @@
   "exports": {
     ".": "./src/index.ts",
     "./alpha": "./src/alpha.ts",
-    "./client": "./src/client.ts",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
@@ -39,9 +38,6 @@
     "*": {
       "alpha": [
         "src/alpha.ts"
-      ],
-      "client": [
-        "src/client.ts"
       ],
       "package.json": [
         "package.json"

@@ -217,6 +217,7 @@ export class DefaultApiClient {
    * @param analyzeLocationRequest -
    */
   public async analyzeLocation(
+    // @ts-ignore
     request: AnalyzeLocation,
     options?: RequestOptions,
   ): Promise<TypedResponse<AnalyzeLocationResponse>> {
@@ -242,6 +243,7 @@ export class DefaultApiClient {
    * @param dryRun -
    */
   public async createLocation(
+    // @ts-ignore
     request: CreateLocation,
     options?: RequestOptions,
   ): Promise<TypedResponse<CreateLocation201Response>> {
@@ -268,6 +270,7 @@ export class DefaultApiClient {
    * @param uid -
    */
   public async deleteEntityByUid(
+    // @ts-ignore
     request: DeleteEntityByUid,
     options?: RequestOptions,
   ): Promise<TypedResponse<void>> {
@@ -293,6 +296,7 @@ export class DefaultApiClient {
    * @param id -
    */
   public async deleteLocation(
+    // @ts-ignore
     request: DeleteLocation,
     options?: RequestOptions,
   ): Promise<TypedResponse<void>> {
@@ -323,6 +327,7 @@ export class DefaultApiClient {
    * @param order -
    */
   public async getEntities(
+    // @ts-ignore
     request: GetEntities,
     options?: RequestOptions,
   ): Promise<TypedResponse<Array<Entity>>> {
@@ -355,6 +360,7 @@ export class DefaultApiClient {
    * @param fullTextFilterFields - A comma separated list of fields to sort returned results by.
    */
   public async getEntitiesByQuery(
+    // @ts-ignore
     request: GetEntitiesByQuery,
     options?: RequestOptions,
   ): Promise<TypedResponse<EntitiesQueryResponse>> {
@@ -381,6 +387,7 @@ export class DefaultApiClient {
    * @param getEntitiesByRefsRequest -
    */
   public async getEntitiesByRefs(
+    // @ts-ignore
     request: GetEntitiesByRefs,
     options?: RequestOptions,
   ): Promise<TypedResponse<EntitiesBatchResponse>> {
@@ -409,6 +416,7 @@ export class DefaultApiClient {
    * @param name -
    */
   public async getEntityAncestryByName(
+    // @ts-ignore
     request: GetEntityAncestryByName,
     options?: RequestOptions,
   ): Promise<TypedResponse<EntityAncestryResponse>> {
@@ -438,6 +446,7 @@ export class DefaultApiClient {
    * @param name -
    */
   public async getEntityByName(
+    // @ts-ignore
     request: GetEntityByName,
     options?: RequestOptions,
   ): Promise<TypedResponse<Entity>> {
@@ -465,6 +474,7 @@ export class DefaultApiClient {
    * @param uid -
    */
   public async getEntityByUid(
+    // @ts-ignore
     request: GetEntityByUid,
     options?: RequestOptions,
   ): Promise<TypedResponse<Entity>> {
@@ -491,6 +501,7 @@ export class DefaultApiClient {
    * @param filter - Filter for just the entities defined by this filter.
    */
   public async getEntityFacets(
+    // @ts-ignore
     request: GetEntityFacets,
     options?: RequestOptions,
   ): Promise<TypedResponse<EntityFacetsResponse>> {
@@ -516,6 +527,7 @@ export class DefaultApiClient {
    * @param id -
    */
   public async getLocation(
+    // @ts-ignore
     request: GetLocation,
     options?: RequestOptions,
   ): Promise<TypedResponse<Location>> {
@@ -543,6 +555,7 @@ export class DefaultApiClient {
    * @param name -
    */
   public async getLocationByEntity(
+    // @ts-ignore
     request: GetLocationByEntity,
     options?: RequestOptions,
   ): Promise<TypedResponse<Location>> {
@@ -569,6 +582,7 @@ export class DefaultApiClient {
    * Get all locations
    */
   public async getLocations(
+    // @ts-ignore
     request: GetLocations,
     options?: RequestOptions,
   ): Promise<TypedResponse<Array<GetLocations200ResponseInner>>> {
@@ -592,6 +606,7 @@ export class DefaultApiClient {
    * @param refreshEntityRequest -
    */
   public async refreshEntity(
+    // @ts-ignore
     request: RefreshEntity,
     options?: RequestOptions,
   ): Promise<TypedResponse<void>> {
@@ -616,6 +631,7 @@ export class DefaultApiClient {
    * @param validateEntityRequest -
    */
   public async validateEntity(
+    // @ts-ignore
     request: ValidateEntity,
     options?: RequestOptions,
   ): Promise<TypedResponse<void>> {

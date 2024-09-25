@@ -48,7 +48,7 @@
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
     "fuzz": "backstage-repo-tools package schema openapi fuzz",
-    "generate": "backstage-repo-tools package schema openapi generate --server --client-package plugins/search-common",
+    "generate": "backstage-repo-tools package schema openapi generate --server",
     "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
