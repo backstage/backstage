@@ -27,8 +27,8 @@ type ExtendedPackageJSON = Package['packageJson'] & {
 
 const desiredLocalVersionsOfDependencies = {
   '@types/react': '^18.0.0',
-  react: '^18.0.0',
-  'react-dom': '^18.0.0',
+  react: '^18.0.2',
+  'react-dom': '^18.0.2',
   'react-router-dom': '^6.3.0',
 };
 
@@ -55,6 +55,10 @@ const isDevDependency = (dep: string, packageJson: ExtendedPackageJSON) => {
   return !!packageJson.devDependencies?.[dep];
 };
 
+const isProdDependency = (dep: string, packageJson: ExtendedPackageJSON) => {
+  return !!packageJson.dependencies?.[dep];
+};
+
 const isPeerDependency = (dep: string, packageJson: ExtendedPackageJSON) => {
   return !!packageJson.peerDependencies?.[dep];
 };
@@ -62,6 +66,16 @@ const isPeerDependency = (dep: string, packageJson: ExtendedPackageJSON) => {
 const isStandaloneApplication = (packageJson: ExtendedPackageJSON) => {
   return ['cli', 'frontend', 'backend'].includes(
     packageJson.backstage?.role || '',
+  );
+};
+
+const matchesDependency = (dep: string, packageJson: ExtendedPackageJSON) => {
+  return (
+    packageJson.devDependencies &&
+    packageJson.devDependencies[dep] ===
+      desiredLocalVersionsOfDependencies[
+        dep as keyof typeof desiredLocalVersionsOfDependencies
+      ]
   );
 };
 
@@ -138,11 +152,19 @@ export default async ({ fix }: { fix: boolean }) => {
             `Peer dependency ${dep} in ${pkg.packageJson.name} is not listed as a devDependency`,
           );
           attemptToApplyFix(() => {
+            delete packageJson.dependencies?.[dep];
             packageJson.devDependencies = packageJson.devDependencies || {};
             packageJson.devDependencies[dep] =
               desiredLocalVersionsOfDependencies[
                 dep as keyof typeof desiredLocalVersionsOfDependencies
               ];
+          });
+        } else if (isProdDependency(dep, packageJson)) {
+          console.error(
+            `Peer dependency ${dep} in ${pkg.packageJson.name} is listed as a dependency`,
+          );
+          attemptToApplyFix(() => {
+            delete packageJson.dependencies?.[dep];
           });
         }
 
@@ -165,6 +187,19 @@ export default async ({ fix }: { fix: boolean }) => {
               }
             }
           }
+        }
+
+        if (!matchesDependency(dep, packageJson)) {
+          console.error(
+            `Incorrect dependency ${dep} in ${pkg.packageJson.name}`,
+          );
+          attemptToApplyFix(() => {
+            packageJson.devDependencies = packageJson.devDependencies || {};
+            packageJson.devDependencies[dep] =
+              desiredLocalVersionsOfDependencies[
+                dep as keyof typeof desiredLocalVersionsOfDependencies
+              ];
+          });
         }
 
         if (!matchesPeerDependency(dep, packageJson)) {

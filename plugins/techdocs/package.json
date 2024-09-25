@@ -98,7 +98,6 @@
     "@testing-library/react": "^16.0.0",
     "@testing-library/user-event": "^14.0.0",
     "@types/dompurify": "^3.0.0",
-    "@types/event-source-polyfill": "^1.0.0",
     "@types/react": "^18.0.0",
     "canvas": "^2.10.2",
     "react": "^18.0.2",

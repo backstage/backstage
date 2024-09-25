@@ -36,8 +36,7 @@
     "@backstage/frontend-app-api": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/plugin-app": "workspace:^",
-    "@react-hookz/web": "^24.0.0",
-    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0"
+    "@react-hookz/web": "^24.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
