@@ -38,6 +38,10 @@ export async function startBackend(options: StartBackendOptions) {
 
     await waitForExit();
   } else {
+    console.warn(
+      'LEGACY_BACKEND_START is deprecated and will be removed in a future release',
+    );
+
     const waitForExit = await cleanDistAndServeBackend({
       entry: 'src/index',
       checksEnabled: options.checksEnabled,
@@ -55,15 +59,9 @@ export async function startBackendPlugin(options: StartBackendOptions) {
     const hasDevIndexEntry = await fs.pathExists(
       paths.resolveTarget('dev', 'index.ts'),
     );
-    const hasSrcIndexEntry = await fs.pathExists(
-      paths.resolveTarget('src', 'run.ts'),
-    );
-
-    if (!hasDevIndexEntry && !hasSrcIndexEntry) {
+    if (!hasDevIndexEntry) {
       console.warn(
-        hasSrcIndexEntry
-          ? `The 'dev' directory is missing. The plugin might not be updated for the new backend system. To run, use "LEGACY_BACKEND_START=1 yarn start".`
-          : `The 'dev' directory is missing. Please create a proper dev/index.ts in order to start the plugin.`,
+        `The 'dev' directory is missing. Please create a proper dev/index.ts in order to start the plugin.`,
       );
       return;
     }
@@ -85,6 +83,9 @@ export async function startBackendPlugin(options: StartBackendOptions) {
       );
       return;
     }
+    console.warn(
+      'LEGACY_BACKEND_START is deprecated and will be removed in a future release',
+    );
 
     const waitForExit = await cleanDistAndServeBackend({
       entry: 'src/run',

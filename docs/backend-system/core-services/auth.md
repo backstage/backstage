@@ -73,7 +73,8 @@ router.get('/makes-calls', async (req, res) => {
     onBehalfOf: await httpAuth.credentials(req),
     targetPluginId: 'catalog',
   });
-  // make a call using the token
+});
+// make a call using the token
 ```
 
 This ensures that the original caller and their associated permissions are
@@ -106,7 +107,7 @@ objects. For example checking what type of principal (caller type - e.g. user or
 service) they represent. For example:
 
 ```ts
-if (auth.isPrincipal(credentials, 'user)) {
+if (auth.isPrincipal(credentials, 'user')) {
   // In here, the TypeScript type of the credentials object has been properly
   // narrowed to `BackstageCredentials<BackstageUserPrincipal>` so you can
   // access its specific properties such as `credentials.principal.userEntityRef`.

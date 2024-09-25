@@ -1,5 +1,40 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
+## 1.1.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.15.1-next.0
+  - @backstage/core-plugin-api@1.10.0-next.0
+  - @backstage/integration@1.15.0
+  - @backstage/integration-react@1.1.32-next.0
+  - @backstage/plugin-techdocs-react@1.2.9-next.0
+
+## 1.1.14
+
+### Patch Changes
+
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.15.0
+  - @backstage/plugin-techdocs-react@1.2.8
+  - @backstage/integration-react@1.1.31
+  - @backstage/integration@1.15.0
+  - @backstage/core-plugin-api@1.9.4
+
+## 1.1.14-next.2
+
+### Patch Changes
+
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.14.11-next.1
+  - @backstage/integration-react@1.1.31-next.0
+  - @backstage/integration@1.15.0-next.0
+  - @backstage/core-plugin-api@1.9.4-next.0
+  - @backstage/plugin-techdocs-react@1.2.8-next.2
+
 ## 1.1.14-next.1
 
 ### Patch Changes

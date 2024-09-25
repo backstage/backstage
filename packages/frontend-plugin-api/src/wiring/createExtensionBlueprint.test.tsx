@@ -27,16 +27,14 @@ import {
 } from './createExtensionDataRef';
 import { createExtensionInput } from './createExtensionInput';
 import { RouteRef } from '../routing';
-import {
-  ExtensionDefinition,
-  toInternalExtensionDefinition,
-} from './createExtension';
+import { ExtensionDefinition } from './createExtension';
 import { createExtensionDataContainer } from './createExtensionDataContainer';
+import { OpaqueExtensionDefinition } from '@internal/frontend';
 
 function unused(..._any: any[]) {}
 
 function factoryOutput(ext: ExtensionDefinition, inputs: unknown = undefined) {
-  const int = toInternalExtensionDefinition(ext);
+  const int = OpaqueExtensionDefinition.toInternal(ext);
   if (int.version !== 'v2') {
     throw new Error('Expected v2 extension');
   }
@@ -682,7 +680,7 @@ describe('createExtensionBlueprint', () => {
       },
     });
 
-    const ext = toInternalExtensionDefinition(
+    const ext = OpaqueExtensionDefinition.toInternal(
       blueprint.makeWithOverrides({
         output: [testDataRef2],
         factory(origFactory) {
@@ -837,5 +835,233 @@ describe('createExtensionBlueprint', () => {
         }),
       ),
     ).toEqual([testDataRef1('foo'), testDataRef2('bar')]);
+  });
+
+  it('should be possible to override extensions resulting from .make', () => {
+    const testDataRef1 = createExtensionDataRef<string>().with({ id: 'test1' });
+    const testDataRef2 = createExtensionDataRef<string>().with({ id: 'test2' });
+
+    function getOutputs(ext: ExtensionDefinition) {
+      const tester = createExtensionTester(ext);
+      return {
+        test1: tester.get(testDataRef1),
+        test2: tester.get(testDataRef2),
+      };
+    }
+
+    const blueprint = createExtensionBlueprint({
+      kind: 'test-extension',
+      attachTo: { id: 'test', input: 'default' },
+      output: [testDataRef1, testDataRef2],
+      *factory(params: { test1: string; test2: string }) {
+        yield testDataRef1(params.test1);
+        yield testDataRef2(params.test2);
+      },
+    });
+
+    const extension = blueprint.make({
+      params: {
+        test1: 'orig-1',
+        test2: 'orig-2',
+      },
+    });
+
+    expect(getOutputs(extension)).toEqual({
+      test1: 'orig-1',
+      test2: 'orig-2',
+    });
+
+    expect(
+      getOutputs(
+        extension.override({
+          params: {
+            test1: 'override-1',
+            test2: 'override-2',
+          },
+        }),
+      ),
+    ).toEqual({
+      test1: 'override-1',
+      test2: 'override-2',
+    });
+
+    // Partial override
+    expect(
+      getOutputs(
+        extension.override({
+          params: {
+            test2: 'override-2',
+          },
+        }),
+      ),
+    ).toEqual({
+      test1: 'orig-1',
+      test2: 'override-2',
+    });
+
+    expect(
+      getOutputs(
+        extension.override({
+          factory(origFactory) {
+            return origFactory({
+              params: {
+                test1: 'override-1',
+                test2: 'override-2',
+              },
+            });
+          },
+        }),
+      ),
+    ).toEqual({
+      test1: 'override-1',
+      test2: 'override-2',
+    });
+
+    // Partial override via factory
+    expect(
+      getOutputs(
+        extension.override({
+          factory(origFactory) {
+            return origFactory({
+              params: {
+                test2: 'override-2',
+              },
+            });
+          },
+        }),
+      ),
+    ).toEqual({
+      test1: 'orig-1',
+      test2: 'override-2',
+    });
+
+    expect(() =>
+      getOutputs(
+        extension.override({
+          params: {
+            test1: 'override-1',
+            test2: 'override-2',
+          },
+          factory(origFactory) {
+            return origFactory();
+          },
+        }),
+      ),
+    ).toThrow('Refused to override params and factory at the same time');
+  });
+
+  it('should be possible to override extensions resulting from .makeWithOverrides', () => {
+    const testDataRef1 = createExtensionDataRef<string>().with({ id: 'test1' });
+    const testDataRef2 = createExtensionDataRef<string>().with({ id: 'test2' });
+
+    function getOutputs(ext: ExtensionDefinition) {
+      const tester = createExtensionTester(ext);
+      return {
+        test1: tester.get(testDataRef1),
+        test2: tester.get(testDataRef2),
+      };
+    }
+
+    const blueprint = createExtensionBlueprint({
+      kind: 'test-extension',
+      attachTo: { id: 'test', input: 'default' },
+      output: [testDataRef1, testDataRef2],
+      *factory(params: { test1: string; test2: string }) {
+        yield testDataRef1(params.test1);
+        yield testDataRef2(params.test2);
+      },
+    });
+
+    const extension = blueprint.makeWithOverrides({
+      factory(origFactory) {
+        return origFactory({
+          test1: 'orig-1',
+          test2: 'orig-2',
+        });
+      },
+    });
+
+    expect(getOutputs(extension)).toEqual({
+      test1: 'orig-1',
+      test2: 'orig-2',
+    });
+
+    expect(
+      getOutputs(
+        extension.override({
+          params: {
+            test1: 'override-1',
+            test2: 'override-2',
+          },
+        }),
+      ),
+    ).toEqual({
+      test1: 'override-1',
+      test2: 'override-2',
+    });
+
+    // Partial override
+    expect(
+      getOutputs(
+        extension.override({
+          params: {
+            test2: 'override-2',
+          },
+        }),
+      ),
+    ).toEqual({
+      test1: 'orig-1',
+      test2: 'override-2',
+    });
+
+    expect(
+      getOutputs(
+        extension.override({
+          factory(origFactory) {
+            return origFactory({
+              params: {
+                test1: 'override-1',
+                test2: 'override-2',
+              },
+            });
+          },
+        }),
+      ),
+    ).toEqual({
+      test1: 'override-1',
+      test2: 'override-2',
+    });
+
+    // Partial override via factory
+    expect(
+      getOutputs(
+        extension.override({
+          factory(origFactory) {
+            return origFactory({
+              params: {
+                test2: 'override-2',
+              },
+            });
+          },
+        }),
+      ),
+    ).toEqual({
+      test1: 'orig-1',
+      test2: 'override-2',
+    });
+
+    expect(() =>
+      getOutputs(
+        extension.override({
+          params: {
+            test1: 'override-1',
+            test2: 'override-2',
+          },
+          factory(origFactory) {
+            return origFactory();
+          },
+        }),
+      ),
+    ).toThrow('Refused to override params and factory at the same time');
   });
 });

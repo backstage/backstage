@@ -891,7 +891,7 @@ const scaffolderModuleCustomFilters = createBackendModule({
 const backend = createBackend();
 backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
 /* highlight-add-next-line */
-backend.add(scaffolderModuleCustomFilters());
+backend.add(scaffolderModuleCustomFilters);
 ```
 
 If you still use the legacy backend system, then you will use the `createRouter()` function of the `Scaffolder plugin`
@@ -947,3 +947,19 @@ Have in mind that changes in this form will not be saved on the template and is 
 ### Custom Field Explorer
 
 The custom filed explorer allows you to select any custom field loaded on the backstage instance and test different values and configurations.
+
+## Presentation
+
+You can configure the text of the "Back", "Review", and "Create" buttons using the `spec.presentation` field of your Software Template. You might want have a Template that doesn't "Create" something but rather "Updates" it. This feature will allow you to change it as needed. Here's an example of how to use this:
+
+```yaml
+---
+spec:
+  owner: scaffolder/maintainers
+  type: website
+  presentation:
+    buttonLabels:
+      backButtonText: 'Return'
+      createButtonText: 'Update'
+      reviewButtonText: 'Verify'
+```

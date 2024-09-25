@@ -172,6 +172,7 @@ export const scaffolderTranslationRef = createTranslationRef({
       },
       subtitle: 'Task {{taskId}}',
       cancelButtonTitle: 'Cancel',
+      retryButtonTitle: 'Retry',
       startOverButtonTitle: 'Start Over',
       hideLogsButtonTitle: 'Hide Logs',
       showLogsButtonTitle: 'Show Logs',
@@ -179,13 +180,23 @@ export const scaffolderTranslationRef = createTranslationRef({
         hideLogs: 'Hide Logs',
         showLogs: 'Show Logs',
         hideButtonBar: 'Hide Button Bar',
+        retry: 'Retry',
         showButtonBar: 'Show Button Bar',
         startOver: 'Start Over',
         cancel: 'Cancel',
       },
     },
+    templateEditorForm: {
+      stepper: {
+        emptyText: 'There are no spec parameters in the template to preview.',
+      },
+    },
     templateTypePicker: {
       title: 'Categories',
+    },
+    templateFormPage: {
+      title: 'Template Form Playground',
+      subtitle: 'Edit, preview, and try out templates and template forms',
     },
     templateEditorPage: {
       title: 'Template Editor',
@@ -214,8 +225,11 @@ export const scaffolderTranslationRef = createTranslationRef({
           title: 'Field Options',
           applyButtonTitle: 'Apply',
         },
+        fieldPreview: {
+          title: 'Field Preview',
+        },
         preview: {
-          title: 'Example Template Spec',
+          title: 'Template Spec',
         },
       },
       templateEditorBrowser: {
@@ -230,6 +244,12 @@ export const scaffolderTranslationRef = createTranslationRef({
           title: 'Load Template Directory',
           description:
             'Load a local template directory, allowing you to both edit and try executing your own template.',
+          unsupportedTooltip: 'Only supported in some Chromium-based browsers',
+        },
+        createLocal: {
+          title: 'Create New Template',
+          description:
+            'Create a local template directory, allowing you to both edit and try executing your own template.',
           unsupportedTooltip: 'Only supported in some Chromium-based browsers',
         },
         formEditor: {
@@ -261,7 +281,6 @@ export const scaffolderTranslationRef = createTranslationRef({
         otherTitle: 'Other Templates',
       },
       contentHeader: {
-        title: 'Available Templates',
         registerExistingButtonTitle: 'Register Existing Component',
         supportButtonTitle:
           'Create new software components using standard templates. Different templates create different kinds of components (services, websites, documentation, ...).',

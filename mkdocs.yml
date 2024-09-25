@@ -6,7 +6,7 @@ edit_uri: edit/master/docs
 plugins:
   - techdocs-core
 
-# For sidebar navigation on https://backstage.io/, see `microsite/sidebars.json`
+# For sidebar navigation on https://backstage.io/, see `microsite/sidebars.js`
 nav:
   - Overview:
       - What is Backstage?: 'overview/what-is-backstage.md'
@@ -48,6 +48,7 @@ nav:
           - External integrations: 'features/software-catalog/external-integrations.md'
           - Catalog Customization: 'features/software-catalog/catalog-customization.md'
           - API: 'features/software-catalog/api.md'
+          - FAQ: 'features/software-catalog/faq.md'
       - Kubernetes:
           - Overview: 'features/kubernetes/index.md'
           - Installation: 'features/kubernetes/installation.md'
@@ -84,6 +85,7 @@ nav:
           - Configuring CI/CD to generate and publish TechDocs sites: 'features/techdocs/configuring-ci-cd.md'
           - CLI: 'features/techdocs/cli.md'
           - HOW TO guides: 'features/techdocs/how-to-guides.md'
+          - Extensions: 'features/techdocs/extensions.md'
           - Troubleshooting: 'features/techdocs/troubleshooting.md'
           - FAQ: 'features/techdocs/FAQ.md'
   - Integrations:

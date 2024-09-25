@@ -15,24 +15,18 @@
  */
 
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
-import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { createFetchCatalogEntityAction } from './fetch';
 import { examples } from './fetch.examples';
 import yaml from 'yaml';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
+import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 
 describe('catalog:fetch examples', () => {
-  const getEntityByRef = jest.fn();
-  const getEntitiesByRefs = jest.fn();
-
-  const catalogClient = {
-    getEntityByRef: getEntityByRef,
-    getEntitiesByRefs: getEntitiesByRefs,
-  };
+  const catalogClient = catalogServiceMock.mock();
 
   const action = createFetchCatalogEntityAction({
-    catalogClient: catalogClient as unknown as CatalogApi,
+    catalogClient,
     auth: mockServices.auth(),
   });
 
@@ -46,13 +40,14 @@ describe('catalog:fetch examples', () => {
   const mockContext = createMockActionContext({
     secrets: { backstageToken: token },
   });
+
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
   describe('fetch single entity', () => {
     it('should return entity from catalog', async () => {
-      getEntityByRef.mockReturnValueOnce({
+      catalogClient.getEntityByRef.mockResolvedValueOnce({
         metadata: {
           namespace: 'default',
           name: 'name',
@@ -65,9 +60,10 @@ describe('catalog:fetch examples', () => {
         input: yaml.parse(examples[0].example).steps[0].input,
       });
 
-      expect(getEntityByRef).toHaveBeenCalledWith('component:default/name', {
-        token,
-      });
+      expect(catalogClient.getEntityByRef).toHaveBeenCalledWith(
+        'component:default/name',
+        { token },
+      );
       expect(mockContext.output).toHaveBeenCalledWith('entity', {
         metadata: {
           namespace: 'default',

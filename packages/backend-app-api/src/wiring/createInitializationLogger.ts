@@ -27,6 +27,7 @@ export function createInitializationLogger(
   rootLogger?: RootLoggerService,
 ): {
   onPluginStarted(pluginId: string): void;
+  onPluginFailed(pluginId: string): void;
   onAllStarted(): void;
 } {
   const logger = rootLogger?.child({ type: 'initialization' });
@@ -66,6 +67,16 @@ export function createInitializationLogger(
     onPluginStarted(pluginId: string) {
       starting.delete(pluginId);
       started.add(pluginId);
+    },
+    onPluginFailed(pluginId: string) {
+      starting.delete(pluginId);
+      const status =
+        starting.size > 0
+          ? `, waiting for ${starting.size} other plugins to finish before shutting down the process`
+          : '';
+      logger?.error(
+        `Plugin '${pluginId}' thew an error during startup${status}`,
+      );
     },
     onAllStarted() {
       logger?.info(`Plugin initialization complete${getInitStatus()}`);

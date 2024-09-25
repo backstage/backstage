@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { createApp } from '@backstage/frontend-app-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { createApp } from '../../../frontend-defaults/src/createApp';
 import { screen } from '@testing-library/react';
 import { FrontendPlugin, createFrontendPlugin } from './createFrontendPlugin';
 import { JsonObject } from '@backstage/types';
@@ -170,7 +171,9 @@ describe('createFrontendPlugin', () => {
       }
     `);
     // @ts-expect-error
-    expect(plugin.getExtension('nonexistent')).toBeUndefined();
+    expect(() => plugin.getExtension('nonexistent')).toThrow(
+      /Attempted to get non-existent extension/,
+    );
 
     await renderWithEffects(
       createTestAppRoot({

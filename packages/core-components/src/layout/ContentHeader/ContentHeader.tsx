@@ -73,10 +73,7 @@ type ContentHeaderTitleProps = {
   className?: string;
 };
 
-const ContentHeaderTitle = ({
-  title = 'Unknown page',
-  className,
-}: ContentHeaderTitleProps) => (
+const ContentHeaderTitle = ({ title, className }: ContentHeaderTitleProps) => (
   <Typography
     variant="h4"
     component="h2"

@@ -44,6 +44,7 @@ import {
   PackageGraphNode,
 } from '@backstage/cli-node';
 import { runParallelWorkers } from '../parallel';
+import { createTypeDistProject } from '../typeDistProject';
 
 // These packages aren't safe to pack in parallel since the CLI depends on them
 const UNSAFE_PACKAGES = [
@@ -211,6 +212,7 @@ export async function createDistWorkspace(
           outputs: outputs,
           logPrefix: `${chalk.cyan(relativePath(paths.targetRoot, pkg.dir))}: `,
           minify: options.minify,
+          workspacePackages: packages,
         });
       }
     }
@@ -286,6 +288,9 @@ async function moveToDistWorkspace(
       FAST_PACK_SCRIPTS.includes(pkg.packageJson.scripts?.prepack),
   );
 
+  const tsMorphProject =
+    fastPackPackages.length > 0 ? await createTypeDistProject() : undefined;
+
   // New an improved flow where we avoid calling `yarn pack`
   await Promise.all(
     fastPackPackages.map(async target => {
@@ -296,6 +301,7 @@ async function moveToDistWorkspace(
       await productionPack({
         packageDir: target.dir,
         targetDir: absoluteOutputPath,
+        project: tsMorphProject,
       });
     }),
   );

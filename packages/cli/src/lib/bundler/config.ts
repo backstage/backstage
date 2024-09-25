@@ -347,6 +347,13 @@ export async function createConfig(
   return {
     mode,
     profile: false,
+    ...(isDev
+      ? {
+          watchOptions: {
+            ignored: /node_modules/,
+          },
+        }
+      : {}),
     optimization,
     bail: false,
     performance: {

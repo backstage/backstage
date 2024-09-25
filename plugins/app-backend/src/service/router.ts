@@ -42,7 +42,7 @@ import {
   HttpAuthService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
-import { AuthenticationError } from '@backstage/errors';
+import { AuthenticationError, InputError } from '@backstage/errors';
 import { injectConfig, readFrontendConfig } from '../lib/config';
 
 // express uses mime v1 while we only have types for mime v2
@@ -220,7 +220,9 @@ export async function createRouter(
           req.method = 'GET';
           next('router');
         } else {
-          throw new Error('Invalid POST request to /');
+          throw new InputError(
+            'Invalid POST request to app-backend wildcard endpoint',
+          );
         }
       },
     );

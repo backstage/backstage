@@ -20,8 +20,8 @@ import { relative as relativePath } from 'path';
 import { buildPackages, getOutputsForRole } from '../../lib/builder';
 import { paths } from '../../lib/paths';
 import {
-  PackageGraph,
   BackstagePackage,
+  PackageGraph,
   PackageRoles,
 } from '@backstage/cli-node';
 import { runParallelWorkers } from '../../lib/parallel';
@@ -136,7 +136,8 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       packageJson: pkg.packageJson,
       outputs,
       logPrefix: `${chalk.cyan(relativePath(paths.targetRoot, pkg.dir))}: `,
-      minify: buildOptions.minify,
+      workspacePackages: packages,
+      minify: opts.minify ?? buildOptions.minify,
     };
   });
 
@@ -179,7 +180,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
         await buildBackend({
           targetDir: pkg.dir,
           skipBuildDependencies: true,
-          minify: buildOptions.minify,
+          minify: opts.minify ?? buildOptions.minify,
         });
       },
     });

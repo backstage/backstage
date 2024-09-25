@@ -18,6 +18,9 @@ import os from 'os';
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
 import tar, { CreateOptions } from 'tar';
+
+import { PackageGraph } from '@backstage/cli-node';
+
 import { createDistWorkspace } from '../../lib/packager';
 import { getEnvironmentParallelism } from '../../lib/parallel';
 import { buildPackage, Output } from '../../lib/builder';
@@ -43,6 +46,7 @@ export async function buildBackend(options: BuildBackendOptions) {
     packageJson: pkg,
     outputs: new Set([Output.cjs]),
     minify,
+    workspacePackages: await PackageGraph.listTargetPackages(),
   });
 
   const tmpDir = await fs.mkdtemp(resolvePath(os.tmpdir(), 'backstage-bundle'));

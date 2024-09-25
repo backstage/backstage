@@ -222,14 +222,7 @@ describe('CatalogTable component', () => {
     },
     {
       kind: 'location',
-      expectedColumns: [
-        'Name',
-        'Type',
-        'Targets',
-        'Description',
-        'Tags',
-        'Actions',
-      ],
+      expectedColumns: ['Name', 'Type', 'Targets', 'Actions'],
     },
     {
       kind: 'resource',

@@ -21,10 +21,14 @@ export { SidebarGroup } from './SidebarGroup';
 export type { SidebarGroupProps } from './SidebarGroup';
 export { SidebarSubmenuItem } from './SidebarSubmenuItem';
 export { SidebarSubmenu } from './SidebarSubmenu';
-export type { SidebarSubmenuProps } from './SidebarSubmenu';
+export type {
+  SidebarSubmenuProps,
+  SidebarSubmenuClassKey,
+} from './SidebarSubmenu';
 export type {
   SidebarSubmenuItemProps,
   SidebarSubmenuItemDropdownItem,
+  SidebarSubmenuItemClassKey,
 } from './SidebarSubmenuItem';
 export type { SidebarClassKey, SidebarProps } from './Bar';
 export { SidebarPage, useContent } from './Page';

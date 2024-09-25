@@ -62,7 +62,7 @@ describe('<ConsumedApisCard />', () => {
       relations: [],
     };
 
-    const { getByText } = await renderInTestApp(
+    const { getByText, getByRole, container } = await renderInTestApp(
       <Wrapper>
         <EntityProvider entity={entity}>
           <ConsumedApisCard />
@@ -77,6 +77,17 @@ describe('<ConsumedApisCard />', () => {
 
     expect(getByText(/Consumed APIs/i)).toBeInTheDocument();
     expect(getByText(/does not consume any APIs/i)).toBeInTheDocument();
+
+    // Also render external link icon
+    const externalLink = getByRole('link');
+    expect(externalLink).toHaveAttribute(
+      'href',
+      'https://backstage.io/docs/features/software-catalog/descriptor-format#specconsumesapis-optional',
+    );
+    const externalLinkIcon: HTMLElement | null = container.querySelector(
+      'svg[class*="externalLink"]',
+    );
+    expect(externalLink).toContainElement(externalLinkIcon);
   });
 
   it('shows consumed APIs', async () => {

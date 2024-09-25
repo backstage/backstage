@@ -800,7 +800,7 @@ const techdocsCustomBuildStrategy = createBackendModule({
 
 /* highlight-add-start */
 backend.add(import('@backstage/plugin-techdocs-backend/alpha'));
-backend.add(techdocsCustomBuildStrategy());
+backend.add(techdocsCustomBuildStrategy);
 /* highlight-add-end */
 
 backend.start();

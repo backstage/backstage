@@ -63,6 +63,8 @@ const mockIcons = {
   help: MockIcon,
   user: MockIcon,
   warning: MockIcon,
+  star: MockIcon,
+  unstarred: MockIcon,
 };
 
 const ErrorBoundaryFallback = ({ error }: { error: Error }) => {

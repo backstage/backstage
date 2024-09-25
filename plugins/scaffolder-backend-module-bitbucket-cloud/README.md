@@ -9,3 +9,4 @@ _This plugin was created through the Backstage CLI_
 
 - `publish:bitbucketCloud`
 - `bitbucket:pipelines:run`
+- `publish:bitbucketCloud:pull-request`

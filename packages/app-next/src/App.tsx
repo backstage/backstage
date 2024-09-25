@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { createApp } from '@backstage/frontend-app-api';
+import { createApp } from '@backstage/frontend-defaults';
 import { pagesPlugin } from './examples/pagesPlugin';
 import notFoundErrorPage from './examples/notFoundErrorPageExtension';
 import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
@@ -82,6 +82,11 @@ TODO:
 
 /* app.tsx */
 
+/**
+ * TechDocs does support the new frontend system so this conversion is not
+ * strictly necessary, but it's left here to provide a demo of the utilities for
+ * converting legacy plugins.
+ */
 const convertedTechdocsPlugin = convertLegacyPlugin(techdocsPlugin, {
   extensions: [
     // TODO: We likely also need a way to convert an entire <Route> tree similar to collectLegacyRoutes

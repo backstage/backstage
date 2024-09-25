@@ -37,10 +37,8 @@ export {
   type ConfigurableExtensionDataRef,
 } from './createExtensionDataRef';
 export {
-  createPlugin,
   createFrontendPlugin,
   type FrontendPlugin,
-  type BackstagePlugin,
   type PluginOptions,
 } from './createFrontendPlugin';
 export {
@@ -48,10 +46,6 @@ export {
   type FrontendModule,
   type CreateFrontendModuleOptions,
 } from './createFrontendModule';
-export {
-  createExtensionOverrides,
-  type ExtensionOverridesOptions,
-} from './createExtensionOverrides';
 export { type Extension } from './resolveExtensionDefinition';
 export {
   type AnyRoutes,

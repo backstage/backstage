@@ -1,5 +1,115 @@
 # @backstage/plugin-scaffolder
 
+## 1.26.0-next.0
+
+### Minor Changes
+
+- bf6eaf3: Added support for `FormFieldBlueprint` to create field extensions in the Scaffolder plugin
+- cc3f80c: Added ability to create a new local scaffolder template to ease onboarding when creating new templates.
+- 5492eb6: Added ability to link to a specific action on the actions page
+
+### Patch Changes
+
+- b2b2aa8: Fix extra divider displayed in owner list picker on list tasks page
+- 7f1f483: Create a separate route for the Scaffolder template editor and add the ability to refresh the page without closing the directory. Also, when the directory is closed, the user will stay on the editor page and can load a template folder from there.
+- 7a3d622: Create a separate route for the template form editor so we refresh it without being redirected to scaffolder edit page.
+- 4698646: Change task list created at column to show timestamp
+- 4130291: Create a separate route for the custom fields explorer so we refresh it without being redirected to scaffolder edit page.
+- 11e0752: Make it possible to manually retry the scaffolder template from the step it failed
+- 09fcd95: Update the Scaffolder template editor to quickly access installed custom fields and actions when editing a template.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.0-next.0
+  - @backstage/plugin-scaffolder-react@1.13.0-next.0
+  - @backstage/core-compat-api@0.3.1-next.0
+  - @backstage/core-components@0.15.1-next.0
+  - @backstage/core-plugin-api@1.10.0-next.0
+  - @backstage/plugin-catalog-react@1.13.1-next.0
+  - @backstage/catalog-client@1.7.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.15.0
+  - @backstage/integration-react@1.1.32-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-permission-react@0.4.27-next.0
+  - @backstage/plugin-scaffolder-common@1.5.6
+
+## 1.25.0
+
+### Minor Changes
+
+- 860ad3a: Expose styles for TemplateEditor, TemplateFormPreviewer and CustomFieldExplorer
+- 4baad34: Added support for `omitExtraData` and `liveOmit` for rjsf in the scaffolder
+- 5143616: Added EntityOwnerPicker component to the TemplateListPage to allow filtering on owner
+
+### Patch Changes
+
+- fec8b57: Updated exports to use the new type parameters for extensions and extension blueprints.
+- b0a5c9f: The `ui:options` for `OwnedEntityPicker` field are now passed to `EntityPicker`. This allows you to use any `ui:options` which `EntityPicker` accepts in the `OwnedEntityPicker` field including `allowArbitraryValues` and `defaultNamespace`.
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- 0a50d44: Updated dependency `@rjsf/utils` to `5.21.1`.
+  Updated dependency `@rjsf/core` to `5.21.1`.
+  Updated dependency `@rjsf/material-ui` to `5.21.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.21.1`.
+- fa9d8da: Updated dependency `@rjsf/utils` to `5.20.1`.
+  Updated dependency `@rjsf/core` to `5.20.1`.
+  Updated dependency `@rjsf/material-ui` to `5.20.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.20.1`.
+- 0944334: Removed duplicated titles on Scaffolder `TemplateListPage` component
+- 7976081: Added support for all request parameters in the Github create/update environment API in the Github environment create scaffolder action.
+
+  Disable MultiEntityPicker when `maxItems` limit is reached defined in `JSONSchema`
+
+- Updated dependencies
+  - @backstage/core-components@0.15.0
+  - @backstage/plugin-catalog-react@1.13.0
+  - @backstage/frontend-plugin-api@0.8.0
+  - @backstage/core-compat-api@0.3.0
+  - @backstage/integration-react@1.1.31
+  - @backstage/catalog-model@1.7.0
+  - @backstage/plugin-scaffolder-react@1.12.0
+  - @backstage/catalog-client@1.7.0
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/integration@1.15.0
+  - @backstage/core-plugin-api@1.9.4
+  - @backstage/plugin-permission-react@0.4.26
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-common@1.5.6
+
+## 1.25.0-next.2
+
+### Minor Changes
+
+- 860ad3a: Expose styles for TemplateEditor, TemplateFormPreviewer and CustomFieldExplorer
+- 4baad34: Added support for `omitExtraData` and `liveOmit` for rjsf in the scaffolder
+
+### Patch Changes
+
+- b0a5c9f: The `ui:options` for `OwnedEntityPicker` field are now passed to `EntityPicker`. This allows you to use any `ui:options` which `EntityPicker` accepts in the `OwnedEntityPicker` field including `allowArbitraryValues` and `defaultNamespace`.
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- fa9d8da: Updated dependency `@rjsf/utils` to `5.20.1`.
+  Updated dependency `@rjsf/core` to `5.20.1`.
+  Updated dependency `@rjsf/material-ui` to `5.20.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.20.1`.
+- 0944334: Removed duplicated titles on Scaffolder `TemplateListPage` component
+- Updated dependencies
+  - @backstage/core-components@0.14.11-next.1
+  - @backstage/plugin-catalog-react@1.13.0-next.2
+  - @backstage/integration-react@1.1.31-next.0
+  - @backstage/plugin-scaffolder-react@1.12.0-next.2
+  - @backstage/catalog-client@1.7.0-next.1
+  - @backstage/integration@1.15.0-next.0
+  - @backstage/core-compat-api@0.3.0-next.2
+  - @backstage/core-plugin-api@1.9.4-next.0
+  - @backstage/frontend-plugin-api@0.8.0-next.2
+  - @backstage/plugin-permission-react@0.4.26-next.0
+  - @backstage/catalog-model@1.6.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.26
+  - @backstage/plugin-scaffolder-common@1.5.5
+
 ## 1.25.0-next.1
 
 ### Patch Changes

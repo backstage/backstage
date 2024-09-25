@@ -39,6 +39,9 @@ import {
 } from '../EntityRelationsGraph';
 import { EntityRelationsGraphProps } from '../EntityRelationsGraph';
 
+/** @public */
+export type CatalogGraphCardClassKey = 'card' | 'graph';
+
 const useStyles = makeStyles<Theme, { height: number | undefined }>(
   {
     card: ({ height }) => ({

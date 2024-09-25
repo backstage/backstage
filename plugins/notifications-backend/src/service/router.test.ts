@@ -20,13 +20,12 @@ import {
 } from '@backstage/backend-common';
 import express from 'express';
 import request from 'supertest';
-
 import { createRouter } from './router';
 import { ConfigReader } from '@backstage/config';
 import { SignalsService } from '@backstage/plugin-signals-node';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import { NotificationSendOptions } from '@backstage/plugin-notifications-node';
-import { CatalogClient } from '@backstage/catalog-client';
+import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 
 function createDatabase(): PluginDatabaseManager {
   return DatabaseManager.fromConfig(
@@ -56,9 +55,7 @@ describe('createRouter', () => {
   const config = mockServices.rootConfig({
     data: { app: { baseUrl: 'http://localhost' } },
   });
-  const catalog = new CatalogClient({
-    discoveryApi: mockServices.discovery.mock(),
-  });
+  const catalog = catalogServiceMock.mock();
 
   beforeAll(async () => {
     const router = await createRouter({

@@ -16,19 +16,21 @@
 import React, { ComponentProps } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
 import { Theme, makeStyles } from '@material-ui/core/styles';
-import Star from '@material-ui/icons/Star';
-import StarBorder from '@material-ui/icons/StarBorder';
+import { StarIcon, UnstarredIcon } from '../../icons';
 
 const useStyles = makeStyles<Theme>(
-  theme => ({
+  () => ({
     icon: {
       color: '#f3ba37',
       cursor: 'pointer',
+      display: 'inline-flex',
     },
     iconBorder: {
-      color: theme.palette.text.primary,
+      color: 'inherit',
       cursor: 'pointer',
+      display: 'inline-flex',
     },
   }),
   { name: 'BackstageFavoriteToggleIcon' },
@@ -50,10 +52,13 @@ export function FavoriteToggleIcon(props: { isFavorite: boolean }) {
   const { isFavorite } = props;
   const classes = useStyles();
 
-  return isFavorite ? (
-    <Star className={classes.icon} />
-  ) : (
-    <StarBorder className={classes.iconBorder} />
+  return (
+    <Typography
+      component="span"
+      className={isFavorite ? classes.icon : classes.iconBorder}
+    >
+      {isFavorite ? <StarIcon /> : <UnstarredIcon />}
+    </Typography>
   );
 }
 
@@ -86,6 +91,7 @@ export function FavoriteToggle(
         aria-label={title}
         id={id}
         onClick={() => onChange(!value)}
+        color="inherit"
         {...iconButtonProps}
       >
         <FavoriteToggleIcon isFavorite={value} />

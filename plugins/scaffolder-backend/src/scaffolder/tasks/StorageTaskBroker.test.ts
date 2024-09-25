@@ -21,8 +21,8 @@ import {
 import { ConfigReader } from '@backstage/config';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import {
-  TaskSecrets,
   SerializedTaskEvent,
+  TaskSecrets,
 } from '@backstage/plugin-scaffolder-node';
 import { DatabaseTaskStore } from './DatabaseTaskStore';
 import { StorageTaskBroker, TaskManager } from './StorageTaskBroker';
@@ -231,6 +231,7 @@ describe('StorageTaskBroker', () => {
           id: taskId,
         }),
       ]),
+      totalTasks: 13,
     });
   });
 
@@ -243,8 +244,30 @@ describe('StorageTaskBroker', () => {
 
     const task = await storage.getTask(taskId);
 
-    const promise = broker.list({ createdBy: 'user:default/foo' });
-    await expect(promise).resolves.toEqual({ tasks: [task] });
+    const promise = broker.list({
+      filters: { createdBy: ['user:default/foo'] },
+    });
+    await expect(promise).resolves.toEqual({ tasks: [task], totalTasks: 1 });
+  });
+
+  it('should list only tasks with specific status', async () => {
+    const broker = new StorageTaskBroker(storage, logger);
+    const { taskId } = await broker.dispatch({
+      spec: { steps: [] } as unknown as TaskSpec,
+      createdBy: 'user:default/foo',
+    });
+
+    const promise = broker.list({
+      filters: { status: ['open'] },
+    });
+    await expect(promise).resolves.toEqual({
+      tasks: expect.arrayContaining([
+        expect.objectContaining({
+          id: taskId,
+        }),
+      ]),
+      totalTasks: 3,
+    });
   });
 
   it('should handle checkpoints in task state', async () => {

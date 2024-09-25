@@ -27,7 +27,7 @@ export function createPathPolicyPredicate(policyPath: string) {
     return () => true;
   }
 
-  const pathRegex = pathToRegexp(policyPath, undefined, {
+  const { regexp: pathRegex } = pathToRegexp(policyPath, {
     end: false,
   });
 

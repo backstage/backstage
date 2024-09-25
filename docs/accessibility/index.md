@@ -52,7 +52,7 @@ Running this command will use the [Lighthouse config](https://github.com/backsta
 
 :::
 
-### Use Lighthouse Github Action on your own repo
+### Use Lighthouse GitHub Action on your own repo
 
 If your Backstage plugin lives outside of the [Backstage main repository](https://github.com/backstage/backstage/), and you use GitHub Actions for continuous integration, we encourage you to add and modify the [Accessibility GitHub workflow](https://github.com/backstage/backstage/blob/master/.github/workflows/verify_accessibility.yml) to your needs.
 
