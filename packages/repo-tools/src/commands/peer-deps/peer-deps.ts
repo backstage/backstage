@@ -191,7 +191,7 @@ export default async ({ fix }: { fix: boolean }) => {
     if (fix) {
       writeFileSync(
         resolvePath(pkg.dir, 'package.json'),
-        JSON.stringify(packageJson, null, 4),
+        `${JSON.stringify(packageJson, null, 2)}\n`,
       );
     }
   }
