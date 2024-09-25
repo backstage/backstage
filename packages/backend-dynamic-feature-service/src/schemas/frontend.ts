@@ -25,7 +25,10 @@ import {
   loadCompiledConfigSchema,
 } from '@backstage/plugin-app-node';
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use {@link dynamicPluginsFeatureLoader} instead, which gathers all services and features required for dynamic plugins.
+ */
 export const dynamicPluginsFrontendSchemas = createBackendModule({
   pluginId: 'app',
   moduleId: 'core.dynamicplugins.frontendSchemas',

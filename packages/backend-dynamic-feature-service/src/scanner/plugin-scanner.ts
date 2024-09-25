@@ -35,6 +35,8 @@ export interface ScanRootResponse {
   packages: ScannedPluginPackage[];
 }
 
+export const configKey = 'dynamicPlugins';
+
 export class PluginScanner {
   private _rootDirectory?: string;
   private configUnsubscribe?: () => void;
@@ -68,7 +70,7 @@ export class PluginScanner {
   }
 
   private applyConfig(): void | never {
-    const dynamicPlugins = this.config.getOptional('dynamicPlugins');
+    const dynamicPlugins = this.config.getOptional(configKey);
     if (!dynamicPlugins) {
       this.logger.info("'dynamicPlugins' config entry not found.");
       this._rootDirectory = undefined;
