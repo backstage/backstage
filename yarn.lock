@@ -3740,7 +3740,6 @@ __metadata:
   dependencies:
     "@apidevtools/swagger-parser": ^10.1.0
     "@backstage/backend-plugin-api": "workspace:^"
-    "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/test-utils": "workspace:^"
