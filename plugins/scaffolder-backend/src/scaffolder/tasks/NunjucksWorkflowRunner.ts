@@ -375,7 +375,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
             keySuffix: string,
             fn: () => Promise<U>,
           ) {
-            const key = `v1.task.checkpoint.${step.name}.${step.id}.${keySuffix}`;
+            const key = `v1.task.checkpoint.${step.id}.${keySuffix}`;
             try {
               let prevValue: U | undefined;
               if (prevTaskState) {

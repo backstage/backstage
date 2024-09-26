@@ -601,11 +601,11 @@ describe('NunjucksWorkflowRunner', () => {
           return Promise.resolve({
             state: {
               checkpoints: {
-                ['v1.task.checkpoint.name.test.key1']: {
+                ['v1.task.checkpoint.test.key1']: {
                   status: 'success',
                   value: 'initial',
                 },
-                ['v1.task.checkpoint.name.test2.key2']: {
+                ['v1.task.checkpoint.test2.key2']: {
                   status: 'failed',
                   reason: 'fatal error',
                 },
