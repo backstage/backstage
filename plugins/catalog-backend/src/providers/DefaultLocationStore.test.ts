@@ -17,13 +17,13 @@
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { ANNOTATION_ORIGIN_LOCATION } from '@backstage/catalog-model';
 import { v4 as uuid } from 'uuid';
-import { applyDatabaseMigrations } from '../../database/migrations';
+import { applyDatabaseMigrations } from '../database/migrations';
 import {
   DbFinalEntitiesRow,
   DbLocationsRow,
   DbRefreshStateRow,
   DbSearchRow,
-} from '../../database/tables';
+} from '../database/tables';
 import { DefaultLocationStore } from './DefaultLocationStore';
 
 jest.setTimeout(60_000);

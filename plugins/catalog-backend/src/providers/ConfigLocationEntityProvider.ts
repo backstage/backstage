@@ -16,12 +16,12 @@
 
 import { Config } from '@backstage/config';
 import path from 'path';
-import { getEntityLocationRef } from '../../processing/util';
+import { getEntityLocationRef } from '../processing/util';
 import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
-import { locationSpecToLocationEntity } from '../../util/conversion';
+import { locationSpecToLocationEntity } from '../util/conversion';
 
 export class ConfigLocationEntityProvider implements EntityProvider {
   constructor(private readonly config: Config) {}
