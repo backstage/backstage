@@ -16,15 +16,32 @@
 
 import os from 'os';
 import fs from 'fs-extra';
-import { join as joinPath } from 'path';
+import { join as joinPath, dirname } from 'path';
 import { OptionValues } from 'commander';
 import inquirer from 'inquirer';
+import { parse } from 'yaml';
 import { FactoryRegistry } from '../../lib/new/FactoryRegistry';
 import { isMonoRepo } from '@backstage/cli-node';
 import { paths } from '../../lib/paths';
 import { assertError } from '@backstage/errors';
 import { Task } from '../../lib/tasks';
 import defaultTemplates from '../../../templates/alpha/all-default-templates';
+
+type ConfigurablePrompt =
+  | {
+      id: string;
+      prompt: string;
+      default?: string | boolean;
+    }
+  | string;
+
+interface Template {
+  description?: string;
+  template: string;
+  targetPath: string;
+  prompts?: ConfigurablePrompt[];
+  additionalActions?: string[];
+}
 
 interface TemplateLocation {
   id: string;
@@ -79,12 +96,29 @@ async function templateSelector(
   return answer.name;
 }
 
+async function verifyTemplate({ target }: TemplateLocation): Promise<Template> {
+  if (target.startsWith('http')) {
+    throw new Error('🚨 WIP');
+  }
+  const template = parse(fs.readFileSync(target, 'utf-8'));
+  const templatePath = paths.resolveTargetRoot(
+    dirname(target),
+    template.template,
+  );
+  if (!fs.existsSync(templatePath)) {
+    throw new Error(
+      `Your CLI template skeleton does not exist: ${templatePath}`,
+    );
+  }
+  return template;
+}
+
 export default async () => {
   const pkgJson = await fs.readJson(paths.resolveTargetRoot('package.json'));
   const cliConfig = pkgJson.backstage?.cli;
 
   const { templates, globals } = await readCliConfig(cliConfig);
-  const template = await templateSelector(templates);
+  const template = await verifyTemplate(await templateSelector(templates));
   console.log(template, globals);
 
   // let defaultVersion = '0.1.0';
