@@ -22,7 +22,7 @@ import {
 } from '@backstage/integration';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { CatalogProcessor } from '@backstage/plugin-catalog-node';
-import { findCodeOwnerByTarget } from './lib';
+import { findCodeOwnerByTarget } from './codeowners';
 import { LoggerService, UrlReaderService } from '@backstage/backend-plugin-api';
 
 const ALLOWED_KINDS = ['API', 'Component', 'Domain', 'Resource', 'System'];

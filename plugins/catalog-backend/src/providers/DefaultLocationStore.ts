@@ -22,14 +22,14 @@ import {
   DbLocationsRow,
   DbRefreshStateRow,
   DbSearchRow,
-} from '../../database/tables';
-import { getEntityLocationRef } from '../../processing/util';
+} from '../database/tables';
+import { getEntityLocationRef } from '../processing/util';
 import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
-import { locationSpecToLocationEntity } from '../../util/conversion';
-import { LocationInput, LocationStore } from '../../service/types';
+import { locationSpecToLocationEntity } from '../util/conversion';
+import { LocationInput, LocationStore } from '../service/types';
 import {
   ANNOTATION_ORIGIN_LOCATION,
   CompoundEntityRef,
