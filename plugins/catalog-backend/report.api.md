@@ -543,8 +543,8 @@ export class UrlReaderProcessor implements CatalogProcessor_2 {
 // src/processors/PlaceholderProcessor.d.ts:21:5 - (ae-undocumented) Missing documentation for "getProcessorName".
 // src/processors/PlaceholderProcessor.d.ts:22:5 - (ae-undocumented) Missing documentation for "preProcessEntity".
 // src/processors/UrlReaderProcessor.d.ts:5:1 - (ae-undocumented) Missing documentation for "UrlReaderProcessor".
-// src/processors/UrlReaderProcessor.d.ts:11:5 - (ae-undocumented) Missing documentation for "getProcessorName".
-// src/processors/UrlReaderProcessor.d.ts:12:5 - (ae-undocumented) Missing documentation for "readLocation".
+// src/processors/UrlReaderProcessor.d.ts:12:5 - (ae-undocumented) Missing documentation for "getProcessorName".
+// src/processors/UrlReaderProcessor.d.ts:13:5 - (ae-undocumented) Missing documentation for "readLocation".
 // src/search/DefaultCatalogCollator.d.ts:11:1 - (ae-undocumented) Missing documentation for "DefaultCatalogCollator".
 // src/search/DefaultCatalogCollator.d.ts:12:5 - (ae-undocumented) Missing documentation for "discovery".
 // src/search/DefaultCatalogCollator.d.ts:13:5 - (ae-undocumented) Missing documentation for "locationTemplate".
