@@ -29,9 +29,6 @@ overridePackagePathResolution({
   path: mockDir.path,
 });
 
-// Make sure root logger is initialized ahead of FS mock
-mockServices.rootLogger();
-
 describe('appPlugin', () => {
   beforeEach(() => {
     mockDir.setContent({

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import {
   AuthService,
   DatabaseService,
@@ -231,7 +230,6 @@ export async function createRouter(
         rootDir: publicDistDir,
         assetStore: assetStore?.withNamespace('public'),
         appConfigs, // TODO(Rugvip): We should not be including the full config here
-        config,
       }),
     );
 
@@ -245,7 +243,6 @@ export async function createRouter(
       assetStore,
       staticFallbackHandler,
       appConfigs,
-      config,
     }),
   );
 
@@ -258,14 +255,12 @@ async function createEntryPointRouter({
   assetStore,
   staticFallbackHandler,
   appConfigs,
-  config,
 }: {
   logger: LoggerService;
   rootDir: string;
   assetStore?: StaticAssetsStore;
   staticFallbackHandler?: express.Handler;
   appConfigs?: AppConfig[];
-  config: RootConfigService;
 }) {
   const staticDir = resolvePath(rootDir, 'static');
 
@@ -301,8 +296,6 @@ async function createEntryPointRouter({
   if (staticFallbackHandler) {
     staticRouter.use(staticFallbackHandler);
   }
-
-  staticRouter.use(MiddlewareFactory.create({ config, logger }).notFound());
 
   router.use('/static', staticRouter);
   router.use(
