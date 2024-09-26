@@ -152,6 +152,7 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
         filterSelectedOptions
         disabled={entities?.entities?.length === 1}
         id={idSchema?.$id}
+        defaultValue={formData}
         loading={loading}
         onChange={onSelect}
         options={entities?.entities || []}

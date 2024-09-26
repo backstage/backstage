@@ -196,7 +196,7 @@ notificationService.send({
 });
 ```
 
-Refer the [API documentation](https://github.com/backstage/backstage/blob/master/plugins/notifications-node/api-report.md) for further details.
+Refer the [API documentation](https://github.com/backstage/backstage/blob/master/plugins/notifications-node/report.api.md) for further details.
 
 ### Signals
 

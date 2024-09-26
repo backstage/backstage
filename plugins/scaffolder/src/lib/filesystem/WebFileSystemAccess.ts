@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { get, set } from 'idb-keyval';
 import { TemplateDirectoryAccess, TemplateFileAccess } from './types';
 
 type WritableFileHandle = FileSystemFileHandle & {
@@ -79,12 +80,37 @@ class WebDirectoryAccess implements TemplateDirectoryAccess {
       }
     }
   }
+
+  async createFile(options: { name: string; data: string }): Promise<void> {
+    const { name, data } = options;
+    let file: FileSystemFileHandle;
+
+    // Current create template does not require support for nested directories
+    if (name.includes('/')) {
+      const [dir, path] = name.split('/');
+      const handle = await this.handle.getDirectoryHandle(dir, {
+        create: true,
+      });
+      file = await handle.getFileHandle(path, { create: true });
+    } else {
+      file = await this.handle.getFileHandle(name, {
+        create: true,
+      });
+    }
+    const writable = await file.createWritable();
+    await writable.write(data);
+    await writable.close();
+  }
 }
 
 /** @internal */
 export class WebFileSystemAccess {
   static isSupported(): boolean {
     return Boolean(showDirectoryPicker);
+  }
+
+  static fromHandle(handle: IterableDirectoryHandle) {
+    return new WebDirectoryAccess(handle);
   }
 
   static async requestDirectoryAccess(): Promise<TemplateDirectoryAccess> {
@@ -96,4 +122,17 @@ export class WebFileSystemAccess {
   }
 
   private constructor() {}
+}
+
+export class WebFileSystemStore {
+  private static readonly key = 'scalfolder-template-editor-directory';
+
+  static async getDirectory(): Promise<IterableDirectoryHandle | undefined> {
+    const directory = await get(WebFileSystemStore.key);
+    return directory.handle;
+  }
+
+  static async setDirectory(directory: TemplateDirectoryAccess | undefined) {
+    return set(WebFileSystemStore.key, directory);
+  }
 }

@@ -393,21 +393,20 @@ export async function runApiExtraction({
     );
 
     const remainingReportFiles = new Set(
-      fs
-        .readdirSync(projectFolder)
-        .filter(
-          filename =>
-            filename.match(/^(.+)-api-report\.md$/) ||
-            filename.match(/^api-report(-.+)?\.md$/),
-        ),
+      fs.readdirSync(projectFolder).filter(
+        filename =>
+          // https://regex101.com/r/QDZIV0/2
+          filename !== 'knip-report.md' &&
+          // this has to temporarily match all old api report formats
+          filename.match(/^.*?(api-)?report(-[^.-]+)?(.*?)\.md$/),
+      ),
     );
 
     for (const packageEntryPoint of packageEntryPoints) {
       const suffix =
         packageEntryPoint.name === 'index' ? '' : `-${packageEntryPoint.name}`;
-      const reportFileName = `api-report${suffix}.md`;
+      const reportFileName = `report${suffix}`;
       const reportPath = resolvePath(projectFolder, reportFileName);
-      remainingReportFiles.delete(reportFileName);
 
       const warningCountBefore = await countApiReportWarnings(reportPath);
 
@@ -485,6 +484,11 @@ export async function runApiExtraction({
         ignoreMissingEntryPoint: true,
       });
 
+      // remove extracted reports from current list
+      for (const reportConfig of extractorConfig.reportConfigs) {
+        remainingReportFiles.delete(reportConfig.fileName);
+      }
+
       // The `packageFolder` needs to point to the location within `dist-types` in order for relative
       // paths to be logged. Unfortunately the `prepare` method above derives it from the `packageJsonFullPath`,
       // which needs to point to the actual file, so we override `packageFolder` afterwards.
@@ -522,7 +526,7 @@ export async function runApiExtraction({
           ) {
             shouldLogInstructions = true;
             const match = message.text.match(
-              /Please copy the file "(.*)" to "api-report\.md"/,
+              /Please copy the file "(.*)" to "api-report\.api\.md"/,
             );
             if (match) {
               conflictingFile = match[1];

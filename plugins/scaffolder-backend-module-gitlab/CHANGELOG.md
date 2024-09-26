@@ -1,5 +1,18 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.5.1-next.0
+
+### Patch Changes
+
+- 094eaa3: Remove references to in-repo backend-common
+- f2f68cf: Updated `gitlab:group:ensureExists` action to instead use oauth client.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.5.0-next.0
+  - @backstage/backend-plugin-api@1.0.1-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.15.0
+
 ## 0.5.0
 
 ### Minor Changes

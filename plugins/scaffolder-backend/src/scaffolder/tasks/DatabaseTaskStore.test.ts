@@ -16,7 +16,7 @@
 
 import { DatabaseManager } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
-import { DatabaseTaskStore } from './DatabaseTaskStore';
+import { DatabaseTaskStore, RawDbTaskEventRow } from './DatabaseTaskStore';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { ConflictError } from '@backstage/errors';
 import { createMockDirectory } from '@backstage/backend-test-utils';
@@ -265,6 +265,48 @@ describe('DatabaseTaskStore', () => {
     expect(event.taskId).toBe(taskId);
     expect(event.body.status).toBe('failed');
     expect(event.type).toBe('log');
+  });
+
+  it('should be able to retied cancelled recoverable task', async () => {
+    const { store, manager } = await createStore();
+    const client = await manager.getClient();
+
+    const { taskId } = await store.createTask({
+      spec: {
+        EXPERIMENTAL_recovery: { EXPERIMENTAL_strategy: 'startOver' },
+      } as TaskSpec,
+      createdBy: 'me#too',
+    });
+    await store.completeTask({ taskId, status: 'cancelled', eventBody: {} });
+
+    await store.retryTask?.({ taskId });
+
+    const taskAfterRetry = await store.getTask(taskId);
+    expect(taskAfterRetry.status).toBe('open');
+
+    expect(
+      await client<RawDbTaskEventRow>('task_events')
+        .where({
+          task_id: taskId,
+          event_type: 'recovered',
+        })
+        .select(['body', 'event_type', 'task_id']),
+    ).toEqual([
+      {
+        body: JSON.stringify({ recoverStrategy: 'startOver' }),
+        event_type: 'recovered',
+        task_id: taskId,
+      },
+    ]);
+
+    expect(
+      await client<RawDbTaskEventRow>('task_events')
+        .where({
+          task_id: taskId,
+        })
+        .andWhere(q => q.whereIn('event_type', ['cancelled', 'completion']))
+        .select(['body', 'event_type', 'task_id']),
+    ).toEqual([]);
   });
 
   it('should complete the task', async () => {

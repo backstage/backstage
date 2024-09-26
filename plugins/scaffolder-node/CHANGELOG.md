@@ -1,5 +1,23 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.5.0-next.0
+
+### Minor Changes
+
+- 3ec4e6d: Added pagination support for listing of tasks and the ability to filter on several users and task statuses.
+
+### Patch Changes
+
+- 094eaa3: Remove references to in-repo backend-common
+- 11e0752: Make it possible to manually retry the scaffolder template from the step it failed
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.1-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.15.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-common@1.5.6
+
 ## 0.4.11
 
 ### Patch Changes

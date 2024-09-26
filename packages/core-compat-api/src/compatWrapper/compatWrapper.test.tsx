@@ -76,7 +76,7 @@ describe('BackwardsCompatProvider', () => {
     expect(screen.getByTestId('ctx').textContent).toMatchInlineSnapshot(`
       "plugins: test, app
       components: NotFoundErrorPage, BootErrorPage, Progress, Router, ErrorBoundaryFallback
-      icons: brokenImage, catalog, scaffolder, techdocs, search, chat, dashboard, docs, email, github, group, help, kind:api, kind:component, kind:domain, kind:group, kind:location, kind:system, kind:user, kind:resource, kind:template, user, warning, star, unstarred"
+      icons: brokenImage, catalog, scaffolder, techdocs, search, chat, dashboard, docs, email, github, group, help, kind:api, kind:component, kind:domain, kind:group, kind:location, kind:system, kind:user, kind:resource, kind:template, user, warning, star, unstarred, externalLink"
     `);
   });
 

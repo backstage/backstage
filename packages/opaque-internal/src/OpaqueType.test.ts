@@ -413,4 +413,40 @@ describe('OpaqueType', () => {
     expect(myInternal.$$type).toBe('my-type');
     expect(myInternal.version).toBe(undefined);
   });
+
+  it('should work with class implementations', () => {
+    type MyType = {
+      $$type: 'my-type';
+    };
+
+    const OpaqueMyType = OpaqueType.create<{
+      public: MyType;
+      versions: {
+        version: 'v1';
+        getX(): number;
+      };
+    }>({
+      type: 'my-type',
+      versions: ['v1'],
+    });
+
+    class MyTypeImpl {
+      getX() {
+        return 4;
+      }
+    }
+
+    const myInstance = OpaqueMyType.createInstance('v1', new MyTypeImpl());
+
+    expect(myInstance.$$type).toBe('my-type');
+
+    expect(OpaqueMyType.isType(myInstance)).toBe(true);
+
+    const myInternal = OpaqueMyType.toInternal(myInstance);
+    expect(myInternal).toBe(myInstance);
+
+    expect(myInternal.$$type).toBe('my-type');
+    expect(myInternal.version).toBe('v1');
+    expect(myInternal.getX()).toBe(4);
+  });
 });

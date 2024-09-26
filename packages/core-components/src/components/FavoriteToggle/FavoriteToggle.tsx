@@ -21,14 +21,16 @@ import { Theme, makeStyles } from '@material-ui/core/styles';
 import { StarIcon, UnstarredIcon } from '../../icons';
 
 const useStyles = makeStyles<Theme>(
-  theme => ({
+  () => ({
     icon: {
       color: '#f3ba37',
       cursor: 'pointer',
+      display: 'inline-flex',
     },
     iconBorder: {
-      color: theme.palette.text.primary,
+      color: 'inherit',
       cursor: 'pointer',
+      display: 'inline-flex',
     },
   }),
   { name: 'BackstageFavoriteToggleIcon' },
@@ -89,6 +91,7 @@ export function FavoriteToggle(
         aria-label={title}
         id={id}
         onClick={() => onChange(!value)}
+        color="inherit"
         {...iconButtonProps}
       >
         <FavoriteToggleIcon isFavorite={value} />

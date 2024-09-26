@@ -135,11 +135,10 @@ export class OpaqueType<
         : never) &
       Object, // & Object to allow for object properties too, e.g. toString()
   ): TPublic {
-    return {
-      ...(props as object),
+    return Object.assign(props as object, {
       $$type: this.#type,
       ...(version && { version }),
-    } as unknown as TPublic;
+    }) as unknown as TPublic;
   }
 
   #isThisInternalType(value: unknown): value is T['public'] & T['versions'] {

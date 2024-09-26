@@ -1,5 +1,18 @@
 # @backstage/plugin-signals-backend
 
+## 0.2.1-next.0
+
+### Patch Changes
+
+- 094eaa3: Remove references to in-repo backend-common
+- Updated dependencies
+  - @backstage/plugin-signals-node@0.1.12-next.0
+  - @backstage/plugin-events-node@0.4.1-next.0
+  - @backstage/plugin-auth-node@0.5.3-next.0
+  - @backstage/backend-plugin-api@1.0.1-next.0
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
 ## 0.2.0
 
 ### Minor Changes

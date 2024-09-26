@@ -16,9 +16,9 @@
 
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
-import { ScaffolderTemplateEditorClassKey } from './next/TemplateEditorPage/TemplateEditor';
-import { ScaffolderTemplateFormPreviewerClassKey } from './next/TemplateEditorPage/TemplateFormPreviewer';
-import { ScaffolderCustomFieldExplorerClassKey } from './next/TemplateEditorPage/CustomFieldExplorer';
+import { ScaffolderTemplateEditorClassKey } from './alpha/components/TemplateEditorPage/TemplateEditor';
+import { ScaffolderTemplateFormPreviewerClassKey } from './alpha/components/TemplateEditorPage/TemplateFormPreviewer';
+import { ScaffolderCustomFieldExplorerClassKey } from './alpha/components/TemplateEditorPage/CustomFieldExplorer';
 
 /** @public */
 export type ScaffolderReactComponentsNameToClassKey = {

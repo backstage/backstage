@@ -143,6 +143,11 @@ function reducer(draft: TaskStream, action: ReducerAction) {
     }
 
     case 'RECOVERED': {
+      draft.cancelled = false;
+      draft.completed = false;
+      draft.output = undefined;
+      draft.error = undefined;
+
       for (const stepId in draft.steps) {
         if (draft.steps.hasOwnProperty(stepId)) {
           draft.steps[stepId].startedAt = undefined;
@@ -185,12 +190,16 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
     let subscription: Subscription | undefined;
     let logPusher: NodeJS.Timeout | undefined;
     let retryCount = 1;
+    let isTaskRecoverable = false;
     const startStreamLogProcess = () =>
       scaffolderApi.getTask(taskId).then(
         task => {
           if (didCancel) {
             return;
           }
+          isTaskRecoverable =
+            task.spec.EXPERIMENTAL_recovery?.EXPERIMENTAL_strategy ===
+            'startOver';
           dispatch({ type: 'INIT', data: task });
 
           // TODO(blam): Use a normal fetch to fetch the current log for the event stream
@@ -199,7 +208,10 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
           // stream logs. Without this, if you have a lot of logs, it can look like the
           // task is being rebuilt on load as it progresses through the steps at a slower
           // rate whilst it builds the status from the event logs
-          const observable = scaffolderApi.streamLogs({ taskId });
+          const observable = scaffolderApi.streamLogs({
+            isTaskRecoverable,
+            taskId,
+          });
 
           const collectedLogEvents = new Array<LogEvent>();
 
@@ -270,12 +282,14 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
       );
     void startStreamLogProcess();
     return () => {
-      didCancel = true;
-      if (subscription) {
-        subscription.unsubscribe();
-      }
-      if (logPusher) {
-        clearInterval(logPusher);
+      if (!isTaskRecoverable) {
+        didCancel = true;
+        if (subscription) {
+          subscription.unsubscribe();
+        }
+        if (logPusher) {
+          clearInterval(logPusher);
+        }
       }
     };
   }, [scaffolderApi, dispatch, taskId]);

@@ -45,6 +45,30 @@ describe('<Link />', () => {
     });
   });
 
+  it('does not render external link icon if externalLinkIcon prop is not passed', async () => {
+    const { container } = await renderInTestApp(
+      <Link to="http://something.external">External Link</Link>,
+    );
+    const externalLink = screen.getByRole('link', {
+      name: 'External Link , Opens in a new window',
+    });
+    const externalLinkIcon = container.querySelector('svg');
+    expect(externalLink).not.toContainElement(externalLinkIcon);
+  });
+
+  it('renders external link icon if externalLinkIcon prop is passed', async () => {
+    const { container } = await renderInTestApp(
+      <Link to="http://something.external" externalLinkIcon>
+        External Link
+      </Link>,
+    );
+    const externalLink = screen.getByRole('link', {
+      name: 'External Link , Opens in a new window',
+    });
+    const externalLinkIcon = container.querySelector('svg');
+    expect(externalLink).toContainElement(externalLinkIcon);
+  });
+
   it('captures click using analytics api', async () => {
     const linkText = 'Navigate!';
     const analyticsApi = new MockAnalyticsApi();

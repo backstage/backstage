@@ -1,5 +1,22 @@
 # @backstage/repo-tools
 
+## 0.10.0-next.0
+
+### Minor Changes
+
+- 30c2be9: Update @microsoft/api-extractor and use their api report resolution.
+  Change api report format from `api-report.md` to `report.api.md`
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.1-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.8
+  - @backstage/config-loader@1.9.1
+  - @backstage/errors@1.2.4
+
 ## 0.9.7
 
 ### Patch Changes

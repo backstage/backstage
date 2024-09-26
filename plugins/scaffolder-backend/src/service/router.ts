@@ -652,6 +652,19 @@ export async function createRouter(
       await taskBroker.cancel?.(taskId);
       res.status(200).json({ status: 'cancelled' });
     })
+    .post('/v2/tasks/:taskId/retry', async (req, res) => {
+      const credentials = await httpAuth.credentials(req);
+      // Requires both read and cancel permissions
+      await checkPermission({
+        credentials,
+        permissions: [taskCreatePermission, taskReadPermission],
+        permissionService: permissions,
+      });
+
+      const { taskId } = req.params;
+      await taskBroker.retry?.(taskId);
+      res.status(201).json({ id: taskId });
+    })
     .get('/v2/tasks/:taskId/eventstream', async (req, res) => {
       const credentials = await httpAuth.credentials(req);
       await checkPermission({
@@ -687,7 +700,7 @@ export async function createRouter(
             res.write(
               `event: ${event.type}\ndata: ${JSON.stringify(event)}\n\n`,
             );
-            if (event.type === 'completion') {
+            if (event.type === 'completion' && !event.isTaskRecoverable) {
               shouldUnsubscribe = true;
             }
           }
