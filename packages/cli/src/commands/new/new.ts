@@ -18,6 +18,7 @@ import os from 'os';
 import fs from 'fs-extra';
 import { join as joinPath } from 'path';
 import { OptionValues } from 'commander';
+import inquirer from 'inquirer';
 import { FactoryRegistry } from '../../lib/new/FactoryRegistry';
 import { isMonoRepo } from '@backstage/cli-node';
 import { paths } from '../../lib/paths';
@@ -59,12 +60,32 @@ async function readCliConfig(
   };
 }
 
+async function templateSelector(
+  templates: TemplateLocation[],
+): Promise<TemplateLocation> {
+  const answer = await inquirer.prompt<{ name: TemplateLocation }>([
+    {
+      type: 'list',
+      name: 'name',
+      message: 'What do you want to create?',
+      choices: templates.map(template => {
+        return {
+          name: template.id,
+          value: template,
+        };
+      }),
+    },
+  ]);
+  return answer.name;
+}
+
 export default async () => {
   const pkgJson = await fs.readJson(paths.resolveTargetRoot('package.json'));
   const cliConfig = pkgJson.backstage?.cli;
 
   const { templates, globals } = await readCliConfig(cliConfig);
-  console.log(templates, globals);
+  const template = await templateSelector(templates);
+  console.log(template, globals);
 
   // let defaultVersion = '0.1.0';
   // if (opts.baseVersion) {
