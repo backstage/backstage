@@ -19,15 +19,12 @@ import { Content, Header, Page } from '@backstage/core-components';
 import { WebFileSystemAccess } from '../../../lib/filesystem';
 
 import { TemplateEditorIntro } from './TemplateEditorIntro';
-import { ScaffolderPageContextMenu } from '@backstage/plugin-scaffolder-react/alpha';
 import { useNavigate } from 'react-router-dom';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import {
-  actionsRouteRef,
   editorRouteRef,
   customFieldsRouteRef,
   rootRouteRef,
-  scaffolderListTaskRouteRef,
   templateFormRouteRef,
 } from '../../../routes';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -37,29 +34,20 @@ import { createExampleTemplate } from '../../../lib/filesystem/createExampleTemp
 
 export function TemplateEditorPage() {
   const navigate = useNavigate();
-  const actionsLink = useRouteRef(actionsRouteRef);
-  const tasksLink = useRouteRef(scaffolderListTaskRouteRef);
   const createLink = useRouteRef(rootRouteRef);
   const editorLink = useRouteRef(editorRouteRef);
   const customFieldsLink = useRouteRef(customFieldsRouteRef);
   const templateFormLink = useRouteRef(templateFormRouteRef);
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
-  const scaffolderPageContextMenuProps = {
-    onEditorClicked: undefined,
-    onActionsClicked: () => navigate(actionsLink()),
-    onTasksClicked: () => navigate(tasksLink()),
-    onCreateClicked: () => navigate(createLink()),
-  };
-
   return (
     <Page themeId="home">
       <Header
         title={t('templateEditorPage.title')}
+        type="Scaffolder"
+        typeLink={createLink()}
         subtitle={t('templateEditorPage.subtitle')}
-      >
-        <ScaffolderPageContextMenu {...scaffolderPageContextMenuProps} />
-      </Header>
+      />
       <Content>
         <TemplateEditorIntro
           onSelect={option => {

@@ -274,9 +274,13 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'ongoingTask.showLogsButtonTitle': 'Show Logs';
     readonly 'templateEditorForm.stepper.emptyText': 'There are no spec parameters in the template to preview.';
     readonly 'templateTypePicker.title': 'Categories';
+<<<<<<< HEAD:plugins/scaffolder/report-alpha.api.md
     readonly 'templateFormPage.title': 'Template Form Playground';
     readonly 'templateFormPage.subtitle': 'Edit, preview, and try out templates and template forms';
     readonly 'templateEditorPage.title': 'Template Editor';
+=======
+    readonly 'templateEditorPage.title': 'Manage Templates';
+>>>>>>> 0d22ec434749 (scaffolder: Rework manage templates page):plugins/scaffolder/api-report-alpha.md
     readonly 'templateEditorPage.subtitle': 'Edit, preview, and try out templates and template forms';
     readonly 'templateEditorPage.dryRunResults.title': 'Dry-run results';
     readonly 'templateEditorPage.dryRunResultsList.title': 'Result {{resultId}}';
@@ -302,7 +306,7 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templateEditorPage.templateEditorIntro.createLocal.title': 'Create New Template';
     readonly 'templateEditorPage.templateEditorIntro.createLocal.description': 'Create a local template directory, allowing you to both edit and try executing your own template.';
     readonly 'templateEditorPage.templateEditorIntro.createLocal.unsupportedTooltip': 'Only supported in some Chromium-based browsers';
-    readonly 'templateEditorPage.templateEditorIntro.formEditor.title': 'Edit Template Form';
+    readonly 'templateEditorPage.templateEditorIntro.formEditor.title': 'Template playground';
     readonly 'templateEditorPage.templateEditorIntro.formEditor.description': 'Preview and edit a template form, either using a sample template or by loading a template from the catalog.';
     readonly 'templateEditorPage.templateEditorIntro.fieldExplorer.title': 'Custom Field Explorer';
     readonly 'templateEditorPage.templateEditorIntro.fieldExplorer.description': 'View and play around with available installed custom field extensions.';

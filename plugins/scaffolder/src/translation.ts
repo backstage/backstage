@@ -199,7 +199,7 @@ export const scaffolderTranslationRef = createTranslationRef({
       subtitle: 'Edit, preview, and try out templates and template forms',
     },
     templateEditorPage: {
-      title: 'Template Editor',
+      title: 'Manage Templates',
       subtitle: 'Edit, preview, and try out templates and template forms',
       dryRunResults: {
         title: 'Dry-run results',
@@ -253,7 +253,7 @@ export const scaffolderTranslationRef = createTranslationRef({
           unsupportedTooltip: 'Only supported in some Chromium-based browsers',
         },
         formEditor: {
-          title: 'Edit Template Form',
+          title: 'Template playground',
           description:
             'Preview and edit a template form, either using a sample template or by loading a template from the catalog.',
         },
