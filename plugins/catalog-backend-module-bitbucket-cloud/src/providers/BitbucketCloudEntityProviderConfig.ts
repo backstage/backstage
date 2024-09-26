@@ -32,6 +32,7 @@ export type BitbucketCloudEntityProviderConfig = {
     repoSlug?: RegExp;
   };
   schedule?: SchedulerServiceTaskScheduleDefinition;
+  level?: 'workspace' | 'project';
 };
 
 export function readProviderConfigs(
