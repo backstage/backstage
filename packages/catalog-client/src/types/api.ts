@@ -650,6 +650,7 @@ export interface CatalogApi {
    *
    * @param entity - Entity to validate
    * @param locationRef - Location ref in format `url:http://example.com/file`
+   * @param options - Additional options
    */
   validateEntity(
     entity: Entity,

@@ -8140,6 +8140,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-user-settings@workspace:plugins/user-settings"
   dependencies:
+    "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
     "@backstage/core-compat-api": "workspace:^"

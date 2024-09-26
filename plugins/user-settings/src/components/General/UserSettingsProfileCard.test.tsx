@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,10 @@
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import React from 'react';
-import { UserSettingsIdentityCard } from './UserSettingsIdentityCard';
-import { ApiProvider } from '@backstage/core-app-api';
 import { identityApiRef } from '@backstage/core-plugin-api';
 import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
+import { ApiProvider } from '@backstage/core-app-api';
+import { UserSettingsProfileCard } from './UserSettingsProfileCard';
 
 const apiRegistry = TestApiRegistry.from(
   [
@@ -37,23 +37,38 @@ const apiRegistry = TestApiRegistry.from(
   [
     catalogApiRef,
     {
-      getEntityByRef: jest.fn(),
+      getEntityByRef: jest.fn(async () => {
+        return {
+          apiVersion: 'backstage.io/v1beta1',
+          kind: 'User',
+          metadata: {
+            name: 'Guest',
+            annotations: {},
+          },
+          spec: {
+            profile: {
+              picture: 'https://example.com/avatar.png',
+            },
+          },
+        };
+      }),
     },
   ],
 );
 
-describe('<UserSettingsIdentityCard />', () => {
-  it('displays an identity card', async () => {
+describe('<UserSettingsProfileCard />', () => {
+  it('displays avatar if it exists in user entity', async () => {
     await renderInTestApp(
       <ApiProvider apis={apiRegistry}>
-        <UserSettingsIdentityCard />
+        <UserSettingsProfileCard />
       </ApiProvider>,
       {
         mountedRoutes: { '/catalog/:namespace/:kind/:name': entityRouteRef },
       },
     );
-
-    expect(screen.getByText('test-ownership')).toBeInTheDocument();
-    expect(screen.getByText('bar/foobar')).toBeInTheDocument();
+    expect(screen.getByAltText('Profile picture')).toHaveAttribute(
+      'src',
+      'https://example.com/avatar.png',
+    );
   });
 });
