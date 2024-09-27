@@ -853,7 +853,7 @@ export class SystemXReaderProcessor implements CatalogProcessor {
       }
 
       // For this example the JSON payload is a single entity.
-      const entity: Entity = JSON.parse(await response.buffer().toString());
+      const entity: Entity = JSON.parse((await response.buffer()).toString());
       emit(processingResult.entity(location, entity));
 
       // Update the cache with the new ETag and entity used for the next run.
