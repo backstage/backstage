@@ -10,7 +10,7 @@
       "templates": [
         {
           "id": "local web plugin",
-          "target": "./packages/cli/templates/alpha/web-library-package.yaml"
+          "target": "./packages/cli/templates/web-library-package.yaml"
         }
       ]
     }
