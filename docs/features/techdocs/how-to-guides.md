@@ -892,5 +892,5 @@ Specify a file name to control the name the file will be given when it is
 downloaded:
 
 ```
-[Link text](./img/foo.jpg){: download="foo.jpg" }
+[Link text](https://example.com/foo.jpg){: download="foo.jpg" }
 ```
