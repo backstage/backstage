@@ -207,7 +207,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
 
     logger.info('Discovering catalog files in Bitbucket Cloud repositories');
 
-    const targets = await this.findCatalogFiles();
+    const targets = await this.findCatalogFiles(this.config.level);
     const entities = this.toDeferredEntities(targets);
 
     await this.connection.applyMutation({
@@ -271,7 +271,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     // Hence, we will just trigger a refresh for catalog file(s) within the repository
     // if we get notified about changes there.
 
-    const targets = await this.findCatalogFiles(repoSlug);
+    const targets = await this.findCatalogFiles('workspace', repoSlug);
 
     const { token } = await this.tokenManager!.getToken();
     const existing = await this.findExistingLocations(repoUrl, token);
@@ -334,6 +334,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
   }
 
   private async findCatalogFiles(
+    level: 'workspace' | 'project' = 'workspace',
     repoSlug?: string,
   ): Promise<IngestionTarget[]> {
     const workspace = this.config.workspace;
@@ -343,6 +344,32 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
       catalogPath.lastIndexOf('/') + 1,
     );
 
+    const optRepoFilter = repoSlug ? ` repo:${repoSlug}` : '';
+    const query = `"${catalogFilename}" path:${catalogPath}${optRepoFilter}`;
+
+    if (level === 'project') {
+      const projects = this.client
+        .listProjectsByWorkspace(workspace)
+        .iterateResults();
+
+      const results: IngestionTarget[] = [];
+
+      for await (const project of projects) {
+        const projectQuery = `${query} project:${project.key}`;
+        const result = await this.processQuery(workspace, projectQuery);
+        results.push(...result);
+      }
+
+      return results;
+    }
+
+    return this.processQuery(workspace, query);
+  }
+
+  private async processQuery(
+    workspace: string,
+    query: string,
+  ): Promise<IngestionTarget[]> {
     // load all fields relevant for creating refs later, but not more
     const fields = [
       // exclude code/content match details
@@ -358,8 +385,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
       // ...except the one we need
       '+values.file.commit.repository.links.html.href',
     ].join(',');
-    const optRepoFilter = repoSlug ? ` repo:${repoSlug}` : '';
-    const query = `"${catalogFilename}" path:${catalogPath}${optRepoFilter}`;
+
     const searchResults = this.client
       .searchCode(workspace, query, { fields })
       .iterateResults();
