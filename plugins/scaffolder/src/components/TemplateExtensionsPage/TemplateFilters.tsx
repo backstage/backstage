@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { MarkdownContent } from '@backstage/core-components';
+import { Link, MarkdownContent } from '@backstage/core-components';
 import {
   ListTemplateExtensionsResponse,
   TemplateFilter,
@@ -25,13 +25,14 @@ import Box from '@material-ui/core/Box';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import LinkIcon from '@material-ui/icons/Link';
+import { isEmpty } from 'lodash';
 import React, { useState } from 'react';
 import { scaffolderTranslationRef } from '../../translation';
+import { ExamplesTable } from '../ExamplesTable/ExamplesTable';
 import { Expanded, SchemaRenderContext } from '../RenderSchema';
 import { RenderSchema } from '../RenderSchema/RenderSchema';
 import { StyleClasses, Xlate } from './types';
-import { ExamplesTable } from '../ExamplesTable/ExamplesTable';
-import { isEmpty } from 'lodash';
 
 const FilterDetailContent = ({
   t,
@@ -130,10 +131,12 @@ export const TemplateFilters = ({
   t,
   classes,
   filters,
+  linkPage,
 }: {
   t: Xlate<typeof scaffolderTranslationRef>;
   classes: StyleClasses;
   filters: ListTemplateExtensionsResponse['filters'];
+  linkPage: string;
 }) => {
   return isEmpty(filters) ? (
     <Box data-testid="no-filters" sx={{ display: 'none' }} />
@@ -143,10 +146,21 @@ export const TemplateFilters = ({
         {t('templateExtensions.filters.title')}
       </Typography>
       {Object.entries(filters).map(([filterName, filter]) => (
-        <Box pb={4} key={filterName} id={filterName} data-testid={filterName}>
-          <Typography variant="h4" component="h2" className={classes.code}>
+        <Box pb={4} key={filterName} data-testid={filterName}>
+          <Typography
+            id={`filter_${filterName}`}
+            variant="h4"
+            component="h2"
+            className={classes.code}
+          >
             {filterName}
           </Typography>
+          <Link
+            className={classes.link}
+            to={`${linkPage}#filter_${filterName}`}
+          >
+            <LinkIcon />
+          </Link>
           <FilterDetailContent {...{ t, classes, filterName, filter }} />
         </Box>
       ))}

@@ -19,7 +19,7 @@ import {
 } from '@backstage/core-plugin-api/alpha';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 
-export type StyleClasses = ClassNameMap<'code' | 'codeRequired'>;
+export type StyleClasses = ClassNameMap<'code' | 'codeRequired' | 'link'>;
 
 export type Xlate<R> = R extends TranslationRef<any, infer M>
   ? TranslationFunction<M>

@@ -97,7 +97,17 @@ describe('TemplateExtensionsPage', () => {
 
       const bar = within(filters).getByTestId('bar');
       expect(bar).toBeInTheDocument();
-      expect(bar.id).toBe('bar');
+
+      const title = within(bar).getByText('bar');
+      expect(title).toBeInTheDocument();
+      expect(title.id).toBe('filter_bar');
+
+      const link = within(bar).getByRole('link');
+      expect(link).toBeInTheDocument();
+      expect(link).toHaveAttribute(
+        'href',
+        expect.stringMatching(new RegExp(`#${title.id}$`)),
+      );
 
       expect(queryByTestId('root_bar.input')).not.toBeInTheDocument();
       expect(queryByTestId('root_bar.arg0')).not.toBeInTheDocument();
@@ -123,7 +133,17 @@ describe('TemplateExtensionsPage', () => {
 
       const foo = within(filters).getByTestId('foo');
       expect(foo).toBeInTheDocument();
-      expect(foo.id).toBe('foo');
+
+      const title = within(foo).getByText('foo');
+      expect(title).toBeInTheDocument();
+      expect(title.id).toBe('filter_foo');
+
+      const link = within(foo).getByRole('link');
+      expect(link).toBeInTheDocument();
+      expect(link).toHaveAttribute(
+        'href',
+        expect.stringMatching(new RegExp(`#${title.id}$`)),
+      );
 
       expect(getByTestId('root_foo.input')).toBeInTheDocument();
       expect(queryByTestId('root_foo.arg0')).not.toBeInTheDocument();
@@ -162,7 +182,17 @@ describe('TemplateExtensionsPage', () => {
 
       const foo = within(filters).getByTestId('foo');
       expect(foo).toBeInTheDocument();
-      expect(foo.id).toBe('foo');
+
+      const title = within(foo).getByText('foo');
+      expect(title).toBeInTheDocument();
+      expect(title.id).toBe('filter_foo');
+
+      const link = within(foo).getByRole('link');
+      expect(link).toBeInTheDocument();
+      expect(link).toHaveAttribute(
+        'href',
+        expect.stringMatching(new RegExp(`#${title.id}$`)),
+      );
 
       expect(within(foo).getByText('foo filter')).toBeInTheDocument();
       expect(within(foo).getByTestId('root_foo.input')).toBeInTheDocument();
@@ -201,7 +231,17 @@ describe('TemplateExtensionsPage', () => {
 
       const baz = within(filters).getByTestId('baz');
       expect(baz).toBeInTheDocument();
-      expect(baz.id).toBe('baz');
+
+      const title = within(baz).getByText('baz');
+      expect(title).toBeInTheDocument();
+      expect(title.id).toBe('filter_baz');
+
+      const link = within(baz).getByRole('link');
+      expect(link).toBeInTheDocument();
+      expect(link).toHaveAttribute(
+        'href',
+        expect.stringMatching(new RegExp(`#${title.id}$`)),
+      );
 
       expect(within(baz).getByTestId('root_baz.input')).toBeInTheDocument();
       expect(within(baz).getByTestId('root_baz.arg0')).toBeInTheDocument();
@@ -280,7 +320,17 @@ describe('TemplateExtensionsPage', () => {
       const truthy = within(within(globals).getByTestId('fun')).getByTestId(
         'truthy',
       );
-      expect(within(truthy).getByText('truthy')).toBeInTheDocument();
+      const title = within(truthy).getByText('truthy');
+      expect(title).toBeInTheDocument();
+      expect(title.id).toBe('global_truthy');
+
+      const link = within(truthy).getByRole('link');
+      expect(link).toBeInTheDocument();
+      expect(link).toHaveAttribute(
+        'href',
+        expect.stringMatching(new RegExp(`#${title.id}$`)),
+      );
+
       expect(
         within(truthy).getByText('evaluate truthiness'),
       ).toBeInTheDocument();
@@ -331,7 +381,17 @@ describe('TemplateExtensionsPage', () => {
       );
       expect(msv).toBeInTheDocument();
 
-      expect(within(msv).getByText('msv')).toBeInTheDocument();
+      const title = within(msv).getByText('msv');
+      expect(title).toBeInTheDocument();
+      expect(title.id).toBe('global_msv');
+
+      const link = within(msv).getByRole('link');
+      expect(link).toBeInTheDocument();
+      expect(link).toHaveAttribute(
+        'href',
+        expect.stringMatching(new RegExp(`#${title.id}$`)),
+      );
+
       expect(
         within(msv).getByText('metasyntactic variables'),
       ).toBeInTheDocument();
