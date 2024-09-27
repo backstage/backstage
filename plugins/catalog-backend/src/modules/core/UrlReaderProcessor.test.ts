@@ -149,7 +149,7 @@ describe('UrlReaderProcessor', () => {
 
     expect(mockCache.get).toHaveBeenCalledWith('v1');
     expect(mockCache.get).toHaveBeenCalledTimes(1);
-    expect(mockCache.set).toHaveBeenCalledTimes(0);
+    expect(mockCache.set).toHaveBeenCalledTimes(1);
   });
 
   it('should fail load from url with error', async () => {

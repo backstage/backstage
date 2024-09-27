@@ -1,5 +1,14 @@
 # @backstage/plugin-techdocs
 
+## 1.10.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-react@1.1.32
+  - @backstage/plugin-catalog-react@1.13.1
+  - @backstage/core-compat-api@0.3.0
+
 ## 1.10.9
 
 ### Patch Changes

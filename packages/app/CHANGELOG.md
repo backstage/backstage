@@ -1,5 +1,32 @@
 # example-app
 
+## 0.2.102
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-react@1.1.32
+  - @backstage/plugin-catalog@1.23.1
+  - @backstage/plugin-catalog-import@0.12.4
+  - @backstage/plugin-catalog-react@1.13.1
+  - @backstage/plugin-scaffolder@1.25.1
+  - @backstage/plugin-techdocs@1.10.10
+  - @backstage/plugin-techdocs-module-addons-contrib@1.1.15
+  - @backstage/cli@0.27.1
+  - @backstage/plugin-api-docs@0.11.10
+  - @backstage/plugin-catalog-graph@0.4.10
+  - @backstage/plugin-catalog-unprocessed-entities@0.2.8
+  - @backstage/plugin-devtools@0.1.18
+  - @backstage/plugin-home@0.7.11
+  - @backstage/plugin-kubernetes@0.11.15
+  - @backstage/plugin-notifications@0.3.1
+  - @backstage/plugin-org@0.6.30
+  - @backstage/plugin-search@1.4.17
+  - @backstage/plugin-signals@0.0.10
+  - @backstage/plugin-user-settings@0.8.13
+  - @backstage/plugin-scaffolder-react@1.12.1
+  - @backstage/plugin-kubernetes-cluster@0.0.16
+
 ## 0.2.101
 
 ### Patch Changes

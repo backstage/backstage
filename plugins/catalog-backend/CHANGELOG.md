@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog-backend
 
+## 1.26.1
+
+### Patch Changes
+
+- 4c35456: Fix a bug where etags were expiring too soon in the URL reader
+
 ## 1.26.0
 
 ### Minor Changes

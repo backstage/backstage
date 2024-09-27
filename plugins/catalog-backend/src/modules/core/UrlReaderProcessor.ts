@@ -105,6 +105,7 @@ export class UrlReaderProcessor implements CatalogProcessor {
           emit(parseResult);
         }
         emit(processingResult.refresh(`${location.type}:${location.target}`));
+        await cache.set(CACHE_KEY, cacheItem);
       } else if (error.name === 'NotFoundError') {
         if (!optional) {
           emit(processingResult.notFoundError(location, message));
