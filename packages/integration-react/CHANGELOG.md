@@ -1,5 +1,11 @@
 # @backstage/integration-react
 
+## 1.1.32
+
+### Patch Changes
+
+- e88c6cc: Revert of change #26430
+
 ## 1.1.31
 
 ### Patch Changes

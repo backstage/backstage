@@ -1,5 +1,12 @@
 # @backstage/plugin-catalog-backend-module-github-org
 
+## 0.3.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend-module-github@0.7.4
+
 ## 0.3.0
 
 ### Minor Changes

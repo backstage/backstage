@@ -1,5 +1,13 @@
 # @backstage/plugin-kubernetes
 
+## 0.11.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.13.1
+  - @backstage/core-compat-api@0.3.0
+
 ## 0.11.14
 
 ### Patch Changes
