@@ -963,8 +963,8 @@ export const customEntityDataParser: CatalogProcessorParser = async function* ({
         if (json.apiVersion) {
           yield processingResult.entity(location, json as Entity);
 
-          // let's treat this like it's our custom format instead.
         } else {
+          // let's treat this like it's our custom format instead.
           yield processingResult.entity(
             location,
             makeEntityFromCustomFormatJson(json, location),
