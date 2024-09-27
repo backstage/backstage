@@ -334,7 +334,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
   }
 
   private async findCatalogFiles(
-    level: 'workspace' | 'project' = 'workspace',
+    level: 'workspace' | 'project',
     repoSlug?: string,
   ): Promise<IngestionTarget[]> {
     const workspace = this.config.workspace;

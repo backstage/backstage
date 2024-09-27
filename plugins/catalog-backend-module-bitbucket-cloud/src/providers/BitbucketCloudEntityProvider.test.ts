@@ -87,6 +87,23 @@ describe('BitbucketCloudEntityProvider', () => {
       },
     },
   });
+  const projectLevelConfig = new ConfigReader({
+    catalog: {
+      providers: {
+        bitbucketCloud: {
+          myProvider: {
+            workspace: 'test-ws',
+            catalogPath: 'catalog-custom.yaml',
+            filters: {
+              projectKey: 'test-.*',
+              repoSlug: 'test-.*',
+            },
+            level: 'project',
+          },
+        },
+      },
+    },
+  });
   const schedule = new PersistingTaskRunner();
   const entityProviderConnection: EntityProviderConnection = {
     applyMutation: jest.fn(),
@@ -278,6 +295,181 @@ describe('BitbucketCloudEntityProvider', () => {
       rest.get(
         `https://api.bitbucket.org/2.0/workspaces/test-ws/search/code`,
         (_req, res, ctx) => {
+          const response = {
+            values: [
+              {
+                // skipped as empty
+                path_matches: [],
+                file: {
+                  type: 'commit_file',
+                  path: 'path/to/ignored/file',
+                },
+              },
+              {
+                path_matches: [
+                  {
+                    match: true,
+                    text: 'catalog-custom.yaml',
+                  },
+                ],
+                file: {
+                  type: 'commit_file',
+                  path: 'custom/path/catalog-custom.yaml',
+                  commit: {
+                    repository: {
+                      // skipped as no match with filter
+                      slug: 'repo',
+                      project: {
+                        key: 'test-project',
+                      },
+                      mainbranch: {
+                        name: 'main',
+                      },
+                      links: {
+                        html: {
+                          href: 'https://bitbucket.org/test-ws/repo',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              {
+                path_matches: [
+                  {
+                    match: true,
+                    text: 'catalog-custom.yaml',
+                  },
+                ],
+                file: {
+                  type: 'commit_file',
+                  path: 'custom/path/catalog-custom.yaml',
+                  commit: {
+                    repository: {
+                      slug: 'test-repo1',
+                      project: {
+                        // skipped as no match with filter
+                        key: 'project',
+                      },
+                      mainbranch: {
+                        name: 'main',
+                      },
+                      links: {
+                        html: {
+                          href: 'https://bitbucket.org/test-ws/test-repo1',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              {
+                path_matches: [
+                  {
+                    match: true,
+                    text: 'catalog-custom.yaml',
+                  },
+                ],
+                file: {
+                  type: 'commit_file',
+                  path: 'custom/path/catalog-custom.yaml',
+                  commit: {
+                    repository: {
+                      slug: 'test-repo2',
+                      project: {
+                        key: 'test-project',
+                      },
+                      mainbranch: {
+                        name: 'main',
+                      },
+                      links: {
+                        html: {
+                          href: 'https://bitbucket.org/test-ws/test-repo2',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            ],
+          };
+          return res(ctx.json(response));
+        },
+      ),
+    );
+
+    await provider.connect(entityProviderConnection);
+
+    const taskDef = schedule.getTasks()[0];
+    expect(taskDef.id).toEqual('bitbucketCloud-provider:myProvider:refresh');
+    await (taskDef.fn as () => Promise<void>)();
+
+    const url = `https://bitbucket.org/test-ws/test-repo2/src/main/custom/path/catalog-custom.yaml`;
+    const expectedEntities = [
+      {
+        entity: {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Location',
+          metadata: {
+            annotations: {
+              'backstage.io/managed-by-location': `url:${url}`,
+              'backstage.io/managed-by-origin-location': `url:${url}`,
+              'bitbucket.org/repo-url':
+                'https://bitbucket.org/test-ws/test-repo2',
+            },
+            name: 'generated-7c2e6263b6cc2d14e69fd4d029afba601ad6dc3b',
+          },
+          spec: {
+            presence: 'required',
+            target: `${url}`,
+            type: 'url',
+          },
+        },
+        locationKey: 'bitbucketCloud-provider:myProvider',
+      },
+    ];
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: expectedEntities,
+    });
+  });
+
+  it('apply full update on scheduled execution on project-level', async () => {
+    const provider = BitbucketCloudEntityProvider.fromConfig(
+      projectLevelConfig,
+      {
+        logger,
+        schedule,
+      },
+    )[0];
+    expect(provider.getProviderName()).toEqual(
+      'bitbucketCloud-provider:myProvider',
+    );
+
+    server.use(
+      rest.get(
+        `https://api.bitbucket.org/2.0/workspaces/test-ws/projects`,
+        (_req, res, ctx) => {
+          const response = {
+            values: [
+              {
+                key: 'TEST',
+              },
+            ],
+          };
+          return res(ctx.json(response));
+        },
+      ),
+      rest.get(
+        `https://api.bitbucket.org/2.0/workspaces/test-ws/search/code`,
+        (req, res, ctx) => {
+          const query = req.url.searchParams.get('search_query');
+          if (!query || !query.includes('project:TEST')) {
+            return res(ctx.json({ values: [] }));
+          }
+
           const response = {
             values: [
               {

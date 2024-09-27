@@ -32,7 +32,7 @@ export type BitbucketCloudEntityProviderConfig = {
     repoSlug?: RegExp;
   };
   schedule?: SchedulerServiceTaskScheduleDefinition;
-  level?: 'workspace' | 'project';
+  level: 'workspace' | 'project';
 };
 
 export function readProviderConfigs(
@@ -73,6 +73,12 @@ function readProviderConfig(
       )
     : undefined;
 
+  const level =
+    (config.getOptionalString('level') as
+      | 'workspace'
+      | 'project'
+      | undefined) ?? 'workspace';
+
   return {
     id,
     catalogPath,
@@ -84,6 +90,7 @@ function readProviderConfig(
       repoSlug: repoSlugPattern ? compileRegExp(repoSlugPattern) : undefined,
     },
     schedule,
+    level,
   };
 }
 
