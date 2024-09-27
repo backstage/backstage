@@ -882,7 +882,7 @@ documents, images, or code templates. Download links for files included in your
 docs directory can be made by adding `{: download }` after a markdown link.
 
 ```
-[Link text](./img/foo.jpg){: download }
+[Link text](https://example.com/foo.jpg){: download }
 ```
 
 The user's browser will download the file as `download.jpg` when the link is
