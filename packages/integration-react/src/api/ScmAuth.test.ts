@@ -105,7 +105,7 @@ describe('ScmAuth', () => {
         additionalScope: { repoWrite: true },
       }),
     ).resolves.toMatchObject({
-      token: 'read_user read_api read_repository write_repository',
+      token: 'read_user read_api read_repository write_repository api',
     });
 
     const azureAuth = ScmAuth.forAzure(mockAuthApi);
