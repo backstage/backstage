@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CodeSnippet, MarkdownContent } from '@backstage/core-components';
+import { CodeSnippet, Link, MarkdownContent } from '@backstage/core-components';
 import {
   ListTemplateExtensionsResponse,
   TemplateGlobalFunction,
@@ -25,6 +25,7 @@ import Box from '@material-ui/core/Box';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import LinkIcon from '@material-ui/icons/Link';
 import { isEmpty } from 'lodash';
 import React, { useState } from 'react';
 import { scaffolderTranslationRef } from '../../translation';
@@ -117,18 +118,28 @@ const TemplateGlobalFunctions = ({
   classes,
   functions,
   t,
+  linkPage,
 }: {
   classes: ClassNameMap;
   functions: ListTemplateExtensionsResponse['globals']['functions'];
   t: Xlate<typeof scaffolderTranslationRef>;
+  linkPage: string;
 }) => {
   return (
     <>
       {Object.entries(functions).map(([fnName, fn]) => (
-        <Box pb={4} key={fnName} id={fnName} data-testid={fnName}>
-          <Typography variant="h4" component="h2" className={classes.code}>
+        <Box pb={4} key={fnName} data-testid={fnName}>
+          <Typography
+            id={`global_${fnName}`}
+            variant="h4"
+            component="h2"
+            className={classes.code}
+          >
             {fnName}
           </Typography>
+          <Link className={classes.link} to={`${linkPage}#global_${fnName}`}>
+            <LinkIcon />
+          </Link>
           <FunctionDetailContent {...{ classes, fnName, fn, t }} />
         </Box>
       ))}
@@ -139,17 +150,27 @@ const TemplateGlobalFunctions = ({
 const TemplateGlobalValues = ({
   classes,
   values,
+  linkPage,
 }: {
   classes: ClassNameMap;
   values: ListTemplateExtensionsResponse['globals']['values'];
+  linkPage: string;
 }) => {
   return (
     <>
       {Object.entries(values).map(([key, gv]) => (
-        <Box pb={4} key={key} id={key} data-testid={key}>
-          <Typography variant="h4" component="h2" className={classes.code}>
+        <Box pb={4} key={key} data-testid={key}>
+          <Typography
+            id={`global_${key}`}
+            variant="h4"
+            component="h2"
+            className={classes.code}
+          >
             {key}
           </Typography>
+          <Link className={classes.link} to={`${linkPage}#global_${key}`}>
+            <LinkIcon />
+          </Link>
           {gv.description && <MarkdownContent content={gv.description} />}
           <Box padding={1} data-testid={`${key}.value`}>
             <CodeSnippet
@@ -168,10 +189,12 @@ export const TemplateGlobals = ({
   t,
   classes,
   globals,
+  linkPage,
 }: {
   t: Xlate<typeof scaffolderTranslationRef>;
   classes: StyleClasses;
   globals: ListTemplateExtensionsResponse['globals'];
+  linkPage: string;
 }) => {
   const { functions, values } = globals;
   return (
@@ -183,7 +206,7 @@ export const TemplateGlobals = ({
           <Typography variant="h3" component="h1" className={classes.code}>
             {t('templateExtensions.globals.functions.title')}
           </Typography>
-          <TemplateGlobalFunctions {...{ t, classes, functions }} />
+          <TemplateGlobalFunctions {...{ t, classes, functions, linkPage }} />
         </div>
       )}
       {(isEmpty(values) && (
@@ -193,7 +216,7 @@ export const TemplateGlobals = ({
           <Typography variant="h3" component="h1" className={classes.code}>
             {t('templateExtensions.globals.values.title')}
           </Typography>
-          <TemplateGlobalValues {...{ classes, values }} />
+          <TemplateGlobalValues {...{ classes, values, linkPage }} />
         </div>
       )}
     </div>
