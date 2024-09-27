@@ -31,7 +31,7 @@ auth:
   providers:
     bitbucketServer:
       development:
-        host: bitbucket.org
+        host: bitbucket.example.org
         clientId: ${AUTH_BITBUCKET_SERVER_CLIENT_ID}
         clientSecret: ${AUTH_BITBUCKET_SERVER_CLIENT_SECRET}
 ```
@@ -77,7 +77,14 @@ backend.add(
 //...
 ```
 
-## Adding the provider to the Backstage frontend
+## Frontend Configuration
 
-To add the provider to the frontend, add the `bitbucketServerAuthApi` reference and `SignInPage` component as shown
-in [Adding the provider to the sign-in page](../index.md#sign-in-configuration).
+### Sign-in
+
+To add the provider to the frontend, add the `bitbucketServerAuthApiRef` reference and
+`SignInPage` component as shown in
+[Adding the provider to the sign-in page](../index.md#sign-in-configuration).
+
+### ScmAuth
+
+For backstage to be able to use the oauth token of the logged in user to access the Bitbucket Server API, you need to add it to list of ScmAuth providers as shown in [Custom ScmAuthApi Implementation](../index.md#custom-scmauthapi-implementation) using the `ScmAuth.forBitbucketServer` method.
