@@ -23,21 +23,20 @@ import {
   RequestValidator,
 } from '@backstage/plugin-events-node';
 import express from 'express';
-import { Request as ExpressRequest, Response, NextFunction } from 'express';
+import { RequestHandler } from 'express';
 import Router from 'express-promise-router';
 import { RequestValidationContextImpl } from './validation';
 
-interface Request extends ExpressRequest {
-  rawBody: string;
-}
-
 // Middleware that populates req.rawBody
-const rawBodyMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  req.rawBody = '';
+const rawBodyMiddleware: RequestHandler = (req, _, next) => {
+  let data = '';
   req.on('data', chunk => {
-    req.rawBody += chunk;
+    data += chunk;
   });
-  req.on('end', () => next());
+  req.on('end', () => {
+    (req as any).rawBody = data;
+    next();
+  });
 };
 
 /**
@@ -106,8 +105,9 @@ export class HttpPostIngressEventPublisher {
     const path = `/${topic}`;
 
     router.post(path, async (request, response) => {
+      const rawBody = (request as any).rawBody;
       const requestDetails = {
-        body: request.rawBody,
+        body: rawBody ? rawBody : undefined,
         headers: request.headers,
       };
       const context = new RequestValidationContextImpl();
