@@ -60,7 +60,7 @@ export interface Config {
              */
             schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
             /**
-             * (Optional) On what level discovery should take place, affecting Bitbucket Cloud API limits.
+             * (Optional) At what level discovery should take place, affecting Bitbucket Cloud API limits.
              *
              * Possible values:
              * - `workspace` (default): 1 API call per workspace, limited to 900 repositories per workspace.
@@ -101,7 +101,7 @@ export interface Config {
                */
               schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
               /**
-               * (Optional) On what level discovery should take place, affecting Bitbucket Cloud API limits.
+               * (Optional) At what level discovery should take place, affecting Bitbucket Cloud API limits.
                *
                * Possible values:
                * - `workspace` (default): 1 API call per workspace, limited to 900 repositories per workspace.

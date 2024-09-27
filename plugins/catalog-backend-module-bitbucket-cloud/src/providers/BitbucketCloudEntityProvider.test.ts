@@ -436,7 +436,7 @@ describe('BitbucketCloudEntityProvider', () => {
     });
   });
 
-  it('apply full update on scheduled execution on project-level', async () => {
+  it('apply full update on scheduled execution on project level', async () => {
     const provider = BitbucketCloudEntityProvider.fromConfig(
       projectLevelConfig,
       {
