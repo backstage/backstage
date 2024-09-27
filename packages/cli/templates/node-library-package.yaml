@@ -1,6 +1,6 @@
 # lib/new/factories/nodeLibraryPackage.ts
 description: A new node-library package, exporting shared functionality for backend plugins and modules
-template: ../node-library-package
+template: ./node-library-package
 targetPath: packages
 prompts:
   - id: test

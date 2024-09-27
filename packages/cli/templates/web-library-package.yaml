@@ -1,6 +1,6 @@
 # lib/new/factories/webLibraryPackage.ts
 description: A new web-library package, exporting shared functionality for frontend plugins
-template: ../web-library-package
+template: ./web-library-package
 targetPath: packages
 prompts:
   - id

@@ -30,7 +30,7 @@ import {
   moduleIdIdPrompt,
   // ownerPrompt, // 🚨 WIP
 } from '../../lib/new/factories/common/prompts';
-import defaultTemplates from '../../../templates/alpha/all-default-templates';
+import defaultTemplates from '../../../templates';
 
 type ConfigurablePrompt =
   | {
