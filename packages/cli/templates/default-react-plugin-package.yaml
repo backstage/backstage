@@ -1,6 +1,6 @@
 # lib/new/factories/pluginWeb.ts
 description: A new web library plugin package
-template: ../default-react-plugin-package
+template: ./default-react-plugin-package
 targetPath: plugins
 prompts:
   - id: test
