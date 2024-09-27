@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-backend-module-gerrit': patch
 ---
 
-Add missing `schedule` key in `config.d.ts`
+Fixed an issue preventing the provider's `schedule` config from being applied."
