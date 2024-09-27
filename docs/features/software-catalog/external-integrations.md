@@ -962,7 +962,6 @@ export const customEntityDataParser: CatalogProcessorParser = async function* ({
         // Is this a catalog-info.yaml file?
         if (json.apiVersion) {
           yield processingResult.entity(location, json as Entity);
-
         } else {
           // let's treat this like it's our custom format instead.
           yield processingResult.entity(
