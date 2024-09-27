@@ -84,13 +84,13 @@ describe('eventsPlugin', () => {
     const response1 = await request(server)
       .post('/api/events/http/fake')
       .timeout(1000)
-      .send({ test: 'fake' });
+      .send(JSON.stringify({ test: 'fake' }));
     expect(response1.status).toBe(202);
 
     const response2 = await request(server)
       .post('/api/events/http/fake-ext')
       .timeout(1000)
-      .send({ test: 'fake-ext' });
+      .send(JSON.stringify({ test: 'fake-ext' }));
     expect(response2.status).toBe(202);
 
     expect(eventsService.published).toHaveLength(2);
