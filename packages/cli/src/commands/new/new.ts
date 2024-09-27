@@ -25,12 +25,19 @@ import { isMonoRepo } from '@backstage/cli-node';
 import { paths } from '../../lib/paths';
 import { assertError } from '@backstage/errors';
 import { Task } from '../../lib/tasks';
+import {
+  pluginIdPrompt,
+  moduleIdIdPrompt,
+  // ownerPrompt, // 🚨 WIP
+} from '../../lib/new/factories/common/prompts';
 import defaultTemplates from '../../../templates/alpha/all-default-templates';
 
 type ConfigurablePrompt =
   | {
       id: string;
       prompt: string;
+      type?: string;
+      validate?: string;
       default?: string | boolean;
     }
   | string;
@@ -113,13 +120,74 @@ async function verifyTemplate({ target }: TemplateLocation): Promise<Template> {
   return template;
 }
 
+async function promptOptions({
+  prompts,
+  globals,
+}: {
+  prompts: ConfigurablePrompt[];
+  globals: Record<string, string>;
+}): Promise<Record<string, string>> {
+  const answers = await inquirer.prompt(
+    prompts.map((prompt: ConfigurablePrompt) => {
+      if (typeof prompt === 'string') {
+        switch (prompt) {
+          case 'id':
+            return pluginIdPrompt();
+          case 'moduleid':
+            return moduleIdIdPrompt();
+          default:
+            throw new Error(
+              `There is no built-in prompt with the following id: ${prompt}`,
+            );
+        }
+      }
+      return {
+        type: prompt.type || 'input',
+        name: prompt.id,
+        message: prompt.prompt,
+        default:
+          globals[prompt.id] !== undefined
+            ? globals[prompt.id]
+            : prompt.default,
+        validate: (value: string) => {
+          if (!value) {
+            return `Please provide a value for ${prompt.id}`;
+          } else if (prompt.validate) {
+            let valid: boolean;
+            let message: string;
+            switch (prompt.validate) {
+              case 'backstage-id':
+                valid = /^[a-z0-9]+(-[a-z0-9]+)*$/.test(value);
+                message =
+                  'Value must be lowercase and contain only letters, digits, and dashes.';
+                break;
+              default:
+                throw new Error(
+                  `There is no built-in validator with the following id: ${prompt.validate}`,
+                );
+            }
+            return valid || message;
+          }
+          return true;
+        },
+      };
+    }),
+  );
+  return { ...globals, ...answers };
+}
+
 export default async () => {
   const pkgJson = await fs.readJson(paths.resolveTargetRoot('package.json'));
   const cliConfig = pkgJson.backstage?.cli;
 
   const { templates, globals } = await readCliConfig(cliConfig);
   const template = await verifyTemplate(await templateSelector(templates));
-  console.log(template, globals);
+  console.log(
+    await promptOptions({
+      prompts: template.prompts || [],
+      globals,
+    }),
+  );
 
   // let defaultVersion = '0.1.0';
   // if (opts.baseVersion) {
