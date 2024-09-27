@@ -23,8 +23,22 @@ import {
   RequestValidator,
 } from '@backstage/plugin-events-node';
 import express from 'express';
+import { Request as ExpressRequest, Response, NextFunction } from 'express';
 import Router from 'express-promise-router';
 import { RequestValidationContextImpl } from './validation';
+
+interface Request extends ExpressRequest {
+  rawBody: string;
+}
+
+// Middleware that populates req.rawBody
+const rawBodyMiddleware = (req: Request, res: Response, next: NextFunction) => {
+  req.rawBody = '';
+  req.on('data', chunk => {
+    req.rawBody += chunk;
+  });
+  req.on('end', () => next());
+};
 
 /**
  * Publishes events received from their origin (e.g., webhook events from an SCM system)
@@ -71,6 +85,9 @@ export class HttpPostIngressEventPublisher {
     [topic: string]: Omit<HttpPostIngressOptions, 'topic'>;
   }): express.Router {
     const router = Router();
+
+    // save the rawBody before parsing to use for signature verification
+    router.use(rawBodyMiddleware);
     router.use(express.json());
 
     Object.keys(ingresses).forEach(topic =>
@@ -90,7 +107,7 @@ export class HttpPostIngressEventPublisher {
 
     router.post(path, async (request, response) => {
       const requestDetails = {
-        body: request.body,
+        body: request.rawBody,
         headers: request.headers,
       };
       const context = new RequestValidationContextImpl();
