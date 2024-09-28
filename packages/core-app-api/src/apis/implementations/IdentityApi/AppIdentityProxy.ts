@@ -130,10 +130,9 @@ export class AppIdentityProxy implements IdentityApi {
 
   async signOut(): Promise<void> {
     await this.waitForTarget.then(target => target.signOut());
-
     await this.#cookieAuthSignOut?.();
 
-    window.location.href = this.signOutTargetUrl;
+    window.location.href = `${this.signOutTargetUrl}?signedOut=true`;
   }
 
   enableCookieAuth(ctx: {
