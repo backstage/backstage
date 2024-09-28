@@ -89,6 +89,6 @@ describe('AppIdentityProxy', () => {
     });
 
     await proxy.signOut();
-    expect(window.location.href).toBe('/foo');
+    expect(window.location.href).toBe('/foo?signedOut=true');
   });
 });
