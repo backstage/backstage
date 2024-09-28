@@ -11518,54 +11518,54 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/axios@npm:3.0.2":
-  version: 3.0.2
-  resolution: "@nestjs/axios@npm:3.0.2"
+"@nestjs/axios@npm:3.0.3":
+  version: 3.0.3
+  resolution: "@nestjs/axios@npm:3.0.3"
   peerDependencies:
     "@nestjs/common": ^7.0.0 || ^8.0.0 || ^9.0.0 || ^10.0.0
     axios: ^1.3.1
     rxjs: ^6.0.0 || ^7.0.0
-  checksum: 285a735fb5db602b63aa4a37e161f609b2cec05b69f4bffe983617c2136ac29c0a33bb96e6276d22a656907bed5d53460e740310bc05c043dcd39c37db7cda29
+  checksum: 4e4cd4a26dc53687cedcf360cf686839608ba80d7c9c7e449546299545ddad69fb2dd199f868f3de5d00bc3ab795fecda79971de1599c24f647f2c6c95a21bb9
   languageName: node
   linkType: hard
 
-"@nestjs/common@npm:10.3.0":
-  version: 10.3.0
-  resolution: "@nestjs/common@npm:10.3.0"
+"@nestjs/common@npm:10.4.3":
+  version: 10.4.3
+  resolution: "@nestjs/common@npm:10.4.3"
   dependencies:
     iterare: 1.2.1
-    tslib: 2.6.2
+    tslib: 2.7.0
     uid: 2.0.2
   peerDependencies:
     class-transformer: "*"
     class-validator: "*"
-    reflect-metadata: ^0.1.12
+    reflect-metadata: ^0.1.12 || ^0.2.0
     rxjs: ^7.1.0
   peerDependenciesMeta:
     class-transformer:
       optional: true
     class-validator:
       optional: true
-  checksum: c5444cb46bd4f4a4d28b5031f7c28a0cf9863bc2d5518910bfed6a49734f59e1ea08dd4651e2117ae82df81c933ef84f0963c5cdeee5ef1608cf1bd36ee291c5
+  checksum: 980d545251c9310fb0680c07fe8a4de65033970e6db0d2bb9b9a82d54842c5e487ca94d1c147dbbdc959b745dabfa9a30a12915523cdb714c450130bc11f14b7
   languageName: node
   linkType: hard
 
-"@nestjs/core@npm:10.3.0":
-  version: 10.3.0
-  resolution: "@nestjs/core@npm:10.3.0"
+"@nestjs/core@npm:10.4.3":
+  version: 10.4.3
+  resolution: "@nestjs/core@npm:10.4.3"
   dependencies:
     "@nuxtjs/opencollective": 0.3.2
     fast-safe-stringify: 2.1.1
     iterare: 1.2.1
-    path-to-regexp: 3.2.0
-    tslib: 2.6.2
+    path-to-regexp: 3.3.0
+    tslib: 2.7.0
     uid: 2.0.2
   peerDependencies:
     "@nestjs/common": ^10.0.0
     "@nestjs/microservices": ^10.0.0
     "@nestjs/platform-express": ^10.0.0
     "@nestjs/websockets": ^10.0.0
-    reflect-metadata: ^0.1.12
+    reflect-metadata: ^0.1.12 || ^0.2.0
     rxjs: ^7.1.0
   peerDependenciesMeta:
     "@nestjs/microservices":
@@ -11574,7 +11574,7 @@ __metadata:
       optional: true
     "@nestjs/websockets":
       optional: true
-  checksum: 7677b9fb97c8dec512c2a736c273ef08698b377af8c046bc5aad442ba3d35acbc17d177e76bf44a66678cae2ced2d265183e85be4190c501a195f16496df6396
+  checksum: 55e2b96f9851d58e42c35d2057bca7b700ced22724e5b17745a88bf2e1f8d61d9d7a84f31b19106982c0cd3d913de165031451ff3b05da1f7c04b83988c499e5
   languageName: node
   linkType: hard
 
@@ -12599,12 +12599,12 @@ __metadata:
   linkType: hard
 
 "@openapitools/openapi-generator-cli@npm:^2.4.26, @openapitools/openapi-generator-cli@npm:^2.7.0":
-  version: 2.13.5
-  resolution: "@openapitools/openapi-generator-cli@npm:2.13.5"
+  version: 2.13.11
+  resolution: "@openapitools/openapi-generator-cli@npm:2.13.11"
   dependencies:
-    "@nestjs/axios": 3.0.2
-    "@nestjs/common": 10.3.0
-    "@nestjs/core": 10.3.0
+    "@nestjs/axios": 3.0.3
+    "@nestjs/common": 10.4.3
+    "@nestjs/core": 10.4.3
     "@nuxtjs/opencollective": 0.3.2
     axios: 1.7.4
     chalk: 4.1.2
@@ -12614,15 +12614,15 @@ __metadata:
     console.table: 0.10.0
     fs-extra: 10.1.0
     glob: 7.2.3
-    https-proxy-agent: 7.0.4
+    https-proxy-agent: 7.0.5
     inquirer: 8.2.6
     lodash: 4.17.21
     reflect-metadata: 0.1.13
     rxjs: 7.8.1
-    tslib: 2.6.2
+    tslib: 2.7.0
   bin:
     openapi-generator-cli: main.js
-  checksum: 923fcdfe29c2d349aaae28a86dd5f63a4f441233549a4575bce6760177c6c48508180c57569bcc4deb63a40d8d36049c4a9060e2884248b1b5fbab2d28954a4e
+  checksum: bf33563660fb0df43c3e222dbf263dee7d603fa9f979b22e7f8166d2a3da9196f055a8909fa24f73cc2d717411fd2fc6af4ecbbb797aa0c31b176cddeab231d9
   languageName: node
   linkType: hard
 
@@ -29173,13 +29173,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"https-proxy-agent@npm:7.0.4, https-proxy-agent@npm:^7.0.0, https-proxy-agent@npm:^7.0.1, https-proxy-agent@npm:^7.0.2":
-  version: 7.0.4
-  resolution: "https-proxy-agent@npm:7.0.4"
+"https-proxy-agent@npm:7.0.5, https-proxy-agent@npm:^7.0.0, https-proxy-agent@npm:^7.0.1, https-proxy-agent@npm:^7.0.2":
+  version: 7.0.5
+  resolution: "https-proxy-agent@npm:7.0.5"
   dependencies:
     agent-base: ^7.0.2
     debug: 4
-  checksum: daaab857a967a2519ddc724f91edbbd388d766ff141b9025b629f92b9408fc83cee8a27e11a907aede392938e9c398e240d643e178408a59e4073539cde8cfe9
+  checksum: 2e1a28960f13b041a50702ee74f240add8e75146a5c37fc98f1960f0496710f6918b3a9fe1e5aba41e50f58e6df48d107edd9c405c5f0d73ac260dabf2210857
   languageName: node
   linkType: hard
 
@@ -36332,10 +36332,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"path-to-regexp@npm:3.2.0":
-  version: 3.2.0
-  resolution: "path-to-regexp@npm:3.2.0"
-  checksum: c3d35cda3b26d9e604d789b9a1764bb9845f53ca8009d5809356b4677a3c064b0f01117a05a5b4b77bafd5ae002a82592e3f3495e885c22961f8b1dab8bd6ae7
+"path-to-regexp@npm:3.3.0":
+  version: 3.3.0
+  resolution: "path-to-regexp@npm:3.3.0"
+  checksum: bb249d08804f7961dd44fb175466c900b893c56e909db8e2a66ec12b9d9a964af269eb7a50892c933f52b47315953dfdb4279639fbce20977c3625a9ef3055fe
   languageName: node
   linkType: hard
 
@@ -42571,10 +42571,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:2.6.2, tslib@npm:^2.0.0, tslib@npm:^2.0.1, tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.2.0, tslib@npm:^2.3.0, tslib@npm:^2.3.1, tslib@npm:^2.4.0, tslib@npm:^2.4.1, tslib@npm:^2.4.1 || ^1.9.3, tslib@npm:^2.5.0, tslib@npm:^2.6.0, tslib@npm:^2.6.2":
-  version: 2.6.2
-  resolution: "tslib@npm:2.6.2"
-  checksum: 329ea56123005922f39642318e3d1f0f8265d1e7fcb92c633e0809521da75eeaca28d2cf96d7248229deb40e5c19adf408259f4b9640afd20d13aecc1430f3ad
+"tslib@npm:2.7.0, tslib@npm:^2.0.0, tslib@npm:^2.0.1, tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.2.0, tslib@npm:^2.3.0, tslib@npm:^2.3.1, tslib@npm:^2.4.0, tslib@npm:^2.4.1, tslib@npm:^2.4.1 || ^1.9.3, tslib@npm:^2.5.0, tslib@npm:^2.6.0, tslib@npm:^2.6.2":
+  version: 2.7.0
+  resolution: "tslib@npm:2.7.0"
+  checksum: 1606d5c89f88d466889def78653f3aab0f88692e80bb2066d090ca6112ae250ec1cfa9dbfaab0d17b60da15a4186e8ec4d893801c67896b277c17374e36e1d28
   languageName: node
   linkType: hard
 
