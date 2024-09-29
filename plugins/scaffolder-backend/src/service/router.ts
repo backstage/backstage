@@ -546,7 +546,6 @@ export async function createRouter(
         credentials,
         permissions: [taskCreatePermission],
         permissionService: permissions,
-        throwError: true,
       });
 
       const { token } = await auth.getPluginRequestToken({
@@ -813,7 +812,6 @@ export async function createRouter(
         credentials,
         permissions: [taskCreatePermission],
         permissionService: permissions,
-        throwError: true,
       });
 
       const bodySchema = z.object({

@@ -29,7 +29,6 @@ export type checkBasicPermissionOptions = {
   credentials: BackstageCredentials;
   permissions: BasicPermission[];
   permissionService?: PermissionsService;
-  throwError?: boolean;
 };
 
 export type checkTaskPermissionOptions = {
@@ -44,9 +43,8 @@ export type checkTaskPermissionOptions = {
 };
 
 /**
- * Does a basic check on permissions.
- * If throwError is set to true, throws 403 error if any permission responds with AuthorizeResult.DENY
- * Otherwise, it will return false instead of throwing an error
+ * Does a check on basic permissions.
+ * Throws 403 error if any permission responds with AuthorizeResult.DENY
  * @public
  */
 export async function checkBasicPermission(
@@ -64,14 +62,10 @@ export async function checkBasicPermission(
 
     for (const response of authorizationResponses) {
       if (response.result === AuthorizeResult.DENY) {
-        if (options.throwError) {
-          throw new NotAllowedError();
-        }
-        return false;
+        throw new NotAllowedError();
       }
     }
   }
-  return true;
 }
 
 /**
