@@ -26,12 +26,12 @@ import { CreateContext } from '../../types';
 export async function executePluginPackageTemplate(
   ctx: CreateContext,
   options: {
-    templateName: string;
+    templateDir: string;
     targetDir: string;
     values: Record<string, unknown>;
   },
 ) {
-  const { targetDir } = options;
+  const { targetDir, templateDir } = options;
 
   let lockfile: Lockfile | undefined;
   try {
@@ -58,7 +58,7 @@ export async function executePluginPackageTemplate(
 
   Task.section('Executing Template');
   await templatingTask(
-    paths.resolveOwn('templates', options.templateName),
+    templateDir,
     tempDir,
     options.values,
     createPackageVersionProvider(lockfile),
