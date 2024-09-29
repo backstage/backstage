@@ -49,6 +49,22 @@ export function moduleIdIdPrompt(): Prompt<{ moduleId: string }> {
   };
 }
 
+export function npmRegistryPrompt(): Prompt<{ npmRegistry: string }> {
+  return {
+    type: 'input',
+    name: 'npmRegistry',
+    message: 'Please specify your NPM registry [optional]',
+    validate: (value: string) => {
+      if (!value) {
+        return 'Please enter the URL of your NPM registry';
+      } else if (!/^http*$/.test(value)) {
+        return 'Invalid URL.';
+      }
+      return true;
+    },
+  };
+}
+
 export function ownerPrompt(): Prompt<{
   owner?: string;
   codeOwnersPath?: string;
