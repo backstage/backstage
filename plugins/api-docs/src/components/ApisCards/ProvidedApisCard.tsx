@@ -84,11 +84,12 @@ export const ProvidedApisCard = (props: {
             This {entity.kind.toLocaleLowerCase('en-US')} does not provide any
             APIs.
           </Typography>
-          <Typography variant="body2">
-            <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specprovidesapis-optional">
-              Learn how to change this.
-            </Link>
-          </Typography>
+          <Link
+            to="https://backstage.io/docs/features/software-catalog/descriptor-format#specprovidesapis-optional"
+            externalLinkIcon
+          >
+            Learn how to change this
+          </Link>
         </div>
       }
       columns={columns}

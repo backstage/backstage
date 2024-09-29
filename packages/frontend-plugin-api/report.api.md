@@ -1285,14 +1285,9 @@ export const IconBundleBlueprint: ExtensionBlueprint<{
 }>;
 
 // @public
-export type IconComponent = ComponentType<
-  | {
-      fontSize?: 'large' | 'small' | 'default' | 'inherit';
-    }
-  | {
-      fontSize?: 'medium' | 'large' | 'small' | 'inherit';
-    }
->;
+export type IconComponent = ComponentType<{
+  fontSize?: 'medium' | 'large' | 'small' | 'inherit';
+}>;
 
 // @public
 export interface IconsApi {

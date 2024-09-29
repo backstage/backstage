@@ -1,5 +1,18 @@
 # @backstage/app-defaults
 
+## 1.5.12-next.0
+
+### Patch Changes
+
+- 46b5a20: Added `externalLink` to icon defaults
+- 8c40e55: Updated the `bitbucket-server-auth` default API to set its environment based on the `auth.environment` config option instead of being hardcoded to `development`.
+- Updated dependencies
+  - @backstage/core-components@0.15.1-next.0
+  - @backstage/core-plugin-api@1.10.0-next.0
+  - @backstage/core-app-api@1.15.1-next.0
+  - @backstage/theme@0.5.7
+  - @backstage/plugin-permission-react@0.4.27-next.0
+
 ## 1.5.11
 
 ### Patch Changes

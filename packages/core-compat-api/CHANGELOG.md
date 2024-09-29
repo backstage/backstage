@@ -1,5 +1,15 @@
 # @backstage/core-compat-api
 
+## 0.3.1-next.0
+
+### Patch Changes
+
+- 4a5ba19: Internal update to remove deprecated `BackstagePlugin` type and move to `FrontendPlugin`
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.0-next.0
+  - @backstage/core-plugin-api@1.10.0-next.0
+  - @backstage/version-bridge@1.0.9
+
 ## 0.3.0
 
 ### Minor Changes

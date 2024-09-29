@@ -23,12 +23,6 @@
 // In this package you might for example export functions that
 // help other plugins or modules interact with your plugin.
 
-/**
- * Node.js library for the kubernetes plugin.
- *
- * @packageDocumentation
- */
-
 export * from './extensions';
 export * from './types';
 export * from './auth';

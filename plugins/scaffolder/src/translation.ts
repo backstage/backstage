@@ -172,6 +172,7 @@ export const scaffolderTranslationRef = createTranslationRef({
       },
       subtitle: 'Task {{taskId}}',
       cancelButtonTitle: 'Cancel',
+      retryButtonTitle: 'Retry',
       startOverButtonTitle: 'Start Over',
       hideLogsButtonTitle: 'Hide Logs',
       showLogsButtonTitle: 'Show Logs',
@@ -179,6 +180,7 @@ export const scaffolderTranslationRef = createTranslationRef({
         hideLogs: 'Hide Logs',
         showLogs: 'Show Logs',
         hideButtonBar: 'Hide Button Bar',
+        retry: 'Retry',
         showButtonBar: 'Show Button Bar',
         startOver: 'Start Over',
         cancel: 'Cancel',
@@ -197,7 +199,7 @@ export const scaffolderTranslationRef = createTranslationRef({
       subtitle: 'Edit, preview, and try out templates and template forms',
     },
     templateEditorPage: {
-      title: 'Template Editor',
+      title: 'Manage Templates',
       subtitle: 'Edit, preview, and try out templates and template forms',
       dryRunResults: {
         title: 'Dry-run results',
@@ -251,7 +253,7 @@ export const scaffolderTranslationRef = createTranslationRef({
           unsupportedTooltip: 'Only supported in some Chromium-based browsers',
         },
         formEditor: {
-          title: 'Edit Template Form',
+          title: 'Template playground',
           description:
             'Preview and edit a template form, either using a sample template or by loading a template from the catalog.',
         },

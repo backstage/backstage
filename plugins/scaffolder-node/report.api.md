@@ -292,6 +292,7 @@ export type SerializedTask = {
 // @public
 export type SerializedTaskEvent = {
   id: number;
+  isTaskRecoverable?: boolean;
   taskId: string;
   body: JsonObject;
   type: TaskEventType;
@@ -339,6 +340,8 @@ export interface TaskBroker {
   }>;
   // (undocumented)
   recoverTasks?(): Promise<void>;
+  // (undocumented)
+  retry?(taskId: string): Promise<void>;
   // (undocumented)
   vacuumTasks(options: { timeoutS: number }): Promise<void>;
 }
@@ -498,30 +501,31 @@ export type TemplateGlobal =
 // src/files/types.d.ts:7:5 - (ae-undocumented) Missing documentation for "content".
 // src/files/types.d.ts:8:5 - (ae-undocumented) Missing documentation for "executable".
 // src/files/types.d.ts:9:5 - (ae-undocumented) Missing documentation for "symlink".
-// src/tasks/types.d.ts:82:5 - (ae-undocumented) Missing documentation for "cancelSignal".
-// src/tasks/types.d.ts:83:5 - (ae-undocumented) Missing documentation for "spec".
-// src/tasks/types.d.ts:84:5 - (ae-undocumented) Missing documentation for "secrets".
-// src/tasks/types.d.ts:85:5 - (ae-undocumented) Missing documentation for "createdBy".
-// src/tasks/types.d.ts:86:5 - (ae-undocumented) Missing documentation for "done".
-// src/tasks/types.d.ts:87:5 - (ae-undocumented) Missing documentation for "isDryRun".
-// src/tasks/types.d.ts:88:5 - (ae-undocumented) Missing documentation for "complete".
-// src/tasks/types.d.ts:89:5 - (ae-undocumented) Missing documentation for "emitLog".
-// src/tasks/types.d.ts:90:5 - (ae-undocumented) Missing documentation for "getTaskState".
-// src/tasks/types.d.ts:93:5 - (ae-undocumented) Missing documentation for "updateCheckpoint".
-// src/tasks/types.d.ts:102:5 - (ae-undocumented) Missing documentation for "serializeWorkspace".
-// src/tasks/types.d.ts:105:5 - (ae-undocumented) Missing documentation for "cleanWorkspace".
-// src/tasks/types.d.ts:106:5 - (ae-undocumented) Missing documentation for "rehydrateWorkspace".
-// src/tasks/types.d.ts:110:5 - (ae-undocumented) Missing documentation for "getWorkspaceName".
-// src/tasks/types.d.ts:111:5 - (ae-undocumented) Missing documentation for "getInitiatorCredentials".
-// src/tasks/types.d.ts:119:5 - (ae-undocumented) Missing documentation for "cancel".
-// src/tasks/types.d.ts:120:5 - (ae-undocumented) Missing documentation for "claim".
-// src/tasks/types.d.ts:121:5 - (ae-undocumented) Missing documentation for "recoverTasks".
-// src/tasks/types.d.ts:122:5 - (ae-undocumented) Missing documentation for "dispatch".
-// src/tasks/types.d.ts:123:5 - (ae-undocumented) Missing documentation for "vacuumTasks".
-// src/tasks/types.d.ts:126:5 - (ae-undocumented) Missing documentation for "event$".
-// src/tasks/types.d.ts:132:5 - (ae-undocumented) Missing documentation for "get".
-// src/tasks/types.d.ts:133:5 - (ae-undocumented) Missing documentation for "list".
-// src/tasks/types.d.ts:153:5 - (ae-undocumented) Missing documentation for "list".
+// src/tasks/types.d.ts:83:5 - (ae-undocumented) Missing documentation for "cancelSignal".
+// src/tasks/types.d.ts:84:5 - (ae-undocumented) Missing documentation for "spec".
+// src/tasks/types.d.ts:85:5 - (ae-undocumented) Missing documentation for "secrets".
+// src/tasks/types.d.ts:86:5 - (ae-undocumented) Missing documentation for "createdBy".
+// src/tasks/types.d.ts:87:5 - (ae-undocumented) Missing documentation for "done".
+// src/tasks/types.d.ts:88:5 - (ae-undocumented) Missing documentation for "isDryRun".
+// src/tasks/types.d.ts:89:5 - (ae-undocumented) Missing documentation for "complete".
+// src/tasks/types.d.ts:90:5 - (ae-undocumented) Missing documentation for "emitLog".
+// src/tasks/types.d.ts:91:5 - (ae-undocumented) Missing documentation for "getTaskState".
+// src/tasks/types.d.ts:94:5 - (ae-undocumented) Missing documentation for "updateCheckpoint".
+// src/tasks/types.d.ts:103:5 - (ae-undocumented) Missing documentation for "serializeWorkspace".
+// src/tasks/types.d.ts:106:5 - (ae-undocumented) Missing documentation for "cleanWorkspace".
+// src/tasks/types.d.ts:107:5 - (ae-undocumented) Missing documentation for "rehydrateWorkspace".
+// src/tasks/types.d.ts:111:5 - (ae-undocumented) Missing documentation for "getWorkspaceName".
+// src/tasks/types.d.ts:112:5 - (ae-undocumented) Missing documentation for "getInitiatorCredentials".
+// src/tasks/types.d.ts:120:5 - (ae-undocumented) Missing documentation for "cancel".
+// src/tasks/types.d.ts:121:5 - (ae-undocumented) Missing documentation for "retry".
+// src/tasks/types.d.ts:122:5 - (ae-undocumented) Missing documentation for "claim".
+// src/tasks/types.d.ts:123:5 - (ae-undocumented) Missing documentation for "recoverTasks".
+// src/tasks/types.d.ts:124:5 - (ae-undocumented) Missing documentation for "dispatch".
+// src/tasks/types.d.ts:125:5 - (ae-undocumented) Missing documentation for "vacuumTasks".
+// src/tasks/types.d.ts:128:5 - (ae-undocumented) Missing documentation for "event$".
+// src/tasks/types.d.ts:134:5 - (ae-undocumented) Missing documentation for "get".
+// src/tasks/types.d.ts:135:5 - (ae-undocumented) Missing documentation for "list".
+// src/tasks/types.d.ts:155:5 - (ae-undocumented) Missing documentation for "list".
 // src/types.d.ts:3:1 - (ae-undocumented) Missing documentation for "TemplateFilter".
 // src/types.d.ts:5:1 - (ae-undocumented) Missing documentation for "TemplateGlobal".
 ```

@@ -23,7 +23,8 @@ import Popover from '@material-ui/core/Popover';
 import { makeStyles, Theme, useTheme } from '@material-ui/core/styles';
 import { useAsync } from '@react-hookz/web';
 import Cancel from '@material-ui/icons/Cancel';
-import Retry from '@material-ui/icons/Repeat';
+import Repeat from '@material-ui/icons/Repeat';
+import Replay from '@material-ui/icons/Replay';
 import Toc from '@material-ui/icons/Toc';
 import ControlPointIcon from '@material-ui/icons/ControlPoint';
 import MoreVert from '@material-ui/icons/MoreVert';
@@ -42,8 +43,11 @@ import { scaffolderTranslationRef } from '../../translation';
 
 type ContextMenuProps = {
   cancelEnabled?: boolean;
+  canRetry: boolean;
+  isRetryableTask: boolean;
   logsVisible?: boolean;
   buttonBarVisible?: boolean;
+  onRetry?: () => void;
   onStartOver?: () => void;
   onToggleLogs?: (state: boolean) => void;
   onToggleButtonBar?: (state: boolean) => void;
@@ -59,8 +63,11 @@ const useStyles = makeStyles<Theme, { fontColor: string }>(() => ({
 export const ContextMenu = (props: ContextMenuProps) => {
   const {
     cancelEnabled,
+    canRetry,
+    isRetryableTask,
     logsVisible,
     buttonBarVisible,
+    onRetry,
     onStartOver,
     onToggleLogs,
     onToggleButtonBar,
@@ -150,10 +157,22 @@ export const ContextMenu = (props: ContextMenuProps) => {
             data-testid="start-over-task"
           >
             <ListItemIcon>
-              <Retry fontSize="small" />
+              <Repeat fontSize="small" />
             </ListItemIcon>
             <ListItemText primary={t('ongoingTask.contextMenu.startOver')} />
           </MenuItem>
+          {isRetryableTask && (
+            <MenuItem
+              onClick={onRetry}
+              disabled={cancelEnabled || !canRetry}
+              data-testid="retry-task"
+            >
+              <ListItemIcon>
+                <Replay fontSize="small" />
+              </ListItemIcon>
+              <ListItemText primary={t('ongoingTask.contextMenu.retry')} />
+            </MenuItem>
+          )}
           <MenuItem
             onClick={cancel}
             disabled={

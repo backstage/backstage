@@ -19,6 +19,7 @@ import { FetchApi } from '@backstage/core-plugin-api';
 import { FieldExtensionComponent as FieldExtensionComponent_2 } from '@backstage/plugin-scaffolder-react';
 import { FieldExtensionComponentProps as FieldExtensionComponentProps_2 } from '@backstage/plugin-scaffolder-react';
 import { FieldExtensionOptions as FieldExtensionOptions_2 } from '@backstage/plugin-scaffolder-react';
+import { FieldSchema as FieldSchema_2 } from '@backstage/plugin-scaffolder-react';
 import { FieldValidation } from '@rjsf/utils';
 import { FormProps } from '@backstage/plugin-scaffolder-react';
 import { IdentityApi } from '@backstage/core-plugin-api';
@@ -174,15 +175,8 @@ export type FieldExtensionComponentProps<
 // @public @deprecated (undocumented)
 export type FieldExtensionOptions = FieldExtensionOptions_2;
 
-// @public
-export interface FieldSchema<TReturn, TUiOptions> {
-  // (undocumented)
-  readonly schema: CustomFieldExtensionSchema_2;
-  // (undocumented)
-  readonly type: FieldExtensionComponentProps_2<TReturn, TUiOptions>;
-  // (undocumented)
-  readonly uiOptionsType: TUiOptions;
-}
+// @public @deprecated (undocumented)
+export interface FieldSchema<T, P> extends FieldSchema_2<T, P> {}
 
 // @public @deprecated (undocumented)
 export type LayoutOptions = LayoutOptions_2;
@@ -196,7 +190,7 @@ export type ListActionsResponse = ListActionsResponse_2;
 // @public @deprecated (undocumented)
 export type LogEvent = LogEvent_2;
 
-// @public
+// @public @deprecated (undocumented)
 export function makeFieldSchemaFromZod<
   TReturnSchema extends z.ZodType,
   TUiOptionsSchema extends z.ZodType = z.ZodType<any, any, {}>,
@@ -443,7 +437,7 @@ export const RepoUrlPickerFieldExtension: FieldExtensionComponent_2<
 >;
 
 // @public (undocumented)
-export const RepoUrlPickerFieldSchema: FieldSchema<
+export const RepoUrlPickerFieldSchema: FieldSchema_2<
   string,
   {
     allowedHosts?: string[] | undefined;
@@ -469,7 +463,7 @@ export const RepoUrlPickerFieldSchema: FieldSchema<
   }
 >;
 
-// @public
+// @public @deprecated
 export type RepoUrlPickerUiOptions =
   typeof RepoUrlPickerFieldSchema.uiOptionsType;
 
@@ -561,6 +555,8 @@ export class ScaffolderClient implements ScaffolderApi_2 {
   listTasks(options: { filterByOwnership: 'owned' | 'all' }): Promise<{
     tasks: ScaffolderTask_2[];
   }>;
+  // (undocumented)
+  retry?(taskId: string): Promise<void>;
   // (undocumented)
   scaffold(
     options: ScaffolderScaffoldOptions_2,
@@ -682,16 +678,16 @@ export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets_2;
 // src/api.d.ts:33:5 - (ae-undocumented) Missing documentation for "dryRun".
 // src/api.d.ts:36:5 - (ae-undocumented) Missing documentation for "listActions".
 // src/api.d.ts:37:5 - (ae-undocumented) Missing documentation for "cancelTask".
-// src/api.d.ts:38:5 - (ae-undocumented) Missing documentation for "autocomplete".
+// src/api.d.ts:38:5 - (ae-undocumented) Missing documentation for "retry".
+// src/api.d.ts:39:5 - (ae-undocumented) Missing documentation for "autocomplete".
 // src/components/OngoingTask/OngoingTask.d.ts:6:22 - (ae-undocumented) Missing documentation for "OngoingTask".
 // src/components/fields/EntityPicker/schema.d.ts:15:22 - (ae-undocumented) Missing documentation for "EntityPickerFieldSchema".
 // src/components/fields/EntityTagsPicker/schema.d.ts:4:22 - (ae-undocumented) Missing documentation for "EntityTagsPickerFieldSchema".
 // src/components/fields/OwnedEntityPicker/schema.d.ts:4:22 - (ae-undocumented) Missing documentation for "OwnedEntityPickerFieldSchema".
 // src/components/fields/OwnerPicker/schema.d.ts:4:22 - (ae-undocumented) Missing documentation for "OwnerPickerFieldSchema".
 // src/components/fields/RepoUrlPicker/schema.d.ts:4:22 - (ae-undocumented) Missing documentation for "RepoUrlPickerFieldSchema".
-// src/components/fields/utils.d.ts:9:5 - (ae-undocumented) Missing documentation for "schema".
-// src/components/fields/utils.d.ts:10:5 - (ae-undocumented) Missing documentation for "type".
-// src/components/fields/utils.d.ts:11:5 - (ae-undocumented) Missing documentation for "uiOptionsType".
+// src/components/fields/utils.d.ts:7:1 - (ae-undocumented) Missing documentation for "FieldSchema".
+// src/components/fields/utils.d.ts:15:1 - (ae-undocumented) Missing documentation for "makeFieldSchemaFromZod".
 // src/deprecated.d.ts:7:22 - (ae-undocumented) Missing documentation for "rootRouteRef".
 // src/deprecated.d.ts:12:22 - (ae-undocumented) Missing documentation for "createScaffolderFieldExtension".
 // src/deprecated.d.ts:17:22 - (ae-undocumented) Missing documentation for "ScaffolderFieldExtensions".

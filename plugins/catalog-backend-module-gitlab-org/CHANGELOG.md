@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-backend-module-gitlab-org
 
+## 0.2.1-next.0
+
+### Patch Changes
+
+- 094eaa3: Remove references to in-repo backend-common
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.1-next.0
+  - @backstage/backend-plugin-api@1.0.1-next.0
+  - @backstage/plugin-catalog-backend-module-gitlab@0.4.3-next.0
+  - @backstage/plugin-catalog-node@1.13.1-next.0
+
 ## 0.2.0
 
 ### Minor Changes

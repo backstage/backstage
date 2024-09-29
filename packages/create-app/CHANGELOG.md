@@ -1,5 +1,13 @@
 # @backstage/create-app
 
+## 0.5.21-next.0
+
+### Patch Changes
+
+- a7674d6: Fixed lack of `.yarnrc.yml` in the template.
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+
 ## 0.5.19
 
 ### Patch Changes

@@ -76,6 +76,7 @@ export type TaskEventType = 'completion' | 'log' | 'cancelled' | 'recovered';
  */
 export type SerializedTaskEvent = {
   id: number;
+  isTaskRecoverable?: boolean;
   taskId: string;
   body: JsonObject;
   type: TaskEventType;
@@ -162,6 +163,8 @@ export interface TaskContext {
  */
 export interface TaskBroker {
   cancel?(taskId: string): Promise<void>;
+
+  retry?(taskId: string): Promise<void>;
 
   claim(): Promise<TaskContext>;
 

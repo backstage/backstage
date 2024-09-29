@@ -25,7 +25,7 @@ import {
   ResourcePermission,
 } from '@backstage/plugin-permission-common';
 
-export type checkBasicPermissionOptions = {
+export type checkPermissionOptions = {
   credentials: BackstageCredentials;
   permissions: BasicPermission[];
   permissionService?: PermissionsService;
@@ -47,9 +47,7 @@ export type checkTaskPermissionOptions = {
  * Throws 403 error if any permission responds with AuthorizeResult.DENY
  * @public
  */
-export async function checkBasicPermission(
-  options: checkBasicPermissionOptions,
-) {
+export async function checkPermission(options: checkPermissionOptions) {
   const { permissions, permissionService, credentials } = options;
   if (permissionService) {
     const permissionRequest = permissions.map(permission => ({

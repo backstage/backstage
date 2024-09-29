@@ -152,7 +152,7 @@ export const catalogTranslationRef = createTranslationRef({
       emptyMessage: 'No system is part of this domain',
     },
     relatedEntitiesCard: {
-      emptyHelpLinkTitle: 'Learn how to change this.',
+      emptyHelpLinkTitle: 'Learn how to change this',
     },
     systemDiagramCard: {
       title: 'System Diagram',

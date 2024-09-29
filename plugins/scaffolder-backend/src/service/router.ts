@@ -106,10 +106,7 @@ import {
   IdentityApiGetIdentityRequest,
 } from '@backstage/plugin-auth-node';
 import { InternalTaskSecrets } from '../scaffolder/tasks/types';
-import {
-  checkBasicPermission,
-  checkTaskPermission,
-} from '../util/checkPermissions';
+import { checkPermission, checkTaskPermission } from '../util/checkPermissions';
 import {
   AutocompleteHandler,
   WorkspaceProvider,
@@ -542,7 +539,7 @@ export async function createRouter(
       });
 
       const credentials = await httpAuth.credentials(req);
-      await checkBasicPermission({
+      await checkPermission({
         credentials,
         permissions: [taskCreatePermission],
         permissionService: permissions,
@@ -706,6 +703,27 @@ export async function createRouter(
       await taskBroker.cancel?.(taskId);
       res.status(200).json({ status: 'cancelled' });
     })
+    .post('/v2/tasks/:taskId/retry', async (req, res) => {
+      const credentials = await httpAuth.credentials(req);
+      const { taskId } = req.params;
+      const task = await getTaskById(taskId);
+      // Requires both read and create permissions
+      await checkPermission({
+        credentials,
+        permissions: [taskCreatePermission],
+        permissionService: permissions,
+      });
+      await checkTaskPermission({
+        credentials,
+        permission: taskReadPermission,
+        permissionService: permissions,
+        createdBy: task.createdBy,
+        isTaskAuthorized,
+      });
+
+      await taskBroker.retry?.(taskId);
+      res.status(201).json({ id: taskId });
+    })
     .get('/v2/tasks/:taskId/eventstream', async (req, res) => {
       const credentials = await httpAuth.credentials(req);
 
@@ -745,7 +763,7 @@ export async function createRouter(
             res.write(
               `event: ${event.type}\ndata: ${JSON.stringify(event)}\n\n`,
             );
-            if (event.type === 'completion') {
+            if (event.type === 'completion' && !event.isTaskRecoverable) {
               shouldUnsubscribe = true;
             }
           }
@@ -808,7 +826,7 @@ export async function createRouter(
     })
     .post('/v2/dry-run', async (req, res) => {
       const credentials = await httpAuth.credentials(req);
-      await checkBasicPermission({
+      await checkPermission({
         credentials,
         permissions: [taskCreatePermission],
         permissionService: permissions,

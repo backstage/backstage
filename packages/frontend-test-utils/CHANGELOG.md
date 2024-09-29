@@ -1,5 +1,19 @@
 # @backstage/frontend-test-utils
 
+## 0.2.1-next.0
+
+### Patch Changes
+
+- 873e424: Internal refactor of usage of opaque types.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.0-next.0
+  - @backstage/frontend-app-api@0.10.0-next.0
+  - @backstage/plugin-app@0.1.1-next.0
+  - @backstage/config@1.2.0
+  - @backstage/test-utils@1.6.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.9
+
 ## 0.2.0
 
 ### Minor Changes
