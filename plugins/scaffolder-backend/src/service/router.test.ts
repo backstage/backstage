@@ -510,7 +510,10 @@ describe('createRouter', () => {
 
         const response = await request(app).get(`/v2/tasks?createdBy=not-user`);
         expect(taskBroker.list).toHaveBeenCalledWith({
-          createdBy: 'not-user',
+          filters: {
+            createdBy: ['not-user'],
+          },
+          pagination: {},
         });
         expect(response.status).toEqual(200);
         expect(response.body).toStrictEqual({
@@ -1509,7 +1512,10 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
 
         const response = await request(app).get(`/v2/tasks?createdBy=not-user`);
         expect(taskBroker.list).toHaveBeenCalledWith({
-          createdBy: 'not-user',
+          filters: {
+            createdBy: ['not-user'],
+          },
+          pagination: {},
         });
         expect(response.status).toEqual(200);
         expect(response.body).toStrictEqual({

@@ -630,6 +630,7 @@ export async function createRouter(
       }
 
       const createdBy = parseStringsParam(req.query.createdBy, 'createdBy');
+      // TODO (zaperex): deal with the array case
       const [userEntityRef] = [createdBy].flat();
       await checkTaskPermission({
         credentials,
