@@ -15,11 +15,13 @@
  */
 
 import {
-  Entity,
   DEFAULT_NAMESPACE,
+  Entity,
+  EntityRelation,
   RELATION_OWNED_BY,
 } from '@backstage/catalog-model';
 import {
+  Breadcrumbs,
   Content,
   Header,
   HeaderLabel,
@@ -32,12 +34,16 @@ import {
 import {
   attachComponentData,
   IconComponent,
+  useApi,
   useElementFilter,
   useRouteRef,
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import {
+  catalogApiRef,
   EntityDisplayName,
+  EntityRefLink,
   EntityRefLinks,
   entityRouteRef,
   FavoriteEntity,
@@ -47,14 +53,15 @@ import {
   useAsyncEntity,
 } from '@backstage/plugin-catalog-react';
 import Box from '@material-ui/core/Box';
+import { makeStyles } from '@material-ui/core/styles';
 import { TabProps } from '@material-ui/core/Tab';
 import Alert from '@material-ui/lab/Alert';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
-import { rootRouteRef, unregisterRedirectRouteRef } from '../../routes';
+import useAsync from 'react-use/esm/useAsync';
 import { catalogTranslationRef } from '../../alpha/translation';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { rootRouteRef, unregisterRedirectRouteRef } from '../../routes';
+import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
 
 /** @public */
 export type EntityLayoutRouteProps = {
@@ -101,6 +108,7 @@ function headerProps(
   const namespace = paramNamespace ?? entity?.metadata.namespace ?? '';
   const name =
     entity?.metadata.title ?? paramName ?? entity?.metadata.name ?? '';
+
   return {
     headerTitle: `${name}${
       namespace && namespace !== DEFAULT_NAMESPACE ? ` in ${namespace}` : ''
@@ -167,7 +175,48 @@ export interface EntityLayoutProps {
   UNSTABLE_contextMenuOptions?: EntityContextMenuOptions;
   children?: React.ReactNode;
   NotFoundComponent?: React.ReactNode;
+  /**
+   * An array of relation types used to determine the parent entities in the hierarchy.
+   * These relations are prioritized in the order provided, allowing for flexible
+   * navigation through entity relationships.
+   *
+   * For example, use relation types like `["partOf", "memberOf", "ownedBy"]` to define how the entity is related to
+   * its parents in the Entity Catalog.
+   *
+   * It adds breadcrumbs in the Entity page to enhance user navigation and context awareness.
+   */
+  parentEntityRelations?: string[];
 }
+
+function findParentRelation(
+  entityRelations: EntityRelation[] = [],
+  relationTypes: string[] = [],
+) {
+  for (const type of relationTypes) {
+    const foundRelation = entityRelations.find(
+      relation => relation.type === type,
+    );
+    if (foundRelation) {
+      return foundRelation; // Return the first found relation and stop
+    }
+  }
+  return null;
+}
+
+const useStyles = makeStyles(theme => ({
+  breadcrumbs: {
+    color: theme.page.fontColor,
+    fontSize: theme.typography.caption.fontSize,
+    textTransform: 'uppercase',
+    marginTop: theme.spacing(1),
+    opacity: 0.8,
+    '& span ': {
+      color: theme.page.fontColor,
+      textDecoration: 'underline',
+      textUnderlineOffset: '3px',
+    },
+  },
+}));
 
 /**
  * EntityLayout is a compound component, which allows you to define a layout for
@@ -192,7 +241,9 @@ export const EntityLayout = (props: EntityLayoutProps) => {
     UNSTABLE_contextMenuOptions,
     children,
     NotFoundComponent,
+    parentEntityRelations,
   } = props;
+  const classes = useStyles();
   const { kind, namespace, name } = useRouteRefParams(entityRouteRef);
   const { entity, loading, error } = useAsyncEntity();
   const location = useLocation();
@@ -247,6 +298,22 @@ export const EntityLayout = (props: EntityLayoutProps) => {
     );
   };
 
+  const parentEntity = findParentRelation(
+    entity?.relations ?? [],
+    parentEntityRelations ?? [],
+  );
+
+  const catalogApi = useApi(catalogApiRef);
+  const { value: ancestorEntity } = useAsync(async () => {
+    if (parentEntity) {
+      return findParentRelation(
+        (await catalogApi.getEntityByRef(parentEntity?.targetRef))?.relations,
+        parentEntityRelations,
+      );
+    }
+    return null;
+  }, [parentEntity]);
+
   // Make sure to close the dialog if the user clicks links in it that navigate
   // to another entity.
   useEffect(() => {
@@ -261,6 +328,23 @@ export const EntityLayout = (props: EntityLayoutProps) => {
         title={<EntityLayoutTitle title={headerTitle} entity={entity!} />}
         pageTitleOverride={headerTitle}
         type={headerType}
+        subtitle={
+          parentEntity && (
+            <Breadcrumbs separator=">" className={classes.breadcrumbs}>
+              {ancestorEntity && (
+                <EntityRefLink
+                  entityRef={ancestorEntity.targetRef}
+                  disableTooltip
+                />
+              )}
+              <EntityRefLink
+                entityRef={parentEntity.targetRef}
+                disableTooltip
+              />
+              {name}
+            </Breadcrumbs>
+          )
+        }
       >
         {entity && (
           <>
