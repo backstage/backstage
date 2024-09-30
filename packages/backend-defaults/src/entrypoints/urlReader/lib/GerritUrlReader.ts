@@ -260,13 +260,8 @@ export class GerritUrlReader implements UrlReaderService {
       // https://github.com/backstage/backstage/issues/8242
       signal: options?.signal as any,
     });
-    if (treeResponse.status === 404) {
-      throw new NotFoundError(`Not found: ${gitilesUrl}`);
-    }
     if (!treeResponse.ok) {
-      throw new Error(
-        `${url} could not be read as ${treeUrl}, ${treeResponse.status} ${treeResponse.statusText}`,
-      );
+      throw await ResponseError.fromResponse(treeResponse);
     }
 
     const res = (await parseGerritJsonResponse(treeResponse as any)) as {
