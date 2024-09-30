@@ -38,7 +38,11 @@ import {
   parseGerritGitilesUrl,
   parseGerritJsonResponse,
 } from '@backstage/integration';
-import { NotFoundError, NotModifiedError } from '@backstage/errors';
+import {
+  NotFoundError,
+  NotModifiedError,
+  ResponseError,
+} from '@backstage/errors';
 import { ReadTreeResponseFactory, ReaderFactory } from './types';
 import { Minimatch } from 'minimatch';
 
@@ -246,7 +250,6 @@ export class GerritUrlReader implements UrlReaderService {
       url,
     );
 
-    /** TODO: export something else from integrations */
     const gitilesUrl = getGitilesAuthenticationUrl(this.integration.config);
     const treeUrl = `${gitilesUrl}/${project}/+/refs/heads/${branch}/?format=JSON&recursive`;
 

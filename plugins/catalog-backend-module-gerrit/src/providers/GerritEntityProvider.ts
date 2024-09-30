@@ -15,7 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
-import { InputError } from '@backstage/errors';
+import { InputError, ResponseError } from '@backstage/errors';
 import {
   EntityProvider,
   EntityProviderConnection,
@@ -210,9 +210,7 @@ export class GerritEntityProvider implements EntityProvider {
     }
 
     if (!response.ok) {
-      throw new Error(
-        `Failed to get project's HEAD for ${project}, got ${response.statusText}`,
-      );
+      throw await ResponseError.fromResponse(response);
     }
 
     // Gerrit responds with something like `refs/heads/master`
