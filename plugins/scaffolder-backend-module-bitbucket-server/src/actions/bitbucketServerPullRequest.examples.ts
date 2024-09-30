@@ -107,6 +107,7 @@ export const examples: TemplateExample[] = [
             sourceBranch: 'my-feature-branch',
             targetBranch: 'development',
             description: 'This is a detailed description of my pull request',
+            reviewers: ['reviewer1', 'reviewer2'],
             token: 'my-auth-token',
             gitAuthorName: 'test-user',
             gitAuthorEmail: 'test-user@sample.com',
