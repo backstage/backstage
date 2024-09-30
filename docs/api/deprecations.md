@@ -85,7 +85,7 @@ First, you'll need to define a new Utility API reference. If you're only using
 the API for sign-in, you can put the definition in `packages/app/src/apis.ts`.
 However, if you need to access your auth API inside plugins you you'll need to
 export it from a common package. If you don't already have one, we recommend
-creating `@internal/apis` and from there export the API reference.
+creating `@internal/apis` and from there exporting the API reference.
 
 ```ts
 // `ProfileInfoApi & BackstageIdentityApi & SessionApi` are required for sign-in
