@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,20 @@
  * limitations under the License.
  */
 
-export { createSpecializedApp } from './createSpecializedApp';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import {
+  createApp as _createApp,
+  CreateAppFeatureLoader as _CreateAppFeatureLoader,
+} from '../../../frontend-defaults/src/createApp';
 
-export * from './deprecated';
-export * from './types';
+/**
+ * @public
+ * @deprecated Import from `@backstage/frontend-defaults` instead.
+ */
+export const createApp = _createApp;
+
+/**
+ * @public
+ * @deprecated Import from `@backstage/frontend-defaults` instead.
+ */
+export type CreateAppFeatureLoader = _CreateAppFeatureLoader;

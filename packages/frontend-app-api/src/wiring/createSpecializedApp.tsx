@@ -42,12 +42,6 @@ import {
 } from '@backstage/core-plugin-api';
 import { ApiFactoryRegistry, ApiResolver } from '@backstage/core-app-api';
 
-// TODO: Get rid of all of these
-
-import {
-  createApp as _createApp,
-  CreateAppFeatureLoader as _CreateAppFeatureLoader,
-} from '@backstage/frontend-defaults';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 
@@ -174,18 +168,6 @@ class RouteResolutionApiProxy implements RouteResolutionApi {
     return this.#routeObjects;
   }
 }
-
-/**
- * @public
- * @deprecated Import from `@backstage/frontend-defaults` instead.
- */
-export const createApp = _createApp;
-
-/**
- * @public
- * @deprecated Import from `@backstage/frontend-defaults` instead.
- */
-export type CreateAppFeatureLoader = _CreateAppFeatureLoader;
 
 /**
  * Creates an empty app without any default features. This is a low-level API is

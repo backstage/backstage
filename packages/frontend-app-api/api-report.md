@@ -4,18 +4,24 @@
 
 ```ts
 import { ConfigApi } from '@backstage/core-plugin-api';
-import { createApp as createApp_2 } from '@backstage/frontend-defaults';
-import { CreateAppFeatureLoader as CreateAppFeatureLoader_2 } from '@backstage/frontend-defaults';
+import { ConfigApi as ConfigApi_2 } from '@backstage/frontend-plugin-api';
+import { CreateAppRouteBinder as CreateAppRouteBinder_2 } from '@backstage/frontend-app-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
+import { FrontendFeature as FrontendFeature_2 } from '@backstage/frontend-app-api';
 import { FrontendModule } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
+import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SubRouteRef } from '@backstage/frontend-plugin-api';
 
+// Warning: (ae-forgotten-export) The symbol "createApp_2" needs to be exported by the entry point index.d.ts
+//
 // @public @deprecated (undocumented)
 export const createApp: typeof createApp_2;
 
+// Warning: (ae-forgotten-export) The symbol "CreateAppFeatureLoader_2" needs to be exported by the entry point index.d.ts
+//
 // @public @deprecated (undocumented)
 export type CreateAppFeatureLoader = CreateAppFeatureLoader_2;
 
