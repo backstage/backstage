@@ -31983,8 +31983,8 @@ __metadata:
   linkType: hard
 
 "knip@npm:^5.0.0":
-  version: 5.30.2
-  resolution: "knip@npm:5.30.2"
+  version: 5.30.6
+  resolution: "knip@npm:5.30.6"
   dependencies:
     "@nodelib/fs.walk": 1.2.8
     "@snyk/github-codeowners": 1.1.0
@@ -31997,7 +31997,7 @@ __metadata:
     picocolors: ^1.0.0
     picomatch: ^4.0.1
     pretty-ms: ^9.0.0
-    smol-toml: ^1.1.4
+    smol-toml: ^1.3.0
     strip-json-comments: 5.0.1
     summary: 2.1.0
     zod: ^3.22.4
@@ -32008,7 +32008,7 @@ __metadata:
   bin:
     knip: bin/knip.js
     knip-bun: bin/knip-bun.js
-  checksum: fafb6ee078c1e9f24e83c08c6b97c7ad82ef78d043eff6a064639e08354a4b81cbb132d705acc53874d0f0d02dc690d960f75efe8783ac349fde491bcbf1b742
+  checksum: 9820761248882926789bdf3cf8014a32e695d94bdabc335b4b637bceaeec7922358b67027b46aa5f7f2af10460027d0d33be407d48db76e50c8d1dd8dfca95ce
   languageName: node
   linkType: hard
 
@@ -40484,10 +40484,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"smol-toml@npm:^1.1.4":
-  version: 1.2.1
-  resolution: "smol-toml@npm:1.2.1"
-  checksum: 12040dd8e38b6efb7a1572bfd803c6a7ac89b8d715d0614b024601165059ea3f4653dd5b87b601308dcefd20a26af8445e9be9888b52e0c4f24d1bfc6d2c4e84
+"smol-toml@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "smol-toml@npm:1.3.0"
+  checksum: 79e1db6b6cd32a13ad7602bfe1a02f20894fe599657a5cc2c8ffab7c3de4ba51f7426b701b513f9b859560918b36a63f7c73f7eaf6def8a1dc73db74ffd9b601
   languageName: node
   linkType: hard
 
