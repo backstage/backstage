@@ -61,7 +61,7 @@ catalog:
         catalogPath: '{**/catalog-info.{yml,yaml},**/.catalog-info/*.{yml,yaml}}'
 ```
 
-The provider configuration is composed of four parts:
+The provider configuration consists of the following parts:
 
 - **`host`**: the host of the Gerrit integration to use.
 - **`branch`** _(optional)_: the branch where we will look for catalog entities (defaults to "master").
