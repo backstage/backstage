@@ -3398,14 +3398,14 @@ __metadata:
   linkType: hard
 
 "@backstage-community/plugin-puppetdb@npm:^0.1.18":
-  version: 0.1.20
-  resolution: "@backstage-community/plugin-puppetdb@npm:0.1.20"
+  version: 0.1.21
+  resolution: "@backstage-community/plugin-puppetdb@npm:0.1.21"
   dependencies:
-    "@backstage/catalog-model": ^1.6.0
-    "@backstage/core-components": ^0.14.10
-    "@backstage/core-plugin-api": ^1.9.3
+    "@backstage/catalog-model": ^1.7.0
+    "@backstage/core-components": ^0.15.0
+    "@backstage/core-plugin-api": ^1.9.4
     "@backstage/errors": ^1.2.4
-    "@backstage/plugin-catalog-react": ^1.12.3
+    "@backstage/plugin-catalog-react": ^1.13.1
     "@material-ui/core": ^4.12.2
     "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     react-use: ^17.2.4
@@ -3413,7 +3413,7 @@ __metadata:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
-  checksum: 231855a135575bdc6eb92890602589adcf82c5eabaec7dfaef456c598454d8d05e2484ee80c3684824a9b52f62ce313d5e780722ae0553c3742ec7a89ec558c7
+  checksum: 35ba13300ef26f705ebd7844bfb8e6dc9bda4db5a4d92d09a9d1dbff52c73a5c4175081fd6b3ef4612cb6018250eedd4e7e1db63b9f1339f723866813dae1595
   languageName: node
   linkType: hard
 
@@ -3839,7 +3839,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/catalog-model@^1.4.3, @backstage/catalog-model@^1.6.0, @backstage/catalog-model@^1.7.0, @backstage/catalog-model@workspace:^, @backstage/catalog-model@workspace:packages/catalog-model":
+"@backstage/catalog-model@^1.4.3, @backstage/catalog-model@^1.7.0, @backstage/catalog-model@workspace:^, @backstage/catalog-model@workspace:packages/catalog-model":
   version: 0.0.0-use.local
   resolution: "@backstage/catalog-model@workspace:packages/catalog-model"
   dependencies:
@@ -4676,9 +4676,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/integration-react@npm:^1.1.31":
-  version: 1.1.31
-  resolution: "@backstage/integration-react@npm:1.1.31"
+"@backstage/integration-react@npm:^1.1.32":
+  version: 1.1.32
+  resolution: "@backstage/integration-react@npm:1.1.32"
   dependencies:
     "@backstage/config": ^1.2.0
     "@backstage/core-plugin-api": ^1.9.4
@@ -4690,7 +4690,7 @@ __metadata:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
-  checksum: a31313bc3cd2189535eee6150ad49963f3172fa33d1c1f1c7f93e46b891c67ead9e0ea810bcfcbd6dc5ceabebb2036b0d562ec2088b0559d48c22e8b65e09bd1
+  checksum: d26362ad3a8a6c8ac41b3eadf9c6d5b01e3cef3ca3e38a86bbf7b1c5e1b6e8ba5e940e74d31006faf0640a366ba8c5deb0ca6cbc58099d5f51fae6a7484944d6
   languageName: node
   linkType: hard
 
@@ -5979,9 +5979,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-react@npm:^1.12.3, @backstage/plugin-catalog-react@npm:^1.9.3":
-  version: 1.13.0
-  resolution: "@backstage/plugin-catalog-react@npm:1.13.0"
+"@backstage/plugin-catalog-react@npm:^1.13.1, @backstage/plugin-catalog-react@npm:^1.9.3":
+  version: 1.13.1
+  resolution: "@backstage/plugin-catalog-react@npm:1.13.1"
   dependencies:
     "@backstage/catalog-client": ^1.7.0
     "@backstage/catalog-model": ^1.7.0
@@ -5990,7 +5990,7 @@ __metadata:
     "@backstage/core-plugin-api": ^1.9.4
     "@backstage/errors": ^1.2.4
     "@backstage/frontend-plugin-api": ^0.8.0
-    "@backstage/integration-react": ^1.1.31
+    "@backstage/integration-react": ^1.1.32
     "@backstage/plugin-catalog-common": ^1.1.0
     "@backstage/plugin-permission-common": ^0.8.1
     "@backstage/plugin-permission-react": ^0.4.26
@@ -6012,7 +6012,7 @@ __metadata:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
-  checksum: e86fdfdab9f2b0fcbc68b0521acbc3c2ba95ab4206aabb09f307021960776f0aca6335cdb47b27c506b4a32f88768716839fe1e09e156d8970414da94992f0b9
+  checksum: d41f4d3a72f17be6a9019a4d8acaeb9d3198e2b1d0e25bd28efb3b5617d301a5798e259d4bcc077351d76e1c130e565344564bf987f4079f4b4bc040ae7a9878
   languageName: node
   linkType: hard
 
