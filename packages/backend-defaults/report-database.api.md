@@ -7,6 +7,8 @@ import { DatabaseService } from '@backstage/backend-plugin-api';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
+import { RootLifecycleService } from '@backstage/backend-plugin-api';
+import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 
 // @public
@@ -27,6 +29,8 @@ export class DatabaseManager {
 // @public
 export type DatabaseManagerOptions = {
   migrations?: DatabaseService['migrations'];
+  rootLogger?: RootLoggerService;
+  rootLifecycle?: RootLifecycleService;
 };
 
 // @public
