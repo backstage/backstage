@@ -1,0 +1,11 @@
+title: Harness Cloud Cost Management
+author: harness.io
+authorUrl: https://github.com/harness/backstage-plugins
+category: FinOps
+description: This plugin helps you to manage and optimize cloud costs using Harness Cloud Cost Management module directly inside Backstage.
+documentation: https://github.com/harness/backstage-plugins/tree/main/plugins/harness-ccm
+iconUrl: https://static.harness.io/ng-static/images/favicon.png
+npmPackageName: '@harnessio/backstage-plugin-harness-ccm'
+tags:
+  - finops
+addedDate: '2024-09-27'
