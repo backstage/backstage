@@ -274,23 +274,23 @@ which uses additional API calls in order to detect whether to 'create', 'update'
           );
         }
       }
-
       const actions: Types.CommitAction[] =
         ctx.input.commitAction === 'skip'
           ? []
           : (
               (
                 await Promise.all(
-                  fileContents.map(async file =>
-                    getFileAction(
+                  fileContents.map(async file => {
+                    const action = await getFileAction(
                       { file, targetPath },
                       { repoID, branch: targetBranch! },
                       api,
                       ctx,
                       remoteFiles,
                       ctx.input.commitAction,
-                    ).then(action => ({ file, action })),
-                  ),
+                    );
+                    return { file, action };
+                  }),
                 )
               ).filter(o => o.action !== 'skip') as {
                 file: SerializedFile;
