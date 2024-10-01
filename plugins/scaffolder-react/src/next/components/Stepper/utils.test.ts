@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { hasErrors } from './utils';
+import { type ParsedTemplateSchema } from '../../hooks/useTemplateSchema';
+import { hasErrors, transformSchemaToProps } from './utils';
 
 describe('hasErrors', () => {
   it('should return false for empty _errors', () => {
@@ -88,5 +89,27 @@ describe('hasErrors', () => {
     };
 
     expect(hasErrors(errors)).toBe(true);
+  });
+});
+
+describe('transformSchemaToProps', () => {
+  it('should replace ui:ObjectFieldTemplate with actual component', () => {
+    const layouts = [{ name: 'TwoColumn', component: jest.fn() }];
+
+    const step: ParsedTemplateSchema = {
+      title: 'Fill in some steps',
+      mergedSchema: {},
+      schema: {},
+      uiSchema: {
+        'ui:ObjectFieldTemplate': 'TwoColumn' as any,
+        name: {
+          'ui:field': 'EntityNamePicker',
+          'ui:autofocus': true,
+        },
+      },
+    };
+
+    const { uiSchema } = transformSchemaToProps(step, { layouts });
+    expect(uiSchema['ui:ObjectFieldTemplate']).toEqual(layouts[0].component);
   });
 });

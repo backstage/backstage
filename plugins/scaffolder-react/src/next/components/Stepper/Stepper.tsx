@@ -36,8 +36,7 @@ import {
 import { ReviewState, type ReviewStateProps } from '../ReviewState';
 import { useTemplateSchema, useFormDataFromQuery } from '../../hooks';
 import { customizeValidator } from '@rjsf/validator-ajv8';
-import { useTransformSchemaToProps } from '../../hooks/useTransformSchemaToProps';
-import { hasErrors } from './utils';
+import { hasErrors, transformSchemaToProps } from './utils';
 import * as FieldOverrides from './FieldOverrides';
 import { Form } from '../Form';
 import {
@@ -118,7 +117,7 @@ export const Stepper = (stepperProps: StepperProps) => {
   const [initialState] = useFormDataFromQuery(props.initialState);
   const [formState, setFormState] = useState<{
     [step: string]: Record<string, JsonValue>;
-  }>();
+  }>({});
 
   const [errors, setErrors] = useState<undefined | FormValidation>();
   const styles = useStyles();
@@ -159,17 +158,12 @@ export const Stepper = (stepperProps: StepperProps) => {
     setActiveStep(prevActiveStep => prevActiveStep - 1);
   };
 
-  const handleChange = useCallback(
-    (e: IChangeEvent) => {
-      setFormState(current => ({
-        ...current,
-        [makeStepKey(activeStep)]: e.formData,
-      }));
-    },
-    [setFormState, activeStep],
-  );
-
-  const currentStep = useTransformSchemaToProps(steps[activeStep], { layouts });
+  const handleChange = (step: number) => (e: IChangeEvent) => {
+    setFormState(current => ({
+      ...current,
+      [makeStepKey(step)]: e.formData,
+    }));
+  };
 
   const handleNext = async ({
     formData = {},
@@ -189,16 +183,16 @@ export const Stepper = (stepperProps: StepperProps) => {
       setErrors(returnedValidation);
     } else {
       setErrors(undefined);
+      setFormState(current => ({
+        ...current,
+        [makeStepKey(activeStep)]: formData,
+      }));
       setActiveStep(prevActiveStep => {
         const stepNum = prevActiveStep + 1;
         analytics.captureEvent('click', `Next Step (${stepNum})`);
         return stepNum;
       });
     }
-    setFormState(current => ({
-      ...current,
-      [makeStepKey(activeStep)]: formData,
-    }));
   };
 
   const {
@@ -207,25 +201,88 @@ export const Stepper = (stepperProps: StepperProps) => {
     ...restFormProps
   } = props.formProps ?? {};
 
-  const mergedUiSchema = merge({}, propUiSchema, currentStep?.uiSchema);
-
-  const mergedState = useMemo(() => {
-    if (!formState) {
-      return initialState;
-    }
-    const { [makeStepKey(activeStep)]: activeState, ...historicalState } =
-      formState;
-    const chronologicalState = {
-      ...historicalState,
-      [makeStepKey(activeStep)]: activeState,
-    };
-    return merge({}, ...Object.values(chronologicalState));
-  }, [formState, activeStep, initialState]);
+  const mergedState = useMemo(
+    () => (formState ? merge({}, ...Object.values(formState)) : initialState),
+    [formState, initialState],
+  );
 
   const handleCreate = useCallback(() => {
     props.onCreate(mergedState);
     analytics.captureEvent('click', `${createLabel}`);
   }, [props, mergedState, analytics, createLabel]);
+
+  const stepForms = steps.map((step, index) => {
+    const { uiSchema, schema } = transformSchemaToProps(step, { layouts });
+    const mergedUiSchema = merge({}, propUiSchema, uiSchema);
+    return (
+      <Form
+        validator={validator}
+        extraErrors={errors as unknown as ErrorSchema}
+        formData={formState[makeStepKey(index)]}
+        formContext={{
+          ...propFormContext,
+          formData: formState[makeStepKey(index)],
+        }}
+        schema={schema}
+        uiSchema={mergedUiSchema}
+        onSubmit={handleNext}
+        fields={fields}
+        showErrorList="top"
+        templates={{ ErrorListTemplate }}
+        onChange={handleChange(index)}
+        widgets={{ password: PasswordWidget }}
+        experimental_defaultFormStateBehavior={{
+          allOf: 'populateDefaults',
+        }}
+        {...restFormProps}
+      >
+        <div className={styles.footer}>
+          <Button
+            onClick={handleBack}
+            className={styles.backButton}
+            disabled={activeStep < 1 || isValidating}
+          >
+            {backLabel}
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            type="submit"
+            disabled={isValidating}
+          >
+            {activeStep === steps.length - 1 ? reviewLabel : 'Next'}
+          </Button>
+        </div>
+      </Form>
+    );
+  });
+
+  const reviewComponent = ReviewStepComponent ? (
+    <ReviewStepComponent
+      disableButtons={isValidating}
+      formData={mergedState}
+      handleBack={handleBack}
+      handleReset={() => {}}
+      steps={steps}
+      handleCreate={handleCreate}
+    />
+  ) : (
+    <>
+      <ReviewStateComponent formState={mergedState} schemas={steps} />
+      <div className={styles.footer}>
+        <Button
+          onClick={handleBack}
+          className={styles.backButton}
+          disabled={activeStep < 1}
+        >
+          {backLabel}
+        </Button>
+        <Button variant="contained" color="primary" onClick={handleCreate}>
+          {createLabel}
+        </Button>
+      </div>
+    </>
+  );
 
   return (
     <>
@@ -257,75 +314,7 @@ export const Stepper = (stepperProps: StepperProps) => {
         </MuiStep>
       </MuiStepper>
       <div className={styles.formWrapper}>
-        {/* eslint-disable-next-line no-nested-ternary */}
-        {activeStep < steps.length ? (
-          <Form
-            validator={validator}
-            extraErrors={errors as unknown as ErrorSchema}
-            formData={mergedState}
-            formContext={{ ...propFormContext, formData: mergedState }}
-            schema={currentStep.schema}
-            uiSchema={mergedUiSchema}
-            onSubmit={handleNext}
-            fields={fields}
-            showErrorList="top"
-            templates={{ ErrorListTemplate }}
-            onChange={handleChange}
-            widgets={{ password: PasswordWidget }}
-            experimental_defaultFormStateBehavior={{
-              allOf: 'populateDefaults',
-            }}
-            {...restFormProps}
-          >
-            <div className={styles.footer}>
-              <Button
-                onClick={handleBack}
-                className={styles.backButton}
-                disabled={activeStep < 1 || isValidating}
-              >
-                {backLabel}
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                type="submit"
-                disabled={isValidating}
-              >
-                {activeStep === steps.length - 1 ? reviewLabel : 'Next'}
-              </Button>
-            </div>
-          </Form>
-        ) : // TODO: potentially move away from this pattern, deprecate?
-        ReviewStepComponent ? (
-          <ReviewStepComponent
-            disableButtons={isValidating}
-            formData={mergedState}
-            handleBack={handleBack}
-            handleReset={() => {}}
-            steps={steps}
-            handleCreate={handleCreate}
-          />
-        ) : (
-          <>
-            <ReviewStateComponent formState={mergedState} schemas={steps} />
-            <div className={styles.footer}>
-              <Button
-                onClick={handleBack}
-                className={styles.backButton}
-                disabled={activeStep < 1}
-              >
-                {backLabel}
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleCreate}
-              >
-                {createLabel}
-              </Button>
-            </div>
-          </>
-        )}
+        {activeStep < steps.length ? stepForms[activeStep] : reviewComponent}
       </div>
     </>
   );

@@ -16,6 +16,8 @@
 import type { JsonObject, JsonValue } from '@backstage/types';
 import type { FieldValidation } from '@rjsf/utils';
 import { FormValidation } from './createAsyncValidators';
+import { type ParsedTemplateSchema } from '../../hooks/useTemplateSchema';
+import { LayoutOptions } from '../../../layouts/';
 
 function isFieldValidation(error: any): error is FieldValidation {
   return !!error && '__errors' in error;
@@ -46,3 +48,37 @@ export function hasErrors(errors?: FormValidation): boolean {
 export function isObject(value: JsonValue | undefined): value is JsonObject {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
+
+interface Options {
+  layouts?: LayoutOptions[];
+}
+
+export const transformSchemaToProps = (
+  step: ParsedTemplateSchema,
+  options: Options = {},
+): ParsedTemplateSchema => {
+  const { layouts = [] } = options;
+  const objectFieldTemplate = step?.uiSchema['ui:ObjectFieldTemplate'] as
+    | string
+    | undefined;
+
+  if (typeof objectFieldTemplate !== 'string') {
+    return step;
+  }
+
+  const Layout = layouts.find(
+    layout => layout.name === objectFieldTemplate,
+  )?.component;
+
+  if (!Layout) {
+    return step;
+  }
+
+  return {
+    ...step,
+    uiSchema: {
+      ...step.uiSchema,
+      ['ui:ObjectFieldTemplate']: Layout,
+    },
+  };
+};
