@@ -41,21 +41,16 @@ export const databaseServiceFactory = createServiceFactory({
     rootLogger: coreServices.rootLogger,
   },
   async createRootContext({ config, rootLifecycle, rootLogger }) {
-    const databaseManager = config.getOptional('backend.database')
-      ? DatabaseManager.fromConfig(config)
+    return config.getOptional('backend.database')
+      ? DatabaseManager.fromConfig(config, { rootLifecycle, rootLogger })
       : DatabaseManager.fromConfig(
           new ConfigReader({
             backend: {
               database: { client: 'better-sqlite3', connection: ':memory:' },
             },
           }),
+          { rootLifecycle, rootLogger },
         );
-
-    rootLifecycle.addShutdownHook(async () => {
-      await databaseManager.shutdown({ logger: rootLogger });
-    });
-
-    return databaseManager;
   },
   async factory({ pluginMetadata, lifecycle, logger }, databaseManager) {
     return databaseManager.forPlugin(pluginMetadata.getId(), {
