@@ -30,6 +30,12 @@ export type LdapVendor = {
    * The attribute name that holds a universal unique identifier for an entry.
    */
   uuidAttributeName: string;
+
+  /**
+   * The attribute that determines behaviour of the (dn,members,memberOf) for entries.
+   */
+  dnCaseSensitive?: boolean;
+
   /**
    * Decode ldap entry values for a given attribute name to their string representation.
    *
