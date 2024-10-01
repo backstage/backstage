@@ -223,7 +223,9 @@ export interface ScaffolderApi {
 
   listTasks?(options: {
     filterByOwnership: 'owned' | 'all';
-  }): Promise<{ tasks: ScaffolderTask[] }>;
+    limit?: number;
+    offset?: number;
+  }): Promise<{ tasks: ScaffolderTask[]; totalTasks?: number }>;
 
   getIntegrationsList(
     options: ScaffolderGetIntegrationsListOptions,
