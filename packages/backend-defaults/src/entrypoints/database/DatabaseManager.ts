@@ -90,6 +90,27 @@ export class DatabaseManagerImpl {
   }
 
   /**
+   * Method to be called during shutdown to destroy all known connections.
+   */
+  async shutdown(deps: { logger: LoggerService }): Promise<void> {
+    const pluginIds = Array.from(this.databaseCache.keys());
+    await Promise.all(
+      pluginIds.map(async pluginId => {
+        const connection = await this.databaseCache.get(pluginId);
+        if (connection) {
+          await connection.destroy().catch((error: unknown) => {
+            deps.logger.error(
+              `Problem closing database connection for ${pluginId}: ${stringifyError(
+                error,
+              )}`,
+            );
+          });
+        }
+      }),
+    );
+  }
+
+  /**
    * Provides the client type which should be used for a given plugin.
    *
    * The client type is determined by plugin specific config if present.
@@ -235,5 +256,12 @@ export class DatabaseManager {
     },
   ): PluginDatabaseManager {
     return this.impl.forPlugin(pluginId, deps);
+  }
+
+  /**
+   * Method to be called during shutdown to destroy all known connections.
+   */
+  async shutdown(deps: { logger: LoggerService }): Promise<void> {
+    return this.impl.shutdown(deps);
   }
 }

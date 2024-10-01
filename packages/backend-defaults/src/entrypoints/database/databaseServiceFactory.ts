@@ -37,9 +37,11 @@ export const databaseServiceFactory = createServiceFactory({
     lifecycle: coreServices.lifecycle,
     logger: coreServices.logger,
     pluginMetadata: coreServices.pluginMetadata,
+    rootLifecycle: coreServices.rootLifecycle,
+    rootLogger: coreServices.rootLogger,
   },
-  async createRootContext({ config }) {
-    return config.getOptional('backend.database')
+  async createRootContext({ config, rootLifecycle, rootLogger }) {
+    const databaseManager = config.getOptional('backend.database')
       ? DatabaseManager.fromConfig(config)
       : DatabaseManager.fromConfig(
           new ConfigReader({
@@ -48,6 +50,12 @@ export const databaseServiceFactory = createServiceFactory({
             },
           }),
         );
+
+    rootLifecycle.addShutdownHook(async () => {
+      await databaseManager.shutdown({ logger: rootLogger });
+    });
+
+    return databaseManager;
   },
   async factory({ pluginMetadata, lifecycle, logger }, databaseManager) {
     return databaseManager.forPlugin(pluginMetadata.getId(), {
