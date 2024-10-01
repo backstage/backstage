@@ -40,7 +40,7 @@ async function getFileAction(
   fileInfo: { file: SerializedFile; targetPath?: string },
   target: { repoID: string; branch: string },
   api: Gitlab,
-  ctx: { logger: Logger },
+  logger: Logger,
   remoteFiles: Types.RepositoryTreeSchema[],
   defaultCommitAction:
     | 'create'
@@ -63,7 +63,7 @@ async function getFileAction(
           return 'skip';
         }
       } catch (error) {
-        ctx.logger.warn(
+        logger.warn(
           `Unable to retrieve detailed information for remote file ${filePath}`,
         );
       }
@@ -285,7 +285,7 @@ which uses additional API calls in order to detect whether to 'create', 'update'
                       { file, targetPath },
                       { repoID, branch: targetBranch! },
                       api,
-                      ctx,
+                      ctx.logger,
                       remoteFiles,
                       ctx.input.commitAction,
                     );
