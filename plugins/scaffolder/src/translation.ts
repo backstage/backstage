@@ -304,17 +304,15 @@ export const scaffolderTranslationRef = createTranslationRef({
       addToCatalogButton: 'Publish',
       addToCatalogDialogTitle: 'Publish changes',
       addToCatalogDialogContent: {
-        introduction:
+        stepsIntroduction:
           'Follow the instructions below to create or update a template:',
-        step1: 'Save the template files in a local directory',
-        step2: 'Create a pull request to a new or existing git repository',
-        step3:
-          'If the template already exists, the changes will be reflected in the software catalog once the pull request gets merged',
-        step4:
-          'But if you are creating a new template, follow the documentation linked below to register the new template repository in software catalog',
+        stepsListItems:
+          'Save the template files in a local directory\nCreate a pull request to a new or existing git repository\nIf the template already exists, the changes will be reflected in the software catalog once the pull request gets merged\nBut if you are creating a new template, follow the documentation linked below to register the new template repository in software catalog',
       },
       addToCatalogDialogActions: {
-        closeButton: 'Close',
+        documentationButton: 'Go to the documentation',
+        documentationUrl:
+          'https://backstage.io/docs/features/software-templates/adding-templates/',
       },
     },
   },

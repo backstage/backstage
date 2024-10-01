@@ -31,7 +31,6 @@ import DialogActions from '@material-ui/core/DialogActions';
 import ExtensionIcon from '@material-ui/icons/Extension';
 import DescriptionIcon from '@material-ui/icons/Description';
 
-import { Link } from '@backstage/core-components';
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 
 import { ActionPageContent } from '../../../components/ActionsPage/ActionsPage';
@@ -137,31 +136,30 @@ export function TemplateEditorToolbar(props: {
           <DialogContent dividers>
             <DialogContentText id="publish-dialog-slide-description">
               {t(
-                'templateEditorToolbar.addToCatalogDialogContent.introduction',
+                'templateEditorToolbar.addToCatalogDialogContent.stepsIntroduction',
               )}
-              <ol>
-                <li>
-                  {t('templateEditorToolbar.addToCatalogDialogContent.step1')}
-                </li>
-                <li>
-                  {t('templateEditorToolbar.addToCatalogDialogContent.step2')}
-                </li>
-                <li>
-                  {t('templateEditorToolbar.addToCatalogDialogContent.step3')}
-                </li>
-                <li>
-                  {t('templateEditorToolbar.addToCatalogDialogContent.step4')}
-                  <br />
-                  <Link to="https://backstage.io/docs/features/software-templates/adding-templates/">
-                    https://backstage.io/docs/features/software-templates/adding-templates/
-                  </Link>
-                </li>
-              </ol>
+              <ul>
+                {t(
+                  'templateEditorToolbar.addToCatalogDialogContent.stepsListItems',
+                )
+                  .split('\n')
+                  .map((step, index) => (
+                    <li key={index}>{step}</li>
+                  ))}
+              </ul>
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button color="primary" onClick={() => setShowPublishModal(false)}>
-              {t('templateEditorToolbar.addToCatalogDialogActions.closeButton')}
+            <Button
+              color="primary"
+              href={t(
+                'templateEditorToolbar.addToCatalogDialogActions.documentationUrl',
+              )}
+              target="_blank"
+            >
+              {t(
+                'templateEditorToolbar.addToCatalogDialogActions.documentationButton',
+              )}
             </Button>
           </DialogActions>
         </Dialog>

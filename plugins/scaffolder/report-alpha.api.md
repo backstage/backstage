@@ -325,12 +325,10 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templateEditorToolbar.installedActionsDocumentationTooltip': 'Installed Actions Documentation';
     readonly 'templateEditorToolbar.addToCatalogButton': 'Publish';
     readonly 'templateEditorToolbar.addToCatalogDialogTitle': 'Publish changes';
-    readonly 'templateEditorToolbar.addToCatalogDialogContent.introduction': 'Follow the instructions below to create or update a template:';
-    readonly 'templateEditorToolbar.addToCatalogDialogContent.step1': 'Save the template files in a local directory';
-    readonly 'templateEditorToolbar.addToCatalogDialogContent.step2': 'Create a pull request to a new or existing git repository';
-    readonly 'templateEditorToolbar.addToCatalogDialogContent.step3': 'If the template already exists, the changes will be reflected in the software catalog once the pull request gets merged';
-    readonly 'templateEditorToolbar.addToCatalogDialogContent.step4': 'But if you are creating a new template, follow the documentation linked below to register the new template repository in software catalog';
-    readonly 'templateEditorToolbar.addToCatalogDialogActions.closeButton': 'Close';
+    readonly 'templateEditorToolbar.addToCatalogDialogContent.stepsIntroduction': 'Follow the instructions below to create or update a template:';
+    readonly 'templateEditorToolbar.addToCatalogDialogContent.stepsListItems': 'Save the template files in a local directory\nCreate a pull request to a new or existing git repository\nIf the template already exists, the changes will be reflected in the software catalog once the pull request gets merged\nBut if you are creating a new template, follow the documentation linked below to register the new template repository in software catalog';
+    readonly 'templateEditorToolbar.addToCatalogDialogActions.documentationUrl': 'https://backstage.io/docs/features/software-templates/adding-templates/';
+    readonly 'templateEditorToolbar.addToCatalogDialogActions.documentationButton': 'Go to the documentation';
   }
 >;
 
