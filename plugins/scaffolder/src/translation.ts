@@ -195,12 +195,21 @@ export const scaffolderTranslationRef = createTranslationRef({
     templateTypePicker: {
       title: 'Categories',
     },
+    templateIntroPage: {
+      title: 'Manage Templates',
+      subtitle:
+        'Edit, preview, and try out templates, forms, and custom fields',
+    },
     templateFormPage: {
-      title: 'Template Form Playground',
-      subtitle: 'Edit, preview, and try out templates and template forms',
+      title: 'Template Editor',
+      subtitle: 'Edit, preview, and try out templates forms',
+    },
+    templateCustomFieldPage: {
+      title: 'Custom Field Explorer',
+      subtitle: 'Edit, preview, and try out custom fields',
     },
     templateEditorPage: {
-      title: 'Manage Templates',
+      title: 'Template Editor',
       subtitle: 'Edit, preview, and try out templates and template forms',
       dryRunResults: {
         title: 'Dry-run results',
@@ -254,7 +263,7 @@ export const scaffolderTranslationRef = createTranslationRef({
           unsupportedTooltip: 'Only supported in some Chromium-based browsers',
         },
         formEditor: {
-          title: 'Template playground',
+          title: 'Template Form Playground',
           description:
             'Preview and edit a template form, either using a sample template or by loading a template from the catalog.',
         },
@@ -267,6 +276,7 @@ export const scaffolderTranslationRef = createTranslationRef({
       templateEditorTextArea: {
         saveIconTooltip: 'Save file',
         refreshIconTooltip: 'Reload file',
+        emptyStateParagraph: 'Please select an action on the file menu.',
       },
       templateFormPreviewer: {
         title: 'Load Existing Template',
@@ -315,6 +325,17 @@ export const scaffolderTranslationRef = createTranslationRef({
         documentationUrl:
           'https://backstage.io/docs/features/software-templates/adding-templates/',
       },
+    },
+    templateEditorToolbarFileMenu: {
+      button: 'File',
+      options: {
+        openDirectory: 'Open template directory',
+        createDirectory: 'Create template directory',
+        closeEditor: 'Close template editor',
+      },
+    },
+    templateEditorToolbarTemplatesMenu: {
+      button: 'Templates',
     },
   },
 });

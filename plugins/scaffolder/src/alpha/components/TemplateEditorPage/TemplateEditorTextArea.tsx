@@ -20,7 +20,6 @@ import { showPanel } from '@codemirror/view';
 import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
 import Tooltip from '@material-ui/core/Tooltip';
-import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import RefreshIcon from '@material-ui/icons/Refresh';
@@ -45,11 +44,14 @@ const useStyles = makeStyles(theme => ({
     verticalAlign: 'top',
   },
   codeMirror: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
+    height: '100%',
+    [theme.breakpoints.up('md')]: {
+      position: 'absolute',
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0,
+    },
   },
   errorPanel: {
     color: theme.palette.error.main,
@@ -150,10 +152,10 @@ export function TemplateEditorTextArea(props: {
 /** A version of the TemplateEditorTextArea that is connected to the DirectoryEditor context */
 export function TemplateEditorDirectoryEditorTextArea(props: {
   errorText?: string;
-  onLoad?: () => void;
 }) {
   const classes = useStyles();
   const directoryEditor = useDirectoryEditor();
+  const { t } = useTranslationRef(scaffolderTranslationRef);
 
   if (!directoryEditor) {
     return (
@@ -162,16 +164,7 @@ export function TemplateEditorDirectoryEditorTextArea(props: {
         color="textSecondary"
         align="center"
       >
-        Please{' '}
-        <Link
-          className={classes.button}
-          component="button"
-          variant="body1"
-          onClick={props.onLoad}
-        >
-          load
-        </Link>{' '}
-        a template directory.
+        {t('templateEditorPage.templateEditorTextArea.emptyStateParagraph')}
       </Typography>
     );
   }
