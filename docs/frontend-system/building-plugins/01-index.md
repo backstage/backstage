@@ -8,48 +8,133 @@ description: Building frontend plugins using the new frontend system
 
 > **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
 
-This section covers how to build your own frontend [plugins](../architecture/15-plugins.md) and
-[overrides](../architecture/25-extension-overrides.md). They are sometimes collectively referred to as
-frontend _features_, and what you install to build up a Backstage frontend [app](../architecture/10-app.md).
+This section covers how to build frontend [plugins](../architecture/15-plugins.md). Plugins are one type of frontend _features_.
+Features, including plugins, are stitched together to build up a Backstage frontend [app](../architecture/10-app.md).
 
-## Creating a new plugin
+Every plugin can incorporate one or more extensions. Each extension in the new frontend system is generated from a Blueprint.
+Additionally, when you import and instantiate a plugin, you can [override the settings for its extensions](../architecture/25-extension-overrides.md).
 
-This guide assumes that you already have a Backstage project set up. Even if you only want to develop a single plugin for publishing, we still recommend that you do so in a standard Backstage monorepo project, as you often end up needing multiple packages. For instructions on how to set up a new project, see our [getting started](../../getting-started/index.md#prerequisites) documentation.
+## Create a Plugin Package
 
-To create a frontend plugin, run `yarn new`, select `plugin`, and fill out the rest of the prompts. This will create a new package at `plugins/<pluginId>`, which will be the main entrypoint for your plugin.
+This guide assumes that you already have a Backstage project set up. Even if you only want to develop a single plugin for publishing,
+we still recommend that you do so in a standard Backstage monorepo project, as you often end up needing multiple packages. For instructions
+on how to set up a new project, see our [getting started](../../getting-started/index.md#prerequisites) documentation.
+
+To create a frontend plugin, run `yarn new`, select `plugin`, and fill out the rest of the prompts. See `Plugin Naming` below for
+examples of plugin ids.
+
+Example:
+
+```sh
+$ yarn new
+
+? What do you want to create?
+  web-library - A new web-library package, exporting shared functionality for frontend plugins
+  backend-module - A new backend module that extends an existing backend plugin with additional features
+  backend-plugin - A new backend plugin
+❯ plugin - A new frontend plugin
+  node-library - A new node-library package, exporting shared functionality for backend plugins and modules
+  plugin-common - A new isomorphic common plugin package
+  plugin-node - A new Node.js library plugin package
+```
+
+Congrats! This will create your new package at `plugins/<pluginId>`.
 
 :::info
-The created plugin will currently be templated for use in the legacy frontend system, and you will need to replace the existing plugin wiring code.
+Important! The created frontend plugin will be templated for use with the legacy frontend system. You will need to replace the
+existing plugin wiring code by migrating it to the new frontend system.
 :::
 
-## The plugin instance
+## Plugin Naming
 
-The starting point of a frontend plugin is the `createFrontendPlugin` function, which accepts a single options object as its only parameter. It is imported from `@backstage/frontend-plugin-api`, which is where you will find most of the common APIs for building plugins.
+A frontend plugin ID is expected to be a lowercase dash-separated string. The plugin instance variable should be the camel case
+version of the plugin ID ending in `Plugin`.
 
-This is how to create a minimal plugin:
+- Example plugin ID: `my-new-feature`
+- Example plugin code name: `myNewFeaturePlugin`
+
+For more details on naming patterns within the frontend system, please see [the article on naming patterns](../architecture/50-naming-patterns.md).
+By sticking to these naming patterns you ensure that users of your plugin more easily recognize the exports and features provided by your plugin.
+
+## Create a Plugin Instance
+
+To instantiate and then export your plugin from your package, you call `createFrontendPlugin({ ... })`. Import this function
+from `@backstage/frontend-plugin-api`. This package is where you will find the common APIs for building plugins.
+
+Create Plugin Example:
 
 ```tsx title="in src/plugin.ts"
 import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 
-export const examplePlugin = createFrontendPlugin({
-  id: 'example',
-  extensions: [],
+export const myExamplePlugin = createFrontendPlugin({
+  id: 'my-example-plugin',
+  extensions: [
+    /** associate extensions with the plugin here **/
+  ],
 });
 ```
+
+Make sure that this Plugin object is exported from your package:
 
 ```tsx title="in src/index.ts"
 export { examplePlugin as default } from './plugin';
 ```
 
-Note that we export the plugin as the default export of our package from `src/index.ts`. This is important, as it is how users of our plugin are able to seamlessly install the plugin package in a Backstage app without having to reference the plugin instance through code.
+Additionally, while still in alpha, we recommend adding the following:
 
-The plugin ID should be a lowercase dash-separated string, while the plugin instance variable should be the camel case version of the ID with a `Plugin` suffix. For more details on naming patterns within the frontend system, see [the article on naming patterns](../architecture/50-naming-patterns.md). By sticking to these naming patterns you ensure that users of your plugin more easily recognize the exports and features provided by your plugin.
+```tsx title="in src/alpha.ts"
+export * from './index.ts';
+```
 
-## Adding extensions
+And then:
 
-The plugin that we created above is empty, and doesn't provide any actual functionality. To add functionality to a plugin you need to create and provide it with one or more [extensions](../architecture/20-extensions.md). Let's continue by adding a standalone page to our plugin, as well as a navigation item that allows users to navigate to the page.
+```typescript jsx title="in package.json"
+  "exports": {
+    ...
+    "./alpha": "./src/alpha.ts"
+    ...
+  }
+```
 
-To create a new extension you typically use pre-defined [extension blueprints](../architecture/23-extension-blueprints.md), provided either by the framework itself or by other plugins. In this case we'll use `PageBlueprint` and `NavItemBlueprint`, both from `@backstage/frontend-plugin-api`. We will also need to [create a route reference](../architecture/36-routes.md#creating-a-route-reference) to use as a reference for our page, allowing us to dynamically create URLs that link to our page.
+Note that we export the plugin as the default export of our package from `src/index.ts`. This is important using the new
+feature discovery of the new frontend system. This default export is how users of our plugin are able to seamlessly install
+the plugin package in a Backstage app without having to reference the plugin instance through code.
+
+## Registering a Plugin with your Backstage App
+
+The new frontend plugin system is designed to use [feature discovery](../architecture/10-app/#feature-discovery) for registration.
+Please see the documentation on Feature Discovery for more information.
+
+If you wish to manually register a plugin rather than using Feature Discovery, plugins are now designed to be passed into
+the `features` field of the `createApp({...})` options.
+
+Manual Plugin Registration (when Feature Discovery is off)
+
+```tsx title="in src/index.ts"
+import { createApp } from '@backstage/frontend-defaults';
+import myExamplePlugin from '@just-an-example/alpha';
+
+// Create your app instance
+const app = createApp({
+  // Features such as plugins can be installed explicitly, but we will explore other options later on
+  features: [myExamplePlugin],
+});
+```
+
+This will register our new completely empty and useless plugin with Backstage. You will need to add features via extensions to
+build out functionality.
+
+## Adding Plugin Features (via Extensions)
+
+To add functionality to a plugin you need to add at least one [extension](../architecture/20-extensions.md). Let's continue by adding a
+standalone page to our plugin, as well as a navigation item that allows users to navigate to the page.
+
+Extensions can be created directly, but it is usually easier to use a predefined starting point for building an extension, called an [extension blueprint](../architecture/23-extension-blueprints.md).
+Blueprints are provided either by the core Backstage framework or by other plugins.
+
+For our example we will use the framework `PageBlueprint` and `NavItemBlueprint`, both from `@backstage/frontend-plugin-api`. We will also need
+to [create a route reference](../architecture/36-routes.md#creating-a-route-reference). A route reference enables us to dynamically create URL
+endpoints that link to our page.
 
 ```tsx title="in src/routes.ts"
 import { createRouteRef } from '@backstage/frontend-plugin-api';
@@ -61,6 +146,11 @@ import { createRouteRef } from '@backstage/frontend-plugin-api';
 export const rootRouteRef = createRouteRef();
 ```
 
+The route reference is a handle to a URL route that is used throughout a Backstage application to ensure that even if
+the sub-url of a route changes, that every reference to that route will still work.
+
+The example page is built by using a `PageBlueprint` provided by the Backstage framework:
+
 ```tsx title="in src/plugin.ts"
 import {
   createFrontendPlugin,
@@ -69,7 +159,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { rootRouteRef } from './routes';
 
-// Note that these extensions aren't exported, only the plugin itself is.
+// Note that the extensions aren't exported, only the plugin itself is.
 // You can export it locally for testing purposes, but don't export it from the plugin package.
 const examplePage = PageBlueprint.make({
   params: {
@@ -109,9 +199,12 @@ export const examplePlugin = createFrontendPlugin({
 });
 ```
 
-What we've built here is a very common type of plugin. It's a top-level tool that provides a single page, along with a method for navigating to that page. The implementation of the page component, in this case the highlighted `ExamplePage`, can be arbitrarily complex. It can be anything from a single simple information page, to a full-blown application with multiple sub-pages.
+This is a very common type of plugin. It is a top-level feature that provides a single page and a routing endpoint for navigating to that page.
+The implementation of the page component, in this case the highlighted `ExamplePage`, can contain whatever functionality we like.
 
-We have also provided external access to our route reference by passing it to the plugin `routes` option. This makes it possible for app integrators to bind an external link from a different plugin to our plugin page. You can read more about how this works in the [External Route References](../architecture/36-routes.md#external-route-references) section.
+We have also provided external access to our route reference by passing it to the plugin `routes` option. This makes it possible for app
+integrators to bind an external link from a different plugin to our plugin page. You can read more about how this works in the
+[External Route References](../architecture/36-routes.md#external-route-references) section.
 
 ## Utility APIs
 
