@@ -53,7 +53,7 @@ backend.add(import('@backstage/plugin-catalog-backend-module-ldap'));
 ## Configuration
 
 The following configuration is a small example of how a setup could look for
-importing groups and users from a corporate LDAP server. 
+importing groups and users from a corporate LDAP server.
 
 Users and Groups can be configured for multiple `dn` entries as an array.
 
@@ -67,23 +67,22 @@ catalog:
           dn: uid=ldap-reader-user,ou=people,ou=example,dc=example,dc=net
           secret: ${LDAP_SECRET}
         users:
-        - dn: ou=people,ou=example,dc=example,dc=net
-          options:
-            filter: (uid=*)
-          map:
-            description: l
-          set:
-            metadata.customField: 'hello'
+          - dn: ou=people,ou=example,dc=example,dc=net
+            options:
+              filter: (uid=*)
+            map:
+              description: l
+            set:
+              metadata.customField: 'hello'
         groups:
-        - dn: ou=access,ou=groups,ou=example,dc=example,dc=net
-          options:
-            filter: (&(objectClass=some-group-class)(!(groupType=email)))
-          map:
-            description: l
-          set:
-            metadata.customField: 'hello'
+          - dn: ou=access,ou=groups,ou=example,dc=example,dc=net
+            options:
+              filter: (&(objectClass=some-group-class)(!(groupType=email)))
+            map:
+              description: l
+            set:
+              metadata.customField: 'hello'
 ```
-
 
 These config blocks have a lot of options in them, so we will describe each "root" key within the block separately.
 
@@ -331,7 +330,6 @@ vendor:
   # This is to resolve potential user/group mapping issues if case differences on dn strings.
   dnCaseSensitive: true
 ```
-
 
 ## Customize the Provider
 
