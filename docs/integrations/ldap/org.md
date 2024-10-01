@@ -53,7 +53,9 @@ backend.add(import('@backstage/plugin-catalog-backend-module-ldap'));
 ## Configuration
 
 The following configuration is a small example of how a setup could look for
-importing groups and users from a corporate LDAP server.
+importing groups and users from a corporate LDAP server. 
+
+Users and Groups can be configured for multiple `dn` entries as an array.
 
 ```yaml
 catalog:
@@ -65,7 +67,7 @@ catalog:
           dn: uid=ldap-reader-user,ou=people,ou=example,dc=example,dc=net
           secret: ${LDAP_SECRET}
         users:
-          dn: ou=people,ou=example,dc=example,dc=net
+        - dn: ou=people,ou=example,dc=example,dc=net
           options:
             filter: (uid=*)
           map:
@@ -73,7 +75,7 @@ catalog:
           set:
             metadata.customField: 'hello'
         groups:
-          dn: ou=access,ou=groups,ou=example,dc=example,dc=net
+        - dn: ou=access,ou=groups,ou=example,dc=example,dc=net
           options:
             filter: (&(objectClass=some-group-class)(!(groupType=email)))
           map:
@@ -82,8 +84,8 @@ catalog:
             metadata.customField: 'hello'
 ```
 
-These config blocks have a lot of options in them, so we will describe each
-"root" key within the block separately.
+
+These config blocks have a lot of options in them, so we will describe each "root" key within the block separately.
 
 > NOTE:
 >
@@ -302,6 +304,34 @@ map:
   # the spec.children field of the entity.
   members: member
 ```
+
+## Optional Vendor Configuration
+
+In case the LDAP vendor isn't available as a provided configuration, A new optional `vendor` configuration section is available which allows overriding the location for `dn` and `uuid` settings, and a case sensitivity function.
+
+#### vendor.dnAttributeName
+
+Allows ability to override non standard `entryDN` values.
+
+#### vendor.uuidAttributeName
+
+Allows ability to override non standard `entryUUID` values.
+
+#### vendor.dnCaseSensitive
+
+Provides the ability to ignore case sensitivity issues with user/group mappings. If set to true will still link user/members to groups by forcing the inbound values from `dn`, `member`, `memberOf` to lowercase.
+
+```yaml
+vendor:
+  # Attribute name override for the distinguished name (DN) of an entry.
+  dnAttributeName: dn
+  # Attribute name override for the unique identifier (UUID) of an entry.
+  uuidAttributeName: uuid
+  # Attribute to force values provided from dn and members/memberOf values all to lowercase.
+  # This is to resolve potential user/group mapping issues if case differences on dn strings.
+  dnCaseSensitive: true
+```
+
 
 ## Customize the Provider
 
