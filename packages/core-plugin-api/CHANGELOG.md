@@ -1,5 +1,16 @@
 # @backstage/core-plugin-api
 
+## 1.10.0-next.1
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.10-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 1.10.0-next.0
 
 ### Minor Changes

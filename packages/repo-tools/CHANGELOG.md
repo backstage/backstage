@@ -1,5 +1,22 @@
 # @backstage/repo-tools
 
+## 0.10.0-next.1
+
+### Minor Changes
+
+- 8eb3033: Adds a new command `backstage-repo-tools peer-deps` for validating your usage of peer dependencies in your plugins. It currently supports react related peer dependencies. It also has a `--fix` mode for quickly fixing any issues that it finds.
+
+### Patch Changes
+
+- 1f6706f: Properly log instructions when APIs do not match
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.1-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.8
+  - @backstage/config-loader@1.9.1
+  - @backstage/errors@1.2.4
+
 ## 0.10.0-next.0
 
 ### Minor Changes

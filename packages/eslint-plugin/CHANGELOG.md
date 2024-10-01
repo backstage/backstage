@@ -1,5 +1,11 @@
 # @backstage/eslint-plugin
 
+## 0.1.10-next.0
+
+### Patch Changes
+
+- 63963f6: Internal refactor to deal with `estree` upgrade
+
 ## 0.1.9
 
 ### Patch Changes
