@@ -246,19 +246,19 @@ export type ScmLocationAnalyzer = {
 
 // Warnings were encountered during analysis:
 //
-// src/api/processor.d.ts:9:1 - (ae-undocumented) Missing documentation for "CatalogProcessor".
-// src/api/processor.d.ts:104:1 - (ae-undocumented) Missing documentation for "CatalogProcessorEmit".
-// src/api/processor.d.ts:106:1 - (ae-undocumented) Missing documentation for "CatalogProcessorLocationResult".
-// src/api/processor.d.ts:111:1 - (ae-undocumented) Missing documentation for "CatalogProcessorEntityResult".
-// src/api/processor.d.ts:117:1 - (ae-undocumented) Missing documentation for "CatalogProcessorRelationResult".
-// src/api/processor.d.ts:122:1 - (ae-undocumented) Missing documentation for "CatalogProcessorErrorResult".
-// src/api/processor.d.ts:128:1 - (ae-undocumented) Missing documentation for "CatalogProcessorRefreshKeysResult".
-// src/api/processor.d.ts:133:1 - (ae-undocumented) Missing documentation for "CatalogProcessorResult".
-// src/processing/types.d.ts:16:1 - (ae-undocumented) Missing documentation for "PlaceholderResolverRead".
-// src/processing/types.d.ts:18:1 - (ae-undocumented) Missing documentation for "PlaceholderResolverResolveUrl".
-// src/processing/types.d.ts:20:1 - (ae-undocumented) Missing documentation for "PlaceholderResolverParams".
-// src/processing/types.d.ts:29:1 - (ae-undocumented) Missing documentation for "PlaceholderResolver".
-// src/processing/types.d.ts:31:1 - (ae-undocumented) Missing documentation for "LocationAnalyzer".
-// src/processing/types.d.ts:41:1 - (ae-undocumented) Missing documentation for "AnalyzeOptions".
-// src/processing/types.d.ts:46:1 - (ae-undocumented) Missing documentation for "ScmLocationAnalyzer".
+// src/api/processor.d.ts:10:1 - (ae-undocumented) Missing documentation for "CatalogProcessor".
+// src/api/processor.d.ts:105:1 - (ae-undocumented) Missing documentation for "CatalogProcessorEmit".
+// src/api/processor.d.ts:107:1 - (ae-undocumented) Missing documentation for "CatalogProcessorLocationResult".
+// src/api/processor.d.ts:112:1 - (ae-undocumented) Missing documentation for "CatalogProcessorEntityResult".
+// src/api/processor.d.ts:118:1 - (ae-undocumented) Missing documentation for "CatalogProcessorRelationResult".
+// src/api/processor.d.ts:123:1 - (ae-undocumented) Missing documentation for "CatalogProcessorErrorResult".
+// src/api/processor.d.ts:129:1 - (ae-undocumented) Missing documentation for "CatalogProcessorRefreshKeysResult".
+// src/api/processor.d.ts:134:1 - (ae-undocumented) Missing documentation for "CatalogProcessorResult".
+// src/processing/types.d.ts:17:1 - (ae-undocumented) Missing documentation for "PlaceholderResolverRead".
+// src/processing/types.d.ts:19:1 - (ae-undocumented) Missing documentation for "PlaceholderResolverResolveUrl".
+// src/processing/types.d.ts:21:1 - (ae-undocumented) Missing documentation for "PlaceholderResolverParams".
+// src/processing/types.d.ts:30:1 - (ae-undocumented) Missing documentation for "PlaceholderResolver".
+// src/processing/types.d.ts:32:1 - (ae-undocumented) Missing documentation for "LocationAnalyzer".
+// src/processing/types.d.ts:42:1 - (ae-undocumented) Missing documentation for "AnalyzeOptions".
+// src/processing/types.d.ts:47:1 - (ae-undocumented) Missing documentation for "ScmLocationAnalyzer".
 ```
