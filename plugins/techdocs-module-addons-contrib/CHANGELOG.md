@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
+## 1.1.16-next.1
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- Updated dependencies
+  - @backstage/core-components@0.15.1-next.1
+  - @backstage/integration-react@1.2.0-next.1
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/plugin-techdocs-react@1.2.9-next.1
+  - @backstage/integration@1.15.1-next.0
+
 ## 1.1.15-next.0
 
 ### Patch Changes

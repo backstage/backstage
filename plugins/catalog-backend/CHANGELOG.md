@@ -1,5 +1,27 @@
 # @backstage/plugin-catalog-backend
 
+## 1.26.2-next.1
+
+### Patch Changes
+
+- 62747f8: Fixed a bug where the concurrency limiter for URL reading was not honored
+- 8206f49: Fix a bug where etags were expiring too soon in the URL reader
+- Updated dependencies
+  - @backstage/integration@1.15.1-next.0
+  - @backstage/backend-openapi-utils@0.1.19-next.0
+  - @backstage/backend-plugin-api@1.0.1-next.0
+  - @backstage/catalog-client@1.7.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-catalog-node@1.13.1-next.0
+  - @backstage/plugin-events-node@0.4.1-next.0
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-node@0.8.4-next.0
+  - @backstage/plugin-search-backend-module-catalog@0.2.3-next.1
+
 ## 1.26.1-next.0
 
 ### Patch Changes

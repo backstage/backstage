@@ -1,5 +1,35 @@
 # @backstage/plugin-scaffolder
 
+## 1.26.0-next.1
+
+### Minor Changes
+
+- c433ae9: Improved the layout of the manage templates page (`/edit`) by adding icons and descriptions that better describe what each page is for. Updated the header menu to link back to the scaffolder create page.
+- 7bfaf23: Text field content of the `EntityPicker` is now more readable as it uses entity title instead of entity reference.
+
+### Patch Changes
+
+- f6c15d8: Apply `defaultValue` props in `MultiEntityPicker`
+- e969dc7: Move `@types/react` to a peer dependency.
+- 785d68f: Add support for pagination in scaffolder tasks list
+- 94a7bcd: Change "Register Existing Component" CTA to outlined as it's not a primary action on the scaffolder pages
+- Updated dependencies
+  - @backstage/core-components@0.15.1-next.1
+  - @backstage/frontend-plugin-api@0.9.0-next.1
+  - @backstage/integration-react@1.2.0-next.1
+  - @backstage/core-compat-api@0.3.1-next.1
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/plugin-permission-react@0.4.27-next.1
+  - @backstage/plugin-scaffolder-react@1.13.0-next.1
+  - @backstage/plugin-catalog-react@1.14.0-next.1
+  - @backstage/integration@1.15.1-next.0
+  - @backstage/catalog-client@1.7.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-scaffolder-common@1.5.6
+
 ## 1.26.0-next.0
 
 ### Minor Changes

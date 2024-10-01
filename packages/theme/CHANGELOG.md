@@ -1,5 +1,11 @@
 # @backstage/theme
 
+## 0.5.8-next.0
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+
 ## 0.5.7
 
 ### Patch Changes
