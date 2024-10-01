@@ -51,24 +51,23 @@ async function getFileAction(
 ): Promise<'create' | 'delete' | 'update' | 'skip'> {
   if (defaultCommitAction === 'auto') {
     const filePath = path.join(fileInfo.targetPath ?? '', fileInfo.file.path);
-    if (remoteFiles) {
-      if (remoteFiles.some(remoteFile => remoteFile.path === filePath)) {
-        try {
-          const targetFile = await api.RepositoryFiles.show(
-            target.repoID,
-            filePath,
-            target.branch,
-          );
-          if (computeSha256(fileInfo.file) === targetFile.content_sha256) {
-            return 'skip';
-          }
-        } catch (error) {
-          ctx.logger.warn(
-            `Unable to retrieve detailed information for remote file ${filePath}`,
-          );
+
+    if (remoteFiles?.some(remoteFile => remoteFile.path === filePath)) {
+      try {
+        const targetFile = await api.RepositoryFiles.show(
+          target.repoID,
+          filePath,
+          target.branch,
+        );
+        if (computeSha256(fileInfo.file) === targetFile.content_sha256) {
+          return 'skip';
         }
-        return 'update';
+      } catch (error) {
+        ctx.logger.warn(
+          `Unable to retrieve detailed information for remote file ${filePath}`,
+        );
       }
+      return 'update';
     }
     return 'create';
   }
