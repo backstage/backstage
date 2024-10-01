@@ -94,7 +94,7 @@ export class DatabaseManagerImpl {
    */
   async shutdown(deps: { logger: LoggerService }): Promise<void> {
     const pluginIds = Array.from(this.databaseCache.keys());
-    await Promise.all(
+    await Promise.allSettled(
       pluginIds.map(async pluginId => {
         const connection = await this.databaseCache.get(pluginId);
         if (connection) {

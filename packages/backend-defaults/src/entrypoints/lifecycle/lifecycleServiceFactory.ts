@@ -111,7 +111,7 @@ export class BackendPluginLifecycleImpl implements LifecycleService {
           await hook();
           logger.debug(`Plugin shutdown hook succeeded`);
         } catch (error) {
-          logger.error(`Plugin shutdown hook failed, ${error}`);
+          logger.error('Plugin shutdown hook failed', error);
         }
       }),
     );

@@ -408,19 +408,18 @@ export class BackendInitializer {
     }
 
     // Get all plugins.
-    const pluginMap = new Map<string, boolean>();
+    const allPlugins = new Set<string>();
     for (const feature of this.#registrations) {
       for (const r of feature.getRegistrations()) {
         if (r.type === 'plugin') {
-          pluginMap.set(r.pluginId, true);
+          allPlugins.add(r.pluginId);
         }
       }
     }
-    const allPluginIds = Array.from(pluginMap.keys());
 
     // Iterate through all plugins and run their shutdown hooks.
     await Promise.allSettled(
-      allPluginIds.map(async pluginId => {
+      [...allPlugins].map(async pluginId => {
         const lifecycleService = await this.#getPluginLifecycleImpl(pluginId);
         await lifecycleService.shutdown();
       }),
@@ -466,7 +465,11 @@ export class BackendInitializer {
     );
 
     const service = lifecycleService as any;
-    if (service && typeof service.startup === 'function') {
+    if (
+      service &&
+      typeof service.startup === 'function' &&
+      typeof service.shutdown === 'function'
+    ) {
       return service;
     }
 
