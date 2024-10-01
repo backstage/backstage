@@ -354,7 +354,7 @@ export type WelcomeTitleLanguageProps = {
 // src/plugin.d.ts:5:22 - (ae-undocumented) Missing documentation for "homePlugin".
 // src/plugin.d.ts:9:22 - (ae-undocumented) Missing documentation for "HomepageCompositionRoot".
 // src/plugin.d.ts:14:22 - (ae-undocumented) Missing documentation for "ComponentAccordion".
-// src/plugin.d.ts:24:22 - (ae-undocumented) Missing documentation for "ComponentTabs".
-// src/plugin.d.ts:32:22 - (ae-undocumented) Missing documentation for "ComponentTab".
-// src/plugin.d.ts:53:22 - (ae-undocumented) Missing documentation for "HomePageRandomJoke".
+// src/plugin.d.ts:23:22 - (ae-undocumented) Missing documentation for "ComponentTabs".
+// src/plugin.d.ts:31:22 - (ae-undocumented) Missing documentation for "ComponentTab".
+// src/plugin.d.ts:52:22 - (ae-undocumented) Missing documentation for "HomePageRandomJoke".
 ```

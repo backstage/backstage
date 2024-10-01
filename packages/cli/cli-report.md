@@ -38,6 +38,16 @@ Options:
   -h, --help
 ```
 
+### `backstage-cli config:docs`
+
+```
+Usage: backstage-cli config:docs [options]
+
+Options:
+  --package <name>
+  -h, --help
+```
+
 ### `backstage-cli config:check`
 
 ```
@@ -50,16 +60,6 @@ Options:
   --deprecated
   --strict
   --config <path>
-  -h, --help
-```
-
-### `backstage-cli config:docs`
-
-```
-Usage: backstage-cli config:docs [options]
-
-Options:
-  --package <name>
   -h, --help
 ```
 
