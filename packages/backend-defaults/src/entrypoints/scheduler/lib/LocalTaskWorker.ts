@@ -36,7 +36,7 @@ export class LocalTaskWorker {
     private readonly logger: LoggerService,
   ) {}
 
-  start(settings: TaskSettingsV2, options?: { signal?: AbortSignal }) {
+  start(settings: TaskSettingsV2, options: { signal: AbortSignal }) {
     this.logger.info(
       `Task worker starting: ${this.taskId}, ${JSON.stringify(settings)}`,
     );
@@ -48,18 +48,18 @@ export class LocalTaskWorker {
           if (settings.initialDelayDuration) {
             await this.sleep(
               Duration.fromISO(settings.initialDelayDuration),
-              options?.signal,
+              options.signal,
             );
           }
 
-          while (!options?.signal?.aborted) {
+          while (!options.signal.aborted) {
             const startTime = process.hrtime();
-            await this.runOnce(settings, options?.signal);
+            await this.runOnce(settings, options.signal);
             const timeTaken = process.hrtime(startTime);
             await this.waitUntilNext(
               settings,
               (timeTaken[0] + timeTaken[1] / 1e9) * 1000,
-              options?.signal,
+              options.signal,
             );
           }
 
@@ -89,7 +89,7 @@ export class LocalTaskWorker {
    */
   private async runOnce(
     settings: TaskSettingsV2,
-    signal?: AbortSignal,
+    signal: AbortSignal,
   ): Promise<void> {
     // Abort the task execution either if the worker is stopped, or if the
     // task timeout is hit
@@ -115,9 +115,9 @@ export class LocalTaskWorker {
   private async waitUntilNext(
     settings: TaskSettingsV2,
     lastRunMillis: number,
-    signal?: AbortSignal,
+    signal: AbortSignal,
   ) {
-    if (signal?.aborted) {
+    if (signal.aborted) {
       return;
     }
 
@@ -145,7 +145,7 @@ export class LocalTaskWorker {
 
   private async sleep(
     duration: Duration,
-    abortSignal?: AbortSignal,
+    abortSignal: AbortSignal,
   ): Promise<void> {
     this.abortWait = delegateAbortController(abortSignal);
     await sleep(duration, this.abortWait.signal);
