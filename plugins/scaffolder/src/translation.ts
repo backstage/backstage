@@ -298,5 +298,22 @@ export const scaffolderTranslationRef = createTranslationRef({
         editConfigurationTitle: 'Edit Configuration',
       },
     },
+    templateEditorToolbar: {
+      customFieldExplorerTooltip: 'Custom Fields Explorer',
+      installedActionsDocumentationTooltip: 'Installed Actions Documentation',
+      addToCatalogButton: 'Publish',
+      addToCatalogDialogTitle: 'Publish changes',
+      addToCatalogDialogContent: {
+        stepsIntroduction:
+          'Follow the instructions below to create or update a template:',
+        stepsListItems:
+          'Save the template files in a local directory\nCreate a pull request to a new or existing git repository\nIf the template already exists, the changes will be reflected in the software catalog once the pull request gets merged\nBut if you are creating a new template, follow the documentation linked below to register the new template repository in software catalog',
+      },
+      addToCatalogDialogActions: {
+        documentationButton: 'Go to the documentation',
+        documentationUrl:
+          'https://backstage.io/docs/features/software-templates/adding-templates/',
+      },
+    },
   },
 });

@@ -321,6 +321,14 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templateWizardPage.subtitle': 'Create new software components using standard templates in your organization';
     readonly 'templateWizardPage.pageTitle': 'Create a new component';
     readonly 'templateWizardPage.pageContextMenu.editConfigurationTitle': 'Edit Configuration';
+    readonly 'templateEditorToolbar.customFieldExplorerTooltip': 'Custom Fields Explorer';
+    readonly 'templateEditorToolbar.installedActionsDocumentationTooltip': 'Installed Actions Documentation';
+    readonly 'templateEditorToolbar.addToCatalogButton': 'Publish';
+    readonly 'templateEditorToolbar.addToCatalogDialogTitle': 'Publish changes';
+    readonly 'templateEditorToolbar.addToCatalogDialogContent.stepsIntroduction': 'Follow the instructions below to create or update a template:';
+    readonly 'templateEditorToolbar.addToCatalogDialogContent.stepsListItems': 'Save the template files in a local directory\nCreate a pull request to a new or existing git repository\nIf the template already exists, the changes will be reflected in the software catalog once the pull request gets merged\nBut if you are creating a new template, follow the documentation linked below to register the new template repository in software catalog';
+    readonly 'templateEditorToolbar.addToCatalogDialogActions.documentationUrl': 'https://backstage.io/docs/features/software-templates/adding-templates/';
+    readonly 'templateEditorToolbar.addToCatalogDialogActions.documentationButton': 'Go to the documentation';
   }
 >;
 
