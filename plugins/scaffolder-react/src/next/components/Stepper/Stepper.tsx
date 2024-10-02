@@ -36,7 +36,12 @@ import {
 import { ReviewState, type ReviewStateProps } from '../ReviewState';
 import { useTemplateSchema, useFormDataFromQuery } from '../../hooks';
 import { customizeValidator } from '@rjsf/validator-ajv8';
-import { hasErrors, transformSchemaToProps } from './utils';
+import {
+  getInitialFormState,
+  hasErrors,
+  makeStepKey,
+  transformSchemaToProps,
+} from './utils';
 import * as FieldOverrides from './FieldOverrides';
 import { Form } from '../Form';
 import {
@@ -94,28 +99,6 @@ export type StepperProps = {
     reviewButtonText?: ReactNode;
   };
   layouts?: LayoutOptions[];
-};
-
-const makeStepKey = (step: string | number) => `step-${step}`;
-
-const getInitialFormState = (
-  steps: any[],
-  initialState: Record<string, JsonValue>,
-) => {
-  return steps.reduce((formState, step, index) => {
-    const stepKey = makeStepKey(index);
-    formState[stepKey] = {};
-
-    if (step.mergedSchema.properties) {
-      Object.keys(step.mergedSchema.properties).forEach(key => {
-        if (initialState && initialState[key] !== undefined) {
-          formState[stepKey][key] = initialState[key];
-        }
-      });
-    }
-
-    return formState;
-  }, {} as { [step: string]: Record<string, JsonValue> });
 };
 
 /**
@@ -334,7 +317,6 @@ export const Stepper = (stepperProps: StepperProps) => {
           <MuiStepLabel>{reviewLabel}</MuiStepLabel>
         </MuiStep>
       </MuiStepper>
-      {JSON.stringify(formState)}
       <div className={styles.formWrapper}>
         {activeStep < steps.length ? stepForms[activeStep] : reviewComponent}
       </div>
