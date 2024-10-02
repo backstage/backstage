@@ -86,13 +86,12 @@ export const transformSchemaToProps = (
 export const makeStepKey = (step: string | number) => `step-${step}`;
 
 export const getInitialFormState = (
-  steps: any[],
+  steps: ParsedTemplateSchema[],
   initialState: Record<string, JsonValue>,
 ) => {
   return steps.reduce((formState, step, index) => {
     const stepKey = makeStepKey(index);
     formState[stepKey] = {};
-
     if (step.mergedSchema.properties) {
       Object.keys(step.mergedSchema.properties).forEach(key => {
         if (initialState && initialState[key] !== undefined) {
