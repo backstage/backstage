@@ -42,7 +42,6 @@ import {
 import { OAuthAuthenticator, OAuthAuthenticatorResult } from './types';
 import { Config } from '@backstage/config';
 import { CookieScopeManager } from './CookieScopeManager';
-import { createAuthErrorCookie } from './createAuthErrorCookie';
 
 /** @public */
 export interface OAuthRouteHandlersOptions<TProfile> {
@@ -252,13 +251,8 @@ export function createOAuthRouteHandlers<TProfile>(
           : new Error('Encountered invalid error'); // Being a bit safe and not forwarding the bad value
 
         if (state?.flow === 'redirect' && state?.redirectUrl) {
-          createAuthErrorCookie(res, state?.redirectUrl, {
-            error: { name, message },
-            apiUrl: `${baseUrl}/.backstage/error`,
-          });
-
           const redirectUrl = new URL(state.redirectUrl);
-          redirectUrl.searchParams.set('error', 'true');
+          redirectUrl.searchParams.set('error', encodeURIComponent(message));
 
           // set the error in a cookie and redirect user back to sign in where the error can be rendered
           res.redirect(redirectUrl.toString());

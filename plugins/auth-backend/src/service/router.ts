@@ -48,7 +48,6 @@ import { StaticTokenIssuer } from '../identity/StaticTokenIssuer';
 import { StaticKeyStore } from '../identity/StaticKeyStore';
 import { Config } from '@backstage/config';
 import { bindProviderRouters, ProviderFactories } from '../providers/router';
-import { createCookieAuthErrorMiddleware } from './createCookieAuthErrorMiddleware';
 
 /** @public */
 export interface RouterOptions {
@@ -169,8 +168,6 @@ export async function createRouter(
     baseUrl: authUrl,
     userInfoDatabaseHandler,
   });
-
-  router.use(createCookieAuthErrorMiddleware(appUrl, authUrl));
 
   // Gives a more helpful error message than a plain 404
   router.use('/:provider/', req => {

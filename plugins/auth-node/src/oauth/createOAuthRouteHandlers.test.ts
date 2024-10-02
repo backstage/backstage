@@ -743,7 +743,7 @@ describe('createOAuthRouteHandlers', () => {
       });
     });
 
-    it('should set cookie and redirect on caught error', async () => {
+    it('should set error search param and redirect on caught error', async () => {
       const app = wrapInApp(createOAuthRouteHandlers(baseConfig));
       const res = await request(app)
         .get('/my-provider/handler/frame')
@@ -756,15 +756,21 @@ describe('createOAuthRouteHandlers', () => {
           }),
         });
 
-      // redirects on error with auth error cookie
+      // Check if it redirects on error
       expect(res.status).toBe(302);
-      const setCookieHeader = res.header['set-cookie'];
-      expect(setCookieHeader).toBeDefined();
 
-      const authErrorCookie = setCookieHeader.find((cookie: string) =>
-        cookie.startsWith('auth-error='),
+      // Extract the redirect URL from the location header
+      const redirectLocation = res.header.location;
+      expect(redirectLocation).toBeDefined();
+
+      // Create a URL object from the redirect location
+      const redirectUrl = new URL(redirectLocation);
+
+      // Verify that the 'error' search param is set with the encoded error message
+      const errorMessage = redirectUrl.searchParams.get('error');
+      expect(errorMessage).toBe(
+        encodeURIComponent('Auth response is missing cookie nonce'),
       );
-      expect(authErrorCookie).toBeDefined();
     });
   });
 });

@@ -24,7 +24,7 @@ import { UserIdentity } from './UserIdentity';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useMountEffect } from '@react-hookz/web';
 import { Progress } from '../../components/Progress';
 import { Content } from '../Content/Content';
@@ -38,7 +38,6 @@ import { IdentityProviders, SignInProviderConfig } from './types';
 import { coreComponentsTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { useSearchParams } from 'react-router-dom';
-import { useSignInAuthError } from '@backstage/plugin-auth-react';
 
 type MultiSignInPageProps = SignInPageProps & {
   providers: IdentityProviders;
@@ -99,7 +98,6 @@ export const SingleSignInPage = ({
   const classes = useStyles();
   const authApi = useApi(provider.apiRef);
   const configApi = useApi(configApiRef);
-  const { error: signInError, checkAuthError } = useSignInAuthError();
   const { t } = useTranslationRef(coreComponentsTranslationRef);
 
   const [error, setError] = useState<Error>();
@@ -112,7 +110,6 @@ export const SingleSignInPage = ({
   // User was redirected back to sign in page with error from auth redirect flow
   const [searchParams, _setSearchParams] = useSearchParams();
   const errorParam = searchParams.get('error');
-  const hasErrorSearchParam = errorParam !== 'false' && errorParam !== null;
 
   type LoginOpts = { checkExisting?: boolean; showPopup?: boolean };
   const login = async ({ checkExisting, showPopup }: LoginOpts) => {
@@ -126,7 +123,7 @@ export const SingleSignInPage = ({
       }
 
       // If no session exists, show the sign-in page
-      if (!identityResponse && (showPopup || auto) && !hasErrorSearchParam) {
+      if (!identityResponse && (showPopup || auto) && !errorParam) {
         // Unless auto is set to true, this step should not happen.
         // When user intentionally clicks the Sign In button, autoShowPopup is set to true
         setShowLoginPage(true);
@@ -161,17 +158,11 @@ export const SingleSignInPage = ({
   };
 
   useMountEffect(() => {
-    if (hasErrorSearchParam) {
-      checkAuthError();
+    if (errorParam) {
+      setError(new Error(decodeURIComponent(errorParam)));
     }
     login({ checkExisting: true });
   });
-
-  useEffect(() => {
-    if (signInError) {
-      setError(signInError);
-    }
-  }, [signInError]);
 
   return showLoginPage ? (
     <Page themeId="home">

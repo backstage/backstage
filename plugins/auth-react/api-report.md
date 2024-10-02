@@ -36,10 +36,4 @@ export function useCookieAuthRefresh(options: { pluginId: string }):
         expiresAt: string;
       };
     };
-
-// @public
-export function useSignInAuthError(): {
-  error: Error | undefined;
-  checkAuthError: () => void;
-};
 ```
