@@ -20,7 +20,7 @@ export default [
   name: Pick
   action: debug:log
   input:
-  extra: \${{ parameters.owner | parseEntityRef | pick('name') }}`,
+    message: \${{ parameters.owner | parseEntityRef | pick('name') }}`,
     notes: `\
 - **Input**: \`{ kind: 'Group', namespace: 'default', name: 'techdocs'\` }
 - **Output**: \`techdocs\`
