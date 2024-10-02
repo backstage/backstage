@@ -300,6 +300,11 @@ export type SerializedTaskEvent = {
 };
 
 // @public
+export class SkipTask extends Error {
+  constructor();
+}
+
+// @public
 export interface TaskBroker {
   // (undocumented)
   cancel?(taskId: string): Promise<void>;
