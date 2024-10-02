@@ -1,12 +1,16 @@
 ---
 id: create-a-plugin
-title: Create a Backstage Plugin
-description: Documentation on How to Create a Backstage Plugin
+title: Create a Frontend Plugin
+description: Documentation on How to Create a Backstage Frontend Plugin
 ---
 
-A Backstage Plugin adds functionality to Backstage.
+A Backstage Frontend Plugin adds functionality to the Backstage frontend web application.
 
-## Create a Plugin
+:::info
+To create a Backend Plugin, please see [Creating a Backend Plugin](./backend-plugin.md#creating-a-backend-plugin).
+:::
+
+## Create a Frontend Plugin
 
 To create a new frontend plugin, make sure you've run `yarn install` and installed
 dependencies, then run the following on your command line (a shortcut to
@@ -18,9 +22,11 @@ from the root of your project.
 yarn new --select plugin
 ```
 
-![Example of output when creating a new plugin](../assets/getting-started/create-plugin_output.png)
+Alternatively, you can run `yarn new` to list available options and then manually select `plugin`.
 
-This will create a new Backstage Plugin based on the ID that was provided. It
+![Example of output when creating a new frontend plugin](../assets/getting-started/create-plugin_output.png)
+
+This will create a new Frontend Plugin based on the ID that was provided. It
 will be built and added to the Backstage App automatically.
 
 > If the Backstage App is already running (with `yarn start` or `yarn dev`) you

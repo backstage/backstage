@@ -125,7 +125,7 @@ nav:
   - Plugins:
       - Intro to plugins: 'plugins/index.md'
       - Existing plugins: 'plugins/existing-plugins.md'
-      - Create a Backstage Plugin: 'plugins/create-a-plugin.md'
+      - Create a Frontend Plugin: 'plugins/create-a-plugin.md'
       - Plugin Development: 'plugins/plugin-development.md'
       - Structure of a plugin: 'plugins/structure-of-a-plugin.md'
       - Integrate into the Software Catalog: 'plugins/integrating-plugin-into-software-catalog.md'
