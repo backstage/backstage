@@ -208,7 +208,18 @@ export const useTechDocsReaderDom = (
               if (modifierActive) {
                 window.open(url, '_blank');
               } else {
-                navigate(url);
+                // If it's in a different page, we navigate to it
+                if (window.location.pathname !== parsedUrl.pathname) {
+                  navigate(url);
+                } else {
+                  // If it's in the same page we avoid using navigate that causes
+                  // the page to rerender.
+                  window.history.pushState(
+                    null,
+                    document.title,
+                    parsedUrl.hash,
+                  );
+                }
                 // Scroll to hash if it's on the current page
                 transformedElement
                   ?.querySelector(`[id="${parsedUrl.hash.slice(1)}"]`)
