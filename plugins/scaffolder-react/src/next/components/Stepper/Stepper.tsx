@@ -230,8 +230,6 @@ export const Stepper = (stepperProps: StepperProps) => {
         onSubmit={handleNext}
         fields={fields}
         showErrorList="top"
-        omitExtraData
-        liveOmit
         templates={{ ErrorListTemplate }}
         onChange={handleChange(index)}
         widgets={{ password: PasswordWidget }}
