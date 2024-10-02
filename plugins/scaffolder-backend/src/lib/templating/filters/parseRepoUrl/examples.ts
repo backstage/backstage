@@ -21,7 +21,7 @@ export default [
   name: Parse Repo URL
   action: debug:log
   input:
-  extra: \${{ parameters.repoUrl | parseRepoUrl }}`,
+    message: \${{ parameters.repoUrl | parseRepoUrl }}`,
     notes: ` - **Input**: \`github.com?repo=backstage&owner=backstage\`
   - **Output**: \`{"host":"github.com","owner":"backstage","repo":"backstage"}\`
 `,

@@ -21,7 +21,7 @@ export default [
   name: Parse Entity Reference
   action: debug:log
   input:
-  extra: \${{ parameters.owner | parseEntityRef }}
+    message: \${{ parameters.owner | parseEntityRef }}
 `,
     notes: `\
 - **Input**: \`group:techdocs\`
@@ -35,7 +35,7 @@ export default [
   name: Parse Entity Reference
   action: debug:log
   input:
-  extra: \${{ parameters.owner | parseEntityRef({ defaultKind:"group", defaultNamespace:"another-namespace" }) }}
+    message: \${{ parameters.owner | parseEntityRef({ defaultKind:"group", defaultNamespace:"another-namespace" }) }}
 `,
     notes: `\
 - **Input**: \`techdocs\`
