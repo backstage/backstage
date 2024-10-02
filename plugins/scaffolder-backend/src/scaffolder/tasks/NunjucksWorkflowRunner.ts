@@ -43,6 +43,7 @@ import {
   TemplateFilter,
   TemplateGlobal,
   TaskContext,
+  SkipTask,
 } from '@backstage/plugin-scaffolder-node';
 import { createConditionAuthorizer } from '@backstage/plugin-permission-node';
 import { UserEntity } from '@backstage/catalog-model';
@@ -446,9 +447,13 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
       await stepTrack.markSuccessful();
     } catch (err) {
-      await taskTrack.markFailed(step, err);
-      await stepTrack.markFailed();
-      throw err;
+      if (err instanceof SkipTask) {
+        await stepTrack.skipFalsy();
+      } else {
+        await taskTrack.markFailed(step, err);
+        await stepTrack.markFailed();
+        throw err;
+      }
     } finally {
       await task.serializeWorkspace?.({ path: workspacePath });
     }

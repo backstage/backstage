@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-export type {
-  TaskSecrets,
-  SerializedTask,
-  SerializedTaskEvent,
-  TaskBroker,
-  TaskBrokerDispatchOptions,
-  TaskBrokerDispatchResult,
-  TaskCompletionState,
-  TaskContext,
-  TaskEventType,
-  TaskStatus,
-} from './types';
-export { SkipTask } from './errors';
+/**
+ * Throwing allows an action to display the task as skipped
+ *
+ * @public
+ */
+export class SkipTask extends Error {
+  constructor() {
+    super();
+    this.name = 'SkipTask';
+  }
+}
