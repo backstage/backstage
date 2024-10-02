@@ -3,4 +3,4 @@
 ---
 
 Changed the target column in the locations table to TEXT type.
-Added a hash for the key column in the refresh_keys table.
+Added a hash for the key column in the `refresh_keys` table.
