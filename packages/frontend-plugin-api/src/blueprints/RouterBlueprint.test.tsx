@@ -46,7 +46,6 @@ describe('RouterBlueprint', () => {
         "inputs": {},
         "kind": "app-router-component",
         "name": undefined,
-        "namespace": undefined,
         "output": [
           [Function],
         ],
@@ -59,7 +58,6 @@ describe('RouterBlueprint', () => {
 
   it('should work with simple options', async () => {
     const extension = RouterBlueprint.make({
-      namespace: 'test',
       params: {
         Component: ({ children }) => (
           <MemoryRouter>
@@ -86,7 +84,6 @@ describe('RouterBlueprint', () => {
 
   it('should work with complex options and props', async () => {
     const extension = RouterBlueprint.makeWithOverrides({
-      namespace: 'test',
       name: 'test',
       config: {
         schema: {
@@ -115,9 +112,8 @@ describe('RouterBlueprint', () => {
       config: { name: 'Robin' },
     }).add(
       createExtension({
-        namespace: 'test',
         attachTo: {
-          id: 'app-router-component:test/test',
+          id: 'app-router-component:test',
           input: 'children',
         },
         output: [coreExtensionData.reactElement],

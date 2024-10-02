@@ -21,7 +21,7 @@ import {
   getComponentData,
 } from '@backstage/core-plugin-api';
 import {
-  BackstagePlugin,
+  FrontendPlugin,
   ExtensionDefinition,
   coreExtensionData,
   createExtension,
@@ -156,7 +156,7 @@ function visitRouteChildren(options: {
 /** @internal */
 export function collectLegacyRoutes(
   flatRoutesElement: JSX.Element,
-): BackstagePlugin[] {
+): FrontendPlugin[] {
   const pluginExtensions = new Map<
     LegacyBackstagePlugin,
     ExtensionDefinition[]
@@ -269,7 +269,7 @@ export function collectLegacyRoutes(
         ...extensions,
         ...Array.from(plugin.getApis()).map(factory =>
           ApiBlueprint.make({
-            namespace: factory.api.id,
+            name: factory.api.id,
             params: { factory },
           }),
         ),

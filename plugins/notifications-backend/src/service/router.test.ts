@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   DatabaseManager,
   PluginDatabaseManager,
 } from '@backstage/backend-common';
 import express from 'express';
 import request from 'supertest';
-
 import { createRouter } from './router';
 import { ConfigReader } from '@backstage/config';
 import { SignalsService } from '@backstage/plugin-signals-node';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import { NotificationSendOptions } from '@backstage/plugin-notifications-node';
+import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 
 function createDatabase(): PluginDatabaseManager {
   return DatabaseManager.fromConfig(
@@ -46,7 +47,6 @@ describe('createRouter', () => {
     publish: jest.fn(),
   };
 
-  const discovery = mockServices.discovery();
   const userInfo = mockServices.userInfo();
   const httpAuth = mockServices.httpAuth({
     defaultCredentials: mockCredentials.service(),
@@ -55,17 +55,18 @@ describe('createRouter', () => {
   const config = mockServices.rootConfig({
     data: { app: { baseUrl: 'http://localhost' } },
   });
+  const catalog = catalogServiceMock.mock();
 
   beforeAll(async () => {
     const router = await createRouter({
       logger: mockServices.logger.mock(),
       database: createDatabase(),
-      discovery,
       signals: signalService,
       userInfo,
       config,
       httpAuth,
       auth,
+      catalog,
     });
     app = express().use(router);
   });

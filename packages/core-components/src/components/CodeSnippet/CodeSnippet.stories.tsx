@@ -52,7 +52,7 @@ greet(world)
 
 export const Default = () => (
   <InfoCard title="JavaScript example">
-    <CodeSnippet text={"const hello = 'World';"} language="javascript" />
+    <CodeSnippet text="const hello = 'World';" language="javascript" />
   </InfoCard>
 );
 

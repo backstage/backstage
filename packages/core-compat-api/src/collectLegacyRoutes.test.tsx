@@ -27,11 +27,12 @@ import { PuppetDbPage } from '@backstage-community/plugin-puppetdb';
 import { StackstormPage } from '@backstage-community/plugin-stackstorm';
 import { ScoreBoardPage } from '@oriflame/backstage-plugin-score-card';
 import React, { Fragment } from 'react';
+// TODO(rugvip): this should take into account that this is a test file, so these deps don't need to be in the dependencies
+// eslint-disable-next-line @backstage/no-undeclared-imports
+import { OpaqueFrontendPlugin } from '@internal/frontend';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { collectLegacyRoutes } from './collectLegacyRoutes';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalFrontendPlugin } from '../../frontend-plugin-api/src/wiring/createFrontendPlugin';
 import {
   createPlugin,
   createRoutableExtension,
@@ -55,7 +56,7 @@ describe('collectLegacyRoutes', () => {
     expect(
       collected.map(p => ({
         id: p.id,
-        extensions: toInternalFrontendPlugin(p).extensions.map(e => ({
+        extensions: OpaqueFrontendPlugin.toInternal(p).extensions.map(e => ({
           id: e.id,
           attachTo: e.attachTo,
           disabled: e.disabled,
@@ -73,7 +74,7 @@ describe('collectLegacyRoutes', () => {
             defaultConfig: {},
           },
           {
-            id: 'api:plugin.scoringdata.service',
+            id: 'api:score-card/plugin.scoringdata.service',
             attachTo: { id: 'root', input: 'apis' },
             disabled: false,
           },
@@ -89,7 +90,7 @@ describe('collectLegacyRoutes', () => {
             defaultConfig: {},
           },
           {
-            id: 'api:plugin.stackstorm.service',
+            id: 'api:stackstorm/plugin.stackstorm.service',
             attachTo: { id: 'root', input: 'apis' },
             disabled: false,
           },
@@ -111,7 +112,7 @@ describe('collectLegacyRoutes', () => {
             defaultConfig: {},
           },
           {
-            id: 'api:plugin.puppetdb.service',
+            id: 'api:puppetDb/plugin.puppetdb.service',
             attachTo: { id: 'root', input: 'apis' },
             disabled: false,
           },
@@ -158,7 +159,7 @@ describe('collectLegacyRoutes', () => {
     expect(
       collected.map(p => ({
         id: p.id,
-        extensions: toInternalFrontendPlugin(p).extensions.map(e => ({
+        extensions: OpaqueFrontendPlugin.toInternal(p).extensions.map(e => ({
           id: e.id,
           attachTo: e.attachTo,
           disabled: e.disabled,
@@ -209,7 +210,7 @@ describe('collectLegacyRoutes', () => {
             disabled: false,
           },
           {
-            id: 'api:plugin.catalog.service',
+            id: 'api:catalog/plugin.catalog.service',
             attachTo: {
               id: 'root',
               input: 'apis',
@@ -218,7 +219,7 @@ describe('collectLegacyRoutes', () => {
             disabled: false,
           },
           {
-            id: 'api:catalog-react.starred-entities',
+            id: 'api:catalog/catalog-react.starred-entities',
             attachTo: {
               id: 'root',
               input: 'apis',
@@ -227,7 +228,7 @@ describe('collectLegacyRoutes', () => {
             disabled: false,
           },
           {
-            id: 'api:plugin.catalog.entity-presentation',
+            id: 'api:catalog/plugin.catalog.entity-presentation',
             attachTo: {
               id: 'root',
               input: 'apis',
@@ -241,7 +242,7 @@ describe('collectLegacyRoutes', () => {
         id: 'score-card',
         extensions: [
           {
-            id: 'api:plugin.scoringdata.service',
+            id: 'api:score-card/plugin.scoringdata.service',
             attachTo: { id: 'root', input: 'apis' },
             disabled: false,
           },

@@ -13,44 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { mockServices } from '@backstage/backend-test-utils';
 import { getUsersForEntityRef } from './getUsersForEntityRef';
-import { CatalogApi } from '@backstage/catalog-client';
 import {
   RELATION_HAS_MEMBER,
   RELATION_OWNED_BY,
   RELATION_PARENT_OF,
 } from '@backstage/catalog-model';
+import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 
 describe('getUsersForEntityRef', () => {
-  const catalogApiMock = {
-    getEntitiesByRefs: jest.fn(),
-    getEntityByRef: jest.fn(),
-  };
-  const authMock = mockServices.auth();
-
   it('should return empty array if entityRef is null', async () => {
     await expect(
       getUsersForEntityRef(null, [], {
-        auth: authMock,
-        catalogClient: catalogApiMock as unknown as CatalogApi,
+        auth: mockServices.auth(),
+        catalogClient: catalogServiceMock.mock(),
       }),
     ).resolves.toEqual([]);
   });
 
   it('should resolve users without calling catalog', async () => {
+    const catalogClient = catalogServiceMock.mock();
     await expect(
       getUsersForEntityRef(['user:foo', 'user:ignored'], ['user:ignored'], {
-        auth: authMock,
-        catalogClient: catalogApiMock as unknown as CatalogApi,
+        auth: mockServices.auth(),
+        catalogClient,
       }),
     ).resolves.toEqual(['user:foo']);
-    expect(catalogApiMock.getEntitiesByRefs).not.toHaveBeenCalled();
+    expect(catalogClient.getEntitiesByRefs).not.toHaveBeenCalled();
   });
 
   it('should resolve group entities to users', async () => {
-    catalogApiMock.getEntitiesByRefs.mockResolvedValueOnce({
-      items: [
+    const catalogClient = catalogServiceMock({
+      entities: [
         {
           apiVersion: 'backstage.io/v1alpha1',
           kind: 'Group',
@@ -68,11 +64,6 @@ describe('getUsersForEntityRef', () => {
             },
           ],
         },
-      ],
-    });
-
-    catalogApiMock.getEntitiesByRefs.mockResolvedValueOnce({
-      items: [
         {
           apiVersion: 'backstage.io/v1alpha1',
           kind: 'Group',
@@ -98,16 +89,16 @@ describe('getUsersForEntityRef', () => {
         'group:default/parent_group',
         ['user:default/ignored'],
         {
-          auth: authMock,
-          catalogClient: catalogApiMock as unknown as CatalogApi,
+          auth: mockServices.auth(),
+          catalogClient,
         },
       ),
     ).resolves.toEqual(['user:default/foo', 'user:default/bar']);
   });
 
   it('should resolve user owner of entity from entity ref', async () => {
-    catalogApiMock.getEntitiesByRefs.mockResolvedValueOnce({
-      items: [
+    const catalogClient = catalogServiceMock({
+      entities: [
         {
           apiVersion: 'backstage.io/v1alpha1',
           kind: 'Component',
@@ -126,15 +117,15 @@ describe('getUsersForEntityRef', () => {
 
     await expect(
       getUsersForEntityRef('component:default/test_component', [], {
-        auth: authMock,
-        catalogClient: catalogApiMock as unknown as CatalogApi,
+        auth: mockServices.auth(),
+        catalogClient,
       }),
     ).resolves.toEqual(['user:default/foo']);
   });
 
   it('should resolve group owner of entity from entity ref', async () => {
-    catalogApiMock.getEntitiesByRefs.mockResolvedValueOnce({
-      items: [
+    const catalogClient = catalogServiceMock({
+      entities: [
         {
           apiVersion: 'backstage.io/v1alpha1',
           kind: 'Component',
@@ -148,27 +139,26 @@ describe('getUsersForEntityRef', () => {
             },
           ],
         },
-      ],
-    });
-
-    catalogApiMock.getEntityByRef.mockResolvedValueOnce({
-      apiVersion: 'backstage.io/v1alpha1',
-      kind: 'Group',
-      metadata: {
-        name: 'owner_group',
-      },
-      relations: [
         {
-          type: RELATION_HAS_MEMBER,
-          targetRef: 'user:default/foo',
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Group',
+          metadata: {
+            name: 'owner_group',
+          },
+          relations: [
+            {
+              type: RELATION_HAS_MEMBER,
+              targetRef: 'user:default/foo',
+            },
+          ],
         },
       ],
     });
 
     await expect(
       getUsersForEntityRef('component:default/test_component', [], {
-        auth: authMock,
-        catalogClient: catalogApiMock as unknown as CatalogApi,
+        auth: mockServices.auth(),
+        catalogClient,
       }),
     ).resolves.toEqual(['user:default/foo']);
   });

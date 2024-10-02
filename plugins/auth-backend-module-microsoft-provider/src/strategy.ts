@@ -20,6 +20,12 @@ import fetch from 'node-fetch';
 import { Strategy as MicrosoftStrategy } from 'passport-microsoft';
 
 export class ExtendedMicrosoftStrategy extends MicrosoftStrategy {
+  private shouldSkipUserProfile = false;
+
+  public setSkipUserProfile(shouldSkipUserProfile: boolean): void {
+    this.shouldSkipUserProfile = shouldSkipUserProfile;
+  }
+
   userProfile(
     accessToken: string,
     done: (err?: unknown, profile?: PassportProfile) => void,
@@ -66,7 +72,7 @@ export class ExtendedMicrosoftStrategy extends MicrosoftStrategy {
 
   private skipUserProfile(accessToken: string): boolean {
     try {
-      return !this.hasGraphReadScope(accessToken);
+      return this.shouldSkipUserProfile || !this.hasGraphReadScope(accessToken);
     } catch {
       // If there is any error with checking the scope
       // we fall back to not skipping the user profile

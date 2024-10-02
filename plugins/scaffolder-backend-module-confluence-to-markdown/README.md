@@ -15,47 +15,16 @@ From your Backstage root directory run:
 yarn --cwd packages/backend add @backstage/plugin-scaffolder-backend-module-confluence-to-markdown
 ```
 
-Then configure the action:
-(you can check the [docs](https://backstage.io/docs/features/software-templates/writing-custom-actions#registering-custom-actions) to see all options):
+Then ensure that both the scaffolder and this module are added to your backend:
 
 ```typescript
-// packages/backend/src/plugins/scaffolder.ts
-
-import { createBuiltinActions } from '@backstage/plugin-scaffolder-backend';
-import { ScmIntegrations } from '@backstage/integration';
-import { createConfluenceToMarkdownAction } from '@backstage/plugin-scaffolder-backend-module-confluence-to-markdown';
-
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  const catalogClient = new CatalogClient({ discoveryApi: env.discovery });
-  const integrations = ScmIntegrations.fromConfig(env.config);
-
-  const builtInActions = createBuiltinActions({
-    integrations,
-    catalogClient,
-    config: env.config,
-    reader: env.reader,
-  });
-
-  const actions = [
-    ...builtInActions,
-    createConfluenceToMarkdownAction({
-      integrations,
-      config: env.config,
-      reader: env.reader,
-    }),
-  ];
-
-  return createRouter({
-    actions,
-    catalogClient: catalogClient,
-    logger: env.logger,
-    config: env.config,
-    database: env.database,
-    reader: env.reader,
-  });
-}
+// In packages/backend/src/index.ts
+const backend = createBackend();
+// ...
+backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
+backend.add(
+  import('@backstage/plugin-scaffolder-backend-module-confluence-to-markdown'),
+);
 ```
 
 ### Configuration

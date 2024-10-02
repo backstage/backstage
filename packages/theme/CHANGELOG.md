@@ -1,5 +1,23 @@
 # @backstage/theme
 
+## 0.5.8-next.0
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+
+## 0.5.7
+
+### Patch Changes
+
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+
+## 0.5.7-next.0
+
+### Patch Changes
+
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+
 ## 0.5.6
 
 ### Patch Changes

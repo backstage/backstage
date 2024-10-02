@@ -67,6 +67,11 @@ export function readEntryPoints(pkg: BackstagePackageJson): Array<EntryPoint> {
         );
       }
 
+      // Setting the EXPERIMENTAL_TRIM_NEXT_ENTRY flag will remove any `./next` entry points
+      if (process.env.EXPERIMENTAL_TRIM_NEXT_ENTRY && mount === './next') {
+        continue;
+      }
+
       entryPoints.push(parseEntryPoint(mount, path));
     }
 

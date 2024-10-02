@@ -25,9 +25,9 @@ import {
   createScaffolderLayout,
   ScaffolderLayouts,
 } from '@backstage/plugin-scaffolder-react';
-import { TemplateListPage, TemplateWizardPage } from '../../next';
+import { TemplateListPage, TemplateWizardPage } from '../../alpha/components';
 
-jest.mock('../../next', () => ({
+jest.mock('../../alpha/components', () => ({
   TemplateWizardPage: jest.fn(() => null),
   TemplateListPage: jest.fn(() => null),
 }));

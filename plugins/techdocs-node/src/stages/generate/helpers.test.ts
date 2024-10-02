@@ -247,6 +247,10 @@ describe('helpers', () => {
       expect(updatedMkdocsYml.toString()).toContain(
         "emoji_index: !!python/name:materialx.emoji.twemoji ''",
       );
+      expect(updatedMkdocsYml.toString()).toContain(
+        'slugify: !!python/object/apply:pymdownx.slugs.slugify',
+      );
+      expect(updatedMkdocsYml.toString()).toContain('case: lower');
     });
 
     it('should not override existing repo_url in mkdocs.yml', async () => {

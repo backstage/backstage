@@ -49,8 +49,56 @@ export interface BackendRegisterInit {
   };
 }
 
+/**
+ * A registry of backend instances, used to manage process shutdown hooks across all instances.
+ */
+const instanceRegistry = new (class InstanceRegistry {
+  #registered = false;
+  #instances = new Set<BackendInitializer>();
+
+  register(instance: BackendInitializer) {
+    if (!this.#registered) {
+      this.#registered = true;
+
+      process.addListener('SIGTERM', this.#exitHandler);
+      process.addListener('SIGINT', this.#exitHandler);
+      process.addListener('beforeExit', this.#exitHandler);
+    }
+
+    this.#instances.add(instance);
+  }
+
+  unregister(instance: BackendInitializer) {
+    this.#instances.delete(instance);
+  }
+
+  #exitHandler = async () => {
+    try {
+      const results = await Promise.allSettled(
+        Array.from(this.#instances).map(b => b.stop()),
+      );
+      const errors = results.flatMap(r =>
+        r.status === 'rejected' ? [r.reason] : [],
+      );
+
+      if (errors.length > 0) {
+        for (const error of errors) {
+          console.error(error);
+        }
+        process.exit(1);
+      } else {
+        process.exit(0);
+      }
+    } catch (error) {
+      console.error(error);
+      process.exit(1);
+    }
+  };
+})();
+
 export class BackendInitializer {
   #startPromise?: Promise<void>;
+  #stopPromise?: Promise<void>;
   #registrations = new Array<InternalBackendRegistrations>();
   #extensionPoints = new Map<string, { impl: unknown; pluginId: string }>();
   #serviceRegistry: ServiceRegistry;
@@ -129,24 +177,11 @@ export class BackendInitializer {
     if (this.#startPromise) {
       throw new Error('Backend has already started');
     }
+    if (this.#stopPromise) {
+      throw new Error('Backend has already stopped');
+    }
 
-    const exitHandler = async () => {
-      process.removeListener('SIGTERM', exitHandler);
-      process.removeListener('SIGINT', exitHandler);
-      process.removeListener('beforeExit', exitHandler);
-
-      try {
-        await this.stop();
-        process.exit(0);
-      } catch (error) {
-        console.error(error);
-        process.exit(1);
-      }
-    };
-
-    process.addListener('SIGTERM', exitHandler);
-    process.addListener('SIGINT', exitHandler);
-    process.addListener('beforeExit', exitHandler);
+    instanceRegistry.register(this);
 
     this.#startPromise = this.#doStart();
     await this.#startPromise;
@@ -240,75 +275,90 @@ export class BackendInitializer {
     );
 
     // All plugins are initialized in parallel
-    await Promise.all(
+    const results = await Promise.allSettled(
       allPluginIds.map(async pluginId => {
-        // Initialize all eager services
-        await this.#serviceRegistry.initializeEagerServicesWithScope(
-          'plugin',
-          pluginId,
-        );
-
-        // Modules are initialized before plugins, so that they can provide extension to the plugin
-        const modules = moduleInits.get(pluginId);
-        if (modules) {
-          const tree = DependencyGraph.fromIterable(
-            Array.from(modules).map(([moduleId, moduleInit]) => ({
-              value: { moduleId, moduleInit },
-              // Relationships are reversed at this point since we're only interested in the extension points.
-              // If a modules provides extension point A we want it to be initialized AFTER all modules
-              // that depend on extension point A, so that they can provide their extensions.
-              consumes: Array.from(moduleInit.provides).map(p => p.id),
-              provides: Array.from(moduleInit.consumes).map(c => c.id),
-            })),
-          );
-          const circular = tree.detectCircularDependency();
-          if (circular) {
-            throw new ConflictError(
-              `Circular dependency detected for modules of plugin '${pluginId}', ${circular
-                .map(({ moduleId }) => `'${moduleId}'`)
-                .join(' -> ')}`,
-            );
-          }
-          await tree.parallelTopologicalTraversal(
-            async ({ moduleId, moduleInit }) => {
-              const moduleDeps = await this.#getInitDeps(
-                moduleInit.init.deps,
-                pluginId,
-                moduleId,
-              );
-              await moduleInit.init.func(moduleDeps).catch(error => {
-                throw new ForwardedError(
-                  `Module '${moduleId}' for plugin '${pluginId}' startup failed`,
-                  error,
-                );
-              });
-            },
-          );
-        }
-
-        // Once all modules have been initialized, we can initialize the plugin itself
-        const pluginInit = pluginInits.get(pluginId);
-        // We allow modules to be installed without the accompanying plugin, so the plugin may not exist
-        if (pluginInit) {
-          const pluginDeps = await this.#getInitDeps(
-            pluginInit.init.deps,
+        try {
+          // Initialize all eager services
+          await this.#serviceRegistry.initializeEagerServicesWithScope(
+            'plugin',
             pluginId,
           );
-          await pluginInit.init.func(pluginDeps).catch(error => {
-            throw new ForwardedError(
-              `Plugin '${pluginId}' startup failed`,
-              error,
+
+          // Modules are initialized before plugins, so that they can provide extension to the plugin
+          const modules = moduleInits.get(pluginId);
+          if (modules) {
+            const tree = DependencyGraph.fromIterable(
+              Array.from(modules).map(([moduleId, moduleInit]) => ({
+                value: { moduleId, moduleInit },
+                // Relationships are reversed at this point since we're only interested in the extension points.
+                // If a modules provides extension point A we want it to be initialized AFTER all modules
+                // that depend on extension point A, so that they can provide their extensions.
+                consumes: Array.from(moduleInit.provides).map(p => p.id),
+                provides: Array.from(moduleInit.consumes).map(c => c.id),
+              })),
             );
-          });
+            const circular = tree.detectCircularDependency();
+            if (circular) {
+              throw new ConflictError(
+                `Circular dependency detected for modules of plugin '${pluginId}', ${circular
+                  .map(({ moduleId }) => `'${moduleId}'`)
+                  .join(' -> ')}`,
+              );
+            }
+            await tree.parallelTopologicalTraversal(
+              async ({ moduleId, moduleInit }) => {
+                const moduleDeps = await this.#getInitDeps(
+                  moduleInit.init.deps,
+                  pluginId,
+                  moduleId,
+                );
+                await moduleInit.init.func(moduleDeps).catch(error => {
+                  throw new ForwardedError(
+                    `Module '${moduleId}' for plugin '${pluginId}' startup failed`,
+                    error,
+                  );
+                });
+              },
+            );
+          }
+
+          // Once all modules have been initialized, we can initialize the plugin itself
+          const pluginInit = pluginInits.get(pluginId);
+          // We allow modules to be installed without the accompanying plugin, so the plugin may not exist
+          if (pluginInit) {
+            const pluginDeps = await this.#getInitDeps(
+              pluginInit.init.deps,
+              pluginId,
+            );
+            await pluginInit.init.func(pluginDeps).catch(error => {
+              throw new ForwardedError(
+                `Plugin '${pluginId}' startup failed`,
+                error,
+              );
+            });
+          }
+
+          initLogger.onPluginStarted(pluginId);
+
+          // Once the plugin and all modules have been initialized, we can signal that the plugin has stared up successfully
+          const lifecycleService = await this.#getPluginLifecycleImpl(pluginId);
+          await lifecycleService.startup();
+        } catch (error) {
+          initLogger.onPluginFailed(pluginId);
+          throw error;
         }
-
-        initLogger.onPluginStarted(pluginId);
-
-        // Once the plugin and all modules have been initialized, we can signal that the plugin has stared up successfully
-        const lifecycleService = await this.#getPluginLifecycleImpl(pluginId);
-        await lifecycleService.startup();
       }),
     );
+
+    const initErrors = results.flatMap(r =>
+      r.status === 'rejected' ? [r.reason] : [],
+    );
+    if (initErrors.length === 1) {
+      throw initErrors[0];
+    } else if (initErrors.length > 1) {
+      // TODO(Rugvip): Seems like there aren't proper types for AggregateError yet
+      throw new (AggregateError as any)(initErrors, 'Backend startup failed');
+    }
 
     // Once all plugins and modules have been initialized, we can signal that the backend has started up successfully
     const lifecycleService = await this.#getRootLifecycleImpl();
@@ -336,7 +386,17 @@ export class BackendInitializer {
     }
   }
 
+  // It's fine to call .stop() multiple times, which for example can happen with manual stop + process exit
   async stop(): Promise<void> {
+    instanceRegistry.unregister(this);
+
+    if (!this.#stopPromise) {
+      this.#stopPromise = this.#doStop();
+    }
+    await this.#stopPromise;
+  }
+
+  async #doStop(): Promise<void> {
     if (!this.#startPromise) {
       return;
     }

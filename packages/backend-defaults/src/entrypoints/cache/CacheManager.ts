@@ -15,17 +15,14 @@
  */
 
 import {
+  CacheService,
   CacheServiceOptions,
   LoggerService,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
 import Keyv from 'keyv';
 import { DefaultCacheClient } from './CacheClient';
-import {
-  CacheManagerOptions,
-  PluginCacheManager,
-  ttlToMilliseconds,
-} from './types';
+import { CacheManagerOptions, ttlToMilliseconds } from './types';
 import { durationToMilliseconds } from '@backstage/types';
 
 type StoreFactory = (pluginId: string, defaultTtl: number | undefined) => Keyv;
@@ -129,24 +126,16 @@ export class CacheManager {
    * @param pluginId - The plugin that the cache manager should be created for.
    *        Plugin names should be unique.
    */
-  forPlugin(pluginId: string): PluginCacheManager {
-    return {
-      getClient: (defaultOptions = {}) => {
-        const clientFactory = (options: CacheServiceOptions) => {
-          const ttl = options.defaultTtl ?? this.defaultTtl;
-          return this.getClientWithTtl(
-            pluginId,
-            ttl !== undefined ? ttlToMilliseconds(ttl) : undefined,
-          );
-        };
-
-        return new DefaultCacheClient(
-          clientFactory(defaultOptions),
-          clientFactory,
-          defaultOptions,
-        );
-      },
+  forPlugin(pluginId: string): CacheService {
+    const clientFactory = (options: CacheServiceOptions) => {
+      const ttl = options.defaultTtl ?? this.defaultTtl;
+      return this.getClientWithTtl(
+        pluginId,
+        ttl !== undefined ? ttlToMilliseconds(ttl) : undefined,
+      );
     };
+
+    return new DefaultCacheClient(clientFactory({}), clientFactory, {});
   }
 
   private getClientWithTtl(pluginId: string, ttl: number | undefined): Keyv {
@@ -158,7 +147,9 @@ export class CacheManager {
     let store: typeof KeyvRedis | undefined;
     return (pluginId, defaultTtl) => {
       if (!store) {
-        store = new KeyvRedis(this.connection);
+        store = new KeyvRedis(this.connection, {
+          useRedisSets: this.useRedisSets,
+        });
         // Always provide an error handler to avoid stopping the process
         store.on('error', (err: Error) => {
           this.logger?.error('Failed to create redis cache client', err);

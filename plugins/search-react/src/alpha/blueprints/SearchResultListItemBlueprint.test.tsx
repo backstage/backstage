@@ -64,7 +64,6 @@ describe('SearchResultListItemBlueprint', () => {
         "inputs": {},
         "kind": "search-result-list-item",
         "name": "test",
-        "namespace": undefined,
         "output": [
           [Function],
         ],
@@ -87,7 +86,7 @@ describe('SearchResultListItemBlueprint', () => {
     });
 
     const mockSearchPage = PageBlueprint.makeWithOverrides({
-      namespace: 'search',
+      name: 'search',
       inputs: {
         items: createExtensionInput([searchResultListItemDataRef]),
       },

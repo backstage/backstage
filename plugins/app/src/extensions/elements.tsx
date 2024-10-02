@@ -19,7 +19,6 @@ import { AppRootElementBlueprint } from '@backstage/frontend-plugin-api';
 import React from 'react';
 
 export const oauthRequestDialogAppRootElement = AppRootElementBlueprint.make({
-  namespace: 'app',
   name: 'oauth-request-dialog',
   params: {
     element: <OAuthRequestDialog />,
@@ -28,7 +27,6 @@ export const oauthRequestDialogAppRootElement = AppRootElementBlueprint.make({
 
 export const alertDisplayAppRootElement =
   AppRootElementBlueprint.makeWithOverrides({
-    namespace: 'app',
     name: 'alert-display',
     config: {
       schema: {

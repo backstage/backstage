@@ -15,9 +15,11 @@
  */
 
 import { readdir, stat } from 'fs-extra';
-import { relative, join } from 'path';
+import { join, relative } from 'path';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { examples } from './log.examples';
+import fs from 'fs';
+import { z } from 'zod';
 
 const id = 'debug:log';
 
@@ -32,28 +34,24 @@ const id = 'debug:log';
  * @public
  */
 export function createDebugLogAction() {
-  return createTemplateAction<{ message?: string; listWorkspace?: boolean }>({
+  return createTemplateAction<{
+    message?: string;
+    listWorkspace?: boolean | 'with-filenames' | 'with-contents';
+  }>({
     id,
     description:
-      'Writes a message into the log or lists all files in the workspace.',
+      'Writes a message into the log and/or lists all files in the workspace.',
     examples,
     schema: {
-      input: {
-        type: 'object',
-        properties: {
-          message: {
-            title: 'Message to output.',
-            type: 'string',
-          },
-          listWorkspace: {
-            title: 'List all files in the workspace, if true.',
-            type: 'boolean',
-          },
-          extra: {
-            title: 'Extra info',
-          },
-        },
-      },
+      input: z.object({
+        message: z.string({ description: 'Message to output.' }).optional(),
+        listWorkspace: z
+          .union([z.boolean(), z.enum(['with-filenames', 'with-contents'])], {
+            description:
+              'List all files in the workspace. If used with "with-contents", also the file contents are listed.',
+          })
+          .optional(),
+      }),
     },
     supportsDryRun: true,
     async handler(ctx) {
@@ -67,7 +65,14 @@ export function createDebugLogAction() {
         const files = await recursiveReadDir(ctx.workspacePath);
         ctx.logger.info(
           `Workspace:\n${files
-            .map(f => `  - ${relative(ctx.workspacePath, f)}`)
+            .map(f => {
+              const relativePath = relative(ctx.workspacePath, f);
+              if (ctx.input?.listWorkspace === 'with-contents') {
+                const content = fs.readFileSync(f, 'utf-8');
+                return ` - ${relativePath}:\n\n  ${content}`;
+              }
+              return `  - ${relativePath}`;
+            })
             .join('\n')}`,
         );
       }

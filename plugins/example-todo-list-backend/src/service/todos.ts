@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { v4 as uuid } from 'uuid';
 import { NotFoundError } from '@backstage/errors';
 
@@ -29,9 +30,7 @@ export type TodoFilter = {
 };
 
 export type TodoFilters =
-  | {
-      anyOf: TodoFilters[];
-    }
+  | { anyOf: TodoFilters[] }
   | { allOf: TodoFilters[] }
   | { not: TodoFilters }
   | TodoFilter;

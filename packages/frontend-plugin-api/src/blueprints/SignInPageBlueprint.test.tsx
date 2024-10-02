@@ -42,7 +42,6 @@ describe('SignInPageBlueprint', () => {
         "inputs": {},
         "kind": "sign-in-page",
         "name": undefined,
-        "namespace": undefined,
         "output": [
           [Function],
         ],
@@ -57,7 +56,6 @@ describe('SignInPageBlueprint', () => {
     const MockSignInPage = () => <div data-testid="mock-sign-in" />;
 
     const extension = SignInPageBlueprint.make({
-      name: 'test',
       params: { loader: async () => () => <MockSignInPage /> },
     });
 

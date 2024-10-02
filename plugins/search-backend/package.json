@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-search-backend",
-  "version": "1.5.17-next.0",
+  "version": "1.5.18-next.1",
   "description": "The Backstage backend plugin that provides your backstage app with search",
   "backstage": {
     "role": "backend-plugin",
@@ -56,7 +56,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-openapi-utils": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
@@ -80,7 +80,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/repo-tools": "workspace:^",
     "@types/supertest": "^2.0.8",
-    "supertest": "^6.1.3"
+    "supertest": "^7.0.0"
   },
   "configSchema": "config.d.ts"
 }

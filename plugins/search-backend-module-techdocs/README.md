@@ -20,8 +20,8 @@ import { searchPlugin } from '@backstage/plugin-search-backend/alpha';
 import { searchModuleTechDocsCollator } from '@backstage/plugin-search-backend-module-techdocs/alpha';
 
 const backend = createBackend();
-backend.add(searchPlugin());
-backend.add(searchModuleTechDocsCollator());
+backend.add(searchPlugin);
+backend.add(searchModuleTechDocsCollator);
 backend.start();
 ```
 

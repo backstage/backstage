@@ -418,6 +418,49 @@ describe('BackendInitializer', () => {
     );
   });
 
+  it('should forward errors when multiple plugins fail to start', async () => {
+    const init = new BackendInitializer([]);
+    init.add(
+      createBackendPlugin({
+        pluginId: 'test-1',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {
+              throw new Error('NOPE A');
+            },
+          });
+        },
+      }),
+    );
+    init.add(
+      createBackendPlugin({
+        pluginId: 'test-2',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {
+              throw new Error('NOPE B');
+            },
+          });
+        },
+      }),
+    );
+    const result = init.start();
+
+    await expect(result).rejects.toThrow('Backend startup failed');
+    await expect(result).rejects.toMatchObject({
+      errors: [
+        expect.objectContaining({
+          message: "Plugin 'test-1' startup failed; caused by Error: NOPE A",
+        }),
+        expect.objectContaining({
+          message: "Plugin 'test-2' startup failed; caused by Error: NOPE B",
+        }),
+      ],
+    });
+  });
+
   it('should forward errors when modules fail to start', async () => {
     const init = new BackendInitializer([]);
     init.add(testPlugin);

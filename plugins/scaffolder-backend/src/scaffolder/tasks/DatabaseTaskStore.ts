@@ -44,6 +44,7 @@ import {
   restoreWorkspace,
   serializeWorkspace,
 } from '@backstage/plugin-scaffolder-node/alpha';
+import { flattenParams } from '../../service/helpers';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-scaffolder-backend',
@@ -183,20 +184,58 @@ export class DatabaseTaskStore implements TaskStore {
   async list(options: {
     createdBy?: string;
     status?: TaskStatus;
-  }): Promise<{ tasks: SerializedTask[] }> {
-    const queryBuilder = this.db<RawDbTaskRow>('tasks');
+    filters?: {
+      createdBy?: string | string[];
+      status?: TaskStatus | TaskStatus[];
+    };
+    pagination?: {
+      limit?: number;
+      offset?: number;
+    };
+    order?: { order: 'asc' | 'desc'; field: string }[];
+  }): Promise<{ tasks: SerializedTask[]; totalTasks?: number }> {
+    const { createdBy, status, pagination, order, filters } = options ?? {};
+    const queryBuilder = this.db<RawDbTaskRow & { count: number }>('tasks');
 
-    if (options.createdBy) {
-      queryBuilder.where({
-        created_by: options.createdBy,
+    if (createdBy || filters?.createdBy) {
+      const arr: string[] = flattenParams<string>(
+        createdBy,
+        filters?.createdBy,
+      );
+      queryBuilder.whereIn('created_by', [...new Set(arr)]);
+    }
+
+    if (status || filters?.status) {
+      const arr: TaskStatus[] = flattenParams<TaskStatus>(
+        status,
+        filters?.status,
+      );
+      queryBuilder.whereIn('status', [...new Set(arr)]);
+    }
+
+    if (order) {
+      order.forEach(f => {
+        queryBuilder.orderBy(f.field, f.order);
       });
+    } else {
+      queryBuilder.orderBy('created_at', 'desc');
     }
 
-    if (options.status) {
-      queryBuilder.where({ status: options.status });
+    const countQuery = queryBuilder.clone();
+    countQuery.count('tasks.id', { as: 'count' });
+
+    if (pagination?.limit !== undefined) {
+      queryBuilder.limit(pagination.limit);
     }
 
-    const results = await queryBuilder.orderBy('created_at', 'desc').select();
+    if (pagination?.offset !== undefined) {
+      queryBuilder.offset(pagination.offset);
+    }
+
+    const [results, [{ count }]] = await Promise.all([
+      queryBuilder.select(),
+      countQuery,
+    ]);
 
     const tasks = results.map(result => ({
       id: result.id,
@@ -207,7 +246,7 @@ export class DatabaseTaskStore implements TaskStore {
       createdAt: parseSqlDateToIsoString(result.created_at),
     }));
 
-    return { tasks };
+    return { tasks, totalTasks: count };
   }
 
   async getTask(taskId: string): Promise<SerializedTask> {
@@ -445,7 +484,7 @@ export class DatabaseTaskStore implements TaskStore {
   async listEvents(
     options: TaskStoreListEventsOptions,
   ): Promise<{ events: SerializedTaskEvent[] }> {
-    const { taskId, after } = options;
+    const { isTaskRecoverable, taskId, after } = options;
     const rawEvents = await this.db<RawDbTaskEventRow>('task_events')
       .where({
         task_id: taskId,
@@ -463,6 +502,7 @@ export class DatabaseTaskStore implements TaskStore {
         const body = JSON.parse(event.body) as JsonObject;
         return {
           id: Number(event.id),
+          isTaskRecoverable,
           taskId,
           body,
           type: event.event_type,
@@ -560,6 +600,44 @@ export class DatabaseTaskStore implements TaskStore {
       task_id: taskId,
       event_type: 'cancelled',
       body: serializedBody,
+    });
+  }
+
+  async retryTask?(options: { taskId: string }): Promise<void> {
+    await this.db.transaction(async tx => {
+      const result = await tx<RawDbTaskRow>('tasks')
+        .where('id', options.taskId)
+        .update(
+          {
+            status: 'open',
+            last_heartbeat_at: this.db.fn.now(),
+          },
+          ['id', 'spec'],
+        );
+
+      for (const { id, spec } of result) {
+        const taskSpec = JSON.parse(spec as string) as TaskSpec;
+
+        /**
+         * Once task is picked up, all event types are replayed.
+         * We have to remove cancelled or completion event_type as these are as actions for frontend to perform.
+         * In contrary, we send 'recovered' event_type to reset the state on the frontend side.
+         *
+         */
+        await tx<RawDbTaskEventRow>('task_events')
+          .where('task_id', id)
+          .andWhere(q => q.whereIn('event_type', ['cancelled', 'completion']))
+          .del();
+
+        await tx<RawDbTaskEventRow>('task_events').insert({
+          task_id: id,
+          event_type: 'recovered',
+          body: JSON.stringify({
+            recoverStrategy:
+              taskSpec.EXPERIMENTAL_recovery?.EXPERIMENTAL_strategy ?? 'none',
+          }),
+        });
+      }
     });
   }
 

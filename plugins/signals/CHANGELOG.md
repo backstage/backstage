@@ -1,5 +1,83 @@
 # @backstage/plugin-signals
 
+## 0.0.11-next.1
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- Updated dependencies
+  - @backstage/core-components@0.15.1-next.1
+  - @backstage/plugin-signals-react@0.0.6-next.1
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/theme@0.5.8-next.0
+  - @backstage/types@1.1.1
+
+## 0.0.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.15.1-next.0
+  - @backstage/core-plugin-api@1.10.0-next.0
+  - @backstage/theme@0.5.7
+  - @backstage/types@1.1.1
+  - @backstage/plugin-signals-react@0.0.6-next.0
+
+## 0.0.10
+
+### Patch Changes
+
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- 5add8e1: Added a `SignalsDisplay` extension to allows the signals plugin to be installed in an app as follows:
+
+  ```tsx
+  export default app.createRoot(
+    <>
+      <AlertDisplay transientTimeoutMs={2500} />
+      <OAuthRequestDialog />
+      <SignalsDisplay />
+      <AppRouter>
+        <VisitListener />
+        <Root>{routes}</Root>
+      </AppRouter>
+    </>,
+  );
+  ```
+
+  With this in place you can remove the explicit installation via the `plugins` option for `createApp`.
+
+- 3e9b1a4: Put a name on the `SignalsDisplay` component extension
+- Updated dependencies
+  - @backstage/core-components@0.15.0
+  - @backstage/core-plugin-api@1.9.4
+  - @backstage/theme@0.5.7
+  - @backstage/plugin-signals-react@0.0.5
+  - @backstage/types@1.1.1
+
+## 0.0.10-next.2
+
+### Patch Changes
+
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.14.11-next.1
+  - @backstage/core-plugin-api@1.9.4-next.0
+  - @backstage/theme@0.5.7-next.0
+  - @backstage/plugin-signals-react@0.0.5-next.1
+  - @backstage/types@1.1.1
+
+## 0.0.10-next.1
+
+### Patch Changes
+
+- 3e9b1a4: Put a name on the `SignalsDisplay` component extension
+- Updated dependencies
+  - @backstage/core-components@0.14.11-next.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/theme@0.5.6
+  - @backstage/types@1.1.1
+  - @backstage/plugin-signals-react@0.0.5-next.0
+
 ## 0.0.10-next.0
 
 ### Patch Changes

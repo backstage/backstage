@@ -24,15 +24,8 @@ const iconsDataRef = createExtensionDataRef<{
 /** @public */
 export const IconBundleBlueprint = createExtensionBlueprint({
   kind: 'icon-bundle',
-  namespace: 'app',
   attachTo: { id: 'api:app/icons', input: 'icons' },
   output: [iconsDataRef],
-  config: {
-    schema: {
-      icons: z => z.string().default('blob'),
-      test: z => z.string(),
-    },
-  },
   factory: (params: { icons: { [key in string]: IconComponent } }) => [
     iconsDataRef(params.icons),
   ],

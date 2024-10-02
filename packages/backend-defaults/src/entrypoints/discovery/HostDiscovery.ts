@@ -42,6 +42,7 @@ export class HostDiscovery implements DiscoveryService {
    *
    * Can be overridden in config by providing a target and corresponding plugins in `discovery.endpoints`.
    * eg.
+   *
    * ```yaml
    * discovery:
    *  endpoints:
@@ -55,14 +56,11 @@ export class HostDiscovery implements DiscoveryService {
    *      plugins: [search]
    * ```
    *
-   * The basePath defaults to `/api`, meaning the default full internal
+   * The fixed base path is `/api`, meaning the default full internal
    * path for the `catalog` plugin will be `http://localhost:7007/api/catalog`.
    */
-  static fromConfig(
-    config: RootConfigService,
-    options?: { basePath?: string },
-  ) {
-    const basePath = options?.basePath ?? '/api';
+  static fromConfig(config: RootConfigService) {
+    const basePath = '/api';
     const externalBaseUrl = config
       .getString('backend.baseUrl')
       .replace(/\/+$/, '');

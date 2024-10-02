@@ -15,22 +15,16 @@
  */
 
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
-import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { createFetchCatalogEntityAction } from './fetch';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
+import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 
 describe('catalog:fetch', () => {
-  const getEntityByRef = jest.fn();
-  const getEntitiesByRefs = jest.fn();
-
-  const catalogClient = {
-    getEntityByRef: getEntityByRef,
-    getEntitiesByRefs: getEntitiesByRefs,
-  };
+  const catalogClient = catalogServiceMock.mock();
 
   const action = createFetchCatalogEntityAction({
-    catalogClient: catalogClient as unknown as CatalogApi,
+    catalogClient,
     auth: mockServices.auth(),
   });
 
@@ -51,7 +45,7 @@ describe('catalog:fetch', () => {
 
   describe('fetch single entity', () => {
     it('should return entity from catalog', async () => {
-      getEntityByRef.mockReturnValueOnce({
+      catalogClient.getEntityByRef.mockResolvedValueOnce({
         metadata: {
           namespace: 'default',
           name: 'test',
@@ -66,9 +60,12 @@ describe('catalog:fetch', () => {
         },
       });
 
-      expect(getEntityByRef).toHaveBeenCalledWith('component:default/test', {
-        token,
-      });
+      expect(catalogClient.getEntityByRef).toHaveBeenCalledWith(
+        'component:default/test',
+        {
+          token,
+        },
+      );
       expect(mockContext.output).toHaveBeenCalledWith('entity', {
         metadata: {
           namespace: 'default',
@@ -79,7 +76,7 @@ describe('catalog:fetch', () => {
     });
 
     it('should throw error if entity fetch fails from catalog and optional is false', async () => {
-      getEntityByRef.mockImplementationOnce(() => {
+      catalogClient.getEntityByRef.mockImplementationOnce(() => {
         throw new Error('Not found');
       });
 
@@ -92,14 +89,17 @@ describe('catalog:fetch', () => {
         }),
       ).rejects.toThrow('Not found');
 
-      expect(getEntityByRef).toHaveBeenCalledWith('component:default/test', {
-        token,
-      });
+      expect(catalogClient.getEntityByRef).toHaveBeenCalledWith(
+        'component:default/test',
+        {
+          token,
+        },
+      );
       expect(mockContext.output).not.toHaveBeenCalled();
     });
 
     it('should throw error if entity not in catalog and optional is false', async () => {
-      getEntityByRef.mockReturnValueOnce(null);
+      catalogClient.getEntityByRef.mockResolvedValueOnce(null as any);
 
       await expect(
         action.handler({
@@ -110,9 +110,12 @@ describe('catalog:fetch', () => {
         }),
       ).rejects.toThrow('Entity component:default/test not found');
 
-      expect(getEntityByRef).toHaveBeenCalledWith('component:default/test', {
-        token,
-      });
+      expect(catalogClient.getEntityByRef).toHaveBeenCalledWith(
+        'component:default/test',
+        {
+          token,
+        },
+      );
       expect(mockContext.output).not.toHaveBeenCalled();
     });
 
@@ -124,7 +127,7 @@ describe('catalog:fetch', () => {
         },
         kind: 'Group',
       } as Entity;
-      getEntityByRef.mockReturnValueOnce(entity);
+      catalogClient.getEntityByRef.mockResolvedValueOnce(entity);
 
       await action.handler({
         ...mockContext,
@@ -135,16 +138,19 @@ describe('catalog:fetch', () => {
         },
       });
 
-      expect(getEntityByRef).toHaveBeenCalledWith('group:ns/test', {
-        token,
-      });
+      expect(catalogClient.getEntityByRef).toHaveBeenCalledWith(
+        'group:ns/test',
+        {
+          token,
+        },
+      );
       expect(mockContext.output).toHaveBeenCalledWith('entity', entity);
     });
   });
 
   describe('fetch multiple entities', () => {
     it('should return entities from catalog', async () => {
-      getEntitiesByRefs.mockReturnValueOnce({
+      catalogClient.getEntitiesByRefs.mockResolvedValueOnce({
         items: [
           {
             metadata: {
@@ -163,7 +169,7 @@ describe('catalog:fetch', () => {
         },
       });
 
-      expect(getEntitiesByRefs).toHaveBeenCalledWith(
+      expect(catalogClient.getEntitiesByRefs).toHaveBeenCalledWith(
         { entityRefs: ['component:default/test'] },
         {
           token,
@@ -181,7 +187,7 @@ describe('catalog:fetch', () => {
     });
 
     it('should throw error if undefined is returned for some entity', async () => {
-      getEntitiesByRefs.mockReturnValueOnce({
+      catalogClient.getEntitiesByRefs.mockResolvedValueOnce({
         items: [
           {
             metadata: {
@@ -204,7 +210,7 @@ describe('catalog:fetch', () => {
         }),
       ).rejects.toThrow('Entity component:default/test2 not found');
 
-      expect(getEntitiesByRefs).toHaveBeenCalledWith(
+      expect(catalogClient.getEntitiesByRefs).toHaveBeenCalledWith(
         { entityRefs: ['component:default/test', 'component:default/test2'] },
         {
           token,
@@ -214,7 +220,7 @@ describe('catalog:fetch', () => {
     });
 
     it('should return null in case some of the entities not found and optional is true', async () => {
-      getEntitiesByRefs.mockReturnValueOnce({
+      catalogClient.getEntitiesByRefs.mockResolvedValueOnce({
         items: [
           {
             metadata: {
@@ -235,7 +241,7 @@ describe('catalog:fetch', () => {
         },
       });
 
-      expect(getEntitiesByRefs).toHaveBeenCalledWith(
+      expect(catalogClient.getEntitiesByRefs).toHaveBeenCalledWith(
         { entityRefs: ['component:default/test', 'component:default/test2'] },
         {
           token,
@@ -268,7 +274,7 @@ describe('catalog:fetch', () => {
         },
         kind: 'User',
       } as Entity;
-      getEntitiesByRefs.mockReturnValueOnce({
+      catalogClient.getEntitiesByRefs.mockResolvedValueOnce({
         items: [entity1, entity2],
       });
 
@@ -281,7 +287,7 @@ describe('catalog:fetch', () => {
         },
       });
 
-      expect(getEntitiesByRefs).toHaveBeenCalledWith(
+      expect(catalogClient.getEntitiesByRefs).toHaveBeenCalledWith(
         { entityRefs: ['group:ns/test', 'user:default/test'] },
         {
           token,

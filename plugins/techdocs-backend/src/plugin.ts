@@ -22,7 +22,6 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-
 import {
   DocsBuildStrategy,
   Generators,
@@ -30,6 +29,7 @@ import {
   Preparers,
   Publisher,
   PublisherBase,
+  PublisherSettings,
   PublisherType,
   RemoteProtocol,
   techdocsBuildsExtensionPoint,
@@ -39,6 +39,7 @@ import {
   techdocsPublisherExtensionPoint,
 } from '@backstage/plugin-techdocs-node';
 import { createRouter } from '@backstage/plugin-techdocs-backend';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import * as winston from 'winston';
 
 /**
@@ -89,12 +90,19 @@ export const techdocsPlugin = createBackendPlugin({
     });
 
     let customTechdocsPublisher: PublisherBase | undefined;
+    const publisherSettings: PublisherSettings = {};
     env.registerExtensionPoint(techdocsPublisherExtensionPoint, {
       registerPublisher(type: PublisherType, publisher: PublisherBase) {
         if (customTechdocsPublisher) {
           throw new Error(`Publisher for type ${type} is already registered`);
         }
         customTechdocsPublisher = publisher;
+      },
+      registerPublisherSettings<T extends keyof PublisherSettings>(
+        publisher: T,
+        settings: PublisherSettings[T],
+      ) {
+        publisherSettings[publisher] = settings;
       },
     });
 
@@ -108,6 +116,7 @@ export const techdocsPlugin = createBackendPlugin({
         cache: coreServices.cache,
         httpAuth: coreServices.httpAuth,
         auth: coreServices.auth,
+        catalog: catalogServiceRef,
       },
       async init({
         config,
@@ -118,6 +127,7 @@ export const techdocsPlugin = createBackendPlugin({
         cache,
         httpAuth,
         auth,
+        catalog,
       }) {
         const winstonLogger = loggerToWinstonLogger(logger);
         // Preparers are responsible for fetching source files for documentation.
@@ -142,6 +152,7 @@ export const techdocsPlugin = createBackendPlugin({
           logger: winstonLogger,
           discovery: discovery,
           customPublisher: customTechdocsPublisher,
+          publisherSettings,
         });
 
         // checks if the publisher is working and logs the result
@@ -161,6 +172,7 @@ export const techdocsPlugin = createBackendPlugin({
             discovery,
             httpAuth,
             auth,
+            catalogClient: catalog,
           }),
         );
 

@@ -84,7 +84,6 @@ export const RelatedEntitiesCard = <T extends Entity>(
     asRenderableEntities,
     tableOptions = {},
   } = props;
-
   const { t } = useTranslationRef(catalogTranslationRef);
   const { entity } = useEntity();
   const { entities, loading, error } = useRelatedEntities(entity, {
@@ -116,7 +115,7 @@ export const RelatedEntitiesCard = <T extends Entity>(
         <div style={{ textAlign: 'center' }}>
           <Typography variant="body1">{emptyMessage}</Typography>
           <Typography variant="body2">
-            <Link to={emptyHelpLink}>
+            <Link to={emptyHelpLink} externalLinkIcon>
               {t('relatedEntitiesCard.emptyHelpLinkTitle')}
             </Link>
           </Typography>

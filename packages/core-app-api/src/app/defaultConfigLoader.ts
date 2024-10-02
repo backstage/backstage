@@ -49,9 +49,36 @@ export function defaultConfigLoaderSync(
   }
   const configs = appConfig.slice() as unknown as AppConfig[];
 
-  // Avoiding this string also being replaced at runtime
-  if (
+  // Check if we have any config script tags, otherwise fall back to injected config
+  const configScripts = document.querySelectorAll(
+    'script[type="backstage.io/config"]',
+  );
+  if (configScripts.length > 0) {
+    for (const el of configScripts) {
+      try {
+        const content = el.textContent;
+        if (!content) {
+          throw new Error('tag is empty');
+        }
+        let data;
+        try {
+          data = JSON.parse(content);
+        } catch (error) {
+          throw new Error(`failed to parse config; ${error}`);
+        }
+        if (!Array.isArray(data)) {
+          throw new Error('data is not an array');
+        }
+        configs.push(...data);
+      } catch (error) {
+        throw new Error(
+          `Failed to load config from script tag, ${error.message}`,
+        );
+      }
+    }
+  } else if (
     runtimeConfigJson !==
+    // Avoiding this string also being replaced at runtime
     '__app_injected_runtime_config__'.toLocaleUpperCase('en-US')
   ) {
     try {

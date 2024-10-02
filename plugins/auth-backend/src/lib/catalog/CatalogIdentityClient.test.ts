@@ -15,28 +15,15 @@
  */
 
 import { TokenManager } from '@backstage/backend-common';
-import { CatalogApi } from '@backstage/catalog-client';
 import {
   RELATION_MEMBER_OF,
   UserEntity,
   UserEntityV1alpha1,
 } from '@backstage/catalog-model';
+import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { CatalogIdentityClient } from './CatalogIdentityClient';
 
 describe('CatalogIdentityClient', () => {
-  const catalogApi = {
-    getLocationById: jest.fn(),
-    getEntityByRef: jest.fn(),
-    getEntities: jest.fn(),
-    addLocation: jest.fn(),
-    removeLocationById: jest.fn(),
-    getLocationByRef: jest.fn(),
-    removeEntityByUid: jest.fn(),
-    refreshEntity: jest.fn(),
-    getEntityAncestors: jest.fn(),
-    getEntityFacets: jest.fn(),
-    validateEntity: jest.fn(),
-  };
   const tokenManager: jest.Mocked<TokenManager> = {
     getToken: jest.fn(),
     authenticate: jest.fn(),
@@ -45,11 +32,15 @@ describe('CatalogIdentityClient', () => {
   afterEach(() => jest.resetAllMocks());
 
   it('findUser passes through the correct search params', async () => {
-    catalogApi.getEntities.mockResolvedValueOnce({ items: [{} as UserEntity] });
+    const catalogApi = catalogServiceMock.mock({
+      getEntities: jest
+        .fn()
+        .mockResolvedValueOnce({ items: [{} as UserEntity] }),
+    });
     tokenManager.getToken.mockResolvedValue({ token: 'my-token' });
     const client = new CatalogIdentityClient({
       discovery: {} as any,
-      catalogApi: catalogApi as Partial<CatalogApi> as CatalogApi,
+      catalogApi,
       tokenManager,
     });
 
@@ -103,12 +94,14 @@ describe('CatalogIdentityClient', () => {
         ],
       },
     ];
-    catalogApi.getEntities.mockResolvedValueOnce({ items: mockUsers });
+    const catalogApi = catalogServiceMock.mock({
+      getEntities: jest.fn().mockResolvedValueOnce({ items: mockUsers }),
+    });
     tokenManager.getToken.mockResolvedValue({ token: 'my-token' });
 
     const client = new CatalogIdentityClient({
       discovery: {} as any,
-      catalogApi: catalogApi as Partial<CatalogApi> as CatalogApi,
+      catalogApi,
       tokenManager,
     });
 

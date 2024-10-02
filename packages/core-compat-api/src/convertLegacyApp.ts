@@ -22,12 +22,13 @@ import React, {
   isValidElement,
 } from 'react';
 import {
-  ExtensionOverrides,
+  FrontendModule,
   FrontendPlugin,
   coreExtensionData,
   createExtension,
+  ExtensionOverrides,
   createExtensionInput,
-  createExtensionOverrides,
+  createFrontendModule,
 } from '@backstage/frontend-plugin-api';
 import { getComponentData } from '@backstage/core-plugin-api';
 import { collectLegacyRoutes } from './collectLegacyRoutes';
@@ -61,7 +62,7 @@ function selectChildren(
 /** @public */
 export function convertLegacyApp(
   rootElement: React.JSX.Element,
-): (FrontendPlugin | ExtensionOverrides)[] {
+): (FrontendPlugin | FrontendModule | ExtensionOverrides)[] {
   if (getComponentData(rootElement, 'core.type') === 'FlatRoutes') {
     return collectLegacyRoutes(rootElement);
   }
@@ -104,7 +105,6 @@ export function convertLegacyApp(
   const [routesEl] = routesEls;
 
   const CoreLayoutOverride = createExtension({
-    namespace: 'app',
     name: 'layout',
     attachTo: { id: 'app', input: 'root' },
     inputs: {
@@ -127,7 +127,6 @@ export function convertLegacyApp(
     },
   });
   const CoreNavOverride = createExtension({
-    namespace: 'app',
     name: 'nav',
     attachTo: { id: 'app/layout', input: 'nav' },
     output: [],
@@ -139,7 +138,8 @@ export function convertLegacyApp(
 
   return [
     ...collectedRoutes,
-    createExtensionOverrides({
+    createFrontendModule({
+      pluginId: 'app',
       extensions: [CoreLayoutOverride, CoreNavOverride],
     }),
   ];

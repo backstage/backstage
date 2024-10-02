@@ -46,7 +46,6 @@ describe('AppRootWrapperBlueprint', () => {
         "inputs": {},
         "kind": "app-root-wrapper",
         "name": undefined,
-        "namespace": undefined,
         "output": [
           [Function],
         ],
@@ -72,7 +71,6 @@ describe('AppRootWrapperBlueprint', () => {
 
   it('should render the complex component wrapper', async () => {
     const extension = AppRootWrapperBlueprint.makeWithOverrides({
-      name: 'test',
       config: {
         schema: {
           name: z => z.string(),

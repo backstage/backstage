@@ -1,12 +1,12 @@
 {
   "name": "@backstage/repo-tools",
+  "version": "0.10.0-next.1",
   "description": "CLI for Backstage repo tooling ",
-  "version": "0.9.7-next.0",
-  "publishConfig": {
-    "access": "public"
-  },
   "backstage": {
     "role": "cli"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "keywords": [
     "backstage"
@@ -50,8 +50,8 @@
     "@backstage/config-loader": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@manypkg/get-packages": "^1.1.3",
-    "@microsoft/api-documenter": "^7.22.33",
-    "@microsoft/api-extractor": "^7.36.4",
+    "@microsoft/api-documenter": "^7.25.7",
+    "@microsoft/api-extractor": "^7.47.2",
     "@openapitools/openapi-generator-cli": "^2.7.0",
     "@stoplight/spectral-core": "^1.18.0",
     "@stoplight/spectral-formatters": "^1.1.0",
@@ -60,7 +60,7 @@
     "@stoplight/spectral-rulesets": "^1.18.0",
     "@stoplight/spectral-runtime": "^1.1.2",
     "@stoplight/types": "^14.0.0",
-    "@useoptic/openapi-utilities": "^0.54.8",
+    "@useoptic/openapi-utilities": "^0.55.0",
     "chalk": "^4.0.0",
     "codeowners-utils": "^1.0.2",
     "command-exists": "^1.2.9",

@@ -1,0 +1,11 @@
+---
+title: Cisco Webex Scaffolder Actions
+author: Robert Lindley
+authorUrl: https://github.com/Coderrob
+category: Scaffolder
+description: >-
+  A Backstage.io plugin that enables sending Webex messages via
+  Incoming Webhooks within scaffolder templates.
+documentation: https://github.com/Coderrob/backstage-plugin-scaffolder-backend-module-webex
+npmPackageName: '@coderrob/backstage-plugin-scaffolder-backend-module-webex'
+addedDate: '2024-09-04'

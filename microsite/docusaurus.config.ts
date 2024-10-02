@@ -21,8 +21,38 @@
 import { themes } from 'prism-react-renderer';
 import type * as Preset from '@docusaurus/preset-classic';
 import { Config } from '@docusaurus/types';
+import RedirectPlugin from '@docusaurus/plugin-client-redirects';
+import { releases } from './releases';
+
 const backstageTheme = themes.vsDark;
 backstageTheme.plain.backgroundColor = '#232323';
+
+const useVersionedDocs = require('fs').existsSync('versions.json');
+
+// This patches the redirect plugin to ignore the error when it tries to override existing fields.
+// This lets us add redirects that only apply to the next docs, while the stable docs still contain the source path.
+const PatchedRedirectPlugin: typeof RedirectPlugin = (ctx, opts) => {
+  const plugin = RedirectPlugin(ctx, opts);
+
+  return {
+    ...plugin,
+    async postBuild(...args) {
+      try {
+        await plugin.postBuild(...args);
+      } catch (error) {
+        if (
+          error.message ===
+          'The redirect plugin is not supposed to override existing files.'
+        ) {
+          // Bit of a hack to make sure all remaining redirects are written, since the write uses Promise.all
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        } else {
+          throw error;
+        }
+      }
+    },
+  };
+};
 
 const config: Config = {
   title: 'Backstage Software Catalog and Developer Platform',
@@ -56,7 +86,27 @@ const config: Config = {
         docs: {
           editUrl: 'https://github.com/backstage/backstage/edit/master/docs/',
           path: '../docs',
-          sidebarPath: 'sidebars.json',
+          sidebarPath: 'sidebars.js',
+          ...(useVersionedDocs
+            ? {
+                includeCurrentVersion: true,
+                lastVersion: 'stable',
+                versions: {
+                  stable: {
+                    label: 'Stable',
+                    path: '/',
+                    banner: 'none',
+                    badge: false,
+                  },
+                  current: {
+                    label: 'Next',
+                    path: '/next',
+                    banner: 'unreleased',
+                    badge: true,
+                  },
+                },
+              }
+            : undefined),
         },
         blog: {
           path: 'blog',
@@ -119,9 +169,11 @@ const config: Config = {
         };
       },
     }),
-    [
-      '@docusaurus/plugin-client-redirects',
-      {
+    ctx =>
+      PatchedRedirectPlugin(ctx, {
+        id: '@docusaurus/plugin-client-redirects',
+        toExtensions: [],
+        fromExtensions: [],
         redirects: [
           {
             from: '/docs',
@@ -200,8 +252,7 @@ const config: Config = {
             to: '/docs/backend-system/core-services/url-reader',
           },
         ],
-      },
-    ],
+      }),
     [
       'docusaurus-pushfeedback',
       {
@@ -245,7 +296,7 @@ const config: Config = {
           position: 'left',
         },
         {
-          to: 'docs/releases/v1.30.0',
+          to: `docs/releases/${releases[0]}`,
           label: 'Releases',
           position: 'left',
         },
@@ -259,6 +310,14 @@ const config: Config = {
           label: 'Community',
           position: 'left',
         },
+        ...(useVersionedDocs
+          ? [
+              {
+                type: 'docsVersionDropdown',
+                position: 'right' as const,
+              },
+            ]
+          : []),
       ],
     },
     image: 'img/sharing-opengraph.png',

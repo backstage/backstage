@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { errorHandler, PluginDatabaseManager } from '@backstage/backend-common';
 import express, { Request } from 'express';
 import Router from 'express-promise-router';
@@ -22,15 +23,14 @@ import {
   NotificationGetOptions,
 } from '../database';
 import { v4 as uuid } from 'uuid';
-import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
+import { CatalogApi } from '@backstage/catalog-client';
 import {
   NotificationProcessor,
   NotificationSendOptions,
 } from '@backstage/plugin-notifications-node';
-import { InputError } from '@backstage/errors';
+import { InputError, NotFoundError } from '@backstage/errors';
 import {
   AuthService,
-  DiscoveryService,
   HttpAuthService,
   LoggerService,
   UserInfoService,
@@ -53,12 +53,11 @@ export interface RouterOptions {
   logger: LoggerService;
   config: Config;
   database: PluginDatabaseManager;
-  discovery: DiscoveryService;
   auth: AuthService;
   httpAuth: HttpAuthService;
   userInfo: UserInfoService;
   signals?: SignalsService;
-  catalog?: CatalogApi;
+  catalog: CatalogApi;
   processors?: NotificationProcessor[];
 }
 
@@ -73,14 +72,11 @@ export async function createRouter(
     auth,
     httpAuth,
     userInfo,
-    discovery,
     catalog,
     processors = [],
     signals,
   } = options;
 
-  const catalogClient =
-    catalog ?? new CatalogClient({ discoveryApi: discovery });
   const store = await DatabaseNotificationsStore.create({ database });
   const frontendBaseUrl = config.getString('app.baseUrl');
 
@@ -253,7 +249,7 @@ export async function createRouter(
       store.getNotifications(opts),
       store.getNotificationsCount(opts),
     ]);
-    res.send({
+    res.json({
       totalCount,
       notifications,
     });
@@ -262,7 +258,7 @@ export async function createRouter(
   router.get('/status', async (req: Request<any, NotificationStatus>, res) => {
     const user = await getUser(req);
     const status = await store.getStatus({ user });
-    res.send(status);
+    res.json(status);
   });
 
   // Make sure this is the last "GET" handler
@@ -275,10 +271,9 @@ export async function createRouter(
     };
     const notifications = await store.getNotifications(opts);
     if (notifications.length !== 1) {
-      res.status(404).send({ error: 'Not found' });
-      return;
+      throw new NotFoundError('Not found');
     }
-    res.send(notifications[0]);
+    res.json(notifications[0]);
   });
 
   router.post('/update', async (req, res) => {
@@ -317,7 +312,7 @@ export async function createRouter(
     }
 
     const notifications = await store.getNotifications({ ids, user: user });
-    res.status(200).send(notifications);
+    res.json(notifications);
   });
 
   const sendBroadcastNotification = async (
@@ -474,7 +469,7 @@ export async function createRouter(
           users = await getUsersForEntityRef(
             entityRef,
             recipients.excludeEntityRef ?? [],
-            { auth, catalogClient },
+            { auth, catalogClient: catalog },
           );
         } catch (e) {
           logger.error(`Failed to resolve notification receivers: ${e}`);

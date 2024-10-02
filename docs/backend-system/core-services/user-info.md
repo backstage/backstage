@@ -47,6 +47,7 @@ additional information about that principal.
 router.get('/some-request', async (req, res) => {
   const credentials = await httpAuth.credentials(req, { allow: ['user'] });
   const info = await userInfo.getUserInfo(credentials);
+});
 ```
 
 The `userInfo` service only deals with credentials that contain user principals,
@@ -61,6 +62,8 @@ router.get('/some-request', async (req, res) => {
   if (auth.isPrincipal(credentials, 'user')) {
     const info = await userInfo.getUserInfo(credentials);
     // ...
+  }
+});
 ```
 
 The user info contains data that was extracted during sign-in for the given

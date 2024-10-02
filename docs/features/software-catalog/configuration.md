@@ -31,7 +31,7 @@ catalog (`UrlReaderProcessor`), so no processor configuration is needed. This
 processor _does however_ need an [integration](../../integrations/index.md) to
 understand how to retrieve a given URL. For the example above, you would need to
 configure the [GitHub integration](../../integrations/github/locations.md) to
-read files from github.com.
+read files from [github.com](https://github.com/).
 
 The locations added through static configuration cannot be removed through the
 catalog locations API. To remove these locations, you must remove them from the

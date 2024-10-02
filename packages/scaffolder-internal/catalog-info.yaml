@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: internal-scaffolder
+  title: '@internal/scaffolder'
+spec:
+  lifecycle: experimental
+  type: backstage-web-library
+  owner: maintainers
