@@ -16,7 +16,6 @@
 
 import { InputError } from '@backstage/errors';
 import { EntityMatcherFn } from './types';
-import { Entity } from '@backstage/catalog-model';
 
 const allowedMatchers: Record<string, EntityMatcherFn> = {
   labels: entity => {
@@ -33,7 +32,6 @@ const allowedMatchers: Record<string, EntityMatcherFn> = {
 export function createHasMatcher(
   parameters: string[],
   onParseError: (error: Error) => void,
-  negation?: boolean,
 ): EntityMatcherFn {
   const matchers = parameters.flatMap(parameter => {
     const matcher = allowedMatchers[parameter.toLocaleLowerCase('en-US')];
@@ -49,7 +47,6 @@ export function createHasMatcher(
     return [matcher];
   });
 
-  const isMatch = (entity: Entity) =>
+  return entity =>
     matchers.length ? matchers.some(matcher => matcher(entity)) : true;
-  return negation ? entity => !isMatch(entity) : isMatch;
 }

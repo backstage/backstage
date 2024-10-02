@@ -22,14 +22,13 @@ import { EntityMatcherFn } from './types';
 export function createTypeMatcher(
   parameters: string[],
   _onParseError: (error: Error) => void,
-  negation?: boolean,
 ): EntityMatcherFn {
   const items = parameters.map(p => p.toLocaleLowerCase('en-US'));
   return entity => {
     const value = entity.spec?.type;
-    const isMatch =
+    return (
       typeof value === 'string' &&
-      items.includes(value.toLocaleLowerCase('en-US'));
-    return negation ? !isMatch : isMatch;
+      items.includes(value.toLocaleLowerCase('en-US'))
+    );
   };
 }

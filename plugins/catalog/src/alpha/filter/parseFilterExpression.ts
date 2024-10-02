@@ -61,14 +61,10 @@ export function parseFilterExpression(expression: string): {
   const parts = splitFilterExpression(expression, e =>
     expressionParseErrors.push(e),
   );
-  let negation = false;
   const matchers = parts.flatMap(part => {
     const factory = rootMatcherFactories[part.key];
+    const negation = part.negation;
     if (!factory) {
-      if (isNegation(part.key)) {
-        negation = true;
-        return [];
-      }
       const known = Object.keys(rootMatcherFactories).map(m => `'${m}'`);
       expressionParseErrors.push(
         new InputError(
@@ -78,13 +74,11 @@ export function parseFilterExpression(expression: string): {
       return [];
     }
 
-    const matcher = factory(
-      part.parameters,
-      e => expressionParseErrors.push(e),
-      negation,
+    const matcher = factory(part.parameters, e =>
+      expressionParseErrors.push(e),
     );
-    negation = false;
-    return [matcher];
+
+    return [negation ? (entity: Entity) => !matcher(entity) : matcher];
   });
 
   const filterFn = (entity: Entity) =>
@@ -105,20 +99,20 @@ export function parseFilterExpression(expression: string): {
 export function splitFilterExpression(
   expression: string,
   onParseError: (error: Error) => void,
-): Array<{ key: string; parameters: string[] }> {
+): Array<{ key: string; parameters: string[]; negation: boolean }> {
   const words = expression
     .split(' ')
     .map(w => w.trim())
     .filter(Boolean);
 
-  const result = new Array<{ key: string; parameters: string[] }>();
+  const result = new Array<{
+    key: string;
+    parameters: string[];
+    negation: boolean;
+  }>();
 
   for (const word of words) {
-    let match = word.match(/^([^:]+):(.+)$/);
-    if (match && isNegation(match[1])) {
-      result.push({ key: 'not', parameters: [] });
-      match = match[2].match(/^([^:]+):(.+)$/) || null;
-    }
+    const match = word.match(/^(not:)?([^:]+):(.+)$/);
     if (!match) {
       onParseError(
         new InputError(
@@ -127,19 +121,14 @@ export function splitFilterExpression(
       );
       continue;
     }
-
-    const key = match[1];
-    const parameters = match[2].split(',').filter(Boolean); // silently ignore double commas
-
-    result.push({ key, parameters });
+    const key = match[2];
+    const parameters = match[3].split(',').filter(Boolean); // silently ignore double commas
+    if (match[1]) {
+      result.push({ key, parameters, negation: true });
+    } else {
+      result.push({ key, parameters, negation: false });
+    }
   }
 
   return result;
-}
-
-function isNegation(parameter: string): boolean {
-  if (parameter.toLocaleLowerCase('en-US') === 'not') {
-    return true;
-  }
-  return false;
 }
