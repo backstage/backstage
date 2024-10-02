@@ -45,17 +45,17 @@ const _default: FrontendPlugin<
         filter: string | undefined;
       };
       configInput: {
-        direction?: Direction | undefined;
         height?: number | undefined;
-        zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
+        curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
+        direction?: Direction | undefined;
         title?: string | undefined;
+        zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
+        relations?: string[] | undefined;
         maxDepth?: number | undefined;
+        kinds?: string[] | undefined;
         unidirectional?: boolean | undefined;
         mergeRelations?: boolean | undefined;
-        kinds?: string[] | undefined;
-        relations?: string[] | undefined;
         relationPairs?: [string, string][] | undefined;
-        curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
       } & {
         filter?: string | undefined;
       };
@@ -114,18 +114,18 @@ const _default: FrontendPlugin<
         path: string | undefined;
       };
       configInput: {
+        curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
         direction?: Direction | undefined;
         zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
+        relations?: string[] | undefined;
+        rootEntityRefs?: string[] | undefined;
         maxDepth?: number | undefined;
+        kinds?: string[] | undefined;
         unidirectional?: boolean | undefined;
         mergeRelations?: boolean | undefined;
-        kinds?: string[] | undefined;
-        relations?: string[] | undefined;
         relationPairs?: [string, string][] | undefined;
-        curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
-        selectedKinds?: string[] | undefined;
         selectedRelations?: string[] | undefined;
-        rootEntityRefs?: string[] | undefined;
+        selectedKinds?: string[] | undefined;
         showFilters?: boolean | undefined;
       } & {
         path?: string | undefined;
