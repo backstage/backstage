@@ -137,7 +137,13 @@ const TemplateGlobalFunctions = ({
           >
             {fnName}
           </Typography>
-          <Link className={classes.link} to={`${linkPage}#global_${fnName}`}>
+          <Link
+            className={classes.link}
+            to={`${linkPage}#global_${fnName}`}
+            {...(linkPage === ''
+              ? {}
+              : { target: '_blank', rel: 'noopener noreferrer' })}
+          >
             <LinkIcon />
           </Link>
           <FunctionDetailContent {...{ classes, fnName, fn, t }} />
@@ -168,7 +174,13 @@ const TemplateGlobalValues = ({
           >
             {key}
           </Typography>
-          <Link className={classes.link} to={`${linkPage}#global_${key}`}>
+          <Link
+            className={classes.link}
+            to={`${linkPage}#global_${key}`}
+            {...(linkPage === ''
+              ? {}
+              : { target: '_blank', rel: 'noopener noreferrer' })}
+          >
             <LinkIcon />
           </Link>
           {gv.description && <MarkdownContent content={gv.description} />}
