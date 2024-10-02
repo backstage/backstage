@@ -16,6 +16,7 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import {
+  Action,
   ActionExample,
   scaffolderApiRef,
 } from '@backstage/plugin-scaffolder-react';
@@ -39,6 +40,10 @@ import classNames from 'classnames';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import LinkIcon from '@material-ui/icons/Link';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import TextField from '@material-ui/core/TextField';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import SearchIcon from '@material-ui/icons/Search';
 
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
@@ -125,14 +130,19 @@ export const ActionPageContent = () => {
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const classes = useStyles();
-  const { loading, value, error } = useAsync(async () => {
+  const {
+    loading,
+    value = [],
+    error,
+  } = useAsync(async () => {
     return api.listActions();
   }, [api]);
 
+  const [selectedAction, setSelectedAction] = useState<Action | null>(null);
   const [isExpanded, setIsExpanded] = useState<{ [key: string]: boolean }>({});
 
   useEffect(() => {
-    if (value && window.location.hash) {
+    if (value.length && window.location.hash) {
       document.querySelector(window.location.hash)?.scrollIntoView();
     }
   }, [value]);
@@ -295,71 +305,107 @@ export const ActionPageContent = () => {
     );
   };
 
-  return value?.map(action => {
-    if (action.id.startsWith('legacy:')) {
-      return undefined;
-    }
-
-    const oneOf = renderTables(
-      'oneOf',
-      `${action.id}.input`,
-      action.schema?.input?.oneOf,
-    );
-    return (
-      <Box pb={4} key={action.id}>
-        <Typography
-          id={action.id.replaceAll(':', '-')}
-          variant="h4"
-          component="h2"
-          className={classes.code}
-        >
-          {action.id}
-        </Typography>
-        <Link
-          className={classes.link}
-          to={`#${action.id.replaceAll(':', '-')}`}
-        >
-          <LinkIcon />
-        </Link>
-        {action.description && <MarkdownContent content={action.description} />}
-        {action.schema?.input && (
-          <Box pb={2}>
-            <Typography variant="h5" component="h3">
-              {t('actionsPage.action.input')}
-            </Typography>
-            {renderTable(
-              formatRows(`${action.id}.input`, action?.schema?.input),
-            )}
-            {oneOf}
-          </Box>
-        )}
-        {action.schema?.output && (
-          <Box pb={2}>
-            <Typography variant="h5" component="h3">
-              {t('actionsPage.action.output')}
-            </Typography>
-            {renderTable(
-              formatRows(`${action.id}.output`, action?.schema?.output),
-            )}
-          </Box>
-        )}
-        {action.examples && (
-          <Accordion>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="h5" component="h3">
-                {t('actionsPage.action.examples')}
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Box pb={2}>
-                <ExamplesTable examples={action.examples} />
-              </Box>
-            </AccordionDetails>
-          </Accordion>
-        )}
+  return (
+    <>
+      <Box pb={3}>
+        <Autocomplete
+          id="actions-autocomplete"
+          options={value}
+          loading={loading}
+          getOptionLabel={option => option.id}
+          renderInput={params => (
+            <TextField
+              {...params}
+              aria-label={t('actionsPage.content.searchFieldPlaceholder')}
+              placeholder={t('actionsPage.content.searchFieldPlaceholder')}
+              variant="outlined"
+              InputProps={{
+                ...params.InputProps,
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          )}
+          onChange={(_event, option) => {
+            setSelectedAction(option);
+          }}
+          fullWidth
+        />
       </Box>
-    );
-  });
+      {(selectedAction ? [selectedAction] : value).map(action => {
+        if (action.id.startsWith('legacy:')) {
+          return undefined;
+        }
+
+        const oneOf = renderTables(
+          'oneOf',
+          `${action.id}.input`,
+          action.schema?.input?.oneOf,
+        );
+        return (
+          <Box pb={3} key={action.id}>
+            <Box display="flex" alignItems="center">
+              <Typography
+                id={action.id.replaceAll(':', '-')}
+                variant="h5"
+                component="h2"
+                className={classes.code}
+              >
+                {action.id}
+              </Typography>
+              <Link
+                className={classes.link}
+                to={`#${action.id.replaceAll(':', '-')}`}
+              >
+                <LinkIcon />
+              </Link>
+            </Box>
+            {action.description && (
+              <MarkdownContent content={action.description} />
+            )}
+            {action.schema?.input && (
+              <Box pb={2}>
+                <Typography variant="h6" component="h3">
+                  {t('actionsPage.action.input')}
+                </Typography>
+                {renderTable(
+                  formatRows(`${action.id}.input`, action?.schema?.input),
+                )}
+                {oneOf}
+              </Box>
+            )}
+            {action.schema?.output && (
+              <Box pb={2}>
+                <Typography variant="h5" component="h3">
+                  {t('actionsPage.action.output')}
+                </Typography>
+                {renderTable(
+                  formatRows(`${action.id}.output`, action?.schema?.output),
+                )}
+              </Box>
+            )}
+            {action.examples && (
+              <Accordion>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography variant="h6" component="h3">
+                    {t('actionsPage.action.examples')}
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Box pb={2}>
+                    <ExamplesTable examples={action.examples} />
+                  </Box>
+                </AccordionDetails>
+              </Accordion>
+            )}
+          </Box>
+        );
+      })}
+    </>
+  );
 };
 export const ActionsPage = () => {
   const navigate = useNavigate();
