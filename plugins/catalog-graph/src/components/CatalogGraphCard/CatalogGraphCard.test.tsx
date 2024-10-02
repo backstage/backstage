@@ -152,7 +152,7 @@ describe('<CatalogGraphCard/>', () => {
       },
     );
 
-    expect(await screen.findByText('Action Button')).toBeInTheDocument();
+    expect(await screen.findByTitle('Action Button')).toBeInTheDocument();
   });
 
   test('renders link to standalone viewer', async () => {
