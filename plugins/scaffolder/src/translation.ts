@@ -29,6 +29,7 @@ export const scaffolderTranslationRef = createTranslationRef({
           description:
             'There are no actions installed or there was an issue communicating with backend.',
         },
+        searchFieldPlaceholder: 'Search for an action',
         tableCell: {
           name: 'Name',
           title: 'Title',

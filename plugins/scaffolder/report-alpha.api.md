@@ -235,6 +235,7 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'actionsPage.content.tableCell.name': 'Name';
     readonly 'actionsPage.content.tableCell.title': 'Title';
     readonly 'actionsPage.content.tableCell.description': 'Description';
+    readonly 'actionsPage.content.searchFieldPlaceholder': 'Search for an action';
     readonly 'actionsPage.content.noRowsDescription': 'No schema defined';
     readonly 'actionsPage.title': 'Installed actions';
     readonly 'actionsPage.action.input': 'Input';

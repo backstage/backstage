@@ -316,8 +316,8 @@ export const ActionPageContent = () => {
           renderInput={params => (
             <TextField
               {...params}
-              aria-label="Actions"
-              placeholder="Search for an action"
+              aria-label={t('actionsPage.content.searchFieldPlaceholder')}
+              placeholder={t('actionsPage.content.searchFieldPlaceholder')}
               variant="outlined"
               InputProps={{
                 ...params.InputProps,
