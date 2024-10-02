@@ -728,7 +728,7 @@ its components, such as `owner`, repository `name`, and more.
   name: Parse Repo URL
   action: debug:log
   input:
-    extra: ${{ parameters.repoUrl | parseRepoUrl }}
+    message: ${{ parameters.repoUrl | parseRepoUrl }}
 ```
 
 - **Input**: `github.com?repo=backstage&owner=backstage`
@@ -748,7 +748,7 @@ an entity reference, such as the `kind`, `namespace`, and `name`.
   name: Parse Entity Reference
   action: debug:log
   input:
-    extra: ${{ parameters.owner | parseEntityRef }}
+    message: ${{ parameters.owner | parseEntityRef }}
 ```
 
 - **Input**: `group:techdocs`
@@ -761,7 +761,7 @@ an entity reference, such as the `kind`, `namespace`, and `name`.
   name: Parse Entity Reference
   action: debug:log
   input:
-    extra: ${{ parameters.owner | parseEntityRef({ defaultKind:"group", defaultNamespace:"another-namespace" }) }}
+    message: ${{ parameters.owner | parseEntityRef({ defaultKind:"group", defaultNamespace:"another-namespace" }) }}
 ```
 
 - **Input**: `techdocs`
@@ -778,7 +778,7 @@ This `pick` filter allows you to select specific properties (`kind`, `namespace`
   name: Pick
   action: debug:log
   input:
-    extra: ${{ parameters.owner | parseEntityRef | pick('name') }}
+    message: ${{ parameters.owner | parseEntityRef | pick('name') }}
 ```
 
 - **Input**: `{ kind: 'Group', namespace: 'default', name: 'techdocs' }`
@@ -795,7 +795,7 @@ The `projectSlug` filter generates a project slug from a repository URL
   name: Project Slug
   action: debug:log
   input:
-    extra: ${{ parameters.repoUrl | projectSlug }}
+    message: ${{ parameters.repoUrl | projectSlug }}
 ```
 
 - **Input**: `github.com?repo=backstage&owner=backstage`

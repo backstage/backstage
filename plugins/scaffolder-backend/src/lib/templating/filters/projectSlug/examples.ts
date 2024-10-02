@@ -20,7 +20,7 @@ export default [
   name: Project Slug
   action: debug:log
   input:
-  extra: \${{ parameters.repoUrl | projectSlug }}
+    message: \${{ parameters.repoUrl | projectSlug }}
 `,
     notes: `\
 - **Input**: \`github.com?repo=backstage&owner=backstage\`
