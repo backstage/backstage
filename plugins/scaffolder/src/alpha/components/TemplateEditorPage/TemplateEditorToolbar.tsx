@@ -31,19 +31,25 @@ import DialogActions from '@material-ui/core/DialogActions';
 import ExtensionIcon from '@material-ui/icons/Extension';
 import DescriptionIcon from '@material-ui/icons/Description';
 
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 
 import { ActionPageContent } from '../../../components/ActionsPage/ActionsPage';
-import { CustomFieldPlaygroud } from './CustomFieldPlaygroud';
-import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { scaffolderTranslationRef } from '../../../translation';
+import { CustomFieldPlaygroud } from './CustomFieldPlaygroud';
 
 const useStyles = makeStyles(
   theme => ({
     paper: {
-      width: '40%',
+      width: '90%',
       padding: theme.spacing(2),
       backgroundColor: theme.palette.background.default,
+      [theme.breakpoints.up('sm')]: {
+        width: '70%',
+      },
+      [theme.breakpoints.up('md')]: {
+        width: '50%',
+      },
     },
     appbar: {
       zIndex: 1,
@@ -83,11 +89,7 @@ export function TemplateEditorToolbar(props: {
     <AppBar className={classes.appbar} position="relative">
       <Toolbar className={classes.toolbar}>
         <div className={classes.toolbarCustomActions}>{children}</div>
-        <ButtonGroup
-          className={classes.toolbarDefaultActions}
-          variant="outlined"
-          color="primary"
-        >
+        <ButtonGroup className={classes.toolbarDefaultActions} variant="text">
           <Tooltip
             title={t('templateEditorToolbar.customFieldExplorerTooltip')}
           >

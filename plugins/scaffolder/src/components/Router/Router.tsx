@@ -54,8 +54,8 @@ import {
 import { TemplateListPage, TemplateWizardPage } from '../../alpha/components';
 import { OngoingTask } from '../OngoingTask';
 import {
-  TemplatePage,
   TemplateFormPage,
+  TemplateIntroPage,
   TemplateEditorPage,
   CustomFieldsPage,
 } from '../../alpha/components/TemplateEditorPage';
@@ -171,7 +171,7 @@ export const Router = (props: PropsWithChildren<RouterProps>) => {
         path={editRouteRef.path}
         element={
           <SecretsContextProvider>
-            <TemplateEditorPage />
+            <TemplateIntroPage />
           </SecretsContextProvider>
         }
       />
@@ -205,7 +205,7 @@ export const Router = (props: PropsWithChildren<RouterProps>) => {
         path={editorRouteRef.path}
         element={
           <SecretsContextProvider>
-            <TemplatePage
+            <TemplateEditorPage
               layouts={customLayouts}
               formProps={props.formProps}
               fieldExtensions={fieldExtensions}

@@ -64,6 +64,10 @@ export function TemplateEditorBrowser(props: { onClose?: () => void }) {
     props.onClose();
   };
 
+  if (!directoryEditor) {
+    return null;
+  }
+
   return (
     <>
       <Grid className={classes.grid} container spacing={0} alignItems="center">
@@ -72,8 +76,8 @@ export function TemplateEditorBrowser(props: { onClose?: () => void }) {
         >
           <IconButton
             size="small"
-            disabled={directoryEditor?.files.every(file => !file.dirty)}
-            onClick={() => directoryEditor?.save()}
+            disabled={directoryEditor.files.every(file => !file.dirty)}
+            onClick={() => directoryEditor.save()}
           >
             <SaveIcon />
           </IconButton>
@@ -83,7 +87,7 @@ export function TemplateEditorBrowser(props: { onClose?: () => void }) {
             'templateEditorPage.templateEditorBrowser.reloadIconTooltip',
           )}
         >
-          <IconButton size="small" onClick={() => directoryEditor?.reload()}>
+          <IconButton size="small" onClick={() => directoryEditor.reload()}>
             <RefreshIcon />
           </IconButton>
         </Tooltip>
@@ -101,9 +105,9 @@ export function TemplateEditorBrowser(props: { onClose?: () => void }) {
       </Grid>
       <Divider />
       <FileBrowser
-        selected={directoryEditor?.selectedFile?.path ?? ''}
-        onSelect={directoryEditor?.setSelectedFile}
-        filePaths={directoryEditor?.files.map(file => file.path) ?? []}
+        selected={directoryEditor.selectedFile?.path ?? ''}
+        onSelect={directoryEditor.setSelectedFile}
+        filePaths={directoryEditor.files.map(file => file.path) ?? []}
       />
     </>
   );
