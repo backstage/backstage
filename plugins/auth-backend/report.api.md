@@ -533,8 +533,8 @@ export const providers: Readonly<{
     resolvers: Readonly<{
       emailMatchingUserEntityProfileEmail: () => SignInResolver_2<OAuthResult>;
       emailLocalPartMatchingUserEntityName: () => SignInResolver_2<OAuthResult>;
-      userIdMatchingUserEntityAnnotation: () => SignInResolver_2<OAuthResult>;
       emailMatchingUserEntityAnnotation: () => SignInResolver_2<OAuthResult>;
+      userIdMatchingUserEntityAnnotation: () => SignInResolver_2<OAuthResult>;
     }>;
   }>;
   oauth2: Readonly<{
