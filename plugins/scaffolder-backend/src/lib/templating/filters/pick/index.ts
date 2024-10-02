@@ -21,7 +21,7 @@ import { get } from 'lodash';
 export default createTemplateFilter({
   id: 'pick',
   description:
-    'Selects a specific property (kind, namespace, name) from an object.',
+    'Selects a specific property (e.g. kind, namespace, name) from an object.',
   schema,
   examples,
   filter: (obj: any, key: string) => get(obj, key),
