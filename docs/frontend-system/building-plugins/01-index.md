@@ -6,10 +6,16 @@ sidebar_label: Overview
 description: Building frontend plugins using the new frontend system
 ---
 
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
+> NOTE: The new frontend system is in alpha and only a few number of plugins have been migrated. The new frontend
+> plugins are not backwards compatible with the old `createApp()`. As a result you will need to migrate your entire
+> application to the new frontend system in order to use any of the new plugin functionality. This includes
+> migrating your usage of `createApp()` to the new package `@backstage/frontend-defaults` which is still incomplete.
+>
+> Also note that even though the old `createPlugin()` is marked as deprecated, you cannot use the new `createFrontendPlugin()`
+> unless you have migrated your entire application to the new frontend system.
 
 This section covers how to build frontend [plugins](../architecture/15-plugins.md). Plugins are one type of frontend _features_.
-Features, including plugins, are stitched together to build up a Backstage frontend [app](../architecture/10-app.md).
+Features, which include plugins and modules, are stitched together to build up a Backstage frontend [app](../architecture/10-app.md).
 
 Every plugin can incorporate one or more extensions. Extensions in the new frontend system are often generated from an
 `ExtensionBlueprint`. Extension Blueprints are opinionated factories for building extensions (e.g. `ApiBlueprint` is
@@ -23,8 +29,6 @@ Putting it all together, a plugin in the new frontend system will:
 Your Backstage frontend app will import the plugin's package, and the new (optional) experimental feature discovery
 (see below) will automatically register your new `FrontendPlugin` with the Backstage app. Then you can import and use
 the various extensions your plugin provides throughout your Backstage app.
-
-Additionally, when you import and instantiate a plugin, you can [override the settings for its extensions](../architecture/25-extension-overrides.md).
 
 ## Create a Plugin Package
 
@@ -65,17 +69,16 @@ version of the plugin ID ending in `Plugin`.
 - Example plugin ID: `my-new-feature`
 - Example plugin code name: `myNewFeaturePlugin`
 
-For more details on naming patterns within the frontend system, please see [the article on naming patterns](../architecture/50-naming-patterns.md).
-By sticking to these naming patterns you ensure that users of your plugin more easily recognize the exports and features provided by your plugin.
+For more details on naming patterns within the frontend system, please see [naming patterns](../architecture/50-naming-patterns.md).
 
 ## Create a Plugin Instance
 
-To instantiate and then export your plugin from your package, you call `createFrontendPlugin({ ... })`. Import this function
+To instantiate and then export your plugin from your package, call `createFrontendPlugin({ ... })`. Import this function
 from `@backstage/frontend-plugin-api`. This package is where you will find the common APIs for building plugins.
 
 Create Plugin Example:
 
-```tsx title="in src/plugin.ts"
+```tsx title="src/plugin.ts"
 import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 
 export const myExamplePlugin = createFrontendPlugin({
@@ -88,19 +91,20 @@ export const myExamplePlugin = createFrontendPlugin({
 
 Make sure that this Plugin object is exported from your package:
 
-```tsx title="in src/index.ts"
-export { examplePlugin as default } from './plugin';
+```tsx title="src/index.ts"
+export { myExamplePlugin as default } from './plugin';
 ```
 
-Additionally, while still in alpha, we recommend adding the following:
+Additionally, if you want your plugin to still support the old system, we recommend following the old plugin packaging
+pattern and exporting the new plugin as follows:
 
-```tsx title="in src/alpha.ts"
+```tsx title="src/alpha.ts"
 export * from './index.ts';
 ```
 
 And then:
 
-```typescript jsx title="in package.json"
+```typescript jsx title="package.json"
   "exports": {
     ...
     "./alpha": "./src/alpha.ts"
@@ -114,13 +118,13 @@ the plugin package in a Backstage app without having to reference the plugin ins
 
 ## Registering a Plugin with your Backstage App
 
-The new frontend plugin system is designed to use [feature discovery](../architecture/10-app/#feature-discovery) for registration.
-Please see the documentation on Feature Discovery for more information.
+The new frontend plugin system is designed to use the optional [feature discovery](../architecture/10-app/#feature-discovery) for registration. Please see the
+documentation on Feature Discovery for more information and how to turn it on.
 
-If you wish to manually register a plugin rather than using Feature Discovery, plugins are now designed to be passed into
-the `features` field of the `createApp({...})` options.
+However, if you wish to manually register a plugin rather than using automated Feature Discovery, plugins are now designed
+to be passed into the `features` field of the `createApp({...})` options.
 
-Manual Plugin Registration (when Feature Discovery is off)
+Manual Plugin Registration:
 
 ```tsx title="in src/index.ts"
 import { createApp } from '@backstage/frontend-defaults';
@@ -133,16 +137,16 @@ const app = createApp({
 });
 ```
 
-This will register our new completely empty and useless plugin with Backstage. You will need to add features via extensions to
-build out functionality.
+This will register our new completely empty and useless plugin with Backstage. You will need to add features via extensions.
 
 ## Adding Plugin Features (via Extensions)
 
 To add functionality to a plugin you need to add at least one [extension](../architecture/20-extensions.md). Let's continue by adding a
 standalone page to our plugin, as well as a navigation item that allows users to navigate to the page.
 
-Extensions can be created directly, but it is usually easier to use a predefined starting point for building an extension, called an [extension blueprint](../architecture/23-extension-blueprints.md).
-Blueprints are provided either by the core Backstage framework or by other plugins.
+Extensions can be created directly by following the `ExtensionDefinition` type or methods like `createComponentExtension()`,
+but for most cases, it will be easier to use a predefined [extension blueprint](../architecture/23-extension-blueprints.md). Blueprints are provided either by
+the core Backstage framework or by other plugins.
 
 For our example we will use the framework `PageBlueprint` and `NavItemBlueprint`, both from `@backstage/frontend-plugin-api`. We will also need
 to [create a route reference](../architecture/36-routes.md#creating-a-route-reference). A route reference enables us to dynamically create URL
