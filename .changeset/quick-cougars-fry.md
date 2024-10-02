@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-home': minor
+'@backstage/plugin-home': patch
 ---
 
 Improve Starred Entities UI to reduce whitespace and provide more context on the entities:
