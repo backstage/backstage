@@ -15,16 +15,18 @@
  */
 
 import { Config, ConfigReader } from '@backstage/config';
-import { CatalogApi } from '@backstage/catalog-client';
-import { ANNOTATION_KUBERNETES_AUTH_PROVIDER } from '@backstage/plugin-kubernetes-common';
+import {
+  ANNOTATION_KUBERNETES_API_SERVER,
+  ANNOTATION_KUBERNETES_API_SERVER_CA,
+  ANNOTATION_KUBERNETES_AUTH_PROVIDER,
+} from '@backstage/plugin-kubernetes-common';
 import { getCombinedClusterSupplier } from './index';
 import { ClusterDetails } from '../types/types';
 import { AuthenticationStrategy, DispatchStrategy } from '../auth';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
+import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 
 describe('getCombinedClusterSupplier', () => {
-  let catalogApi: CatalogApi;
-
   it('should retrieve cluster details from config', async () => {
     const config: Config = new ConfigReader(
       {
@@ -62,7 +64,7 @@ describe('getCombinedClusterSupplier', () => {
 
     const clusterSupplier = getCombinedClusterSupplier(
       config,
-      catalogApi,
+      catalogServiceMock.mock(),
       mockStrategy,
       mockServices.logger.mock(),
       undefined,
@@ -106,7 +108,7 @@ describe('getCombinedClusterSupplier', () => {
     expect(() =>
       getCombinedClusterSupplier(
         config,
-        catalogApi,
+        catalogServiceMock.mock(),
         new DispatchStrategy({ authStrategyMap: {} }),
         mockServices.logger.mock(),
         undefined,
@@ -141,31 +143,30 @@ describe('getCombinedClusterSupplier', () => {
       validateCluster: jest.fn().mockReturnValue([]),
       presentAuthMetadata: jest.fn(),
     };
-    catalogApi = {
-      getEntities: jest.fn().mockResolvedValue({
-        items: [{ metadata: { annotations: {}, name: 'cluster' } }],
-      }),
-      getEntitiesByRefs: jest.fn(),
-      queryEntities: jest.fn(),
-      getEntityAncestors: jest.fn(),
-      getEntityByRef: jest.fn(),
-      removeEntityByUid: jest.fn(),
-      refreshEntity: jest.fn(),
-      getEntityFacets: jest.fn(),
-      getLocationById: jest.fn(),
-      getLocationByRef: jest.fn(),
-      addLocation: jest.fn(),
-      removeLocationById: jest.fn(),
-      getLocationByEntity: jest.fn(),
-      validateEntity: jest.fn(),
-    };
 
     const auth = mockServices.auth();
     const credentials = mockCredentials.user();
 
     const clusterSupplier = getCombinedClusterSupplier(
       config,
-      catalogApi,
+      catalogServiceMock({
+        entities: [
+          {
+            kind: 'Resource',
+            metadata: {
+              name: 'cluster',
+              annotations: {
+                [ANNOTATION_KUBERNETES_API_SERVER]: 'mock',
+                [ANNOTATION_KUBERNETES_API_SERVER_CA]: 'mock',
+                [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'mock',
+              },
+            },
+            spec: {
+              type: 'kubernetes-cluster',
+            },
+          } as any,
+        ],
+      }),
       mockStrategy,
       logger,
       undefined,

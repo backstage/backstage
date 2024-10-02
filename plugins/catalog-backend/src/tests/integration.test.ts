@@ -40,7 +40,7 @@ import { DefaultProviderDatabase } from '../database/DefaultProviderDatabase';
 import { applyDatabaseMigrations } from '../database/migrations';
 import { RefreshStateItem } from '../database/types';
 import { DefaultCatalogRulesEnforcer } from '../ingestion/CatalogRules';
-import { defaultEntityDataParser } from '../modules/util/parse';
+import { defaultEntityDataParser } from '../util/parse';
 import {
   DefaultCatalogProcessingEngine,
   ProgressTracker,

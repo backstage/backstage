@@ -287,6 +287,36 @@ describe('publish:github', () => {
       has_projects: false,
       has_issues: false,
     });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        customProperties: {
+          foo: 'bar',
+          foo2: 'bar2',
+        },
+      },
+    });
+
+    expect(mockOctokit.rest.repos.createInOrg).toHaveBeenCalledWith({
+      description: 'description',
+      name: 'repo',
+      org: 'owner',
+      private: true,
+      delete_branch_on_merge: false,
+      allow_squash_merge: true,
+      squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
+      squash_merge_commit_message: 'COMMIT_MESSAGES',
+      allow_merge_commit: true,
+      allow_rebase_merge: true,
+      allow_auto_merge: false,
+      visibility: 'private',
+      custom_properties: {
+        foo: 'bar',
+        foo2: 'bar2',
+      },
+    });
   });
 
   it('should call the githubApis with the correct values for createForAuthenticatedUser', async () => {
@@ -411,6 +441,33 @@ describe('publish:github', () => {
       has_wiki: false,
       has_projects: false,
       has_issues: false,
+    });
+
+    // Custom properties on user repos should be ignored
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        customProperties: {
+          foo: 'bar',
+          foo2: 'bar2',
+        },
+      },
+    });
+
+    expect(
+      mockOctokit.rest.repos.createForAuthenticatedUser,
+    ).toHaveBeenCalledWith({
+      description: 'description',
+      name: 'repo',
+      private: true,
+      delete_branch_on_merge: false,
+      allow_squash_merge: true,
+      squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
+      squash_merge_commit_message: 'COMMIT_MESSAGES',
+      allow_merge_commit: true,
+      allow_rebase_merge: true,
+      allow_auto_merge: false,
     });
   });
 

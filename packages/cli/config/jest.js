@@ -19,6 +19,9 @@ const path = require('path');
 const crypto = require('crypto');
 const glob = require('util').promisify(require('glob'));
 const { version } = require('../package.json');
+const paths = require('@backstage/cli-common').findPaths(process.cwd());
+
+const SRC_EXTS = ['ts', 'js', 'tsx', 'jsx', 'mts', 'cts', 'mjs', 'cjs'];
 
 const envOptions = {
   oldTests: Boolean(process.env.BACKSTAGE_OLD_TESTS),
@@ -30,6 +33,75 @@ try {
 } catch {
   /* ignored */
 }
+
+/**
+ * A list of config keys that are valid for project-level config.
+ * Jest will complain if we forward any other root configuration to the projects.
+ *
+ * @type {Array<keyof import('@jest/types').Config.ProjectConfig>}
+ */
+const projectConfigKeys = [
+  'automock',
+  'cache',
+  'cacheDirectory',
+  'clearMocks',
+  'collectCoverageFrom',
+  'coverageDirectory',
+  'coveragePathIgnorePatterns',
+  'cwd',
+  'dependencyExtractor',
+  'detectLeaks',
+  'detectOpenHandles',
+  'displayName',
+  'errorOnDeprecated',
+  'extensionsToTreatAsEsm',
+  'fakeTimers',
+  'filter',
+  'forceCoverageMatch',
+  'globalSetup',
+  'globalTeardown',
+  'globals',
+  'haste',
+  'id',
+  'injectGlobals',
+  'moduleDirectories',
+  'moduleFileExtensions',
+  'moduleNameMapper',
+  'modulePathIgnorePatterns',
+  'modulePaths',
+  'openHandlesTimeout',
+  'preset',
+  'prettierPath',
+  'resetMocks',
+  'resetModules',
+  'resolver',
+  'restoreMocks',
+  'rootDir',
+  'roots',
+  'runner',
+  'runtime',
+  'sandboxInjectedGlobals',
+  'setupFiles',
+  'setupFilesAfterEnv',
+  'skipFilter',
+  'skipNodeResolution',
+  'slowTestThreshold',
+  'snapshotResolver',
+  'snapshotSerializers',
+  'snapshotFormat',
+  'testEnvironment',
+  'testEnvironmentOptions',
+  'testMatch',
+  'testLocationInResults',
+  'testPathIgnorePatterns',
+  'testRegex',
+  'testRunner',
+  'transform',
+  'transformIgnorePatterns',
+  'watchPathIgnorePatterns',
+  'unmockedModulePathPatterns',
+  'workerIdleMemoryLimit',
+];
 
 const transformIgnorePattern = [
   '@material-ui',
@@ -76,54 +148,11 @@ async function getProjectConfig(targetPath, extraConfig) {
     return require(configTsPath);
   }
 
-  // We read all "jest" config fields in package.json files all the way to the filesystem root.
-  // All configs are merged together to create the final config, with longer paths taking precedence.
+  // Jest config can be defined both in the root package.json and within each package. The root config
+  // gets forwarded to us through the `extraConfig` parameter, while the package config is read here.
+  // If they happen to be the same the keys will simply override each other.
   // The merging of the configs is shallow, meaning e.g. all transforms are replaced if new ones are defined.
-  const pkgJsonConfigs = [];
-  let closestPkgJson = undefined;
-  let currentPath = targetPath;
-
-  // Some confidence check to avoid infinite loop
-  for (let i = 0; i < 100; i++) {
-    const packagePath = path.resolve(currentPath, 'package.json');
-    const exists = fs.pathExistsSync(packagePath);
-    if (exists) {
-      try {
-        const data = fs.readJsonSync(packagePath);
-        if (!closestPkgJson) {
-          closestPkgJson = data;
-        }
-        if (data.jest) {
-          pkgJsonConfigs.unshift(data.jest);
-        }
-      } catch (error) {
-        throw new Error(
-          `Failed to parse package.json file reading jest configs, ${error}`,
-        );
-      }
-    }
-
-    const newPath = path.dirname(currentPath);
-    if (newPath === currentPath) {
-      break;
-    }
-    currentPath = newPath;
-  }
-
-  // This is an old deprecated option that is no longer used.
-  const transformModules = pkgJsonConfigs
-    .flatMap(conf => {
-      const modules = conf.transformModules || [];
-      delete conf.transformModules;
-      return modules;
-    })
-    .map(name => `${name}/`)
-    .join('|');
-  if (transformModules.length > 0) {
-    console.warn(
-      'The Backstage CLI jest transformModules option is no longer used and will be ignored. All modules are now always transformed.',
-    );
-  }
+  const pkgJson = await fs.readJson(path.resolve(targetPath, 'package.json'));
 
   const options = {
     ...extraConfig,
@@ -191,14 +220,14 @@ async function getProjectConfig(targetPath, extraConfig) {
     },
 
     // A bit more opinionated
-    testMatch: ['**/*.test.{js,jsx,ts,tsx,mjs,cjs}'],
+    testMatch: [`**/*.test.{${SRC_EXTS.join(',')}}`],
 
     runtime: envOptions.oldTests
       ? undefined
       : require.resolve('./jestCachingModuleLoader'),
 
     transformIgnorePatterns: [`/node_modules/(?:${transformIgnorePattern})/`],
-    ...getRoleConfig(closestPkgJson?.backstage?.role),
+    ...getRoleConfig(pkgJson.backstage?.role),
   };
 
   options.setupFilesAfterEnv = options.setupFilesAfterEnv || [];
@@ -208,12 +237,15 @@ async function getProjectConfig(targetPath, extraConfig) {
     options.setupFilesAfterEnv.unshift(require.resolve('cross-fetch/polyfill'));
   }
 
-  // Use src/setupTests.ts as the default location for configuring test env
-  if (fs.existsSync(path.resolve(targetPath, 'src/setupTests.ts'))) {
-    options.setupFilesAfterEnv.push('<rootDir>/setupTests.ts');
+  // Use src/setupTests.* as the default location for configuring test env
+  for (const ext of SRC_EXTS) {
+    if (fs.existsSync(path.resolve(targetPath, `src/setupTests.${ext}`))) {
+      options.setupFilesAfterEnv.push(`<rootDir>/setupTests.${ext}`);
+      break;
+    }
   }
 
-  const config = Object.assign(options, ...pkgJsonConfigs);
+  const config = Object.assign(options, pkgJson.jest);
 
   // The config id is a cache key that lets us share the jest cache across projects.
   // If no explicit id was configured, generated one based on the configuration.
@@ -234,31 +266,44 @@ async function getProjectConfig(targetPath, extraConfig) {
 // configuration for the current package, or a collection of configurations for
 // the target workspace packages
 async function getRootConfig() {
-  const targetPath = process.cwd();
-  const targetPackagePath = path.resolve(targetPath, 'package.json');
-  const exists = await fs.pathExists(targetPackagePath);
+  const rootPkgJson = await fs.readJson(
+    paths.resolveTargetRoot('package.json'),
+  );
 
-  const coverageConfig = {
-    coverageDirectory: path.resolve(targetPath, 'coverage'),
+  const baseCoverageConfig = {
+    coverageDirectory: paths.resolveTarget('coverage'),
     coverageProvider: envOptions.oldTests ? 'v8' : 'babel',
     collectCoverageFrom: ['**/*.{js,jsx,ts,tsx,mjs,cjs}', '!**/*.d.ts'],
   };
 
-  if (!exists) {
-    return getProjectConfig(targetPath, coverageConfig);
+  const workspacePatterns =
+    rootPkgJson.workspaces && rootPkgJson.workspaces.packages;
+
+  // Check if we're running within a specific monorepo package. In that case just get the single project config.
+  if (!workspacePatterns || paths.targetRoot !== paths.targetDir) {
+    return getProjectConfig(paths.targetDir, {
+      ...baseCoverageConfig,
+      ...(rootPkgJson.jest ?? {}),
+    });
   }
 
-  // Check whether the current package is a workspace root or not
-  const data = await fs.readJson(targetPackagePath);
-  const workspacePatterns = data.workspaces && data.workspaces.packages;
-  if (!workspacePatterns) {
-    return getProjectConfig(targetPath, coverageConfig);
+  const globalRootConfig = { ...baseCoverageConfig };
+  const globalProjectConfig = {};
+
+  for (const [key, value] of Object.entries(rootPkgJson.jest ?? {})) {
+    if (projectConfigKeys.includes(key)) {
+      globalProjectConfig[key] = value;
+    } else {
+      globalRootConfig[key] = value;
+    }
   }
 
   // If the target package is a workspace root, we find all packages in the
   // workspace and load those in as separate jest projects instead.
   const projectPaths = await Promise.all(
-    workspacePatterns.map(pattern => glob(path.join(targetPath, pattern))),
+    workspacePatterns.map(pattern =>
+      glob(path.join(paths.targetRoot, pattern)),
+    ),
   ).then(_ => _.flat());
 
   const configs = await Promise.all(
@@ -277,6 +322,7 @@ async function getRootConfig() {
         testScript?.includes('backstage-cli package test');
       if (testScript && isSupportedTestScript) {
         return await getProjectConfig(projectPath, {
+          ...globalProjectConfig,
           displayName: packageData.name,
         });
       }
@@ -286,9 +332,9 @@ async function getRootConfig() {
   ).then(cs => cs.filter(Boolean));
 
   return {
-    rootDir: targetPath,
+    rootDir: paths.targetRoot,
     projects: configs,
-    ...coverageConfig,
+    ...globalRootConfig,
   };
 }
 

@@ -15,7 +15,7 @@
  */
 
 import { createApiRef } from '@backstage/core-plugin-api';
-import { BackstagePlugin, Extension, ExtensionDataRef } from '../../wiring';
+import { FrontendPlugin, Extension, ExtensionDataRef } from '../../wiring';
 
 /**
  * The specification for this {@link AppNode} in the {@link AppTree}.
@@ -32,7 +32,7 @@ export interface AppNodeSpec {
   readonly extension: Extension<unknown, unknown>;
   readonly disabled: boolean;
   readonly config?: unknown;
-  readonly source?: BackstagePlugin;
+  readonly source?: FrontendPlugin;
 }
 
 /**

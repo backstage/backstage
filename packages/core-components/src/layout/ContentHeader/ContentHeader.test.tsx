@@ -30,6 +30,13 @@ describe('<ContentHeader/>', () => {
     rendered.getByText('Title');
   });
 
+  it('should render without title', async () => {
+    const rendered = await renderInTestApp(
+      <ContentHeader>content</ContentHeader>,
+    );
+    rendered.getByText('content');
+  });
+
   it('should render with titleComponent', async () => {
     const title = 'Custom title';
     const titleComponent = <h1>{title}</h1>;

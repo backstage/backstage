@@ -23,6 +23,7 @@ import {
   TechdocsGenerator,
 } from './stages';
 import * as winston from 'winston';
+import { PublisherSettings } from './stages/publish/types';
 
 /**
  * Extension point type for configuring TechDocs builds.
@@ -89,6 +90,10 @@ export const techdocsPreparerExtensionPoint =
  */
 export interface TechdocsPublisherExtensionPoint {
   registerPublisher(type: PublisherType, publisher: PublisherBase): void;
+  registerPublisherSettings<T extends keyof PublisherSettings>(
+    publisher: T,
+    settings: PublisherSettings[T],
+  ): void;
 }
 
 /**

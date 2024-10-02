@@ -243,6 +243,7 @@ export const apis = [
         discoveryApi,
         oauthRequestApi,
         defaultScopes: ['REPO_READ'],
+        environment: configApi.getOptionalString('auth.environment'),
       }),
   }),
   createApiFactory({

@@ -15,4 +15,7 @@
  */
 
 export { Content } from './Content';
-export type { FeaturedDocsCardProps } from './Content';
+export type {
+  FeaturedDocsCardProps,
+  FeaturedDocsCardClassKey,
+} from './Content';

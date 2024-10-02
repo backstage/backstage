@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugin-api';
+
 export interface Config {
   catalog?: {
     /**
@@ -41,6 +43,10 @@ export interface Config {
            * The branch where the provider will try to find entities. Defaults to "master".
            */
           branch?: string;
+          /**
+           * (Optional) TaskScheduleDefinition for the discovery.
+           */
+          schedule?: SchedulerServiceTaskScheduleDefinition;
         };
       };
     };

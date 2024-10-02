@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { CacheClient } from '@backstage/backend-common';
 import {
   cloudflareAccessSignInResolvers,
   createCloudflareAccessAuthenticator,
@@ -25,6 +24,7 @@ import {
 } from '@backstage/plugin-auth-node';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 import { AuthHandler } from '../types';
+import { CacheService } from '@backstage/backend-plugin-api';
 
 /**
  * CloudflareAccessClaims
@@ -145,10 +145,10 @@ export const cfAccess = createAuthProviderIntegration({
     };
 
     /**
-     * CacheClient object that was configured for the Backstage backend,
+     * Cache service object that was configured for the Backstage backend,
      * should be provided via the backend auth plugin.
      */
-    cache?: CacheClient;
+    cache?: CacheService;
   }) {
     return createProxyAuthProviderFactory({
       authenticator: createCloudflareAccessAuthenticator({

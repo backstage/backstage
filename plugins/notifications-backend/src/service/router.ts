@@ -28,7 +28,7 @@ import {
   NotificationProcessor,
   NotificationSendOptions,
 } from '@backstage/plugin-notifications-node';
-import { InputError } from '@backstage/errors';
+import { InputError, NotFoundError } from '@backstage/errors';
 import {
   AuthService,
   HttpAuthService,
@@ -249,7 +249,7 @@ export async function createRouter(
       store.getNotifications(opts),
       store.getNotificationsCount(opts),
     ]);
-    res.send({
+    res.json({
       totalCount,
       notifications,
     });
@@ -258,7 +258,7 @@ export async function createRouter(
   router.get('/status', async (req: Request<any, NotificationStatus>, res) => {
     const user = await getUser(req);
     const status = await store.getStatus({ user });
-    res.send(status);
+    res.json(status);
   });
 
   // Make sure this is the last "GET" handler
@@ -271,10 +271,9 @@ export async function createRouter(
     };
     const notifications = await store.getNotifications(opts);
     if (notifications.length !== 1) {
-      res.status(404).send({ error: 'Not found' });
-      return;
+      throw new NotFoundError('Not found');
     }
-    res.send(notifications[0]);
+    res.json(notifications[0]);
   });
 
   router.post('/update', async (req, res) => {
@@ -313,7 +312,7 @@ export async function createRouter(
     }
 
     const notifications = await store.getNotifications({ ids, user: user });
-    res.status(200).send(notifications);
+    res.json(notifications);
   });
 
   const sendBroadcastNotification = async (

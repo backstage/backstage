@@ -19,6 +19,7 @@ import { CurrentClaimedTask } from './StorageTaskBroker';
 import { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
 import { DatabaseWorkspaceProvider } from './DatabaseWorkspaceProvider';
 import { TaskStore } from './types';
+import fs from 'fs-extra';
 
 export interface WorkspaceService {
   serializeWorkspace(options: { path: string }): Promise<void>;
@@ -74,6 +75,7 @@ export class DefaultWorkspaceService implements WorkspaceService {
     targetPath: string;
   }): Promise<void> {
     if (this.isWorkspaceSerializationEnabled()) {
+      await fs.mkdirp(options.targetPath);
       await this.workspaceProvider.rehydrateWorkspace(options);
     }
   }

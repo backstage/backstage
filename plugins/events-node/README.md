@@ -78,5 +78,5 @@ and your custom implementation:
 
 ```diff
 // packages/backend/src/index.ts
-+  backend.add(customEventsServiceFactory());
++  backend.add(customEventsServiceFactory);
 ```

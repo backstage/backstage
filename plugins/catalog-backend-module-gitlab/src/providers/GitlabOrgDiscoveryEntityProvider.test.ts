@@ -400,6 +400,40 @@ describe('GitlabOrgDiscoveryEntityProvider - refresh', () => {
     });
   });
 
+  // This needs to return all users, including those without a seat but filter out the bot users
+  it('SaaS: should get users without a seat if includeUsersWithoutSeat true', async () => {
+    const config = new ConfigReader(
+      mock.config_org_group_includeUsersWithoutSeat_true_saas,
+    );
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+    expect(provider.getProviderName()).toEqual(
+      'GitlabOrgDiscoveryEntityProvider:test-id',
+    );
+
+    await provider.connect(entityProviderConnection);
+
+    const taskDef = schedule.getTasks()[0];
+    expect(taskDef.id).toEqual(
+      'GitlabOrgDiscoveryEntityProvider:test-id:refresh',
+    );
+    await (taskDef.fn as () => Promise<void>)();
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities:
+        mock.expected_full_org_scan_entities_includeUsersWithoutSeat_saas, //
+    });
+  });
+
   // This should return all members of the self-hosted instance regardless of the group set -> expected_full_members_group_org_scan_entities
   // All instance members, but only the group entities below the config.group
   it('Self-hosted: should get all instance users when restrictUsersToGroup is not set', async () => {

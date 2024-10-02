@@ -1,5 +1,124 @@
 # @backstage/cli
 
+## 0.28.0-next.1
+
+### Minor Changes
+
+- 55b8b84: **BREAKING**: The Jest configuration defined at `@backstage/cli/config/jest` no longer collects configuration defined in the `"jest"` field from all parent `package.json` files. Instead, it will only read and merge configuration from the `package.json` in the monorepo root if it exists, as well as the target package. In addition, configuration defined in the root `package.json` will now only be merged into each package configuration if it is a valid project-level configuration key.
+
+### Patch Changes
+
+- 03810d2: Remove unknown dependency `diff`
+- cebee4f: Added support for a new experimental `EXPERIMENTAL_TRIM_NEXT_ENTRY` flag which removes any `./next` entry points present in packages when building and publishing.
+- 55b8b84: The Jest configuration will now search for a `src/setupTests.*` file with any valid script extension, not only `.ts`.
+- Updated dependencies
+  - @backstage/eslint-plugin@0.1.10-next.0
+  - @backstage/integration@1.15.1-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.8
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.9.1
+  - @backstage/errors@1.2.4
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
+## 0.28.0-next.0
+
+### Minor Changes
+
+- 6129076: **BREAKING**: Removed the following deprecated commands:
+
+  - `create`: Use `backstage-cli new` instead
+  - `create-plugin`: Use `backstage-cli new` instead
+  - `plugin:diff`: Use `backstage-cli fix` instead
+  - `test`: Use `backstage-cli repo test` or `backstage-cli package test` instead
+  - `versions:check`: Use `yarn dedupe` or `yarn-deduplicate` instead
+  - `clean`: Use `backstage-cli package clean` instead
+
+  In addition, the experimental `install` and `onboard` commands have been removed since they have not received any updates since their introduction and we're expecting usage to be low. If you where relying on these commands, please let us know by opening an issue towards the main Backstage repository.
+
+### Patch Changes
+
+- 520a383: Added functionality to the prepack script that will append the default export type for entry points to the `exports` object before publishing. This is to help with identifying the declarative integration points for plugins without needing to fetch or run the plugins first.
+- 094eaa3: Remove references to in-repo backend-common
+- 79ba5a8: The `LEGACY_BACKEND_START` flag is now deprecated.
+- Updated dependencies
+  - @backstage/catalog-model@1.7.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.8
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.9.1
+  - @backstage/errors@1.2.4
+  - @backstage/eslint-plugin@0.1.9
+  - @backstage/integration@1.15.0
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
+## 0.27.1
+
+### Patch Changes
+
+- d2d2313: Add `config.d.ts` files to the list of included file in `tsconfig.json`.
+
+  This allows ESLint to detect issues or deprecations in those files.
+
+- 16ffdd6: Remove direct `vite` dependency
+- 8069f4a: Update Scaffolder module template to add itself to the backend
+- 97422b0: Update templates to not refer to backend-common
+- 0e1a817: The app build process now outputs an additional `index.html.tmpl` file. This is an non-templated version of the `index.html` file, which can be used to delay templating until runtime.
+
+  The new `index.html.tmpl` file also sets a `backstage-public-path` meta tag to be templated at runtime. The meta tag is in turn picked up by the new `@backstage/cli/config/webpack-public-path.js` entry point script, which uses it to set the runtime public path of the Webpack bundle.
+
+- 1b5c264: Add `checks: 'read'` for default GitHub app permissions
+- b4685e7: Added `watchOptions` to frontend webpack config for compatibility with Yarn PnP
+- d29fc1b: Updated dependency `@module-federation/enhanced` to `^0.6.0`.
+- f865103: Updated dependency `esbuild` to `^0.23.0`.
+- ab7713a: Updated dependency `eslint-plugin-jest` to `^28.0.0`.
+- c78ff91: Updated dependency `@rollup/plugin-commonjs` to `^26.0.0`.
+- 4ebf36f: Upgrade to `vite@v5`
+- 2d3caaf: The build commands now support the new `backstage.inline` flag in `package.json`, which causes the contents of private packages to be inlined into the consuming package, rather than be treated as an external dependency.
+- 569c3f0: Fixed an issue where published frontend packages would end up with an invalid import structure if a single module imported both `.css` and `.svg` files.
+- 3d88455: Add support for `backstage:^` version ranges to versions:bump when using the experimental yarn plugin
+- d10f6b6: Allow overriding minify flag with build repo command
+- Updated dependencies
+  - @backstage/catalog-model@1.7.0
+  - @backstage/cli-node@0.2.8
+  - @backstage/integration@1.15.0
+  - @backstage/config-loader@1.9.1
+  - @backstage/eslint-plugin@0.1.9
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
+## 0.27.1-next.2
+
+### Patch Changes
+
+- 16ffdd6: Remove direct `vite` dependency
+- 8069f4a: Update Scaffolder module template to add itself to the backend
+- 0e1a817: The app build process now outputs an additional `index.html.tmpl` file. This is an non-templated version of the `index.html` file, which can be used to delay templating until runtime.
+
+  The new `index.html.tmpl` file also sets a `backstage-public-path` meta tag to be templated at runtime. The meta tag is in turn picked up by the new `@backstage/cli/config/webpack-public-path.js` entry point script, which uses it to set the runtime public path of the Webpack bundle.
+
+- d29fc1b: Updated dependency `@module-federation/enhanced` to `^0.6.0`.
+- 4ebf36f: Upgrade to `vite@v5`
+- 2d3caaf: The build commands now support the new `backstage.inline` flag in `package.json`, which causes the contents of private packages to be inlined into the consuming package, rather than be treated as an external dependency.
+- 3d88455: Add support for `backstage:^` version ranges to versions:bump when using the experimental yarn plugin
+- Updated dependencies
+  - @backstage/cli-node@0.2.8-next.0
+  - @backstage/integration@1.15.0-next.0
+  - @backstage/config-loader@1.9.1-next.0
+  - @backstage/eslint-plugin@0.1.9-next.0
+  - @backstage/catalog-model@1.6.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
 ## 0.27.1-next.1
 
 ### Patch Changes

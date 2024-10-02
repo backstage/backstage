@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-devtools-backend",
-  "version": "0.4.0-next.1",
+  "version": "0.4.1-next.0",
   "backstage": {
     "role": "backend-plugin",
     "pluginId": "devtools",
@@ -38,7 +38,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/cli-common": "workspace:^",
     "@backstage/config": "workspace:^",
@@ -68,7 +68,7 @@
     "@types/ping": "^0.4.1",
     "@types/supertest": "^2.0.8",
     "@types/yarnpkg__lockfile": "^1.1.4",
-    "supertest": "^6.2.4"
+    "supertest": "^7.0.0"
   },
   "configSchema": "config.d.ts"
 }

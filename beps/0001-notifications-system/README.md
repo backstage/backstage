@@ -74,7 +74,7 @@ The `signal` plugin provides the following:
 
 ### Signals Plugin
 
-In the backend the signal plugin implements a general purpose message bus for sending signals from backend plugins to connected users. It relies on the `EventBroker` from the [events plugin](https://github.com/backstage/backstage/blob/master/plugins/events-backend/README.md) for the actual message passing in the backend. In order to support scaled deployments, each signal backend instance has a separate subscription to the event broker so that each instance receives all events. It is then up to each backend instance to filter out events that are not relevant to it. For this reason, signals should be kept lightweight and not contain unnecessary data.
+In the backend the signal plugin implements a general purpose message bus for sending signals from backend plugins to connected users. It relies on the `EventsService` from the [events plugin](https://github.com/backstage/backstage/blob/master/plugins/events-node/README.md) for the actual message passing in the backend. In order to support scaled deployments, each signal backend instance has a separate subscription to the events service so that each instance receives all events. It is then up to each backend instance to filter out events that are not relevant to it. For this reason, signals should be kept lightweight and not contain unnecessary data.
 
 In the frontend the signal plugin has a persistent connection to the signal backend. This is initially implemented as a WebSocket connection, but could in the future also receive fallback mechanisms such as Server Sent Events or long polling. It is important that this connection is authenticated as we will be routing signals to specific users. The exact implementation of the authentication is not part of this proposal, but it should use whatever the outcome of the discussion in issue [#19581](https://github.com/backstage/backstage/issues/19581) is.
 
@@ -427,22 +427,22 @@ The notification and signal plugins are released as two new plugins in the Backs
 
 For the notification plugin to reach a stable release we much reach the following:
 
-- A stable notifications payload format.
-- A stable notifications recipient filter format.
-- The event broker must have at least one implementation that supports scaled deployments.
+- [ ] A stable notifications payload format.
+- [ ] A stable notifications recipient filter format.
+- [x] The events service must have at least one implementation that supports scaled deployments. Done in #24916.
 
 For the signal plugin to reach a stable release we much reach the following:
 
-- A stable signal recipient filter format.
-- A stable signal channel API in the frontend.
+- [ ] A stable signal recipient filter format.
+- [ ] A stable signal channel API in the frontend.
 
 If any changes are required to the frontend framework to facilitate the implementation of notifications or signals, these will be released as experimental alpha features. They will stay in alpha until they are deemed stable enough, which must happen before a stable release of the notifications system.
 
 ## Dependencies
 
-Since the signal plugin relies on the event broker for communication, it is a dependency for the notifications system as a whole. The event broker does not currently implement any transport for scaled deployments, which is a requirement for scaled deployments of the notification system.
+~Since the signal plugin relies on the events service for communication, it is a dependency for the notifications system as a whole. The events service does not currently implement any transport for scaled deployments, which is a requirement for scaled deployments of the notification system.
 
-Alternatively the notifications can work without the signals, but in this case the notifications are updated only during page refresh.
+Alternatively the notifications can work without the signals, but in this case the notifications are updated only during page refresh.~
 
 ## Alternatives
 

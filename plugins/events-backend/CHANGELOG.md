@@ -1,5 +1,47 @@
 # @backstage/plugin-events-backend
 
+## 0.3.13-next.0
+
+### Patch Changes
+
+- 094eaa3: Remove references to in-repo backend-common
+- 5c728ee: The events backend now has its own built-in event bus for distributing events across multiple backend instances. It exposes a new HTTP API under `/bus/v1/` for publishing and reading events from the bus, as well as its own storage and notification mechanism for events.
+
+  The backing event store for the bus only supports scaled deployment if PostgreSQL is used as the DBMS. If SQLite or MySQL is used, the event bus will fall back to an in-memory store that does not support multiple backend instances.
+
+  The default `EventsService` implementation from `@backstage/plugin-events-node` has also been updated to use the new events bus.
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.1-next.0
+  - @backstage/backend-openapi-utils@0.1.19-next.0
+  - @backstage/backend-plugin-api@1.0.1-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.3.12
+
+### Patch Changes
+
+- d425fc4: Modules, plugins, and services are now `BackendFeature`, not a function that returns a feature.
+- c2b63ab: Updated dependency `supertest` to `^7.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.25.0
+  - @backstage/backend-plugin-api@1.0.0
+  - @backstage/plugin-events-node@0.4.0
+  - @backstage/config@1.2.0
+
+## 0.3.12-next.2
+
+### Patch Changes
+
+- c2b63ab: Updated dependency `supertest` to `^7.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.25.0-next.2
+  - @backstage/backend-plugin-api@1.0.0-next.2
+  - @backstage/config@1.2.0
+  - @backstage/plugin-events-node@0.4.0-next.2
+
 ## 0.3.12-next.1
 
 ### Patch Changes

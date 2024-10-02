@@ -400,7 +400,12 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
         ? rootGroupSplit[rootGroupSplit.length - 1]
         : rootGroupSplit[0];
       users = paginated<GitLabUser>(
-        options => this.gitLabClient.listSaaSUsers(rootGroup, options),
+        options =>
+          this.gitLabClient.listSaaSUsers(
+            rootGroup,
+            options,
+            this.config.includeUsersWithoutSeat,
+          ),
         {
           page: 1,
           per_page: 100,
@@ -445,9 +450,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
 
       let groupUsers: PagedResponse<GitLabUser> = { items: [] };
       try {
-        const relations = this.config.allowInherited
-          ? ['DIRECT', 'INHERITED']
-          : ['DIRECT'];
+        const relations = this.getRelations(this.config);
         groupUsers = await this.gitLabClient.getGroupMembers(
           group.full_path,
           relations,
@@ -724,9 +727,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       return;
     }
 
-    const relations = this.config.allowInherited
-      ? ['DIRECT', 'INHERITED']
-      : ['DIRECT'];
+    const relations = this.getRelations(this.config);
 
     // fetch group members from GitLab
     const groupMembers = await this.gitLabClient.getGroupMembers(
@@ -801,5 +802,16 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       },
       entity,
     ) as Entity;
+  }
+
+  private getRelations(config: any) {
+    if (Array.isArray(config.relations)) {
+      // filter out duplicates
+      const relationsSet = new Set(['DIRECT', ...config.relations]);
+      return Array.from(relationsSet);
+    }
+
+    // TODO: remove this fallback in the next major version by ensuring the method returns only `['DIRECT']` if no `relations` array is provided.
+    return ['DIRECT', ...(config.allowInherited ? ['INHERITED'] : [])];
   }
 }

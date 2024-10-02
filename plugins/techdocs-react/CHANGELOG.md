@@ -1,5 +1,53 @@
 # @backstage/plugin-techdocs-react
 
+## 1.2.9-next.1
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- Updated dependencies
+  - @backstage/core-components@0.15.1-next.1
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/version-bridge@1.0.10-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+
+## 1.2.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.15.1-next.0
+  - @backstage/core-plugin-api@1.10.0-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/version-bridge@1.0.9
+
+## 1.2.8
+
+### Patch Changes
+
+- 5ee3d27: Fixed issue in useShadowRootElements which could lead to unlimited render loops
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.15.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-plugin-api@1.9.4
+  - @backstage/version-bridge@1.0.9
+  - @backstage/config@1.2.0
+
+## 1.2.8-next.2
+
+### Patch Changes
+
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.14.11-next.1
+  - @backstage/core-plugin-api@1.9.4-next.0
+  - @backstage/version-bridge@1.0.9-next.0
+  - @backstage/catalog-model@1.6.0
+  - @backstage/config@1.2.0
+
 ## 1.2.8-next.1
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-proxy-backend",
-  "version": "0.5.6-next.1",
+  "version": "0.5.7-next.0",
   "description": "A Backstage backend plugin that helps you set up proxy endpoints in the backend",
   "backstage": {
     "role": "backend-plugin",
@@ -53,7 +53,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/types": "workspace:^",

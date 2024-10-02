@@ -1,5 +1,67 @@
 # @backstage/plugin-kubernetes
 
+## 0.11.16-next.1
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- 605e0bb: Updated dependency `@kubernetes-models/base` to `^5.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.15.1-next.1
+  - @backstage/frontend-plugin-api@0.9.0-next.1
+  - @backstage/core-compat-api@0.3.1-next.1
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/plugin-kubernetes-react@0.4.4-next.1
+  - @backstage/plugin-catalog-react@1.14.0-next.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/plugin-kubernetes-common@0.8.3
+
+## 0.11.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.0-next.0
+  - @backstage/core-compat-api@0.3.1-next.0
+  - @backstage/core-components@0.15.1-next.0
+  - @backstage/core-plugin-api@1.10.0-next.0
+  - @backstage/plugin-catalog-react@1.13.1-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/plugin-kubernetes-common@0.8.3
+  - @backstage/plugin-kubernetes-react@0.4.4-next.0
+
+## 0.11.14
+
+### Patch Changes
+
+- fec8b57: Updated exports to use the new type parameters for extensions and extension blueprints.
+- bfc0f42: Make k8s entity content appear on components & resources only by default in new FE system
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.15.0
+  - @backstage/plugin-catalog-react@1.13.0
+  - @backstage/frontend-plugin-api@0.8.0
+  - @backstage/core-compat-api@0.3.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-plugin-api@1.9.4
+  - @backstage/plugin-kubernetes-react@0.4.3
+  - @backstage/plugin-kubernetes-common@0.8.3
+
+## 0.11.14-next.2
+
+### Patch Changes
+
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.14.11-next.1
+  - @backstage/plugin-catalog-react@1.13.0-next.2
+  - @backstage/core-compat-api@0.3.0-next.2
+  - @backstage/core-plugin-api@1.9.4-next.0
+  - @backstage/frontend-plugin-api@0.8.0-next.2
+  - @backstage/plugin-kubernetes-react@0.4.3-next.1
+  - @backstage/catalog-model@1.6.0
+  - @backstage/plugin-kubernetes-common@0.8.2
+
 ## 0.11.14-next.1
 
 ### Patch Changes

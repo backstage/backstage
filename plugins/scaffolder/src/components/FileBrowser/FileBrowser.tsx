@@ -21,12 +21,13 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import TreeItem from '@material-ui/lab/TreeItem';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   root: {
     whiteSpace: 'nowrap',
     overflowY: 'auto',
+    padding: theme.spacing(1),
   },
-});
+}));
 
 export type FileEntry =
   | {

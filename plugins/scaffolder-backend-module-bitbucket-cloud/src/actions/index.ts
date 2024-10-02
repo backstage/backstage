@@ -15,3 +15,4 @@
  */
 export * from './bitbucketCloud';
 export { createBitbucketPipelinesRunAction } from './bitbucketCloudPipelinesRun';
+export * from './bitbucketCloudPullRequest';

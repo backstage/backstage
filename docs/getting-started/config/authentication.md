@@ -8,7 +8,7 @@ Audience: Admins or Developers
 
 ## Summary
 
-We'll be walking you through how to setup authentication for your Backstage app using Github. After finishing this guide, you'll have both working authentication and users in your Backstage app to match to the users logging in!
+We'll be walking you through how to setup authentication for your Backstage app using GitHub. After finishing this guide, you'll have both working authentication and users in your Backstage app to match to the users logging in!
 
 There are multiple authentication providers available for you to use with Backstage, feel free to follow [their instructions for adding authentication](../../auth/index.md).
 

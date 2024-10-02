@@ -277,7 +277,7 @@ d@^1:
   version: 0.0.0-use.local
   resolution: "@backstage/backend-app-api@workspace:packages/backend-app-api"
   dependencies:
-    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-common": "^0.25.0"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-tasks": "workspace:^"
     "@backstage/cli": "workspace:^"
@@ -330,7 +330,7 @@ d@^1:
   version: 0.0.0-use.local
   resolution: "@backstage/backend-app-api@workspace:packages/backend-app-api"
   dependencies:
-    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-common": "^0.25.0"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-tasks": "workspace:^"
     "@backstage/cli": "workspace:^"
