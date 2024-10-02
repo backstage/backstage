@@ -79,7 +79,11 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const TemplateExtensionsPageContent = () => {
+export const TemplateExtensionsPageContent = ({
+  linkPage,
+}: {
+  linkPage?: string;
+}) => {
   const api = useApi(scaffolderApiRef);
   const classes = useStyles();
   const { t } = useTranslationRef(scaffolderTranslationRef);
@@ -94,7 +98,7 @@ export const TemplateExtensionsPageContent = () => {
     }
   }, [value]);
 
-  const linkPage = useRouteRef(templateExtensionsRouteRef)();
+  const extensionsLink = useRouteRef(templateExtensionsRouteRef);
 
   if (loading) {
     return <Progress />;
@@ -119,11 +123,19 @@ export const TemplateExtensionsPageContent = () => {
     );
   }
   const { filters, globals } = value;
+  const effectiveLinkPage =
+    linkPage === undefined ? extensionsLink() : linkPage;
 
   return (
     <>
-      <TemplateFilters {...{ t, classes, filters, linkPage }} />
-      <TemplateGlobals {...{ t, classes, globals, linkPage }} />
+      <TemplateFilters
+        linkPage={effectiveLinkPage}
+        {...{ t, classes, filters }}
+      />
+      <TemplateGlobals
+        linkPage={effectiveLinkPage}
+        {...{ t, classes, globals }}
+      />
     </>
   );
 };
@@ -154,7 +166,7 @@ export const TemplateExtensionsPage = () => {
         <ScaffolderPageContextMenu {...scaffolderPageContextMenuProps} />
       </Header>
       <Content>
-        <TemplateExtensionsPageContent />
+        <TemplateExtensionsPageContent linkPage="" />
       </Content>
     </Page>
   );

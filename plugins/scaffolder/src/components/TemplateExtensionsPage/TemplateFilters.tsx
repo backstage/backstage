@@ -158,6 +158,9 @@ export const TemplateFilters = ({
           <Link
             className={classes.link}
             to={`${linkPage}#filter_${filterName}`}
+            {...(linkPage === ''
+              ? {}
+              : { target: '_blank', rel: 'noopener noreferrer' })}
           >
             <LinkIcon />
           </Link>
