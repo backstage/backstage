@@ -116,7 +116,9 @@ export async function getProjectId(
   const url = new URL(target);
 
   if (!url.pathname.includes('/blob/')) {
-    throw new Error('Please provide full path to yaml file from GitLab');
+    throw new Error(
+      `Failed converting ${url.pathname} to a project id. Url path must include /blob/.`,
+    );
   }
 
   try {

@@ -41,13 +41,8 @@ export const authServiceFactory = createServiceFactory({
     discovery: coreServices.discovery,
     plugin: coreServices.pluginMetadata,
     database: coreServices.database,
-    // Re-using the token manager makes sure that we use the same generated keys for
-    // development as plugins that have not yet been migrated. It's important that this
-    // keeps working as long as there are plugins that have not been migrated to the
-    // new auth services in the new backend system.
-    tokenManager: coreServices.tokenManager,
   },
-  async factory({ config, discovery, plugin, tokenManager, logger, database }) {
+  async factory({ config, discovery, plugin, logger, database }) {
     const disableDefaultAuthPolicy =
       config.getOptionalBoolean(
         'backend.auth.dangerouslyDisableDefaultAuthPolicy',
@@ -84,7 +79,6 @@ export const authServiceFactory = createServiceFactory({
       userTokens,
       pluginTokens,
       externalTokens,
-      tokenManager,
       plugin.getId(),
       disableDefaultAuthPolicy,
       keySource,

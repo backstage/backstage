@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TaskScheduleDefinition } from '@backstage/backend-tasks';
+import { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugin-api';
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { GitLabIntegrationConfig } from '@backstage/integration';
 
@@ -191,12 +191,43 @@ export type GitlabProviderConfig = {
   groupPattern: RegExp;
 
   /**
-   * If true, the provider will also ingest add inherited users to the ingested groups
-   */
+   * If true, the provider will also add inherited (ascendant) users to the ingested groups.
+   * See: https://docs.gitlab.com/ee/api/graphql/reference/#groupmemberrelation
+   *
+   * @deprecated Use the `relations` array to configure group membership relations instead.
+   **/
   allowInherited?: boolean;
 
+  /**
+   * Specifies the types of group membership relations that should be included when ingesting data.
+   *
+   * The following values are valid:
+   * - 'DIRECT': Direct members of the group. This is the default relation and is always included.
+   * - 'INHERITED': Members inherited from parent (ascendant) groups.
+   * - 'DESCENDANTS': Members from child (descendant) groups.
+   * - 'SHARED_FROM_GROUPS': Members shared from other groups.
+   *
+   * See: https://docs.gitlab.com/ee/api/graphql/reference/#groupmemberrelation
+   *
+   * If the `relations` array is provided in the app-config.yaml, it should contain any combination of the above values.
+   * The 'DIRECT' relation is automatically included and cannot be excluded, even if not specified.
+   * Example configuration:
+   *
+   * ```yaml
+   * catalog:
+   *   providers:
+   *     gitlab:
+   *       development:
+   *         relations:
+   *           - INHERITED
+   *           - DESCENDANTS
+   *           - SHARED_FROM_GROUPS
+   * ```
+   */
+  relations?: string[];
+
   orgEnabled?: boolean;
-  schedule?: TaskScheduleDefinition;
+  schedule?: SchedulerServiceTaskScheduleDefinition;
   /**
    * If the project is a fork, skip repository
    */
@@ -206,6 +237,13 @@ export type GitlabProviderConfig = {
    * Paths should not start or end with a slash.
    */
   excludeRepos?: string[];
+
+  /**
+   * If true, users without a seat will be included in the catalog.
+   * Group/Application Access Tokens are still filtered out but you might find service accounts or other users without a seat.
+   * Defaults to `false`
+   */
+  includeUsersWithoutSeat?: boolean;
 };
 
 /**

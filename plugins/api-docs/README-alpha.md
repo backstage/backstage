@@ -50,6 +50,7 @@ To link that a component provides or consumes an API, see the [`providesApis`](h
       - [Custom Api Renderings](#custom-api-renderings)
       - [Adding Swagger UI Interceptor](#adding-requestinterceptor-to-swagger-ui)
       - [Providing Swagger UI Specific Supported Methods](#provide-specific-supported-methods-to-swagger-ui)
+      - [Custom Resolvers for AsyncApi](#custom-resolvers-for-asyncapi)
     - [Integrations](#integrations)
       - [Implementing OAuth 2 Authorization Code flow with Swagger UI](#implementing-oauth-2-authorization-code-flow-with-swagger-ui)
 
@@ -202,21 +203,23 @@ The apis nav item icon can only be changed by overriding the extension, as the i
 Here is an example overriding the nav item extension with a custom icon component:
 
 ```tsx
-import { createExtensionOverrides, createNavItemExtension } from '@backstage/backstage-plugin-api';
+import {
+  createFrontendModule,
+  createNavItemExtension,
+} from '@backstage/backstage-plugin-api';
 import { MyCustomApiDocsIcon } from './components';
 
-export default createExtensionOverrides(
+export default createFrontendModule({
+  pluginId: 'api-docs',
   extensions: [
     createNavItemExtension({
-      // These namespace is necessary so the system knows that this extension will override the default nav item provided by the 'api-docs' plugin
-      namespace: 'api-docs',
       // It's your choice whether to use the original extension's title or a different one
       title: 'APIs',
       // Setting a custom icon component
       icon: MyCustomApiDocsIcon,
-    })
-  ]
-);
+    }),
+  ],
+});
 ```
 
 For more information about where to place extension overrides, see the official [documentation](https://backstage.io/docs/frontend-system/architecture/extension-overrides).
@@ -272,24 +275,27 @@ The explorer page implementation can be [overridden](https://backstage.io/docs/f
 Here is an example overriding the APIs Explorer page component:
 
 ```tsx
-import { createExtensionOverrides, createPageExtension } from '@backstage/backstage-plugin-api';
+import {
+  createFrontendModule,
+  createPageExtension,
+} from '@backstage/backstage-plugin-api';
 import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 
-export default createExtensionOverrides(
+export default createFrontendModule({
+  pluginId: 'api-docs',
   extensions: [
     createPageExtension({
-      // These namespace is necessary so the system knows that this extension will override the default explorer page provided by the 'api-docs' plugin
-      namespace: 'api-docs',
       // Ommitting name since we are overriding a plugin index page
       // It's up to you whether to use the original default path or not, but links that are hardcoded to the default path won't work if you change it
       defaultPath: '/api-docs',
       // Associating the page with a different route ref may result in the sidebar item or external plugin route pointing to an unreachable page
       routeRef: convertLegacyRouteRef(rootRoute),
       // Custom page components are loaded here
-      loader: () => import('./components').then(m => <m.MyCustomApiExplorerPage />)
-    })
-  ]
-);
+      loader: () =>
+        import('./components').then(m => <m.MyCustomApiExplorerPage />),
+    }),
+  ],
+});
 ```
 
 #### Apis Entities Cards
@@ -303,7 +309,7 @@ See a complete cards list below:
 
 ##### Has Apis Entity Card
 
-An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md) extension that renders a table of entities that have an api relation with a particular Software catalog entity.
+An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/report-alpha.api.md) extension that renders a table of entities that have an api relation with a particular Software catalog entity.
 
 | Kind          | Namespace  | Name       | Id                              |
 | ------------- | ---------- | ---------- | ------------------------------- |
@@ -355,14 +361,14 @@ app:
 Use extension overrides for completely re-implementing the has apis entity card extension:
 
 ```tsx
-import { createExtensionOverrides } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/backstage-plugin-api';
 import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
 
-export default createExtensionOverrides({
+export default createFrontendModule({
+  pluginId: 'api-docs',
   extensions: [
     createEntityCardExtension({
-      // These namespace and name necessary so the system knows that this extension will override the default 'has-apis' entity card extension provided by the 'api-docs' plugin
-      namespace: 'api-docs',
+      // Name is necessary so the system knows that this extension will override the default 'has-apis' entity card extension provided by the 'api-docs' plugin
       name: 'has-apis',
       // Returing a custom card component
       loader: () =>
@@ -376,7 +382,7 @@ For more information about where to place extension overrides, see the official 
 
 ##### Definition Entity Card
 
-An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md) extension that renders an entity api definition widget.
+An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/report-alpha.api.md) extension that renders an entity api definition widget.
 
 | Kind          | Namespace  | Name         | Id                                |
 | ------------- | ---------- | ------------ | --------------------------------- |
@@ -428,14 +434,14 @@ app:
 Use extension overrides for completely re-implementing the has apis entity card extension:
 
 ```tsx
-import { createExtensionOverrides } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/backstage-plugin-api';
 import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
 
-export default createExtensionOverrides({
+export default createFrontendModule({
+  pluginId: 'api-docs',
   extensions: [
     createEntityCardExtension({
-      // These namespace and name necessary so the system knows that this extension will override the default 'definition' entity card extension provided by the 'api-docs' plugin
-      namespace: 'api-docs',
+      // Name is necessary so the system knows that this extension will override the default 'definition' entity card extension provided by the 'api-docs' plugin
       name: 'definition',
       // Returing a custom card component
       loader: () =>
@@ -449,7 +455,7 @@ For more information about where to place extension overrides, see the official 
 
 ##### Provided Apis Entity Card
 
-An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md) extension that renders a table of apis provided by a particular Software Catalog Component.
+An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/report-alpha.api.md) extension that renders a table of apis provided by a particular Software Catalog Component.
 
 | Kind          | Namespace  | Name            | Id                                   |
 | ------------- | ---------- | --------------- | ------------------------------------ |
@@ -501,14 +507,14 @@ app:
 Use extension overrides for completely re-implementing the has apis entity card extension:
 
 ```tsx
-import { createExtensionOverrides } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/backstage-plugin-api';
 import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
 
-export default createExtensionOverrides({
+export default createFrontendModule({
+  pluginId: 'api-docs',
   extensions: [
     createEntityCardExtension({
-      // These namespace and name necessary so the system knows that this extension will override the default 'provided-apis' entity card extension provided by the 'api-docs' plugin
-      namespace: 'api-docs',
+      // Name is necessary so the system knows that this extension will override the default 'provided-apis' entity card extension provided by the 'api-docs' plugin
       name: 'provided-apis',
       // Returing a custom card component
       loader: () =>
@@ -522,7 +528,7 @@ For more information about where to place extension overrides, see the official 
 
 ##### Consumed Apis Entity Card
 
-An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md) extension that renders a table of apis consumed by a particular Software Catalog Component.
+An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/report-alpha.api.md) extension that renders a table of apis consumed by a particular Software Catalog Component.
 
 | Kind          | Namespace  | Name            | Id                                   |
 | ------------- | ---------- | --------------- | ------------------------------------ |
@@ -574,14 +580,14 @@ app:
 Use extension overrides for completely re-implementing the has apis entity card extension:
 
 ```tsx
-import { createExtensionOverrides } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/backstage-plugin-api';
 import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
 
-export default createExtensionOverrides({
+export default createFrontendModule({
+  pluginId: 'api-docs',
   extensions: [
     createEntityCardExtension({
-      // These namespace and name necessary so the system knows that this extension will override the default 'consumed-apis' entity card extension provided by the 'api-docs' plugin
-      namespace: 'api-docs',
+      // Name is necessary so the system knows that this extension will override the default 'consumed-apis' entity card extension provided by the 'api-docs' plugin
       name: 'consumed-apis',
       // Returing a custom card component
       loader: () =>
@@ -595,7 +601,7 @@ For more information about where to place extension overrides, see the official 
 
 ##### Providing Components Entity Card
 
-An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md) extension that renders a table of components that provides a particular Software Catalog api.
+An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/report-alpha.api.md) extension that renders a table of components that provides a particular Software Catalog api.
 
 | Kind          | Namespace  | Name                   | Id                                          |
 | ------------- | ---------- | ---------------------- | ------------------------------------------- |
@@ -647,14 +653,14 @@ app:
 Use extension overrides for completely re-implementing the has apis entity card extension:
 
 ```tsx
-import { createExtensionOverrides } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/backstage-plugin-api';
 import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
 
-export default createExtensionOverrides({
+export default createFrontendModule({
+  pluginId: 'api-docs',
   extensions: [
     createEntityCardExtension({
-      // These namespace and name necessary so the system knows that this extension will override the default 'providing-components' entity card extension provided by the 'api-docs' plugin
-      namespace: 'api-docs',
+      // Name is necessary so the system knows that this extension will override the default 'providing-components' entity card extension provided by the 'api-docs' plugin
       name: 'providing-components',
       // Returing a custom card component
       loader: () =>
@@ -670,7 +676,7 @@ For more information about where to place extension overrides, see the official 
 
 ##### Consuming Components Entity Card
 
-An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md) extension that renders a table of components that consumes a particular Software Catalog api.
+An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/report-alpha.api.md) extension that renders a table of components that consumes a particular Software Catalog api.
 
 | Kind          | Namespace  | Name                   | Id                                          |
 | ------------- | ---------- | ---------------------- | ------------------------------------------- |
@@ -722,14 +728,14 @@ app:
 Use extension overrides for completely re-implementing the has apis entity card extension:
 
 ```tsx
-import { createExtensionOverrides } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/backstage-plugin-api';
 import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
 
-export default createExtensionOverrides({
+export default createFrontendModule({
+  pluginId: 'api-docs',
   extensions: [
     createEntityCardExtension({
-      // These namespace and name necessary so the system knows that this extension will override the default 'consuming-components' entity card extension provided by the 'api-docs' plugin
-      namespace: 'api-docs',
+      // Name is necessary so the system knows that this extension will override the default 'consuming-components' entity card extension provided by the 'api-docs' plugin
       name: 'consuming-components',
       // Returing a custom card component
       loader: () =>
@@ -754,7 +760,7 @@ See a complete contents list below:
 
 ##### Definition Entity Content
 
-An [entity content](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md) extension that renders a tab in the entity page showing a particular entity api definition.
+An [entity content](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/report-alpha.api.md) extension that renders a tab in the entity page showing a particular entity api definition.
 
 | Kind             | Namespace  | Name         | Id                                   |
 | ---------------- | ---------- | ------------ | ------------------------------------ |
@@ -811,14 +817,14 @@ app:
 Use extension overrides for completely re-implementing the has apis entity card extension:
 
 ```tsx
-import { createExtensionOverrides } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/backstage-plugin-api';
 import { createEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
 
-export default createExtensionOverrides({
+export default createFrontendModule({
+  pluginId: 'api-docs',
   extensions: [
     createEntityContentExtension({
-      // These namespace and name necessary so the system knows that this extension will override the default 'definition' entity content extension provided by the 'api-docs' plugin
-      namespace: 'api-docs',
+      // Name is necessary so the system knows that this extension will override the default 'definition' entity content extension provided by the 'api-docs' plugin
       name: 'definition',
       // Returing a custom content component
       loader: () =>
@@ -891,14 +897,14 @@ app:
 Use extension overrides for completely re-implementing the apis entity content extension:
 
 ```tsx
-import { createExtensionOverrides } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/backstage-plugin-api';
 import { createEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
 
-export default createExtensionOverrides({
+export default createFrontendModule({
+  pluginId: 'api-docs',
   extensions: [
     createEntityContentExtension({
-      // These namespace and name necessary so the system knows that this extension will override the default 'apis' entity content extension provided by the 'api-docs' plugin
-      namespace: 'api-docs',
+      // Name is necessary so the system knows that this extension will override the default 'apis' entity content extension provided by the 'api-docs' plugin
       name: 'apis',
       // Returing a custom content component
       loader: () =>
@@ -928,7 +934,7 @@ This is an example with a made-up renderer for SQL schemas:
 
 ```tsx
 import {
-  createExtensionOverrides,
+  createFrontendModule,
   createApiExtenion,
   createApiFactory,
 } from '@backstage/frontend-plugin-api';
@@ -940,7 +946,8 @@ import {
 } from '@backstage/plugin-api-docs';
 import { SqlRenderer } from '...';
 
-export default createExtensionOverrides({
+export default createFrontendModule({
+  pluginId: 'api-docs',
   extensions: [
     createApiExtenion({
       factory: createApiFactory({
@@ -981,7 +988,7 @@ Override the config api to configure a [`requestInterceptor` for Swagger UI](htt
 
 ```tsx
 import {
-  createExtensionOverrides,
+  createFrontendModule,
   createApiExtenion,
   createApiFactory,
 } from '@backstage/frontend-plugin-api';
@@ -992,7 +999,8 @@ import {
 } from '@backstage/plugin-api-docs';
 import { ApiEntity } from '@backstage/catalog-model';
 
-export default createExtensionOverrides({
+export default createFrontendModule({
+  pluginId: 'api-docs',
   extensions: [
     createApiExtenion({
       factory: createApiFactory({
@@ -1042,7 +1050,7 @@ If you want to limit the HTTP methods available for the `Try It Out` feature of 
 
 ```tsx
 import {
-  createExtensionOverrides,
+  createFrontendModule,
   createApiExtenion,
   createApiFactory,
 } from '@backstage/frontend-plugin-api';
@@ -1053,7 +1061,8 @@ import {
 } from '@backstage/plugin-api-docs';
 import { ApiEntity } from '@backstage/catalog-model';
 
-export default createExtensionOverrides({
+export default createFrontendModule({
+  pluginId: 'api-docs',
   extensions: [
     createApiExtenion({
       factory: createApiFactory({
@@ -1091,6 +1100,61 @@ export default createExtensionOverrides({
 ```
 
 N.B. if you wish to disable the `Try It Out` feature for your API, you can provide an empty list to the `supportedSubmitMethods` parameter.
+
+##### Custom Resolvers for AsyncApi
+
+You can override the default http/https resolvers, for example to add authentication to requests to internal schema registries by providing the `resolvers` prop to the `AsyncApiDefinitionWidget`. This is an example:
+
+```tsx
+...
+import {
+  AsyncApiDefinitionWidget,
+  apiDocsConfigRef,
+  defaultDefinitionWidgets,
+} from '@backstage/plugin-api-docs';
+import { ApiEntity } from '@backstage/catalog-model';
+
+export const apis: AnyApiFactory[] = [
+...
+  createApiFactory({
+    api: apiDocsConfigRef,
+    deps: {},
+    factory: () => {
+      const myCustomResolver = {
+        schema: 'https',
+        order: 1,
+        canRead: true,
+        async read(uri: any) {
+          const response = await fetch(request, {
+            headers: {
+              X-Custom: 'Custom',
+            },
+          });
+          return response.text();
+        },
+      };
+
+      const definitionWidgets = defaultDefinitionWidgets().map(obj => {
+        if (obj.type === 'asyncapi') {
+          return {
+            ...obj,
+            component: (definition) => (
+              <AsyncApiDefinitionWidget definition={definition} resolvers={[myCustomResolver]} />
+            ),
+          };
+        }
+        return obj;
+      });
+
+      return {
+        getApiDefinitionWidget: (apiEntity: ApiEntity) => {
+          return definitionWidgets.find(d => d.type === apiEntity.spec.type);
+        },
+      };
+    }
+  })
+]
+```
 
 ### Integrations
 

@@ -23,13 +23,14 @@ import React, {
 import { MemoryRouter, Route } from 'react-router-dom';
 import { themes, UnifiedThemeProvider } from '@backstage/theme';
 import MockIcon from '@material-ui/icons/AcUnit';
-import { createSpecializedApp } from '@backstage/core-app-api';
+import { AppIcons, createSpecializedApp } from '@backstage/core-app-api';
 import {
   AppComponents,
   attachComponentData,
   BootErrorPageProps,
   createRouteRef,
   ExternalRouteRef,
+  IconComponent,
   RouteRef,
 } from '@backstage/core-plugin-api';
 import { MatcherFunction, RenderResult } from '@testing-library/react';
@@ -62,6 +63,8 @@ const mockIcons = {
   help: MockIcon,
   user: MockIcon,
   warning: MockIcon,
+  star: MockIcon,
+  unstarred: MockIcon,
 };
 
 const ErrorBoundaryFallback = ({ error }: { error: Error }) => {
@@ -107,6 +110,13 @@ export type TestAppOptions = {
    * Components to be forwarded to the `components` option of `createApp`.
    */
   components?: Partial<AppComponents>;
+
+  /**
+   * Icons to be forwarded to the `icons` option of `createApp`.
+   */
+  icons?: Partial<AppIcons> & {
+    [key in string]: IconComponent;
+  };
 };
 
 function isExternalRouteRef(
@@ -145,7 +155,10 @@ export function createTestAppWrapper(
       ),
       ...options.components,
     },
-    icons: mockIcons,
+    icons: {
+      ...mockIcons,
+      ...options.icons,
+    },
     plugins: [],
     themes: [
       {

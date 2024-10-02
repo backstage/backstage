@@ -34,6 +34,9 @@ type FacetsInitialRequest = {
   text: string;
 };
 
+const maybeString = (value: unknown): string | undefined =>
+  typeof value === 'string' ? value : undefined;
+
 /**
  * This hook asynchronously loads the entity owners using the facets endpoint.
  * EntityOwnerPicker uses this hook when mode="owners-only" is passed as prop.
@@ -52,7 +55,7 @@ export function useFacetsEntities({ enabled }: { enabled: boolean }) {
     const facetsResponse = await catalogApi.getEntityFacets({
       facets: [facet],
     });
-    const entityRefs = facetsResponse.facets[facet].map(e => e.value);
+    const entityRefs = facetsResponse.facets[facet]?.map(e => e.value) ?? [];
 
     return catalogApi
       .getEntitiesByRefs({ entityRefs })
@@ -67,11 +70,11 @@ export function useFacetsEntities({ enabled }: { enabled: boolean }) {
                 'en-US',
               ) ||
               (
-                get(a, 'spec.profile.displayName') ||
+                maybeString(get(a, 'spec.profile.displayName')) ||
                 a.metadata.title ||
                 a.metadata.name
               ).localeCompare(
-                get(b, 'spec.profile.displayName') ||
+                maybeString(get(b, 'spec.profile.displayName')) ||
                   b.metadata.title ||
                   b.metadata.name,
                 'en-US',

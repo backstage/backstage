@@ -14,27 +14,18 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import { withStyles } from '@material-ui/core/styles';
-import Star from '@material-ui/icons/Star';
-import StarBorder from '@material-ui/icons/StarBorder';
 import React, { ComponentProps } from 'react';
 import { useStarredEntity } from '../../hooks/useStarredEntity';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { FavoriteToggle } from '@backstage/core-components';
 
 /** @public */
 export type FavoriteEntityProps = ComponentProps<typeof IconButton> & {
   entity: Entity;
 };
-
-const YellowStar = withStyles({
-  root: {
-    color: '#f3ba37',
-  },
-})(Star);
 
 /**
  * IconButton for showing if a current entity is starred and adding/removing it from the favorite entities
@@ -46,22 +37,22 @@ export const FavoriteEntity = (props: FavoriteEntityProps) => {
     props.entity,
   );
   const { t } = useTranslationRef(catalogReactTranslationRef);
+  const title = isStarredEntity
+    ? t('favoriteEntity.removeFromFavorites')
+    : t('favoriteEntity.addToFavorites');
+
+  const id = `favorite-${stringifyEntityRef(props.entity).replace(
+    /[^a-zA-Z0-9-_]/g,
+    '-',
+  )}`;
+
   return (
-    <IconButton
-      aria-label="favorite"
-      color="inherit"
+    <FavoriteToggle
+      title={title}
+      id={id}
+      isFavorite={isStarredEntity}
+      onToggle={toggleStarredEntity}
       {...props}
-      onClick={() => toggleStarredEntity()}
-    >
-      <Tooltip
-        title={
-          isStarredEntity
-            ? t('favoriteEntity.removeFromFavorites')
-            : t('favoriteEntity.addToFavorites')
-        }
-      >
-        {isStarredEntity ? <YellowStar /> : <StarBorder />}
-      </Tooltip>
-    </IconButton>
+    />
   );
 };

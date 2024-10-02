@@ -24,6 +24,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { Notification } from '@backstage/plugin-notifications-common';
 import { useConfirm } from 'material-ui-confirm';
+import BroadcastIcon from '@material-ui/icons/RssFeed';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import {
   Link,
@@ -33,14 +34,13 @@ import {
 } from '@backstage/core-components';
 
 import { notificationsApiRef } from '../../api';
-
-import { SeverityIcon } from './SeverityIcon';
 import { SelectAll } from './SelectAll';
 import { BulkActions } from './BulkActions';
+import { NotificationIcon } from './NotificationIcon';
 
 const ThrottleDelayMs = 1000;
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   description: {
     maxHeight: '5rem',
     overflow: 'auto',
@@ -48,7 +48,15 @@ const useStyles = makeStyles({
   severityItem: {
     alignContent: 'center',
   },
-});
+  broadcastIcon: {
+    fontSize: '1rem',
+    verticalAlign: 'text-bottom',
+  },
+  notificationInfoRow: {
+    marginLeft: theme.spacing(0.5),
+    marginRight: theme.spacing(0.5),
+  },
+}));
 
 /** @public */
 export type NotificationsTableProps = Pick<
@@ -175,7 +183,6 @@ export const NotificationsTable = ({
 
   const compactColumns = React.useMemo((): TableColumn<Notification>[] => {
     const showToolbar = notifications.length > 0;
-
     return [
       {
         /* selection column */
@@ -211,7 +218,7 @@ export const NotificationsTable = ({
           return (
             <Grid container>
               <Grid item className={classes.severityItem}>
-                <SeverityIcon severity={notification.payload?.severity} />
+                <NotificationIcon notification={notification} />
               </Grid>
               <Grid item xs={11}>
                 <Box>
@@ -236,15 +243,40 @@ export const NotificationsTable = ({
                       {notification.payload.description}
                     </Typography>
                   ) : null}
+
                   <Typography variant="caption">
+                    {!notification.user && (
+                      <>
+                        <BroadcastIcon className={classes.broadcastIcon} />
+                      </>
+                    )}
                     {notification.origin && (
-                      <>{notification.origin}&nbsp;&bull;&nbsp;</>
+                      <>
+                        <Typography
+                          variant="inherit"
+                          className={classes.notificationInfoRow}
+                        >
+                          {notification.origin}
+                        </Typography>
+                        &bull;
+                      </>
                     )}
                     {notification.payload.topic && (
-                      <>{notification.payload.topic}&nbsp;&bull;&nbsp;</>
+                      <>
+                        <Typography
+                          variant="inherit"
+                          className={classes.notificationInfoRow}
+                        >
+                          {notification.payload.topic}
+                        </Typography>
+                        &bull;
+                      </>
                     )}
                     {notification.created && (
-                      <RelativeTime value={notification.created} />
+                      <RelativeTime
+                        value={notification.created}
+                        className={classes.notificationInfoRow}
+                      />
                     )}
                   </Typography>
                 </Box>
@@ -272,15 +304,13 @@ export const NotificationsTable = ({
             selectedNotifications={new Set([notification.id])}
             onSwitchReadStatus={onSwitchReadStatus}
             onSwitchSavedStatus={onSwitchSavedStatus}
-            //
           />
         ),
       },
     ];
   }, [
-    markAsReadOnLinkOpen,
-    selectedNotifications,
     notifications,
+    selectedNotifications,
     isUnread,
     onSwitchReadStatus,
     onSwitchSavedStatus,
@@ -288,6 +318,9 @@ export const NotificationsTable = ({
     onNotificationsSelectChange,
     classes.severityItem,
     classes.description,
+    classes.broadcastIcon,
+    classes.notificationInfoRow,
+    markAsReadOnLinkOpen,
   ]);
 
   return (

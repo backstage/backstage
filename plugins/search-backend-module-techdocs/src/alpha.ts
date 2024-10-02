@@ -23,8 +23,8 @@ import {
   coreServices,
   createBackendModule,
   createExtensionPoint,
+  readSchedulerServiceTaskScheduleDefinitionFromConfig,
 } from '@backstage/backend-plugin-api';
-import { readTaskScheduleDefinitionFromConfig } from '@backstage/backend-tasks';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import {
   DefaultTechDocsCollatorFactory,
@@ -78,7 +78,6 @@ export default createBackendModule({
         auth: coreServices.auth,
         httpAuth: coreServices.httpAuth,
         discovery: coreServices.discovery,
-        tokenManager: coreServices.tokenManager,
         scheduler: coreServices.scheduler,
         catalog: catalogServiceRef,
         indexRegistry: searchIndexRegistryExtensionPoint,
@@ -89,7 +88,6 @@ export default createBackendModule({
         auth,
         httpAuth,
         discovery,
-        tokenManager,
         scheduler,
         catalog,
         indexRegistry,
@@ -101,7 +99,7 @@ export default createBackendModule({
         };
 
         const schedule = config.has('search.collators.techdocs.schedule')
-          ? readTaskScheduleDefinitionFromConfig(
+          ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
               config.getConfig('search.collators.techdocs.schedule'),
             )
           : defaultSchedule;
@@ -110,7 +108,6 @@ export default createBackendModule({
           schedule: scheduler.createScheduledTaskRunner(schedule),
           factory: DefaultTechDocsCollatorFactory.fromConfig(config, {
             discovery,
-            tokenManager,
             auth,
             httpAuth,
             logger,

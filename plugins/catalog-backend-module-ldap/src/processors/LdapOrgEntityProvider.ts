@@ -294,6 +294,7 @@ export class LdapOrgEntityProvider implements EntityProvider {
       client,
       this.options.provider.users,
       this.options.provider.groups,
+      this.options.provider.vendor,
       {
         groupTransformer: this.options.groupTransformer,
         userTransformer: this.options.userTransformer,

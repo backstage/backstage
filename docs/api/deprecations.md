@@ -26,7 +26,7 @@ opens up for other type of themes, and removes the hardcoded usage of
 
 To migrate an existing theme, remove the `theme` property and move it over to a
 new `Provider` component, using `ThemeProvider` from Material UI to provide the new
-theme, along with `<CssBaseline>`. For example a theme that currently looks like
+theme, along with `<CssBaseline>`. For example, a theme that currently looks like
 this:
 
 ```tsx
@@ -84,8 +84,8 @@ migrate to your own custom API.
 First, you'll need to define a new Utility API reference. If you're only using
 the API for sign-in, you can put the definition in `packages/app/src/apis.ts`.
 However, if you need to access your auth API inside plugins you you'll need to
-export it from a common package. If you don't already have one we recommended
-creating `@internal/apis` and from there export the API reference.
+export it from a common package. If you don't already have one, we recommend
+creating `@internal/apis` and from there exporting the API reference.
 
 ```ts
 // `ProfileInfoApi & BackstageIdentityApi & SessionApi` are required for sign-in
@@ -101,7 +101,7 @@ export const acmeAuthApiRef: ApiRef<
 });
 ```
 
-Next you'll want to wire up the API inside `packages/app/src/apis.ts`, which
+Next, you'll want to wire up the API inside `packages/app/src/apis.ts`, which
 varies depending on which API you're replacing. If you for example are replacing
 the `oauth2ApiRef`, the factory might look like this:
 

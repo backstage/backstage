@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend-module-cloudflare-access-provider",
-  "version": "0.1.6-next.0",
+  "version": "0.3.1-next.0",
   "description": "The cloudflare-access-provider backend module for the auth plugin.",
   "backstage": {
     "role": "backend-plugin-module",
@@ -40,7 +40,7 @@
     "@backstage/plugin-auth-node": "workspace:^",
     "express": "^4.18.2",
     "jose": "^5.0.0",
-    "node-fetch": "^2.6.7"
+    "node-fetch": "^2.7.0"
   },
   "devDependencies": {
     "@backstage/backend-defaults": "workspace:^",

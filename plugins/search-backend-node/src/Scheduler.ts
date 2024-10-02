@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-import { TaskFunction, TaskRunner } from '@backstage/backend-tasks';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  LoggerService,
+  SchedulerServiceTaskRunner,
+  SchedulerServiceTaskFunction,
+} from '@backstage/backend-plugin-api';
 
 type TaskEnvelope = {
-  task: TaskFunction;
-  scheduledRunner: TaskRunner;
+  task: SchedulerServiceTaskFunction;
+  scheduledRunner: SchedulerServiceTaskRunner;
 };
 
 /**
@@ -28,8 +31,8 @@ type TaskEnvelope = {
  */
 export type ScheduleTaskParameters = {
   id: string;
-  task: TaskFunction;
-  scheduledRunner: TaskRunner;
+  task: SchedulerServiceTaskFunction;
+  scheduledRunner: SchedulerServiceTaskRunner;
 };
 
 /**

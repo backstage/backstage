@@ -41,6 +41,7 @@ const NOTIFICATION_COLUMNS = [
   'origin',
   'scope',
   'topic',
+  'icon',
   'created',
   'updated',
   'user',
@@ -119,6 +120,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       description: notification.payload?.description,
       severity: normalizeSeverity(notification.payload?.severity),
       scope: notification.payload?.scope,
+      icon: notification.payload.icon,
       saved: notification.saved,
       read: notification.read,
     };
@@ -134,18 +136,19 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       title: notification.payload?.title,
       description: notification.payload?.description,
       severity: normalizeSeverity(notification.payload?.severity),
+      icon: notification.payload.icon,
       scope: notification.payload?.scope,
     };
   };
 
-  private getBroadcastUnion = () => {
+  private getBroadcastUnion = (user?: string | null) => {
     return this.db('broadcast')
-      .leftJoin(
-        'broadcast_user_status',
-        'id',
-        '=',
-        'broadcast_user_status.broadcast_id',
-      )
+      .leftJoin('broadcast_user_status', function clause() {
+        const join = this.on('id', '=', 'broadcast_user_status.broadcast_id');
+        if (user !== null && user !== undefined) {
+          join.andOnVal('user', '=', user);
+        }
+      })
       .select(NOTIFICATION_COLUMNS);
   };
 
@@ -156,7 +159,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
 
     const subQuery = this.db('notification')
       .select(NOTIFICATION_COLUMNS)
-      .unionAll([this.getBroadcastUnion()])
+      .unionAll([this.getBroadcastUnion(user)])
       .as('notifications');
 
     const query = this.db.from(subQuery).where(q => {
@@ -345,16 +348,19 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       broadcastQuery.update({ ...updateColumns, read: undefined }),
     ]);
 
-    return await this.getNotification({ id });
+    return await this.getNotification({ id, user: notification.user });
   }
 
-  async getNotification(options: { id: string }): Promise<Notification | null> {
+  async getNotification(options: {
+    id: string;
+    user?: string | null;
+  }): Promise<Notification | null> {
     const rows = await this.db
       .select('*')
       .from(
         this.db('notification')
           .select(NOTIFICATION_COLUMNS)
-          .unionAll([this.getBroadcastUnion()])
+          .unionAll([this.getBroadcastUnion(options.user)])
           .as('notifications'),
       )
       .where('id', options.id)

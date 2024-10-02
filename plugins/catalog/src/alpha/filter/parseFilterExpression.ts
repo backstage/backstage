@@ -16,11 +16,11 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { InputError } from '@backstage/errors';
-import { EntityMatcherFn } from './matrchers/types';
-import { createKindMatcher } from './matrchers/createKindMatcher';
-import { createTypeMatcher } from './matrchers/createTypeMatcher';
-import { createIsMatcher } from './matrchers/createIsMatcher';
-import { createHasMatcher } from './matrchers/createHasMatcher';
+import { EntityMatcherFn } from './matchers/types';
+import { createKindMatcher } from './matchers/createKindMatcher';
+import { createTypeMatcher } from './matchers/createTypeMatcher';
+import { createIsMatcher } from './matchers/createIsMatcher';
+import { createHasMatcher } from './matchers/createHasMatcher';
 
 const rootMatcherFactories: Record<
   string,

@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
+import { mockServices } from '@backstage/backend-test-utils';
 import express from 'express';
 import request from 'supertest';
-
 import { createRouter } from './router';
-import { mockServices } from '@backstage/backend-test-utils';
 
 describe('createRouter', () => {
   let app: express.Express;
@@ -27,7 +25,7 @@ describe('createRouter', () => {
   beforeAll(async () => {
     const router = await createRouter({
       logger: mockServices.logger.mock(),
-      identity: {} as DefaultIdentityClient,
+      httpAuth: mockServices.httpAuth.mock(),
     });
     app = express().use(router);
   });

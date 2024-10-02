@@ -26,26 +26,26 @@ import {
 import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
   CatalogFilterLayout,
+  DefaultFilters,
+  EntityListPagination,
   EntityListProvider,
-  UserListFilterKind,
   EntityOwnerPickerProps,
+  UserListFilterKind,
 } from '@backstage/plugin-catalog-react';
 import React, { ReactNode } from 'react';
 import { createComponentRouteRef } from '../../routes';
 import { CatalogTable, CatalogTableRow } from '../CatalogTable';
-import { catalogTranslationRef } from '../../translation';
+import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-
 import { CatalogTableColumnsFunc } from '../CatalogTable/types';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { usePermission } from '@backstage/plugin-permission-react';
-import { DefaultFilters } from '@backstage/plugin-catalog-react';
 
 /** @internal */
 export type BaseCatalogPageProps = {
   filters: ReactNode;
   content?: ReactNode;
-  pagination?: boolean | { limit?: number };
+  pagination?: EntityListPagination;
 };
 
 /** @internal */
@@ -95,9 +95,9 @@ export interface DefaultCatalogPageProps {
   tableOptions?: TableProps<CatalogTableRow>['options'];
   emptyContent?: ReactNode;
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
-  pagination?: boolean | { limit?: number };
   filters?: ReactNode;
   initiallySelectedNamespaces?: string[];
+  pagination?: EntityListPagination;
 }
 
 export function DefaultCatalogPage(props: DefaultCatalogPageProps) {

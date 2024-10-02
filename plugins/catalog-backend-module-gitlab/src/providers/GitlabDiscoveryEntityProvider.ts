@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import { LoggerService } from '@backstage/backend-plugin-api';
-import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
+import {
+  LoggerService,
+  SchedulerService,
+  SchedulerServiceTaskRunner,
+} from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { GitLabIntegration, ScmIntegrations } from '@backstage/integration';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
@@ -68,8 +71,8 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     options: {
       logger: LoggerService;
       events?: EventsService;
-      schedule?: TaskRunner;
-      scheduler?: PluginTaskScheduler;
+      schedule?: SchedulerServiceTaskRunner;
+      scheduler?: SchedulerService;
     },
   ): GitlabDiscoveryEntityProvider[] {
     if (!options.schedule && !options.scheduler) {
@@ -121,7 +124,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     integration: GitLabIntegration;
     logger: LoggerService;
     events?: EventsService;
-    taskRunner: TaskRunner;
+    taskRunner: SchedulerServiceTaskRunner;
   }) {
     this.config = options.config;
     this.integration = options.integration;
@@ -165,7 +168,9 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
    * @param taskRunner - The task runner instance.
    * @returns The scheduled function.
    */
-  private createScheduleFn(taskRunner: TaskRunner): () => Promise<void> {
+  private createScheduleFn(
+    taskRunner: SchedulerServiceTaskRunner,
+  ): () => Promise<void> {
     return async () => {
       const taskId = `${this.getProviderName()}:refresh`;
       return taskRunner.run({

@@ -34,8 +34,8 @@ describe('catalogModuleLogs', () => {
     await startTestBackend({
       features: [
         mockServices.logger.factory(),
-        eventsServiceFactory(),
-        catalogModuleLogs(),
+        eventsServiceFactory,
+        catalogModuleLogs,
       ],
     });
 

@@ -36,7 +36,7 @@ catalog:
         bucketName: sample-bucket
         prefix: prefix/ # optional
         region: us-east-2 # optional, uses the default region otherwise
-        schedule: # same options as in TaskScheduleDefinition
+        schedule: # same options as in SchedulerServiceTaskScheduleDefinition
           # supports cron, ISO duration, "human duration" as used in code
           frequency: { minutes: 30 }
           # supports ISO duration, "human duration" as used in code
@@ -56,7 +56,7 @@ catalog:
       bucketName: sample-bucket
       prefix: prefix/ # optional
       region: us-east-2 # optional, uses the default region otherwise
-      schedule: # same options as in TaskScheduleDefinition
+      schedule: # same options as in SchedulerServiceTaskScheduleDefinition
         # supports cron, ISO duration, "human duration" as used in code
         frequency: { minutes: 30 }
         # supports ISO duration, "human duration" as used in code

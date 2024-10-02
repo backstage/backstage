@@ -15,8 +15,20 @@
  */
 
 import { createBackend } from '@backstage/backend-defaults';
+import { createBackendFeatureLoader } from '@backstage/backend-plugin-api';
 
 const backend = createBackend();
+
+// An example of how to group together and load multiple features. You can also
+// access root-scoped services by adding `deps`.
+const searchLoader = createBackendFeatureLoader({
+  *loader() {
+    yield import('@backstage/plugin-search-backend/alpha');
+    yield import('@backstage/plugin-search-backend-module-catalog/alpha');
+    yield import('@backstage/plugin-search-backend-module-explore/alpha');
+    yield import('@backstage/plugin-search-backend-module-techdocs/alpha');
+  },
+});
 
 backend.add(import('@backstage/plugin-auth-backend'));
 backend.add(import('./authModuleGithubProvider'));
@@ -27,6 +39,7 @@ backend.add(
   import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
 );
 backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-events-backend/alpha'));
 backend.add(import('@backstage/plugin-devtools-backend'));
 backend.add(import('@backstage/plugin-kubernetes-backend/alpha'));
 backend.add(
@@ -36,13 +49,10 @@ backend.add(import('@backstage/plugin-permission-backend/alpha'));
 backend.add(import('@backstage/plugin-proxy-backend/alpha'));
 backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
 backend.add(import('@backstage/plugin-scaffolder-backend-module-github'));
-backend.add(import('@backstage/plugin-search-backend-module-catalog/alpha'));
-backend.add(import('@backstage/plugin-search-backend-module-explore/alpha'));
-backend.add(import('@backstage/plugin-search-backend-module-techdocs/alpha'));
 backend.add(
   import('@backstage/plugin-catalog-backend-module-backstage-openapi'),
 );
-backend.add(import('@backstage/plugin-search-backend/alpha'));
+backend.add(searchLoader);
 backend.add(import('@backstage/plugin-techdocs-backend/alpha'));
 backend.add(import('@backstage/plugin-signals-backend'));
 backend.add(import('@backstage/plugin-notifications-backend'));

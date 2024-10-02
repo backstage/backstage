@@ -21,7 +21,6 @@ import {
   devToolsPermissions,
 } from '@backstage/plugin-devtools-common';
 
-import { Config } from '@backstage/config';
 import { DevToolsBackendApi } from '../api';
 import { NotAllowedError } from '@backstage/errors';
 import Router from 'express-promise-router';
@@ -36,19 +35,26 @@ import {
   HttpAuthService,
   LoggerService,
   PermissionsService,
+  RootConfigService,
 } from '@backstage/backend-plugin-api';
 
-/** @public */
+/**
+ * @public
+ * @deprecated Please migrate to the new backend system as this will be removed in the future.
+ */
 export interface RouterOptions {
   devToolsBackendApi?: DevToolsBackendApi;
   logger: LoggerService;
-  config: Config;
+  config: RootConfigService;
   permissions: PermissionsService;
   discovery: DiscoveryService;
   httpAuth?: HttpAuthService;
 }
 
-/** @public */
+/**
+ * @deprecated Please migrate to the new backend system as this will be removed in the future.
+ * @public
+ * */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {

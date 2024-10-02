@@ -16,7 +16,7 @@
 
 import { DatabaseManager } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
-import { DatabaseTaskStore } from './DatabaseTaskStore';
+import { DatabaseTaskStore, RawDbTaskEventRow } from './DatabaseTaskStore';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { ConflictError } from '@backstage/errors';
 import { createMockDirectory } from '@backstage/backend-test-utils';
@@ -75,6 +75,62 @@ describe('DatabaseTaskStore', () => {
     expect(tasks[0].id).toBeDefined();
   });
 
+  it('should allow paginating tasks', async () => {
+    const { store } = await createStore();
+    await store.createTask({
+      spec: {} as TaskSpec,
+      createdBy: 'me',
+    });
+
+    await store.createTask({
+      spec: {} as TaskSpec,
+      createdBy: 'him',
+    });
+
+    const { tasks } = await store.list({ pagination: { limit: 1, offset: 0 } });
+    expect(tasks.length).toBe(1);
+    expect(tasks[0].createdBy).toBe('me');
+    expect(tasks[0].status).toBe('open');
+    expect(tasks[0].id).toBeDefined();
+
+    const { tasks: tasks2 } = await store.list({
+      pagination: { limit: 1, offset: 1 },
+    });
+    expect(tasks2.length).toBe(1);
+    expect(tasks2[0].createdBy).toBe('him');
+    expect(tasks2[0].status).toBe('open');
+    expect(tasks2[0].id).toBeDefined();
+  });
+
+  it('should allow ordering tasks', async () => {
+    const { store } = await createStore();
+    await store.createTask({
+      spec: {} as TaskSpec,
+      createdBy: 'a',
+    });
+
+    await store.createTask({
+      spec: {} as TaskSpec,
+      createdBy: 'b',
+    });
+
+    const { tasks } = await store.list({
+      order: [{ field: 'created_by', order: 'asc' }],
+    });
+    expect(tasks.length).toBe(2);
+    expect(tasks[0].createdBy).toBe('a');
+    expect(tasks[0].status).toBe('open');
+    expect(tasks[0].id).toBeDefined();
+
+    const { tasks: tasks2 } = await store.list({
+      order: [{ field: 'created_by', order: 'desc' }],
+    });
+    expect(tasks2.length).toBe(2);
+    expect(tasks2[0].createdBy).toBe('b');
+    expect(tasks2[0].status).toBe('open');
+    expect(tasks2[0].id).toBeDefined();
+  });
+
   it('should list filtered created tasks by createdBy', async () => {
     const { store } = await createStore();
 
@@ -90,6 +146,76 @@ describe('DatabaseTaskStore', () => {
 
     const { tasks } = await store.list({ createdBy: 'him' });
     expect(tasks.length).toBe(1);
+    expect(tasks[0].createdBy).toBe('him');
+    expect(tasks[0].status).toBe('open');
+    expect(tasks[0].id).toBeDefined();
+
+    const { tasks: tasks2 } = await store.list({
+      filters: { createdBy: 'him' },
+    });
+    expect(tasks2.length).toBe(1);
+    expect(tasks2[0].createdBy).toBe('him');
+    expect(tasks2[0].status).toBe('open');
+    expect(tasks2[0].id).toBeDefined();
+  });
+
+  it('should list filtered created tasks by status', async () => {
+    const { store } = await createStore();
+
+    const { taskId } = await store.createTask({
+      spec: {} as TaskSpec,
+      createdBy: 'me',
+    });
+
+    await store.createTask({
+      spec: {} as TaskSpec,
+      createdBy: 'him',
+    });
+
+    const message = `This task was marked as stale as it exceeded its timeout`;
+    await store.completeTask({
+      taskId,
+      status: 'cancelled',
+      eventBody: { message },
+    });
+
+    const { tasks, totalTasks } = await store.list({
+      status: 'open',
+    });
+    expect(tasks.length).toBe(1);
+    expect(totalTasks).toBe(1);
+    expect(tasks[0].createdBy).toBe('him');
+    expect(tasks[0].status).toBe('open');
+    expect(tasks[0].id).toBeDefined();
+
+    const { tasks: tasks2, totalTasks: totalTasks2 } = await store.list({
+      filters: { status: ['open'] },
+    });
+    expect(tasks2.length).toBe(1);
+    expect(totalTasks2).toBe(1);
+    expect(tasks2[0].createdBy).toBe('him');
+    expect(tasks2[0].status).toBe('open');
+    expect(tasks2[0].id).toBeDefined();
+  });
+
+  it('should limit and offset based on parameters', async () => {
+    const { store } = await createStore();
+
+    await store.createTask({
+      spec: {} as TaskSpec,
+      createdBy: 'me',
+    });
+
+    await store.createTask({
+      spec: {} as TaskSpec,
+      createdBy: 'him',
+    });
+
+    const { tasks, totalTasks } = await store.list({
+      pagination: { limit: 1, offset: 1 },
+    });
+    expect(tasks.length).toBe(1);
+    expect(totalTasks).toBe(2);
     expect(tasks[0].createdBy).toBe('him');
     expect(tasks[0].status).toBe('open');
     expect(tasks[0].id).toBeDefined();
@@ -139,6 +265,48 @@ describe('DatabaseTaskStore', () => {
     expect(event.taskId).toBe(taskId);
     expect(event.body.status).toBe('failed');
     expect(event.type).toBe('log');
+  });
+
+  it('should be able to retied cancelled recoverable task', async () => {
+    const { store, manager } = await createStore();
+    const client = await manager.getClient();
+
+    const { taskId } = await store.createTask({
+      spec: {
+        EXPERIMENTAL_recovery: { EXPERIMENTAL_strategy: 'startOver' },
+      } as TaskSpec,
+      createdBy: 'me#too',
+    });
+    await store.completeTask({ taskId, status: 'cancelled', eventBody: {} });
+
+    await store.retryTask?.({ taskId });
+
+    const taskAfterRetry = await store.getTask(taskId);
+    expect(taskAfterRetry.status).toBe('open');
+
+    expect(
+      await client<RawDbTaskEventRow>('task_events')
+        .where({
+          task_id: taskId,
+          event_type: 'recovered',
+        })
+        .select(['body', 'event_type', 'task_id']),
+    ).toEqual([
+      {
+        body: JSON.stringify({ recoverStrategy: 'startOver' }),
+        event_type: 'recovered',
+        task_id: taskId,
+      },
+    ]);
+
+    expect(
+      await client<RawDbTaskEventRow>('task_events')
+        .where({
+          task_id: taskId,
+        })
+        .andWhere(q => q.whereIn('event_type', ['cancelled', 'completion']))
+        .select(['body', 'event_type', 'task_id']),
+    ).toEqual([]);
   });
 
   it('should complete the task', async () => {

@@ -4,6 +4,19 @@ DockerHub images in general did not seem ideal for Backstage as the number of vu
 
 The `Dockerfile` in this directory uses a [wolfi-base](https://github.com/wolfi-dev) image from Chainguard Images. This improves the security of the application and reduces false positives in scanners.
 
+## Steps taken
+
+When converting, I utilized the upstream Dockerfile as a starting point.
+
+- Multi-stage build - The Dockerfile has been split up into a multistage build which reduces the files, packages, executables, and directories in the final image.
+  - Size savings = ~900mb
+  - Reduced attack surface
+- Base Image - Swap to [wolfi-base](https://github.com/wolfi-dev) image from Chainguard Images
+  - Vulnerability Savings = ~239 at the time of updating this README
+- Entrypoint - Swap from `node` to `tini` as entrypoint to ensure that the default signal handlers work and zombie processes are handled properly
+- Use `ADD` instead of `COPY` in dockerfile to reduce copied compressed files
+  - When a `rm` is used to remove a compressed file it still makes its way into the final image. Using `ADD` is safe with local files.
+
 ## Pinning Digest
 
 To reduce maintenance, the digest of the image has been removed from the `./Dockerfile` file. A complete example with the digest would be `cgr.dev/chainguard/wolfi-base:latest@sha256:3d6dece13cdb5546cd03b20e14f9af354bc1a56ab5a7b47dca3e6c1557211fcf` and it is suggested to update the `FROM` line in the `Dockerfile` to use a digest.

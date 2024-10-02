@@ -8,14 +8,148 @@ permissions:
   contents: read
 
 jobs:
-  deploy-microsite-and-storybook:
-    permissions:
-      contents: write # for JamesIves/github-pages-deploy-action to push changes in repo
+  stable:
     runs-on: ubuntu-latest
+    concurrency:
+      group: stable-reference-${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
 
     env:
       CI: true
       NODE_OPTIONS: --max-old-space-size=8192
+
+    outputs:
+      release: ${{ steps.find-release.outputs.result }}
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+        with:
+          egress-policy: audit
+
+      - name: find latest release
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7
+        id: find-release
+        with:
+          script: |
+            const { data } = await github.rest.repos.listTags({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100,
+            })
+
+            const [{tag}] = data
+              .map(i => i.name)
+              .filter(tag => tag.match(/^v\d+\.\d+\.\d+$/))
+              .map(tag => ({
+                tag,
+                val: tag
+                  .slice(1)
+                  .split('.')
+                  .reduce((val, part) => Number(val) * 1000 + Number(part))
+              }))
+              .sort((a, b) => b.val - a.val)
+
+            return tag
+          result-encoding: string
+
+      - name: checkout latest release
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          ref: refs/tags/${{ steps.find-release.outputs.result }}
+
+      - name: use node.js 18.x
+        uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4.0.4
+        with:
+          node-version: 18.x
+          registry-url: https://registry.npmjs.org/ # Needed for auth
+
+      - name: yarn install
+        uses: backstage/actions/yarn-install@25145dd4117d50e1da9330e9ed2893bc6b75373e # v0.6.15
+        with:
+          cache-prefix: ${{ runner.os }}-v18.x
+
+      - name: build API reference
+        run: yarn build:api-docs
+
+      - name: upload API reference
+        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4
+        with:
+          name: stable-reference
+          path: docs/reference/
+          if-no-files-found: error
+          retention-days: 1
+
+  next:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: next-reference-${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    env:
+      CI: true
+      NODE_OPTIONS: --max-old-space-size=8192
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+        with:
+          egress-policy: audit
+
+      - name: checkout master
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
+      - name: use node.js 18.x
+        uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4.0.4
+        with:
+          node-version: 18.x
+          registry-url: https://registry.npmjs.org/ # Needed for auth
+
+      - name: yarn install
+        uses: backstage/actions/yarn-install@25145dd4117d50e1da9330e9ed2893bc6b75373e # v0.6.15
+        with:
+          cache-prefix: ${{ runner.os }}-v18.x
+
+      - name: build API reference
+        run: yarn build:api-docs
+
+      - name: upload API reference
+        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4
+        with:
+          name: next-reference
+          path: docs/reference/
+          if-no-files-found: error
+          retention-days: 1
+
+        # Also build and upload storybook
+      - name: storybook yarn install
+        run: yarn install --immutable
+        working-directory: storybook
+
+      - name: storybook build
+        run: yarn build-storybook
+        working-directory: storybook
+
+      - name: storybook upload
+        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4
+        with:
+          name: storybook
+          path: storybook/dist/
+          if-no-files-found: error
+          retention-days: 1
+
+  deploy-microsite-and-storybook:
+    permissions:
+      contents: write # for JamesIves/github-pages-deploy-action to push changes in repo
+
+    runs-on: ubuntu-latest
+
+    needs:
+      - stable
+      - next
+
+    env:
+      CI: true
+      NODE_OPTIONS: --max-old-space-size=16384
       DOCUSAURUS_SSR_CONCURRENCY: 5
 
     concurrency:
@@ -24,49 +158,74 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@17d0e2bd7d51742c71671bd19fa12bdc9d40a3d6 # v2.8.1
+        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
-
       - name: use node.js 18.x
-        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
+        uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4.0.4
         with:
           node-version: 18.x
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
-      # We avoid caching in this workflow, as we're running an install of both the top-level
-      # dependencies and the microsite. We leave it to the main master workflow to produce the
-      # cache, as that results in a smaller bundle.
-      - name: top-level yarn install
-        run: yarn install --immutable
+      # Stable docs
+      - name: checkout latest release
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          ref: refs/tags/${{ needs.stable.outputs.release }}
+
       - name: microsite yarn install
         run: yarn install --immutable
         working-directory: microsite
-      - name: storybook yarn install
-        run: yarn install --immutable
-        working-directory: storybook
 
-      - name: build API reference
-        run: yarn build:api-docs
+      - name: download stable reference
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
+        with:
+          name: stable-reference
+          path: docs/reference
+
+      - name: grab lastest releases docs
+        run: |
+          git fetch origin master --depth 1
+          git checkout FETCH_HEAD -- docs/releases
+
+      - name: generate stable docs
+        run: yarn docusaurus docs:version stable
+        working-directory: microsite
+
+      - name: clear API reference
+        run: rm -r docs/reference
+
+      # Next docs
+      - name: checkout master
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          clean: false
+
+      - name: microsite yarn install
+        run: yarn install --immutable
+        working-directory: microsite
+
+      - name: download next reference
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
+        with:
+          name: next-reference
+          path: docs/reference
 
       - name: build microsite
         run: yarn build
         working-directory: microsite
 
-      - name: build storybook
-        run: yarn build-storybook
-        working-directory: storybook
-
-      - name: move storybook dist into microsite
-        run: mv storybook/dist/ microsite/build/storybook
+      - uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
+        with:
+          name: storybook
+          path: microsite/build/storybook
 
       - name: Check the build output
         run: ls microsite/build && ls microsite/build/storybook
 
       - name: Deploy both microsite and storybook to gh-pages
-        uses: JamesIves/github-pages-deploy-action@5c6e9e9f3672ce8fd37b9856193d2a537941e66c # v4.6.1
+        uses: JamesIves/github-pages-deploy-action@920cbb300dcd3f0568dbc42700c61e2fd9e6139c # v4.6.4
         with:
           branch: gh-pages
           folder: microsite/build

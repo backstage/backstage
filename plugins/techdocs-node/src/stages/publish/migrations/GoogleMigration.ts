@@ -17,20 +17,24 @@
 import { assertError } from '@backstage/errors';
 import { File } from '@google-cloud/storage';
 import { Writable } from 'stream';
-import { Logger } from 'winston';
 import { lowerCaseEntityTripletInStoragePath } from '../helpers';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Writable stream to handle object copy/move operations. This implementation
  * ensures we don't read in files from GCS faster than GCS can copy/move them.
  */
 export class MigrateWriteStream extends Writable {
-  protected logger: Logger;
+  protected logger: LoggerService;
   protected removeOriginal: boolean;
   protected maxConcurrency: number;
   protected inFlight = 0;
 
-  constructor(logger: Logger, removeOriginal: boolean, concurrency: number) {
+  constructor(
+    logger: LoggerService,
+    removeOriginal: boolean,
+    concurrency: number,
+  ) {
     super({ objectMode: true });
     this.logger = logger;
     this.removeOriginal = removeOriginal;
@@ -66,7 +70,7 @@ export class MigrateWriteStream extends Writable {
     const migrate = this.removeOriginal
       ? file.move.bind(file)
       : file.copy.bind(file);
-    this.logger.verbose(`Migrating ${file.name}`);
+    this.logger.debug(`Migrating ${file.name}`);
     migrate(newFile)
       .catch(e =>
         this.logger.warn(`Unable to migrate ${file.name}: ${e.message}`),

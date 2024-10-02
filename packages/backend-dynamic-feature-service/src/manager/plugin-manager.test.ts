@@ -16,7 +16,7 @@
 
 import {
   DynamicPluginManager,
-  dynamicPluginsServiceFactory,
+  dynamicPluginsServiceFactoryWithOptions,
 } from './plugin-manager';
 import {
   BackendFeature,
@@ -37,15 +37,13 @@ import {
 import { ScannedPluginManifest, ScannedPluginPackage } from '../scanner/types';
 import { randomUUID } from 'crypto';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
-import {
-  createSpecializedBackend,
-  rootLifecycleServiceFactory,
-} from '@backstage/backend-app-api';
+import { createSpecializedBackend } from '@backstage/backend-app-api';
 import { ConfigSources } from '@backstage/config-loader';
 import { Logs, MockedLogger, LogContent } from '../__testUtils__/testUtils';
 import { PluginScanner } from '../scanner/plugin-scanner';
 import { findPaths } from '@backstage/cli-common';
 import { createMockDirectory } from '@backstage/backend-test-utils';
+import { rootLifecycleServiceFactory } from '@backstage/backend-defaults/rootLifecycle';
 
 describe('backend-dynamic-feature-service', () => {
   const mockDir = createMockDirectory();
@@ -246,6 +244,59 @@ describe('backend-dynamic-feature-service', () => {
           expect(installer.install()).toEqual<
             BackendFeature | BackendFeature[]
           >([]);
+        },
+      },
+      {
+        name: 'should successfully load a backend plugin wrapped in a BackendFeatureCompatWrapper function',
+        packageManifest: {
+          name: 'backend-dynamic-plugin-test',
+          version: '0.0.0',
+          backstage: {
+            role: 'backend-plugin',
+          },
+          main: 'dist/index.cjs.js',
+        },
+        indexFile: {
+          relativePath: ['dist', 'index.cjs.js'],
+          content: `
+          function backendFeatureCompatWrapper() {
+            return backendFeatureCompatWrapper;
+          }
+          Object.assign(backendFeatureCompatWrapper, {
+            $$type: "@backstage/BackendFeature",
+            version: "v1",
+          });
+          const alpha = backendFeatureCompatWrapper;
+          exports.default = alpha;
+          `,
+        },
+        expectedLogs(location) {
+          return {
+            infos: [
+              {
+                message: `loaded dynamic backend plugin 'backend-dynamic-plugin-test' from '${location}'`,
+              },
+            ],
+          };
+        },
+        checkLoadedPlugins(plugins) {
+          expect(plugins).toMatchObject([
+            {
+              name: 'backend-dynamic-plugin-test',
+              version: '0.0.0',
+              role: 'backend-plugin',
+              platform: 'node',
+              installer: {
+                kind: 'new',
+              },
+            },
+          ]);
+          const installer: NewBackendPluginInstaller = (
+            plugins[0] as BackendDynamicPlugin
+          ).installer as NewBackendPluginInstaller;
+          expect((installer.install() as BackendFeature).$$type).toEqual(
+            '@backstage/BackendFeature',
+          );
         },
       },
       {
@@ -639,7 +690,7 @@ describe('backend-dynamic-feature-service', () => {
 
       const backend = createSpecializedBackend({
         defaultServiceFactories: [
-          rootLifecycleServiceFactory(),
+          rootLifecycleServiceFactory,
           createServiceFactory({
             service: coreServices.rootConfig,
             deps: {},
@@ -672,7 +723,7 @@ describe('backend-dynamic-feature-service', () => {
               return rootLogger;
             },
           }),
-          dynamicPluginsServiceFactory({
+          dynamicPluginsServiceFactoryWithOptions({
             moduleLoader: _ => mockedModuleLoader,
           }),
         ],

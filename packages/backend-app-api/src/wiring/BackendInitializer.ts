@@ -25,13 +25,20 @@ import {
 } from '@backstage/backend-plugin-api';
 import { ServiceOrExtensionPoint } from './types';
 // Direct internal import to avoid duplication
-// eslint-disable-next-line @backstage/no-forbidden-package-imports
-import { InternalBackendFeature } from '@backstage/backend-plugin-api/src/wiring/types';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import type {
+  InternalBackendFeature,
+  InternalBackendFeatureLoader,
+  InternalBackendRegistrations,
+} from '../../../backend-plugin-api/src/wiring/types';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import type { InternalServiceFactory } from '../../../backend-plugin-api/src/services/system/types';
 import { ForwardedError, ConflictError } from '@backstage/errors';
 import { featureDiscoveryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { DependencyGraph } from '../lib/DependencyGraph';
 import { ServiceRegistry } from './ServiceRegistry';
 import { createInitializationLogger } from './createInitializationLogger';
+import { unwrapFeature } from './helpers';
 
 export interface BackendRegisterInit {
   consumes: Set<ServiceOrExtensionPoint>;
@@ -42,12 +49,61 @@ export interface BackendRegisterInit {
   };
 }
 
+/**
+ * A registry of backend instances, used to manage process shutdown hooks across all instances.
+ */
+const instanceRegistry = new (class InstanceRegistry {
+  #registered = false;
+  #instances = new Set<BackendInitializer>();
+
+  register(instance: BackendInitializer) {
+    if (!this.#registered) {
+      this.#registered = true;
+
+      process.addListener('SIGTERM', this.#exitHandler);
+      process.addListener('SIGINT', this.#exitHandler);
+      process.addListener('beforeExit', this.#exitHandler);
+    }
+
+    this.#instances.add(instance);
+  }
+
+  unregister(instance: BackendInitializer) {
+    this.#instances.delete(instance);
+  }
+
+  #exitHandler = async () => {
+    try {
+      const results = await Promise.allSettled(
+        Array.from(this.#instances).map(b => b.stop()),
+      );
+      const errors = results.flatMap(r =>
+        r.status === 'rejected' ? [r.reason] : [],
+      );
+
+      if (errors.length > 0) {
+        for (const error of errors) {
+          console.error(error);
+        }
+        process.exit(1);
+      } else {
+        process.exit(0);
+      }
+    } catch (error) {
+      console.error(error);
+      process.exit(1);
+    }
+  };
+})();
+
 export class BackendInitializer {
   #startPromise?: Promise<void>;
-  #features = new Array<InternalBackendFeature>();
+  #stopPromise?: Promise<void>;
+  #registrations = new Array<InternalBackendRegistrations>();
   #extensionPoints = new Map<string, { impl: unknown; pluginId: string }>();
   #serviceRegistry: ServiceRegistry;
   #registeredFeatures = new Array<Promise<BackendFeature>>();
+  #registeredFeatureLoaders = new Array<InternalBackendFeatureLoader>();
 
   constructor(defaultApiFactories: ServiceFactory[]) {
     this.#serviceRegistry = ServiceRegistry.create([...defaultApiFactories]);
@@ -85,8 +141,11 @@ export class BackendInitializer {
 
     if (missingRefs.size > 0) {
       const missing = Array.from(missingRefs).join(', ');
+      const target = moduleId
+        ? `module '${moduleId}' for plugin '${pluginId}'`
+        : `plugin '${pluginId}'`;
       throw new Error(
-        `No extension point or service available for the following ref(s): ${missing}`,
+        `Service or extension point dependencies of ${target} are missing for the following ref(s): ${missing}`,
       );
     }
 
@@ -101,21 +160,12 @@ export class BackendInitializer {
   }
 
   #addFeature(feature: BackendFeature) {
-    if (feature.$$type !== '@backstage/BackendFeature') {
-      throw new Error(
-        `Failed to add feature, invalid type '${feature.$$type}'`,
-      );
-    }
-
     if (isServiceFactory(feature)) {
       this.#serviceRegistry.add(feature);
-    } else if (isInternalBackendFeature(feature)) {
-      if (feature.version !== 'v1') {
-        throw new Error(
-          `Failed to add feature, invalid version '${feature.version}'`,
-        );
-      }
-      this.#features.push(feature);
+    } else if (isBackendFeatureLoader(feature)) {
+      this.#registeredFeatureLoaders.push(feature);
+    } else if (isBackendRegistrations(feature)) {
+      this.#registrations.push(feature);
     } else {
       throw new Error(
         `Failed to add feature, invalid feature ${JSON.stringify(feature)}`,
@@ -127,24 +177,11 @@ export class BackendInitializer {
     if (this.#startPromise) {
       throw new Error('Backend has already started');
     }
+    if (this.#stopPromise) {
+      throw new Error('Backend has already stopped');
+    }
 
-    const exitHandler = async () => {
-      process.removeListener('SIGTERM', exitHandler);
-      process.removeListener('SIGINT', exitHandler);
-      process.removeListener('beforeExit', exitHandler);
-
-      try {
-        await this.stop();
-        process.exit(0);
-      } catch (error) {
-        console.error(error);
-        process.exit(1);
-      }
-    };
-
-    process.addListener('SIGTERM', exitHandler);
-    process.addListener('SIGINT', exitHandler);
-    process.addListener('beforeExit', exitHandler);
+    instanceRegistry.register(this);
 
     this.#startPromise = this.#doStart();
     await this.#startPromise;
@@ -158,6 +195,7 @@ export class BackendInitializer {
     }
 
     const featureDiscovery = await this.#serviceRegistry.get(
+      // TODO: Let's leave this in place and remove it once the deprecated service is removed. We can do that post-1.0 since it's alpha
       featureDiscoveryServiceRef,
       'root',
     );
@@ -165,10 +203,12 @@ export class BackendInitializer {
     if (featureDiscovery) {
       const { features } = await featureDiscovery.getBackendFeatures();
       for (const feature of features) {
-        this.#addFeature(feature);
+        this.#addFeature(unwrapFeature(feature));
       }
       this.#serviceRegistry.checkForCircularDeps();
     }
+
+    await this.#applyBackendFeatureLoaders(this.#registeredFeatureLoaders);
 
     // Initialize all root scoped services
     await this.#serviceRegistry.initializeEagerServicesWithScope('root');
@@ -176,8 +216,8 @@ export class BackendInitializer {
     const pluginInits = new Map<string, BackendRegisterInit>();
     const moduleInits = new Map<string, Map<string, BackendRegisterInit>>();
 
-    // Enumerate all features
-    for (const feature of this.#features) {
+    // Enumerate all registrations
+    for (const feature of this.#registrations) {
       for (const r of feature.getRegistrations()) {
         const provides = new Set<ExtensionPoint<unknown>>();
 
@@ -205,7 +245,7 @@ export class BackendInitializer {
             consumes: new Set(Object.values(r.init.deps)),
             init: r.init,
           });
-        } else {
+        } else if (r.type === 'module') {
           let modules = moduleInits.get(r.pluginId);
           if (!modules) {
             modules = new Map();
@@ -221,6 +261,8 @@ export class BackendInitializer {
             consumes: new Set(Object.values(r.init.deps)),
             init: r.init,
           });
+        } else {
+          throw new Error(`Invalid registration type '${(r as any).type}'`);
         }
       }
     }
@@ -233,75 +275,90 @@ export class BackendInitializer {
     );
 
     // All plugins are initialized in parallel
-    await Promise.all(
+    const results = await Promise.allSettled(
       allPluginIds.map(async pluginId => {
-        // Initialize all eager services
-        await this.#serviceRegistry.initializeEagerServicesWithScope(
-          'plugin',
-          pluginId,
-        );
-
-        // Modules are initialized before plugins, so that they can provide extension to the plugin
-        const modules = moduleInits.get(pluginId);
-        if (modules) {
-          const tree = DependencyGraph.fromIterable(
-            Array.from(modules).map(([moduleId, moduleInit]) => ({
-              value: { moduleId, moduleInit },
-              // Relationships are reversed at this point since we're only interested in the extension points.
-              // If a modules provides extension point A we want it to be initialized AFTER all modules
-              // that depend on extension point A, so that they can provide their extensions.
-              consumes: Array.from(moduleInit.provides).map(p => p.id),
-              provides: Array.from(moduleInit.consumes).map(c => c.id),
-            })),
-          );
-          const circular = tree.detectCircularDependency();
-          if (circular) {
-            throw new ConflictError(
-              `Circular dependency detected for modules of plugin '${pluginId}', ${circular
-                .map(({ moduleId }) => `'${moduleId}'`)
-                .join(' -> ')}`,
-            );
-          }
-          await tree.parallelTopologicalTraversal(
-            async ({ moduleId, moduleInit }) => {
-              const moduleDeps = await this.#getInitDeps(
-                moduleInit.init.deps,
-                pluginId,
-                moduleId,
-              );
-              await moduleInit.init.func(moduleDeps).catch(error => {
-                throw new ForwardedError(
-                  `Module '${moduleId}' for plugin '${pluginId}' startup failed`,
-                  error,
-                );
-              });
-            },
-          );
-        }
-
-        // Once all modules have been initialized, we can initialize the plugin itself
-        const pluginInit = pluginInits.get(pluginId);
-        // We allow modules to be installed without the accompanying plugin, so the plugin may not exist
-        if (pluginInit) {
-          const pluginDeps = await this.#getInitDeps(
-            pluginInit.init.deps,
+        try {
+          // Initialize all eager services
+          await this.#serviceRegistry.initializeEagerServicesWithScope(
+            'plugin',
             pluginId,
           );
-          await pluginInit.init.func(pluginDeps).catch(error => {
-            throw new ForwardedError(
-              `Plugin '${pluginId}' startup failed`,
-              error,
+
+          // Modules are initialized before plugins, so that they can provide extension to the plugin
+          const modules = moduleInits.get(pluginId);
+          if (modules) {
+            const tree = DependencyGraph.fromIterable(
+              Array.from(modules).map(([moduleId, moduleInit]) => ({
+                value: { moduleId, moduleInit },
+                // Relationships are reversed at this point since we're only interested in the extension points.
+                // If a modules provides extension point A we want it to be initialized AFTER all modules
+                // that depend on extension point A, so that they can provide their extensions.
+                consumes: Array.from(moduleInit.provides).map(p => p.id),
+                provides: Array.from(moduleInit.consumes).map(c => c.id),
+              })),
             );
-          });
+            const circular = tree.detectCircularDependency();
+            if (circular) {
+              throw new ConflictError(
+                `Circular dependency detected for modules of plugin '${pluginId}', ${circular
+                  .map(({ moduleId }) => `'${moduleId}'`)
+                  .join(' -> ')}`,
+              );
+            }
+            await tree.parallelTopologicalTraversal(
+              async ({ moduleId, moduleInit }) => {
+                const moduleDeps = await this.#getInitDeps(
+                  moduleInit.init.deps,
+                  pluginId,
+                  moduleId,
+                );
+                await moduleInit.init.func(moduleDeps).catch(error => {
+                  throw new ForwardedError(
+                    `Module '${moduleId}' for plugin '${pluginId}' startup failed`,
+                    error,
+                  );
+                });
+              },
+            );
+          }
+
+          // Once all modules have been initialized, we can initialize the plugin itself
+          const pluginInit = pluginInits.get(pluginId);
+          // We allow modules to be installed without the accompanying plugin, so the plugin may not exist
+          if (pluginInit) {
+            const pluginDeps = await this.#getInitDeps(
+              pluginInit.init.deps,
+              pluginId,
+            );
+            await pluginInit.init.func(pluginDeps).catch(error => {
+              throw new ForwardedError(
+                `Plugin '${pluginId}' startup failed`,
+                error,
+              );
+            });
+          }
+
+          initLogger.onPluginStarted(pluginId);
+
+          // Once the plugin and all modules have been initialized, we can signal that the plugin has stared up successfully
+          const lifecycleService = await this.#getPluginLifecycleImpl(pluginId);
+          await lifecycleService.startup();
+        } catch (error) {
+          initLogger.onPluginFailed(pluginId);
+          throw error;
         }
-
-        initLogger.onPluginStarted(pluginId);
-
-        // Once the plugin and all modules have been initialized, we can signal that the plugin has stared up successfully
-        const lifecycleService = await this.#getPluginLifecycleImpl(pluginId);
-        await lifecycleService.startup();
       }),
     );
+
+    const initErrors = results.flatMap(r =>
+      r.status === 'rejected' ? [r.reason] : [],
+    );
+    if (initErrors.length === 1) {
+      throw initErrors[0];
+    } else if (initErrors.length > 1) {
+      // TODO(Rugvip): Seems like there aren't proper types for AggregateError yet
+      throw new (AggregateError as any)(initErrors, 'Backend startup failed');
+    }
 
     // Once all plugins and modules have been initialized, we can signal that the backend has started up successfully
     const lifecycleService = await this.#getRootLifecycleImpl();
@@ -329,7 +386,17 @@ export class BackendInitializer {
     }
   }
 
+  // It's fine to call .stop() multiple times, which for example can happen with manual stop + process exit
   async stop(): Promise<void> {
+    instanceRegistry.unregister(this);
+
+    if (!this.#stopPromise) {
+      this.#stopPromise = this.#doStop();
+    }
+    await this.#stopPromise;
+  }
+
+  async #doStop(): Promise<void> {
     if (!this.#startPromise) {
       return;
     }
@@ -383,16 +450,110 @@ export class BackendInitializer {
 
     throw new Error('Unexpected plugin lifecycle service implementation');
   }
+
+  async #applyBackendFeatureLoaders(loaders: InternalBackendFeatureLoader[]) {
+    for (const loader of loaders) {
+      const deps = new Map<string, unknown>();
+      const missingRefs = new Set<ServiceOrExtensionPoint>();
+
+      for (const [name, ref] of Object.entries(loader.deps ?? {})) {
+        if (ref.scope !== 'root') {
+          throw new Error(
+            `Feature loaders can only depend on root scoped services, but '${name}' is scoped to '${ref.scope}'. Offending loader is ${loader.description}`,
+          );
+        }
+        const impl = await this.#serviceRegistry.get(
+          ref as ServiceRef<unknown>,
+          'root',
+        );
+        if (impl) {
+          deps.set(name, impl);
+        } else {
+          missingRefs.add(ref);
+        }
+      }
+
+      if (missingRefs.size > 0) {
+        const missing = Array.from(missingRefs).join(', ');
+        throw new Error(
+          `No service available for the following ref(s): ${missing}, depended on by feature loader ${loader.description}`,
+        );
+      }
+
+      const result = await loader
+        .loader(Object.fromEntries(deps))
+        .then(features => features.map(unwrapFeature))
+        .catch(error => {
+          throw new ForwardedError(
+            `Feature loader ${loader.description} failed`,
+            error,
+          );
+        });
+
+      let didAddServiceFactory = false;
+      const newLoaders = new Array<InternalBackendFeatureLoader>();
+
+      for await (const feature of result) {
+        if (isBackendFeatureLoader(feature)) {
+          newLoaders.push(feature);
+        } else {
+          didAddServiceFactory ||= isServiceFactory(feature);
+          this.#addFeature(feature);
+        }
+      }
+
+      // Every time we add a new service factory we need to make sure that we don't have circular dependencies
+      if (didAddServiceFactory) {
+        this.#serviceRegistry.checkForCircularDeps();
+      }
+
+      // Apply loaders recursively, depth-first
+      if (newLoaders.length > 0) {
+        await this.#applyBackendFeatureLoaders(newLoaders);
+      }
+    }
+  }
 }
 
-function isServiceFactory(feature: BackendFeature): feature is ServiceFactory {
-  return !!(feature as ServiceFactory).service;
-}
-
-function isInternalBackendFeature(
+function toInternalBackendFeature(
   feature: BackendFeature,
-): feature is InternalBackendFeature {
-  return (
-    typeof (feature as InternalBackendFeature).getRegistrations === 'function'
-  );
+): InternalBackendFeature {
+  if (feature.$$type !== '@backstage/BackendFeature') {
+    throw new Error(`Invalid BackendFeature, bad type '${feature.$$type}'`);
+  }
+  const internal = feature as InternalBackendFeature;
+  if (internal.version !== 'v1') {
+    throw new Error(
+      `Invalid BackendFeature, bad version '${internal.version}'`,
+    );
+  }
+  return internal;
+}
+
+function isServiceFactory(
+  feature: BackendFeature,
+): feature is InternalServiceFactory {
+  const internal = toInternalBackendFeature(feature);
+  if (internal.featureType === 'service') {
+    return true;
+  }
+  // Backwards compatibility for v1 registrations that use duck typing
+  return 'service' in internal;
+}
+
+function isBackendRegistrations(
+  feature: BackendFeature,
+): feature is InternalBackendRegistrations {
+  const internal = toInternalBackendFeature(feature);
+  if (internal.featureType === 'registrations') {
+    return true;
+  }
+  // Backwards compatibility for v1 registrations that use duck typing
+  return 'getRegistrations' in internal;
+}
+
+function isBackendFeatureLoader(
+  feature: BackendFeature,
+): feature is InternalBackendFeatureLoader {
+  return toInternalBackendFeature(feature).featureType === 'loader';
 }

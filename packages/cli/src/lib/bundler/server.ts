@@ -54,6 +54,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
   const { name } = await fs.readJson(libPaths.resolveTarget('package.json'));
 
   let webpackServer: WebpackDevServer | undefined = undefined;
+  // @ts-ignore
   let viteServer: import('vite').ViteDevServer | undefined = undefined;
 
   let latestFrontendAppConfigs: AppConfig[] = [];

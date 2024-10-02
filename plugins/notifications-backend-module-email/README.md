@@ -2,7 +2,7 @@
 
 Adds support for sending Backstage notifications as emails to users.
 
-Supports sending emails using `SMTP`, `SES`, or `sendmail`.
+Supports sending emails using `SMTP`, `SES`, `sendmail`, or `stream` (for debugging purposes).
 
 ## Customizing email content
 

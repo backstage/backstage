@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { readTaskScheduleDefinitionFromConfig } from '@backstage/backend-tasks';
+import { readSchedulerServiceTaskScheduleDefinitionFromConfig } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { GitlabProviderConfig } from '../lib';
 
@@ -45,16 +45,23 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
   const orgEnabled: boolean = config.getOptionalBoolean('orgEnabled') ?? false;
   const allowInherited: boolean =
     config.getOptionalBoolean('allowInherited') ?? false;
+  const relations: string[] = config.getOptionalStringArray('relations') ?? [];
+
   const skipForkedRepos: boolean =
     config.getOptionalBoolean('skipForkedRepos') ?? false;
   const excludeRepos: string[] =
     config.getOptionalStringArray('excludeRepos') ?? [];
 
   const schedule = config.has('schedule')
-    ? readTaskScheduleDefinitionFromConfig(config.getConfig('schedule'))
+    ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
+        config.getConfig('schedule'),
+      )
     : undefined;
   const restrictUsersToGroup =
     config.getOptionalBoolean('restrictUsersToGroup') ?? false;
+
+  const includeUsersWithoutSeat =
+    config.getOptionalBoolean('includeUsersWithoutSeat') ?? false;
 
   return {
     id,
@@ -69,9 +76,11 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
     schedule,
     orgEnabled,
     allowInherited,
+    relations,
     skipForkedRepos,
     excludeRepos,
     restrictUsersToGroup,
+    includeUsersWithoutSeat,
   };
 }
 

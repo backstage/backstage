@@ -126,7 +126,7 @@ The Catalog graphics plugin provides extensions for each of its features, see be
 
 #### Catalog Entity Relations Graph Card
 
-An [entity card](https://backstage.io/docs/frontend-system/building-plugins/extension-types#entitycard---reference) extension that renders the relation graph for an entity on the Catalog entity page and has an action that redirects users to the more advanced [relations graph page](#catalog-entity-relations-graph-page).
+An [entity card](https://backstage.io/docs/frontend-system/building-plugins/extension-blueprints#entitycard---reference) extension that renders the relation graph for an entity on the Catalog entity page and has an action that redirects users to the more advanced [relations graph page](#catalog-entity-relations-graph-page).
 
 | kind        | namespace     | name             | id                                    | Default enabled |
 | ----------- | ------------- | ---------------- | ------------------------------------- | --------------- |
@@ -198,23 +198,28 @@ Overriding the card extension allows you to modify how it is implemented.
 Here is an example overriding the card extension with a custom component:
 
 ```tsx
-import { createExtensionOverrides, createSchemaFromZod } from '@backstage/backstage-plugin-api';
+import {
+  createFrontendModule,
+  createSchemaFromZod,
+} from '@backstage/backstage-plugin-api';
 import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
 
-export default createExtensionOverrides(
+export default createFrontendModule({
+  pluginId: 'catalog-graph',
   extensions: [
     createEntityCardExtension({
-      // These namespace and name are necessary so the system knows that this extension will replace the default 'entity-relations' card extension provided by the 'catalog-graph' plugin
-      namespace: 'catalog-graph',
       name: 'entity-relations',
-      configSchema: createSchemaFromZod(z => z.object({
-        filter: z.string().optional(),
-        // Ommitting the rest of default configs for simplicity in this example
-      })),
-      loader: () => import('./components').then(m => <m.MyEntityRelationsCard />)
-    })
-  ]
-);
+      configSchema: createSchemaFromZod(z =>
+        z.object({
+          filter: z.string().optional(),
+          // Ommitting the rest of default configs for simplicity in this example
+        }),
+      ),
+      loader: () =>
+        import('./components').then(m => <m.MyEntityRelationsCard />),
+    }),
+  ],
+});
 ```
 
 For more information about where to place extension overrides, see the official [documentation](https://backstage.io/docs/frontend-system/architecture/extension-overrides).
@@ -292,16 +297,15 @@ Overriding the page extension allows you to modify how it is implemented.
 Here is example overriding the page extension with a custom component:
 
 ```tsx
-import { createExtensionOverrides, createPageExtension, createSchemaFromZod } from '@backstage/backstage-plugin-api';
+import { createFrontendModule, createPageExtension, createSchemaFromZod } from '@backstage/backstage-plugin-api';
 import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import { catalogGraphRouteRef } from '@backstage/plugin-catalog-graph';
 
-export default createExtensionOverrides(
+export default createFrontendModule({
+  pluginId: 'catalog-graph',
   extensions: [
     createPageExtension({
       // Ommiting name since it is an index page
-      // This namespace is necessary so the system knows that this extension will replace the default 'catalog-graph' page extension
-      namespace: 'catalog-graph',
       defaultPath: '/catalog-graph',
       routeRef: convertLegacyRouteRef(catalogGraphRouteRef),
       createSchemaFromZod(z => z.object({
@@ -311,7 +315,7 @@ export default createExtensionOverrides(
       loader: () => import('./components').then(m => <m.CustomEntityRelationsPage />)
     })
   ]
-);
+});
 ```
 
 For more information about where to place extension overrides, see the official [documentation](https://backstage.io/docs/frontend-system/architecture/extension-overrides).

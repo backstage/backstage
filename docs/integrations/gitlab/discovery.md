@@ -34,9 +34,9 @@ Then add the following to your backend initialization:
 // optional if you want to use AWS SQS instead of HTTP endpoints to receive external events
 // backend.add(import('@backstage/plugin-events-backend-module-aws-sqs/alpha'));
 // optional - event router for gitlab. See.: https://github.com/backstage/backstage/blob/master/plugins/events-backend-module-gitlab/README.md
-// backend.add(eventsModuleGitlabEventRouter());
+// backend.add(eventsModuleGitlabEventRouter);
 // optional - token validator for the gitlab topic
-// backend.add(eventsModuleGitlabWebhook());
+// backend.add(eventsModuleGitlabWebhook);
 backend.add(import('@backstage/plugin-catalog-backend-module-gitlab/alpha'));
 ```
 
@@ -154,7 +154,7 @@ catalog:
         entityFilename: catalog-info.yaml # Optional. Defaults to `catalog-info.yaml`
         projectPattern: '[\s\S]*' # Optional. Filters found projects based on provided patter. Defaults to `[\s\S]*`, which means to not filter anything
         excludeRepos: [] # Optional. A list of project paths that should be excluded from discovery, e.g. group/subgroup/repo. Should not start or end with a slash.
-        schedule: # Same options as in TaskScheduleDefinition. Optional for the Legacy Backend System
+        schedule: # Same options as in SchedulerServiceTaskScheduleDefinition. Optional for the Legacy Backend System
           # supports cron, ISO duration, "human duration" as used in code
           frequency: { minutes: 30 }
           # supports ISO duration, "human duration" as used in code

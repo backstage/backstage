@@ -18,7 +18,7 @@ import { StructuredMetadataTable } from '@backstage/core-components';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { Draft07 as JSONSchema } from 'json-schema-library';
 import { ParsedTemplateSchema } from '../../hooks/useTemplateSchema';
-import { isJsonObject, getLastKey } from './util';
+import { isJsonObject, formatKey, findSchemaForKey } from './util';
 
 /**
  * The props for the {@link ReviewState} component.
@@ -41,25 +41,33 @@ function processSchema(
     data: formState,
   });
 
+  const name =
+    definitionInSchema?.['ui:backstage']?.review?.name ??
+    definitionInSchema?.title ??
+    key;
+
   if (definitionInSchema) {
     const backstageReviewOptions = definitionInSchema['ui:backstage']?.review;
     if (backstageReviewOptions) {
       if (backstageReviewOptions.mask) {
-        return [[getLastKey(key), backstageReviewOptions.mask]];
+        return [[name, backstageReviewOptions.mask]];
       }
       if (backstageReviewOptions.show === false) {
         return [];
       }
     }
 
-    if (definitionInSchema['ui:widget'] === 'password') {
-      return [[getLastKey(key), '******']];
+    if (
+      definitionInSchema['ui:widget'] === 'password' ||
+      definitionInSchema['ui:field']?.toLocaleLowerCase('en-us') === 'secret'
+    ) {
+      return [[name, '******']];
     }
 
     if (definitionInSchema.enum && definitionInSchema.enumNames) {
       return [
         [
-          getLastKey(key),
+          name,
           definitionInSchema.enumNames[
             definitionInSchema.enum.indexOf(value)
           ] || value,
@@ -75,7 +83,7 @@ function processSchema(
     }
   }
 
-  return [[getLastKey(key), value]];
+  return [[name, value]];
 }
 
 /**
@@ -86,12 +94,15 @@ export const ReviewState = (props: ReviewStateProps) => {
   const reviewData = Object.fromEntries(
     Object.entries(props.formState)
       .flatMap(([key, value]) => {
-        for (const step of props.schemas) {
-          return processSchema(key, value, step, props.formState);
-        }
-        return [[key, value]];
+        const schema = findSchemaForKey(key, props.schemas, props.formState);
+        return schema
+          ? processSchema(key, value, schema, props.formState)
+          : [[key, value]];
       })
       .filter(prop => prop.length > 0),
   );
-  return <StructuredMetadataTable metadata={reviewData} />;
+  const options = {
+    titleFormat: formatKey,
+  };
+  return <StructuredMetadataTable metadata={reviewData} options={options} />;
 };

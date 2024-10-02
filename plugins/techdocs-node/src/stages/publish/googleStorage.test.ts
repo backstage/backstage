@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
@@ -27,8 +26,11 @@ import {
   createMockDirectory,
   mockServices,
 } from '@backstage/backend-test-utils';
+import { StorageOptions } from '@google-cloud/storage';
 
 const mockDir = createMockDirectory();
+
+let createdStorageOptions: Array<StorageOptions | undefined> = [];
 
 jest.mock('@google-cloud/storage', () => {
   class GCSFile {
@@ -119,6 +121,10 @@ jest.mock('@google-cloud/storage', () => {
   }
 
   class Storage {
+    constructor(readonly options?: StorageOptions) {
+      createdStorageOptions.push(options);
+    }
+
     bucket(bucketName: string) {
       return new Bucket(bucketName);
     }
@@ -139,18 +145,18 @@ const getEntityRootDir = (entity: Entity) => {
   return mockDir.resolve(namespace || DEFAULT_NAMESPACE, kind, name);
 };
 
-const logger = loggerToWinstonLogger(mockServices.logger.mock());
-jest.spyOn(logger, 'info').mockReturnValue(logger);
-jest.spyOn(logger, 'error').mockReturnValue(logger);
+const logger = mockServices.logger.mock();
 
 const createPublisherFromConfig = ({
   bucketName = 'bucketName',
   bucketRootPath = '/',
   legacyUseCaseSensitiveTripletPaths = false,
+  storageOptions = {},
 }: {
   bucketName?: string;
   bucketRootPath?: string;
   legacyUseCaseSensitiveTripletPaths?: boolean;
+  storageOptions?: StorageOptions;
 } = {}) => {
   const config = new ConfigReader({
     techdocs: {
@@ -165,7 +171,7 @@ const createPublisherFromConfig = ({
       legacyUseCaseSensitiveTripletPaths,
     },
   });
-  return GoogleGCSPublish.fromConfig(config, logger);
+  return GoogleGCSPublish.fromConfig(config, logger, storageOptions);
 };
 
 describe('GoogleGCSPublish', () => {
@@ -214,9 +220,22 @@ describe('GoogleGCSPublish', () => {
   };
 
   beforeEach(() => {
+    createdStorageOptions = [];
     mockDir.setContent({
       [directory]: files,
     });
+  });
+
+  it('should pass options to storage', () => {
+    createPublisherFromConfig({
+      storageOptions: {
+        userAgent: 'Test-UA',
+      },
+    });
+
+    expect(createdStorageOptions.map(opt => opt?.userAgent)).toContain(
+      'Test-UA',
+    );
   });
 
   describe('getReadiness', () => {

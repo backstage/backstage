@@ -55,7 +55,7 @@ export interface ConfigurableExtensionDataRef<
   optional(): ConfigurableExtensionDataRef<
     TData,
     TId,
-    TData & { optional: true }
+    TConfig & { optional: true }
   >;
   (t: TData): ExtensionDataValue<TData, TId>;
 }

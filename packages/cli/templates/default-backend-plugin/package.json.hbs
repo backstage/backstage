@@ -3,7 +3,7 @@
   "version": "{{pluginVersion}}",
   "main": "src/index.ts",
   "types": "src/index.ts",
-  "license": "Apache-2.0",
+  "license": "{{license}}",
 {{#if privatePackage}}
   "private": {{privatePackage}},
 {{/if}}
@@ -28,7 +28,6 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
-    "@backstage/backend-common": "{{versionQuery '@backstage/backend-common'}}",
     "@backstage/backend-defaults": "{{versionQuery '@backstage/backend-defaults'}}",
     "@backstage/backend-plugin-api": "{{versionQuery '@backstage/backend-plugin-api'}}",
     "express": "{{versionQuery 'express' '4.17.1'}}",

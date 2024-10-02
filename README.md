@@ -1,8 +1,5 @@
 [![headline](docs/assets/headline.png)](https://backstage.io/)
 
-> [!NOTE]
-> 🏖 From July 1st through 16th, due to maintainers being on summer vacations, expect the project to move a little slower than normal, and support to be limited. Normal service will resume after that! 🏝
-
 # [Backstage](https://backstage.io)
 
 English \| [한국어](README-ko_kr.md) \| [中文版](README-zh_Hans.md) \| [Français](README-fr_FR.md)
@@ -65,6 +62,10 @@ To engage with our community, you can use the following resources:
 - [Newsletter](https://spoti.fi/backstagenewsletter) - Subscribe to our email newsletter
 - [Backstage Community Sessions](https://github.com/backstage/community) - Join monthly meetups and explore Backstage community
 - Give us a star ⭐️ - If you are using Backstage or think it is an interesting project, we would love a star ❤️
+
+## Governance
+
+See the [GOVERNANCE.md](https://github.com/backstage/community/blob/main/GOVERNANCE.md) document in the [backstage/community](https://github.com/backstage/community) repository.
 
 ## License
 

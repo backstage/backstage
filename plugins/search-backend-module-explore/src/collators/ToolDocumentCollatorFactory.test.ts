@@ -13,10 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  PluginEndpointDiscovery,
-  TokenManager,
-} from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { TestPipeline } from '@backstage/plugin-search-backend-node';
 import {
@@ -27,6 +23,7 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { Readable } from 'stream';
 import { ToolDocumentCollatorFactory } from './ToolDocumentCollatorFactory';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 
 const logger = mockServices.logger.mock();
 
@@ -58,18 +55,14 @@ const mockTools = {
 
 describe('ToolDocumentCollatorFactory', () => {
   const config = new ConfigReader({});
-  const mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery> = {
+  const mockDiscoveryApi: jest.Mocked<DiscoveryService> = {
     getBaseUrl: jest.fn().mockResolvedValue('http://test-backend/api/explore'),
     getExternalBaseUrl: jest.fn(),
   };
-  const mockTokenManager: jest.Mocked<TokenManager> = {
-    getToken: jest.fn().mockResolvedValue({ token: '' }),
-    authenticate: jest.fn(),
-  };
+
   const options = {
     discovery: mockDiscoveryApi,
     logger,
-    tokenManager: mockTokenManager,
   };
 
   it('has expected type', () => {

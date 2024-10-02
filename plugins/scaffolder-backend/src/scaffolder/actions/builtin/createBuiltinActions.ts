@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { UrlReader } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import {
@@ -38,6 +37,7 @@ import {
   createFetchPlainAction,
   createFetchPlainFileAction,
   createFetchTemplateAction,
+  createFetchTemplateFileAction,
 } from './fetch';
 import {
   createFilesystemDeleteAction,
@@ -63,6 +63,7 @@ import { createPublishBitbucketAction } from '@backstage/plugin-scaffolder-backe
 import {
   createPublishBitbucketCloudAction,
   createBitbucketPipelinesRunAction,
+  createPublishBitbucketCloudPullRequestAction,
 } from '@backstage/plugin-scaffolder-backend-module-bitbucket-cloud';
 
 import {
@@ -82,7 +83,7 @@ import {
 } from '@backstage/plugin-scaffolder-backend-module-gitlab';
 
 import { createPublishGiteaAction } from '@backstage/plugin-scaffolder-backend-module-gitea';
-import { AuthService } from '@backstage/backend-plugin-api';
+import { AuthService, UrlReaderService } from '@backstage/backend-plugin-api';
 
 /**
  * The options passed to {@link createBuiltinActions}
@@ -90,9 +91,9 @@ import { AuthService } from '@backstage/backend-plugin-api';
  */
 export interface CreateBuiltInActionsOptions {
   /**
-   * The {@link @backstage/backend-common#UrlReader} interface that will be used in the default actions.
+   * The {@link @backstage/backend-plugin-api#UrlReaderService} interface that will be used in the default actions.
    */
-  reader: UrlReader;
+  reader: UrlReaderService;
   /**
    * The {@link @backstage/integrations#ScmIntegrations} that will be used in the default actions.
    */
@@ -158,6 +159,12 @@ export const createBuiltinActions = (
       additionalTemplateFilters,
       additionalTemplateGlobals,
     }),
+    createFetchTemplateFileAction({
+      integrations,
+      reader,
+      additionalTemplateFilters,
+      additionalTemplateGlobals,
+    }),
     createPublishGerritAction({
       integrations,
       config,
@@ -198,6 +205,7 @@ export const createBuiltinActions = (
       integrations,
       config,
     }),
+    createPublishBitbucketCloudPullRequestAction({ integrations, config }),
     createPublishBitbucketServerAction({
       integrations,
       config,
@@ -240,6 +248,7 @@ export const createBuiltinActions = (
     }),
     createGithubEnvironmentAction({
       integrations,
+      catalogClient,
     }),
     createGithubDeployKeyAction({
       integrations,

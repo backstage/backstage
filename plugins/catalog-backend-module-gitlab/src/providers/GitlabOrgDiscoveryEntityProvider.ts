@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { LoggerService } from '@backstage/backend-plugin-api';
-import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
+import {
+  LoggerService,
+  SchedulerService,
+  SchedulerServiceTaskRunner,
+} from '@backstage/backend-plugin-api';
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
@@ -114,8 +117,8 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     options: {
       logger: LoggerService;
       events?: EventsService;
-      schedule?: TaskRunner;
-      scheduler?: PluginTaskScheduler;
+      schedule?: SchedulerServiceTaskRunner;
+      scheduler?: SchedulerService;
       userTransformer?: UserTransformer;
       groupEntitiesTransformer?: GroupEntitiesTransformer;
       groupNameTransformer?: GroupNameTransformer;
@@ -176,7 +179,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     integration: GitLabIntegration;
     logger: LoggerService;
     events?: EventsService;
-    taskRunner: TaskRunner;
+    taskRunner: SchedulerServiceTaskRunner;
     userTransformer?: UserTransformer;
     groupEntitiesTransformer?: GroupEntitiesTransformer;
     groupNameTransformer?: GroupNameTransformer;
@@ -321,7 +324,9 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     }
   }
 
-  private createScheduleFn(taskRunner: TaskRunner): () => Promise<void> {
+  private createScheduleFn(
+    taskRunner: SchedulerServiceTaskRunner,
+  ): () => Promise<void> {
     return async () => {
       const taskId = `${this.getProviderName()}:refresh`;
       return taskRunner.run({
@@ -395,7 +400,12 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
         ? rootGroupSplit[rootGroupSplit.length - 1]
         : rootGroupSplit[0];
       users = paginated<GitLabUser>(
-        options => this.gitLabClient.listSaaSUsers(rootGroup, options),
+        options =>
+          this.gitLabClient.listSaaSUsers(
+            rootGroup,
+            options,
+            this.config.includeUsersWithoutSeat,
+          ),
         {
           page: 1,
           per_page: 100,
@@ -440,9 +450,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
 
       let groupUsers: PagedResponse<GitLabUser> = { items: [] };
       try {
-        const relations = this.config.allowInherited
-          ? ['DIRECT', 'INHERITED']
-          : ['DIRECT'];
+        const relations = this.getRelations(this.config);
         groupUsers = await this.gitLabClient.getGroupMembers(
           group.full_path,
           relations,
@@ -719,9 +727,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       return;
     }
 
-    const relations = this.config.allowInherited
-      ? ['DIRECT', 'INHERITED']
-      : ['DIRECT'];
+    const relations = this.getRelations(this.config);
 
     // fetch group members from GitLab
     const groupMembers = await this.gitLabClient.getGroupMembers(
@@ -796,5 +802,16 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       },
       entity,
     ) as Entity;
+  }
+
+  private getRelations(config: any) {
+    if (Array.isArray(config.relations)) {
+      // filter out duplicates
+      const relationsSet = new Set(['DIRECT', ...config.relations]);
+      return Array.from(relationsSet);
+    }
+
+    // TODO: remove this fallback in the next major version by ensuring the method returns only `['DIRECT']` if no `relations` array is provided.
+    return ['DIRECT', ...(config.allowInherited ? ['INHERITED'] : [])];
   }
 }

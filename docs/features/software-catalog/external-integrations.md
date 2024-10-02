@@ -77,28 +77,30 @@ yarn new --select backend-module --option id=catalog
 
 The class will have this basic structure:
 
-```ts
-import { UrlReader } from '@backstage/backend-common';
+```ts title="plugins/catalog-backend-module-frobs/src/FrobsProvider.ts"
 import { Entity } from '@backstage/catalog-model';
 import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
-import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
+import {
+  SchedulerServiceTaskRunner,
+  UrlReaderService,
+} from '@backstage/backend-plugin-api';
 
 /**
  * Provides entities from fictional frobs service.
  */
 export class FrobsProvider implements EntityProvider {
   private readonly env: string;
-  private readonly reader: UrlReader;
+  private readonly reader: UrlReaderService;
   private connection?: EntityProviderConnection;
   private taskRunner: SchedulerServiceTaskRunner;
 
   /** [1] */
   constructor(
     env: string,
-    reader: UrlReader,
+    reader: UrlReaderService,
     taskRunner: SchedulerServiceTaskRunner,
   ) {
     this.env = env;
@@ -114,7 +116,7 @@ export class FrobsProvider implements EntityProvider {
   /** [3] */
   async connect(connection: EntityProviderConnection): Promise<void> {
     this.connection = connection;
-    this.taskRunner.run({
+    await this.taskRunner.run({
       id: this.getProviderName(),
       fn: async () => {
         await this.run();
@@ -131,7 +133,7 @@ export class FrobsProvider implements EntityProvider {
     const response = await this.reader.readUrl(
       `https://frobs-${this.env}.example.com/data`,
     );
-    const data = JSON.parse(await response.buffer()).toString();
+    const data = JSON.parse((await response.buffer()).toString());
 
     /** [5] */
     const entities: Entity[] = frobsToEntities(data);
@@ -200,7 +202,7 @@ bucket is accessible.
 There are two different types of mutation.
 
 The first is `'full'`, which means to figuratively throw away the contents of
-the bucket and replacing it with all of the new contents specified. Under the
+the bucket and replacing it with all the new contents specified. Under the
 hood, this is actually implemented through a highly efficient delta mechanism
 for performance reasons, since it is common that the difference from one run to
 the other is actually very small. This strategy is convenient for providers that
@@ -436,66 +438,66 @@ We create a basic entity provider as shown above. In the example below we might 
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
-} from '@backstage/catalog-model'
+} from '@backstage/catalog-model';
 import {
   EntityProvider,
   EntityProviderConnection,
-} from '@backstage/plugin-catalog-backend'
-import { WebClient } from '@slack/web-api'
-import {kebabCase} from 'lodash'
+} from '@backstage/plugin-catalog-backend';
+import { WebClient } from '@slack/web-api';
+import { kebabCase } from 'lodash';
 
 interface Staff {
-  displayName: string
-  slackUserId: string
-  jobTitle: string
-  photoUrl: string
-  address: string
-  email:string
+  displayName: string;
+  slackUserId: string;
+  jobTitle: string;
+  photoUrl: string;
+  address: string;
+  email: string;
 }
 
 export class UserEntityProvider implements EntityProvider {
-  private readonly getStaffUrl: string
-  protected readonly slackTeam: string
-  protected readonly slackToken: string
-  protected connection?: EntityProviderConnection
+  private readonly getStaffUrl: string;
+  protected readonly slackTeam: string;
+  protected readonly slackToken: string;
+  protected connection?: EntityProviderConnection;
 
   static fromConfig(config: Config, options: { logger: Logger }) {
-    const getStaffUrl = config.getString('staff.url')
-    const slackToken = config.getString('slack.token')
-    const slackTeam = config.getString('slack.team')
+    const getStaffUrl = config.getString('staff.url');
+    const slackToken = config.getString('slack.token');
+    const slackTeam = config.getString('slack.team');
     return new UserEntityProvider({
       ...options,
       getStaffUrl,
       slackToken,
       slackTeam,
-    })
+    });
   }
 
   private constructor(options: {
-    getStaffUrl: string
-    slackToken: string
-    slackTeam: string
+    getStaffUrl: string;
+    slackToken: string;
+    slackTeam: string;
   }) {
-    this.getStaffUrl = options.getStaffUrl
-    this.slackToken = options.slackToken
-    this.slackTeam = options.slackTeam
+    this.getStaffUrl = options.getStaffUrl;
+    this.slackToken = options.slackToken;
+    this.slackTeam = options.slackTeam;
   }
 
-  async getAllStaff(): Promise<Staff[]>{
-    await return axios.get(this.getStaffUrl)
+  async getAllStaff(): Promise<Staff[]> {
+    return await axios.get(this.getStaffUrl);
   }
 
   public async connect(connection: EntityProviderConnection): Promise<void> {
-    this.connection = connection
+    this.connection = connection;
   }
 
   async run(): Promise<void> {
     if (!this.connection) {
-      throw new Error('User Connection Not initialized')
+      throw new Error('User Connection Not initialized');
     }
 
-    const userResources: UserEntity[] = []
-    const staff = await this.getAllStaff()
+    const userResources: UserEntity[] = [];
+    const staff = await this.getAllStaff();
 
     for (const user of staff) {
       // we can add any links here in this case it would be adding a slack link to the users so you can directly slack them.
@@ -508,7 +510,7 @@ export class UserEntityProvider implements EntityProvider {
                 icon: 'message',
               },
             ]
-          : undefined
+          : undefined;
       const userEntity: UserEntity = {
         kind: 'User',
         apiVersion: 'backstage.io/v1alpha1',
@@ -531,20 +533,20 @@ export class UserEntityProvider implements EntityProvider {
           },
           memberOf: [],
         },
-      }
+      };
 
-      userResources.push(userEntity)
+      userResources.push(userEntity);
     }
 
     await this.connection.applyMutation({
       type: 'full',
-      entities: userResources.map((entity) => ({
+      entities: userResources.map(entity => ({
         entity,
         locationKey: 'hr-user-https://www.hrurl.com/',
       })),
-    })
+    });
+  }
 }
-
 ```
 
 ## Custom Processors
@@ -595,7 +597,7 @@ startup. They are at the heart of all catalog logic, and have the ability to
 read the contents of locations, modify in-flight entities that were read out of
 a location, perform validation, and more. The catalog comes with a set of
 builtin processors, that have the ability to read from a list of well known
-location types, to perform the basic processing needs, etc, but more can be
+location types, to perform the basic processing needs, etc., but more can be
 added by the organization that adopts Backstage.
 
 We will now show the process of creating a new processor and location type,
@@ -654,18 +656,18 @@ yarn new --select backend-module --option id=catalog
 The class will have this basic structure:
 
 ```ts
-import { UrlReader } from '@backstage/backend-common';
 import {
   processingResult,
   CatalogProcessor,
   CatalogProcessorEmit,
 } from '@backstage/plugin-catalog-node';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 
 // A processor that reads from the fictional System-X
 export class SystemXReaderProcessor implements CatalogProcessor {
-  constructor(private readonly reader: UrlReader) {}
+  constructor(private readonly reader: UrlReaderService) {}
 
   getProcessorName(): string {
     return 'SystemXReaderProcessor';
@@ -784,8 +786,8 @@ locations in GitHub. This example aims to demonstrate how to add the same
 behavior for `system-x` that we implemented earlier.
 
 ```ts
-import { UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 import {
   processingResult,
   CatalogProcessor,
@@ -808,7 +810,7 @@ type CacheItem = {
 };
 
 export class SystemXReaderProcessor implements CatalogProcessor {
-  constructor(private readonly reader: UrlReader) {}
+  constructor(private readonly reader: UrlReaderService) {}
 
   getProcessorName() {
     // The processor name must be unique.
@@ -851,7 +853,7 @@ export class SystemXReaderProcessor implements CatalogProcessor {
       }
 
       // For this example the JSON payload is a single entity.
-      const entity: Entity = JSON.parse(response.buffer.toString());
+      const entity: Entity = JSON.parse((await response.buffer()).toString());
       emit(processingResult.entity(location, entity));
 
       // Update the cache with the new ETag and entity used for the next run.
@@ -922,13 +924,13 @@ const makeEntityFromCustomFormatJson = (
         [ANNOTATION_LOCATION]: `${location.type}:${location.target}`,
         [ANNOTATION_ORIGIN_LOCATION]: `${location.type}:${location.target}`,
       },
-    }
+    },
     spec: {
       type: component.type,
       owner: component.author,
-      lifecycle: 'experimental'
-    }
-  }
+      lifecycle: 'experimental',
+    },
+  };
 };
 
 export const customEntityDataParser: CatalogProcessorParser = async function* ({
@@ -960,9 +962,8 @@ export const customEntityDataParser: CatalogProcessorParser = async function* ({
         // Is this a catalog-info.yaml file?
         if (json.apiVersion) {
           yield processingResult.entity(location, json as Entity);
-
-        // let's treat this like it's our custom format instead.
         } else {
+          // let's treat this like it's our custom format instead.
           yield processingResult.entity(
             location,
             makeEntityFromCustomFormatJson(json, location),
@@ -978,7 +979,7 @@ export const customEntityDataParser: CatalogProcessorParser = async function* ({
       }
     }
   }
-}
+};
 ```
 
 This is a lot of code right now, as this is a pretty niche use-case, so we don't currently provide many helpers for you to be able to provide custom implementations easier or to compose together different parsers.
@@ -1031,3 +1032,292 @@ backend.add(catalogModuleCustomDataParser);
 
 backend.start();
 ```
+
+## Incremental Entity Provider
+
+For large data sources that may not fit into memory but support pagination, the Incremental Entity Provider offers an efficient way to ingest data incrementally, handling deletions and updates seamlessly while minimizing memory usage.
+
+You can find more details about [why it was created](https://github.com/backstage/backstage/tree/master/plugins/catalog-backend-module-incremental-ingestion#why-did-we-create-it) and its [requirements](https://github.com/backstage/backstage/tree/master/plugins/catalog-backend-module-incremental-ingestion#requirements).
+
+### Installation
+
+1. Install `@backstage/plugin-catalog-backend-module-incremental-ingestion` with `yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-incremental-ingestion` from the Backstage root directory.
+
+2. Add the following code to the `packages/backend/src/index.ts` file:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+
+/* highlight-add-start */
+backend.add(
+  import(
+    '@backstage/plugin-catalog-backend-module-incremental-ingestion/alpha'
+  ),
+);
+/* highlight-add-end */
+
+backend.start();
+```
+
+### Writing an Incremental Entity Provider
+
+To create an Incremental Entity Provider, you need to know how to retrieve a single page of data from an API with pagination. The `IncrementalEntityProvider` facilitates this by requiring:
+
+- **getProviderName:** A unique name to avoid conflicts with other providers.
+- **next:** Fetches a specific page of entities, moving the cursor forward.
+- **around:** Handles setup and tear-down, wrapping the process that iterates through multiple pages.
+
+For more information on compatibility, refer to the [requirements](https://github.com/backstage/backstage/tree/master/plugins/catalog-backend-module-incremental-ingestion#requirements).
+
+In this tutorial, we'll implement an Incremental Entity Provider that interacts with an imaginary API to fetch a list of imaginary services.
+
+```ts
+interface MyApiClient {
+  getServices(page: number): MyPaginatedResults<Service>;
+}
+
+interface MyPaginatedResults<T> {
+  items: T[];
+  totalPages: number;
+}
+
+interface Service {
+  name: string;
+}
+```
+
+These are the only 3 methods that you need to implement. `getProviderName()` is pretty self-explanatory and it's identical to the `getProviderName()` method on a regular Entity Provider.
+
+```ts
+import { IncrementalEntityProvider } from '@backstage/plugin-catalog-backend-module-incremental-ingestion';
+
+// This will include your pagination information, let's say our API accepts a `page` parameter.
+// In this case, the cursor will include `page`
+interface Cursor {
+  page: number;
+}
+
+// This interface describes the type of data that will be passed to your burst function.
+interface Context {
+  apiClient: MyApiClient;
+}
+
+export class MyIncrementalEntityProvider
+  implements IncrementalEntityProvider<Cursor, Context>
+{
+  getProviderName() {
+    return `MyIncrementalEntityProvider`;
+  }
+}
+```
+
+`around` method is used for setup and tear-down. For example, if you need to create a client that will connect to the API, you would do that here.
+
+```ts
+export class MyIncrementalEntityProvider
+  implements IncrementalEntityProvider<Cursor, Context>
+{
+  getProviderName() {
+    return `MyIncrementalEntityProvider`;
+  }
+
+  async around(burst: (context: Context) => Promise<void>): Promise<void> {
+    const apiClient = new MyApiClient();
+
+    await burst({ apiClient });
+
+    // If you need to do any teardown, you can do it here.
+  }
+}
+```
+
+If you need to pass a token to your API, then you can create a constructor that will receive a token and use the token to setup the client.
+
+```ts
+export class MyIncrementalEntityProvider
+  implements IncrementalEntityProvider<Cursor, Context>
+{
+  private readonly token: string;
+
+  constructor(token: string) {
+    this.token = token;
+  }
+
+  getProviderName() {
+    return `MyIncrementalEntityProvider`;
+  }
+
+  async around(burst: (context: Context) => Promise<void>): Promise<void> {
+    const apiClient = new MyApiClient(this.token);
+
+    await burst({ apiClient });
+  }
+}
+```
+
+The last step is to implement the actual `next` method that will accept the cursor, call the API, process the result and return the result.
+
+```ts
+export class MyIncrementalEntityProvider
+  implements IncrementalEntityProvider<Cursor, Context>
+{
+  private readonly token: string;
+
+  constructor(token: string) {
+    this.token = token;
+  }
+
+  getProviderName() {
+    return `MyIncrementalEntityProvider`;
+  }
+
+  async around(burst: (context: Context) => Promise<void>): Promise<void> {
+    const apiClient = new MyApiClient(this.token);
+
+    await burst({ apiClient });
+  }
+
+  async next(
+    context: Context,
+    cursor: Cursor = { page: 1 },
+  ): Promise<EntityIteratorResult<Cursor>> {
+    const { apiClient } = context;
+
+    // call your API with the current cursor
+    const data = await apiClient.getServices(cursor);
+
+    // calculate the next page
+    const nextPage = page + 1;
+
+    // figure out if there are any more pages to fetch
+    const done = nextPage > data.totalPages;
+
+    // convert returned items into entities
+    const entities = data.items.map(item => ({
+      entity: {
+        apiVersion: 'backstage.io/v1beta1',
+        kind: 'Component',
+        metadata: {
+          name: item.name,
+          annotations: {
+            // You need to define these, otherwise they'll fail validation
+            [ANNOTATION_LOCATION]: this.getProviderName(),
+            [ANNOTATION_ORIGIN_LOCATION]: this.getProviderName(),
+          },
+        },
+        spec: {
+          type: 'service',
+          lifecycle: 'production', // Ideally your source has this information
+          owner: 'unknown', // Ideally your source has this information
+        },
+      },
+    }));
+
+    // create the next cursor
+    const nextCursor = {
+      page: nextPage,
+    };
+
+    return {
+      done,
+      entities,
+      cursor: nextCursor,
+    };
+  }
+}
+```
+
+Now that you have your new Incremental Entity Provider, we can connect it to the catalog.
+
+### Installing the Incremental Entity Provider
+
+We'll assume you followed the [Installation](#installation) instructions. Now create a module inside `packages/backend/src/extensions/catalogCustomIncrementalIngestion.ts`.
+
+```ts title="packages/backend/src/extensions/catalogCustomIncrementalIngestion.ts"
+import {
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
+import { incrementalIngestionProvidersExtensionPoint } from '@backstage/plugin-catalog-backend-module-incremental-ingestion/alpha';
+
+export const catalogModuleCustomIncrementalIngestionProvider =
+  createBackendModule({
+    pluginId: 'catalog',
+    moduleId: 'custom-incremental-ingestion-provider',
+    register(env) {
+      env.registerInit({
+        deps: {
+          incrementalBuilder: incrementalIngestionProvidersExtensionPoint,
+          config: coreServices.rootConfig,
+        },
+        async init({ incrementalBuilder, config }) {
+          // Assuming the token for the API comes from config
+          const token = config.getString('myApiClient.token');
+          const myEntityProvider = new MyIncrementalEntityProvider(token);
+
+          const options = {
+            // How long should it attempt to read pages from the API in a
+            // single burst? Keep this short. The Incremental Entity Provider
+            // will attempt to read as many pages as it can in this time
+            burstLength: { seconds: 3 },
+
+            // How long should it wait between bursts?
+            burstInterval: { seconds: 3 },
+
+            // How long should it rest before re-ingesting again?
+            restLength: { day: 1 },
+
+            // Optional back-off configuration - how long should it wait to retry
+            // in the event of an error?
+            backoff: [
+              { seconds: 5 },
+              { seconds: 30 },
+              { minutes: 10 },
+              { hours: 3 },
+            ],
+
+            // Optional. Use this to prevent removal of entities above a given
+            // percentage. This can be helpful if a data source is flaky and
+            // sometimes returns a successful status, but fewer than expected
+            // assets to add or maintain in the catalog.
+            rejectRemovalsAbovePercentage: 5,
+
+            // Optional. Similar to rejectRemovalsAbovePercentage, except it
+            // applies to complete, 100% failure of a data source. If true,
+            // a data source that returns a successful status but does not
+            // provide any assets to turn into entities will have its empty
+            // data set rejected.
+            rejectEmptySourceCollections: true,
+          };
+
+          incrementalBuilder.addProvider({
+            provider: myEntityProvider,
+            options,
+          });
+        },
+      });
+    },
+  });
+```
+
+Add the module to `packages/backend/src/index.ts`
+
+```ts title="packages/backend/src/index.ts"
+/* highlight-add-next-line */
+import { catalogModuleCustomIncrementalIngestionProvider } from './extensions/catalogCustomIncrementalIngestion';
+
+const backend = createBackend();
+
+backend.add(
+  import(
+    '@backstage/plugin-catalog-backend-module-incremental-ingestion/alpha'
+  ),
+);
+
+/* highlight-add-next-line */
+backend.add(catalogModuleCustomIncrementalIngestionProvider);
+
+backend.start();
+```
+
+For a deep dive into the technical details of the Incremental Entity Provider, see [the README](https://github.com/backstage/backstage/tree/master/plugins/catalog-backend-module-incremental-ingestion).

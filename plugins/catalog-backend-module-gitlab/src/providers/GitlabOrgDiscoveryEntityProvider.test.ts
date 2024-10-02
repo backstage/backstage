@@ -15,10 +15,10 @@
  */
 
 import {
-  PluginTaskScheduler,
-  TaskInvocationDefinition,
-  TaskRunner,
-} from '@backstage/backend-tasks';
+  SchedulerService,
+  SchedulerServiceTaskRunner,
+  SchedulerServiceTaskInvocationDefinition,
+} from '@backstage/backend-plugin-api';
 import {
   mockServices,
   registerMswTestHooks,
@@ -36,14 +36,14 @@ const server = setupServer(...handlers);
 registerMswTestHooks(server);
 afterEach(() => jest.clearAllMocks());
 
-class PersistingTaskRunner implements TaskRunner {
-  private tasks: TaskInvocationDefinition[] = [];
+class PersistingTaskRunner implements SchedulerServiceTaskRunner {
+  private tasks: SchedulerServiceTaskInvocationDefinition[] = [];
 
   getTasks() {
     return this.tasks;
   }
 
-  run(task: TaskInvocationDefinition): Promise<void> {
+  run(task: SchedulerServiceTaskInvocationDefinition): Promise<void> {
     this.tasks.push(task);
     return Promise.resolve(undefined);
   }
@@ -113,7 +113,7 @@ describe('GitlabOrgDiscoveryEntityProvider - configuration', () => {
   it('should fail with scheduler but no schedule config', () => {
     const scheduler = {
       createScheduledTaskRunner: (_: any) => jest.fn(),
-    } as unknown as PluginTaskScheduler;
+    } as unknown as SchedulerService;
     const config = new ConfigReader(mock.config_org_integration_saas);
 
     expect(() =>
@@ -130,7 +130,7 @@ describe('GitlabOrgDiscoveryEntityProvider - configuration', () => {
     const schedule = new PersistingTaskRunner();
     const scheduler = {
       createScheduledTaskRunner: (_: any) => schedule,
-    } as unknown as PluginTaskScheduler;
+    } as unknown as SchedulerService;
     const config = new ConfigReader(mock.config_org_integration_saas_sched);
     const providers = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
       logger,
@@ -397,6 +397,40 @@ describe('GitlabOrgDiscoveryEntityProvider - refresh', () => {
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
       type: 'full',
       entities: mock.expected_subgroup_org_scan_entities_saas,
+    });
+  });
+
+  // This needs to return all users, including those without a seat but filter out the bot users
+  it('SaaS: should get users without a seat if includeUsersWithoutSeat true', async () => {
+    const config = new ConfigReader(
+      mock.config_org_group_includeUsersWithoutSeat_true_saas,
+    );
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+    expect(provider.getProviderName()).toEqual(
+      'GitlabOrgDiscoveryEntityProvider:test-id',
+    );
+
+    await provider.connect(entityProviderConnection);
+
+    const taskDef = schedule.getTasks()[0];
+    expect(taskDef.id).toEqual(
+      'GitlabOrgDiscoveryEntityProvider:test-id:refresh',
+    );
+    await (taskDef.fn as () => Promise<void>)();
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities:
+        mock.expected_full_org_scan_entities_includeUsersWithoutSeat_saas, //
     });
   });
 

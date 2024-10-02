@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { UrlReader } from '@backstage/backend-common';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { isError } from '@backstage/errors';
 import {
   CatalogProcessor,
@@ -34,7 +34,7 @@ import limiterFactory from 'p-limit';
  * @deprecated Use the `AwsS3EntityProvider` instead (see https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-aws/CHANGELOG.md#014).
  */
 export class AwsS3DiscoveryProcessor implements CatalogProcessor {
-  constructor(private readonly reader: UrlReader) {}
+  constructor(private readonly reader: UrlReaderService) {}
 
   getProcessorName(): string {
     return 'AwsS3DiscoveryProcessor';

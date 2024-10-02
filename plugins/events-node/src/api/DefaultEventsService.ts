@@ -14,9 +14,320 @@
  * limitations under the License.
  */
 
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  DiscoveryService,
+  LifecycleService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import { EventParams } from './EventParams';
 import { EventsService, EventsServiceSubscribeOptions } from './EventsService';
+import { DefaultApiClient } from '../generated';
+import { ResponseError } from '@backstage/errors';
+
+const POLL_BACKOFF_START_MS = 1_000;
+const POLL_BACKOFF_MAX_MS = 60_000;
+const POLL_BACKOFF_FACTOR = 2;
+
+/**
+ * Local event bus for subscribers within the same process.
+ *
+ * When publishing events we'll keep track of which subscribers we managed to
+ * reach locally, and forward those subscriber IDs to the events backend if it
+ * is in use. The events backend will then both avoid forwarding the same events
+ * to those subscribers again, but also avoid storing the event altogether if
+ * there are no other subscribers.
+ * @internal
+ */
+export class LocalEventBus {
+  readonly #logger: LoggerService;
+
+  readonly #subscribers = new Map<
+    string,
+    Omit<EventsServiceSubscribeOptions, 'topics'>[]
+  >();
+
+  constructor(logger: LoggerService) {
+    this.#logger = logger;
+  }
+
+  async publish(
+    params: EventParams,
+  ): Promise<{ notifiedSubscribers: string[] }> {
+    this.#logger.debug(
+      `Event received: topic=${params.topic}, metadata=${JSON.stringify(
+        params.metadata,
+      )}, payload=${JSON.stringify(params.eventPayload)}`,
+    );
+
+    if (!this.#subscribers.has(params.topic)) {
+      return { notifiedSubscribers: [] };
+    }
+
+    const onEventPromises: Promise<string>[] = [];
+    this.#subscribers.get(params.topic)?.forEach(subscription => {
+      onEventPromises.push(
+        (async () => {
+          try {
+            await subscription.onEvent(params);
+          } catch (error) {
+            this.#logger.warn(
+              `Subscriber "${subscription.id}" failed to process event for topic "${params.topic}"`,
+              error,
+            );
+          }
+          return subscription.id;
+        })(),
+      );
+    });
+
+    return { notifiedSubscribers: await Promise.all(onEventPromises) };
+  }
+
+  async subscribe(options: EventsServiceSubscribeOptions): Promise<void> {
+    options.topics.forEach(topic => {
+      if (!this.#subscribers.has(topic)) {
+        this.#subscribers.set(topic, []);
+      }
+
+      this.#subscribers.get(topic)!.push({
+        id: options.id,
+        onEvent: options.onEvent,
+      });
+    });
+  }
+}
+
+/**
+ * Plugin specific events bus that delegates to the local bus, as well as the
+ * events backend if it is available.
+ */
+class PluginEventsService implements EventsService {
+  constructor(
+    private readonly pluginId: string,
+    private readonly localBus: LocalEventBus,
+    private readonly logger: LoggerService,
+    private client?: DefaultApiClient,
+    private readonly auth?: AuthService,
+  ) {}
+
+  async publish(params: EventParams): Promise<void> {
+    const lock = this.#getShutdownLock();
+    try {
+      const { notifiedSubscribers } = await this.localBus.publish(params);
+
+      if (!this.client) {
+        return;
+      }
+      const token = await this.#getToken();
+      if (!token) {
+        return;
+      }
+      const res = await this.client.postEvent(
+        {
+          body: {
+            event: { payload: params.eventPayload, topic: params.topic },
+            notifiedSubscribers,
+          },
+        },
+        { token },
+      );
+
+      if (!res.ok) {
+        if (res.status === 404) {
+          this.logger.warn(
+            `Event publish request failed with status 404, events backend not found. Future events will not be persisted.`,
+          );
+          delete this.client;
+          return;
+        }
+        throw await ResponseError.fromResponse(res);
+      }
+    } finally {
+      lock.release();
+    }
+  }
+
+  async subscribe(options: EventsServiceSubscribeOptions): Promise<void> {
+    const subscriptionId = `${this.pluginId}.${options.id}`;
+
+    await this.localBus.subscribe({
+      id: subscriptionId,
+      topics: options.topics,
+      onEvent: options.onEvent,
+    });
+
+    if (!this.client) {
+      return;
+    }
+    const token = await this.#getToken();
+    if (!token) {
+      return;
+    }
+    const res = await this.client.putSubscription(
+      {
+        path: { subscriptionId },
+        body: { topics: options.topics },
+      },
+      { token },
+    );
+    if (!res.ok) {
+      if (res.status === 404) {
+        this.logger.warn(
+          `Event subscribe request failed with status 404, events backend not found. Will only receive events that were sent locally on this process.`,
+        );
+        delete this.client;
+        return;
+      }
+      throw await ResponseError.fromResponse(res);
+    }
+
+    this.#startPolling(subscriptionId, options.topics, options.onEvent);
+  }
+
+  #startPolling(
+    subscriptionId: string,
+    topics: string[],
+    onEvent: EventsServiceSubscribeOptions['onEvent'],
+  ) {
+    let backoffMs = POLL_BACKOFF_START_MS;
+    const poll = async () => {
+      if (!this.client) {
+        return;
+      }
+      const lock = this.#getShutdownLock();
+      try {
+        const token = await this.#getToken();
+        if (!token) {
+          return;
+        }
+        const res = await this.client.getSubscriptionEvents(
+          {
+            path: { subscriptionId },
+          },
+          { token },
+        );
+
+        if (!res.ok) {
+          if (res.status === 404) {
+            this.logger.info(
+              `Polling event subscription resulted in a 404, recreating subscription`,
+            );
+            const putRes = await this.client.putSubscription(
+              {
+                path: { subscriptionId },
+                body: { topics },
+              },
+              { token },
+            );
+            if (!putRes.ok) {
+              throw await ResponseError.fromResponse(res);
+            }
+          }
+          throw await ResponseError.fromResponse(res);
+        }
+        backoffMs = POLL_BACKOFF_START_MS;
+
+        // 202 means there were no immediately available events, but the
+        // response will block until either new events are available or the
+        // request times out. In both cases we should should try to read events
+        // immediately again
+        if (res.status === 202) {
+          lock.release();
+          await res.body?.getReader()?.closed;
+          process.nextTick(poll);
+        } else if (res.status === 200) {
+          const data = await res.json();
+          if (data) {
+            for (const event of data.events ?? []) {
+              try {
+                await onEvent({
+                  topic: event.topic,
+                  eventPayload: event.payload,
+                });
+              } catch (error) {
+                this.logger.warn(
+                  `Subscriber "${subscriptionId}" failed to process event for topic "${event.topic}"`,
+                  error,
+                );
+              }
+            }
+          }
+          process.nextTick(poll);
+        } else {
+          this.logger.warn(
+            `Unexpected response status ${res.status} from events backend for subscription "${subscriptionId}"`,
+          );
+        }
+      } catch (error) {
+        this.logger.warn(
+          `Poll failed for subscription "${subscriptionId}", retrying in ${backoffMs.toFixed(
+            0,
+          )}ms`,
+          error,
+        );
+        setTimeout(poll, backoffMs);
+        backoffMs = Math.min(
+          backoffMs * POLL_BACKOFF_FACTOR,
+          POLL_BACKOFF_MAX_MS,
+        );
+      } finally {
+        lock.release();
+      }
+    };
+    poll();
+  }
+
+  async #getToken() {
+    if (!this.auth) {
+      throw new Error('Auth service not available');
+    }
+
+    try {
+      const { token } = await this.auth.getPluginRequestToken({
+        onBehalfOf: await this.auth.getOwnServiceCredentials(),
+        targetPluginId: 'events',
+      });
+      return token;
+    } catch (error) {
+      // This is a bit hacky, but handles the case where new auth is used
+      // without legacy auth fallback, and the events backend is not installed
+      if (String(error).includes('Unable to generate legacy token')) {
+        this.logger.warn(
+          `The events backend is not available and neither is legacy auth. Future events will not be persisted.`,
+        );
+        delete this.client;
+        return undefined;
+      }
+      throw error;
+    }
+  }
+
+  async shutdown() {
+    this.#isShuttingDown = true;
+    await Promise.all(this.#shutdownLocks);
+  }
+
+  #isShuttingDown = false;
+  #shutdownLocks: Promise<void>[] = [];
+
+  // This locking mechanism helps ensure that we are either idle or waiting for
+  // a blocked events call before shutting down. It increases out changes of
+  // never dropping any events on shutdown.
+  #getShutdownLock(): { release(): void } {
+    if (this.#isShuttingDown) {
+      throw new Error('Service is shutting down');
+    }
+
+    let release: () => void;
+    this.#shutdownLocks.push(
+      new Promise<void>(resolve => {
+        release = resolve;
+      }),
+    );
+    return { release: release! };
+  }
+}
 
 /**
  * In-process event broker which will pass the event to all registered subscribers
@@ -28,15 +339,16 @@ import { EventsService, EventsServiceSubscribeOptions } from './EventsService';
  */
 // TODO(pjungermann): add opentelemetry? (see plugins/catalog-backend/src/util/opentelemetry.ts, etc.)
 export class DefaultEventsService implements EventsService {
-  private readonly subscribers = new Map<
-    string,
-    Omit<EventsServiceSubscribeOptions, 'topics'>[]
-  >();
-
-  private constructor(private readonly logger: LoggerService) {}
+  private constructor(
+    private readonly logger: LoggerService,
+    private readonly localBus: LocalEventBus,
+  ) {}
 
   static create(options: { logger: LoggerService }): DefaultEventsService {
-    return new DefaultEventsService(options.logger);
+    return new DefaultEventsService(
+      options.logger,
+      new LocalEventBus(options.logger),
+    );
   }
 
   /**
@@ -45,60 +357,40 @@ export class DefaultEventsService implements EventsService {
    *
    * @param pluginId - The plugin that the `EventService` should be created for.
    */
-  forPlugin(pluginId: string): EventsService {
-    return {
-      publish: (params: EventParams): Promise<void> => {
-        return this.publish(params);
-      },
-      subscribe: (options: EventsServiceSubscribeOptions): Promise<void> => {
-        return this.subscribe({
-          ...options,
-          id: `${pluginId}.${options.id}`,
-        });
-      },
-    };
+  forPlugin(
+    pluginId: string,
+    options?: {
+      discovery: DiscoveryService;
+      logger: LoggerService;
+      auth: AuthService;
+      lifecycle: LifecycleService;
+    },
+  ): EventsService {
+    const client =
+      options &&
+      new DefaultApiClient({
+        discoveryApi: options.discovery,
+        fetchApi: { fetch }, // use native node fetch
+      });
+    const logger = options?.logger ?? this.logger;
+    const service = new PluginEventsService(
+      pluginId,
+      this.localBus,
+      logger,
+      client,
+      options?.auth,
+    );
+    options?.lifecycle.addShutdownHook(async () => {
+      await service.shutdown();
+    });
+    return service;
   }
 
   async publish(params: EventParams): Promise<void> {
-    this.logger.debug(
-      `Event received: topic=${params.topic}, metadata=${JSON.stringify(
-        params.metadata,
-      )}, payload=${JSON.stringify(params.eventPayload)}`,
-    );
-
-    if (!this.subscribers.has(params.topic)) {
-      return;
-    }
-
-    const onEventPromises: Promise<void>[] = [];
-    this.subscribers.get(params.topic)?.forEach(subscription => {
-      onEventPromises.push(
-        (async () => {
-          try {
-            await subscription.onEvent(params);
-          } catch (error) {
-            this.logger.warn(
-              `Subscriber "${subscription.id}" failed to process event for topic "${params.topic}"`,
-              error,
-            );
-          }
-        })(),
-      );
-    });
-
-    await Promise.all(onEventPromises);
+    await this.localBus.publish(params);
   }
 
   async subscribe(options: EventsServiceSubscribeOptions): Promise<void> {
-    options.topics.forEach(topic => {
-      if (!this.subscribers.has(topic)) {
-        this.subscribers.set(topic, []);
-      }
-
-      this.subscribers.get(topic)!.push({
-        id: options.id,
-        onEvent: options.onEvent,
-      });
-    });
+    this.localBus.subscribe(options);
   }
 }

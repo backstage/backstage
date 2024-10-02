@@ -1,5 +1,88 @@
 # @backstage/plugin-catalog-unprocessed-entities
 
+## 0.2.9-next.1
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- Updated dependencies
+  - @backstage/core-components@0.15.1-next.1
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/errors@1.2.4
+
+## 0.2.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.15.1-next.0
+  - @backstage/core-plugin-api@1.10.0-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/errors@1.2.4
+
+## 0.2.8
+
+### Patch Changes
+
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- 4f08c85: Show additional info on DevTools unprocessed entities table
+
+  - Location path (so that it's easier to search the failed entity from the YAML URL)
+  - Time info of last discovery and next refresh time so that users can be aware of it and can sort the errors based on the time.
+
+- Updated dependencies
+  - @backstage/core-components@0.15.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-plugin-api@1.9.4
+  - @backstage/errors@1.2.4
+
+## 0.2.8-next.1
+
+### Patch Changes
+
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.14.11-next.1
+  - @backstage/core-plugin-api@1.9.4-next.0
+  - @backstage/catalog-model@1.6.0
+  - @backstage/errors@1.2.4
+
+## 0.2.8-next.0
+
+### Patch Changes
+
+- 4f08c85: Show additional info on DevTools unprocessed entities table
+
+  - Location path (so that it's easier to search the failed entity from the YAML URL)
+  - Time info of last discovery and next refresh time so that users can be aware of it and can sort the errors based on the time.
+
+- Updated dependencies
+  - @backstage/core-components@0.14.11-next.0
+  - @backstage/catalog-model@1.6.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+
+## 0.2.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.10
+  - @backstage/catalog-model@1.6.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+
+## 0.2.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.6.0-next.0
+  - @backstage/core-components@0.14.10-next.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+
 ## 0.2.7-next.0
 
 ### Patch Changes

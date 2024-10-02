@@ -22,7 +22,7 @@ import {
   SQSClient,
 } from '@aws-sdk/client-sqs';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { SchedulerService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { EventsService } from '@backstage/plugin-events-node';
 import { AwsSqsEventSourceConfig, readConfig } from './config';
@@ -46,7 +46,7 @@ export class AwsSqsConsumingEventPublisher {
     config: Config;
     events: EventsService;
     logger: LoggerService;
-    scheduler: PluginTaskScheduler;
+    scheduler: SchedulerService;
   }): AwsSqsConsumingEventPublisher[] {
     return readConfig(env.config).map(
       config =>
@@ -62,7 +62,7 @@ export class AwsSqsConsumingEventPublisher {
   private constructor(
     private readonly logger: LoggerService,
     private readonly events: EventsService,
-    private readonly scheduler: PluginTaskScheduler,
+    private readonly scheduler: SchedulerService,
     config: AwsSqsEventSourceConfig,
   ) {
     this.topic = config.topic;

@@ -75,6 +75,55 @@ describe('resolveRouteBindings', () => {
     expect(result.get(mySource)).toBe(myTarget);
   });
 
+  it('prioritizes callback routes over config', () => {
+    const mySource = createExternalRouteRef({ id: 'test', optional: true });
+    const myTarget = createRouteRef({ id: 'test' });
+
+    expect(
+      resolveRouteBindings(
+        ({ bind }) => {
+          bind({ mySource }, { mySource: false });
+        },
+        new MockConfigApi({
+          app: { routes: { bindings: { 'test.mySource': 'myTarget' } } },
+        }),
+        [
+          createPlugin({
+            id: 'test',
+            routes: {
+              myTarget,
+            },
+            externalRoutes: {
+              mySource,
+            },
+          }),
+        ],
+      ).get(mySource),
+    ).toBe(undefined);
+
+    expect(
+      resolveRouteBindings(
+        ({ bind }) => {
+          bind({ mySource }, { mySource: myTarget });
+        },
+        new MockConfigApi({
+          app: { routes: { bindings: { 'test.mySource': false } } },
+        }),
+        [
+          createPlugin({
+            id: 'test',
+            routes: {
+              myTarget,
+            },
+            externalRoutes: {
+              mySource,
+            },
+          }),
+        ],
+      ).get(mySource),
+    ).toBe(myTarget);
+  });
+
   it('throws on invalid config', () => {
     expect(() =>
       resolveRouteBindings(

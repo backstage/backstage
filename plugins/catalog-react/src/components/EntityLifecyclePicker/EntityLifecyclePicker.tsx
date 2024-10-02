@@ -28,9 +28,7 @@ const useStyles = makeStyles(
   {
     input: {},
   },
-  {
-    name: 'CatalogReactEntityLifecyclePicker',
-  },
+  { name: 'CatalogReactEntityLifecyclePicker' },
 );
 
 /** @public */

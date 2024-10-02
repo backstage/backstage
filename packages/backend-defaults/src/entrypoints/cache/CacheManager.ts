@@ -15,13 +15,15 @@
  */
 
 import {
+  CacheService,
   CacheServiceOptions,
   LoggerService,
+  RootConfigService,
 } from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
 import Keyv from 'keyv';
 import { DefaultCacheClient } from './CacheClient';
-import { CacheManagerOptions, PluginCacheManager } from './types';
+import { CacheManagerOptions, ttlToMilliseconds } from './types';
+import { durationToMilliseconds } from '@backstage/types';
 
 type StoreFactory = (pluginId: string, defaultTtl: number | undefined) => Keyv;
 
@@ -57,13 +59,13 @@ export class CacheManager {
    * @param config - The loaded application configuration.
    */
   static fromConfig(
-    config: Config,
+    config: RootConfigService,
     options: CacheManagerOptions = {},
   ): CacheManager {
     // If no `backend.cache` config is provided, instantiate the CacheManager
     // with an in-memory cache client.
     const store = config.getOptionalString('backend.cache.store') || 'memory';
-    const defaultTtl = config.getOptionalNumber('backend.cache.defaultTtl');
+    const defaultTtlConfig = config.getOptional('backend.cache.defaultTtl');
     const connectionString =
       config.getOptionalString('backend.cache.connection') || '';
     const useRedisSets =
@@ -71,6 +73,23 @@ export class CacheManager {
     const logger = options.logger?.child({
       type: 'cacheManager',
     });
+
+    let defaultTtl: number | undefined;
+    if (defaultTtlConfig !== undefined && defaultTtlConfig !== null) {
+      if (typeof defaultTtlConfig === 'number') {
+        defaultTtl = defaultTtlConfig;
+      } else if (
+        typeof defaultTtlConfig === 'object' &&
+        !Array.isArray(defaultTtlConfig)
+      ) {
+        defaultTtl = durationToMilliseconds(defaultTtlConfig);
+      } else {
+        throw new Error(
+          `Invalid configuration backend.cache.defaultTtl: ${defaultTtlConfig}, expected milliseconds number or HumanDuration object`,
+        );
+      }
+    }
+
     return new CacheManager(
       store,
       connectionString,
@@ -107,36 +126,16 @@ export class CacheManager {
    * @param pluginId - The plugin that the cache manager should be created for.
    *        Plugin names should be unique.
    */
-  forPlugin(pluginId: string): PluginCacheManager {
-    return {
-      getClient: (defaultOptions = {}) => {
-        const clientFactory = (options: CacheServiceOptions) => {
-          const concreteClient = this.getClientWithTtl(
-            pluginId,
-            options.defaultTtl ?? this.defaultTtl,
-          );
-
-          // Always provide an error handler to avoid stopping the process.
-          concreteClient.on('error', (err: Error) => {
-            // In all cases, just log the error.
-            this.logger?.error('Failed to create cache client', err);
-
-            // Invoke any custom error handler if provided.
-            if (typeof this.errorHandler === 'function') {
-              this.errorHandler(err);
-            }
-          });
-
-          return concreteClient;
-        };
-
-        return new DefaultCacheClient(
-          clientFactory(defaultOptions),
-          clientFactory,
-          defaultOptions,
-        );
-      },
+  forPlugin(pluginId: string): CacheService {
+    const clientFactory = (options: CacheServiceOptions) => {
+      const ttl = options.defaultTtl ?? this.defaultTtl;
+      return this.getClientWithTtl(
+        pluginId,
+        ttl !== undefined ? ttlToMilliseconds(ttl) : undefined,
+      );
     };
+
+    return new DefaultCacheClient(clientFactory({}), clientFactory, {});
   }
 
   private getClientWithTtl(pluginId: string, ttl: number | undefined): Keyv {
@@ -148,12 +147,20 @@ export class CacheManager {
     let store: typeof KeyvRedis | undefined;
     return (pluginId, defaultTtl) => {
       if (!store) {
-        store = new KeyvRedis(this.connection);
+        store = new KeyvRedis(this.connection, {
+          useRedisSets: this.useRedisSets,
+        });
+        // Always provide an error handler to avoid stopping the process
+        store.on('error', (err: Error) => {
+          this.logger?.error('Failed to create redis cache client', err);
+          this.errorHandler?.(err);
+        });
       }
       return new Keyv({
         namespace: pluginId,
         ttl: defaultTtl,
         store,
+        emitErrors: false,
         useRedisSets: this.useRedisSets,
       });
     };
@@ -165,10 +172,16 @@ export class CacheManager {
     return (pluginId, defaultTtl) => {
       if (!store) {
         store = new KeyvMemcache(this.connection);
+        // Always provide an error handler to avoid stopping the process
+        store.on('error', (err: Error) => {
+          this.logger?.error('Failed to create memcache cache client', err);
+          this.errorHandler?.(err);
+        });
       }
       return new Keyv({
         namespace: pluginId,
         ttl: defaultTtl,
+        emitErrors: false,
         store,
       });
     };
@@ -180,6 +193,7 @@ export class CacheManager {
       new Keyv({
         namespace: pluginId,
         ttl: defaultTtl,
+        emitErrors: false,
         store,
       });
   }

@@ -24,7 +24,7 @@ const backend = createBackend();
 backend.add(import('@backstage/plugin-catalog-backend/alpha'));
 
 // Features can also be installed using an explicit reference
-backend.add(scaffolderPlugin());
+backend.add(scaffolderPlugin);
 
 // Start up the backend
 backend.start();

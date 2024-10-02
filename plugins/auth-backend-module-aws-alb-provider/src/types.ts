@@ -39,3 +39,9 @@ export type AwsAlbClaims = {
   exp: number;
   iss: string;
 };
+/**
+ * @internal
+ */
+export type AwsAlbProtectedHeader = {
+  signer?: string;
+};

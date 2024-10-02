@@ -68,7 +68,7 @@ that's specific to your plugin. In the example above, the logger might tag
 messages with your plugin ID, and the HTTP router might prefix API routes with
 your plugin ID, depending on the implementation used.
 
-See [the article on naming patterns](../architecture/07-naming-patterns.md) for
+See [the article on naming patterns](../architecture/08-naming-patterns.md) for
 details on how to best choose names/IDs for plugins and related backend system
 items.
 
@@ -124,7 +124,7 @@ export const catalogModuleExampleCustomProcessor = createBackendModule({
 export { catalogModuleExampleCustomProcessor as default } from './module';
 ```
 
-See [the article on naming patterns](../architecture/07-naming-patterns.md) for
+See [the article on naming patterns](../architecture/08-naming-patterns.md) for
 details on how to best choose names/IDs for modules and related backend system
 items.
 
@@ -159,8 +159,7 @@ The same applies for modules that perform their own migrations and interact with
 the database. They will run on the same logical database instance as the target
 plugin, so care must be taken to choose table names that do not risk colliding
 with those of the plugin. A recommended naming pattern is `<package
-name>__<table name>`, for example the `@backstage/backend-tasks` package creates
-tables named `backstage_backend_tasks__<table>`. If you use the default [`Knex` migration facilities](https://knexjs.org/guide/migrations.html), you will also
+name>__<table name>`, for example the scheduler core service creates tables named `backstage_backend_tasks__<table>`, because it used to be the case that the service lived in a package named `@backstage/backend-tasks`. Things have since moved around a bit, but the effects of the rule are still visible. If you use the default [`Knex` migration facilities](https://knexjs.org/guide/migrations.html), you will also
 want to make sure that it uses similarly prefixed migration state tables for its
 internal bookkeeping needs, so they do not collide with the main ones used by
 the plugin itself. You can do this as follows:

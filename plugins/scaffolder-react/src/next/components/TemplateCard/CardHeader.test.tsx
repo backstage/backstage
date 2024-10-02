@@ -119,7 +119,7 @@ describe('CardHeader', () => {
       </TestApiProvider>,
     );
 
-    const favorite = getByRole('button', { name: 'favorite' });
+    const favorite = getByRole('button', { name: 'Add to favorites' });
 
     await fireEvent.click(favorite);
 

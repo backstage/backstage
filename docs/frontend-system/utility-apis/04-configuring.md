@@ -12,7 +12,7 @@ Utility APIs are extensions and can therefore optionally be amended with configu
 
 ## Configuring
 
-To configure your Utility API extension, first you'll need to know its ID. That ID is formed from the API ref ID; check [the naming patterns docs](../architecture/08-naming-patterns.md) for details.
+To configure your Utility API extension, first you'll need to know its ID. That ID is formed from the API ref ID; check [the naming patterns docs](../architecture/50-naming-patterns.md) for details.
 
 Our example work API from [the creating section](./02-creating.md) would have the ID `api:plugin.example.work`. You configure it and all other extensions under the `app.extensions` section of your app-config.
 
@@ -37,25 +37,26 @@ Well written input-enabled extension often have extension creator functions that
 
 ## Replacing a Utility API implementation
 
-Like with other extension types, you replace Utility APIs with your own custom implementation using [extension overrides](../architecture/05-extension-overrides.md).
+Like with other extension types, you replace Utility APIs with your own custom implementation using [extension overrides](../architecture/25-extension-overrides.md).
 
 ```tsx title="in your app"
 /* highlight-add-start */
-import { createExtensionOverrides } from '@backstage/frontend-plugin-api';
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
 
 class CustomWorkImpl implements WorkApi {
   /* ... */
 }
 
-const myOverrides = createExtensionOverrides({
+const workModule = createFrontendModule({
+  pluginId: 'work',
   extensions: [
-    createApiExtension({
-      api: workApiRef,
-      factory: () =>
-        createApiFactory({
+    ApiBlueprint.make({
+      params: {
+        factory: createApiFactory({
           api: workApiRef,
           factory: () => new CustomWorkImpl(),
         }),
+      },
     }),
   ],
 });
@@ -66,7 +67,7 @@ export default createApp({
   features: [
     // ... other features
     /* highlight-add-next-line */
-    myOverrides,
+    workModule,
   ],
 });
 ```

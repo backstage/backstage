@@ -59,6 +59,45 @@ app:
     ]);
   });
 
+  it('should load and parse config from a remote URL', async () => {
+    worker.use(
+      rest.get('http://localhost/config.json', (_req, res, ctx) =>
+        res(
+          ctx.body(
+            JSON.stringify({
+              app: {
+                title: 'Example App',
+                substituted: 'x',
+                escaped: '$${VALUE}',
+              },
+            }),
+          ),
+        ),
+      ),
+    );
+
+    const source = RemoteConfigSource.create({
+      url: 'http://localhost/config.json',
+      substitutionFunc: async () => 'x',
+      parser: async ({ contents }) => ({ result: JSON.parse(contents) }),
+    });
+
+    await expect(readN(source, 1)).resolves.toEqual([
+      [
+        {
+          context: 'http://localhost/config.json',
+          data: {
+            app: {
+              title: 'Example App',
+              substituted: 'x',
+              escaped: '${VALUE}',
+            },
+          },
+        },
+      ],
+    ]);
+  });
+
   it('should reload config from a remote URL', async () => {
     let fetched = false;
 

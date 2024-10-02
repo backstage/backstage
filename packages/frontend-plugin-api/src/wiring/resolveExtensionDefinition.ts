@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-import { AppNode } from '../apis';
+import { ApiHolder, AppNode } from '../apis';
 import {
-  AnyExtensionDataMap,
-  AnyExtensionInputMap,
-  ExtensionDataValues,
   ExtensionDefinition,
+  ExtensionDefinitionParameters,
   ResolvedExtensionInputs,
-  toInternalExtensionDefinition,
 } from './createExtension';
 import { PortableSchema } from '../schema';
 import { ExtensionInput } from './createExtensionInput';
@@ -29,6 +26,7 @@ import {
   AnyExtensionDataRef,
   ExtensionDataValue,
 } from './createExtensionDataRef';
+import { OpaqueExtensionDefinition } from '@internal/frontend';
 
 /** @public */
 export interface Extension<TConfig, TConfigInput = TConfig> {
@@ -47,13 +45,28 @@ export type InternalExtension<TConfig, TConfigInput> = Extension<
   (
     | {
         readonly version: 'v1';
-        readonly inputs: AnyExtensionInputMap;
-        readonly output: AnyExtensionDataMap;
-        factory(options: {
+        readonly inputs: {
+          [inputName in string]: {
+            $$type: '@backstage/ExtensionInput';
+            extensionData: {
+              [name in string]: AnyExtensionDataRef;
+            };
+            config: { optional: boolean; singleton: boolean };
+          };
+        };
+        readonly output: {
+          [name in string]: AnyExtensionDataRef;
+        };
+        factory(context: {
+          apis: ApiHolder;
           node: AppNode;
           config: TConfig;
-          inputs: ResolvedExtensionInputs<AnyExtensionInputMap>;
-        }): ExtensionDataValues<any>;
+          inputs: {
+            [inputName in string]: unknown;
+          };
+        }): {
+          [inputName in string]: unknown;
+        };
       }
     | {
         readonly version: 'v2';
@@ -65,6 +78,7 @@ export type InternalExtension<TConfig, TConfigInput> = Extension<
         };
         readonly output: Array<AnyExtensionDataRef>;
         factory(options: {
+          apis: ApiHolder;
           node: AppNode;
           config: TConfig;
           inputs: ResolvedExtensionInputs<{
@@ -94,13 +108,41 @@ export function toInternalExtension<TConfig, TConfigInput>(
   return internal;
 }
 
+/** @ignore */
+export type ResolveExtensionId<
+  TExtension extends ExtensionDefinition,
+  TNamespace extends string,
+> = TExtension extends ExtensionDefinition<{
+  kind: infer IKind extends string | undefined;
+  name: infer IName extends string | undefined;
+}>
+  ? [string] extends [IKind | IName]
+    ? never
+    : (
+        undefined extends IName ? TNamespace : `${TNamespace}/${IName}`
+      ) extends infer INamePart extends string
+    ? IKind extends string
+      ? `${IKind}:${INamePart}`
+      : INamePart
+    : never
+  : never;
+
 /** @internal */
-export function resolveExtensionDefinition<TConfig, TConfigInput>(
-  definition: ExtensionDefinition<TConfig, TConfigInput>,
+export function resolveExtensionDefinition<
+  T extends ExtensionDefinitionParameters,
+>(
+  definition: ExtensionDefinition<T>,
   context?: { namespace?: string },
-): Extension<TConfig, TConfigInput> {
-  const internalDefinition = toInternalExtensionDefinition(definition);
-  const { name, kind, namespace: _, ...rest } = internalDefinition;
+): Extension<T['config'], T['configInput']> {
+  const internalDefinition = OpaqueExtensionDefinition.toInternal(definition);
+  const {
+    name,
+    kind,
+    namespace: _skip1,
+    override: _skip2,
+    ...rest
+  } = internalDefinition;
+
   const namespace = internalDefinition.namespace ?? context?.namespace;
 
   const namePart =
@@ -121,5 +163,5 @@ export function resolveExtensionDefinition<TConfig, TConfigInput>(
     toString() {
       return `Extension{id=${id}}`;
     },
-  } as InternalExtension<TConfig, TConfigInput>;
+  } as InternalExtension<T['config'], T['configInput']> & Object;
 }

@@ -14,27 +14,36 @@
  * limitations under the License.
  */
 
-import { AppNode } from '../apis';
+import { ApiHolder, AppNode } from '../apis';
 import { Expand } from '../types';
 import {
-  CreateExtensionOptions,
   ExtensionDefinition,
   ResolvedExtensionInputs,
   VerifyExtensionFactoryOutput,
   createExtension,
+  ctxParamsSymbol,
 } from './createExtension';
 import { z } from 'zod';
 import { ExtensionInput } from './createExtensionInput';
 import {
   AnyExtensionDataRef,
-  ExtensionDataRefToValue,
   ExtensionDataValue,
 } from './createExtensionDataRef';
+import {
+  ExtensionDataContainer,
+  createExtensionDataContainer,
+} from './createExtensionDataContainer';
+import {
+  ResolveInputValueOverrides,
+  resolveInputOverrides,
+} from './resolveInputOverrides';
 
 /**
  * @public
  */
 export type CreateExtensionBlueprintOptions<
+  TKind extends string,
+  TName extends string | undefined,
   TParams,
   UOutput extends AnyExtensionDataRef,
   TInputs extends {
@@ -47,12 +56,12 @@ export type CreateExtensionBlueprintOptions<
   UFactoryOutput extends ExtensionDataValue<any, any>,
   TDataRefs extends { [name in string]: AnyExtensionDataRef },
 > = {
-  kind: string;
-  namespace?: string;
+  kind: TKind;
   attachTo: { id: string; input: string };
   disabled?: boolean;
   inputs?: TInputs;
   output: Array<UOutput>;
+  name?: TName;
   config?: {
     schema: TConfigSchema;
   };
@@ -60,6 +69,7 @@ export type CreateExtensionBlueprintOptions<
     params: TParams,
     context: {
       node: AppNode;
+      apis: ApiHolder;
       config: {
         [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
       };
@@ -70,24 +80,45 @@ export type CreateExtensionBlueprintOptions<
   dataRefs?: TDataRefs;
 } & VerifyExtensionFactoryOutput<UOutput, UFactoryOutput>;
 
+/** @public */
+export type ExtensionBlueprintParameters = {
+  kind: string;
+  name?: string;
+  params?: object;
+  configInput?: { [K in string]: any };
+  config?: { [K in string]: any };
+  output?: AnyExtensionDataRef;
+  inputs?: {
+    [KName in string]: ExtensionInput<
+      AnyExtensionDataRef,
+      { optional: boolean; singleton: boolean }
+    >;
+  };
+  dataRefs?: { [name in string]: AnyExtensionDataRef };
+};
+
 /**
  * @public
  */
 export interface ExtensionBlueprint<
-  TParams,
-  UOutput extends AnyExtensionDataRef,
-  TInputs extends {
-    [inputName in string]: ExtensionInput<
-      AnyExtensionDataRef,
-      { optional: boolean; singleton: boolean }
-    >;
-  },
-  UExtraOutput extends AnyExtensionDataRef,
-  TConfig extends { [key in string]: unknown },
-  TConfigInput extends { [key in string]: unknown },
-  TDataRefs extends { [name in string]: AnyExtensionDataRef },
+  T extends ExtensionBlueprintParameters = ExtensionBlueprintParameters,
 > {
-  dataRefs: TDataRefs;
+  dataRefs: T['dataRefs'];
+
+  make<TNewName extends string | undefined>(args: {
+    name?: TNewName;
+    attachTo?: { id: string; input: string };
+    disabled?: boolean;
+    params: T['params'];
+  }): ExtensionDefinition<{
+    kind: T['kind'];
+    name: string | undefined extends TNewName ? T['name'] : TNewName;
+    config: T['config'];
+    configInput: T['configInput'];
+    output: T['output'];
+    inputs: T['inputs'];
+    params: T['params'];
+  }>;
 
   /**
    * Creates a new extension from the blueprint.
@@ -95,234 +126,84 @@ export interface ExtensionBlueprint<
    * You must either pass `params` directly, or define a `factory` that can
    * optionally call the original factory with the same params.
    */
-  make<
+  makeWithOverrides<
+    TNewName extends string | undefined,
     TExtensionConfigSchema extends {
       [key in string]: (zImpl: typeof z) => z.ZodType;
     },
     UFactoryOutput extends ExtensionDataValue<any, any>,
-  >(
-    args: {
-      namespace?: string;
-      name?: string;
-      attachTo?: { id: string; input: string };
-      disabled?: boolean;
-      inputs?: TInputs;
-      output?: Array<UExtraOutput>;
-      config?: {
-        schema: TExtensionConfigSchema & {
-          [KName in keyof TConfig]?: `Error: Config key '${KName &
-            string}' is already defined in parent schema`;
-        };
-      };
-    } & (
-      | ({
-          factory(
-            originalFactory: (
-              params: TParams,
-              context?: {
-                config?: TConfig;
-                inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
-              },
-            ) => Iterable<ExtensionDataRefToValue<UOutput>>,
-            context: {
-              node: AppNode;
-              config: TConfig & {
-                [key in keyof TExtensionConfigSchema]: z.infer<
-                  ReturnType<TExtensionConfigSchema[key]>
-                >;
-              };
-              inputs: Expand<ResolvedExtensionInputs<TInputs>>;
-            },
-          ): Iterable<UFactoryOutput>;
-        } & VerifyExtensionFactoryOutput<
-          UOutput & UExtraOutput,
-          UFactoryOutput
-        >)
-      | {
-          params: TParams;
-        }
-    ),
-  ): ExtensionDefinition<
-    {
-      [key in keyof TExtensionConfigSchema]: z.infer<
-        ReturnType<TExtensionConfigSchema[key]>
+    UNewOutput extends AnyExtensionDataRef,
+    TExtraInputs extends {
+      [inputName in string]: ExtensionInput<
+        AnyExtensionDataRef,
+        { optional: boolean; singleton: boolean }
       >;
-    } & TConfig,
-    z.input<
-      z.ZodObject<{
-        [key in keyof TExtensionConfigSchema]: ReturnType<
-          TExtensionConfigSchema[key]
-        >;
-      }>
-    > &
-      TConfigInput
-  >;
-}
-
-/**
- * @internal
- */
-class ExtensionBlueprintImpl<
-  TParams,
-  UOutput extends AnyExtensionDataRef,
-  TInputs extends {
-    [inputName in string]: ExtensionInput<
-      AnyExtensionDataRef,
-      { optional: boolean; singleton: boolean }
-    >;
-  },
-  UExtraOutput extends AnyExtensionDataRef,
-  TConfigSchema extends { [key in string]: (zImpl: typeof z) => z.ZodType },
-  TDataRefs extends { [name in string]: AnyExtensionDataRef },
-> {
-  constructor(
-    private readonly options: CreateExtensionBlueprintOptions<
-      TParams,
-      UOutput,
-      TInputs,
-      TConfigSchema,
-      any,
-      TDataRefs
-    >,
-  ) {
-    this.dataRefs = options.dataRefs!;
-  }
-
-  dataRefs: TDataRefs;
-
-  public make<
-    TExtensionConfigSchema extends {
-      [key in string]: (zImpl: typeof z) => z.ZodType;
     },
-    UFactoryOutput extends ExtensionDataValue<any, any>,
   >(args: {
-    namespace?: string;
-    name?: string;
+    name?: TNewName;
     attachTo?: { id: string; input: string };
     disabled?: boolean;
-    inputs?: TInputs;
-    output?: Array<UExtraOutput>;
-    params?: TParams;
-    config?: {
-      schema: TExtensionConfigSchema;
+    inputs?: TExtraInputs & {
+      [KName in keyof T['inputs']]?: `Error: Input '${KName &
+        string}' is already defined in parent definition`;
     };
-    factory?(
+    output?: Array<UNewOutput>;
+    config?: {
+      schema: TExtensionConfigSchema & {
+        [KName in keyof T['config']]?: `Error: Config key '${KName &
+          string}' is already defined in parent schema`;
+      };
+    };
+    factory(
       originalFactory: (
-        params: TParams,
+        params: T['params'],
         context?: {
-          config?: {
-            [key in keyof TConfigSchema]: z.infer<
-              ReturnType<TConfigSchema[key]>
-            >;
-          };
-          inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
+          config?: T['config'];
+          inputs?: ResolveInputValueOverrides<NonNullable<T['inputs']>>;
         },
-      ) => Iterable<ExtensionDataRefToValue<UOutput>>,
+      ) => ExtensionDataContainer<NonNullable<T['output']>>,
       context: {
         node: AppNode;
-        config: {
+        apis: ApiHolder;
+        config: T['config'] & {
           [key in keyof TExtensionConfigSchema]: z.infer<
             ReturnType<TExtensionConfigSchema[key]>
           >;
-        } & {
-          [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
         };
-        inputs: Expand<ResolvedExtensionInputs<TInputs>>;
+        inputs: Expand<ResolvedExtensionInputs<T['inputs'] & TExtraInputs>>;
       },
-    ): Iterable<UFactoryOutput>;
-  }): ExtensionDefinition<
-    {
-      [key in keyof TExtensionConfigSchema]: z.infer<
-        ReturnType<TExtensionConfigSchema[key]>
+    ): Iterable<UFactoryOutput> &
+      VerifyExtensionFactoryOutput<
+        AnyExtensionDataRef extends UNewOutput
+          ? NonNullable<T['output']>
+          : UNewOutput,
+        UFactoryOutput
       >;
-    } & {
-      [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
-    },
-    z.input<
-      z.ZodObject<
-        {
-          [key in keyof TExtensionConfigSchema]: ReturnType<
-            TExtensionConfigSchema[key]
+  }): ExtensionDefinition<{
+    config: (string extends keyof TExtensionConfigSchema
+      ? {}
+      : {
+          [key in keyof TExtensionConfigSchema]: z.infer<
+            ReturnType<TExtensionConfigSchema[key]>
           >;
-        } & {
-          [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
-        }
-      >
-    >
-  > {
-    const schema = {
-      ...this.options.config?.schema,
-      ...args.config?.schema,
-    } as TConfigSchema & TExtensionConfigSchema;
-    return createExtension({
-      kind: this.options.kind,
-      namespace: args.namespace ?? this.options.namespace,
-      name: args.name,
-      attachTo: args.attachTo ?? this.options.attachTo,
-      disabled: args.disabled ?? this.options.disabled,
-      inputs: args.inputs ?? this.options.inputs,
-      output: [...(args.output ?? []), ...this.options.output],
-      config: Object.keys(schema).length === 0 ? undefined : { schema },
-      factory: ({ node, config, inputs }) => {
-        if (args.factory) {
-          return args.factory(
-            (
-              innerParams: TParams,
-              innerContext?: {
-                config?: {
-                  [key in keyof TConfigSchema]: z.infer<
-                    ReturnType<TConfigSchema[key]>
-                  >;
-                };
-                inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
-              },
-            ): Iterable<ExtensionDataRefToValue<UOutput>> => {
-              return this.options.factory(innerParams, {
-                node,
-                config: innerContext?.config ?? config,
-                inputs: innerContext?.inputs ?? inputs,
-              });
-            },
-            {
-              node,
-              config,
-              inputs,
-            },
-          );
-        } else if (args.params) {
-          return this.options.factory(args.params, {
-            node,
-            config,
-            inputs,
-          });
-        }
-        throw new Error('Either params or factory must be provided');
-      },
-    } as CreateExtensionOptions<
-      UOutput,
-      TInputs,
-      {
-        [key in keyof TExtensionConfigSchema]: z.infer<
-          ReturnType<TExtensionConfigSchema[key]>
-        >;
-      } & {
-        [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
-      },
-      z.input<
-        z.ZodObject<
-          {
+        }) &
+      T['config'];
+    configInput: (string extends keyof TExtensionConfigSchema
+      ? {}
+      : z.input<
+          z.ZodObject<{
             [key in keyof TExtensionConfigSchema]: ReturnType<
               TExtensionConfigSchema[key]
             >;
-          } & {
-            [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
-          }
-        >
-      >,
-      TConfigSchema,
-      UFactoryOutput
-    >);
-  }
+          }>
+        >) &
+      T['configInput'];
+    output: AnyExtensionDataRef extends UNewOutput ? T['output'] : UNewOutput;
+    inputs: T['inputs'] & TExtraInputs;
+    kind: T['kind'];
+    name: string | undefined extends TNewName ? T['name'] : TNewName;
+    params: T['params'];
+  }>;
 }
 
 /**
@@ -332,7 +213,7 @@ class ExtensionBlueprintImpl<
  * @public
  */
 export function createExtensionBlueprint<
-  TParams,
+  TParams extends object,
   UOutput extends AnyExtensionDataRef,
   TInputs extends {
     [inputName in string]: ExtensionInput<
@@ -340,12 +221,15 @@ export function createExtensionBlueprint<
       { optional: boolean; singleton: boolean }
     >;
   },
-  UExtraOutput extends AnyExtensionDataRef,
   TConfigSchema extends { [key in string]: (zImpl: typeof z) => z.ZodType },
   UFactoryOutput extends ExtensionDataValue<any, any>,
+  TKind extends string,
+  TName extends string | undefined = undefined,
   TDataRefs extends { [name in string]: AnyExtensionDataRef } = never,
 >(
   options: CreateExtensionBlueprintOptions<
+    TKind,
+    TName,
     TParams,
     UOutput,
     TInputs,
@@ -353,40 +237,108 @@ export function createExtensionBlueprint<
     UFactoryOutput,
     TDataRefs
   >,
-): ExtensionBlueprint<
-  TParams,
-  UOutput,
-  TInputs,
-  UExtraOutput,
-  string extends keyof TConfigSchema
+): ExtensionBlueprint<{
+  kind: TKind;
+  name: TName;
+  params: TParams;
+  output: UOutput;
+  inputs: string extends keyof TInputs ? {} : TInputs;
+  config: string extends keyof TConfigSchema
     ? {}
-    : { [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>> },
-  string extends keyof TConfigSchema
+    : { [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>> };
+  configInput: string extends keyof TConfigSchema
     ? {}
     : z.input<
         z.ZodObject<{
           [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
         }>
-      >,
-  TDataRefs
-> {
-  return new ExtensionBlueprintImpl(options) as ExtensionBlueprint<
-    TParams,
-    UOutput,
-    TInputs,
-    UExtraOutput,
-    string extends keyof TConfigSchema
+      >;
+  dataRefs: TDataRefs;
+}> {
+  return {
+    dataRefs: options.dataRefs,
+    make(args) {
+      return createExtension({
+        kind: options.kind,
+        name: args.name ?? options.name,
+        attachTo: args.attachTo ?? options.attachTo,
+        disabled: args.disabled ?? options.disabled,
+        inputs: options.inputs,
+        output: options.output as AnyExtensionDataRef[],
+        config: options.config,
+        factory: ctx =>
+          options.factory(
+            { ...args.params, ...(ctx as any)[ctxParamsSymbol] },
+            ctx,
+          ) as Iterable<ExtensionDataValue<any, any>>,
+      }) as ExtensionDefinition;
+    },
+    makeWithOverrides(args) {
+      return createExtension({
+        kind: options.kind,
+        name: args.name ?? options.name,
+        attachTo: args.attachTo ?? options.attachTo,
+        disabled: args.disabled ?? options.disabled,
+        inputs: { ...args.inputs, ...options.inputs },
+        output: (args.output ?? options.output) as AnyExtensionDataRef[],
+        config:
+          options.config || args.config
+            ? {
+                schema: {
+                  ...options.config?.schema,
+                  ...args.config?.schema,
+                },
+              }
+            : undefined,
+        factory: ctx => {
+          const { node, config, inputs, apis } = ctx;
+          return args.factory(
+            (innerParams, innerContext) => {
+              return createExtensionDataContainer<UOutput>(
+                options.factory(
+                  { ...innerParams, ...(ctx as any)[ctxParamsSymbol] },
+                  {
+                    apis,
+                    node,
+                    config: (innerContext?.config ?? config) as any,
+                    inputs: resolveInputOverrides(
+                      options.inputs,
+                      inputs,
+                      innerContext?.inputs,
+                    ) as any,
+                  },
+                ) as Iterable<any>,
+                options.output,
+              );
+            },
+            {
+              apis,
+              node,
+              config: config as any,
+              inputs: inputs as any,
+            },
+          ) as Iterable<ExtensionDataValue<any, any>>;
+        },
+      }) as ExtensionDefinition;
+    },
+  } as ExtensionBlueprint<{
+    kind: TKind;
+    name: TName;
+    params: TParams;
+    output: UOutput;
+    inputs: string extends keyof TInputs ? {} : TInputs;
+    config: string extends keyof TConfigSchema
       ? {}
       : {
           [key in keyof TConfigSchema]: z.infer<ReturnType<TConfigSchema[key]>>;
-        },
-    string extends keyof TConfigSchema
+        };
+    configInput: string extends keyof TConfigSchema
       ? {}
       : z.input<
           z.ZodObject<{
             [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
           }>
-        >,
-    TDataRefs
-  >;
+        >;
+    dataRefs: TDataRefs;
+  }>;
 }

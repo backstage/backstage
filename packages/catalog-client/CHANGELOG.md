@@ -1,5 +1,62 @@
 # @backstage/catalog-client
 
+## 1.7.0
+
+### Minor Changes
+
+- 78475c3: Allow offset mode paging in entity list provider
+- 29e57c7: Add catalog service mocks under the `/testUtils` subpath export.
+
+### Patch Changes
+
+- 1882cfe: Moved `getEntities` ordering to utilize database instead of having it inside catalog client
+
+  Please note that the latest version of `@backstage/catalog-client` will not order the entities in the same way as before. This is because the ordering is now done in the database query instead of in the client. If you rely on the ordering of the entities, you may need to update your backend plugin or code to handle this change.
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.0
+  - @backstage/errors@1.2.4
+
+## 1.7.0-next.1
+
+### Minor Changes
+
+- 78475c3: Allow offset mode paging in entity list provider
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.6.0
+  - @backstage/errors@1.2.4
+
+## 1.6.7-next.0
+
+### Patch Changes
+
+- 1882cfe: Moved `getEntities` ordering to utilize database instead of having it inside catalog client
+
+  Please note that the latest version of `@backstage/catalog-client` will not order the entities in the same way as before. This is because the ordering is now done in the database query instead of in the client. If you rely on the ordering of the entities, you may need to update your backend plugin or code to handle this change.
+
+- Updated dependencies
+  - @backstage/catalog-model@1.6.0
+  - @backstage/errors@1.2.4
+
+## 1.6.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.6.0
+  - @backstage/errors@1.2.4
+
+## 1.6.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.6.0-next.0
+  - @backstage/errors@1.2.4
+
 ## 1.6.5
 
 ### Patch Changes

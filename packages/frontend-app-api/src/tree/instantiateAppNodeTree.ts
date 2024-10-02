@@ -15,9 +15,8 @@
  */
 
 import {
-  AnyExtensionDataMap,
   AnyExtensionDataRef,
-  AnyExtensionInputMap,
+  ApiHolder,
   ExtensionDataContainer,
   ExtensionDataRef,
   ExtensionInput,
@@ -32,8 +31,10 @@ type Mutable<T> = {
   -readonly [P in keyof T]: T[P];
 };
 
-function resolveInputDataMap(
-  dataMap: AnyExtensionDataMap,
+function resolveV1InputDataMap(
+  dataMap: {
+    [name in string]: AnyExtensionDataRef;
+  },
   attachment: AppNode,
   inputName: string,
 ) {
@@ -92,6 +93,16 @@ function resolveInputDataContainer(
     get(ref) {
       return dataMap.get(ref.id);
     },
+    *[Symbol.iterator]() {
+      for (const [id, value] of dataMap) {
+        // TODO: Would be better to be able to create a new instance using the ref here instead
+        yield {
+          $$type: '@backstage/ExtensionDataValue',
+          id,
+          value,
+        };
+      }
+    },
   } as { node: AppNode } & ExtensionDataContainer<AnyExtensionDataRef>;
 }
 
@@ -124,9 +135,17 @@ function reportUndeclaredAttachments(
 }
 
 function resolveV1Inputs(
-  inputMap: AnyExtensionInputMap,
+  inputMap: {
+    [inputName in string]: {
+      $$type: '@backstage/ExtensionInput';
+      extensionData: {
+        [name in string]: AnyExtensionDataRef;
+      };
+      config: { optional: boolean; singleton: boolean };
+    };
+  },
   attachments: ReadonlyMap<string, AppNode[]>,
-): ResolvedExtensionInputs<AnyExtensionInputMap> {
+) {
   return mapValues(inputMap, (input, inputName) => {
     const attachedNodes = attachments.get(inputName) ?? [];
 
@@ -148,7 +167,7 @@ function resolveV1Inputs(
       }
       return {
         node: attachedNodes[0],
-        output: resolveInputDataMap(
+        output: resolveV1InputDataMap(
           input.extensionData,
           attachedNodes[0],
           inputName,
@@ -158,9 +177,16 @@ function resolveV1Inputs(
 
     return attachedNodes.map(attachment => ({
       node: attachment,
-      output: resolveInputDataMap(input.extensionData, attachment, inputName),
+      output: resolveV1InputDataMap(input.extensionData, attachment, inputName),
     }));
-  }) as ResolvedExtensionInputs<AnyExtensionInputMap>;
+  }) as {
+    [inputName in string]: {
+      node: AppNode;
+      output: {
+        [name in string]: unknown;
+      };
+    };
+  };
 }
 
 function resolveV2Inputs(
@@ -217,9 +243,10 @@ function resolveV2Inputs(
 /** @internal */
 export function createAppNodeInstance(options: {
   node: AppNode;
+  apis: ApiHolder;
   attachments: ReadonlyMap<string, AppNode[]>;
 }): AppNodeInstance {
-  const { node, attachments } = options;
+  const { node, apis, attachments } = options;
   const { id, extension, config } = node.spec;
   const extensionData = new Map<string, unknown>();
   const extensionDataRefs = new Set<ExtensionDataRef<unknown>>();
@@ -243,6 +270,7 @@ export function createAppNodeInstance(options: {
     if (internalExtension.version === 'v1') {
       const namedOutputs = internalExtension.factory({
         node,
+        apis,
         config: parsedConfig,
         inputs: resolveV1Inputs(internalExtension.inputs, attachments),
       });
@@ -263,6 +291,7 @@ export function createAppNodeInstance(options: {
     } else if (internalExtension.version === 'v2') {
       const outputDataValues = internalExtension.factory({
         node,
+        apis,
         config: parsedConfig,
         inputs: resolveV2Inputs(internalExtension.inputs, attachments),
       });
@@ -324,7 +353,10 @@ export function createAppNodeInstance(options: {
  * Starting at the provided node, instantiate all reachable nodes in the tree that have not been disabled.
  * @internal
  */
-export function instantiateAppNodeTree(rootNode: AppNode): void {
+export function instantiateAppNodeTree(
+  rootNode: AppNode,
+  apis: ApiHolder,
+): void {
   function createInstance(node: AppNode): AppNodeInstance | undefined {
     if (node.instance) {
       return node.instance;
@@ -350,6 +382,7 @@ export function instantiateAppNodeTree(rootNode: AppNode): void {
 
     (node as Mutable<AppNode>).instance = createAppNodeInstance({
       node,
+      apis,
       attachments: instantiatedAttachments,
     });
 

@@ -24,7 +24,7 @@ import { UserIdentity } from './UserIdentity';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import React, { useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 import { useMountEffect } from '@react-hookz/web';
 import { Progress } from '../../components/Progress';
 import { Content } from '../Content/Content';
@@ -42,6 +42,7 @@ import { useSearchParams } from 'react-router-dom';
 type MultiSignInPageProps = SignInPageProps & {
   providers: IdentityProviders;
   title?: string;
+  titleComponent?: ReactNode;
   align?: 'center' | 'left';
 };
 
@@ -56,6 +57,7 @@ export const MultiSignInPage = ({
   onSignInSuccess,
   providers = [],
   title,
+  titleComponent,
   align = 'left',
 }: MultiSignInPageProps) => {
   const configApi = useApi(configApiRef);
@@ -75,7 +77,13 @@ export const MultiSignInPage = ({
     <Page themeId="home">
       <Header title={configApi.getString('app.title')} />
       <Content>
-        {title && <ContentHeader title={title} textAlign={align} />}
+        {(title || titleComponent) && (
+          <ContentHeader
+            title={title}
+            titleComponent={titleComponent}
+            textAlign={align}
+          />
+        )}
         <Grid
           container
           justifyContent={align === 'center' ? align : 'flex-start'}

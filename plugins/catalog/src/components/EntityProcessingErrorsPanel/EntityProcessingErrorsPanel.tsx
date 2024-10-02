@@ -31,7 +31,7 @@ import {
 import { useApi, ApiHolder } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/esm/useAsync';
 import { SerializedError } from '@backstage/errors';
-import { catalogTranslationRef } from '../../translation';
+import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 const errorFilter = (i: EntityStatusItem) =>

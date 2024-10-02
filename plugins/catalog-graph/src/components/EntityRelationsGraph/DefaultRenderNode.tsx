@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 import { DependencyGraphTypes } from '@backstage/core-components';
-import { useApp } from '@backstage/core-plugin-api';
-import { humanizeEntityRef } from '@backstage/plugin-catalog-react';
+import { IconComponent } from '@backstage/core-plugin-api';
+import { useEntityPresentation } from '@backstage/plugin-catalog-react';
 import { makeStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import React, { useLayoutEffect, useRef, useState } from 'react';
-import { EntityKindIcon } from './EntityKindIcon';
+import { EntityIcon } from './EntityIcon';
 import { EntityNodeData } from './types';
 import { DEFAULT_NAMESPACE } from '@backstage/catalog-model';
+
+/** @public */
+export type CustomNodeClassKey = 'node' | 'text' | 'clickable';
 
 const useStyles = makeStyles(
   theme => ({
@@ -64,8 +67,10 @@ export function DefaultRenderNode({
   const classes = useStyles();
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
-  const app = useApp();
   const idRef = useRef<SVGTextElement | null>(null);
+  const entityRefPresentationSnapshot = useEntityPresentation(entity, {
+    defaultNamespace: DEFAULT_NAMESPACE,
+  });
 
   useLayoutEffect(() => {
     // set the width to the length of the ID
@@ -82,25 +87,14 @@ export function DefaultRenderNode({
     }
   }, [width, height]);
 
-  const {
-    kind,
-    metadata: { name, namespace = DEFAULT_NAMESPACE, title },
-  } = entity;
-
-  const hasKindIcon = app.getSystemIcon(
-    `kind:${kind.toLocaleLowerCase('en-US')}`,
-  );
+  const hasKindIcon = !!entityRefPresentationSnapshot.Icon;
   const padding = 10;
   const iconSize = height;
   const paddedIconWidth = hasKindIcon ? iconSize + padding : 0;
   const paddedWidth = paddedIconWidth + width + padding * 2;
   const paddedHeight = height + padding * 2;
 
-  const displayTitle =
-    title ??
-    (kind && name && namespace
-      ? humanizeEntityRef({ kind, name, namespace })
-      : id);
+  const displayTitle = entityRefPresentationSnapshot.primaryTitle ?? id;
 
   return (
     <g onClick={onClick} className={classNames(onClick && classes.clickable)}>
@@ -115,8 +109,8 @@ export function DefaultRenderNode({
         rx={10}
       />
       {hasKindIcon && (
-        <EntityKindIcon
-          kind={kind}
+        <EntityIcon
+          icon={entityRefPresentationSnapshot.Icon as IconComponent}
           y={padding}
           x={padding}
           width={iconSize}
@@ -144,6 +138,7 @@ export function DefaultRenderNode({
       >
         {displayTitle}
       </text>
+      <title>{entityRefPresentationSnapshot.entityRef}</title>
     </g>
   );
 }

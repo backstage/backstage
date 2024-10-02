@@ -15,8 +15,11 @@
  */
 
 import { TokenManager } from '@backstage/backend-common';
-import { LoggerService } from '@backstage/backend-plugin-api';
-import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
+import {
+  LoggerService,
+  SchedulerService,
+  SchedulerServiceTaskRunner,
+} from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { LocationEntity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
@@ -80,8 +83,8 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
       catalogApi?: CatalogApi;
       events?: EventsService;
       logger: LoggerService;
-      schedule?: TaskRunner;
-      scheduler?: PluginTaskScheduler;
+      schedule?: SchedulerServiceTaskRunner;
+      scheduler?: SchedulerService;
       tokenManager?: TokenManager;
     },
   ): BitbucketCloudEntityProvider[] {
@@ -124,7 +127,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     config: BitbucketCloudEntityProviderConfig,
     integration: BitbucketCloudIntegration,
     logger: LoggerService,
-    taskRunner: TaskRunner,
+    taskRunner: SchedulerServiceTaskRunner,
     catalogApi?: CatalogApi,
     events?: EventsService,
     tokenManager?: TokenManager,
@@ -140,7 +143,9 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     this.tokenManager = tokenManager;
   }
 
-  private createScheduleFn(schedule: TaskRunner): () => Promise<void> {
+  private createScheduleFn(
+    schedule: SchedulerServiceTaskRunner,
+  ): () => Promise<void> {
     return async () => {
       const taskId = this.getTaskId();
       return schedule.run({

@@ -6,7 +6,7 @@ edit_uri: edit/master/docs
 plugins:
   - techdocs-core
 
-# For sidebar navigation on https://backstage.io/, see `microsite/sidebars.json`
+# For sidebar navigation on https://backstage.io/, see `microsite/sidebars.js`
 nav:
   - Overview:
       - What is Backstage?: 'overview/what-is-backstage.md'
@@ -48,6 +48,7 @@ nav:
           - External integrations: 'features/software-catalog/external-integrations.md'
           - Catalog Customization: 'features/software-catalog/catalog-customization.md'
           - API: 'features/software-catalog/api.md'
+          - FAQ: 'features/software-catalog/faq.md'
       - Kubernetes:
           - Overview: 'features/kubernetes/index.md'
           - Installation: 'features/kubernetes/installation.md'
@@ -64,12 +65,14 @@ nav:
           - Writing Custom Actions: 'features/software-templates/writing-custom-actions.md'
           - Writing Custom Step Layouts: 'features/software-templates/writing-custom-step-layouts.md'
           - Migrating from v1beta2 to v1beta3 templates: 'features/software-templates/migrating-from-v1beta2-to-v1beta3.md'
+          - Dry Run Testing: 'features/software-templates/dry-run-testing.md'
       - Backstage Search:
           - Overview: 'features/search/README.md'
           - Getting Started: 'features/search/getting-started.md'
           - Concepts: 'features/search/concepts.md'
           - Search Architecture: 'features/search/architecture.md'
           - Search Engines: 'features/search/search-engines.md'
+          - Collators: 'features/search/collators.md'
           - HOW TO guides: 'features/search/how-to-guides.md'
       - TechDocs:
           - Overview: 'features/techdocs/README.md'
@@ -82,6 +85,7 @@ nav:
           - Configuring CI/CD to generate and publish TechDocs sites: 'features/techdocs/configuring-ci-cd.md'
           - CLI: 'features/techdocs/cli.md'
           - HOW TO guides: 'features/techdocs/how-to-guides.md'
+          - Extensions: 'features/techdocs/extensions.md'
           - Troubleshooting: 'features/techdocs/troubleshooting.md'
           - FAQ: 'features/techdocs/FAQ.md'
   - Integrations:
@@ -136,7 +140,6 @@ nav:
           - Proxying: 'plugins/proxying.md'
           - Backend plugin: 'plugins/backend-plugin.md'
           - Call existing API: 'plugins/call-existing-api.md'
-          - URL Reader: 'plugins/url-reader.md'
       - Testing:
           - Testing with Jest: 'plugins/testing.md'
       - Publishing:
@@ -181,6 +184,7 @@ nav:
       - Local Development:
           - Linking in Local Packages: 'tooling/local-dev/linking-local-packages.md'
           - Debugging Backstage: 'tooling/local-dev/debugging.md'
+          - Profiling Backstage: 'tooling/local-dev/profiling.md'
       - Package Metadata: 'tooling/package-metadata.md'
   - Deployment:
       - Deploying Backstage: 'deployment/index.md'

@@ -29,6 +29,7 @@ describe('makeRollupConfigs', () => {
         version: '0.0.0',
         main: './src/index.ts',
       },
+      workspacePackages: [],
     });
     const external = config.external as Exclude<
       ExternalOption,

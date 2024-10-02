@@ -5,6 +5,13 @@ sidebar_label: Auth0
 description: Adding Auth0 as an authentication provider in Backstage
 ---
 
+:::info
+This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage
+[version 1.24](../../releases/v1.24.0.md). If you are still on the old backend
+system, you may want to read [its own article](./provider--old.md)
+instead, and [consider migrating](../../backend-system/building-backends/08-migrating.md)!
+:::
+
 The Backstage `core-plugin-api` package comes with an Auth0 authentication
 provider that can authenticate users using OAuth.
 
@@ -54,11 +61,45 @@ It additionally relies on the following configuration to function:
 
 Auth0 requires a session, so you need to give the session a secret key.
 
-## Optional Configuration
+### Optional
 
 - `audience`: The intended recipients of the token
 - `connection`: Social identity provider name. To check the available social connections, please visit [Auth0 Social Connections](https://marketplace.auth0.com/features/social-connections).
 - `connectionScope`: Additional scopes in the interactive token request. It should always be used in combination with the `connection` parameter
+
+### Resolvers
+
+This provider includes several resolvers out of the box that you can use:
+
+- `emailMatchingUserEntityProfileEmail`: Matches the email address from the auth provider with the User entity that has a matching `spec.profile.email`. If no match is found it will throw a `NotFoundError`.
+- `emailLocalPartMatchingUserEntityName`: Matches the [local part](https://en.wikipedia.org/wiki/Email_address#Local-part) of the email address from the auth provider with the User entity that has a matching `name`. If no match is found it will throw a `NotFoundError`.
+
+:::note Note
+
+The resolvers will be tried in order, but will only be skipped if they throw a `NotFoundError`.
+
+:::
+
+If these resolvers do not fit your needs you can build a custom resolver, this is covered in the [Building Custom Resolvers](../identity-resolver.md#building-custom-resolvers) section of the Sign-in Identities and Resolvers documentation.
+
+## Backend Installation
+
+To add the provider to the backend we will first need to install the package by running this command:
+
+```bash title="from your Backstage root directory"
+yarn --cwd packages/backend add @backstage/plugin-auth-backend-module-auth0-provider
+```
+
+Then we will need to add this line:
+
+```ts title="packages/backend/src/index.ts"
+import { createBackend } from '@backstage/backend-defaults';
+//...
+backend.add(import('@backstage/plugin-auth-backend'));
+// highlight-add-next-line
+backend.add(import('@backstage/plugin-auth-backend-module-auth0-provider'));
+//...
+```
 
 ## Adding the provider to the Backstage frontend
 

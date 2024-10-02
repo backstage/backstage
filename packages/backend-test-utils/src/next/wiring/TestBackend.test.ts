@@ -71,34 +71,34 @@ describe('TestBackend', () => {
         features: [
           // @ts-expect-error
           [extensionPoint1, { a: 'a' }],
-          createServiceFactory(() => ({
+          createServiceFactory({
             service: serviceRef,
             deps: {},
             // @ts-expect-error
             factory: async () => ({ a: 'a' }),
-          })),
-          createServiceFactory(() => ({
+          }),
+          createServiceFactory({
             service: serviceRef,
             deps: {},
             factory: async () => ({ a: 'a', b: 'b' }),
-          })),
-          createServiceFactory(() => ({
+          }),
+          createServiceFactory({
             service: serviceRef,
             deps: {},
             // @ts-expect-error
             factory: async () => ({ c: 'c' }),
-          })),
-          createServiceFactory(() => ({
+          }),
+          createServiceFactory({
             service: serviceRef,
             deps: {},
             // @ts-expect-error
             factory: async () => ({ a: 'a', c: 'c' }),
-          })),
-          createServiceFactory(() => ({
+          }),
+          createServiceFactory({
             service: serviceRef,
             deps: {},
             factory: async () => ({ a: 'a', b: 'b', c: 'c' }),
-          })),
+          }),
         ],
         extensionPoints: [
           // @ts-expect-error
@@ -144,7 +144,7 @@ describe('TestBackend', () => {
     });
 
     await startTestBackend({
-      features: [testModule, sf()],
+      features: [testModule, sf],
     });
 
     expect(testFn).toHaveBeenCalledWith('winning');
@@ -198,13 +198,12 @@ describe('TestBackend', () => {
             rootLifecycle: coreServices.rootLifecycle,
             rootLogger: coreServices.rootLogger,
             scheduler: coreServices.scheduler,
-            tokenManager: coreServices.tokenManager,
             urlReader: coreServices.urlReader,
             auth: coreServices.auth,
             httpAuth: coreServices.httpAuth,
           },
           async init(deps) {
-            expect(Object.keys(deps)).toHaveLength(17);
+            expect(Object.keys(deps)).toHaveLength(16);
             expect(Object.values(deps)).not.toContain(undefined);
           },
         });
@@ -334,5 +333,79 @@ describe('TestBackend', () => {
     ).rejects.toThrow(
       "Unable to determine the plugin ID of extension point(s) 'a'. Tested extension points must be depended on by one or more tested modules.",
     );
+  });
+
+  it('should forward errors from plugins', async () => {
+    await expect(
+      startTestBackend({
+        features: [
+          createBackendPlugin({
+            pluginId: 'test',
+            register(reg) {
+              reg.registerInit({
+                deps: {},
+                async init() {
+                  throw new Error('nah');
+                },
+              });
+            },
+          }),
+        ],
+      }),
+    ).rejects.toThrow("Plugin 'test' startup failed; caused by Error: nah");
+  });
+
+  it('should forward errors from modules', async () => {
+    await expect(
+      startTestBackend({
+        features: [
+          createBackendModule({
+            pluginId: 'test',
+            moduleId: 'tester',
+            register(reg) {
+              reg.registerInit({
+                deps: {},
+                async init() {
+                  throw new Error('nah');
+                },
+              });
+            },
+          }),
+        ],
+      }),
+    ).rejects.toThrow(
+      "Module 'tester' for plugin 'test' startup failed; caused by Error: nah",
+    );
+  });
+
+  it('should forward errors from plugin register', async () => {
+    await expect(
+      startTestBackend({
+        features: [
+          createBackendPlugin({
+            pluginId: 'test',
+            register() {
+              throw new Error('nah');
+            },
+          }),
+        ],
+      }),
+    ).rejects.toThrow('nah');
+  });
+
+  it('should forward errors from module register', async () => {
+    await expect(
+      startTestBackend({
+        features: [
+          createBackendModule({
+            pluginId: 'test',
+            moduleId: 'tester',
+            register() {
+              throw new Error('nah');
+            },
+          }),
+        ],
+      }),
+    ).rejects.toThrow('nah');
   });
 });

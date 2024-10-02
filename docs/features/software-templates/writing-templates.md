@@ -477,6 +477,34 @@ template can be published to multiple providers.
 Note, that you will need to configure an [authentication provider](../../auth/index.md#configuring-authentication-providers), alongside the
 [`ScmAuthApi`](../../auth/index.md#scaffolder-configuration-software-templates) for your source code management (SCM) service to make this feature work.
 
+### The Repository Branch Picker
+
+Similar to the repository picker, there is a picker for branches to support autocompletion. A full example could look like this:
+
+```yaml
+- title: Choose a branch
+  required:
+    - repoBranch
+  properties:
+    repoBranch:
+      title: Repository Branch
+      type: string
+      ui:field: RepoBranchPicker
+      ui:options:
+        requestUserCredentials:
+          secretsKey: USER_OAUTH_TOKEN
+```
+
+Passing the `requestUserCredentials` object is required for autocompletion to work.
+If you're also using the repository picker, you should simply duplicate this part from there.
+For more information regarding the `requestUserCredentials` object, please refer to the [Using the Users `oauth` token](#using-the-users-oauth-token) section under [The Repository Picker](#the-repository-picker).
+
+For a list of all possible `ui:options` input props for `RepoBranchPicker`, please visit [here](./ui-options-examples.md#repobranchpicker).
+
+The `RepoBranchPicker` is a custom field that we provide part of the
+`plugin-scaffolder`. You can provide your own custom fields by
+[writing your own Custom Field Extensions](./writing-custom-field-extensions.md)
+
 ### Accessing the signed-in users details
 
 Sometimes when authoring templates, you'll want to access the user that is running the template, and get details from the profile or the users `Entity` in the Catalog.
@@ -863,7 +891,7 @@ const scaffolderModuleCustomFilters = createBackendModule({
 const backend = createBackend();
 backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
 /* highlight-add-next-line */
-backend.add(scaffolderModuleCustomFilters());
+backend.add(scaffolderModuleCustomFilters);
 ```
 
 If you still use the legacy backend system, then you will use the `createRouter()` function of the `Scaffolder plugin`
@@ -919,3 +947,19 @@ Have in mind that changes in this form will not be saved on the template and is 
 ### Custom Field Explorer
 
 The custom filed explorer allows you to select any custom field loaded on the backstage instance and test different values and configurations.
+
+## Presentation
+
+You can configure the text of the "Back", "Review", and "Create" buttons using the `spec.presentation` field of your Software Template. You might want have a Template that doesn't "Create" something but rather "Updates" it. This feature will allow you to change it as needed. Here's an example of how to use this:
+
+```yaml
+---
+spec:
+  owner: scaffolder/maintainers
+  type: website
+  presentation:
+    buttonLabels:
+      backButtonText: 'Return'
+      createButtonText: 'Update'
+      reviewButtonText: 'Verify'
+```

@@ -22,14 +22,15 @@ import {
 } from '@backstage/types';
 import isEqual from 'lodash/isEqual';
 import fetch from 'node-fetch';
-import yaml from 'yaml';
 import { ConfigTransformer, createConfigTransformer } from './transform';
 import {
   AsyncConfigSourceGenerator,
   ConfigSource,
   SubstitutionFunc,
   ReadConfigDataOptions,
+  Parser,
 } from './types';
+import { parseYamlContent } from './utils';
 
 const DEFAULT_RELOAD_INTERVAL = { seconds: 60 };
 
@@ -55,6 +56,11 @@ export interface RemoteConfigSourceOptions {
    * A substitution function to use instead of the default environment substitution.
    */
   substitutionFunc?: SubstitutionFunc;
+
+  /**
+   * A content parsing function to transform string content to configuration values.
+   */
+  parser?: Parser;
 }
 
 /**
@@ -84,6 +90,7 @@ export class RemoteConfigSource implements ConfigSource {
   readonly #url: string;
   readonly #reloadIntervalMs: number;
   readonly #transformer: ConfigTransformer;
+  readonly #parser: Parser;
 
   private constructor(options: RemoteConfigSourceOptions) {
     this.#url = options.url;
@@ -93,6 +100,7 @@ export class RemoteConfigSource implements ConfigSource {
     this.#transformer = createConfigTransformer({
       substitutionFunc: options.substitutionFunc,
     });
+    this.#parser = options.parser ?? parseYamlContent;
   }
 
   async *readConfigData(
@@ -135,11 +143,21 @@ export class RemoteConfigSource implements ConfigSource {
       throw await ResponseError.fromResponse(res);
     }
 
-    const content = await res.text();
-    const data = await this.#transformer(yaml.parse(content));
-    if (data === null) {
+    const contents = await res.text();
+    const { result: rawData } = await this.#parser({ contents });
+    if (rawData === undefined) {
+      /**
+       * This error message is/was coupled to the implementation and with refactoring it is no longer truly accurate
+       * This behavior is also inconsistent with {@link FileConfigSource}, which doesn't error on unparseable or empty
+       * content
+       *
+       * Preserving to not make a breaking change
+       */
       throw new Error('configuration data is null');
-    } else if (typeof data !== 'object') {
+    }
+
+    const data = await this.#transformer(rawData);
+    if (typeof data !== 'object') {
       throw new Error('configuration data is not an object');
     } else if (Array.isArray(data)) {
       throw new Error(

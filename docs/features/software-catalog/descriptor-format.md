@@ -527,6 +527,8 @@ spec:
   system: artist-engagement-portal
   dependsOn:
     - resource:default/artists-db
+  dependencyOf:
+    - component:default/artist-web-lookup
   providesApis:
     - artist-api
 ```
@@ -635,6 +637,17 @@ field is optional.
 | --------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------- |
 | [`Component`](#kind-component)          | Same as this entity, typically `default`   | [`dependsOn`, and reverse `dependencyOf`](well-known-relations.md#dependson-and-dependencyof) |
 | [`Resource`](#kind-resource)            | Same as this entity, typically `default`   | [`dependsOn`, and reverse `dependencyOf`](well-known-relations.md#dependson-and-dependencyof) |
+
+### `spec.dependencyOf` [optional]
+
+An array of [entity references](references.md#string-references) to the
+components and resources that the component is a dependency of, e.g. `artist-web-lookup`.
+This field is optional.
+
+| [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                                            |
+| --------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| [`Component`](#kind-component)          | Same as this entity, typically `default`   | [`dependencyOf`, and reverse `dependsOn`](well-known-relations.md#dependson-and-dependencyof) |
+| [`Resource`](#kind-resource)            | Same as this entity, typically `default`   | [`dependencyOf`, and reverse `dependsOn`](well-known-relations.md#dependson-and-dependencyof) |
 
 ## Kind: Template
 
@@ -1243,6 +1256,18 @@ system belongs to, e.g. `artists`. This field is optional.
 | --------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------- |
 | [`Domain`](#kind-domain) (default)      | Same as this entity, typically `default`   | [`partOf`, and reverse `hasPart`](well-known-relations.md#partof-and-haspart) |
 
+### `spec.type` [optional]
+
+The type of system. There is currently no enforced set of values for this field,
+so it is left up to the adopting organization to choose a nomenclature that
+matches their catalog hierarchy. This field is optional.
+
+Some common values for this field could be:
+
+- `product`
+- `service`
+- `feature-set`
+
 ## Kind: Domain
 
 Describes the following entity kind:
@@ -1302,6 +1327,18 @@ which the domain is a part, e.g. `audio`. This field is optional.
 | [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                            |
 | --------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------- |
 | [`Domain`](#kind-domain) (default)      | Same as this entity, typically `default`   | [`partOf`, and reverse `hasPart`](well-known-relations.md#partof-and-haspart) |
+
+### `spec.type` [optional]
+
+The type of domain. There is currently no enforced set of values for this field,
+so it is left up to the adopting organization to choose a nomenclature that
+matches their catalog hierarchy. This field is optional.
+
+Some common values for this field could be:
+
+- `product-area`
+- `product-group`
+- `bundle`
 
 ## Kind: Location
 

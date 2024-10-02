@@ -16,7 +16,7 @@
 
 import { join as joinPath, sep as pathSep } from 'path';
 import fs from 'fs-extra';
-import { UrlReader } from '@backstage/backend-common';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
@@ -71,7 +71,7 @@ describe('fetch:template examples', () => {
   beforeEach(() => {
     mockDir.clear();
     action = createFetchTemplateAction({
-      reader: Symbol('UrlReader') as unknown as UrlReader,
+      reader: Symbol('UrlReader') as unknown as UrlReaderService,
       integrations: Symbol('Integrations') as unknown as ScmIntegrations,
     });
   });

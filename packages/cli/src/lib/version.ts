@@ -32,7 +32,6 @@ This does not create an actual dependency on these packages and does not bring i
 Rollup will extract the value of the version field in each package at build time without
 leaving any imports in place.
 */
-import { version as backendCommon } from '../../../../packages/backend-common/package.json';
 import { version as backendPluginApi } from '../../../../packages/backend-plugin-api/package.json';
 import { version as backendTestUtils } from '../../../../packages/backend-test-utils/package.json';
 import { version as cli } from '../../../../packages/cli/package.json';
@@ -49,7 +48,6 @@ import { version as theme } from '../../../../packages/theme/package.json';
 import { version as backendDefaults } from '../../../../packages/backend-defaults/package.json';
 
 export const packageVersions: Record<string, string> = {
-  '@backstage/backend-common': backendCommon,
   '@backstage/backend-defaults': backendDefaults,
   '@backstage/backend-plugin-api': backendPluginApi,
   '@backstage/backend-test-utils': backendTestUtils,

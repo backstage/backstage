@@ -30,6 +30,8 @@ type TypographyHeadings = Pick<
 type TypographyHeadingsKeys = keyof TypographyHeadings;
 
 const headings: TypographyHeadingsKeys[] = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
+const relativeLengthUnit: RegExp = /(em)|(rem)/gi;
+const cssVariable: RegExp = /var\(|\)/gi;
 
 export default ({ theme }: RuleOptions) => `
 /*==================  Typeset  ==================*/
@@ -43,17 +45,27 @@ ${headings.reduce<string>((style, heading) => {
     (theme.typography as BackstageTypography).htmlFontSize ?? 16;
   const styles = theme.typography[heading];
   const { lineHeight, fontFamily, fontWeight, fontSize } = styles;
-  const calculate = (value: typeof fontSize) => {
-    let factor: number | string = 1;
+  const calculate = (value: typeof fontSize): string | undefined => {
     if (typeof value === 'number') {
-      // convert px to rem
-      // 60% of the size defined because it is too big
-      factor = (value / htmlFontSize) * 0.6;
+      // Convert px to rem and apply 60% factor
+      return calculate(`${(value / htmlFontSize) * 0.6}rem`);
+    } else if (typeof value === 'string') {
+      if (value.match(cssVariable)) {
+        // Resolve css variable and calculate recursively
+        const resolvedValue = window
+          .getComputedStyle(document.body)
+          .getPropertyValue(value.replaceAll(cssVariable, ''));
+        if (resolvedValue !== '') {
+          return calculate(resolvedValue);
+        }
+      } else if (value.match(relativeLengthUnit)) {
+        // Use relative size as factor
+        const factor = value.replace(relativeLengthUnit, '');
+        return `calc(${factor} * var(--md-typeset-font-size))`;
+      }
     }
-    if (typeof value === 'string') {
-      factor = value.replace('rem', '');
-    }
-    return `calc(${factor} * var(--md-typeset-font-size))`;
+    // Value is not a number, relative length unit, or CSS variable, return as is
+    return value;
   };
   return style.concat(`
     .md-typeset ${heading} {
@@ -101,6 +113,7 @@ ${headings.reduce<string>((style, heading) => {
   border: 1px solid var(--md-default-fg-color);
   border-bottom: none;
   border-collapse: collapse;
+  border-radius: ${theme.shape.borderRadius}px;
 }
 .md-typeset table:not([class]) th {
   font-weight: bold;

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-home-react",
-  "version": "0.1.16-next.0",
+  "version": "0.1.18-next.1",
   "description": "A Backstage plugin that contains react components helps you build a home page",
   "backstage": {
     "role": "web-library",
@@ -46,16 +46,25 @@
     "@backstage/core-plugin-api": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
-    "@rjsf/utils": "5.18.5",
-    "@types/react": "^16.13.1 || ^17.0.0"
+    "@rjsf/utils": "5.21.1"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@types/react-grid-layout": "^1.3.2"
+    "@types/react": "^18.0.0",
+    "@types/react-grid-layout": "^1.3.2",
+    "react": "^18.0.2",
+    "react-dom": "^18.0.2",
+    "react-router-dom": "^6.3.0"
   },
   "peerDependencies": {
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
   }
 }

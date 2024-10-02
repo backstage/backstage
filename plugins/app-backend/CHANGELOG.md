@@ -1,5 +1,157 @@
 # @backstage/plugin-app-backend
 
+## 0.3.75-next.0
+
+### Patch Changes
+
+- 094eaa3: Remove references to in-repo backend-common
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.3-next.0
+  - @backstage/backend-plugin-api@1.0.1-next.0
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.9.1
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.26-next.0
+
+## 0.3.74
+
+### Patch Changes
+
+- 72a8c7b: Return HTTP status 400 rather than 500 when receiving an unknown POST request.
+- d3f79d1: Fixing dependency metadata with the new `@backstage/plugin-app` package
+- 590fb2d: **BREAKING**: The app backend now supports the new `index.html.tmpl` output from `@backstage/cli`. If available, the `index.html` will be templated at runtime with the current configuration of the app backend.
+
+  This is marked as a breaking change because you must now supply the app build-time configuration to the backend. This change also affects the public path behavior, where it is no longer necessary to build the app with the correct public path upfront. You now only need to supply a correct `app.baseUrl` to the app backend plugin at runtime.
+
+  An effect that this change has is that the `index.html` will now contain and present the frontend configuration in an easily readable way, which can aid in debugging. This data was always available in the frontend, but it was injected and hidden in the static bundle.
+
+  This templating behavior is enabled by default, but it can be disabled by setting the `app.disableConfigInjection` configuration option to `true`.
+
+- d425fc4: Modules, plugins, and services are now `BackendFeature`, not a function that returns a feature.
+- c2b63ab: Updated dependency `supertest` to `^7.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.25.0
+  - @backstage/backend-plugin-api@1.0.0
+  - @backstage/plugin-auth-node@0.5.2
+  - @backstage/plugin-app-node@0.1.25
+  - @backstage/config-loader@1.9.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.3.74-next.2
+
+### Patch Changes
+
+- 590fb2d: **BREAKING**: The app backend now supports the new `index.html.tmpl` output from `@backstage/cli`. If available, the `index.html` will be templated at runtime with the current configuration of the app backend.
+
+  This is marked as a breaking change because you must now supply the app build-time configuration to the backend. This change also affects the public path behavior, where it is no longer necessary to build the app with the correct public path upfront. You now only need to supply a correct `app.baseUrl` to the app backend plugin at runtime.
+
+  An effect that this change has is that the `index.html` will now contain and present the frontend configuration in an easily readable way, which can aid in debugging. This data was always available in the frontend, but it was injected and hidden in the static bundle.
+
+  This templating behavior is enabled by default, but it can be disabled by setting the `app.disableConfigInjection` configuration option to `true`.
+
+- c2b63ab: Updated dependency `supertest` to `^7.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.25.0-next.2
+  - @backstage/plugin-auth-node@0.5.2-next.2
+  - @backstage/backend-plugin-api@1.0.0-next.2
+  - @backstage/config-loader@1.9.1-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.25-next.2
+
+## 0.3.74-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.25.0-next.1
+  - @backstage/plugin-auth-node@0.5.2-next.1
+  - @backstage/backend-plugin-api@0.9.0-next.1
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.9.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.25-next.1
+
+## 0.3.74-next.0
+
+### Patch Changes
+
+- d3f79d1: Fixing dependency metadata with the new `@backstage/plugin-app` package
+- d425fc4: Modules, plugins, and services are now `BackendFeature`, not a function that returns a feature.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.9.0-next.0
+  - @backstage/plugin-app-node@0.1.25-next.0
+  - @backstage/backend-common@0.25.0-next.0
+  - @backstage/plugin-auth-node@0.5.2-next.0
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.9.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.3.72
+
+### Patch Changes
+
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- 6bd6fda: Deprecate `createRouter` and its options in favour of the new backend system.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/backend-common@0.24.0
+  - @backstage/config-loader@1.9.0
+  - @backstage/plugin-auth-node@0.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.23
+
+## 0.3.72-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.3
+  - @backstage/backend-common@0.23.4-next.3
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.9.0-next.2
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.23-next.3
+  - @backstage/plugin-auth-node@0.5.0-next.3
+
+## 0.3.72-next.2
+
+### Patch Changes
+
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0-next.2
+  - @backstage/backend-common@0.23.4-next.2
+  - @backstage/config-loader@1.9.0-next.2
+  - @backstage/plugin-auth-node@0.5.0-next.2
+  - @backstage/plugin-app-node@0.1.23-next.2
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.3.72-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.9.0-next.1
+  - @backstage/backend-plugin-api@0.7.1-next.1
+  - @backstage/backend-common@0.23.4-next.1
+  - @backstage/plugin-app-node@0.1.23-next.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.18-next.1
+
 ## 0.3.72-next.0
 
 ### Patch Changes

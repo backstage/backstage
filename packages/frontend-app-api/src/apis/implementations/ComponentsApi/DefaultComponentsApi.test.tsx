@@ -15,63 +15,22 @@
  */
 
 import React from 'react';
-import {
-  coreExtensionData,
-  createComponentExtension,
-  createComponentRef,
-  createExtension,
-  createExtensionOverrides,
-} from '@backstage/frontend-plugin-api';
-import { resolveAppNodeSpecs } from '../../../tree/resolveAppNodeSpecs';
-import { resolveAppTree } from '../../../tree/resolveAppTree';
-import { App } from '../../../extensions/App';
+import { createComponentRef } from '@backstage/frontend-plugin-api';
 import { DefaultComponentsApi } from './DefaultComponentsApi';
 import { render, screen } from '@testing-library/react';
-import { instantiateAppNodeTree } from '../../../tree/instantiateAppNodeTree';
 
 const testRefA = createComponentRef({ id: 'test.a' });
 const testRefB1 = createComponentRef({ id: 'test.b' });
 const testRefB2 = createComponentRef({ id: 'test.b' });
 
-const baseOverrides = createExtensionOverrides({
-  extensions: [
-    App,
-    createExtension({
-      namespace: 'app',
-      name: 'root',
-      attachTo: { id: 'app', input: 'root' },
-      output: {
-        element: coreExtensionData.reactElement,
-      },
-      factory() {
-        return {
-          element: <div>root</div>,
-        };
-      },
-    }),
-  ],
-});
-
 describe('DefaultComponentsApi', () => {
   it('should provide components', () => {
-    const tree = resolveAppTree(
-      'app',
-      resolveAppNodeSpecs({
-        features: [
-          baseOverrides,
-          createExtensionOverrides({
-            extensions: [
-              createComponentExtension({
-                ref: testRefA,
-                loader: { sync: () => () => <div>test.a</div> },
-              }),
-            ],
-          }),
-        ],
-      }),
-    );
-    instantiateAppNodeTree(tree.root);
-    const api = DefaultComponentsApi.fromTree(tree);
+    const api = DefaultComponentsApi.fromComponents([
+      {
+        ref: testRefA,
+        impl: () => <div>test.a</div>,
+      },
+    ]);
 
     const ComponentA = api.getComponent(testRefA);
     render(<ComponentA />);
@@ -80,24 +39,12 @@ describe('DefaultComponentsApi', () => {
   });
 
   it('should key extension refs by ID', () => {
-    const tree = resolveAppTree(
-      'app',
-      resolveAppNodeSpecs({
-        features: [
-          baseOverrides,
-          createExtensionOverrides({
-            extensions: [
-              createComponentExtension({
-                ref: testRefB1,
-                loader: { sync: () => () => <div>test.b</div> },
-              }),
-            ],
-          }),
-        ],
-      }),
-    );
-    instantiateAppNodeTree(tree.root);
-    const api = DefaultComponentsApi.fromTree(tree);
+    const api = DefaultComponentsApi.fromComponents([
+      {
+        ref: testRefB1,
+        impl: () => <div>test.b</div>,
+      },
+    ]);
 
     const ComponentB1 = api.getComponent(testRefB1);
     const ComponentB2 = api.getComponent(testRefB2);

@@ -44,6 +44,7 @@ import {
   createFetchPlainAction,
   createFetchPlainFileAction,
   createFetchTemplateAction,
+  createFetchTemplateFileAction,
   createFilesystemDeleteAction,
   createFilesystemRenameAction,
   createWaitAction,
@@ -144,6 +145,12 @@ export const scaffolderPlugin = createBackendPlugin({
             integrations,
           }),
           createFetchTemplateAction({
+            integrations,
+            reader,
+            additionalTemplateFilters,
+            additionalTemplateGlobals,
+          }),
+          createFetchTemplateFileAction({
             integrations,
             reader,
             additionalTemplateFilters,

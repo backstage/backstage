@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-import {
-  CacheClient,
-  CacheManager,
-  PluginCacheManager,
-} from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import {
   ScmIntegrationRegistry,
@@ -31,7 +26,8 @@ import {
   processingResult,
 } from '@backstage/plugin-catalog-node';
 import { GitLabClient, GitLabProject, paginated } from './lib';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import { CacheService, LoggerService } from '@backstage/backend-plugin-api';
+import { CacheManager } from '@backstage/backend-defaults/cache';
 
 /**
  * Extracts repositories out of an GitLab instance.
@@ -40,7 +36,7 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 export class GitLabDiscoveryProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;
   private readonly logger: LoggerService;
-  private readonly cache: CacheClient;
+  private readonly cache: CacheService;
   private readonly skipReposWithoutExactFileMatch: boolean;
   private readonly skipForkedRepos: boolean;
 
@@ -65,13 +61,13 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
 
   private constructor(options: {
     integrations: ScmIntegrationRegistry;
-    pluginCache: PluginCacheManager;
+    pluginCache: CacheService;
     logger: LoggerService;
     skipReposWithoutExactFileMatch?: boolean;
     skipForkedRepos?: boolean;
   }) {
     this.integrations = options.integrations;
-    this.cache = options.pluginCache.getClient();
+    this.cache = options.pluginCache;
     this.logger = options.logger;
     this.skipReposWithoutExactFileMatch =
       options.skipReposWithoutExactFileMatch || false;

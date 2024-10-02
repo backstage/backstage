@@ -142,8 +142,28 @@ backend.add(import('@backstage/plugin-auth-backend-module-github-provider'));
 
 When you want to supply a custom sign-in resolver, as a general pattern you
 remove that last import and instead construct your own provider using the
-facilities from the same package. You can leave the config unchanged from
-before.
+facilities from the same package.
+
+Make sure that your `auth` config in your `app-config.yaml` does not contain
+any `resolvers` field - otherwise, they take priority.
+
+```yaml title="in e.g. app-config.yaml"
+auth:
+  environment: development
+  providers:
+    github:
+      development:
+        clientId: ${AUTH_GITHUB_CLIENT_ID}
+        clientSecret: ${AUTH_GITHUB_CLIENT_SECRET}
+        enterpriseInstanceUrl: ${AUTH_GITHUB_ENTERPRISE_INSTANCE_URL}
+/* highlight-remove-start */
+        signIn:
+          resolvers:
+            - resolver: usernameMatchingUserEntityName
+            - resolver: emailMatchingUserEntityProfileEmail
+            - resolver: emailLocalPartMatchingUserEntityName
+/* highlight-remove-end */
+```
 
 ```ts title="in packages/backend/src/index.ts"
 /* highlight-add-start */
@@ -193,7 +213,7 @@ backend.add(import('@backstage/plugin-auth-backend-module-github-provider'));
 backend.add(customAuth);
 ```
 
-Check out [the naming patterns article](../backend-system/architecture/07-naming-patterns.md) for what rules
+Check out [the naming patterns article](../backend-system/architecture/08-naming-patterns.md) for what rules
 apply regarding how to form valid IDs. In this example we also put the module
 declaration directly in `packages/backend/src/index.ts` but that's just for
 simplicity. You can place it anywhere you like, including in other packages, and
@@ -403,3 +423,22 @@ const customAuth = createBackendModule({
 ```
 
 Remember to `backend.add` the created module just like above.
+
+## Common Sign-In Resolver Errors
+
+There are two common Sign-In Resolver errors you might run into.
+
+First is: "The 'Auth Provider Name' provider is not configured to support sign-in". Here is what this looks like for the GitHub Auth provider:
+
+![The GitHub provider is not configured to support sign-in](../assets/auth/github-provider-not-configured-to-support-sign-in.png)
+
+This error can be caused by the following:
+
+- The `signIn.resolvers` have not be added to your Auth Provider configuration. Adding this will resolve the error.
+- There is a syntax error in your Auth Provider configuration. Running `yarn backstage-cli config:check --strict` will help identify the syntax error.
+
+The second common error is: "Failed to sign-in, unable to resolve user identity". Here is what this looks like for the GitHub Auth provider:
+
+![Failed to sign-in, unable to resolve user identity](../assets/auth/github-unable-to-reolve-identity.png)
+
+This error is caused by the Sign-In Resolver you configured being unable to find a matching User in the Catalog. To fix this you need to import User, and Group, data from some source of truth for this data at your Organization. To do this you can use one of the existing Org Data providers like the ones for [Entra ID (Azure AD/MS Graph)](../integrations/azure/org.md), [GitHub](../integrations/github/org.md), [GitLab](../integrations/gitlab/org.md), etc. or if none of those fit your needs you can create a [Custom Entity Provider](../features/software-catalog/external-integrations.md#custom-entity-providers).

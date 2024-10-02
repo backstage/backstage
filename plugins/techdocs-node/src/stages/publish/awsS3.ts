@@ -42,13 +42,13 @@ import JSON5 from 'json5';
 import createLimiter from 'p-limit';
 import path from 'path';
 import { Readable } from 'stream';
-import { Logger } from 'winston';
 import {
   bulkStorageOperation,
   getCloudPathForLocalPath,
   getFileTreeRecursively,
   getHeadersForFileExtension,
   getStaleFiles,
+  isValidContentPath,
   lowerCaseEntityTriplet,
   lowerCaseEntityTripletInStoragePath,
   normalizeExternalStorageRootPath,
@@ -60,6 +60,7 @@ import {
   ReadinessResponse,
   TechDocsMetadata,
 } from './types';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 const streamToBuffer = (stream: Readable): Promise<Buffer> => {
   return new Promise((resolve, reject) => {
@@ -80,7 +81,7 @@ export class AwsS3Publish implements PublisherBase {
   private readonly storageClient: S3Client;
   private readonly bucketName: string;
   private readonly legacyPathCasing: boolean;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly bucketRootPath: string;
   private readonly sse?: 'aws:kms' | 'AES256';
 
@@ -88,7 +89,7 @@ export class AwsS3Publish implements PublisherBase {
     storageClient: S3Client;
     bucketName: string;
     legacyPathCasing: boolean;
-    logger: Logger;
+    logger: LoggerService;
     bucketRootPath: string;
     sse?: 'aws:kms' | 'AES256';
   }) {
@@ -102,7 +103,7 @@ export class AwsS3Publish implements PublisherBase {
 
   static async fromConfig(
     config: Config,
-    logger: Logger,
+    logger: LoggerService,
   ): Promise<PublisherBase> {
     let bucketName = '';
     try {
@@ -398,6 +399,12 @@ export class AwsS3Publish implements PublisherBase {
           : lowerCaseEntityTriplet(entityTriplet);
 
         const entityRootDir = path.posix.join(this.bucketRootPath, entityDir);
+        if (!isValidContentPath(this.bucketRootPath, entityRootDir)) {
+          this.logger.error(
+            `Invalid content path found while fetching TechDocs metadata: ${entityRootDir}`,
+          );
+          throw new Error(`Metadata Not Found`);
+        }
 
         try {
           const resp = await this.storageClient.send(
@@ -446,6 +453,13 @@ export class AwsS3Publish implements PublisherBase {
 
       // Prepend the root path to the relative file path
       const filePath = path.posix.join(this.bucketRootPath, filePathNoRoot);
+      if (!isValidContentPath(this.bucketRootPath, filePath)) {
+        this.logger.error(
+          `Attempted to fetch TechDocs content for a file outside of the bucket root: ${filePathNoRoot}`,
+        );
+        res.status(404).send('File Not Found');
+        return;
+      }
 
       // Files with different extensions (CSS, HTML) need to be served with different headers
       const fileExtension = path.extname(filePath);
@@ -486,6 +500,12 @@ export class AwsS3Publish implements PublisherBase {
         : lowerCaseEntityTriplet(entityTriplet);
 
       const entityRootDir = path.posix.join(this.bucketRootPath, entityDir);
+      if (!isValidContentPath(this.bucketRootPath, entityRootDir)) {
+        this.logger.error(
+          `Invalid content path found while checking if docs have been generated: ${entityRootDir}`,
+        );
+        return Promise.resolve(false);
+      }
 
       await this.storageClient.send(
         new HeadObjectCommand({
@@ -524,7 +544,7 @@ export class AwsS3Publish implements PublisherBase {
           }
 
           try {
-            this.logger.verbose(`Migrating ${file}`);
+            this.logger.debug(`Migrating ${file}`);
             await this.storageClient.send(
               new CopyObjectCommand({
                 Bucket: this.bucketName,

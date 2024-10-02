@@ -42,7 +42,6 @@ import {
   createMockDirectory,
   mockServices,
 } from '@backstage/backend-test-utils';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 
 const env = process.env;
 let s3Mock: AwsClientStub<S3Client>;
@@ -90,7 +89,7 @@ class ErrorReadable extends Readable {
   }
 }
 
-const logger = loggerToWinstonLogger(mockServices.logger.mock());
+const logger = mockServices.logger.mock();
 const loggerInfoSpy = jest.spyOn(logger, 'info');
 const loggerErrorSpy = jest.spyOn(logger, 'error');
 

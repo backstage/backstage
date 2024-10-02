@@ -32,6 +32,12 @@ auth:
       serviceTokens:
         - token: '1uh2fh19efvfh129f1f919u21f2f19jf2.access'
           subject: 'bot-user@your-company.com'
+      # You can customize the header name that contains the jwt token, by default
+      # cf-access-jwt-assertion is used
+      jwtHeaderName: <my-header>
+      # You can customize the authorization cookie name, by default
+      # CF_Authorization is used
+      authorizationCookieName: <MY_CAUTHORIZATION_COOKIE_NAME>
       # This picks what sign in resolver(s) you want to use.
       signIn:
         resolvers:

@@ -15,14 +15,19 @@
  */
 
 import { ExtensionDefinition } from './createExtension';
-import { resolveExtensionDefinition } from './resolveExtensionDefinition';
+import {
+  ResolveExtensionId,
+  resolveExtensionDefinition,
+} from './resolveExtensionDefinition';
 
 describe('resolveExtensionDefinition', () => {
   const baseDef = {
     $$type: '@backstage/ExtensionDefinition',
+    T: undefined as any,
     version: 'v2',
     attachTo: { id: '', input: '' },
     disabled: false,
+    override: () => ({} as ExtensionDefinition),
   };
 
   it.each([
@@ -35,7 +40,7 @@ describe('resolveExtensionDefinition', () => {
     const resolved = resolveExtensionDefinition({
       ...baseDef,
       ...definition,
-    } as ExtensionDefinition<unknown>);
+    } as ExtensionDefinition);
     expect(resolved.id).toBe(expected);
     expect(String(resolved)).toBe(`Extension{id=${expected}}`);
   });
@@ -45,12 +50,12 @@ describe('resolveExtensionDefinition', () => {
       resolveExtensionDefinition({
         ...baseDef,
         kind: 'k',
-      } as ExtensionDefinition<unknown>),
+      } as ExtensionDefinition),
     ).toThrow(
       'Extension must declare an explicit namespace or name as it could not be resolved from context, kind=k namespace=undefined name=undefined',
     );
     expect(() =>
-      resolveExtensionDefinition(baseDef as ExtensionDefinition<unknown>),
+      resolveExtensionDefinition(baseDef as ExtensionDefinition),
     ).toThrow(
       'Extension must declare an explicit namespace or name as it could not be resolved from context, kind=undefined namespace=undefined name=undefined',
     );
@@ -60,9 +65,11 @@ describe('resolveExtensionDefinition', () => {
 describe('old resolveExtensionDefinition', () => {
   const baseDef = {
     $$type: '@backstage/ExtensionDefinition',
+    T: undefined as any,
     version: 'v1',
     attachTo: { id: '', input: '' },
     disabled: false,
+    override: () => ({} as ExtensionDefinition),
   };
 
   it.each([
@@ -75,7 +82,7 @@ describe('old resolveExtensionDefinition', () => {
     const resolved = resolveExtensionDefinition({
       ...baseDef,
       ...definition,
-    } as ExtensionDefinition<unknown>);
+    } as ExtensionDefinition);
     expect(resolved.id).toBe(expected);
     expect(String(resolved)).toBe(`Extension{id=${expected}}`);
   });
@@ -85,14 +92,58 @@ describe('old resolveExtensionDefinition', () => {
       resolveExtensionDefinition({
         ...baseDef,
         kind: 'k',
-      } as ExtensionDefinition<unknown>),
+      } as ExtensionDefinition),
     ).toThrow(
       'Extension must declare an explicit namespace or name as it could not be resolved from context, kind=k namespace=undefined name=undefined',
     );
     expect(() =>
-      resolveExtensionDefinition(baseDef as ExtensionDefinition<unknown>),
+      resolveExtensionDefinition(baseDef as ExtensionDefinition),
     ).toThrow(
       'Extension must declare an explicit namespace or name as it could not be resolved from context, kind=undefined namespace=undefined name=undefined',
     );
+  });
+});
+
+describe('ResolveExtensionId', () => {
+  it('should resolve extension IDs correctly', () => {
+    type NamedExtension<
+      TKind extends string | undefined,
+      TName extends string | undefined,
+    > = ExtensionDefinition<{
+      kind: TKind;
+      name: TName;
+      output: any;
+    }>;
+    const id1: 'k:ns' = {} as ResolveExtensionId<
+      NamedExtension<'k', undefined>,
+      'ns'
+    >;
+
+    const id2: 'ns/n' = {} as ResolveExtensionId<
+      NamedExtension<undefined, 'n'>,
+      'ns'
+    >;
+
+    const id3: 'ns' = {} as ResolveExtensionId<
+      NamedExtension<undefined, undefined>,
+      'ns'
+    >;
+
+    const id4: 'k:ns/n' = {} as ResolveExtensionId<
+      NamedExtension<'k', 'n'>,
+      'ns'
+    >;
+
+    const invalid1: never = {} as ResolveExtensionId<
+      NamedExtension<'k', string | undefined>,
+      'ns'
+    >;
+
+    const invalid2: never = {} as ResolveExtensionId<
+      NamedExtension<'k', string>,
+      'ns'
+    >;
+
+    expect([id1, id2, id3, id4, invalid1, invalid2]).toBeDefined();
   });
 });

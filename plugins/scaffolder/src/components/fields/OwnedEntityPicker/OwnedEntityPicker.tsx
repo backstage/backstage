@@ -23,6 +23,8 @@ import { EntityPicker } from '../EntityPicker/EntityPicker';
 
 import { OwnedEntityPickerProps } from './schema';
 import { EntityPickerProps } from '../EntityPicker/schema';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../../translation';
 
 export { OwnedEntityPickerSchema } from './schema';
 
@@ -33,8 +35,12 @@ export { OwnedEntityPickerSchema } from './schema';
  * @public
  */
 export const OwnedEntityPicker = (props: OwnedEntityPickerProps) => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const {
-    schema: { title = 'Entity', description = 'An entity from the catalog' },
+    schema: {
+      title = t('fields.ownedEntityPicker.title'),
+      description = t('fields.ownedEntityPicker.description'),
+    },
     uiSchema,
     required,
   } = props;
@@ -88,7 +94,7 @@ function buildEntityPickerUISchema(
   // Note: This is typed to avoid es-lint rule TS2698
   const uiOptions: EntityPickerProps['uiSchema']['ui:options'] =
     uiSchema?.['ui:options'] || {};
-  const allowedKinds = uiOptions.allowedKinds;
+  const { allowedKinds, ...extraOptions } = uiOptions;
 
   const catalogFilter = asArray(uiOptions.catalogFilter).map(e => ({
     ...e,
@@ -98,6 +104,7 @@ function buildEntityPickerUISchema(
 
   return {
     'ui:options': {
+      ...extraOptions,
       catalogFilter,
     },
   };

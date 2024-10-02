@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
+import fs from 'fs-extra';
 import chalk from 'chalk';
 import { paths } from '../../paths';
 import { addCodeownersEntry, getCodeownersFilePath } from '../../codeowners';
 import { CreateContext, createFactory } from '../types';
-import { Task } from '../../tasks';
+import { addPackageDependency, addToBackend, Task } from '../../tasks';
 import { ownerPrompt } from './common/prompts';
 import { executePluginPackageTemplate } from './common/tasks';
 import { resolvePackageName } from './common/util';
@@ -78,7 +79,25 @@ export const scaffolderModule = createFactory<Options>({
         privatePackage: ctx.private,
         npmRegistry: ctx.npmRegistry,
         pluginVersion: ctx.defaultVersion,
+        license: ctx.license,
       },
+    });
+
+    if (await fs.pathExists(paths.resolveTargetRoot('packages/backend'))) {
+      await Task.forItem('backend', 'adding dependency', async () => {
+        await addPackageDependency(
+          paths.resolveTargetRoot('packages/backend/package.json'),
+          {
+            dependencies: {
+              [name]: `^${ctx.defaultVersion}`,
+            },
+          },
+        );
+      });
+    }
+
+    await addToBackend(name, {
+      type: 'module',
     });
 
     if (options.owner) {

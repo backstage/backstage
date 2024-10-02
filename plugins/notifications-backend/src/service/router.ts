@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { errorHandler, PluginDatabaseManager } from '@backstage/backend-common';
 import express, { Request } from 'express';
 import Router from 'express-promise-router';
@@ -22,24 +23,14 @@ import {
   NotificationGetOptions,
 } from '../database';
 import { v4 as uuid } from 'uuid';
-import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
-import {
-  Entity,
-  isGroupEntity,
-  isUserEntity,
-  RELATION_HAS_MEMBER,
-  RELATION_OWNED_BY,
-  RELATION_PARENT_OF,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
+import { CatalogApi } from '@backstage/catalog-client';
 import {
   NotificationProcessor,
   NotificationSendOptions,
 } from '@backstage/plugin-notifications-node';
-import { InputError } from '@backstage/errors';
+import { InputError, NotFoundError } from '@backstage/errors';
 import {
   AuthService,
-  DiscoveryService,
   HttpAuthService,
   LoggerService,
   UserInfoService,
@@ -54,17 +45,19 @@ import {
   NotificationStatus,
 } from '@backstage/plugin-notifications-common';
 import { parseEntityOrderFieldParams } from './parseEntityOrderFieldParams';
+import { getUsersForEntityRef } from './getUsersForEntityRef';
+import { Config } from '@backstage/config';
 
 /** @internal */
 export interface RouterOptions {
   logger: LoggerService;
+  config: Config;
   database: PluginDatabaseManager;
-  discovery: DiscoveryService;
   auth: AuthService;
   httpAuth: HttpAuthService;
   userInfo: UserInfoService;
   signals?: SignalsService;
-  catalog?: CatalogApi;
+  catalog: CatalogApi;
   processors?: NotificationProcessor[];
 }
 
@@ -73,110 +66,24 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const {
+    config,
     logger,
     database,
     auth,
     httpAuth,
     userInfo,
-    discovery,
     catalog,
     processors = [],
     signals,
   } = options;
 
-  const catalogClient =
-    catalog ?? new CatalogClient({ discoveryApi: discovery });
   const store = await DatabaseNotificationsStore.create({ database });
+  const frontendBaseUrl = config.getString('app.baseUrl');
 
   const getUser = async (req: Request<unknown>) => {
     const credentials = await httpAuth.credentials(req, { allow: ['user'] });
     const info = await userInfo.getUserInfo(credentials);
     return info.userEntityRef;
-  };
-
-  const getUsersForEntityRef = async (
-    entityRef: string | string[] | null,
-    excludeEntityRefs: string | string[],
-  ): Promise<string[]> => {
-    const { token } = await auth.getPluginRequestToken({
-      onBehalfOf: await auth.getOwnServiceCredentials(),
-      targetPluginId: 'catalog',
-    });
-
-    if (entityRef === null) {
-      return [];
-    }
-
-    const fields = ['kind', 'metadata.name', 'metadata.namespace', 'relations'];
-
-    const refs = Array.isArray(entityRef) ? entityRef : [entityRef];
-    const entities = await catalogClient.getEntitiesByRefs(
-      {
-        entityRefs: refs,
-        fields,
-      },
-      { token },
-    );
-
-    const excluded = Array.isArray(excludeEntityRefs)
-      ? excludeEntityRefs
-      : [excludeEntityRefs];
-
-    const mapEntity = async (entity: Entity | undefined): Promise<string[]> => {
-      if (!entity) {
-        return [];
-      }
-
-      const currentEntityRef = stringifyEntityRef(entity);
-      if (excluded.includes(currentEntityRef)) {
-        return [];
-      }
-
-      if (isUserEntity(entity)) {
-        return [currentEntityRef];
-      } else if (isGroupEntity(entity) && entity.relations) {
-        const users = entity.relations
-          .filter(relation => relation.type === RELATION_HAS_MEMBER)
-          .map(r => r.targetRef);
-
-        const childGroupRefs = entity.relations
-          .filter(relation => relation.type === RELATION_PARENT_OF)
-          .map(r => r.targetRef);
-
-        const childGroups = await catalogClient.getEntitiesByRefs(
-          {
-            entityRefs: childGroupRefs,
-            fields,
-          },
-          { token },
-        );
-        const childGroupUsers = await Promise.all(
-          childGroups.items.map(mapEntity),
-        );
-        return [...users, ...childGroupUsers.flat(2)];
-      } else if (entity.relations) {
-        const ownerRef = entity.relations.find(
-          relation => relation.type === RELATION_OWNED_BY,
-        )?.targetRef;
-
-        if (ownerRef) {
-          const owner = await catalogClient.getEntityByRef(ownerRef, { token });
-          if (owner) {
-            return mapEntity(owner);
-          }
-        }
-      }
-
-      return [];
-    };
-
-    const users: string[] = [];
-    for (const entity of entities.items) {
-      const u = await mapEntity(entity);
-      users.push(...u);
-    }
-
-    return users;
   };
 
   const filterProcessors = (payload: NotificationPayload) => {
@@ -270,6 +177,18 @@ export async function createRouter(
     }
   };
 
+  const validateLink = (link: string) => {
+    const stripLeadingSlash = (s: string) => s.replace(/^\//, '');
+    const ensureTrailingSlash = (s: string) => s.replace(/\/?$/, '/');
+    const url = new URL(
+      stripLeadingSlash(link),
+      ensureTrailingSlash(frontendBaseUrl),
+    );
+    if (url.protocol !== 'https:' && url.protocol !== 'http:') {
+      throw new Error('Only HTTP/HTTPS links are allowed');
+    }
+  };
+
   // TODO: Move to use OpenAPI router instead
   const router = Router();
   router.use(express.json());
@@ -330,7 +249,7 @@ export async function createRouter(
       store.getNotifications(opts),
       store.getNotificationsCount(opts),
     ]);
-    res.send({
+    res.json({
       totalCount,
       notifications,
     });
@@ -339,7 +258,7 @@ export async function createRouter(
   router.get('/status', async (req: Request<any, NotificationStatus>, res) => {
     const user = await getUser(req);
     const status = await store.getStatus({ user });
-    res.send(status);
+    res.json(status);
   });
 
   // Make sure this is the last "GET" handler
@@ -352,10 +271,9 @@ export async function createRouter(
     };
     const notifications = await store.getNotifications(opts);
     if (notifications.length !== 1) {
-      res.status(404).send({ error: 'Not found' });
-      return;
+      throw new NotFoundError('Not found');
     }
-    res.send(notifications[0]);
+    res.json(notifications[0]);
   });
 
   router.post('/update', async (req, res) => {
@@ -394,7 +312,7 @@ export async function createRouter(
     }
 
     const notifications = await store.getNotifications({ ids, user: user });
-    res.status(200).send(notifications);
+    res.json(notifications);
   });
 
   const sendBroadcastNotification = async (
@@ -512,11 +430,19 @@ export async function createRouter(
         allow: ['service'],
       });
 
-      const { title } = payload;
+      const { title, link } = payload;
 
       if (!recipients || !title) {
         logger.error(`Invalid notification request received`);
         throw new InputError(`Invalid notification request received`);
+      }
+
+      if (link) {
+        try {
+          validateLink(link);
+        } catch (e) {
+          throw new InputError('Invalid link provided', e);
+        }
       }
 
       const origin = credentials.principal.subject;
@@ -543,6 +469,7 @@ export async function createRouter(
           users = await getUsersForEntityRef(
             entityRef,
             recipients.excludeEntityRef ?? [],
+            { auth, catalogClient: catalog },
           );
         } catch (e) {
           logger.error(`Failed to resolve notification receivers: ${e}`);

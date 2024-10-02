@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import { LoggerService, UrlReaderService } from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
+import {
+  LoggerService,
+  RootConfigService,
+  UrlReaderService,
+} from '@backstage/backend-plugin-api';
 import { ReaderFactory } from './types';
 import { UrlReaderPredicateMux } from './UrlReaderPredicateMux';
 import { AzureUrlReader } from './AzureUrlReader';
@@ -40,7 +43,7 @@ import { HarnessUrlReader } from './HarnessUrlReader';
  */
 export type UrlReadersOptions = {
   /** Root config object */
-  config: Config;
+  config: RootConfigService;
   /** Logger used by all the readers */
   logger: LoggerService;
   /** A list of factories used to construct individual readers that match on URLs */

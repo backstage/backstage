@@ -39,7 +39,7 @@ the code.
 - [`docs/`](https://github.com/backstage/backstage/tree/master/docs) - This is
   where we keep all of our documentation Markdown files. These end up on
   https://backstage.io/docs. Just keep in mind that changes to the
-  [`sidebars.json`](https://github.com/backstage/backstage/blob/master/microsite/sidebars.json)
+  [`sidebars.js`](https://github.com/backstage/backstage/blob/master/microsite/sidebars.js)
   file may be needed as sections are added/removed.
 
 - [`.editorconfig`](https://github.com/backstage/backstage/tree/master/.editorconfig) -
@@ -82,9 +82,11 @@ are separated out into their own folder, see further down.
   package. The `backend` uses plugins to construct a working backend that the
   frontend (`app`) can use.
 
-- [`backend-common/`](https://github.com/backstage/backstage/tree/master/packages/backend-common) -
-  There are no "core" packages in the backend. Instead we have `backend-common`
-  which contains helper middleware and other utils.
+- [`backend-app-api/`](https://github.com/backstage/backstage/tree/master/packages/backend-app-api) -
+  This package contains the central wiring for how to make Backstage backends.
+
+- [`backend-plugin-api/`](https://github.com/backstage/backstage/tree/master/packages/backend-plugin-api) -
+  This package contains the core APIs that are used to make Backstage backend features such as plugins and modules.
 
 - [`catalog-client`](https://github.com/backstage/backstage/tree/master/packages/catalog-client) -
   An isomorphic client to interact with the Software Catalog. Backend plugins

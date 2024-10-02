@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import {
   ActionExample,
@@ -38,6 +38,7 @@ import { JSONSchema7, JSONSchema7Definition } from 'json-schema';
 import classNames from 'classnames';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import LinkIcon from '@material-ui/icons/Link';
 
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
@@ -46,6 +47,7 @@ import {
   EmptyState,
   ErrorPanel,
   Header,
+  Link,
   MarkdownContent,
   Page,
   Progress,
@@ -58,6 +60,8 @@ import {
   rootRouteRef,
   scaffolderListTaskRouteRef,
 } from '../../routes';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../translation';
 
 const useStyles = makeStyles(theme => ({
   code: {
@@ -82,6 +86,9 @@ const useStyles = makeStyles(theme => ({
       fontWeight: 'bolder',
       color: theme.palette.error.light,
     },
+  },
+  link: {
+    paddingLeft: theme.spacing(1),
   },
 }));
 
@@ -113,14 +120,22 @@ const ExamplesTable = (props: { examples: ActionExample[] }) => {
   );
 };
 
-const ActionPageContent = () => {
+export const ActionPageContent = () => {
   const api = useApi(scaffolderApiRef);
+  const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const classes = useStyles();
   const { loading, value, error } = useAsync(async () => {
     return api.listActions();
-  });
+  }, [api]);
+
   const [isExpanded, setIsExpanded] = useState<{ [key: string]: boolean }>({});
+
+  useEffect(() => {
+    if (value && window.location.hash) {
+      document.querySelector(window.location.hash)?.scrollIntoView();
+    }
+  }, [value]);
 
   if (loading) {
     return <Progress />;
@@ -132,8 +147,8 @@ const ActionPageContent = () => {
         <ErrorPanel error={error} />
         <EmptyState
           missing="info"
-          title="No information to display"
-          description="There are no actions installed or there was an issue communicating with backend."
+          title={t('actionsPage.content.emptyState.title')}
+          description={t('actionsPage.content.emptyState.description')}
         />
       </>
     );
@@ -141,17 +156,21 @@ const ActionPageContent = () => {
 
   const renderTable = (rows?: JSX.Element[]) => {
     if (!rows || rows.length < 1) {
-      return <Typography>No schema defined</Typography>;
+      return (
+        <Typography>{t('actionsPage.content.noRowsDescription')}</Typography>
+      );
     }
     return (
       <TableContainer component={Paper}>
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Title</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell>Type</TableCell>
+              <TableCell>{t('actionsPage.content.tableCell.name')}</TableCell>
+              <TableCell>{t('actionsPage.content.tableCell.title')}</TableCell>
+              <TableCell>
+                {t('actionsPage.content.tableCell.description')}
+              </TableCell>
+              <TableCell>{t('actionsPage.content.tableCell.type')}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>{rows}</TableBody>
@@ -288,14 +307,25 @@ const ActionPageContent = () => {
     );
     return (
       <Box pb={4} key={action.id}>
-        <Typography variant="h4" component="h2" className={classes.code}>
+        <Typography
+          id={action.id.replaceAll(':', '-')}
+          variant="h4"
+          component="h2"
+          className={classes.code}
+        >
           {action.id}
         </Typography>
+        <Link
+          className={classes.link}
+          to={`#${action.id.replaceAll(':', '-')}`}
+        >
+          <LinkIcon />
+        </Link>
         {action.description && <MarkdownContent content={action.description} />}
         {action.schema?.input && (
           <Box pb={2}>
             <Typography variant="h5" component="h3">
-              Input
+              {t('actionsPage.action.input')}
             </Typography>
             {renderTable(
               formatRows(`${action.id}.input`, action?.schema?.input),
@@ -306,7 +336,7 @@ const ActionPageContent = () => {
         {action.schema?.output && (
           <Box pb={2}>
             <Typography variant="h5" component="h3">
-              Output
+              {t('actionsPage.action.output')}
             </Typography>
             {renderTable(
               formatRows(`${action.id}.output`, action?.schema?.output),
@@ -317,7 +347,7 @@ const ActionPageContent = () => {
           <Accordion>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography variant="h5" component="h3">
-                Examples
+                {t('actionsPage.action.examples')}
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
@@ -336,6 +366,7 @@ export const ActionsPage = () => {
   const editorLink = useRouteRef(editRouteRef);
   const tasksLink = useRouteRef(scaffolderListTaskRouteRef);
   const createLink = useRouteRef(rootRouteRef);
+  const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const scaffolderPageContextMenuProps = {
     onEditorClicked: () => navigate(editorLink()),
@@ -347,9 +378,9 @@ export const ActionsPage = () => {
   return (
     <Page themeId="home">
       <Header
-        pageTitleOverride="Create a New Component"
-        title="Installed actions"
-        subtitle="This is the collection of all installed actions"
+        pageTitleOverride={t('actionsPage.pageTitle')}
+        title={t('actionsPage.title')}
+        subtitle={t('actionsPage.subtitle')}
       >
         <ScaffolderPageContextMenu {...scaffolderPageContextMenuProps} />
       </Header>

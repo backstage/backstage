@@ -17,10 +17,9 @@
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { GroupSchema } from '@gitbeaker/core/dist/types/resources/Groups';
-import { Gitlab } from '@gitbeaker/node';
 import { z } from 'zod';
 import commonGitlabConfig from '../commonGitlabConfig';
-import { getToken } from '../util';
+import { getClient, parseRepoUrl } from '../util';
 import { examples } from './gitlabGroupEnsureExists.examples';
 
 /**
@@ -60,16 +59,14 @@ export const createGitlabGroupEnsureExistsAction = (options: {
         return;
       }
 
-      const { path } = ctx.input;
-      const { token, integrationConfig } = getToken(ctx.input, integrations);
+      const { token, repoUrl, path } = ctx.input;
 
-      const api = new Gitlab({
-        host: integrationConfig.config.baseUrl,
-        token: token,
-      });
+      const { host } = parseRepoUrl(repoUrl, integrations);
+
+      const api = getClient({ host, integrations, token });
 
       let currentPath: string | null = null;
-      let parent: GroupSchema | null = null;
+      let parentId: number | null = null;
       for (const pathElement of path) {
         const fullPath: string = currentPath
           ? `${currentPath}/${pathElement}`
@@ -82,22 +79,24 @@ export const createGitlabGroupEnsureExistsAction = (options: {
         );
         if (!subGroup) {
           ctx.logger.info(`creating missing group ${fullPath}`);
-          parent = await api.Groups.create(
-            pathElement,
-            pathElement,
-            parent
-              ? {
-                  parent_id: parent.id,
-                }
-              : {},
-          );
+          parentId = (
+            await api.Groups.create(
+              pathElement,
+              pathElement,
+              parentId
+                ? {
+                    parentId: parentId,
+                  }
+                : {},
+            )
+          )?.id;
         } else {
-          parent = subGroup;
+          parentId = subGroup.id;
         }
         currentPath = fullPath;
       }
-      if (parent !== null) {
-        ctx.output('groupId', parent?.id);
+      if (parentId !== null) {
+        ctx.output('groupId', parentId);
       }
     },
   });

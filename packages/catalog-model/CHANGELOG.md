@@ -1,5 +1,41 @@
 # @backstage/catalog-model
 
+## 1.7.0
+
+### Minor Changes
+
+- 74acf06: Add `dependencyOf` prop to catalog model for Component kind to enable building relationship graphs with both directions using `dependsOn` and `dependencyOf`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 1.6.0
+
+### Minor Changes
+
+- 34fa803: Introduce an optional spec.type attribute on the Domain and System entity kinds
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 1.6.0-next.0
+
+### Minor Changes
+
+- 34fa803: Introduce an optional spec.type attribute on the Domain and System entity kinds
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 1.5.0
 
 ### Minor Changes

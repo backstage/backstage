@@ -1,5 +1,55 @@
 # @backstage/plugin-catalog-common
 
+## 1.1.0
+
+### Minor Changes
+
+- bd35cdb: The `analyze-location` endpoint is now protected by the `catalog.location.analyze` permission.
+  The `validate-entity` endpoint is now protected by the `catalog.entity.validate` permission.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.0
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-search-common@1.2.14
+
+## 1.0.26
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-search-common@1.2.14
+  - @backstage/catalog-model@1.6.0
+
+## 1.0.26-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.6.0-next.0
+  - @backstage/plugin-permission-common@0.8.1-next.1
+  - @backstage/plugin-search-common@1.2.14-next.1
+
+## 1.0.26-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.8.1-next.1
+  - @backstage/plugin-search-common@1.2.14-next.1
+  - @backstage/catalog-model@1.5.0
+
+## 1.0.26-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.8.1-next.0
+  - @backstage/plugin-search-common@1.2.14-next.0
+  - @backstage/catalog-model@1.5.0
+
 ## 1.0.25
 
 ### Patch Changes

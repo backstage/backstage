@@ -64,6 +64,7 @@ export const backendPlugin = createFactory<Options>({
         pluginVersion: ctx.defaultVersion,
         privatePackage: ctx.private,
         npmRegistry: ctx.npmRegistry,
+        license: ctx.license,
       },
     });
 
@@ -78,11 +79,11 @@ export const backendPlugin = createFactory<Options>({
           },
         );
       });
-
-      await addToBackend(name, {
-        type: 'plugin',
-      });
     }
+
+    await addToBackend(name, {
+      type: 'plugin',
+    });
 
     if (options.owner) {
       await addCodeownersEntry(`/plugins/${id}`, options.owner);

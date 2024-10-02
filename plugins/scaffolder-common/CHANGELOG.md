@@ -1,5 +1,50 @@
 # @backstage/plugin-scaffolder-common
 
+## 1.5.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.8.1
+
+## 1.5.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/catalog-model@1.6.0
+  - @backstage/types@1.1.1
+
+## 1.5.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.6.0-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.8.1-next.1
+
+## 1.5.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.8.1-next.1
+  - @backstage/catalog-model@1.5.0
+  - @backstage/types@1.1.1
+
+## 1.5.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.8.1-next.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/types@1.1.1
+
 ## 1.5.4
 
 ### Patch Changes
