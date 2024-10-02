@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-catalog-graph': minor
+'@backstage/plugin-catalog-graph': patch
 ---
 
 Added Action attribute for CatalogGraphCard
