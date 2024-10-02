@@ -96,6 +96,28 @@ export type StepperProps = {
   layouts?: LayoutOptions[];
 };
 
+const makeStepKey = (step: string | number) => `step-${step}`;
+
+const getInitialFormState = (
+  steps: any[],
+  initialState: Record<string, JsonValue>,
+) => {
+  return steps.reduce((formState, step, index) => {
+    const stepKey = makeStepKey(index);
+    formState[stepKey] = {};
+
+    if (step.mergedSchema.properties) {
+      Object.keys(step.mergedSchema.properties).forEach(key => {
+        if (initialState && initialState[key] !== undefined) {
+          formState[stepKey][key] = initialState[key];
+        }
+      });
+    }
+
+    return formState;
+  }, {} as { [step: string]: Record<string, JsonValue> });
+};
+
 /**
  * The `Stepper` component is the Wizard that is rendered when a user selects a template
  * @alpha
@@ -117,12 +139,9 @@ export const Stepper = (stepperProps: StepperProps) => {
   const [initialState] = useFormDataFromQuery(props.initialState);
   const [formState, setFormState] = useState<{
     [step: string]: Record<string, JsonValue>;
-  }>({});
-
+  }>(() => getInitialFormState(steps, initialState));
   const [errors, setErrors] = useState<undefined | FormValidation>();
   const styles = useStyles();
-
-  const makeStepKey = (step: string | number) => `step-${step}`;
 
   const backLabel =
     presentation?.buttonLabels?.backButtonText ?? backButtonText;
@@ -202,8 +221,8 @@ export const Stepper = (stepperProps: StepperProps) => {
   } = props.formProps ?? {};
 
   const mergedState = useMemo(
-    () => (formState ? merge({}, ...Object.values(formState)) : initialState),
-    [formState, initialState],
+    () => merge({}, ...Object.values(formState)),
+    [formState],
   );
 
   const handleCreate = useCallback(() => {
@@ -228,6 +247,8 @@ export const Stepper = (stepperProps: StepperProps) => {
         onSubmit={handleNext}
         fields={fields}
         showErrorList="top"
+        omitExtraData
+        liveOmit
         templates={{ ErrorListTemplate }}
         onChange={handleChange(index)}
         widgets={{ password: PasswordWidget }}
@@ -313,6 +334,7 @@ export const Stepper = (stepperProps: StepperProps) => {
           <MuiStepLabel>{reviewLabel}</MuiStepLabel>
         </MuiStep>
       </MuiStepper>
+      {JSON.stringify(formState)}
       <div className={styles.formWrapper}>
         {activeStep < steps.length ? stepForms[activeStep] : reviewComponent}
       </div>

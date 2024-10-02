@@ -13,8 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { first } from 'lodash';
 import { type ParsedTemplateSchema } from '../../hooks/useTemplateSchema';
-import { hasErrors, transformSchemaToProps } from './utils';
+import {
+  getInitialFormState,
+  hasErrors,
+  makeStepKey,
+  transformSchemaToProps,
+} from './utils';
 
 describe('hasErrors', () => {
   it('should return false for empty _errors', () => {
@@ -111,5 +117,33 @@ describe('transformSchemaToProps', () => {
 
     const { uiSchema } = transformSchemaToProps(step, { layouts });
     expect(uiSchema['ui:ObjectFieldTemplate']).toEqual(layouts[0].component);
+  });
+});
+
+describe('makeStepKey', () => {
+  it('should return a string with step prefix', () => {
+    expect(makeStepKey(1)).toEqual('step-1');
+    expect(makeStepKey('2')).toEqual('step-2');
+  });
+});
+
+describe('getInitialFormState', () => {
+  const templateSchema = [
+    { mergedSchema: { properties: { firstName: '' } } },
+    { mergedSchema: { properties: { lastName: '' } } },
+  ] as any;
+  it('should return a record with step keys', () => {
+    const initialState = { firstName: 'John', lastName: 'Doe' };
+    expect(getInitialFormState(templateSchema, initialState)).toEqual({
+      'step-0': { firstName: 'John' },
+      'step-1': { lastName: 'Doe' },
+    });
+  });
+
+  it('should return a record with step keys when no initial state is provided', () => {
+    expect(getInitialFormState(templateSchema, {})).toEqual({
+      'step-0': {},
+      'step-1': {},
+    });
   });
 });

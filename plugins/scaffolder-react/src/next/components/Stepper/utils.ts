@@ -82,3 +82,25 @@ export const transformSchemaToProps = (
     },
   };
 };
+
+export const makeStepKey = (step: string | number) => `step-${step}`;
+
+export const getInitialFormState = (
+  steps: any[],
+  initialState: Record<string, JsonValue>,
+) => {
+  return steps.reduce((formState, step, index) => {
+    const stepKey = makeStepKey(index);
+    formState[stepKey] = {};
+
+    if (step.mergedSchema.properties) {
+      Object.keys(step.mergedSchema.properties).forEach(key => {
+        if (initialState && initialState[key] !== undefined) {
+          formState[stepKey][key] = initialState[key];
+        }
+      });
+    }
+
+    return formState;
+  }, {} as { [step: string]: Record<string, JsonValue> });
+};
