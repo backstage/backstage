@@ -89,7 +89,6 @@ export const palettes = {
     tabbar: {
       indicator: '#9BF0E1',
     },
-    code: {},
   },
   dark: {
     type: 'dark' as const,
@@ -164,6 +163,5 @@ export const palettes = {
     tabbar: {
       indicator: '#9BF0E1',
     },
-    code: {},
   },
 };

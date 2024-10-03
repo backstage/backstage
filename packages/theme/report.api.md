@@ -313,7 +313,6 @@ export const palettes: {
     tabbar: {
       indicator: string;
     };
-    code: {};
   };
   dark: {
     type: 'dark';
@@ -388,7 +387,6 @@ export const palettes: {
     tabbar: {
       indicator: string;
     };
-    code: {};
   };
 };
 
