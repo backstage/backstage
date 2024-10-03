@@ -32,7 +32,7 @@ export const useUserProfile = () => {
   const catalogApi = useApi(catalogApiRef);
 
   const { value, loading, error } = useAsync(async () => {
-    const identityProfile = await identityApi.getProfileInfo();
+    let identityProfile = await identityApi.getProfileInfo();
     const backStageIdentity = await identityApi.getBackstageIdentity();
     const catalogProfile = (await catalogApi.getEntityByRef(
       backStageIdentity.userEntityRef,
@@ -41,7 +41,10 @@ export const useUserProfile = () => {
       identityProfile.picture === undefined &&
       catalogProfile?.spec?.profile?.picture
     ) {
-      identityProfile.picture = catalogProfile.spec.profile.picture;
+      identityProfile = {
+        ...identityProfile,
+        picture: catalogProfile.spec.profile.picture,
+      };
     }
     return {
       profile: identityProfile,
