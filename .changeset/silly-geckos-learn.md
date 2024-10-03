@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-user-settings': minor
+'@backstage/plugin-user-settings': patch
 ---
 
-Search for profile image also in User Entities
+`useUserProfile` will now use the user's picture stored in the catalog as a fallback if the identity provider doesn't return a picture.
