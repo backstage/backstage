@@ -185,11 +185,11 @@ Scope: The Backstage Documentation
 
 ## Sponsors
 
-| Name              | Organization | GitHub                                      | Email              |
-| ----------------- | ------------ | ------------------------------------------- | ------------------ |
-| Niklas Gustavsson | Spotify      | [protocol7](https://github.com/protocol7)   | ngn@spotify.com    |
-| Dave Zolotusky    | Spotify      | [dzolotusky](https://github.com/dzolotusky) | dzolo@spotify.com  |
-| Helen Greul       | Spotify      | [helengreul](https://github.com/helengreul) | heleng@spotify.com |
+| Name              | Organization | GitHub                                      | Email             |
+| ----------------- | ------------ | ------------------------------------------- | ----------------- |
+| Niklas Gustavsson | Spotify      | [protocol7](https://github.com/protocol7)   | ngn@spotify.com   |
+| Dave Zolotusky    | Spotify      | [dzolotusky](https://github.com/dzolotusky) | dzolo@spotify.com |
+| Pia Nilsson       | Spotify      | [pianilsson](https://github.com/pianilsson) | pia@spotify.com   |
 
 ## Organization Members
 
@@ -224,9 +224,10 @@ Scope: The Backstage Documentation
 
 ## Emeritus End User Sponsors
 
-| Name      | Organization | GitHub                                      | Discord        |
-| --------- | ------------ | ------------------------------------------- | -------------- |
-| Lee Mills | Spotify      | [leemills83](https://github.com/leemills83) | `.binarypoint` |
+| Name        | Organization | GitHub                                      | Discord        |
+| ----------- | ------------ | ------------------------------------------- | -------------- |
+| Lee Mills   | Spotify      | [leemills83](https://github.com/leemills83) | `.binarypoint` |
+| Helen Greul | Spotify      | [helengreul](https://github.com/helengreul) | `helen_greul`  |
 
 ## Emeritus Project Area Maintainers
 
