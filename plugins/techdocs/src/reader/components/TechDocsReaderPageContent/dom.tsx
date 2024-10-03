@@ -265,6 +265,12 @@ export const useTechDocsReaderDom = (
         return;
       }
 
+      // Skip this update if the location's path has changed but the state
+      // contains a page for another page that isn't loaded yet.
+      if (!window.location.pathname.endsWith(path)) {
+        return;
+      }
+
       // Scroll to top after render
       window.scroll({ top: 0 });
 
@@ -272,6 +278,7 @@ export const useTechDocsReaderDom = (
       const postTransformedDomElement = await postRender(
         preTransformedDomElement,
       );
+
       setDom(postTransformedDomElement as HTMLElement);
     });
 
