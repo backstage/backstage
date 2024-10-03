@@ -16,6 +16,21 @@
 
 /**
  * Utility type to expand type aliases into their equivalent type.
+ *
+ * @example Expanding a basic object merge
+ *
+ * ### Basic object type
+ * ```ts
+ * type Example = { item1: string } & { item2: number }
+ *   // ?^ { item1: string } & { item2: number }
+ * ```
+ *
+ * ### Usage
+ * ```ts
+ * type Example = Expand<{ item1: string } & { item2: number }>
+ *   // ?^ { item1: string, item2: number }
+ * ```
+ *
  * @public
  */
 
@@ -23,6 +38,8 @@ export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
 
 /**
  * Helper type that expands type hints recursively
+ *
+ * Refer to {@link Expand} for an example of type expansion.
  *
  * @public
  */
