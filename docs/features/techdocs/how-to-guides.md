@@ -874,3 +874,23 @@ metadata:
 
 TechDocs supports using the [mkdocs-redirects](https://github.com/mkdocs/mkdocs-redirects/tree/master) plugin to create a redirect map for any TechDocs site. This allows broken links from renamed or moved pages in your site to be redirected to their specified replacement.
 TechDocs will notify the user that the page they are trying to access is no longer maintained. Then, they will be redirected. External site redirects are not supported. If an external redirect is provided, the user will instead be redirected to the index page of the documentation site.
+
+## Create download links for static assets
+
+You may want to make files available for download by your users such as PDF
+documents, images, or code templates. Download links for files included in your
+docs directory can be made by adding `{: download }` after a markdown link.
+
+```
+[Link text](https://example.com/foo.jpg){: download }
+```
+
+The user's browser will download the file as `download.jpg` when the link is
+clicked.
+
+Specify a file name to control the name the file will be given when it is
+downloaded:
+
+```
+[Link text](https://example.com/foo.jpg){: download="foo.jpg" }
+```

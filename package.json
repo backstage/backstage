@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "1.32.0-next.0",
+  "version": "1.32.0-next.1",
   "private": true,
   "repository": {
     "type": "git",
@@ -31,6 +31,7 @@
     "lint": "backstage-cli repo lint --since origin/master",
     "lint:all": "backstage-cli repo lint",
     "lint:docs": "node ./scripts/check-docs-quality",
+    "lint:peer-deps": "backstage-repo-tools peer-deps",
     "lint:type-deps": "backstage-repo-tools type-deps",
     "new": "backstage-cli new --scope backstage --baseVersion 0.0.0 --no-private",
     "prepare": "husky",

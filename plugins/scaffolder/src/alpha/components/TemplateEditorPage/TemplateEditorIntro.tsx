@@ -18,29 +18,62 @@ import React from 'react';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
-import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import { makeStyles } from '@material-ui/core/styles';
 import { WebFileSystemAccess } from '../../../lib/filesystem';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
+import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
+import ListAltIcon from '@material-ui/icons/ListAlt';
+import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import CardMedia from '@material-ui/core/CardMedia';
+import PublishIcon from '@material-ui/icons/Publish';
+import SvgIcon from '@material-ui/core/SvgIcon';
+import Tooltip from '@material-ui/core/Tooltip';
 
 const useStyles = makeStyles(theme => ({
+  gridRoot: {
+    display: 'flex',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cardGrid: {
+    maxWidth: 1000,
+    display: 'grid',
+    gridGap: theme.spacing(2),
+    gridAutoFlow: 'row',
+    [theme.breakpoints.up('md')]: {
+      gridTemplateRows: '1fr 1fr',
+      gridTemplateColumns: '1fr 1fr',
+    },
+  },
+  card: {
+    display: 'grid',
+    gridTemplateColumns: 'auto 1fr',
+    gridTemplateRows: '1fr',
+    alignItems: 'center',
+    margin: theme.spacing(0, 1),
+    marginTop: theme.spacing(2),
+    padding: theme.spacing(2),
+  },
+  icon: {
+    justifySelf: 'center',
+    paddingTop: theme.spacing(1),
+    fontSize: 48,
+  },
   introText: {
     textAlign: 'center',
     marginTop: theme.spacing(2),
-  },
-  card: {
-    position: 'relative',
-    maxWidth: 340,
-    marginTop: theme.spacing(4),
-    margin: theme.spacing(0, 2),
   },
   infoIcon: {
     position: 'absolute',
     top: theme.spacing(1),
     right: theme.spacing(1),
+  },
+  cardContent: {
+    padding: theme.spacing(1),
   },
 }));
 
@@ -51,142 +84,109 @@ interface EditorIntroProps {
   ) => void;
 }
 
-export function TemplateEditorIntro(props: EditorIntroProps) {
-  const classes = useStyles();
-  const supportsLoad = WebFileSystemAccess.isSupported();
+function ActionCard(props: {
+  title: string;
+  description: string;
+  Icon: typeof SvgIcon;
+  action?: React.MouseEventHandler;
+  requireLoad?: boolean;
+}) {
+  const supportsLoad = props.requireLoad
+    ? WebFileSystemAccess.isSupported()
+    : true;
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
-  const cardLoadLocal = (
-    <Card className={classes.card} elevation={4}>
-      <CardActionArea
-        disabled={!supportsLoad}
-        onClick={() => props.onSelect?.('local')}
-      >
-        <CardContent>
-          <Typography
-            variant="h4"
-            component="h3"
-            gutterBottom
-            color={supportsLoad ? undefined : 'textSecondary'}
-            style={{ display: 'flex', flexFlow: 'row nowrap' }}
-          >
-            {t('templateEditorPage.templateEditorIntro.loadLocal.title')}
-          </Typography>
-          <Typography
-            variant="body1"
-            color={supportsLoad ? undefined : 'textSecondary'}
-          >
-            {t('templateEditorPage.templateEditorIntro.loadLocal.description')}
-          </Typography>
-        </CardContent>
-      </CardActionArea>
+  const classes = useStyles();
+  const { Icon, title, description, action } = props;
+  return (
+    <Card className={classes.card}>
       {!supportsLoad && (
-        <div className={classes.infoIcon}>
-          <Tooltip
-            placement="top"
-            title={t(
-              'templateEditorPage.templateEditorIntro.loadLocal.unsupportedTooltip',
-            )}
-          >
-            <InfoOutlinedIcon />
-          </Tooltip>
-        </div>
+        <Tooltip
+          placement="top"
+          title={t(
+            'templateEditorPage.templateEditorIntro.loadLocal.unsupportedTooltip',
+          )}
+        >
+          <InfoOutlinedIcon />
+        </Tooltip>
       )}
-    </Card>
-  );
 
-  const cardCreateLocal = (
-    <Card className={classes.card} elevation={4}>
-      <CardActionArea
-        disabled={!supportsLoad}
-        onClick={() => props.onSelect?.('create-template')}
-      >
-        <CardContent>
+      <CardActionArea onClick={action}>
+        <CardMedia>
+          <Icon
+            className={classes.icon}
+            color={supportsLoad ? undefined : 'disabled'}
+          />
+        </CardMedia>
+        <CardContent className={classes.cardContent}>
           <Typography
-            variant="h4"
-            component="h3"
             gutterBottom
-            color={supportsLoad ? undefined : 'textSecondary'}
-            style={{ display: 'flex', flexFlow: 'row nowrap' }}
-          >
-            {t('templateEditorPage.templateEditorIntro.createLocal.title')}
-          </Typography>
-          <Typography
-            variant="body1"
+            variant="h5"
+            component="h2"
             color={supportsLoad ? undefined : 'textSecondary'}
           >
-            {t(
-              'templateEditorPage.templateEditorIntro.createLocal.description',
-            )}
+            {title}
           </Typography>
-        </CardContent>
-      </CardActionArea>
-      {!supportsLoad && (
-        <div className={classes.infoIcon}>
-          <Tooltip
-            placement="top"
-            title={t(
-              'templateEditorPage.templateEditorIntro.createLocal.unsupportedTooltip',
-            )}
-          >
-            <InfoOutlinedIcon />
-          </Tooltip>
-        </div>
-      )}
-    </Card>
-  );
-
-  const cardFormEditor = (
-    <Card className={classes.card} elevation={4}>
-      <CardActionArea onClick={() => props.onSelect?.('form')}>
-        <CardContent>
-          <Typography variant="h4" component="h3" gutterBottom>
-            {t('templateEditorPage.templateEditorIntro.formEditor.title')}
-          </Typography>
-          <Typography variant="body1">
-            {t('templateEditorPage.templateEditorIntro.formEditor.description')}
+          <Typography variant="body2" color="textSecondary" component="p">
+            {description}
           </Typography>
         </CardContent>
       </CardActionArea>
     </Card>
   );
-
-  const cardFieldExplorer = (
-    <Card className={classes.card} elevation={4}>
-      <CardActionArea onClick={() => props.onSelect?.('field-explorer')}>
-        <CardContent>
-          <Typography variant="h4" component="h3" gutterBottom>
-            {t('templateEditorPage.templateEditorIntro.fieldExplorer.title')}
-          </Typography>
-          <Typography variant="body1">
-            {t(
-              'templateEditorPage.templateEditorIntro.fieldExplorer.description',
-            )}
-          </Typography>
-        </CardContent>
-      </CardActionArea>
-    </Card>
-  );
+}
+export function TemplateEditorIntro(props: EditorIntroProps) {
+  const classes = useStyles();
+  const { t } = useTranslationRef(scaffolderTranslationRef);
 
   return (
     <div style={props.style}>
       <Typography variant="h4" component="h2" className={classes.introText}>
         {t('templateEditorPage.templateEditorIntro.title')}
       </Typography>
-      <div
-        style={{
-          display: 'flex',
-          flexFlow: 'row wrap',
-          alignItems: 'flex-start',
-          justifyContent: 'center',
-          alignContent: 'flex-start',
-        }}
-      >
-        {supportsLoad && cardLoadLocal}
-        {supportsLoad && cardCreateLocal}
-        {cardFormEditor}
-        {!supportsLoad && cardLoadLocal}
-        {cardFieldExplorer}
+      <div className={classes.gridRoot}>
+        <div className={classes.cardGrid}>
+          <ActionCard
+            title={t('templateEditorPage.templateEditorIntro.loadLocal.title')}
+            description={t(
+              'templateEditorPage.templateEditorIntro.loadLocal.description',
+            )}
+            requireLoad
+            Icon={PublishIcon}
+            action={() => props.onSelect?.('local')}
+          />
+          <ActionCard
+            title={t(
+              'templateEditorPage.templateEditorIntro.createLocal.title',
+            )}
+            description={t(
+              'templateEditorPage.templateEditorIntro.createLocal.description',
+            )}
+            requireLoad
+            action={() => props.onSelect?.('create-template')}
+            Icon={CreateNewFolderIcon}
+          />
+
+          <ActionCard
+            title={t('templateEditorPage.templateEditorIntro.formEditor.title')}
+            description={t(
+              'templateEditorPage.templateEditorIntro.formEditor.description',
+            )}
+            Icon={ListAltIcon}
+            action={() => props.onSelect?.('form')}
+          />
+
+          <ActionCard
+            title={t(
+              'templateEditorPage.templateEditorIntro.fieldExplorer.title',
+            )}
+            description={t(
+              'templateEditorPage.templateEditorIntro.fieldExplorer.description',
+            )}
+            Icon={FormatListBulletedIcon}
+            action={() => props.onSelect?.('field-explorer')}
+          />
+        </div>
       </div>
     </div>
   );

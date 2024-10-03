@@ -1,5 +1,19 @@
 # @backstage/core-components
 
+## 0.15.1-next.1
+
+### Patch Changes
+
+- 3f76d0e: Correct size of FavoriteToggle and inherit non-starred color from parent
+- e969dc7: Move `@types/react` to a peer dependency.
+- 83e2887: Fixed a bug in the `SidebarSubmenu` core component that caused the nested menu to overlap with the sidebar when the user hovers over the pinned sidebar.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/version-bridge@1.0.10-next.0
+  - @backstage/theme@0.5.8-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 0.15.1-next.0
 
 ### Patch Changes

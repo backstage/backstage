@@ -456,6 +456,7 @@ export type EntityRefLinkProps = {
   title?: string;
   children?: React_2.ReactNode;
   hideIcon?: boolean;
+  disableTooltip?: boolean;
 } & Omit<LinkProps, 'to'>;
 
 // @public

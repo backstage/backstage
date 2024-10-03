@@ -239,7 +239,11 @@ export function TemplateEditorFormDirectoryEditorDryRun(
       ? selectedFile.content
       : undefined;
 
-  return directoryEditor ? (
+  if (!directoryEditor) {
+    return null;
+  }
+
+  return (
     <TemplateEditorForm
       onDryRun={handleDryRun}
       fieldExtensions={fieldExtensions}
@@ -248,7 +252,7 @@ export function TemplateEditorFormDirectoryEditorDryRun(
       layouts={layouts}
       formProps={props.formProps}
     />
-  ) : null;
+  );
 }
 
 TemplateEditorForm.DirectoryEditorDryRun =

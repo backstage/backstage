@@ -558,5 +558,5 @@ export class UrlReaderProcessor implements CatalogProcessor_2 {
 // src/search/DefaultCatalogCollator.d.ts:33:5 - (ae-undocumented) Missing documentation for "execute".
 // src/service/CatalogBuilder.d.ts:19:1 - (ae-undocumented) Missing documentation for "CatalogEnvironment".
 // src/service/CatalogBuilder.d.ts:233:5 - (ae-undocumented) Missing documentation for "subscribe".
-// src/util/parse.d.ts:5:1 - (ae-undocumented) Missing documentation for "parseEntityYaml".
+// src/util/parse.d.ts:6:1 - (ae-undocumented) Missing documentation for "parseEntityYaml".
 ```

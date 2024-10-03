@@ -1,5 +1,26 @@
 # @backstage/backend-defaults
 
+## 0.5.1-next.1
+
+### Patch Changes
+
+- 920004b: Updating error message for getProjectId when fetching Gitlab project from its url to be more accurate
+- Updated dependencies
+  - @backstage/integration@1.15.1-next.0
+  - @backstage/backend-app-api@1.0.1-next.0
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/backend-plugin-api@1.0.1-next.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.8
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.9.1
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.5.3-next.0
+  - @backstage/plugin-events-node@0.4.1-next.0
+  - @backstage/plugin-permission-node@0.8.4-next.0
+
 ## 0.5.1-next.0
 
 ### Patch Changes

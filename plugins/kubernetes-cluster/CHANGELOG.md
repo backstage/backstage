@@ -1,5 +1,19 @@
 # @backstage/plugin-kubernetes-cluster
 
+## 0.0.17-next.1
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- 605e0bb: Updated dependency `@kubernetes-models/base` to `^5.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.15.1-next.1
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/plugin-kubernetes-react@0.4.4-next.1
+  - @backstage/plugin-catalog-react@1.14.0-next.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/plugin-kubernetes-common@0.8.3
+
 ## 0.0.16-next.0
 
 ### Patch Changes

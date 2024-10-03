@@ -61,7 +61,7 @@ export const RegisterExistingButton = (props: RegisterExistingButtonProps) => {
       <AddCircleOutline />
     </IconButton>
   ) : (
-    <Button component={RouterLink} variant="contained" color="primary" to={to}>
+    <Button component={RouterLink} variant="outlined" color="primary" to={to}>
       {title}
     </Button>
   );

@@ -31,18 +31,25 @@ import DialogActions from '@material-ui/core/DialogActions';
 import ExtensionIcon from '@material-ui/icons/Extension';
 import DescriptionIcon from '@material-ui/icons/Description';
 
-import { Link } from '@backstage/core-components';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 
 import { ActionPageContent } from '../../../components/ActionsPage/ActionsPage';
+import { scaffolderTranslationRef } from '../../../translation';
 import { CustomFieldPlaygroud } from './CustomFieldPlaygroud';
 
 const useStyles = makeStyles(
   theme => ({
     paper: {
-      width: '40%',
+      width: '90%',
       padding: theme.spacing(2),
       backgroundColor: theme.palette.background.default,
+      [theme.breakpoints.up('sm')]: {
+        width: '70%',
+      },
+      [theme.breakpoints.up('md')]: {
+        width: '50%',
+      },
     },
     appbar: {
       zIndex: 1,
@@ -73,6 +80,7 @@ export function TemplateEditorToolbar(props: {
 }) {
   const { children, fieldExtensions } = props;
   const classes = useStyles();
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const [showFieldsDrawer, setShowFieldsDrawer] = useState(false);
   const [showActionsDrawer, setShowActionsDrawer] = useState(false);
   const [showPublishModal, setShowPublishModal] = useState(false);
@@ -81,22 +89,26 @@ export function TemplateEditorToolbar(props: {
     <AppBar className={classes.appbar} position="relative">
       <Toolbar className={classes.toolbar}>
         <div className={classes.toolbarCustomActions}>{children}</div>
-        <ButtonGroup
-          className={classes.toolbarDefaultActions}
-          variant="outlined"
-          color="primary"
-        >
-          <Tooltip title="Custom Fields Explorer">
+        <ButtonGroup className={classes.toolbarDefaultActions} variant="text">
+          <Tooltip
+            title={t('templateEditorToolbar.customFieldExplorerTooltip')}
+          >
             <Button onClick={() => setShowFieldsDrawer(true)}>
               <ExtensionIcon />
             </Button>
           </Tooltip>
-          <Tooltip title="Installed Actions Documentation">
+          <Tooltip
+            title={t(
+              'templateEditorToolbar.installedActionsDocumentationTooltip',
+            )}
+          >
             <Button onClick={() => setShowActionsDrawer(true)}>
               <DescriptionIcon />
             </Button>
           </Tooltip>
-          <Button onClick={() => setShowPublishModal(true)}>Publish</Button>
+          <Button onClick={() => setShowPublishModal(true)}>
+            {t('templateEditorToolbar.addToCatalogButton')}
+          </Button>
         </ButtonGroup>
         <Drawer
           classes={{ paper: classes.paper }}
@@ -120,32 +132,36 @@ export function TemplateEditorToolbar(props: {
           aria-labelledby="publish-dialog-title"
           aria-describedby="publish-dialog-description"
         >
-          <DialogTitle id="publish-dialog-title">Publish changes</DialogTitle>
+          <DialogTitle id="publish-dialog-title">
+            {t('templateEditorToolbar.addToCatalogDialogTitle')}
+          </DialogTitle>
           <DialogContent dividers>
             <DialogContentText id="publish-dialog-slide-description">
-              Follow the instructions below to create or update a template:
-              <ol>
-                <li>Save the template files in a local directory</li>
-                <li>
-                  Create a pull request to a new or existing git repository
-                </li>
-                <li>
-                  If the template already exists, the changes will be reflected
-                  in the software catalog once the pull request gets merged
-                </li>
-                <li>
-                  But if you are creating a new template, follow this{' '}
-                  <Link to="https://backstage.io/docs/features/software-templates/adding-templates/">
-                    documentation
-                  </Link>{' '}
-                  to register the new template repository in software catalog
-                </li>
-              </ol>
+              {t(
+                'templateEditorToolbar.addToCatalogDialogContent.stepsIntroduction',
+              )}
+              <ul>
+                {t(
+                  'templateEditorToolbar.addToCatalogDialogContent.stepsListItems',
+                )
+                  .split('\n')
+                  .map((step, index) => (
+                    <li key={index}>{step}</li>
+                  ))}
+              </ul>
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button color="primary" onClick={() => setShowPublishModal(false)}>
-              Close
+            <Button
+              color="primary"
+              href={t(
+                'templateEditorToolbar.addToCatalogDialogActions.documentationUrl',
+              )}
+              target="_blank"
+            >
+              {t(
+                'templateEditorToolbar.addToCatalogDialogActions.documentationButton',
+              )}
             </Button>
           </DialogActions>
         </Dialog>
