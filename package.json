@@ -122,6 +122,7 @@
     "@changesets/cli": "^2.14.0",
     "@octokit/rest": "^19.0.3",
     "@playwright/test": "^1.32.3",
+    "@scaffolder/cli": "0.1.0-next.0",
     "@spotify/eslint-plugin": "^15.0.0",
     "@techdocs/cli": "workspace:*",
     "@types/cacheable-request": "^8.3.6",
