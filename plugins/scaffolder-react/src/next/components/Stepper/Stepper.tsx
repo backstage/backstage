@@ -63,7 +63,7 @@ const useStyles = makeStyles(theme => ({
   footer: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'right',
+    justifyContent: 'left',
     marginTop: theme.spacing(2),
   },
   formWrapper: {
