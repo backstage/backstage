@@ -27,6 +27,8 @@ import Edit from '@material-ui/icons/Edit';
 import List from '@material-ui/icons/List';
 import MoreVert from '@material-ui/icons/MoreVert';
 import React, { useState } from 'react';
+import { usePermission } from '@backstage/plugin-permission-react';
+import { templateManagementPermission } from '@backstage/plugin-scaffolder-common/alpha';
 
 const useStyles = makeStyles(theme => ({
   button: {
@@ -54,6 +56,10 @@ export function ScaffolderPageContextMenu(
     props;
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
+
+  const { allowed: canManageTemplates } = usePermission({
+    permission: templateManagementPermission,
+  });
 
   if (!onEditorClicked && !onActionsClicked) {
     return null;
@@ -100,7 +106,7 @@ export function ScaffolderPageContextMenu(
               <ListItemText primary="Create" />
             </MenuItem>
           )}
-          {onEditorClicked && (
+          {onEditorClicked && canManageTemplates && (
             <MenuItem onClick={onEditorClicked}>
               <ListItemIcon>
                 <Edit fontSize="small" />

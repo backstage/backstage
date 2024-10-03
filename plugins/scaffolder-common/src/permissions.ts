@@ -114,6 +114,16 @@ export const taskCancelPermission = createPermission({
 });
 
 /**
+ * This permission is used to authorize template management features.
+ *
+ * @alpha
+ */
+export const templateManagementPermission = createPermission({
+  name: 'scaffolder.template.management',
+  attributes: {},
+});
+
+/**
  * List of the scaffolder permissions that are associated with template steps and parameters.
  * @alpha
  */
@@ -139,6 +149,12 @@ export const scaffolderTaskPermissions = [
 ];
 
 /**
+ * List of the scaffolder permissions that are associated with scaffolder management.
+ * @alpha
+ */
+export const scaffolderManagementPermissions = [templateManagementPermission];
+
+/**
  * List of all the scaffolder permissions
  * @alpha
  */
@@ -146,4 +162,5 @@ export const scaffolderPermissions = [
   ...scaffolderTemplatePermissions,
   ...scaffolderActionPermissions,
   ...scaffolderTaskPermissions,
+  ...scaffolderManagementPermissions,
 ];

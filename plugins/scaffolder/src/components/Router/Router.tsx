@@ -59,6 +59,8 @@ import {
   TemplateEditorPage,
   CustomFieldsPage,
 } from '../../alpha/components/TemplateEditorPage';
+import { RequirePermission } from '@backstage/plugin-permission-react';
+import { templateManagementPermission } from '@backstage/plugin-scaffolder-common/alpha';
 
 /**
  * The Props for the Scaffolder Router
@@ -170,29 +172,35 @@ export const Router = (props: PropsWithChildren<RouterProps>) => {
       <Route
         path={editRouteRef.path}
         element={
-          <SecretsContextProvider>
-            <TemplateIntroPage />
-          </SecretsContextProvider>
+          <RequirePermission permission={templateManagementPermission}>
+            <SecretsContextProvider>
+              <TemplateIntroPage />
+            </SecretsContextProvider>
+          </RequirePermission>
         }
       />
       <Route
         path={customFieldsRouteRef.path}
         element={
-          <SecretsContextProvider>
-            <CustomFieldsPage fieldExtensions={fieldExtensions} />
-          </SecretsContextProvider>
+          <RequirePermission permission={templateManagementPermission}>
+            <SecretsContextProvider>
+              <CustomFieldsPage fieldExtensions={fieldExtensions} />
+            </SecretsContextProvider>
+          </RequirePermission>
         }
       />
       <Route
         path={templateFormRouteRef.path}
         element={
-          <SecretsContextProvider>
-            <TemplateFormPage
-              layouts={customLayouts}
-              formProps={props.formProps}
-              fieldExtensions={fieldExtensions}
-            />
-          </SecretsContextProvider>
+          <RequirePermission permission={templateManagementPermission}>
+            <SecretsContextProvider>
+              <TemplateFormPage
+                layouts={customLayouts}
+                formProps={props.formProps}
+                fieldExtensions={fieldExtensions}
+              />
+            </SecretsContextProvider>
+          </RequirePermission>
         }
       />
 
@@ -204,13 +212,15 @@ export const Router = (props: PropsWithChildren<RouterProps>) => {
       <Route
         path={editorRouteRef.path}
         element={
-          <SecretsContextProvider>
-            <TemplateEditorPage
-              layouts={customLayouts}
-              formProps={props.formProps}
-              fieldExtensions={fieldExtensions}
-            />
-          </SecretsContextProvider>
+          <RequirePermission permission={templateManagementPermission}>
+            <SecretsContextProvider>
+              <TemplateEditorPage
+                layouts={customLayouts}
+                formProps={props.formProps}
+                fieldExtensions={fieldExtensions}
+              />
+            </SecretsContextProvider>
+          </RequirePermission>
         }
       />
       <Route
