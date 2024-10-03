@@ -36,7 +36,7 @@ exports.up = async function up(knex) {
           .comment('Auto-generated ID of the location');
         table.string('type').notNullable().comment('The type of location');
         table
-          .text('target')
+          .string('target')
           .notNullable()
           .comment('The actual target of the location');
       })

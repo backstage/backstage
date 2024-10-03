@@ -308,4 +308,26 @@ describe('migrations', () => {
       await knex.destroy();
     },
   );
+
+  it.each(databases.eachSupportedId())(
+    '20241003170511_alter_target_in_locations.js, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+
+      await migrateUntilBefore(
+        knex,
+        '20241003170511_alter_target_in_locations.js',
+      );
+
+      await migrateUpOnce(knex);
+      const columnInfo = await knex('locations').columnInfo();
+      expect(columnInfo.target.type).toBe('text');
+
+      await migrateDownOnce(knex);
+      const revertedColumnInfo = await knex('locations').columnInfo();
+      expect(revertedColumnInfo.target.type).toBe('varchar');
+
+      await knex.destroy();
+    },
+  );
 });
