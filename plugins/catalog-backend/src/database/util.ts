@@ -23,3 +23,11 @@ export function generateStableHash(entity: Entity) {
     .update(stableStringify({ ...entity }))
     .digest('hex');
 }
+
+export function generateTargetKey(target: string) {
+  return target.length > 255
+    ? `${target.slice(0, 150)}#sha256:${createHash('sha256')
+        .update(target)
+        .digest('hex')}`
+    : target;
+}

@@ -41,7 +41,7 @@ import {
 import { checkLocationKeyConflict } from './operations/refreshState/checkLocationKeyConflict';
 import { insertUnprocessedEntity } from './operations/refreshState/insertUnprocessedEntity';
 import { updateUnprocessedEntity } from './operations/refreshState/updateUnprocessedEntity';
-import { generateStableHash } from './util';
+import { generateStableHash, generateTargetKey } from './util';
 import {
   EventBroker,
   EventParams,
@@ -51,7 +51,6 @@ import { DateTime } from 'luxon';
 import { CATALOG_CONFLICTS_TOPIC } from '../constants';
 import { CatalogConflictEventPayload } from '../catalog/types';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { createHash } from 'crypto';
 
 // The number of items that are sent per batch to the database layer, when
 // doing .batchInsert calls to knex. This needs to be low enough to not cause
@@ -159,7 +158,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       'refresh_keys',
       refreshKeys.map(k => ({
         entity_id: id,
-        key: createHash('sha256').update(k.key).digest('hex'),
+        key: generateTargetKey(k.key),
       })),
       BATCH_SIZE,
     );
