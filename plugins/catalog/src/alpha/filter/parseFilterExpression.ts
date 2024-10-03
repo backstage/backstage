@@ -123,11 +123,8 @@ export function splitFilterExpression(
     }
     const key = match[2];
     const parameters = match[3].split(',').filter(Boolean); // silently ignore double commas
-    if (match[1]) {
-      result.push({ key, parameters, negation: true });
-    } else {
-      result.push({ key, parameters, negation: false });
-    }
+    const negation = Boolean(match[1]);
+    result.push({ key, parameters, negation });
   }
 
   return result;
