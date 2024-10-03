@@ -146,6 +146,10 @@ describe('splitFilterExpression', () => {
       { key: 'kind', parameters: ['component', 'user'], negation: false },
       { key: 'type', parameters: ['foo'], negation: true },
     ]);
+    expect(run('not:type:foo kind:component,user')).toEqual([
+      { key: 'type', parameters: ['foo'], negation: true },
+      { key: 'kind', parameters: ['component', 'user'], negation: false },
+    ]);
     expect(run('kind:component,user type:foo')).toEqual([
       { key: 'kind', parameters: ['component', 'user'], negation: false },
       { key: 'type', parameters: ['foo'], negation: false },
