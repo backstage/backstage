@@ -1,5 +1,12 @@
 # example-backend-legacy
 
+## 0.2.104
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-app-backend@0.3.75
+
 ## 0.2.103
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @backstage/plugin-app-backend
 
+## 0.3.75
+
+### Patch Changes
+
+- 9206a12: Fixed unexpected behaviour where configuration supplied with `APP_CONFIG_*` environment variables where not filtered by the configuration schema.
+
 ## 0.3.74
 
 ### Patch Changes
