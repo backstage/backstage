@@ -30,6 +30,7 @@ import {
 } from '@backstage/plugin-scaffolder-react';
 import { act, fireEvent } from '@testing-library/react';
 import { rootRouteRef } from '../../routes';
+import { permissionApiRef } from '@backstage/plugin-permission-react';
 
 describe('<ListTasksPage />', () => {
   const catalogApi: jest.Mocked<CatalogApi> = {
@@ -48,6 +49,8 @@ describe('<ListTasksPage />', () => {
     getTemplateParameterSchema: jest.fn(),
     listTasks: jest.fn(),
   } as any;
+
+  const mockPermissionApi = { authorize: jest.fn() };
 
   it('should render the page', async () => {
     const entity: Entity = {
@@ -72,6 +75,7 @@ describe('<ListTasksPage />', () => {
           [catalogApiRef, catalogApi],
           [identityApiRef, identityApi],
           [scaffolderApiRef, scaffolderApiMock],
+          [permissionApiRef, mockPermissionApi],
         ]}
       >
         <ListTasksPage />
@@ -132,6 +136,7 @@ describe('<ListTasksPage />', () => {
           [catalogApiRef, catalogApi],
           [identityApiRef, identityApi],
           [scaffolderApiRef, scaffolderApiMock],
+          [permissionApiRef, mockPermissionApi],
         ]}
       >
         <ListTasksPage />
@@ -230,6 +235,7 @@ describe('<ListTasksPage />', () => {
           [catalogApiRef, catalogApi],
           [identityApiRef, identityApi],
           [scaffolderApiRef, scaffolderApiMock],
+          [permissionApiRef, mockPermissionApi],
         ]}
       >
         <ListTasksPage />
