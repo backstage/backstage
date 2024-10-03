@@ -325,7 +325,9 @@ describe('migrations', () => {
 
       await migrateDownOnce(knex);
       const revertedColumnInfo = await knex('locations').columnInfo();
-      expect(revertedColumnInfo.target.type).toBe('varchar');
+      expect(revertedColumnInfo.target.type).toMatch(
+        /^(varchar|character varying)$/,
+      );
 
       await knex.destroy();
     },
