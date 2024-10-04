@@ -18,11 +18,7 @@ import React, { Fragment } from 'react';
 import startCase from 'lodash/startCase';
 import Typography from '@material-ui/core/Typography';
 
-import {
-  MetadataTable,
-  MetadataTableItem,
-} from './MetadataTable';
-import { JsonArray, JsonObject, JsonValue } from '@backstage/types';
+import { MetadataTable, MetadataTableItem } from './MetadataTable';
 import { CodeSnippet } from '../CodeSnippet';
 import jsyaml from 'js-yaml';
 
@@ -30,25 +26,24 @@ export type StructuredMetadataTableListClassKey = 'root';
 
 export type StructuredMetadataTableNestedListClassKey = 'root';
 
-function toValue(
-  value: object | Array<any> | boolean | string,
-) {
+function toValue(value: object | Array<any> | boolean | string) {
   if (React.isValidElement(value)) {
     return <Fragment>{value}</Fragment>;
   }
 
   if (value !== null && typeof value === 'object') {
-    return <CodeSnippet
-      language='yaml'
-      text={jsyaml.dump(value)}
-      // showLineNumbers={true}
-      customStyle={{
-        background: 'transparent',
-        lineHeight: '1.4',
-        padding: '0',
-        margin: 0,
-      }}
-    />
+    return (
+      <CodeSnippet
+        language="yaml"
+        text={jsyaml.dump(value)}
+        customStyle={{
+          background: 'transparent',
+          lineHeight: '1.4',
+          padding: '0',
+          margin: 0,
+        }}
+      />
+    );
   }
 
   if (typeof value === 'boolean') {
@@ -71,7 +66,7 @@ const TableItem = ({
   options,
 }: {
   title: string;
-  value: JsonObject | JsonArray | JsonValue;
+  value: any;
   options: Options;
 }) => {
   return (
