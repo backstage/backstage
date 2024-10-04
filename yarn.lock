@@ -3448,7 +3448,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
-    "@material-ui/icons": ^4.9.1
+    "@mui/icons-material": ^5.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^16.0.0
     "@types/react": ^18.0.0
@@ -4322,8 +4322,8 @@ __metadata:
     "@date-io/core": ^1.3.13
     "@material-table/core": ^3.1.0
     "@material-ui/core": ^4.12.2
-    "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@mui/icons-material": ^5.0.0
     "@react-hookz/web": ^24.0.0
     "@testing-library/dom": ^10.0.0
     "@testing-library/jest-dom": ^6.0.0
@@ -4475,7 +4475,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
-    "@material-ui/icons": ^4.9.1
+    "@mui/icons-material": ^5.0.0
     "@testing-library/dom": ^10.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^16.0.0
@@ -4733,7 +4733,7 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@material-ui/core": ^4.12.2
-    "@material-ui/icons": ^4.9.1
+    "@mui/icons-material": ^5.0.0
     "@testing-library/dom": ^10.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@types/react": ^18.0.0
@@ -4831,8 +4831,8 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@graphiql/react": ^0.23.0
     "@material-ui/core": ^4.12.2
-    "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@mui/icons-material": ^5.0.0
     "@testing-library/dom": ^10.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^16.0.0
@@ -4914,7 +4914,7 @@ __metadata:
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
     "@material-ui/core": ^4.12.2
-    "@material-ui/icons": ^4.9.1
+    "@mui/icons-material": ^5.0.0
     "@types/react": ^18.0.0
     react: ^18.0.2
     react-dom: ^18.0.2
@@ -4943,8 +4943,8 @@ __metadata:
     "@backstage/plugin-permission-react": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.9.13
-    "@material-ui/icons": ^4.9.1
     "@material-ui/lab": ^4.0.0-alpha.61
+    "@mui/icons-material": ^5.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^16.0.0
     "@testing-library/user-event": ^14.0.0
@@ -5986,8 +5986,8 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@material-ui/core": ^4.12.2
-    "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@mui/icons-material": ^5.0.0
     "@testing-library/dom": ^10.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^16.0.0
@@ -6034,8 +6034,8 @@ __metadata:
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@material-ui/core": ^4.12.2
-    "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@mui/icons-material": ^5.0.0
     "@octokit/rest": ^19.0.3
     "@testing-library/dom": ^10.0.0
     "@testing-library/jest-dom": ^6.0.0
@@ -6140,8 +6140,8 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
     "@material-ui/core": ^4.12.2
-    "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@mui/icons-material": ^5.0.0
     "@react-hookz/web": ^24.0.0
     "@testing-library/dom": ^10.0.0
     "@testing-library/jest-dom": ^6.0.0
@@ -6191,8 +6191,8 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@material-ui/core": ^4.9.13
-    "@material-ui/icons": ^4.9.1
     "@material-ui/lab": ^4.0.0-alpha.60
+    "@mui/icons-material": ^5.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^16.0.0
     "@types/react": ^18.0.0
@@ -6238,8 +6238,8 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@material-ui/core": ^4.12.2
-    "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@mui/icons-material": ^5.0.0
     "@mui/utils": ^5.14.15
     "@testing-library/dom": ^10.0.0
     "@testing-library/jest-dom": ^6.0.0
@@ -6280,8 +6280,8 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/types": "workspace:^"
     "@material-ui/core": ^4.12.2
-    "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@mui/icons-material": ^5.0.0
     "@testing-library/dom": ^10.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^16.0.0
@@ -6363,8 +6363,8 @@ __metadata:
     "@backstage/plugin-devtools-common": "workspace:^"
     "@backstage/plugin-permission-react": "workspace:^"
     "@material-ui/core": ^4.9.13
-    "@material-ui/icons": ^4.9.1
     "@material-ui/lab": ^4.0.0-alpha.57
+    "@mui/icons-material": ^5.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@types/react": ^18.0.0
     react: ^18.0.2
@@ -6522,7 +6522,7 @@ __metadata:
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@material-ui/core": ^4.12.2
-    "@material-ui/icons": ^4.9.1
+    "@mui/icons-material": ^5.0.0
     "@rjsf/utils": 5.21.1
     "@types/react": ^18.0.0
     "@types/react-grid-layout": ^1.3.2
@@ -6559,8 +6559,8 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
-    "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@mui/icons-material": ^5.0.0
     "@rjsf/core": 5.21.1
     "@rjsf/material-ui": 5.21.1
     "@rjsf/utils": 5.21.1
@@ -6741,8 +6741,8 @@ __metadata:
     "@kubernetes-models/base": ^5.0.0
     "@kubernetes/client-node": ^0.20.0
     "@material-ui/core": ^4.9.13
-    "@material-ui/icons": ^4.11.3
     "@material-ui/lab": ^4.0.0-alpha.61
+    "@mui/icons-material": ^5.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^16.0.0
     "@types/react": ^18.0.0
@@ -6884,7 +6884,7 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
-    "@material-ui/icons": ^4.9.1
+    "@mui/icons-material": ^5.0.0
   languageName: unknown
   linkType: soft
 
@@ -6925,8 +6925,8 @@ __metadata:
     "@backstage/theme": "workspace:^"
     "@backstage/types": "workspace:^"
     "@material-ui/core": ^4.9.13
-    "@material-ui/icons": ^4.9.1
     "@material-ui/lab": ^4.0.0-alpha.61
+    "@mui/icons-material": ^5.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^16.0.0
     "@testing-library/user-event": ^14.0.0
@@ -6964,8 +6964,8 @@ __metadata:
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@material-ui/core": ^4.12.2
-    "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@mui/icons-material": ^5.0.0
     "@testing-library/dom": ^10.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^16.0.0
@@ -7007,8 +7007,8 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@material-ui/core": ^4.12.2
-    "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@mui/icons-material": ^5.0.0
     "@testing-library/dom": ^10.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^16.0.0
@@ -7642,8 +7642,8 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
     "@material-ui/core": ^4.12.2
-    "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@mui/icons-material": ^5.0.0
     "@react-hookz/web": ^24.0.0
     "@rjsf/core": 5.21.1
     "@rjsf/material-ui": 5.21.1
@@ -7715,9 +7715,9 @@ __metadata:
     "@codemirror/legacy-modes": ^6.1.0
     "@codemirror/view": ^6.0.0
     "@material-ui/core": ^4.12.2
-    "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@microsoft/fetch-event-source": ^2.0.1
+    "@mui/icons-material": ^5.0.0
     "@react-hookz/web": ^24.0.0
     "@rjsf/core": 5.21.1
     "@rjsf/material-ui": 5.21.1
@@ -7963,8 +7963,8 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
     "@material-ui/core": ^4.12.2
-    "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@mui/icons-material": ^5.0.0
     "@testing-library/dom": ^10.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^16.0.0
@@ -8006,7 +8006,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
     "@material-ui/core": ^4.12.2
-    "@material-ui/icons": ^4.9.1
+    "@mui/icons-material": ^5.0.0
     "@testing-library/dom": ^10.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^16.0.0
@@ -8120,8 +8120,8 @@ __metadata:
     "@backstage/theme": "workspace:^"
     "@backstage/types": "workspace:^"
     "@material-ui/core": ^4.12.4
-    "@material-ui/icons": ^4.9.1
     "@material-ui/lab": ^4.0.0-alpha.61
+    "@mui/icons-material": ^5.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^16.0.0
     "@testing-library/user-event": ^14.0.0
@@ -8232,7 +8232,7 @@ __metadata:
     "@backstage/plugin-techdocs-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@material-ui/core": ^4.12.2
-    "@material-ui/icons": ^4.9.1
+    "@mui/icons-material": ^5.0.0
     "@react-hookz/web": ^24.0.0
     "@testing-library/dom": ^10.0.0
     "@testing-library/jest-dom": ^6.0.0
@@ -8360,10 +8360,10 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
-    "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@material-ui/styles": ^4.10.0
     "@microsoft/fetch-event-source": ^2.0.1
+    "@mui/icons-material": ^5.0.0
     "@testing-library/dom": ^10.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^16.0.0
@@ -8443,8 +8443,8 @@ __metadata:
     "@backstage/theme": "workspace:^"
     "@backstage/types": "workspace:^"
     "@material-ui/core": ^4.12.2
-    "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@mui/icons-material": ^5.0.0
     "@testing-library/dom": ^10.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^16.0.0
@@ -8550,7 +8550,7 @@ __metadata:
     "@backstage/theme": "workspace:^"
     "@backstage/types": "workspace:^"
     "@material-ui/core": ^4.12.2
-    "@material-ui/icons": ^4.9.1
+    "@mui/icons-material": ^5.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@types/react": ^18.0.0
     cross-fetch: ^4.0.0
@@ -11179,7 +11179,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material-ui/icons@npm:^4.11.2, @material-ui/icons@npm:^4.11.3, @material-ui/icons@npm:^4.9.1":
+"@material-ui/icons@npm:^4.11.2, @material-ui/icons@npm:^4.9.1":
   version: 4.11.3
   resolution: "@material-ui/icons@npm:4.11.3"
   dependencies:
@@ -11699,6 +11699,22 @@ __metadata:
   version: 5.16.7
   resolution: "@mui/core-downloads-tracker@npm:5.16.7"
   checksum: b65c48ba2bf6bba6435ba9f2d6c33db0c8a85b3ff7599136a9682b72205bec76470ab5ed5e6e625d5bd012ed9bcbc641ed677548be80d217c9fb5d0435567062
+  languageName: node
+  linkType: hard
+
+"@mui/icons-material@npm:^5.0.0":
+  version: 5.16.7
+  resolution: "@mui/icons-material@npm:5.16.7"
+  dependencies:
+    "@babel/runtime": ^7.23.9
+  peerDependencies:
+    "@mui/material": ^5.0.0
+    "@types/react": ^17.0.0 || ^18.0.0
+    react: ^17.0.0 || ^18.0.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: a875f2837897d79a83173d80461e06ab090b64d08913d26433cf2cbeb8e7c7456468632a7aa495d722718f09111a8043255777d73b4dfbe9e0f863a170fc7190
   languageName: node
   linkType: hard
 
@@ -20935,7 +20951,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
-    "@material-ui/icons": ^4.9.1
+    "@mui/icons-material": ^5.0.0
     "@types/react": ^18.0.0
     cross-fetch: ^4.0.0
     msw: ^1.0.0
@@ -26779,8 +26795,8 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
-    "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@mui/icons-material": ^5.0.0
     "@octokit/rest": ^19.0.3
     "@testing-library/dom": ^10.0.0
     "@testing-library/jest-dom": ^6.0.0
@@ -26854,8 +26870,8 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
-    "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@mui/icons-material": ^5.0.0
     "@octokit/rest": ^19.0.3
     "@playwright/test": ^1.32.3
     "@testing-library/dom": ^10.0.0
@@ -42235,7 +42251,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
-    "@material-ui/icons": ^4.9.1
+    "@mui/icons-material": ^5.0.0
     "@testing-library/dom": ^10.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^16.0.0

@@ -43,7 +43,7 @@
   "dependencies": {
     "@backstage/core-components": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
-    "@material-ui/icons": "^4.9.1"
+    "@mui/icons-material": "^5.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
