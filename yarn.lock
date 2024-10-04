@@ -5461,6 +5461,7 @@ __metadata:
     winston: ^3.2.1
     zod: ^3.22.4
     zod-to-json-schema: ^3.21.4
+    zod-validation-error: ^3.4.0
   languageName: unknown
   linkType: soft
 
@@ -45286,12 +45287,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod-validation-error@npm:^3.0.3":
-  version: 3.1.0
-  resolution: "zod-validation-error@npm:3.1.0"
+"zod-validation-error@npm:^3.0.3, zod-validation-error@npm:^3.4.0":
+  version: 3.4.0
+  resolution: "zod-validation-error@npm:3.4.0"
   peerDependencies:
     zod: ^3.18.0
-  checksum: 84df01c91d594701eaf7f5f007be881e47f7adef2e3f3765f7be031cb78033f9be0924273106cb81b586d8020da9885dbb81b3da363f00a51df00f26274f2b23
+  checksum: b07fbfc39582dbdf6972f5f5f0c3bac9e6b5e6d2e55ef3dd891fd08f1966ebf1023a4bc270e9b569eaa48ed1684ac2252c9f260b0bd07b167671596e6e4d0fa8
   languageName: node
   linkType: hard
 

@@ -27,7 +27,10 @@ export interface Config {
           additionalScopes?: string | string[];
           signIn?: {
             resolvers: Array<
-              | { resolver: 'emailLocalPartMatchingUserEntityName' }
+              | {
+                  resolver: 'emailLocalPartMatchingUserEntityName';
+                  allowedDomains?: string[];
+                }
               | { resolver: 'emailMatchingUserEntityProfileEmail' }
             >;
           };
