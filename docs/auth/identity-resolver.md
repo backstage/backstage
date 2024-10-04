@@ -132,11 +132,26 @@ GitHub provider, but you could also choose to use the
 resolvers, which are common to all auth providers.
 
 :::warning
-When using the `emailLocalPartMatchingUserEntityName` resolver it is important
-to only allow users to sign in with email addresses from expected domains. This
-is typically controlled as part of the OAuth configuration in the provider
-itself.
+When using the `emailLocalPartMatchingUserEntityName` resolver it is strongly
+recommended to set the `allowedDomains` option to ensure that only authorized users
+are able to sign-in.
 :::
+
+If you are using the `emailLocalPartMatchingUserEntityName` resolver, it is
+recommended to also set the `allowedDomains` option, for example:
+
+```yaml title="Within the provider configuration"
+auth:
+  providers:
+    github:
+      development:
+        ...
+        signIn:
+          resolvers:
+            - resolver: emailLocalPartMatchingUserEntityName
+              allowedDomains:
+                - acme.org
+```
 
 ### Building Custom Resolvers
 
