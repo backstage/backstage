@@ -14,109 +14,41 @@
  * limitations under the License.
  */
 
-import React, { Fragment, ReactElement } from 'react';
-import {
-  withStyles,
-  createStyles,
-  WithStyles,
-  Theme,
-} from '@material-ui/core/styles';
+import React, { Fragment } from 'react';
 import startCase from 'lodash/startCase';
 import Typography from '@material-ui/core/Typography';
 
 import {
   MetadataTable,
   MetadataTableItem,
-  MetadataList,
-  MetadataListItem,
 } from './MetadataTable';
+import { JsonArray, JsonObject, JsonValue } from '@backstage/types';
+import { CodeSnippet } from '../CodeSnippet';
+import jsyaml from 'js-yaml';
 
 export type StructuredMetadataTableListClassKey = 'root';
 
-const listStyle = createStyles({
-  root: {
-    margin: '0 0',
-    listStyleType: 'none',
-  },
-});
-
 export type StructuredMetadataTableNestedListClassKey = 'root';
 
-const nestedListStyle = (theme: Theme) =>
-  createStyles({
-    root: {
-      ...listStyle.root,
-      paddingLeft: theme.spacing(1),
-    },
-  });
-
-interface StyleProps extends WithStyles {
-  children?: React.ReactNode;
-}
-// Sub Components
-const StyledList = withStyles(listStyle, {
-  name: 'BackstageStructuredMetadataTableList',
-})(({ classes, children }: StyleProps) => (
-  <MetadataList classes={classes}>{children}</MetadataList>
-));
-const StyledNestedList = withStyles(nestedListStyle, {
-  name: 'BackstageStructuredMetadataTableNestedList',
-})(({ classes, children }: StyleProps) => (
-  <MetadataList classes={classes}>{children}</MetadataList>
-));
-
-function renderList(list: Array<any>, options: Options, nested: boolean) {
-  const values = list.map((item: any, index: number) => (
-    <MetadataListItem key={index}>
-      {toValue(item, options, nested)}
-    </MetadataListItem>
-  ));
-  return nested ? (
-    <StyledNestedList>{values}</StyledNestedList>
-  ) : (
-    <StyledList>{values}</StyledList>
-  );
-}
-
-function renderMap(
-  map: { [key: string]: any },
-  options: Options,
-  nested: boolean,
-) {
-  const values = Object.keys(map).map(key => {
-    const value = toValue(map[key], options, true);
-    return (
-      <MetadataListItem key={key}>
-        <Typography variant="body2" component="span">
-          {`${options.titleFormat(key)}: `}
-        </Typography>
-        {value}
-      </MetadataListItem>
-    );
-  });
-
-  return nested ? (
-    <StyledNestedList>{values}</StyledNestedList>
-  ) : (
-    <StyledList>{values}</StyledList>
-  );
-}
-
 function toValue(
-  value: ReactElement | object | Array<any> | boolean,
-  options: Options,
-  nested: boolean,
+  value: object | Array<any> | boolean | string,
 ) {
   if (React.isValidElement(value)) {
     return <Fragment>{value}</Fragment>;
   }
 
-  if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
-    return renderMap(value, options, nested);
-  }
-
-  if (Array.isArray(value)) {
-    return renderList(value, options, nested);
+  if (value !== null && typeof value === 'object') {
+    return <CodeSnippet
+      language='yaml'
+      text={jsyaml.dump(value)}
+      // showLineNumbers={true}
+      customStyle={{
+        background: 'transparent',
+        lineHeight: '1.4',
+        padding: '0',
+        margin: 0,
+      }}
+    />
   }
 
   if (typeof value === 'boolean') {
@@ -129,8 +61,8 @@ function toValue(
     </Typography>
   );
 }
-const ItemValue = ({ value, options }: { value: any; options: Options }) => (
-  <Fragment>{toValue(value, options, false)}</Fragment>
+const ItemValue = ({ value }: { value: any }) => (
+  <Fragment>{toValue(value)}</Fragment>
 );
 
 const TableItem = ({
@@ -139,12 +71,12 @@ const TableItem = ({
   options,
 }: {
   title: string;
-  value: any;
+  value: JsonObject | JsonArray | JsonValue;
   options: Options;
 }) => {
   return (
     <MetadataTableItem title={options.titleFormat(title)}>
-      <ItemValue value={value} options={options} />
+      <ItemValue value={value} />
     </MetadataTableItem>
   );
 };
