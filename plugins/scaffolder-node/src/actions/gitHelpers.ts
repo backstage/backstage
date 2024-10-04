@@ -178,7 +178,7 @@ export async function createBranch(options: {
     logger,
   });
 
-  await git.checkout({ dir, ref });
+  await git.branch({ dir, ref });
 }
 
 /**
