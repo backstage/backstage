@@ -592,7 +592,7 @@ describe('DefaultProcessingDatabase', () => {
 
         expect(refreshKeys[0]).toEqual({
           entity_id: id,
-          key: `url:https://example.com/foo-bar-test-group/very-long-group-name-that-exceeds-255-characters-just-to-test-the-limits-of-url-length-in-the-catalog-info-#sha256:edfb606500d184900e63891e5279d35bf0069ea251e90d15c0a430de6023d905`,
+          key: `url:https://example.com/foo-bar-test-group/very-long-group-name-that-exceeds-255-characters-just-to-test-the-limits-of-url-length-in-the-catalog-info-yaml-file-and-see-how-the-back#sha256:edfb606500d184900e63891e5279d35bf0069ea251e90d15c0a430de6023d905`,
         });
       },
     );
