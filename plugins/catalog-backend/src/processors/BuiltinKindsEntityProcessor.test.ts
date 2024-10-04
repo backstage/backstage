@@ -315,7 +315,7 @@ describe('BuiltinKindsEntityProcessor', () => {
 
       await processor.postProcessEntity(entity, location, emit);
 
-      expect(emit).toHaveBeenCalledTimes(10);
+      expect(emit).toHaveBeenCalledTimes(14);
       expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
