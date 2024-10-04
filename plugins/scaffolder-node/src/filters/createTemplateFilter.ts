@@ -24,6 +24,6 @@ export const createTemplateFilter = <
   TF extends CreatedTemplateFilter<any, any>,
 >(
   filter: TF,
-): TF => {
+): CreatedTemplateFilter<any, any> => {
   return filter;
 };

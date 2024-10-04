@@ -18,12 +18,10 @@ import parseRepoUrl from './parseRepoUrl';
 import parseEntityRef from './parseEntityRef';
 import pick from './pick';
 import projectSlug from './projectSlug';
-import { CreatedTemplateFilter } from '@backstage/plugin-scaffolder-node';
 
-export default (options: { integrations: ScmIntegrations }) =>
-  [
-    parseRepoUrl(options.integrations),
-    parseEntityRef,
-    pick,
-    projectSlug(options.integrations),
-  ] as CreatedTemplateFilter<any, any>[];
+export default (options: { integrations: ScmIntegrations }) => [
+  parseRepoUrl(options.integrations),
+  parseEntityRef,
+  pick,
+  projectSlug(options.integrations),
+];
