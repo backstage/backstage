@@ -31,4 +31,6 @@ export const createTemplateGlobal = <
     | CreatedTemplateGlobalFunction<any, any>,
 >(
   t: T,
-): T => t;
+): T extends CreatedTemplateGlobalValue
+  ? CreatedTemplateGlobalValue<any>
+  : CreatedTemplateGlobalFunction<any> => t as any;

@@ -228,7 +228,7 @@ export const createTemplateAction: <
 // @public
 export const createTemplateFilter: <TF extends CreatedTemplateFilter<any, any>>(
   filter: TF,
-) => TF;
+) => CreatedTemplateFilter<any, any>;
 
 // @public
 export const createTemplateGlobal: <
@@ -237,7 +237,9 @@ export const createTemplateGlobal: <
     | CreatedTemplateGlobalFunction<any, any>,
 >(
   t: T,
-) => T;
+) => T extends CreatedTemplateGlobalValue
+  ? CreatedTemplateGlobalValue<any>
+  : CreatedTemplateGlobalFunction<any>;
 
 // @public
 export function deserializeDirectoryContents(
