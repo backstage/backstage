@@ -8755,8 +8755,8 @@ __metadata:
   linkType: hard
 
 "@changesets/cli@npm:^2.14.0":
-  version: 2.27.8
-  resolution: "@changesets/cli@npm:2.27.8"
+  version: 2.27.9
+  resolution: "@changesets/cli@npm:2.27.9"
   dependencies:
     "@changesets/apply-release-plan": ^7.0.5
     "@changesets/assemble-release-plan": ^6.0.4
@@ -8773,14 +8773,12 @@ __metadata:
     "@changesets/types": ^6.0.0
     "@changesets/write": ^0.3.2
     "@manypkg/get-packages": ^1.1.3
-    "@types/semver": ^7.5.0
     ansi-colors: ^4.1.3
     ci-info: ^3.7.0
     enquirer: ^2.3.0
     external-editor: ^3.1.0
     fs-extra: ^7.0.1
     mri: ^1.2.0
-    outdent: ^0.5.0
     p-limit: ^2.2.0
     package-manager-detector: ^0.2.0
     picocolors: ^1.1.0
@@ -8790,7 +8788,7 @@ __metadata:
     term-size: ^2.1.0
   bin:
     changeset: bin.js
-  checksum: b58386716b337976d5797debd4a418fb257bec1e6c9932b99eac7725dd5a76fceff32691c625f897fd4baa78aa2bfba9747fbacf7d8193197f9246b36d31c013
+  checksum: 4bd36c152f9f93716b001f3ed849717588d2a9eb97f058e86f95ba6a43d8e4311073174251150aabb96f0a1ab5f8ab5ee6a32f85fc9248363f92b3826227cb9d
   languageName: node
   linkType: hard
 
