@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder-node': patch
 ---
 
-Fix gitHelper createBranch functionality to use isometric-git's branch function
+Use Git class' branch function instead of checkout function when creating branch
