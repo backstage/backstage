@@ -206,12 +206,6 @@ export type ScaffolderReactComponentsNameToClassKey = {
 // @alpha (undocumented)
 export type ScaffolderReactTemplateCategoryPickerClassKey = 'root' | 'label';
 
-// @alpha (undocumented)
-export type BackstageTemplateStepperClassKey =
-  | 'backButton'
-  | 'footer'
-  | 'formWrapper';
-
 // @alpha
 export const SecretWidget: (
   props: Pick<
