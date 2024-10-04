@@ -39,11 +39,8 @@ auth:
         clientSecret: ${AUTH_BITBUCKET_CLIENT_SECRET}
         signIn:
           resolvers:
-            # typically you would pick one of these
-            - resolver: emailMatchingUserEntityProfileEmail
-            - resolver: emailLocalPartMatchingUserEntityName
+            # See https://backstage.io/docs/auth/bitbucket/provider#resolvers for more resolvers
             - resolver: userIdMatchingUserEntityAnnotation
-            - resolver: usernameMatchingUserEntityAnnotation
 ```
 
 The Bitbucket provider is a structure with two configuration keys:

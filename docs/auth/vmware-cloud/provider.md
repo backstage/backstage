@@ -49,10 +49,8 @@ auth:
         organizationId: ${ORG_ID}
         signIn:
           resolvers:
-            # typically you would pick one of these
+            # See https://backstage.io/docs/auth/vmware-cloud/provider#resolvers for more resolvers
             - resolver: emailMatchingUserEntityProfileEmail
-            - resolver: emailLocalPartMatchingUserEntityName
-            - resolver: vmwareCloudSignInResolvers
 ```
 
 Where `APP_ID` refers to the ID retrieved when creating the OAuth App, and
