@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder-react': patch
 ---
 
-Update template form buttons from `justifyContent` 'right' to `justifyContent` 'left'
+Add `overridableComponent` `BackstageTemplateStepperClassKey` to template stepper to enable custom styling

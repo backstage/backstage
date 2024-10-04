@@ -56,20 +56,28 @@ import { merge } from 'lodash';
 const validator = customizeValidator();
 ajvErrors(validator.ajv);
 
-const useStyles = makeStyles(theme => ({
-  backButton: {
-    marginRight: theme.spacing(1),
-  },
-  footer: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'left',
-    marginTop: theme.spacing(2),
-  },
-  formWrapper: {
-    padding: theme.spacing(2),
-  },
-}));
+export type BackstageTemplateStepperClassKey =
+  | 'backButton'
+  | 'footer'
+  | 'formWrapper';
+
+const useStyles = makeStyles(
+  theme => ({
+    backButton: {
+      marginRight: theme.spacing(1),
+    },
+    footer: {
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'right',
+      marginTop: theme.spacing(2),
+    },
+    formWrapper: {
+      padding: theme.spacing(2),
+    },
+  }),
+  { name: 'BackstageTemplateStepper' },
+);
 
 /**
  * The Props for {@link Stepper} component
