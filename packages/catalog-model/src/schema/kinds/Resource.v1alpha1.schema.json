@@ -55,6 +55,30 @@
                 "minLength": 1
               }
             },
+            "dependencyOf": {
+              "type": "array",
+              "description": "An array of references to other entities that depend on this resource to function.",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "partOf": {
+              "type": "array",
+              "description": "An array of references to other entities that this resource is a part of.",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "hasPart": {
+              "type": "array",
+              "description": "An array of references to other entities that are part of this resource.",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
             "system": {
               "type": "string",
               "description": "An entity reference to the system that the resource belongs to.",
