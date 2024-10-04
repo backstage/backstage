@@ -307,6 +307,8 @@ describe('BuiltinKindsEntityProcessor', () => {
           owner: 'o',
           dependsOn: ['Component:c', 'Resource:r'],
           dependencyOf: ['Component:d'],
+          partOf: ['Resource:r'],
+          hasPart: ['Resource:r'],
           system: 's',
         },
       };
