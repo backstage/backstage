@@ -4,7 +4,7 @@ title: Create a Frontend Plugin
 description: Documentation on How to Create a Backstage Frontend Plugin
 ---
 
-A Backstage Frontend Plugin adds functionality to the Backstage frontend web application.
+A Backstage Frontend Plugin adds functionality, via extensions, to the Backstage frontend web application.
 
 :::info
 To create a Backend Plugin, please see [Creating a Backend Plugin](./backend-plugin.md#creating-a-backend-plugin).
@@ -12,22 +12,34 @@ To create a Backend Plugin, please see [Creating a Backend Plugin](./backend-plu
 
 ## Create a Frontend Plugin
 
-To create a new frontend plugin, make sure you've run `yarn install` and installed
-dependencies, then run the following on your command line (a shortcut to
-invoking the
-[`backstage-cli new --select plugin`](../tooling/cli/03-commands.md#new))
+To create a new frontend plugin from our predefined template, first make sure you've run `yarn install`, then run the
+following on your command line (a shortcut to invoking the [`backstage-cli new --select plugin`](../tooling/cli/03-commands.md#new))
 from the root of your project.
-
-```bash
-yarn new --select plugin
-```
-
-Alternatively, you can run `yarn new` to list available options and then manually select `plugin`.
 
 ![Example of output when creating a new frontend plugin](../assets/getting-started/create-plugin_output.png)
 
-This will create a new Frontend Plugin based on the ID that was provided. It
-will be built and added to the Backstage App automatically.
+This will template out the files for a new Frontend Plugin into a folder based on the plugin ID that was provided.
+
+The `App.tsx` file will also be updated to include a route to the new generated demo page, like so:
+
+```tsx title=packages/app/src/App.tsx
+<FlatRoutes>
+  ...
+  <Route path="/my-plugin" element={<MyPluginPage />} />
+  ...
+</FlatRoutes>
+```
+
+:::info
+Important Advanced Note!
+
+Placing `<MyPluginPage />` into the application is what registers everything in your plugin with the Backstage
+application. Do not remove this unless you know what you are doing.
+
+By default, plugins are discovered when the Backstage `AppManager` traverses the React node tree when React starts up.
+When it finds a plugin extension in the visible React tree, it then "registers" the associated plugin and makes its apis
+available to `useApi()`.
+:::
 
 > If the Backstage App is already running (with `yarn start` or `yarn dev`) you
 > should be able to see the default page for your new plugin directly by

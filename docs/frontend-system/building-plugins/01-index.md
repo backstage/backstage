@@ -11,8 +11,8 @@ description: Building frontend plugins using the new frontend system
 > application to the new frontend system in order to use any of the new plugin functionality. This includes
 > migrating your usage of `createApp()` to the new package `@backstage/frontend-defaults` which is still incomplete.
 >
-> Also note that even though the old `createPlugin()` is marked as deprecated, you cannot use the new `createFrontendPlugin()`
-> unless you have migrated your entire application to the new frontend system.
+> To clarify, you cannot use the new `createFrontendPlugin()` unless you have migrated your entire application to
+> the new frontend system.
 
 This section covers how to build frontend [plugins](../architecture/15-plugins.md). Plugins are one type of frontend _features_.
 Features, which include plugins and modules, are stitched together to build up a Backstage frontend [app](../architecture/10-app.md).
