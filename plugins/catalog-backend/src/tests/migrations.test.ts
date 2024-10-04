@@ -319,14 +319,71 @@ describe('migrations', () => {
         '20241003170511_alter_target_in_locations.js',
       );
 
+      // Insert a simple URL before the migration
+      await knex
+        .insert({
+          id: '1f99f7f6-1d87-4e8c-994a-8a2ba1d542f6',
+          type: 'url',
+          target: 'https://example.com',
+        })
+        .into('locations');
+
       await migrateUpOnce(knex);
+
+      // Verify that the target column is now 'text'
       const columnInfo = await knex('locations').columnInfo();
       expect(columnInfo.target.type).toBe('text');
 
+      // Insert a long URL (exceeding 255 characters)
+      await knex
+        .insert({
+          id: '1f99f6f7-1d87-4e8c-994a-2a8ba1d542f6',
+          type: 'url',
+          target:
+            'https://example.com/foo-bar-test-group/very-long-group-name-that-exceeds-255-characters-just-to-test-the-limits-of-url-length-in-the-catalog-info-yaml-file-and-see-how-the-backstage-system-handles-it-making/test-this-alright-1/-/blob/main/catalog-info.yaml',
+        })
+        .into('locations');
+
+      // Verify that both the simple and long URLs exist after the migration
+      await expect(knex('locations')).resolves.toEqual(
+        expect.arrayContaining([
+          {
+            id: '1f99f7f6-1d87-4e8c-994a-8a2ba1d542f6',
+            target: 'https://example.com',
+            type: 'url',
+          },
+          {
+            id: '1f99f6f7-1d87-4e8c-994a-2a8ba1d542f6',
+            target:
+              'https://example.com/foo-bar-test-group/very-long-group-name-that-exceeds-255-characters-just-to-test-the-limits-of-url-length-in-the-catalog-info-yaml-file-and-see-how-the-backstage-system-handles-it-making/test-this-alright-1/-/blob/main/catalog-info.yaml',
+            type: 'url',
+          },
+        ]),
+      );
+
       await migrateDownOnce(knex);
+
+      // Verify that the column type has reverted to varchar
       const revertedColumnInfo = await knex('locations').columnInfo();
       expect(revertedColumnInfo.target.type).toMatch(
         /^(varchar|character varying)$/,
+      );
+
+      // Verify that both the simple and long URLs exist after the rollback
+      await expect(knex('locations')).resolves.toEqual(
+        expect.arrayContaining([
+          {
+            id: '1f99f7f6-1d87-4e8c-994a-8a2ba1d542f6',
+            target: 'https://example.com',
+            type: 'url',
+          },
+          {
+            id: '1f99f6f7-1d87-4e8c-994a-2a8ba1d542f6',
+            target:
+              'https://example.com/foo-bar-test-group/very-long-group-name-that-exceeds-255-characters-just-to-test-the-limits-of-url-length-in-the-catalog-info-yaml-file-and-see-how-the-backstage-system-handles-it-making/test-this-alright-1/-/blob/main/catalog-info.yaml',
+            type: 'url',
+          },
+        ]),
       );
 
       await knex.destroy();
