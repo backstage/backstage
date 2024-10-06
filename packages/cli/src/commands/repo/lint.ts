@@ -92,10 +92,11 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
 
   const items = await Promise.all(
     packages.map(async pkg => {
+      const lintOptions = parseLintScript(pkg.packageJson.scripts?.lint);
       const base = {
         fullDir: pkg.dir,
         relativeDir: relativePath(paths.targetRoot, pkg.dir),
-        lintOptions: parseLintScript(pkg.packageJson.scripts?.lint),
+        lintOptions,
         parentHash: undefined,
       };
 
@@ -106,6 +107,8 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       const hash = createHash('sha1');
 
       hash.update(await graph.getDependencyHash(pkg.packageJson.name));
+      hash.update('\0');
+      hash.update(JSON.stringify(lintOptions));
       hash.update('\0');
       hash.update(process.version); // Node.js version
       hash.update('\0');
