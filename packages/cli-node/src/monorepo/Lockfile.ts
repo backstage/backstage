@@ -134,6 +134,14 @@ export class Lockfile {
   ) {}
 
   /**
+   * Returns all versions of a package in the lockfile.
+   */
+  getVersions(name: string): string[] {
+    const queries = this.packages.get(name);
+    return queries ? queries.map(q => q.version) : [];
+  }
+
+  /**
    * Creates a simplified dependency graph from the lockfile data, where each
    * key is a package, and the value is a set of all packages that it depends on
    * across all versions.
