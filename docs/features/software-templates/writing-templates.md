@@ -814,7 +814,7 @@ These properties accept a `Record`
 ```
 
 where the first parameter is the identifier of the filter or global and the second is a `TemplateFilter` or a `TemplateGlobal` respectively.
-A `TemplateFilter` is a function which will be called using the previous `JsonValue` objets and may return a `JsonValue` object.
+A `TemplateFilter` is a function which will be called using the previous `JsonValue` objects and may return a `JsonValue` object.
 A `TemplateGlobal` can either be a function which will be called using the passed `JsonValue` objects and may return a `JsonValue` object or it can be a `JsonValue` object itself.
 
 ```ts title="plugins/scaffolder-node/src/types.ts"
