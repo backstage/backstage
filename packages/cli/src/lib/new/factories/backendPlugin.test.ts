@@ -89,7 +89,7 @@ describe('backendPlugin factory', () => {
       `availability  plugins${sep}test-backend`,
       'creating      temp dir',
       'Executing Template:',
-      'copying       .eslintrc.js',
+      'templating    .eslintrc.js.hbs',
       'templating    README.md.hbs',
       'templating    index.ts.hbs',
       'templating    package.json.hbs',
