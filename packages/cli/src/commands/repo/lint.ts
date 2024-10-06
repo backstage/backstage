@@ -15,11 +15,12 @@
  */
 
 import chalk from 'chalk';
-import { OptionValues } from 'commander';
+import { Command, OptionValues } from 'commander';
 import { relative as relativePath } from 'path';
 import { PackageGraph, BackstagePackageJson } from '@backstage/cli-node';
 import { paths } from '../../lib/paths';
 import { runWorkerQueueThreads } from '../../lib/parallel';
+import { createScriptOptionsParser } from './optionsParser';
 
 function depCount(pkg: BackstagePackageJson) {
   const deps = pkg.dependencies ? Object.keys(pkg.dependencies).length : 0;
@@ -29,7 +30,7 @@ function depCount(pkg: BackstagePackageJson) {
   return deps + devDeps;
 }
 
-export async function command(opts: OptionValues): Promise<void> {
+export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   let packages = await PackageGraph.listTargetPackages();
 
   if (opts.since) {
@@ -54,22 +55,30 @@ export async function command(opts: OptionValues): Promise<void> {
     process.env.FORCE_COLOR = '1';
   }
 
+  const parseLintScript = createScriptOptionsParser(cmd, ['package', 'lint']);
+
   const resultsList = await runWorkerQueueThreads({
     items: packages.map(pkg => ({
       fullDir: pkg.dir,
       relativeDir: relativePath(paths.targetRoot, pkg.dir),
+      lintOptions: parseLintScript(pkg.packageJson.scripts?.lint),
     })),
     workerData: {
       fix: Boolean(opts.fix),
       format: opts.format as string | undefined,
     },
     workerFactory: async ({ fix, format }) => {
-      const { ESLint } = require('eslint');
+      const { ESLint } = require('eslint') as typeof import('eslint');
 
       return async ({
         fullDir,
         relativeDir,
-      }): Promise<{ relativeDir: string; resultText: string }> => {
+        lintOptions,
+      }): Promise<{
+        relativeDir: string;
+        resultText: string;
+        failed: boolean;
+      }> => {
         // Bit of a hack to make file resolutions happen from the correct directory
         // since some lint rules don't respect the cwd of ESLint
         process.cwd = () => fullDir;
@@ -92,21 +101,34 @@ export async function command(opts: OptionValues): Promise<void> {
           await ESLint.outputFixes(results);
         }
 
-        const resultText = formatter.format(results);
+        const maxWarnings = lintOptions?.maxWarnings ?? 0;
+        const resultText = formatter.format(results) as string;
+        const failed =
+          results.some(r => r.errorCount > 0) ||
+          results.reduce((current, next) => current + next.warningCount, 0) >
+            maxWarnings;
 
-        return { relativeDir, resultText };
+        return {
+          relativeDir,
+          resultText,
+          failed,
+        };
       };
     },
   });
 
   let failed = false;
-  for (const { relativeDir, resultText } of resultsList) {
-    if (resultText) {
-      console.log();
-      console.log(chalk.red(`Lint failed in ${relativeDir}:`));
-      console.log(resultText.trimStart());
-
+  for (const { relativeDir, resultText, failed: runFailed } of resultsList) {
+    if (runFailed) {
+      console.log(chalk.red(`Lint failed in ${relativeDir}`));
       failed = true;
+
+      // When doing repo lint, only list the results if the lint failed to avoid a log
+      // dump of all warnings that might be irrelevant
+      if (resultText) {
+        console.log();
+        console.log(resultText.trimStart());
+      }
     }
   }
 

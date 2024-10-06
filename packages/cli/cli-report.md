@@ -237,6 +237,7 @@ Usage: backstage-cli package lint [options] [directories...]
 Options:
   --format <format>
   --fix
+  --max-warnings <number>
   -h, --help
 ```
 
