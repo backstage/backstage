@@ -61,6 +61,10 @@ export function registerRepoCommand(program: Command) {
       '--since <ref>',
       'Only lint packages that changed since the specified ref',
     )
+    .option(
+      '--cache [path]',
+      'Enable caching, storing it in node_modules/.cache/backstage-cli by default, or at the provided directory',
+    )
     .option('--fix', 'Attempt to automatically fix violations')
     .action(lazy(() => import('./repo/lint').then(m => m.command)));
 

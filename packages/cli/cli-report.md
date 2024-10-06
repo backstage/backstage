@@ -446,6 +446,7 @@ Usage: backstage-cli repo lint [options]
 Options:
   --format <format>
   --since <ref>
+  --cache [path]
   --fix
   -h, --help
 ```
