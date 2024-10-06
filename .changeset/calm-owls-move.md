@@ -2,4 +2,4 @@
 '@backstage/cli-node': patch
 ---
 
-Added new `packageGraph.getDependencyHash(name)` utility.
+Added new `lockfile.getDependencyTreeHash(name)` utility.

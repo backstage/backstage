@@ -19,7 +19,11 @@ import { Command, OptionValues } from 'commander';
 import fs from 'fs-extra';
 import { createHash } from 'crypto';
 import { relative as relativePath, resolve as resolvePath } from 'path';
-import { PackageGraph, BackstagePackageJson } from '@backstage/cli-node';
+import {
+  PackageGraph,
+  BackstagePackageJson,
+  Lockfile,
+} from '@backstage/cli-node';
 import { paths } from '../../lib/paths';
 import { runWorkerQueueThreads } from '../../lib/parallel';
 import { createScriptOptionsParser } from './optionsParser';
@@ -63,11 +67,15 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     opts.cache === true
       ? paths.resolveTargetRoot('node_modules/.cache/backstage-cli')
       : opts.cache;
-  const cache = cacheDir ? await readCache(cacheDir) : undefined;
-
-  const graph = PackageGraph.fromPackages(packages);
+  const cacheContext = cacheDir
+    ? {
+        cache: await readCache(cacheDir),
+        lockfile: await Lockfile.load(paths.resolveTargetRoot('yarn.lock')),
+      }
+    : undefined;
 
   if (opts.since) {
+    const graph = PackageGraph.fromPackages(packages);
     packages = await graph.listChangedPackages({
       ref: opts.since,
       analyzeLockfile: true,
@@ -100,13 +108,15 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
         parentHash: undefined,
       };
 
-      if (!cacheDir) {
+      if (!cacheContext) {
         return base;
       }
 
       const hash = createHash('sha1');
 
-      hash.update(await graph.getDependencyHash(pkg.packageJson.name));
+      hash.update(
+        cacheContext.lockfile.getDependencyTreeHash(pkg.packageJson.name),
+      );
       hash.update('\0');
       hash.update(JSON.stringify(lintOptions));
       hash.update('\0');
@@ -127,7 +137,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       fix: Boolean(opts.fix),
       format: opts.format as string | undefined,
       shouldCache: Boolean(cacheDir),
-      successCache: cache,
+      successCache: cacheContext?.cache,
     },
     workerFactory: async ({ fix, format, shouldCache, successCache }) => {
       const { ESLint } = require('eslint') as typeof import('eslint');

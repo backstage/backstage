@@ -92,7 +92,7 @@ export function isMonoRepo(): Promise<boolean>;
 export class Lockfile {
   createSimplifiedDependencyGraph(): Map<string, Set<string>>;
   diff(otherLockfile: Lockfile): LockfileDiff;
-  getVersions(name: string): string[];
+  getDependencyTreeHash(startName: string): string;
   static load(path: string): Promise<Lockfile>;
   static parse(content: string): Lockfile;
 }
@@ -117,7 +117,6 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
     collectFn: (pkg: PackageGraphNode) => Iterable<string> | undefined,
   ): Set<string>;
   static fromPackages(packages: Package[]): PackageGraph;
-  getDependencyHash(name: string): Promise<string>;
   listChangedPackages(options: {
     ref: string;
     analyzeLockfile?: boolean;

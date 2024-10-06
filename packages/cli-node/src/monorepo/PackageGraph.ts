@@ -15,7 +15,6 @@
  */
 
 import path from 'path';
-import crypto from 'node:crypto';
 import { getPackages, Package } from '@manypkg/get-packages';
 import { paths } from '../paths';
 import { PackageRole } from '../roles';
@@ -285,43 +284,6 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
   }
 
   /**
-   * Generates a sha1 hex hash of the dependency graph for a package.
-   */
-  async getDependencyHash(name: string): Promise<string> {
-    const pkg = this.get(name);
-    if (!pkg) {
-      throw new Error(`Package '${name}' not found`);
-    }
-
-    const lockfile = await this.#getLockfile();
-    const depGraph = lockfile.createSimplifiedDependencyGraph();
-
-    const seen = new Set<string>();
-    const queue = [name];
-
-    while (queue.length > 0) {
-      const deps = depGraph.get(queue.pop()!);
-      if (deps) {
-        for (const dep of deps) {
-          if (!seen.has(dep)) {
-            seen.add(dep);
-            queue.push(dep);
-          }
-        }
-      }
-    }
-
-    const hash = crypto.createHash('sha1');
-    for (const dep of Array.from(seen).sort()) {
-      hash.update(dep);
-      hash.update('\0');
-      hash.update(lockfile.getVersions(dep).join(' '));
-      hash.update('\0');
-    }
-    return hash.digest('hex');
-  }
-
-  /**
    * Lists all packages that have changed since a given git ref.
    *
    * @remarks
@@ -380,7 +342,9 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
       let thisLockfile: Lockfile;
       let otherLockfile: Lockfile;
       try {
-        thisLockfile = await this.#getLockfile();
+        thisLockfile = await Lockfile.load(
+          paths.resolveTargetRoot('yarn.lock'),
+        );
         otherLockfile = Lockfile.parse(
           await GitUtils.readFileAtRef('yarn.lock', options.ref),
         );
@@ -445,14 +409,5 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
     }
 
     return result;
-  }
-
-  #lockfilePromise?: Promise<Lockfile>;
-  #getLockfile(): Promise<Lockfile> {
-    if (this.#lockfilePromise) {
-      return this.#lockfilePromise;
-    }
-    this.#lockfilePromise = Lockfile.load(paths.resolveTargetRoot('yarn.lock'));
-    return this.#lockfilePromise;
   }
 }
