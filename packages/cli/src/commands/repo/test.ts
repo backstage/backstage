@@ -15,10 +15,76 @@
  */
 
 import os from 'os';
+import crypto from 'node:crypto';
+import fs from 'fs-extra';
+import yargs from 'yargs';
+import { resolve as resolvePath, relative as relativePath } from 'path';
 import { Command, OptionValues } from 'commander';
-import { PackageGraph } from '@backstage/cli-node';
+import { Lockfile, PackageGraph } from '@backstage/cli-node';
 import { paths } from '../../lib/paths';
-import { runCheck } from '../../lib/run';
+import { runCheck, runPlain } from '../../lib/run';
+
+type JestProject = {
+  displayName: string;
+};
+
+interface GlobalWithCache extends Global {
+  __backstageCli_jestSuccessCache?: {
+    filterConfigs(
+      projectConfigs: JestProject[],
+      globalConfig: unknown,
+    ): Promise<JestProject[]>;
+    reportResults(options: { successful: Set<string> }): Promise<void>;
+  };
+}
+
+const CACHE_FILE_NAME = 'test-cache.json';
+
+type Cache = string[];
+
+async function readCache(dir: string): Promise<Cache | undefined> {
+  try {
+    const data = await fs.readJson(resolvePath(dir, CACHE_FILE_NAME));
+    if (!Array.isArray(data)) {
+      return undefined;
+    }
+    if (data.some(x => typeof x !== 'string')) {
+      return undefined;
+    }
+    return data as Cache;
+  } catch {
+    return undefined;
+  }
+}
+
+function writeCache(dir: string, cache: Cache) {
+  fs.mkdirpSync(dir);
+  fs.writeJsonSync(resolvePath(dir, CACHE_FILE_NAME), cache, { spaces: 2 });
+}
+
+/**
+ * Use git to get the HEAD tree hashes of each package in the project.
+ */
+async function getPackageTreeHashes(graph: PackageGraph) {
+  const pkgs = Array.from(graph.values());
+  const output = await runPlain(
+    'git',
+    'ls-tree',
+    '--object-only',
+    'HEAD',
+    '--',
+    ...pkgs.map(pkg => relativePath(paths.targetRoot, pkg.dir)),
+  );
+
+  const treeShaList = output.trim().split(/\r?\n/);
+  if (treeShaList.length !== pkgs.length) {
+    throw new Error(
+      `Error listing project git tree hashes, output length does not equal input length`,
+    );
+  }
+
+  return new Map(pkgs.map((pkg, i) => [pkg.packageJson.name, treeShaList[i]]));
+}
 
 export function createFlagFinder(args: string[]) {
   const flags = new Set<string>();
@@ -120,9 +186,18 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     removeOptionArg(args, '--since');
   }
 
-  if (opts.since && !hasFlags('--selectProjects')) {
+  let packageGraph: PackageGraph | undefined;
+  async function getPackageGraph() {
+    if (packageGraph) {
+      return packageGraph;
+    }
     const packages = await PackageGraph.listTargetPackages();
-    const graph = PackageGraph.fromPackages(packages);
+    packageGraph = PackageGraph.fromPackages(packages);
+    return packageGraph;
+  }
+
+  if (opts.since && !hasFlags('--selectProjects')) {
+    const graph = await getPackageGraph();
     const changedPackages = await graph.listChangedPackages({
       ref: opts.since,
       analyzeLockfile: true,
@@ -163,5 +238,106 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     (process.stdout as any)._handle.setBlocking(true);
   }
 
-  await require('jest').run(args);
+  const jestCli = require('jest-cli');
+
+  // This code path is enabled by the --successCache flag, which is specific to
+  // the `repo test` command in the Backstage CLI.
+  if (opts.successCache) {
+    removeOptionArg(args, '--successCache');
+    removeOptionArg(args, '--successCacheDir');
+
+    const cacheDir = resolvePath(
+      opts.successCacheDir ?? 'node_modules/.cache/backstage-cli',
+    );
+
+    // Parse the args to ensure that no file filters are provided, in which case we refuse to run
+    const { _: parsedArgs } = await yargs(args).options(jestCli.yargsOptions)
+      .argv;
+    if (parsedArgs.length > 0) {
+      throw new Error(
+        `The --successCache flag can not be combined with the following arguments: ${parsedArgs.join(
+          ', ',
+        )}`,
+      );
+    }
+    // Likewise, it's not possible to combine sharding and the success cache
+    if (args.includes('--shard')) {
+      throw new Error(
+        `The --successCache flag can not be combined with the --shard flag`,
+      );
+    }
+
+    // Shared state for the bridge
+    const projectHashes = new Map<string, string>();
+    const outputSuccessCache = new Array<string>();
+
+    // Set up a bridge with the @backstage/cli/config/jest configuration file. These methods
+    // are picked up by the config script itself, as well as the custom result processor.
+    const globalWithCache = global as GlobalWithCache;
+    globalWithCache.__backstageCli_jestSuccessCache = {
+      async filterConfigs(projectConfigs, globalRootConfig) {
+        const graph = await getPackageGraph();
+        const cache = await readCache(cacheDir);
+        const lockfile = await Lockfile.load(
+          paths.resolveTargetRoot('yarn.lock'),
+        );
+        const packageTreeHashes = await getPackageTreeHashes(graph);
+
+        // Base hash shared by all projects
+        const baseHash = crypto.createHash('sha1');
+        baseHash.update('v1'); // The version of this implementation
+        baseHash.update('\0');
+        baseHash.update(process.version); // Node.js version
+        baseHash.update('\0');
+        baseHash.update(JSON.stringify(globalRootConfig)); // Variable global jest config
+        const baseSha = baseHash.digest('hex');
+
+        return projectConfigs.filter(project => {
+          const packageName = project.displayName;
+          const pkg = graph.get(packageName);
+          if (!pkg) {
+            throw new Error(
+              `Package ${packageName} not found in package graph`,
+            );
+          }
+
+          const hash = crypto.createHash('sha1');
+
+          const packageTreeSha = packageTreeHashes.get(packageName);
+          if (!packageTreeSha) {
+            throw new Error(`Tree sha not found for ${packageName}`);
+          }
+          hash.update(baseSha);
+          hash.update(packageTreeSha);
+          // The project ID is a hash of the transform configuration, which helps
+          // us bust the cache when any changes are made to the transform implementation.
+          hash.update(JSON.stringify(project));
+          hash.update(lockfile.getDependencyTreeHash(packageName));
+
+          const sha = hash.digest('hex');
+
+          projectHashes.set(packageName, sha);
+
+          if (cache?.includes(sha)) {
+            console.log(`Skipped ${packageName} due to cache hit`);
+            outputSuccessCache.push(sha);
+            return undefined;
+          }
+
+          return project;
+        });
+      },
+      async reportResults(options) {
+        for (const packageName of options.successful) {
+          const sha = projectHashes.get(packageName);
+          if (sha) {
+            outputSuccessCache.push(sha);
+          }
+        }
+        writeCache(cacheDir, outputSuccessCache);
+      },
+    };
+  }
+
+  await jestCli.run(args);
 }

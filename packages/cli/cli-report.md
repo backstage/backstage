@@ -469,6 +469,8 @@ Usage: backstage-cli repo test [options]
 
 Options:
   --since <ref>
+  --successCache
+  --successCacheDir <path>
   --jest-help
   -h, --help
 ```
