@@ -35,7 +35,7 @@ import Autocomplete, {
   AutocompleteChangeReason,
   createFilterOptions,
 } from '@material-ui/lab/Autocomplete';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import {
   EntityPickerFilterQueryValue,
@@ -166,12 +166,6 @@ export const EntityPicker = (props: EntityPickerProps) => {
     entities?.catalogEntities.find(e => stringifyEntityRef(e) === formData) ??
     (allowArbitraryValues && formData ? getLabel(formData) : '');
 
-  useEffect(() => {
-    if (entities?.catalogEntities.length === 1 && selectedEntity === '') {
-      onChange(stringifyEntityRef(entities.catalogEntities[0]));
-    }
-  }, [entities, onChange, selectedEntity]);
-
   return (
     <FormControl
       margin="normal"
@@ -179,7 +173,6 @@ export const EntityPicker = (props: EntityPickerProps) => {
       error={rawErrors?.length > 0 && !formData}
     >
       <Autocomplete
-        disabled={entities?.catalogEntities.length === 1}
         id={idSchema?.$id}
         value={selectedEntity}
         loading={loading}

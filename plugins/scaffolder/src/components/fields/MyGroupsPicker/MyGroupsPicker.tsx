@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   errorApiRef,
   identityApiRef,
@@ -101,12 +101,6 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
     groups?.catalogEntities.find(e => stringifyEntityRef(e) === formData) ||
     null;
 
-  useEffect(() => {
-    if (groups?.catalogEntities.length === 1 && !selectedEntity) {
-      onChange(stringifyEntityRef(groups.catalogEntities[0]));
-    }
-  }, [groups, onChange, selectedEntity]);
-
   return (
     <FormControl
       margin="normal"
@@ -114,7 +108,6 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
       error={rawErrors?.length > 0}
     >
       <Autocomplete
-        disabled={groups?.catalogEntities.length === 1}
         id="OwnershipEntityRefPicker-dropdown"
         options={groups?.catalogEntities || []}
         value={selectedEntity}

@@ -34,7 +34,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Autocomplete, {
   AutocompleteChangeReason,
 } from '@material-ui/lab/Autocomplete';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import { FieldValidation } from '@rjsf/utils';
 import {
@@ -135,12 +135,6 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
     [onChange, formData, defaultKind, defaultNamespace, allowArbitraryValues],
   );
 
-  useEffect(() => {
-    if (entities?.entities?.length === 1) {
-      onChange([stringifyEntityRef(entities?.entities[0])]);
-    }
-  }, [entities, onChange]);
-
   return (
     <FormControl
       margin="normal"
@@ -150,7 +144,6 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
       <Autocomplete
         multiple
         filterSelectedOptions
-        disabled={entities?.entities?.length === 1}
         id={idSchema?.$id}
         defaultValue={formData}
         loading={loading}
