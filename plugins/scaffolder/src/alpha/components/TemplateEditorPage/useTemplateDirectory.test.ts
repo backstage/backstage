@@ -78,7 +78,7 @@ describe('useTemplateDirectory', () => {
     expect(result.current.directory).toBeUndefined();
 
     await act(async () => {
-      result.current.handleOpenDirectory();
+      result.current.openDirectory();
     });
 
     expect(requestDirectoryAccess).toHaveBeenCalled();
@@ -103,7 +103,7 @@ describe('useTemplateDirectory', () => {
     const { result } = renderHook(() => useTemplateDirectory());
 
     await act(async () => {
-      result.current.handleCreateDirectory();
+      result.current.createDirectory();
     });
 
     expect(requestDirectoryAccess).toHaveBeenCalled();
@@ -124,7 +124,7 @@ describe('useTemplateDirectory', () => {
     expect(result.current.directory).toBeUndefined();
 
     await act(async () => {
-      result.current.handleCloseDirectory();
+      result.current.closeDirectory();
     });
 
     expect(setDirectory).toHaveBeenCalledWith(undefined);
