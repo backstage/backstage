@@ -28,10 +28,10 @@ jest.mock(
 );
 
 import { ContainerRunner } from '@backstage/backend-common';
-import path from 'path';
-import { PassThrough } from 'stream';
-import { RailsNewRunner } from './railsNewRunner';
 import { createMockDirectory } from '@backstage/backend-test-utils';
+import path from 'path';
+import { Logger } from 'winston';
+import { RailsNewRunner } from './railsNewRunner';
 
 describe('Rails Templater', () => {
   const containerRunner: jest.Mocked<ContainerRunner> = {
@@ -47,7 +47,7 @@ describe('Rails Templater', () => {
 
   describe('when running on docker', () => {
     it('should run the correct bindings for the volumes', async () => {
-      const logStream = new PassThrough();
+      const logger = new Logger();
       const values = {
         owner: 'angeliski',
         storePath: 'https://github.com/angeliski/rails-project',
@@ -65,7 +65,7 @@ describe('Rails Templater', () => {
       await templater.run({
         workspacePath: mockDir.path,
         values,
-        logStream,
+        logger,
       });
 
       expect(containerRunner.runContainer).toHaveBeenCalledWith({
@@ -78,12 +78,12 @@ describe('Rails Templater', () => {
           [path.join(mockDir.path, 'intermediate')]: '/output',
         },
         workingDir: '/input',
-        logStream: logStream,
+        logger: logger,
       });
     });
 
     it('should use the provided imageName', async () => {
-      const logStream = new PassThrough();
+      const logger = new Logger();
       const values = {
         owner: 'angeliski',
         storePath: 'https://github.com/angeliski/rails-project',
@@ -101,7 +101,7 @@ describe('Rails Templater', () => {
       await templater.run({
         workspacePath: mockDir.path,
         values,
-        logStream,
+        logger,
       });
 
       expect(containerRunner.runContainer).toHaveBeenCalledWith(
@@ -112,7 +112,7 @@ describe('Rails Templater', () => {
     });
 
     it('should pass through the streamer to the run docker helper', async () => {
-      const stream = new PassThrough();
+      const logger = new Logger();
 
       const values = {
         owner: 'angeliski',
@@ -131,7 +131,7 @@ describe('Rails Templater', () => {
       await templater.run({
         workspacePath: mockDir.path,
         values,
-        logStream: stream,
+        logger,
       });
 
       expect(containerRunner.runContainer).toHaveBeenCalledWith({
@@ -144,12 +144,12 @@ describe('Rails Templater', () => {
           [path.join(mockDir.path, 'intermediate')]: '/output',
         },
         workingDir: '/input',
-        logStream: stream,
+        logger,
       });
     });
 
     it('update the template path to correct location', async () => {
-      const logStream = new PassThrough();
+      const logger = new Logger();
       const values = {
         owner: 'angeliski',
         storePath: 'https://github.com/angeliski/rails-project',
@@ -168,7 +168,7 @@ describe('Rails Templater', () => {
       await templater.run({
         workspacePath: mockDir.path,
         values,
-        logStream,
+        logger,
       });
 
       expect(containerRunner.runContainer).toHaveBeenCalledWith({
@@ -186,14 +186,14 @@ describe('Rails Templater', () => {
           [path.join(mockDir.path, 'intermediate')]: '/output',
         },
         workingDir: '/input',
-        logStream: logStream,
+        logger,
       });
     });
   });
 
   describe('when rails is available', () => {
     it('use the binary', async () => {
-      const stream = new PassThrough();
+      const logger = new Logger();
 
       const values = {
         owner: 'angeliski',
@@ -213,7 +213,7 @@ describe('Rails Templater', () => {
       await templater.run({
         workspacePath: mockDir.path,
         values,
-        logStream: stream,
+        logger,
       });
 
       expect(executeShellCommand).toHaveBeenCalledWith({
@@ -222,12 +222,12 @@ describe('Rails Templater', () => {
           'new',
           path.join(mockDir.path, 'intermediate', 'rails-project'),
         ]),
-        logStream: stream,
+        logger,
       });
     });
 
     it('update the template path to correct location', async () => {
-      const stream = new PassThrough();
+      const logger = new Logger();
 
       const values = {
         owner: 'angeliski',
@@ -248,7 +248,7 @@ describe('Rails Templater', () => {
       await templater.run({
         workspacePath: mockDir.path,
         values,
-        logStream: stream,
+        logger,
       });
 
       expect(executeShellCommand).toHaveBeenCalledWith({
@@ -259,14 +259,14 @@ describe('Rails Templater', () => {
           '--template',
           path.join(mockDir.path, './something.rb'),
         ]),
-        logStream: stream,
+        logger,
       });
     });
   });
 
   describe('when nothing was generated', () => {
     it('throws an error', async () => {
-      const stream = new PassThrough();
+      const logger = new Logger();
 
       mockDir.setContent({
         intermediate: {},
@@ -282,7 +282,7 @@ describe('Rails Templater', () => {
             name: 'rails-project',
             imageName: 'foo/rails-custom-image',
           },
-          logStream: stream,
+          logger,
         }),
       ).rejects.toThrow(/No data generated by rails/);
     });

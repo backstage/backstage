@@ -15,16 +15,16 @@
  */
 
 import { ContainerRunner } from '@backstage/backend-common';
+import { executeShellCommand } from '@backstage/plugin-scaffolder-node';
+import { JsonObject } from '@backstage/types';
+import commandExists from 'command-exists';
 import fs from 'fs-extra';
 import path from 'path';
-import { executeShellCommand } from '@backstage/plugin-scaffolder-node';
-import commandExists from 'command-exists';
+import { Logger } from 'winston';
 import {
   railsArgumentResolver,
   RailsRunOptions,
 } from './railsArgumentResolver';
-import { JsonObject } from '@backstage/types';
-import { Writable } from 'stream';
 
 export class RailsNewRunner {
   private readonly containerRunner?: ContainerRunner;
@@ -36,11 +36,11 @@ export class RailsNewRunner {
   public async run({
     workspacePath,
     values,
-    logStream,
+    logger,
   }: {
     workspacePath: string;
     values: JsonObject;
-    logStream: Writable;
+    logger: Logger;
   }): Promise<void> {
     const intermediateDir = path.join(workspacePath, 'intermediate');
     await fs.ensureDir(intermediateDir);
@@ -71,7 +71,7 @@ export class RailsNewRunner {
           `${intermediateDir}${path.sep}${name}`,
           ...arrayExtraArguments,
         ],
-        logStream,
+        logger,
       });
     } else {
       if (!imageName) {
@@ -96,7 +96,7 @@ export class RailsNewRunner {
         // Set the home directory inside the container as something that applications can
         // write to, otherwise they will just fail trying to write to /
         envVars: { HOME: '/tmp' },
-        logStream,
+        logger,
       });
     }
 

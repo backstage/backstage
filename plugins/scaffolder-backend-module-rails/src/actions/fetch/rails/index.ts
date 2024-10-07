@@ -15,20 +15,19 @@
  */
 
 import { ContainerRunner } from '@backstage/backend-common';
-import { JsonObject } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
-import fs from 'fs-extra';
 import {
   createTemplateAction,
   fetchContents,
 } from '@backstage/plugin-scaffolder-node';
+import { JsonObject } from '@backstage/types';
+import fs from 'fs-extra';
 
-import { resolve as resolvePath } from 'path';
-import { RailsNewRunner } from './railsNewRunner';
-import { PassThrough } from 'stream';
-import { examples } from './index.examples';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
+import { resolve as resolvePath } from 'path';
+import { examples } from './index.examples';
+import { RailsNewRunner } from './railsNewRunner';
 
 /**
  * Creates the `fetch:rails` Scaffolder action.
@@ -219,15 +218,10 @@ export function createFetchRailsAction(options: {
         throw new Error(`Image ${imageName} is not allowed`);
       }
 
-      const logStream = new PassThrough();
-      logStream.on('data', chunk => {
-        ctx.logger.info(chunk.toString());
-      });
-
       // Will execute the template in ./template and put the result in ./result
       await templateRunner.run({
         workspacePath: workDir,
-        logStream,
+        logger: ctx.logger,
         values: { ...ctx.input.values, imageName },
       });
 

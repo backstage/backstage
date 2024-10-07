@@ -15,16 +15,16 @@
  */
 
 import { ContainerRunner } from '@backstage/backend-common';
-import { ConfigReader } from '@backstage/config';
-import { JsonObject } from '@backstage/types';
-import { ScmIntegrations } from '@backstage/integration';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { createMockDirectory } from '@backstage/backend-test-utils';
-import { createFetchCookiecutterAction } from './cookiecutter';
-import { join } from 'path';
+import { ConfigReader } from '@backstage/config';
+import { ScmIntegrations } from '@backstage/integration';
 import type { ActionContext } from '@backstage/plugin-scaffolder-node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
-import { Writable } from 'stream';
-import { UrlReaderService } from '@backstage/backend-plugin-api';
+import { JsonObject } from '@backstage/types';
+import { join } from 'path';
+import { Logger } from 'winston';
+import { createFetchCookiecutterAction } from './cookiecutter';
 
 const executeShellCommand = jest.fn();
 const commandExists = jest.fn();
@@ -168,7 +168,7 @@ describe('fetch:cookiecutter', () => {
           join(mockTmpDir, 'template'),
           '--verbose',
         ],
-        logStream: expect.any(Writable),
+        logger: expect.any(Logger),
       }),
     );
   });
@@ -189,7 +189,7 @@ describe('fetch:cookiecutter', () => {
         },
         workingDir: '/input',
         envVars: { HOME: '/tmp' },
-        logStream: expect.any(Writable),
+        logger: expect.any(Logger),
       }),
     );
   });

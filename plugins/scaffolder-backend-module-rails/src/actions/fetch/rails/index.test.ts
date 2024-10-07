@@ -28,15 +28,15 @@ jest.mock('./railsNewRunner', () => {
 });
 
 import { ContainerRunner } from '@backstage/backend-common';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
-import { resolve as resolvePath } from 'path';
-import { createFetchRailsAction } from './index';
 import { fetchContents } from '@backstage/plugin-scaffolder-node';
-import { createMockDirectory } from '@backstage/backend-test-utils';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
-import { Writable } from 'stream';
-import { UrlReaderService } from '@backstage/backend-plugin-api';
+import { resolve as resolvePath } from 'path';
+import { Logger } from 'winston';
+import { createFetchRailsAction } from './index';
 
 describe('fetch:rails', () => {
   const mockDir = createMockDirectory();
@@ -106,7 +106,7 @@ describe('fetch:rails', () => {
 
     expect(mockRailsTemplater.run).toHaveBeenCalledWith({
       workspacePath: mockContext.workspacePath,
-      logStream: expect.any(Writable),
+      logger: expect.any(Logger),
       values: mockContext.input.values,
     });
   });
@@ -122,7 +122,7 @@ describe('fetch:rails', () => {
 
     expect(mockRailsTemplater.run).toHaveBeenCalledWith({
       workspacePath: mockContext.workspacePath,
-      logStream: expect.any(Writable),
+      logger: expect.any(Logger),
       values: {
         ...mockContext.input.values,
         imageName: 'foo/rails-custom-image',
