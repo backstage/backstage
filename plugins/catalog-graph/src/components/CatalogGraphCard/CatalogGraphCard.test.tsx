@@ -33,6 +33,7 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { catalogGraphRouteRef } from '../../routes';
 import { CatalogGraphCard } from './CatalogGraphCard';
+import Button from '@material-ui/core/Button';
 
 describe('<CatalogGraphCard/>', () => {
   let entity: Entity;
@@ -125,6 +126,33 @@ describe('<CatalogGraphCard/>', () => {
     );
 
     expect(await screen.findByText('Custom Title')).toBeInTheDocument();
+  });
+
+  test('renders with action attribute', async () => {
+    catalog.getEntitiesByRefs.mockImplementation(async _ => ({
+      items: [
+        {
+          ...entity,
+          relations: [],
+        },
+      ],
+    }));
+
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EntityProvider entity={entity}>
+          <CatalogGraphCard action={<Button title="Action Button" />} />
+        </EntityProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/entity/{kind}/{namespace}/{name}': entityRouteRef,
+          '/catalog-graph': catalogGraphRouteRef,
+        },
+      },
+    );
+
+    expect(await screen.findByTitle('Action Button')).toBeInTheDocument();
   });
 
   test('renders link to standalone viewer', async () => {

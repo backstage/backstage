@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,63 +14,53 @@
  * limitations under the License.
  */
 import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
 import { Content, Header, Page } from '@backstage/core-components';
-
-import { WebFileSystemAccess } from '../../../lib/filesystem';
-
-import { TemplateEditorIntro } from './TemplateEditorIntro';
-import { useNavigate } from 'react-router-dom';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import {
-  editorRouteRef,
-  customFieldsRouteRef,
-  rootRouteRef,
-  templateFormRouteRef,
-} from '../../../routes';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import {
+  FormProps,
+  FieldExtensionOptions,
+  type LayoutOptions,
+} from '@backstage/plugin-scaffolder-react';
 import { scaffolderTranslationRef } from '../../../translation';
-import { WebFileSystemStore } from '../../../lib/filesystem/WebFileSystemAccess';
-import { createExampleTemplate } from '../../../lib/filesystem/createExampleTemplate';
+import { editRouteRef } from '../../../routes';
+import { TemplateEditor } from './TemplateEditor';
 
-export function TemplateEditorPage() {
-  const navigate = useNavigate();
-  const createLink = useRouteRef(rootRouteRef);
-  const editorLink = useRouteRef(editorRouteRef);
-  const customFieldsLink = useRouteRef(customFieldsRouteRef);
-  const templateFormLink = useRouteRef(templateFormRouteRef);
+const useStyles = makeStyles(
+  {
+    content: {
+      padding: 0,
+    },
+  },
+  { name: 'ScaffolderTemplateEditorToolbar' },
+);
+
+interface TemplatePageProps {
+  defaultPreviewTemplate?: string;
+  fieldExtensions?: FieldExtensionOptions<any, any>[];
+  layouts?: LayoutOptions[];
+  formProps?: FormProps;
+}
+
+export function TemplateEditorPage(props: TemplatePageProps) {
+  const classes = useStyles();
+  const editLink = useRouteRef(editRouteRef);
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
   return (
     <Page themeId="home">
       <Header
         title={t('templateEditorPage.title')}
-        type="Scaffolder"
-        typeLink={createLink()}
         subtitle={t('templateEditorPage.subtitle')}
+        type={t('templateIntroPage.title')}
+        typeLink={editLink()}
       />
-      <Content>
-        <TemplateEditorIntro
-          onSelect={option => {
-            if (option === 'local') {
-              WebFileSystemAccess.requestDirectoryAccess()
-                .then(directory => WebFileSystemStore.setDirectory(directory))
-                .then(() => navigate(editorLink()))
-                .catch(() => {});
-            } else if (option === 'create-template') {
-              WebFileSystemAccess.requestDirectoryAccess()
-                .then(directory => {
-                  createExampleTemplate(directory).then(() => {
-                    WebFileSystemStore.setDirectory(directory);
-                    navigate(editorLink());
-                  });
-                })
-                .catch(() => {});
-            } else if (option === 'form') {
-              navigate(templateFormLink());
-            } else if (option === 'field-explorer') {
-              navigate(customFieldsLink());
-            }
-          }}
+      <Content className={classes.content}>
+        <TemplateEditor
+          layouts={props.layouts}
+          formProps={props.formProps}
+          fieldExtensions={props.fieldExtensions}
         />
       </Content>
     </Page>

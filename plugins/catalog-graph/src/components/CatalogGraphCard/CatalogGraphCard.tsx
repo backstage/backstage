@@ -28,7 +28,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import qs from 'qs';
-import React, { MouseEvent, useCallback } from 'react';
+import React, { MouseEvent, ReactNode, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { catalogGraphRouteRef } from '../../routes';
 import {
@@ -63,6 +63,7 @@ export const CatalogGraphCard = (
     variant?: InfoCardVariants;
     height?: number;
     title?: string;
+    action?: ReactNode;
   },
 ) => {
   const {
@@ -77,6 +78,7 @@ export const CatalogGraphCard = (
     entityFilter,
     height,
     className,
+    action,
     rootEntityNames,
     onNodeClick,
     title = 'Relations',
@@ -126,6 +128,7 @@ export const CatalogGraphCard = (
   return (
     <InfoCard
       title={title}
+      action={action}
       cardClassName={classes.card}
       variant={variant}
       noPadding

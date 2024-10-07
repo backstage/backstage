@@ -53,7 +53,8 @@ class WebFileAccess implements TemplateFileAccess {
   }
 }
 
-class WebDirectoryAccess implements TemplateDirectoryAccess {
+/** @internal */
+export class WebDirectoryAccess implements TemplateDirectoryAccess {
   constructor(private readonly handle: IterableDirectoryHandle) {}
 
   async listFiles(): Promise<TemplateFileAccess[]> {

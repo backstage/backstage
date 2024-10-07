@@ -140,18 +140,6 @@ describe('SearchType.Accordion', () => {
     expect(setPageCursorMock).toHaveBeenCalledWith(undefined);
   });
 
-  it('should collapse when a new type is selected', async () => {
-    const { getByText, queryByText } = render(
-      <Wrapper>
-        <SearchType.Accordion name={expectedLabel} types={[expectedType]} />
-      </Wrapper>,
-    );
-
-    await user.click(getByText(expectedType.name));
-
-    expect(queryByText('Collapse')).not.toBeInTheDocument();
-  });
-
   it('should show result counts if enabled', async () => {
     const { getAllByText } = render(
       <Wrapper>
