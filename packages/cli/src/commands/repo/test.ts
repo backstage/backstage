@@ -23,6 +23,7 @@ import { Command, OptionValues } from 'commander';
 import { Lockfile, PackageGraph } from '@backstage/cli-node';
 import { paths } from '../../lib/paths';
 import { runCheck, runPlain } from '../../lib/run';
+import { isChildPath } from '@backstage/cli-common';
 
 type JestProject = {
   displayName: string;
@@ -34,7 +35,18 @@ interface GlobalWithCache extends Global {
       projectConfigs: JestProject[],
       globalConfig: unknown,
     ): Promise<JestProject[]>;
-    reportResults(options: { successful: Set<string> }): Promise<void>;
+    reportResults(results: {
+      testResults: Array<{
+        displayName?: { name: string };
+        numFailingTests: number;
+        testFilePath: string;
+        testExecError: {
+          message: string;
+          stack: string;
+        };
+        failureMessage: string;
+      }>;
+    }): Promise<void>;
   };
 }
 
@@ -267,6 +279,8 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       );
     }
 
+    const graph = await getPackageGraph();
+
     // Shared state for the bridge
     const projectHashes = new Map<string, string>();
     const outputSuccessCache = new Array<string>();
@@ -276,7 +290,6 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     const globalWithCache = global as GlobalWithCache;
     globalWithCache.__backstageCli_jestSuccessCache = {
       async filterConfigs(projectConfigs, globalRootConfig) {
-        const graph = await getPackageGraph();
         const cache = await readCache(cacheDir);
         const lockfile = await Lockfile.load(
           paths.resolveTargetRoot('yarn.lock'),
@@ -327,14 +340,33 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
           return project;
         });
       },
-      async reportResults(options) {
-        for (const packageName of options.successful) {
-          const sha = projectHashes.get(packageName);
+      async reportResults(results) {
+        const successful = new Set<string>();
+        const failed = new Set<string>();
+        for (const testResult of results.testResults) {
+          for (const [pkgName, pkg] of graph) {
+            if (isChildPath(pkg.dir, testResult.testFilePath)) {
+              if (
+                testResult.testExecError ||
+                testResult.failureMessage ||
+                testResult.numFailingTests > 0
+              ) {
+                failed.add(pkgName);
+                successful.delete(pkgName);
+              } else if (!failed.has(pkgName)) {
+                successful.add(pkgName);
+              }
+              break;
+            }
+          }
+        }
+        for (const pkgName of successful) {
+          const sha = projectHashes.get(pkgName);
           if (sha) {
             outputSuccessCache.push(sha);
           }
         }
-        writeCache(cacheDir, outputSuccessCache);
+        await writeCache(cacheDir, outputSuccessCache);
       },
     };
   }

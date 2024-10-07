@@ -16,25 +16,8 @@
 
 module.exports = async results => {
   const cache = global.__backstageCli_jestSuccessCache;
-  if (!cache) {
-    return results;
+  if (cache) {
+    await cache.reportResults(results);
   }
-
-  const successful = new Set();
-  const failed = new Set();
-  for (const testResult of results.testResults) {
-    const projectName = testResult.displayName.name;
-    if (testResult.numFailingTests > 0) {
-      failed.add(projectName);
-      successful.delete(projectName);
-    } else if (!failed.has(projectName)) {
-      successful.add(projectName);
-    }
-  }
-
-  await cache.reportResults({
-    successful: successful,
-  });
-
   return results;
 };
