@@ -112,7 +112,7 @@ export function createFlagFinder(args: string[]) {
   };
 }
 
-function removeOptionArg(args: string[], option: string) {
+function removeOptionArg(args: string[], option: string, size: number = 2) {
   let changed = false;
   do {
     changed = false;
@@ -120,7 +120,7 @@ function removeOptionArg(args: string[], option: string) {
     const index = args.indexOf(option);
     if (index >= 0) {
       changed = true;
-      args.splice(index, 2);
+      args.splice(index, size);
     }
     const indexEq = args.findIndex(arg => arg.startsWith(`${option}=`));
     if (indexEq >= 0) {
@@ -243,7 +243,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   // This code path is enabled by the --successCache flag, which is specific to
   // the `repo test` command in the Backstage CLI.
   if (opts.successCache) {
-    removeOptionArg(args, '--successCache');
+    removeOptionArg(args, '--successCache', 1);
     removeOptionArg(args, '--successCacheDir');
 
     const cacheDir = resolvePath(
