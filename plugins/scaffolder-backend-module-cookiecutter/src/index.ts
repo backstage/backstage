@@ -21,4 +21,7 @@
  */
 
 export * from './actions';
-export { cookiecutterModule as default } from './module';
+export {
+  cookiecutterModule as default,
+  cookieCutterContainerRunnerServiceRef,
+} from './module';

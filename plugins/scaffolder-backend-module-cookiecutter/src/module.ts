@@ -16,10 +16,18 @@
 import {
   coreServices,
   createBackendModule,
+  createServiceRef,
 } from '@backstage/backend-plugin-api';
 import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
-import { createFetchCookiecutterAction } from './actions';
+import { createFetchCookiecutterAction, ContainerRunner } from './actions';
 import { ScmIntegrations } from '@backstage/integration';
+
+export const cookieCutterContainerRunnerServiceRef =
+  createServiceRef<ContainerRunner>({
+    id: 'scaffolder.cookiecutter.containerRunner',
+    scope: 'plugin',
+    multiton: true,
+  });
 
 /**
  * @public
@@ -34,11 +42,20 @@ export const cookiecutterModule = createBackendModule({
         scaffolder: scaffolderActionsExtensionPoint,
         config: coreServices.rootConfig,
         reader: coreServices.urlReader,
+        containerRunner: cookieCutterContainerRunnerServiceRef,
       },
-      async init({ scaffolder, config, reader }) {
+      async init({ scaffolder, config, reader, containerRunner }) {
+        if (containerRunner.length > 1) {
+          throw new Error('Multiple container runners are not supported');
+        }
+
         const integrations = ScmIntegrations.fromConfig(config);
         scaffolder.addActions(
-          createFetchCookiecutterAction({ reader, integrations }),
+          createFetchCookiecutterAction({
+            reader,
+            integrations,
+            containerRunner: containerRunner[0],
+          }),
         );
       },
     });

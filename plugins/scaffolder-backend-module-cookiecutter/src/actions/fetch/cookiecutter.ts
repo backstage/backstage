@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { ContainerRunner } from '@backstage/backend-common';
 import {
   UrlReaderService,
   resolveSafeChildPath,
@@ -269,3 +268,15 @@ export function createFetchCookiecutterAction(options: {
     },
   });
 }
+
+export type ContainerRunner = {
+  runContainer(opts: {
+    imageName: string;
+    command?: string | string[];
+    args: string[];
+    logStream?: Writable;
+    mountDirs?: Record<string, string>;
+    workingDir?: string;
+    envVars?: Record<string, string>;
+  }): Promise<void>;
+};
