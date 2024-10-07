@@ -156,6 +156,10 @@ export function registerScriptCommand(program: Command) {
       'eslint-formatter-friendly',
     )
     .option('--fix', 'Attempt to automatically fix violations')
+    .option(
+      '--max-warnings <number>',
+      'Fail if more than this number of warnings (default: 0)',
+    )
     .description('Lint a package')
     .action(lazy(() => import('./lint').then(m => m.default)));
 

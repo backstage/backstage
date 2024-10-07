@@ -29,7 +29,7 @@ import {
 } from '../../../routes';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
-import { WebFileSystemStore } from '../../../lib/filesystem/WebFileSystemAccess';
+import { WebFileSystemStore } from '../../../lib/filesystem/WebFileSystemStore';
 import { createExampleTemplate } from '../../../lib/filesystem/createExampleTemplate';
 
 export function TemplateIntroPage() {
