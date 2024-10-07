@@ -20,4 +20,5 @@
  * @packageDocumentation
  */
 
+export { catalogApiMock } from './testUtils/catalogApiMock';
 export { MockEntityListContextProvider } from './testUtils/MockEntityListContextProvider';

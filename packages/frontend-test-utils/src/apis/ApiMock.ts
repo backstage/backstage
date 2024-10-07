@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-export {
-  MockConfigApi,
-  type ErrorWithContext,
-  MockErrorApi,
-  type MockErrorApiOptions,
-  MockFetchApi,
-  type MockFetchApiOptions,
-  MockPermissionApi,
-  MockStorageApi,
-  type MockStorageBucket,
-} from '@backstage/test-utils';
+import { ApiFactory } from '@backstage/frontend-plugin-api';
 
-export { type ApiMock } from './ApiMock';
-export { MockAnalyticsApi } from './AnalyticsApi/MockAnalyticsApi';
+/**
+ * Represents a mocked version of an API, where you automatically have access to
+ * the mocked versions of all of its methods along with a factory that returns
+ * that same mock.
+ *
+ * @public
+ */
+export type ApiMock<TApi> = {
+  factory: ApiFactory<TApi, TApi, {}>;
+} & {
+  [Key in keyof TApi]: TApi[Key] extends (...args: infer Args) => infer Return
+    ? TApi[Key] & jest.MockInstance<Return, Args>
+    : TApi[Key];
+};

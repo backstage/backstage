@@ -14,4 +14,10 @@
  * limitations under the License.
  */
 
+/**
+ * Backend test helpers for the Catalog plugin.
+ *
+ * @packageDocumentation
+ */
+
 export { catalogServiceMock } from './testUtils/catalogServiceMock';
