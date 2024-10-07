@@ -16,7 +16,7 @@
 
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import React from 'react';
-import { MockEntityListContextProvider } from '../../testUtils/providers';
+import { MockEntityListContextProvider } from '@backstage/plugin-catalog-react/testUtils';
 import { EntityNamespaceFilter } from '../../filters';
 import { EntityNamespacePicker } from './EntityNamespacePicker';
 import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';

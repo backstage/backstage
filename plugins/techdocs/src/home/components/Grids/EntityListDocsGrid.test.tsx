@@ -24,9 +24,9 @@ import {
   CatalogApi,
   catalogApiRef,
   starredEntitiesApiRef,
-  MockEntityListContextProvider,
   MockStarredEntitiesApi,
 } from '@backstage/plugin-catalog-react';
+import { MockEntityListContextProvider } from '@backstage/plugin-catalog-react/testUtils';
 import {
   MockStorageApi,
   renderInTestApp,
