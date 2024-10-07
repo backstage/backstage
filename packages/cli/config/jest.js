@@ -339,7 +339,9 @@ async function getRootConfig() {
   return {
     rootDir: paths.targetRoot,
     projects: configs,
-    testResultsProcessor: require.resolve('./jestCacheResultProcessor.cjs'),
+    testResultsProcessor: cache
+      ? require.resolve('./jestCacheResultProcessor.cjs')
+      : undefined,
     ...globalRootConfig,
   };
 }
