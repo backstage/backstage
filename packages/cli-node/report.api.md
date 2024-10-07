@@ -92,6 +92,7 @@ export function isMonoRepo(): Promise<boolean>;
 export class Lockfile {
   createSimplifiedDependencyGraph(): Map<string, Set<string>>;
   diff(otherLockfile: Lockfile): LockfileDiff;
+  getDependencyTreeHash(startName: string): string;
   static load(path: string): Promise<Lockfile>;
   static parse(content: string): Lockfile;
 }

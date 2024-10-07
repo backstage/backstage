@@ -89,7 +89,7 @@ describe('scaffolderModule factory', () => {
       `availability  plugins${sep}scaffolder-backend-module-test`,
       'creating      temp dir',
       'Executing Template:',
-      'copying       .eslintrc.js',
+      'templating    .eslintrc.js.hbs',
       'templating    README.md.hbs',
       'templating    package.json.hbs',
       'templating    index.ts.hbs',
