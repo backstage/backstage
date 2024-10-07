@@ -197,12 +197,13 @@ FROM node:20-bookworm-slim AS build
 
 # Set Python interpreter for `node-gyp` to use
 ENV PYTHON=/usr/bin/python3
+ENV NODE_OPTIONS="--max-old-space-size=8192"
 
 # Install isolate-vm dependencies, these are needed by the @backstage/plugin-scaffolder-backend.
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     apt-get update && \
-    apt-get install -y --no-install-recommends python3 g++ build-essential && \
+    apt-get install -y --no-install-recommends python3 g++ build-essential git && \
     rm -rf /var/lib/apt/lists/*
 
 # Install sqlite3 dependencies. You can skip this if you don't use sqlite3 in the image,
@@ -213,7 +214,11 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     apt-get install -y --no-install-recommends libsqlite3-dev && \
     rm -rf /var/lib/apt/lists/*
 
+RUN corepack enable && npm install -g corepack@0.27.0 && corepack install --global yarn@1.22.22
+RUN mkdir -p /home/node/.cache/node/corepack/v1 && chown -R node:node /home/node
+
 USER node
+RUN git config --global http.sslverify false
 WORKDIR /app
 
 COPY --from=packages --chown=node:node /app .
