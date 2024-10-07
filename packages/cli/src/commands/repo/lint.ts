@@ -63,11 +63,10 @@ async function writeCache(dir: string, cache: Cache) {
 export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   let packages = await PackageGraph.listTargetPackages();
 
-  const cacheDir =
-    opts.cache === true
-      ? paths.resolveTargetRoot('node_modules/.cache/backstage-cli')
-      : opts.cache;
-  const cacheContext = cacheDir
+  const cacheDir = resolvePath(
+    opts.successCacheDir ?? 'node_modules/.cache/backstage-cli',
+  );
+  const cacheContext = opts.successCache
     ? {
         cache: await readCache(cacheDir),
         lockfile: await Lockfile.load(paths.resolveTargetRoot('yarn.lock')),
@@ -136,7 +135,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     workerData: {
       fix: Boolean(opts.fix),
       format: opts.format as string | undefined,
-      shouldCache: Boolean(cacheDir),
+      shouldCache: Boolean(cacheContext),
       successCache: cacheContext?.cache,
     },
     workerFactory: async ({ fix, format, shouldCache, successCache }) => {
@@ -252,7 +251,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     }
   }
 
-  if (cacheDir) {
+  if (cacheContext) {
     await writeCache(cacheDir, outputSuccessCache);
   }
 
