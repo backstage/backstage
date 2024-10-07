@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,12 @@ import {
   DefaultEntityFilters,
   EntityListContext,
   EntityListContextProps,
-} from '../hooks/useEntityListProvider';
+} from './hooks/useEntityListProvider';
 
-/** @public */
+/**
+ * @public
+ * @deprecated Moved to `@backstage/plugin-catalog-react/testUtils`
+ */
 export function MockEntityListContextProvider<
   T extends DefaultEntityFilters = DefaultEntityFilters,
 >(

@@ -30,6 +30,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./alpha": "./src/alpha/index.ts",
+    "./testUtils": "./src/testUtils.ts",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
@@ -38,6 +39,9 @@
     "*": {
       "alpha": [
         "src/alpha/index.ts"
+      ],
+      "testUtils": [
+        "src/testUtils.ts"
       ],
       "package.json": [
         "package.json"

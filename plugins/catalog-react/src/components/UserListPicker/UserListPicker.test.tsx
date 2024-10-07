@@ -18,7 +18,7 @@ import React from 'react';
 import { fireEvent, waitFor, screen } from '@testing-library/react';
 import { UserEntity } from '@backstage/catalog-model';
 import { UserListPicker, UserListPickerProps } from './UserListPicker';
-import { MockEntityListContextProvider } from '../../testUtils/providers';
+import { MockEntityListContextProvider } from '@backstage/plugin-catalog-react/testUtils';
 import {
   EntityKindFilter,
   EntityNamespaceFilter,
