@@ -676,3 +676,23 @@ paths:
         - JWT: []
       parameters:
         - $ref: '#/components/parameters/taskId'
+
+  /v2/tasks/{taskId}/cancel:
+    post:
+      operationId: CancelTask
+      description: Sends a signal to a task broker to cancel the running task by taskId.
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    $ref: '#/components/schemas/TaskStatus'
+      security:
+        - {}
+        - JWT: []
+      parameters:
+        - $ref: '#/components/parameters/taskId'
