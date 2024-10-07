@@ -88,7 +88,7 @@ export class DynamicPluginManager implements DynamicPluginProvider {
       ),
     );
 
-    moduleLoader.bootstrap(backstageRoot, dynamicPluginsPaths);
+    await moduleLoader.bootstrap(backstageRoot, dynamicPluginsPaths);
 
     scanner.subscribeToRootDirectoryChange(async () => {
       manager._availablePackages = (await scanner.scanRoot()).packages;
@@ -262,7 +262,7 @@ export const dynamicPluginsServiceRef = createServiceRef<DynamicPluginProvider>(
  * @public
  */
 export interface DynamicPluginsFactoryOptions {
-  moduleLoader?(logger: LoggerService): ModuleLoader;
+  moduleLoader?(logger: LoggerService): ModuleLoader | Promise<ModuleLoader>;
 }
 
 /**
@@ -283,7 +283,7 @@ export const dynamicPluginsServiceFactoryWithOptions = (
         config,
         logger,
         preferAlpha: true,
-        moduleLoader: options?.moduleLoader?.(logger),
+        moduleLoader: await options?.moduleLoader?.(logger),
       });
     },
   });
