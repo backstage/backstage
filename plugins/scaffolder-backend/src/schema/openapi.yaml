@@ -696,3 +696,23 @@ paths:
         - JWT: []
       parameters:
         - $ref: '#/components/parameters/taskId'
+
+  /v2/tasks/{taskId}/retry:
+    post:
+      operationId: Retry
+      description: Starts the task again from the point where it failed.
+      responses:
+        '201':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+      security:
+        - {}
+        - JWT: []
+      parameters:
+        - $ref: '#/components/parameters/taskId'
