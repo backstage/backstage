@@ -16,17 +16,17 @@
 
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import React from 'react';
-import { MockEntityListContextProvider } from '@backstage/plugin-catalog-react/testUtils';
+import {
+  MockEntityListContextProvider,
+  catalogApiMock,
+} from '@backstage/plugin-catalog-react/testUtils';
 import { EntityLifecycleFilter } from '../../filters';
 import { EntityLifecyclePicker } from './EntityLifecyclePicker';
 import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
 import { catalogApiRef } from '../../api';
-import { CatalogApi } from '@backstage/catalog-client';
 
 describe('<EntityLifecyclePicker/>', () => {
-  const catalogApi = {
-    getEntityFacets: jest.fn(),
-  } as unknown as jest.Mocked<CatalogApi>;
+  const catalogApi = catalogApiMock.mock();
 
   beforeEach(() => {
     catalogApi.getEntityFacets.mockResolvedValue({

@@ -13,21 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { renderHook, waitFor } from '@testing-library/react';
 import { useFacetsEntities } from './useFacetsEntities';
-import { CatalogApi } from '@backstage/catalog-client';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { Entity, parseEntityRef } from '@backstage/catalog-model';
 
-const mockedGetEntityFacets: jest.MockedFn<CatalogApi['getEntityFacets']> =
-  jest.fn();
-
-const mockedGetEntitiesByRefs: jest.MockedFn<CatalogApi['getEntitiesByRefs']> =
-  jest.fn();
-
-const mockCatalogApi: Partial<CatalogApi> = {
-  getEntityFacets: mockedGetEntityFacets,
-  getEntitiesByRefs: mockedGetEntitiesByRefs,
-};
+const mockCatalogApi = catalogApiMock.mock();
 
 jest.mock('@backstage/core-plugin-api', () => ({
   ...jest.requireActual('@backstage/core-plugin-api'),
@@ -65,16 +57,16 @@ describe('useFacetsEntities', () => {
   });
 
   it(`should return empty items when facets are loading`, () => {
-    mockedGetEntityFacets.mockReturnValue(new Promise(() => {}));
+    mockCatalogApi.getEntityFacets.mockReturnValue(new Promise(() => {}));
     const { result } = renderHook(() => useFacetsEntities({ enabled: true }));
     expect(result.current[0]).toEqual({ value: { items: [] }, loading: true });
   });
 
   it(`should return empty response when facet is not present`, async () => {
-    mockedGetEntityFacets.mockResolvedValueOnce({
+    mockCatalogApi.getEntityFacets.mockResolvedValueOnce({
       facets: { 'metadata.tags': [{ value: 'tag', count: 1 }] },
     });
-    mockedGetEntitiesByRefs.mockResolvedValueOnce({ items: [] });
+    mockCatalogApi.getEntitiesByRefs.mockResolvedValueOnce({ items: [] });
     const { result } = renderHook(() => useFacetsEntities({ enabled: true }));
     result.current[1]({ text: '' });
     await waitFor(() => {
@@ -87,8 +79,10 @@ describe('useFacetsEntities', () => {
 
   it(`should return the owners`, async () => {
     const entityRefs = ['component:default/e1', 'component:default/e2'];
-    mockedGetEntityFacets.mockResolvedValue(facetsFromEntityRefs(entityRefs));
-    mockedGetEntitiesByRefs.mockResolvedValue(
+    mockCatalogApi.getEntityFacets.mockResolvedValue(
+      facetsFromEntityRefs(entityRefs),
+    );
+    mockCatalogApi.getEntitiesByRefs.mockResolvedValue(
       entitiesFromEntityRefs(entityRefs),
     );
 
@@ -152,8 +146,10 @@ describe('useFacetsEntities', () => {
       },
     };
 
-    mockedGetEntityFacets.mockResolvedValue(facetsFromEntityRefs(entityRefs));
-    mockedGetEntitiesByRefs.mockResolvedValue(
+    mockCatalogApi.getEntityFacets.mockResolvedValue(
+      facetsFromEntityRefs(entityRefs),
+    );
+    mockCatalogApi.getEntitiesByRefs.mockResolvedValue(
       entitiesFromEntityRefs(entityRefs, enrichedEntities),
     );
 
@@ -225,8 +221,10 @@ describe('useFacetsEntities', () => {
       'component:default/b',
     ];
 
-    mockedGetEntityFacets.mockResolvedValue(facetsFromEntityRefs(entityRefs));
-    mockedGetEntitiesByRefs.mockResolvedValue(
+    mockCatalogApi.getEntityFacets.mockResolvedValue(
+      facetsFromEntityRefs(entityRefs),
+    );
+    mockCatalogApi.getEntitiesByRefs.mockResolvedValue(
       entitiesFromEntityRefs(entityRefs),
     );
 
@@ -336,7 +334,9 @@ describe('useFacetsEntities', () => {
       'component:default/nade',
     ];
 
-    mockedGetEntityFacets.mockResolvedValue(facetsFromEntityRefs(entityRefs));
+    mockCatalogApi.getEntityFacets.mockResolvedValue(
+      facetsFromEntityRefs(entityRefs),
+    );
     const enrichedEntities: { [key: string]: Entity } = {
       'group:default/go': {
         apiVersion: 'backstage.io/v1beta1',
@@ -352,7 +352,7 @@ describe('useFacetsEntities', () => {
         },
       },
     };
-    mockedGetEntitiesByRefs.mockResolvedValue(
+    mockCatalogApi.getEntitiesByRefs.mockResolvedValue(
       entitiesFromEntityRefs(entityRefs, enrichedEntities),
     );
 

@@ -19,9 +19,9 @@ import React from 'react';
 import { MyGroupsSidebarItem } from './MyGroupsSidebarItem';
 import GroupIcon from '@material-ui/icons/People';
 import { IdentityApi, identityApiRef } from '@backstage/core-plugin-api';
-import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 describe('MyGroupsSidebarItem Test', () => {
   describe('For guests or users with no groups', () => {
@@ -33,12 +33,7 @@ describe('MyGroupsSidebarItem Test', () => {
           ownershipEntityRefs: ['user:default/guest'],
         }),
       };
-      const catalogApi: Partial<CatalogApi> = {
-        getEntities: () =>
-          Promise.resolve({
-            items: [] as Entity[],
-          }),
-      };
+      const catalogApi = catalogApiMock();
       const rendered = await renderInTestApp(
         <TestApiProvider
           apis={[
@@ -71,26 +66,25 @@ describe('MyGroupsSidebarItem Test', () => {
           ownershipEntityRefs: ['user:default/nigel.manning'],
         }),
       };
-      const catalogApi: Partial<CatalogApi> = {
-        getEntities: () =>
-          Promise.resolve({
-            items: [
-              {
-                apiVersion: 'backstage.io/v1alpha1',
-                kind: 'Group',
-                metadata: {
-                  name: 'team-a',
-                  title: 'Team A',
-                  namespace: 'default',
-                },
-                spec: {
-                  type: 'team',
-                  children: [],
-                },
+      const catalogApi = catalogApiMock.mock({
+        getEntities: async () => ({
+          items: [
+            {
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Group',
+              metadata: {
+                name: 'team-a',
+                title: 'Team A',
+                namespace: 'default',
               },
-            ] as Entity[],
-          }),
-      };
+              spec: {
+                type: 'team',
+                children: [],
+              },
+            },
+          ] as Entity[],
+        }),
+      });
       const rendered = await renderInTestApp(
         <TestApiProvider
           apis={[
@@ -127,52 +121,51 @@ describe('MyGroupsSidebarItem Test', () => {
           ownershipEntityRefs: ['user:default/nigel.manning'],
         }),
       };
-      const catalogApi: Partial<CatalogApi> = {
-        getEntities: () =>
-          Promise.resolve({
-            items: [
-              {
-                apiVersion: 'backstage.io/v1alpha1',
-                kind: 'Group',
-                metadata: {
-                  name: 'team-a',
-                  title: 'Team A',
-                  namespace: 'default',
-                },
-                spec: {
-                  type: 'team',
-                  children: [],
-                },
+      const catalogApi = catalogApiMock.mock({
+        getEntities: async () => ({
+          items: [
+            {
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Group',
+              metadata: {
+                name: 'team-a',
+                title: 'Team A',
+                namespace: 'default',
               },
-              {
-                apiVersion: 'backstage.io/v1alpha1',
-                kind: 'Group',
-                metadata: {
-                  name: 'team-b',
-                  title: 'Team B',
-                  namespace: 'default',
-                },
-                spec: {
-                  type: 'team',
-                  children: [],
-                },
+              spec: {
+                type: 'team',
+                children: [],
               },
-              {
-                apiVersion: 'backstage.io/v1alpha1',
-                kind: 'Group',
-                metadata: {
-                  name: 'team-c',
-                  title: 'Team C',
-                  namespace: 'default',
-                },
-                spec: {
-                  type: 'team',
-                  children: [],
-                },
+            },
+            {
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Group',
+              metadata: {
+                name: 'team-b',
+                title: 'Team B',
+                namespace: 'default',
               },
-            ] as Entity[],
-          }),
-      };
+              spec: {
+                type: 'team',
+                children: [],
+              },
+            },
+            {
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Group',
+              metadata: {
+                name: 'team-c',
+                title: 'Team C',
+                namespace: 'default',
+              },
+              spec: {
+                type: 'team',
+                children: [],
+              },
+            },
+          ] as Entity[],
+        }),
+      });
       const rendered = await renderInTestApp(
         <TestApiProvider
           apis={[
@@ -206,9 +199,7 @@ describe('MyGroupsSidebarItem Test', () => {
           ownershipEntityRefs: ['user:default/guest'],
         }),
       };
-      const mockCatalogApi: Partial<CatalogApi> = {
-        getEntities: jest.fn(),
-      };
+      const mockCatalogApi = catalogApiMock.mock();
       await renderInTestApp(
         <TestApiProvider
           apis={[
@@ -249,9 +240,7 @@ describe('MyGroupsSidebarItem Test', () => {
           ownershipEntityRefs: ['user:default/guest'],
         }),
       };
-      const mockCatalogApi: Partial<CatalogApi> = {
-        getEntities: jest.fn(),
-      };
+      const mockCatalogApi = catalogApiMock.mock();
       await renderInTestApp(
         <TestApiProvider
           apis={[

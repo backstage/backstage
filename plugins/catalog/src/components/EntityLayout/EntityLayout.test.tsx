@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { CatalogApi } from '@backstage/catalog-client';
 import {
   ANNOTATION_ORIGIN_LOCATION,
   Entity,
@@ -30,6 +29,7 @@ import {
   starredEntitiesApiRef,
   MockStarredEntitiesApi,
 } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import {
   MockPermissionApi,
@@ -52,7 +52,7 @@ describe('EntityLayout', () => {
   } as Entity;
 
   const mockApis = TestApiRegistry.from(
-    [catalogApiRef, {} as CatalogApi],
+    [catalogApiRef, catalogApiMock()],
     [alertApiRef, {} as AlertApi],
     [starredEntitiesApiRef, new MockStarredEntitiesApi()],
     [permissionApiRef, new MockPermissionApi()],
@@ -302,20 +302,13 @@ describe('EntityLayout - CleanUpAfterRemoval', () => {
       },
     ],
   };
-  const getLocationByRef: jest.MockedFunction<CatalogApi['getLocationByRef']> =
-    jest.fn();
-  const getEntities: jest.MockedFunction<CatalogApi['getEntities']> = jest.fn();
-  const removeEntityByUid: jest.MockedFunction<
-    CatalogApi['removeEntityByUid']
-  > = jest.fn();
-  const getEntityFacets: jest.MockedFunction<CatalogApi['getEntityFacets']> =
-    jest.fn();
-  getLocationByRef.mockResolvedValue(undefined);
-  getEntities.mockResolvedValue({ items: [{ ...entity }] });
-  getEntityFacets.mockResolvedValue({
-    facets: {
-      'relations.ownedBy': [{ count: 1, value: 'group:default/tools' }],
-    },
+  const catalogApi = catalogApiMock.mock({
+    getEntities: async () => ({ items: [{ ...entity }] }),
+    getEntityFacets: async () => ({
+      facets: {
+        'relations.ownedBy': [{ count: 1, value: 'group:default/tools' }],
+      },
+    }),
   });
 
   const alertApi: AlertApi = {
@@ -331,15 +324,7 @@ describe('EntityLayout - CleanUpAfterRemoval', () => {
     await renderInTestApp(
       <TestApiProvider
         apis={[
-          [
-            catalogApiRef,
-            {
-              getLocationByRef,
-              getEntities,
-              removeEntityByUid,
-              getEntityFacets,
-            },
-          ],
+          [catalogApiRef, catalogApi],
           [alertApiRef, alertApi],
           [starredEntitiesApiRef, new MockStarredEntitiesApi()],
           [permissionApiRef, new MockPermissionApi()],
@@ -390,15 +375,7 @@ describe('EntityLayout - CleanUpAfterRemoval', () => {
     await renderInTestApp(
       <TestApiProvider
         apis={[
-          [
-            catalogApiRef,
-            {
-              getLocationByRef,
-              getEntities,
-              removeEntityByUid,
-              getEntityFacets,
-            },
-          ],
+          [catalogApiRef, catalogApi],
           [alertApiRef, alertApi],
           [starredEntitiesApiRef, new MockStarredEntitiesApi()],
           [permissionApiRef, new MockPermissionApi()],
