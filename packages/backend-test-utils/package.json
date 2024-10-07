@@ -60,7 +60,7 @@
     "@types/keyv": "^4.2.0",
     "@types/qs": "^6.9.6",
     "better-sqlite3": "^11.0.0",
-    "cookie": "^0.6.0",
+    "cookie": "^0.7.0",
     "express": "^4.17.1",
     "fs-extra": "^11.0.0",
     "keyv": "^4.5.2",
