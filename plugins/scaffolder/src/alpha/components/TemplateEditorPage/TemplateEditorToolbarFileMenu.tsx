@@ -15,16 +15,13 @@
  */
 
 import React, { MouseEvent, useCallback, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 
-import { useRouteRef } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 
-import { editRouteRef } from '../../../routes';
 import { scaffolderTranslationRef } from '../../../translation';
 
 export function TemplateEditorToolbarFileMenu(props: {
@@ -33,8 +30,6 @@ export function TemplateEditorToolbarFileMenu(props: {
   onCloseDirectory?: () => void;
 }) {
   const { onOpenDirectory, onCreateDirectory, onCloseDirectory } = props;
-  const navigate = useNavigate();
-  const editLink = useRouteRef(editRouteRef);
   const { t } = useTranslationRef(scaffolderTranslationRef);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -62,8 +57,7 @@ export function TemplateEditorToolbarFileMenu(props: {
   const handleCloseEditor = useCallback(() => {
     handleCloseMenu();
     onCloseDirectory?.();
-    navigate(editLink());
-  }, [handleCloseMenu, onCloseDirectory, navigate, editLink]);
+  }, [handleCloseMenu, onCloseDirectory]);
 
   return (
     <>
@@ -88,7 +82,6 @@ export function TemplateEditorToolbarFileMenu(props: {
           vertical: 'top',
           horizontal: 'left',
         }}
-        keepMounted
       >
         <MenuItem onClick={handleOpenDirectory} disabled={!onOpenDirectory}>
           {t('templateEditorToolbarFileMenu.options.openDirectory')}
@@ -100,7 +93,7 @@ export function TemplateEditorToolbarFileMenu(props: {
         >
           {t('templateEditorToolbarFileMenu.options.createDirectory')}
         </MenuItem>
-        <MenuItem onClick={handleCloseEditor}>
+        <MenuItem onClick={handleCloseEditor} disabled={!onCloseDirectory}>
           {t('templateEditorToolbarFileMenu.options.closeEditor')}
         </MenuItem>
       </Menu>

@@ -13,12 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import { useRouteRef } from '@backstage/core-plugin-api';
 import type {
   FormProps,
   LayoutOptions,
+  FieldExtensionOptions,
 } from '@backstage/plugin-scaffolder-react';
-import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
+
+import { editRouteRef } from '../../../routes';
+
+import { useTemplateDirectory } from './useTemplateDirectory';
 import { DirectoryEditorProvider } from './DirectoryEditorContext';
 import {
   TemplateEditorLayout,
@@ -31,11 +38,10 @@ import {
 import { TemplateEditorToolbar } from './TemplateEditorToolbar';
 import { TemplateEditorToolbarFileMenu } from './TemplateEditorToolbarFileMenu';
 import { TemplateEditorBrowser } from './TemplateEditorBrowser';
-import { DryRunProvider } from './DryRunContext';
 import { TemplateEditorTextArea } from './TemplateEditorTextArea';
 import { TemplateEditorForm } from './TemplateEditorForm';
+import { DryRunProvider } from './DryRunContext';
 import { DryRunResults } from './DryRunResults';
-import { useTemplateDirectory } from './useTemplateDirectory';
 
 /** @public */
 export type ScaffolderTemplateEditorClassKey =
@@ -53,12 +59,18 @@ export const TemplateEditor = (props: {
 }) => {
   const { layouts, formProps, fieldExtensions } = props;
   const [errorText, setErrorText] = useState<string>();
+  const navigate = useNavigate();
+  const editLink = useRouteRef(editRouteRef);
   const {
     directory,
-    handleOpenDirectory,
-    handleCreateDirectory,
-    handleCloseDirectory,
+    openDirectory: handleOpenDirectory,
+    createDirectory: handleCreateDirectory,
+    closeDirectory,
   } = useTemplateDirectory();
+
+  const handleCloseDirectory = useCallback(() => {
+    closeDirectory().then(() => navigate(editLink()));
+  }, [closeDirectory, navigate, editLink]);
 
   return (
     <DirectoryEditorProvider directory={directory}>
@@ -68,13 +80,13 @@ export const TemplateEditor = (props: {
             <TemplateEditorToolbar fieldExtensions={fieldExtensions}>
               <TemplateEditorToolbarFileMenu
                 onOpenDirectory={handleOpenDirectory}
-                onCloseDirectory={handleCloseDirectory}
                 onCreateDirectory={handleCreateDirectory}
+                onCloseDirectory={handleCloseDirectory}
               />
             </TemplateEditorToolbar>
           </TemplateEditorLayoutToolbar>
           <TemplateEditorLayoutBrowser>
-            <TemplateEditorBrowser onClose={handleCloseDirectory} />
+            <TemplateEditorBrowser onClose={closeDirectory} />
           </TemplateEditorLayoutBrowser>
           <TemplateEditorLayoutFiles>
             <TemplateEditorTextArea.DirectoryEditor errorText={errorText} />
