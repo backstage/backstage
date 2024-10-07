@@ -18,11 +18,11 @@ import { useCallback } from 'react';
 import useAsyncRetry from 'react-use/esm/useAsyncRetry';
 
 import {
-  WebFileSystemAccess,
   WebFileSystemStore,
+  WebFileSystemAccess,
   WebDirectoryAccess,
+  createExampleTemplate,
 } from '../../../lib/filesystem';
-import { createExampleTemplate } from '../../../lib/filesystem/createExampleTemplate';
 
 export function useTemplateDirectory(): {
   directory?: WebDirectoryAccess;
