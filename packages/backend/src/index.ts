@@ -15,7 +15,11 @@
  */
 
 import { createBackend } from '@backstage/backend-defaults';
-import { createBackendFeatureLoader } from '@backstage/backend-plugin-api';
+import {
+  createBackendFeatureLoader,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
+import { cookieCutterContainerRunnerServiceRef } from '@backstage/plugin-scaffolder-backend-module-cookiecutter';
 
 const backend = createBackend();
 
@@ -28,6 +32,14 @@ const searchLoader = createBackendFeatureLoader({
     yield import('@backstage/plugin-search-backend-module-explore/alpha');
     yield import('@backstage/plugin-search-backend-module-techdocs/alpha');
   },
+});
+
+const cookieCutterContainerRunner = createServiceFactory({
+  service: cookieCutterContainerRunnerServiceRef,
+  deps: {},
+  factory: () => ({
+    runContainer: () => undefined!,
+  }),
 });
 
 backend.add(import('@backstage/plugin-auth-backend'));
@@ -54,7 +66,8 @@ backend.add(
 );
 backend.add(searchLoader);
 backend.add(import('@backstage/plugin-techdocs-backend/alpha'));
+backend.add(import('@backstage/plugin-scaffolder-backend-module-cookiecutter'));
 backend.add(import('@backstage/plugin-signals-backend'));
 backend.add(import('@backstage/plugin-notifications-backend'));
-
+backend.add(cookieCutterContainerRunner);
 backend.start();
