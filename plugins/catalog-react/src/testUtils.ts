@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,11 @@
  * limitations under the License.
  */
 
-export {
-  MockConfigApi,
-  type ErrorWithContext,
-  MockErrorApi,
-  type MockErrorApiOptions,
-  MockFetchApi,
-  type MockFetchApiOptions,
-  MockPermissionApi,
-  MockStorageApi,
-  type MockStorageBucket,
-} from '@backstage/test-utils';
+/**
+ * Frontend test helpers for the Catalog plugin.
+ *
+ * @packageDocumentation
+ */
 
-export { type ApiMock } from './ApiMock';
-export { MockAnalyticsApi } from './AnalyticsApi/MockAnalyticsApi';
+export { catalogApiMock } from './testUtils/catalogApiMock';
+export { MockEntityListContextProvider } from './testUtils/MockEntityListContextProvider';

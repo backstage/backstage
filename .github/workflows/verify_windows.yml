@@ -46,7 +46,7 @@ jobs:
         run: yarn install --immutable
 
       - name: lint
-        run: yarn backstage-cli repo lint
+        run: yarn backstage-cli repo lint --successCache
 
       - name: type checking and declarations
         run: yarn tsc:full

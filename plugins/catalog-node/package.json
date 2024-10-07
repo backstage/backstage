@@ -16,6 +16,9 @@
   "publishConfig": {
     "access": "public"
   },
+  "keywords": [
+    "backstage"
+  ],
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",

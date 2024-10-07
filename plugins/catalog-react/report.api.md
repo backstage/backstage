@@ -695,7 +695,7 @@ export function MissingAnnotationEmptyState(props: {
 // @public (undocumented)
 export type MissingAnnotationEmptyStateClassKey = 'code';
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function MockEntityListContextProvider<
   T extends DefaultEntityFilters = DefaultEntityFilters,
 >(
@@ -887,6 +887,7 @@ export function useStarredEntity(
 // src/components/UserListPicker/UserListPicker.d.ts:5:1 - (ae-undocumented) Missing documentation for "CatalogReactUserListPickerClassKey".
 // src/components/UserListPicker/UserListPicker.d.ts:15:1 - (ae-undocumented) Missing documentation for "UserListPickerProps".
 // src/components/UserListPicker/UserListPicker.d.ts:20:22 - (ae-undocumented) Missing documentation for "UserListPicker".
+// src/deprecated.d.ts:7:1 - (ae-undocumented) Missing documentation for "MockEntityListContextProvider".
 // src/filters.d.ts:8:5 - (ae-undocumented) Missing documentation for "value".
 // src/filters.d.ts:10:5 - (ae-undocumented) Missing documentation for "getCatalogFilters".
 // src/filters.d.ts:11:5 - (ae-undocumented) Missing documentation for "toQueryValue".
@@ -948,7 +949,6 @@ export function useStarredEntity(
 // src/hooks/useStarredEntity.d.ts:3:1 - (ae-undocumented) Missing documentation for "useStarredEntity".
 // src/overridableComponents.d.ts:6:1 - (ae-undocumented) Missing documentation for "CatalogReactComponentsNameToClassKey".
 // src/overridableComponents.d.ts:19:1 - (ae-undocumented) Missing documentation for "BackstageOverrides".
-// src/testUtils/providers.d.ts:4:1 - (ae-undocumented) Missing documentation for "MockEntityListContextProvider".
 // src/types.d.ts:3:1 - (ae-undocumented) Missing documentation for "EntityFilter".
 // src/types.d.ts:25:1 - (ae-undocumented) Missing documentation for "UserListFilterKind".
 // src/types.d.ts:27:1 - (ae-undocumented) Missing documentation for "EntityListPagination".

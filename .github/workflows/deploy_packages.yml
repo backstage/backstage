@@ -94,7 +94,7 @@ jobs:
         run: yarn backstage-cli config:check --lax
 
       - name: lint
-        run: yarn backstage-cli repo lint
+        run: yarn backstage-cli repo lint --successCache
 
       - name: type checking and declarations
         run: yarn tsc:full

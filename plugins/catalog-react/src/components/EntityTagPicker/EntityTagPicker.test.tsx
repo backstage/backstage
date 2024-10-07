@@ -16,7 +16,7 @@
 
 import { fireEvent, waitFor, screen, act } from '@testing-library/react';
 import React from 'react';
-import { MockEntityListContextProvider } from '../../testUtils/providers';
+import { MockEntityListContextProvider } from '@backstage/plugin-catalog-react/testUtils';
 import { EntityTagFilter } from '../../filters';
 import { EntityTagPicker } from './EntityTagPicker';
 import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
