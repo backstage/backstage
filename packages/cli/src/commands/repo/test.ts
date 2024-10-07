@@ -289,6 +289,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     // are picked up by the config script itself, as well as the custom result processor.
     const globalWithCache = global as GlobalWithCache;
     globalWithCache.__backstageCli_jestSuccessCache = {
+      // This is called by `config/jest.js` after the project configs have been gathered
       async filterConfigs(projectConfigs, globalRootConfig) {
         const cache = await readCache(cacheDir);
         const lockfile = await Lockfile.load(
@@ -340,9 +341,11 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
           return project;
         });
       },
+      // This is called by `config/jestCacheResultProcess.cjs` after all tests have run
       async reportResults(results) {
         const successful = new Set<string>();
         const failed = new Set<string>();
+
         for (const testResult of results.testResults) {
           for (const [pkgName, pkg] of graph) {
             if (isChildPath(pkg.dir, testResult.testFilePath)) {
@@ -360,12 +363,14 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
             }
           }
         }
+
         for (const pkgName of successful) {
           const sha = projectHashes.get(pkgName);
           if (sha) {
             outputSuccessCache.push(sha);
           }
         }
+
         await writeCache(cacheDir, outputSuccessCache);
       },
     };
