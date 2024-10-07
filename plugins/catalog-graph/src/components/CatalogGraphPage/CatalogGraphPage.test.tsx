@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-import { RELATION_HAS_PART, RELATION_PART_OF } from '@backstage/catalog-model';
+import {
+  Entity,
+  RELATION_HAS_PART,
+  RELATION_PART_OF,
+} from '@backstage/catalog-model';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
 import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import {
   MockAnalyticsApi,
   renderInTestApp,
@@ -112,24 +117,11 @@ describe.skip('<CatalogGraphPage/>', () => {
       },
     ],
   };
-  const allEntities: Record<string, object> = {
+  const allEntities: Record<string, Entity> = {
     'b:d/c': entityC,
     'b:d/e': entityE,
   };
-  const catalog = {
-    getEntities: jest.fn(),
-    getEntityByRef: jest.fn(),
-    getEntitiesByRefs: jest.fn(),
-    removeEntityByUid: jest.fn(),
-    getLocationById: jest.fn(),
-    getLocationByRef: jest.fn(),
-    addLocation: jest.fn(),
-    removeLocationById: jest.fn(),
-    refreshEntity: jest.fn(),
-    getEntityAncestors: jest.fn(),
-    getEntityFacets: jest.fn(),
-    validateEntity: jest.fn(),
-  };
+  const catalog = catalogApiMock.mock();
 
   beforeEach(() => {
     wrapper = (

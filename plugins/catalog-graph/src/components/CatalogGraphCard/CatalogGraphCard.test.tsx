@@ -22,6 +22,7 @@ import {
   EntityProvider,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import {
   MockAnalyticsApi,
   renderInTestApp,
@@ -38,20 +39,7 @@ import Button from '@material-ui/core/Button';
 describe('<CatalogGraphCard/>', () => {
   let entity: Entity;
   let wrapper: JSX.Element;
-  const catalog = {
-    getEntities: jest.fn(),
-    getEntityByRef: jest.fn(),
-    getEntitiesByRefs: jest.fn(),
-    removeEntityByUid: jest.fn(),
-    getLocationById: jest.fn(),
-    getLocationByRef: jest.fn(),
-    addLocation: jest.fn(),
-    removeLocationById: jest.fn(),
-    refreshEntity: jest.fn(),
-    getEntityAncestors: jest.fn(),
-    getEntityFacets: jest.fn(),
-    validateEntity: jest.fn(),
-  };
+  const catalog = catalogApiMock.mock();
   let apis: TestApiRegistry;
 
   beforeEach(() => {

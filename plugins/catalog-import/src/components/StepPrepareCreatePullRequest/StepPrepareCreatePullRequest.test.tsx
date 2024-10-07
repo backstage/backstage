@@ -27,6 +27,7 @@ import {
   generateEntities,
   StepPrepareCreatePullRequest,
 } from './StepPrepareCreatePullRequest';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 describe('<StepPrepareCreatePullRequest />', () => {
   const catalogImportApi: jest.Mocked<typeof catalogImportApiRef.T> = {
@@ -35,19 +36,7 @@ describe('<StepPrepareCreatePullRequest />', () => {
     preparePullRequest: jest.fn(),
   };
 
-  const catalogApi = {
-    getEntities: jest.fn(),
-    addLocation: jest.fn(),
-    getEntityByRef: jest.fn(),
-    getLocationByRef: jest.fn(),
-    getLocationById: jest.fn(),
-    removeLocationById: jest.fn(),
-    removeEntityByUid: jest.fn(),
-    refreshEntity: jest.fn(),
-    getEntityAncestors: jest.fn(),
-    getEntityFacets: jest.fn(),
-    validateEntity: jest.fn(),
-  };
+  const catalogApi = catalogApiMock.mock();
 
   const errorApi: jest.Mocked<typeof errorApiRef.T> = {
     error$: jest.fn(),

@@ -84,11 +84,11 @@ describe('StarredEntitiesContent', () => {
   it('should display call to action message if no entities are starred', async () => {
     const mockedApi = new MockStarredEntitiesApi();
 
-    const mockCatalogApi = {
+    const mockCatalogApi = catalogApiMock.mock({
       getEntitiesByRefs: jest
         .fn()
         .mockImplementation(async () => ({ items: entities })),
-    };
+    });
 
     const { getByText } = await renderInTestApp(
       <TestApiProvider
@@ -114,11 +114,11 @@ describe('StarredEntitiesContent', () => {
   it('should display user provided message if no entities are starred', async () => {
     const mockedApi = new MockStarredEntitiesApi();
 
-    const mockCatalogApi = {
+    const mockCatalogApi = catalogApiMock.mock({
       getEntitiesByRefs: jest
         .fn()
         .mockImplementation(async () => ({ items: entities })),
-    };
+    });
 
     const { getByText } = await renderInTestApp(
       <TestApiProvider
