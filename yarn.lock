@@ -3712,6 +3712,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/config-loader": "workspace:^"
     "@backstage/errors": "workspace:^"
+    "@backstage/plugin-app-backend": "workspace:^"
     "@backstage/plugin-app-node": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
@@ -3729,6 +3730,7 @@ __metadata:
     express: ^4.17.1
     fs-extra: ^11.2.0
     lodash: ^4.17.21
+    triple-beam: ^1.4.1
     wait-for-expect: ^3.0.2
     winston: ^3.2.1
   languageName: unknown

@@ -44,6 +44,7 @@ export const dynamicPluginsFrontendSchemas = createBackendModule({
           config.getOptionalString('app.packageName') ?? 'app';
         const appDistDir = resolvePackagePath(appPackageName, 'dist');
         const compiledConfigSchema = await loadCompiledConfigSchema(appDistDir);
+        // TODO(davidfestal): Add dynamic pliugin config schemas even if the compiled schemas are empty.
         if (compiledConfigSchema) {
           configSchemaExtension.setConfigSchema(
             (await schemas.addDynamicPluginsSchemas(compiledConfigSchema))
