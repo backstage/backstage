@@ -20,6 +20,7 @@ import { command as generateServer } from './server';
 import chokidar from 'chokidar';
 import { getPathToCurrentOpenApiSpec } from '../../../../../lib/openapi/helpers';
 import { debounce } from 'lodash';
+import { block } from '../../../../../lib/runner';
 
 export async function command(opts: OptionValues) {
   if (!opts.clientPackage && !opts.server) {
@@ -74,7 +75,7 @@ export async function command(opts: OptionValues) {
           'Watching for changes in OpenAPI spec. Press Ctrl+C to stop.',
         );
       });
-      await new Promise(() => {});
+      await block();
     } catch (err) {
       console.error(chalk.red('Error: ', err));
       process.exit(1);
