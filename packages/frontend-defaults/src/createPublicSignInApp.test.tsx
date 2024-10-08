@@ -15,7 +15,6 @@
  */
 
 import {
-  IdentityApi,
   SignInPageBlueprint,
   createFrontendModule,
 } from '@backstage/frontend-plugin-api';
@@ -70,9 +69,9 @@ describe('createPublicSignInApp', () => {
                   async () =>
                   ({ onSignInSuccess }) => {
                     useEffect(() => {
-                      onSignInSuccess({
-                        getCredentials: async () => ({ token: 'mock-token' }),
-                      } as IdentityApi);
+                      onSignInSuccess(
+                        mockApis.identity({ token: 'mock-token' }),
+                      );
                     }, [onSignInSuccess]);
                     return <div />;
                   },

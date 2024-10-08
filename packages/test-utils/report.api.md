@@ -100,7 +100,9 @@ export namespace mockApis {
     const // (undocumented)
       factory: () => ApiFactory<AnalyticsApi, AnalyticsApi, {}>;
     const // (undocumented)
-      mock: () => jest.Mocked<AnalyticsApi>;
+      mock: (
+        partialImpl?: Partial<AnalyticsApi> | undefined,
+      ) => ApiMock<AnalyticsApi>;
   }
   export function config(options?: { data?: JsonObject }): ConfigApi;
   export namespace config {
@@ -112,6 +114,35 @@ export namespace mockApis {
         | undefined,
     ) => ApiFactory<Config, Config, {}>;
     const mock: (partialImpl?: Partial<Config> | undefined) => ApiMock<Config>;
+  }
+  // (undocumented)
+  export function identity(options?: {
+    userEntityRef?: string;
+    ownershipEntityRefs?: string[];
+    token?: string;
+    email?: string;
+    displayName?: string;
+    picture?: string;
+  }): jest.Mocked<IdentityApi>;
+  // (undocumented)
+  export namespace identity {
+    const // (undocumented)
+      factory: (
+        options?:
+          | {
+              userEntityRef?: string | undefined;
+              ownershipEntityRefs?: string[] | undefined;
+              token?: string | undefined;
+              email?: string | undefined;
+              displayName?: string | undefined;
+              picture?: string | undefined;
+            }
+          | undefined,
+      ) => ApiFactory<IdentityApi, IdentityApi, {}>;
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<IdentityApi> | undefined,
+      ) => ApiMock<IdentityApi>;
   }
 }
 
@@ -331,4 +362,8 @@ export function wrapInTestApp(
 // src/testUtils/apis/mockApis.d.ts:45:5 - (ae-undocumented) Missing documentation for "analytics".
 // src/testUtils/apis/mockApis.d.ts:46:15 - (ae-undocumented) Missing documentation for "factory".
 // src/testUtils/apis/mockApis.d.ts:47:15 - (ae-undocumented) Missing documentation for "mock".
+// src/testUtils/apis/mockApis.d.ts:98:5 - (ae-undocumented) Missing documentation for "identity".
+// src/testUtils/apis/mockApis.d.ts:106:5 - (ae-undocumented) Missing documentation for "identity".
+// src/testUtils/apis/mockApis.d.ts:107:15 - (ae-undocumented) Missing documentation for "factory".
+// src/testUtils/apis/mockApis.d.ts:115:15 - (ae-undocumented) Missing documentation for "mock".
 ```

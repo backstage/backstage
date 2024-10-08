@@ -15,20 +15,17 @@
  */
 
 import { ComponentEntity, RELATION_OWNED_BY } from '@backstage/catalog-model';
-import { IdentityApi, identityApiRef } from '@backstage/core-plugin-api';
-import { TestApiProvider } from '@backstage/test-utils';
+import { identityApiRef } from '@backstage/core-plugin-api';
+import { TestApiProvider, mockApis } from '@backstage/test-utils';
 import { renderHook, waitFor } from '@testing-library/react';
 import React from 'react';
 import { useEntityOwnership } from './useEntityOwnership';
 
 describe('useEntityOwnership', () => {
-  type MockIdentityApi = jest.Mocked<Pick<IdentityApi, 'getBackstageIdentity'>>;
-
-  const mockIdentityApi: MockIdentityApi = {
-    getBackstageIdentity: jest.fn(),
-  };
-
-  const identityApi = mockIdentityApi as unknown as IdentityApi;
+  const identityApi = mockApis.identity({
+    userEntityRef: 'user:default/user1',
+    ownershipEntityRefs: ['user:default/user1', 'group:default/group1'],
+  });
 
   const Wrapper = (props: { children?: React.ReactNode }) => (
     <TestApiProvider apis={[[identityApiRef, identityApi]]}>
@@ -64,12 +61,6 @@ describe('useEntityOwnership', () => {
 
   describe('useEntityOwnership', () => {
     it('matches ownership via ownership entity refs', async () => {
-      mockIdentityApi.getBackstageIdentity.mockResolvedValue({
-        type: 'user',
-        userEntityRef: 'user:default/user1',
-        ownershipEntityRefs: ['user:default/user1', 'group:default/group1'],
-      });
-
       const { result } = renderHook(() => useEntityOwnership(), {
         wrapper: Wrapper,
       });

@@ -18,14 +18,16 @@ import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { Entity } from '@backstage/catalog-model';
 import {
   alertApiRef,
-  ConfigApi,
   configApiRef,
   errorApiRef,
-  IdentityApi,
   identityApiRef,
   storageApiRef,
 } from '@backstage/core-plugin-api';
-import { MockStorageApi, TestApiProvider } from '@backstage/test-utils';
+import {
+  MockStorageApi,
+  TestApiProvider,
+  mockApis,
+} from '@backstage/test-utils';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import qs from 'qs';
 import React, { PropsWithChildren } from 'react';
@@ -67,20 +69,14 @@ const entities: Entity[] = [
   },
 ];
 
-const mockConfigApi = {
-  getOptionalString: () => '',
-} as Partial<ConfigApi>;
+const mockConfigApi = mockApis.config();
 
 const ownershipEntityRefs = ['user:default/guest'];
 
-const mockIdentityApi: Partial<IdentityApi> = {
-  getBackstageIdentity: async () => ({
-    type: 'user',
-    userEntityRef: 'user:default/guest',
-    ownershipEntityRefs,
-  }),
-  getCredentials: async () => ({ token: undefined }),
-};
+const mockIdentityApi = mockApis.identity({
+  userEntityRef: 'user:default/guest',
+  ownershipEntityRefs,
+});
 const mockCatalogApi = catalogApiMock.mock({
   getEntities: jest.fn().mockResolvedValue({ items: entities }),
   queryEntities: jest.fn().mockResolvedValue({

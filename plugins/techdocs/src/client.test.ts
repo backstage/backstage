@@ -15,7 +15,6 @@
  */
 
 import { UrlPatternDiscovery } from '@backstage/core-app-api';
-import { IdentityApi } from '@backstage/core-plugin-api';
 import { NotFoundError } from '@backstage/errors';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { mockApis, MockFetchApi } from '@backstage/test-utils';
@@ -36,9 +35,7 @@ describe('TechDocsStorageClient', () => {
   const mockBaseUrl = 'http://backstage:9191/api/techdocs';
   const configApi = mockApis.config();
   const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);
-  const identityApi: jest.Mocked<IdentityApi> = {
-    getCredentials: jest.fn(),
-  } as unknown as jest.Mocked<IdentityApi>;
+  const identityApi = mockApis.identity();
   const fetchApi = new MockFetchApi({ injectIdentityAuth: { identityApi } });
 
   beforeEach(() => {

@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
+import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { mockApis } from '@backstage/test-utils';
 import WS from 'jest-websocket-mock';
 import { SignalClient } from './SignalClient';
 
 describe('SignalsClient', () => {
-  const tokenFunction = jest.fn();
   const baseUrlFunction = jest.fn();
-  const identity = {
-    getCredentials: tokenFunction,
-  } as unknown as IdentityApi;
+  const identity = mockApis.identity({ token: '12345' });
   const discoveryApi = {
     getBaseUrl: baseUrlFunction,
   } as unknown as DiscoveryApi;
@@ -31,8 +29,7 @@ describe('SignalsClient', () => {
   let server: WS;
 
   beforeEach(async () => {
-    jest.resetAllMocks();
-    tokenFunction.mockResolvedValue({ token: '12345' });
+    jest.clearAllMocks();
     baseUrlFunction.mockResolvedValue('http://localhost:1234');
     server = new WS('ws://localhost:1234', { jsonProtocol: true });
   });

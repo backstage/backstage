@@ -36,13 +36,12 @@ import { catalogApiRef } from '../../api';
 import {
   MockStorageApi,
   TestApiRegistry,
+  mockApis,
   renderInTestApp,
 } from '@backstage/test-utils';
 import { ApiProvider } from '@backstage/core-app-api';
 import {
-  ConfigApi,
   configApiRef,
-  IdentityApi,
   identityApiRef,
   storageApiRef,
 } from '@backstage/core-plugin-api';
@@ -61,15 +60,18 @@ const mockUser: UserEntity = {
   },
 };
 
-const mockConfigApi = {
-  getOptionalString: () => 'Test Company',
-} as Partial<ConfigApi>;
+const ownershipEntityRefs = ['user:default/testuser'];
+
+const mockConfigApi = mockApis.config({
+  data: { organization: { name: 'Test Company' } },
+});
 
 const mockCatalogApi = catalogApiMock.mock();
 
-const mockIdentityApi = {
-  getBackstageIdentity: jest.fn(),
-} as Partial<jest.Mocked<IdentityApi>>;
+const mockIdentityApi = mockApis.identity({
+  userEntityRef: ownershipEntityRefs[0],
+  ownershipEntityRefs,
+});
 
 const mockStarredEntitiesApi = new MockStarredEntitiesApi();
 
@@ -81,7 +83,6 @@ const apis = TestApiRegistry.from(
   [starredEntitiesApiRef, mockStarredEntitiesApi],
 );
 
-const ownershipEntityRefs = ['user:default/testuser'];
 describe('<UserListPicker />', () => {
   const mockQueryEntitiesImplementation: CatalogApi['queryEntities'] =
     async request => {

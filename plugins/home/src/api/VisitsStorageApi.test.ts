@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { BackstageUserIdentity, IdentityApi } from '@backstage/core-plugin-api';
 import { VisitsStorageApi } from './VisitsStorageApi';
-import { MockStorageApi } from '@backstage/test-utils';
+import { MockStorageApi, mockApis } from '@backstage/test-utils';
 import { Visit, VisitsApi } from './VisitsApi';
 
 describe('VisitsStorageApi.create', () => {
@@ -26,13 +25,9 @@ describe('VisitsStorageApi.create', () => {
       () => Math.floor(Math.random() * 16).toString(16), // 0x0 to 0xf
     ) as `${string}-${string}-${string}-${string}-${string}`;
 
-  const mockIdentityApi: IdentityApi = {
-    signOut: jest.fn(),
-    getProfileInfo: jest.fn(),
-    getBackstageIdentity: async () =>
-      ({ userEntityRef: 'user:default/guest' } as BackstageUserIdentity),
-    getCredentials: jest.fn(),
-  };
+  const mockIdentityApi = mockApis.identity({
+    userEntityRef: 'user:default/guest',
+  });
 
   beforeEach(() => {
     window.crypto.randomUUID = mockRandomUUID;
@@ -40,7 +35,7 @@ describe('VisitsStorageApi.create', () => {
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
     jest.useRealTimers();
     window.localStorage.clear();
   });
