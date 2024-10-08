@@ -176,4 +176,35 @@ describe('DatabaseManagerImpl', () => {
       skip: true,
     });
   });
+
+  it('registers a shutdown hook if root lifecycle service is provided', async () => {
+    // Given a database manager that is provided a rootLifecycle service
+    const rootLifecycle = { addShutdownHook: jest.fn() } as unknown as any;
+    const destroy = jest.fn();
+    const connector1 = {
+      getClient: jest.fn().mockResolvedValue({ destroy }),
+    } satisfies Connector;
+    const impl = new DatabaseManagerImpl(
+      new ConfigReader({
+        client: 'pg',
+      }),
+      {
+        pg: connector1,
+      },
+      { rootLifecycle },
+    );
+
+    // Then a shutdown hook should have been added
+    expect(rootLifecycle.addShutdownHook).toHaveBeenCalled();
+    const shutdownHook = rootLifecycle.addShutdownHook.mock.calls[0][0];
+
+    // When a database client for a plugin is retrieved
+    await impl.forPlugin('plugin1', deps).getClient();
+
+    // And the shutdownhook is called
+    await shutdownHook();
+
+    // Then the destroy method should have been called on the resolved client
+    expect(destroy).toHaveBeenCalled();
+  });
 });
