@@ -29,6 +29,7 @@ export const scaffolderTranslationRef = createTranslationRef({
           description:
             'There are no actions installed or there was an issue communicating with backend.',
         },
+        searchFieldPlaceholder: 'Search for an action',
         tableCell: {
           name: 'Name',
           title: 'Title',
@@ -194,12 +195,21 @@ export const scaffolderTranslationRef = createTranslationRef({
     templateTypePicker: {
       title: 'Categories',
     },
+    templateIntroPage: {
+      title: 'Manage Templates',
+      subtitle:
+        'Edit, preview, and try out templates, forms, and custom fields',
+    },
     templateFormPage: {
-      title: 'Template Form Playground',
-      subtitle: 'Edit, preview, and try out templates and template forms',
+      title: 'Template Editor',
+      subtitle: 'Edit, preview, and try out templates forms',
+    },
+    templateCustomFieldPage: {
+      title: 'Custom Field Explorer',
+      subtitle: 'Edit, preview, and try out custom fields',
     },
     templateEditorPage: {
-      title: 'Manage Templates',
+      title: 'Template Editor',
       subtitle: 'Edit, preview, and try out templates and template forms',
       dryRunResults: {
         title: 'Dry-run results',
@@ -253,7 +263,7 @@ export const scaffolderTranslationRef = createTranslationRef({
           unsupportedTooltip: 'Only supported in some Chromium-based browsers',
         },
         formEditor: {
-          title: 'Template playground',
+          title: 'Template Form Playground',
           description:
             'Preview and edit a template form, either using a sample template or by loading a template from the catalog.',
         },
@@ -266,6 +276,7 @@ export const scaffolderTranslationRef = createTranslationRef({
       templateEditorTextArea: {
         saveIconTooltip: 'Save file',
         refreshIconTooltip: 'Reload file',
+        emptyStateParagraph: 'Please select an action on the file menu.',
       },
       templateFormPreviewer: {
         title: 'Load Existing Template',
@@ -297,6 +308,34 @@ export const scaffolderTranslationRef = createTranslationRef({
       pageContextMenu: {
         editConfigurationTitle: 'Edit Configuration',
       },
+    },
+    templateEditorToolbar: {
+      customFieldExplorerTooltip: 'Custom Fields Explorer',
+      installedActionsDocumentationTooltip: 'Installed Actions Documentation',
+      addToCatalogButton: 'Publish',
+      addToCatalogDialogTitle: 'Publish changes',
+      addToCatalogDialogContent: {
+        stepsIntroduction:
+          'Follow the instructions below to create or update a template:',
+        stepsListItems:
+          'Save the template files in a local directory\nCreate a pull request to a new or existing git repository\nIf the template already exists, the changes will be reflected in the software catalog once the pull request gets merged\nBut if you are creating a new template, follow the documentation linked below to register the new template repository in software catalog',
+      },
+      addToCatalogDialogActions: {
+        documentationButton: 'Go to the documentation',
+        documentationUrl:
+          'https://backstage.io/docs/features/software-templates/adding-templates/',
+      },
+    },
+    templateEditorToolbarFileMenu: {
+      button: 'File',
+      options: {
+        openDirectory: 'Open template directory',
+        createDirectory: 'Create template directory',
+        closeEditor: 'Close template editor',
+      },
+    },
+    templateEditorToolbarTemplatesMenu: {
+      button: 'Templates',
     },
   },
 });

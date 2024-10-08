@@ -24,23 +24,22 @@ import { ResponseError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { Observable } from '@backstage/types';
 import qs from 'qs';
+import queryString from 'qs';
 import ObservableImpl from 'zen-observable';
 import {
   ListActionsResponse,
   LogEvent,
   ScaffolderApi,
+  ScaffolderDryRunOptions,
+  ScaffolderDryRunResponse,
+  ScaffolderGetIntegrationsListOptions,
+  ScaffolderGetIntegrationsListResponse,
   ScaffolderScaffoldOptions,
   ScaffolderScaffoldResponse,
   ScaffolderStreamLogsOptions,
-  ScaffolderGetIntegrationsListOptions,
-  ScaffolderGetIntegrationsListResponse,
   ScaffolderTask,
-  ScaffolderDryRunOptions,
-  ScaffolderDryRunResponse,
   TemplateParameterSchema,
 } from '@backstage/plugin-scaffolder-react';
-
-import queryString from 'qs';
 import {
   EventSourceMessage,
   fetchEventSource,
@@ -74,7 +73,9 @@ export class ScaffolderClient implements ScaffolderApi {
 
   async listTasks(options: {
     filterByOwnership: 'owned' | 'all';
-  }): Promise<{ tasks: ScaffolderTask[] }> {
+    limit?: number;
+    offset?: number;
+  }): Promise<{ tasks: ScaffolderTask[]; totalTasks?: number }> {
     if (!this.identityApi) {
       throw new Error(
         'IdentityApi is not available in the ScaffolderClient, please pass through the IdentityApi to the ScaffolderClient constructor in order to use the listTasks method',
@@ -83,9 +84,12 @@ export class ScaffolderClient implements ScaffolderApi {
     const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
     const { userEntityRef } = await this.identityApi.getBackstageIdentity();
 
-    const query = queryString.stringify(
-      options.filterByOwnership === 'owned' ? { createdBy: userEntityRef } : {},
-    );
+    const query = queryString.stringify({
+      createdBy:
+        options.filterByOwnership === 'owned' ? userEntityRef : undefined,
+      limit: options.limit,
+      offset: options.offset,
+    });
 
     const response = await this.fetchApi.fetch(`${baseUrl}/v2/tasks?${query}`);
     if (!response.ok) {

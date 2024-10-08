@@ -225,6 +225,14 @@ export function registerCommands(program: Command) {
     .action(lazy(() => import('./type-deps/type-deps').then(m => m.default)));
 
   program
+    .command('peer-deps')
+    .description(
+      'Ensure your packages are using the correct peer dependency format.',
+    )
+    .option('--fix', 'Fix the issues found')
+    .action(lazy(() => import('./peer-deps/peer-deps').then(m => m.default)));
+
+  program
     .command('generate-catalog-info')
     .option(
       '--dry-run',

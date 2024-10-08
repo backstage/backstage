@@ -46,7 +46,7 @@ jobs:
         run: yarn install --immutable
 
       - name: lint
-        run: yarn backstage-cli repo lint
+        run: yarn backstage-cli repo lint --successCache
 
       - name: type checking and declarations
         run: yarn tsc:full
@@ -55,7 +55,7 @@ jobs:
         run: yarn lint:type-deps
 
       - name: test
-        run: yarn backstage-cli repo test --maxWorkers=3 --workerIdleMemoryLimit=1300M
+        run: yarn backstage-cli repo test --maxWorkers=3 --workerIdleMemoryLimit=1300M --successCache
         env:
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
 

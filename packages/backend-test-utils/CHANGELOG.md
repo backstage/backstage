@@ -1,5 +1,34 @@
 # @backstage/backend-test-utils
 
+## 1.0.1-next.2
+
+### Patch Changes
+
+- fd6e6f4: build(deps): bump `cookie` from 0.6.0 to 0.7.0
+- Updated dependencies
+  - @backstage/backend-app-api@1.0.1-next.1
+  - @backstage/backend-defaults@0.5.1-next.2
+  - @backstage/plugin-auth-node@0.5.3-next.1
+  - @backstage/backend-plugin-api@1.0.1-next.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-events-node@0.4.1-next.1
+
+## 1.0.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.5.1-next.1
+  - @backstage/backend-app-api@1.0.1-next.0
+  - @backstage/backend-plugin-api@1.0.1-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.5.3-next.0
+  - @backstage/plugin-events-node@0.4.1-next.0
+
 ## 1.0.1-next.0
 
 ### Patch Changes

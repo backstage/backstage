@@ -22,16 +22,16 @@ import { StreamLanguage } from '@codemirror/language';
 import { yaml as yamlSupport } from '@codemirror/legacy-modes/mode/yaml';
 
 import { makeStyles } from '@material-ui/core/styles';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import SearchIcon from '@material-ui/icons/Search';
 
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { Form } from '@backstage/plugin-scaffolder-react/alpha';
@@ -48,7 +48,7 @@ const useStyles = makeStyles(
       gridTemplateRows: 'auto 1fr',
     },
     controls: {
-      marginBottom: theme.spacing(2),
+      marginBottom: theme.spacing(3),
     },
     code: {
       width: '100%',
@@ -114,25 +114,39 @@ export const CustomFieldPlaygroud = ({
   return (
     <main className={classes.root}>
       <div className={classes.controls}>
-        <FormControl variant="outlined" fullWidth>
-          <InputLabel id="select-field-label">
-            {t('templateEditorPage.customFieldExplorer.selectFieldLabel')}
-          </InputLabel>
-          <Select
-            value={selectedField}
-            label={t('templateEditorPage.customFieldExplorer.selectFieldLabel')}
-            labelId="select-field-label"
-            onChange={e =>
-              handleSelectionChange(e.target.value as FieldExtensionOptions)
+        <Autocomplete
+          id="custom-fields-autocomplete"
+          value={selectedField}
+          options={fieldOptions}
+          getOptionLabel={option => option.name}
+          renderInput={params => (
+            <TextField
+              {...params}
+              aria-label={t(
+                'templateEditorPage.customFieldExplorer.selectFieldLabel',
+              )}
+              placeholder={t(
+                'templateEditorPage.customFieldExplorer.selectFieldLabel',
+              )}
+              variant="outlined"
+              InputProps={{
+                ...params.InputProps,
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          )}
+          onChange={(_event, option) => {
+            if (option) {
+              handleSelectionChange(option);
             }
-          >
-            {fieldOptions.map((option, idx) => (
-              <MenuItem key={idx} value={option as any}>
-                {option.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+          }}
+          disableClearable
+          fullWidth
+        />
       </div>
       <div>
         <Accordion defaultExpanded>

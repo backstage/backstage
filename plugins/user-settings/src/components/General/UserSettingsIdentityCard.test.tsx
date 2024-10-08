@@ -20,19 +20,27 @@ import React from 'react';
 import { UserSettingsIdentityCard } from './UserSettingsIdentityCard';
 import { ApiProvider } from '@backstage/core-app-api';
 import { identityApiRef } from '@backstage/core-plugin-api';
-import { entityRouteRef } from '@backstage/plugin-catalog-react';
+import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
 
-const apiRegistry = TestApiRegistry.from([
-  identityApiRef,
-  {
-    getProfileInfo: jest.fn(async () => ({})),
-    getBackstageIdentity: jest.fn(async () => ({
-      type: 'user' as const,
-      userEntityRef: 'foo:bar/foobar',
-      ownershipEntityRefs: ['user:default/test-ownership'],
-    })),
-  },
-]);
+const apiRegistry = TestApiRegistry.from(
+  [
+    identityApiRef,
+    {
+      getProfileInfo: jest.fn(async () => ({})),
+      getBackstageIdentity: jest.fn(async () => ({
+        type: 'user' as const,
+        userEntityRef: 'foo:bar/foobar',
+        ownershipEntityRefs: ['user:default/test-ownership'],
+      })),
+    },
+  ],
+  [
+    catalogApiRef,
+    {
+      getEntityByRef: jest.fn(),
+    },
+  ],
+);
 
 describe('<UserSettingsIdentityCard />', () => {
   it('displays an identity card', async () => {

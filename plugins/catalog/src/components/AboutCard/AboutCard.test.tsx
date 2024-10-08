@@ -15,11 +15,11 @@
  */
 
 import {
-  CatalogApi,
   EntityProvider,
   catalogApiRef,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import {
   ScmIntegrationsApi,
   scmIntegrationsApiRef,
@@ -42,16 +42,7 @@ const mockAuthorize = jest.fn();
 const mockPermissionApi = { authorize: mockAuthorize };
 
 describe('<AboutCard />', () => {
-  const catalogApi: jest.Mocked<CatalogApi> = {
-    getLocationById: jest.fn(),
-    getEntityByName: jest.fn(),
-    getEntityByRef: jest.fn(),
-    getEntities: jest.fn(),
-    addLocation: jest.fn(),
-    getLocationByRef: jest.fn(),
-    removeEntityByUid: jest.fn(),
-    refreshEntity: jest.fn(),
-  } as any;
+  const catalogApi = catalogApiMock.mock();
 
   beforeEach(() => {
     jest.clearAllMocks();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,4 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { MockEntityListContextProvider } from './providers';
+
+module.exports = async results => {
+  const cache = global.__backstageCli_jestSuccessCache;
+  if (cache) {
+    await cache.reportResults(results);
+  }
+  return results;
+};

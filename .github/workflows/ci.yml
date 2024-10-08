@@ -90,6 +90,9 @@ jobs:
       - name: verify local dependency ranges
         run: node scripts/verify-local-dependencies.js
 
+      - name: verify peer dependency ranges
+        run: yarn lint:peer-deps
+
       - name: check for missing repo fixes
         run: yarn fix --check
 
@@ -230,17 +233,32 @@ jobs:
       - name: verify release
         run: node scripts/verify-release.js
 
+      # Use the lower-level cache actions for the success cache, so that we can store the cache even on failed builds
+      - name: restore backstage-cli cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .cache/backstage-cli
+          key: ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli
+
       - name: lint changed packages
-        run: yarn backstage-cli repo lint --since origin/master
+        run: yarn backstage-cli repo lint --since origin/master --successCache --successCacheDir .cache/backstage-cli
 
       - name: test changed packages
-        run: yarn backstage-cli repo test --maxWorkers=3 --workerIdleMemoryLimit=1300M --since origin/master
+        run: yarn backstage-cli repo test --maxWorkers=3 --workerIdleMemoryLimit=1300M --since origin/master --successCache --successCacheDir .cache/backstage-cli
         env:
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
           BACKSTAGE_TEST_DATABASE_POSTGRES16_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres16.ports[5432] }}
           BACKSTAGE_TEST_DATABASE_POSTGRES12_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres12.ports[5432] }}
           BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING: mysql://root:root@localhost:${{ job.services.mysql8.ports[3306] }}/ignored
           BACKSTAGE_TEST_CACHE_REDIS7_CONNECTION_STRING: redis://localhost:${{ job.services.redis.ports[6379] }}
+
+      # Always save success cache even if there were failures, that way it can be used in re-triggered builds
+      - name: save backstage-cli cache
+        uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: .cache/backstage-cli
+          key: ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli
 
       # We run the test cases before verifying the specs to prevent any failing tests from causing errors.
       - name: verify openapi specs against test cases

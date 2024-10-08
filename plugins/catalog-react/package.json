@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-react",
-  "version": "1.13.1-next.0",
+  "version": "1.14.0-next.2",
   "description": "A frontend library that helps other Backstage plugins interact with the catalog",
   "backstage": {
     "role": "web-library",
@@ -30,6 +30,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./alpha": "./src/alpha/index.ts",
+    "./testUtils": "./src/testUtils.ts",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
@@ -38,6 +39,9 @@
     "*": {
       "alpha": [
         "src/alpha/index.ts"
+      ],
+      "testUtils": [
+        "src/testUtils.ts"
       ],
       "package.json": [
         "package.json"
@@ -64,6 +68,7 @@
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
+    "@backstage/frontend-test-utils": "workspace:^",
     "@backstage/integration-react": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
@@ -74,7 +79,6 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
     "@react-hookz/web": "^24.0.0",
-    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "classnames": "^2.2.6",
     "lodash": "^4.17.21",
     "material-ui-popup-state": "^1.9.3",
@@ -86,7 +90,6 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
-    "@backstage/frontend-test-utils": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
     "@backstage/plugin-scaffolder-common": "workspace:^",
     "@backstage/test-utils": "workspace:^",
@@ -94,12 +97,22 @@
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
     "@testing-library/user-event": "^14.0.0",
+    "@types/react": "^18.0.0",
     "@types/zen-observable": "^0.8.0",
+    "react": "^18.0.2",
+    "react-dom": "^18.0.2",
+    "react-router-dom": "^6.3.0",
     "react-test-renderer": "^16.13.1"
   },
   "peerDependencies": {
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
   }
 }

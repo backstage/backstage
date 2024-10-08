@@ -16,25 +16,20 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import {
-  CatalogApi,
-  catalogApiRef,
-  entityRouteRef,
-} from '@backstage/plugin-catalog-react';
+import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import React from 'react';
 import { identityApiRef } from '@backstage/core-plugin-api';
 import { ListTasksPage } from './ListTasksPage';
 import {
-  scaffolderApiRef,
   ScaffolderApi,
+  scaffolderApiRef,
 } from '@backstage/plugin-scaffolder-react';
 import { act, fireEvent } from '@testing-library/react';
 import { rootRouteRef } from '../../routes';
 
 describe('<ListTasksPage />', () => {
-  const catalogApi: jest.Mocked<CatalogApi> = {
-    getEntityByRef: jest.fn(),
-  } as any;
+  const catalogApi = catalogApiMock.mock();
 
   const identityApi = {
     getBackstageIdentity: jest.fn(),
@@ -64,7 +59,7 @@ describe('<ListTasksPage />', () => {
     };
     catalogApi.getEntityByRef.mockResolvedValue(entity);
 
-    scaffolderApiMock.listTasks.mockResolvedValue({ tasks: [] });
+    scaffolderApiMock.listTasks.mockResolvedValue({ tasks: [], totalTasks: 0 });
 
     const { getByText } = await renderInTestApp(
       <TestApiProvider
@@ -118,6 +113,7 @@ describe('<ListTasksPage />', () => {
           lastHeartbeatAt: '',
         },
       ],
+      totalTasks: 1,
     });
 
     scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
@@ -145,6 +141,8 @@ describe('<ListTasksPage />', () => {
 
     expect(scaffolderApiMock.listTasks).toHaveBeenCalledWith({
       filterByOwnership: 'owned',
+      limit: 5,
+      offset: 0,
     });
     expect(getByText('List template tasks')).toBeInTheDocument();
     expect(getByText('All tasks that have been started')).toBeInTheDocument();
@@ -194,6 +192,7 @@ describe('<ListTasksPage />', () => {
             lastHeartbeatAt: '',
           },
         ],
+        totalTasks: 1,
       })
       .mockResolvedValue({
         tasks: [
@@ -212,6 +211,7 @@ describe('<ListTasksPage />', () => {
             lastHeartbeatAt: '',
           },
         ],
+        totalTasks: 1,
       });
 
     scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
@@ -244,6 +244,8 @@ describe('<ListTasksPage />', () => {
 
     expect(scaffolderApiMock.listTasks).toHaveBeenCalledWith({
       filterByOwnership: 'all',
+      limit: 5,
+      offset: 0,
     });
     expect(await findByText('One Template')).toBeInTheDocument();
     expect(await findByText('OtherUser')).toBeInTheDocument();

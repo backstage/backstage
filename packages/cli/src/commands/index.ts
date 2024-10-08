@@ -61,6 +61,14 @@ export function registerRepoCommand(program: Command) {
       '--since <ref>',
       'Only lint packages that changed since the specified ref',
     )
+    .option(
+      '--successCache',
+      'Enable success caching, which skips running tests for unchanged packages that were successful in the previous run',
+    )
+    .option(
+      '--successCacheDir <path>',
+      'Set the success cache location, (default: node_modules/.cache/backstage-cli)',
+    )
     .option('--fix', 'Attempt to automatically fix violations')
     .action(lazy(() => import('./repo/lint').then(m => m.command)));
 
@@ -96,6 +104,14 @@ export function registerRepoCommand(program: Command) {
     .option(
       '--since <ref>',
       'Only test packages that changed since the specified ref',
+    )
+    .option(
+      '--successCache',
+      'Enable success caching, which skips running tests for unchanged packages that were successful in the previous run',
+    )
+    .option(
+      '--successCacheDir <path>',
+      'Set the success cache location, (default: node_modules/.cache/backstage-cli)',
     )
     .option(
       '--jest-help',
@@ -156,6 +172,10 @@ export function registerScriptCommand(program: Command) {
       'eslint-formatter-friendly',
     )
     .option('--fix', 'Attempt to automatically fix violations')
+    .option(
+      '--max-warnings <number>',
+      'Fail if more than this number of warnings (default: 0)',
+    )
     .description('Lint a package')
     .action(lazy(() => import('./lint').then(m => m.default)));
 

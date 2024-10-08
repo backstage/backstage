@@ -1,5 +1,53 @@
 # @backstage/cli
 
+## 0.28.0-next.2
+
+### Patch Changes
+
+- ea16633: Preserve directory structure for CommonJS build output, just like ESM. This makes the build output more stable and easier to browse, and allows for more effective tree shaking and lazy imports.
+- 7955f9b: Tweaked the new package feature detection to not be active when building backend packages.
+- 720a2f9: Updated dependency `git-url-parse` to `^15.0.0`.
+- 2c5ecf5: Support `--max-warnings` flag for package linting
+- 8fe740d: Added a new `--successCache` option to the `backstage-cli repo test` and `backstage-cli repo lint` commands. The cache keeps track of successful runs and avoids re-running for individual packages if they haven't changed. This option is intended only to be used in CI.
+
+  In addition a `--successCacheDir <path>` option has also been added to be able to override the default cache directory.
+
+- f0514c7: Disabled parsing of input source maps in the SWC transform for Jest.
+- Updated dependencies
+  - @backstage/cli-node@0.2.9-next.0
+  - @backstage/eslint-plugin@0.1.10-next.1
+  - @backstage/integration@1.15.1-next.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.9.1
+  - @backstage/errors@1.2.4
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
+## 0.28.0-next.1
+
+### Minor Changes
+
+- 55b8b84: **BREAKING**: The Jest configuration defined at `@backstage/cli/config/jest` no longer collects configuration defined in the `"jest"` field from all parent `package.json` files. Instead, it will only read and merge configuration from the `package.json` in the monorepo root if it exists, as well as the target package. In addition, configuration defined in the root `package.json` will now only be merged into each package configuration if it is a valid project-level configuration key.
+
+### Patch Changes
+
+- 03810d2: Remove unknown dependency `diff`
+- cebee4f: Added support for a new experimental `EXPERIMENTAL_TRIM_NEXT_ENTRY` flag which removes any `./next` entry points present in packages when building and publishing.
+- 55b8b84: The Jest configuration will now search for a `src/setupTests.*` file with any valid script extension, not only `.ts`.
+- Updated dependencies
+  - @backstage/eslint-plugin@0.1.10-next.0
+  - @backstage/integration@1.15.1-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.8
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.9.1
+  - @backstage/errors@1.2.4
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
 ## 0.28.0-next.0
 
 ### Minor Changes

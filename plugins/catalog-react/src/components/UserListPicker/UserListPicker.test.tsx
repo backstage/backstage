@@ -18,7 +18,10 @@ import React from 'react';
 import { fireEvent, waitFor, screen } from '@testing-library/react';
 import { UserEntity } from '@backstage/catalog-model';
 import { UserListPicker, UserListPickerProps } from './UserListPicker';
-import { MockEntityListContextProvider } from '../../testUtils/providers';
+import {
+  MockEntityListContextProvider,
+  catalogApiMock,
+} from '@backstage/plugin-catalog-react/testUtils';
 import {
   EntityKindFilter,
   EntityNamespaceFilter,
@@ -62,10 +65,7 @@ const mockConfigApi = {
   getOptionalString: () => 'Test Company',
 } as Partial<ConfigApi>;
 
-const mockCatalogApi = {
-  getEntityByRef: jest.fn(),
-  queryEntities: jest.fn(),
-} as Partial<jest.Mocked<CatalogApi>>;
+const mockCatalogApi = catalogApiMock.mock();
 
 const mockIdentityApi = {
   getBackstageIdentity: jest.fn(),

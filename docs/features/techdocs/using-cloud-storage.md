@@ -120,6 +120,36 @@ techdocs:
 Your Backstage app is now ready to use Google Cloud Storage for TechDocs, to
 store and read the static generated documentation files.
 
+### Extending default Storage configuration
+
+If you need a non-standard configuration of Google Cloud Storage client,
+`TechdocsPublisherExtensionPoint` is something you should look at.
+You can register custom `StorageOptions` that will be used to configure the client. To do so, you
+need to register publisher settings inside your module init, like in the following example:
+
+```typescript
+export const gcsPublisherCustomizer = createBackendModule({
+  pluginId: 'techdocs',
+  moduleId: 'gcs-publisher-customizer',
+  register(reg) {
+    reg.registerInit({
+      deps: {
+        techdocsExtensionPoint: techdocsPublisherExtensionPoint,
+      },
+      async init({ techdocsExtensionPoint }) {
+        const customOptions: StorageOptions = {
+          userAgent: 'my-custom-user-agent',
+        };
+        techdocsExtensionPoint.registerPublisherSettings(
+          'googleGcs',
+          customOptions,
+        );
+      },
+    });
+  },
+});
+```
+
 ## Configuring AWS S3 Bucket with TechDocs
 
 **1. Set `techdocs.publisher.type` config in your `app-config.yaml`**

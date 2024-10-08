@@ -148,7 +148,10 @@ export namespace commonSignInResolvers {
   >;
   const emailLocalPartMatchingUserEntityName: SignInResolverFactory<
     unknown,
-    unknown
+    | {
+        allowedDomains?: string[] | undefined;
+      }
+    | undefined
   >;
 }
 
@@ -178,10 +181,7 @@ export function createOAuthProviderFactory<TProfile>(options: {
   profileTransform?: ProfileTransform<OAuthAuthenticatorResult<TProfile>>;
   signInResolver?: SignInResolver<OAuthAuthenticatorResult<TProfile>>;
   signInResolverFactories?: {
-    [name in string]: SignInResolverFactory<
-      OAuthAuthenticatorResult<TProfile>,
-      unknown
-    >;
+    [name in string]: SignInResolverFactory;
   };
 }): AuthProviderFactory;
 
@@ -200,10 +200,7 @@ export function createProxyAuthProviderFactory<TResult>(options: {
   authenticator: ProxyAuthenticator<unknown, TResult, unknown>;
   profileTransform?: ProfileTransform<TResult>;
   signInResolver?: SignInResolver<TResult>;
-  signInResolverFactories?: Record<
-    string,
-    SignInResolverFactory<TResult, unknown>
-  >;
+  signInResolverFactories?: Record<string, SignInResolverFactory>;
 }): AuthProviderFactory;
 
 // @public (undocumented)
@@ -648,7 +645,7 @@ export type SignInResolver<TAuthResult> = (
 ) => Promise<BackstageSignInResult>;
 
 // @public (undocumented)
-export interface SignInResolverFactory<TAuthResult, TOptions> {
+export interface SignInResolverFactory<TAuthResult = any, TOptions = any> {
   // (undocumented)
   (
     ...options: undefined extends TOptions
