@@ -114,15 +114,20 @@ describe('BackstageResolver', () => {
     });
 
     describe('with range "backstage:1.23.45"', () => {
-      it('throws an error', () => {
-        expect(() =>
+      it('returns the correct descriptor', () => {
+        expect(
           backstageResolver.bindDescriptor(
             structUtils.makeDescriptor(
               structUtils.makeIdent('backstage', 'core'),
               'backstage:1.23.45',
             ),
           ),
-        ).toThrow(/unsupported version range/i);
+        ).toEqual(
+          structUtils.makeDescriptor(
+            structUtils.makeIdent('backstage', 'core'),
+            'backstage:1.23.45',
+          ),
+        );
       });
     });
   });
