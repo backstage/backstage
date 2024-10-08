@@ -44,7 +44,10 @@ export class BackstageResolver implements Resolver {
    * the version in backstage.json changes.
    */
   bindDescriptor(descriptor: Descriptor): Descriptor {
-    if (descriptor.range !== 'backstage:^') {
+    if (
+      descriptor.range !== 'backstage:^' &&
+      !descriptor.range.startsWith('backstage:')
+    ) {
       throw new Error(
         `Unsupported version range "${
           descriptor.range
