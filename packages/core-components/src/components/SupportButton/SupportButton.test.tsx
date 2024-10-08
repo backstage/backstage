@@ -16,7 +16,7 @@
 
 import { configApiRef } from '@backstage/core-plugin-api';
 import {
-  MockConfigApi,
+  mockApis,
   renderInTestApp,
   TestApiProvider,
 } from '@backstage/test-utils';
@@ -24,17 +24,19 @@ import { act, fireEvent, screen } from '@testing-library/react';
 import React from 'react';
 import { SupportButton } from './SupportButton';
 
-const configApi = new MockConfigApi({
-  app: {
-    support: {
-      url: 'https://github.com',
-      items: [
-        {
-          title: 'Github',
-          icon: 'github',
-          links: [{ title: 'Github Issues', url: '/issues' }],
-        },
-      ],
+const configApi = mockApis.config({
+  data: {
+    app: {
+      support: {
+        url: 'https://github.com',
+        items: [
+          {
+            title: 'Github',
+            icon: 'github',
+            links: [{ title: 'Github Issues', url: '/issues' }],
+          },
+        ],
+      },
     },
   },
 });

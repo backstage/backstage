@@ -22,7 +22,7 @@ import {
 import { render, screen, waitFor } from '@testing-library/react';
 import React, { useEffect } from 'react';
 import { createPublicSignInApp } from './createPublicSignInApp';
-import { MockConfigApi } from '@backstage/test-utils';
+import { mockApis } from '@backstage/test-utils';
 
 describe('createPublicSignInApp', () => {
   beforeEach(() => {
@@ -31,7 +31,7 @@ describe('createPublicSignInApp', () => {
 
   it('should render a sign-in page', async () => {
     const app = createPublicSignInApp({
-      configLoader: async () => ({ config: new MockConfigApi({}) }),
+      configLoader: async () => ({ config: mockApis.config() }),
       features: [
         createFrontendModule({
           pluginId: 'app',
@@ -59,7 +59,7 @@ describe('createPublicSignInApp', () => {
       .mockReturnValue();
 
     const app = createPublicSignInApp({
-      configLoader: async () => ({ config: new MockConfigApi({}) }),
+      configLoader: async () => ({ config: mockApis.config() }),
       features: [
         createFrontendModule({
           pluginId: 'app',

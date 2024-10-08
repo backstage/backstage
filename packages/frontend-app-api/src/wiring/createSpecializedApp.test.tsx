@@ -29,7 +29,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { screen, render } from '@testing-library/react';
 import { createSpecializedApp } from './createSpecializedApp';
-import { MockConfigApi } from '@backstage/test-utils';
+import { mockApis } from '@backstage/test-utils';
 import React from 'react';
 import {
   configApiRef,
@@ -98,7 +98,7 @@ describe('createSpecializedApp', () => {
 
   it('should forward config', () => {
     const app = createSpecializedApp({
-      config: new MockConfigApi({ test: 'foo' }),
+      config: mockApis.config({ data: { test: 'foo' } }),
       features: [
         createFrontendPlugin({
           id: 'test',

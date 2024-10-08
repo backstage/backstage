@@ -22,7 +22,7 @@ import {
   act,
   renderHook,
 } from '@testing-library/react';
-import { MockConfigApi, TestApiProvider } from '@backstage/test-utils';
+import { mockApis, TestApiProvider } from '@backstage/test-utils';
 import React from 'react';
 import {
   SearchContextProvider,
@@ -37,7 +37,7 @@ describe('SearchContext', () => {
   } satisfies typeof searchApiRef.T;
 
   const wrapper = ({ children, initialState, config = {} }: any) => {
-    const configApiMock = new MockConfigApi(config);
+    const configApiMock = mockApis.config({ data: config });
     return (
       <TestApiProvider
         apis={[
@@ -433,7 +433,7 @@ describe('SearchContext', () => {
 
       const { result } = renderHook(() => useSearch(), {
         wrapper: ({ children }) => {
-          const configApiMock = new MockConfigApi({});
+          const configApiMock = mockApis.config();
           return (
             <TestApiProvider
               apis={[
@@ -491,7 +491,7 @@ describe('SearchContext', () => {
 
     const { result } = renderHook(() => useSearch(), {
       wrapper: ({ children }) => {
-        const configApiMock = new MockConfigApi({});
+        const configApiMock = mockApis.config();
         return (
           <TestApiProvider
             apis={[

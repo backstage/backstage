@@ -26,7 +26,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { screen, waitFor } from '@testing-library/react';
 import { CreateAppFeatureLoader, createApp } from './createApp';
-import { MockConfigApi, renderWithEffects } from '@backstage/test-utils';
+import { mockApis, renderWithEffects } from '@backstage/test-utils';
 import React from 'react';
 import { featureFlagsApiRef, useApi } from '@backstage/core-plugin-api';
 import appPlugin from '@backstage/plugin-app';
@@ -35,12 +35,14 @@ describe('createApp', () => {
   it('should allow themes to be installed', async () => {
     const app = createApp({
       configLoader: async () => ({
-        config: new MockConfigApi({
-          app: {
-            extensions: [
-              { 'theme:app/light': false },
-              { 'theme:app/dark': false },
-            ],
+        config: mockApis.config({
+          data: {
+            app: {
+              extensions: [
+                { 'theme:app/light': false },
+                { 'theme:app/dark': false },
+              ],
+            },
           },
         }),
       }),
@@ -72,7 +74,7 @@ describe('createApp', () => {
   it('should deduplicate features keeping the last received one', async () => {
     const duplicatedFeatureId = 'test';
     const app = createApp({
-      configLoader: async () => ({ config: new MockConfigApi({}) }),
+      configLoader: async () => ({ config: mockApis.config() }),
       features: [
         createFrontendPlugin({
           id: duplicatedFeatureId,
@@ -135,7 +137,7 @@ describe('createApp', () => {
 
     const app = createApp({
       configLoader: async () => ({
-        config: new MockConfigApi({ key: 'config-value' }),
+        config: mockApis.config({ data: { key: 'config-value' } }),
       }),
       features: [appPlugin, loader],
     });
@@ -159,7 +161,7 @@ describe('createApp', () => {
 
     const app = createApp({
       configLoader: async () => ({
-        config: new MockConfigApi({}),
+        config: mockApis.config(),
       }),
       features: [loader],
     });
@@ -173,7 +175,7 @@ describe('createApp', () => {
 
   it('should register feature flags', async () => {
     const app = createApp({
-      configLoader: async () => ({ config: new MockConfigApi({}) }),
+      configLoader: async () => ({ config: mockApis.config() }),
       features: [
         appPlugin.withOverrides({
           extensions: [
@@ -227,7 +229,7 @@ describe('createApp', () => {
     let appTreeApi: AppTreeApi | undefined = undefined;
 
     const app = createApp({
-      configLoader: async () => ({ config: new MockConfigApi({}) }),
+      configLoader: async () => ({ config: mockApis.config() }),
       features: [
         createFrontendPlugin({
           id: 'my-plugin',

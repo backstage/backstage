@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { renderHook, act, waitFor } from '@testing-library/react';
 
@@ -21,7 +22,7 @@ import { ThemeProvider } from '@material-ui/core/styles';
 import { lightTheme } from '@backstage/theme';
 import {
   MockAnalyticsApi,
-  MockConfigApi,
+  mockApis,
   TestApiProvider,
 } from '@backstage/test-utils';
 import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
@@ -84,7 +85,7 @@ const wrapper = ({
     <TestApiProvider
       apis={[
         [analyticsApiRef, analyticsApiMock],
-        [configApiRef, new MockConfigApi(config ?? {})],
+        [configApiRef, mockApis.config({ data: config ?? {} })],
         [techdocsApiRef, techdocsApiMock],
       ]}
     >
