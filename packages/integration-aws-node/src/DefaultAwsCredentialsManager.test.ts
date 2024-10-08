@@ -135,12 +135,12 @@ describe('DefaultAwsCredentialsManager', () => {
         },
       });
 
+    const testDate = new Date('2022-01-10');
+
     process.env.AWS_ACCESS_KEY_ID = 'ACCESS_KEY_ID_10';
     process.env.AWS_SECRET_ACCESS_KEY = 'SECRET_ACCESS_KEY_10';
     process.env.AWS_SESSION_TOKEN = 'SESSION_TOKEN_10';
-    process.env.AWS_CREDENTIAL_EXPIRATION = new Date(
-      '2022-01-10',
-    ).toISOString();
+    process.env.AWS_CREDENTIAL_EXPIRATION = testDate.toISOString();
 
     // Return creds from env
     (fromNodeProviderChain as jest.Mock).mockReturnValue(() =>
@@ -148,7 +148,7 @@ describe('DefaultAwsCredentialsManager', () => {
         accessKeyId: process.env.AWS_ACCESS_KEY_ID,
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
         sessionToken: process.env.AWS_SESSION_TOKEN,
-        expiration: new Date(process.env.AWS_CREDENTIAL_EXPIRATION),
+        expiration: testDate,
       }),
     );
 
