@@ -79,7 +79,7 @@ export type LegacyPluginEnvironment = {
 export interface DynamicPluginProvider
   extends FrontendPluginProvider,
     BackendPluginProvider {
-  plugins(includeFailed?: boolean): DynamicPlugin[];
+  plugins(options?: { includeFailed?: boolean }): DynamicPlugin[];
   getScannedPackage(plugin: DynamicPlugin): ScannedPluginPackage;
 }
 
@@ -87,14 +87,16 @@ export interface DynamicPluginProvider
  * @public
  */
 export interface BackendPluginProvider {
-  backendPlugins(includeFailed?: boolean): BackendDynamicPlugin[];
+  backendPlugins(options?: { includeFailed?: boolean }): BackendDynamicPlugin[];
 }
 
 /**
  * @public
  */
 export interface FrontendPluginProvider {
-  frontendPlugins(includeFailed?: boolean): FrontendDynamicPlugin[];
+  frontendPlugins(options?: {
+    includeFailed?: boolean;
+  }): FrontendDynamicPlugin[];
 }
 
 /**

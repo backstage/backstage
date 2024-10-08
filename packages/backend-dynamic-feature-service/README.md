@@ -15,7 +15,7 @@ In the `backend` application, it can be enabled by adding the `backend-dynamic-f
 ```ts
 const backend = createBackend();
 +
-+ backend.add(dynamicPluginsFeatureLoader) which provides features loaded by dynamic plugins
++ backend.add(dynamicPluginsFeatureLoader) // provides features loaded by dynamic plugins
 +
 ```
 

@@ -40003,7 +40003,6 @@ __metadata:
   resolution: "root@workspace:."
   dependencies:
     "@backstage/cli": "workspace:*"
-    "@backstage/cli-node": "workspace:^"
     "@backstage/codemods": "workspace:*"
     "@backstage/create-app": "workspace:*"
     "@backstage/e2e-test-utils": "workspace:*"

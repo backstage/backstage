@@ -75,7 +75,9 @@ class DynamicPluginLister {
             dynamicPlugins: dynamicPluginsServiceRef,
           },
           async init({ dynamicPlugins }) {
-            that.loadedPlugins.push(...dynamicPlugins.plugins(true));
+            that.loadedPlugins.push(
+              ...dynamicPlugins.plugins({ includeFailed: true }),
+            );
           },
         });
       },

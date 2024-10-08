@@ -217,20 +217,24 @@ export class DynamicPluginManager implements DynamicPluginProvider {
     }
   }
 
-  backendPlugins(includeFailed?: boolean): BackendDynamicPlugin[] {
-    return this.plugins(includeFailed).filter(
+  backendPlugins(options?: {
+    includeFailed?: boolean;
+  }): BackendDynamicPlugin[] {
+    return this.plugins(options).filter(
       (p): p is BackendDynamicPlugin => p.platform === 'node',
     );
   }
 
-  frontendPlugins(includeFailed?: boolean): FrontendDynamicPlugin[] {
-    return this.plugins(includeFailed).filter(
+  frontendPlugins(options?: {
+    includeFailed?: boolean;
+  }): FrontendDynamicPlugin[] {
+    return this.plugins(options).filter(
       (p): p is FrontendDynamicPlugin => p.platform === 'web',
     );
   }
 
-  plugins(includeFailed?: boolean): DynamicPlugin[] {
-    return this._plugins.filter(p => includeFailed || !p.failure);
+  plugins(options?: { includeFailed?: boolean }): DynamicPlugin[] {
+    return this._plugins.filter(p => options?.includeFailed || !p.failure);
   }
 
   getScannedPackage(plugin: DynamicPlugin): ScannedPluginPackage {

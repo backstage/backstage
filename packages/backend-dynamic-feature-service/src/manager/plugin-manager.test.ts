@@ -682,7 +682,7 @@ describe('backend-dynamic-feature-service', () => {
           version: '0.0.0',
         },
       ]);
-      expect(pluginManager.backendPlugins(false)).toEqual([
+      expect(pluginManager.backendPlugins({ includeFailed: false })).toEqual([
         {
           name: 'a-backend-plugin',
           platform: 'node',
@@ -696,7 +696,7 @@ describe('backend-dynamic-feature-service', () => {
           version: '0.0.0',
         },
       ]);
-      expect(pluginManager.backendPlugins(true)).toEqual([
+      expect(pluginManager.backendPlugins({ includeFailed: true })).toEqual([
         {
           name: 'a-backend-plugin',
           platform: 'node',
@@ -740,7 +740,7 @@ describe('backend-dynamic-feature-service', () => {
           version: '0.0.0',
         },
       ]);
-      expect(pluginManager.frontendPlugins(false)).toEqual([
+      expect(pluginManager.frontendPlugins({ includeFailed: false })).toEqual([
         {
           name: 'a-frontend-plugin',
           platform: 'web',
@@ -754,7 +754,7 @@ describe('backend-dynamic-feature-service', () => {
           version: '0.0.0',
         },
       ]);
-      expect(pluginManager.frontendPlugins(true)).toEqual([
+      expect(pluginManager.frontendPlugins({ includeFailed: true })).toEqual([
         {
           name: 'a-frontend-plugin',
           platform: 'web',
@@ -810,7 +810,7 @@ describe('backend-dynamic-feature-service', () => {
           version: '0.0.0',
         },
       ]);
-      expect(pluginManager.plugins(false)).toEqual([
+      expect(pluginManager.plugins({ includeFailed: false })).toEqual([
         {
           name: 'a-frontend-plugin',
           platform: 'web',
@@ -836,7 +836,7 @@ describe('backend-dynamic-feature-service', () => {
           version: '0.0.0',
         },
       ]);
-      expect(pluginManager.plugins(true)).toEqual([
+      expect(pluginManager.plugins({ includeFailed: true })).toEqual([
         {
           name: 'a-frontend-plugin',
           platform: 'web',
