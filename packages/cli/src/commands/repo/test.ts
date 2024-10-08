@@ -77,7 +77,7 @@ function writeCache(dir: string, cache: Cache) {
 /**
  * Use git to get the HEAD tree hashes of each package in the project.
  */
-async function getPackageTreeHashes(graph: PackageGraph) {
+async function readPackageTreeHashes(graph: PackageGraph) {
   const pkgs = Array.from(graph.values());
   const output = await runPlain(
     'git',
@@ -95,7 +95,16 @@ async function getPackageTreeHashes(graph: PackageGraph) {
     );
   }
 
-  return new Map(pkgs.map((pkg, i) => [pkg.packageJson.name, treeShaList[i]]));
+  const map = new Map(
+    pkgs.map((pkg, i) => [pkg.packageJson.name, treeShaList[i]]),
+  );
+  return (pkgName: string) => {
+    const sha = map.get(pkgName);
+    if (!sha) {
+      throw new Error(`Tree sha not found for ${pkgName}`);
+    }
+    return sha;
+  };
 }
 
 export function createFlagFinder(args: string[]) {
@@ -295,7 +304,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
         const lockfile = await Lockfile.load(
           paths.resolveTargetRoot('yarn.lock'),
         );
-        const packageTreeHashes = await getPackageTreeHashes(graph);
+        const getPackageTreeHash = await readPackageTreeHashes(graph);
 
         // Base hash shared by all projects
         const baseHash = crypto.createHash('sha1');
@@ -317,12 +326,16 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
 
           const hash = crypto.createHash('sha1');
 
-          const packageTreeSha = packageTreeHashes.get(packageName);
-          if (!packageTreeSha) {
-            throw new Error(`Tree sha not found for ${packageName}`);
+          hash.update(baseSha); // Global base hash
+
+          const packageTreeSha = getPackageTreeHash(packageName);
+          hash.update(packageTreeSha); // Hash for target package contents
+
+          for (const [depName, depPkg] of pkg.allLocalDependencies) {
+            const depHash = getPackageTreeHash(depPkg.name);
+            hash.update(`${depName}:${depHash}`); // Hash for each local monorepo dependency contents
           }
-          hash.update(baseSha);
-          hash.update(packageTreeSha);
+
           // The project ID is a hash of the transform configuration, which helps
           // us bust the cache when any changes are made to the transform implementation.
           hash.update(JSON.stringify(project));
