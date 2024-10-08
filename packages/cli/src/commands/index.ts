@@ -106,6 +106,14 @@ export function registerRepoCommand(program: Command) {
       'Only test packages that changed since the specified ref',
     )
     .option(
+      '--successCache',
+      'Enable success caching, which skips running tests for unchanged packages that were successful in the previous run',
+    )
+    .option(
+      '--successCacheDir <path>',
+      'Set the success cache location, (default: node_modules/.cache/backstage-cli)',
+    )
+    .option(
       '--jest-help',
       'Show help for Jest CLI options, which are passed through',
     )

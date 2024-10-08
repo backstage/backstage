@@ -564,6 +564,7 @@ The overrides in a single `package.json` may for example look like this:
 Caching is used sparingly throughout the Backstage build system. It is always used as a way to squeeze out a little bit of extra performance, rather than requirement to keep things fast. The following is a list of places where optional caching is available:
 
 - **TypeScript** - The default `tsconfig.json` used by Backstage projects has `incremental` set to `true`, which enables local caching of type checking results. It is however generally not recommended in CI, where `yarn tsc:full` is preferred, which sets `--incremental false`.
+- **Testing** - The `backstage-cli repo test` command has a `--successCache` flag that enables caching of successful test results. This is done at the package level, meaning that if a package has not been changed since the last test run and it was successful, the testing will be skipped. This is recommended to be used in CI, but not during local development.
 - **Linting** - The `backstage-cli repo lint` command has a `--successCache` flag that enables caching of successful linting results. This is done at the package level, meaning that if a package has not been changed since the last lint run and it was successful, the linting will be skipped. This is recommended to be used in CI, but not during local development.
 - **Webpack** - It is possible to enable experimental caching of frontend package builds using the `BACKSTAGE_CLI_EXPERIMENTAL_BUILD_CACHE` environment variable. This will enable the Webpack filesystem cache.
 
