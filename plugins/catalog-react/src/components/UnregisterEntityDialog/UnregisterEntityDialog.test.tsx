@@ -20,25 +20,15 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { UnregisterEntityDialog } from './UnregisterEntityDialog';
 import { ANNOTATION_ORIGIN_LOCATION } from '@backstage/catalog-model';
-import { CatalogClient } from '@backstage/catalog-client';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { catalogApiRef } from '../../api';
 import { entityRouteRef } from '../../routes';
 import { screen, waitFor } from '@testing-library/react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import * as state from './useUnregisterEntityDialogState';
-
-import {
-  AlertApi,
-  alertApiRef,
-  DiscoveryApi,
-} from '@backstage/core-plugin-api';
+import { AlertApi, alertApiRef } from '@backstage/core-plugin-api';
 
 describe('UnregisterEntityDialog', () => {
-  const discoveryApi: DiscoveryApi = {
-    async getBaseUrl(pluginId) {
-      return `http://example.com/${pluginId}`;
-    },
-  };
   const alertApi: AlertApi = {
     post() {
       return undefined;
@@ -68,7 +58,7 @@ describe('UnregisterEntityDialog', () => {
   const Wrapper = (props: { children?: React.ReactNode }) => (
     <TestApiProvider
       apis={[
-        [catalogApiRef, new CatalogClient({ discoveryApi })],
+        [catalogApiRef, catalogApiMock()],
         [alertApiRef, alertApi],
       ]}
     >

@@ -21,11 +21,11 @@ import {
   storageApiRef,
 } from '@backstage/core-plugin-api';
 import {
-  CatalogApi,
   catalogApiRef,
   starredEntitiesApiRef,
   MockStarredEntitiesApi,
 } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import {
   MockStorageApi,
   renderInTestApp,
@@ -36,22 +36,18 @@ import React from 'react';
 import { rootDocsRouteRef } from '../../routes';
 import { DefaultTechDocsHome } from './DefaultTechDocsHome';
 
-const mockCatalogApi: Partial<CatalogApi> = {
-  getEntityFacets: async () => ({ facets: { 'relations.ownedBy': [] } }),
-  getEntitiesByRefs: () => Promise.resolve({ items: [] }),
-  getEntities: async () => ({
-    items: [
-      {
-        apiVersion: 'version',
-        kind: 'User',
-        metadata: {
-          name: 'owned',
-          namespace: 'default',
-        },
+const mockCatalogApi = catalogApiMock({
+  entities: [
+    {
+      apiVersion: 'version',
+      kind: 'User',
+      metadata: {
+        name: 'owned',
+        namespace: 'default',
       },
-    ],
-  }),
-};
+    },
+  ],
+});
 
 describe('TechDocs Home', () => {
   const configApi: ConfigApi = new ConfigReader({

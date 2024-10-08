@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { waitFor } from '@testing-library/react';
-import { CatalogApi } from '@backstage/catalog-client';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { MyGroupsPicker } from './MyGroupsPicker';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import {
@@ -60,9 +60,9 @@ describe('<MyGroupsPicker />', () => {
   const schema = {};
   const required = false;
 
-  const catalogApi: jest.Mocked<CatalogApi> = {
+  const catalogApi = catalogApiMock.mock({
     getEntities: jest.fn(async () => ({ items: entities })),
-  } as any;
+  });
 
   const mockErrorApi: jest.Mocked<ErrorApi> = {
     post: jest.fn(),

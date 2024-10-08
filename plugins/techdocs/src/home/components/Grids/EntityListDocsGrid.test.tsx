@@ -21,12 +21,14 @@ import {
   storageApiRef,
 } from '@backstage/core-plugin-api';
 import {
-  CatalogApi,
   catalogApiRef,
   starredEntitiesApiRef,
   MockStarredEntitiesApi,
 } from '@backstage/plugin-catalog-react';
-import { MockEntityListContextProvider } from '@backstage/plugin-catalog-react/testUtils';
+import {
+  MockEntityListContextProvider,
+  catalogApiMock,
+} from '@backstage/plugin-catalog-react/testUtils';
 import {
   MockStorageApi,
   renderInTestApp,
@@ -62,12 +64,7 @@ const entities = [
   },
 ];
 
-const mockCatalogApi = {
-  getEntityByRef: () => Promise.resolve(),
-  getEntities: async () => ({
-    items: entities,
-  }),
-} as Partial<CatalogApi>;
+const mockCatalogApi = catalogApiMock({ entities });
 
 describe('Entity List Docs Grid', () => {
   beforeEach(() => {

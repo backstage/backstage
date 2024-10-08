@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CatalogApi } from '@backstage/catalog-client';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { Entity } from '@backstage/catalog-model';
 import {
   alertApiRef,
@@ -81,7 +81,7 @@ const mockIdentityApi: Partial<IdentityApi> = {
   }),
   getCredentials: async () => ({ token: undefined }),
 };
-const mockCatalogApi: Partial<jest.Mocked<CatalogApi>> = {
+const mockCatalogApi = catalogApiMock.mock({
   getEntities: jest.fn().mockResolvedValue({ items: entities }),
   queryEntities: jest.fn().mockResolvedValue({
     items: entities,
@@ -89,7 +89,7 @@ const mockCatalogApi: Partial<jest.Mocked<CatalogApi>> = {
     totalItems: 10,
   }),
   getEntityByRef: jest.fn().mockResolvedValue(undefined),
-};
+});
 
 const createWrapper =
   (options: { location?: string; pagination: EntityListPagination }) =>

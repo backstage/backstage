@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { Entity, GroupEntity } from '@backstage/catalog-model';
+import { GroupEntity } from '@backstage/catalog-model';
 import {
-  CatalogApi,
   catalogApiRef,
   EntityProvider,
   entityRouteRef,
@@ -35,6 +34,7 @@ import { EntityLayout, catalogPlugin } from '@backstage/plugin-catalog';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Observable } from '@backstage/types';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 const mockedStarredEntitiesApi: Partial<StarredEntitiesApi> = {
   starredEntitie$: () => {
@@ -68,38 +68,36 @@ describe('MemberTab Test', () => {
     },
   };
 
-  const catalogApi: Partial<CatalogApi> = {
-    getEntities: () =>
-      Promise.resolve({
-        items: [
-          {
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: 'User',
-            metadata: {
-              name: 'tara.macgovern',
-              namespace: 'foo-bar',
-              uid: 'a5gerth56',
-              description: 'Super Awesome Developer',
-            },
-            relations: [
-              {
-                type: 'memberOf',
-                targetRef: 'group:default/team-d',
-              },
-            ],
-            spec: {
-              profile: {
-                displayName: 'Tara MacGovern',
-                email: 'tara-macgovern@example.com',
-                picture: 'https://example.com/staff/tara.jpeg',
-              },
-              memberOf: ['team-d'],
-            },
+  const catalogApi = catalogApiMock.mock({
+    getEntities: async () => ({
+      items: [
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'User',
+          metadata: {
+            name: 'tara.macgovern',
+            namespace: 'foo-bar',
+            uid: 'a5gerth56',
+            description: 'Super Awesome Developer',
           },
-        ] as Entity[],
-      }),
-  };
-  const getEntitiesSpy = jest.spyOn(catalogApi, 'getEntities');
+          relations: [
+            {
+              type: 'memberOf',
+              targetRef: 'group:default/team-d',
+            },
+          ],
+          spec: {
+            profile: {
+              displayName: 'Tara MacGovern',
+              email: 'tara-macgovern@example.com',
+              picture: 'https://example.com/staff/tara.jpeg',
+            },
+            memberOf: ['team-d'],
+          },
+        },
+      ],
+    }),
+  });
 
   it('Display Profile Card', async () => {
     await renderInTestApp(
@@ -116,7 +114,7 @@ describe('MemberTab Test', () => {
         },
       },
     );
-    expect(getEntitiesSpy).toHaveBeenCalledWith({
+    expect(catalogApi.getEntities).toHaveBeenCalledWith({
       filter: {
         kind: 'User',
         'relations.memberof': ['group:default/team-d'],
@@ -171,7 +169,7 @@ describe('MemberTab Test', () => {
       },
     );
 
-    expect(getEntitiesSpy).toHaveBeenCalledWith({
+    expect(catalogApi.getEntities).toHaveBeenCalledWith({
       filter: {
         kind: 'User',
         'relations.leaderof': ['group:default/team-d'],
