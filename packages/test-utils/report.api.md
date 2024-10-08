@@ -81,7 +81,9 @@ export type LogCollector = AsyncLogCollector | SyncLogCollector;
 // @public
 export type LogFuncs = 'log' | 'warn' | 'error';
 
-// @public
+// Warning: (ae-unresolved-link) The @link reference could not be resolved: The reference is ambiguous because "analytics" has more than one declaration; you need to add a TSDoc member reference selector
+//
+// @public @deprecated
 export class MockAnalyticsApi implements AnalyticsApi {
   // (undocumented)
   captureEvent(event: AnalyticsEvent): void;
@@ -91,6 +93,15 @@ export class MockAnalyticsApi implements AnalyticsApi {
 
 // @public
 export namespace mockApis {
+  // (undocumented)
+  export function analytics(): jest.Mocked<AnalyticsApi>;
+  // (undocumented)
+  export namespace analytics {
+    const // (undocumented)
+      factory: () => ApiFactory<AnalyticsApi, AnalyticsApi, {}>;
+    const // (undocumented)
+      mock: () => jest.Mocked<AnalyticsApi>;
+  }
   export function config(options?: { data?: JsonObject }): ConfigApi;
   export namespace config {
     const factory: (
@@ -303,8 +314,8 @@ export function wrapInTestApp(
 // Warnings were encountered during analysis:
 //
 // src/deprecated.d.ts:5:1 - (ae-undocumented) Missing documentation for "setupRequestMockHandlers".
-// src/testUtils/apis/AnalyticsApi/MockAnalyticsApi.d.ts:10:5 - (ae-undocumented) Missing documentation for "captureEvent".
-// src/testUtils/apis/AnalyticsApi/MockAnalyticsApi.d.ts:11:5 - (ae-undocumented) Missing documentation for "getEvents".
+// src/testUtils/apis/AnalyticsApi/MockAnalyticsApi.d.ts:11:5 - (ae-undocumented) Missing documentation for "captureEvent".
+// src/testUtils/apis/AnalyticsApi/MockAnalyticsApi.d.ts:12:5 - (ae-undocumented) Missing documentation for "getEvents".
 // src/testUtils/apis/ErrorApi/MockErrorApi.d.ts:28:5 - (ae-undocumented) Missing documentation for "post".
 // src/testUtils/apis/ErrorApi/MockErrorApi.d.ts:29:5 - (ae-undocumented) Missing documentation for "error$".
 // src/testUtils/apis/ErrorApi/MockErrorApi.d.ts:33:5 - (ae-undocumented) Missing documentation for "getErrors".
@@ -316,4 +327,8 @@ export function wrapInTestApp(
 // src/testUtils/apis/StorageApi/MockStorageApi.d.ts:22:5 - (ae-undocumented) Missing documentation for "set".
 // src/testUtils/apis/StorageApi/MockStorageApi.d.ts:23:5 - (ae-undocumented) Missing documentation for "remove".
 // src/testUtils/apis/StorageApi/MockStorageApi.d.ts:24:5 - (ae-undocumented) Missing documentation for "observe$".
+// src/testUtils/apis/mockApis.d.ts:44:5 - (ae-undocumented) Missing documentation for "analytics".
+// src/testUtils/apis/mockApis.d.ts:45:5 - (ae-undocumented) Missing documentation for "analytics".
+// src/testUtils/apis/mockApis.d.ts:46:15 - (ae-undocumented) Missing documentation for "factory".
+// src/testUtils/apis/mockApis.d.ts:47:15 - (ae-undocumented) Missing documentation for "mock".
 ```

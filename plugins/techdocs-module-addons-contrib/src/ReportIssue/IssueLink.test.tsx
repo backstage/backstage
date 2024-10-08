@@ -19,7 +19,7 @@ import { screen, fireEvent, waitFor } from '@testing-library/react';
 
 import { analyticsApiRef } from '@backstage/core-plugin-api';
 import {
-  MockAnalyticsApi,
+  mockApis,
   TestApiProvider,
   renderInTestApp,
 } from '@backstage/test-utils';
@@ -55,11 +55,11 @@ const defaultGitlabProps = {
 };
 
 describe('FeedbackLink', () => {
-  const apiSpy = new MockAnalyticsApi();
+  const analytics = mockApis.analytics();
 
   it('Should open new Github issue tab', async () => {
     await renderInTestApp(
-      <TestApiProvider apis={[[analyticsApiRef, apiSpy]]}>
+      <TestApiProvider apis={[[analyticsApiRef, analytics]]}>
         <IssueLink {...defaultGithubProps} />
       </TestApiProvider>,
     );
@@ -77,7 +77,7 @@ describe('FeedbackLink', () => {
 
   it('Should open new Gitlab issue tab', async () => {
     await renderInTestApp(
-      <TestApiProvider apis={[[analyticsApiRef, apiSpy]]}>
+      <TestApiProvider apis={[[analyticsApiRef, analytics]]}>
         <IssueLink {...defaultGitlabProps} />
       </TestApiProvider>,
     );
@@ -95,7 +95,7 @@ describe('FeedbackLink', () => {
 
   it('Should track click events', async () => {
     await renderInTestApp(
-      <TestApiProvider apis={[[analyticsApiRef, apiSpy]]}>
+      <TestApiProvider apis={[[analyticsApiRef, analytics]]}>
         <IssueLink {...defaultGithubProps} />
       </TestApiProvider>,
     );
@@ -103,10 +103,12 @@ describe('FeedbackLink', () => {
     fireEvent.click(screen.getByText(/Open new Github issue/));
 
     await waitFor(() => {
-      expect(apiSpy.getEvents()[0]).toMatchObject({
-        action: 'click',
-        subject: 'Open new  Github  issue',
-      });
+      expect(analytics.captureEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'click',
+          subject: 'Open new  Github  issue',
+        }),
+      );
     });
   });
 });

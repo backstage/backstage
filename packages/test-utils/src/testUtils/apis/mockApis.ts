@@ -16,9 +16,11 @@
 
 import { ConfigReader } from '@backstage/config';
 import {
+  AnalyticsApi,
   ApiFactory,
   ApiRef,
   ConfigApi,
+  analyticsApiRef,
   configApiRef,
   createApiFactory,
 } from '@backstage/core-plugin-api';
@@ -103,6 +105,17 @@ function simpleMock<TApi>(
  * ```
  */
 export namespace mockApis {
+  const analyticsMockSkeleton = (): jest.Mocked<AnalyticsApi> => ({
+    captureEvent: jest.fn(),
+  });
+  export function analytics() {
+    return analyticsMockSkeleton();
+  }
+  export namespace analytics {
+    export const factory = simpleFactory(analyticsApiRef, analytics);
+    export const mock = analyticsMockSkeleton;
+  }
+
   /**
    * Fake implementation of {@link @backstage/frontend-plugin-api#ConfigApi}
    * with optional data supplied.
