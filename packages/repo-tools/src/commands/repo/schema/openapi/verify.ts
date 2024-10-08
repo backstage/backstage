@@ -23,7 +23,6 @@ import { runner } from '../../../../lib/runner';
 import { paths as cliPaths } from '../../../../lib/paths';
 import {
   OLD_SCHEMA_PATH,
-  TS_MODULE,
   TS_SCHEMA_PATH,
   YAML_SCHEMA_PATH,
 } from '../../../../lib/openapi/constants';
