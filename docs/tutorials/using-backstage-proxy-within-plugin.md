@@ -36,10 +36,11 @@ and you want to be able to access it within backstage at
 
 ```yaml
 proxy:
-  '/<your-proxy-uri>':
-    target: https://api.myawesomeservice.com/v1
-    headers:
-      X-Custom-Source: backstage
+  endpoints:
+    '/<your-proxy-uri>':
+      target: https://api.myawesomeservice.com/v1
+      headers:
+        X-Custom-Source: backstage
 ```
 
 You can find more details about the proxy config options in the
