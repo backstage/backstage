@@ -3490,7 +3490,7 @@ __metadata:
     "@types/node-forge": ^1.3.0
     "@types/stoppable": ^1.1.0
     compression: ^1.7.4
-    cookie: ^0.6.0
+    cookie: ^0.7.0
     cors: ^2.8.5
     express: ^4.17.1
     express-promise-router: ^4.1.0
@@ -3645,7 +3645,7 @@ __metadata:
     better-sqlite3: ^11.0.0
     compression: ^1.7.4
     concat-stream: ^2.0.0
-    cookie: ^0.6.0
+    cookie: ^0.7.0
     cors: ^2.8.5
     cron: ^3.0.0
     express: ^4.17.1
@@ -3821,7 +3821,7 @@ __metadata:
     "@types/qs": ^6.9.6
     "@types/supertest": ^2.0.8
     better-sqlite3: ^11.0.0
-    cookie: ^0.6.0
+    cookie: ^0.7.0
     express: ^4.17.1
     fs-extra: ^11.0.0
     keyv: ^4.5.2
@@ -23697,7 +23697,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cookie@npm:0.6.0, cookie@npm:^0.6.0, cookie@npm:~0.6.0":
+"cookie@npm:0.6.0, cookie@npm:~0.6.0":
   version: 0.6.0
   resolution: "cookie@npm:0.6.0"
   checksum: f56a7d32a07db5458e79c726b77e3c2eff655c36792f2b6c58d351fb5f61531e5b1ab7f46987150136e366c65213cbe31729e02a3eaed630c3bf7334635fb410
@@ -23715,6 +23715,13 @@ __metadata:
   version: 0.5.0
   resolution: "cookie@npm:0.5.0"
   checksum: 1f4bd2ca5765f8c9689a7e8954183f5332139eb72b6ff783d8947032ec1fdf43109852c178e21a953a30c0dd42257828185be01b49d1eb1a67fd054ca588a180
+  languageName: node
+  linkType: hard
+
+"cookie@npm:^0.7.0":
+  version: 0.7.2
+  resolution: "cookie@npm:0.7.2"
+  checksum: 9bf8555e33530affd571ea37b615ccad9b9a34febbf2c950c86787088eb00a8973690833b0f8ebd6b69b753c62669ea60cec89178c1fb007bf0749abed74f93e
   languageName: node
   linkType: hard
 

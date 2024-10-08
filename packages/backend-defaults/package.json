@@ -147,7 +147,7 @@
     "better-sqlite3": "^11.0.0",
     "compression": "^1.7.4",
     "concat-stream": "^2.0.0",
-    "cookie": "^0.6.0",
+    "cookie": "^0.7.0",
     "cors": "^2.8.5",
     "cron": "^3.0.0",
     "express": "^4.17.1",
