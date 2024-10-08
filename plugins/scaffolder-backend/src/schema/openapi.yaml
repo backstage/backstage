@@ -716,3 +716,22 @@ paths:
         - JWT: []
       parameters:
         - $ref: '#/components/parameters/taskId'
+
+  /v2/tasks/{taskId}/eventstream:
+    get:
+      operationId: StreamLogsEventStream
+      description: Get event stream for a task by ID.
+      responses:
+        '200':
+          description: Ok
+          content:
+            text/event-stream:
+              schema:
+                type: string
+      parameters:
+        - $ref: '#/components/parameters/taskId'
+        - name: after
+          in: query
+          description: Offset event ID to stream events after.
+          schema:
+            type: integer
