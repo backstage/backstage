@@ -314,7 +314,7 @@ Allows explicitly defining the name of the attribute that stores each entry's DN
 
 #### vendor.uuidAttributeName
 
-Allows ability to override non standard `entryUUID` values.
+Allows explicitly defining the name of the attribute that stores each entry's UUID.
 
 #### vendor.dnCaseSensitive
 
