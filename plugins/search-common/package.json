@@ -14,7 +14,9 @@
     ]
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
   },
   "keywords": [
     "backstage",
@@ -31,19 +33,8 @@
   },
   "license": "Apache-2.0",
   "sideEffects": false,
-  "exports": {
-    ".": "./src/index.ts",
-    "./package.json": "./package.json"
-  },
   "main": "src/index.ts",
   "types": "src/index.ts",
-  "typesVersions": {
-    "*": {
-      "package.json": [
-        "package.json"
-      ]
-    }
-  },
   "files": [
     "dist"
   ],
@@ -62,9 +53,7 @@
   },
   "dependencies": {
     "@backstage/plugin-permission-common": "workspace:^",
-    "@backstage/types": "workspace:^",
-    "cross-fetch": "^4.0.0",
-    "uri-template": "^2.0.0"
+    "@backstage/types": "workspace:^"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"

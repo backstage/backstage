@@ -37,8 +37,7 @@
     }
   },
   "files": [
-    "dist",
-    "alpha"
+    "dist"
   ],
   "scripts": {
     "build": "backstage-cli package build",
@@ -51,7 +50,6 @@
   "dependencies": {
     "@backstage/catalog-model": "workspace:^",
     "@backstage/errors": "workspace:^",
-    "@backstage/plugin-catalog-common": "workspace:^",
     "cross-fetch": "^4.0.0",
     "uri-template": "^2.0.0"
   },
