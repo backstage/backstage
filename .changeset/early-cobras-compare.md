@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-backend-module-ldap': patch
 ---
 
-Fixed user/group membership mapping for case insensitive returned dn results for catalog-ldap
+Added a `dnCaseSensitive` flag to support LDAP servers with mixed-case attributes.
