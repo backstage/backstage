@@ -38,7 +38,7 @@ import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common/a
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { z } from 'zod';
 import { decodeCursor, encodeCursor } from './util';
-import { wrapInOpenApiTestServer } from '@backstage/backend-openapi-utils';
+import { wrapServer } from '@backstage/backend-openapi-utils';
 import { Server } from 'http';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
@@ -93,7 +93,7 @@ describe('createRouter readonly disabled', () => {
       locationAnalyzer,
       permissionsService: permissionsService,
     });
-    app = wrapInOpenApiTestServer(express().use(router));
+    app = await wrapServer(express().use(router));
   });
 
   beforeEach(() => {
