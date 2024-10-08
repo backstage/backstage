@@ -310,7 +310,7 @@ In case the LDAP vendor isn't automatically detected by the module, an optional 
 
 #### vendor.dnAttributeName
 
-Allows ability to override non standard `entryDN` values.
+Allows explicitly defining the name of the attribute that stores each entry's DN.
 
 #### vendor.uuidAttributeName
 
