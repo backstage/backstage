@@ -24,12 +24,20 @@ import {
 } from '@aws-sdk/client-sts';
 import { Config, ConfigReader } from '@backstage/config';
 import { promises } from 'fs';
+import { fromNodeProviderChain } from '@aws-sdk/credential-providers';
 
 const env = process.env;
 let stsMock: AwsClientStub<STSClient>;
 let config: Config;
 
 jest.mock('fs', () => ({ promises: { readFile: jest.fn() } }));
+jest.mock('@aws-sdk/credential-providers', () => {
+  const originalModule = jest.requireActual('@aws-sdk/credential-providers');
+  return {
+    ...originalModule,
+    fromNodeProviderChain: jest.fn(),
+  };
+});
 
 describe('DefaultAwsCredentialsManager', () => {
   beforeEach(() => {
@@ -133,6 +141,16 @@ describe('DefaultAwsCredentialsManager', () => {
     process.env.AWS_CREDENTIAL_EXPIRATION = new Date(
       '2022-01-10',
     ).toISOString();
+
+    // Return creds from env
+    (fromNodeProviderChain as jest.Mock).mockReturnValue(() =>
+      Promise.resolve({
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        sessionToken: process.env.AWS_SESSION_TOKEN,
+        expiration: new Date(process.env.AWS_CREDENTIAL_EXPIRATION),
+      }),
+    );
 
     const mockProfile = `[my-profile]
     aws_access_key_id=ACCESS_KEY_ID_9
@@ -430,6 +448,50 @@ describe('DefaultAwsCredentialsManager', () => {
       await expect(
         provider.getCredentialProvider({ accountId: '123456789012' }),
       ).rejects.toThrow(/No credentials found/);
+    });
+
+    it('passes the region to getDefaultCredentialsChain', async () => {
+      const region = 'us-west-2';
+      const configWithRegion = new ConfigReader({
+        aws: {
+          mainAccount: {
+            region,
+          },
+        },
+      });
+
+      const provider =
+        DefaultAwsCredentialsManager.fromConfig(configWithRegion);
+      const awsCredentialProvider = await provider.getCredentialProvider();
+
+      // Trigger the call to fromNodeProviderChain
+      await awsCredentialProvider.sdkCredentialProvider();
+
+      expect(fromNodeProviderChain).toHaveBeenCalledWith({
+        clientConfig: {
+          region,
+        },
+      });
+    });
+
+    it('uses default region when none is specified', async () => {
+      const configWithoutRegion = new ConfigReader({
+        aws: {
+          mainAccount: {},
+        },
+      });
+
+      const provider =
+        DefaultAwsCredentialsManager.fromConfig(configWithoutRegion);
+      const awsCredentialProvider = await provider.getCredentialProvider();
+
+      await awsCredentialProvider.sdkCredentialProvider();
+
+      expect(fromNodeProviderChain).toHaveBeenCalledWith({
+        clientConfig: {
+          region: 'us-east-1',
+        },
+      });
     });
   });
 });
