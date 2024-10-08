@@ -70,7 +70,7 @@
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
     "@material-ui/core": "^4.12.2",
-    "@material-ui/icons": "^4.9.1",
+    "@mui/icons-material": "^5.0.0",
     "@material-ui/lab": "4.0.0-alpha.61",
     "@react-hookz/web": "^24.0.0",
     "@rjsf/core": "5.21.1",
