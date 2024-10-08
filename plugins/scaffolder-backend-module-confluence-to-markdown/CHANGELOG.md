@@ -1,5 +1,17 @@
 # @backstage/plugin-scaffolder-backend-module-confluence-to-markdown
 
+## 0.3.1-next.2
+
+### Patch Changes
+
+- 720a2f9: Updated dependency `git-url-parse` to `^15.0.0`.
+- Updated dependencies
+  - @backstage/integration@1.15.1-next.1
+  - @backstage/plugin-scaffolder-node@0.5.0-next.2
+  - @backstage/backend-plugin-api@1.0.1-next.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 0.3.1-next.1
 
 ### Patch Changes
