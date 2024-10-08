@@ -93,8 +93,14 @@ jobs:
       - name: validate config
         run: yarn backstage-cli config:check --lax
 
+      - name: backstage-cli cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/backstage-cli
+          key: ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli
+
       - name: lint
-        run: yarn backstage-cli repo lint --successCache
+        run: yarn backstage-cli repo lint --successCache --successCacheDir .cache/backstage-cli
 
       - name: type checking and declarations
         run: yarn tsc:full
