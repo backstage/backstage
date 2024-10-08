@@ -884,8 +884,6 @@ auth:
         signIn:
           resolvers:
             - resolver: emailMatchingUserEntityProfileEmail
-            - resolver: emailLocalPartMatchingUserEntityName
-            - resolver: emailMatchingUserEntityAnnotation
 ```
 
 :::note Note
