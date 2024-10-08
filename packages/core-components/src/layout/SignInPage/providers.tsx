@@ -101,10 +101,7 @@ export const useSignInProviders = (
     const errorParam = searchParams.get('error');
     if (errorParam) {
       errorApi.post(
-        new ForwardedError(t('signIn.loginFailed'), {
-          name: 'Error',
-          message: decodeURIComponent(errorParam),
-        }),
+        new ForwardedError(t('signIn.loginFailed'), new Error(errorParam)),
       );
     }
   });

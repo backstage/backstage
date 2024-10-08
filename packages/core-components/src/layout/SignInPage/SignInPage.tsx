@@ -167,7 +167,7 @@ export const SingleSignInPage = ({
 
   useMountEffect(() => {
     if (errorParam) {
-      setError(new Error(decodeURIComponent(errorParam)));
+      setError(new Error(errorParam));
     }
     login({ checkExisting: true });
   });

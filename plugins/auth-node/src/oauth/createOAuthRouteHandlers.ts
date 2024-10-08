@@ -252,7 +252,7 @@ export function createOAuthRouteHandlers<TProfile>(
 
         if (state?.flow === 'redirect' && state?.redirectUrl) {
           const redirectUrl = new URL(state.redirectUrl);
-          redirectUrl.searchParams.set('error', encodeURIComponent(message));
+          redirectUrl.searchParams.set('error', message);
 
           // set the error in a cookie and redirect user back to sign in where the error can be rendered
           res.redirect(redirectUrl.toString());

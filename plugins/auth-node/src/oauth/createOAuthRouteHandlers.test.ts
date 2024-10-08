@@ -768,9 +768,7 @@ describe('createOAuthRouteHandlers', () => {
 
       // Verify that the 'error' search param is set with the encoded error message
       const errorMessage = redirectUrl.searchParams.get('error');
-      expect(errorMessage).toBe(
-        encodeURIComponent('Auth response is missing cookie nonce'),
-      );
+      expect(errorMessage).toBe('Auth response is missing cookie nonce');
     });
   });
 });
