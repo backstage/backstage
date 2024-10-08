@@ -29,5 +29,6 @@ export default async (dir: string, packages: string[], options: Options) => {
   await createDistWorkspace(packages, {
     targetDir: dir,
     alwaysYarnPack: options.alwaysYarnPack,
+    enableFeatureDetection: true,
   });
 };
