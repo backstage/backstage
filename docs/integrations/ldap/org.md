@@ -318,7 +318,7 @@ Allows explicitly defining the name of the attribute that stores each entry's UU
 
 #### vendor.dnCaseSensitive
 
-Provides the ability to ignore case sensitivity issues with user/group mappings. If set to true will still link user/members to groups by forcing the inbound values from `dn`, `member`, `memberOf` to lowercase.
+Provides the ability to ignore case sensitivity issues with user/group mappings. If set to true, the ingestion will link user/members to groups whether their `dn`, `member`, or `memberOf` values have the right case or not.
 
 ```yaml
 vendor:
