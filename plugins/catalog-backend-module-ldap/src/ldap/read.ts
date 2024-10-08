@@ -353,8 +353,8 @@ function mapReferencesAttr(
     if (values && dn && dn.length === 1) {
       if (vendor.dnCaseSensitive) {
         setter(
-          dn[0].toLowerCase(),
-          values.map(v => v.toLowerCase()),
+          dn[0].toLocaleLowerCase('en-US'),
+          values.map(v => v.toLocaleLowerCase('en-US')),
         );
       } else {
         setter(dn[0], values);
@@ -365,7 +365,7 @@ function mapReferencesAttr(
 
 /** Validates value exists and if required forced sensitivty value to lowercase */
 function getCaseSensitivityValue(value: string, vendor: LdapVendor) {
-  return value && vendor.dnCaseSensitive ? value.toLowerCase() : value;
+  return value && vendor.dnCaseSensitive ? value.toLocaleLowerCase('en-US') : value;
 }
 
 // Inserts a number of values in a key-values mapping
