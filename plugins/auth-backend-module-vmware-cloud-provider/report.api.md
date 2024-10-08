@@ -5,10 +5,8 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { OAuthAuthenticator } from '@backstage/plugin-auth-node';
-import { OAuthAuthenticatorResult } from '@backstage/plugin-auth-node';
 import { PassportOAuthAuthenticatorHelper } from '@backstage/plugin-auth-node';
 import { PassportProfile } from '@backstage/plugin-auth-node';
-import { SignInResolverFactory } from '@backstage/plugin-auth-node';
 import { Strategy } from 'passport-oauth2';
 
 // @public
@@ -29,14 +27,6 @@ export interface VMwareCloudAuthenticatorContext {
   organizationId?: string;
   // (undocumented)
   providerStrategy: Strategy;
-}
-
-// @public
-export namespace vmwareCloudSignInResolvers {
-  const profileEmailMatchingUserEntityEmail: SignInResolverFactory<
-    OAuthAuthenticatorResult<PassportProfile>,
-    unknown
-  >;
 }
 
 // @public (undocumented)

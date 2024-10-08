@@ -39,7 +39,10 @@ export type OidcAuthResult = {
 export namespace oidcSignInResolvers {
   const emailLocalPartMatchingUserEntityName: SignInResolverFactory<
     unknown,
-    unknown
+    | {
+        allowedDomains?: string[] | undefined;
+      }
+    | undefined
   >;
   const emailMatchingUserEntityProfileEmail: SignInResolverFactory<
     unknown,
