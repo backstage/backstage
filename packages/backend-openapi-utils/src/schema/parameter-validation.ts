@@ -135,8 +135,6 @@ export class QueryParameterParser
     // Sort the parameters so that form explode parameters are processed last.
     parameterIterator = [...regularParameters, ...formExplodeParameters];
 
-    console.log(parameterIterator);
-
     for (const [name, parameter] of parameterIterator) {
       if (!parameter.schema) {
         throw new OperationError(
