@@ -345,7 +345,7 @@ describe('migrations', () => {
         .into('locations');
 
       // Verify that both the simple and long URLs exist after the migration
-      await expect(knex('locations')).resolves.toEqual(
+      await expect(knex('locations').where({ type: 'url' })).resolves.toEqual(
         expect.arrayContaining([
           {
             id: '1f99f7f6-1d87-4e8c-994a-8a2ba1d542f6',
@@ -361,6 +361,18 @@ describe('migrations', () => {
         ]),
       );
 
+      await expect(migrateDownOnce(knex)).rejects.toThrow(
+        `Migration aborted: Found 1 entries with 'target' exceeding 255 characters. Manual intervention required.`,
+      );
+
+      // Now remove the long URL
+      await knex('locations')
+        .where({
+          id: '1f99f6f7-1d87-4e8c-994a-2a8ba1d542f6',
+        })
+        .del();
+
+      // Retry the migration down after removing the long URL
       await migrateDownOnce(knex);
 
       // Verify that the column type has reverted to varchar
@@ -369,18 +381,12 @@ describe('migrations', () => {
         /^(varchar|character varying)$/,
       );
 
-      // Verify that both the simple and long URLs exist after the rollback
-      await expect(knex('locations')).resolves.toEqual(
+      // Verify that the short URL still exists in the table
+      await expect(knex('locations').where({ type: 'url' })).resolves.toEqual(
         expect.arrayContaining([
           {
             id: '1f99f7f6-1d87-4e8c-994a-8a2ba1d542f6',
             target: 'https://example.com',
-            type: 'url',
-          },
-          {
-            id: '1f99f6f7-1d87-4e8c-994a-2a8ba1d542f6',
-            target:
-              'https://example.com/foo-bar-test-group/very-long-group-name-that-exceeds-255-characters-just-to-test-the-limits-of-url-length-in-the-catalog-info-yaml-file-and-see-how-the-backstage-system-handles-it-making/test-this-alright-1/-/blob/main/catalog-info.yaml',
             type: 'url',
           },
         ]),

@@ -31,6 +31,16 @@ exports.up = async function up(knex) {
  * @returns { Promise<void> }
  */
 exports.down = async function down(knex) {
+  const oversizedEntries = await knex('locations').where(
+    knex.raw('LENGTH(target) > 255'),
+  );
+
+  if (oversizedEntries.length > 0) {
+    throw new Error(
+      `Migration aborted: Found ${oversizedEntries.length} entries with 'target' exceeding 255 characters. Manual intervention required.`,
+    );
+  }
+
   await knex.schema.alterTable('locations', table => {
     table.string('target').alter();
   });
