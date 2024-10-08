@@ -1,5 +1,34 @@
 # @backstage/plugin-scaffolder
 
+## 1.26.0-next.2
+
+### Patch Changes
+
+- e6bbfce: Add tests for the `TemplateEditorToolbarTemplatesMenu` component.
+- 4e9702e: Add tests for the new pages header navigation.
+- f989c47: Add translation to the editor toolbar component.
+- d4cafc8: Standardize template editor pages desktop and mobile layouts.
+- 720a2f9: Updated dependency `git-url-parse` to `^15.0.0`.
+- 01ffa58: Add tests for the `useTemplateDirectory` hook.
+- 3ac4766: Add an actions filter on the list actions page and drawer.
+- c18d925: Add tests for the `TemplateEditorToolbarFilesMenu` component.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.14.0-next.2
+  - @backstage/integration@1.15.1-next.1
+  - @backstage/catalog-client@1.7.1-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-compat-api@0.3.1-next.2
+  - @backstage/core-components@0.15.1-next.2
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-plugin-api@0.9.0-next.2
+  - @backstage/integration-react@1.2.0-next.2
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-permission-react@0.4.27-next.1
+  - @backstage/plugin-scaffolder-common@1.5.6
+  - @backstage/plugin-scaffolder-react@1.13.0-next.2
+
 ## 1.26.0-next.1
 
 ### Minor Changes

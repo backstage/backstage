@@ -1,5 +1,11 @@
 # @backstage/eslint-plugin
 
+## 0.1.10-next.1
+
+### Patch Changes
+
+- b1c2a2d: Exclude `@material-ui/data-grid`
+
 ## 0.1.10-next.0
 
 ### Patch Changes

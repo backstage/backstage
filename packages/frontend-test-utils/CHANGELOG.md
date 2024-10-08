@@ -1,5 +1,19 @@
 # @backstage/frontend-test-utils
 
+## 0.2.1-next.2
+
+### Patch Changes
+
+- 0801db6: Added an `ApiMock`, analogous to `ServiceMock` from the backend test utils.
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/frontend-app-api@0.10.0-next.2
+  - @backstage/frontend-plugin-api@0.9.0-next.2
+  - @backstage/test-utils@1.6.1-next.2
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.10-next.0
+  - @backstage/plugin-app@0.1.1-next.2
+
 ## 0.2.1-next.1
 
 ### Patch Changes
