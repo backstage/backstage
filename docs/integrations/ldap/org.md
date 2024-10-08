@@ -306,7 +306,7 @@ map:
 
 ## Optional Vendor Configuration
 
-In case the LDAP vendor isn't available as a provided configuration, A new optional `vendor` configuration section is available which allows overriding the location for `dn` and `uuid` settings, and a case sensitivity function.
+In case the LDAP vendor isn't automatically detected by the module, an optional `vendor` configuration section is available which allows overriding the location for `dn` and `uuid` settings, and a case sensitivity setting.
 
 #### vendor.dnAttributeName
 
