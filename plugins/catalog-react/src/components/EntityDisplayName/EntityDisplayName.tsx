@@ -20,6 +20,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { Theme, makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { useEntityPresentation } from '../../apis';
+import Typography from '@material-ui/core/Typography';
 
 /**
  * The available style class keys for {@link EntityDisplayName}, under the name
@@ -34,6 +35,7 @@ const useStyles = makeStyles(
     root: {
       display: 'inline-flex',
       alignItems: 'center',
+      maxWidth: '100%',
     },
     icon: {
       marginRight: theme.spacing(0.5),
@@ -41,6 +43,13 @@ const useStyles = makeStyles(
       '& svg': {
         verticalAlign: 'middle',
       },
+    },
+    truncate: {
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      maxWidth: '100%',
+      display: 'block',
     },
   }),
   { name: 'CatalogReactEntityDisplayName' },
@@ -77,7 +86,9 @@ export const EntityDisplayName = (
   );
 
   // The innermost "body" content
-  let content = <>{primaryTitle}</>;
+  let content = (
+    <Typography className={classes.truncate}>{primaryTitle}</Typography>
+  );
 
   // Optionally an icon, and wrapper around them both
   content = (
