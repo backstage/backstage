@@ -916,7 +916,7 @@ export default async function createPlugin({
 }
 ```
 
-Note, that addtional template global functions are currently not supported in `fetch:template` (see #25445).
+Note that additional template global functions are currently not supported in `fetch:template` (see #25445).
 
 ## Template Editor
 
