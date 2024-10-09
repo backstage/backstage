@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
+import { Config, readDurationFromConfig } from '@backstage/config';
 import { HumanDuration } from '@backstage/types';
 
 /**
@@ -66,15 +66,23 @@ export function stitchingStrategyFromConfig(config: Config): StitchingStrategy {
       mode: 'immediate',
     };
   } else if (strategyMode === 'deferred') {
-    const pollingInterval =
-      config.getOptionalNumber('catalog.stitchingStrategy.pollingInterval') ??
-      1;
-    const stitchTimeout =
-      config.getOptionalNumber('catalog.stitchingStrategy.stitchTimeout') ?? 60;
+    const pollingIntervalKey = 'catalog.stitchingStrategy.pollingInterval';
+    const stitchTimeoutKey = 'catalog.stitchingStrategy.stitchTimeout';
+
+    const pollingInterval = config.has(pollingIntervalKey)
+      ? readDurationFromConfig(config, {
+          key: pollingIntervalKey,
+        })
+      : { seconds: 1 };
+    const stitchTimeout = config.has(stitchTimeoutKey)
+      ? readDurationFromConfig(config, {
+          key: stitchTimeoutKey,
+        })
+      : { seconds: 60 };
     return {
       mode: 'deferred',
-      pollingInterval: { seconds: pollingInterval },
-      stitchTimeout: { seconds: stitchTimeout },
+      pollingInterval: pollingInterval,
+      stitchTimeout: stitchTimeout,
     };
   }
 
