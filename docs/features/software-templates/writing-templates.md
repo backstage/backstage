@@ -878,7 +878,7 @@ const scaffolderModuleCustomFilters = createBackendModule({
           myGlobal: () => 'myGlobal',
           myFunctionGlobal: (...args: JsonValue[]) => args[0] + args[1],
         });
-        scaffolder.additionalTemplateFilters({
+        scaffolder.addTemplateFilters({
           myFilter: () => 'the value is this now',
           myOtherFilter: (...args: JsonValue[]) => args.join(''),
         });
