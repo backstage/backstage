@@ -81,12 +81,6 @@ const techdocsStorageApiMock: jest.Mocked<typeof techdocsStorageApiRef.T> = {
   syncEntityDocs: jest.fn(),
 };
 
-const discoveryApiMock = {
-  getBaseUrl: jest
-    .fn()
-    .mockResolvedValue('https://localhost:7000/api/techdocs'),
-};
-
 const fetchApiMock = {
   fetch: jest.fn().mockResolvedValue({
     ok: true,
@@ -116,7 +110,7 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => {
     <TestApiProvider
       apis={[
         [fetchApiRef, fetchApiMock],
-        [discoveryApiRef, discoveryApiMock],
+        [discoveryApiRef, mockApis.discovery()],
         [scmIntegrationsApiRef, {}],
         [configApiRef, configApi],
         [techdocsApiRef, techdocsApiMock],

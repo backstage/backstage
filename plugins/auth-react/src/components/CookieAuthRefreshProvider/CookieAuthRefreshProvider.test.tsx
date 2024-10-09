@@ -30,11 +30,7 @@ import {
 } from '@backstage/core-plugin-api';
 
 describe('CookieAuthRefreshProvider', () => {
-  const discoveryApiMock = {
-    getBaseUrl: jest
-      .fn()
-      .mockResolvedValue('http://localhost:7000/api/techdocs'),
-  };
+  const discoveryApiMock = mockApis.discovery();
 
   function getExpiresAtInFuture() {
     const tenMinutesInMilliseconds = 10 * 60 * 1000;
@@ -118,7 +114,7 @@ describe('CookieAuthRefreshProvider', () => {
 
     await waitFor(() =>
       expect(fetchApiMock.fetch).toHaveBeenCalledWith(
-        'http://localhost:7000/api/techdocs/.backstage/auth/v1/cookie',
+        'http://example.com/api/techdocs/.backstage/auth/v1/cookie',
         { credentials: 'include' },
       ),
     );

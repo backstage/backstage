@@ -878,9 +878,9 @@ describe('Integration Test', () => {
         }),
       }),
     };
-    const discoveryApiMock = {
-      getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7007/app'),
-    };
+    const discoveryApiMock = mockApis.discovery.mock({
+      getBaseUrl: async () => 'http://localhost:7007/app',
+    });
 
     const app = new AppManager({
       icons,

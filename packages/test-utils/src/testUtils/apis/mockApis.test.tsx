@@ -79,6 +79,34 @@ describe('mockApis', () => {
     });
   });
 
+  describe('discovery', () => {
+    it('can create an instance and make assertions on it', async () => {
+      const empty = mockApis.discovery();
+      await expect(empty.getBaseUrl('catalog')).resolves.toBe(
+        'http://example.com/api/catalog',
+      );
+      expect(empty.getBaseUrl).toHaveBeenCalledTimes(1);
+
+      const notEmpty = mockApis.discovery({ baseUrl: 'https://other.net' });
+      await expect(notEmpty.getBaseUrl('catalog')).resolves.toBe(
+        'https://other.net/api/catalog',
+      );
+      expect(notEmpty.getBaseUrl).toHaveBeenCalledTimes(1);
+    });
+
+    it('can create a mock and make assertions on it', async () => {
+      const empty = mockApis.discovery.mock();
+      expect(empty.getBaseUrl('catalog')).toBeUndefined();
+      expect(empty.getBaseUrl).toHaveBeenCalledTimes(1);
+
+      const notEmpty = mockApis.discovery.mock({
+        getBaseUrl: async () => 'replaced',
+      });
+      await expect(notEmpty.getBaseUrl('catalog')).resolves.toBe('replaced');
+      expect(notEmpty.getBaseUrl).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('identity', () => {
     it('can create an instance and make assertions on it', async () => {
       const empty = mockApis.identity();

@@ -20,14 +20,20 @@ import {
   ApiFactory,
   ApiRef,
   ConfigApi,
+  DiscoveryApi,
   IdentityApi,
   StorageApi,
   analyticsApiRef,
   configApiRef,
   createApiFactory,
+  discoveryApiRef,
   identityApiRef,
   storageApiRef,
 } from '@backstage/core-plugin-api';
+import {
+  TranslationApi,
+  translationApiRef,
+} from '@backstage/core-plugin-api/alpha';
 import {
   AuthorizeResult,
   EvaluatePermissionRequest,
@@ -40,10 +46,6 @@ import { JsonObject } from '@backstage/types';
 import { ApiMock } from './ApiMock';
 import { MockPermissionApi } from './PermissionApi';
 import { MockStorageApi } from './StorageApi';
-import {
-  TranslationApi,
-  translationApiRef,
-} from '@backstage/core-plugin-api/alpha';
 import { MockTranslationApi } from './TranslationApi';
 
 /** @internal */
@@ -198,6 +200,26 @@ export namespace mockApis {
       getStringArray: jest.fn(),
       getOptionalStringArray: jest.fn(),
     }));
+  }
+
+  const discoveryMockSkeleton = (): jest.Mocked<DiscoveryApi> => ({
+    getBaseUrl: jest.fn(),
+  });
+  export function discovery(options?: { baseUrl?: string }) {
+    const baseUrl = options?.baseUrl ?? 'http://example.com';
+    return simpleInstance(
+      discoveryApiRef,
+      {
+        async getBaseUrl(pluginId: string) {
+          return `${baseUrl}/api/${pluginId}`;
+        },
+      },
+      discoveryMockSkeleton,
+    );
+  }
+  export namespace discovery {
+    export const factory = simpleFactory(discoveryApiRef, discovery);
+    export const mock = simpleMock(discoveryApiRef, discoveryMockSkeleton);
   }
 
   const identityMockSkeleton = (): jest.Mocked<IdentityApi> => ({
