@@ -26,7 +26,6 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { mockBreakpoint } from '@backstage/core-components/testUtils';
 import {
-  MockPermissionApi,
   MockStorageApi,
   TestApiProvider,
   mockApis,
@@ -177,7 +176,7 @@ describe('DefaultCatalogPage', () => {
           [identityApiRef, identityApi],
           [storageApiRef, storageApi],
           [starredEntitiesApiRef, new MockStarredEntitiesApi()],
-          [permissionApiRef, new MockPermissionApi()],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         {children}

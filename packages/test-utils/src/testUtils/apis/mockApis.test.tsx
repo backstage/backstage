@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import {
+  AuthorizeResult,
+  createPermission,
+} from '@backstage/plugin-permission-common';
 import { mockApis } from './mockApis';
 
 describe('mockApis', () => {
@@ -155,6 +159,100 @@ describe('mockApis', () => {
       expect(notEmpty.getCredentials).toHaveBeenCalledTimes(1);
       expect(notEmpty.getProfileInfo).toHaveBeenCalledTimes(1);
       expect(notEmpty.signOut).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('permission', () => {
+    it('can create an instance and make assertions on it', async () => {
+      // default allow
+      const permission1 = mockApis.permission();
+      await expect(
+        permission1.authorize({
+          permission: createPermission({
+            name: 'permission.1',
+            attributes: {},
+          }),
+        }),
+      ).resolves.toEqual({ result: AuthorizeResult.ALLOW });
+      expect(permission1.authorize).toHaveBeenCalledTimes(1);
+
+      // static value
+      const permission2 = mockApis.permission({
+        authorize: AuthorizeResult.DENY,
+      });
+      await expect(
+        permission2.authorize({
+          permission: createPermission({
+            name: 'permission.1',
+            attributes: {},
+          }),
+        }),
+      ).resolves.toEqual({ result: AuthorizeResult.DENY });
+      expect(permission2.authorize).toHaveBeenCalledTimes(1);
+
+      // callback form
+      const permission3 = mockApis.permission({
+        authorize: req =>
+          req.permission.name === 'permission.1'
+            ? AuthorizeResult.ALLOW
+            : AuthorizeResult.DENY,
+      });
+      await expect(
+        permission3.authorize({
+          permission: createPermission({
+            name: 'permission.1',
+            attributes: {},
+          }),
+        }),
+      ).resolves.toEqual({ result: AuthorizeResult.ALLOW });
+      await expect(
+        permission3.authorize({
+          permission: createPermission({
+            name: 'permission.2',
+            attributes: {},
+          }),
+        }),
+      ).resolves.toEqual({ result: AuthorizeResult.DENY });
+      expect(permission3.authorize).toHaveBeenCalledTimes(2);
+    });
+
+    it('can create a mock and make assertions on it', async () => {
+      const empty = mockApis.permission.mock();
+      expect(
+        empty.authorize({
+          permission: createPermission({
+            name: 'permission.1',
+            attributes: {},
+          }),
+        }),
+      ).toBeUndefined();
+      expect(empty.authorize).toHaveBeenCalledTimes(1);
+
+      const notEmpty = mockApis.permission.mock({
+        authorize: async req => ({
+          result:
+            req.permission.name === 'permission.1'
+              ? AuthorizeResult.ALLOW
+              : AuthorizeResult.DENY,
+        }),
+      });
+      await expect(
+        notEmpty.authorize({
+          permission: createPermission({
+            name: 'permission.1',
+            attributes: {},
+          }),
+        }),
+      ).resolves.toEqual({ result: AuthorizeResult.ALLOW });
+      await expect(
+        notEmpty.authorize({
+          permission: createPermission({
+            name: 'permission.2',
+            attributes: {},
+          }),
+        }),
+      ).resolves.toEqual({ result: AuthorizeResult.DENY });
+      expect(notEmpty.authorize).toHaveBeenCalledTimes(2);
     });
   });
 });

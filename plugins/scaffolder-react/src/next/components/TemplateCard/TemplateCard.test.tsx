@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { DefaultStarredEntitiesApi } from '@backstage/plugin-catalog';
 import {
   entityRouteRef,
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
 import {
-  MockPermissionApi,
+  mockApis,
   MockStorageApi,
   renderInTestApp,
   TestApiProvider,
@@ -54,7 +55,7 @@ describe('TemplateCard', () => {
               storageApi: MockStorageApi.create(),
             }),
           ],
-          [permissionApiRef, new MockPermissionApi()],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         <TemplateCard template={mockTemplate} />
@@ -84,7 +85,7 @@ describe('TemplateCard', () => {
               storageApi: MockStorageApi.create(),
             }),
           ],
-          [permissionApiRef, new MockPermissionApi()],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         <TemplateCard template={mockTemplate} />
@@ -116,7 +117,7 @@ describe('TemplateCard', () => {
               storageApi: MockStorageApi.create(),
             }),
           ],
-          [permissionApiRef, new MockPermissionApi()],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         <TemplateCard template={mockTemplate} />
@@ -146,7 +147,7 @@ describe('TemplateCard', () => {
               storageApi: MockStorageApi.create(),
             }),
           ],
-          [permissionApiRef, new MockPermissionApi()],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         <TemplateCard template={mockTemplate} />
@@ -182,7 +183,7 @@ describe('TemplateCard', () => {
               storageApi: MockStorageApi.create(),
             }),
           ],
-          [permissionApiRef, new MockPermissionApi()],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         <TemplateCard template={mockTemplate} />
@@ -222,7 +223,7 @@ describe('TemplateCard', () => {
               storageApi: MockStorageApi.create(),
             }),
           ],
-          [permissionApiRef, new MockPermissionApi()],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         <TemplateCard template={mockTemplate} />
@@ -267,7 +268,7 @@ describe('TemplateCard', () => {
               storageApi: MockStorageApi.create(),
             }),
           ],
-          [permissionApiRef, new MockPermissionApi()],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         <TemplateCard template={mockTemplate} additionalLinks={[]} />
@@ -316,7 +317,7 @@ describe('TemplateCard', () => {
               storageApi: MockStorageApi.create(),
             }),
           ],
-          [permissionApiRef, new MockPermissionApi()],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         <TemplateCard template={mockTemplate} additionalLinks={[]} />
@@ -359,7 +360,7 @@ describe('TemplateCard', () => {
               storageApi: MockStorageApi.create(),
             }),
           ],
-          [permissionApiRef, new MockPermissionApi()],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         <TemplateCard template={mockTemplate} />
@@ -399,7 +400,7 @@ describe('TemplateCard', () => {
               storageApi: MockStorageApi.create(),
             }),
           ],
-          [permissionApiRef, new MockPermissionApi()],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         <TemplateCard template={mockTemplate} onSelected={mockOnSelected} />
@@ -428,9 +429,6 @@ describe('TemplateCard', () => {
       },
     };
     const mockOnSelected = jest.fn();
-    const mockAuthorize = jest
-      .fn()
-      .mockImplementation(async () => ({ result: AuthorizeResult.DENY }));
     // SWR used by the usePermission hook needs cache to be reset for each test
     const { queryByText } = await renderInTestApp(
       <SWRConfig value={{ provider: () => new Map() }}>
@@ -442,7 +440,10 @@ describe('TemplateCard', () => {
                 storageApi: MockStorageApi.create(),
               }),
             ],
-            [permissionApiRef, new MockPermissionApi(mockAuthorize)],
+            [
+              permissionApiRef,
+              mockApis.permission({ authorize: AuthorizeResult.DENY }),
+            ],
           ]}
         >
           <TemplateCard template={mockTemplate} onSelected={mockOnSelected} />

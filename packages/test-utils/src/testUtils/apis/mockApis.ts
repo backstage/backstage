@@ -26,8 +26,17 @@ import {
   createApiFactory,
   identityApiRef,
 } from '@backstage/core-plugin-api';
+import {
+  AuthorizeResult,
+  EvaluatePermissionRequest,
+} from '@backstage/plugin-permission-common';
+import {
+  PermissionApi,
+  permissionApiRef,
+} from '@backstage/plugin-permission-react';
 import { JsonObject } from '@backstage/types';
 import { ApiMock } from './ApiMock';
+import { MockPermissionApi } from './PermissionApi';
 
 /** @internal */
 function simpleFactory<TApi, TArgs extends unknown[]>(
@@ -225,5 +234,38 @@ export namespace mockApis {
   export namespace identity {
     export const factory = simpleFactory(identityApiRef, identity);
     export const mock = simpleMock(identityApiRef, identityMockSkeleton);
+  }
+
+  const permissionMockSkeleton = (): jest.Mocked<PermissionApi> => ({
+    authorize: jest.fn(),
+  });
+  export function permission(options?: {
+    authorize?:
+      | AuthorizeResult.ALLOW
+      | AuthorizeResult.DENY
+      | ((
+          request: EvaluatePermissionRequest,
+        ) => AuthorizeResult.ALLOW | AuthorizeResult.DENY);
+  }) {
+    const authorizeInput = options?.authorize;
+    let authorize: (
+      request: EvaluatePermissionRequest,
+    ) => AuthorizeResult.ALLOW | AuthorizeResult.DENY;
+    if (authorizeInput === undefined) {
+      authorize = () => AuthorizeResult.ALLOW;
+    } else if (typeof authorizeInput === 'function') {
+      authorize = authorizeInput;
+    } else {
+      authorize = () => authorizeInput;
+    }
+    return simpleInstance(
+      permissionApiRef,
+      new MockPermissionApi(authorize),
+      permissionMockSkeleton,
+    );
+  }
+  export namespace permission {
+    export const factory = simpleFactory(permissionApiRef, permission);
+    export const mock = simpleMock(permissionApiRef, permissionMockSkeleton);
   }
 }

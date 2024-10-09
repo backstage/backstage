@@ -25,6 +25,7 @@ import {
   MockStorageApi,
   renderInTestApp,
   TestApiProvider,
+  mockApis,
 } from '@backstage/test-utils';
 import React from 'react';
 import { rootRouteRef } from '../../../routes';
@@ -55,7 +56,7 @@ describe('TemplateListPage', () => {
               storageApi: MockStorageApi.create(),
             }),
           ],
-          [permissionApiRef, {}],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         <TemplateListPage />
@@ -77,7 +78,7 @@ describe('TemplateListPage', () => {
               storageApi: MockStorageApi.create(),
             }),
           ],
-          [permissionApiRef, {}],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         <TemplateListPage />
@@ -100,7 +101,7 @@ describe('TemplateListPage', () => {
               storageApi: MockStorageApi.create(),
             }),
           ],
-          [permissionApiRef, {}],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         <TemplateListPage />
@@ -122,7 +123,7 @@ describe('TemplateListPage', () => {
               storageApi: MockStorageApi.create(),
             }),
           ],
-          [permissionApiRef, {}],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         <TemplateListPage />
@@ -145,7 +146,7 @@ describe('TemplateListPage', () => {
               storageApi: MockStorageApi.create(),
             }),
           ],
-          [permissionApiRef, {}],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         <TemplateListPage />
@@ -167,7 +168,7 @@ describe('TemplateListPage', () => {
                 storageApi: MockStorageApi.create(),
               }),
             ],
-            [permissionApiRef, {}],
+            [permissionApiRef, mockApis.permission()],
           ]}
         >
           <TemplateListPage />
@@ -188,7 +189,7 @@ describe('TemplateListPage', () => {
                 storageApi: MockStorageApi.create(),
               }),
             ],
-            [permissionApiRef, {}],
+            [permissionApiRef, mockApis.permission()],
           ]}
         >
           <TemplateListPage

@@ -26,6 +26,7 @@ import {
  * {@link @backstage/plugin-permission-react#PermissionApi}. Supply a
  * requestHandler function to override the mock result returned for a given
  * request.
+ * @deprecated Use {@link mockApis.permissions} instead
  * @public
  */
 export class MockPermissionApi implements PermissionApi {

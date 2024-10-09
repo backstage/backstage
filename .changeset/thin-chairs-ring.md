@@ -7,3 +7,4 @@ Added a `mockApis` export, which will replace the `MockX` API implementation cla
 
 - Deprecated `MockAnalyticsApi`, please use `mockApis.analytics` instead.
 - Deprecated `MockConfigApi`, please use `mockApis.config` instead.
+- Deprecated `MockPermissionApi`, please use `mockApis.permission` instead.

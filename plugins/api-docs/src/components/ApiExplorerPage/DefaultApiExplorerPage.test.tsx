@@ -28,7 +28,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import {
-  MockPermissionApi,
+  mockApis,
   MockStorageApi,
   TestApiProvider,
   renderInTestApp,
@@ -96,7 +96,7 @@ describe('DefaultApiExplorerPage', () => {
             new DefaultStarredEntitiesApi({ storageApi }),
           ],
           [apiDocsConfigRef, apiDocsConfig],
-          [permissionApiRef, new MockPermissionApi()],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         {children}
