@@ -13,6 +13,12 @@ components:
   examples: {}
   headers: {}
   parameters:
+    eventsAfter:
+      name: after
+      in: query
+      description: Offset event ID to stream events after.
+      schema:
+        type: integer
     kind:
       name: kind
       in: path
@@ -212,6 +218,28 @@ components:
           items:
             $ref: '#/components/schemas/SerializedTask'
       description: The response shape for the `listTasks` call to the `scaffolder-backend`
+    SerializedTaskEvent:
+      type: object
+      properties:
+        id:
+          type: integer
+        isTaskRecoverable:
+          type: boolean
+        taskId:
+          type: string
+        body:
+          $ref: '#/components/schemas/JsonObject'
+        type:
+          $ref: '#/components/schemas/TaskEventType'
+        createdAt:
+          type: string
+      required:
+        - id
+        - taskId
+        - body
+        - type
+        - createdAt
+      description: SerializedTaskEvent
     ScaffolderScaffoldOptions:
       type: object
       properties:
@@ -385,6 +413,14 @@ components:
         - status
         - createdAt
       description: SerializedTask
+    TaskEventType:
+      type: string
+      description: TaskEventType
+      enum:
+        - completion
+        - log
+        - cancelled
+        - recovered
     TaskRecovery:
       type: object
       properties:
@@ -729,9 +765,22 @@ paths:
               schema:
                 type: string
       parameters:
+        - $ref: '#/components/parameters/eventsAfter'
         - $ref: '#/components/parameters/taskId'
-        - name: after
-          in: query
-          description: Offset event ID to stream events after.
-          schema:
-            type: integer
+
+  /v2/tasks/{taskId}/events:
+    get:
+      operationId: StreamLogsPolling
+      description: Get events for a task by ID.
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SerializedTaskEvent'
+      parameters:
+        - $ref: '#/components/parameters/eventsAfter'
+        - $ref: '#/components/parameters/taskId'
