@@ -129,16 +129,26 @@ export namespace mockApis {
   const analyticsMockSkeleton = (): jest.Mocked<AnalyticsApi> => ({
     captureEvent: jest.fn(),
   });
+  /**
+   * Mock implementation of {@link @backstage/core-plugin-api#AnalyticsApi}.
+   *
+   * @public
+   */
   export function analytics() {
     return analyticsMockSkeleton();
   }
+  /**
+   * Mock implementations of {@link @backstage/core-plugin-api#AnalyticsApi}.
+   *
+   * @public
+   */
   export namespace analytics {
     export const factory = simpleFactory(analyticsApiRef, analytics);
     export const mock = simpleMock(analyticsApiRef, analyticsMockSkeleton);
   }
 
   /**
-   * Fake implementation of {@link @backstage/frontend-plugin-api#ConfigApi}
+   * Fake implementation of {@link @backstage/core-plugin-api#ConfigApi}
    * with optional data supplied.
    *
    * @public
@@ -149,7 +159,7 @@ export namespace mockApis {
    *   data: { app: { baseUrl: 'https://example.com' } },
    * });
    *
-   * const rendered = await renderInTestApp(
+   * await renderInTestApp(
    *   <TestApiProvider apis={[[configApiRef, config]]}>
    *     <MyTestedComponent />
    *   </TestApiProvider>,
@@ -160,15 +170,15 @@ export namespace mockApis {
     return new ConfigReader(options?.data, 'mock-config');
   }
   /**
-   * Mock helpers for {@link @backstage/frontend-plugin-api#ConfigApi}.
+   * Mock helpers for {@link @backstage/core-plugin-api#ConfigApi}.
    *
-   * @see {@link @backstage/frontend-plugin-api#mockApis.config}
+   * @see {@link @backstage/core-plugin-api#mockApis.config}
    * @public
    */
   export namespace config {
     /**
      * Creates a factory for a fake implementation of
-     * {@link @backstage/frontend-plugin-api#ConfigApi} with optional
+     * {@link @backstage/core-plugin-api#ConfigApi} with optional
      * configuration data supplied.
      *
      * @public
@@ -176,7 +186,7 @@ export namespace mockApis {
     export const factory = simpleFactory(configApiRef, config);
     /**
      * Creates a mock implementation of
-     * {@link @backstage/frontend-plugin-api#ConfigApi}. All methods are
+     * {@link @backstage/core-plugin-api#ConfigApi}. All methods are
      * replaced with jest mock functions, and you can optionally pass in a
      * subset of methods with an explicit implementation.
      *
@@ -205,6 +215,12 @@ export namespace mockApis {
   const discoveryMockSkeleton = (): jest.Mocked<DiscoveryApi> => ({
     getBaseUrl: jest.fn(),
   });
+  /**
+   * Fake implementation of {@link @backstage/core-plugin-api#DiscoveryApi}. By
+   * default returns URLs on the form `http://example.com/api/<pluginIs>`.
+   *
+   * @public
+   */
   export function discovery(options?: { baseUrl?: string }) {
     const baseUrl = options?.baseUrl ?? 'http://example.com';
     return simpleInstance(
@@ -217,6 +233,11 @@ export namespace mockApis {
       discoveryMockSkeleton,
     );
   }
+  /**
+   * Mock implementations of {@link @backstage/core-plugin-api#DiscoveryApi}.
+   *
+   * @public
+   */
   export namespace discovery {
     export const factory = simpleFactory(discoveryApiRef, discovery);
     export const mock = simpleMock(discoveryApiRef, discoveryMockSkeleton);
@@ -228,6 +249,12 @@ export namespace mockApis {
     getProfileInfo: jest.fn(),
     signOut: jest.fn(),
   });
+  /**
+   * Fake implementation of {@link @backstage/core-plugin-api#IdentityApi}. By
+   * default returns no token or profile info, and the user `user:default/test`.
+   *
+   * @public
+   */
   export function identity(options?: {
     userEntityRef?: string;
     ownershipEntityRefs?: string[];
@@ -257,6 +284,11 @@ export namespace mockApis {
       async signOut() {},
     };
   }
+  /**
+   * Mock implementations of {@link @backstage/core-plugin-api#IdentityApi}.
+   *
+   * @public
+   */
   export namespace identity {
     export const factory = simpleFactory(identityApiRef, identity);
     export const mock = simpleMock(identityApiRef, identityMockSkeleton);
@@ -265,6 +297,13 @@ export namespace mockApis {
   const permissionMockSkeleton = (): jest.Mocked<PermissionApi> => ({
     authorize: jest.fn(),
   });
+  /**
+   * Fake implementation of
+   * {@link @backstage/plugin-permission-react#PermissionApi}. By default allows
+   * all actions.
+   *
+   * @public
+   */
   export function permission(options?: {
     authorize?:
       | AuthorizeResult.ALLOW
@@ -286,6 +325,12 @@ export namespace mockApis {
     }
     return new MockPermissionApi(authorize);
   }
+  /**
+   * Mock implementation of
+   * {@link @backstage/plugin-permission-react#PermissionApi}.
+   *
+   * @public
+   */
   export namespace permission {
     export const factory = simpleFactory(permissionApiRef, permission);
     export const mock = simpleMock(permissionApiRef, permissionMockSkeleton);
@@ -298,9 +343,20 @@ export namespace mockApis {
     observe$: jest.fn(),
     snapshot: jest.fn(),
   });
+  /**
+   * Fake implementation of {@link @backstage/core-plugin-api#StorageApi}.
+   * Stores data temporarily in memory.
+   *
+   * @public
+   */
   export function storage(options?: { data?: JsonObject }) {
     return MockStorageApi.create(options?.data);
   }
+  /**
+   * Mock implementations of {@link @backstage/core-plugin-api#StorageApi}.
+   *
+   * @public
+   */
   export namespace storage {
     export const factory = simpleFactory(storageApiRef, storage);
     export const mock = simpleMock(storageApiRef, storageMockSkeleton);
@@ -310,9 +366,20 @@ export namespace mockApis {
     getTranslation: jest.fn(),
     translation$: jest.fn(),
   });
+  /**
+   * Fake implementation of {@link @backstage/core-plugin-api/alpha#TranslationApi}.
+   * By default returns the default translation.
+   *
+   * @public
+   */
   export function translation() {
     return MockTranslationApi.create();
   }
+  /**
+   * Mock implementations of {@link @backstage/core-plugin-api/alpha#TranslationApi}.
+   *
+   * @public
+   */
   export namespace translation {
     export const factory = simpleFactory(translationApiRef, translation);
     export const mock = simpleMock(translationApiRef, translationMockSkeleton);
