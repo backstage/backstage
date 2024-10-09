@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,16 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { TechDocsDocument } from '@backstage/plugin-techdocs-node';
 
-export { DefaultTechDocsCollatorFactory } from './DefaultTechDocsCollatorFactory';
+/** @public */
+export interface MkSearchIndexDoc {
+  title: string;
+  text: string;
+  location: string;
+  tags?: string[];
+}
 
-export type { TechDocsCollatorFactoryOptions } from './DefaultTechDocsCollatorFactory';
-
-export { defaultTechDocsCollatorEntityTransformer } from './defaultTechDocsCollatorEntityTransformer';
-
-export type { TechDocsCollatorEntityTransformer } from './TechDocsCollatorEntityTransformer';
-
-export type {
-  TechDocsCollatorDocumentTransformer,
-  MkSearchIndexDoc,
-} from './TechDocsCollatorDocumentTransformer';
+/** @public */
+export type TechDocsCollatorDocumentTransformer = (
+  doc: MkSearchIndexDoc,
+) => Partial<
+  Omit<
+    TechDocsDocument,
+    | 'location'
+    | 'authorization'
+    | 'kind'
+    | 'namespace'
+    | 'name'
+    | 'lifecycle'
+    | 'owner'
+  >
+>;

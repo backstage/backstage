@@ -28,6 +28,7 @@ import {
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import {
   DefaultTechDocsCollatorFactory,
+  TechDocsCollatorDocumentTransformer,
   TechDocsCollatorEntityTransformer,
 } from '@backstage/plugin-search-backend-module-techdocs';
 import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
@@ -35,6 +36,9 @@ import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-back
 /** @alpha */
 export interface TechDocsCollatorEntityTransformerExtensionPoint {
   setTransformer(transformer: TechDocsCollatorEntityTransformer): void;
+  setDocumentTransformer(
+    transformer: TechDocsCollatorDocumentTransformer,
+  ): void;
 }
 
 /**
@@ -55,18 +59,27 @@ export default createBackendModule({
   pluginId: 'search',
   moduleId: 'techdocs-collator',
   register(env) {
-    let transformer: TechDocsCollatorEntityTransformer | undefined;
+    let entityTransformer: TechDocsCollatorEntityTransformer | undefined;
+    let documentTransformer: TechDocsCollatorDocumentTransformer | undefined;
 
     env.registerExtensionPoint(
       techdocsCollatorEntityTransformerExtensionPoint,
       {
         setTransformer(newTransformer) {
-          if (transformer) {
+          if (entityTransformer) {
             throw new Error(
               'TechDocs collator entity transformer may only be set once',
             );
           }
-          transformer = newTransformer;
+          entityTransformer = newTransformer;
+        },
+        setDocumentTransformer(newTransformer) {
+          if (documentTransformer) {
+            throw new Error(
+              'TechDocs collator document transformer may only be set once',
+            );
+          }
+          documentTransformer = newTransformer;
         },
       },
     );
@@ -112,7 +125,8 @@ export default createBackendModule({
             httpAuth,
             logger,
             catalogClient: catalog,
-            entityTransformer: transformer,
+            entityTransformer,
+            documentTransformer,
           }),
         });
       },

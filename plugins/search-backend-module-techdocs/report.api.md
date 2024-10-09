@@ -37,9 +37,37 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
 }
 
 // @public (undocumented)
+export interface MkSearchIndexDoc {
+  // (undocumented)
+  location: string;
+  // (undocumented)
+  tags?: string[];
+  // (undocumented)
+  text: string;
+  // (undocumented)
+  title: string;
+}
+
+// @public (undocumented)
+export type TechDocsCollatorDocumentTransformer = (
+  doc: MkSearchIndexDoc,
+) => Partial<
+  Omit<
+    TechDocsDocument,
+    | 'location'
+    | 'authorization'
+    | 'kind'
+    | 'namespace'
+    | 'name'
+    | 'lifecycle'
+    | 'owner'
+  >
+>;
+
+// @public (undocumented)
 export type TechDocsCollatorEntityTransformer = (
   entity: Entity,
-) => Omit<TechDocsDocument, 'location' | 'authorization'>;
+) => Partial<Omit<TechDocsDocument, 'location' | 'authorization'>>;
 
 // @public @deprecated
 export type TechDocsCollatorFactoryOptions = {
@@ -53,14 +81,21 @@ export type TechDocsCollatorFactoryOptions = {
   parallelismLimit?: number;
   legacyPathCasing?: boolean;
   entityTransformer?: TechDocsCollatorEntityTransformer;
+  documentTransformer?: TechDocsCollatorDocumentTransformer;
 };
 
 // Warnings were encountered during analysis:
 //
-// src/collators/DefaultTechDocsCollatorFactory.d.ts:36:5 - (ae-undocumented) Missing documentation for "type".
-// src/collators/DefaultTechDocsCollatorFactory.d.ts:37:5 - (ae-undocumented) Missing documentation for "visibilityPermission".
-// src/collators/DefaultTechDocsCollatorFactory.d.ts:47:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/collators/DefaultTechDocsCollatorFactory.d.ts:48:5 - (ae-undocumented) Missing documentation for "getCollator".
+// src/collators/DefaultTechDocsCollatorFactory.d.ts:38:5 - (ae-undocumented) Missing documentation for "type".
+// src/collators/DefaultTechDocsCollatorFactory.d.ts:39:5 - (ae-undocumented) Missing documentation for "visibilityPermission".
+// src/collators/DefaultTechDocsCollatorFactory.d.ts:50:5 - (ae-undocumented) Missing documentation for "fromConfig".
+// src/collators/DefaultTechDocsCollatorFactory.d.ts:51:5 - (ae-undocumented) Missing documentation for "getCollator".
+// src/collators/TechDocsCollatorDocumentTransformer.d.ts:3:1 - (ae-undocumented) Missing documentation for "MkSearchIndexDoc".
+// src/collators/TechDocsCollatorDocumentTransformer.d.ts:4:5 - (ae-undocumented) Missing documentation for "title".
+// src/collators/TechDocsCollatorDocumentTransformer.d.ts:5:5 - (ae-undocumented) Missing documentation for "text".
+// src/collators/TechDocsCollatorDocumentTransformer.d.ts:6:5 - (ae-undocumented) Missing documentation for "location".
+// src/collators/TechDocsCollatorDocumentTransformer.d.ts:7:5 - (ae-undocumented) Missing documentation for "tags".
+// src/collators/TechDocsCollatorDocumentTransformer.d.ts:10:1 - (ae-undocumented) Missing documentation for "TechDocsCollatorDocumentTransformer".
 // src/collators/TechDocsCollatorEntityTransformer.d.ts:4:1 - (ae-undocumented) Missing documentation for "TechDocsCollatorEntityTransformer".
 // src/collators/defaultTechDocsCollatorEntityTransformer.d.ts:3:22 - (ae-undocumented) Missing documentation for "defaultTechDocsCollatorEntityTransformer".
 ```
