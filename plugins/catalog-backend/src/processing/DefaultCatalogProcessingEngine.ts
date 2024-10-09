@@ -129,9 +129,13 @@ export class DefaultCatalogProcessingEngine {
   }
 
   private startPipeline(): () => void {
+    const lowWatermark =
+      this.config.getOptionalNumber('catalog.pipeline.lowWatermark') ?? 5;
+    const highWatermark =
+      this.config.getOptionalNumber('catalog.pipeline.highWatermark') ?? 10;
     return startTaskPipeline<RefreshStateItem>({
-      lowWatermark: 5,
-      highWatermark: 10,
+      lowWatermark: lowWatermark,
+      highWatermark: highWatermark,
       pollingIntervalMs: this.pollingIntervalMs,
       loadTasks: async count => {
         try {
