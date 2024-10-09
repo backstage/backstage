@@ -365,7 +365,9 @@ function mapReferencesAttr(
 
 /** Validates value exists and if required forced sensitivty value to lowercase */
 function getCaseSensitivityValue(value: string, vendor: LdapVendor) {
-  return value && vendor.dnCaseSensitive ? value.toLocaleLowerCase('en-US') : value;
+  return value && vendor.dnCaseSensitive
+    ? value.toLocaleLowerCase('en-US')
+    : value;
 }
 
 // Inserts a number of values in a key-values mapping
