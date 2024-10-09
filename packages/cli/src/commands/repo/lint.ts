@@ -117,7 +117,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
         cacheContext.lockfile.getDependencyTreeHash(pkg.packageJson.name),
       );
       hash.update('\0');
-      hash.update(JSON.stringify(lintOptions));
+      hash.update(JSON.stringify(lintOptions ?? {}));
       hash.update('\0');
       hash.update(process.version); // Node.js version
       hash.update('\0');
@@ -131,18 +131,24 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   );
 
   const resultsList = await runWorkerQueueThreads({
-    items,
+    items: items.filter(item => item.lintOptions), // Filter out packages without lint script
     workerData: {
       fix: Boolean(opts.fix),
       format: opts.format as string | undefined,
       shouldCache: Boolean(cacheContext),
       successCache: cacheContext?.cache,
+      rootDir: paths.targetRoot,
     },
-    workerFactory: async ({ fix, format, shouldCache, successCache }) => {
+    workerFactory: async ({
+      fix,
+      format,
+      shouldCache,
+      successCache,
+      rootDir,
+    }) => {
       const { ESLint } = require('eslint') as typeof import('eslint');
       const crypto = require('crypto') as typeof import('crypto');
-      const recursiveReadDir =
-        require('recursive-readdir') as typeof import('recursive-readdir');
+      const globby = require('globby') as typeof import('globby');
       const { readFile } =
         require('fs/promises') as typeof import('fs/promises');
       const { relative: workerRelativePath } =
@@ -172,7 +178,11 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
 
         let sha: string | undefined = undefined;
         if (shouldCache) {
-          const result = await recursiveReadDir(fullDir);
+          const result = await globby(relativeDir, {
+            gitignore: true,
+            onlyFiles: true,
+            cwd: rootDir,
+          });
 
           const hash = crypto.createHash('sha1');
           hash.update(parentHash!);
