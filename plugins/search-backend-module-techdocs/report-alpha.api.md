@@ -5,6 +5,7 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
+import { TechDocsCollatorDocumentTransformer } from '@backstage/plugin-search-backend-module-techdocs';
 import { TechDocsCollatorEntityTransformer } from '@backstage/plugin-search-backend-module-techdocs';
 
 // @alpha
@@ -13,6 +14,10 @@ export default _default;
 
 // @alpha (undocumented)
 export interface TechDocsCollatorEntityTransformerExtensionPoint {
+  // (undocumented)
+  setDocumentTransformer(
+    transformer: TechDocsCollatorDocumentTransformer,
+  ): void;
   // (undocumented)
   setTransformer(transformer: TechDocsCollatorEntityTransformer): void;
 }
@@ -24,6 +29,7 @@ export const techdocsCollatorEntityTransformerExtensionPoint: ExtensionPoint<Tec
 //
 // src/alpha.d.ts:3:1 - (ae-undocumented) Missing documentation for "TechDocsCollatorEntityTransformerExtensionPoint".
 // src/alpha.d.ts:4:5 - (ae-undocumented) Missing documentation for "setTransformer".
+// src/alpha.d.ts:5:5 - (ae-undocumented) Missing documentation for "setDocumentTransformer".
 
 // (No @packageDocumentation comment for this package)
 ```
