@@ -34,7 +34,6 @@ import {
 } from '@backstage/catalog-client';
 import { catalogApiRef } from '../../api';
 import {
-  MockStorageApi,
   TestApiRegistry,
   mockApis,
   renderInTestApp,
@@ -79,7 +78,7 @@ const apis = TestApiRegistry.from(
   [configApiRef, mockConfigApi],
   [catalogApiRef, mockCatalogApi],
   [identityApiRef, mockIdentityApi],
-  [storageApiRef, MockStorageApi.create()],
+  [storageApiRef, mockApis.storage()],
   [starredEntitiesApiRef, mockStarredEntitiesApi],
 );
 
@@ -134,19 +133,13 @@ describe('<UserListPicker />', () => {
 
   beforeEach(() => {
     mockCatalogApi.getEntityByRef?.mockResolvedValue(mockUser);
-    mockIdentityApi.getBackstageIdentity?.mockResolvedValue({
-      ownershipEntityRefs,
-      type: 'user',
-      userEntityRef: 'user:default/testuser',
-    });
-
     mockCatalogApi.queryEntities?.mockImplementation(
       mockQueryEntitiesImplementation,
     );
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   it('renders filter groups', async () => {

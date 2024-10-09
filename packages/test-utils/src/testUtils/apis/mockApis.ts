@@ -21,10 +21,12 @@ import {
   ApiRef,
   ConfigApi,
   IdentityApi,
+  StorageApi,
   analyticsApiRef,
   configApiRef,
   createApiFactory,
   identityApiRef,
+  storageApiRef,
 } from '@backstage/core-plugin-api';
 import {
   AuthorizeResult,
@@ -37,6 +39,7 @@ import {
 import { JsonObject } from '@backstage/types';
 import { ApiMock } from './ApiMock';
 import { MockPermissionApi } from './PermissionApi';
+import { MockStorageApi } from './StorageApi';
 
 /** @internal */
 function simpleFactory<TApi, TArgs extends unknown[]>(
@@ -267,5 +270,24 @@ export namespace mockApis {
   export namespace permission {
     export const factory = simpleFactory(permissionApiRef, permission);
     export const mock = simpleMock(permissionApiRef, permissionMockSkeleton);
+  }
+
+  const storageMockSkeleton = (): jest.Mocked<StorageApi> => ({
+    forBucket: jest.fn(),
+    set: jest.fn(),
+    remove: jest.fn(),
+    observe$: jest.fn(),
+    snapshot: jest.fn(),
+  });
+  export function storage(options?: { data?: JsonObject }) {
+    return simpleInstance(
+      storageApiRef,
+      MockStorageApi.create(options?.data),
+      storageMockSkeleton,
+    );
+  }
+  export namespace storage {
+    export const factory = simpleFactory(storageApiRef, storage);
+    export const mock = simpleMock(storageApiRef, storageMockSkeleton);
   }
 }

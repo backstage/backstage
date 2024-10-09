@@ -26,7 +26,6 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { mockBreakpoint } from '@backstage/core-components/testUtils';
 import {
-  MockStorageApi,
   TestApiProvider,
   mockApis,
   renderInTestApp,
@@ -49,7 +48,6 @@ describe('DefaultCatalogPage', () => {
   });
   afterEach(() => {
     window.history.replaceState = origReplaceState;
-
     jest.clearAllMocks();
   });
 
@@ -166,7 +164,6 @@ describe('DefaultCatalogPage', () => {
     ownershipEntityRefs: ['user:default/guest', 'group:default/tools'],
     displayName: 'Display Name',
   });
-  const storageApi = MockStorageApi.create();
 
   const renderWrapped = (children: React.ReactNode) =>
     renderInTestApp(
@@ -174,7 +171,7 @@ describe('DefaultCatalogPage', () => {
         apis={[
           [catalogApiRef, catalogApi],
           [identityApiRef, identityApi],
-          [storageApiRef, storageApi],
+          [storageApiRef, mockApis.storage()],
           [starredEntitiesApiRef, new MockStarredEntitiesApi()],
           [permissionApiRef, mockApis.permission()],
         ]}

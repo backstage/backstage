@@ -23,11 +23,7 @@ import {
   identityApiRef,
   storageApiRef,
 } from '@backstage/core-plugin-api';
-import {
-  MockStorageApi,
-  TestApiProvider,
-  mockApis,
-} from '@backstage/test-utils';
+import { TestApiProvider, mockApis } from '@backstage/test-utils';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import qs from 'qs';
 import React, { PropsWithChildren } from 'react';
@@ -69,8 +65,6 @@ const entities: Entity[] = [
   },
 ];
 
-const mockConfigApi = mockApis.config();
-
 const ownershipEntityRefs = ['user:default/guest'];
 
 const mockIdentityApi = mockApis.identity({
@@ -104,10 +98,10 @@ const createWrapper =
       <MemoryRouter initialEntries={[options.location ?? '']}>
         <TestApiProvider
           apis={[
-            [configApiRef, mockConfigApi],
+            [configApiRef, mockApis.config()],
             [catalogApiRef, mockCatalogApi],
             [identityApiRef, mockIdentityApi],
-            [storageApiRef, MockStorageApi.create()],
+            [storageApiRef, mockApis.storage()],
             [starredEntitiesApiRef, new MockStarredEntitiesApi()],
             [alertApiRef, { post: jest.fn() }],
             [translationApiRef, MockTranslationApi.create()],

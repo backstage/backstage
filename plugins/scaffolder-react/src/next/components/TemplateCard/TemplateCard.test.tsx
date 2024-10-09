@@ -21,7 +21,6 @@ import {
 } from '@backstage/plugin-catalog-react';
 import {
   mockApis,
-  MockStorageApi,
   renderInTestApp,
   TestApiProvider,
 } from '@backstage/test-utils';
@@ -52,7 +51,7 @@ describe('TemplateCard', () => {
           [
             starredEntitiesApiRef,
             new DefaultStarredEntitiesApi({
-              storageApi: MockStorageApi.create(),
+              storageApi: mockApis.storage(),
             }),
           ],
           [permissionApiRef, mockApis.permission()],
@@ -82,7 +81,7 @@ describe('TemplateCard', () => {
           [
             starredEntitiesApiRef,
             new DefaultStarredEntitiesApi({
-              storageApi: MockStorageApi.create(),
+              storageApi: mockApis.storage(),
             }),
           ],
           [permissionApiRef, mockApis.permission()],
@@ -114,7 +113,7 @@ describe('TemplateCard', () => {
           [
             starredEntitiesApiRef,
             new DefaultStarredEntitiesApi({
-              storageApi: MockStorageApi.create(),
+              storageApi: mockApis.storage(),
             }),
           ],
           [permissionApiRef, mockApis.permission()],
@@ -144,7 +143,7 @@ describe('TemplateCard', () => {
           [
             starredEntitiesApiRef,
             new DefaultStarredEntitiesApi({
-              storageApi: MockStorageApi.create(),
+              storageApi: mockApis.storage(),
             }),
           ],
           [permissionApiRef, mockApis.permission()],
@@ -180,7 +179,7 @@ describe('TemplateCard', () => {
           [
             starredEntitiesApiRef,
             new DefaultStarredEntitiesApi({
-              storageApi: MockStorageApi.create(),
+              storageApi: mockApis.storage(),
             }),
           ],
           [permissionApiRef, mockApis.permission()],
@@ -220,7 +219,7 @@ describe('TemplateCard', () => {
           [
             starredEntitiesApiRef,
             new DefaultStarredEntitiesApi({
-              storageApi: MockStorageApi.create(),
+              storageApi: mockApis.storage(),
             }),
           ],
           [permissionApiRef, mockApis.permission()],
@@ -265,7 +264,7 @@ describe('TemplateCard', () => {
           [
             starredEntitiesApiRef,
             new DefaultStarredEntitiesApi({
-              storageApi: MockStorageApi.create(),
+              storageApi: mockApis.storage(),
             }),
           ],
           [permissionApiRef, mockApis.permission()],
@@ -314,7 +313,7 @@ describe('TemplateCard', () => {
           [
             starredEntitiesApiRef,
             new DefaultStarredEntitiesApi({
-              storageApi: MockStorageApi.create(),
+              storageApi: mockApis.storage(),
             }),
           ],
           [permissionApiRef, mockApis.permission()],
@@ -357,7 +356,7 @@ describe('TemplateCard', () => {
           [
             starredEntitiesApiRef,
             new DefaultStarredEntitiesApi({
-              storageApi: MockStorageApi.create(),
+              storageApi: mockApis.storage(),
             }),
           ],
           [permissionApiRef, mockApis.permission()],
@@ -397,7 +396,7 @@ describe('TemplateCard', () => {
           [
             starredEntitiesApiRef,
             new DefaultStarredEntitiesApi({
-              storageApi: MockStorageApi.create(),
+              storageApi: mockApis.storage(),
             }),
           ],
           [permissionApiRef, mockApis.permission()],
@@ -437,7 +436,7 @@ describe('TemplateCard', () => {
             [
               starredEntitiesApiRef,
               new DefaultStarredEntitiesApi({
-                storageApi: MockStorageApi.create(),
+                storageApi: mockApis.storage(),
               }),
             ],
             [

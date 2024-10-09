@@ -15,7 +15,7 @@
  */
 
 import { VisitsStorageApi } from './VisitsStorageApi';
-import { MockStorageApi, mockApis } from '@backstage/test-utils';
+import { mockApis } from '@backstage/test-utils';
 import { Visit, VisitsApi } from './VisitsApi';
 
 describe('VisitsStorageApi.create', () => {
@@ -42,7 +42,7 @@ describe('VisitsStorageApi.create', () => {
 
   it('instantiates', () => {
     const api = VisitsStorageApi.create({
-      storageApi: MockStorageApi.create(),
+      storageApi: mockApis.storage(),
       identityApi: mockIdentityApi,
     });
     expect(api).toBeTruthy();
@@ -51,7 +51,7 @@ describe('VisitsStorageApi.create', () => {
   describe('.save()', () => {
     it('saves a visit', async () => {
       const api = VisitsStorageApi.create({
-        storageApi: MockStorageApi.create(),
+        storageApi: mockApis.storage(),
         identityApi: mockIdentityApi,
       });
       const visit = {
@@ -68,7 +68,7 @@ describe('VisitsStorageApi.create', () => {
 
     it('can control the number of stored entities', async () => {
       const api = VisitsStorageApi.create({
-        storageApi: MockStorageApi.create(),
+        storageApi: mockApis.storage(),
         identityApi: mockIdentityApi,
         limit: 2,
       });
@@ -102,7 +102,7 @@ describe('VisitsStorageApi.create', () => {
 
     it('correctly bumps the hits from a previous visit', async () => {
       const api = VisitsStorageApi.create({
-        storageApi: MockStorageApi.create(),
+        storageApi: mockApis.storage(),
         identityApi: mockIdentityApi,
       });
       const visit = {
@@ -144,7 +144,7 @@ describe('VisitsStorageApi.create', () => {
 
     beforeEach(() => {
       api = VisitsStorageApi.create({
-        storageApi: MockStorageApi.create(),
+        storageApi: mockApis.storage(),
         identityApi: mockIdentityApi,
       });
 

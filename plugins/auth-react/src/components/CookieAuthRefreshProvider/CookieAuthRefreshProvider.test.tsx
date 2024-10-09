@@ -19,7 +19,7 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { CookieAuthRefreshProvider } from './CookieAuthRefreshProvider';
 import {
-  MockStorageApi,
+  mockApis,
   TestApiProvider,
   renderInTestApp,
 } from '@backstage/test-utils';
@@ -30,7 +30,6 @@ import {
 } from '@backstage/core-plugin-api';
 
 describe('CookieAuthRefreshProvider', () => {
-  const storageApiMock = MockStorageApi.create();
   const discoveryApiMock = {
     getBaseUrl: jest
       .fn()
@@ -51,7 +50,7 @@ describe('CookieAuthRefreshProvider', () => {
       <TestApiProvider
         apis={[
           [fetchApiRef, fetchApiMock],
-          [storageApiRef, storageApiMock],
+          [storageApiRef, mockApis.storage()],
           [discoveryApiRef, discoveryApiMock],
         ]}
       >
@@ -76,7 +75,7 @@ describe('CookieAuthRefreshProvider', () => {
       <TestApiProvider
         apis={[
           [fetchApiRef, fetchApiMock],
-          [storageApiRef, storageApiMock],
+          [storageApiRef, mockApis.storage()],
           [discoveryApiRef, discoveryApiMock],
         ]}
       >
@@ -107,7 +106,7 @@ describe('CookieAuthRefreshProvider', () => {
       <TestApiProvider
         apis={[
           [fetchApiRef, fetchApiMock],
-          [storageApiRef, storageApiMock],
+          [storageApiRef, mockApis.storage()],
           [discoveryApiRef, discoveryApiMock],
         ]}
       >
@@ -153,7 +152,7 @@ describe('CookieAuthRefreshProvider', () => {
       <TestApiProvider
         apis={[
           [fetchApiRef, fetchApiMock],
-          [storageApiRef, storageApiMock],
+          [storageApiRef, mockApis.storage()],
           [discoveryApiRef, discoveryApiMock],
         ]}
       >

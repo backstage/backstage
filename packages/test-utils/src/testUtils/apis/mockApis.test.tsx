@@ -255,4 +255,288 @@ describe('mockApis', () => {
       expect(notEmpty.authorize).toHaveBeenCalledTimes(2);
     });
   });
+
+  describe('storage', () => {
+    describe('instance deep tests', () => {
+      it('should return undefined for values which are unset', async () => {
+        const storage = mockApis.storage();
+
+        expect(storage.snapshot('myfakekey').value).toBeUndefined();
+        expect(storage.snapshot('myfakekey')).toEqual({
+          key: 'myfakekey',
+          presence: 'absent',
+          value: undefined,
+          newValue: undefined,
+        });
+      });
+
+      it('should allow the setting and snapshotting of the simple data structures', async () => {
+        const storage = mockApis.storage();
+
+        await storage.set('myfakekey', 'helloimastring');
+        await storage.set('mysecondfakekey', 1234);
+        await storage.set('mythirdfakekey', true);
+        expect(storage.snapshot('myfakekey').value).toBe('helloimastring');
+        expect(storage.snapshot('mysecondfakekey').value).toBe(1234);
+        expect(storage.snapshot('mythirdfakekey').value).toBe(true);
+        expect(storage.snapshot('myfakekey')).toEqual({
+          key: 'myfakekey',
+          presence: 'present',
+          value: 'helloimastring',
+        });
+        expect(storage.snapshot('mysecondfakekey')).toEqual({
+          key: 'mysecondfakekey',
+          presence: 'present',
+          value: 1234,
+        });
+        expect(storage.snapshot('mythirdfakekey')).toEqual({
+          key: 'mythirdfakekey',
+          presence: 'present',
+          value: true,
+        });
+      });
+
+      it('should allow setting of complex datastructures', async () => {
+        const storage = mockApis.storage();
+
+        const mockData = {
+          something: 'here',
+          is: [{ super: { complex: [{ but: 'something', why: true }] } }],
+        };
+
+        await storage.set('myfakekey', mockData);
+
+        expect(storage.snapshot('myfakekey').value).toEqual(mockData);
+        expect(storage.snapshot('myfakekey')).toEqual({
+          key: 'myfakekey',
+          presence: 'present',
+          value: mockData,
+        });
+      });
+
+      it('should subscribe to key changes when setting a new value', async () => {
+        const storage = mockApis.storage();
+
+        const wrongKeyNextHandler = jest.fn();
+        const selectedKeyNextHandler = jest.fn();
+        const mockData = { hello: 'im a great new value' };
+
+        await new Promise<void>(resolve => {
+          storage.observe$<typeof mockData>('correctKey').subscribe({
+            next: (...args) => {
+              selectedKeyNextHandler(...args);
+              resolve();
+            },
+          });
+
+          storage.observe$('wrongKey').subscribe({ next: wrongKeyNextHandler });
+
+          storage.set('correctKey', mockData);
+        });
+
+        expect(wrongKeyNextHandler).not.toHaveBeenCalled();
+        expect(selectedKeyNextHandler).toHaveBeenCalledTimes(1);
+        expect(selectedKeyNextHandler).toHaveBeenCalledWith({
+          key: 'correctKey',
+          presence: 'present',
+          value: mockData,
+        });
+      });
+
+      it('should subscribe to key changes when deleting a value', async () => {
+        const storage = mockApis.storage();
+
+        const wrongKeyNextHandler = jest.fn();
+        const selectedKeyNextHandler = jest.fn();
+        const mockData = { hello: 'im a great new value' };
+
+        storage.set('correctKey', mockData);
+
+        await new Promise<void>(resolve => {
+          storage.observe$('correctKey').subscribe({
+            next: (...args) => {
+              selectedKeyNextHandler(...args);
+              resolve();
+            },
+          });
+
+          storage.observe$('wrongKey').subscribe({ next: wrongKeyNextHandler });
+
+          storage.remove('correctKey');
+        });
+
+        expect(wrongKeyNextHandler).not.toHaveBeenCalled();
+        expect(selectedKeyNextHandler).toHaveBeenCalledTimes(1);
+        expect(selectedKeyNextHandler).toHaveBeenCalledWith({
+          key: 'correctKey',
+          presence: 'absent',
+          value: undefined,
+          newValue: undefined,
+        });
+      });
+
+      it('should be able to create different buckets for different uses', async () => {
+        const rootStorage = mockApis.storage();
+
+        const firstStorage = rootStorage.forBucket('userSettings');
+        const secondStorage = rootStorage.forBucket('profileSettings');
+        const keyName = 'blobby';
+
+        await firstStorage.set(keyName, 'boop');
+        await secondStorage.set(keyName, 'deerp');
+
+        expect(firstStorage.snapshot(keyName)).not.toBe(
+          secondStorage.snapshot(keyName),
+        );
+        expect(firstStorage.snapshot(keyName).value).toBe('boop');
+        expect(secondStorage.snapshot(keyName).value).toBe('deerp');
+        expect(firstStorage.snapshot(keyName)).not.toEqual(
+          secondStorage.snapshot(keyName),
+        );
+        expect(firstStorage.snapshot(keyName)).toEqual({
+          key: keyName,
+          presence: 'present',
+          value: 'boop',
+        });
+        expect(secondStorage.snapshot(keyName)).toEqual({
+          key: keyName,
+          presence: 'present',
+          value: 'deerp',
+        });
+      });
+
+      it('should not clash with other namespaces when creating buckets', async () => {
+        const rootStorage = mockApis.storage();
+
+        // when getting key test2 it will translate to /profile/something/deep/test2
+        const firstStorage = rootStorage
+          .forBucket('profile')
+          .forBucket('something')
+          .forBucket('deep');
+        // when getting key deep/test2 it will translate to /profile/something/deep/test2
+        const secondStorage = rootStorage.forBucket('profile/something');
+
+        await firstStorage.set('test2', { error: true });
+
+        expect(secondStorage.snapshot('deep/test2').value).toBe(undefined);
+        expect(secondStorage.snapshot('deep/test2')).toMatchObject({
+          presence: 'absent',
+        });
+      });
+
+      it('should not reuse storage instances between different rootStorages', async () => {
+        const rootStorage1 = mockApis.storage();
+        const rootStorage2 = mockApis.storage();
+
+        const firstStorage = rootStorage1.forBucket('something');
+        const secondStorage = rootStorage2.forBucket('something');
+
+        await firstStorage.set('test2', true);
+
+        expect(firstStorage.snapshot('test2').value).toBe(true);
+        expect(secondStorage.snapshot('test2').value).toBe(undefined);
+        expect(firstStorage.snapshot('test2')).toEqual({
+          key: 'test2',
+          presence: 'present',
+          value: true,
+        });
+        expect(secondStorage.snapshot('test2')).toEqual({
+          key: 'test2',
+          presence: 'absent',
+          value: undefined,
+        });
+      });
+
+      it('should freeze the snapshot value', async () => {
+        const storage = mockApis.storage();
+
+        const data = { foo: 'bar', baz: [{ foo: 'bar' }] };
+        storage.set('foo', data);
+
+        const snapshot = storage.snapshot<typeof data>('foo');
+        expect(snapshot.value).not.toBe(data);
+
+        if (snapshot.presence !== 'present') {
+          throw new Error('Invalid presence');
+        }
+
+        expect(() => {
+          snapshot.value.foo = 'buzz';
+        }).toThrow(/Cannot assign to read only property/);
+        expect(() => {
+          snapshot.value.baz[0].foo = 'buzz';
+        }).toThrow(/Cannot assign to read only property/);
+        expect(() => {
+          snapshot.value.baz.push({ foo: 'buzz' });
+        }).toThrow(/Cannot add property 1, object is not extensible/);
+      });
+
+      it('should freeze observed values', async () => {
+        const storage = mockApis.storage();
+
+        const snapshotPromise = new Promise<any>(resolve => {
+          storage.observe$('test').subscribe({
+            next: resolve,
+          });
+        });
+
+        storage.set('test', {
+          foo: {
+            bar: 'baz',
+          },
+        });
+
+        const snapshot = await snapshotPromise;
+        expect(snapshot.presence).toBe('present');
+        expect(() => {
+          snapshot.value!.foo.bar = 'qux';
+        }).toThrow(/Cannot assign to read only property 'bar' of object/);
+      });
+
+      it('should JSON serialize stored values', async () => {
+        const storage = mockApis.storage();
+
+        storage.set<any>('test', {
+          foo: {
+            toJSON() {
+              return {
+                bar: 'baz',
+              };
+            },
+          },
+        });
+
+        expect(storage.snapshot('test')).toMatchObject({
+          presence: 'present',
+          value: {
+            foo: {
+              bar: 'baz',
+            },
+          },
+        });
+      });
+    });
+
+    it('can create an instance and make assertions on it', () => {
+      const empty = mockApis.storage();
+      expect(empty.snapshot('a')).toEqual({ key: 'a', presence: 'absent' });
+      expect(empty.snapshot).toHaveBeenCalledTimes(1);
+
+      const notEmpty = mockApis.storage({ data: { a: 1, b: { c: 2 } } });
+      expect(notEmpty.snapshot('a')).toEqual({
+        key: 'a',
+        presence: 'present',
+        value: 1,
+      });
+      expect(notEmpty.forBucket('b').snapshot('c')).toEqual({
+        key: 'c',
+        presence: 'present',
+        value: 2,
+      });
+      expect(notEmpty.snapshot).toHaveBeenCalledTimes(1); // "inner" (forBucket returned) instances aren't mocked
+      expect(notEmpty.forBucket).toHaveBeenCalledTimes(1);
+    });
+
+    it('can create a mock and make assertions on it', () => {});
+  });
 });

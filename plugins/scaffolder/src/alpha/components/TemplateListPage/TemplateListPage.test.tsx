@@ -22,7 +22,6 @@ import {
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import {
-  MockStorageApi,
   renderInTestApp,
   TestApiProvider,
   mockApis,
@@ -53,7 +52,7 @@ describe('TemplateListPage', () => {
           [
             starredEntitiesApiRef,
             new DefaultStarredEntitiesApi({
-              storageApi: MockStorageApi.create(),
+              storageApi: mockApis.storage(),
             }),
           ],
           [permissionApiRef, mockApis.permission()],
@@ -75,7 +74,7 @@ describe('TemplateListPage', () => {
           [
             starredEntitiesApiRef,
             new DefaultStarredEntitiesApi({
-              storageApi: MockStorageApi.create(),
+              storageApi: mockApis.storage(),
             }),
           ],
           [permissionApiRef, mockApis.permission()],
@@ -98,7 +97,7 @@ describe('TemplateListPage', () => {
           [
             starredEntitiesApiRef,
             new DefaultStarredEntitiesApi({
-              storageApi: MockStorageApi.create(),
+              storageApi: mockApis.storage(),
             }),
           ],
           [permissionApiRef, mockApis.permission()],
@@ -120,7 +119,7 @@ describe('TemplateListPage', () => {
           [
             starredEntitiesApiRef,
             new DefaultStarredEntitiesApi({
-              storageApi: MockStorageApi.create(),
+              storageApi: mockApis.storage(),
             }),
           ],
           [permissionApiRef, mockApis.permission()],
@@ -143,7 +142,7 @@ describe('TemplateListPage', () => {
           [
             starredEntitiesApiRef,
             new DefaultStarredEntitiesApi({
-              storageApi: MockStorageApi.create(),
+              storageApi: mockApis.storage(),
             }),
           ],
           [permissionApiRef, mockApis.permission()],
@@ -165,7 +164,7 @@ describe('TemplateListPage', () => {
             [
               starredEntitiesApiRef,
               new DefaultStarredEntitiesApi({
-                storageApi: MockStorageApi.create(),
+                storageApi: mockApis.storage(),
               }),
             ],
             [permissionApiRef, mockApis.permission()],
@@ -186,7 +185,7 @@ describe('TemplateListPage', () => {
             [
               starredEntitiesApiRef,
               new DefaultStarredEntitiesApi({
-                storageApi: MockStorageApi.create(),
+                storageApi: mockApis.storage(),
               }),
             ],
             [permissionApiRef, mockApis.permission()],
