@@ -191,15 +191,14 @@ export interface Config {
        * of in-flight tasks reaches this count, more tasks will be loaded in.
        *
        * @default 5
-       *
        * @remarks
        * Has to be lower than `highWatermark`.
        */
       lowWatermark?: number;
       /**
        * The maximum number of items to process in parallel.
-       * @default 10
        *
+       * @default 10
        * @remarks
        * Has to be higher than `lowWatermark`.
        */
