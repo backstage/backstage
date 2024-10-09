@@ -41,6 +41,7 @@ import { RenderResult } from '@testing-library/react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { StorageValueSnapshot } from '@backstage/core-plugin-api';
+import { TranslationApi } from '@backstage/core-plugin-api/alpha';
 
 // @public
 export type ApiMock<TApi> = {
@@ -81,8 +82,6 @@ export type LogCollector = AsyncLogCollector | SyncLogCollector;
 // @public
 export type LogFuncs = 'log' | 'warn' | 'error';
 
-// Warning: (ae-unresolved-link) The @link reference could not be resolved: The reference is ambiguous because "analytics" has more than one declaration; you need to add a TSDoc member reference selector
-//
 // @public @deprecated
 export class MockAnalyticsApi implements AnalyticsApi {
   // (undocumented)
@@ -193,6 +192,17 @@ export namespace mockApis {
         partialImpl?: Partial<StorageApi> | undefined,
       ) => ApiMock<StorageApi>;
   }
+  // (undocumented)
+  export function translation(): jest.Mocked<TranslationApi>;
+  // (undocumented)
+  export namespace translation {
+    const // (undocumented)
+      factory: () => ApiFactory<TranslationApi, TranslationApi, {}>;
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<TranslationApi> | undefined,
+      ) => ApiMock<TranslationApi>;
+  }
 }
 
 // @public @deprecated
@@ -264,8 +274,6 @@ export interface MockFetchApiOptions {
       };
 }
 
-// Warning: (ae-unresolved-link) The @link reference could not be resolved: No member was found with name "permissions"
-//
 // @public @deprecated
 export class MockPermissionApi implements PermissionApi {
   constructor(
@@ -279,8 +287,6 @@ export class MockPermissionApi implements PermissionApi {
   ): Promise<EvaluatePermissionResponse>;
 }
 
-// Warning: (ae-unresolved-link) The @link reference could not be resolved: The reference is ambiguous because "storage" has more than one declaration; you need to add a TSDoc member reference selector
-//
 // @public @deprecated
 export class MockStorageApi implements StorageApi {
   // (undocumented)
@@ -299,8 +305,6 @@ export class MockStorageApi implements StorageApi {
   snapshot<T extends JsonValue>(key: string): StorageValueSnapshot<T>;
 }
 
-// Warning: (ae-unresolved-link) The @link reference could not be resolved: The reference is ambiguous because "storage" has more than one declaration; you need to add a TSDoc member reference selector
-//
 // @public @deprecated
 export type MockStorageBucket = {
   [key: string]: any;
@@ -413,20 +417,24 @@ export function wrapInTestApp(
 // src/testUtils/apis/StorageApi/MockStorageApi.d.ts:24:5 - (ae-undocumented) Missing documentation for "set".
 // src/testUtils/apis/StorageApi/MockStorageApi.d.ts:25:5 - (ae-undocumented) Missing documentation for "remove".
 // src/testUtils/apis/StorageApi/MockStorageApi.d.ts:26:5 - (ae-undocumented) Missing documentation for "observe$".
-// src/testUtils/apis/mockApis.d.ts:46:5 - (ae-undocumented) Missing documentation for "analytics".
 // src/testUtils/apis/mockApis.d.ts:47:5 - (ae-undocumented) Missing documentation for "analytics".
-// src/testUtils/apis/mockApis.d.ts:48:15 - (ae-undocumented) Missing documentation for "factory".
-// src/testUtils/apis/mockApis.d.ts:49:15 - (ae-undocumented) Missing documentation for "mock".
-// src/testUtils/apis/mockApis.d.ts:100:5 - (ae-undocumented) Missing documentation for "identity".
-// src/testUtils/apis/mockApis.d.ts:108:5 - (ae-undocumented) Missing documentation for "identity".
-// src/testUtils/apis/mockApis.d.ts:109:15 - (ae-undocumented) Missing documentation for "factory".
-// src/testUtils/apis/mockApis.d.ts:117:15 - (ae-undocumented) Missing documentation for "mock".
-// src/testUtils/apis/mockApis.d.ts:119:5 - (ae-undocumented) Missing documentation for "permission".
-// src/testUtils/apis/mockApis.d.ts:122:5 - (ae-undocumented) Missing documentation for "permission".
-// src/testUtils/apis/mockApis.d.ts:123:15 - (ae-undocumented) Missing documentation for "factory".
-// src/testUtils/apis/mockApis.d.ts:126:15 - (ae-undocumented) Missing documentation for "mock".
-// src/testUtils/apis/mockApis.d.ts:128:5 - (ae-undocumented) Missing documentation for "storage".
-// src/testUtils/apis/mockApis.d.ts:131:5 - (ae-undocumented) Missing documentation for "storage".
-// src/testUtils/apis/mockApis.d.ts:132:15 - (ae-undocumented) Missing documentation for "factory".
-// src/testUtils/apis/mockApis.d.ts:135:15 - (ae-undocumented) Missing documentation for "mock".
+// src/testUtils/apis/mockApis.d.ts:48:5 - (ae-undocumented) Missing documentation for "analytics".
+// src/testUtils/apis/mockApis.d.ts:49:15 - (ae-undocumented) Missing documentation for "factory".
+// src/testUtils/apis/mockApis.d.ts:50:15 - (ae-undocumented) Missing documentation for "mock".
+// src/testUtils/apis/mockApis.d.ts:101:5 - (ae-undocumented) Missing documentation for "identity".
+// src/testUtils/apis/mockApis.d.ts:109:5 - (ae-undocumented) Missing documentation for "identity".
+// src/testUtils/apis/mockApis.d.ts:110:15 - (ae-undocumented) Missing documentation for "factory".
+// src/testUtils/apis/mockApis.d.ts:118:15 - (ae-undocumented) Missing documentation for "mock".
+// src/testUtils/apis/mockApis.d.ts:120:5 - (ae-undocumented) Missing documentation for "permission".
+// src/testUtils/apis/mockApis.d.ts:123:5 - (ae-undocumented) Missing documentation for "permission".
+// src/testUtils/apis/mockApis.d.ts:124:15 - (ae-undocumented) Missing documentation for "factory".
+// src/testUtils/apis/mockApis.d.ts:127:15 - (ae-undocumented) Missing documentation for "mock".
+// src/testUtils/apis/mockApis.d.ts:129:5 - (ae-undocumented) Missing documentation for "storage".
+// src/testUtils/apis/mockApis.d.ts:132:5 - (ae-undocumented) Missing documentation for "storage".
+// src/testUtils/apis/mockApis.d.ts:133:15 - (ae-undocumented) Missing documentation for "factory".
+// src/testUtils/apis/mockApis.d.ts:136:15 - (ae-undocumented) Missing documentation for "mock".
+// src/testUtils/apis/mockApis.d.ts:138:5 - (ae-undocumented) Missing documentation for "translation".
+// src/testUtils/apis/mockApis.d.ts:139:5 - (ae-undocumented) Missing documentation for "translation".
+// src/testUtils/apis/mockApis.d.ts:140:15 - (ae-undocumented) Missing documentation for "factory".
+// src/testUtils/apis/mockApis.d.ts:141:15 - (ae-undocumented) Missing documentation for "mock".
 ```

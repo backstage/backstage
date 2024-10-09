@@ -40,6 +40,11 @@ import { JsonObject } from '@backstage/types';
 import { ApiMock } from './ApiMock';
 import { MockPermissionApi } from './PermissionApi';
 import { MockStorageApi } from './StorageApi';
+import {
+  TranslationApi,
+  translationApiRef,
+} from '@backstage/core-plugin-api/alpha';
+import { MockTranslationApi } from './TranslationApi';
 
 /** @internal */
 function simpleFactory<TApi, TArgs extends unknown[]>(
@@ -208,7 +213,7 @@ export namespace mockApis {
     email?: string;
     displayName?: string;
     picture?: string;
-  }) {
+  }): IdentityApi {
     const {
       userEntityRef = 'user:default/test',
       ownershipEntityRefs = ['user:default/test'],
@@ -217,22 +222,18 @@ export namespace mockApis {
       displayName,
       picture,
     } = options ?? {};
-    return simpleInstance(
-      identityApiRef,
-      {
-        async getBackstageIdentity() {
-          return { type: 'user', ownershipEntityRefs, userEntityRef };
-        },
-        async getCredentials() {
-          return { token };
-        },
-        async getProfileInfo() {
-          return { email, displayName, picture };
-        },
-        async signOut() {},
+    return {
+      async getBackstageIdentity() {
+        return { type: 'user', ownershipEntityRefs, userEntityRef };
       },
-      identityMockSkeleton,
-    );
+      async getCredentials() {
+        return { token };
+      },
+      async getProfileInfo() {
+        return { email, displayName, picture };
+      },
+      async signOut() {},
+    };
   }
   export namespace identity {
     export const factory = simpleFactory(identityApiRef, identity);
@@ -261,11 +262,7 @@ export namespace mockApis {
     } else {
       authorize = () => authorizeInput;
     }
-    return simpleInstance(
-      permissionApiRef,
-      new MockPermissionApi(authorize),
-      permissionMockSkeleton,
-    );
+    return new MockPermissionApi(authorize);
   }
   export namespace permission {
     export const factory = simpleFactory(permissionApiRef, permission);
@@ -280,14 +277,22 @@ export namespace mockApis {
     snapshot: jest.fn(),
   });
   export function storage(options?: { data?: JsonObject }) {
-    return simpleInstance(
-      storageApiRef,
-      MockStorageApi.create(options?.data),
-      storageMockSkeleton,
-    );
+    return MockStorageApi.create(options?.data);
   }
   export namespace storage {
     export const factory = simpleFactory(storageApiRef, storage);
     export const mock = simpleMock(storageApiRef, storageMockSkeleton);
+  }
+
+  const translationMockSkeleton = (): jest.Mocked<TranslationApi> => ({
+    getTranslation: jest.fn(),
+    translation$: jest.fn(),
+  });
+  export function translation() {
+    return MockTranslationApi.create();
+  }
+  export namespace translation {
+    export const factory = simpleFactory(translationApiRef, translation);
+    export const mock = simpleMock(translationApiRef, translationMockSkeleton);
   }
 }

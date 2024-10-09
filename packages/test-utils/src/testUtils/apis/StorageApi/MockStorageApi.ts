@@ -20,14 +20,14 @@ import ObservableImpl from 'zen-observable';
 
 /**
  * Type for map holding data in {@link MockStorageApi}
- * @deprecated Use {@link mockApis.storage} instead
+ * @deprecated Use {@link @backstage/test-utils#mockApis.(storage:namespace)} instead
  * @public
  */
 export type MockStorageBucket = { [key: string]: any };
 
 /**
  * Mock implementation of the {@link core-plugin-api#StorageApi} to be used in tests
- * @deprecated Use {@link mockApis.storage} instead
+ * @deprecated Use {@link @backstage/test-utils#mockApis.(storage:namespace)} instead
  * @public
  */
 export class MockStorageApi implements StorageApi {
