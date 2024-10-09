@@ -18190,7 +18190,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/multer@npm:^1.4.11":
+"@types/multer@npm:^1.4.12":
   version: 1.4.12
   resolution: "@types/multer@npm:1.4.12"
   dependencies:
@@ -27112,11 +27112,11 @@ __metadata:
   linkType: hard
 
 "express-openapi-validator@npm:^5.0.4":
-  version: 5.3.6
-  resolution: "express-openapi-validator@npm:5.3.6"
+  version: 5.3.7
+  resolution: "express-openapi-validator@npm:5.3.7"
   dependencies:
     "@apidevtools/json-schema-ref-parser": ^11.7.0
-    "@types/multer": ^1.4.11
+    "@types/multer": ^1.4.12
     ajv: ^8.17.1
     ajv-draft-04: ^1.0.0
     ajv-formats: ^2.1.1
@@ -27127,10 +27127,10 @@ __metadata:
     media-typer: ^1.1.0
     multer: ^1.4.5-lts.1
     ono: ^7.1.3
-    path-to-regexp: ^6.3.0
+    path-to-regexp: ^8.1.0
   peerDependencies:
     express: "*"
-  checksum: 3833bc2351fe099aed5777c1254514316425d9188ad5002e6604259b36953d8304b8804b835cddc518e8a63f1d1c2288e7a83006400c2dc7e644f2e3cadfb755
+  checksum: 28be61484f68bbad3f2ec8304bf310e1c962ceefd21b9feea5e52187670715257a30e1d87173c773e36b1a182a10760ca16987f16649bf0b91f4bcca0b58cfbd
   languageName: node
   linkType: hard
 
@@ -36703,10 +36703,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"path-to-regexp@npm:^8.0.0":
-  version: 8.1.0
-  resolution: "path-to-regexp@npm:8.1.0"
-  checksum: 982b784f8dff704c04c79dc3e26d51d2dba340e6bd513a8bdc48559a8543d730547d9d2355122166171eb509236e7524802ed643f8a77d527e12c69ffc74f97f
+"path-to-regexp@npm:^8.0.0, path-to-regexp@npm:^8.1.0":
+  version: 8.2.0
+  resolution: "path-to-regexp@npm:8.2.0"
+  checksum: 56e13e45962e776e9e7cd72e87a441cfe41f33fd539d097237ceb16adc922281136ca12f5a742962e33d8dda9569f630ba594de56d8b7b6e49adf31803c5e771
   languageName: node
   linkType: hard
 
