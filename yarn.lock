@@ -3991,6 +3991,7 @@ __metadata:
     git-url-parse: ^15.0.0
     glob: ^7.1.7
     global-agent: ^3.0.0
+    globby: ^11.1.0
     handlebars: ^4.7.3
     html-webpack-plugin: ^5.3.1
     inquirer: ^8.2.0
