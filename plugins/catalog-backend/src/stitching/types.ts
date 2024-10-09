@@ -66,11 +66,15 @@ export function stitchingStrategyFromConfig(config: Config): StitchingStrategy {
       mode: 'immediate',
     };
   } else if (strategyMode === 'deferred') {
-    // TODO(freben): Make parameters configurable
+    const pollingInterval =
+      config.getOptionalNumber('catalog.stitchingStrategy.pollingInterval') ??
+      1;
+    const stitchTimeout =
+      config.getOptionalNumber('catalog.stitchingStrategy.stitchTimeout') ?? 60;
     return {
       mode: 'deferred',
-      pollingInterval: { seconds: 1 },
-      stitchTimeout: { seconds: 60 },
+      pollingInterval: { seconds: pollingInterval },
+      stitchTimeout: { seconds: stitchTimeout },
     };
   }
 
