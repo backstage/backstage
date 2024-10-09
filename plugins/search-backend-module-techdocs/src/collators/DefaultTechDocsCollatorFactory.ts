@@ -109,10 +109,8 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
       new CatalogClient({ discoveryApi: options.discovery });
     this.parallelismLimit = options.parallelismLimit ?? 10;
     this.legacyPathCasing = options.legacyPathCasing ?? false;
-    // @ts-ignore
-    this.entityTransformer = options.entityTransformer ?? (() => {});
-    // @ts-ignore
-    this.documentTransformer = options.documentTransformer ?? (() => {});
+    this.entityTransformer = options.entityTransformer ?? (() => ({}));
+    this.documentTransformer = options.documentTransformer ?? (() => ({}));
 
     this.auth = createLegacyAuthAdapters({
       auth: options.auth,
@@ -228,8 +226,8 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
               return searchIndex.docs.map((doc: MkSearchIndexDoc) => ({
                 ...defaultTechDocsCollatorEntityTransformer(entity),
                 ...defaultTechDocsCollatorDocumentTransformer(doc),
-                ...(this.entityTransformer(entity) ?? {}),
-                ...(this.documentTransformer(doc) ?? {}),
+                ...this.entityTransformer(entity),
+                ...this.documentTransformer(doc),
                 location: this.applyArgsToFormat(
                   this.locationTemplate || '/docs/:namespace/:kind/:name/:path',
                   {
