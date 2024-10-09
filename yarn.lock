@@ -8531,7 +8531,7 @@ __metadata:
     "@types/is-glob": ^4.0.2
     "@types/node": ^18.17.8
     "@types/prettier": ^2.0.0
-    "@useoptic/openapi-utilities": ^0.55.0
+    "@useoptic/openapi-utilities": ^1.0.0
     chalk: ^4.0.0
     codeowners-utils: ^1.0.2
     command-exists: ^1.2.9
@@ -19448,16 +19448,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@useoptic/json-pointer-helpers@npm:0.55.1":
-  version: 0.55.1
-  resolution: "@useoptic/json-pointer-helpers@npm:0.55.1"
-  dependencies:
-    jsonpointer: ^5.0.1
-    minimatch: 9.0.3
-  checksum: 874db1e25c4abecf29faf95c51d39d127ac50ee9f1ad9654babb3a0257a7c321e54312bf66214ac188e3f92f7e9c342fd81565356c0472689c120ea40465b15d
-  languageName: node
-  linkType: hard
-
 "@useoptic/json-pointer-helpers@npm:1.0.3":
   version: 1.0.3
   resolution: "@useoptic/json-pointer-helpers@npm:1.0.3"
@@ -19497,7 +19487,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@useoptic/openapi-utilities@npm:1.0.3":
+"@useoptic/openapi-utilities@npm:1.0.3, @useoptic/openapi-utilities@npm:^1.0.0":
   version: 1.0.3
   resolution: "@useoptic/openapi-utilities@npm:1.0.3"
   dependencies:
@@ -19519,31 +19509,6 @@ __metadata:
     url-join: ^4.0.1
     yaml-ast-parser: ^0.0.43
   checksum: c6142a55f29e0c4b813b621a70d9f1c937dcdc67ac04da5bd4bb729a58fd0e796ff52db4d55953466a815de306023861cb602c4a1fe60699afa2626368dca6bb
-  languageName: node
-  linkType: hard
-
-"@useoptic/openapi-utilities@npm:^0.55.0":
-  version: 0.55.1
-  resolution: "@useoptic/openapi-utilities@npm:0.55.1"
-  dependencies:
-    "@useoptic/json-pointer-helpers": 0.55.1
-    ajv: ^8.6.0
-    ajv-errors: ~3.0.0
-    ajv-formats: ~2.1.0
-    chalk: ^4.1.2
-    fast-deep-equal: ^3.1.3
-    is-url: ^1.2.4
-    js-yaml: ^4.1.0
-    json-stable-stringify: ^1.0.1
-    lodash.groupby: ^4.6.0
-    lodash.isequal: ^4.5.0
-    lodash.omit: ^4.5.0
-    node-machine-id: ^1.1.12
-    openapi-types: ^12.0.2
-    ts-invariant: ^0.9.3
-    url-join: ^4.0.1
-    yaml-ast-parser: ^0.0.43
-  checksum: 53f9ebc645d69cb1ede0263bb3dc2786cfb18f7e5a3da734898c3d9cc2109d581cd6238cec77e6eaae2f478da4ed134abca8255977e68fd06418966a65a9bbe6
   languageName: node
   linkType: hard
 

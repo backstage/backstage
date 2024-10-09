@@ -60,7 +60,7 @@
     "@stoplight/spectral-rulesets": "^1.18.0",
     "@stoplight/spectral-runtime": "^1.1.2",
     "@stoplight/types": "^14.0.0",
-    "@useoptic/openapi-utilities": "^0.55.0",
+    "@useoptic/openapi-utilities": "^1.0.0",
     "chalk": "^4.0.0",
     "codeowners-utils": "^1.0.2",
     "command-exists": "^1.2.9",
