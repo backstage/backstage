@@ -4978,6 +4978,7 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/frontend-test-utils": "workspace:^"
+    "@backstage/integration-react": "workspace:^"
     "@backstage/plugin-permission-react": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.9.13
