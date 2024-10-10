@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,50 +14,4 @@
  * limitations under the License.
  */
 
-/**
- * The Backstage backend plugin that renders technical documentation for your components
- *
- * @packageDocumentation
- */
-
-import { Entity } from '@backstage/catalog-model';
-import {
-  DocsBuildStrategy as _DocsBuildStrategy,
-  TechDocsDocument as _TechDocsDocument,
-} from '@backstage/plugin-techdocs-node';
-
-export { createRouter } from './service';
-export type {
-  RouterOptions,
-  RecommendedDeploymentOptions,
-  OutOfTheBoxDeploymentOptions,
-} from './service';
-
-export {
-  DefaultTechDocsCollator,
-  DefaultTechDocsCollatorFactory,
-} from './search';
-export type {
-  TechDocsCollatorFactoryOptions,
-  TechDocsCollatorOptions,
-} from './search';
-
-/**
- * @public
- * @deprecated import from `@backstage/plugin-techdocs-node` instead
- */
-export type DocsBuildStrategy = _DocsBuildStrategy;
-/**
- * @public
- * @deprecated use direct type definition instead
- */
-export type ShouldBuildParameters = {
-  entity: Entity;
-};
-/**
- * @public
- * @deprecated import from `@backstage/plugin-techdocs-node` instead
- */
-export type TechDocsDocument = _TechDocsDocument;
-
-export * from '@backstage/plugin-techdocs-node';
+export { techdocsPlugin as default } from './plugin';

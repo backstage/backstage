@@ -22,6 +22,7 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import {
   DocsBuildStrategy,
   Generators,
@@ -38,9 +39,8 @@ import {
   techdocsPreparerExtensionPoint,
   techdocsPublisherExtensionPoint,
 } from '@backstage/plugin-techdocs-node';
-import { createRouter } from '@backstage/plugin-techdocs-backend';
-import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import * as winston from 'winston';
+import { createRouter } from './service/router';
 
 /**
  * The TechDocs plugin is responsible for serving and building documentation for any entity.

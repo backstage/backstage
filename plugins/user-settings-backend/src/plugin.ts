@@ -18,16 +18,16 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { createRouterInternal } from './service/router';
 import { signalsServiceRef } from '@backstage/plugin-signals-node';
 import { DatabaseUserSettingsStore } from './database/DatabaseUserSettingsStore';
+import { createRouterInternal } from './service/router';
 
 /**
  * The user settings backend plugin.
  *
  * @alpha
  */
-export default createBackendPlugin({
+export const userSettingsPlugin = createBackendPlugin({
   pluginId: 'user-settings',
   register(env) {
     env.registerInit({
