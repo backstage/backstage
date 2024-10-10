@@ -153,7 +153,7 @@ describe('BitbucketCloudEntityProvider', () => {
 
   it('no provider config', () => {
     const auth = mockServices.auth.mock();
-    const catalogApi = catalogServiceMock.mock();
+    const catalogApi = catalogServiceMock();
     const config = new ConfigReader({});
     const events = DefaultEventsService.create({ logger });
     const providers = BitbucketCloudEntityProvider.fromConfig(config, {
@@ -169,7 +169,7 @@ describe('BitbucketCloudEntityProvider', () => {
 
   it('single simple provider config', () => {
     const auth = mockServices.auth.mock();
-    const catalogApi = catalogServiceMock.mock();
+    const catalogApi = catalogServiceMock();
     const events = DefaultEventsService.create({ logger });
     const providers = BitbucketCloudEntityProvider.fromConfig(simpleConfig, {
       auth,
@@ -187,7 +187,7 @@ describe('BitbucketCloudEntityProvider', () => {
 
   it('fail without schedule and scheduler', () => {
     const auth = mockServices.auth.mock();
-    const catalogApi = catalogServiceMock.mock();
+    const catalogApi = catalogServiceMock();
     const events = DefaultEventsService.create({ logger });
 
     expect(() =>
@@ -202,7 +202,7 @@ describe('BitbucketCloudEntityProvider', () => {
 
   it('fail with scheduler but no schedule config', () => {
     const auth = mockServices.auth.mock();
-    const catalogApi = catalogServiceMock.mock();
+    const catalogApi = catalogServiceMock();
     const events = DefaultEventsService.create({ logger });
     const scheduler = mockServices.scheduler.mock();
     const config = new ConfigReader({
@@ -230,7 +230,7 @@ describe('BitbucketCloudEntityProvider', () => {
 
   it('single simple provider config with schedule in config', () => {
     const auth = mockServices.auth.mock();
-    const catalogApi = catalogServiceMock.mock();
+    const catalogApi = catalogServiceMock();
     const events = DefaultEventsService.create({ logger });
     const scheduler = mockServices.scheduler.mock();
     const config = new ConfigReader({
@@ -263,7 +263,7 @@ describe('BitbucketCloudEntityProvider', () => {
 
   it('multiple provider configs', () => {
     const auth = mockServices.auth.mock();
-    const catalogApi = catalogServiceMock.mock();
+    const catalogApi = catalogServiceMock();
     const config = new ConfigReader({
       catalog: {
         providers: {
@@ -298,7 +298,7 @@ describe('BitbucketCloudEntityProvider', () => {
 
   it('apply full update on scheduled execution', async () => {
     const auth = mockServices.auth.mock();
-    const catalogApi = catalogServiceMock.mock();
+    const catalogApi = catalogServiceMock();
     const events = DefaultEventsService.create({ logger });
     const provider = BitbucketCloudEntityProvider.fromConfig(defaultConfig, {
       auth,
@@ -610,7 +610,8 @@ describe('BitbucketCloudEntityProvider', () => {
 
   it('no onRepoPush update on non-matching workspace slug', async () => {
     const auth = mockServices.auth.mock();
-    const catalogApi = catalogServiceMock.mock();
+    const catalogApi = catalogServiceMock();
+    jest.spyOn(catalogApi, 'refreshEntity');
     const events = DefaultEventsService.create({ logger });
     const provider = BitbucketCloudEntityProvider.fromConfig(defaultConfig, {
       auth,
@@ -641,7 +642,8 @@ describe('BitbucketCloudEntityProvider', () => {
 
   it('no onRepoPush update on non-matching repo slug', async () => {
     const auth = mockServices.auth.mock();
-    const catalogApi = catalogServiceMock.mock();
+    const catalogApi = catalogServiceMock();
+    jest.spyOn(catalogApi, 'refreshEntity');
     const events = DefaultEventsService.create({ logger });
     const provider = BitbucketCloudEntityProvider.fromConfig(defaultConfig, {
       auth,

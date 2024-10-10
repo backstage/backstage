@@ -17,11 +17,11 @@
 import { TokenManager } from '@backstage/backend-common';
 import {
   RELATION_MEMBER_OF,
-  UserEntity,
   UserEntityV1alpha1,
 } from '@backstage/catalog-model';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { CatalogIdentityClient } from './CatalogIdentityClient';
+import { mockServices } from '@backstage/backend-test-utils';
 
 describe('CatalogIdentityClient', () => {
   const tokenManager: jest.Mocked<TokenManager> = {
@@ -32,14 +32,25 @@ describe('CatalogIdentityClient', () => {
   afterEach(() => jest.resetAllMocks());
 
   it('findUser passes through the correct search params', async () => {
-    const catalogApi = catalogServiceMock.mock({
-      getEntities: jest
-        .fn()
-        .mockResolvedValueOnce({ items: [{} as UserEntity] }),
+    const catalogApi = catalogServiceMock({
+      entities: [
+        {
+          apiVersion: 'backstage.io/v1beta1',
+          kind: 'User',
+          metadata: {
+            name: 'user',
+            namespace: 'default',
+            annotations: { key: 'value' },
+          },
+          spec: {},
+        },
+      ],
     });
+    jest.spyOn(catalogApi, 'getEntities');
+
     tokenManager.getToken.mockResolvedValue({ token: 'my-token' });
     const client = new CatalogIdentityClient({
-      discovery: {} as any,
+      discovery: mockServices.discovery(),
       catalogApi,
       tokenManager,
     });
@@ -94,9 +105,8 @@ describe('CatalogIdentityClient', () => {
         ],
       },
     ];
-    const catalogApi = catalogServiceMock.mock({
-      getEntities: jest.fn().mockResolvedValueOnce({ items: mockUsers }),
-    });
+    const catalogApi = catalogServiceMock({ entities: mockUsers });
+    jest.spyOn(catalogApi, 'getEntities');
     tokenManager.getToken.mockResolvedValue({ token: 'my-token' });
 
     const client = new CatalogIdentityClient({

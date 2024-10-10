@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Config, ConfigReader } from '@backstage/config';
 import {
   ANNOTATION_KUBERNETES_API_SERVER,
   ANNOTATION_KUBERNETES_API_SERVER_CA,
@@ -28,8 +27,8 @@ import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 
 describe('getCombinedClusterSupplier', () => {
   it('should retrieve cluster details from config', async () => {
-    const config: Config = new ConfigReader(
-      {
+    const config = mockServices.rootConfig({
+      data: {
         kubernetes: {
           clusterLocatorMethods: [
             {
@@ -51,8 +50,7 @@ describe('getCombinedClusterSupplier', () => {
           ],
         },
       },
-      'ctx',
-    );
+    });
     const mockStrategy: jest.Mocked<AuthenticationStrategy> = {
       getCredential: jest.fn(),
       validateCluster: jest.fn().mockReturnValue([]),
@@ -98,17 +96,16 @@ describe('getCombinedClusterSupplier', () => {
   });
 
   it('throws an error when using an unsupported cluster locator', async () => {
-    const config: Config = new ConfigReader(
-      { kubernetes: { clusterLocatorMethods: [{ type: 'magic' }] } },
-      'ctx',
-    );
+    const config = mockServices.rootConfig({
+      data: { kubernetes: { clusterLocatorMethods: [{ type: 'magic' }] } },
+    });
 
     const auth = mockServices.auth();
 
     expect(() =>
       getCombinedClusterSupplier(
         config,
-        catalogServiceMock.mock(),
+        catalogServiceMock(),
         new DispatchStrategy({ authStrategyMap: {} }),
         mockServices.logger.mock(),
         undefined,
@@ -122,8 +119,8 @@ describe('getCombinedClusterSupplier', () => {
   it('logs a warning when two clusters have the same name', async () => {
     const logger = mockServices.logger.mock();
     const warn = jest.spyOn(logger, 'warn');
-    const config: Config = new ConfigReader(
-      {
+    const config = mockServices.rootConfig({
+      data: {
         kubernetes: {
           clusterLocatorMethods: [
             {
@@ -136,8 +133,7 @@ describe('getCombinedClusterSupplier', () => {
           ],
         },
       },
-      'ctx',
-    );
+    });
     const mockStrategy: jest.Mocked<AuthenticationStrategy> = {
       getCredential: jest.fn(),
       validateCluster: jest.fn().mockReturnValue([]),

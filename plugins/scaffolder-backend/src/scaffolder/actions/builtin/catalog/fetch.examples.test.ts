@@ -23,7 +23,15 @@ import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 
 describe('catalog:fetch examples', () => {
-  const catalogClient = catalogServiceMock.mock();
+  const entity = {
+    kind: 'Component',
+    metadata: {
+      name: 'name',
+      namespace: 'default',
+    },
+  } as Entity;
+
+  const catalogClient = catalogServiceMock({ entities: [entity] });
 
   const action = createFetchCatalogEntityAction({
     catalogClient,
@@ -43,18 +51,11 @@ describe('catalog:fetch examples', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
+    jest.spyOn(catalogClient, 'getEntityByRef');
   });
 
   describe('fetch single entity', () => {
     it('should return entity from catalog', async () => {
-      catalogClient.getEntityByRef.mockResolvedValueOnce({
-        metadata: {
-          namespace: 'default',
-          name: 'name',
-        },
-        kind: 'Component',
-      } as Entity);
-
       await action.handler({
         ...mockContext,
         input: yaml.parse(examples[0].example).steps[0].input,
@@ -64,13 +65,7 @@ describe('catalog:fetch examples', () => {
         'component:default/name',
         { token },
       );
-      expect(mockContext.output).toHaveBeenCalledWith('entity', {
-        metadata: {
-          namespace: 'default',
-          name: 'name',
-        },
-        kind: 'Component',
-      });
+      expect(mockContext.output).toHaveBeenCalledWith('entity', entity);
     });
   });
 });

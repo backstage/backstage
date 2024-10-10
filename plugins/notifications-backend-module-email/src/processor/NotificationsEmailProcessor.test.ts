@@ -35,6 +35,10 @@ const DEFAULT_ENTITIES_RESPONSE = {
   items: [
     {
       kind: 'User',
+      metadata: {
+        name: 'mock',
+        namespace: 'default',
+      },
       spec: {
         profile: {
           email: 'mock@backstage.io',
@@ -64,7 +68,6 @@ const DEFAULT_SENDMAIL_CONFIG = {
 describe('NotificationsEmailProcessor', () => {
   const logger = mockServices.logger.mock();
   const auth = mockServices.auth();
-  const catalog = catalogServiceMock.mock();
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -93,7 +96,7 @@ describe('NotificationsEmailProcessor', () => {
           },
         },
       }),
-      catalog,
+      catalogServiceMock(),
       auth,
     );
 
@@ -140,7 +143,7 @@ describe('NotificationsEmailProcessor', () => {
           },
         },
       }),
-      catalog,
+      catalogServiceMock(),
       auth,
     );
 
@@ -184,7 +187,7 @@ describe('NotificationsEmailProcessor', () => {
           },
         },
       }),
-      catalog,
+      catalogServiceMock(),
       auth,
     );
 
@@ -212,13 +215,10 @@ describe('NotificationsEmailProcessor', () => {
 
   it('should send user email', async () => {
     (createTransport as jest.Mock).mockReturnValue(mockTransport);
-    catalog.getEntityByRef.mockResolvedValue(
-      DEFAULT_ENTITIES_RESPONSE.items[0],
-    );
     const processor = new NotificationsEmailProcessor(
       logger,
       mockServices.rootConfig({ data: DEFAULT_SENDMAIL_CONFIG }),
-      catalog,
+      catalogServiceMock({ entities: [DEFAULT_ENTITIES_RESPONSE.items[0]] }),
       auth,
     );
 
@@ -248,7 +248,6 @@ describe('NotificationsEmailProcessor', () => {
 
   it('should send email to all', async () => {
     (createTransport as jest.Mock).mockReturnValue(mockTransport);
-    catalog.getEntities.mockResolvedValue(DEFAULT_ENTITIES_RESPONSE);
     const processor = new NotificationsEmailProcessor(
       logger,
       mockServices.rootConfig({
@@ -266,7 +265,7 @@ describe('NotificationsEmailProcessor', () => {
           },
         },
       }),
-      catalog,
+      catalogServiceMock({ entities: DEFAULT_ENTITIES_RESPONSE.items }),
       auth,
     );
 
@@ -296,7 +295,6 @@ describe('NotificationsEmailProcessor', () => {
 
   it('should send email to configured addresses', async () => {
     (createTransport as jest.Mock).mockReturnValue(mockTransport);
-    catalog.getEntities.mockResolvedValue(DEFAULT_ENTITIES_RESPONSE);
     const processor = new NotificationsEmailProcessor(
       logger,
       mockServices.rootConfig({
@@ -315,7 +313,7 @@ describe('NotificationsEmailProcessor', () => {
           },
         },
       }),
-      catalog,
+      catalogServiceMock({ entities: DEFAULT_ENTITIES_RESPONSE.items }),
       auth,
     );
 
@@ -345,15 +343,12 @@ describe('NotificationsEmailProcessor', () => {
 
   it('should send email with relative link to given address', async () => {
     (createTransport as jest.Mock).mockReturnValue(mockTransport);
-    catalog.getEntityByRef.mockResolvedValue(
-      DEFAULT_ENTITIES_RESPONSE.items[0],
-    );
     const processor = new NotificationsEmailProcessor(
       logger,
       mockServices.rootConfig({
         data: DEFAULT_SENDMAIL_CONFIG,
       }),
-      catalog,
+      catalogServiceMock({ entities: DEFAULT_ENTITIES_RESPONSE.items }),
       auth,
     );
 
@@ -412,15 +407,12 @@ describe('NotificationsEmailProcessor', () => {
 
   it('should send email with absolute link to given address', async () => {
     (createTransport as jest.Mock).mockReturnValue(mockTransport);
-    catalog.getEntityByRef.mockResolvedValue(
-      DEFAULT_ENTITIES_RESPONSE.items[0],
-    );
     const processor = new NotificationsEmailProcessor(
       logger,
       mockServices.rootConfig({
         data: DEFAULT_SENDMAIL_CONFIG,
       }),
-      catalog,
+      catalogServiceMock({ entities: DEFAULT_ENTITIES_RESPONSE.items }),
       auth,
     );
 

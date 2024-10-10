@@ -55,7 +55,7 @@ describe('createRouter', () => {
   const config = mockServices.rootConfig({
     data: { app: { baseUrl: 'http://localhost' } },
   });
-  const catalog = catalogServiceMock.mock();
+  const catalog = catalogServiceMock();
 
   beforeAll(async () => {
     const router = await createRouter({
