@@ -125,13 +125,15 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
   });
 
   if (process.env.EXPERIMENTAL_VITE) {
-    const vite = require('vite');
-    const { default: viteReact } = require('@vitejs/plugin-react');
-    const { default: viteYaml } = require('@modyfi/vite-plugin-yaml');
-    const {
-      nodePolyfills: viteNodePolyfills,
-    } = require('vite-plugin-node-polyfills');
-    const { createHtmlPlugin: viteHtml } = require('vite-plugin-html');
+    const vite = require('vite') as typeof import('vite');
+    const { default: viteReact } =
+      require('@vitejs/plugin-react') as typeof import('@vitejs/plugin-react');
+    const { default: viteYaml } =
+      require('@modyfi/vite-plugin-yaml') as typeof import('@modyfi/vite-plugin-yaml');
+    const { nodePolyfills: viteNodePolyfills } =
+      require('vite-plugin-node-polyfills') as typeof import('vite-plugin-node-polyfills');
+    const { createHtmlPlugin: viteHtml } =
+      require('vite-plugin-html') as typeof import('vite-plugin-html');
 
     viteServer = await vite.createServer({
       define: {
@@ -146,9 +148,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
           plugins: [
             {
               name: 'custom-define',
-              setup(build: {
-                initialOptions: { define: Record<string, string> };
-              }) {
+              setup(build) {
                 const define = (build.initialOptions.define ||= {});
                 define['process.env.HAS_REACT_DOM_CLIENT'] = JSON.stringify(
                   hasReactDomClient(),
