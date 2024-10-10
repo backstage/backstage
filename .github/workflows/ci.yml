@@ -238,7 +238,9 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: .cache/backstage-cli
-          key: ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli
+          key: ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli-
 
       - name: lint changed packages
         run: yarn backstage-cli repo lint --since origin/master --successCache --successCacheDir .cache/backstage-cli
@@ -258,7 +260,7 @@ jobs:
         if: always()
         with:
           path: .cache/backstage-cli
-          key: ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli
+          key: ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli-${{ github.run_id }}
 
       # We run the test cases before verifying the specs to prevent any failing tests from causing errors.
       - name: verify openapi specs against test cases

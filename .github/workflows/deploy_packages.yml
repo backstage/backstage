@@ -97,7 +97,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .cache/backstage-cli
-          key: ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli
+          key: ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli-
 
       - name: lint
         run: yarn backstage-cli repo lint --successCache --successCacheDir .cache/backstage-cli
