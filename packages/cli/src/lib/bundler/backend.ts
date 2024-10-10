@@ -20,24 +20,17 @@ import { resolveBundlingPaths } from './paths';
 import { BackendServeOptions } from './types';
 
 export async function serveBackend(options: BackendServeOptions) {
-  const useRspack = !!process.env.EXPERIMENTAL_RSPACK;
-
   const paths = resolveBundlingPaths(options);
   const config = await createBackendConfig(paths, {
     ...options,
     isDev: true,
-    useRspack,
   });
 
   // Webpack only replaces occurrences of this in code it touches, which does
   // not include dependencies in node_modules. So we set it here at runtime as well.
   (process.env as { NODE_ENV: string }).NODE_ENV = 'development';
 
-  const bundler: typeof webpack = useRspack
-    ? require('@rspack/core').rspack
-    : webpack;
-
-  const compiler = bundler(config, (err: Error | null) => {
+  const compiler = webpack(config, (err: Error | null) => {
     if (err) {
       console.error(err);
     } else console.log('Build succeeded');

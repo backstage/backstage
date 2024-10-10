@@ -447,7 +447,7 @@ export async function createBackendConfig(
   paths: BundlingPaths,
   options: BackendBundlingOptions,
 ): Promise<webpack.Configuration> {
-  const { checksEnabled, isDev, useRspack } = options;
+  const { checksEnabled, isDev } = options;
 
   // Find all local monorepo packages and their node_modules, and mark them as external.
   const { packages } = await getPackages(cliPaths.targetDir);
@@ -518,16 +518,13 @@ export async function createBackendConfig(
       extensions: ['.ts', '.mjs', '.js', '.json'],
       mainFields: ['main'],
       modules: [paths.rootNodeModules, ...moduleDirs],
-      // FIXME: see also https://github.com/web-infra-dev/rspack/issues/3408
-      ...(!useRspack && {
-        plugins: [
-          new LinkedPackageResolvePlugin(paths.rootNodeModules, externalPkgs),
-          new ModuleScopePlugin(
-            [paths.targetSrc, paths.targetDev],
-            [paths.targetPackageJson],
-          ),
-        ],
-      }),
+      plugins: [
+        new LinkedPackageResolvePlugin(paths.rootNodeModules, externalPkgs),
+        new ModuleScopePlugin(
+          [paths.targetSrc, paths.targetDev],
+          [paths.targetPackageJson],
+        ),
+      ],
     },
     module: {
       rules: loaders,
@@ -554,9 +551,7 @@ export async function createBackendConfig(
         nodeArgs: runScriptNodeArgs.length > 0 ? runScriptNodeArgs : undefined,
         args: process.argv.slice(3), // drop `node backstage-cli backend:dev`
       }),
-      new (useRspack
-        ? require('@rspack/core').rspack.HotModuleReplacementPlugin
-        : webpack.HotModuleReplacementPlugin)(),
+      new webpack.HotModuleReplacementPlugin(),
       ...(checksEnabled
         ? [
             new ForkTsCheckerWebpackPlugin({
