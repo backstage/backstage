@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,27 +14,9 @@
  * limitations under the License.
  */
 
-/**
- * CLI for developing Backstage plugins and apps
- *
- * @packageDocumentation
- */
+const path = require('path');
 
-import { program } from 'commander';
-import chalk from 'chalk';
-import { registerCommands } from './commands';
-
-const main = (argv: string[]) => {
-  registerCommands(program);
-  program.on('command:*', () => {
-    console.log();
-    console.log(chalk.red(`Invalid command: ${program.args.join(' ')}`));
-    console.log();
-    program.outputHelp();
-    process.exit(1);
-  });
-
-  program.parse(argv);
-};
-
-main(process.argv);
+module.exports = require('@backstage/cli/config/jest').then(baseConfig => ({
+  ...baseConfig,
+  rootDir: path.resolve(__dirname, 'cli-e2e-tests'),
+}));
