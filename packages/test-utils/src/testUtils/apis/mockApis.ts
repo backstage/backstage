@@ -134,7 +134,7 @@ export namespace mockApis {
    *
    * @public
    */
-  export function analytics() {
+  export function analytics(): AnalyticsApi {
     return analyticsMockSkeleton();
   }
   /**
@@ -212,26 +212,19 @@ export namespace mockApis {
     }));
   }
 
-  const discoveryMockSkeleton = (): jest.Mocked<DiscoveryApi> => ({
-    getBaseUrl: jest.fn(),
-  });
   /**
    * Fake implementation of {@link @backstage/core-plugin-api#DiscoveryApi}. By
    * default returns URLs on the form `http://example.com/api/<pluginIs>`.
    *
    * @public
    */
-  export function discovery(options?: { baseUrl?: string }) {
+  export function discovery(options?: { baseUrl?: string }): DiscoveryApi {
     const baseUrl = options?.baseUrl ?? 'http://example.com';
-    return simpleInstance(
-      discoveryApiRef,
-      {
-        async getBaseUrl(pluginId: string) {
-          return `${baseUrl}/api/${pluginId}`;
-        },
+    return {
+      async getBaseUrl(pluginId: string) {
+        return `${baseUrl}/api/${pluginId}`;
       },
-      discoveryMockSkeleton,
-    );
+    };
   }
   /**
    * Mock implementations of {@link @backstage/core-plugin-api#DiscoveryApi}.
@@ -240,15 +233,11 @@ export namespace mockApis {
    */
   export namespace discovery {
     export const factory = simpleFactory(discoveryApiRef, discovery);
-    export const mock = simpleMock(discoveryApiRef, discoveryMockSkeleton);
+    export const mock = simpleMock(discoveryApiRef, () => ({
+      getBaseUrl: jest.fn(),
+    }));
   }
 
-  const identityMockSkeleton = (): jest.Mocked<IdentityApi> => ({
-    getBackstageIdentity: jest.fn(),
-    getCredentials: jest.fn(),
-    getProfileInfo: jest.fn(),
-    signOut: jest.fn(),
-  });
   /**
    * Fake implementation of {@link @backstage/core-plugin-api#IdentityApi}. By
    * default returns no token or profile info, and the user `user:default/test`.
@@ -291,12 +280,17 @@ export namespace mockApis {
    */
   export namespace identity {
     export const factory = simpleFactory(identityApiRef, identity);
-    export const mock = simpleMock(identityApiRef, identityMockSkeleton);
+    export const mock = simpleMock(
+      identityApiRef,
+      (): jest.Mocked<IdentityApi> => ({
+        getBackstageIdentity: jest.fn(),
+        getCredentials: jest.fn(),
+        getProfileInfo: jest.fn(),
+        signOut: jest.fn(),
+      }),
+    );
   }
 
-  const permissionMockSkeleton = (): jest.Mocked<PermissionApi> => ({
-    authorize: jest.fn(),
-  });
   /**
    * Fake implementation of
    * {@link @backstage/plugin-permission-react#PermissionApi}. By default allows
@@ -311,7 +305,7 @@ export namespace mockApis {
       | ((
           request: EvaluatePermissionRequest,
         ) => AuthorizeResult.ALLOW | AuthorizeResult.DENY);
-  }) {
+  }): PermissionApi {
     const authorizeInput = options?.authorize;
     let authorize: (
       request: EvaluatePermissionRequest,
@@ -333,23 +327,18 @@ export namespace mockApis {
    */
   export namespace permission {
     export const factory = simpleFactory(permissionApiRef, permission);
-    export const mock = simpleMock(permissionApiRef, permissionMockSkeleton);
+    export const mock = simpleMock(permissionApiRef, () => ({
+      authorize: jest.fn(),
+    }));
   }
 
-  const storageMockSkeleton = (): jest.Mocked<StorageApi> => ({
-    forBucket: jest.fn(),
-    set: jest.fn(),
-    remove: jest.fn(),
-    observe$: jest.fn(),
-    snapshot: jest.fn(),
-  });
   /**
    * Fake implementation of {@link @backstage/core-plugin-api#StorageApi}.
    * Stores data temporarily in memory.
    *
    * @public
    */
-  export function storage(options?: { data?: JsonObject }) {
+  export function storage(options?: { data?: JsonObject }): StorageApi {
     return MockStorageApi.create(options?.data);
   }
   /**
@@ -359,20 +348,22 @@ export namespace mockApis {
    */
   export namespace storage {
     export const factory = simpleFactory(storageApiRef, storage);
-    export const mock = simpleMock(storageApiRef, storageMockSkeleton);
+    export const mock = simpleMock(storageApiRef, () => ({
+      forBucket: jest.fn(),
+      set: jest.fn(),
+      remove: jest.fn(),
+      observe$: jest.fn(),
+      snapshot: jest.fn(),
+    }));
   }
 
-  const translationMockSkeleton = (): jest.Mocked<TranslationApi> => ({
-    getTranslation: jest.fn(),
-    translation$: jest.fn(),
-  });
   /**
    * Fake implementation of {@link @backstage/core-plugin-api/alpha#TranslationApi}.
    * By default returns the default translation.
    *
    * @public
    */
-  export function translation() {
+  export function translation(): TranslationApi {
     return MockTranslationApi.create();
   }
   /**
@@ -382,6 +373,9 @@ export namespace mockApis {
    */
   export namespace translation {
     export const factory = simpleFactory(translationApiRef, translation);
-    export const mock = simpleMock(translationApiRef, translationMockSkeleton);
+    export const mock = simpleMock(translationApiRef, () => ({
+      getTranslation: jest.fn(),
+      translation$: jest.fn(),
+    }));
   }
 }
