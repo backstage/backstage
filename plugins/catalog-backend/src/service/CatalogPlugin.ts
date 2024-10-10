@@ -42,6 +42,7 @@ import {
 import { merge } from 'lodash';
 import { Permission } from '@backstage/plugin-permission-common';
 import { ForwardedError } from '@backstage/errors';
+import { constrainedMemory } from 'node:process';
 
 class CatalogLocationsExtensionPointImpl
   implements CatalogLocationsExtensionPoint
@@ -301,10 +302,13 @@ export const catalogPlugin = createBackendPlugin({
 
         const { processingEngine, router } = await builder.build();
 
-        lifecycle.addStartupHook(async () => {
-          await processingEngine.start();
-        });
-        lifecycle.addShutdownHook(() => processingEngine.stop());
+        if (config.getOptionalBoolean('catalog.processingEnabled') ?? true) {
+          lifecycle.addStartupHook(async () => {
+            await processingEngine.start();
+          });
+          lifecycle.addShutdownHook(() => processingEngine.stop());
+        }
+
         httpRouter.use(router);
       },
     });
