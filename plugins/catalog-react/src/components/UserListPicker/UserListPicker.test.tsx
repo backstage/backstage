@@ -66,11 +66,13 @@ const mockConfigApi = mockApis.config({
 });
 
 const mockCatalogApi = catalogApiMock.mock();
+jest.spyOn(mockCatalogApi, 'queryEntities');
 
 const mockIdentityApi = mockApis.identity({
   userEntityRef: ownershipEntityRefs[0],
   ownershipEntityRefs,
 });
+jest.spyOn(mockIdentityApi, 'getBackstageIdentity');
 
 const mockStarredEntitiesApi = new MockStarredEntitiesApi();
 

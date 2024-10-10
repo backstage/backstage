@@ -58,7 +58,7 @@ describe('IdentityAuthInjectorFetchMiddleware', () => {
   });
 
   it('injects the header only when a token is available', async () => {
-    const identityApi = mockApis.identity();
+    const identityApi = mockApis.identity.mock();
 
     const middleware = new IdentityAuthInjectorFetchMiddleware(
       identityApi,

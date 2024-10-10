@@ -40,7 +40,6 @@ describe('TechDocsStorageClient', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-    identityApi.getCredentials.mockResolvedValue({ token: undefined });
   });
 
   it('should return correct base url based on defined storage', async () => {
@@ -92,7 +91,6 @@ describe('TechDocsStorageClient', () => {
         await Promise.resolve();
         onmessage?.({ id: '', event: 'finish', data: '{"updated": false}' });
       });
-      identityApi.getCredentials.mockResolvedValue({});
       await storageApi.syncEntityDocs(mockEntity);
 
       expect(mockFetchEventSource).toHaveBeenCalledWith(
@@ -123,7 +121,6 @@ describe('TechDocsStorageClient', () => {
         onmessage?.({ id: '', event: 'finish', data: '{"updated": false}' });
       });
 
-      identityApi.getCredentials.mockResolvedValue({});
       await expect(storageApi.syncEntityDocs(mockEntity)).resolves.toEqual(
         'cached',
       );
@@ -143,7 +140,6 @@ describe('TechDocsStorageClient', () => {
         onmessage?.({ id: '', event: 'finish', data: '{"updated": true}' });
       });
 
-      identityApi.getCredentials.mockResolvedValue({});
       await expect(storageApi.syncEntityDocs(mockEntity)).resolves.toEqual(
         'updated',
       );
@@ -166,7 +162,6 @@ describe('TechDocsStorageClient', () => {
         onmessage?.({ id: '', event: 'finish', data: '{"updated": false}' });
       });
 
-      identityApi.getCredentials.mockResolvedValue({});
       const logHandler = jest.fn();
       await expect(
         storageApi.syncEntityDocs(mockEntity, logHandler),
@@ -189,7 +184,6 @@ describe('TechDocsStorageClient', () => {
       });
 
       // we await later after we emitted the error
-      identityApi.getCredentials.mockResolvedValue({});
       const promise = storageApi.syncEntityDocs(mockEntity).then();
 
       await expect(promise).rejects.toThrow(NotFoundError);
@@ -204,7 +198,6 @@ describe('TechDocsStorageClient', () => {
       });
 
       // we await later after we emitted the error
-      identityApi.getCredentials.mockResolvedValue({});
       const promise = storageApi.syncEntityDocs(mockEntity).then();
 
       mockFetchEventSource.mockImplementation(async (_url, options) => {

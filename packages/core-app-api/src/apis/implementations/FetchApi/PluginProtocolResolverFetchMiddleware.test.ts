@@ -21,7 +21,7 @@ describe('PluginProtocolResolverFetchMiddleware', () => {
   it.each([['https://passthrough.com/a']])(
     'passes through regular URLs, %p',
     async url => {
-      const discoveryApi = mockApis.discovery();
+      const discoveryApi = mockApis.discovery.mock();
       const middleware = new PluginProtocolResolverFetchMiddleware(
         discoveryApi,
       );

@@ -131,7 +131,7 @@ describe('useAsyncEntity', () => {
   });
 
   it('should provide entityRef analytics context', () => {
-    const analyticsSpy = mockApis.analytics();
+    const analyticsSpy = mockApis.analytics.mock();
     const apis = TestApiRegistry.from([analyticsApiRef, analyticsSpy]);
     const { result } = renderHook(() => useAnalytics(), {
       wrapper: ({ children }: React.PropsWithChildren<{}>) => (
@@ -154,7 +154,7 @@ describe('useAsyncEntity', () => {
   });
 
   it('should omit entityRef analytics context', () => {
-    const analyticsSpy = mockApis.analytics();
+    const analyticsSpy = mockApis.analytics.mock();
     const apis = TestApiRegistry.from([analyticsApiRef, analyticsSpy]);
     const { result } = renderHook(() => useAnalytics(), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (

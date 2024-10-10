@@ -39,6 +39,7 @@ const mockIdentityApi = mockApis.identity({
   ownershipEntityRefs: ['user:default/spiderman', 'user:group/a-group'],
   userEntityRef: 'user:default/spiderman',
 });
+jest.spyOn(mockIdentityApi, 'getBackstageIdentity');
 
 jest.mock('@backstage/core-plugin-api', () => {
   const actual = jest.requireActual('@backstage/core-plugin-api');

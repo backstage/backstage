@@ -25,7 +25,7 @@ import { createTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 describe('mockApis', () => {
   describe('analytics', () => {
-    it('can create an instance and make assertions on it', () => {
+    it('can create an instance', () => {
       const analytics = mockApis.analytics();
       expect(
         analytics.captureEvent({
@@ -34,7 +34,6 @@ describe('mockApis', () => {
           context: { pluginId: 'c', extension: 'd', routeRef: 'e' },
         }),
       ).toBeUndefined();
-      expect(analytics.captureEvent).toHaveBeenCalledTimes(1);
     });
 
     it('can create a mock and make assertions on it', async () => {
@@ -80,18 +79,16 @@ describe('mockApis', () => {
   });
 
   describe('discovery', () => {
-    it('can create an instance and make assertions on it', async () => {
+    it('can create an instance', async () => {
       const empty = mockApis.discovery();
       await expect(empty.getBaseUrl('catalog')).resolves.toBe(
         'http://example.com/api/catalog',
       );
-      expect(empty.getBaseUrl).toHaveBeenCalledTimes(1);
 
       const notEmpty = mockApis.discovery({ baseUrl: 'https://other.net' });
       await expect(notEmpty.getBaseUrl('catalog')).resolves.toBe(
         'https://other.net/api/catalog',
       );
-      expect(notEmpty.getBaseUrl).toHaveBeenCalledTimes(1);
     });
 
     it('can create a mock and make assertions on it', async () => {
@@ -108,7 +105,7 @@ describe('mockApis', () => {
   });
 
   describe('identity', () => {
-    it('can create an instance and make assertions on it', async () => {
+    it('can create an instance', async () => {
       const empty = mockApis.identity();
       await expect(empty.getBackstageIdentity()).resolves.toEqual({
         type: 'user',
@@ -118,10 +115,6 @@ describe('mockApis', () => {
       await expect(empty.getCredentials()).resolves.toEqual({});
       await expect(empty.getProfileInfo()).resolves.toEqual({});
       await expect(empty.signOut()).resolves.toBeUndefined();
-      expect(empty.getBackstageIdentity).toHaveBeenCalledTimes(1);
-      expect(empty.getCredentials).toHaveBeenCalledTimes(1);
-      expect(empty.getProfileInfo).toHaveBeenCalledTimes(1);
-      expect(empty.signOut).toHaveBeenCalledTimes(1);
 
       const notEmpty = mockApis.identity({
         userEntityRef: 'a',
@@ -143,10 +136,6 @@ describe('mockApis', () => {
         picture: 'f',
       });
       await expect(notEmpty.signOut()).resolves.toBeUndefined();
-      expect(notEmpty.getBackstageIdentity).toHaveBeenCalledTimes(1);
-      expect(notEmpty.getCredentials).toHaveBeenCalledTimes(1);
-      expect(notEmpty.getProfileInfo).toHaveBeenCalledTimes(1);
-      expect(notEmpty.signOut).toHaveBeenCalledTimes(1);
     });
 
     it('can create a mock and make assertions on it', async () => {
@@ -194,7 +183,7 @@ describe('mockApis', () => {
   });
 
   describe('permission', () => {
-    it('can create an instance and make assertions on it', async () => {
+    it('can create an instance', async () => {
       // default allow
       const permission1 = mockApis.permission();
       await expect(
@@ -205,7 +194,6 @@ describe('mockApis', () => {
           }),
         }),
       ).resolves.toEqual({ result: AuthorizeResult.ALLOW });
-      expect(permission1.authorize).toHaveBeenCalledTimes(1);
 
       // static value
       const permission2 = mockApis.permission({
@@ -219,7 +207,6 @@ describe('mockApis', () => {
           }),
         }),
       ).resolves.toEqual({ result: AuthorizeResult.DENY });
-      expect(permission2.authorize).toHaveBeenCalledTimes(1);
 
       // callback form
       const permission3 = mockApis.permission({
@@ -244,7 +231,6 @@ describe('mockApis', () => {
           }),
         }),
       ).resolves.toEqual({ result: AuthorizeResult.DENY });
-      expect(permission3.authorize).toHaveBeenCalledTimes(2);
     });
 
     it('can create a mock and make assertions on it', async () => {
@@ -548,10 +534,9 @@ describe('mockApis', () => {
       });
     });
 
-    it('can create an instance and make assertions on it', () => {
+    it('can create an instance', () => {
       const empty = mockApis.storage();
       expect(empty.snapshot('a')).toEqual({ key: 'a', presence: 'absent' });
-      expect(empty.snapshot).toHaveBeenCalledTimes(1);
 
       const notEmpty = mockApis.storage({ data: { a: 1, b: { c: 2 } } });
       expect(notEmpty.snapshot('a')).toEqual({
@@ -564,8 +549,6 @@ describe('mockApis', () => {
         presence: 'present',
         value: 2,
       });
-      expect(notEmpty.snapshot).toHaveBeenCalledTimes(1); // "inner" (forBucket returned) instances aren't mocked
-      expect(notEmpty.forBucket).toHaveBeenCalledTimes(1);
     });
 
     it('can create a mock and make assertions on it', () => {
@@ -750,7 +733,7 @@ describe('mockApis', () => {
       });
     });
 
-    it('can create an instance and make assertions on it', () => {
+    it('can create an instance', () => {
       const translation = mockApis.translation();
       const ref = createTranslationRef({
         id: 'test',
@@ -761,7 +744,6 @@ describe('mockApis', () => {
         throw new Error('not ready');
       }
       expect(result.t('a')).toEqual('b');
-      expect(translation.getTranslation).toHaveBeenCalledTimes(1);
     });
 
     it('can create a mock and make assertions on it', () => {

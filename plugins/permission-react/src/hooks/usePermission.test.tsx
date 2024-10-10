@@ -67,6 +67,7 @@ describe('usePermission', () => {
     const permissionApi = mockApis.permission({
       authorize: AuthorizeResult.ALLOW,
     });
+    jest.spyOn(permissionApi, 'authorize');
 
     const { findByText } = renderComponent(permissionApi);
 
@@ -78,6 +79,7 @@ describe('usePermission', () => {
     const permissionApi = mockApis.permission({
       authorize: AuthorizeResult.DENY,
     });
+    jest.spyOn(permissionApi, 'authorize');
 
     const { findByText } = renderComponent(permissionApi);
 

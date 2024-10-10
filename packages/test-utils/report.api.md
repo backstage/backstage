@@ -92,7 +92,7 @@ export class MockAnalyticsApi implements AnalyticsApi {
 
 // @public
 export namespace mockApis {
-  export function analytics(): jest.Mocked<AnalyticsApi>;
+  export function analytics(): AnalyticsApi;
   export namespace analytics {
     const // (undocumented)
       factory: () => ApiFactory<AnalyticsApi, AnalyticsApi, {}>;
@@ -112,9 +112,7 @@ export namespace mockApis {
     ) => ApiFactory<Config, Config, {}>;
     const mock: (partialImpl?: Partial<Config> | undefined) => ApiMock<Config>;
   }
-  export function discovery(options?: { baseUrl?: string }): jest.Mocked<{
-    getBaseUrl(pluginId: string): Promise<string>;
-  }>;
+  export function discovery(options?: { baseUrl?: string }): DiscoveryApi;
   export namespace discovery {
     const // (undocumented)
       factory: (
@@ -136,7 +134,7 @@ export namespace mockApis {
     email?: string;
     displayName?: string;
     picture?: string;
-  }): jest.Mocked<IdentityApi>;
+  }): IdentityApi;
   export namespace identity {
     const // (undocumented)
       factory: (
@@ -163,7 +161,7 @@ export namespace mockApis {
       | ((
           request: EvaluatePermissionRequest,
         ) => AuthorizeResult.ALLOW | AuthorizeResult.DENY);
-  }): jest.Mocked<PermissionApi>;
+  }): PermissionApi;
   export namespace permission {
     const // (undocumented)
       factory: (
@@ -184,9 +182,7 @@ export namespace mockApis {
         partialImpl?: Partial<PermissionApi> | undefined,
       ) => ApiMock<PermissionApi>;
   }
-  export function storage(options?: {
-    data?: JsonObject;
-  }): jest.Mocked<StorageApi>;
+  export function storage(options?: { data?: JsonObject }): StorageApi;
   export namespace storage {
     const // (undocumented)
       factory: (
@@ -201,7 +197,7 @@ export namespace mockApis {
         partialImpl?: Partial<StorageApi> | undefined,
       ) => ApiMock<StorageApi>;
   }
-  export function translation(): jest.Mocked<TranslationApi>;
+  export function translation(): TranslationApi;
   export namespace translation {
     const // (undocumented)
       factory: () => ApiFactory<TranslationApi, TranslationApi, {}>;
@@ -424,16 +420,16 @@ export function wrapInTestApp(
 // src/testUtils/apis/StorageApi/MockStorageApi.d.ts:24:5 - (ae-undocumented) Missing documentation for "set".
 // src/testUtils/apis/StorageApi/MockStorageApi.d.ts:25:5 - (ae-undocumented) Missing documentation for "remove".
 // src/testUtils/apis/StorageApi/MockStorageApi.d.ts:26:5 - (ae-undocumented) Missing documentation for "observe$".
-// src/testUtils/apis/mockApis.d.ts:59:15 - (ae-undocumented) Missing documentation for "factory".
-// src/testUtils/apis/mockApis.d.ts:60:15 - (ae-undocumented) Missing documentation for "mock".
-// src/testUtils/apis/mockApis.d.ts:128:15 - (ae-undocumented) Missing documentation for "factory".
-// src/testUtils/apis/mockApis.d.ts:131:15 - (ae-undocumented) Missing documentation for "mock".
-// src/testUtils/apis/mockApis.d.ts:153:15 - (ae-undocumented) Missing documentation for "factory".
-// src/testUtils/apis/mockApis.d.ts:161:15 - (ae-undocumented) Missing documentation for "mock".
-// src/testUtils/apis/mockApis.d.ts:180:15 - (ae-undocumented) Missing documentation for "factory".
-// src/testUtils/apis/mockApis.d.ts:183:15 - (ae-undocumented) Missing documentation for "mock".
-// src/testUtils/apis/mockApis.d.ts:200:15 - (ae-undocumented) Missing documentation for "factory".
-// src/testUtils/apis/mockApis.d.ts:203:15 - (ae-undocumented) Missing documentation for "mock".
-// src/testUtils/apis/mockApis.d.ts:218:15 - (ae-undocumented) Missing documentation for "factory".
-// src/testUtils/apis/mockApis.d.ts:219:15 - (ae-undocumented) Missing documentation for "mock".
+// src/testUtils/apis/mockApis.d.ts:58:15 - (ae-undocumented) Missing documentation for "factory".
+// src/testUtils/apis/mockApis.d.ts:59:15 - (ae-undocumented) Missing documentation for "mock".
+// src/testUtils/apis/mockApis.d.ts:125:15 - (ae-undocumented) Missing documentation for "factory".
+// src/testUtils/apis/mockApis.d.ts:128:15 - (ae-undocumented) Missing documentation for "mock".
+// src/testUtils/apis/mockApis.d.ts:150:15 - (ae-undocumented) Missing documentation for "factory".
+// src/testUtils/apis/mockApis.d.ts:158:15 - (ae-undocumented) Missing documentation for "mock".
+// src/testUtils/apis/mockApis.d.ts:177:15 - (ae-undocumented) Missing documentation for "factory".
+// src/testUtils/apis/mockApis.d.ts:180:15 - (ae-undocumented) Missing documentation for "mock".
+// src/testUtils/apis/mockApis.d.ts:197:15 - (ae-undocumented) Missing documentation for "factory".
+// src/testUtils/apis/mockApis.d.ts:200:15 - (ae-undocumented) Missing documentation for "mock".
+// src/testUtils/apis/mockApis.d.ts:215:15 - (ae-undocumented) Missing documentation for "factory".
+// src/testUtils/apis/mockApis.d.ts:216:15 - (ae-undocumented) Missing documentation for "mock".
 ```
