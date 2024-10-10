@@ -20,15 +20,13 @@ describe('mockApis', () => {
   describe('config', () => {
     const data = { backend: { baseUrl: 'http://test.com' } };
 
-    it('can create an instance and make assertions on it', () => {
+    it('can create an instance', () => {
       const empty = mockApis.config();
       const notEmpty = mockApis.config({ data });
       expect(empty.getOptional('backend.baseUrl')).toBeUndefined();
-      expect(empty.getOptional).toHaveBeenCalledTimes(1);
       expect(notEmpty.getOptional('backend.baseUrl')).toEqual(
         'http://test.com',
       );
-      expect(notEmpty.getOptional).toHaveBeenCalledTimes(1);
     });
 
     it('can create a mock and make assertions on it', async () => {

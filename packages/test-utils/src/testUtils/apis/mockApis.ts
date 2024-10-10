@@ -18,25 +18,12 @@ import { ConfigReader } from '@backstage/config';
 import {
   ApiFactory,
   ApiRef,
+  ConfigApi,
   configApiRef,
   createApiFactory,
 } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { ApiMock } from './ApiMock';
-
-/** @internal */
-function simpleInstance<TApi extends object>(
-  _ref: ApiRef<TApi>,
-  instance: TApi,
-  mockSkeleton: () => jest.Mocked<TApi>,
-): jest.Mocked<TApi> {
-  const mock = mockSkeleton();
-  const result = Object.create(instance) as any;
-  for (const [key, impl] of Object.entries(mock)) {
-    result[key] = (impl as any).mockImplementation((instance as any)[key]);
-  }
-  return result;
-}
 
 /** @internal */
 function simpleFactory<TApi, TArgs extends unknown[]>(
@@ -116,24 +103,6 @@ function simpleMock<TApi>(
  * ```
  */
 export namespace mockApis {
-  const configMockSkeleton = () => ({
-    has: jest.fn(),
-    keys: jest.fn(),
-    get: jest.fn(),
-    getOptional: jest.fn(),
-    getConfig: jest.fn(),
-    getOptionalConfig: jest.fn(),
-    getConfigArray: jest.fn(),
-    getOptionalConfigArray: jest.fn(),
-    getNumber: jest.fn(),
-    getOptionalNumber: jest.fn(),
-    getBoolean: jest.fn(),
-    getOptionalBoolean: jest.fn(),
-    getString: jest.fn(),
-    getOptionalString: jest.fn(),
-    getStringArray: jest.fn(),
-    getOptionalStringArray: jest.fn(),
-  });
   /**
    * Fake implementation of {@link @backstage/frontend-plugin-api#ConfigApi}
    * with optional data supplied.
@@ -153,12 +122,8 @@ export namespace mockApis {
    * );
    * ```
    */
-  export function config(options?: { data?: JsonObject }) {
-    return simpleInstance(
-      configApiRef,
-      new ConfigReader(options?.data, 'mock-config'),
-      configMockSkeleton,
-    );
+  export function config(options?: { data?: JsonObject }): ConfigApi {
+    return new ConfigReader(options?.data, 'mock-config');
   }
   /**
    * Mock helpers for {@link @backstage/frontend-plugin-api#ConfigApi}.
@@ -183,6 +148,23 @@ export namespace mockApis {
      *
      * @public
      */
-    export const mock = simpleMock(configApiRef, configMockSkeleton);
+    export const mock = simpleMock(configApiRef, () => ({
+      has: jest.fn(),
+      keys: jest.fn(),
+      get: jest.fn(),
+      getOptional: jest.fn(),
+      getConfig: jest.fn(),
+      getOptionalConfig: jest.fn(),
+      getConfigArray: jest.fn(),
+      getOptionalConfigArray: jest.fn(),
+      getNumber: jest.fn(),
+      getOptionalNumber: jest.fn(),
+      getBoolean: jest.fn(),
+      getOptionalBoolean: jest.fn(),
+      getString: jest.fn(),
+      getOptionalString: jest.fn(),
+      getStringArray: jest.fn(),
+      getOptionalStringArray: jest.fn(),
+    }));
   }
 }

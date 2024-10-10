@@ -91,7 +91,7 @@ export class MockAnalyticsApi implements AnalyticsApi {
 
 // @public
 export namespace mockApis {
-  export function config(options?: { data?: JsonObject }): jest.Mocked<Config>;
+  export function config(options?: { data?: JsonObject }): ConfigApi;
   export namespace config {
     const factory: (
       options?:
