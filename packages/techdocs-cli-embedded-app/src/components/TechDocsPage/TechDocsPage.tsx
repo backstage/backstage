@@ -16,7 +16,8 @@
 
 import React, { useState } from 'react';
 
-import { Theme, makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { Theme } from '@material-ui/core/styles/createTheme';
 
 import { Box, Tooltip, IconButton } from '@material-ui/core';
 import LightIcon from '@material-ui/icons/Brightness7';

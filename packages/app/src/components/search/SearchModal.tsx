@@ -29,14 +29,12 @@ import {
 } from '@backstage/plugin-search-react';
 import { TechDocsSearchResultListItem } from '@backstage/plugin-techdocs';
 import { CatalogSearchResultListItem } from '@backstage/plugin-catalog';
-import {
-  Box,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Grid,
-  makeStyles,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';

@@ -17,7 +17,7 @@
 import type {
   Theme as MuiTheme,
   ThemeOptions as MuiThemeOptions,
-} from '@material-ui/core';
+} from '@material-ui/core/styles/createTheme';
 import type {
   PaletteOptions as MuiPaletteOptions,
   Palette as MuiPalette,
