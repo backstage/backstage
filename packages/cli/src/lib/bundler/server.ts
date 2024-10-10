@@ -132,6 +132,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
       nodePolyfills: viteNodePolyfills,
     } = require('vite-plugin-node-polyfills');
     const { createHtmlPlugin: viteHtml } = require('vite-plugin-html');
+
     viteServer = await vite.createServer({
       define: {
         'process.argv': JSON.stringify(process.argv),
@@ -139,6 +140,24 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
         // This allows for conditional imports of react-dom/client, since there's no way
         // to check for presence of it in source code without module resolution errors.
         'process.env.HAS_REACT_DOM_CLIENT': JSON.stringify(hasReactDomClient()),
+      },
+      optimizeDeps: {
+        esbuildOptions: {
+          plugins: [
+            {
+              name: 'custom-define',
+              setup(build: {
+                initialOptions: { define: Record<string, string> };
+              }) {
+                const define = (build.initialOptions.define ||= {});
+                define['process.env.HAS_REACT_DOM_CLIENT'] = JSON.stringify(
+                  hasReactDomClient(),
+                );
+                define['process.env.NODE_ENV'] = JSON.stringify('development');
+              },
+            },
+          ],
+        },
       },
       plugins: [
         viteReact(),
