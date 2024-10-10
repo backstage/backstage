@@ -174,3 +174,6 @@ knip.json
 # Schemathesis temporary files
 .hypothesis/
 .cassettes/
+
+# Temporary test outputs
+*dry-run-output*

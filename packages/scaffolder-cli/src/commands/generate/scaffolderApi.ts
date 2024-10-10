@@ -22,13 +22,14 @@ const scaffolderApi = {
   dryRun: async (
     baseUrl: string,
     options: ScaffolderDryRunOptions,
-    authToken?: string,
   ): Promise<ScaffolderDryRunResponse> => {
     const response = await fetch(`${baseUrl}/api/scaffolder/v2/dry-run`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+        ...(process.env.TOKEN
+          ? { Authorization: `Bearer ${process.env.TOKEN}` }
+          : {}),
       },
       body: JSON.stringify(options),
     });
