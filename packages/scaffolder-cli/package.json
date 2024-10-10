@@ -60,6 +60,7 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/test-utils": "workspace:^",
+    "@playwright/test": "^1.32.3",
     "@types/js-yaml": "^3.12.5",
     "@types/node": "^16.7.13",
     "chalk": "^4.0.0",

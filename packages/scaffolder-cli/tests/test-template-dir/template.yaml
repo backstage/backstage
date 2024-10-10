@@ -1,0 +1,32 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+
+metadata:
+  name: test
+
+spec:
+  owner: group:test-group
+  type: backend service
+  parameters:
+    - title: Java backend app details
+      required:
+        - name
+        - package_name
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Unique name of the component
+        package_name:
+          title: Java Package Name
+          type: string
+          description: Name for the Java package.
+  steps:
+    - id: template
+      name: Fetch Skeleton + Template
+      action: fetch:template
+      input:
+        url: ./skeleton
+        values:
+          name: ${{ parameters.name }}
+          package_name: ${{ parameters.package_name }}

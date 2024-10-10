@@ -26,6 +26,7 @@ import {
   serializeDirectoryContents,
   deserializeDirectoryContents,
 } from '@backstage/plugin-scaffolder-node';
+import fs from 'fs-extra';
 
 export default async function generate(
   templateDirectory: string,
@@ -37,14 +38,13 @@ export default async function generate(
     options,
   );
 
-  const authToken = process.env.TOKEN;
   const response: ScaffolderDryRunResponse = await scaffolderApi.dryRun(
     options.url,
     dryRunOptions,
-    authToken,
   );
 
   const outputDir: string = 'dry-run-output';
+  fs.rmSync(outputDir, { recursive: true, force: true });
 
   await deserializeDirectoryContents(
     outputDir,
@@ -62,8 +62,9 @@ async function getDryRunOptions(
   options: { url: string; values: string },
 ): Promise<ScaffolderDryRunOptions> {
   validateDirectoryAccess(templateDirectory);
-  const templateJson: JsonValue = await readYamlFile(path.join(templatePath));
-
+  const templateJson: JsonValue = await readYamlFile(
+    path.join(templateDirectory, templatePath),
+  );
   let dryRunData: JsonObject;
   if (options.values?.startsWith('{')) {
     dryRunData = JSON.parse(options.values);
@@ -76,16 +77,13 @@ async function getDryRunOptions(
     }
     dryRunData = json;
   }
-
   const serializedContents = await serializeDirectoryContents(
     templateDirectory,
   );
-
   const directoryContents = serializedContents.map(file => ({
     path: file.path,
     base64Content: file.content.toString('base64'),
   }));
-
   return {
     template: templateJson,
     values: dryRunData, // Use dryRunData here
