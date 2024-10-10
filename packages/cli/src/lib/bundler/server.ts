@@ -165,12 +165,17 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
           include: [
             'buffer',
             'events',
+            'fs',
+            'http',
+            'https',
             'os',
+            'path',
             'process',
             'querystring',
             'stream',
             'url',
             'util',
+            'zlib',
           ],
           globals: {
             global: true,
