@@ -41,6 +41,8 @@ import React from 'react';
 import { registerComponentRouteRef } from '../../routes';
 import { usePermission } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { apiDocsTranslationRef } from '../../translation';
 
 const defaultColumns: TableColumn<CatalogTableRow>[] = [
   CatalogTable.columns.createTitleColumn({ hidden: true }),
@@ -77,9 +79,10 @@ export const DefaultApiExplorerPage = (props: DefaultApiExplorerPageProps) => {
   } = props;
 
   const configApi = useApi(configApiRef);
-  const generatedSubtitle = `${
-    configApi.getOptionalString('organization.name') ?? 'Backstage'
-  } API Explorer`;
+  const { t } = useTranslationRef(apiDocsTranslationRef);
+  const generatedSubtitle = t('defaultApiExplorerPage.subtitle', {
+    orgName: configApi.getOptionalString('organization.name') ?? 'Backstage',
+  });
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
   const { allowed } = usePermission({
     permission: catalogEntityCreatePermission,
@@ -88,9 +91,9 @@ export const DefaultApiExplorerPage = (props: DefaultApiExplorerPageProps) => {
   return (
     <PageWithHeader
       themeId="apis"
-      title="APIs"
+      title={t('defaultApiExplorerPage.title')}
       subtitle={generatedSubtitle}
-      pageTitleOverride="APIs"
+      pageTitleOverride={t('defaultApiExplorerPage.pageTitleOverride')}
     >
       <Content>
         <ContentHeader title="">
@@ -100,7 +103,9 @@ export const DefaultApiExplorerPage = (props: DefaultApiExplorerPageProps) => {
               to={registerComponentLink?.()}
             />
           )}
-          <SupportButton>All your APIs</SupportButton>
+          <SupportButton>
+            {t('defaultApiExplorerPage.supportButtonTitle')}
+          </SupportButton>
         </ContentHeader>
         <EntityListProvider>
           <CatalogFilterLayout>
