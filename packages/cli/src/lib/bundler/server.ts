@@ -134,7 +134,6 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
     const { createHtmlPlugin: viteHtml } = require('vite-plugin-html');
     viteServer = await vite.createServer({
       define: {
-        global: 'window',
         'process.argv': JSON.stringify(process.argv),
         'process.env.APP_CONFIG': JSON.stringify(cliConfig.frontendAppConfigs),
         // This allows for conditional imports of react-dom/client, since there's no way
@@ -143,7 +142,23 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
       },
       plugins: [
         viteReact(),
-        viteNodePolyfills(),
+        viteNodePolyfills({
+          include: [
+            'buffer',
+            'events',
+            'os',
+            'process',
+            'querystring',
+            'stream',
+            'url',
+            'util',
+          ],
+          globals: {
+            global: true,
+            Buffer: true,
+            process: true,
+          },
+        }),
         viteYaml(),
         viteHtml({
           entry: paths.targetEntry,
