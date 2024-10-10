@@ -117,6 +117,9 @@ export class DatabaseManagerImpl {
 
         const connection = await this.databaseCache.get(pluginId);
         if (connection) {
+          if (connection.client.config.includes('sqlite3')) {
+            return; // sqlite3 does not support destroy, it hangs
+          }
           await connection.destroy().catch((error: unknown) => {
             deps?.logger?.error(
               `Problem closing database connection for ${pluginId}: ${stringifyError(
