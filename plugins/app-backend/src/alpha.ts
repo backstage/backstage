@@ -14,15 +14,8 @@
  * limitations under the License.
  */
 
-<<<<<<< HEAD
 import { appPlugin } from './service/appPlugin';
 
 /** @alpha */
 const _appPlugin = appPlugin;
 export default _appPlugin;
-=======
-/**
- * @deprecated Please migrate to the new backend system as this will be removed in the future.
- */
-export { appPlugin as default } from './service/appPlugin';
->>>>>>> 9306aecd7c324 (Phase 1 deprecation for plugin-app-back-end)
