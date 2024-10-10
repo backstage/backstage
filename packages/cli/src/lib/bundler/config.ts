@@ -132,7 +132,7 @@ export async function createConfig(
     frontendConfig,
     moduleFederation,
     publicSubPath = '',
-    useRspack,
+    rspack,
   } = options;
 
   const { plugins, loaders } = transforms(options);
@@ -153,7 +153,7 @@ export async function createConfig(
       options.moduleFederation,
     );
 
-    if (useRspack) {
+    if (rspack) {
       const RspackReactRefreshPlugin = require('@rspack/plugin-react-refresh');
       plugins.push(new RspackReactRefreshPlugin());
     } else {
@@ -181,10 +181,7 @@ export async function createConfig(
     );
   }
 
-  const rspack = useRspack
-    ? (require('@rspack/core') as typeof import('@rspack/core').rspack)
-    : undefined;
-  const bundler = useRspack ? (rspack as unknown as typeof webpack) : webpack;
+  const bundler = rspack ? (rspack as unknown as typeof webpack) : webpack;
 
   // TODO(blam): process is no longer auto polyfilled by webpack in v5.
   // we use the provide plugin to provide this polyfill, but lets look
@@ -215,8 +212,8 @@ export async function createConfig(
   if (options.moduleFederation) {
     const isRemote = options.moduleFederation?.mode === 'remote';
 
-    const AdaptedModuleFederationPlugin = useRspack
-      ? (rspack!.container
+    const AdaptedModuleFederationPlugin = rspack
+      ? (rspack.container
           .ModuleFederationPlugin as unknown as typeof ModuleFederationPlugin)
       : ModuleFederationPlugin;
 
@@ -285,7 +282,7 @@ export async function createConfig(
   plugins.push(
     new bundler.DefinePlugin({
       'process.env.BUILD_INFO': JSON.stringify(buildInfo),
-      'process.env.APP_CONFIG': useRspack
+      'process.env.APP_CONFIG': rspack
         ? // FIXME: see also https://github.com/web-infra-dev/rspack/issues/5606
           JSON.stringify(options.getFrontendAppConfigs())
         : bundler.DefinePlugin.runtimeValue(
@@ -301,7 +298,7 @@ export async function createConfig(
   // These files are required by the transpiled code when using React Refresh.
   // They need to be excluded to the module scope plugin which ensures that files
   // that exist in the package are required.
-  const reactRefreshFiles = useRspack
+  const reactRefreshFiles = rspack
     ? []
     : [
         require.resolve(
@@ -341,7 +338,7 @@ export async function createConfig(
     // the module is part of `react` or `react-dom`, and `config.mode` otherwise.
     plugins.push(
       new bundler.DefinePlugin({
-        'process.env.NODE_ENV': useRspack
+        'process.env.NODE_ENV': rspack
           ? // FIXME: see also https://github.com/web-infra-dev/rspack/issues/5606
             JSON.stringify(mode)
           : webpack.DefinePlugin.runtimeValue(({ module }) => {
@@ -391,7 +388,7 @@ export async function createConfig(
         util: require.resolve('util/'),
       },
       // FIXME: see also https://github.com/web-infra-dev/rspack/issues/3408
-      ...(!useRspack && {
+      ...(!rspack && {
         plugins: [
           new LinkedPackageResolvePlugin(paths.rootNodeModules, externalPkgs),
           new ModuleScopePlugin(
@@ -424,9 +421,8 @@ export async function createConfig(
         : {}),
     },
     experiments: {
-      lazyCompilation:
-        !useRspack && yn(process.env.EXPERIMENTAL_LAZY_COMPILATION),
-      ...(useRspack && {
+      lazyCompilation: !rspack && yn(process.env.EXPERIMENTAL_LAZY_COMPILATION),
+      ...(rspack && {
         // We're still using `style-loader` for custom `insert` option
         css: false,
       }),

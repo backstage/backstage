@@ -26,14 +26,14 @@ type Transforms = {
 type TransformOptions = {
   isDev: boolean;
   isBackend?: boolean;
-  useRspack?: boolean;
+  rspack?: typeof import('@rspack/core').rspack;
 };
 
 export const transforms = (options: TransformOptions): Transforms => {
-  const { isDev, isBackend, useRspack } = options;
+  const { isDev, isBackend, rspack } = options;
 
-  const CssExtractRspackPlugin: typeof MiniCssExtractPlugin = useRspack
-    ? require('@rspack/core').CssExtractRspackPlugin
+  const CssExtractRspackPlugin: typeof MiniCssExtractPlugin = rspack
+    ? (rspack.CssExtractRspackPlugin as unknown as typeof MiniCssExtractPlugin)
     : MiniCssExtractPlugin;
 
   // This ensures that styles inserted from the style-loader and any
@@ -59,9 +59,7 @@ export const transforms = (options: TransformOptions): Transforms => {
       exclude: /node_modules/,
       use: [
         {
-          loader: useRspack
-            ? 'builtin:swc-loader'
-            : require.resolve('swc-loader'),
+          loader: rspack ? 'builtin:swc-loader' : require.resolve('swc-loader'),
           options: {
             jsc: {
               target: 'es2022',
@@ -89,9 +87,7 @@ export const transforms = (options: TransformOptions): Transforms => {
       exclude: /node_modules/,
       use: [
         {
-          loader: useRspack
-            ? 'builtin:swc-loader'
-            : require.resolve('swc-loader'),
+          loader: rspack ? 'builtin:swc-loader' : require.resolve('swc-loader'),
           options: {
             jsc: {
               target: 'es2022',
@@ -124,9 +120,7 @@ export const transforms = (options: TransformOptions): Transforms => {
       test: [/\.icon\.svg$/],
       use: [
         {
-          loader: useRspack
-            ? 'builtin:swc-loader'
-            : require.resolve('swc-loader'),
+          loader: rspack ? 'builtin:swc-loader' : require.resolve('swc-loader'),
           options: {
             jsc: {
               target: 'es2022',

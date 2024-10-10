@@ -38,7 +38,7 @@ function applyContextToError(error: string, moduleName: string): string {
 }
 
 export async function buildBundle(options: BuildOptions) {
-  const { statsJsonEnabled, schema: configSchema, useRspack } = options;
+  const { statsJsonEnabled, schema: configSchema, rspack } = options;
 
   const paths = resolveBundlingPaths(options);
   const publicPaths = await resolveOptionalBundlingPaths({
@@ -119,7 +119,7 @@ export async function buildBundle(options: BuildOptions) {
     );
   }
 
-  const { stats } = await build(configs, isCi, useRspack);
+  const { stats } = await build(configs, isCi, rspack);
 
   if (!stats) {
     throw new Error('No stats returned');
@@ -155,9 +155,9 @@ export async function buildBundle(options: BuildOptions) {
 async function build(
   configs: webpack.Configuration[],
   isCi: boolean,
-  useRspack?: boolean,
+  rspack?: typeof import('@rspack/core').rspack,
 ) {
-  const bundler: typeof webpack = useRspack ? require('@rspack/core') : webpack;
+  const bundler = (rspack ?? webpack) as typeof webpack;
 
   const stats = await new Promise<webpack.MultiStats | undefined>(
     (resolve, reject) => {

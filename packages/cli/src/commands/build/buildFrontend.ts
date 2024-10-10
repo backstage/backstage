@@ -25,11 +25,11 @@ interface BuildAppOptions {
   writeStats: boolean;
   configPaths: string[];
   isModuleFederationRemote?: true;
-  useRspack?: boolean;
+  rspack?: typeof import('@rspack/core').rspack;
 }
 
 export async function buildFrontend(options: BuildAppOptions) {
-  const { targetDir, writeStats, configPaths, useRspack } = options;
+  const { targetDir, writeStats, configPaths, rspack } = options;
   const { name } = await fs.readJson(resolvePath(targetDir, 'package.json'));
 
   await buildBundle({
@@ -45,6 +45,6 @@ export async function buildFrontend(options: BuildAppOptions) {
       args: configPaths,
       fromPackage: name,
     })),
-    useRspack,
+    rspack,
   });
 }

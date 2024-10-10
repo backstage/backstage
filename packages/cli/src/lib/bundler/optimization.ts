@@ -22,14 +22,10 @@ const { EsbuildPlugin } = require('esbuild-loader');
 export const optimization = (
   options: BundlingOptions,
 ): WebpackOptionsNormalized['optimization'] => {
-  const { isDev, useRspack } = options;
+  const { isDev, rspack } = options;
 
-  const rspack = useRspack
-    ? (require('@rspack/core') as typeof import('@rspack/core').rspack)
-    : undefined;
-
-  const MinifyPlugin = useRspack
-    ? rspack!.SwcJsMinimizerRspackPlugin
+  const MinifyPlugin = rspack
+    ? rspack.SwcJsMinimizerRspackPlugin
     : EsbuildPlugin;
 
   return {
@@ -46,7 +42,7 @@ export const optimization = (
         format: undefined,
         include: 'remoteEntry.js',
       }),
-      useRspack && new rspack!.LightningCssMinimizerRspackPlugin(),
+      rspack && new rspack.LightningCssMinimizerRspackPlugin(),
     ],
     runtimeChunk: 'single',
     splitChunks: {
@@ -78,7 +74,7 @@ export const optimization = (
           priority: 10,
           minSize: 100000,
           minChunks: 1,
-          ...(!useRspack && {
+          ...(!rspack && {
             maxAsyncRequests: Infinity,
             maxInitialRequests: Infinity,
           }),
