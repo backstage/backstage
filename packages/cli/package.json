@@ -193,12 +193,16 @@
     "vite-plugin-node-polyfills": "^0.22.0"
   },
   "peerDependencies": {
+    "@modyfi/vite-plugin-yaml": "^1.1.0",
     "@vitejs/plugin-react": "^4.3.1",
     "vite": "^5.0.0",
     "vite-plugin-html": "^3.2.2",
     "vite-plugin-node-polyfills": "^0.22.0"
   },
   "peerDependenciesMeta": {
+    "@modyfi/vite-plugin-yaml": {
+      "optional": true
+    },
     "@vitejs/plugin-react": {
       "optional": true
     },

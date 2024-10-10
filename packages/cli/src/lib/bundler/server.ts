@@ -127,6 +127,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
   if (process.env.EXPERIMENTAL_VITE) {
     const vite = require('vite');
     const { default: viteReact } = require('@vitejs/plugin-react');
+    const { default: viteYaml } = require('@modyfi/vite-plugin-yaml');
     const {
       nodePolyfills: viteNodePolyfills,
     } = require('vite-plugin-node-polyfills');
@@ -143,6 +144,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
       plugins: [
         viteReact(),
         viteNodePolyfills(),
+        viteYaml(),
         viteHtml({
           entry: paths.targetEntry,
           // todo(blam): we should look at contributing to thPe plugin here
