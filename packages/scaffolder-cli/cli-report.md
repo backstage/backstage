@@ -11,7 +11,7 @@ Options:
   -h, --help
 
 Commands:
-  generate <templateDirectory>
+  generate [options] <templateDirectory>
   help [command]
 ```
 
@@ -21,5 +21,8 @@ Commands:
 Usage: scaffolder-cli generate [options] <templateDirectory>
 
 Options:
+  --template-path <templatePath>
+  --url <url>
+  -v, --values <values>
   -h, --help
 ```
