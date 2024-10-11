@@ -16,25 +16,19 @@
 import { JsonValue } from '@backstage/types';
 import { z } from 'zod';
 
-/** @public */
-export type TemplateFilter = (
-  arg: JsonValue,
-  ...rest: JsonValue[]
-) => JsonValue | undefined;
-
-/** @public */
+/** @alpha */
 export type TemplateFilterSchema = {
   [K in 'input' | 'arguments' | 'output']?: (zImpl: typeof z) => z.ZodType;
 };
 
-/** @public */
+/** @alpha */
 export type TemplateFilterExample = {
   description?: string;
   example: string;
   notes?: string;
 };
 
-/** @public */
+/** @alpha */
 export type TemplateFilterFunction<T extends TemplateFilterSchema> =
   z.ZodFunction<
     z.ZodTuple<
@@ -52,7 +46,7 @@ export type TemplateFilterFunction<T extends TemplateFilterSchema> =
       : z.ZodUnknown
   >;
 
-/** @public */
+/** @alpha */
 export type CreatedTemplateFilter<
   TSchema extends TemplateFilterSchema | undefined = undefined,
   TFilterSchema extends TSchema extends TemplateFilterSchema

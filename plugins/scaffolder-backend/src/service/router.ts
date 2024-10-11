@@ -50,6 +50,8 @@ import {
 } from '@backstage/plugin-scaffolder-common/alpha';
 import {
   AutocompleteHandler,
+  CreatedTemplateFilter,
+  CreatedTemplateGlobal,
   WorkspaceProvider,
 } from '@backstage/plugin-scaffolder-node/alpha';
 import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
@@ -59,8 +61,6 @@ import { validate } from 'jsonschema';
 import { Logger } from 'winston';
 import { z } from 'zod';
 import {
-  CreatedTemplateFilter,
-  CreatedTemplateGlobal,
   TaskBroker,
   TaskStatus,
   TemplateAction,

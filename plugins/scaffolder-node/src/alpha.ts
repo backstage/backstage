@@ -18,13 +18,15 @@ import { createExtensionPoint } from '@backstage/backend-plugin-api';
 import {
   TaskBroker,
   TemplateAction,
-  CreatedTemplateFilter,
   TemplateFilter,
   TemplateGlobal,
-  CreatedTemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
+import { CreatedTemplateFilter } from './filters';
+import { CreatedTemplateGlobal } from './globals';
 
 export * from './tasks/alpha';
+export * from './filters';
+export * from './globals';
 
 /**
  * Extension point for managing scaffolder actions.

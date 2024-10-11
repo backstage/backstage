@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 import { ScmIntegrations } from '@backstage/integration';
-import {
-  createTemplateFilter,
-  parseRepoUrl,
-} from '@backstage/plugin-scaffolder-node';
-import schema from './schema';
+import { parseRepoUrl } from '@backstage/plugin-scaffolder-node';
+import { createTemplateFilter } from '@backstage/plugin-scaffolder-node/alpha';
 import examples from './examples';
+import schema from './schema';
 
 export default (integrations: ScmIntegrations) =>
   createTemplateFilter({
