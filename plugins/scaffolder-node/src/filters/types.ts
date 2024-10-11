@@ -54,7 +54,7 @@ export type TemplateFilterFunction<T extends TemplateFilterSchema> =
 
 /** @public */
 export type CreatedTemplateFilter<
-  S extends TemplateFilterSchema | undefined = undefined,
+  TSchema extends TemplateFilterSchema | undefined = undefined,
   TFilterSchema extends TSchema extends TemplateFilterSchema
     ? TemplateFilterFunction<S>
     : (
