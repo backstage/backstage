@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import { parseEntityRef } from '@backstage/catalog-model';
-import { createTemplateFilter } from '@backstage/plugin-scaffolder-node';
-import schema from './schema';
+import { createTemplateFilter } from '@backstage/plugin-scaffolder-node/alpha';
 import examples from './examples';
+import schema from './schema';
 
 export default createTemplateFilter({
   id: 'parseEntityRef',

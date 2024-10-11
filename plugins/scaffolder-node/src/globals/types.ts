@@ -16,28 +16,19 @@
 import { JsonValue } from '@backstage/types';
 import { z } from 'zod';
 
-/** @public */
-export type TemplateGlobalFunction<
-  Args extends JsonValue[] = JsonValue[],
-  Output extends JsonValue | undefined = JsonValue | undefined,
-> = (...args: Args) => Output;
-
-/** @public */
-export type TemplateGlobal = TemplateGlobalFunction | JsonValue;
-
-/** @public */
+/** @alpha */
 export type CreatedTemplateGlobalValue<T extends JsonValue = JsonValue> = {
   id: string;
   value: T;
   description?: string;
 };
 
-/** @public */
+/** @alpha */
 export type TemplateGlobalFunctionSchema = {
   [K in 'arguments' | 'output']?: (zImpl: typeof z) => z.ZodType;
 };
 
-/** @public */
+/** @alpha */
 export type SchemaCompliantTemplateGlobalFunction<
   T extends TemplateGlobalFunctionSchema,
 > = z.ZodFunction<
@@ -53,14 +44,14 @@ export type SchemaCompliantTemplateGlobalFunction<
     : z.ZodUnknown
 >;
 
-/** @public */
+/** @alpha */
 export type TemplateGlobalFunctionExample = {
   description?: string;
   example: string;
   notes?: string;
 };
 
-/** @public */
+/** @alpha */
 export type CreatedTemplateGlobalFunction<
   S extends TemplateGlobalFunctionSchema | undefined = undefined,
   F extends S extends TemplateGlobalFunctionSchema
@@ -79,7 +70,7 @@ export type CreatedTemplateGlobalFunction<
   fn: F;
 };
 
-/** @public */
+/** @alpha */
 export type CreatedTemplateGlobal =
   | CreatedTemplateGlobalValue<any>
   | CreatedTemplateGlobalFunction<any, any>;

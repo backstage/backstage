@@ -38,15 +38,9 @@ import {
 } from '@backstage/catalog-model';
 import { createRouter, DatabaseTaskStore } from '../index';
 import {
-  CreatedTemplateFilter,
-  CreatedTemplateGlobal,
-  createTemplateFilter,
-  createTemplateGlobal,
   TaskBroker,
   TemplateFilter,
-  TemplateFilterSchema,
   TemplateGlobal,
-  TemplateGlobalFunctionSchema,
 } from '@backstage/plugin-scaffolder-node';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 import {
@@ -58,7 +52,13 @@ import {
   mockErrorHandler,
   mockServices,
 } from '@backstage/backend-test-utils';
-import { AutocompleteHandler } from '@backstage/plugin-scaffolder-node/alpha';
+import {
+  AutocompleteHandler,
+  createTemplateFilter,
+  createTemplateGlobal,
+  TemplateFilterSchema,
+  TemplateGlobalFunctionSchema,
+} from '@backstage/plugin-scaffolder-node/alpha';
 import { UrlReaders } from '@backstage/backend-defaults/urlReader';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { EventsService } from '@backstage/plugin-events-node';
@@ -155,7 +155,7 @@ describe.each([
         filter: (base: number, factor: number, addend: number) =>
           base * factor + addend,
       }),
-    ] as CreatedTemplateFilter[],
+    ],
   },
   {
     desc: 'legacy template globals',
@@ -181,7 +181,7 @@ describe.each([
         } as TemplateGlobalFunctionSchema,
         fn: (x: any) => x,
       }),
-    ] as CreatedTemplateGlobal[],
+    ],
   },
 ])(
   'createRouter, $desc',
@@ -280,65 +280,9 @@ describe.each([
           'google.com/email': 'bobby@tables.com',
         },
       },
-    },
-  };
-
-  describe('not providing an identity api', () => {
-    beforeEach(async () => {
-      const logger = loggerToWinstonLogger(mockServices.logger.mock());
-      const databaseTaskStore = await DatabaseTaskStore.create({
-        database: createDatabase(),
-      });
-      taskBroker = new StorageTaskBroker(databaseTaskStore, logger, config);
-
-      jest.spyOn(taskBroker, 'dispatch');
-      jest.spyOn(taskBroker, 'get');
-      jest.spyOn(taskBroker, 'list');
-      jest.spyOn(taskBroker, 'event$');
-      loggerSpy = jest.spyOn(logger, 'info');
-
-      const router = await createRouter({
-        logger: logger,
-        config: new ConfigReader({}),
-        database: createDatabase(),
-        catalogClient,
-        reader: mockUrlReader,
-        taskBroker,
-        permissions: permissionApi,
-        auth,
-        httpAuth,
-        discovery,
-        events,
-      });
-      app = express().use(router);
-
-      catalogClient.getEntityByRef.mockImplementation(async ref => {
-        const { kind } = parseEntityRef(ref);
-
-        if (kind.toLocaleLowerCase() === 'template') {
-          return getMockTemplate();
-        }
-
-        if (kind.toLocaleLowerCase() === 'user') {
-          return mockUser;
-        }
-
-        throw new Error(`no mock found for kind: ${kind}`);
-      });
-
-      jest
-        .spyOn(permissionApi, 'authorizeConditional')
-        .mockImplementation(async () => [
-          {
-            result: AuthorizeResult.ALLOW,
-          },
-          {
-            result: AuthorizeResult.ALLOW,
-          },
-        ]);
-      jest.spyOn(permissionApi, 'authorize').mockImplementation(async () => [
-        {
-          result: AuthorizeResult.ALLOW,
+      spec: {
+        profile: {
+          displayName: 'Robert Tables of the North',
         },
       },
     };
@@ -368,6 +312,7 @@ describe.each([
           auth,
           httpAuth,
           discovery,
+          events,
           additionalTemplateFilters,
           additionalTemplateGlobals,
         });
