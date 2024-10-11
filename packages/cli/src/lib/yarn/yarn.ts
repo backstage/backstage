@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,35 @@
 import { assertError, ForwardedError } from '@backstage/errors';
 import { execFile as execFileCb } from 'child_process';
 import { promisify } from 'util';
+import { PackageInfo, PackageManager } from '../pacman';
+import { fetchPackageInfo } from './packageInfo';
+import { YarnVersion } from './types';
 
 const execFile = promisify(execFileCb);
 
-const versions = new Map<string, Promise<'classic' | 'berry'>>();
+const versions = new Map<string, Promise<YarnVersion>>();
 
-export function detectYarnVersion(dir?: string): Promise<'classic' | 'berry'> {
+export class Yarn implements PackageManager {
+  private constructor(private readonly yarnVersion: YarnVersion) {}
+
+  static async create(dir?: string): Promise<Yarn> {
+    const yarnVersion = await detectYarnVersion(dir);
+    return new Yarn(yarnVersion);
+  }
+
+  install(): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+  runScript(_scriptName: string): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+
+  fetchPackageInfo(name: string): Promise<PackageInfo> {
+    return fetchPackageInfo(name, this.yarnVersion);
+  }
+}
+
+function detectYarnVersion(dir?: string): Promise<YarnVersion> {
   const cwd = dir ?? process.cwd();
   if (versions.has(cwd)) {
     return versions.get(cwd)!;
