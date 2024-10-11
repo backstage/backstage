@@ -23,7 +23,7 @@ import { ConfigApi } from '@backstage/core-plugin-api';
  * that can be used to mock configuration using a plain object.
  *
  * @public
- * @deprecated Use {@link mockApis.config} instead
+ * @deprecated Use {@link mockApis.(config:namespace)} instead
  * @example
  * ```tsx
  * const mockConfig = new MockConfigApi({

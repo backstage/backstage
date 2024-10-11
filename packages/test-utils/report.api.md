@@ -107,8 +107,6 @@ export namespace mockApis {
 // @public @deprecated
 export function mockBreakpoint(options: { matches: boolean }): void;
 
-// Warning: (ae-unresolved-link) The @link reference could not be resolved: The reference is ambiguous because "config" has more than one declaration; you need to add a TSDoc member reference selector
-//
 // @public @deprecated
 export class MockConfigApi implements ConfigApi {
   constructor(data: JsonObject);
