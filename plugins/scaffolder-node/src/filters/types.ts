@@ -55,7 +55,7 @@ export type TemplateFilterFunction<T extends TemplateFilterSchema> =
 /** @public */
 export type CreatedTemplateFilter<
   S extends TemplateFilterSchema | undefined = undefined,
-  F extends S extends TemplateFilterSchema
+  TFilterSchema extends TSchema extends TemplateFilterSchema
     ? TemplateFilterFunction<S>
     : (
         arg: JsonValue,
