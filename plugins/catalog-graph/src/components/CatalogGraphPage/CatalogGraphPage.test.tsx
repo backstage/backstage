@@ -23,7 +23,7 @@ import { analyticsApiRef } from '@backstage/core-plugin-api';
 import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import {
-  MockAnalyticsApi,
+  mockApis,
   renderInTestApp,
   TestApiProvider,
 } from '@backstage/test-utils';
@@ -227,9 +227,9 @@ describe.skip('<CatalogGraphPage/>', () => {
       }),
     );
 
-    const analyticsSpy = new MockAnalyticsApi();
+    const analyticsApi = mockApis.analytics();
     await renderInTestApp(
-      <TestApiProvider apis={[[analyticsApiRef, analyticsSpy]]}>
+      <TestApiProvider apis={[[analyticsApiRef, analyticsApi]]}>
         {wrapper}
       </TestApiProvider>,
       {
@@ -243,10 +243,12 @@ describe.skip('<CatalogGraphPage/>', () => {
 
     await userEvent.click(screen.getByText('b:d/e'));
 
-    expect(analyticsSpy.getEvents()[0]).toMatchObject({
-      action: 'click',
-      subject: 'b:d/e',
-    });
+    expect(analyticsApi.captureEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: 'click',
+        subject: 'b:d/e',
+      }),
+    );
   });
 
   test('should capture analytics event when navigating to entity', async () => {
@@ -256,9 +258,9 @@ describe.skip('<CatalogGraphPage/>', () => {
       }),
     );
 
-    const analyticsSpy = new MockAnalyticsApi();
+    const analyticsApi = mockApis.analytics();
     await renderInTestApp(
-      <TestApiProvider apis={[[analyticsApiRef, analyticsSpy]]}>
+      <TestApiProvider apis={[[analyticsApiRef, analyticsApi]]}>
         {wrapper}
       </TestApiProvider>,
       {
@@ -274,12 +276,14 @@ describe.skip('<CatalogGraphPage/>', () => {
     await user.keyboard('{Shift>}');
     await user.click(screen.getByText('b:d/e'));
 
-    expect(analyticsSpy.getEvents()[0]).toMatchObject({
-      action: 'click',
-      subject: 'b:d/e',
-      attributes: {
-        to: '/entity/b/d/e',
-      },
-    });
+    expect(analyticsApi.captureEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: 'click',
+        subject: 'b:d/e',
+        attributes: {
+          to: '/entity/b/d/e',
+        },
+      }),
+    );
   });
 });

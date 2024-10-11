@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { ConfigReader } from '@backstage/core-app-api';
 import { TableColumn, TableProps } from '@backstage/core-components';
 import { configApiRef, storageApiRef } from '@backstage/core-plugin-api';
 import {
@@ -28,8 +27,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import {
-  MockPermissionApi,
-  MockStorageApi,
+  mockApis,
   TestApiProvider,
   renderInTestApp,
 } from '@backstage/test-utils';
@@ -72,17 +70,15 @@ describe('DefaultApiExplorerPage', () => {
     }),
   });
 
-  const configApi = new ConfigReader({
-    organization: {
-      name: 'My Company',
-    },
+  const configApi = mockApis.config({
+    data: { organization: { name: 'My Company' } },
   });
 
   const apiDocsConfig = {
     getApiDefinitionWidget: () => undefined,
   };
 
-  const storageApi = MockStorageApi.create();
+  const storageApi = mockApis.storage();
 
   const renderWrapped = (children: React.ReactNode) =>
     renderInTestApp(
@@ -96,7 +92,7 @@ describe('DefaultApiExplorerPage', () => {
             new DefaultStarredEntitiesApi({ storageApi }),
           ],
           [apiDocsConfigRef, apiDocsConfig],
-          [permissionApiRef, new MockPermissionApi()],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         {children}

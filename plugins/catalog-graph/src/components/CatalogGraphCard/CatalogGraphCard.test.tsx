@@ -24,7 +24,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import {
-  MockAnalyticsApi,
+  mockApis,
   renderInTestApp,
   TestApiProvider,
   TestApiRegistry,
@@ -212,9 +212,9 @@ describe('<CatalogGraphCard/>', () => {
       ],
     }));
 
-    const analyticsSpy = new MockAnalyticsApi();
+    const analyticsApi = mockApis.analytics();
     await renderInTestApp(
-      <TestApiProvider apis={[[analyticsApiRef, analyticsSpy]]}>
+      <TestApiProvider apis={[[analyticsApiRef, analyticsApi]]}>
         {wrapper}
       </TestApiProvider>,
       {
@@ -228,12 +228,14 @@ describe('<CatalogGraphCard/>', () => {
     expect(await screen.findByText('b:d/c')).toBeInTheDocument();
     await userEvent.click(await screen.findByText('b:d/c'));
 
-    expect(analyticsSpy.getEvents()[0]).toMatchObject({
-      action: 'click',
-      subject: 'b:d/c',
-      attributes: {
-        to: '/entity/{kind}/{namespace}/{name}',
-      },
-    });
+    expect(analyticsApi.captureEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: 'click',
+        subject: 'b:d/c',
+        attributes: {
+          to: '/entity/{kind}/{namespace}/{name}',
+        },
+      }),
+    );
   });
 });

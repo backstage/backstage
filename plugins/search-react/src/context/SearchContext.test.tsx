@@ -422,9 +422,7 @@ describe('SearchContext', () => {
 
   describe('analytics', () => {
     it('captures analytics events if enabled in app', async () => {
-      const analyticsApiMock = {
-        captureEvent: jest.fn(),
-      } satisfies typeof analyticsApiRef.T;
+      const analyticsApiMock = mockApis.analytics();
 
       searchApiMock.query.mockResolvedValue({
         results: [],
@@ -481,9 +479,7 @@ describe('SearchContext', () => {
   });
 
   it('captures analytics events even if number of results does not exist', async () => {
-    const analyticsApiMock = {
-      captureEvent: jest.fn(),
-    } satisfies typeof analyticsApiRef.T;
+    const analyticsApiMock = mockApis.analytics();
 
     searchApiMock.query.mockResolvedValue({
       results: [],

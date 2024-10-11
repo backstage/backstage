@@ -32,7 +32,7 @@ import {
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import {
-  MockPermissionApi,
+  mockApis,
   renderInTestApp,
   TestApiProvider,
   TestApiRegistry,
@@ -51,16 +51,16 @@ describe('EntityLayout', () => {
     },
   } as Entity;
 
-  const mockApis = TestApiRegistry.from(
+  const apis = TestApiRegistry.from(
     [catalogApiRef, catalogApiMock()],
     [alertApiRef, {} as AlertApi],
     [starredEntitiesApiRef, new MockStarredEntitiesApi()],
-    [permissionApiRef, new MockPermissionApi()],
+    [permissionApiRef, mockApis.permission()],
   );
 
   it('renders simplest case', async () => {
     await renderInTestApp(
-      <ApiProvider apis={mockApis}>
+      <ApiProvider apis={apis}>
         <EntityProvider entity={mockEntity}>
           <EntityLayout>
             <EntityLayout.Route path="/" title="tabbed-test-title">
@@ -93,7 +93,7 @@ describe('EntityLayout', () => {
     } as Entity;
 
     await renderInTestApp(
-      <ApiProvider apis={mockApis}>
+      <ApiProvider apis={apis}>
         <EntityProvider entity={mockEntityWithTitle}>
           <EntityLayout>
             <EntityLayout.Route path="/" title="tabbed-test-title">
@@ -117,7 +117,7 @@ describe('EntityLayout', () => {
 
   it('renders default error message when entity is not found', async () => {
     await renderInTestApp(
-      <ApiProvider apis={mockApis}>
+      <ApiProvider apis={apis}>
         <AsyncEntityProvider loading={false}>
           <EntityLayout>
             <EntityLayout.Route path="/" title="tabbed-test-title">
@@ -142,7 +142,7 @@ describe('EntityLayout', () => {
 
   it('renders custom message when entity is not found', async () => {
     await renderInTestApp(
-      <ApiProvider apis={mockApis}>
+      <ApiProvider apis={apis}>
         <AsyncEntityProvider loading={false}>
           <EntityLayout
             NotFoundComponent={<div>Oppps.. Your entity was not found</div>}
@@ -171,7 +171,7 @@ describe('EntityLayout', () => {
 
   it('navigates when user clicks different tab', async () => {
     await renderInTestApp(
-      <ApiProvider apis={mockApis}>
+      <ApiProvider apis={apis}>
         <EntityProvider entity={mockEntity}>
           <EntityLayout>
             <EntityLayout.Route path="/" title="tabbed-test-title">
@@ -211,7 +211,7 @@ describe('EntityLayout', () => {
     const shouldNotRenderTab = (e: Entity) => e.metadata.name === 'some-entity';
 
     await renderInTestApp(
-      <ApiProvider apis={mockApis}>
+      <ApiProvider apis={apis}>
         <EntityProvider entity={mockEntity}>
           <EntityLayout>
             <EntityLayout.Route path="/" title="tabbed-test-title">
@@ -254,7 +254,7 @@ describe('EntityLayout', () => {
       relations: [{ type: 'ownedBy', targetRef: mockTargetRef }],
     };
     await renderInTestApp(
-      <ApiProvider apis={mockApis}>
+      <ApiProvider apis={apis}>
         <EntityProvider entity={ownerEntity}>
           <EntityLayout>
             <EntityLayout.Route path="/" title="tabbed-test-title">
@@ -327,7 +327,7 @@ describe('EntityLayout - CleanUpAfterRemoval', () => {
           [catalogApiRef, catalogApi],
           [alertApiRef, alertApi],
           [starredEntitiesApiRef, new MockStarredEntitiesApi()],
-          [permissionApiRef, new MockPermissionApi()],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         <EntityProvider entity={entity}>
@@ -378,7 +378,7 @@ describe('EntityLayout - CleanUpAfterRemoval', () => {
           [catalogApiRef, catalogApi],
           [alertApiRef, alertApi],
           [starredEntitiesApiRef, new MockStarredEntitiesApi()],
-          [permissionApiRef, new MockPermissionApi()],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         <EntityProvider entity={entity}>

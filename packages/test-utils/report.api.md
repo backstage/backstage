@@ -41,6 +41,7 @@ import { RenderResult } from '@testing-library/react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { StorageValueSnapshot } from '@backstage/core-plugin-api';
+import { TranslationApi } from '@backstage/core-plugin-api/alpha';
 
 // @public
 export type ApiMock<TApi> = {
@@ -81,7 +82,7 @@ export type LogCollector = AsyncLogCollector | SyncLogCollector;
 // @public
 export type LogFuncs = 'log' | 'warn' | 'error';
 
-// @public
+// @public @deprecated
 export class MockAnalyticsApi implements AnalyticsApi {
   // (undocumented)
   captureEvent(event: AnalyticsEvent): void;
@@ -91,6 +92,15 @@ export class MockAnalyticsApi implements AnalyticsApi {
 
 // @public
 export namespace mockApis {
+  export function analytics(): AnalyticsApi;
+  export namespace analytics {
+    const // (undocumented)
+      factory: () => ApiFactory<AnalyticsApi, AnalyticsApi, {}>;
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<AnalyticsApi> | undefined,
+      ) => ApiMock<AnalyticsApi>;
+  }
   export function config(options?: { data?: JsonObject }): ConfigApi;
   export namespace config {
     const factory: (
@@ -101,6 +111,100 @@ export namespace mockApis {
         | undefined,
     ) => ApiFactory<Config, Config, {}>;
     const mock: (partialImpl?: Partial<Config> | undefined) => ApiMock<Config>;
+  }
+  export function discovery(options?: { baseUrl?: string }): DiscoveryApi;
+  export namespace discovery {
+    const // (undocumented)
+      factory: (
+        options?:
+          | {
+              baseUrl?: string | undefined;
+            }
+          | undefined,
+      ) => ApiFactory<DiscoveryApi, DiscoveryApi, {}>;
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<DiscoveryApi> | undefined,
+      ) => ApiMock<DiscoveryApi>;
+  }
+  export function identity(options?: {
+    userEntityRef?: string;
+    ownershipEntityRefs?: string[];
+    token?: string;
+    email?: string;
+    displayName?: string;
+    picture?: string;
+  }): IdentityApi;
+  export namespace identity {
+    const // (undocumented)
+      factory: (
+        options?:
+          | {
+              userEntityRef?: string | undefined;
+              ownershipEntityRefs?: string[] | undefined;
+              token?: string | undefined;
+              email?: string | undefined;
+              displayName?: string | undefined;
+              picture?: string | undefined;
+            }
+          | undefined,
+      ) => ApiFactory<IdentityApi, IdentityApi, {}>;
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<IdentityApi> | undefined,
+      ) => ApiMock<IdentityApi>;
+  }
+  export function permission(options?: {
+    authorize?:
+      | AuthorizeResult.ALLOW
+      | AuthorizeResult.DENY
+      | ((
+          request: EvaluatePermissionRequest,
+        ) => AuthorizeResult.ALLOW | AuthorizeResult.DENY);
+  }): PermissionApi;
+  export namespace permission {
+    const // (undocumented)
+      factory: (
+        options?:
+          | {
+              authorize?:
+                | AuthorizeResult.DENY
+                | AuthorizeResult.ALLOW
+                | ((
+                    request: EvaluatePermissionRequest,
+                  ) => AuthorizeResult.DENY | AuthorizeResult.ALLOW)
+                | undefined;
+            }
+          | undefined,
+      ) => ApiFactory<PermissionApi, PermissionApi, {}>;
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<PermissionApi> | undefined,
+      ) => ApiMock<PermissionApi>;
+  }
+  export function storage(options?: { data?: JsonObject }): StorageApi;
+  export namespace storage {
+    const // (undocumented)
+      factory: (
+        options?:
+          | {
+              data?: JsonObject | undefined;
+            }
+          | undefined,
+      ) => ApiFactory<StorageApi, StorageApi, {}>;
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<StorageApi> | undefined,
+      ) => ApiMock<StorageApi>;
+  }
+  export function translation(): TranslationApi;
+  export namespace translation {
+    const // (undocumented)
+      factory: () => ApiFactory<TranslationApi, TranslationApi, {}>;
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<TranslationApi> | undefined,
+      ) => ApiMock<TranslationApi>;
   }
 }
 
@@ -173,7 +277,7 @@ export interface MockFetchApiOptions {
       };
 }
 
-// @public
+// @public @deprecated
 export class MockPermissionApi implements PermissionApi {
   constructor(
     requestHandler?: (
@@ -186,7 +290,7 @@ export class MockPermissionApi implements PermissionApi {
   ): Promise<EvaluatePermissionResponse>;
 }
 
-// @public
+// @public @deprecated
 export class MockStorageApi implements StorageApi {
   // (undocumented)
   static create(data?: MockStorageBucket): MockStorageApi;
@@ -204,7 +308,7 @@ export class MockStorageApi implements StorageApi {
   snapshot<T extends JsonValue>(key: string): StorageValueSnapshot<T>;
 }
 
-// @public
+// @public @deprecated
 export type MockStorageBucket = {
   [key: string]: any;
 };
@@ -303,17 +407,29 @@ export function wrapInTestApp(
 // Warnings were encountered during analysis:
 //
 // src/deprecated.d.ts:5:1 - (ae-undocumented) Missing documentation for "setupRequestMockHandlers".
-// src/testUtils/apis/AnalyticsApi/MockAnalyticsApi.d.ts:10:5 - (ae-undocumented) Missing documentation for "captureEvent".
-// src/testUtils/apis/AnalyticsApi/MockAnalyticsApi.d.ts:11:5 - (ae-undocumented) Missing documentation for "getEvents".
+// src/testUtils/apis/AnalyticsApi/MockAnalyticsApi.d.ts:11:5 - (ae-undocumented) Missing documentation for "captureEvent".
+// src/testUtils/apis/AnalyticsApi/MockAnalyticsApi.d.ts:12:5 - (ae-undocumented) Missing documentation for "getEvents".
 // src/testUtils/apis/ErrorApi/MockErrorApi.d.ts:28:5 - (ae-undocumented) Missing documentation for "post".
 // src/testUtils/apis/ErrorApi/MockErrorApi.d.ts:29:5 - (ae-undocumented) Missing documentation for "error$".
 // src/testUtils/apis/ErrorApi/MockErrorApi.d.ts:33:5 - (ae-undocumented) Missing documentation for "getErrors".
 // src/testUtils/apis/ErrorApi/MockErrorApi.d.ts:34:5 - (ae-undocumented) Missing documentation for "waitForError".
-// src/testUtils/apis/PermissionApi/MockPermissionApi.d.ts:13:5 - (ae-undocumented) Missing documentation for "authorize".
-// src/testUtils/apis/StorageApi/MockStorageApi.d.ts:19:5 - (ae-undocumented) Missing documentation for "create".
-// src/testUtils/apis/StorageApi/MockStorageApi.d.ts:20:5 - (ae-undocumented) Missing documentation for "forBucket".
-// src/testUtils/apis/StorageApi/MockStorageApi.d.ts:21:5 - (ae-undocumented) Missing documentation for "snapshot".
-// src/testUtils/apis/StorageApi/MockStorageApi.d.ts:22:5 - (ae-undocumented) Missing documentation for "set".
-// src/testUtils/apis/StorageApi/MockStorageApi.d.ts:23:5 - (ae-undocumented) Missing documentation for "remove".
-// src/testUtils/apis/StorageApi/MockStorageApi.d.ts:24:5 - (ae-undocumented) Missing documentation for "observe$".
+// src/testUtils/apis/PermissionApi/MockPermissionApi.d.ts:14:5 - (ae-undocumented) Missing documentation for "authorize".
+// src/testUtils/apis/StorageApi/MockStorageApi.d.ts:21:5 - (ae-undocumented) Missing documentation for "create".
+// src/testUtils/apis/StorageApi/MockStorageApi.d.ts:22:5 - (ae-undocumented) Missing documentation for "forBucket".
+// src/testUtils/apis/StorageApi/MockStorageApi.d.ts:23:5 - (ae-undocumented) Missing documentation for "snapshot".
+// src/testUtils/apis/StorageApi/MockStorageApi.d.ts:24:5 - (ae-undocumented) Missing documentation for "set".
+// src/testUtils/apis/StorageApi/MockStorageApi.d.ts:25:5 - (ae-undocumented) Missing documentation for "remove".
+// src/testUtils/apis/StorageApi/MockStorageApi.d.ts:26:5 - (ae-undocumented) Missing documentation for "observe$".
+// src/testUtils/apis/mockApis.d.ts:58:15 - (ae-undocumented) Missing documentation for "factory".
+// src/testUtils/apis/mockApis.d.ts:59:15 - (ae-undocumented) Missing documentation for "mock".
+// src/testUtils/apis/mockApis.d.ts:125:15 - (ae-undocumented) Missing documentation for "factory".
+// src/testUtils/apis/mockApis.d.ts:128:15 - (ae-undocumented) Missing documentation for "mock".
+// src/testUtils/apis/mockApis.d.ts:150:15 - (ae-undocumented) Missing documentation for "factory".
+// src/testUtils/apis/mockApis.d.ts:158:15 - (ae-undocumented) Missing documentation for "mock".
+// src/testUtils/apis/mockApis.d.ts:177:15 - (ae-undocumented) Missing documentation for "factory".
+// src/testUtils/apis/mockApis.d.ts:180:15 - (ae-undocumented) Missing documentation for "mock".
+// src/testUtils/apis/mockApis.d.ts:197:15 - (ae-undocumented) Missing documentation for "factory".
+// src/testUtils/apis/mockApis.d.ts:200:15 - (ae-undocumented) Missing documentation for "mock".
+// src/testUtils/apis/mockApis.d.ts:215:15 - (ae-undocumented) Missing documentation for "factory".
+// src/testUtils/apis/mockApis.d.ts:216:15 - (ae-undocumented) Missing documentation for "mock".
 ```

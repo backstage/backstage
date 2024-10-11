@@ -16,14 +16,37 @@
 
 import { ConfigReader } from '@backstage/config';
 import {
+  AnalyticsApi,
   ApiFactory,
   ApiRef,
   ConfigApi,
+  DiscoveryApi,
+  IdentityApi,
+  StorageApi,
+  analyticsApiRef,
   configApiRef,
   createApiFactory,
+  discoveryApiRef,
+  identityApiRef,
+  storageApiRef,
 } from '@backstage/core-plugin-api';
+import {
+  TranslationApi,
+  translationApiRef,
+} from '@backstage/core-plugin-api/alpha';
+import {
+  AuthorizeResult,
+  EvaluatePermissionRequest,
+} from '@backstage/plugin-permission-common';
+import {
+  PermissionApi,
+  permissionApiRef,
+} from '@backstage/plugin-permission-react';
 import { JsonObject } from '@backstage/types';
 import { ApiMock } from './ApiMock';
+import { MockPermissionApi } from './PermissionApi';
+import { MockStorageApi } from './StorageApi';
+import { MockTranslationApi } from './TranslationApi';
 
 /** @internal */
 function simpleFactory<TApi, TArgs extends unknown[]>(
@@ -103,8 +126,29 @@ function simpleMock<TApi>(
  * ```
  */
 export namespace mockApis {
+  const analyticsMockSkeleton = (): jest.Mocked<AnalyticsApi> => ({
+    captureEvent: jest.fn(),
+  });
   /**
-   * Fake implementation of {@link @backstage/frontend-plugin-api#ConfigApi}
+   * Mock implementation of {@link @backstage/core-plugin-api#AnalyticsApi}.
+   *
+   * @public
+   */
+  export function analytics(): AnalyticsApi {
+    return analyticsMockSkeleton();
+  }
+  /**
+   * Mock implementations of {@link @backstage/core-plugin-api#AnalyticsApi}.
+   *
+   * @public
+   */
+  export namespace analytics {
+    export const factory = simpleFactory(analyticsApiRef, analytics);
+    export const mock = simpleMock(analyticsApiRef, analyticsMockSkeleton);
+  }
+
+  /**
+   * Fake implementation of {@link @backstage/core-plugin-api#ConfigApi}
    * with optional data supplied.
    *
    * @public
@@ -115,7 +159,7 @@ export namespace mockApis {
    *   data: { app: { baseUrl: 'https://example.com' } },
    * });
    *
-   * const rendered = await renderInTestApp(
+   * await renderInTestApp(
    *   <TestApiProvider apis={[[configApiRef, config]]}>
    *     <MyTestedComponent />
    *   </TestApiProvider>,
@@ -126,15 +170,15 @@ export namespace mockApis {
     return new ConfigReader(options?.data, 'mock-config');
   }
   /**
-   * Mock helpers for {@link @backstage/frontend-plugin-api#ConfigApi}.
+   * Mock helpers for {@link @backstage/core-plugin-api#ConfigApi}.
    *
-   * @see {@link @backstage/frontend-plugin-api#mockApis.config}
+   * @see {@link @backstage/core-plugin-api#mockApis.config}
    * @public
    */
   export namespace config {
     /**
      * Creates a factory for a fake implementation of
-     * {@link @backstage/frontend-plugin-api#ConfigApi} with optional
+     * {@link @backstage/core-plugin-api#ConfigApi} with optional
      * configuration data supplied.
      *
      * @public
@@ -142,7 +186,7 @@ export namespace mockApis {
     export const factory = simpleFactory(configApiRef, config);
     /**
      * Creates a mock implementation of
-     * {@link @backstage/frontend-plugin-api#ConfigApi}. All methods are
+     * {@link @backstage/core-plugin-api#ConfigApi}. All methods are
      * replaced with jest mock functions, and you can optionally pass in a
      * subset of methods with an explicit implementation.
      *
@@ -165,6 +209,173 @@ export namespace mockApis {
       getOptionalString: jest.fn(),
       getStringArray: jest.fn(),
       getOptionalStringArray: jest.fn(),
+    }));
+  }
+
+  /**
+   * Fake implementation of {@link @backstage/core-plugin-api#DiscoveryApi}. By
+   * default returns URLs on the form `http://example.com/api/<pluginIs>`.
+   *
+   * @public
+   */
+  export function discovery(options?: { baseUrl?: string }): DiscoveryApi {
+    const baseUrl = options?.baseUrl ?? 'http://example.com';
+    return {
+      async getBaseUrl(pluginId: string) {
+        return `${baseUrl}/api/${pluginId}`;
+      },
+    };
+  }
+  /**
+   * Mock implementations of {@link @backstage/core-plugin-api#DiscoveryApi}.
+   *
+   * @public
+   */
+  export namespace discovery {
+    export const factory = simpleFactory(discoveryApiRef, discovery);
+    export const mock = simpleMock(discoveryApiRef, () => ({
+      getBaseUrl: jest.fn(),
+    }));
+  }
+
+  /**
+   * Fake implementation of {@link @backstage/core-plugin-api#IdentityApi}. By
+   * default returns no token or profile info, and the user `user:default/test`.
+   *
+   * @public
+   */
+  export function identity(options?: {
+    userEntityRef?: string;
+    ownershipEntityRefs?: string[];
+    token?: string;
+    email?: string;
+    displayName?: string;
+    picture?: string;
+  }): IdentityApi {
+    const {
+      userEntityRef = 'user:default/test',
+      ownershipEntityRefs = ['user:default/test'],
+      token,
+      email,
+      displayName,
+      picture,
+    } = options ?? {};
+    return {
+      async getBackstageIdentity() {
+        return { type: 'user', ownershipEntityRefs, userEntityRef };
+      },
+      async getCredentials() {
+        return { token };
+      },
+      async getProfileInfo() {
+        return { email, displayName, picture };
+      },
+      async signOut() {},
+    };
+  }
+  /**
+   * Mock implementations of {@link @backstage/core-plugin-api#IdentityApi}.
+   *
+   * @public
+   */
+  export namespace identity {
+    export const factory = simpleFactory(identityApiRef, identity);
+    export const mock = simpleMock(
+      identityApiRef,
+      (): jest.Mocked<IdentityApi> => ({
+        getBackstageIdentity: jest.fn(),
+        getCredentials: jest.fn(),
+        getProfileInfo: jest.fn(),
+        signOut: jest.fn(),
+      }),
+    );
+  }
+
+  /**
+   * Fake implementation of
+   * {@link @backstage/plugin-permission-react#PermissionApi}. By default allows
+   * all actions.
+   *
+   * @public
+   */
+  export function permission(options?: {
+    authorize?:
+      | AuthorizeResult.ALLOW
+      | AuthorizeResult.DENY
+      | ((
+          request: EvaluatePermissionRequest,
+        ) => AuthorizeResult.ALLOW | AuthorizeResult.DENY);
+  }): PermissionApi {
+    const authorizeInput = options?.authorize;
+    let authorize: (
+      request: EvaluatePermissionRequest,
+    ) => AuthorizeResult.ALLOW | AuthorizeResult.DENY;
+    if (authorizeInput === undefined) {
+      authorize = () => AuthorizeResult.ALLOW;
+    } else if (typeof authorizeInput === 'function') {
+      authorize = authorizeInput;
+    } else {
+      authorize = () => authorizeInput;
+    }
+    return new MockPermissionApi(authorize);
+  }
+  /**
+   * Mock implementation of
+   * {@link @backstage/plugin-permission-react#PermissionApi}.
+   *
+   * @public
+   */
+  export namespace permission {
+    export const factory = simpleFactory(permissionApiRef, permission);
+    export const mock = simpleMock(permissionApiRef, () => ({
+      authorize: jest.fn(),
+    }));
+  }
+
+  /**
+   * Fake implementation of {@link @backstage/core-plugin-api#StorageApi}.
+   * Stores data temporarily in memory.
+   *
+   * @public
+   */
+  export function storage(options?: { data?: JsonObject }): StorageApi {
+    return MockStorageApi.create(options?.data);
+  }
+  /**
+   * Mock implementations of {@link @backstage/core-plugin-api#StorageApi}.
+   *
+   * @public
+   */
+  export namespace storage {
+    export const factory = simpleFactory(storageApiRef, storage);
+    export const mock = simpleMock(storageApiRef, () => ({
+      forBucket: jest.fn(),
+      set: jest.fn(),
+      remove: jest.fn(),
+      observe$: jest.fn(),
+      snapshot: jest.fn(),
+    }));
+  }
+
+  /**
+   * Fake implementation of {@link @backstage/core-plugin-api/alpha#TranslationApi}.
+   * By default returns the default translation.
+   *
+   * @public
+   */
+  export function translation(): TranslationApi {
+    return MockTranslationApi.create();
+  }
+  /**
+   * Mock implementations of {@link @backstage/core-plugin-api/alpha#TranslationApi}.
+   *
+   * @public
+   */
+  export namespace translation {
+    export const factory = simpleFactory(translationApiRef, translation);
+    export const mock = simpleMock(translationApiRef, () => ({
+      getTranslation: jest.fn(),
+      translation$: jest.fn(),
     }));
   }
 }

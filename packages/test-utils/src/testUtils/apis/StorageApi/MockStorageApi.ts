@@ -20,12 +20,14 @@ import ObservableImpl from 'zen-observable';
 
 /**
  * Type for map holding data in {@link MockStorageApi}
+ * @deprecated Use {@link @backstage/test-utils#mockApis.(storage:namespace)} instead
  * @public
  */
 export type MockStorageBucket = { [key: string]: any };
 
 /**
  * Mock implementation of the {@link core-plugin-api#StorageApi} to be used in tests
+ * @deprecated Use {@link @backstage/test-utils#mockApis.(storage:namespace)} instead
  * @public
  */
 export class MockStorageApi implements StorageApi {
@@ -44,7 +46,21 @@ export class MockStorageApi implements StorageApi {
   }
 
   static create(data?: MockStorageBucket) {
-    return new MockStorageApi('', new Map(), data);
+    // Translate a nested data object structure into a flat object with keys
+    // like `/a/b` with their corresponding leaf values
+    const keyValues: { [key: string]: any } = {};
+    function put(value: { [key: string]: any }, namespace: string) {
+      for (const [key, val] of Object.entries(value)) {
+        if (typeof val === 'object' && val !== null) {
+          put(val, `${namespace}/${key}`);
+        } else {
+          const namespacedKey = `${namespace}/${key.replace(/^\//, '')}`;
+          keyValues[namespacedKey] = val;
+        }
+      }
+    }
+    put(data ?? {}, '');
+    return new MockStorageApi('', new Map(), keyValues);
   }
 
   forBucket(name: string): StorageApi {
