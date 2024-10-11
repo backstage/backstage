@@ -144,6 +144,22 @@ components:
         - description
         - example
       description: A single action example
+    DryRunResult:
+      type: object
+      properties:
+        log:
+          type: array
+          items:
+            type: object
+            properties:
+              body:
+                $ref: '#/components/schemas/JsonObject'
+        directoryContents:
+          type: array
+          items:
+            $ref: '#/components/schemas/SerializedFile'
+        output:
+          $ref: '#/components/schemas/JsonObject'
     Error:
       type: object
       properties:
@@ -218,6 +234,21 @@ components:
           items:
             $ref: '#/components/schemas/SerializedTask'
       description: The response shape for the `listTasks` call to the `scaffolder-backend`
+    SerializedFile:
+      type: object
+      properties:
+        path:
+          type: string
+        content:
+          type: string
+          format: byte
+        executable:
+          type: boolean
+        symlink:
+          type: boolean
+      required:
+        - path
+        - content
     SerializedTaskEvent:
       type: object
       properties:
@@ -539,6 +570,89 @@ components:
         - name
         - action
       description: An individual step of a scaffolder task, as stored in the database.
+    TemplateEntityStepV1beta3:
+      allOf:
+        - $ref: '#/components/schemas/JsonObject'
+        - type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            action:
+              type: string
+            input:
+              $ref: '#/components/schemas/JsonObject'
+            if:
+              oneOf:
+                - type: string
+                - type: boolean
+            backstage:permissions:
+              $ref: '#/components/schemas/TemplatePermissionsV1beta3'
+          required:
+            - action
+      description: Step that is part of a Template Entity.
+    TemplateEntityV1beta3:
+      allOf:
+        - $ref: '../../../catalog-backend/src/schema/openapi.yaml#/components/schemas/Entity'
+        - type: object
+          properties:
+            apiVersion:
+              type: string
+              enum: ['scaffolder.backstage.io/v1beta3']
+              description: The apiVersion string of the TaskSpec.
+            kind:
+              type: string
+              enum: ['Template']
+              description: The kind of the entity
+            spec:
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: The type that the Template will create. For example service, website or library.
+                presentation:
+                  $ref: '#/components/schemas/TemplatePresentationV1beta3'
+                  description: Template specific configuration of the presentation layer.
+                EXPERIMENTAL_recovery:
+                  $ref: '#/components/schemas/TemplateRecoveryV1beta3'
+                  description: Recovery strategy for the template
+                parameters:
+                  oneOf:
+                    - $ref: '#/components/schemas/TemplateParametersV1beta3'
+                    - type: array
+                      items:
+                        $ref: '#/components/schemas/TemplateParametersV1beta3'
+                  description: |-
+                    This is a JSONSchema or an array of JSONSchema's which is used to render a form in the frontend
+                    to collect user input and validate it against that schema. This can then be used in the `steps` part below to template
+                    variables passed from the user into each action in the template.
+                steps:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/TemplateEntityStepV1beta3'
+                  description: |-
+                    A list of steps to be executed in sequence which are defined by the template. These steps are a list of the underlying
+                    javascript action and some optional input parameters that may or may not have been collected from the end user.
+                output:
+                  type: object
+                  additionalProperties:
+                    type: string
+                  description: The output is an object where template authors can pull out information from template actions and return them in a known standard way.
+                owner:
+                  type: string
+                  description: The owner entityRef of the TemplateEntity
+              required:
+                - type
+                - steps
+              description: The specification of the Template Entity
+          required:
+            - apiVersion
+            - kind
+            - spec
+      description: |-
+        Backstage catalog Template kind Entity. Templates are used by the Scaffolder
+        plugin to create new entities, such as Components.
     TemplateInfo:
       type: object
       properties:
@@ -589,6 +703,24 @@ components:
       description: |-
         The shape of each entry of parameters which gets rendered
         as a separate step in the wizard input
+    TemplateParametersV1beta3:
+      allOf:
+        - $ref: '#/components/schemas/JsonObject'
+        - type: object
+          properties:
+            backstage:permissions:
+              $ref: '#/components/schemas/TemplatePermissionsV1beta3'
+      description: Parameter that is part of a Template Entity.
+    TemplatePermissionsV1beta3:
+      allOf:
+        - $ref: '#/components/schemas/JsonObject'
+        - type: object
+          properties:
+            tags:
+              type: array
+              items:
+                type: string
+      description: Access control properties for parts of a template.
     TemplatePresentationV1beta3:
       type: object
       properties:
@@ -608,6 +740,17 @@ components:
           additionalProperties: false
       description: The presentation of the template.
       additionalProperties: {}
+    TemplateRecoveryV1beta3:
+      allOf:
+        - $ref: '#/components/schemas/JsonObject'
+        - type: string
+          enum:
+            - none
+            - startOver
+          description: |-
+            none - not recover, let the task be marked as failed
+            startOver - do recover, start the execution of the task from the first step.
+      description: Depends on how you designed your task you might tailor the behaviour for each of them.
   securitySchemes:
     JWT:
       type: http
@@ -784,3 +927,83 @@ paths:
       parameters:
         - $ref: '#/components/parameters/eventsAfter'
         - $ref: '#/components/parameters/taskId'
+
+  /v2/dry-run:
+    post:
+      operationId: DryRun
+      description: Perform a dry-run of a template
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                template:
+                  $ref: '#/components/schemas/TemplateEntityV1beta3'
+                values:
+                  type: object
+                secrets:
+                  type: object
+                directoryContents:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      path:
+                        type: string
+                      base64Content:
+                        type: string
+              required:
+                - template
+                - values
+                - directoryContents
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/DryRunResult'
+                  - type: object
+                    properties:
+                      steps:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            name:
+                              type: string
+                            action:
+                              type: string
+                            input:
+                              $ref: '#/components/schemas/JsonObject'
+                            if:
+                              oneOf:
+                                - type: string
+                                - type: boolean
+                            backstage:permissions:
+                              $ref: '#/components/schemas/TemplatePermissionsV1beta3'
+                          required:
+                            - id
+                            - name
+                            - action
+                      directoryContents:
+                        type: object
+                        properties:
+                          path:
+                            type: string
+                          executable:
+                            type: boolean
+                          base64Content:
+                            type: string
+                        required:
+                          - path
+                          - base64Content
+        '400':
+          $ref: '#/components/responses/ValidationError'
+      parameters: []
