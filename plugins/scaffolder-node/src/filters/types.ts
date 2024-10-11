@@ -56,17 +56,17 @@ export type TemplateFilterFunction<T extends TemplateFilterSchema> =
 export type CreatedTemplateFilter<
   TSchema extends TemplateFilterSchema | undefined = undefined,
   TFilterSchema extends TSchema extends TemplateFilterSchema
-    ? TemplateFilterFunction<S>
+    ? TemplateFilterFunction<TSchema>
     : (
         arg: JsonValue,
         ...rest: JsonValue[]
-      ) => JsonValue | undefined = S extends TemplateFilterSchema
-    ? TemplateFilterFunction<S>
+      ) => JsonValue | undefined = TSchema extends TemplateFilterSchema
+    ? TemplateFilterFunction<TSchema>
     : (arg: JsonValue, ...rest: JsonValue[]) => JsonValue | undefined,
 > = {
   id: string;
   description?: string;
   examples?: TemplateFilterExample[];
-  schema?: S;
-  filter: F;
+  schema?: TSchema;
+  filter: TFilterSchema;
 };
