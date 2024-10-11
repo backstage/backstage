@@ -7,6 +7,7 @@
 
 import { ApiResponse } from '@opensearch-project/opensearch';
 import { ApiResponse as ApiResponse_2 } from '@elastic/elasticsearch';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node';
 import { BulkHelper } from '@elastic/elasticsearch/lib/Helpers';
 import { BulkStats } from '@elastic/elasticsearch/lib/Helpers';
@@ -391,6 +392,10 @@ export interface ElasticSearchTransportConstructor {
   };
 }
 
+// @public (undocumented)
+const _feature: BackendFeature;
+export default _feature;
+
 // @public
 export const isOpenSearchCompatible: (
   opts: ElasticSearchClientOptions,
@@ -552,4 +557,8 @@ export interface OpenSearchNodeOptions {
 // src/engines/ElasticSearchSearchEngineIndexer.d.ts:39:5 - (ae-undocumented) Missing documentation for "initialize".
 // src/engines/ElasticSearchSearchEngineIndexer.d.ts:40:5 - (ae-undocumented) Missing documentation for "index".
 // src/engines/ElasticSearchSearchEngineIndexer.d.ts:41:5 - (ae-undocumented) Missing documentation for "finalize".
+// src/index.d.ts:2:15 - (ae-undocumented) Missing documentation for "_feature".
+// src/index.d.ts:4:1 - (ae-misplaced-package-tag) The @packageDocumentation comment must appear at the top of entry point *.d.ts file
+
+// (No @packageDocumentation comment for this package)
 ```

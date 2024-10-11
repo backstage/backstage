@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { scaffolderPlugin as feature } from './ScaffolderPlugin';
+
 /**
  * The Backstage backend plugin that helps you create new things
  *
@@ -23,5 +25,9 @@
 export * from './scaffolder';
 export * from './service/router';
 export * from './lib';
+
+/** @public */
+const _feature = feature;
+export default _feature;
 
 export * from './deprecated';

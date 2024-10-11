@@ -5,6 +5,7 @@
 ```ts
 /// <reference types="express" />
 
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
 import type { Config } from '@backstage/config';
 import type { DeferredEntity } from '@backstage/plugin-catalog-node';
@@ -30,6 +31,10 @@ export type EntityIteratorResult<T> =
       entities?: DeferredEntity[];
       cursor?: T;
     };
+
+// @public (undocumented)
+const _feature: BackendFeature;
+export default _feature;
 
 // @public (undocumented)
 export class IncrementalCatalogBuilder {
@@ -97,9 +102,13 @@ export type PluginEnvironment = {
 
 // Warnings were encountered during analysis:
 //
+// src/index.d.ts:2:15 - (ae-undocumented) Missing documentation for "_feature".
+// src/index.d.ts:4:1 - (ae-misplaced-package-tag) The @packageDocumentation comment must appear at the top of entry point *.d.ts file
 // src/service/IncrementalCatalogBuilder.d.ts:6:1 - (ae-undocumented) Missing documentation for "IncrementalCatalogBuilder".
 // src/service/IncrementalCatalogBuilder.d.ts:20:5 - (ae-undocumented) Missing documentation for "build".
 // src/service/IncrementalCatalogBuilder.d.ts:23:5 - (ae-undocumented) Missing documentation for "addIncrementalEntityProvider".
 // src/types.d.ts:106:1 - (ae-undocumented) Missing documentation for "IncrementalEntityProviderOptions".
 // src/types.d.ts:145:1 - (ae-undocumented) Missing documentation for "PluginEnvironment".
+
+// (No @packageDocumentation comment for this package)
 ```

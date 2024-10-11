@@ -6,6 +6,7 @@
 /// <reference types="node" />
 
 import { AuthService } from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
@@ -35,6 +36,10 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
   // (undocumented)
   readonly visibilityPermission: Permission;
 }
+
+// @public (undocumented)
+const _feature: BackendFeature;
+export default _feature;
 
 // @public (undocumented)
 export interface MkSearchIndexDoc {
@@ -98,4 +103,5 @@ export type TechDocsCollatorFactoryOptions = {
 // src/collators/TechDocsCollatorDocumentTransformer.d.ts:10:1 - (ae-undocumented) Missing documentation for "TechDocsCollatorDocumentTransformer".
 // src/collators/TechDocsCollatorEntityTransformer.d.ts:4:1 - (ae-undocumented) Missing documentation for "TechDocsCollatorEntityTransformer".
 // src/collators/defaultTechDocsCollatorEntityTransformer.d.ts:3:22 - (ae-undocumented) Missing documentation for "defaultTechDocsCollatorEntityTransformer".
+// src/index.d.ts:7:15 - (ae-undocumented) Missing documentation for "_feature".
 ```

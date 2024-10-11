@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+import { default as feature } from './alpha';
+
+/** @public */
+const _feature = feature;
+export default _feature;
+
 /**
  * The module "azure" for the Backstage backend plugin "events-backend"
  * adding an event router for Azure DevOps.

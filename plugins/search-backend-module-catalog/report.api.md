@@ -6,6 +6,7 @@
 /// <reference types="node" />
 
 import { AuthService } from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
 import { Config } from '@backstage/config';
@@ -52,6 +53,10 @@ export type DefaultCatalogCollatorFactoryOptions = {
   entityTransformer?: CatalogCollatorEntityTransformer;
 };
 
+// @public (undocumented)
+const _feature: BackendFeature;
+export default _feature;
+
 // Warnings were encountered during analysis:
 //
 // src/collators/CatalogCollatorEntityTransformer.d.ts:4:1 - (ae-undocumented) Missing documentation for "CatalogCollatorEntityTransformer".
@@ -61,4 +66,5 @@ export type DefaultCatalogCollatorFactoryOptions = {
 // src/collators/DefaultCatalogCollatorFactory.d.ts:51:5 - (ae-undocumented) Missing documentation for "fromConfig".
 // src/collators/DefaultCatalogCollatorFactory.d.ts:53:5 - (ae-undocumented) Missing documentation for "getCollator".
 // src/collators/defaultCatalogCollatorEntityTransformer.d.ts:3:22 - (ae-undocumented) Missing documentation for "defaultCatalogCollatorEntityTransformer".
+// src/index.d.ts:7:15 - (ae-undocumented) Missing documentation for "_feature".
 ```

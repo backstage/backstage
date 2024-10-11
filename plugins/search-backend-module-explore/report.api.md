@@ -6,6 +6,7 @@
 /// <reference types="node" />
 
 import { AuthService } from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
@@ -14,6 +15,10 @@ import { IndexableDocument } from '@backstage/plugin-search-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { Readable } from 'stream';
 import { TokenManager } from '@backstage/backend-common';
+
+// @public (undocumented)
+const _feature: BackendFeature;
+export default _feature;
 
 // @public
 export interface ToolDocument extends IndexableDocument, ExploreTool {}
@@ -48,4 +53,5 @@ export type ToolDocumentCollatorFactoryOptions = {
 // src/collators/ToolDocumentCollatorFactory.d.ts:37:5 - (ae-undocumented) Missing documentation for "fromConfig".
 // src/collators/ToolDocumentCollatorFactory.d.ts:38:5 - (ae-undocumented) Missing documentation for "getCollator".
 // src/collators/ToolDocumentCollatorFactory.d.ts:39:5 - (ae-undocumented) Missing documentation for "execute".
+// src/index.d.ts:7:15 - (ae-undocumented) Missing documentation for "_feature".
 ```

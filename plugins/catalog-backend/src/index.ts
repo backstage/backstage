@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { catalogPlugin as feature } from './service/CatalogPlugin';
+
 /**
  * The Backstage backend plugin that provides the Backstage catalog
  *
@@ -27,3 +29,7 @@ export * from './service';
 export * from './deprecated';
 export * from './constants';
 export * from './util';
+
+/** @public */
+const _feature = feature;
+export default _feature;

@@ -4,6 +4,7 @@
 
 ```ts
 import { AuthService } from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import express from 'express';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
@@ -15,6 +16,10 @@ import { UserInfoService } from '@backstage/backend-plugin-api';
 
 // @public @deprecated
 export function createRouter(options: RouterOptions): Promise<express.Router>;
+
+// @public (undocumented)
+const _feature: BackendFeature;
+export default _feature;
 
 // @public @deprecated
 export interface RouterOptions {
@@ -38,6 +43,7 @@ export interface RouterOptions {
 
 // Warnings were encountered during analysis:
 //
+// src/index.d.ts:7:15 - (ae-undocumented) Missing documentation for "_feature".
 // src/service/router.d.ts:13:5 - (ae-undocumented) Missing documentation for "logger".
 // src/service/router.d.ts:14:5 - (ae-undocumented) Missing documentation for "discovery".
 // src/service/router.d.ts:15:5 - (ae-undocumented) Missing documentation for "policy".

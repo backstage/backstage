@@ -6,6 +6,7 @@
 import { AuthenticationStrategy as AuthenticationStrategy_2 } from '@backstage/plugin-kubernetes-node';
 import { AuthMetadata as AuthMetadata_2 } from '@backstage/plugin-kubernetes-node';
 import { AuthService } from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ClusterDetails as ClusterDetails_2 } from '@backstage/plugin-kubernetes-node';
@@ -120,6 +121,10 @@ export type DispatchStrategyOptions = {
     [key: string]: AuthenticationStrategy_2;
   };
 };
+
+// @public (undocumented)
+const _feature: BackendFeature;
+export default _feature;
 
 // @public @deprecated (undocumented)
 export type FetchResponseWrapper = k8sAuthTypes.FetchResponseWrapper;
@@ -467,6 +472,7 @@ export type SigningCreds = {
 // src/auth/ServiceAccountStrategy.d.ts:9:5 - (ae-undocumented) Missing documentation for "presentAuthMetadata".
 // src/auth/types.d.ts:5:1 - (ae-undocumented) Missing documentation for "AuthenticationStrategy".
 // src/auth/types.d.ts:9:1 - (ae-undocumented) Missing documentation for "KubernetesCredential".
+// src/index.d.ts:10:15 - (ae-undocumented) Missing documentation for "_feature".
 // src/service/KubernetesBuilder.d.ts:14:1 - (ae-undocumented) Missing documentation for "KubernetesEnvironment".
 // src/service/KubernetesBuilder.d.ts:15:5 - (ae-undocumented) Missing documentation for "logger".
 // src/service/KubernetesBuilder.d.ts:16:5 - (ae-undocumented) Missing documentation for "config".

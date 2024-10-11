@@ -4,6 +4,7 @@
 
 ```ts
 import { AuthService } from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
@@ -37,9 +38,17 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
   refresh(logger: LoggerService): Promise<void>;
 }
 
+// @public (undocumented)
+const _feature: BackendFeature;
+export default _feature;
+
 // Warnings were encountered during analysis:
 //
+// src/index.d.ts:2:15 - (ae-undocumented) Missing documentation for "_feature".
+// src/index.d.ts:4:1 - (ae-misplaced-package-tag) The @packageDocumentation comment must appear at the top of entry point *.d.ts file
 // src/providers/BitbucketCloudEntityProvider.d.ts:26:5 - (ae-undocumented) Missing documentation for "fromConfig".
 // src/providers/BitbucketCloudEntityProvider.d.ts:42:5 - (ae-undocumented) Missing documentation for "refresh".
 // src/providers/BitbucketCloudEntityProvider.d.ts:44:5 - (ae-undocumented) Missing documentation for "onRepoPush".
+
+// (No @packageDocumentation comment for this package)
 ```

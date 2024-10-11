@@ -9,6 +9,7 @@ import { ActionContext as ActionContext_2 } from '@backstage/plugin-scaffolder-n
 import { AuthService } from '@backstage/backend-plugin-api';
 import { AutocompleteHandler } from '@backstage/plugin-scaffolder-node/alpha';
 import * as azure from '@backstage/plugin-scaffolder-backend-module-azure';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import * as bitbucket from '@backstage/plugin-scaffolder-backend-module-bitbucket';
 import * as bitbucketCloud from '@backstage/plugin-scaffolder-backend-module-bitbucket-cloud';
@@ -504,6 +505,10 @@ export type DatabaseTaskStoreOptions = {
 // @public @deprecated
 export const executeShellCommand: typeof executeShellCommand_2;
 
+// @public (undocumented)
+const _feature: BackendFeature;
+export default _feature;
+
 // @public @deprecated
 export const fetchContents: typeof fetchContents_2;
 
@@ -846,6 +851,7 @@ export type TemplatePermissionRuleInput<
 // src/deprecated.d.ts:13:22 - (ae-undocumented) Missing documentation for "createTemplateAction".
 // src/deprecated.d.ts:18:1 - (ae-undocumented) Missing documentation for "TaskSecrets".
 // src/deprecated.d.ts:23:1 - (ae-undocumented) Missing documentation for "TemplateAction".
+// src/index.d.ts:10:15 - (ae-undocumented) Missing documentation for "_feature".
 // src/lib/templating/SecureTemplater.d.ts:6:1 - (ae-undocumented) Missing documentation for "TemplateFilter".
 // src/lib/templating/SecureTemplater.d.ts:11:1 - (ae-undocumented) Missing documentation for "TemplateGlobal".
 // src/scaffolder/actions/TemplateActionRegistry.d.ts:8:5 - (ae-undocumented) Missing documentation for "register".

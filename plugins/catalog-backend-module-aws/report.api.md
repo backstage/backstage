@@ -5,6 +5,7 @@
 ```ts
 import { AwsCredentialIdentity } from '@aws-sdk/types';
 import { AwsCredentialsManager } from '@backstage/integration-aws-node';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogProcessor } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorParser } from '@backstage/plugin-catalog-node';
@@ -113,8 +114,14 @@ export type EksClusterEntityTransformer = (
   accountId: string,
 ) => Promise<Entity>;
 
+// @public (undocumented)
+const _feature: BackendFeature;
+export default _feature;
+
 // Warnings were encountered during analysis:
 //
+// src/index.d.ts:2:15 - (ae-undocumented) Missing documentation for "_feature".
+// src/index.d.ts:4:1 - (ae-misplaced-package-tag) The @packageDocumentation comment must appear at the top of entry point *.d.ts file
 // src/processors/AwsEKSClusterProcessor.d.ts:18:5 - (ae-undocumented) Missing documentation for "fromConfig".
 // src/processors/AwsEKSClusterProcessor.d.ts:26:5 - (ae-undocumented) Missing documentation for "getProcessorName".
 // src/processors/AwsEKSClusterProcessor.d.ts:27:5 - (ae-undocumented) Missing documentation for "readLocation".
@@ -125,4 +132,6 @@ export type EksClusterEntityTransformer = (
 // src/processors/AwsS3DiscoveryProcessor.d.ts:16:5 - (ae-undocumented) Missing documentation for "readLocation".
 // src/providers/AwsS3EntityProvider.d.ts:20:5 - (ae-undocumented) Missing documentation for "fromConfig".
 // src/providers/AwsS3EntityProvider.d.ts:31:5 - (ae-undocumented) Missing documentation for "refresh".
+
+// (No @packageDocumentation comment for this package)
 ```

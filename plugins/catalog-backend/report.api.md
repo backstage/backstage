@@ -12,6 +12,7 @@ import { AnalyzeLocationRequest as AnalyzeLocationRequest_2 } from '@backstage/p
 import { AnalyzeLocationResponse as AnalyzeLocationResponse_2 } from '@backstage/plugin-catalog-common';
 import { AnalyzeOptions as AnalyzeOptions_2 } from '@backstage/plugin-catalog-node';
 import { AuthService } from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogCollatorEntityTransformer as CatalogCollatorEntityTransformer_2 } from '@backstage/plugin-search-backend-module-catalog';
 import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
@@ -350,6 +351,10 @@ export type EntityProviderMutation = EntityProviderMutation_2;
 export type EntityRelationSpec = EntityRelationSpec_2;
 
 // @public (undocumented)
+const _feature: BackendFeature;
+export default _feature;
+
+// @public (undocumented)
 export class FileReaderProcessor implements CatalogProcessor_2 {
   // (undocumented)
   getProcessorName(): string;
@@ -516,6 +521,7 @@ export class UrlReaderProcessor implements CatalogProcessor_2 {
 // src/deprecated.d.ts:207:22 - (ae-undocumented) Missing documentation for "defaultCatalogCollatorEntityTransformer".
 // src/deprecated.d.ts:212:1 - (ae-undocumented) Missing documentation for "DefaultCatalogCollatorFactoryOptions".
 // src/deprecated.d.ts:217:1 - (ae-undocumented) Missing documentation for "CatalogCollatorEntityTransformer".
+// src/index.d.ts:14:15 - (ae-undocumented) Missing documentation for "_feature".
 // src/processing/types.d.ts:31:5 - (ae-undocumented) Missing documentation for "start".
 // src/processing/types.d.ts:32:5 - (ae-undocumented) Missing documentation for "stop".
 // src/processors/AnnotateLocationEntityProcessor.d.ts:6:1 - (ae-undocumented) Missing documentation for "AnnotateLocationEntityProcessor".

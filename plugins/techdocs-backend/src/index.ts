@@ -25,6 +25,7 @@ import {
   DocsBuildStrategy as _DocsBuildStrategy,
   TechDocsDocument as _TechDocsDocument,
 } from '@backstage/plugin-techdocs-node';
+import { techdocsPlugin as feature } from './plugin';
 
 export { createRouter } from './service';
 export type {
@@ -41,6 +42,10 @@ export type {
   TechDocsCollatorFactoryOptions,
   TechDocsCollatorOptions,
 } from './search';
+
+/** @public */
+const _feature = feature;
+export default _feature;
 
 /**
  * @public

@@ -5,6 +5,7 @@
 ```ts
 import { AnalyzeOptions } from '@backstage/plugin-catalog-node';
 import { AuthService } from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogProcessor } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-node';
@@ -36,6 +37,10 @@ export const defaultUserTransformer: (
   item: GithubUser,
   _ctx: TransformerContext,
 ) => Promise<UserEntity | undefined>;
+
+// @public (undocumented)
+const _feature: BackendFeature;
+export default _feature;
 
 // @public
 export class GithubDiscoveryProcessor implements CatalogProcessor {
@@ -333,6 +338,8 @@ export type UserTransformer = (
 // src/deprecated.d.ts:29:5 - (ae-undocumented) Missing documentation for "connect".
 // src/deprecated.d.ts:30:5 - (ae-undocumented) Missing documentation for "getProviderName".
 // src/deprecated.d.ts:31:5 - (ae-undocumented) Missing documentation for "refresh".
+// src/index.d.ts:2:15 - (ae-undocumented) Missing documentation for "_feature".
+// src/index.d.ts:4:1 - (ae-misplaced-package-tag) The @packageDocumentation comment must appear at the top of entry point *.d.ts file
 // src/lib/defaultTransformers.d.ts:10:5 - (ae-undocumented) Missing documentation for "client".
 // src/lib/defaultTransformers.d.ts:11:5 - (ae-undocumented) Missing documentation for "query".
 // src/lib/defaultTransformers.d.ts:12:5 - (ae-undocumented) Missing documentation for "org".
@@ -355,4 +362,6 @@ export type UserTransformer = (
 // src/providers/GithubEntityProvider.d.ts:102:8 - (tsdoc-undefined-tag) The TSDoc tag "@private" is not defined in this configuration
 // src/providers/GithubMultiOrgEntityProvider.d.ts:84:5 - (ae-undocumented) Missing documentation for "fromConfig".
 // src/providers/GithubOrgEntityProvider.d.ts:71:5 - (ae-undocumented) Missing documentation for "fromConfig".
+
+// (No @packageDocumentation comment for this package)
 ```

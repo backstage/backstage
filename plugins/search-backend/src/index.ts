@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { default as feature } from './alpha';
+
 /**
  * The Backstage backend plugin that provides your backstage app with search
  *
@@ -21,3 +23,7 @@
  */
 
 export * from './service/router';
+
+/** @public */
+const _feature = feature;
+export default _feature;

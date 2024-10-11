@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { default as feature } from './alpha';
+
 /**
  * A Backstage backend plugin that helps you set up proxy endpoints in the backend
  *
@@ -21,3 +23,7 @@
  */
 
 export * from './service';
+
+/** @public */
+const _feature = feature;
+export default _feature;
