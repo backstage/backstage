@@ -15,10 +15,9 @@
  */
 
 import { UrlPatternDiscovery } from '@backstage/core-app-api';
-import { IdentityApi } from '@backstage/core-plugin-api';
 import { NotFoundError } from '@backstage/errors';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
-import { MockConfigApi, MockFetchApi } from '@backstage/test-utils';
+import { mockApis, MockFetchApi } from '@backstage/test-utils';
 import { TechDocsStorageClient } from './client';
 
 jest.mock('@microsoft/fetch-event-source');
@@ -34,16 +33,13 @@ const mockEntity = {
 
 describe('TechDocsStorageClient', () => {
   const mockBaseUrl = 'http://backstage:9191/api/techdocs';
-  const configApi = new MockConfigApi({});
+  const configApi = mockApis.config();
   const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);
-  const identityApi: jest.Mocked<IdentityApi> = {
-    getCredentials: jest.fn(),
-  } as unknown as jest.Mocked<IdentityApi>;
+  const identityApi = mockApis.identity();
   const fetchApi = new MockFetchApi({ injectIdentityAuth: { identityApi } });
 
   beforeEach(() => {
     jest.resetAllMocks();
-    identityApi.getCredentials.mockResolvedValue({ token: undefined });
   });
 
   it('should return correct base url based on defined storage', async () => {
@@ -95,7 +91,6 @@ describe('TechDocsStorageClient', () => {
         await Promise.resolve();
         onmessage?.({ id: '', event: 'finish', data: '{"updated": false}' });
       });
-      identityApi.getCredentials.mockResolvedValue({});
       await storageApi.syncEntityDocs(mockEntity);
 
       expect(mockFetchEventSource).toHaveBeenCalledWith(
@@ -126,7 +121,6 @@ describe('TechDocsStorageClient', () => {
         onmessage?.({ id: '', event: 'finish', data: '{"updated": false}' });
       });
 
-      identityApi.getCredentials.mockResolvedValue({});
       await expect(storageApi.syncEntityDocs(mockEntity)).resolves.toEqual(
         'cached',
       );
@@ -146,7 +140,6 @@ describe('TechDocsStorageClient', () => {
         onmessage?.({ id: '', event: 'finish', data: '{"updated": true}' });
       });
 
-      identityApi.getCredentials.mockResolvedValue({});
       await expect(storageApi.syncEntityDocs(mockEntity)).resolves.toEqual(
         'updated',
       );
@@ -169,7 +162,6 @@ describe('TechDocsStorageClient', () => {
         onmessage?.({ id: '', event: 'finish', data: '{"updated": false}' });
       });
 
-      identityApi.getCredentials.mockResolvedValue({});
       const logHandler = jest.fn();
       await expect(
         storageApi.syncEntityDocs(mockEntity, logHandler),
@@ -192,7 +184,6 @@ describe('TechDocsStorageClient', () => {
       });
 
       // we await later after we emitted the error
-      identityApi.getCredentials.mockResolvedValue({});
       const promise = storageApi.syncEntityDocs(mockEntity).then();
 
       await expect(promise).rejects.toThrow(NotFoundError);
@@ -207,7 +198,6 @@ describe('TechDocsStorageClient', () => {
       });
 
       // we await later after we emitted the error
-      identityApi.getCredentials.mockResolvedValue({});
       const promise = storageApi.syncEntityDocs(mockEntity).then();
 
       mockFetchEventSource.mockImplementation(async (_url, options) => {

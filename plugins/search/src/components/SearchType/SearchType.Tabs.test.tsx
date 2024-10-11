@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { MockConfigApi, TestApiProvider } from '@backstage/test-utils';
+import { mockApis, TestApiProvider } from '@backstage/test-utils';
 import { act, render } from '@testing-library/react';
 import user from '@testing-library/user-event';
 import {
@@ -40,10 +40,12 @@ jest.mock('@backstage/plugin-search-react', () => ({
 
 describe('SearchType.Tabs', () => {
   const searchApiMock = { query: jest.fn().mockResolvedValue({ results: [] }) };
-  const configApiMock = new MockConfigApi({
-    search: {
-      query: {
-        pageLimit: 100,
+  const configApiMock = mockApis.config({
+    data: {
+      search: {
+        query: {
+          pageLimit: 100,
+        },
       },
     },
   });

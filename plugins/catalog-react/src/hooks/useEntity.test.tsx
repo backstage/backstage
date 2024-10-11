@@ -25,7 +25,7 @@ import {
 import { Entity } from '@backstage/catalog-model';
 import { analyticsApiRef, useAnalytics } from '@backstage/core-plugin-api';
 import {
-  MockAnalyticsApi,
+  mockApis,
   TestApiRegistry,
   withLogCollector,
 } from '@backstage/test-utils';
@@ -57,7 +57,7 @@ describe('useEntity', () => {
   });
 
   it('should provide entityRef analytics context', () => {
-    const analyticsSpy = new MockAnalyticsApi();
+    const analyticsSpy = mockApis.analytics();
     const apis = TestApiRegistry.from([analyticsApiRef, analyticsSpy]);
     const { result } = renderHook(() => useAnalytics(), {
       wrapper: ({ children }: React.PropsWithChildren<{}>) => (
@@ -69,9 +69,13 @@ describe('useEntity', () => {
 
     result.current.captureEvent('test', 'value');
 
-    expect(analyticsSpy.getEvents()[0]).toMatchObject({
-      context: { entityRef: 'mykind:default/my-entity' },
-    });
+    expect(analyticsSpy.captureEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        context: expect.objectContaining({
+          entityRef: 'mykind:default/my-entity',
+        }),
+      }),
+    );
   });
 });
 
@@ -127,7 +131,7 @@ describe('useAsyncEntity', () => {
   });
 
   it('should provide entityRef analytics context', () => {
-    const analyticsSpy = new MockAnalyticsApi();
+    const analyticsSpy = mockApis.analytics.mock();
     const apis = TestApiRegistry.from([analyticsApiRef, analyticsSpy]);
     const { result } = renderHook(() => useAnalytics(), {
       wrapper: ({ children }: React.PropsWithChildren<{}>) => (
@@ -144,13 +148,13 @@ describe('useAsyncEntity', () => {
 
     result.current.captureEvent('test', 'value');
 
-    expect(analyticsSpy.getEvents()[0]).toMatchObject({
-      context: { entityRef: 'mykind:default/my-entity' },
-    });
+    expect(analyticsSpy.captureEvent.mock.calls[0][0].context.entityRef).toBe(
+      'mykind:default/my-entity',
+    );
   });
 
   it('should omit entityRef analytics context', () => {
-    const analyticsSpy = new MockAnalyticsApi();
+    const analyticsSpy = mockApis.analytics.mock();
     const apis = TestApiRegistry.from([analyticsApiRef, analyticsSpy]);
     const { result } = renderHook(() => useAnalytics(), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
@@ -162,6 +166,8 @@ describe('useAsyncEntity', () => {
 
     result.current.captureEvent('test', 'value');
 
-    expect(analyticsSpy.getEvents()[0].context).not.toHaveProperty('entityRef');
+    expect(
+      analyticsSpy.captureEvent.mock.calls[0][0].context,
+    ).not.toHaveProperty('entityRef');
   });
 });

@@ -20,6 +20,7 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import {
   TestApiProvider,
+  mockApis,
   registerMswTestHooks,
   wrapInTestApp,
 } from '@backstage/test-utils';
@@ -37,9 +38,7 @@ describe('ProxiedSignInPage', () => {
           apis={[
             [
               discoveryApiRef,
-              {
-                getBaseUrl: async () => 'http://example.com/api/auth',
-              },
+              mockApis.discovery({ baseUrl: 'http://example.com' }),
             ],
           ]}
         >

@@ -14,35 +14,30 @@
  * limitations under the License.
  */
 
-import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
+import {
+  renderInTestApp,
+  TestApiRegistry,
+  mockApis,
+} from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import React from 'react';
 import { identityApiRef } from '@backstage/core-plugin-api';
 import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { ApiProvider } from '@backstage/core-app-api';
 import { UserSettingsProfileCard } from './UserSettingsProfileCard';
 
 const apiRegistry = TestApiRegistry.from(
-  [
-    identityApiRef,
-    {
-      getProfileInfo: jest.fn(async () => ({})),
-      getBackstageIdentity: jest.fn(async () => ({
-        type: 'user' as const,
-        userEntityRef: 'foo:bar/foobar',
-        ownershipEntityRefs: ['user:default/test-ownership'],
-      })),
-    },
-  ],
+  [identityApiRef, mockApis.identity()],
   [
     catalogApiRef,
-    {
-      getEntityByRef: jest.fn(async () => {
-        return {
+    catalogApiMock({
+      entities: [
+        {
           apiVersion: 'backstage.io/v1beta1',
           kind: 'User',
           metadata: {
-            name: 'Guest',
+            name: 'test',
             annotations: {},
           },
           spec: {
@@ -50,9 +45,9 @@ const apiRegistry = TestApiRegistry.from(
               picture: 'https://example.com/avatar.png',
             },
           },
-        };
-      }),
-    },
+        },
+      ],
+    }),
   ],
 );
 

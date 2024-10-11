@@ -16,12 +16,11 @@
 
 import { TechDocsNotFound } from './TechDocsNotFound';
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import {
-  MockAnalyticsApi,
+  mockApis,
   TestApiProvider,
   renderInTestApp,
-  wrapInTestApp,
 } from '@backstage/test-utils';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
 
@@ -58,18 +57,16 @@ describe('<TechDocsNotFound />', () => {
   });
 
   it('should trigger analytics event not-found', async () => {
-    const mockAnalyticsApi = new MockAnalyticsApi();
+    const mockAnalyticsApi = mockApis.analytics();
 
-    render(
-      wrapInTestApp(
-        <TestApiProvider apis={[[analyticsApiRef, mockAnalyticsApi]]}>
-          <TechDocsNotFound />
-        </TestApiProvider>,
-      ),
+    await renderInTestApp(
+      <TestApiProvider apis={[[analyticsApiRef, mockAnalyticsApi]]}>
+        <TechDocsNotFound />
+      </TestApiProvider>,
     );
 
     await waitFor(() => {
-      expect(mockAnalyticsApi.getEvents()[0]).toMatchObject({
+      expect(mockAnalyticsApi.captureEvent).toHaveBeenCalledWith({
         action: 'not-found',
         subject: '/the/pathname?the=search#the-anchor',
         attributes: {
@@ -77,6 +74,7 @@ describe('<TechDocsNotFound />', () => {
           namespace: 'namespace',
           kind: 'kind',
         },
+        context: expect.anything(),
       });
     });
   });

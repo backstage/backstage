@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import {
+  renderInTestApp,
+  TestApiProvider,
+  mockApis,
+} from '@backstage/test-utils';
 import React from 'react';
 import { MyGroupsSidebarItem } from './MyGroupsSidebarItem';
 import GroupIcon from '@material-ui/icons/People';
-import { IdentityApi, identityApiRef } from '@backstage/core-plugin-api';
+import { identityApiRef } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
@@ -26,13 +30,10 @@ import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 describe('MyGroupsSidebarItem Test', () => {
   describe('For guests or users with no groups', () => {
     it('MyGroupsSidebarItem should be empty', async () => {
-      const identityApi: Partial<IdentityApi> = {
-        getBackstageIdentity: async () => ({
-          type: 'user',
-          userEntityRef: 'user:default/guest',
-          ownershipEntityRefs: ['user:default/guest'],
-        }),
-      };
+      const identityApi = mockApis.identity({
+        userEntityRef: 'user:default/guest',
+        ownershipEntityRefs: ['user:default/guest'],
+      });
       const catalogApi = catalogApiMock();
       const rendered = await renderInTestApp(
         <TestApiProvider
@@ -59,13 +60,10 @@ describe('MyGroupsSidebarItem Test', () => {
 
   describe('For users that are members of a single group', () => {
     it('MyGroupsSidebarItem should display a single item that links to their group', async () => {
-      const identityApi: Partial<IdentityApi> = {
-        getBackstageIdentity: async () => ({
-          type: 'user',
-          userEntityRef: 'user:default/nigel.manning',
-          ownershipEntityRefs: ['user:default/nigel.manning'],
-        }),
-      };
+      const identityApi = mockApis.identity({
+        userEntityRef: 'user:default/nigel.manning',
+        ownershipEntityRefs: ['user:default/nigel.manning'],
+      });
       const catalogApi = catalogApiMock.mock({
         getEntities: async () => ({
           items: [
@@ -114,13 +112,10 @@ describe('MyGroupsSidebarItem Test', () => {
 
   describe('For users that are members of multiple groups', () => {
     it('MyGroupsSidebarItem should display a sub-menu with all their groups and a link to each group', async () => {
-      const identityApi: Partial<IdentityApi> = {
-        getBackstageIdentity: async () => ({
-          type: 'user',
-          userEntityRef: 'user:default/nigel.manning',
-          ownershipEntityRefs: ['user:default/nigel.manning'],
-        }),
-      };
+      const identityApi = mockApis.identity({
+        userEntityRef: 'user:default/nigel.manning',
+        ownershipEntityRefs: ['user:default/nigel.manning'],
+      });
       const catalogApi = catalogApiMock.mock({
         getEntities: async () => ({
           items: [
@@ -192,13 +187,10 @@ describe('MyGroupsSidebarItem Test', () => {
 
   describe('When an additional filter is not provided', () => {
     it('catalogApi.getEntities() should be called with the default filter', async () => {
-      const identityApi: Partial<IdentityApi> = {
-        getBackstageIdentity: async () => ({
-          type: 'user',
-          userEntityRef: 'user:default/guest',
-          ownershipEntityRefs: ['user:default/guest'],
-        }),
-      };
+      const identityApi = mockApis.identity({
+        userEntityRef: 'user:default/guest',
+        ownershipEntityRefs: ['user:default/guest'],
+      });
       const mockCatalogApi = catalogApiMock.mock();
       await renderInTestApp(
         <TestApiProvider
@@ -233,13 +225,10 @@ describe('MyGroupsSidebarItem Test', () => {
 
   describe('When an additional filter is provided', () => {
     it('catalogApi.getEntities() should be called with an additional filter item', async () => {
-      const identityApi: Partial<IdentityApi> = {
-        getBackstageIdentity: async () => ({
-          type: 'user',
-          userEntityRef: 'user:default/guest',
-          ownershipEntityRefs: ['user:default/guest'],
-        }),
-      };
+      const identityApi = mockApis.identity({
+        userEntityRef: 'user:default/guest',
+        ownershipEntityRefs: ['user:default/guest'],
+      });
       const mockCatalogApi = catalogApiMock.mock();
       await renderInTestApp(
         <TestApiProvider

@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { DiscoveryApi, discoveryApiRef } from '@backstage/core-plugin-api';
+import { discoveryApiRef } from '@backstage/core-plugin-api';
 import {
+  mockApis,
   renderInTestApp,
   TestApiProvider,
   textContentMatcher,
@@ -37,9 +38,7 @@ describe('PodExecTerminal', () => {
   const podName = 'pod1';
   const podNamespace = 'podNamespace';
 
-  const mockDiscoveryApi: Partial<DiscoveryApi> = {
-    getBaseUrl: () => Promise.resolve('http://localhost'),
-  };
+  const mockDiscoveryApi = mockApis.discovery();
 
   it('Should render an XTerm web terminal', async () => {
     await renderInTestApp(
@@ -62,7 +61,7 @@ describe('PodExecTerminal', () => {
 
   it('Should connect to WebSocket server & render response', async () => {
     const server = new WS(
-      'ws://localhost/proxy/api/v1/namespaces/podNamespace/pods/pod1/exec?container=container2&stdin=true&stdout=true&stderr=true&tty=true&command=%2Fbin%2Fsh',
+      'ws://example.com/api/kubernetes/proxy/api/v1/namespaces/podNamespace/pods/pod1/exec?container=container2&stdin=true&stdout=true&stderr=true&tty=true&command=%2Fbin%2Fsh',
     );
 
     await renderInTestApp(
