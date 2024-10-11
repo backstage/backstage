@@ -21,7 +21,7 @@ import scaffolderPlugin from '@backstage/plugin-scaffolder-backend';
 const backend = createBackend();
 
 // Install desired features
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 
 // Features can also be installed using an explicit reference
 backend.add(scaffolderPlugin);

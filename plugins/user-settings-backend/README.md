@@ -16,7 +16,7 @@ yarn --cwd packages/backend add @backstage/plugin-user-settings-backend @backsta
 Add the plugin to your backend in `packages/backend/src/index.ts`:
 
 ```ts
-backend.add(import('@backstage/plugin-user-settings-backend/alpha'));
+backend.add(import('@backstage/plugin-user-settings-backend'));
 // The signals backend is technically optional but enables real-time update of user
 // settings across different sessions
 backend.add(import('@backstage/plugin-signals-backend'));

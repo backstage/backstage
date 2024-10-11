@@ -799,7 +799,7 @@ const techdocsCustomBuildStrategy = createBackendModule({
 // Other plugins...
 
 /* highlight-add-start */
-backend.add(import('@backstage/plugin-techdocs-backend/alpha'));
+backend.add(import('@backstage/plugin-techdocs-backend'));
 backend.add(techdocsCustomBuildStrategy);
 /* highlight-add-end */
 
