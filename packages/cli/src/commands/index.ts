@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Command } from 'commander';
+import { Command, Option } from 'commander';
 import { assertError } from '@backstage/errors';
 import { exitWithError } from '../lib/errors';
 
@@ -353,7 +353,7 @@ export function registerCommands(program: Command) {
       'Bump to a specific Backstage release line or version',
       'main',
     )
-    .option('--skip-install', 'Skips yarn install step')
+    .option('--skip-install', 'Skips install step')
     .option('--skip-migrate', 'Skips migration of any moved packages')
     .description('Bump Backstage packages to the latest versions')
     .action(lazy(() => import('./versions/bump').then(m => m.default)));
@@ -375,9 +375,17 @@ export function registerCommands(program: Command) {
 
   program
     .command('build-workspace <workspace-dir> [packages...]')
+    .addOption(
+      new Option(
+        '--alwaysYarnPack',
+        'Alias for --alwaysPack for backwards compatibility.',
+      )
+        .implies({ alwaysPack: true })
+        .hideHelp(true),
+    )
     .option(
-      '--alwaysYarnPack',
-      'Force workspace output to be a result of running `yarn pack` on each package (warning: very slow)',
+      '--alwaysPack',
+      'Force workspace output to be a result of running `yarn pack` or `pnpm pack` on each package (warning: very slow)',
     )
     .description('Builds a temporary dist workspace from the provided packages')
     .action(lazy(() => import('./buildWorkspace').then(m => m.default)));
@@ -420,7 +428,7 @@ export function registerCommands(program: Command) {
   program
     .command('versions:check')
     .allowUnknownOption(true)
-    .action(removed("use 'yarn dedupe' or 'yarn-deduplicate' instead"));
+    .action(removed("use 'yarn dedupe'/`pnpm dedupe instead"));
   program.command('install').allowUnknownOption(true).action(removed());
   program.command('onboard').allowUnknownOption(true).action(removed());
 }

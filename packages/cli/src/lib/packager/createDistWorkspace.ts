@@ -99,11 +99,11 @@ type Options = {
   skeleton?: 'skeleton.tar' | 'skeleton.tar.gz';
 
   /**
-   * If set to true, `yarn pack` is always preferred when creating the dist
-   * workspace. This ensures correct workspace output at significant cost to
-   * command performance.
+   * If set to true, `yarn pack` or `pnpm pack` is always preferred when
+   * creating the dist workspace. This ensures correct workspace output at
+   * significant cost to command performance.
    */
-  alwaysYarnPack?: boolean;
+  alwaysPack?: boolean;
 
   /**
    * If set to true, the TypeScript feature detection will be enabled, which
