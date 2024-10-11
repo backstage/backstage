@@ -7,7 +7,7 @@ description: Deploying Backstage to AWS Fargate via Flightcontrol
 
 This guide explains how to deploy Backstage to [Flightcontrol](https://www.flightcontrol.dev?ref=backstage), a platform that fully automates deployments to Amazon Web Services (AWS). Flightcontrol supports git-driven and image registry deployments.
 
-Before you begin, make sure you have a [Flightcontrol account](https://app.flightcontrol.dev/signup?ref=backstage) and a [Github account](https://github.com/login) to follow this guide.
+Before you begin, make sure you have a [Flightcontrol account](https://app.flightcontrol.dev/signup?ref=backstage) and a [GitHub account](https://github.com/login) to follow this guide.
 
 # Creating a Dockerfile and .dockerignore
 
@@ -28,7 +28,7 @@ The following two code snippets demonstrate this method. The first block of code
 # yarn build:backend
 #
 # Once the commands have been run, you can build the image using `yarn build-image`
-FROM node:18-bookworm-slim as build
+FROM node:20-bookworm-slim as build
 
 USER node
 WORKDIR /app
@@ -43,7 +43,7 @@ RUN yarn tsc
 # The configuration files here should match the one you use inside the Dockerfile below.
 RUN yarn build:backend --config ../../app-config.yaml
 
-FROM node:18-bookworm-slim
+FROM node:20-bookworm-slim
 
 # Install isolate-vm dependencies, these are needed by the @backstage/plugin-scaffolder-backend.
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
@@ -68,7 +68,7 @@ USER node
 WORKDIR /app
 
 # This switches many Node.js dependencies to production mode.
-ENV NODE_ENV production
+ENV NODE_ENV=production
 
 # Copy repo skeleton first, to avoid unnecessary docker cache invalidation.
 # The skeleton contains the package.json of each package in the monorepo,

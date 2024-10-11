@@ -1,0 +1,9 @@
+---
+title: 'Analytics Module: Generic HTTP'
+author: Josephine Pfeiffer
+authorUrl: https://josie.lol
+category: Monitoring
+description: Track usage of your Backstage instance using generic POST endpoints.
+documentation: https://github.com/pfeifferj/backstage-plugin-analytics-generic/blob/main/README.md
+npmPackageName: '@pfeifferj/backstage-plugin-analytics-generic'
+addedDate: '2024-08-23'

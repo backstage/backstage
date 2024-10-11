@@ -53,6 +53,21 @@ function isFileImport(source: string) {
   return false;
 }
 
+function buildInternalImportPattern(options: BuildOptions) {
+  const inlinedPackages = options.workspacePackages.filter(
+    pkg => pkg.packageJson.backstage?.inline,
+  );
+  for (const { packageJson } of inlinedPackages) {
+    if (!packageJson.private) {
+      throw new Error(
+        `Inlined package ${packageJson.name} must be marked as private`,
+      );
+    }
+  }
+  const names = inlinedPackages.map(pkg => pkg.packageJson.name);
+  return new RegExp(`^(?:${names.join('|')})(?:$|/)`);
+}
+
 export async function makeRollupConfigs(
   options: BuildOptions,
 ): Promise<RollupOptions[]> {
@@ -83,6 +98,19 @@ export async function makeRollupConfigs(
     SCRIPT_EXTS.includes(e.ext),
   );
 
+  const internalImportPattern = buildInternalImportPattern(options);
+  const external = (
+    source: string,
+    importer: string | undefined,
+    isResolved: boolean,
+  ) =>
+    Boolean(
+      importer &&
+        !isResolved &&
+        !internalImportPattern.test(source) &&
+        !isFileImport(source),
+    );
+
   if (options.outputs.has(Output.cjs) || options.outputs.has(Output.esm)) {
     const output = new Array<OutputOptions>();
     const mainFields = ['module', 'main'];
@@ -95,6 +123,8 @@ export async function makeRollupConfigs(
         format: 'commonjs',
         interop: 'compat',
         sourcemap: true,
+        preserveModules: true,
+        preserveModulesRoot: `${targetDir}/src`,
         exports: 'named',
       });
     }
@@ -118,10 +148,10 @@ export async function makeRollupConfigs(
       ),
       output,
       onwarn,
+      makeAbsoluteExternalsRelative: false,
       preserveEntrySignatures: 'strict',
       // All module imports are always marked as external
-      external: (source, importer, isResolved) =>
-        Boolean(importer && !isResolved && !isFileImport(source)),
+      external,
       plugins: [
         resolve({ mainFields }),
         commonjs({
@@ -190,18 +220,11 @@ export async function makeRollupConfigs(
         chunkFileNames: `types/[name]-[hash].d.ts`,
         format: 'es',
       },
-      external: [
-        /\.css$/,
-        /\.scss$/,
-        /\.sass$/,
-        /\.svg$/,
-        /\.eot$/,
-        /\.woff$/,
-        /\.woff2$/,
-        /\.ttf$/,
-      ],
+      external: (source, importer, isResolved) =>
+        /\.css|scss|sass|svg|eot|woff|woff2|ttf$/.test(source) ||
+        external(source, importer, isResolved),
       onwarn,
-      plugins: [dts()],
+      plugins: [dts({ respectExternal: true })],
     });
   }
 

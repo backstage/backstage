@@ -44,6 +44,7 @@ import {
   PackageGraphNode,
 } from '@backstage/cli-node';
 import { runParallelWorkers } from '../parallel';
+import { createTypeDistProject } from '../typeDistProject';
 
 // These packages aren't safe to pack in parallel since the CLI depends on them
 const UNSAFE_PACKAGES = [
@@ -103,6 +104,12 @@ type Options = {
    * command performance.
    */
   alwaysYarnPack?: boolean;
+
+  /**
+   * If set to true, the TypeScript feature detection will be enabled, which
+   * annotates the package exports field with the `backstage` export type.
+   */
+  enableFeatureDetection?: boolean;
 
   /**
    * If set to true, the generated code will be minified.
@@ -211,6 +218,7 @@ export async function createDistWorkspace(
           outputs: outputs,
           logPrefix: `${chalk.cyan(relativePath(paths.targetRoot, pkg.dir))}: `,
           minify: options.minify,
+          workspacePackages: packages,
         });
       }
     }
@@ -235,6 +243,7 @@ export async function createDistWorkspace(
     targetDir,
     targets,
     Boolean(options.alwaysYarnPack),
+    Boolean(options.enableFeatureDetection),
   );
 
   const files: FileEntry[] = options.files ?? ['yarn.lock', 'package.json'];
@@ -278,6 +287,7 @@ async function moveToDistWorkspace(
   workspaceDir: string,
   localPackages: PackageGraphNode[],
   alwaysYarnPack: boolean,
+  enableFeatureDetection: boolean,
 ): Promise<void> {
   const [fastPackPackages, slowPackPackages] = partition(
     localPackages,
@@ -285,6 +295,11 @@ async function moveToDistWorkspace(
       !alwaysYarnPack &&
       FAST_PACK_SCRIPTS.includes(pkg.packageJson.scripts?.prepack),
   );
+
+  const featureDetectionProject =
+    fastPackPackages.length > 0 && enableFeatureDetection
+      ? await createTypeDistProject()
+      : undefined;
 
   // New an improved flow where we avoid calling `yarn pack`
   await Promise.all(
@@ -296,6 +311,7 @@ async function moveToDistWorkspace(
       await productionPack({
         packageDir: target.dir,
         targetDir: absoluteOutputPath,
+        featureDetectionProject,
       });
     }),
   );

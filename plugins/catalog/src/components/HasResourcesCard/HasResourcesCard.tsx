@@ -27,7 +27,7 @@ import {
   resourceEntityColumns,
   resourceEntityHelpLink,
 } from '../RelatedEntitiesCard';
-import { catalogTranslationRef } from '../../translation';
+import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */

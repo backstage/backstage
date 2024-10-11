@@ -6,10 +6,7 @@ description: Backstage Utility APIs
 
 ## Introduction
 
-Backstage Plugins strive to be self-contained, with as much functionality as
-possible residing within the plugin itself and its backend APIs. There will
-however always be a need for plugins to communicate outside of its boundaries,
-both with other plugins and the app itself.
+Backstage plugins strive to be self-contained, with as much functionality as possible residing within the plugin itself and its backend APIs. There will, however, always be a need for plugins to communicate outside of their boundaries, both with other plugins and with the app itself.
 
 Backstage provides two primary methods for plugins to communicate across their
 boundaries in client-side code. The first one being the
@@ -61,7 +58,7 @@ Note that there is no explicit type given for
 embedded, and [`useApi`](../reference/core-plugin-api.useapi.md) is able to infer
 the type.
 
-Also note that consuming Utility APIs is not limited to plugins, it can be done
+Also note that consuming Utility APIs is not limited to plugins; it can be done
 from any component inside Backstage, including the ones in
 [`@backstage/core-plugin-api`](../reference/core-plugin-api.md). The only
 requirement is that they are beneath the `AppProvider` in the react tree.
@@ -93,7 +90,7 @@ createApiFactory({
 });
 ```
 
-In this example the [`errorApiRef`](../reference/core-plugin-api.errorapiref.md)
+In this example, the [`errorApiRef`](../reference/core-plugin-api.errorapiref.md)
 is our API, which encapsulates the
 [`ErrorApi`](../reference/core-plugin-api.errorapi.md) type. The
 [`alertApiRef`](../reference/core-plugin-api.alertapiref.md) is our single
@@ -135,11 +132,11 @@ there is no step that needs to be taken to include these APIs in an app.
 ### Plugin APIs
 
 In addition to the core APIs, plugins can define and export their own APIs.
-While doing so they should usually also provide default implementations of their
-own APIs, for example, the `catalog` plugin exports `catalogApiRef`, and also
+While doing so, they should usually also provide default implementations of their
+own APIs; for example, the `catalog` plugin exports `catalogApiRef` and also
 supplies a default [`ApiFactory`](../reference/core-plugin-api.apifactory.md) of
 that API using the `CatalogClient`. There is one restriction to plugin-provided
-API Factories: plugins may not supply factories for core APIs, trying to do so
+API Factories: plugins may not supply factories for core APIs; trying to do so
 will cause the app to refuse to start.
 
 Plugins supply their APIs through the `apis` option of
@@ -165,16 +162,16 @@ export const techdocsPlugin = createPlugin({
 ### App APIs
 
 Lastly, the app itself is the final point where APIs can be added, and what has
-the final say in what APIs will be loaded at runtime. The app may override the
+the final say in what APIs will be loaded at runtime? The app may override the
 factories for any of the core or plugin APIs, with the exception of the config,
 app theme, and identity APIs. These are static APIs that are tied into the
-[`createApp`](../reference/app-defaults.createapp.md) implementation, and
-therefore not possible to override.
+[`createApp`](../reference/app-defaults.createapp.md) implementation and
+therefore, not possible to override.
 
 Overriding APIs is useful for apps that want to switch out behavior to tailor it
-to their environment. In some cases plugins may also export multiple
+to their environment. In some cases, plugins may also export multiple
 implementations of the same API, where they each have their own different
-requirements on for example backend storage and surrounding environment.
+requirements, for example, backend storage and the surrounding environment.
 
 Supplying APIs to the app works just like for plugins:
 
@@ -238,21 +235,14 @@ checked by the type embedded in the
 ## Defining custom Utility APIs
 
 Plugins are free to define their own Utility APIs. Simply define the TypeScript
-interface for the API, and create an
+interface for the API and create an
 [`ApiRef`](../reference/core-plugin-api.apiref.md) using
 [`createApiRef`](../reference/core-plugin-api.createapiref.md) exported from
-[`@backstage/core-plugin-api`](../reference/core-plugin-api.md). Also be sure to
-provide at least one implementation of the API, and to declare a default factory
+[`@backstage/core-plugin-api`](../reference/core-plugin-api.md). Also, be sure to
+provide at least one implementation of the API and to declare a default factory
 for the API in [`createPlugin`](../reference/core-plugin-api.createplugin.md).
 
-Custom Utility APIs can be either public or private, which is up to the plugin
-to choose. Private APIs do not expose an external API surface, and it's
-therefore possible to make breaking changes to the API without affecting other
-users of the plugin. If an API is made public however, it opens up for other
-plugins to make use of the API, and it also makes it possible for users for your
-plugin to override the API in the app. It is however important to maintain
-backwards compatibility of public APIs, as you may otherwise break apps that are
-using your plugin.
+Custom Utility APIs can be either public or private, which is up to the plugin to choose. Private APIs do not expose an external API surface, and it's therefore possible to make breaking changes to the API without affecting other users of the plugin. If an API is made public, however, it opens up for other plugins to make use of the API, and it also makes it possible for users for your plugin to override the API in the app. It is, however, important to maintain backward compatibility of public APIs, as you may otherwise break apps that are using your plugin.
 
 To make an API public, simply export the
 [`ApiRef`](../reference/core-plugin-api.apiref.md) of the API, and any associated

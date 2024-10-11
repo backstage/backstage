@@ -16,9 +16,11 @@
 
 import React from 'react';
 import { SignInPageBlueprint } from './SignInPageBlueprint';
-import { createExtensionTester } from '@backstage/frontend-test-utils';
+import {
+  createExtensionTester,
+  renderInTestApp,
+} from '@backstage/frontend-test-utils';
 import { screen, waitFor } from '@testing-library/react';
-import { coreExtensionData, createExtension } from '../wiring';
 
 describe('SignInPageBlueprint', () => {
   it('should create an extension with sensible defaults', () => {
@@ -29,6 +31,7 @@ describe('SignInPageBlueprint', () => {
     ).toMatchInlineSnapshot(`
       {
         "$$type": "@backstage/ExtensionDefinition",
+        "T": undefined,
         "attachTo": {
           "id": "app/root",
           "input": "signInPage",
@@ -39,7 +42,6 @@ describe('SignInPageBlueprint', () => {
         "inputs": {},
         "kind": "sign-in-page",
         "name": undefined,
-        "namespace": undefined,
         "output": [
           [Function],
         ],
@@ -54,26 +56,14 @@ describe('SignInPageBlueprint', () => {
     const MockSignInPage = () => <div data-testid="mock-sign-in" />;
 
     const extension = SignInPageBlueprint.make({
-      name: 'test',
       params: { loader: async () => () => <MockSignInPage /> },
     });
 
     const tester = createExtensionTester(extension);
 
-    expect(tester.data(SignInPageBlueprint.dataRefs.component)).toBeDefined();
+    const Component = tester.get(SignInPageBlueprint.dataRefs.component);
 
-    createExtensionTester(
-      createExtension({
-        name: 'dummy',
-        attachTo: { id: 'ignored', input: 'ignored' },
-        output: {
-          element: coreExtensionData.reactElement,
-        },
-        factory: () => ({ element: <div /> }),
-      }),
-    )
-      .add(extension)
-      .render();
+    renderInTestApp(<Component onSignInSuccess={() => {}} />);
 
     await waitFor(() => {
       expect(screen.getByTestId('mock-sign-in')).toBeInTheDocument();

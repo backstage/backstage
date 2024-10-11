@@ -17,7 +17,10 @@
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import React from 'react';
-import { MockEntityListContextProvider } from '../../testUtils/providers';
+import {
+  MockEntityListContextProvider,
+  catalogApiMock,
+} from '@backstage/plugin-catalog-react/testUtils';
 import { EntityOwnerFilter } from '../../filters';
 import { EntityOwnerPicker } from './EntityOwnerPicker';
 import { ApiProvider } from '@backstage/core-app-api';
@@ -26,7 +29,7 @@ import {
   renderInTestApp,
   TestApiRegistry,
 } from '@backstage/test-utils';
-import { catalogApiRef, CatalogApi } from '../..';
+import { catalogApiRef } from '../..';
 import { errorApiRef } from '@backstage/core-plugin-api';
 import { QueryEntitiesCursorRequest } from '@backstage/catalog-client';
 
@@ -108,21 +111,7 @@ const ownerEntitiesBatch2: Entity[] = [
   },
 ];
 
-const mockedQueryEntities: jest.MockedFn<CatalogApi['queryEntities']> =
-  jest.fn();
-
-const mockedGetEntitiesByRef: jest.MockedFn<CatalogApi['getEntitiesByRefs']> =
-  jest.fn();
-
-const mockedGetEntityFacets: jest.MockedFn<CatalogApi['getEntityFacets']> =
-  jest.fn();
-
-const mockCatalogApi: Partial<CatalogApi> = {
-  queryEntities: mockedQueryEntities,
-  getEntitiesByRefs: mockedGetEntitiesByRef,
-  getEntityFacets: mockedGetEntityFacets,
-};
-
+const mockCatalogApi = catalogApiMock.mock();
 const mockErrorApi = new MockErrorApi();
 
 describe('<EntityOwnerPicker mode="all" />', () => {
@@ -134,7 +123,7 @@ describe('<EntityOwnerPicker mode="all" />', () => {
   beforeEach(() => {
     jest.resetAllMocks();
 
-    mockedQueryEntities.mockImplementation(async request => {
+    mockCatalogApi.queryEntities.mockImplementation(async request => {
       const totalItems =
         ownerEntitiesBatch1.length + ownerEntitiesBatch2.length;
       if ((request as QueryEntitiesCursorRequest).cursor) {
@@ -178,8 +167,8 @@ describe('<EntityOwnerPicker mode="all" />', () => {
       expect(screen.getByText(owner)).toBeInTheDocument();
     });
 
-    expect(mockedQueryEntities).toHaveBeenCalledTimes(1);
-    expect(mockedGetEntitiesByRef).not.toHaveBeenCalled();
+    expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
+    expect(mockCatalogApi.getEntitiesByRefs).not.toHaveBeenCalled();
 
     fireEvent.scroll(screen.getByTestId('owner-picker-listbox'));
 
@@ -195,7 +184,7 @@ describe('<EntityOwnerPicker mode="all" />', () => {
       expect(screen.getByText(owner)).toBeInTheDocument();
     });
 
-    expect(mockedQueryEntities).toHaveBeenCalledTimes(2);
+    expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(2);
   });
 
   it('respects the query parameter filter value', async () => {
@@ -214,7 +203,7 @@ describe('<EntityOwnerPicker mode="all" />', () => {
       </ApiProvider>,
     );
 
-    expect(mockedGetEntitiesByRef).toHaveBeenCalledWith({
+    expect(mockCatalogApi.getEntitiesByRefs).toHaveBeenCalledWith({
       entityRefs: ['another-owner'],
     });
     expect(updateFilters).toHaveBeenLastCalledWith({
@@ -226,7 +215,7 @@ describe('<EntityOwnerPicker mode="all" />', () => {
     const updateFilters = jest.fn();
     const queryParameters = { owners: ['another-owner'] };
 
-    mockedGetEntitiesByRef.mockResolvedValue({
+    mockCatalogApi.getEntitiesByRefs.mockResolvedValue({
       items: [
         {
           metadata: {
@@ -260,7 +249,7 @@ describe('<EntityOwnerPicker mode="all" />', () => {
       ).toBeInTheDocument(),
     );
 
-    expect(mockedGetEntitiesByRef).toHaveBeenCalledWith({
+    expect(mockCatalogApi.getEntitiesByRefs).toHaveBeenCalledWith({
       entityRefs: ['another-owner'],
     });
 
@@ -268,7 +257,7 @@ describe('<EntityOwnerPicker mode="all" />', () => {
     await waitFor(() => screen.getByText('Some Owner 2'));
     fireEvent.click(screen.getByText('Some Owner 2'));
 
-    expect(mockedGetEntitiesByRef).toHaveBeenCalledTimes(1);
+    expect(mockCatalogApi.getEntitiesByRefs).toHaveBeenCalledTimes(1);
 
     await waitFor(() =>
       expect(
@@ -292,7 +281,7 @@ describe('<EntityOwnerPicker mode="all" />', () => {
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
-    expect(mockedGetEntitiesByRef).not.toHaveBeenCalled();
+    expect(mockCatalogApi.getEntitiesByRefs).not.toHaveBeenCalled();
     expect(updateFilters).toHaveBeenLastCalledWith({
       owners: undefined,
     });
@@ -320,7 +309,7 @@ describe('<EntityOwnerPicker mode="all" />', () => {
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
-    expect(mockedGetEntitiesByRef).toHaveBeenCalledWith({
+    expect(mockCatalogApi.getEntitiesByRefs).toHaveBeenCalledWith({
       entityRefs: ['group:default/some-owner'],
     });
     expect(updateFilters).toHaveBeenLastCalledWith({
@@ -352,7 +341,7 @@ describe('<EntityOwnerPicker mode="all" />', () => {
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
-    expect(mockedGetEntitiesByRef).toHaveBeenCalledWith({
+    expect(mockCatalogApi.getEntitiesByRefs).toHaveBeenCalledWith({
       entityRefs: ['team-a'],
     });
     expect(updateFilters).toHaveBeenLastCalledWith({
@@ -385,7 +374,7 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
   beforeEach(() => {
     jest.resetAllMocks();
 
-    mockedGetEntityFacets.mockResolvedValue({
+    mockCatalogApi.getEntityFacets.mockResolvedValue({
       facets: {
         'relations.ownedBy': [
           ...[...ownerEntitiesBatch1, ...ownerEntitiesBatch2].map(o => ({
@@ -396,7 +385,7 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
       },
     });
 
-    mockedGetEntitiesByRef.mockResolvedValue({
+    mockCatalogApi.getEntitiesByRefs.mockResolvedValue({
       items: [...ownerEntitiesBatch1, ...ownerEntitiesBatch2],
     });
   });
@@ -425,7 +414,7 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
       expect(screen.getByText(owner)).toBeInTheDocument();
     });
 
-    expect(mockedGetEntityFacets).toHaveBeenCalledTimes(1);
+    expect(mockCatalogApi.getEntityFacets).toHaveBeenCalledTimes(1);
 
     fireEvent.scroll(screen.getByTestId('owner-picker-listbox'));
 
@@ -476,7 +465,7 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
-    expect(mockedGetEntitiesByRef).toHaveBeenCalledWith({
+    expect(mockCatalogApi.getEntitiesByRefs).toHaveBeenCalledWith({
       entityRefs: [...ownerEntitiesBatch1, ...ownerEntitiesBatch2].map(entity =>
         stringifyEntityRef(entity),
       ),

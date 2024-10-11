@@ -1,5 +1,14 @@
 # @backstage/plugin-search-common
 
+## 1.2.14
+
+### Patch Changes
+
+- 3123c16: Fix package metadata
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/types@1.1.1
+
 ## 1.2.14-next.1
 
 ### Patch Changes

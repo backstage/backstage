@@ -68,6 +68,7 @@ const testNotification1: Notification = {
     topic: 'efgh-topic',
     link: '/catalog',
     severity: 'critical',
+    icon: 'docs',
   },
 };
 const testNotification2: Notification = {
@@ -183,6 +184,7 @@ describe.each(databases.eachSupportedId())(
         expect(notification?.payload?.topic).toBe('efgh-topic');
         expect(notification?.payload?.link).toBe('/catalog');
         expect(notification?.payload?.severity).toBe('critical');
+        expect(notification?.payload?.icon).toBe('docs');
       });
     });
 

@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  CatalogApi,
-  QueryEntitiesInitialRequest,
-} from '@backstage/catalog-client';
+import { QueryEntitiesInitialRequest } from '@backstage/catalog-client';
 import { RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { TableColumn, TableProps } from '@backstage/core-components';
 import {
@@ -48,6 +45,7 @@ import { DefaultCatalogPage } from './DefaultCatalogPage';
 
 import { CatalogTableColumnsFunc } from '../CatalogTable/types';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 describe('DefaultCatalogPage', () => {
   const origReplaceState = window.history.replaceState;
@@ -60,7 +58,7 @@ describe('DefaultCatalogPage', () => {
     jest.clearAllMocks();
   });
 
-  const catalogApi: jest.Mocked<Partial<CatalogApi>> = {
+  const catalogApi = catalogApiMock.mock({
     getEntities: jest.fn().mockImplementation(() =>
       Promise.resolve({
         items: [
@@ -166,7 +164,7 @@ describe('DefaultCatalogPage', () => {
         // all items
         return { items: [], totalItems: 2, pageInfo: {} };
       }),
-  };
+  });
 
   const testProfile: Partial<ProfileInfo> = {
     displayName: 'Display Name',

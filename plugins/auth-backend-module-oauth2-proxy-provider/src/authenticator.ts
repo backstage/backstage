@@ -42,6 +42,15 @@ export const oauth2ProxyAuthenticator = createProxyAuthenticator({
   async initialize() {},
   async authenticate({ req }) {
     try {
+      // This unpacking of the JWT is just a utility provided by the
+      // authenticator to make the fields available to the profile transform and
+      // sign-in resolvers. The JWT is already validated by the upstream OAuth2
+      // Proxy, and since OAuth2 Proxy doesn't provide a way to authenticate
+      // forwarded requests, we don't do any additional validation here but
+      // instead trust that there is no way for attackers to bypass the OAuth2
+      // Proxy. We could validate these individual ID tokens for some of the
+      // upstream providers, but that is currently not in scope for this
+      // authenticator.
       const authHeader = req.header(OAUTH2_PROXY_JWT_HEADER);
       const jwt = authHeader?.match(/^Bearer[ ]+(\S+)$/i)?.[1];
       const decodedJWT = jwt && decodeJwt(jwt);

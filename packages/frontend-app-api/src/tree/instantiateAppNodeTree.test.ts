@@ -15,14 +15,15 @@
  */
 
 import {
+  AnyExtensionDataRef,
   AppNode,
   Extension,
   ExtensionInput,
+  PortableSchema,
   ResolvedExtensionInput,
   createExtension,
   createExtensionDataRef,
   createExtensionInput,
-  createSchemaFromZod,
 } from '@backstage/frontend-plugin-api';
 import {
   createAppNodeInstance,
@@ -31,9 +32,15 @@ import {
 import { AppNodeSpec } from '@backstage/frontend-plugin-api';
 import { resolveAppTree } from './resolveAppTree';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
-import { withLogCollector } from '@backstage/test-utils';
+import {
+  InternalExtension,
+  resolveExtensionDefinition,
+} from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { createSchemaFromZod } from '../../../frontend-plugin-api/src/schema/createSchemaFromZod';
+import { TestApiRegistry, withLogCollector } from '@backstage/test-utils';
 
+const testApis = TestApiRegistry.from();
 const testDataRef = createExtensionDataRef<string>().with({ id: 'test' });
 const otherDataRef = createExtensionDataRef<number>().with({ id: 'other' });
 const inputMirrorDataRef = createExtensionDataRef<unknown>().with({
@@ -76,44 +83,80 @@ function makeInstanceWithId<TConfig, TConfigInput>(
     instance: createAppNodeInstance({
       node,
       attachments: new Map(),
+      apis: testApis,
     }),
   };
 }
 
+function createV1ExtensionInput(
+  extensionData: Record<string, AnyExtensionDataRef>,
+  options: { singleton?: boolean; optional?: boolean } = {},
+) {
+  return {
+    $$type: '@backstage/ExtensionInput' as const,
+    extensionData,
+    config: {
+      singleton: options.singleton ?? false,
+      optional: options.optional ?? false,
+    },
+  };
+}
+
+function createV1Extension(opts: {
+  namespace: string;
+  name?: string;
+  attachTo?: { id: string; input: string };
+  inputs?: Record<string, ReturnType<typeof createV1ExtensionInput>>;
+  output: Record<string, AnyExtensionDataRef>;
+  configSchema?: PortableSchema<any, any>;
+  factory: (ctx: { inputs: any; config: any }) => any;
+}): Extension<any, any> {
+  const ext: InternalExtension<any, any> = {
+    $$type: '@backstage/Extension',
+    version: 'v1',
+    id: opts.name ? `${opts.namespace}/${opts.name}` : opts.namespace,
+    disabled: false,
+    attachTo: opts.attachTo ?? { id: 'ignored', input: 'ignored' },
+    inputs: opts.inputs ?? {},
+    output: opts.output,
+    configSchema: opts.configSchema,
+    factory: opts.factory,
+  };
+  return ext;
+}
+
 describe('instantiateAppNodeTree', () => {
   describe('v1', () => {
-    const simpleExtension = resolveExtensionDefinition(
-      createExtension({
-        namespace: 'app',
-        name: 'test',
-        attachTo: { id: 'ignored', input: 'ignored' },
-        output: {
-          test: testDataRef,
-          other: otherDataRef.optional(),
-        },
-        configSchema: createSchemaFromZod(z =>
-          z.object({
-            output: z.string().default('test'),
-            other: z.number().optional(),
-          }),
-        ),
-        factory({ config }) {
-          return { test: config.output, other: config.other };
-        },
-      }),
-    );
+    const simpleExtension = createV1Extension({
+      namespace: 'app',
+      name: 'test',
+      attachTo: { id: 'ignored', input: 'ignored' },
+      output: {
+        test: testDataRef,
+        other: otherDataRef.optional(),
+      },
+      configSchema: createSchemaFromZod(z =>
+        z.object({
+          output: z.string().default('test'),
+          other: z.number().optional(),
+        }),
+      ),
+      factory({ config }) {
+        return { test: config.output, other: config.other };
+      },
+    });
 
     it('should instantiate a single node', () => {
       const tree = resolveAppTree('root-node', [
         makeSpec(simpleExtension, { id: 'root-node' }),
       ]);
       expect(tree.root.instance).not.toBeDefined();
-      instantiateAppNodeTree(tree.root);
+      instantiateAppNodeTree(tree.root, testApis);
       expect(tree.root.instance).toBeDefined();
       expect(tree.root.instance?.getData(testDataRef)).toBe('test');
 
       // Multiple calls should have no effect
-      instantiateAppNodeTree(tree.root);
+      instantiateAppNodeTree(tree.root, testApis);
       expect(tree.root.instance).toBeDefined();
     });
 
@@ -122,28 +165,26 @@ describe('instantiateAppNodeTree', () => {
         makeSpec(simpleExtension, { id: 'root-node', disabled: true }),
       ]);
       expect(tree.root.instance).not.toBeDefined();
-      instantiateAppNodeTree(tree.root);
+      instantiateAppNodeTree(tree.root, testApis);
       expect(tree.root.instance).not.toBeDefined();
     });
 
     it('should instantiate a node with attachments', () => {
       const tree = resolveAppTree('root-node', [
         makeSpec(
-          resolveExtensionDefinition(
-            createExtension({
-              namespace: 'root-node',
-              attachTo: { id: 'ignored', input: 'ignored' },
-              inputs: {
-                test: createExtensionInput({ test: testDataRef }),
-              },
-              output: {
-                inputMirror: inputMirrorDataRef,
-              },
-              factory({ inputs }) {
-                return { inputMirror: inputs };
-              },
-            }),
-          ),
+          createV1Extension({
+            namespace: 'root-node',
+            attachTo: { id: 'ignored', input: 'ignored' },
+            inputs: {
+              test: createV1ExtensionInput({ test: testDataRef }),
+            },
+            output: {
+              inputMirror: inputMirrorDataRef,
+            },
+            factory({ inputs }) {
+              return { inputMirror: inputs };
+            },
+          }),
         ),
         makeSpec(simpleExtension, {
           id: 'child-node',
@@ -156,7 +197,7 @@ describe('instantiateAppNodeTree', () => {
 
       expect(tree.root.instance).not.toBeDefined();
       expect(childNode?.instance).not.toBeDefined();
-      instantiateAppNodeTree(tree.root);
+      instantiateAppNodeTree(tree.root, testApis);
       expect(tree.root.instance).toBeDefined();
       expect(childNode?.instance).toBeDefined();
       expect(tree.root.instance?.getData(inputMirrorDataRef)).toMatchObject({
@@ -166,7 +207,7 @@ describe('instantiateAppNodeTree', () => {
       });
 
       // Multiple calls should have no effect
-      instantiateAppNodeTree(tree.root);
+      instantiateAppNodeTree(tree.root, testApis);
       expect(tree.root.instance).toBeDefined();
       expect(childNode?.instance).toBeDefined();
     });
@@ -175,21 +216,19 @@ describe('instantiateAppNodeTree', () => {
       const tree = resolveAppTree('root-node', [
         {
           ...makeSpec(
-            resolveExtensionDefinition(
-              createExtension({
-                namespace: 'root-node',
-                attachTo: { id: 'ignored', input: 'ignored' },
-                inputs: {
-                  test: createExtensionInput({ test: testDataRef }),
-                },
-                output: {
-                  inputMirror: inputMirrorDataRef,
-                },
-                factory({ inputs }) {
-                  return { inputMirror: inputs };
-                },
-              }),
-            ),
+            createV1Extension({
+              namespace: 'root-node',
+              attachTo: { id: 'ignored', input: 'ignored' },
+              inputs: {
+                test: createV1ExtensionInput({ test: testDataRef }),
+              },
+              output: {
+                inputMirror: inputMirrorDataRef,
+              },
+              factory({ inputs }) {
+                return { inputMirror: inputs };
+              },
+            }),
           ),
         },
         {
@@ -206,7 +245,7 @@ describe('instantiateAppNodeTree', () => {
 
       expect(tree.root.instance).not.toBeDefined();
       expect(childNode?.instance).not.toBeDefined();
-      instantiateAppNodeTree(tree.root);
+      instantiateAppNodeTree(tree.root, testApis);
       expect(tree.root.instance).toBeDefined();
       expect(childNode?.instance).not.toBeDefined();
       expect(tree.root.instance?.getData(inputMirrorDataRef)).toEqual({
@@ -220,6 +259,7 @@ describe('instantiateAppNodeTree', () => {
         const instance = createAppNodeInstance({
           node: makeNode(simpleExtension),
           attachments,
+          apis: testApis,
         });
 
         expect(Array.from(instance.getDataRefs())).toEqual([
@@ -260,48 +300,47 @@ describe('instantiateAppNodeTree', () => {
           ],
         ]);
         const instance = createAppNodeInstance({
+          apis: testApis,
           attachments,
           node: makeNode(
-            resolveExtensionDefinition(
-              createExtension({
-                namespace: 'app',
-                name: 'test',
-                attachTo: { id: 'ignored', input: 'ignored' },
-                inputs: {
-                  optionalSingletonPresent: createExtensionInput(
-                    {
-                      test: testDataRef,
-                      other: otherDataRef.optional(),
-                    },
-                    { singleton: true, optional: true },
-                  ),
-                  optionalSingletonMissing: createExtensionInput(
-                    {
-                      test: testDataRef,
-                      other: otherDataRef.optional(),
-                    },
-                    { singleton: true, optional: true },
-                  ),
-                  singleton: createExtensionInput(
-                    {
-                      test: testDataRef,
-                      other: otherDataRef.optional(),
-                    },
-                    { singleton: true },
-                  ),
-                  many: createExtensionInput({
+            createV1Extension({
+              namespace: 'app',
+              name: 'test',
+              attachTo: { id: 'ignored', input: 'ignored' },
+              inputs: {
+                optionalSingletonPresent: createV1ExtensionInput(
+                  {
                     test: testDataRef,
                     other: otherDataRef.optional(),
-                  }),
-                },
-                output: {
-                  inputMirror: inputMirrorDataRef,
-                },
-                factory({ inputs }) {
-                  return { inputMirror: inputs };
-                },
-              }),
-            ),
+                  },
+                  { singleton: true, optional: true },
+                ),
+                optionalSingletonMissing: createV1ExtensionInput(
+                  {
+                    test: testDataRef,
+                    other: otherDataRef.optional(),
+                  },
+                  { singleton: true, optional: true },
+                ),
+                singleton: createV1ExtensionInput(
+                  {
+                    test: testDataRef,
+                    other: otherDataRef.optional(),
+                  },
+                  { singleton: true },
+                ),
+                many: createV1ExtensionInput({
+                  test: testDataRef,
+                  other: otherDataRef.optional(),
+                }),
+              },
+              output: {
+                inputMirror: inputMirrorDataRef,
+              },
+              factory({ inputs }) {
+                return { inputMirror: inputs };
+              },
+            }),
           ),
         });
 
@@ -330,6 +369,7 @@ describe('instantiateAppNodeTree', () => {
       it('should refuse to create an extension with invalid config', () => {
         expect(() =>
           createAppNodeInstance({
+            apis: testApis,
             node: makeNode(simpleExtension, {
               config: { other: 'not-a-number' },
             }),
@@ -343,20 +383,19 @@ describe('instantiateAppNodeTree', () => {
       it('should forward extension factory errors', () => {
         expect(() =>
           createAppNodeInstance({
+            apis: testApis,
             node: makeNode(
-              resolveExtensionDefinition(
-                createExtension({
-                  namespace: 'app',
-                  name: 'test',
-                  attachTo: { id: 'ignored', input: 'ignored' },
-                  output: {},
-                  factory() {
-                    const error = new Error('NOPE');
-                    error.name = 'NopeError';
-                    throw error;
-                  },
-                }),
-              ),
+              createV1Extension({
+                namespace: 'app',
+                name: 'test',
+                attachTo: { id: 'ignored', input: 'ignored' },
+                output: {},
+                factory() {
+                  const error = new Error('NOPE');
+                  error.name = 'NopeError';
+                  throw error;
+                },
+              }),
             ),
             attachments: new Map(),
           }),
@@ -368,21 +407,20 @@ describe('instantiateAppNodeTree', () => {
       it('should refuse to create an instance with duplicate output', () => {
         expect(() =>
           createAppNodeInstance({
+            apis: testApis,
             node: makeNode(
-              resolveExtensionDefinition(
-                createExtension({
-                  namespace: 'app',
-                  name: 'test',
-                  attachTo: { id: 'ignored', input: 'ignored' },
-                  output: {
-                    test1: testDataRef,
-                    test2: testDataRef,
-                  },
-                  factory({}) {
-                    return { test1: 'test', test2: 'test2' };
-                  },
-                }),
-              ),
+              createV1Extension({
+                namespace: 'app',
+                name: 'test',
+                attachTo: { id: 'ignored', input: 'ignored' },
+                output: {
+                  test1: testDataRef,
+                  test2: testDataRef,
+                },
+                factory({}) {
+                  return { test1: 'test', test2: 'test2' };
+                },
+              }),
             ),
             attachments: new Map(),
           }),
@@ -394,20 +432,19 @@ describe('instantiateAppNodeTree', () => {
       it('should refuse to create an instance with disconnected output data', () => {
         expect(() =>
           createAppNodeInstance({
+            apis: testApis,
             node: makeNode(
-              resolveExtensionDefinition(
-                createExtension({
-                  namespace: 'app',
-                  name: 'test',
-                  attachTo: { id: 'ignored', input: 'ignored' },
-                  output: {
-                    test: testDataRef,
-                  },
-                  factory({}) {
-                    return { nonexistent: 'test' } as any;
-                  },
-                }),
-              ),
+              createV1Extension({
+                namespace: 'app',
+                name: 'test',
+                attachTo: { id: 'ignored', input: 'ignored' },
+                output: {
+                  test: testDataRef,
+                },
+                factory({}) {
+                  return { nonexistent: 'test' } as any;
+                },
+              }),
             ),
             attachments: new Map(),
           }),
@@ -419,24 +456,23 @@ describe('instantiateAppNodeTree', () => {
       it('should refuse to create an instance with missing required input', () => {
         expect(() =>
           createAppNodeInstance({
+            apis: testApis,
             node: makeNode(
-              resolveExtensionDefinition(
-                createExtension({
-                  namespace: 'app',
-                  name: 'test',
-                  attachTo: { id: 'ignored', input: 'ignored' },
-                  inputs: {
-                    singleton: createExtensionInput(
-                      {
-                        test: testDataRef,
-                      },
-                      { singleton: true },
-                    ),
-                  },
-                  output: {},
-                  factory: () => ({}),
-                }),
-              ),
+              createV1Extension({
+                namespace: 'app',
+                name: 'test',
+                attachTo: { id: 'ignored', input: 'ignored' },
+                inputs: {
+                  singleton: createV1ExtensionInput(
+                    {
+                      test: testDataRef,
+                    },
+                    { singleton: true },
+                  ),
+                },
+                output: {},
+                factory: () => ({}),
+              }),
             ),
             attachments: new Map(),
           }),
@@ -448,6 +484,7 @@ describe('instantiateAppNodeTree', () => {
       it('should warn when creating an instance with undeclared inputs', () => {
         const { warn } = withLogCollector(['warn'], () =>
           createAppNodeInstance({
+            apis: testApis,
             attachments: new Map([
               [
                 'declared',
@@ -467,20 +504,18 @@ describe('instantiateAppNodeTree', () => {
               ],
             ]),
             node: makeNode(
-              resolveExtensionDefinition(
-                createExtension({
-                  namespace: 'app',
-                  name: 'parent',
-                  attachTo: { id: 'ignored', input: 'ignored' },
-                  inputs: {
-                    declared: createExtensionInput({
-                      test: testDataRef,
-                    }),
-                  },
-                  output: {},
-                  factory: () => ({}),
-                }),
-              ),
+              createV1Extension({
+                namespace: 'app',
+                name: 'parent',
+                attachTo: { id: 'ignored', input: 'ignored' },
+                inputs: {
+                  declared: createV1ExtensionInput({
+                    test: testDataRef,
+                  }),
+                },
+                output: {},
+                factory: () => ({}),
+              }),
             ),
           }),
         );
@@ -493,6 +528,7 @@ describe('instantiateAppNodeTree', () => {
       it('should refuse to create an instance with multiple undeclared inputs', () => {
         const { warn } = withLogCollector(['warn'], () =>
           createAppNodeInstance({
+            apis: testApis,
             attachments: new Map([
               [
                 'undeclared1',
@@ -507,15 +543,13 @@ describe('instantiateAppNodeTree', () => {
               ],
             ]),
             node: makeNode(
-              resolveExtensionDefinition(
-                createExtension({
-                  namespace: 'app',
-                  name: 'parent',
-                  attachTo: { id: 'ignored', input: 'ignored' },
-                  output: {},
-                  factory: () => ({}),
-                }),
-              ),
+              createV1Extension({
+                namespace: 'app',
+                name: 'parent',
+                attachTo: { id: 'ignored', input: 'ignored' },
+                output: {},
+                factory: () => ({}),
+              }),
             ),
           }),
         );
@@ -529,6 +563,7 @@ describe('instantiateAppNodeTree', () => {
       it('should refuse to create an instance with multiple inputs for required singleton', () => {
         expect(() =>
           createAppNodeInstance({
+            apis: testApis,
             attachments: new Map([
               [
                 'singleton',
@@ -539,23 +574,21 @@ describe('instantiateAppNodeTree', () => {
               ],
             ]),
             node: makeNode(
-              resolveExtensionDefinition(
-                createExtension({
-                  namespace: 'app',
-                  name: 'test',
-                  attachTo: { id: 'ignored', input: 'ignored' },
-                  inputs: {
-                    singleton: createExtensionInput(
-                      {
-                        test: testDataRef,
-                      },
-                      { singleton: true },
-                    ),
-                  },
-                  output: {},
-                  factory: () => ({}),
-                }),
-              ),
+              createV1Extension({
+                namespace: 'app',
+                name: 'test',
+                attachTo: { id: 'ignored', input: 'ignored' },
+                inputs: {
+                  singleton: createV1ExtensionInput(
+                    {
+                      test: testDataRef,
+                    },
+                    { singleton: true },
+                  ),
+                },
+                output: {},
+                factory: () => ({}),
+              }),
             ),
           }),
         ).toThrow(
@@ -566,6 +599,7 @@ describe('instantiateAppNodeTree', () => {
       it('should refuse to create an instance with multiple inputs for optional singleton', () => {
         expect(() =>
           createAppNodeInstance({
+            apis: testApis,
             attachments: new Map([
               [
                 'singleton',
@@ -576,23 +610,21 @@ describe('instantiateAppNodeTree', () => {
               ],
             ]),
             node: makeNode(
-              resolveExtensionDefinition(
-                createExtension({
-                  namespace: 'app',
-                  name: 'test',
-                  attachTo: { id: 'ignored', input: 'ignored' },
-                  inputs: {
-                    singleton: createExtensionInput(
-                      {
-                        test: testDataRef,
-                      },
-                      { singleton: true, optional: true },
-                    ),
-                  },
-                  output: {},
-                  factory: () => ({}),
-                }),
-              ),
+              createV1Extension({
+                namespace: 'app',
+                name: 'test',
+                attachTo: { id: 'ignored', input: 'ignored' },
+                inputs: {
+                  singleton: createV1ExtensionInput(
+                    {
+                      test: testDataRef,
+                    },
+                    { singleton: true, optional: true },
+                  ),
+                },
+                output: {},
+                factory: () => ({}),
+              }),
             ),
           }),
         ).toThrow(
@@ -603,27 +635,26 @@ describe('instantiateAppNodeTree', () => {
       it('should refuse to create an instance with multiple inputs that did not provide required data', () => {
         expect(() =>
           createAppNodeInstance({
+            apis: testApis,
             attachments: new Map([
               ['singleton', [makeInstanceWithId(simpleExtension, undefined)]],
             ]),
             node: makeNode(
-              resolveExtensionDefinition(
-                createExtension({
-                  namespace: 'app',
-                  name: 'test',
-                  attachTo: { id: 'ignored', input: 'ignored' },
-                  inputs: {
-                    singleton: createExtensionInput(
-                      {
-                        other: otherDataRef,
-                      },
-                      { singleton: true },
-                    ),
-                  },
-                  output: {},
-                  factory: () => ({}),
-                }),
-              ),
+              createV1Extension({
+                namespace: 'app',
+                name: 'test',
+                attachTo: { id: 'ignored', input: 'ignored' },
+                inputs: {
+                  singleton: createV1ExtensionInput(
+                    {
+                      other: otherDataRef,
+                    },
+                    { singleton: true },
+                  ),
+                },
+                output: {},
+                factory: () => ({}),
+              }),
             ),
           }),
         ).toThrowErrorMatchingInlineSnapshot(
@@ -636,7 +667,6 @@ describe('instantiateAppNodeTree', () => {
   describe('v2', () => {
     const simpleExtension = resolveExtensionDefinition(
       createExtension({
-        namespace: 'app',
         name: 'test',
         attachTo: { id: 'ignored', input: 'ignored' },
         output: [testDataRef, otherDataRef.optional()],
@@ -653,6 +683,7 @@ describe('instantiateAppNodeTree', () => {
           ];
         },
       }),
+      { namespace: 'app' },
     );
 
     function mirrorInputs(ctx: {
@@ -696,12 +727,12 @@ describe('instantiateAppNodeTree', () => {
         makeSpec(simpleExtension, { id: 'root-node' }),
       ]);
       expect(tree.root.instance).not.toBeDefined();
-      instantiateAppNodeTree(tree.root);
+      instantiateAppNodeTree(tree.root, testApis);
       expect(tree.root.instance).toBeDefined();
       expect(tree.root.instance?.getData(testDataRef)).toBe('test');
 
       // Multiple calls should have no effect
-      instantiateAppNodeTree(tree.root);
+      instantiateAppNodeTree(tree.root, testApis);
       expect(tree.root.instance).toBeDefined();
     });
 
@@ -710,7 +741,7 @@ describe('instantiateAppNodeTree', () => {
         makeSpec(simpleExtension, { id: 'root-node', disabled: true }),
       ]);
       expect(tree.root.instance).not.toBeDefined();
-      instantiateAppNodeTree(tree.root);
+      instantiateAppNodeTree(tree.root, testApis);
       expect(tree.root.instance).not.toBeDefined();
     });
 
@@ -719,7 +750,6 @@ describe('instantiateAppNodeTree', () => {
         makeSpec(
           resolveExtensionDefinition(
             createExtension({
-              namespace: 'root-node',
               attachTo: { id: 'ignored', input: 'ignored' },
               inputs: {
                 test: createExtensionInput([testDataRef]),
@@ -727,6 +757,7 @@ describe('instantiateAppNodeTree', () => {
               output: [inputMirrorDataRef],
               factory: mirrorInputs,
             }),
+            { namespace: 'root-node' },
           ),
         ),
         makeSpec(simpleExtension, {
@@ -740,7 +771,7 @@ describe('instantiateAppNodeTree', () => {
 
       expect(tree.root.instance).not.toBeDefined();
       expect(childNode?.instance).not.toBeDefined();
-      instantiateAppNodeTree(tree.root);
+      instantiateAppNodeTree(tree.root, testApis);
       expect(tree.root.instance).toBeDefined();
       expect(childNode?.instance).toBeDefined();
       expect(tree.root.instance?.getData(inputMirrorDataRef)).toMatchObject({
@@ -748,7 +779,7 @@ describe('instantiateAppNodeTree', () => {
       });
 
       // Multiple calls should have no effect
-      instantiateAppNodeTree(tree.root);
+      instantiateAppNodeTree(tree.root, testApis);
       expect(tree.root.instance).toBeDefined();
       expect(childNode?.instance).toBeDefined();
     });
@@ -759,7 +790,6 @@ describe('instantiateAppNodeTree', () => {
           ...makeSpec(
             resolveExtensionDefinition(
               createExtension({
-                namespace: 'root-node',
                 attachTo: { id: 'ignored', input: 'ignored' },
                 inputs: {
                   test: createExtensionInput([testDataRef]),
@@ -767,6 +797,7 @@ describe('instantiateAppNodeTree', () => {
                 output: [inputMirrorDataRef],
                 factory: mirrorInputs,
               }),
+              { namespace: 'root-node' },
             ),
           ),
         },
@@ -784,7 +815,7 @@ describe('instantiateAppNodeTree', () => {
 
       expect(tree.root.instance).not.toBeDefined();
       expect(childNode?.instance).not.toBeDefined();
-      instantiateAppNodeTree(tree.root);
+      instantiateAppNodeTree(tree.root, testApis);
       expect(tree.root.instance).toBeDefined();
       expect(childNode?.instance).not.toBeDefined();
       expect(tree.root.instance?.getData(inputMirrorDataRef)).toEqual({
@@ -798,6 +829,7 @@ describe('instantiateAppNodeTree', () => {
         const instance = createAppNodeInstance({
           node: makeNode(simpleExtension),
           attachments,
+          apis: testApis,
         });
 
         expect(Array.from(instance.getDataRefs())).toEqual([testDataRef]);
@@ -837,10 +869,10 @@ describe('instantiateAppNodeTree', () => {
 
         const instance = createAppNodeInstance({
           attachments,
+          apis: testApis,
           node: makeNode(
             resolveExtensionDefinition(
               createExtension({
-                namespace: 'app',
                 name: 'test',
                 attachTo: { id: 'ignored', input: 'ignored' },
                 inputs: {
@@ -864,6 +896,7 @@ describe('instantiateAppNodeTree', () => {
                 output: [inputMirrorDataRef],
                 factory: mirrorInputs,
               }),
+              { namespace: 'app' },
             ),
           ),
         });
@@ -895,6 +928,7 @@ describe('instantiateAppNodeTree', () => {
       it('should refuse to create an extension with invalid config', () => {
         expect(() =>
           createAppNodeInstance({
+            apis: testApis,
             node: makeNode(simpleExtension, {
               config: { other: 'not-a-number' },
             }),
@@ -908,10 +942,10 @@ describe('instantiateAppNodeTree', () => {
       it('should forward extension factory errors', () => {
         expect(() =>
           createAppNodeInstance({
+            apis: testApis,
             node: makeNode(
               resolveExtensionDefinition(
                 createExtension({
-                  namespace: 'app',
                   name: 'test',
                   attachTo: { id: 'ignored', input: 'ignored' },
                   output: [testDataRef],
@@ -921,6 +955,7 @@ describe('instantiateAppNodeTree', () => {
                     throw error;
                   },
                 }),
+                { namespace: 'app' },
               ),
             ),
             attachments: new Map(),
@@ -933,10 +968,10 @@ describe('instantiateAppNodeTree', () => {
       it('should refuse to create an instance with duplicate output', () => {
         expect(() =>
           createAppNodeInstance({
+            apis: testApis,
             node: makeNode(
               resolveExtensionDefinition(
                 createExtension({
-                  namespace: 'app',
                   name: 'test',
                   attachTo: { id: 'ignored', input: 'ignored' },
                   output: [testDataRef, testDataRef],
@@ -944,6 +979,7 @@ describe('instantiateAppNodeTree', () => {
                     return [testDataRef('test'), testDataRef('test2')];
                   },
                 }),
+                { namespace: 'app' },
               ),
             ),
             attachments: new Map(),
@@ -956,10 +992,10 @@ describe('instantiateAppNodeTree', () => {
       it('should refuse to create an instance without required', () => {
         expect(() =>
           createAppNodeInstance({
+            apis: testApis,
             node: makeNode(
               resolveExtensionDefinition(
                 createExtension({
-                  namespace: 'app',
                   name: 'test',
                   attachTo: { id: 'ignored', input: 'ignored' },
                   output: [testDataRef],
@@ -967,6 +1003,7 @@ describe('instantiateAppNodeTree', () => {
                     return [] as any;
                   },
                 }),
+                { namespace: 'app' },
               ),
             ),
             attachments: new Map(),
@@ -979,11 +1016,11 @@ describe('instantiateAppNodeTree', () => {
       it('should refuse to create an instance with unknown output data', () => {
         expect(() =>
           createAppNodeInstance({
+            apis: testApis,
             node: makeNode(
               resolveExtensionDefinition(
                 // @ts-expect-error
                 createExtension({
-                  namespace: 'app',
                   name: 'test',
                   attachTo: { id: 'ignored', input: 'ignored' },
                   output: [], // Output not declared
@@ -991,6 +1028,7 @@ describe('instantiateAppNodeTree', () => {
                     return [testDataRef('test')] as any;
                   },
                 }),
+                { namespace: 'app' },
               ),
             ),
             attachments: new Map(),
@@ -1003,10 +1041,10 @@ describe('instantiateAppNodeTree', () => {
       it('should refuse to create an instance with missing required input', () => {
         expect(() =>
           createAppNodeInstance({
+            apis: testApis,
             node: makeNode(
               resolveExtensionDefinition(
                 createExtension({
-                  namespace: 'app',
                   name: 'test',
                   attachTo: { id: 'ignored', input: 'ignored' },
                   inputs: {
@@ -1017,6 +1055,7 @@ describe('instantiateAppNodeTree', () => {
                   output: [],
                   factory: () => [],
                 }),
+                { namespace: 'app' },
               ),
             ),
             attachments: new Map(),
@@ -1029,6 +1068,7 @@ describe('instantiateAppNodeTree', () => {
       it('should warn when creating an instance with undeclared inputs', () => {
         const { warn } = withLogCollector(['warn'], () =>
           createAppNodeInstance({
+            apis: testApis,
             attachments: new Map([
               [
                 'declared',
@@ -1050,7 +1090,6 @@ describe('instantiateAppNodeTree', () => {
             node: makeNode(
               resolveExtensionDefinition(
                 createExtension({
-                  namespace: 'app',
                   name: 'parent',
                   attachTo: { id: 'ignored', input: 'ignored' },
                   inputs: {
@@ -1059,6 +1098,7 @@ describe('instantiateAppNodeTree', () => {
                   output: [],
                   factory: () => [],
                 }),
+                { namespace: 'app' },
               ),
             ),
           }),
@@ -1072,6 +1112,7 @@ describe('instantiateAppNodeTree', () => {
       it('should refuse to create an instance with multiple undeclared inputs', () => {
         const { warn } = withLogCollector(['warn'], () =>
           createAppNodeInstance({
+            apis: testApis,
             attachments: new Map([
               [
                 'undeclared1',
@@ -1088,12 +1129,12 @@ describe('instantiateAppNodeTree', () => {
             node: makeNode(
               resolveExtensionDefinition(
                 createExtension({
-                  namespace: 'app',
                   name: 'parent',
                   attachTo: { id: 'ignored', input: 'ignored' },
                   output: [],
                   factory: () => [],
                 }),
+                { namespace: 'app' },
               ),
             ),
           }),
@@ -1108,6 +1149,7 @@ describe('instantiateAppNodeTree', () => {
       it('should refuse to create an instance with multiple inputs for required singleton', () => {
         expect(() =>
           createAppNodeInstance({
+            apis: testApis,
             attachments: new Map([
               [
                 'singleton',
@@ -1120,7 +1162,6 @@ describe('instantiateAppNodeTree', () => {
             node: makeNode(
               resolveExtensionDefinition(
                 createExtension({
-                  namespace: 'app',
                   name: 'test',
                   attachTo: { id: 'ignored', input: 'ignored' },
                   inputs: {
@@ -1131,6 +1172,7 @@ describe('instantiateAppNodeTree', () => {
                   output: [],
                   factory: () => [],
                 }),
+                { namespace: 'app' },
               ),
             ),
           }),
@@ -1142,6 +1184,7 @@ describe('instantiateAppNodeTree', () => {
       it('should refuse to create an instance with multiple inputs for optional singleton', () => {
         expect(() =>
           createAppNodeInstance({
+            apis: testApis,
             attachments: new Map([
               [
                 'singleton',
@@ -1154,7 +1197,6 @@ describe('instantiateAppNodeTree', () => {
             node: makeNode(
               resolveExtensionDefinition(
                 createExtension({
-                  namespace: 'app',
                   name: 'test',
                   attachTo: { id: 'ignored', input: 'ignored' },
                   inputs: {
@@ -1166,6 +1208,7 @@ describe('instantiateAppNodeTree', () => {
                   output: [],
                   factory: () => [],
                 }),
+                { namespace: 'app' },
               ),
             ),
           }),
@@ -1177,13 +1220,13 @@ describe('instantiateAppNodeTree', () => {
       it('should refuse to create an instance with multiple inputs that did not provide required data', () => {
         expect(() =>
           createAppNodeInstance({
+            apis: testApis,
             attachments: new Map([
               ['singleton', [makeInstanceWithId(simpleExtension, undefined)]],
             ]),
             node: makeNode(
               resolveExtensionDefinition(
                 createExtension({
-                  namespace: 'app',
                   name: 'test',
                   attachTo: { id: 'ignored', input: 'ignored' },
                   inputs: {
@@ -1194,6 +1237,7 @@ describe('instantiateAppNodeTree', () => {
                   output: [],
                   factory: () => [],
                 }),
+                { namespace: 'app' },
               ),
             ),
           }),

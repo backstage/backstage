@@ -33,7 +33,7 @@ Example of use-cases:
 
 ## Installation in Older Environments
 
-Newer versions of instances created by the create-app have both the notifications and signals plugins included by default, this section can be skipped right to the Configuration.
+Newer versions of instances created by the create-app have both the notifications and signals plugins included by default; this section can be skipped right to the Configuration.
 
 Following installation instructions are valid for enabling the plugins in older environments.
 
@@ -54,7 +54,7 @@ backend.add(import('@backstage/plugin-notifications-backend'));
 ### Add Notifications Frontend
 
 ```bash
-yarn workspace app add @backstage/notifications
+yarn workspace app add @backstage/plugin-notifications
 ```
 
 To add the notifications main menu, add following to your `packages/app/src/components/Root/Root.tsx`:
@@ -109,22 +109,23 @@ Start with:
 yarn workspace app add @backstage/plugin-signals
 ```
 
-To install the plugin, you have to add the following to your `packages/app/src/plugins.ts`:
+To install the plugin, add the `SignalsDisplay` to your app root in `packages/app/src/App.tsx`:
 
-```ts
-export { signalsPlugin } from '@backstage/plugin-signals';
-```
+```tsx
+import { SignalsDisplay } from '@backstage/plugin-signals';
 
-And make sure that your `packages/app/src/App.tsx` contains:
-
-```ts
-import * as plugins from './plugins';
-
-const app = createApp({
-  // ...
-  plugins: Object.values(plugins),
-  // ...
-});
+export default app.createRoot(
+  <>
+    <AlertDisplay transientTimeoutMs={2500} />
+    <OAuthRequestDialog />
+    {/* highlight-add-next-line */}
+    <SignalsDisplay />
+    <AppRouter>
+      <VisitListener />
+      <Root>{routes}</Root>
+    </AppRouter>
+  </>,
+);
 ```
 
 If the signals plugin is properly configured, it will be automatically discovered by the notifications plugin and used.
@@ -135,15 +136,15 @@ If the signals plugin is properly configured, it will be automatically discovere
 
 The Notifications backend plugin provides an API to create notifications, list notifications per logged-in user, and search based on parameters.
 
-The plugin uses a relational [database](https://backstage.io/docs/getting-started/config/database) for persistence, no specifics are introduced in this context.
+The plugin uses a relational [database](https://backstage.io/docs/getting-started/config/database) for persistence; no specifics are introduced in this context.
 
 No additional configuration in the app-config is needed, except for optional additional modules for `processors`.
 
 ### Notifications Frontend
 
-The recipients of notifications have to be entities in the catalog, e.g. of the User or Group kind.
+The recipients of notifications have to be entities in the catalog, e.g., of the User or Group kind.
 
-Otherwise no specific configuration is needed for the front-end notifications plugin.
+Otherwise, no specific configuration is needed for the front-end notifications plugin.
 
 All parametrization is done through component properties, such as the `NotificationsSidebarItem`, which can be used as an active left-side menu item in the front-end.
 
@@ -195,7 +196,7 @@ notificationService.send({
 });
 ```
 
-Refer the [API documentation](https://github.com/backstage/backstage/blob/master/plugins/notifications-node/api-report.md) for further details.
+Refer the [API documentation](https://github.com/backstage/backstage/blob/master/plugins/notifications-node/report.api.md) for further details.
 
 ### Signals
 
@@ -216,6 +217,59 @@ const { lastSignal } = useSignal<NotificationSignal>('notifications');
 React.useEffect(() => {
   /* ... */
 }, [lastSignal, notificationsApi]);
+```
+
+#### Using signals in your own plugin
+
+It's possible to use signals in your own plugin to deliver data from the backend to the frontend in near real-time.
+
+To use signals in your own frontend plugin, you need to add the `useSignal` hook from `@backstage/plugin-signals-react` from `@backstage/plugin-notifications-common` with optional generic type of the signal.
+
+```ts
+// To use the same type of signal in the backend, this should be placed in a shared common package
+export type MySignalType = {
+  user: string;
+  data: string;
+  // ....
+};
+
+const { lastSignal } = useSignal<MySignalType>('my-plugin');
+
+useEffect(() => {
+  if (lastSignal) {
+    // Do something with the signal
+  }
+}, [lastSignal]);
+```
+
+To send signals from the backend plugin, you must add the `signalsServiceRef` to your plugin or module as a dependency.
+
+```ts
+import { signalsServiceRef } from '@backstage/plugin-signals-node';
+export const myPlugin = createBackendPlugin({
+  pluginId: 'my',
+  register(env) {
+    env.registerInit({
+      deps: {
+        httpRouter: coreServices.httpRouter,
+        signals: signalsServiceRef,
+      },
+      async init({ httpRouter, signals }) {
+        httpRouter.use(
+          await createRouter({
+            signals,
+          }),
+        );
+      },
+    });
+  },
+});
+```
+
+To send the signal using the service, you can use the `publish` method.
+
+```ts
+signals.publish<MySignalType>({ user: 'user', data: 'test' });
 ```
 
 ### Consuming Notifications
@@ -249,14 +303,18 @@ import { Notification } from '@backstage/plugin-notifications-common';
 import { NotificationProcessor } from '@backstage/plugin-notifications-node';
 
 class MyNotificationProcessor implements NotificationProcessor {
-  async decorate(notification: Notification): Promise<Notification> {
+  // preProcess is called before the notification is saved to database.
+  // This is a good place to modify the notification before it is saved and sent to the user.
+  async preProcess(notification: Notification): Promise<Notification> {
     if (notification.origin === 'plugin-my-plugin') {
       notification.payload.icon = 'my-icon';
     }
     return notification;
   }
 
-  async send(notification: Notification): Promise<void> {
+  // postProcess is called after the notification is saved to database and the signal is emitted.
+  // This is a good place to send the notification to external services.
+  async postProcess(notification: Notification): Promise<void> {
     nodemailer.sendEmail({
       from: 'backstage',
       to: 'user',

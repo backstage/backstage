@@ -29,6 +29,18 @@ import { isLocationMatch } from './utils';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 
+/** @public */
+export type SidebarSubmenuItemClassKey =
+  | 'item'
+  | 'itemContainer'
+  | 'selected'
+  | 'label'
+  | 'subtitle'
+  | 'dropdownArrow'
+  | 'dropdown'
+  | 'dropdownItem'
+  | 'textContent';
+
 const useStyles = makeStyles(
   theme => ({
     item: {

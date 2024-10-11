@@ -20,72 +20,86 @@ import {
   convertLegacyRouteRef,
 } from '@backstage/core-compat-api';
 import {
-  createPageExtension,
   coreExtensionData,
   createExtensionInput,
+  PageBlueprint,
 } from '@backstage/frontend-plugin-api';
 import {
   AsyncEntityProvider,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
-import { catalogExtensionData } from '@backstage/plugin-catalog-react/alpha';
+import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { rootRouteRef } from '../routes';
 import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
 import { buildFilterFn } from './filter/FilterWrapper';
 
-export const catalogPage = createPageExtension({
-  defaultPath: '/catalog',
-  routeRef: convertLegacyRouteRef(rootRouteRef),
+export const catalogPage = PageBlueprint.makeWithOverrides({
   inputs: {
-    filters: createExtensionInput({
-      element: coreExtensionData.reactElement,
-    }),
+    filters: createExtensionInput([coreExtensionData.reactElement]),
   },
-  loader: async ({ inputs }) => {
-    const { BaseCatalogPage } = await import('../components/CatalogPage');
-    const filters = inputs.filters.map(filter => filter.output.element);
-    return compatWrapper(<BaseCatalogPage filters={<>{filters}</>} />);
+  factory(originalFactory, { inputs }) {
+    return originalFactory({
+      defaultPath: '/catalog',
+      routeRef: convertLegacyRouteRef(rootRouteRef),
+      loader: async () => {
+        const { BaseCatalogPage } = await import('../components/CatalogPage');
+        const filters = inputs.filters.map(filter =>
+          filter.get(coreExtensionData.reactElement),
+        );
+        return compatWrapper(<BaseCatalogPage filters={<>{filters}</>} />);
+      },
+    });
   },
 });
 
-export const catalogEntityPage = createPageExtension({
+export const catalogEntityPage = PageBlueprint.makeWithOverrides({
   name: 'entity',
-  defaultPath: '/catalog/:namespace/:kind/:name',
-  routeRef: convertLegacyRouteRef(entityRouteRef),
   inputs: {
-    contents: createExtensionInput({
-      element: coreExtensionData.reactElement,
-      path: coreExtensionData.routePath,
-      routeRef: coreExtensionData.routeRef.optional(),
-      title: catalogExtensionData.entityContentTitle,
-      filterFunction: catalogExtensionData.entityFilterFunction.optional(),
-      filterExpression: catalogExtensionData.entityFilterExpression.optional(),
-    }),
+    contents: createExtensionInput([
+      coreExtensionData.reactElement,
+      coreExtensionData.routePath,
+      coreExtensionData.routeRef.optional(),
+      EntityContentBlueprint.dataRefs.title,
+      EntityContentBlueprint.dataRefs.filterFunction.optional(),
+      EntityContentBlueprint.dataRefs.filterExpression.optional(),
+    ]),
   },
-  loader: async ({ inputs }) => {
-    const { EntityLayout } = await import('../components/EntityLayout');
-    const Component = () => {
-      return (
-        <AsyncEntityProvider {...useEntityFromUrl()}>
-          <EntityLayout>
-            {inputs.contents.map(({ output }) => (
-              <EntityLayout.Route
-                key={output.path}
-                path={output.path}
-                title={output.title}
-                if={buildFilterFn(
-                  output.filterFunction,
-                  output.filterExpression,
-                )}
-              >
-                {output.element}
-              </EntityLayout.Route>
-            ))}
-          </EntityLayout>
-        </AsyncEntityProvider>
-      );
-    };
-    return compatWrapper(<Component />);
+  factory(originalFactory, { inputs }) {
+    return originalFactory({
+      defaultPath: '/catalog/:namespace/:kind/:name',
+      routeRef: convertLegacyRouteRef(entityRouteRef),
+      loader: async () => {
+        const { EntityLayout } = await import('../components/EntityLayout');
+        const Component = () => {
+          return (
+            <AsyncEntityProvider {...useEntityFromUrl()}>
+              <EntityLayout>
+                {inputs.contents.map(output => {
+                  return (
+                    <EntityLayout.Route
+                      key={output.get(coreExtensionData.routePath)}
+                      path={output.get(coreExtensionData.routePath)}
+                      title={output.get(EntityContentBlueprint.dataRefs.title)}
+                      if={buildFilterFn(
+                        output.get(
+                          EntityContentBlueprint.dataRefs.filterFunction,
+                        ),
+                        output.get(
+                          EntityContentBlueprint.dataRefs.filterExpression,
+                        ),
+                      )}
+                    >
+                      {output.get(coreExtensionData.reactElement)}
+                    </EntityLayout.Route>
+                  );
+                })}
+              </EntityLayout>
+            </AsyncEntityProvider>
+          );
+        };
+        return compatWrapper(<Component />);
+      },
+    });
   },
 });
 

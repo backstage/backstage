@@ -16,87 +16,77 @@
 
 import React from 'react';
 import {
-  createPageExtension,
-  createPlugin,
-  createSchemaFromZod,
+  createFrontendPlugin,
+  PageBlueprint,
 } from '@backstage/frontend-plugin-api';
 import {
   compatWrapper,
   convertLegacyRouteRef,
 } from '@backstage/core-compat-api';
-import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
+import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { catalogGraphRouteRef, catalogEntityRouteRef } from './routes';
-import { Direction } from './components';
+import { Direction } from '@backstage/plugin-catalog-graph';
 
-function getEntityGraphRelationsConfigSchema(
-  z: Parameters<Parameters<typeof createSchemaFromZod>[0]>[0],
-) {
-  // Mapping EntityRelationsGraphProps to config
-  // The classname and render functions are configurable only via extension overrides
-  return z.object({
-    kinds: z.array(z.string()).optional(),
-    relations: z.array(z.string()).optional(),
-    maxDepth: z.number().optional(),
-    unidirectional: z.boolean().optional(),
-    mergeRelations: z.boolean().optional(),
-    direction: z.nativeEnum(Direction).optional(),
-    relationPairs: z.array(z.tuple([z.string(), z.string()])).optional(),
-    zoom: z.enum(['enabled', 'disabled', 'enable-on-click']).optional(),
-    curve: z.enum(['curveStepBefore', 'curveMonotoneX']).optional(),
-  });
-}
-
-const CatalogGraphEntityCard = createEntityCardExtension({
+const CatalogGraphEntityCard = EntityCardBlueprint.makeWithOverrides({
   name: 'relations',
-  configSchema: createSchemaFromZod(z =>
-    z
-      .object({
-        // Filter is a config required to all entity cards
-        filter: z.string().optional(),
-        title: z.string().optional(),
-        height: z.number().optional(),
-        // Skipping a "variant" config for now, defaulting to "gridItem" in the component
-        // For more details, see this comment: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
-      })
-      .merge(getEntityGraphRelationsConfigSchema(z)),
-  ),
-  loader: async ({ config: { filter, ...props } }) =>
-    import('./components/CatalogGraphCard').then(m =>
-      compatWrapper(<m.CatalogGraphCard {...props} />),
-    ),
+  config: {
+    schema: {
+      kinds: z => z.array(z.string()).optional(),
+      relations: z => z.array(z.string()).optional(),
+      maxDepth: z => z.number().optional(),
+      unidirectional: z => z.boolean().optional(),
+      mergeRelations: z => z.boolean().optional(),
+      direction: z => z.nativeEnum(Direction).optional(),
+      relationPairs: z => z.array(z.tuple([z.string(), z.string()])).optional(),
+      zoom: z => z.enum(['enabled', 'disabled', 'enable-on-click']).optional(),
+      curve: z => z.enum(['curveStepBefore', 'curveMonotoneX']).optional(),
+      // Skipping a "variant" config for now, defaulting to "gridItem" in the component
+      // For more details, see this comment: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
+      title: z => z.string().optional(),
+      height: z => z.number().optional(),
+    },
+  },
+  factory(originalFactory, { config }) {
+    return originalFactory({
+      loader: async () =>
+        import('./components/CatalogGraphCard').then(m =>
+          compatWrapper(<m.CatalogGraphCard {...config} />),
+        ),
+    });
+  },
 });
 
-const CatalogGraphPage = createPageExtension({
-  defaultPath: '/catalog-graph',
-  routeRef: convertLegacyRouteRef(catalogGraphRouteRef),
-  configSchema: createSchemaFromZod(z =>
-    z.object({
-      // Path is a default config required to all pages
-      path: z.string().default('/catalog-graph'),
-      // Mapping intialState prop to config, these are the initial filter values, as opposed to configuration of the available filter values
-      initialState: z
-        .object({
-          selectedKinds: z.array(z.string()).optional(),
-          selectedRelations: z.array(z.string()).optional(),
-          rootEntityRefs: z.array(z.string()).optional(),
-          maxDepth: z.number().optional(),
-          unidirectional: z.boolean().optional(),
-          mergeRelations: z.boolean().optional(),
-          direction: z.nativeEnum(Direction).optional(),
-          showFilters: z.boolean().optional(),
-          curve: z.enum(['curveStepBefore', 'curveMonotoneX']).optional(),
-        })
-        .merge(getEntityGraphRelationsConfigSchema(z))
-        .optional(),
-    }),
-  ),
-  loader: ({ config: { path, ...props } }) =>
-    import('./components/CatalogGraphPage').then(m =>
-      compatWrapper(<m.CatalogGraphPage {...props} />),
-    ),
+const CatalogGraphPage = PageBlueprint.makeWithOverrides({
+  config: {
+    schema: {
+      selectedKinds: z => z.array(z.string()).optional(),
+      selectedRelations: z => z.array(z.string()).optional(),
+      rootEntityRefs: z => z.array(z.string()).optional(),
+      maxDepth: z => z.number().optional(),
+      unidirectional: z => z.boolean().optional(),
+      mergeRelations: z => z.boolean().optional(),
+      direction: z => z.nativeEnum(Direction).optional(),
+      showFilters: z => z.boolean().optional(),
+      curve: z => z.enum(['curveStepBefore', 'curveMonotoneX']).optional(),
+      kinds: z => z.array(z.string()).optional(),
+      relations: z => z.array(z.string()).optional(),
+      relationPairs: z => z.array(z.tuple([z.string(), z.string()])).optional(),
+      zoom: z => z.enum(['enabled', 'disabled', 'enable-on-click']).optional(),
+    },
+  },
+  factory(originalFactory, { config }) {
+    return originalFactory({
+      defaultPath: '/catalog-graph',
+      routeRef: convertLegacyRouteRef(catalogGraphRouteRef),
+      loader: () =>
+        import('./components/CatalogGraphPage').then(m =>
+          compatWrapper(<m.CatalogGraphPage {...config} />),
+        ),
+    });
+  },
 });
 
-export default createPlugin({
+export default createFrontendPlugin({
   id: 'catalog-graph',
   routes: {
     catalogGraph: convertLegacyRouteRef(catalogGraphRouteRef),

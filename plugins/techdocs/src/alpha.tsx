@@ -17,13 +17,14 @@
 import React from 'react';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import {
-  createPlugin,
-  createSchemaFromZod,
-  createApiExtension,
-  createPageExtension,
-  createNavItemExtension,
+  createFrontendPlugin,
+  ApiBlueprint,
+  PageBlueprint,
+  NavItemBlueprint,
+  createExtensionInput,
+  coreExtensionData,
+  createExtension,
 } from '@backstage/frontend-plugin-api';
-import { createSearchResultListItemExtension } from '@backstage/plugin-search-react/alpha';
 import {
   configApiRef,
   createApiFactory,
@@ -35,6 +36,8 @@ import {
   convertLegacyRouteRef,
   convertLegacyRouteRefs,
 } from '@backstage/core-compat-api';
+import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
+import { SearchResultListItemBlueprint } from '@backstage/plugin-search-react/alpha';
 import {
   techdocsApiRef,
   techdocsStorageApiRef,
@@ -45,64 +48,72 @@ import {
   rootDocsRouteRef,
   rootRouteRef,
 } from './routes';
-import { createEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
 
 /** @alpha */
-const techDocsStorageApi = createApiExtension({
-  factory: createApiFactory({
-    api: techdocsStorageApiRef,
-    deps: {
-      configApi: configApiRef,
-      discoveryApi: discoveryApiRef,
-      fetchApi: fetchApiRef,
-    },
-    factory: ({ configApi, discoveryApi, fetchApi }) =>
-      new TechDocsStorageClient({
-        configApi,
-        discoveryApi,
-        fetchApi,
-      }),
-  }),
+const techDocsStorageApi = ApiBlueprint.make({
+  name: 'storage',
+  params: {
+    factory: createApiFactory({
+      api: techdocsStorageApiRef,
+      deps: {
+        configApi: configApiRef,
+        discoveryApi: discoveryApiRef,
+        fetchApi: fetchApiRef,
+      },
+      factory: ({ configApi, discoveryApi, fetchApi }) =>
+        new TechDocsStorageClient({
+          configApi,
+          discoveryApi,
+          fetchApi,
+        }),
+    }),
+  },
 });
 
 /** @alpha */
-const techDocsClientApi = createApiExtension({
-  factory: createApiFactory({
-    api: techdocsApiRef,
-    deps: {
-      configApi: configApiRef,
-      discoveryApi: discoveryApiRef,
-      fetchApi: fetchApiRef,
-    },
-    factory: ({ configApi, discoveryApi, fetchApi }) =>
-      new TechDocsClient({
-        configApi,
-        discoveryApi,
-        fetchApi,
-      }),
-  }),
+const techDocsClientApi = ApiBlueprint.make({
+  params: {
+    factory: createApiFactory({
+      api: techdocsApiRef,
+      deps: {
+        configApi: configApiRef,
+        discoveryApi: discoveryApiRef,
+        fetchApi: fetchApiRef,
+      },
+      factory: ({ configApi, discoveryApi, fetchApi }) =>
+        new TechDocsClient({
+          configApi,
+          discoveryApi,
+          fetchApi,
+        }),
+    }),
+  },
 });
 
 /** @alpha */
 export const techDocsSearchResultListItemExtension =
-  createSearchResultListItemExtension({
-    configSchema: createSchemaFromZod(z =>
-      z.object({
-        // TODO: Define how the icon can be configurable
-        title: z.string().optional(),
-        lineClamp: z.number().default(5),
-        asLink: z.boolean().default(true),
-        asListItem: z.boolean().default(true),
-        noTrack: z.boolean().default(false),
-      }),
-    ),
-    predicate: result => result.type === 'techdocs',
-    component: async ({ config }) => {
-      const { TechDocsSearchResultListItem } = await import(
-        './search/components/TechDocsSearchResultListItem'
-      );
-      return props =>
-        compatWrapper(<TechDocsSearchResultListItem {...props} {...config} />);
+  SearchResultListItemBlueprint.makeWithOverrides({
+    config: {
+      schema: {
+        title: z => z.string().optional(),
+        lineClamp: z => z.number().default(5),
+        asLink: z => z.boolean().default(true),
+        asListItem: z => z.boolean().default(true),
+      },
+    },
+    factory(originalFactory, { config }) {
+      return originalFactory({
+        predicate: result => result.type === 'techdocs',
+        component: async () => {
+          const { TechDocsSearchResultListItem } = await import(
+            './search/components/TechDocsSearchResultListItem'
+          );
+          return props =>
+            compatWrapper(
+              <TechDocsSearchResultListItem {...props} {...config} />,
+            );
+        },
+      });
     },
   });
 
@@ -111,13 +122,15 @@ export const techDocsSearchResultListItemExtension =
  *
  * @alpha
  */
-const techDocsPage = createPageExtension({
-  defaultPath: '/docs',
-  routeRef: convertLegacyRouteRef(rootRouteRef),
-  loader: () =>
-    import('./home/components/TechDocsIndexPage').then(m =>
-      compatWrapper(<m.TechDocsIndexPage />),
-    ),
+const techDocsPage = PageBlueprint.make({
+  params: {
+    defaultPath: '/docs',
+    routeRef: convertLegacyRouteRef(rootRouteRef),
+    loader: () =>
+      import('./home/components/TechDocsIndexPage').then(m =>
+        compatWrapper(<m.TechDocsIndexPage />),
+      ),
+  },
 });
 
 /**
@@ -125,14 +138,16 @@ const techDocsPage = createPageExtension({
  *
  * @alpha
  */
-const techDocsReaderPage = createPageExtension({
+const techDocsReaderPage = PageBlueprint.make({
   name: 'reader',
-  defaultPath: '/docs/:namespace/:kind/:name',
-  routeRef: convertLegacyRouteRef(rootDocsRouteRef),
-  loader: () =>
-    import('./reader/components/TechDocsReaderPage').then(m =>
-      compatWrapper(<m.TechDocsReaderPage />),
-    ),
+  params: {
+    defaultPath: '/docs/:namespace/:kind/:name',
+    routeRef: convertLegacyRouteRef(rootDocsRouteRef),
+    loader: () =>
+      import('./reader/components/TechDocsReaderPage').then(m =>
+        compatWrapper(<m.TechDocsReaderPage />),
+      ),
+  },
 });
 
 /**
@@ -140,22 +155,56 @@ const techDocsReaderPage = createPageExtension({
  *
  * @alpha
  */
-const techDocsEntityContent = createEntityContentExtension({
-  defaultPath: 'docs',
-  defaultTitle: 'TechDocs',
-  loader: () =>
-    import('./Router').then(m => compatWrapper(<m.EmbeddedDocsRouter />)),
+const techDocsEntityContent = EntityContentBlueprint.makeWithOverrides({
+  inputs: {
+    emptyState: createExtensionInput(
+      [coreExtensionData.reactElement.optional()],
+      {
+        singleton: true,
+        optional: true,
+      },
+    ),
+  },
+  factory(originalFactory, context) {
+    return originalFactory(
+      {
+        defaultPath: 'docs',
+        defaultTitle: 'TechDocs',
+        loader: () =>
+          import('./Router').then(({ EmbeddedDocsRouter }) =>
+            compatWrapper(
+              <EmbeddedDocsRouter
+                emptyState={context.inputs.emptyState?.get(
+                  coreExtensionData.reactElement,
+                )}
+              />,
+            ),
+          ),
+      },
+      context,
+    );
+  },
+});
+
+const techDocsEntityContentEmptyState = createExtension({
+  kind: 'empty-state',
+  name: 'entity-content',
+  attachTo: { id: 'entity-content:techdocs', input: 'emptyState' },
+  output: [coreExtensionData.reactElement.optional()],
+  factory: () => [],
 });
 
 /** @alpha */
-const techDocsNavItem = createNavItemExtension({
-  icon: LibraryBooks,
-  title: 'Docs',
-  routeRef: convertLegacyRouteRef(rootRouteRef),
+const techDocsNavItem = NavItemBlueprint.make({
+  params: {
+    icon: LibraryBooks,
+    title: 'Docs',
+    routeRef: convertLegacyRouteRef(rootRouteRef),
+  },
 });
 
 /** @alpha */
-export default createPlugin({
+export default createFrontendPlugin({
   id: 'techdocs',
   extensions: [
     techDocsClientApi,
@@ -164,6 +213,7 @@ export default createPlugin({
     techDocsPage,
     techDocsReaderPage,
     techDocsEntityContent,
+    techDocsEntityContentEmptyState,
     techDocsSearchResultListItemExtension,
   ],
   routes: convertLegacyRouteRefs({

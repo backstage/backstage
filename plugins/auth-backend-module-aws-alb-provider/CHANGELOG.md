@@ -1,5 +1,125 @@
 # @backstage/plugin-auth-backend-module-aws-alb-provider
 
+## 0.2.1-next.1
+
+### Patch Changes
+
+- 217458a: Updated configuration schema to include the new `allowedDomains` option for the `emailLocalPartMatchingUserEntityName` sign-in resolver.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.3-next.1
+  - @backstage/backend-plugin-api@1.0.1-next.1
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-auth-backend@0.23.1-next.1
+
+## 0.2.1-next.0
+
+### Patch Changes
+
+- 094eaa3: Remove references to in-repo backend-common
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.23.1-next.0
+  - @backstage/plugin-auth-node@0.5.3-next.0
+  - @backstage/backend-plugin-api@1.0.1-next.0
+  - @backstage/errors@1.2.4
+
+## 0.2.0
+
+### Minor Changes
+
+- d425fc4: **BREAKING**: The return values from `createBackendPlugin`, `createBackendModule`, and `createServiceFactory` are now simply `BackendFeature` and `ServiceFactory`, instead of the previously deprecated form of a function that returns them. For this reason, `createServiceFactory` also no longer accepts the callback form where you provide direct options to the service. This also affects all `coreServices.*` service refs.
+
+  This may in particular affect tests; if you were effectively doing `createBackendModule({...})()` (note the parentheses), you can now remove those extra parentheses at the end. You may encounter cases of this in your `packages/backend/src/index.ts` too, where you add plugins, modules, and services. If you were using `createServiceFactory` with a function as its argument for the purpose of passing in options, this pattern has been deprecated for a while and is no longer supported. You may want to explore the new multiton patterns to achieve your goals, or moving settings to app-config.
+
+  As part of this change, the `IdentityFactoryOptions` type was removed, and can no longer be used to tweak that service. The identity service was also deprecated some time ago, and you will want to [migrate to the new auth system](https://backstage.io/docs/tutorials/auth-service-migration) if you still rely on it.
+
+### Patch Changes
+
+- ecbc47e: Fix a bug where the signer was checked from the payload instead of the header
+- 8d1fb8d: Throw correct error when email is missing from the claims
+- Updated dependencies
+  - @backstage/backend-common@0.25.0
+  - @backstage/backend-plugin-api@1.0.0
+  - @backstage/plugin-auth-node@0.5.2
+  - @backstage/plugin-auth-backend@0.23.0
+  - @backstage/errors@1.2.4
+
+## 0.2.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.25.0-next.2
+  - @backstage/plugin-auth-node@0.5.2-next.2
+  - @backstage/plugin-auth-backend@0.23.0-next.2
+  - @backstage/backend-plugin-api@1.0.0-next.2
+  - @backstage/errors@1.2.4
+
+## 0.2.0-next.1
+
+### Patch Changes
+
+- 8d1fb8d: Throw correct error when email is missing from the claims
+- Updated dependencies
+  - @backstage/backend-common@0.25.0-next.1
+  - @backstage/plugin-auth-node@0.5.2-next.1
+  - @backstage/backend-plugin-api@0.9.0-next.1
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-auth-backend@0.23.0-next.1
+
+## 0.2.0-next.0
+
+### Minor Changes
+
+- d425fc4: **BREAKING**: The return values from `createBackendPlugin`, `createBackendModule`, and `createServiceFactory` are now simply `BackendFeature` and `ServiceFactory`, instead of the previously deprecated form of a function that returns them. For this reason, `createServiceFactory` also no longer accepts the callback form where you provide direct options to the service. This also affects all `coreServices.*` service refs.
+
+  This may in particular affect tests; if you were effectively doing `createBackendModule({...})()` (note the parentheses), you can now remove those extra parentheses at the end. You may encounter cases of this in your `packages/backend/src/index.ts` too, where you add plugins, modules, and services. If you were using `createServiceFactory` with a function as its argument for the purpose of passing in options, this pattern has been deprecated for a while and is no longer supported. You may want to explore the new multiton patterns to achieve your goals, or moving settings to app-config.
+
+  As part of this change, the `IdentityFactoryOptions` type was removed, and can no longer be used to tweak that service. The identity service was also deprecated some time ago, and you will want to [migrate to the new auth system](https://backstage.io/docs/tutorials/auth-service-migration) if you still rely on it.
+
+### Patch Changes
+
+- ecbc47e: Fix a bug where the signer was checked from the payload instead of the header
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.9.0-next.0
+  - @backstage/plugin-auth-backend@0.23.0-next.0
+  - @backstage/backend-common@0.25.0-next.0
+  - @backstage/plugin-auth-node@0.5.2-next.0
+  - @backstage/errors@1.2.4
+
+## 0.1.15
+
+### Patch Changes
+
+- c8f1cae: Add `signIn` to authentication provider configuration schema
+- 4ea354f: Added a `signer` configuration option to validate against the token claims. We strongly recommend that you set this value (typically on the format `arn:aws:elasticloadbalancing:us-east-2:123456789012:loadbalancer/app/my-load-balancer/1234567890123456`) to ensure that the auth provider can safely check the authenticity of any incoming tokens.
+
+  Example:
+
+  ```diff
+   auth:
+     providers:
+       awsalb:
+         # this is the URL of the IdP you configured
+         issuer: 'https://example.okta.com/oauth2/default'
+         # this is the ARN of your ALB instance
+  +      signer: 'arn:aws:elasticloadbalancing:us-east-2:123456789012:loadbalancer/app/my-load-balancer/1234567890123456'
+         # this is the region where your ALB instance resides
+         region: 'us-west-2'
+         signIn:
+           resolvers:
+             # typically you would pick one of these
+             - resolver: emailMatchingUserEntityProfileEmail
+             - resolver: emailLocalPartMatchingUserEntityName
+  ```
+
+- 93095ee: Make sure node-fetch is version 2.7.0 or greater
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/backend-common@0.24.0
+  - @backstage/plugin-auth-backend@0.22.10
+  - @backstage/plugin-auth-node@0.5.0
+  - @backstage/errors@1.2.4
+
 ## 0.1.15-next.3
 
 ### Patch Changes

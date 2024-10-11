@@ -34,7 +34,6 @@ interface EventsParamsWithPayload extends EventParams {
 /**
  * A catalog module that logs catalog errors using the logger service.
  *
- * @packageDocumentation
  * @public
  */
 export const catalogModuleLogs = createBackendModule({

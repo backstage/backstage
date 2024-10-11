@@ -15,3 +15,18 @@
  */
 
 import '@testing-library/jest-dom';
+
+// eslint-disable-next-line no-console
+const originalConsoleWarn = console.warn;
+// eslint-disable-next-line no-console
+console.warn = (...args: any[]) => {
+  const message = args[0];
+  if (
+    typeof message === 'string' &&
+    (message.includes('CSSOM.parse is not a function') ||
+      message.includes('[JSS]'))
+  ) {
+    return;
+  }
+  originalConsoleWarn(...args);
+};

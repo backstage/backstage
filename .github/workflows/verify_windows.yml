@@ -29,14 +29,14 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@17d0e2bd7d51742c71671bd19fa12bdc9d40a3d6 # v2.8.1
+        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
         with:
           egress-policy: audit
 
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
+        uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4.0.4
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
@@ -46,7 +46,7 @@ jobs:
         run: yarn install --immutable
 
       - name: lint
-        run: yarn backstage-cli repo lint
+        run: yarn backstage-cli repo lint --successCache
 
       - name: type checking and declarations
         run: yarn tsc:full
@@ -55,7 +55,7 @@ jobs:
         run: yarn lint:type-deps
 
       - name: test
-        run: yarn backstage-cli repo test --maxWorkers=3 --workerIdleMemoryLimit=1300M
+        run: yarn backstage-cli repo test --maxWorkers=3 --workerIdleMemoryLimit=1300M --successCache
         env:
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
 

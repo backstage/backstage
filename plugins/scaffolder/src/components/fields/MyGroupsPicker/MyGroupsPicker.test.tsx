@@ -15,10 +15,10 @@
  */
 
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
-import { CatalogApi } from '@backstage/catalog-client';
+import { waitFor } from '@testing-library/react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { MyGroupsPicker } from './MyGroupsPicker';
-import { TestApiProvider } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import {
   catalogApiRef,
   entityPresentationApiRef,
@@ -60,9 +60,9 @@ describe('<MyGroupsPicker />', () => {
   const schema = {};
   const required = false;
 
-  const catalogApi: jest.Mocked<CatalogApi> = {
+  const catalogApi = catalogApiMock.mock({
     getEntities: jest.fn(async () => ({ items: entities })),
-  } as any;
+  });
 
   const mockErrorApi: jest.Mocked<ErrorApi> = {
     post: jest.fn(),
@@ -115,7 +115,7 @@ describe('<MyGroupsPicker />', () => {
       required,
     } as unknown as FieldProps<string>;
 
-    render(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [identityApiRef, mockIdentityApi],
@@ -191,7 +191,7 @@ describe('<MyGroupsPicker />', () => {
       required,
     } as unknown as FieldProps<string>;
 
-    const { queryByText, getByRole } = render(
+    const { queryByText, getByRole } = await renderInTestApp(
       <TestApiProvider
         apis={[
           [identityApiRef, mockIdentityApi],
@@ -252,7 +252,7 @@ describe('<MyGroupsPicker />', () => {
       required,
     } as unknown as FieldProps<string>;
 
-    const { getByRole } = render(
+    const { getByRole } = await renderInTestApp(
       <TestApiProvider
         apis={[
           [identityApiRef, mockIdentityApi],
@@ -316,7 +316,7 @@ describe('<MyGroupsPicker />', () => {
       formData: 'group:default/group1',
     } as unknown as FieldProps<string>;
 
-    const { getByRole } = render(
+    const { getByRole } = await renderInTestApp(
       <TestApiProvider
         apis={[
           [identityApiRef, mockIdentityApi],

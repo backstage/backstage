@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  LifecycleService,
-  PluginMetadataService,
-} from '@backstage/backend-plugin-api';
+import { LifecycleService, LoggerService } from '@backstage/backend-plugin-api';
 import { Config, ConfigReader } from '@backstage/config';
 import { InputError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
@@ -253,9 +250,9 @@ export class MysqlConnector implements Connector {
 
   async getClient(
     pluginId: string,
-    _deps?: {
+    _deps: {
+      logger: LoggerService;
       lifecycle: LifecycleService;
-      pluginMetadata: PluginMetadataService;
     },
   ): Promise<Knex> {
     const pluginConfig = new ConfigReader(
@@ -291,10 +288,6 @@ export class MysqlConnector implements Connector {
     );
 
     return client;
-  }
-
-  async dropDatabase(...databaseNames: string[]): Promise<void> {
-    return await dropMysqlDatabase(this.config, ...databaseNames);
   }
 
   /**

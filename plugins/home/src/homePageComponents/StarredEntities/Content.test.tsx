@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import {
   catalogApiRef,
@@ -20,6 +21,7 @@ import {
   MockStarredEntitiesApi,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import React from 'react';
 import { Content } from './Content';
 
@@ -48,11 +50,7 @@ describe('StarredEntitiesContent', () => {
     mockedApi.toggleStarred('component:default/mock-starred-entity-2');
     mockedApi.toggleStarred('component:default/mock-starred-entity-3');
 
-    const mockCatalogApi = {
-      getEntitiesByRefs: jest
-        .fn()
-        .mockImplementation(async () => ({ items: entities })),
-    };
+    const mockCatalogApi = catalogApiMock({ entities });
 
     const { getByText, queryByText } = await renderInTestApp(
       <TestApiProvider
@@ -86,11 +84,11 @@ describe('StarredEntitiesContent', () => {
   it('should display call to action message if no entities are starred', async () => {
     const mockedApi = new MockStarredEntitiesApi();
 
-    const mockCatalogApi = {
+    const mockCatalogApi = catalogApiMock.mock({
       getEntitiesByRefs: jest
         .fn()
         .mockImplementation(async () => ({ items: entities })),
-    };
+    });
 
     const { getByText } = await renderInTestApp(
       <TestApiProvider
@@ -116,11 +114,11 @@ describe('StarredEntitiesContent', () => {
   it('should display user provided message if no entities are starred', async () => {
     const mockedApi = new MockStarredEntitiesApi();
 
-    const mockCatalogApi = {
+    const mockCatalogApi = catalogApiMock.mock({
       getEntitiesByRefs: jest
         .fn()
         .mockImplementation(async () => ({ items: entities })),
-    };
+    });
 
     const { getByText } = await renderInTestApp(
       <TestApiProvider

@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
-import { CatalogApi } from '@backstage/catalog-client';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { EntityListProvider, useStarredEntities } from '../../hooks';
 import { catalogApiRef } from '../../api';
 import { ApiRef } from '@backstage/core-plugin-api';
@@ -22,10 +23,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { useStarredEntitiesCount } from './useStarredEntitiesCount';
 import { renderHook, waitFor } from '@testing-library/react';
 
-const mockQueryEntities: jest.MockedFn<CatalogApi['queryEntities']> = jest.fn();
-const mockCatalogApi: jest.Mocked<Partial<CatalogApi>> = {
-  queryEntities: mockQueryEntities,
-};
+const mockCatalogApi = catalogApiMock.mock();
 
 const mockStarredEntities: jest.MockedFn<() => Set<string>> = jest.fn();
 
@@ -58,7 +56,7 @@ describe('useStarredEntitiesCount', () => {
     mockStarredEntities.mockReturnValue(
       new Set(['component:default/favourite1', 'component:default/favourite2']),
     );
-    mockQueryEntities.mockResolvedValue({
+    mockCatalogApi.queryEntities.mockResolvedValue({
       items: [
         {
           apiVersion: '1',
@@ -84,7 +82,7 @@ describe('useStarredEntitiesCount', () => {
     });
 
     await waitFor(() => {
-      expect(mockQueryEntities).toHaveBeenCalledWith({
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
         filter: {
           'metadata.name': ['favourite1', 'favourite2'],
         },
@@ -116,7 +114,7 @@ describe('useStarredEntitiesCount', () => {
     });
 
     await expect(
-      waitFor(() => expect(mockQueryEntities).toHaveBeenCalled()),
+      waitFor(() => expect(mockCatalogApi.queryEntities).toHaveBeenCalled()),
     ).rejects.toThrow();
     expect(result.current).toEqual({
       count: 0,

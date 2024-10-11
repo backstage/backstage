@@ -42,6 +42,8 @@ import {
   taskReadPermission,
   taskCreatePermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../translation';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -54,6 +56,9 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'right',
   },
   cancelButton: {
+    marginRight: theme.spacing(1),
+  },
+  retryButton: {
     marginRight: theme.spacing(1),
   },
   logsVisibilityButton: {
@@ -85,6 +90,7 @@ export const OngoingTask = (props: {
       })) ?? [],
     [taskStream],
   );
+  const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const [logsVisible, setLogVisibleState] = useState(false);
   const [buttonBarVisible, setButtonBarVisibleState] = useState(true);
@@ -127,6 +133,12 @@ export const OngoingTask = (props: {
     return 0;
   }, [steps]);
 
+  const isRetryableTask =
+    taskStream.task?.spec.EXPERIMENTAL_recovery?.EXPERIMENTAL_strategy ===
+    'startOver';
+
+  const canRetry = canReadTask && canCreateTask && isRetryableTask;
+
   const startOver = useCallback(() => {
     const { namespace, name } =
       taskStream.task?.spec.templateInfo?.entity?.metadata ?? {};
@@ -154,6 +166,13 @@ export const OngoingTask = (props: {
     templateRouteRef,
   ]);
 
+  const [{ status: _ }, { execute: triggerRetry }] = useAsync(async () => {
+    if (taskId) {
+      analytics.captureEvent('retried', 'Template has been retried');
+      await scaffolderApi.retry?.(taskId);
+    }
+  });
+
   const [{ status: cancelStatus }, { execute: triggerCancel }] = useAsync(
     async () => {
       if (taskId) {
@@ -166,7 +185,7 @@ export const OngoingTask = (props: {
   const Outputs = props.TemplateOutputsComponent ?? DefaultTemplateOutputs;
 
   const templateName =
-    taskStream.task?.spec.templateInfo?.entity?.metadata.name;
+    taskStream.task?.spec.templateInfo?.entity?.metadata.name || '';
 
   const cancelEnabled = !(taskStream.cancelled || taskStream.completed);
 
@@ -174,20 +193,25 @@ export const OngoingTask = (props: {
     <Page themeId="website">
       <Header
         pageTitleOverride={
-          templateName ? `Run of ${templateName}` : `Scaffolder Run`
+          templateName
+            ? t('ongoingTask.pageTitle.hasTemplateName', { templateName })
+            : t('ongoingTask.pageTitle.noTemplateName')
         }
         title={
           <div>
-            Run of <code>{templateName}</code>
+            {t('ongoingTask.title')} <code>{templateName}</code>
           </div>
         }
-        subtitle={`Task ${taskId}`}
+        subtitle={t('ongoingTask.subtitle', { taskId: taskId as string })}
       >
         <ContextMenu
           cancelEnabled={cancelEnabled}
+          canRetry={canRetry}
+          isRetryableTask={isRetryableTask}
           logsVisible={logsVisible}
           buttonBarVisible={buttonBarVisible}
           onStartOver={startOver}
+          onRetry={triggerRetry}
           onToggleLogs={setLogVisibleState}
           onToggleButtonBar={setButtonBarVisibleState}
           taskId={taskId}
@@ -224,21 +248,33 @@ export const OngoingTask = (props: {
                     className={classes.cancelButton}
                     disabled={
                       !cancelEnabled ||
-                      cancelStatus !== 'not-executed' ||
+                      (cancelStatus !== 'not-executed' && !isRetryableTask) ||
                       !canCancelTask
                     }
                     onClick={triggerCancel}
                     data-testid="cancel-button"
                   >
-                    Cancel
+                    {t('ongoingTask.cancelButtonTitle')}
                   </Button>
+                  {isRetryableTask && (
+                    <Button
+                      className={classes.retryButton}
+                      disabled={cancelEnabled || !canRetry}
+                      onClick={triggerRetry}
+                      data-testid="retry-button"
+                    >
+                      {t('ongoingTask.retryButtonTitle')}
+                    </Button>
+                  )}
                   <Button
                     className={classes.logsVisibilityButton}
                     color="primary"
                     variant="outlined"
                     onClick={() => setLogVisibleState(!logsVisible)}
                   >
-                    {logsVisible ? 'Hide Logs' : 'Show Logs'}
+                    {logsVisible
+                      ? t('ongoingTask.hideLogsButtonTitle')
+                      : t('ongoingTask.showLogsButtonTitle')}
                   </Button>
                   <Button
                     variant="contained"
@@ -247,7 +283,7 @@ export const OngoingTask = (props: {
                     onClick={startOver}
                     data-testid="start-over-button"
                   >
-                    Start Over
+                    {t('ongoingTask.startOverButtonTitle')}
                   </Button>
                 </div>
               </Box>

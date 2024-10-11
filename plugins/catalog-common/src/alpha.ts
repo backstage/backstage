@@ -20,9 +20,11 @@ export {
   catalogEntityCreatePermission,
   catalogEntityDeletePermission,
   catalogEntityRefreshPermission,
+  catalogEntityValidatePermission,
   catalogLocationReadPermission,
   catalogLocationCreatePermission,
   catalogLocationDeletePermission,
+  catalogLocationAnalyzePermission,
   catalogPermissions,
 } from './permissions';
 export type { CatalogEntityPermission } from './permissions';

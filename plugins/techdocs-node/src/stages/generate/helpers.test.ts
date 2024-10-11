@@ -37,7 +37,6 @@ import {
   patchMkdocsYmlWithPlugins,
 } from './mkdocsPatchers';
 import yaml from 'js-yaml';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 
 const mockEntity = {
   apiVersion: 'version',
@@ -93,7 +92,7 @@ const mkdocsYmlWithAdditionalPluginsWithConfig = fs.readFileSync(
 const mkdocsYmlWithEnvTag = fs.readFileSync(
   resolvePath(__filename, '../__fixtures__/mkdocs_with_env_tag.yml'),
 );
-const mockLogger = loggerToWinstonLogger(mockServices.logger.mock());
+const mockLogger = mockServices.logger.mock();
 const warn = jest.spyOn(mockLogger, 'warn');
 
 const scmIntegrations = ScmIntegrations.fromConfig(new ConfigReader({}));
@@ -248,6 +247,10 @@ describe('helpers', () => {
       expect(updatedMkdocsYml.toString()).toContain(
         "emoji_index: !!python/name:materialx.emoji.twemoji ''",
       );
+      expect(updatedMkdocsYml.toString()).toContain(
+        'slugify: !!python/object/apply:pymdownx.slugs.slugify',
+      );
+      expect(updatedMkdocsYml.toString()).toContain('case: lower');
     });
 
     it('should not override existing repo_url in mkdocs.yml', async () => {

@@ -24,10 +24,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { Config, readDurationFromConfig } from '@backstage/config';
 import { durationToMilliseconds } from '@backstage/types';
-import {
-  CATALOG_FILTER_EXISTS,
-  CatalogClient,
-} from '@backstage/catalog-client';
+import { CATALOG_FILTER_EXISTS, CatalogApi } from '@backstage/catalog-client';
 import {
   getProcessorFiltersFromConfig,
   Notification,
@@ -63,7 +60,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
   constructor(
     private readonly logger: LoggerService,
     private readonly config: Config,
-    private readonly catalog: CatalogClient,
+    private readonly catalog: CatalogApi,
     private readonly auth: AuthService,
     private readonly cache?: CacheService,
     private readonly templateRenderer?: NotificationTemplateRenderer,
@@ -207,12 +204,17 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
   private async getRecipientEmails(
     notification: Notification,
     options: NotificationSendOptions,
-  ) {
+  ): Promise<string[]> {
     let emails: string[];
-    if (options.recipients.type === 'broadcast' || notification.user === null) {
+    if (options.recipients.type === 'broadcast') {
       emails = await this.getBroadcastEmails();
-    } else {
+    } else if (options.recipients.type === 'entity' && !!notification.user) {
       emails = await this.getUserEmail(notification.user);
+    } else {
+      this.logger.info(
+        `Unknown notification type ${options.recipients.type} or missing user.`,
+      );
+      return [];
     }
 
     if (this.allowlistEmailAddresses) {
@@ -337,6 +339,8 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       );
       return;
     }
+
+    this.logger.debug(`Sending notification emails to: ${emails.join(',')}`);
 
     if (!this.templateRenderer) {
       await this.sendPlainEmail(notification, emails);

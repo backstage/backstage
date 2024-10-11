@@ -15,8 +15,11 @@
  */
 
 import { AppTheme } from '@backstage/core-plugin-api';
-import { createExtensionBlueprint } from '../wiring';
-import { createThemeExtension } from '../extensions/createThemeExtension';
+import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
+
+const themeDataRef = createExtensionDataRef<AppTheme>().with({
+  id: 'core.theme.theme',
+});
 
 /**
  * Creates an extension that adds/replaces an app theme.
@@ -25,13 +28,10 @@ import { createThemeExtension } from '../extensions/createThemeExtension';
  */
 export const ThemeBlueprint = createExtensionBlueprint({
   kind: 'theme',
-  namespace: 'app',
-  attachTo: { id: 'app', input: 'themes' },
-  output: [createThemeExtension.themeDataRef],
+  attachTo: { id: 'api:app/app-theme', input: 'themes' },
+  output: [themeDataRef],
   dataRefs: {
-    theme: createThemeExtension.themeDataRef,
+    theme: themeDataRef,
   },
-  factory: ({ theme }: { theme: AppTheme }) => [
-    createThemeExtension.themeDataRef(theme),
-  ],
+  factory: ({ theme }: { theme: AppTheme }) => [themeDataRef(theme)],
 });

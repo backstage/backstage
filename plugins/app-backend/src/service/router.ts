@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
+import { notFoundHandler } from '@backstage/backend-common';
 import {
-  notFoundHandler,
-  PluginDatabaseManager,
-} from '@backstage/backend-common';
-import { resolvePackagePath } from '@backstage/backend-plugin-api';
-import { AppConfig, Config } from '@backstage/config';
+  DatabaseService,
+  resolvePackagePath,
+  RootConfigService,
+} from '@backstage/backend-plugin-api';
+import { AppConfig } from '@backstage/config';
 import helmet from 'helmet';
 import express from 'express';
 import Router from 'express-promise-router';
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
-import { injectConfig, readConfigs } from '../lib/config';
 import {
   createStaticAssetMiddleware,
   findStaticAssets,
@@ -42,14 +42,18 @@ import {
   HttpAuthService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
-import { AuthenticationError } from '@backstage/errors';
+import { AuthenticationError, InputError } from '@backstage/errors';
+import { injectConfig, readFrontendConfig } from '../lib/config';
 
 // express uses mime v1 while we only have types for mime v2
 type Mime = { lookup(arg0: string): string };
 
-/** @public */
+/**
+ * @public
+ * @deprecated Please migrate to the new backend system as this will be removed in the future.
+ */
 export interface RouterOptions {
-  config: Config;
+  config: RootConfigService;
   logger: LoggerService;
   auth?: AuthService;
   httpAuth?: HttpAuthService;
@@ -59,7 +63,7 @@ export interface RouterOptions {
    *
    * This is a built-in alternative to using a `staticFallbackHandler`.
    */
-  database?: PluginDatabaseManager;
+  database?: DatabaseService;
 
   /**
    * The name of the app package that content should be served from. The same app package should be
@@ -102,7 +106,10 @@ export interface RouterOptions {
   schema?: ConfigSchema;
 }
 
-/** @public */
+/**
+ * @public
+ * @deprecated Please migrate to the new backend system as this will be removed in the future.
+ */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
@@ -140,7 +147,7 @@ export async function createRouter(
 
   const appConfigs = disableConfigInjection
     ? undefined
-    : await readConfigs({
+    : await readFrontendConfig({
         config,
         appDistDir,
         env: process.env,
@@ -213,7 +220,9 @@ export async function createRouter(
           req.method = 'GET';
           next('router');
         } else {
-          throw new Error('Invalid POST request to /');
+          throw new InputError(
+            'Invalid POST request to app-backend wildcard endpoint',
+          );
         }
       },
     );
@@ -259,7 +268,8 @@ async function createEntryPointRouter({
   const staticDir = resolvePath(rootDir, 'static');
 
   const injectedConfigPath =
-    appConfigs && (await injectConfig({ appConfigs, logger, staticDir }));
+    appConfigs &&
+    (await injectConfig({ appConfigs, logger, rootDir, staticDir }));
 
   const router = Router();
 

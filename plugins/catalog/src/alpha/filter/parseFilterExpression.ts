@@ -16,17 +16,18 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { InputError } from '@backstage/errors';
-import { EntityMatcherFn } from './matrchers/types';
-import { createKindMatcher } from './matrchers/createKindMatcher';
-import { createTypeMatcher } from './matrchers/createTypeMatcher';
-import { createIsMatcher } from './matrchers/createIsMatcher';
-import { createHasMatcher } from './matrchers/createHasMatcher';
+import { EntityMatcherFn } from './matchers/types';
+import { createKindMatcher } from './matchers/createKindMatcher';
+import { createTypeMatcher } from './matchers/createTypeMatcher';
+import { createIsMatcher } from './matchers/createIsMatcher';
+import { createHasMatcher } from './matchers/createHasMatcher';
 
 const rootMatcherFactories: Record<
   string,
   (
     parameters: string[],
     onParseError: (error: Error) => void,
+    negation?: boolean,
   ) => EntityMatcherFn
 > = {
   kind: createKindMatcher,
@@ -60,9 +61,9 @@ export function parseFilterExpression(expression: string): {
   const parts = splitFilterExpression(expression, e =>
     expressionParseErrors.push(e),
   );
-
   const matchers = parts.flatMap(part => {
     const factory = rootMatcherFactories[part.key];
+    const negation = part.negation;
     if (!factory) {
       const known = Object.keys(rootMatcherFactories).map(m => `'${m}'`);
       expressionParseErrors.push(
@@ -76,7 +77,8 @@ export function parseFilterExpression(expression: string): {
     const matcher = factory(part.parameters, e =>
       expressionParseErrors.push(e),
     );
-    return [matcher];
+
+    return [negation ? (entity: Entity) => !matcher(entity) : matcher];
   });
 
   const filterFn = (entity: Entity) =>
@@ -97,16 +99,20 @@ export function parseFilterExpression(expression: string): {
 export function splitFilterExpression(
   expression: string,
   onParseError: (error: Error) => void,
-): Array<{ key: string; parameters: string[] }> {
+): Array<{ key: string; parameters: string[]; negation: boolean }> {
   const words = expression
     .split(' ')
     .map(w => w.trim())
     .filter(Boolean);
 
-  const result = new Array<{ key: string; parameters: string[] }>();
+  const result = new Array<{
+    key: string;
+    parameters: string[];
+    negation: boolean;
+  }>();
 
   for (const word of words) {
-    const match = word.match(/^([^:]+):(.+)$/);
+    const match = word.match(/^(not:)?([^:]+):(.+)$/);
     if (!match) {
       onParseError(
         new InputError(
@@ -115,11 +121,10 @@ export function splitFilterExpression(
       );
       continue;
     }
-
-    const key = match[1];
-    const parameters = match[2].split(',').filter(Boolean); // silently ignore double commas
-
-    result.push({ key, parameters });
+    const key = match[2];
+    const parameters = match[3].split(',').filter(Boolean); // silently ignore double commas
+    const negation = Boolean(match[1]);
+    result.push({ key, parameters, negation });
   }
 
   return result;

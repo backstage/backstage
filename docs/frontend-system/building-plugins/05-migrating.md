@@ -8,7 +8,7 @@ description: How to migrate an existing frontend plugin to the new frontend syst
 
 This guide allows you to migrate a frontend plugin and its own components, routes, apis to the new frontend system.
 
-The main concept is that routes, components, apis are now extensions. You can use the appropriate extension creators to migrate all of them to extensions.
+The main concept is that routes, components, apis are now extensions. You can use the appropriate [extension blueprints](../architecture/23-extension-blueprints.md) to migrate all of them to extensions.
 
 ## Migrating the plugin
 
@@ -29,13 +29,13 @@ In the legacy frontend system a plugin was defined in its own `plugin.ts` file a
   });
 ```
 
-In order to migrate the actual definition of the plugin you need to recreate the plugin using the new `createPlugin` utility exported by `@backstage/frontend-plugin-api`.
-The new `createPlugin` function doesn't accept apis anymore as apis are now extensions.
+In order to migrate the actual definition of the plugin you need to recreate the plugin using the new `createFrontendPlugin` utility exported by `@backstage/frontend-plugin-api`.
+The new `createFrontendPlugin` function doesn't accept apis anymore as apis are now extensions.
 
 ```ts title="my-plugin/src/alpha.ts"
-  import { createPlugin } from '@backstage/frontend-plugin-api';
+  import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 
-  export default createPlugin({
+  export default createFrontendPlugin({
     id: 'my-plugin',
     // bind all the extensions to the plugin
     /* highlight-next-line */
@@ -77,7 +77,7 @@ The code above binds all the extensions to the plugin. _Important_: Make sure to
 
 ## Migrating Pages
 
-Pages that were previously created using the `createRoutableExtension` extension function can be migrated to the new Frontend System using the `createPageExtension` extension creator, exported by `@backstage/frontend-plugin-api`.
+Pages that were previously created using the `createRoutableExtension` extension function can be migrated to the new Frontend System using the `PageBlueprint` [extension blueprint](../architecture/23-extension-blueprints.md), exported by `@backstage/frontend-plugin-api`.
 
 For example, given the following page:
 
@@ -94,33 +94,35 @@ export const FooPage = fooPlugin.provide(
 it can be migrated as the following:
 
 ```tsx
-import { createPageExtension } from '@backstage/frontend-plugin-api';
+import { PageBlueprint } from '@backstage/frontend-plugin-api';
 import {
   compatWrapper,
   convertLegacyRouteRef,
 } from '@backstage/core-compat-api';
 
-const fooPage = createPageExtension({
-  defaultPath: '/foo',
-  // you can reuse the existing routeRef
-  // by wrapping into the convertLegacyRouteRef.
-  routeRef: convertLegacyRouteRef(rootRouteRef),
-  // these inputs usually match the props required by the component.
-  loader: ({ inputs }) =>
-    import('./components/').then(m =>
-      // The compatWrapper utility allows you to use the existing
-      // legacy frontend utilities used internally by the components.
-      compatWrapper(<m.FooPage />),
-    ),
+const fooPage = PageBlueprint.make({
+  params: {
+    defaultPath: '/foo',
+    // you can reuse the existing routeRef
+    // by wrapping into the convertLegacyRouteRef.
+    routeRef: convertLegacyRouteRef(rootRouteRef),
+    // these inputs usually match the props required by the component.
+    loader: ({ inputs }) =>
+      import('./components/').then(m =>
+        // The compatWrapper utility allows you to use the existing
+        // legacy frontend utilities used internally by the components.
+        compatWrapper(<m.FooPage />),
+      ),
+  },
 });
 ```
 
-then add the `fooPage` extension to the plugin:
+Then add the `fooPage` extension to the plugin:
 
 ```ts title="my-plugin/src/alpha.ts"
-  import { createPlugin } from '@backstage/frontend-plugin-api';
+  import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 
-  export default createPlugin({
+  export default createFrontendPlugin({
     id: 'my-plugin',
     // bind all the extensions to the plugin
     /* highlight-remove-next-line */
@@ -133,7 +135,7 @@ then add the `fooPage` extension to the plugin:
 
 ## Migrating Components
 
-The equivalent utility to replace components created with `createComponentExtension` is `createExtension` from `@backstage/frontend-plugin-api`. However, we recommend searching for a more appropriate extension creator first.
+The equivalent utility to replace components created with `createComponentExtension` depends on the context within which the component is used, typically indicated by the naming pattern of the export. Many of these can be migrated to one of the [existing blueprints](03-common-extension-blueprints.md), but in rare cases it may be necessary to use [`createExtension`](../architecture/20-extensions.md#creating-an-extension) directly.
 
 ## Migrating APIs
 
@@ -182,7 +184,7 @@ const exampleWorkApi = createApiFactory({
 The major changes we'll make are
 
 - Change the old `@backstage/core-plugin-api` imports to the new `@backstage/frontend-plugin-api` package as per the top section of this guide
-- Wrap the existing API factory in a `createApiExtension`
+- Wrap the existing API factory in a `ApiBlueprint`
 
 The end result, after simplifying imports and cleaning up a bit, might look like this:
 
@@ -190,26 +192,28 @@ The end result, after simplifying imports and cleaning up a bit, might look like
 import {
   storageApiRef,
   createApiFactory,
-  createApiExtension,
+  ApiBlueprint,
 } from '@backstage/frontend-plugin-api';
 import { workApiRef } from '@internal/plugin-example-react';
 import { WorkImpl } from './WorkImpl';
 
-const exampleWorkApi = createApiExtension({
-  factory: createApiFactory({
-    api: workApiRef,
-    deps: { storageApi: storageApiRef },
-    factory: ({ storageApi }) => new WorkImpl({ storageApi }),
-  }),
+const exampleWorkApi = ApiBlueprint.make({
+  params: {
+    factory: createApiFactory({
+      api: workApiRef,
+      deps: { storageApi: storageApiRef },
+      factory: ({ storageApi }) => new WorkImpl({ storageApi }),
+    }),
+  },
 });
 ```
 
 Finally, let's add the `exampleWorkApi` extension to the plugin:
 
 ```ts title="my-plugin/src/alpha.ts"
-  import { createPlugin } from '@backstage/frontend-plugin-api';
+  import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 
-  export default createPlugin({
+  export default createFrontendPlugin({
     id: 'my-plugin',
     // bind all the extensions to the plugin
     /* highlight-remove-next-line */

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-techdocs-common",
-  "version": "0.1.0-next.0",
+  "version": "0.1.0",
   "description": "Common functionality for TechDocs",
   "backstage": {
     "role": "common-library",
@@ -23,13 +23,13 @@
     "techdocs"
   ],
   "homepage": "https://backstage.io",
+  "bugs": {
+    "url": "https://github.com/backstage/backstage/issues"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
     "directory": "plugins/techdocs-common"
-  },
-  "bugs": {
-    "url": "https://github.com/backstage/backstage/issues"
   },
   "license": "Apache-2.0",
   "sideEffects": false,

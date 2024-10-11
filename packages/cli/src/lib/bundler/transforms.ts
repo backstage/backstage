@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { ModuleOptions, WebpackPluginInstance } from 'webpack';
+import { RuleSetRule, WebpackPluginInstance } from 'webpack';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { svgrTemplate } from '../svgrTemplate';
 
 type Transforms = {
-  loaders: ModuleOptions['rules'];
+  loaders: RuleSetRule[];
   plugins: WebpackPluginInstance[];
 };
 

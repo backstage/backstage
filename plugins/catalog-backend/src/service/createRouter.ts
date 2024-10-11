@@ -47,19 +47,22 @@ import {
   validateRequestBody,
 } from './util';
 import { createOpenApiRouter } from '../schema/openapi.generated';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { parseEntityPaginationParams } from './request/parseEntityPaginationParams';
 import {
   AuthService,
   HttpAuthService,
   LoggerService,
+  SchedulerService,
+  PermissionsService,
 } from '@backstage/backend-plugin-api';
 import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
+import { AuthorizedValidationService } from './AuthorizedValidationService';
 
 /**
  * Options used by {@link createRouter}.
  *
  * @public
+ * @deprecated Please migrate to the new backend system as this will be removed in the future.
  */
 export interface RouterOptions {
   entitiesCatalog?: EntitiesCatalog;
@@ -67,18 +70,17 @@ export interface RouterOptions {
   locationService: LocationService;
   orchestrator?: CatalogProcessingOrchestrator;
   refreshService?: RefreshService;
-  scheduler?: PluginTaskScheduler;
+  scheduler?: SchedulerService;
   logger: LoggerService;
   config: Config;
   permissionIntegrationRouter?: express.Router;
   auth: AuthService;
   httpAuth: HttpAuthService;
+  permissionsService: PermissionsService;
 }
 
 /**
  * Creates a catalog router.
- *
- * @public
  */
 export async function createRouter(
   options: RouterOptions,
@@ -99,6 +101,7 @@ export async function createRouter(
     config,
     logger,
     permissionIntegrationRouter,
+    permissionsService,
     auth,
     httpAuth,
   } = options;
@@ -155,6 +158,7 @@ export async function createRouter(
         const { items, pageInfo, totalItems } =
           await entitiesCatalog.queryEntities({
             limit: req.query.limit,
+            offset: req.query.offset,
             ...parseQueryEntitiesParams(req.query),
             credentials: await httpAuth.credentials(req),
           });
@@ -301,9 +305,13 @@ export async function createRouter(
         location: locationInput,
         catalogFilename: z.string().optional(),
       });
+      const credentials = await httpAuth.credentials(req);
       const parsedBody = schema.parse(body);
       try {
-        const output = await locationAnalyzer.analyzeLocation(parsedBody);
+        const output = await locationAnalyzer.analyzeLocation(
+          parsedBody,
+          credentials,
+        );
         res.status(200).json(output);
       } catch (err) {
         if (
@@ -342,19 +350,27 @@ export async function createRouter(
         });
       }
 
-      const processingResult = await orchestrator.process({
-        entity: {
-          ...entity,
-          metadata: {
-            ...entity.metadata,
-            annotations: {
-              [ANNOTATION_LOCATION]: body.location,
-              [ANNOTATION_ORIGIN_LOCATION]: body.location,
-              ...entity.metadata.annotations,
+      const credentials = await httpAuth.credentials(req);
+      const authorizedValidationService = new AuthorizedValidationService(
+        orchestrator,
+        permissionsService,
+      );
+      const processingResult = await authorizedValidationService.process(
+        {
+          entity: {
+            ...entity,
+            metadata: {
+              ...entity.metadata,
+              annotations: {
+                [ANNOTATION_LOCATION]: body.location,
+                [ANNOTATION_ORIGIN_LOCATION]: body.location,
+                ...entity.metadata.annotations,
+              },
             },
           },
         },
-      });
+        credentials,
+      );
 
       if (!processingResult.ok)
         res.status(400).json({

@@ -19,6 +19,9 @@ import React from 'react';
 import { EntityEdgeData } from './types';
 import classNames from 'classnames';
 
+/** @public */
+export type CustomLabelClassKey = 'text' | 'secondary';
+
 const useStyles = makeStyles(
   theme => ({
     text: {

@@ -39,14 +39,14 @@ class MockLogger {
 }
 
 const baseFactories = [
-  lifecycleServiceFactory(),
-  rootLifecycleServiceFactory(),
+  lifecycleServiceFactory,
+  rootLifecycleServiceFactory,
   createServiceFactory({
     service: coreServices.rootLogger,
     deps: {},
     factory: () => new MockLogger(),
-  })(),
-  loggerServiceFactory(),
+  }),
+  loggerServiceFactory,
 ];
 
 const testPlugin = createBackendPlugin({
@@ -57,7 +57,7 @@ const testPlugin = createBackendPlugin({
       async init() {},
     });
   },
-})();
+});
 
 describe('BackendInitializer', () => {
   it('should initialize root scoped services', async () => {
@@ -84,18 +84,18 @@ describe('BackendInitializer', () => {
         initialization: 'always',
         deps: {},
         factory: factory1,
-      })(),
+      }),
       createServiceFactory({
         service: ref2,
         deps: {},
         factory: factory2,
-      })(),
+      }),
       createServiceFactory({
         service: ref3,
         initialization: 'lazy',
         deps: {},
         factory: factory3,
-      })(),
+      }),
     ];
 
     const init = new BackendInitializer(services);
@@ -249,18 +249,18 @@ describe('BackendInitializer', () => {
         initialization: 'always',
         deps: {},
         factory: factory1,
-      })(),
+      }),
       createServiceFactory({
         service: ref2,
         deps: {},
         factory: factory2,
-      })(),
+      }),
       createServiceFactory({
         service: ref3,
         initialization: 'lazy',
         deps: {},
         factory: factory3,
-      })(),
+      }),
     ];
 
     const init = new BackendInitializer(services);
@@ -418,6 +418,49 @@ describe('BackendInitializer', () => {
     );
   });
 
+  it('should forward errors when multiple plugins fail to start', async () => {
+    const init = new BackendInitializer([]);
+    init.add(
+      createBackendPlugin({
+        pluginId: 'test-1',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {
+              throw new Error('NOPE A');
+            },
+          });
+        },
+      }),
+    );
+    init.add(
+      createBackendPlugin({
+        pluginId: 'test-2',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {
+              throw new Error('NOPE B');
+            },
+          });
+        },
+      }),
+    );
+    const result = init.start();
+
+    await expect(result).rejects.toThrow('Backend startup failed');
+    await expect(result).rejects.toMatchObject({
+      errors: [
+        expect.objectContaining({
+          message: "Plugin 'test-1' startup failed; caused by Error: NOPE A",
+        }),
+        expect.objectContaining({
+          message: "Plugin 'test-2' startup failed; caused by Error: NOPE B",
+        }),
+      ],
+    });
+  });
+
   it('should forward errors when modules fail to start', async () => {
     const init = new BackendInitializer([]);
     init.add(testPlugin);
@@ -505,12 +548,12 @@ describe('BackendInitializer', () => {
     const extA = createExtensionPoint<string>({ id: 'a' });
     const extB = createExtensionPoint<string>({ id: 'b' });
     const init = new BackendInitializer([
-      rootLifecycleServiceFactory(),
+      rootLifecycleServiceFactory,
       createServiceFactory({
         service: coreServices.rootLogger,
         deps: {},
         factory: () => new MockLogger(),
-      })(),
+      }),
     ]);
     init.add(testPlugin);
     init.add(
@@ -575,5 +618,110 @@ describe('BackendInitializer', () => {
     await expect(init.start()).rejects.toThrow(
       "Illegal dependency: Module 'mod' for plugin 'test' attempted to depend on extension point 'a' for plugin 'test-a'. Extension points can only be used within their plugin's scope.",
     );
+  });
+
+  it('should reject plugins with missing dependencies', async () => {
+    const init = new BackendInitializer(baseFactories);
+    const ref = createServiceRef<string>({ id: 'a' });
+    init.add(
+      createBackendPlugin({
+        pluginId: 'test',
+        register(reg) {
+          reg.registerInit({
+            deps: { ref },
+            async init() {},
+          });
+        },
+      }),
+    );
+    await expect(init.start()).rejects.toThrow(
+      "Service or extension point dependencies of plugin 'test' are missing for the following ref(s): serviceRef{a}",
+    );
+  });
+
+  it('should reject modules with missing dependencies', async () => {
+    const init = new BackendInitializer(baseFactories);
+    const ref = createServiceRef<string>({ id: 'a' });
+    init.add(
+      createBackendPlugin({
+        pluginId: 'test',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {},
+          });
+        },
+      }),
+    );
+    init.add(
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'test-mod',
+        register(reg) {
+          reg.registerInit({
+            deps: { ref },
+            async init() {},
+          });
+        },
+      }),
+    );
+    await expect(init.start()).rejects.toThrow(
+      "Service or extension point dependencies of module 'test-mod' for plugin 'test' are missing for the following ref(s): serviceRef{a}",
+    );
+  });
+
+  it('should properly load double-default CJS modules', async () => {
+    expect.assertions(3);
+
+    const init = new BackendInitializer(baseFactories);
+    init.add(
+      createBackendFeatureLoader({
+        loader() {
+          return [
+            createBackendPlugin({
+              pluginId: 'no-double-wrapping',
+              register(reg) {
+                reg.registerInit({
+                  deps: {},
+                  async init() {
+                    expect(true).toBeTruthy();
+                  },
+                });
+              },
+            }),
+            {
+              default: createBackendPlugin({
+                pluginId: 'single-wrapping',
+                register(reg) {
+                  reg.registerInit({
+                    deps: {},
+                    async init() {
+                      expect(true).toBeTruthy();
+                    },
+                  });
+                },
+              }),
+            },
+            {
+              default: {
+                default: createBackendPlugin({
+                  pluginId: 'double-wrapping',
+                  register(reg) {
+                    reg.registerInit({
+                      deps: {},
+                      async init() {
+                        expect(true).toBeTruthy();
+                      },
+                    });
+                  },
+                }),
+              },
+            } as any, // not typescript valid, but can happen at runtime
+          ];
+        },
+      }),
+    );
+
+    await init.start();
   });
 });

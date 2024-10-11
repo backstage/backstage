@@ -30,13 +30,13 @@ The created-app is currently templated for legacy frontend system applications, 
 
 ## The app instance
 
-The starting point of a frontend app is the `createApp` function, which accepts a single options object as its only parameter. It is imported from `@backstage/frontend-app-api`, which is where you will find most of the common APIs for building apps.
+The starting point of a frontend app is the `createApp` function, which accepts a single options object as its only parameter. It is imported from `@backstage/frontend-defaults`, which is where you will find most of the common APIs for building apps.
 
 This is how to create a minimal app:
 
 ```tsx title="in src/index.ts"
 import ReactDOM from 'react-dom/client';
-import { createApp } from '@backstage/frontend-app-api';
+import { createApp } from '@backstage/frontend-defaults';
 import catalogPlugin from '@backstage/plugin-catalog/alpha';
 
 // Create your app instance
@@ -66,7 +66,7 @@ Linking routes from different plugins requires this configuration. You can do th
 
 ### Enable feature discovery
 
-Use this setting to enable experimental feature discovery when building your app with `@backstage/cli`. With this configuration your application tries to discover and install package extensions automatically, check [here](../architecture/02-app.md#feature-discovery) for more details.
+Use this setting to enable experimental feature discovery when building your app with `@backstage/cli`. With this configuration your application tries to discover and install package extensions automatically, check [here](../architecture/10-app.md#feature-discovery) for more details.
 
 :::warning
 Remember that package extensions that are not auto-discovered must be manually added to the application when creating an app. See [features](#install-features-manually) for more details.
@@ -78,7 +78,7 @@ It is possible to enable, disable and configure extensions individually in the `
 
 ### Customize or override built-in extensions
 
-Previously you would customize the application route, components, apis, sidebar, etc. through the code in `App.tsx`. Now we want you to write less code and install more extensions to customize your Backstage instance. See [here](../building-plugins/03-extension-types.md) which types of extensions are available for you to customize your application.
+Previously you would customize the application routes, components, apis, sidebar, etc. through the code in `App.tsx`. Now we want to allow the same thing to be achieved while writing less code and instead installing more extensions to customize your Backstage instance. See the [extension blueprints](../building-plugins/03-common-extension-blueprints.md) section for a list of common extension kinds that are available for you to customize and extend your application.
 
 ## Use code to customize the app at a more granular level
 
@@ -87,7 +87,7 @@ Previously you would customize the application route, components, apis, sidebar,
 A manual installation is required if your packages are not discovered automatically, either because you are not using `@backstage/cli` to build your application or because the features are defined in local modules in the app package. In order to manually install a feature, you must import it and pass it to the `createApp` function:
 
 ```tsx title="packages/app/src/App.tsx"
-import { createApp } from '@backstage/frontend-app-api';
+import { createApp } from '@backstage/frontend-defaults';
 // This plugin was create as a local module in the app
 import { somePlugin } from './plugins';
 
@@ -99,15 +99,15 @@ export default app.createRoot();
 ```
 
 :::info
-You can also pass overrides to the features array, for more details, please read the [extension overrides](../architecture/05-extension-overrides.md) documentation.
+You can also pass overrides to the features array, for more details, please read the [extension overrides](../architecture/25-extension-overrides.md) documentation.
 :::
 
 ### Using an async features loader
 
-In case you need to perform asynchronous operations before passing features to the `createApp` function, define a [feature loader](https://backstage.io/docs/reference/frontend-app-api.createappfeatureloader/) object and pass it to the `features` option:
+In case you need to perform asynchronous operations before passing features to the `createApp` function, define a [feature loader](https://backstage.io/docs/reference/frontend-defaults.createappfeatureloader/) object and pass it to the `features` option:
 
 ```tsx title="packages/app/src/App.tsx"
-import { createApp } from '@backstage/frontend-app-api';
+import { createApp } from '@backstage/frontend-defaults';
 
 const app = createApp({
   features: {
@@ -129,7 +129,7 @@ export default app.createRoot();
 In some cases we want to load our configuration from a backend server and to do so, you can pass an callback to the `configLoader` option when calling the `createApp` function, the callback should return a promise of an object with the config object:
 
 ```tsx title="packages/app/src/App.tsx"
-import { createApp } from '@backstage/frontend-app-api';
+import { createApp } from '@backstage/frontend-defaults';
 import { getConfigFromServer } from './utils';
 
 // Example lazy loading the app configuration

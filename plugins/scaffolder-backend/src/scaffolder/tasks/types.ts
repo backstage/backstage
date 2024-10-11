@@ -119,6 +119,7 @@ export type TaskStoreEmitOptions<TBody = JsonObject> = {
  * @public
  */
 export type TaskStoreListEventsOptions = {
+  isTaskRecoverable?: boolean;
   taskId: string;
   after?: number | undefined;
 };
@@ -170,6 +171,8 @@ export interface TaskStore {
     options: TaskStoreCreateTaskOptions,
   ): Promise<TaskStoreCreateTaskResult>;
 
+  retryTask?(options: { taskId: string }): Promise<void>;
+
   recoverTasks?(
     options: TaskStoreRecoverTaskOptions,
   ): Promise<{ ids: string[] }>;
@@ -191,9 +194,33 @@ export interface TaskStore {
   }>;
 
   list?(options: {
+    filters?: {
+      createdBy?: string | string[];
+      status?: TaskStatus | TaskStatus[];
+    };
+    pagination?: {
+      limit?: number;
+      offset?: number;
+    };
+    order?: { order: 'asc' | 'desc'; field: string }[];
+  }): Promise<{ tasks: SerializedTask[]; totalTasks?: number }>;
+
+  /**
+   * @deprecated Make sure to pass `createdBy` and `status` in the `filters` parameter instead
+   */
+  list?(options: {
     createdBy?: string;
     status?: TaskStatus;
-  }): Promise<{ tasks: SerializedTask[] }>;
+    filters?: {
+      createdBy?: string | string[];
+      status?: TaskStatus | TaskStatus[];
+    };
+    pagination?: {
+      limit?: number;
+      offset?: number;
+    };
+    order?: { order: 'asc' | 'desc'; field: string }[];
+  }): Promise<{ tasks: SerializedTask[]; totalTasks?: number }>;
 
   emitLogEvent(options: TaskStoreEmitOptions): Promise<void>;
 

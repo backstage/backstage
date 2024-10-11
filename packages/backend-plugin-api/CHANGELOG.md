@@ -1,5 +1,247 @@
 # @backstage/backend-plugin-api
 
+## 1.0.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.3-next.1
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.8.1
+
+## 1.0.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.3-next.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.8.1
+
+## 1.0.0
+
+### Major Changes
+
+- ec1b4be: Release 1.0 of the new backend system! :tada:
+
+  The backend system is finally getting promoted to 1.0.0. This means that the API is now stable and breaking changes should not occur until version 2.0.0, see our [package versioning policy](https://backstage.io/docs/overview/versioning-policy/#package-versioning-policy) for more information what this means.
+
+  This release also marks the end of the old backend system based on `createRouter` exports. Going forward backend plugins packages will start to deprecate and later this year remove exports supporting the old backend system. If you would like to help out with this transition, see https://github.com/backstage/backstage/issues/26353 or consult the [migration guide](https://backstage.io/docs/backend-system/building-plugins-and-modules/migrating/#remove-support-for-the-old-backend-system).
+
+### Minor Changes
+
+- 19ff127: **BREAKING**: The deprecated identity and token manager services have been removed. This means that `coreServices.identity` and `coreServices.tokenManager` are gone, along with related types and utilities in other packages.
+- f687050: Removed the following deprecated exports
+
+  - `BackendPluginConfig` use `CreateBackendPluginOptions`
+  - `BackendModuleConfig` use `CreateBackendModuleOptions`
+  - `ExtensionPointConfig` use `CreateExtensionPointOptions`
+
+- 4d82481: Removed deprecated `ServiceFactoryOrFunction` type.
+- d425fc4: **BREAKING**: The return values from `createBackendPlugin`, `createBackendModule`, and `createServiceFactory` are now simply `BackendFeature` and `ServiceFactory`, instead of the previously deprecated form of a function that returns them. For this reason, `createServiceFactory` also no longer accepts the callback form where you provide direct options to the service. This also affects all `coreServices.*` service refs.
+
+  This may in particular affect tests; if you were effectively doing `createBackendModule({...})()` (note the parentheses), you can now remove those extra parentheses at the end. You may encounter cases of this in your `packages/backend/src/index.ts` too, where you add plugins, modules, and services. If you were using `createServiceFactory` with a function as its argument for the purpose of passing in options, this pattern has been deprecated for a while and is no longer supported. You may want to explore the new multiton patterns to achieve your goals, or moving settings to app-config.
+
+  As part of this change, the `IdentityFactoryOptions` type was removed, and can no longer be used to tweak that service. The identity service was also deprecated some time ago, and you will want to [migrate to the new auth system](https://backstage.io/docs/tutorials/auth-service-migration) if you still rely on it.
+
+### Patch Changes
+
+- cd38da8: Deprecate the `featureDiscoveryServiceRef` in favor of using the new `discoveryFeatureLoader` instead.
+- 8052b9b: Add a `toJSON` on refs so that they can appear in expectations in jest tests
+- 66dbf0a: Allow the cache service to accept the human duration format for TTL
+- 0b2a402: Updates to the config schema to match reality
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.2
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.8.1
+
+## 1.0.0-next.2
+
+### Major Changes
+
+- ec1b4be: Release 1.0 of the new backend system! :tada:
+
+  The backend system is finally getting promoted to 1.0.0. This means that the API is now stable and breaking changes should not occur until version 2.0.0, see our [package versioning policy](https://backstage.io/docs/overview/versioning-policy/#package-versioning-policy) for more information what this means.
+
+  This release also marks the end of the old backend system based on `createRouter` exports. Going forward backend plugins packages will start to deprecate and later this year remove exports supporting the old backend system. If you would like to help out with this transition, see https://github.com/backstage/backstage/issues/26353 or consult the [migration guide](https://backstage.io/docs/backend-system/building-plugins-and-modules/migrating/#remove-support-for-the-old-backend-system).
+
+### Patch Changes
+
+- 8052b9b: Add a `toJSON` on refs so that they can appear in expectations in jest tests
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.2-next.2
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.8.1
+
+## 0.9.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.2-next.1
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.8.1
+
+## 0.9.0-next.0
+
+### Minor Changes
+
+- 19ff127: **BREAKING**: The deprecated identity and token manager services have been removed. This means that `coreServices.identity` and `coreServices.tokenManager` are gone, along with related types and utilities in other packages.
+- f687050: Removed the following deprecated exports
+
+  - `BackendPluginConfig` use `CreateBackendPluginOptions`
+  - `BackendModuleConfig` use `CreateBackendModuleOptions`
+  - `ExtensionPointConfig` use `CreateExtensionPointOptions`
+
+- 4d82481: Removed deprecated `ServiceFactoryOrFunction` type.
+- d425fc4: **BREAKING**: The return values from `createBackendPlugin`, `createBackendModule`, and `createServiceFactory` are now simply `BackendFeature` and `ServiceFactory`, instead of the previously deprecated form of a function that returns them. For this reason, `createServiceFactory` also no longer accepts the callback form where you provide direct options to the service. This also affects all `coreServices.*` service refs.
+
+  This may in particular affect tests; if you were effectively doing `createBackendModule({...})()` (note the parentheses), you can now remove those extra parentheses at the end. You may encounter cases of this in your `packages/backend/src/index.ts` too, where you add plugins, modules, and services. If you were using `createServiceFactory` with a function as its argument for the purpose of passing in options, this pattern has been deprecated for a while and is no longer supported. You may want to explore the new multiton patterns to achieve your goals, or moving settings to app-config.
+
+  As part of this change, the `IdentityFactoryOptions` type was removed, and can no longer be used to tweak that service. The identity service was also deprecated some time ago, and you will want to [migrate to the new auth system](https://backstage.io/docs/tutorials/auth-service-migration) if you still rely on it.
+
+### Patch Changes
+
+- cd38da8: Deprecate the `featureDiscoveryServiceRef` in favor of using the new `discoveryFeatureLoader` instead.
+- 66dbf0a: Allow the cache service to accept the human duration format for TTL
+- 0b2a402: Updates to the config schema to match reality
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.2-next.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.8.1
+
+## 0.8.0
+
+### Minor Changes
+
+- 389f5a4: **BREAKING** Deleted the following deprecated `UrlReader` exports
+
+  - ReadUrlOptions: Use `UrlReaderServiceReadUrlOptions` instead;
+  - ReadUrlResponse: Use `UrlReaderServiceReadUrlResponse` instead;
+  - ReadTreeOptions: Use `UrlReaderServiceReadTreeOptions` instead;
+  - ReadTreeResponse: Use `UrlReaderServiceReadTreeResponse` instead;
+  - ReadTreeResponseFile: Use `UrlReaderServiceReadTreeResponseFile` instead;
+  - ReadTreeResponseDirOptions: Use `UrlReaderServiceReadTreeResponseDirOptions` instead;
+  - SearchOptions: Use `UrlReaderServiceSearchOptions` instead;
+  - SearchResponse: Use `UrlReaderServiceSearchResponse` instead;
+  - SearchResponseFile: Use `UrlReaderServiceSearchResponseFile` instead.
+
+- 7c5f3b0: The `createServiceRef` function now accepts a new boolean `multiple` option. The `multiple` option defaults to `false` and when set to `true`, it enables that multiple implementation are installed for the created service ref.
+
+  We're looking for ways to make it possible to augment services without the need to replace the entire service.
+
+  Typical example of that being the ability to install support for additional targets for the `UrlReader` service without replacing the service itself. This achieves that by allowing us to define services that can have multiple simultaneous implementation, allowing the `UrlReader` implementation to depend on such a service to collect all possible implementation of support for external targets:
+
+  ```diff
+  // @backstage/backend-defaults
+
+  + export const urlReaderFactoriesServiceRef = createServiceRef<ReaderFactory>({
+  +   id: 'core.urlReader.factories',
+  +   scope: 'plugin',
+  +   multiton: true,
+  + });
+
+  ...
+
+  export const urlReaderServiceFactory = createServiceFactory({
+    service: coreServices.urlReader,
+    deps: {
+      config: coreServices.rootConfig,
+      logger: coreServices.logger,
+  +   factories: urlReaderFactoriesServiceRef,
+    },
+  -  async factory({ config, logger }) {
+  +  async factory({ config, logger, factories }) {
+      return UrlReaders.default({
+        config,
+        logger,
+  +     factories,
+      });
+    },
+  });
+  ```
+
+  With that, you can then add more custom `UrlReader` factories by installing more implementations of the `urlReaderFactoriesServiceRef` in your backend instance. Something like:
+
+  ```ts
+  // packages/backend/index.ts
+  import { createServiceFactory } from '@backstage/backend-plugin-api';
+  import { urlReaderFactoriesServiceRef } from '@backstage/backend-defaults';
+  ...
+
+  backend.add(createServiceFactory({
+    service: urlReaderFactoriesServiceRef,
+    deps: {},
+    async factory() {
+      return CustomUrlReader.factory;
+    },
+  }));
+
+  ...
+
+  ```
+
+- c99c620: **BREAKING** Removed the following deprecated types:
+
+  - `ServiceRefConfig` use `ServiceRefOptions`
+  - `RootServiceFactoryConfig` use `RootServiceFactoryOptions`
+  - `PluginServiceFactoryConfig` use `PluginServiceFactoryOptions`
+
+### Patch Changes
+
+- 6061061: Added `createBackendFeatureLoader`, which can be used to create an installable backend feature that can in turn load in additional backend features in a dynamic way.
+- ba9abf4: The `SchedulerService` now allows tasks with `frequency: { trigger: 'manual' }`. This means that the task will not be scheduled, but rather run only when manually triggered with `SchedulerService.triggerTask`.
+- 8b13183: Added `createBackendFeatureLoader`, which can be used to programmatically select and install backend features.
+
+  A feature loader can return an list of features to be installed, for example in the form on an `Array` or other for of iterable, which allows for the loader to be defined as a generator function. Both synchronous and asynchronous loaders are supported.
+
+  Additionally, a loader can depend on services in its implementation, with the restriction that it can only depend on root-scoped services, and it may not override services that have already been instantiated.
+
+  ```ts
+  const searchLoader = createBackendFeatureLoader({
+    deps: {
+      config: coreServices.rootConfig,
+    },
+    *loader({ config }) {
+      // Example of a custom config flag to enable search
+      if (config.getOptionalString('customFeatureToggle.search')) {
+        yield import('@backstage/plugin-search-backend/alpha');
+        yield import('@backstage/plugin-search-backend-module-catalog/alpha');
+        yield import('@backstage/plugin-search-backend-module-explore/alpha');
+        yield import('@backstage/plugin-search-backend-module-techdocs/alpha');
+      }
+    },
+  });
+  ```
+
+- ddde5fe: Fixed a type issue where plugin and modules depending on multiton services would not receive the correct type.
+- f011d1b: fix typo in `getPluginRequestToken` comments
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-auth-node@0.5.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.8.0-next.3
 
 ### Patch Changes

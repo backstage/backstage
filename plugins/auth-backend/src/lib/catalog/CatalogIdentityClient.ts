@@ -45,7 +45,7 @@ export class CatalogIdentityClient {
 
   constructor(options: {
     catalogApi: CatalogApi;
-    tokenManager: TokenManager;
+    tokenManager?: TokenManager;
     discovery: DiscoveryService;
     auth?: AuthService;
     httpAuth?: HttpAuthService;

@@ -580,6 +580,10 @@ Note: To refer external diagram files, we need to include the diagrams directory
 
 ## How to add Mermaid support in TechDocs
 
+There are two options for adding Mermaid support in TechDocs: using [Kroki](https://kroki.io) or by using [markdown-inline-mermaid](https://github.com/johanneswuerbach/markdown-inline-mermaid). We currently use `markdown-inline-mermaid` for the [Mermaid example on the Demo site](https://demo.backstage.io/docs/default/component/backstage-demo/examples/mermaid/).
+
+### Using Kroki
+
 To add `Mermaid` support in TechDocs, you can use [`kroki`](https://kroki.io)
 that creates diagrams from Textual descriptions. It is a single rendering
 gateway for all popular diagrams-as-a-code tools. It supports an enormous number
@@ -678,6 +682,30 @@ Done! Now you have a support of the following diagrams along with mermaid:
 - `Vega-Lite`
 - `WaveDrom`
 
+### Using `markdown-inline-mermaid`
+
+To use `markdown-inline-mermaid` to generate your Mermaid diagrams in TechDocs you'll need to do the following:
+
+1. In your Dockerfile you will need to make sure you install `markdown-inline-mermaid` like this: `RUN pip3 install mkdocs-techdocs-core markdown-inline-mermaid`
+2. You will also need to install the `@mermaid-js/mermaid-cli`, to do that add this: `RUN yarn global add @mermaid-js/mermaid-cli`
+3. Now in your `mkdocs.yml` file you will need to add the following section (this is at the root level like `plugins` which you should already have):
+
+   ```yaml title="mkdocs.yml"
+   markdown_extensions:
+     - markdown_inline_mermaid
+   ```
+
+4. With this in place you can now add Mermaid diagrams in your Markdown files like this:
+
+   ````md
+   ```mermaid
+   sequenceDiagram
+   Alice->>John: Hello John, how are you?
+   John-->>Alice: Great!
+   Alice-)John: See you later!
+   ```
+   ````
+
 ## How to implement a hybrid build strategy
 
 One limitation of the [Recommended deployment](./architecture.md#recommended-deployment) is that
@@ -772,7 +800,7 @@ const techdocsCustomBuildStrategy = createBackendModule({
 
 /* highlight-add-start */
 backend.add(import('@backstage/plugin-techdocs-backend/alpha'));
-backend.add(techdocsCustomBuildStrategy());
+backend.add(techdocsCustomBuildStrategy);
 /* highlight-add-end */
 
 backend.start();
@@ -840,4 +868,29 @@ metadata:
   description: This is the child entity
   annotations:
     backstage.io/techdocs-entity: system:default/example
+```
+
+## How to resolve broken links from moved or renamed pages in your documentation site
+
+TechDocs supports using the [mkdocs-redirects](https://github.com/mkdocs/mkdocs-redirects/tree/master) plugin to create a redirect map for any TechDocs site. This allows broken links from renamed or moved pages in your site to be redirected to their specified replacement.
+TechDocs will notify the user that the page they are trying to access is no longer maintained. Then, they will be redirected. External site redirects are not supported. If an external redirect is provided, the user will instead be redirected to the index page of the documentation site.
+
+## Create download links for static assets
+
+You may want to make files available for download by your users such as PDF
+documents, images, or code templates. Download links for files included in your
+docs directory can be made by adding `{: download }` after a markdown link.
+
+```
+[Link text](https://example.com/foo.jpg){: download }
+```
+
+The user's browser will download the file as `download.jpg` when the link is
+clicked.
+
+Specify a file name to control the name the file will be given when it is
+downloaded:
+
+```
+[Link text](https://example.com/foo.jpg){: download="foo.jpg" }
 ```

@@ -15,12 +15,26 @@
  */
 
 import React from 'react';
+import { Link, MemoryRouter } from 'react-router-dom';
 import {
-  RouteRef,
-  coreExtensionData,
+  createSpecializedApp,
+  FrontendFeature,
+} from '@backstage/frontend-app-api';
+import { RenderResult, render } from '@testing-library/react';
+import { ConfigReader } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
+import {
   createExtension,
+  ExtensionDefinition,
+  coreExtensionData,
+  RouteRef,
+  useRouteRef,
+  IconComponent,
+  RouterBlueprint,
+  NavItemBlueprint,
+  createFrontendPlugin,
 } from '@backstage/frontend-plugin-api';
-import { createExtensionTester } from './createExtensionTester';
+import appPlugin from '@backstage/plugin-app';
 
 /**
  * Options to customize the behavior of the test app.
@@ -44,7 +58,73 @@ export type TestAppOptions = {
    * ```
    */
   mountedRoutes?: { [path: string]: RouteRef };
+
+  /**
+   * Additional configuration passed to the app when rendering elements inside it.
+   */
+  config?: JsonObject;
+
+  /**
+   * Additional extensions to add to the test app.
+   */
+  extensions?: ExtensionDefinition<any>[];
+
+  /**
+   * Additional features to add to the test app.
+   */
+  features?: FrontendFeature[];
 };
+
+const NavItem = (props: {
+  routeRef: RouteRef<undefined>;
+  title: string;
+  icon: IconComponent;
+}) => {
+  const { routeRef, title, icon: Icon } = props;
+  const link = useRouteRef(routeRef);
+  if (!link) {
+    return null;
+  }
+  return (
+    <li>
+      <Link to={link()}>
+        <Icon /> {title}
+      </Link>
+    </li>
+  );
+};
+
+const appPluginOverride = appPlugin.withOverrides({
+  extensions: [
+    appPlugin.getExtension('app/nav').override({
+      output: [coreExtensionData.reactElement],
+      factory(_originalFactory, { inputs }) {
+        return [
+          coreExtensionData.reactElement(
+            <nav>
+              <ul>
+                {inputs.items.map((item, index) => {
+                  const { icon, title, routeRef } = item.get(
+                    NavItemBlueprint.dataRefs.target,
+                  );
+
+                  return (
+                    <NavItem
+                      key={index}
+                      icon={icon}
+                      title={title}
+                      routeRef={routeRef}
+                    />
+                  );
+                })}
+              </ul>
+            </nav>,
+          ),
+        ];
+      },
+    }),
+  ],
+});
 
 /**
  * @public
@@ -53,36 +133,70 @@ export type TestAppOptions = {
 export function renderInTestApp(
   element: JSX.Element,
   options?: TestAppOptions,
-) {
-  const extension = createExtension({
-    namespace: 'test',
-    attachTo: { id: 'app', input: 'root' },
-    output: {
-      element: coreExtensionData.reactElement,
-    },
-    factory: () => ({ element }),
-  });
-  const tester = createExtensionTester(extension);
+): RenderResult {
+  const extensions: Array<ExtensionDefinition> = [
+    createExtension({
+      attachTo: { id: 'app/routes', input: 'routes' },
+      output: [coreExtensionData.reactElement, coreExtensionData.routePath],
+      factory: () => {
+        return [
+          coreExtensionData.reactElement(element),
+          coreExtensionData.routePath('/'),
+        ];
+      },
+    }),
+    RouterBlueprint.make({
+      params: {
+        Component: ({ children }) => <MemoryRouter>{children}</MemoryRouter>,
+      },
+    }),
+  ];
 
   if (options?.mountedRoutes) {
     for (const [path, routeRef] of Object.entries(options.mountedRoutes)) {
       // TODO(Rugvip): add support for external route refs
-      tester.add(
+      extensions.push(
         createExtension({
           kind: 'test-route',
           name: path,
           attachTo: { id: 'app/root', input: 'elements' },
-          output: {
-            element: coreExtensionData.reactElement,
-            path: coreExtensionData.routePath,
-            routeRef: coreExtensionData.routeRef,
-          },
-          factory() {
-            return { element: <React.Fragment />, path, routeRef };
-          },
+          output: [
+            coreExtensionData.reactElement,
+            coreExtensionData.routePath,
+            coreExtensionData.routeRef,
+          ],
+          factory: () => [
+            coreExtensionData.reactElement(<React.Fragment />),
+            coreExtensionData.routePath(path),
+            coreExtensionData.routeRef(routeRef),
+          ],
         }),
       );
     }
   }
-  return tester.render();
+
+  if (options?.extensions) {
+    extensions.push(...options.extensions);
+  }
+
+  const features: FrontendFeature[] = [
+    createFrontendPlugin({
+      id: 'test',
+      extensions,
+    }),
+    appPluginOverride,
+  ];
+
+  if (options?.features) {
+    features.push(...options.features);
+  }
+
+  const app = createSpecializedApp({
+    features,
+    config: ConfigReader.fromConfigs([
+      { context: 'render-config', data: options?.config ?? {} },
+    ]),
+  });
+
+  return render(app.createRoot());
 }

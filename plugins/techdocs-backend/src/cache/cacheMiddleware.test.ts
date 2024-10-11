@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import express from 'express';
 import request from 'supertest';
 import { createCacheMiddleware } from './cacheMiddleware';
@@ -58,7 +57,7 @@ describe('createCacheMiddleware', () => {
       invalidateMultiple: jest.fn().mockResolvedValue(undefined),
     } as unknown as jest.Mocked<TechDocsCache>;
     const router = await createCacheMiddleware({
-      logger: loggerToWinstonLogger(mockServices.logger.mock()),
+      logger: mockServices.logger.mock(),
       cache,
     });
     app = express().use(router);

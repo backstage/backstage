@@ -38,10 +38,11 @@ import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common/a
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { z } from 'zod';
 import { decodeCursor, encodeCursor } from './util';
-import { wrapInOpenApiTestServer } from '@backstage/backend-openapi-utils';
+import { wrapServer } from '@backstage/backend-openapi-utils';
 import { Server } from 'http';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
+import { PermissionsService } from '@backstage/backend-plugin-api';
 
 describe('createRouter readonly disabled', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
@@ -50,6 +51,7 @@ describe('createRouter readonly disabled', () => {
   let app: express.Express | Server;
   let refreshService: RefreshService;
   let locationAnalyzer: jest.Mocked<LocationAnalyzer>;
+  let permissionsService: jest.Mocked<PermissionsService>;
 
   beforeAll(async () => {
     entitiesCatalog = {
@@ -71,6 +73,11 @@ describe('createRouter readonly disabled', () => {
     locationAnalyzer = {
       analyzeLocation: jest.fn(),
     };
+    permissionsService = {
+      authorize: jest.fn(),
+      authorizeConditional: jest.fn(),
+    };
+
     refreshService = { refresh: jest.fn() };
     orchestrator = { process: jest.fn() };
     const router = await createRouter({
@@ -84,8 +91,9 @@ describe('createRouter readonly disabled', () => {
       auth: mockServices.auth(),
       httpAuth: mockServices.httpAuth(),
       locationAnalyzer,
+      permissionsService: permissionsService,
     });
-    app = wrapInOpenApiTestServer(express().use(router));
+    app = await wrapServer(express().use(router));
   });
 
   beforeEach(() => {
@@ -725,6 +733,12 @@ describe('createRouter readonly disabled', () => {
           metadata: { name: 'n' },
         };
 
+        permissionsService.authorize.mockResolvedValueOnce([
+          {
+            result: AuthorizeResult.ALLOW,
+          },
+        ]);
+
         orchestrator.process.mockResolvedValueOnce({
           ok: true,
           state: {},
@@ -765,6 +779,12 @@ describe('createRouter readonly disabled', () => {
           metadata: { name: 'invalid*name' },
         };
 
+        permissionsService.authorize.mockResolvedValueOnce([
+          {
+            result: AuthorizeResult.ALLOW,
+          },
+        ]);
+
         orchestrator.process.mockResolvedValueOnce({
           ok: false,
           errors: [new Error('Invalid entity name')],
@@ -801,6 +821,12 @@ describe('createRouter readonly disabled', () => {
           kind: 'b',
           metadata: { name: 'n' },
         };
+
+        permissionsService.authorize.mockResolvedValueOnce([
+          {
+            result: AuthorizeResult.ALLOW,
+          },
+        ]);
 
         const response = await request(app)
           .post('/validate-entity')
@@ -848,6 +874,7 @@ describe('createRouter readonly enabled', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
   let app: express.Express;
   let locationService: jest.Mocked<LocationService>;
+  let permissionsService: jest.Mocked<PermissionsService>;
 
   beforeAll(async () => {
     entitiesCatalog = {
@@ -877,6 +904,7 @@ describe('createRouter readonly enabled', () => {
       permissionIntegrationRouter: express.Router(),
       auth: mockServices.auth(),
       httpAuth: mockServices.httpAuth(),
+      permissionsService: permissionsService,
     });
     app = express().use(router);
   });
@@ -1046,6 +1074,7 @@ describe('NextRouter permissioning', () => {
   let locationService: jest.Mocked<LocationService>;
   let app: express.Express;
   let refreshService: RefreshService;
+  let permissionsService: jest.Mocked<PermissionsService>;
 
   const fakeRule = createPermissionRule({
     name: 'FAKE_RULE',
@@ -1092,6 +1121,7 @@ describe('NextRouter permissioning', () => {
       }),
       auth: mockServices.auth(),
       httpAuth: mockServices.httpAuth(),
+      permissionsService: permissionsService,
     });
     app = express().use(router);
   });

@@ -46,18 +46,18 @@ describe('createBackendFeatureLoader', () => {
           createBackendPlugin({
             pluginId: 'x',
             register() {},
-          })(),
+          }),
           createServiceFactory({
             service: coreServices.pluginMetadata,
             deps: {},
             factory: () => ({ getId: () => 'fake-id' }),
-          })(),
+          }),
           // Dynamic import format
           Promise.resolve({
             default: createBackendPlugin({
               pluginId: 'y',
               register() {},
-            })(),
+            }),
           }),
         ];
       },
@@ -79,7 +79,7 @@ describe('createBackendFeatureLoader', () => {
   });
 
   it('should support multiple output formats', async () => {
-    const feature = createBackendPlugin({ pluginId: 'x', register() {} })();
+    const feature = createBackendPlugin({ pluginId: 'x', register() {} });
     const dynamicFeature = Promise.resolve({ default: feature });
 
     async function extractResult(f: BackendFeature) {

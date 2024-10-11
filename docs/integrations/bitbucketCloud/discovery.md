@@ -51,33 +51,6 @@ Further documentation:
 
 ### Installation with Legacy Backend System
 
-#### Installation without Events Support
-
-And then add the entity provider to your catalog builder:
-
-```ts title="packages/backend/src/plugins/catalog.ts"
-/* highlight-add-next-line */
-import { BitbucketCloudEntityProvider } from '@backstage/plugin-catalog-backend-module-bitbucket-cloud';
-
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  const builder = await CatalogBuilder.create(env);
-  /* highlight-add-start */
-  builder.addEntityProvider(
-    BitbucketCloudEntityProvider.fromConfig(env.config, {
-      logger: env.logger,
-      scheduler: env.scheduler,
-    }),
-  );
-  /* highlight-add-end */
-
-  // ..
-}
-```
-
-#### Installation with Events Support
-
 Please follow the installation instructions at
 
 - <https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md>
@@ -104,19 +77,17 @@ export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
   const builder = await CatalogBuilder.create(env);
-  builder.addProcessor(new ScaffolderEntitiesProcessor());
   /* highlight-add-start */
   const bitbucketCloudProvider = BitbucketCloudEntityProvider.fromConfig(
     env.config,
     {
+      auth: env.auth,
       catalogApi: new CatalogClient({ discoveryApi: env.discovery }),
       events: env.events,
       logger: env.logger,
       scheduler: env.scheduler,
-      tokenManager: env.tokenManager,
     },
   );
-  env.eventBroker.subscribe(bitbucketCloudProvider);
   builder.addEntityProvider(bitbucketCloudProvider);
   /* highlight-add-end */
   const { processingEngine, router } = await builder.build();
@@ -146,7 +117,7 @@ catalog:
         filters: # optional
           projectKey: '^apis-.*$' # optional; RegExp
           repoSlug: '^service-.*$' # optional; RegExp
-        schedule: # same options as in TaskScheduleDefinition
+        schedule: # same options as in SchedulerServiceTaskScheduleDefinition
           # supports cron, ISO duration, "human duration" as used in code
           frequency: { minutes: 30 }
           # supports ISO duration, "human duration" as used in code

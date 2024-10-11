@@ -17,10 +17,7 @@
 import {
   createLegacyAuthAdapters,
   HostDiscovery,
-  PluginDatabaseManager,
-  UrlReader,
 } from '@backstage/backend-common';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import {
   DefaultNamespaceEntityPolicy,
   Entity,
@@ -55,16 +52,17 @@ import {
   FileReaderProcessor,
   PlaceholderProcessor,
   UrlReaderProcessor,
-} from '../modules';
-import { ConfigLocationEntityProvider } from '../modules/core/ConfigLocationEntityProvider';
-import { DefaultLocationStore } from '../modules/core/DefaultLocationStore';
+} from '../processors';
+import { ConfigLocationEntityProvider } from '../providers/ConfigLocationEntityProvider';
+import { DefaultLocationStore } from '../providers/DefaultLocationStore';
 import { RepoLocationAnalyzer } from '../ingestion/LocationAnalyzer';
+import { AuthorizedLocationAnalyzer } from './AuthorizedLocationAnalyzer';
 import {
   jsonPlaceholderResolver,
   textPlaceholderResolver,
   yamlPlaceholderResolver,
-} from '../modules/core/PlaceholderProcessor';
-import { defaultEntityDataParser } from '../modules/util/parse';
+} from '../processors/PlaceholderProcessor';
+import { defaultEntityDataParser } from '../util/parse';
 import {
   CatalogProcessingEngine,
   createRandomProcessingInterval,
@@ -108,10 +106,14 @@ import { EventBroker, EventsService } from '@backstage/plugin-events-node';
 import { durationToMilliseconds } from '@backstage/types';
 import {
   AuthService,
+  DatabaseService,
   DiscoveryService,
   HttpAuthService,
   LoggerService,
   PermissionsService,
+  RootConfigService,
+  UrlReaderService,
+  SchedulerService,
 } from '@backstage/backend-plugin-api';
 
 /**
@@ -123,14 +125,17 @@ export type CatalogPermissionRuleInput<
   TParams extends PermissionRuleParams = PermissionRuleParams,
 > = PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
 
-/** @public */
+/**
+ * @deprecated Please migrate to the new backend system as this will be removed in the future.
+ * @public
+ */
 export type CatalogEnvironment = {
   logger: LoggerService;
-  database: PluginDatabaseManager;
-  config: Config;
-  reader: UrlReader;
+  database: DatabaseService;
+  config: RootConfigService;
+  reader: UrlReaderService;
   permissions: PermissionsService | PermissionAuthorizer;
-  scheduler?: PluginTaskScheduler;
+  scheduler?: SchedulerService;
   discovery?: DiscoveryService;
   auth?: AuthService;
   httpAuth?: HttpAuthService;
@@ -160,6 +165,7 @@ export type CatalogEnvironment = {
  *   persisted in the catalog.
  *
  * @public
+ * @deprecated Please migrate to the new backend system as this will be removed in the future.
  */
 export class CatalogBuilder {
   private readonly env: CatalogEnvironment;
@@ -510,15 +516,7 @@ export class CatalogBuilder {
     });
     const integrations = ScmIntegrations.fromConfig(config);
     const rulesEnforcer = DefaultCatalogRulesEnforcer.fromConfig(config);
-    const orchestrator = new DefaultCatalogProcessingOrchestrator({
-      processors,
-      integrations,
-      rulesEnforcer,
-      logger,
-      parser,
-      policy,
-      legacySingleProcessorValidation: this.legacySingleProcessorValidation,
-    });
+
     const unauthorizedEntitiesCatalog = new DefaultEntitiesCatalog({
       database: dbClient,
       logger,
@@ -534,6 +532,16 @@ export class CatalogBuilder {
       );
       permissionsService = toPermissionEvaluator(permissions);
     }
+
+    const orchestrator = new DefaultCatalogProcessingOrchestrator({
+      processors,
+      integrations,
+      rulesEnforcer,
+      logger,
+      parser,
+      policy,
+      legacySingleProcessorValidation: this.legacySingleProcessorValidation,
+    });
 
     const entitiesCatalog = new AuthorizedEntitiesCatalog(
       unauthorizedEntitiesCatalog,
@@ -594,7 +602,10 @@ export class CatalogBuilder {
 
     const locationAnalyzer =
       this.locationAnalyzer ??
-      new RepoLocationAnalyzer(logger, integrations, this.locationAnalyzers);
+      new AuthorizedLocationAnalyzer(
+        new RepoLocationAnalyzer(logger, integrations, this.locationAnalyzers),
+        permissionsService,
+      );
     const locationService = new AuthorizedLocationService(
       new DefaultLocationService(locationStore, orchestrator, {
         allowedLocationTypes: this.allowedLocationType,
@@ -617,6 +628,7 @@ export class CatalogBuilder {
       permissionIntegrationRouter,
       auth,
       httpAuth,
+      permissionsService,
     });
 
     await connectEntityProviders(providerDatabase, entityProviders);

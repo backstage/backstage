@@ -283,7 +283,7 @@ Backstage Search builds and maintains its index
 [on a schedule](./concepts.md#the-scheduler). You can change how often the
 indexes are rebuilt for a given type of document. You may want to do this if
 your documents are updated more or less frequently. You can do so by configuring
-a scheduled `TaskRunner` to pass into the `schedule` value, like this:
+a scheduled `SchedulerServiceTaskRunner` to pass into the `schedule` value, like this:
 
 ```typescript {3}
 const every10MinutesSchedule = env.scheduler.createScheduledTaskRunner({
@@ -302,16 +302,19 @@ indexBuilder.addCollator({
 ```
 
 Note: if you are using the in-memory Lunr search engine, you probably want to
-implement a non-distributed `TaskRunner` like the following to ensure consistency
+implement a non-distributed `SchedulerServiceTaskRunner` like the following to ensure consistency
 if you're running multiple search backend nodes (alternatively, you can configure
 the search plugin to use a non-distributed database such as
 [SQLite](../../tutorials/configuring-plugin-databases.md#postgresql-and-sqlite-3)):
 
 ```typescript
-import { TaskInvocationDefinition, TaskRunner } from '@backstage/backend-tasks';
+import {
+  SchedulerServiceTaskRunner,
+  SchedulerServiceTaskInvocationDefinition,
+} from '@backstage/backend-plugin-api';
 
-const schedule: TaskRunner = {
-  run: async (task: TaskInvocationDefinition) => {
+const schedule: SchedulerServiceTaskRunner = {
+  run: async (task: SchedulerServiceTaskInvocationDefinition) => {
     const startRefresh = async () => {
       while (!task.signal?.aborted) {
         try {

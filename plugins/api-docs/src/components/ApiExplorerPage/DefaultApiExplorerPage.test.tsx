@@ -16,21 +16,17 @@
 
 import { ConfigReader } from '@backstage/core-app-api';
 import { TableColumn, TableProps } from '@backstage/core-components';
-import {
-  ConfigApi,
-  configApiRef,
-  storageApiRef,
-} from '@backstage/core-plugin-api';
+import { configApiRef, storageApiRef } from '@backstage/core-plugin-api';
 import {
   CatalogTableRow,
   DefaultStarredEntitiesApi,
 } from '@backstage/plugin-catalog';
 import {
-  CatalogApi,
   catalogApiRef,
   entityRouteRef,
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import {
   MockPermissionApi,
   MockStorageApi,
@@ -45,7 +41,7 @@ import { DefaultApiExplorerPage } from './DefaultApiExplorerPage';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 
 describe('DefaultApiExplorerPage', () => {
-  const catalogApi: Partial<CatalogApi> = {
+  const catalogApi = catalogApiMock.mock({
     getEntities: () =>
       Promise.resolve({
         items: [
@@ -74,9 +70,9 @@ describe('DefaultApiExplorerPage', () => {
       pageInfo: {},
       totalItems: 0,
     }),
-  };
+  });
 
-  const configApi: ConfigApi = new ConfigReader({
+  const configApi = new ConfigReader({
     organization: {
       name: 'My Company',
     },

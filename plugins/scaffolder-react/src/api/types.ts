@@ -161,6 +161,7 @@ export interface ScaffolderGetIntegrationsListResponse {
  * @public
  */
 export interface ScaffolderStreamLogsOptions {
+  isTaskRecoverable?: boolean;
   taskId: string;
   after?: number;
 }
@@ -213,9 +214,18 @@ export interface ScaffolderApi {
    */
   cancelTask(taskId: string): Promise<void>;
 
+  /**
+   * Starts the task again from the point where it failed.
+   *
+   * @param taskId - the id of the task
+   */
+  retry?(taskId: string): Promise<void>;
+
   listTasks?(options: {
     filterByOwnership: 'owned' | 'all';
-  }): Promise<{ tasks: ScaffolderTask[] }>;
+    limit?: number;
+    offset?: number;
+  }): Promise<{ tasks: ScaffolderTask[]; totalTasks?: number }>;
 
   getIntegrationsList(
     options: ScaffolderGetIntegrationsListOptions,

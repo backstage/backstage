@@ -301,7 +301,7 @@ An example of [integration with scalprum](https://github.com/backstage/backstage
 
 **Dynamic Feature configuration**
 
-The dynamic remote loading can be added directly into the [`createApp`](https://github.com/backstage/backstage/blob/master/packages/frontend-app-api/src/wiring/createApp.tsx#L234) function.
+The dynamic remote loading can be added directly into the [`createApp`](https://backstage.io/docs/reference/frontend-defaults.createapp) function.
 
 The current `feature` type can be expanded with a `DynamicFrontendFeature` type:
 
@@ -351,7 +351,7 @@ const scalprum = initialize({
 });
 ```
 
-Because the [`appLoader`](https://github.com/backstage/backstage/blob/master/packages/frontend-app-api/src/wiring/createApp.tsx#L193) is already async, it is a perfect place to load the plugin registry and init the dynamic plugins.
+Because the [`appLoader`](https://backstage.io/docs/reference/frontend-defaults.createapp) is already async, it is a perfect place to load the plugin registry and init the dynamic plugins.
 
 Initializing the dynamic feature is just a case of mapping the `DynamicFrontendFeature` to `FrontendFeature` via Scalprum:
 
@@ -595,7 +595,7 @@ Singleton "might have to" list:
 
 > NOTE: Can leverage [Generate module sharing map](#generate-module-sharing-map).
 
-Component libraries are usually large (thousands of svg icons in @mui/icons) and it is inefficient to share them as a whole. **Tree shaking is disabled for shared modules**. That means sharing large packages in multiple versions will result in a bloated JS in browsers.
+Component libraries are usually large (thousands of SVG icons in `@mui/icons`) and it is inefficient to share them as a whole. **Tree shaking is disabled for shared modules**. That means sharing large packages in multiple versions will result in a bloated JS in browsers.
 
 Sharing components like these can be done on module level. Instead of sharing the entire package, share its individual components:
 
@@ -625,7 +625,7 @@ There is also a conflict with the chunk splitting currently used in the Backstag
 
 #### Webpack chunk optimization
 
-Custom webpack chunk splitting configuration can be problematic, especially when modifying runtime and vendor chunks. Module federation creates its own chunks. Shared modules that are not set up to be eagerly loaded (using the `eager` configuration) **cannot be included inside the entry script**. With a custom chunk splitting setup, they can potentially be forced into the entry script, causing runtime errors. On the other hand, some critical runtime code that has to be in the entry script, cna be forced out of it. This is particularly problematic for the "shell" application.
+Custom webpack chunk splitting configuration can be problematic, especially when modifying runtime and vendor chunks. Module federation creates its own chunks. Shared modules that are not set up to be eagerly loaded (using the `eager` configuration) **cannot be included inside the entry script**. With a custom chunk splitting setup, they can potentially be forced into the entry script, causing runtime errors. On the other hand, some critical runtime code that has to be in the entry script, can be forced out of it. This is particularly problematic for the "shell" application.
 
 Chunk optimization should be disabled for the initial implementation.
 

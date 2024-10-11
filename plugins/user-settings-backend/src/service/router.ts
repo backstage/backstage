@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { errorHandler, PluginDatabaseManager } from '@backstage/backend-common';
 import { AuthenticationError, InputError } from '@backstage/errors';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import express, { Request } from 'express';
@@ -23,12 +22,16 @@ import { DatabaseUserSettingsStore } from '../database/DatabaseUserSettingsStore
 import { UserSettingsStore } from '../database/UserSettingsStore';
 import { SignalsService } from '@backstage/plugin-signals-node';
 import { UserSettingsSignal } from '@backstage/plugin-user-settings-common';
+import {
+  DatabaseService,
+  HttpAuthService,
+} from '@backstage/backend-plugin-api';
 
 /**
  * @public
  */
 export interface RouterOptions {
-  database: PluginDatabaseManager;
+  database: DatabaseService;
   identity: IdentityApi;
   signals?: SignalsService;
 }
@@ -52,11 +55,19 @@ export async function createRouter(
   });
 }
 
-export async function createRouterInternal(options: {
-  identity: IdentityApi;
-  userSettingsStore: UserSettingsStore;
-  signals?: SignalsService;
-}): Promise<express.Router> {
+export async function createRouterInternal(
+  options:
+    | {
+        identity: IdentityApi;
+        userSettingsStore: UserSettingsStore;
+        signals?: SignalsService;
+      }
+    | {
+        httpAuth: HttpAuthService;
+        userSettingsStore: UserSettingsStore;
+        signals?: SignalsService;
+      },
+): Promise<express.Router> {
   const router = Router();
   router.use(express.json());
 
@@ -64,6 +75,13 @@ export async function createRouterInternal(options: {
    * Helper method to extract the userEntityRef from the request.
    */
   const getUserEntityRef = async (req: Request): Promise<string> => {
+    if ('httpAuth' in options) {
+      const credentials = await options.httpAuth.credentials(req, {
+        allow: ['user'],
+      });
+      return credentials.principal.userEntityRef;
+    }
+
     // throws an AuthenticationError in case the token exists but is invalid
     const identity = await options.identity.getIdentity({ request: req });
     if (!identity) {
@@ -136,8 +154,6 @@ export async function createRouterInternal(options: {
 
     res.status(204).end();
   });
-
-  router.use(errorHandler());
 
   return router;
 }

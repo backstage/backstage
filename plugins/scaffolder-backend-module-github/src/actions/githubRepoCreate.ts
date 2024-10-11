@@ -100,6 +100,7 @@ export function createGithubRepoCreateAction(options: {
       includeClaimKeys?: string[];
     };
     requireCommitSigning?: boolean;
+    customProperties?: { [key: string]: string };
   }>({
     id: 'github:repo:create',
     description: 'Creates a GitHub repository.',
@@ -139,6 +140,7 @@ export function createGithubRepoCreateAction(options: {
           secrets: inputProps.secrets,
           oidcCustomization: inputProps.oidcCustomization,
           requiredCommitSigning: inputProps.requiredCommitSigning,
+          customProperties: inputProps.customProperties,
         },
       },
       output: {
@@ -171,6 +173,7 @@ export function createGithubRepoCreateAction(options: {
         repoVariables,
         secrets,
         oidcCustomization,
+        customProperties,
         token: providedToken,
       } = ctx.input;
 
@@ -211,6 +214,7 @@ export function createGithubRepoCreateAction(options: {
         repoVariables,
         secrets,
         oidcCustomization,
+        customProperties,
         ctx.logger,
       );
 

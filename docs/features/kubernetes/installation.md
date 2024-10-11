@@ -96,6 +96,7 @@ async function main() {
   // ...
   /* highlight-add-next-line */
   apiRouter.use('/kubernetes', await kubernetes(kubernetesEnv));
+}
 ```
 
 That's it! The Kubernetes frontend and backend have now been added to your

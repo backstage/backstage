@@ -13,7 +13,6 @@ Options:
 
 Commands:
   new [options]
-  test
   config:docs [options]
   config:print [options]
   config:check [options]
@@ -23,7 +22,6 @@ Commands:
   migrate [command]
   versions:bump [options]
   versions:migrate [options]
-  clean
   build-workspace [options] <workspace-dir> [packages...]
   create-github-app <github-org>
   info
@@ -37,15 +35,6 @@ Usage: backstage-cli build-workspace [options] <workspace-dir> [packages...]
 
 Options:
   --alwaysYarnPack
-  -h, --help
-```
-
-### `backstage-cli clean`
-
-```
-Usage: backstage-cli clean [options]
-
-Options:
   -h, --help
 ```
 
@@ -248,6 +237,7 @@ Usage: backstage-cli package lint [options] [directories...]
 Options:
   --format <format>
   --fix
+  --max-warnings <number>
   -h, --help
 ```
 
@@ -424,6 +414,7 @@ Usage: backstage-cli repo build [options]
 Options:
   --all
   --since <ref>
+  --minify
   -h, --help
 ```
 
@@ -455,6 +446,8 @@ Usage: backstage-cli repo lint [options]
 Options:
   --format <format>
   --since <ref>
+  --successCache
+  --successCacheDir <path>
   --fix
   -h, --help
 ```
@@ -476,122 +469,10 @@ Usage: backstage-cli repo test [options]
 
 Options:
   --since <ref>
+  --successCache
+  --successCacheDir <path>
   --jest-help
   -h, --help
-```
-
-### `backstage-cli test`
-
-```
-Usage: backstage-cli [--config=<pathToConfigFile>] [TestPathPattern]
-
-Options:
-  -h, --help
-  --version
-  --all
-  --automock
-  -b, --bail
-  --cache
-  --cacheDirectory
-  --changedFilesWithAncestor
-  --changedSince
-  --ci
-  --clearCache
-  --clearMocks
-  --collectCoverage
-  --collectCoverageFrom
-  --color
-  --colors
-  -c, --config
-  --coverage
-  --coverageDirectory
-  --coveragePathIgnorePatterns
-  --coverageProvider
-  --coverageReporters
-  --coverageThreshold
-  --debug
-  --detectLeaks
-  --detectOpenHandles
-  --env
-  --errorOnDeprecated
-  -e, --expand
-  --filter
-  --findRelatedTests
-  --forceExit
-  --globalSetup
-  --globalTeardown
-  --globals
-  --haste
-  --ignoreProjects
-  --init
-  --injectGlobals
-  --json
-  --lastCommit
-  --listTests
-  --logHeapUsage
-  --maxConcurrency
-  -w, --maxWorkers
-  --moduleDirectories
-  --moduleFileExtensions
-  --moduleNameMapper
-  --modulePathIgnorePatterns
-  --modulePaths
-  --noStackTrace
-  --notify
-  --notifyMode
-  -o, --onlyChanged
-  -f, --onlyFailures
-  --openHandlesTimeout
-  --outputFile
-  --passWithNoTests
-  --preset
-  --prettierPath
-  --projects
-  --randomize
-  --reporters
-  --resetMocks
-  --resetModules
-  --resolver
-  --restoreMocks
-  --rootDir
-  --roots
-  -i, --runInBand
-  --runTestsByPath
-  --runner
-  --seed
-  --selectProjects
-  --setupFiles
-  --setupFilesAfterEnv
-  --shard
-  --showConfig
-  --showSeed
-  --silent
-  --skipFilter
-  --snapshotSerializers
-  --testEnvironment
-  --testEnvironmentOptions
-  --testFailureExitCode
-  --testLocationInResults
-  --testMatch
-  -t, --testNamePattern
-  --testPathIgnorePatterns
-  --testPathPattern
-  --testRegex
-  --testResultsProcessor
-  --testRunner
-  --testSequencer
-  --testTimeout
-  --transform
-  --transformIgnorePatterns
-  --unmockedModulePathPatterns
-  -u, --updateSnapshot
-  --useStderr
-  --verbose
-  --watch
-  --watchAll
-  --watchPathIgnorePatterns
-  --watchman
-  --workerThreads
 ```
 
 ### `backstage-cli versions:bump`

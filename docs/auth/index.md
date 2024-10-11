@@ -36,8 +36,7 @@ Backstage comes with many common authentication providers in the core library:
 - [OneLogin](onelogin/provider.md)
 - [VMware Cloud](vmware-cloud/provider.md)
 
-These built-in providers handle the authentication flow for a particular service
-including required scopes, callbacks, etc. These providers are each added to a
+These built-in providers handle the authentication flow for a particular service, including required scopes, callbacks, etc. These providers are each added to a
 Backstage app in a similar way.
 
 ## Configuring Authentication Providers
@@ -58,7 +57,7 @@ auth:
 See the documentation for a particular provider to see what configuration is
 needed.
 
-The `providers` key may have several authentication providers, if multiple
+The `providers` key may have several authentication providers if multiple
 authentication methods are supported. Each provider may also have configuration
 for different authentication environments (development, production, etc). This
 allows a single auth backend to serve multiple environments, such as running a
@@ -68,15 +67,14 @@ the local `auth.environment` setting will be selected.
 ## Sign-In Configuration
 
 Using an authentication provider for sign-in is something you need to configure
-both in the frontend app, as well as the `auth` backend plugin. For information
+both in the frontend app as well as the `auth` backend plugin. For information
 on how to configure the backend app, see [Sign-in Identities and Resolvers](./identity-resolver.md).
 The rest of this section will focus on how to configure sign-in for the frontend app.
 
 Sign-in is configured by providing a custom `SignInPage` app component. It will be
 rendered before any other routes in the app and is responsible for providing the
 identity of the current user. The `SignInPage` can render any number of pages and
-components, or just blank space with logic running in the background. In the end
-however it must provide a valid Backstage user identity through the `onSignInSuccess`
+components, or just blank space with logic running in the background. In the end, however, it must provide a valid Backstage user identity through the `onSignInSuccess`
 callback prop, at which point the rest of the app is rendered.
 
 If you want to, you can use the `SignInPage` component that is provided by `@backstage/core-components`,
@@ -149,7 +147,7 @@ const app = createApp({
 
 ### Conditionally Render Sign In Provider
 
-In the above example you have both Guest and GitHub sign-in options, this is helpful for non-production but in Production you will most likely not want to offer Guest access. You can easily use information from your config to help conditionally render the provider:
+In the above example, you have both Guest and GitHub sign-in options; this is helpful for non-production, but in Production you will most likely not want to offer Guest access. You can easily use information from your config to help conditionally render the provider:
 
 ```tsx title="packages/app/src/App.tsx"
 import {
@@ -207,7 +205,7 @@ and [OAuth2 Proxy](./oauth2-proxy/provider.md).
 
 When using a proxy provider, you'll end up wanting to use a different sign-in page, as
 there is no need for further user interaction once you've signed in towards the proxy.
-All the sign-in page needs to do is to call the `/refresh` endpoint of the auth providers
+All the sign-in page needs to do is call the `/refresh` endpoint of the auth providers
 to get the existing session, which is exactly what the `ProxiedSignInPage` does. The only
 thing you need to do to configure the `ProxiedSignInPage` is to pass the ID of the provider like this:
 
@@ -250,7 +248,7 @@ Headers can also be returned in an async manner:
 
 A downside of this method is that it can be cumbersome to set up for local development.
 As a workaround for this, it's possible to dynamically select the sign-in page based on
-what environment the app is running in, and then use a different sign-in method for local
+what environment the app is running in and then use a different sign-in method for local
 development, if one is needed at all. Depending on the exact setup, one might choose to
 select the sign-in method based on the `process.env.NODE_ENV` environment variable,
 by checking the `hostname` of the current location, or by accessing the configuration API
@@ -286,7 +284,7 @@ sign-in resolvers so that they resolve to the same identity regardless of the me
 
 ## Scaffolder Configuration (Software Templates)
 
-If you want to use the authentication capabilities of the [Repository Picker](../features/software-templates/writing-templates.md#the-repository-picker) inside your software templates you will need to configure the [`ScmAuthApi`](https://backstage.io/docs/reference/integration-react.scmauthapi) alongside your authentication provider. It is an API used to authenticate towards different SCM systems in a generic way, based on what resource is being accessed.
+If you want to use the authentication capabilities of the [Repository Picker](../features/software-templates/writing-templates.md#the-repository-picker) inside your software templates, you will need to configure the [`ScmAuthApi`](https://backstage.io/docs/reference/integration-react.scmauthapi) alongside your authentication provider. It is an API used to authenticate towards different SCM systems in a generic way, based on what resource is being accessed.
 
 To set it up, you'll need to add an API factory entry to `packages/app/src/apis.ts`. The example below sets up the `ScmAuthApi` for an already configured GitLab authentication provider:
 
@@ -305,7 +303,7 @@ In case you are using a custom authentication providers, you might need to add a
 ## For Plugin Developers
 
 The Backstage frontend core APIs provide a set of Utility APIs for plugin developers
-to use, both to access the user identity, as well as third party resources.
+to use, both to access the user identity as well as third-party resources.
 
 ### Identity for Plugin Developers
 
@@ -323,21 +321,21 @@ to interact directly with the `IdentityApi`.
 
 ### Accessing Third Party Resources
 
-A common pattern for talking to third party services in Backstage is
+A common pattern for talking to third-party services in Backstage is
 user-to-server requests, where short-lived OAuth Access Tokens are requested by
 plugins to authenticate calls to external services. These calls can be made
 either directly to the services or through a backend plugin or service.
 
-By relying on user-to-server calls we keep the coupling between the frontend and
-backend low, and provide a much lower barrier for plugins to make use of third
-party services. This is in comparison to for example a session-based system,
+By relying on user-to-server calls, we keep the coupling between the frontend and
+backend low and provide a much lower barrier for plugins to make use of third
+party services. This is in comparison to, for example, a session-based system
 where access tokens are stored server-side. Such a solution would require a much
 deeper coupling between the auth backend plugin, its session storage, and other
 backend plugins or separate services. A goal of Backstage is to make it as easy
 as possible to create new plugins, and an auth solution based on user-to-server
 OAuth helps in that regard.
 
-The method with which frontend plugins request access to third party services is
+The method with which frontend plugins request access to third-party services is
 through [Utility APIs](../api/utility-apis.md) for each service provider. These
 are all suffixed with `*AuthApiRef`, for example `githubAuthApiRef`. For a
 full list of providers, see the

@@ -44,9 +44,9 @@ import {
   copyToClipboard,
   useSanitizerTransformer,
   useStylesTransformer,
+  handleMetaRedirects,
 } from '../../transformers';
 import { useNavigateUrl } from './useNavigateUrl';
-import { handleMetaRedirects } from '../../transformers/handleMetaRedirects';
 
 const MOBILE_MEDIA_QUERY = 'screen and (max-width: 76.1875em)';
 

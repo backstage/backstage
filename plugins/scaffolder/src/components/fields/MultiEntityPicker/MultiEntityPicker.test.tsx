@@ -17,18 +17,19 @@
 import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import {
-  CatalogApi,
   catalogApiRef,
   entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 
 import { fireEvent, screen } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
 import React from 'react';
 import { MultiEntityPicker } from './MultiEntityPicker';
 import { MultiEntityPickerProps } from './schema';
 import { ScaffolderRJSFFieldProps as FieldProps } from '@backstage/plugin-scaffolder-react';
 import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
   apiVersion: 'scaffolder.backstage.io/v1beta3',
@@ -37,7 +38,10 @@ const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
 });
 
 describe('<MultiEntityPicker />', () => {
-  let entities: Entity[];
+  const entities: Entity[] = [
+    makeEntity('Group', 'default', 'team-a'),
+    makeEntity('Group', 'default', 'squad-b'),
+  ];
   const onChange = jest.fn();
   const schema = {};
   const required = false;
@@ -47,22 +51,12 @@ describe('<MultiEntityPicker />', () => {
 
   let props: FieldProps<string[]>;
 
-  const catalogApi: jest.Mocked<CatalogApi> = {
-    getLocationById: jest.fn(),
-    getEntityByName: jest.fn(),
+  const catalogApi = catalogApiMock.mock({
     getEntities: jest.fn(async () => ({ items: entities })),
-    addLocation: jest.fn(),
-    getLocationByRef: jest.fn(),
-    removeEntityByUid: jest.fn(),
-  } as any;
+  });
   let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
 
   beforeEach(() => {
-    entities = [
-      makeEntity('Group', 'default', 'team-a'),
-      makeEntity('Group', 'default', 'squad-b'),
-    ];
-
     Wrapper = ({ children }: { children?: React.ReactNode }) => (
       <TestApiProvider
         apis={[
@@ -91,8 +85,6 @@ describe('<MultiEntityPicker />', () => {
         rawErrors,
         formData,
       } as unknown as FieldProps;
-
-      catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
 
     it('searches for all entities', async () => {
@@ -702,6 +694,125 @@ describe('<MultiEntityPicker />', () => {
 
       // Verify that the handleChange function was called with an empty array
       expect(onChange).toHaveBeenCalledWith([]);
+    });
+  });
+
+  describe('Multiselect maxNoOfEntities option', () => {
+    beforeEach(() => {
+      const testEntities = [
+        makeEntity('Group', 'default', 'team-a'),
+        makeEntity('Group', 'default', 'squad-b'),
+        makeEntity('User', 'default', 'user-a'),
+        makeEntity('User', 'default', 'user-b'),
+      ];
+
+      uiSchema = {
+        'ui:options': {
+          catalogFilter: [
+            {
+              kind: ['Group'],
+              'metadata.name': 'test-entity',
+            },
+            {
+              kind: ['User'],
+              'metadata.name': 'test-entity',
+            },
+          ],
+        },
+        allowArbitraryValues: true,
+      };
+      props = {
+        onChange,
+        schema,
+        required: false,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+
+      catalogApi.getEntities.mockResolvedValue({ items: testEntities });
+    });
+
+    it('limit the number of selected entities when maxNoOfEntities is specified', async () => {
+      props.schema.maxItems = 2;
+      await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = screen.getByRole('textbox');
+
+      fireEvent.mouseDown(input);
+      const optionA = screen.getByText('team-a');
+      await userEvent.click(optionA as HTMLElement);
+
+      fireEvent.mouseDown(input);
+      const optionB = screen.getByText('user-b');
+      await userEvent.click(optionB as HTMLElement);
+
+      fireEvent.mouseDown(input);
+      const optionC = screen.getByText('user-a');
+      await expect(() =>
+        userEvent.click(optionC as HTMLElement),
+      ).rejects.toThrow(/pointer-events: none/);
+
+      expect(onChange).toHaveBeenCalledTimes(2);
+      expect(onChange).toHaveBeenNthCalledWith(1, ['group:default/team-a']);
+      expect(onChange).toHaveBeenNthCalledWith(2, [
+        'group:default/team-a',
+        'user:default/user-b',
+      ]);
+      expect(onChange).not.toHaveBeenNthCalledWith(3, [
+        'group:default/team-a',
+        'user:default/user-b',
+        'user:default/user-a',
+      ]);
+    });
+
+    it('does not limit the number of selected entities when maxItems is not specified', async () => {
+      props.schema.maxItems = undefined;
+      await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = screen.getByRole('textbox');
+
+      fireEvent.mouseDown(input);
+      const optionA = screen.getByText('team-a');
+      await userEvent.click(optionA as HTMLElement);
+
+      fireEvent.mouseDown(input);
+      const optionB = screen.getByText('user-b');
+      await userEvent.click(optionB as HTMLElement);
+
+      fireEvent.mouseDown(input);
+      const optionC = screen.getByText('user-a');
+      await userEvent.click(optionC as HTMLElement);
+
+      fireEvent.mouseDown(input);
+      const optionD = screen.getByText('squad-b');
+      await userEvent.click(optionD as HTMLElement);
+
+      expect(onChange).toHaveBeenCalledTimes(4);
+      expect(onChange).toHaveBeenNthCalledWith(1, ['group:default/team-a']);
+      expect(onChange).toHaveBeenNthCalledWith(2, [
+        'group:default/team-a',
+        'user:default/user-b',
+      ]);
+      expect(onChange).toHaveBeenNthCalledWith(3, [
+        'group:default/team-a',
+        'user:default/user-b',
+        'user:default/user-a',
+      ]);
+      expect(onChange).toHaveBeenNthCalledWith(4, [
+        'group:default/team-a',
+        'user:default/user-b',
+        'user:default/user-a',
+        'group:default/squad-b',
+      ]);
     });
   });
 });

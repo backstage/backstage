@@ -48,6 +48,15 @@ export interface BackstagePackageJson {
     moved?: string;
 
     /**
+     * If set to `true`, the package will be treated as an internal package
+     * where any imports will be inlined into the consuming package.
+     *
+     * When set to `true`, the top-level `private` field must be set to `true`
+     * as well.
+     */
+    inline?: boolean;
+
+    /**
      * The ID of the plugin if this is a plugin package. Must always be set for plugin and module packages, and may be set for library packages. A `null` value means that the package is explicitly not a plugin package.
      */
     pluginId?: string | null;

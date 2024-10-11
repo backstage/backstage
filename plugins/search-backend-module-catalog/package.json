@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-search-backend-module-catalog",
-  "version": "0.1.29-next.3",
+  "version": "0.2.3-next.2",
   "description": "A module for the search backend that exports catalog modules",
   "backstage": {
     "role": "backend-plugin-module",
@@ -48,9 +48,8 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-plugin-api": "workspace:^",
-    "@backstage/backend-tasks": "workspace:^",
     "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
@@ -62,7 +61,7 @@
     "@backstage/plugin-search-common": "workspace:^"
   },
   "devDependencies": {
-    "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "msw": "^1.0.0"

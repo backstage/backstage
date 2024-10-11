@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { TokenManager } from '@backstage/backend-common';
 import {
   AuthService,
   BackstageCredentials,
@@ -23,7 +22,7 @@ import {
   BackstageServicePrincipal,
   BackstageUserPrincipal,
 } from '@backstage/backend-plugin-api';
-import { AuthenticationError, ForwardedError } from '@backstage/errors';
+import { AuthenticationError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 import { decodeJwt } from 'jose';
 import { ExternalTokenHandler } from './external/ExternalTokenHandler';
@@ -43,7 +42,6 @@ export class DefaultAuthService implements AuthService {
     private readonly userTokenHandler: UserTokenHandler,
     private readonly pluginTokenHandler: PluginTokenHandler,
     private readonly externalTokenHandler: ExternalTokenHandler,
-    private readonly tokenManager: TokenManager,
     private readonly pluginId: string,
     private readonly disableDefaultAuthPolicy: boolean,
     private readonly pluginKeySource: PluginKeySource,
@@ -151,52 +149,28 @@ export class DefaultAuthService implements AuthService {
       return { token: '' };
     }
 
-    const targetSupportsNewAuth =
-      await this.pluginTokenHandler.isTargetPluginSupported(targetPluginId);
-
     // check whether a plugin support the new auth system
     // by checking the public keys endpoint existance.
     switch (type) {
       // TODO: Check whether the principal is ourselves
       case 'service':
-        if (targetSupportsNewAuth) {
-          return this.pluginTokenHandler.issueToken({
-            pluginId: this.pluginId,
-            targetPluginId,
-          });
-        }
-        // If the target plugin does not support the new auth service, fall back to using old token format
-        return this.tokenManager.getToken().catch(error => {
-          throw new ForwardedError(
-            `Unable to generate legacy token for communication with the '${targetPluginId}' plugin. ` +
-              `You will typically encounter this error when attempting to call a plugin that does not exist, or is deployed with an old version of Backstage`,
-            error,
-          );
+        return this.pluginTokenHandler.issueToken({
+          pluginId: this.pluginId,
+          targetPluginId,
         });
       case 'user': {
         const { token } = internalForward;
         if (!token) {
           throw new Error('User credentials is unexpectedly missing token');
         }
-        // If the target plugin supports the new auth service we issue a service
-        // on-behalf-of token rather than forwarding the user token
-        if (targetSupportsNewAuth) {
-          const onBehalfOf = await this.userTokenHandler.createLimitedUserToken(
-            token,
-          );
-          return this.pluginTokenHandler.issueToken({
-            pluginId: this.pluginId,
-            targetPluginId,
-            onBehalfOf,
-          });
-        }
-
-        if (this.userTokenHandler.isLimitedUserToken(token)) {
-          throw new AuthenticationError(
-            `Unable to call '${targetPluginId}' plugin on behalf of user, because the target plugin does not support on-behalf-of tokens or the plugin doesn't exist`,
-          );
-        }
-        return { token };
+        const onBehalfOf = await this.userTokenHandler.createLimitedUserToken(
+          token,
+        );
+        return this.pluginTokenHandler.issueToken({
+          pluginId: this.pluginId,
+          targetPluginId,
+          onBehalfOf,
+        });
       }
       default:
         throw new AuthenticationError(

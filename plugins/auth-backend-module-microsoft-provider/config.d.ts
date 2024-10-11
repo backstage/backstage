@@ -29,10 +29,14 @@ export interface Config {
           domainHint?: string;
           callbackUrl?: string;
           additionalScopes?: string | string[];
+          skipUserProfile?: boolean;
           signIn?: {
             resolvers: Array<
               | { resolver: 'emailMatchingUserEntityAnnotation' }
-              | { resolver: 'emailLocalPartMatchingUserEntityName' }
+              | {
+                  resolver: 'emailLocalPartMatchingUserEntityName';
+                  allowedDomains?: string[];
+                }
               | { resolver: 'emailMatchingUserEntityProfileEmail' }
             >;
           };

@@ -19,6 +19,8 @@ import npmPackList from 'npm-packlist';
 import { resolve as resolvePath, posix as posixPath } from 'path';
 import { BackstagePackageJson } from '@backstage/cli-node';
 import { readEntryPoints } from '../entryPoints';
+import { getEntryPointDefaultFeatureType } from '../typeDistProject';
+import { Project } from 'ts-morph';
 
 const PKG_PATH = 'package.json';
 const PKG_BACKUP_PATH = 'package.json-prepack';
@@ -29,6 +31,10 @@ const SCRIPT_EXTS = ['.js', '.jsx', '.ts', '.tsx'];
 interface ProductionPackOptions {
   packageDir: string;
   targetDir?: string;
+  /**
+   * Enables package feature detection using this TS-morph project.
+   */
+  featureDetectionProject?: Project;
 }
 
 export async function productionPack(options: ProductionPackOptions) {
@@ -46,6 +52,7 @@ export async function productionPack(options: ProductionPackOptions) {
   const writeCompatibilityEntryPoints = await prepareExportsEntryPoints(
     pkg,
     packageDir,
+    options.featureDetectionProject,
   );
 
   // TODO(Rugvip): Once exports are rolled out more broadly we should deprecate and remove this behavior
@@ -134,6 +141,7 @@ const EXPORT_MAP = {
 async function prepareExportsEntryPoints(
   pkg: BackstagePackageJson,
   packageDir: string,
+  featureDetectionProject?: Project,
 ) {
   const distPath = resolvePath(packageDir, 'dist');
   if (!(await fs.pathExists(distPath))) {
@@ -147,19 +155,42 @@ async function prepareExportsEntryPoints(
   >();
 
   const entryPoints = readEntryPoints(pkg);
+
   for (const entryPoint of entryPoints) {
     if (!SCRIPT_EXTS.includes(entryPoint.ext)) {
       outputExports[entryPoint.mount] = entryPoint.path;
       continue;
     }
-    const exp = {} as Record<string, string>;
+
+    let exp = {} as Record<string, string>;
+
     for (const [key, ext] of Object.entries(EXPORT_MAP)) {
       const name = `${entryPoint.name}${ext}`;
       if (distFiles.includes(name)) {
         exp[key] = `./${posixPath.join(`dist`, name)}`;
       }
     }
+
     exp.default = exp.require ?? exp.import;
+
+    // Find the default export type for the entry point, if feature detection is active
+    if (exp.types && featureDetectionProject) {
+      const defaultFeatureType =
+        pkg.backstage?.role &&
+        getEntryPointDefaultFeatureType(
+          pkg.backstage?.role,
+          packageDir,
+          featureDetectionProject,
+          exp.types,
+        );
+
+      if (defaultFeatureType) {
+        // This ensures that the `backstage` field is at the top of the
+        // `exports` field in the package.json because order is important.
+        // https://nodejs.org/docs/latest-v20.x/api/packages.html#conditional-exports
+        exp = { backstage: defaultFeatureType, ...exp };
+      }
+    }
 
     // This creates a directory with a lone package.json for backwards compatibility
     if (entryPoint.mount === '.') {

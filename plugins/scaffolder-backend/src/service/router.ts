@@ -17,10 +17,7 @@
 import {
   createLegacyAuthAdapters,
   HostDiscovery,
-  PluginDatabaseManager,
-  UrlReader,
 } from '@backstage/backend-common';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
   CompoundEntityRef,
@@ -72,7 +69,13 @@ import {
 } from '../scaffolder';
 import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
-import { findTemplate, getEntityBaseUrl, getWorkingDirectory } from './helpers';
+import {
+  findTemplate,
+  getEntityBaseUrl,
+  getWorkingDirectory,
+  parseNumberParam,
+  parseStringsParam,
+} from './helpers';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import {
   createConditionAuthorizer,
@@ -84,10 +87,13 @@ import { Duration } from 'luxon';
 import {
   AuthService,
   BackstageCredentials,
+  DatabaseService,
   DiscoveryService,
   HttpAuthService,
   LifecycleService,
   PermissionsService,
+  SchedulerService,
+  UrlReaderService,
 } from '@backstage/backend-plugin-api';
 import {
   IdentityApi,
@@ -140,15 +146,16 @@ function isActionPermissionRuleInput(
  * RouterOptions
  *
  * @public
+ * @deprecated Please migrate to the new backend system as this will be removed in the future.
  */
 export interface RouterOptions {
   logger: Logger;
   config: Config;
-  reader: UrlReader;
+  reader: UrlReaderService;
   lifecycle?: LifecycleService;
-  database: PluginDatabaseManager;
+  database: DatabaseService;
   catalogClient: CatalogApi;
-  scheduler?: PluginTaskScheduler;
+  scheduler?: SchedulerService;
   actions?: TemplateAction<any, any>[];
   /**
    * @deprecated taskWorkers is deprecated in favor of concurrentTasksLimit option with a single TaskWorker
@@ -258,6 +265,7 @@ const readDuration = (
 /**
  * A method to create a router for the scaffolder backend plugin.
  * @public
+ * @deprecated Please migrate to the new backend system as this will be removed in the future.
  */
 export async function createRouter(
   options: RouterOptions,
@@ -574,31 +582,42 @@ export async function createRouter(
         permissionService: permissions,
       });
 
-      const [userEntityRef] = [req.query.createdBy].flat();
-      if (
-        typeof userEntityRef !== 'string' &&
-        typeof userEntityRef !== 'undefined'
-      ) {
-        throw new InputError('createdBy query parameter must be a string');
-      }
-
       if (!taskBroker.list) {
         throw new Error(
           'TaskBroker does not support listing tasks, please implement the list method on the TaskBroker.',
         );
       }
 
-      const [statusQuery] = [req.query.status].flat();
-      if (
-        typeof statusQuery !== 'string' &&
-        typeof statusQuery !== 'undefined'
-      ) {
-        throw new InputError('status query parameter must be a string');
-      }
+      const createdBy = parseStringsParam(req.query.createdBy, 'createdBy');
+      const status = parseStringsParam(req.query.status, 'status');
+
+      const order = parseStringsParam(req.query.order, 'order')?.map(item => {
+        const match = item.match(/^(asc|desc):(.+)$/);
+        if (!match) {
+          throw new InputError(
+            `Invalid order parameter "${item}", expected "<asc or desc>:<field name>"`,
+          );
+        }
+
+        return {
+          order: match[1] as 'asc' | 'desc',
+          field: match[2],
+        };
+      });
+
+      const limit = parseNumberParam(req.query.limit, 'limit');
+      const offset = parseNumberParam(req.query.offset, 'offset');
 
       const tasks = await taskBroker.list({
-        createdBy: userEntityRef,
-        status: statusQuery ? (statusQuery as TaskStatus) : undefined,
+        filters: {
+          createdBy,
+          status: status ? (status as TaskStatus[]) : undefined,
+        },
+        order,
+        pagination: {
+          limit: limit ? limit[0] : undefined,
+          offset: offset ? offset[0] : undefined,
+        },
       });
 
       res.status(200).json(tasks);
@@ -632,6 +651,19 @@ export async function createRouter(
       const { taskId } = req.params;
       await taskBroker.cancel?.(taskId);
       res.status(200).json({ status: 'cancelled' });
+    })
+    .post('/v2/tasks/:taskId/retry', async (req, res) => {
+      const credentials = await httpAuth.credentials(req);
+      // Requires both read and cancel permissions
+      await checkPermission({
+        credentials,
+        permissions: [taskCreatePermission, taskReadPermission],
+        permissionService: permissions,
+      });
+
+      const { taskId } = req.params;
+      await taskBroker.retry?.(taskId);
+      res.status(201).json({ id: taskId });
     })
     .get('/v2/tasks/:taskId/eventstream', async (req, res) => {
       const credentials = await httpAuth.credentials(req);
@@ -668,7 +700,7 @@ export async function createRouter(
             res.write(
               `event: ${event.type}\ndata: ${JSON.stringify(event)}\n\n`,
             );
-            if (event.type === 'completion') {
+            if (event.type === 'completion' && !event.isTaskRecoverable) {
               shouldUnsubscribe = true;
             }
           }

@@ -235,7 +235,11 @@ export class MysqlEngine implements Engine {
       client: this.#properties.driver,
       connection,
       pool: {
-        acquireTimeoutMillis: 10000,
+        min: 0,
+        max: 1,
+        acquireTimeoutMillis: 20_000,
+        createTimeoutMillis: 20_000,
+        createRetryIntervalMillis: 1_000,
       },
     });
   }

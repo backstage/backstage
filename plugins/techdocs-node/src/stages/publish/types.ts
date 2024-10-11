@@ -13,21 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { Logger } from 'winston';
 import express from 'express';
 import { Config } from '@backstage/config';
+import { DiscoveryService, LoggerService } from '@backstage/backend-plugin-api';
+import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
+import { StorageOptions } from '@google-cloud/storage';
 
 /**
  * Options for building publishers
  * @public
  */
 export type PublisherFactory = {
-  logger: Logger;
-  discovery: PluginEndpointDiscovery;
+  logger: LoggerService;
+  discovery: DiscoveryService;
   customPublisher?: PublisherBase | undefined;
+  publisherSettings?: PublisherSettings;
 };
+
+/**
+ * Additional configurations for publishers.
+ * @public
+ */
+export interface PublisherSettings {
+  googleGcs?: StorageOptions;
+}
 
 /**
  * Key for all the different types of TechDocs publishers that are supported.

@@ -4,6 +4,13 @@ title: OIDC provider from scratch
 description: This section shows how to use an OIDC provider from scratch, same steps apply for custom providers.
 ---
 
+:::info
+This documentation is written for [the new backend system](../backend-system/index.md) which is the default since Backstage
+[version 1.24](../releases/v1.24.0.md). If you are still on the old backend
+system, you may want to read [its own article](./oidc--old.md)
+instead, and [consider migrating](../backend-system/building-backends/08-migrating.md)!
+:::
+
 This section shows how to use an OIDC provider from scratch, same steps apply for custom
 providers. Please note these steps are for using a provider, not how to implement one,
 and Backstage recommends creating custom providers specific to the IDP, so we'll use a
@@ -13,7 +20,7 @@ to your provider name.
 ## Summary
 
 To add providers not enabled by default like OIDC, we need to follow some steps, we
-assume you already have a sign in page to which we'll add the provider so users can
+assume you already have a sign-in page to which we'll add the provider so users can
 sign in through the provider. In simple steps here's how you enable the provider:
 
 - Create an API reference to identify the provider.
@@ -133,84 +140,83 @@ The Auth Provider is responsible for authenticating with the 3rd party service, 
 us back the credentials, here's where you pick which protocol to use, be it Auth0, OAuth2,
 OIDC, SAML or any other that your 3rd party IDP provider supports.
 
-For this example we'll use OIDC, we pass a factory to the `providerFactories` object with
-the ID you picked to represent the Auth provider, this ID has to match with the provider's
-`id` inside the API factory, the yaml config provider key under `auth.providers`, and the
-callback URI provider segment (you'll have to configure your IDP to handle the callback
-URI properly).
-
-```ts
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  return await createRouter({
-    logger: env.logger,
-    config: env.config,
-    database: env.database,
-    discovery: env.discovery,
-    tokenManager: env.tokenManager,
-    providerFactories: {
-      ...defaultAuthProviderFactories,
-      /* highlight-add-next-line */
-      'my-auth-provider': providers.oidc.create({}),
-    },
-  // ..
-})
-```
-
 ### The Resolver
 
 Resolvers exist to map user identity from the 3rd party (in this case an azure IDP
-provider) to the backstage user identity, for a detailed explanation check the
-[Identity Resolver][1] page, it explains how to write a custom resolver as well as
-linking the built in resolvers of backstage.
+provider) to the backstage user identity.
 
-The default OIDC provider does not support SignIn, we need to add such support by
-adding a resolver for a SignIn request.
+The default OIDC provider has built-in resolvers, here is how you configure them:
 
-The OIDC provider doesn't provide any build-in resolvers, so we'll need to define our own:
-
-```ts
-import {
-  DEFAULT_NAMESPACE,
-  /* highlight-add-next-line */
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
-
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  return await createRouter({
-    logger: env.logger,
-    config: env.config,
-    database: env.database,
-    discovery: env.discovery,
-    tokenManager: env.tokenManager,
-    providerFactories: {
-      ...defaultAuthProviderFactories,
-     'my-auth-provider': providers.oidc.create({
-        /* highlight-add-start */
-        signIn: {
-          resolver(info, ctx) {
-            const userRef = stringifyEntityRef({
-              kind: 'User',
-              name: info.result.userinfo.sub,
-              namespace: DEFAULT_NAMESPACE,
-            });
-            return ctx.issueToken({
-              claims: {
-                sub: userRef, // The user's own identity
-                ent: [userRef], // A list of identities that the user claims ownership through
-              },
-            });
-          },
-        },
-        /* highlight-add-end */
-     }),
-    },
-    // ..
-  })
+```yaml title="app-config.yaml"
+auth:
+  environment: development
+  providers:
+    oidc:
+      development:
+        # ...
+        signIn:
+          resolvers:
+            - resolver: emailMatchingUserEntityProfileEmail
 ```
+
+But you can also write a custom resolver as well, see an example below:
+
+```ts title="in packages/backend/src/index.ts"
+/* highlight-add-start */
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import {
+  authProvidersExtensionPoint,
+  createOAuthProviderFactory,
+} from '@backstage/plugin-auth-node';
+import { oidcAuthenticator } from '@backstage/plugin-auth-backend-module-oidc-provider';
+
+const myAuthProviderModule = createBackendModule({
+  // This ID must be exactly "auth" because that's the plugin it targets
+  pluginId: 'auth',
+  // This ID must be unique, but can be anything
+  moduleId: 'my-auth-provider',
+  register(reg) {
+    reg.registerInit({
+      deps: { providers: authProvidersExtensionPoint },
+      async init({ providers }) {
+        providers.registerProvider({
+          // This ID must match the actual provider config, e.g. addressing
+          // auth.providers.azure means that this must be "azure".
+          providerId: 'my-auth-provider',
+          // Use createProxyAuthProviderFactory instead if it's one of the proxy
+          // based providers rather than an OAuth based one
+          factory: createOAuthProviderFactory({
+            // For more info about authenticators please see https://backstage.io/docs/auth/add-auth-provider/#adding-an-oauth-based-provider
+            authenticator: oidcAuthenticator,
+            async signInResolver(info, ctx) {
+              const userRef = stringifyEntityRef({
+                kind: 'User',
+                name: info.result.userinfo.sub,
+                namespace: DEFAULT_NAMESPACE,
+              });
+              return ctx.issueToken({
+                claims: {
+                  sub: userRef, // The user's own identity
+                  ent: [userRef], // A list of identities that the user claims ownership through
+                },
+              });
+            },
+          }),
+        });
+      },
+    });
+  },
+});
+/* highlight-add-end */
+//...
+backend.add(import('@backstage/plugin-auth-backend'));
+/* highlight-add-next-line */
+backend.add(myAuthProviderModule);
+//...
+```
+
+For a more a detailed explanation about resolvers check the
+[Identity Resolver][1] page.
 
 ### The configuration
 

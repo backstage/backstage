@@ -36,12 +36,18 @@ import { NotFoundError } from '@backstage/errors';
 import useAsync from 'react-use/esm/useAsync';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { VirtualizedListbox } from '../VirtualizedListbox';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { scaffolderTranslationRef } from '../../../translation';
 
 export { MyGroupsPickerSchema };
 
 export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const {
-    schema: { title, description },
+    schema: {
+      title = t('fields.myGroupsPicker.title'),
+      description = t('fields.myGroupsPicker.description'),
+    },
     required,
     rawErrors,
     onChange,
@@ -96,10 +102,10 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
     null;
 
   useEffect(() => {
-    if (groups?.catalogEntities.length === 1 && !selectedEntity) {
+    if (required && groups?.catalogEntities.length === 1 && !selectedEntity) {
       onChange(stringifyEntityRef(groups.catalogEntities[0]));
     }
-  }, [groups, onChange, selectedEntity]);
+  }, [groups, onChange, selectedEntity, required]);
 
   return (
     <FormControl
@@ -108,7 +114,7 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
       error={rawErrors?.length > 0}
     >
       <Autocomplete
-        disabled={groups?.catalogEntities.length === 1}
+        disabled={required && groups?.catalogEntities.length === 1}
         id="OwnershipEntityRefPicker-dropdown"
         options={groups?.catalogEntities || []}
         value={selectedEntity}

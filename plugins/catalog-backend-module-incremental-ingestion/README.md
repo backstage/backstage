@@ -42,57 +42,25 @@ The Incremental Entity Provider backend is designed for data sources that provid
 ## Installation
 
 1. Install `@backstage/plugin-catalog-backend-module-incremental-ingestion` with `yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-incremental-ingestion` from the Backstage root directory.
-2. In your catalog.ts, import `IncrementalCatalogBuilder` from `@backstage/plugin-catalog-backend-module-incremental-ingestion` and instantiate it with `await IncrementalCatalogBuilder.create(env, builder)`. You have to pass `builder` into `IncrementalCatalogBuilder.create` function because `IncrementalCatalogBuilder` will convert an `IncrementalEntityProvider` into an `EntityProvider` and call `builder.addEntityProvider`.
 
-```ts
-const builder = CatalogBuilder.create(env);
-// incremental builder receives builder because it'll register
-// incremental entity providers with the builder
-const incrementalBuilder = await IncrementalCatalogBuilder.create(env, builder);
-```
+2. Add the following code to the `packages/backend/src/index.ts` file:
 
-3. After building the regular `CatalogBuilder`, build the incremental builder:
+```diff
++ import { catalogModuleCustomIncrementalIngestionProvider } from './extensions/catalogCustomIncrementalIngestion';
 
-```ts
-// Must be run first to ensure CatalogBuilder database migrations run before Incremental Entity Provider database migrations
-const { processingEngine, router } = await builder.build();
 
-// Returns an optional - but highly recommended - set of administrative routes
-const { incrementalAdminRouter } = await incrementBuilder.build();
-```
+const backend = createBackend();
 
-The final result should look something like this,
++ backend.add(
++   import(
++     '@backstage/plugin-catalog-backend-module-incremental-ingestion/alpha'
++   ),
++ );
 
-```ts
-import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
-import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
-import { IncrementalCatalogBuilder } from '@backstage/plugin-catalog-backend-module-incremental-ingestion';
-import { Router } from 'express';
-import { Duration } from 'luxon';
-import { PluginEnvironment } from '../types';
+// We have created this in section **Adding an Incremental Entity Provider to the catalog**
++ backend.add(catalogModuleCustomIncrementalIngestionProvider);
 
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  const builder = CatalogBuilder.create(env);
-  // incremental builder receives builder because it'll register
-  // incremental entity providers with the builder
-  const incrementalBuilder = await IncrementalCatalogBuilder.create(
-    env,
-    builder,
-  );
-
-  builder.addProcessor(new ScaffolderEntitiesProcessor());
-
-  const { processingEngine, router } = await builder.build();
-  const { incrementalAdminRouter } = await incrementalBuilder.build();
-
-  router.use(incrementalAdminRouter);
-
-  await processingEngine.start();
-
-  return router;
-}
+backend.start();
 ```
 
 ## Administrative Routes
@@ -116,7 +84,7 @@ In all cases, `:provider` is the name of the incremental entity provider.
 
 ## Writing an Incremental Entity Provider
 
-To create an Incremental Entity Provider, you need to know how to retrieve a single page of the data that you wish to ingest into the Backstage catalog. If the API has pagination and you know how to make a paginated request to that API, you'll be able to implement an Incremental Entity Provider for this API. For more information about compatibility, check out the <a href="#requirements">requirements</a> section of this page.
+To create an Incremental Entity Provider, you need to know how to retrieve a single page of the data that you wish to ingest into the Backstage catalog. If the API has pagination and you know how to make a paginated request to that API, you'll be able to implement an Incremental Entity Provider for this API. For more information about compatibility, check out the [requirements](#requirements) section of this page.
 
 Here is the type definition for an Incremental Entity Provider.
 
@@ -309,45 +277,73 @@ Now that you have your new Incremental Entity Provider, we can connect it to the
 
 ## Adding an Incremental Entity Provider to the catalog
 
-We'll assume you followed the <a href="#installation">Installation</a> instructions. After you create your `incrementalBuilder`, you can instantiate your Entity Provider and pass it to the `addIncrementalEntityProvider` method.
+We'll assume you followed the [Installation](#installation) instructions. Now create a module inside `packages/backend/src/extensions/catalogCustomIncrementalIngestion.ts`.
 
 ```ts
-const incrementalBuilder = await IncrementalCatalogBuilder.create(env, builder);
+import {
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
+import { incrementalIngestionProvidersExtensionPoint } from '@backstage/plugin-catalog-backend-module-incremental-ingestion/alpha';
 
-// Assuming the token for the API comes from config
-const token = config.getString('myApiClient.token');
+export const catalogModuleCustomIncrementalIngestionProvider =
+  createBackendModule({
+    pluginId: 'catalog',
+    moduleId: 'custom-incremental-ingestion-provider',
+    register(env) {
+      env.registerInit({
+        deps: {
+          incrementalBuilder: incrementalIngestionProvidersExtensionPoint,
+          config: coreServices.rootConfig,
+        },
+        async init({ incrementalBuilder, config }) {
+          // Assuming the token for the API comes from config
+          const token = config.getString('myApiClient.token');
+          const myEntityProvider = new MyIncrementalEntityProvider(token);
 
-const myEntityProvider = new MyIncrementalEntityProvider(token);
+          const options = {
+            // How long should it attempt to read pages from the API in a
+            // single burst? Keep this short. The Incremental Entity Provider
+            // will attempt to read as many pages as it can in this time
+            burstLength: { seconds: 3 },
 
-incrementalBuilder.addIncrementalEntityProvider(myEntityProvider, {
-  // How long should it attempt to read pages from the API in a
-  // single burst? Keep this short. The Incremental Entity Provider
-  // will attempt to read as many pages as it can in this time
-  burstLength: { seconds: 3 },
+            // How long should it wait between bursts?
+            burstInterval: { seconds: 3 },
 
-  // How long should it wait between bursts?
-  burstInterval: { seconds: 3 },
+            // How long should it rest before re-ingesting again?
+            restLength: { day: 1 },
 
-  // How long should it rest before re-ingesting again?
-  restLength: { day: 1 },
+            // Optional back-off configuration - how long should it wait to retry
+            // in the event of an error?
+            backoff: [
+              { seconds: 5 },
+              { seconds: 30 },
+              { minutes: 10 },
+              { hours: 3 },
+            ],
 
-  // Optional back-off configuration - how long should it wait to retry
-  // in the event of an error?
-  backoff: [{ seconds: 5 }, { seconds: 30 }, { minutes: 10 }, { hours: 3 }],
+            // Optional. Use this to prevent removal of entities above a given
+            // percentage. This can be helpful if a data source is flaky and
+            // sometimes returns a successful status, but fewer than expected
+            // assets to add or maintain in the catalog.
+            rejectRemovalsAbovePercentage: 5,
 
-  // Optional. Use this to prevent removal of entities above a given
-  // percentage. This can be helpful if a data source is flaky and
-  // sometimes returns a successful status, but fewer than expected
-  // assets to add or maintain in the catalog.
-  rejectRemovalsAbovePercentage: 5,
+            // Optional. Similar to rejectRemovalsAbovePercentage, except it
+            // applies to complete, 100% failure of a data source. If true,
+            // a data source that returns a successful status but does not
+            // provide any assets to turn into entities will have its empty
+            // data set rejected.
+            rejectEmptySourceCollections: true,
+          };
 
-  // Optional. Similar to rejectRemovalsAbovePercentage, except it
-  // applies to complete, 100% failure of a data source. If true,
-  // a data source that returns a successful status but does not
-  // provide any assets to turn into entities will have its empty
-  // data set rejected.
-  rejectEmptySourceCollections: true,
-});
+          incrementalBuilder.addProvider({
+            provider: myEntityProvider,
+            options,
+          });
+        },
+      });
+    },
+  });
 ```
 
 That's it!!!

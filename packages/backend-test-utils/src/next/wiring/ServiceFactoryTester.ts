@@ -85,17 +85,6 @@ export class ServiceFactoryTester<
   /**
    * Returns the service instance for the subject.
    *
-   * @deprecated Use `getSubject` instead.
-   */
-  async get(
-    ...args: 'root' extends TScope ? [] : [pluginId?: string]
-  ): Promise<TInstances extends 'multiton' ? TService[] : TService> {
-    return this.getSubject(...args);
-  }
-
-  /**
-   * Returns the service instance for the subject.
-   *
    * @remarks
    *
    * If the subject is a plugin scoped service factory a plugin ID

@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React, { PropsWithChildren } from 'react';
-import { CatalogApi } from '@backstage/catalog-client';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { renderHook, waitFor } from '@testing-library/react';
 import {
   DefaultEntityFilters,
@@ -36,10 +37,7 @@ import {
 } from '../../filters';
 import { useMountEffect } from '@react-hookz/web';
 
-const mockQueryEntities: jest.MockedFn<CatalogApi['queryEntities']> = jest.fn();
-const mockCatalogApi: jest.Mocked<Partial<CatalogApi>> = {
-  queryEntities: mockQueryEntities,
-};
+const mockCatalogApi = catalogApiMock.mock();
 
 const mockGetBackstageIdentity: jest.MockedFn<
   IdentityApi['getBackstageIdentity']
@@ -76,7 +74,7 @@ describe('useOwnedEntitiesCount', () => {
   });
 
   it(`shouldn't invoke queryEntities when filters are loading`, async () => {
-    mockQueryEntities.mockResolvedValue({
+    mockCatalogApi.queryEntities.mockResolvedValue({
       items: [],
       totalItems: 10,
       pageInfo: {},
@@ -89,7 +87,7 @@ describe('useOwnedEntitiesCount', () => {
     await waitFor(() => expect(mockGetBackstageIdentity).toHaveBeenCalled());
 
     await expect(
-      waitFor(() => expect(mockQueryEntities).toHaveBeenCalled()),
+      waitFor(() => expect(mockCatalogApi.queryEntities).toHaveBeenCalled()),
     ).rejects.toThrow();
 
     expect(result.current).toEqual({
@@ -104,7 +102,7 @@ describe('useOwnedEntitiesCount', () => {
   });
 
   it(`should properly apply the filters`, async () => {
-    mockQueryEntities.mockResolvedValue({
+    mockCatalogApi.queryEntities.mockResolvedValue({
       items: [],
       totalItems: 10,
       pageInfo: {},
@@ -119,7 +117,7 @@ describe('useOwnedEntitiesCount', () => {
     await waitFor(() => expect(mockGetBackstageIdentity).toHaveBeenCalled());
 
     await waitFor(() =>
-      expect(mockQueryEntities).toHaveBeenCalledWith({
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
         filter: {
           'metadata.namespace': ['a-namespace'],
           'relations.ownedBy': ['user:default/spiderman', 'user:group/a-group'],
@@ -140,7 +138,7 @@ describe('useOwnedEntitiesCount', () => {
   });
 
   it(`should return count 0 without invoking queryEntities if owners filter doesn't have claims in common with logged in user`, async () => {
-    mockQueryEntities.mockResolvedValue({
+    mockCatalogApi.queryEntities.mockResolvedValue({
       items: [],
       totalItems: 10,
       pageInfo: {},
@@ -156,7 +154,7 @@ describe('useOwnedEntitiesCount', () => {
     await waitFor(() => expect(mockGetBackstageIdentity).toHaveBeenCalled());
 
     await expect(
-      waitFor(() => expect(mockQueryEntities).toHaveBeenCalled()),
+      waitFor(() => expect(mockCatalogApi.queryEntities).toHaveBeenCalled()),
     ).rejects.toThrow();
 
     expect(result.current).toEqual({
@@ -171,7 +169,7 @@ describe('useOwnedEntitiesCount', () => {
   });
 
   it(`should send claims in common between owners filter and logged in user`, async () => {
-    mockQueryEntities.mockResolvedValue({
+    mockCatalogApi.queryEntities.mockResolvedValue({
       items: [],
       totalItems: 10,
       pageInfo: {},
@@ -190,7 +188,7 @@ describe('useOwnedEntitiesCount', () => {
     await waitFor(() => expect(mockGetBackstageIdentity).toHaveBeenCalled());
 
     await waitFor(() =>
-      expect(mockQueryEntities).toHaveBeenCalledWith({
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
         filter: {
           'metadata.namespace': ['a-namespace'],
           'relations.ownedBy': ['user:group/a-group'],

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-github-org",
-  "version": "0.1.18-next.3",
+  "version": "0.3.2-next.2",
   "description": "The github-org backend module for the catalog plugin.",
   "backstage": {
     "role": "backend-plugin-module",
@@ -33,9 +33,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/backend-common": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
-    "@backstage/backend-tasks": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/plugin-catalog-backend-module-github": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",

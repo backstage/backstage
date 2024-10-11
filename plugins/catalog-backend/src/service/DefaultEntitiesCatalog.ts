@@ -249,7 +249,18 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
         ]);
       }
     });
-    entitiesQuery = entitiesQuery.orderBy('final_entities.entity_id', 'asc'); // stable sort
+
+    if (!request?.order) {
+      entitiesQuery = entitiesQuery
+        .leftOuterJoin(
+          'refresh_state',
+          'refresh_state.entity_id',
+          'final_entities.entity_id',
+        )
+        .orderBy('refresh_state.entity_ref', 'asc'); // default sort
+    } else {
+      entitiesQuery.orderBy('final_entities.entity_id', 'asc'); // stable sort
+    }
 
     const { limit, offset } = parsePagination(request?.pagination);
     if (limit !== undefined) {
@@ -379,12 +390,20 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     const [prevItemOrderFieldValue, prevItemUid] =
       cursor.orderFieldValues || [];
 
-    const dbQuery = db('search')
-      .join('final_entities', 'search.entity_id', 'final_entities.entity_id')
-      .where('search.key', sortField.field);
+    const dbQuery = db('final_entities').leftOuterJoin('search', qb =>
+      qb
+        .on('search.entity_id', 'final_entities.entity_id')
+        .andOnVal('search.key', sortField.field),
+    );
 
     if (cursor.filter) {
-      parseFilter(cursor.filter, dbQuery, db, false, 'search.entity_id');
+      parseFilter(
+        cursor.filter,
+        dbQuery,
+        db,
+        false,
+        'final_entities.entity_id',
+      );
     }
 
     const normalizedFullTextFilterTerm = cursor.fullTextFilter?.term?.trim();
@@ -410,7 +429,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
               `%${normalizedFullTextFilterTerm.toLocaleLowerCase('en-US')}%`,
             );
           });
-        dbQuery.andWhere('search.entity_id', 'in', matchQuery);
+        dbQuery.andWhere('final_entities.entity_id', 'in', matchQuery);
       }
     }
 
@@ -427,32 +446,65 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
         )
           .orWhere('value', '=', prevItemOrderFieldValue)
           .andWhere(
-            'search.entity_id',
+            'final_entities.entity_id',
             isFetchingBackwards !== isOrderingDescending ? '<' : '>',
             prevItemUid,
           );
       });
     }
 
-    dbQuery
-      .orderBy([
+    if (db.client.config.client === 'pg') {
+      // pg correctly orders by the column value and handling nulls in one go
+      dbQuery.orderBy([
         {
-          column: 'value',
+          column: 'search.value',
+          order: isFetchingBackwards
+            ? invertOrder(sortField.order)
+            : sortField.order,
+          nulls: 'last',
+        },
+        {
+          column: 'final_entities.entity_id',
+          order: isFetchingBackwards
+            ? invertOrder(sortField.order)
+            : sortField.order,
+        },
+      ]);
+    } else {
+      // sqlite and mysql translate the above statement ONLY into "order by (value is null) asc"
+      // no matter what the order is, for some reason, so we have to manually add back the statement
+      // that translates to "order by value <order>" while avoiding to give an order
+      dbQuery.orderBy([
+        {
+          column: 'search.value',
+          order: undefined,
+          nulls: 'last',
+        },
+        {
+          column: 'search.value',
           order: isFetchingBackwards
             ? invertOrder(sortField.order)
             : sortField.order,
         },
         {
-          column: 'search.entity_id',
+          column: 'final_entities.entity_id',
           order: isFetchingBackwards
             ? invertOrder(sortField.order)
             : sortField.order,
         },
-      ])
-      // fetch an extra item to check if there are more items.
-      .limit(isFetchingBackwards ? limit : limit + 1);
+      ]);
+    }
 
-    countQuery.count('search.entity_id', { as: 'count' });
+    if (
+      isQueryEntitiesInitialRequest(request) &&
+      request.offset !== undefined
+    ) {
+      dbQuery.offset(request.offset);
+    }
+    // fetch an extra item to check if there are more items.
+    dbQuery.limit(isFetchingBackwards ? limit : limit + 1);
+
+    countQuery.count('final_entities.entity_id', { as: 'count' });
 
     const [rows, [{ count }]] = await Promise.all([
       limit > 0 ? dbQuery : [],

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React, { PropsWithChildren } from 'react';
-import { CatalogApi } from '@backstage/catalog-client';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { useAllEntitiesCount } from './useAllEntitiesCount';
 import { renderHook, waitFor } from '@testing-library/react';
 import { EntityListProvider, useEntityList } from '../../hooks';
@@ -24,10 +24,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { EntityOwnerFilter } from '../../filters';
 import { useMountEffect } from '@react-hookz/web';
 
-const mockQueryEntities: jest.MockedFn<CatalogApi['queryEntities']> = jest.fn();
-const mockCatalogApi: jest.Mocked<Partial<CatalogApi>> = {
-  queryEntities: mockQueryEntities,
-};
+const mockCatalogApi = catalogApiMock.mock();
 
 jest.mock('@backstage/core-plugin-api', () => {
   const actual = jest.requireActual('@backstage/core-plugin-api');
@@ -44,7 +41,7 @@ describe('useAllEntitiesCount', () => {
   });
 
   it('should return the count', async () => {
-    mockQueryEntities.mockResolvedValue({
+    mockCatalogApi.queryEntities.mockResolvedValue({
       items: [],
       totalItems: 10,
       pageInfo: {},
@@ -72,7 +69,7 @@ describe('useAllEntitiesCount', () => {
     });
 
     await waitFor(() =>
-      expect(mockQueryEntities).toHaveBeenCalledWith({
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
         filter: {
           'relations.ownedBy': ['user:default/owner'],
         },
@@ -83,7 +80,7 @@ describe('useAllEntitiesCount', () => {
   });
 
   it(`shouldn't invoke the endpoint at startup, when filters are missing`, async () => {
-    mockQueryEntities.mockResolvedValue({
+    mockCatalogApi.queryEntities.mockResolvedValue({
       items: [],
       totalItems: 10,
       pageInfo: {},
@@ -98,7 +95,7 @@ describe('useAllEntitiesCount', () => {
     });
 
     await expect(
-      waitFor(() => expect(mockQueryEntities).toHaveBeenCalled()),
+      waitFor(() => expect(mockCatalogApi.queryEntities).toHaveBeenCalled()),
     ).rejects.toThrow();
     expect(result.current).toEqual({ count: 0, loading: false });
   });

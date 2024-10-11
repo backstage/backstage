@@ -85,8 +85,11 @@ export const ConsumedApisCard = (props: {
             APIs.
           </Typography>
           <Typography variant="body2">
-            <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specconsumesapis-optional">
-              Learn how to change this.
+            <Link
+              to="https://backstage.io/docs/features/software-catalog/descriptor-format#specconsumesapis-optional"
+              externalLinkIcon
+            >
+              Learn how to change this
             </Link>
           </Typography>
         </div>

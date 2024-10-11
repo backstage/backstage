@@ -82,7 +82,9 @@ describe('handleMetaRedirects', () => {
       ),
     ).toBeInTheDocument();
     jest.runAllTimers();
-    expect(navigate).toHaveBeenCalledWith('/docs/default/component/testEntity');
+    expect(navigate).toHaveBeenCalledWith(
+      'http://localhost/docs/default/component/testEntity',
+    );
   });
 
   it('should navigate to absolute URL if meta redirect tag is present and not external', async () => {

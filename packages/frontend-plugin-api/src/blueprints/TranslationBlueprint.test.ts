@@ -46,8 +46,9 @@ describe('TranslationBlueprint', () => {
     ).toMatchInlineSnapshot(`
       {
         "$$type": "@backstage/ExtensionDefinition",
+        "T": undefined,
         "attachTo": {
-          "id": "app",
+          "id": "api:app/translations",
           "input": "translations",
         },
         "configSchema": undefined,
@@ -56,7 +57,6 @@ describe('TranslationBlueprint', () => {
         "inputs": {},
         "kind": "translation",
         "name": "blob",
-        "namespace": undefined,
         "output": [
           [Function],
         ],
@@ -76,7 +76,7 @@ describe('TranslationBlueprint', () => {
     });
 
     expect(
-      createExtensionTester(extension).data(
+      createExtensionTester(extension).get(
         TranslationBlueprint.dataRefs.translation,
       ),
     ).toBe(messages);

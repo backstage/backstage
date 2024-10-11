@@ -42,7 +42,6 @@ import {
 import { PermissionIntegrationClient } from './PermissionIntegrationClient';
 import { memoize } from 'lodash';
 import DataLoader from 'dataloader';
-import { Config } from '@backstage/config';
 import {
   AuthService,
   BackstageCredentials,
@@ -51,6 +50,7 @@ import {
   DiscoveryService,
   HttpAuthService,
   LoggerService,
+  RootConfigService,
   UserInfoService,
 } from '@backstage/backend-plugin-api';
 
@@ -97,13 +97,14 @@ const evaluatePermissionRequestBatchSchema: z.ZodSchema<EvaluatePermissionReques
  * {@link createRouter}.
  *
  * @public
+ * @deprecated Please migrate to the new backend system as this will be removed in the future.
  */
 export interface RouterOptions {
   logger: LoggerService;
   discovery: DiscoveryService;
   policy: PermissionPolicy;
   identity?: IdentityApi;
-  config: Config;
+  config: RootConfigService;
   auth?: AuthService;
   httpAuth?: HttpAuthService;
   userInfo?: UserInfoService;
@@ -190,6 +191,7 @@ const handleRequest = async (
  * Creates a new {@link express#Router} which provides the backend API
  * for the permission system.
  *
+ * @deprecated Please migrate to the new backend system as this will be removed in the future.
  * @public
  */
 export async function createRouter(

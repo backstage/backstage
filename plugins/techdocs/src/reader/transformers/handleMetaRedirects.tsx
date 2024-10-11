@@ -16,64 +16,19 @@
 
 import { Transformer } from './transformer';
 import { normalizeUrl } from './rewriteDocLinks';
-import Snackbar from '@material-ui/core/Snackbar';
-import React, { useState } from 'react';
+import React from 'react';
 import { renderReactElement } from './renderReactElement';
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
-
-type RedirectNotificationProps = {
-  handleButtonClick: () => void;
-  message: string;
-  autoHideDuration: number;
-};
-
-const useStyles = makeStyles(theme => ({
-  button: {
-    color: theme.palette.primary.light,
-    textDecoration: 'underline',
-  },
-}));
-const RedirectNotification = ({
-  message,
-  handleButtonClick,
-  autoHideDuration,
-}: RedirectNotificationProps) => {
-  const classes = useStyles();
-  const [open, setOpen] = useState(true);
-  const handleClose = () => {
-    setOpen(prev => !prev);
-  };
-
-  return (
-    <Snackbar
-      open={open}
-      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-      autoHideDuration={autoHideDuration}
-      color="primary"
-      onClose={handleClose}
-      message={message}
-      action={
-        <Button
-          classes={{ root: classes.button }}
-          size="small"
-          onClick={handleButtonClick}
-        >
-          Redirect now
-        </Button>
-      }
-    />
-  );
-};
+import { TechDocsRedirectNotification } from '../components/TechDocsRedirectNotification';
 
 export const handleMetaRedirects = (
   navigate: (to: string) => void,
   entityName: string,
 ): Transformer => {
-  const redirectAfterMs = 4000;
+  const redirectAfterMs = 3000;
+
   const determineRedirectURL = (metaUrl: string) => {
     const normalizedCurrentUrl = normalizeUrl(window.location.href);
-    // If metaUrl is relative, it will be resolved with base href. If it is absolute, it will replace the base href when creating URL object.
+    // When creating URL object, if the metaUrl is relative, it will be resolved with base href. If it is absolute, it will replace the base href.
     const absoluteRedirectObj = new URL(metaUrl, normalizedCurrentUrl);
     const isExternalRedirect =
       absoluteRedirectObj.hostname !== window.location.hostname;
@@ -85,9 +40,8 @@ export const handleMetaRedirects = (
         0,
         indexOfSiteHome + entityName.length,
       );
-      return siteHomePath;
+      return new URL(siteHomePath, normalizedCurrentUrl).href;
     }
-    // The navigate function from dom.tsx is a wrapper around react-router navigate function that helps absolute url redirects.
     return absoluteRedirectObj.href;
   };
 
@@ -97,15 +51,23 @@ export const handleMetaRedirects = (
         const metaContentParameters = elem
           .getAttribute('content')
           ?.split('url=');
+
         if (!metaContentParameters || metaContentParameters.length < 2) {
-          continue;
+          return dom;
         }
+
         const metaUrl = metaContentParameters[1];
         const redirectURL = determineRedirectURL(metaUrl);
+
+        // If the current URL is the same as the redirect URL, do not proceed with the redirect.
+        if (window.location.href === redirectURL) {
+          return dom;
+        }
+
         const container = document.createElement('div');
 
         renderReactElement(
-          <RedirectNotification
+          <TechDocsRedirectNotification
             message="This TechDocs page is no longer maintained. Will automatically redirect to the designated replacement."
             handleButtonClick={() => navigate(redirectURL)}
             autoHideDuration={redirectAfterMs}

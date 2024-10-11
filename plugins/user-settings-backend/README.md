@@ -10,48 +10,16 @@ Install the backend plugin
 
 ```bash
 # From your Backstage root directory
-yarn --cwd packages/backend add @backstage/plugin-user-settings-backend
+yarn --cwd packages/backend add @backstage/plugin-user-settings-backend @backstage/plugin-signals-backend
 ```
-
-### New backend
 
 Add the plugin to your backend in `packages/backend/src/index.ts`:
 
 ```ts
 backend.add(import('@backstage/plugin-user-settings-backend/alpha'));
-```
-
-To get real-time updates of the user settings across different user sessions, you must also install
-the `@backstage/plugin-signals-backend` plugin.
-
-### Old backend
-
-1. Configure the routes by adding a new `userSettings.ts` file in
-   `packages/backend/src/plugins/`:
-
-```ts
-// packages/backend/src/plugins/userSettings.ts
-import { createRouter } from '@backstage/plugin-user-settings-backend';
-import { PluginEnvironment } from '../types';
-
-export default async function createPlugin(env: PluginEnvironment) {
-  return await createRouter({
-    database: env.database,
-    identity: env.identity,
-  });
-}
-```
-
-2. Add the new routes to your backend by modifying `packages/backend/src/index.ts`:
-
-```diff
- // packages/backend/src/index.ts
-+import userSettings from './plugins/userSettings';
- async function main() {
-+  const userSettingsEnv = useHotMemoize(module, () => createEnv('user-settings'));
-   const apiRouter = Router();
-+  apiRouter.use('/user-settings', await userSettings(userSettingsEnv));
-}
+// The signals backend is technically optional but enables real-time update of user
+// settings across different sessions
+backend.add(import('@backstage/plugin-signals-backend'));
 ```
 
 ## Setup app

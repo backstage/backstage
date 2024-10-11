@@ -60,6 +60,9 @@ const roleRules = [
     targetRole: 'frontend-plugin',
     except: [
       // TODO(freben): Address these
+      '@backstage/frontend-defaults',
+      '@backstage/frontend-app-api',
+      '@backstage/frontend-test-utils',
       '@backstage/plugin-api-docs',
       '@backstage/plugin-techdocs-addons-test-utils',
     ],
@@ -73,6 +76,7 @@ const roleRules = [
       '@backstage/app-defaults',
       '@backstage/core-compat-api',
       '@backstage/dev-utils',
+      '@backstage/frontend-defaults',
       '@backstage/frontend-app-api',
       '@backstage/frontend-test-utils',
       '@backstage/test-utils',

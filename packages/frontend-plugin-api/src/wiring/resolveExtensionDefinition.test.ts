@@ -23,10 +23,11 @@ import {
 describe('resolveExtensionDefinition', () => {
   const baseDef = {
     $$type: '@backstage/ExtensionDefinition',
+    T: undefined as any,
     version: 'v2',
     attachTo: { id: '', input: '' },
     disabled: false,
-    override: () => ({} as ExtensionDefinition<unknown>),
+    override: () => ({} as ExtensionDefinition),
   };
 
   it.each([
@@ -39,7 +40,7 @@ describe('resolveExtensionDefinition', () => {
     const resolved = resolveExtensionDefinition({
       ...baseDef,
       ...definition,
-    } as ExtensionDefinition<unknown>);
+    } as ExtensionDefinition);
     expect(resolved.id).toBe(expected);
     expect(String(resolved)).toBe(`Extension{id=${expected}}`);
   });
@@ -49,12 +50,12 @@ describe('resolveExtensionDefinition', () => {
       resolveExtensionDefinition({
         ...baseDef,
         kind: 'k',
-      } as ExtensionDefinition<unknown>),
+      } as ExtensionDefinition),
     ).toThrow(
       'Extension must declare an explicit namespace or name as it could not be resolved from context, kind=k namespace=undefined name=undefined',
     );
     expect(() =>
-      resolveExtensionDefinition(baseDef as ExtensionDefinition<unknown>),
+      resolveExtensionDefinition(baseDef as ExtensionDefinition),
     ).toThrow(
       'Extension must declare an explicit namespace or name as it could not be resolved from context, kind=undefined namespace=undefined name=undefined',
     );
@@ -64,10 +65,11 @@ describe('resolveExtensionDefinition', () => {
 describe('old resolveExtensionDefinition', () => {
   const baseDef = {
     $$type: '@backstage/ExtensionDefinition',
+    T: undefined as any,
     version: 'v1',
     attachTo: { id: '', input: '' },
     disabled: false,
-    override: () => ({} as ExtensionDefinition<unknown>),
+    override: () => ({} as ExtensionDefinition),
   };
 
   it.each([
@@ -80,7 +82,7 @@ describe('old resolveExtensionDefinition', () => {
     const resolved = resolveExtensionDefinition({
       ...baseDef,
       ...definition,
-    } as ExtensionDefinition<unknown>);
+    } as ExtensionDefinition);
     expect(resolved.id).toBe(expected);
     expect(String(resolved)).toBe(`Extension{id=${expected}}`);
   });
@@ -90,12 +92,12 @@ describe('old resolveExtensionDefinition', () => {
       resolveExtensionDefinition({
         ...baseDef,
         kind: 'k',
-      } as ExtensionDefinition<unknown>),
+      } as ExtensionDefinition),
     ).toThrow(
       'Extension must declare an explicit namespace or name as it could not be resolved from context, kind=k namespace=undefined name=undefined',
     );
     expect(() =>
-      resolveExtensionDefinition(baseDef as ExtensionDefinition<unknown>),
+      resolveExtensionDefinition(baseDef as ExtensionDefinition),
     ).toThrow(
       'Extension must declare an explicit namespace or name as it could not be resolved from context, kind=undefined namespace=undefined name=undefined',
     );
@@ -106,98 +108,42 @@ describe('ResolveExtensionId', () => {
   it('should resolve extension IDs correctly', () => {
     type NamedExtension<
       TKind extends string | undefined,
-      TNamespace extends string | undefined,
       TName extends string | undefined,
-    > = ExtensionDefinition<any, any, any, any, TKind, TNamespace, TName>;
-
+    > = ExtensionDefinition<{
+      kind: TKind;
+      name: TName;
+      output: any;
+    }>;
     const id1: 'k:ns' = {} as ResolveExtensionId<
-      NamedExtension<'k', 'ns', undefined>,
-      undefined
+      NamedExtension<'k', undefined>,
+      'ns'
     >;
-    const id2: 'k:n' = {} as ResolveExtensionId<
-      NamedExtension<'k', undefined, 'n'>,
-      undefined
+
+    const id2: 'ns/n' = {} as ResolveExtensionId<
+      NamedExtension<undefined, 'n'>,
+      'ns'
     >;
-    const id3: 'ns/n' = {} as ResolveExtensionId<
-      NamedExtension<undefined, 'ns', 'n'>,
-      undefined
+
+    const id3: 'ns' = {} as ResolveExtensionId<
+      NamedExtension<undefined, undefined>,
+      'ns'
     >;
-    const id4: never = {} as ResolveExtensionId<
-      NamedExtension<'k', undefined, undefined>,
-      undefined
-    >;
-    const id5: 'ns' = {} as ResolveExtensionId<
-      NamedExtension<undefined, 'ns', undefined>,
-      undefined
-    >;
-    const id6: 'n' = {} as ResolveExtensionId<
-      NamedExtension<undefined, undefined, 'n'>,
-      undefined
-    >;
-    const id7: 'k:ns/n' = {} as ResolveExtensionId<
-      NamedExtension<'k', 'ns', 'n'>,
-      undefined
-    >;
-    const id8: 'k:ns2' = {} as ResolveExtensionId<
-      NamedExtension<'k', 'ns', undefined>,
-      'ns2'
-    >;
-    const id9: 'k:ns2/n' = {} as ResolveExtensionId<
-      NamedExtension<'k', undefined, 'n'>,
-      'ns2'
-    >;
-    const ida: 'ns2/n' = {} as ResolveExtensionId<
-      NamedExtension<undefined, 'ns', 'n'>,
-      'ns2'
-    >;
-    const idb: 'k:ns2' = {} as ResolveExtensionId<
-      NamedExtension<'k', undefined, undefined>,
-      'ns2'
-    >;
-    const idc: 'ns2' = {} as ResolveExtensionId<
-      NamedExtension<undefined, 'ns', undefined>,
-      'ns2'
-    >;
-    const idd: 'ns2/n' = {} as ResolveExtensionId<
-      NamedExtension<undefined, undefined, 'n'>,
-      'ns2'
-    >;
-    const ide: 'k:ns2/n' = {} as ResolveExtensionId<
-      NamedExtension<'k', 'ns', 'n'>,
-      'ns2'
+
+    const id4: 'k:ns/n' = {} as ResolveExtensionId<
+      NamedExtension<'k', 'n'>,
+      'ns'
     >;
 
     const invalid1: never = {} as ResolveExtensionId<
-      NamedExtension<string | undefined, 'ns', 'n'>,
-      undefined
-    >;
-    const invalid2: never = {} as ResolveExtensionId<
-      NamedExtension<'k', string | undefined, 'n'>,
-      undefined
-    >;
-    const invalid3: never = {} as ResolveExtensionId<
-      NamedExtension<'k', 'ns', string | undefined>,
-      undefined
+      NamedExtension<'k', string | undefined>,
+      'ns'
     >;
 
-    expect([
-      id1,
-      id2,
-      id3,
-      id4,
-      id5,
-      id6,
-      id7,
-      id8,
-      id9,
-      ida,
-      idb,
-      idc,
-      idd,
-      ide,
-      invalid1,
-      invalid2,
-      invalid3,
-    ]).toBeDefined();
+    const invalid2: never = {} as ResolveExtensionId<
+      NamedExtension<'k', string>,
+      'ns'
+    >;
+
+    expect([id1, id2, id3, id4, invalid1, invalid2]).toBeDefined();
   });
 });

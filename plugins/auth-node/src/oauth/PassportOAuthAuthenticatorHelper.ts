@@ -85,12 +85,13 @@ export class PassportOAuthAuthenticatorHelper {
 
   async authenticate(
     input: OAuthAuthenticatorAuthenticateInput,
+    options?: Record<string, string>,
   ): Promise<OAuthAuthenticatorResult<PassportProfile>> {
     const { result, privateInfo } =
       await PassportHelpers.executeFrameHandlerStrategy<
         PassportOAuthResult,
         PassportOAuthPrivateInfo
-      >(input.req, this.#strategy);
+      >(input.req, this.#strategy, options);
 
     return {
       fullProfile: result.fullProfile as PassportProfile,

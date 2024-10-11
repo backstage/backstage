@@ -105,7 +105,7 @@ export function ScaffolderPageContextMenu(
               <ListItemIcon>
                 <Edit fontSize="small" />
               </ListItemIcon>
-              <ListItemText primary="Template Editor" />
+              <ListItemText primary="Manage Templates" />
             </MenuItem>
           )}
           {onActionsClicked && (

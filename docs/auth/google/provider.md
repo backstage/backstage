@@ -44,9 +44,7 @@ auth:
         clientSecret: ${AUTH_GOOGLE_CLIENT_SECRET}
         signIn:
           resolvers:
-            # typically you would pick one of these
-            - resolver: emailMatchingUserEntityProfileEmail
-            - resolver: emailLocalPartMatchingUserEntityName
+            # See https://backstage.io/docs/auth/google/provider#resolvers for more resolvers
             - resolver: emailMatchingUserEntityAnnotation
 ```
 

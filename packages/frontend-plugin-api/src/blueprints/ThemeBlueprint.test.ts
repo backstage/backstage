@@ -31,8 +31,9 @@ describe('ThemeBlueprint', () => {
       .toMatchInlineSnapshot(`
       {
         "$$type": "@backstage/ExtensionDefinition",
+        "T": undefined,
         "attachTo": {
-          "id": "app",
+          "id": "api:app/app-theme",
           "input": "themes",
         },
         "configSchema": undefined,
@@ -41,7 +42,6 @@ describe('ThemeBlueprint', () => {
         "inputs": {},
         "kind": "theme",
         "name": "light",
-        "namespace": "app",
         "output": [
           [Function],
         ],
@@ -56,7 +56,7 @@ describe('ThemeBlueprint', () => {
     const extension = ThemeBlueprint.make({ params: { theme } });
 
     expect(
-      createExtensionTester(extension).data(ThemeBlueprint.dataRefs.theme),
+      createExtensionTester(extension).get(ThemeBlueprint.dataRefs.theme),
     ).toEqual(theme);
   });
 });

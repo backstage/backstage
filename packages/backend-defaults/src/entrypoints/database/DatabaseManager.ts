@@ -18,7 +18,9 @@ import {
   DatabaseService,
   LifecycleService,
   LoggerService,
-  PluginMetadataService,
+  RootConfigService,
+  RootLifecycleService,
+  RootLoggerService,
 } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { stringifyError } from '@backstage/errors';
@@ -42,27 +44,32 @@ function pluginPath(pluginId: string): string {
  */
 export type DatabaseManagerOptions = {
   migrations?: DatabaseService['migrations'];
-  logger?: LoggerService;
-};
-
-/**
- * An interface that represents the legacy global DatabaseManager implementation.
- * @public
- */
-export type LegacyRootDatabaseService = {
-  forPlugin(pluginId: string): DatabaseService;
+  rootLogger?: RootLoggerService;
+  rootLifecycle?: RootLifecycleService;
 };
 
 /**
  * Testable implementation class for {@link DatabaseManager} below.
  */
-export class DatabaseManagerImpl implements LegacyRootDatabaseService {
+export class DatabaseManagerImpl {
   constructor(
     private readonly config: Config,
     private readonly connectors: Record<string, Connector>,
     private readonly options?: DatabaseManagerOptions,
     private readonly databaseCache: Map<string, Promise<Knex>> = new Map(),
-  ) {}
+    private readonly keepaliveIntervals: Map<
+      string,
+      NodeJS.Timeout
+    > = new Map(),
+  ) {
+    // If a rootLifecycle service was provided, register a shutdown hook to
+    // clean up any database connections.
+    if (options?.rootLifecycle !== undefined) {
+      options.rootLifecycle.addShutdownHook(async () => {
+        await this.shutdown({ logger: options.rootLogger });
+      });
+    }
+  }
 
   /**
    * Generates a PluginDatabaseManager for consumption by plugins.
@@ -73,9 +80,9 @@ export class DatabaseManagerImpl implements LegacyRootDatabaseService {
    */
   forPlugin(
     pluginId: string,
-    deps?: {
+    deps: {
+      logger: LoggerService;
       lifecycle: LifecycleService;
-      pluginMetadata: PluginMetadataService;
     },
   ): PluginDatabaseManager {
     const client = this.getClientType(pluginId).client;
@@ -86,8 +93,43 @@ export class DatabaseManagerImpl implements LegacyRootDatabaseService {
       );
     }
     const getClient = () => this.getDatabase(pluginId, connector, deps);
-    const migrations = { skip: false, ...this.options?.migrations };
-    return { getClient, migrations };
+
+    const skip =
+      this.options?.migrations?.skip ??
+      this.config.getOptionalBoolean(
+        `backend.database.plugin.${pluginId}.skipMigrations`,
+      ) ??
+      this.config.getOptionalBoolean('backend.database.skipMigrations') ??
+      false;
+
+    return { getClient, migrations: { skip } };
+  }
+
+  /**
+   * Destroys all known connections.
+   */
+  private async shutdown(deps?: { logger?: LoggerService }): Promise<void> {
+    const pluginIds = Array.from(this.databaseCache.keys());
+    await Promise.allSettled(
+      pluginIds.map(async pluginId => {
+        // We no longer need to keep connections alive.
+        clearInterval(this.keepaliveIntervals.get(pluginId));
+
+        const connection = await this.databaseCache.get(pluginId);
+        if (connection) {
+          if (connection.client.config.includes('sqlite3')) {
+            return; // sqlite3 does not support destroy, it hangs
+          }
+          await connection.destroy().catch((error: unknown) => {
+            deps?.logger?.error(
+              `Problem closing database connection for ${pluginId}: ${stringifyError(
+                error,
+              )}`,
+            );
+          });
+        }
+      }),
+    );
   }
 
   /**
@@ -127,9 +169,9 @@ export class DatabaseManagerImpl implements LegacyRootDatabaseService {
   private async getDatabase(
     pluginId: string,
     connector: Connector,
-    deps?: {
+    deps: {
+      logger: LoggerService;
       lifecycle: LifecycleService;
-      pluginMetadata: PluginMetadataService;
     },
   ): Promise<Knex> {
     if (this.databaseCache.has(pluginId)) {
@@ -140,34 +182,43 @@ export class DatabaseManagerImpl implements LegacyRootDatabaseService {
     this.databaseCache.set(pluginId, clientPromise);
 
     if (process.env.NODE_ENV !== 'test') {
-      clientPromise.then(client => this.startKeepaliveLoop(pluginId, client));
+      clientPromise.then(client =>
+        this.startKeepaliveLoop(pluginId, client, deps.logger),
+      );
     }
 
     return clientPromise;
   }
 
-  private startKeepaliveLoop(pluginId: string, client: Knex): void {
+  private startKeepaliveLoop(
+    pluginId: string,
+    client: Knex,
+    logger: LoggerService,
+  ): void {
     let lastKeepaliveFailed = false;
 
-    setInterval(() => {
-      // During testing it can happen that the environment is torn down and
-      // this client is `undefined`, but this interval is still run.
-      client?.raw('select 1').then(
-        () => {
-          lastKeepaliveFailed = false;
-        },
-        (error: unknown) => {
-          if (!lastKeepaliveFailed) {
-            lastKeepaliveFailed = true;
-            this.options?.logger?.warn(
-              `Database keepalive failed for plugin ${pluginId}, ${stringifyError(
-                error,
-              )}`,
-            );
-          }
-        },
-      );
-    }, 60 * 1000);
+    this.keepaliveIntervals.set(
+      pluginId,
+      setInterval(() => {
+        // During testing it can happen that the environment is torn down and
+        // this client is `undefined`, but this interval is still run.
+        client?.raw('select 1').then(
+          () => {
+            lastKeepaliveFailed = false;
+          },
+          (error: unknown) => {
+            if (!lastKeepaliveFailed) {
+              lastKeepaliveFailed = true;
+              logger.warn(
+                `Database keepalive failed for plugin ${pluginId}, ${stringifyError(
+                  error,
+                )}`,
+              );
+            }
+          },
+        );
+      }, 60 * 1000),
+    );
   }
 }
 
@@ -184,7 +235,7 @@ export class DatabaseManagerImpl implements LegacyRootDatabaseService {
  * set `prefix` which is used to prefix generated database names if config is
  * not provided.
  */
-export class DatabaseManager implements LegacyRootDatabaseService {
+export class DatabaseManager {
   /**
    * Creates a {@link DatabaseManager} from `backend.database` config.
    *
@@ -192,7 +243,7 @@ export class DatabaseManager implements LegacyRootDatabaseService {
    * @param options - An optional configuration object.
    */
   static fromConfig(
-    config: Config,
+    config: RootConfigService,
     options?: DatabaseManagerOptions,
   ): DatabaseManager {
     const databaseConfig = config.getConfig('backend.database');
@@ -224,31 +275,11 @@ export class DatabaseManager implements LegacyRootDatabaseService {
    */
   forPlugin(
     pluginId: string,
-    deps?: {
+    deps: {
+      logger: LoggerService;
       lifecycle: LifecycleService;
-      pluginMetadata: PluginMetadataService;
     },
   ): PluginDatabaseManager {
     return this.impl.forPlugin(pluginId, deps);
-  }
-}
-
-/**
- * Helper for deleting databases.
- *
- * @public
- * @deprecated Will be removed in a future release.
- */
-export async function dropDatabase(
-  dbConfig: Config,
-  ...databaseNames: string[]
-): Promise<void> {
-  const client = dbConfig.getString('client');
-  const prefix = dbConfig.getOptionalString('prefix') || 'backstage_plugin_';
-
-  if (client === 'pg') {
-    await new PgConnector(dbConfig, prefix).dropDatabase(...databaseNames);
-  } else if (client === 'mysql' || client === 'mysql2') {
-    await new MysqlConnector(dbConfig, prefix).dropDatabase(...databaseNames);
   }
 }

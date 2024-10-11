@@ -15,97 +15,122 @@
  */
 
 import React from 'react';
-import { createCatalogFilterExtension } from './createCatalogFilterExtension';
-import { createSchemaFromZod } from '@backstage/frontend-plugin-api';
+import { CatalogFilterBlueprint } from './blueprints';
 
-const catalogTagCatalogFilter = createCatalogFilterExtension({
+const catalogTagCatalogFilter = CatalogFilterBlueprint.make({
   name: 'tag',
-  loader: async () => {
-    const { EntityTagPicker } = await import('@backstage/plugin-catalog-react');
-    return <EntityTagPicker />;
+  params: {
+    loader: async () => {
+      const { EntityTagPicker } = await import(
+        '@backstage/plugin-catalog-react'
+      );
+      return <EntityTagPicker />;
+    },
   },
 });
 
-const catalogKindCatalogFilter = createCatalogFilterExtension({
+const catalogKindCatalogFilter = CatalogFilterBlueprint.makeWithOverrides({
   name: 'kind',
-  configSchema: createSchemaFromZod(z =>
-    z.object({
-      initialFilter: z.string().default('component'),
-    }),
-  ),
-  loader: async ({ config }) => {
-    const { EntityKindPicker } = await import(
-      '@backstage/plugin-catalog-react'
-    );
-    return <EntityKindPicker initialFilter={config.initialFilter} />;
+  config: {
+    schema: {
+      initialFilter: z => z.string().default('component'),
+    },
+  },
+  factory(originalFactory, { config }) {
+    return originalFactory({
+      loader: async () => {
+        const { EntityKindPicker } = await import(
+          '@backstage/plugin-catalog-react'
+        );
+        return <EntityKindPicker initialFilter={config.initialFilter} />;
+      },
+    });
   },
 });
 
-const catalogTypeCatalogFilter = createCatalogFilterExtension({
+const catalogTypeCatalogFilter = CatalogFilterBlueprint.make({
   name: 'type',
-  loader: async () => {
-    const { EntityTypePicker } = await import(
-      '@backstage/plugin-catalog-react'
-    );
-    return <EntityTypePicker />;
+  params: {
+    loader: async () => {
+      const { EntityTypePicker } = await import(
+        '@backstage/plugin-catalog-react'
+      );
+      return <EntityTypePicker />;
+    },
   },
 });
 
-const catalogModeCatalogFilter = createCatalogFilterExtension({
+const catalogModeCatalogFilter = CatalogFilterBlueprint.makeWithOverrides({
   name: 'mode',
-  configSchema: createSchemaFromZod(z =>
-    z.object({
-      mode: z.enum(['owners-only', 'all']).optional(),
-    }),
-  ),
-  loader: async ({ config }) => {
-    const { EntityOwnerPicker } = await import(
-      '@backstage/plugin-catalog-react'
-    );
-    return <EntityOwnerPicker mode={config.mode} />;
+  config: {
+    schema: {
+      mode: z => z.enum(['owners-only', 'all']).optional(),
+    },
+  },
+  factory(originalFactory, { config }) {
+    return originalFactory({
+      loader: async () => {
+        const { EntityOwnerPicker } = await import(
+          '@backstage/plugin-catalog-react'
+        );
+        return <EntityOwnerPicker mode={config.mode} />;
+      },
+    });
   },
 });
 
-const catalogNamespaceCatalogFilter = createCatalogFilterExtension({
+const catalogNamespaceCatalogFilter = CatalogFilterBlueprint.make({
   name: 'namespace',
-  loader: async () => {
-    const { EntityNamespacePicker } = await import(
-      '@backstage/plugin-catalog-react'
-    );
-    return <EntityNamespacePicker />;
+  params: {
+    loader: async () => {
+      const { EntityNamespacePicker } = await import(
+        '@backstage/plugin-catalog-react'
+      );
+      return <EntityNamespacePicker />;
+    },
   },
 });
 
-const catalogLifecycleCatalogFilter = createCatalogFilterExtension({
+const catalogLifecycleCatalogFilter = CatalogFilterBlueprint.make({
   name: 'lifecycle',
-  loader: async () => {
-    const { EntityLifecyclePicker } = await import(
-      '@backstage/plugin-catalog-react'
-    );
-    return <EntityLifecyclePicker />;
+  params: {
+    loader: async () => {
+      const { EntityLifecyclePicker } = await import(
+        '@backstage/plugin-catalog-react'
+      );
+      return <EntityLifecyclePicker />;
+    },
   },
 });
 
-const catalogProcessingStatusCatalogFilter = createCatalogFilterExtension({
+const catalogProcessingStatusCatalogFilter = CatalogFilterBlueprint.make({
   name: 'processing-status',
-  loader: async () => {
-    const { EntityProcessingStatusPicker } = await import(
-      '@backstage/plugin-catalog-react'
-    );
-    return <EntityProcessingStatusPicker />;
+  params: {
+    loader: async () => {
+      const { EntityProcessingStatusPicker } = await import(
+        '@backstage/plugin-catalog-react'
+      );
+      return <EntityProcessingStatusPicker />;
+    },
   },
 });
 
-const catalogListCatalogFilter = createCatalogFilterExtension({
+const catalogListCatalogFilter = CatalogFilterBlueprint.makeWithOverrides({
   name: 'list',
-  configSchema: createSchemaFromZod(z =>
-    z.object({
-      initialFilter: z.enum(['owned', 'starred', 'all']).default('owned'),
-    }),
-  ),
-  loader: async ({ config }) => {
-    const { UserListPicker } = await import('@backstage/plugin-catalog-react');
-    return <UserListPicker initialFilter={config.initialFilter} />;
+  config: {
+    schema: {
+      initialFilter: z => z.enum(['owned', 'starred', 'all']).default('owned'),
+    },
+  },
+  factory(originalFactory, { config }) {
+    return originalFactory({
+      loader: async () => {
+        const { UserListPicker } = await import(
+          '@backstage/plugin-catalog-react'
+        );
+        return <UserListPicker initialFilter={config.initialFilter} />;
+      },
+    });
   },
 });
 

@@ -23,11 +23,12 @@ import {
   coreServices,
   createBackendModule,
   createExtensionPoint,
+  readSchedulerServiceTaskScheduleDefinitionFromConfig,
 } from '@backstage/backend-plugin-api';
-import { readTaskScheduleDefinitionFromConfig } from '@backstage/backend-tasks';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import {
   DefaultTechDocsCollatorFactory,
+  TechDocsCollatorDocumentTransformer,
   TechDocsCollatorEntityTransformer,
 } from '@backstage/plugin-search-backend-module-techdocs';
 import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
@@ -35,6 +36,9 @@ import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-back
 /** @alpha */
 export interface TechDocsCollatorEntityTransformerExtensionPoint {
   setTransformer(transformer: TechDocsCollatorEntityTransformer): void;
+  setDocumentTransformer(
+    transformer: TechDocsCollatorDocumentTransformer,
+  ): void;
 }
 
 /**
@@ -55,18 +59,27 @@ export default createBackendModule({
   pluginId: 'search',
   moduleId: 'techdocs-collator',
   register(env) {
-    let transformer: TechDocsCollatorEntityTransformer | undefined;
+    let entityTransformer: TechDocsCollatorEntityTransformer | undefined;
+    let documentTransformer: TechDocsCollatorDocumentTransformer | undefined;
 
     env.registerExtensionPoint(
       techdocsCollatorEntityTransformerExtensionPoint,
       {
         setTransformer(newTransformer) {
-          if (transformer) {
+          if (entityTransformer) {
             throw new Error(
               'TechDocs collator entity transformer may only be set once',
             );
           }
-          transformer = newTransformer;
+          entityTransformer = newTransformer;
+        },
+        setDocumentTransformer(newTransformer) {
+          if (documentTransformer) {
+            throw new Error(
+              'TechDocs collator document transformer may only be set once',
+            );
+          }
+          documentTransformer = newTransformer;
         },
       },
     );
@@ -78,7 +91,6 @@ export default createBackendModule({
         auth: coreServices.auth,
         httpAuth: coreServices.httpAuth,
         discovery: coreServices.discovery,
-        tokenManager: coreServices.tokenManager,
         scheduler: coreServices.scheduler,
         catalog: catalogServiceRef,
         indexRegistry: searchIndexRegistryExtensionPoint,
@@ -89,7 +101,6 @@ export default createBackendModule({
         auth,
         httpAuth,
         discovery,
-        tokenManager,
         scheduler,
         catalog,
         indexRegistry,
@@ -101,7 +112,7 @@ export default createBackendModule({
         };
 
         const schedule = config.has('search.collators.techdocs.schedule')
-          ? readTaskScheduleDefinitionFromConfig(
+          ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
               config.getConfig('search.collators.techdocs.schedule'),
             )
           : defaultSchedule;
@@ -110,12 +121,12 @@ export default createBackendModule({
           schedule: scheduler.createScheduledTaskRunner(schedule),
           factory: DefaultTechDocsCollatorFactory.fromConfig(config, {
             discovery,
-            tokenManager,
             auth,
             httpAuth,
             logger,
             catalogClient: catalog,
-            entityTransformer: transformer,
+            entityTransformer,
+            documentTransformer,
           }),
         });
       },

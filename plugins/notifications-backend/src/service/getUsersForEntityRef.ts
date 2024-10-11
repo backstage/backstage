@@ -157,5 +157,5 @@ export const getUsersForEntityRef = async (
     users.push(...u);
   }
 
-  return [...new Set(users)];
+  return [...new Set(users)].filter(Boolean);
 };

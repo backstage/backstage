@@ -1,5 +1,63 @@
 # @backstage/plugin-app-node
 
+## 0.1.26-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.1-next.1
+  - @backstage/config-loader@1.9.1
+
+## 0.1.26-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.1-next.0
+  - @backstage/config-loader@1.9.1
+
+## 0.1.25
+
+### Patch Changes
+
+- d3f79d1: Fixing dependency metadata with the new `@backstage/plugin-app` package
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.0
+  - @backstage/config-loader@1.9.1
+
+## 0.1.25-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.0-next.2
+  - @backstage/config-loader@1.9.1-next.0
+
+## 0.1.25-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.9.0-next.1
+  - @backstage/config-loader@1.9.0
+
+## 0.1.25-next.0
+
+### Patch Changes
+
+- d3f79d1: Fixing dependency metadata with the new `@backstage/plugin-app` package
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.9.0-next.0
+  - @backstage/config-loader@1.9.0
+
+## 0.1.23
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.8.0
+  - @backstage/config-loader@1.9.0
+
 ## 0.1.23-next.3
 
 ### Patch Changes
