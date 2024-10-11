@@ -18,7 +18,7 @@ import { CreatedTemplateFilter } from './types';
 
 /**
  * This function is used to create new template filters in type-safe manner.
- * @public
+ * @alpha
  */
 export const createTemplateFilter = <
   TF extends CreatedTemplateFilter<any, any>,

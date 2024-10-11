@@ -23,7 +23,7 @@ import {
  * This function is used to created new template globals in type-safe manner.
  * @param t - CreatedTemplateGlobalValue | CreatedTemplateGlobalFunction
  * @returns t
- * @public
+ * @alpha
  */
 export const createTemplateGlobal = <
   T extends

@@ -22,15 +22,13 @@ import {
 import { ScmIntegrations } from '@backstage/integration';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
+import { TaskBroker, TemplateAction } from '@backstage/plugin-scaffolder-node';
 import {
+  AutocompleteHandler,
   CreatedTemplateFilter,
   CreatedTemplateGlobal,
   createTemplateFilter,
-  TaskBroker,
-  TemplateAction,
-} from '@backstage/plugin-scaffolder-node';
-import {
-  AutocompleteHandler,
+  createTemplateGlobal,
   scaffolderActionsExtensionPoint,
   scaffolderAutocompleteExtensionPoint,
   scaffolderTaskBrokerExtensionPoint,
@@ -54,7 +52,6 @@ import {
 } from './scaffolder';
 import { createRouter } from './service/router';
 import { templateFilterImpls, templateGlobals } from './util/templating';
-import { createTemplateGlobal } from '@backstage/plugin-scaffolder-node';
 
 /**
  * Scaffolder plugin

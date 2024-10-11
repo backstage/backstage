@@ -37,15 +37,9 @@ import {
 } from '@backstage/catalog-model';
 import { createRouter, DatabaseTaskStore } from '../index';
 import {
-  CreatedTemplateFilter,
-  CreatedTemplateGlobal,
-  createTemplateFilter,
-  createTemplateGlobal,
   TaskBroker,
   TemplateFilter,
-  TemplateFilterSchema,
   TemplateGlobal,
-  TemplateGlobalFunctionSchema,
 } from '@backstage/plugin-scaffolder-node';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 import {
@@ -57,7 +51,13 @@ import {
   mockErrorHandler,
   mockServices,
 } from '@backstage/backend-test-utils';
-import { AutocompleteHandler } from '@backstage/plugin-scaffolder-node/alpha';
+import {
+  AutocompleteHandler,
+  createTemplateFilter,
+  createTemplateGlobal,
+  TemplateFilterSchema,
+  TemplateGlobalFunctionSchema,
+} from '@backstage/plugin-scaffolder-node/alpha';
 import { UrlReaders } from '@backstage/backend-defaults/urlReader';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { EventsService } from '@backstage/plugin-events-node';
@@ -155,7 +155,7 @@ describe.each([
         filter: (base: number, factor: number, addend: number) =>
           base * factor + addend,
       }),
-    ] as CreatedTemplateFilter[],
+    ],
   },
   {
     desc: 'legacy template globals',
@@ -181,7 +181,7 @@ describe.each([
         } as TemplateGlobalFunctionSchema,
         fn: (x: any) => x,
       }),
-    ] as CreatedTemplateGlobal[],
+    ],
   },
 ])(
   'createRouter, $desc',

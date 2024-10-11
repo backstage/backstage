@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createTemplateFilter } from '@backstage/plugin-scaffolder-node';
-import schema from './schema';
-import examples from './examples';
+import { createTemplateFilter } from '@backstage/plugin-scaffolder-node/alpha';
 import { get } from 'lodash';
+import examples from './examples';
+import schema from './schema';
 
 export default createTemplateFilter({
   id: 'pick',

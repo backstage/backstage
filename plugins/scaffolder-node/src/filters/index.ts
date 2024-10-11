@@ -13,12 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export {
-  type TemplateFilter,
-  type TemplateFilterFunction,
-  type TemplateFilterSchema,
-  type TemplateFilterExample,
-  type CreatedTemplateFilter,
-} from './types';
-
-export { createTemplateFilter } from './createTemplateFilter';
+export * from './types';
+export * from './createTemplateFilter';

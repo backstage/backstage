@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TemplateFilterSchema } from '@backstage/plugin-scaffolder-node';
+import { TemplateFilterSchema } from '@backstage/plugin-scaffolder-node/alpha';
 
 export default {
   input: z => z.string().describe('compact entity reference'),

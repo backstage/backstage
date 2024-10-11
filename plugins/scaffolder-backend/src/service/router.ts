@@ -73,8 +73,6 @@ import {
   templateStepReadPermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
 import {
-  CreatedTemplateFilter,
-  CreatedTemplateGlobal,
   TaskBroker,
   TaskStatus,
   TemplateAction,
@@ -83,6 +81,8 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import {
   AutocompleteHandler,
+  CreatedTemplateFilter,
+  CreatedTemplateGlobal,
   WorkspaceProvider,
 } from '@backstage/plugin-scaffolder-node/alpha';
 import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';

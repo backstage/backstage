@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { TemplateFilter } from '@backstage/plugin-scaffolder-node';
 import {
-  TemplateFilter,
   CreatedTemplateGlobal,
-} from '@backstage/plugin-scaffolder-node';
-import { createTemplateFilter } from '@backstage/plugin-scaffolder-node';
+  createTemplateFilter,
+} from '@backstage/plugin-scaffolder-node/alpha';
+import { JsonValue } from '@backstage/types';
 import {
   templateFilterImpls,
   templateFilterMetadata,
@@ -25,7 +26,6 @@ import {
   templateGlobals,
   templateGlobalValueMetadata,
 } from './templating';
-import { JsonValue } from '@backstage/types';
 
 describe('templating utilities', () => {
   describe('api filters', () => {

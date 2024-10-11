@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 import {
+  TemplateFilter,
+  TemplateGlobal,
+} from '@backstage/plugin-scaffolder-node';
+import {
   CreatedTemplateFilter,
   CreatedTemplateGlobal,
   CreatedTemplateGlobalFunction,
   CreatedTemplateGlobalValue,
-  TemplateFilter,
   TemplateFilterSchema,
-  TemplateGlobal,
   TemplateGlobalFunctionSchema,
-} from '@backstage/plugin-scaffolder-node';
+} from '@backstage/plugin-scaffolder-node/alpha';
 import { JsonValue } from '@backstage/types';
 import { Schema } from 'jsonschema';
 import {

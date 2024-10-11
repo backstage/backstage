@@ -23,5 +23,4 @@
 export * from './actions';
 export * from './tasks';
 export * from './files';
-export * from './filters';
-export * from './globals';
+export * from './types';
