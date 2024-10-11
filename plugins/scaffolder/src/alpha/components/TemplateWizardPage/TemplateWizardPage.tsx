@@ -126,7 +126,6 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
           extensions={props.customFieldExtensions}
           formProps={props.formProps}
           layouts={props.layouts}
-          EXPERIMENTAL_formHooks={props.EXPERIMENTAL_formHooks}
         />
       </Page>
     </AnalyticsContext>

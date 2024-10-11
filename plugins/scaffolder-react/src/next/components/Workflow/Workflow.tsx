@@ -26,12 +26,16 @@ import { makeStyles } from '@material-ui/core/styles';
 import { errorApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { useTemplateParameterSchema } from '../../hooks/useTemplateParameterSchema';
 import { Stepper, type StepperProps } from '../Stepper/Stepper';
-import { SecretsContextProvider } from '../../../secrets/SecretsContext';
+import {
+  SecretsContextProvider,
+  useTemplateSecrets,
+} from '../../../secrets/SecretsContext';
 import { useFilteredSchemaProperties } from '../../hooks/useFilteredSchemaProperties';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 import { useTemplateTimeSavedMinutes } from '../../hooks/useTemplateTimeSaved';
 import { JsonValue } from '@backstage/types';
-import { ScaffolderFormHook } from '../../extensions';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { useFormHooks } from '../../../../../scaffolder/src/alpha/hooks/useFormHooks';
 
 const useStyles = makeStyles({
   markdown: {
@@ -53,7 +57,6 @@ export type WorkflowProps = {
   description?: string;
   namespace: string;
   templateName: string;
-  formHooks?: ScaffolderFormHook[];
   components?: {
     ReviewStepComponent?: React.ComponentType<ReviewStepProps>;
   };
@@ -74,7 +77,6 @@ export type WorkflowProps = {
 export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
   const { title, description, namespace, templateName, onCreate, ...props } =
     workflowProps;
-
   const analytics = useAnalytics();
   const styles = useStyles();
   const templateRef = stringifyEntityRef({
@@ -82,17 +84,34 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
     namespace: namespace,
     name: templateName,
   });
-
   const errorApi = useApi(errorApiRef);
-
   const { loading, manifest, error } = useTemplateParameterSchema(templateRef);
-
   const sortedManifest = useFilteredSchemaProperties(manifest);
-
   const minutesSaved = useTemplateTimeSavedMinutes(templateRef);
+  const { setSecrets } = useTemplateSecrets();
+  const formHooks = useFormHooks();
 
   const workflowOnCreate = useCallback(
     async (formState: Record<string, JsonValue>) => {
+      if (manifest?.EXPERIMENTAL_formHooks && formHooks?.size) {
+        // for each of the form hooks, go and call the hook with the context
+        await Promise.all(
+          manifest.EXPERIMENTAL_formHooks.map(async hook => {
+            const formHook = formHooks.get(hook.id);
+            if (!formHook) {
+              // eslint-disable-next-line no-console
+              console.error('Failed to find form hook', hook.id);
+              return;
+            }
+
+            await formHook.fn({
+              setSecrets,
+              input: hook.input,
+            });
+          }),
+        );
+      }
+
       onCreate(formState);
 
       const name =
@@ -101,7 +120,15 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
         value: minutesSaved,
       });
     },
-    [onCreate, analytics, templateName, minutesSaved],
+    [
+      manifest?.EXPERIMENTAL_formHooks,
+      formHooks,
+      onCreate,
+      analytics,
+      templateName,
+      minutesSaved,
+      setSecrets,
+    ],
   );
 
   useEffect(() => {

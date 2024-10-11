@@ -538,6 +538,10 @@ export type TemplateParameterSchema = {
     description?: string;
     schema: JsonObject;
   }>;
+  EXPERIMENTAL_formHooks?: {
+    id: string;
+    input?: JsonObject;
+  }[];
 };
 
 // @public

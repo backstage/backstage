@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 import { AnyApiRef } from '@backstage/core-plugin-api';
-import { JsonValue } from '@backstage/types';
 import { z } from 'zod';
 
 export type ScaffolderFormHookContext<TInput> = {
   input: TInput;
-  setSecret: (key: string, value: JsonValue) => void;
+  setSecrets: (input: Record<string, string>) => void;
 };
 
-export type ScaffolderInitialFormHook<
+export type ScaffolderFormHook<
   TInputSchema extends { [key in string]: (zImpl: typeof z) => z.ZodType } = {},
   TDeps extends { [key in string]: AnyApiRef } = { [key in string]: AnyApiRef },
-  TInput = {
+  TInput extends {} = {
     [key in keyof TInputSchema]: z.infer<ReturnType<TInputSchema[key]>>;
   },
 > = {
@@ -43,11 +42,6 @@ export type ScaffolderInitialFormHook<
   ) => Promise<void>;
 };
 
-export type ScaffolderFormHook<TInput = any> = {
-  id: string;
-  fn: (ctx: ScaffolderFormHookContext<TInput>) => Promise<void>;
-};
-
 /**
  * Method for creating hooks which can be used to collect
  * secrets from the user before submitting to the backend.
@@ -56,7 +50,7 @@ export type ScaffolderFormHook<TInput = any> = {
 export function createScaffolderFormHook<
   TDeps extends { [key in string]: AnyApiRef },
   TInputSchema extends { [key in string]: (zImpl: typeof z) => z.ZodType },
-  TInput = {
+  TInput extends {} = {
     [key in keyof TInputSchema]: z.infer<ReturnType<TInputSchema[key]>>;
   },
 >(options: {
@@ -71,7 +65,7 @@ export function createScaffolderFormHook<
       ? { [key in keyof TDeps]: TDeps[key]['T'] }
       : never,
   ) => Promise<void>;
-}): ScaffolderInitialFormHook<TInputSchema, TDeps, TInput> {
+}): ScaffolderFormHook<TInputSchema, TDeps, TInput> {
   return {
     ...options,
     version: 'v1',
