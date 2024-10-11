@@ -365,7 +365,7 @@ load performance.
 ### Backend Development
 
 The backend development setup does not use any bundling process. It runs a
-Node.js process directly, with only-the-fly transpilation from TypeScript to
+Node.js process directly, with on-the-fly transpilation from TypeScript to
 JavaScript. The transpilation is done with a custom transform based on
 [SWC](https://swc.rs/).
 
@@ -375,7 +375,7 @@ order to store data between restarts, the backend process has an IPC channel
 available to store and restore data from the parent CLI process. The primary
 purpose of this, which is already built-in, is to restore the contents of
 databases when using SQLite for development. You can also use it for your own
-purposes too, with the `DevDataStore` utility exported from the
+purposes, with the `DevDataStore` utility exported from the
 `@backstage/backend-dev-utils` package.
 
 If you want to inspect the running Node.js process, the `--inspect` and
