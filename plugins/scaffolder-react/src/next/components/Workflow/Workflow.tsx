@@ -31,6 +31,7 @@ import { useFilteredSchemaProperties } from '../../hooks/useFilteredSchemaProper
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 import { useTemplateTimeSavedMinutes } from '../../hooks/useTemplateTimeSaved';
 import { JsonValue } from '@backstage/types';
+import { ScaffolderFormHook } from '../../extensions';
 
 const useStyles = makeStyles({
   markdown: {
@@ -52,6 +53,7 @@ export type WorkflowProps = {
   description?: string;
   namespace: string;
   templateName: string;
+  formHooks?: ScaffolderFormHook[];
   components?: {
     ReviewStepComponent?: React.ComponentType<ReviewStepProps>;
   };

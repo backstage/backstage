@@ -173,6 +173,20 @@
                 }
               }
             },
+            "EXPERIMENTAL_formHooks": {
+              "type": "object",
+              "description": "A list of hooks and their inputs that the form should trigger before submitting the job",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "The form hook ID"
+                },
+                "input": {
+                  "type": "object",
+                  "description": "A object describing the inputs to the form hook."
+                }
+              }
+            },
             "steps": {
               "type": "array",
               "description": "A list of steps to execute.",

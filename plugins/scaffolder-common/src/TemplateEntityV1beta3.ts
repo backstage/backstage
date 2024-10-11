@@ -57,6 +57,11 @@ export interface TemplateEntityV1beta3 extends Entity {
     EXPERIMENTAL_recovery?: TemplateRecoveryV1beta3;
 
     /**
+     * Form hooks to be run
+     */
+    EXPERIMENTAL_formHooks?: { id: string; input: JsonObject }[];
+
+    /**
      * This is a JSONSchema or an array of JSONSchema's which is used to render a form in the frontend
      * to collect user input and validate it against that schema. This can then be used in the `steps` part below to template
      * variables passed from the user into each action in the template.

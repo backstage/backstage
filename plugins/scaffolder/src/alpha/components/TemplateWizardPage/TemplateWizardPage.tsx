@@ -36,7 +36,10 @@ import {
 } from '@backstage/plugin-scaffolder-react';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 
-import { Workflow } from '@backstage/plugin-scaffolder-react/alpha';
+import {
+  ScaffolderFormHook,
+  Workflow,
+} from '@backstage/plugin-scaffolder-react/alpha';
 import { JsonValue } from '@backstage/types';
 import { Header, Page } from '@backstage/core-components';
 
@@ -65,6 +68,7 @@ export type TemplateWizardPageProps = {
     title?: string;
     subtitle?: string;
   };
+  EXPERIMENTAL_formHooks?: ScaffolderFormHook[];
 };
 
 export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
@@ -122,6 +126,7 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
           extensions={props.customFieldExtensions}
           formProps={props.formProps}
           layouts={props.layouts}
+          EXPERIMENTAL_formHooks={props.EXPERIMENTAL_formHooks}
         />
       </Page>
     </AnalyticsContext>

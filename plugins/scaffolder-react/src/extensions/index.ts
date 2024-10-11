@@ -13,16 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import {
-  FormFieldExtensionData,
-  ScaffolderFormHook,
-} from '@backstage/plugin-scaffolder-react/alpha';
-
-export interface ScaffolderFormFieldsApi {
-  getFormFields(): Promise<FormFieldExtensionData[]>;
-}
-
-export interface ScaffolderFormHooksApi {
-  getFormHooks(): Promise<ScaffolderFormHook[]>;
-}
+export * from './createScaffolderFieldExtension';
