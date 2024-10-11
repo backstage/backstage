@@ -16,7 +16,7 @@
 
 import fs from 'fs-extra';
 import { paths } from '../../lib/paths';
-import { startBackendExperimental } from '../../lib/experimental/startBackendExperimental';
+import { runBackend } from '../../lib/runner';
 
 interface StartBackendOptions {
   checksEnabled: boolean;
@@ -26,9 +26,8 @@ interface StartBackendOptions {
 }
 
 export async function startBackend(options: StartBackendOptions) {
-  const waitForExit = await startBackendExperimental({
+  const waitForExit = await runBackend({
     entry: 'src/index',
-    checksEnabled: false, // not supported
     inspectEnabled: options.inspectEnabled,
     inspectBrkEnabled: options.inspectBrkEnabled,
     require: options.require,
@@ -48,9 +47,8 @@ export async function startBackendPlugin(options: StartBackendOptions) {
     return;
   }
 
-  const waitForExit = await startBackendExperimental({
+  const waitForExit = await runBackend({
     entry: 'dev/index',
-    checksEnabled: false, // not supported
     inspectEnabled: options.inspectEnabled,
     inspectBrkEnabled: options.inspectBrkEnabled,
     require: options.require,
