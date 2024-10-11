@@ -56,7 +56,6 @@ import {
 } from '@backstage/plugin-scaffolder-node/alpha';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { DatabaseService } from '@backstage/backend-plugin-api';
-
 import { ScmIntegrations } from '@backstage/integration';
 import {
   extractFilterMetadata,
