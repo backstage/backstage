@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
-import {
-  ConfigApi,
-  configApiRef,
-  storageApiRef,
-} from '@backstage/core-plugin-api';
+import { ApiProvider } from '@backstage/core-app-api';
+import { configApiRef, storageApiRef } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
   starredEntitiesApiRef,
@@ -30,9 +26,9 @@ import {
   catalogApiMock,
 } from '@backstage/plugin-catalog-react/testUtils';
 import {
-  MockStorageApi,
   renderInTestApp,
   TestApiRegistry,
+  mockApis,
 } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import React from 'react';
@@ -68,21 +64,17 @@ const mockCatalogApi = catalogApiMock({ entities });
 
 describe('Entity List Docs Grid', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
-  const configApi: ConfigApi = new ConfigReader({
-    organization: {
-      name: 'My Company',
-    },
+  const configApi = mockApis.config({
+    data: { organization: { name: 'My Company' } },
   });
-
-  const storageApi = MockStorageApi.create();
 
   const apiRegistry = TestApiRegistry.from(
     [catalogApiRef, mockCatalogApi],
     [configApiRef, configApi],
-    [storageApiRef, storageApi],
+    [storageApiRef, mockApis.storage()],
     [starredEntitiesApiRef, new MockStarredEntitiesApi()],
   );
 

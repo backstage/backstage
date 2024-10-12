@@ -22,9 +22,9 @@ import {
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import {
-  MockStorageApi,
   renderInTestApp,
   TestApiProvider,
+  mockApis,
 } from '@backstage/test-utils';
 import React from 'react';
 import { rootRouteRef } from '../../../routes';
@@ -52,10 +52,10 @@ describe('TemplateListPage', () => {
           [
             starredEntitiesApiRef,
             new DefaultStarredEntitiesApi({
-              storageApi: MockStorageApi.create(),
+              storageApi: mockApis.storage(),
             }),
           ],
-          [permissionApiRef, {}],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         <TemplateListPage />
@@ -74,10 +74,10 @@ describe('TemplateListPage', () => {
           [
             starredEntitiesApiRef,
             new DefaultStarredEntitiesApi({
-              storageApi: MockStorageApi.create(),
+              storageApi: mockApis.storage(),
             }),
           ],
-          [permissionApiRef, {}],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         <TemplateListPage />
@@ -97,10 +97,10 @@ describe('TemplateListPage', () => {
           [
             starredEntitiesApiRef,
             new DefaultStarredEntitiesApi({
-              storageApi: MockStorageApi.create(),
+              storageApi: mockApis.storage(),
             }),
           ],
-          [permissionApiRef, {}],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         <TemplateListPage />
@@ -119,10 +119,10 @@ describe('TemplateListPage', () => {
           [
             starredEntitiesApiRef,
             new DefaultStarredEntitiesApi({
-              storageApi: MockStorageApi.create(),
+              storageApi: mockApis.storage(),
             }),
           ],
-          [permissionApiRef, {}],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         <TemplateListPage />
@@ -142,10 +142,10 @@ describe('TemplateListPage', () => {
           [
             starredEntitiesApiRef,
             new DefaultStarredEntitiesApi({
-              storageApi: MockStorageApi.create(),
+              storageApi: mockApis.storage(),
             }),
           ],
-          [permissionApiRef, {}],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         <TemplateListPage />
@@ -164,10 +164,10 @@ describe('TemplateListPage', () => {
             [
               starredEntitiesApiRef,
               new DefaultStarredEntitiesApi({
-                storageApi: MockStorageApi.create(),
+                storageApi: mockApis.storage(),
               }),
             ],
-            [permissionApiRef, {}],
+            [permissionApiRef, mockApis.permission()],
           ]}
         >
           <TemplateListPage />
@@ -185,10 +185,10 @@ describe('TemplateListPage', () => {
             [
               starredEntitiesApiRef,
               new DefaultStarredEntitiesApi({
-                storageApi: MockStorageApi.create(),
+                storageApi: mockApis.storage(),
               }),
             ],
-            [permissionApiRef, {}],
+            [permissionApiRef, mockApis.permission()],
           ]}
         >
           <TemplateListPage

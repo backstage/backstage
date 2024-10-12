@@ -13,23 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { createMocks } from 'react-idle-timer';
 // eslint-disable-next-line no-restricted-imports
 import { MessageChannel } from 'worker_threads';
 import { ApiProvider } from '@backstage/core-app-api';
 import { identityApiRef } from '@backstage/core-plugin-api';
-import { TestApiRegistry, renderInTestApp } from '@backstage/test-utils';
+import {
+  TestApiRegistry,
+  renderInTestApp,
+  mockApis,
+} from '@backstage/test-utils';
 import React from 'react';
 
 import { AutoLogout } from './AutoLogout';
 import { cleanup } from '@testing-library/react';
 
-// Mock the signOut function of identityApiRef
-const mockSignOut = jest.fn();
-const mockIdentityApi = {
-  signOut: mockSignOut,
-  getCredentials: jest.fn().mockReturnValue({ token: 'xxx' }),
-};
+const mockIdentityApi = mockApis.identity({ token: 'xxx' });
 const apis = TestApiRegistry.from([identityApiRef, mockIdentityApi]);
 
 describe('AutoLogout', () => {

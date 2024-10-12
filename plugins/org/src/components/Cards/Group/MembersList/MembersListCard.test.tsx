@@ -22,7 +22,11 @@ import {
   StarredEntitiesApi,
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
-import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import {
+  mockApis,
+  renderInTestApp,
+  TestApiProvider,
+} from '@backstage/test-utils';
 import React from 'react';
 import { MembersListCard } from './MembersListCard';
 import {
@@ -184,7 +188,7 @@ describe('MemberTab Test', () => {
           apis={[
             [catalogApiRef, mockedCatalogApiSupportingGroups],
             [starredEntitiesApiRef, mockedStarredEntitiesApi],
-            [permissionApiRef, {}],
+            [permissionApiRef, mockApis.permission()],
           ]}
         >
           <EntityProvider entity={groupA}>
@@ -212,7 +216,7 @@ describe('MemberTab Test', () => {
           apis={[
             [catalogApiRef, mockedCatalogApiSupportingGroups],
             [starredEntitiesApiRef, mockedStarredEntitiesApi],
-            [permissionApiRef, {}],
+            [permissionApiRef, mockApis.permission()],
           ]}
         >
           <EntityProvider entity={groupA}>
@@ -238,7 +242,7 @@ describe('MemberTab Test', () => {
           apis={[
             [catalogApiRef, mockedCatalogApiSupportingGroups],
             [starredEntitiesApiRef, mockedStarredEntitiesApi],
-            [permissionApiRef, {}],
+            [permissionApiRef, mockApis.permission()],
           ]}
         >
           <EntityProvider entity={groupA}>
@@ -273,7 +277,7 @@ describe('MemberTab Test', () => {
           apis={[
             [catalogApiRef, mockedCatalogApiSupportingGroups],
             [starredEntitiesApiRef, mockedStarredEntitiesApi],
-            [permissionApiRef, {}],
+            [permissionApiRef, mockApis.permission()],
           ]}
         >
           <EntityProvider entity={groupA}>
@@ -308,7 +312,7 @@ describe('MemberTab Test', () => {
           apis={[
             [catalogApiRef, mockedCatalogApiSupportingGroups],
             [starredEntitiesApiRef, mockedStarredEntitiesApi],
-            [permissionApiRef, {}],
+            [permissionApiRef, mockApis.permission()],
           ]}
         >
           <EntityProvider entity={groupA}>
@@ -366,7 +370,7 @@ describe('MemberTab Test', () => {
         apis={[
           [catalogApiRef, mockedCatalogApiSupportingGroups],
           [starredEntitiesApiRef, mockedStarredEntitiesApi],
-          [permissionApiRef, {}],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         <EntityProvider entity={groupA}>
@@ -406,7 +410,7 @@ describe('MemberTab Test', () => {
         apis={[
           [catalogApiRef, mockedCatalogApiSupportingGroups],
           [starredEntitiesApiRef, mockedStarredEntitiesApi],
-          [permissionApiRef, {}],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         <EntityProvider entity={groupA}>

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { LocalStorageFeatureFlags, NoOpAnalyticsApi } from '../apis';
+import { LocalStorageFeatureFlags } from '../apis';
 import {
-  MockAnalyticsApi,
+  mockApis,
   renderWithEffects,
   withLogCollector,
   registerMswTestHooks,
@@ -59,7 +59,7 @@ describe('Integration Test', () => {
 
   const noOpAnalyticsApi = createApiFactory(
     analyticsApiRef,
-    new NoOpAnalyticsApi(),
+    mockApis.analytics(),
   );
   const noopErrorApi = createApiFactory(errorApiRef, {
     error$() {
@@ -575,7 +575,7 @@ describe('Integration Test', () => {
   });
 
   it('should track route changes via analytics api', async () => {
-    const mockAnalyticsApi = new MockAnalyticsApi();
+    const mockAnalyticsApi = mockApis.analytics();
     const apis = [createApiFactory(analyticsApiRef, mockAnalyticsApi)];
     const app = new AppManager({
       apis,
@@ -608,26 +608,27 @@ describe('Integration Test', () => {
     );
 
     // Capture initial and subsequent navigation events with expected context.
-    const capturedEvents = mockAnalyticsApi.getEvents();
-    expect(capturedEvents[0]).toMatchObject({
+    expect(mockAnalyticsApi.captureEvent).toHaveBeenCalledTimes(2);
+    expect(mockAnalyticsApi.captureEvent).toHaveBeenNthCalledWith(1, {
       action: 'navigate',
       subject: '/',
+      attributes: {},
       context: {
         extension: 'App',
         pluginId: 'blob',
         routeRef: 'ref-1-2',
       },
     });
-    expect(capturedEvents[1]).toMatchObject({
+    expect(mockAnalyticsApi.captureEvent).toHaveBeenNthCalledWith(2, {
       action: 'navigate',
       subject: '/foo',
+      attributes: {},
       context: {
         extension: 'App',
         pluginId: 'plugin2',
         routeRef: 'ref-2',
       },
     });
-    expect(capturedEvents).toHaveLength(2);
   });
 
   it('should throw some error when the route has duplicate params', async () => {
@@ -877,9 +878,9 @@ describe('Integration Test', () => {
         }),
       }),
     };
-    const discoveryApiMock = {
-      getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7007/app'),
-    };
+    const discoveryApiMock = mockApis.discovery.mock({
+      getBaseUrl: async () => 'http://localhost:7007/app',
+    });
 
     const app = new AppManager({
       icons,

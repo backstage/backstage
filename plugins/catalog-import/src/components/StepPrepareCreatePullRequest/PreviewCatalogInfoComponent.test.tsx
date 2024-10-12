@@ -16,7 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { configApiRef } from '@backstage/core-plugin-api';
-import { MockConfigApi, TestApiProvider } from '@backstage/test-utils';
+import { mockApis, TestApiProvider } from '@backstage/test-utils';
 import { makeStyles } from '@material-ui/core/styles';
 import { render, screen } from '@testing-library/react';
 import { renderHook } from '@testing-library/react';
@@ -46,7 +46,7 @@ const entities: Entity[] = [
   },
 ];
 
-const mockConfigApi = new MockConfigApi({});
+const mockConfigApi = mockApis.config();
 const apis = [[configApiRef, mockConfigApi]] as const;
 
 describe('<PreviewCatalogInfoComponent />', () => {
@@ -122,10 +122,12 @@ describe('<PreviewCatalogInfoComponent />', () => {
         apis={[
           [
             configApiRef,
-            new MockConfigApi({
-              catalog: {
-                import: {
-                  entityFilename: 'anvil.yaml',
+            mockApis.config({
+              data: {
+                catalog: {
+                  import: {
+                    entityFilename: 'anvil.yaml',
+                  },
                 },
               },
             }),
