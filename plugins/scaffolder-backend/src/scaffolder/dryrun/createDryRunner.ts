@@ -28,6 +28,7 @@ import {
   SerializedFile,
   serializeDirectoryContents,
 } from '@backstage/plugin-scaffolder-node';
+import path from 'path';
 import { TemplateActionRegistry } from '../actions';
 import { NunjucksWorkflowRunner } from '../tasks/NunjucksWorkflowRunner';
 import { DecoratedActionsRegistry } from './DecoratedActionsRegistry';
@@ -97,7 +98,7 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
       throw new Error('baseUrl is required');
     }
     const basePath = fileURLToPath(new URL(baseUrl));
-    const contentsPath = basePath.replace('template.yaml', '');
+    const contentsPath = path.dirname(basePath);
     const dryRunId = contentsPath
       .replace(options.workingDirectory, '')
       .replace('dry-run-content-', '');
