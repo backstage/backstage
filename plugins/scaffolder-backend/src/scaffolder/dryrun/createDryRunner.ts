@@ -88,7 +88,7 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
           supportsDryRun: true,
           async handler(ctx) {
             contentPromise = serializeDirectoryContents(ctx.workspacePath);
-            await contentPromise.catch(() => {});
+            await contentPromise.catch(() => { });
           },
         }),
       ]),
