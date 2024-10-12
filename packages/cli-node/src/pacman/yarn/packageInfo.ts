@@ -16,7 +16,7 @@
 import { NotFoundError } from '../errors';
 import { YarnVersion } from './types';
 import { execFile } from '../run';
-import { PackageInfo } from '../pacman';
+import { PackageInfo } from '../../../../cli-node/src/pacman/pacman';
 
 // Possible `yarn info` output
 type YarnInfo = {

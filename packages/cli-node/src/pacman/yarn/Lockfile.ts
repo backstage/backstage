@@ -17,20 +17,9 @@
 import fs from 'fs-extra';
 import { parseSyml, stringifySyml } from '@yarnpkg/parsers';
 import { stringify as legacyStringifyLockfile } from '@yarnpkg/lockfile';
-import { Lockfile, LockfileQueryEntry } from '../pacman';
+import { Lockfile, LockfileData, LockfileQueryEntry } from '../lockfile';
 
 const ENTRY_PATTERN = /^((?:@[^/]+\/)?[^@/]+)@(.+)$/;
-
-type LockfileData = {
-  [entry: string]: {
-    version: string;
-    resolved?: string;
-    integrity?: string /* old */;
-    checksum?: string /* new */;
-    dependencies?: { [name: string]: string };
-    peerDependencies?: { [name: string]: string };
-  };
-};
 
 // the new yarn header is handled out of band of the parsing
 // https://github.com/yarnpkg/berry/blob/0c5974f193a9397630e9aee2b3876cca62611149/packages/yarnpkg-core/sources/Project.ts#L1741-L1746
@@ -56,7 +45,7 @@ const SPECIAL_OBJECT_KEYS = [
   `binaries`,
 ];
 
-export class YarnLockfile implements Lockfile {
+export class YarnLockfile extends Lockfile {
   static async load(path: string) {
     const lockfileContents = await fs.readFile(path, 'utf8');
     return YarnLockfile.parse(lockfileContents);
@@ -102,10 +91,12 @@ export class YarnLockfile implements Lockfile {
   }
 
   private constructor(
-    private readonly packages: Map<string, LockfileQueryEntry[]>,
-    private readonly data: LockfileData,
-    private readonly legacy: boolean = false,
-  ) {}
+    packages: Map<string, LockfileQueryEntry[]>,
+    data: LockfileData,
+    private readonly legacy: boolean,
+  ) {
+    super(packages, data);
+  }
 
   /** Get the entries for a single package in the lockfile */
   get(name: string): LockfileQueryEntry[] | undefined {

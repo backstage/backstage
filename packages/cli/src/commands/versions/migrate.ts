@@ -19,8 +19,8 @@ import { resolve as resolvePath, join as joinPath } from 'path';
 import { OptionValues } from 'commander';
 import { readJson, writeJson } from 'fs-extra';
 import { minimatch } from 'minimatch';
-import { runYarnInstall } from './bump';
 import replace from 'replace-in-file';
+import { detectPackageManager } from '@backstage/cli-node';
 
 declare module 'replace-in-file' {
   export default function (config: {
@@ -45,7 +45,8 @@ export default async (options: OptionValues) => {
   });
 
   if (changed) {
-    await runYarnInstall();
+    const pacman = await detectPackageManager();
+    await pacman.install();
   }
 };
 

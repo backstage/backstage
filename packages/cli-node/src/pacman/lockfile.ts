@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,31 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { parseSyml } from '@yarnpkg/parsers';
 import crypto from 'node:crypto';
-import fs from 'fs-extra';
-
-const ENTRY_PATTERN = /^((?:@[^/]+\/)?[^@/]+)@(.+)$/;
-
-/** @internal */
-type LockfileData = {
-  [entry: string]: {
-    version: string;
-    resolved?: string;
-    integrity?: string /* old */;
-    checksum?: string /* new */;
-    dependencies?: { [name: string]: string };
-    peerDependencies?: { [name: string]: string };
-  };
-};
-
-/** @internal */
-type LockfileQueryEntry = {
-  range: string;
-  version: string;
-  dataKey: string;
-};
 
 /**
  * An entry for a single difference between two {@link Lockfile}s.
@@ -60,79 +36,34 @@ export type LockfileDiff = {
   removed: LockfileDiffEntry[];
 };
 
-// these are special top level yarn keys.
-// https://github.com/yarnpkg/berry/blob/9bd61fbffb83d0b8166a9cc26bec3a58743aa453/packages/yarnpkg-parsers/sources/syml.ts#L9
-const SPECIAL_OBJECT_KEYS = [
-  `__metadata`,
-  `version`,
-  `resolution`,
-  `dependencies`,
-  `peerDependencies`,
-  `dependenciesMeta`,
-  `peerDependenciesMeta`,
-  `binaries`,
-];
+/** @internal */
+export type LockfileQueryEntry = {
+  range: string;
+  version: string;
+  dataKey: string;
+};
 
-/**
- * Represents a package manager lockfile.
- *
- * @public
- */
-export class Lockfile {
-  /**
-   * Load a {@link Lockfile} from a file path.
-   */
-  static async load(path: string): Promise<Lockfile> {
-    const lockfileContents = await fs.readFile(path, 'utf8');
-    return Lockfile.parse(lockfileContents);
-  }
+/** @internal */
+export type LockfileData = {
+  [entry: string]: {
+    version: string;
+    resolved?: string;
+    integrity?: string /* old */;
+    checksum?: string /* new */;
+    dependencies?: { [name: string]: string };
+    peerDependencies?: { [name: string]: string };
+  };
+};
 
-  /**
-   * Parse lockfile contents into a {@link Lockfile}.
-   *
-   * @public
-   */
-  static parse(content: string): Lockfile {
-    let data: LockfileData;
-    try {
-      data = parseSyml(content);
-    } catch (err) {
-      throw new Error(`Failed yarn.lock parse, ${err}`);
-    }
-
-    const packages = new Map<string, LockfileQueryEntry[]>();
-
-    for (const [key, value] of Object.entries(data)) {
-      if (SPECIAL_OBJECT_KEYS.includes(key)) continue;
-
-      const [, name, ranges] = ENTRY_PATTERN.exec(key) ?? [];
-      if (!name) {
-        throw new Error(`Failed to parse yarn.lock entry '${key}'`);
-      }
-
-      let queries = packages.get(name);
-      if (!queries) {
-        queries = [];
-        packages.set(name, queries);
-      }
-      for (let range of ranges.split(/\s*,\s*/)) {
-        if (range.startsWith(`${name}@`)) {
-          range = range.slice(`${name}@`.length);
-        }
-        if (range.startsWith('npm:')) {
-          range = range.slice('npm:'.length);
-        }
-        queries.push({ range, version: value.version, dataKey: key });
-      }
-    }
-
-    return new Lockfile(packages, data);
-  }
-
-  private constructor(
-    private readonly packages: Map<string, LockfileQueryEntry[]>,
-    private readonly data: LockfileData,
+export abstract class Lockfile {
+  protected constructor(
+    protected readonly packages: Map<string, LockfileQueryEntry[]>,
+    protected readonly data: LockfileData,
   ) {}
+
+  abstract get(name: string): LockfileQueryEntry[] | undefined;
+  abstract keys(): IterableIterator<string>;
+  abstract toString(): string;
 
   /**
    * Creates a simplified dependency graph from the lockfile data, where each

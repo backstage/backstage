@@ -15,6 +15,7 @@
  */
 
 import { Yarn } from './yarn';
+import { Lockfile } from './lockfile';
 
 export interface PackageManager {
   name(): string;
@@ -26,23 +27,11 @@ export interface PackageManager {
   supportsBackstageVersionProtocol(): Promise<boolean>;
 }
 
-export interface Lockfile {
-  get(name: string): LockfileQueryEntry[] | undefined;
-  keys(): IterableIterator<string>;
-  toString(): string;
-}
-
 export type PackageInfo = {
   name: string;
   'dist-tags': Record<string, string>;
   versions: string[];
   time: { [version: string]: string };
-};
-
-export type LockfileQueryEntry = {
-  range: string;
-  version: string;
-  dataKey: string;
 };
 
 export async function detectPackageManager(): Promise<PackageManager> {

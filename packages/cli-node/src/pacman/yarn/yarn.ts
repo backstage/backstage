@@ -17,7 +17,11 @@
 import { assertError, ForwardedError } from '@backstage/errors';
 import { execFile as execFileCb } from 'child_process';
 import { promisify } from 'util';
-import { Lockfile, PackageInfo, PackageManager } from '../pacman';
+import {
+  Lockfile,
+  PackageInfo,
+  PackageManager,
+} from '../../../../cli-node/src/pacman/pacman';
 import { fetchPackageInfo } from './packageInfo';
 import { YarnVersion } from './types';
 import { YarnLockfile } from './Lockfile';

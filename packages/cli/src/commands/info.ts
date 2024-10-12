@@ -17,7 +17,7 @@
 import { version as cliVersion } from '../../package.json';
 import os from 'os';
 import { paths } from '../lib/paths';
-import { detectPackageManager } from '../lib/pacman';
+import { detectPackageManager } from '@backstage/cli-node';
 import fs from 'fs-extra';
 
 export default async () => {

@@ -31,7 +31,7 @@ import {
   ReleaseManifest,
 } from '@backstage/release-manifests';
 import { migrateMovedPackages } from './migrate';
-import { detectPackageManager, PackageInfo } from '../../lib/pacman';
+import { detectPackageManager } from '@backstage/cli-node';
 
 if (shouldUseGlobalAgent()) {
   bootstrap();
@@ -235,7 +235,7 @@ export default async (opts: OptionValues) => {
     } else {
       console.log();
 
-      console.log(chalk.yellow(`Skipping yarn install`));
+      console.log(chalk.yellow(`Skipping ${pacman.name()} install`));
     }
 
     if (!opts.skipMigrate) {
@@ -286,6 +286,7 @@ export default async (opts: OptionValues) => {
     }
 
     if (supportsBackstageVersionProtocol) {
+      // TODO not sure how to best make this message generic
       console.log();
       console.log(
         chalk.blue(
