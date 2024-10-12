@@ -28,7 +28,7 @@ export async function fetchPackageInfo(
   name: string,
   yarnVersion: YarnVersion,
 ): Promise<PackageInfo> {
-  const cmd = yarnVersion === 'classic' ? ['info'] : ['npm', 'info'];
+  const cmd = yarnVersion.codename === 'classic' ? ['info'] : ['npm', 'info'];
   try {
     const { stdout: output } = await execFile(
       'yarn',
@@ -42,7 +42,7 @@ export async function fetchPackageInfo(
       );
     }
 
-    if (yarnVersion === 'berry') {
+    if (yarnVersion.codename === 'berry') {
       return JSON.parse(output) as PackageInfo;
     }
 
@@ -53,7 +53,7 @@ export async function fetchPackageInfo(
 
     return info.data as PackageInfo;
   } catch (error) {
-    if (yarnVersion === 'classic') {
+    if (yarnVersion.codename === 'classic') {
       throw error;
     }
 

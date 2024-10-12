@@ -13,4 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export type YarnVersion = 'classic' | 'berry';
+export type YarnVersion = {
+  codename: 'classic' | 'berry';
+  version: string;
+};

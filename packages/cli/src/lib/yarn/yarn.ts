@@ -27,14 +27,20 @@ import { runYarnInstall } from './install';
 
 const execFile = promisify(execFileCb);
 
-const versions = new Map<string, Promise<YarnVersion>>();
-
 export class Yarn implements PackageManager {
   private constructor(private readonly yarnVersion: YarnVersion) {}
 
   static async create(dir?: string): Promise<Yarn> {
     const yarnVersion = await detectYarnVersion(dir);
     return new Yarn(yarnVersion);
+  }
+
+  name() {
+    return 'yarn';
+  }
+
+  version() {
+    return this.yarnVersion.version;
   }
 
   async install(): Promise<void> {
@@ -58,6 +64,8 @@ export class Yarn implements PackageManager {
   }
 }
 
+const versions = new Map<string, Promise<YarnVersion>>();
+
 function detectYarnVersion(dir?: string): Promise<YarnVersion> {
   const cwd = dir ?? process.cwd();
   if (versions.has(cwd)) {
@@ -70,7 +78,11 @@ function detectYarnVersion(dir?: string): Promise<YarnVersion> {
         shell: true,
         cwd,
       });
-      return stdout.trim().startsWith('1.') ? 'classic' : 'berry';
+      const versionString = stdout.trim();
+      const codename: 'classic' | 'berry' = versionString.startsWith('1.')
+        ? 'classic'
+        : 'berry';
+      return { version: versionString, codename };
     } catch (error) {
       assertError(error);
       if ('stderr' in error) {

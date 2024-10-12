@@ -17,6 +17,8 @@
 import { Yarn } from './yarn';
 
 export interface PackageManager {
+  name(): string;
+  version(): string;
   install(): Promise<void>;
   runScript(scriptName: string): Promise<void>;
   fetchPackageInfo(name: string): Promise<PackageInfo>;
