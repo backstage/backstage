@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { JsonValue } from '@backstage/types';
 import { z } from 'zod';
+import { TemplateFilter } from '../types';
 
 /** @alpha */
 export type TemplateFilterSchema = {
@@ -48,15 +48,16 @@ export type TemplateFilterFunction<T extends TemplateFilterSchema> =
 
 /** @alpha */
 export type CreatedTemplateFilter<
-  TSchema extends TemplateFilterSchema | undefined = undefined,
+  TSchema extends TemplateFilterSchema | undefined | unknown = unknown,
   TFilterSchema extends TSchema extends TemplateFilterSchema
     ? TemplateFilterFunction<TSchema>
-    : (
-        arg: JsonValue,
-        ...rest: JsonValue[]
-      ) => JsonValue | undefined = TSchema extends TemplateFilterSchema
+    : TSchema extends unknown
+    ? unknown
+    : TemplateFilter = TSchema extends TemplateFilterSchema
     ? TemplateFilterFunction<TSchema>
-    : (arg: JsonValue, ...rest: JsonValue[]) => JsonValue | undefined,
+    : TSchema extends unknown
+    ? unknown
+    : TemplateFilter,
 > = {
   id: string;
   description?: string;
