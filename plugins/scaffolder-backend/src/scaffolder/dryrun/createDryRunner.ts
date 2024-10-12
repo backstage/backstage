@@ -36,6 +36,8 @@ import fs from 'fs-extra';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import type { UserEntity } from '@backstage/catalog-model';
+import { v4 as uuid } from 'uuid';
+
 
 interface DryRunInput {
   spec: TaskSpec;
@@ -99,9 +101,7 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
     }
     const basePath = fileURLToPath(new URL(baseUrl));
     const contentsPath = path.dirname(basePath);
-    const dryRunId = contentsPath
-      .replace(options.workingDirectory, '')
-      .replace('dry-run-content-', '');
+    const dryRunId = uuid()
 
     const log = new Array<{ body: JsonObject }>();
 
