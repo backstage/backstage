@@ -33,6 +33,7 @@ import { ExamplesTable } from '../ExamplesTable/ExamplesTable';
 import { Expanded, SchemaRenderContext } from '../RenderSchema';
 import { RenderSchema } from '../RenderSchema/RenderSchema';
 import { StyleClasses, Xlate } from './types';
+import { renderLink } from './navigation';
 
 const FilterDetailContent = ({
   t,
@@ -142,31 +143,31 @@ export const TemplateFilters = ({
     <Box data-testid="no-filters" sx={{ display: 'none' }} />
   ) : (
     <div data-testid="filters">
-      <Typography variant="h3" component="h1" className={classes.code}>
-        {t('templateExtensions.filters.title')}
-      </Typography>
-      {Object.entries(filters).map(([filterName, filter]) => (
-        <Box pb={4} key={filterName} data-testid={filterName}>
-          <Typography
-            id={`filter_${filterName}`}
-            variant="h4"
-            component="h2"
-            className={classes.code}
-          >
-            {filterName}
-          </Typography>
-          <Link
-            className={classes.link}
-            to={`${linkPage}#filter_${filterName}`}
-            {...(linkPage === ''
-              ? {}
-              : { target: '_blank', rel: 'noopener noreferrer' })}
-          >
-            <LinkIcon />
-          </Link>
-          <FilterDetailContent {...{ t, classes, filterName, filter }} />
-        </Box>
-      ))}
+      {Object.entries(filters).map(([filterName, filter]) => {
+        const link = renderLink('filter', filterName);
+        return (
+          <Box pb={4} key={filterName} data-testid={filterName}>
+            <Typography
+              id={link}
+              variant="h4"
+              component="h2"
+              className={classes.code}
+            >
+              {filterName}
+            </Typography>
+            <Link
+              className={classes.link}
+              to={`${linkPage}#${link}`}
+              {...(linkPage === ''
+                ? {}
+                : { target: '_blank', rel: 'noopener noreferrer' })}
+            >
+              <LinkIcon />
+            </Link>
+            <FilterDetailContent {...{ t, classes, filterName, filter }} />
+          </Box>
+        );
+      })}
     </div>
   );
 };

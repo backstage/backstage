@@ -41,12 +41,18 @@ import {
   ScaffolderPageContextMenu,
   ScaffolderPageContextMenuProps,
 } from '@backstage/plugin-scaffolder-react/alpha';
+import Tab from '@material-ui/core/Tab';
+import Tabs from '@material-ui/core/Tabs';
 import { every, isEmpty } from 'lodash';
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
+import { parseLink, TabKey } from './navigation';
 import { TemplateFilters } from './TemplateFilters';
-import { TemplateGlobals } from './TemplateGlobals';
+import {
+  TemplateGlobalFunctions,
+  TemplateGlobalValues,
+} from './TemplateGlobals';
 
 const useStyles = makeStyles(theme => ({
   code: {
@@ -102,9 +108,17 @@ export const TemplateExtensionsPageContent = ({
     });
   }, [api]);
 
+  const [tab, selectTab] = React.useState<TabKey>('filter');
+  const handleTab = (_event: any, tabKey: TabKey) => selectTab(tabKey);
+
   useEffect(() => {
     if (value && window.location.hash) {
-      document.querySelector(window.location.hash)?.scrollIntoView();
+      try {
+        selectTab(parseLink(window.location.hash).tab);
+        document.querySelector(window.location.hash)?.scrollIntoView();
+      } catch (e) {
+        // ignore bad link
+      }
     }
   }, [value]);
 
@@ -138,14 +152,37 @@ export const TemplateExtensionsPageContent = ({
 
   return (
     <>
-      <TemplateFilters
-        linkPage={effectiveLinkPage}
-        {...{ t, classes, filters }}
-      />
-      <TemplateGlobals
-        linkPage={effectiveLinkPage}
-        {...{ t, classes, globals }}
-      />
+      <Tabs value={tab} onChange={handleTab} centered>
+        <Tab value="filter" label={t('templateExtensions.filters.title')} />
+        <Tab
+          value="function"
+          label={t('templateExtensions.globals.functions.title')}
+        />
+        <Tab
+          value="value"
+          label={t('templateExtensions.globals.values.title')}
+        />
+      </Tabs>
+      {tab === 'filter' && (
+        <TemplateFilters
+          linkPage={effectiveLinkPage}
+          {...{ t, classes, filters }}
+        />
+      )}
+      {tab === 'function' && (
+        <TemplateGlobalFunctions
+          functions={globals.functions}
+          linkPage={effectiveLinkPage}
+          {...{ t, classes }}
+        />
+      )}
+      {tab === 'value' && (
+        <TemplateGlobalValues
+          values={globals.values}
+          linkPage={effectiveLinkPage}
+          {...{ t, classes }}
+        />
+      )}
     </>
   );
 };
