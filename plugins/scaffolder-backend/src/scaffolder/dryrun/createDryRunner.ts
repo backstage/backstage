@@ -38,7 +38,6 @@ import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import type { UserEntity } from '@backstage/catalog-model';
 import { v4 as uuid } from 'uuid';
 
-
 interface DryRunInput {
   spec: TaskSpec;
   templateInfo: TemplateInfo;
@@ -88,7 +87,7 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
           supportsDryRun: true,
           async handler(ctx) {
             contentPromise = serializeDirectoryContents(ctx.workspacePath);
-            await contentPromise.catch(() => { });
+            await contentPromise.catch(() => {});
           },
         }),
       ]),
@@ -101,7 +100,7 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
     }
     const basePath = fileURLToPath(new URL(baseUrl));
     const contentsPath = path.dirname(basePath);
-    const dryRunId = uuid()
+    const dryRunId = uuid();
 
     const log = new Array<{ body: JsonObject }>();
 
