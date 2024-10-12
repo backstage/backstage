@@ -23,6 +23,8 @@ import { ScmAuthApi } from '@backstage/integration-react';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { SubmitHandler } from 'react-hook-form';
 import { TextFieldProps } from '@material-ui/core/TextField/TextField';
+import { TranslationFunction } from '@backstage/core-plugin-api/alpha';
+import { TranslationRef } from '@backstage/frontend-plugin-api';
 import { UnpackNestedValue } from 'react-hook-form';
 import { UseFormProps } from 'react-hook-form';
 import { UseFormReturn } from 'react-hook-form';
@@ -140,11 +142,13 @@ export { catalogImportPlugin };
 export { catalogImportPlugin as plugin };
 
 // Warning: (ae-forgotten-export) The symbol "StepperProvider" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "catalogImportTranslationRef" needs to be exported by the entry point index.d.ts
 //
 // @public
 export function defaultGenerateStepper(
   flow: ImportFlows,
   defaults: StepperProvider,
+  t: TranslationFunction<typeof catalogImportTranslationRef.T>,
 ): StepperProvider;
 
 // @public
