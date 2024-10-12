@@ -14,36 +14,33 @@
  * limitations under the License.
  */
 
-import { notFoundHandler } from '@backstage/backend-common';
 import {
+  AuthService,
   DatabaseService,
+  HttpAuthService,
+  LoggerService,
   resolvePackagePath,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
 import { AppConfig } from '@backstage/config';
-import helmet from 'helmet';
+import { ConfigSchema } from '@backstage/config-loader';
+import { AuthenticationError, InputError } from '@backstage/errors';
 import express from 'express';
 import Router from 'express-promise-router';
 import fs from 'fs-extra';
+import helmet from 'helmet';
 import { resolve as resolvePath } from 'path';
 import {
   createStaticAssetMiddleware,
   findStaticAssets,
   StaticAssetsStore,
 } from '../lib/assets';
+import { injectConfig, readFrontendConfig } from '../lib/config';
 import {
   CACHE_CONTROL_MAX_CACHE,
   CACHE_CONTROL_NO_CACHE,
   CACHE_CONTROL_REVALIDATE_CACHE,
 } from '../lib/headers';
-import { ConfigSchema } from '@backstage/config-loader';
-import {
-  AuthService,
-  HttpAuthService,
-  LoggerService,
-} from '@backstage/backend-plugin-api';
-import { AuthenticationError, InputError } from '@backstage/errors';
-import { injectConfig, readFrontendConfig } from '../lib/config';
 
 // express uses mime v1 while we only have types for mime v2
 type Mime = { lookup(arg0: string): string };
@@ -299,7 +296,6 @@ async function createEntryPointRouter({
   if (staticFallbackHandler) {
     staticRouter.use(staticFallbackHandler);
   }
-  staticRouter.use(notFoundHandler());
 
   router.use('/static', staticRouter);
   router.use(

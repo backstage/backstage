@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
+/**
+ * @deprecated Please migrate to the new backend system as this will be removed in the future.
+ */
 export { appPlugin as default } from './service/appPlugin';
