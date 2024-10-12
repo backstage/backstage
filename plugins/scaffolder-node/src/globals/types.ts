@@ -15,6 +15,7 @@
  */
 import { JsonValue } from '@backstage/types';
 import { z } from 'zod';
+import { TemplateGlobal } from '../types';
 
 /** @alpha */
 export type CreatedTemplateGlobalValue<T extends JsonValue = JsonValue> = {
@@ -53,24 +54,28 @@ export type TemplateGlobalFunctionExample = {
 
 /** @alpha */
 export type CreatedTemplateGlobalFunction<
-  S extends TemplateGlobalFunctionSchema | undefined = undefined,
-  F extends S extends TemplateGlobalFunctionSchema
-    ? SchemaCompliantTemplateGlobalFunction<S>
-    : (
-        arg: JsonValue,
-        ...rest: JsonValue[]
-      ) => JsonValue = S extends TemplateGlobalFunctionSchema
-    ? SchemaCompliantTemplateGlobalFunction<S>
-    : (...args: JsonValue[]) => JsonValue,
+  TSchema extends TemplateGlobalFunctionSchema | undefined | unknown = unknown,
+  TFilterSchema extends TSchema extends TemplateGlobalFunctionSchema
+    ? SchemaCompliantTemplateGlobalFunction<TSchema>
+    : TSchema extends unknown
+    ? unknown
+    : Exclude<
+        TemplateGlobal,
+        JsonValue
+      > = TSchema extends TemplateGlobalFunctionSchema
+    ? SchemaCompliantTemplateGlobalFunction<TSchema>
+    : TSchema extends unknown
+    ? unknown
+    : Exclude<TemplateGlobal, JsonValue>,
 > = {
   id: string;
   description?: string;
   examples?: TemplateGlobalFunctionExample[];
-  schema?: S;
-  fn: F;
+  schema?: TSchema;
+  fn: TFilterSchema;
 };
 
 /** @alpha */
 export type CreatedTemplateGlobal =
-  | CreatedTemplateGlobalValue<any>
-  | CreatedTemplateGlobalFunction<any, any>;
+  | CreatedTemplateGlobalValue
+  | CreatedTemplateGlobalFunction<unknown, unknown>;

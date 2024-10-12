@@ -27,10 +27,8 @@ import {
  */
 export const createTemplateGlobal = <
   T extends
-    | CreatedTemplateGlobalValue<any>
-    | CreatedTemplateGlobalFunction<any, any>,
+    | CreatedTemplateGlobalValue
+    | CreatedTemplateGlobalFunction<unknown, unknown>,
 >(
   t: T,
-): T extends CreatedTemplateGlobalValue
-  ? CreatedTemplateGlobalValue<any>
-  : CreatedTemplateGlobalFunction<any> => t as any;
+): T => t;

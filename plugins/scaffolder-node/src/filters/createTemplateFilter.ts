@@ -21,9 +21,7 @@ import { CreatedTemplateFilter } from './types';
  * @alpha
  */
 export const createTemplateFilter = <
-  TF extends CreatedTemplateFilter<any, any>,
+  TF extends CreatedTemplateFilter<unknown, unknown>,
 >(
   filter: TF,
-): CreatedTemplateFilter<any, any> => {
-  return filter;
-};
+): CreatedTemplateFilter<unknown, unknown> => filter;
