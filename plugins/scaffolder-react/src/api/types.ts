@@ -300,7 +300,7 @@ export interface ScaffolderApi {
   /**
    * Returns a structure describing the available templating extensions.
    */
-  listTemplateExtensions(): Promise<ListTemplateExtensionsResponse>;
+  listTemplateExtensions?(): Promise<ListTemplateExtensionsResponse>;
 
   streamLogs(options: ScaffolderStreamLogsOptions): Observable<LogEvent>;
 

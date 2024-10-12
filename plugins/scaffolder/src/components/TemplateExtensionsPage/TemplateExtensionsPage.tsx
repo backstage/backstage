@@ -89,7 +89,17 @@ export const TemplateExtensionsPageContent = ({
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const { loading, value, error } = useAsync(async () => {
-    return api.listTemplateExtensions();
+    if (api.listTemplateExtensions) {
+      return api.listTemplateExtensions();
+    }
+    // eslint-disable-next-line no-console
+    console.warn(
+      'listTemplateExtensions is not implemented in the scaffolderApi; please make sure to implement this method.',
+    );
+    return Promise.resolve({
+      filters: {},
+      globals: { functions: {}, values: {} },
+    });
   }, [api]);
 
   useEffect(() => {

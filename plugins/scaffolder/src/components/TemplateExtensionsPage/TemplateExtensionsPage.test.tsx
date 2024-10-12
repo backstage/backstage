@@ -25,6 +25,8 @@ import React from 'react';
 import { rootRouteRef } from '../../routes';
 import { TemplateExtensionsPage } from './TemplateExtensionsPage';
 
+const listTemplateExtensions = jest.fn();
+
 const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
   scaffold: jest.fn(),
   cancelTask: jest.fn(),
@@ -33,7 +35,7 @@ const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
   getTask: jest.fn(),
   streamLogs: jest.fn(),
   listActions: jest.fn(),
-  listTemplateExtensions: jest.fn(),
+  listTemplateExtensions,
   listTasks: jest.fn(),
   autocomplete: jest.fn(),
 };
@@ -62,9 +64,7 @@ const emptyExtensions: ListTemplateExtensionsResponse = {
 
 describe('TemplateExtensionsPage', () => {
   it('renders with error response', async () => {
-    scaffolderApiMock.listTemplateExtensions.mockRejectedValue(
-      new Error('contrived'),
-    );
+    listTemplateExtensions.mockRejectedValue(new Error('contrived'));
     const { getByTestId } = await r();
 
     const empty = getByTestId('empty');
@@ -73,14 +73,14 @@ describe('TemplateExtensionsPage', () => {
     expect(within(empty).getByText('contrived')).toBeInTheDocument();
   });
   it('renders with no extensions', async () => {
-    scaffolderApiMock.listTemplateExtensions.mockResolvedValue(emptyExtensions);
+    listTemplateExtensions.mockResolvedValue(emptyExtensions);
     const { getByTestId } = await r();
 
     expect(getByTestId('empty')).toBeInTheDocument();
   });
   describe('renders filters', () => {
     it('renders filter without metadata', async () => {
-      scaffolderApiMock.listTemplateExtensions.mockResolvedValue({
+      listTemplateExtensions.mockResolvedValue({
         ...emptyExtensions,
         filters: {
           bar: {},
@@ -114,7 +114,7 @@ describe('TemplateExtensionsPage', () => {
       expect(queryByTestId('root_bar.output')).not.toBeInTheDocument();
     });
     it('renders input/output with empty filter schema', async () => {
-      scaffolderApiMock.listTemplateExtensions.mockResolvedValue({
+      listTemplateExtensions.mockResolvedValue({
         ...emptyExtensions,
         filters: {
           foo: {
@@ -150,7 +150,7 @@ describe('TemplateExtensionsPage', () => {
       expect(getByTestId('root_foo.output')).toBeInTheDocument();
     });
     it('renders fully specified filter metadata', async () => {
-      scaffolderApiMock.listTemplateExtensions.mockResolvedValue({
+      listTemplateExtensions.mockResolvedValue({
         ...emptyExtensions,
         filters: {
           foo: {
@@ -203,7 +203,7 @@ describe('TemplateExtensionsPage', () => {
       expect(within(foo).getByTestId('root_foo.output')).toBeInTheDocument();
     });
     it('renders multiple args', async () => {
-      scaffolderApiMock.listTemplateExtensions.mockResolvedValue({
+      listTemplateExtensions.mockResolvedValue({
         ...emptyExtensions,
         filters: {
           baz: {
@@ -249,7 +249,7 @@ describe('TemplateExtensionsPage', () => {
       expect(within(baz).getByTestId('root_baz.output')).toBeInTheDocument();
     });
     it('renders examples', async () => {
-      scaffolderApiMock.listTemplateExtensions.mockResolvedValue({
+      listTemplateExtensions.mockResolvedValue({
         ...emptyExtensions,
         filters: {
           wut: {
@@ -282,7 +282,7 @@ describe('TemplateExtensionsPage', () => {
   });
   describe('renders global', () => {
     it('renders global functions', async () => {
-      scaffolderApiMock.listTemplateExtensions.mockResolvedValue({
+      listTemplateExtensions.mockResolvedValue({
         ...emptyExtensions,
         globals: {
           ...emptyExtensions.globals,
@@ -357,7 +357,7 @@ describe('TemplateExtensionsPage', () => {
     });
     it('renders global values', async () => {
       const msvValue = ['foo', 'bar', 'baz'];
-      scaffolderApiMock.listTemplateExtensions.mockResolvedValue({
+      listTemplateExtensions.mockResolvedValue({
         ...emptyExtensions,
         globals: {
           ...emptyExtensions.globals,
