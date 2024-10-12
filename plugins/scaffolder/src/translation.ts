@@ -211,7 +211,7 @@ export const scaffolderTranslationRef = createTranslationRef({
           'There are no template extensions available or there was an issue communicating with the backend.',
       },
       filters: {
-        title: 'Template filters',
+        title: 'Filters',
         metadataAbsent: 'Filter metadata unavailable',
         schema: {
           input: 'Input',
@@ -222,7 +222,7 @@ export const scaffolderTranslationRef = createTranslationRef({
       },
       globals: {
         functions: {
-          title: 'Template global functions',
+          title: 'Functions',
           schema: {
             arguments: 'Arguments',
             output: 'Output',
@@ -230,7 +230,7 @@ export const scaffolderTranslationRef = createTranslationRef({
           examples: 'Examples',
         },
         values: {
-          title: 'Template global values',
+          title: 'Values',
         },
       },
     },

@@ -26,13 +26,13 @@ import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import LinkIcon from '@material-ui/icons/Link';
-import { isEmpty } from 'lodash';
 import React, { useState } from 'react';
 import { scaffolderTranslationRef } from '../../translation';
 import { ExamplesTable } from '../ExamplesTable/ExamplesTable';
 import { Expanded, SchemaRenderContext } from '../RenderSchema';
 import { RenderSchema } from '../RenderSchema/RenderSchema';
-import { StyleClasses, Xlate } from './types';
+import { renderLink } from './navigation';
+import { Xlate } from './types';
 
 const FunctionDetailContent = ({
   classes,
@@ -114,7 +114,7 @@ const FunctionDetailContent = ({
   );
 };
 
-const TemplateGlobalFunctions = ({
+export const TemplateGlobalFunctions = ({
   classes,
   functions,
   t,
@@ -127,33 +127,36 @@ const TemplateGlobalFunctions = ({
 }) => {
   return (
     <>
-      {Object.entries(functions).map(([fnName, fn]) => (
-        <Box pb={4} key={fnName} data-testid={fnName}>
-          <Typography
-            id={`global_${fnName}`}
-            variant="h4"
-            component="h2"
-            className={classes.code}
-          >
-            {fnName}
-          </Typography>
-          <Link
-            className={classes.link}
-            to={`${linkPage}#global_${fnName}`}
-            {...(linkPage === ''
-              ? {}
-              : { target: '_blank', rel: 'noopener noreferrer' })}
-          >
-            <LinkIcon />
-          </Link>
-          <FunctionDetailContent {...{ classes, fnName, fn, t }} />
-        </Box>
-      ))}
+      {Object.entries(functions).map(([fnName, fn]) => {
+        const link = renderLink('function', fnName);
+        return (
+          <Box pb={4} key={fnName} data-testid={fnName}>
+            <Typography
+              id={link}
+              variant="h4"
+              component="h2"
+              className={classes.code}
+            >
+              {fnName}
+            </Typography>
+            <Link
+              className={classes.link}
+              to={`${linkPage}#${link}`}
+              {...(linkPage === ''
+                ? {}
+                : { target: '_blank', rel: 'noopener noreferrer' })}
+            >
+              <LinkIcon />
+            </Link>
+            <FunctionDetailContent {...{ classes, fnName, fn, t }} />
+          </Box>
+        );
+      })}
     </>
   );
 };
 
-const TemplateGlobalValues = ({
+export const TemplateGlobalValues = ({
   classes,
   values,
   linkPage,
@@ -164,73 +167,38 @@ const TemplateGlobalValues = ({
 }) => {
   return (
     <>
-      {Object.entries(values).map(([key, gv]) => (
-        <Box pb={4} key={key} data-testid={key}>
-          <Typography
-            id={`global_${key}`}
-            variant="h4"
-            component="h2"
-            className={classes.code}
-          >
-            {key}
-          </Typography>
-          <Link
-            className={classes.link}
-            to={`${linkPage}#global_${key}`}
-            {...(linkPage === ''
-              ? {}
-              : { target: '_blank', rel: 'noopener noreferrer' })}
-          >
-            <LinkIcon />
-          </Link>
-          {gv.description && <MarkdownContent content={gv.description} />}
-          <Box padding={1} data-testid={`${key}.value`}>
-            <CodeSnippet
-              text={JSON.stringify(gv.value, null, 2)}
-              showCopyCodeButton
-              language="json"
-            />
+      {Object.entries(values).map(([key, gv]) => {
+        const link = renderLink('value', key);
+        return (
+          <Box pb={4} key={key} data-testid={key}>
+            <Typography
+              id={link}
+              variant="h4"
+              component="h2"
+              className={classes.code}
+            >
+              {key}
+            </Typography>
+            <Link
+              className={classes.link}
+              to={`${linkPage}#${link}`}
+              {...(linkPage === ''
+                ? {}
+                : { target: '_blank', rel: 'noopener noreferrer' })}
+            >
+              <LinkIcon />
+            </Link>
+            {gv.description && <MarkdownContent content={gv.description} />}
+            <Box padding={1} data-testid={`${key}.value`}>
+              <CodeSnippet
+                text={JSON.stringify(gv.value, null, 2)}
+                showCopyCodeButton
+                language="json"
+              />
+            </Box>
           </Box>
-        </Box>
-      ))}
+        );
+      })}
     </>
-  );
-};
-
-export const TemplateGlobals = ({
-  t,
-  classes,
-  globals,
-  linkPage,
-}: {
-  t: Xlate<typeof scaffolderTranslationRef>;
-  classes: StyleClasses;
-  globals: ListTemplateExtensionsResponse['globals'];
-  linkPage: string;
-}) => {
-  const { functions, values } = globals;
-  return (
-    <div data-testid="globals">
-      {(isEmpty(functions) && (
-        <Box data-testid="no-fun" sx={{ display: 'none' }} />
-      )) || (
-        <div data-testid="fun">
-          <Typography variant="h3" component="h1" className={classes.code}>
-            {t('templateExtensions.globals.functions.title')}
-          </Typography>
-          <TemplateGlobalFunctions {...{ t, classes, functions, linkPage }} />
-        </div>
-      )}
-      {(isEmpty(values) && (
-        <Box data-testid="no-values" sx={{ display: 'none' }} />
-      )) || (
-        <div data-testid="values">
-          <Typography variant="h3" component="h1" className={classes.code}>
-            {t('templateExtensions.globals.values.title')}
-          </Typography>
-          <TemplateGlobalValues {...{ classes, values, linkPage }} />
-        </div>
-      )}
-    </div>
   );
 };
