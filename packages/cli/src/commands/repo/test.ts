@@ -221,6 +221,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     return packageGraph;
   }
 
+  let selectedProjects: string[] | undefined = undefined;
   if (opts.since && !hasFlags('--selectProjects')) {
     const graph = await getPackageGraph();
     const changedPackages = await graph.listChangedPackages({
@@ -228,19 +229,20 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       analyzeLockfile: true,
     });
 
-    const packageNames = Array.from(
+    selectedProjects = Array.from(
       graph.collectPackageNames(
         changedPackages.map(pkg => pkg.name),
         pkg => pkg.allLocalDependents.keys(),
       ),
     );
 
-    if (packageNames.length === 0) {
+    if (selectedProjects.length === 0) {
       console.log(`No packages changed since ${opts.since}`);
       return;
     }
 
-    args.push('--selectProjects', ...packageNames);
+    selectedProjects = selectedProjects.filter(pkg => pkg.includes('app'));
+    args.push('--selectProjects', ...selectedProjects);
   }
 
   // This is the only thing that is not implemented by jest.run(), so we do it here instead
@@ -350,7 +352,9 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
           projectHashes.set(packageName, sha);
 
           if (cache?.includes(sha)) {
-            console.log(`Skipped ${packageName} due to cache hit`);
+            if (!selectedProjects || selectedProjects.includes(packageName)) {
+              console.log(`Skipped ${packageName} due to cache hit`);
+            }
             outputSuccessCache.push(sha);
             return undefined;
           }
