@@ -184,6 +184,8 @@ export function templateGlobals(
     return globals;
   }
   return mapValues(keyBy(globals, 'id'), v =>
-    isGlobalFunctionInfo(v) ? v.fn : (v as CreatedTemplateGlobalValue).value,
+    isGlobalFunctionInfo(v)
+      ? (v.fn as Exclude<TemplateGlobal, JsonValue>)
+      : v.value,
   );
 }
