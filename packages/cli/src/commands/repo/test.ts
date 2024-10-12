@@ -172,7 +172,11 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   }
 
   // Run in watch mode unless in CI, coverage mode, or running all tests
-  if (!process.env.CI && !hasFlags('--coverage', '--watch', '--watchAll')) {
+  if (
+    !opts.since &&
+    !process.env.CI &&
+    !hasFlags('--coverage', '--watch', '--watchAll')
+  ) {
     const isGitRepo = () =>
       runCheck('git', 'rev-parse', '--is-inside-work-tree');
     const isMercurialRepo = () => runCheck('hg', '--cwd', '.', 'root');
