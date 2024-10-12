@@ -15,7 +15,7 @@
  */
 import ora from 'ora';
 import chalk from 'chalk';
-import { run } from '../run';
+import { run } from '../../run';
 
 export async function runYarnInstall() {
   const spinner = ora({

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
 import { parseSyml, stringifySyml } from '@yarnpkg/parsers';
 import { stringify as legacyStringifyLockfile } from '@yarnpkg/lockfile';
 import { Lockfile, LockfileData, LockfileQueryEntry } from '../lockfile';
@@ -46,11 +45,6 @@ const SPECIAL_OBJECT_KEYS = [
 ];
 
 export class YarnLockfile extends Lockfile {
-  static async load(path: string) {
-    const lockfileContents = await fs.readFile(path, 'utf8');
-    return YarnLockfile.parse(lockfileContents);
-  }
-
   static parse(content: string) {
     const legacy = LEGACY_REGEX.test(content);
 

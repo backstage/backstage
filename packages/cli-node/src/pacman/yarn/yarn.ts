@@ -15,21 +15,17 @@
  */
 
 import { assertError, ForwardedError } from '@backstage/errors';
-import { execFile as execFileCb } from 'child_process';
-import { promisify } from 'util';
-import {
-  Lockfile,
-  PackageInfo,
-  PackageManager,
-} from '../../../../cli-node/src/pacman/pacman';
+import { PackageInfo, PackageManager } from '../pacman';
+import { Lockfile } from '../lockfile';
 import { fetchPackageInfo } from './packageInfo';
 import { YarnVersion } from './types';
 import { YarnLockfile } from './Lockfile';
-import { paths } from '../paths';
+import { paths } from '../../paths';
 import { getHasYarnPlugin } from './plugin';
 import { runYarnInstall } from './install';
-
-const execFile = promisify(execFileCb);
+import fs from 'fs-extra';
+import { GitUtils } from '../../git';
+import { execFile } from '../../run';
 
 export class Yarn implements PackageManager {
   private constructor(private readonly yarnVersion: YarnVersion) {}
@@ -47,6 +43,10 @@ export class Yarn implements PackageManager {
     return this.yarnVersion.version;
   }
 
+  lockfilePath(): string {
+    return 'yarn.lock';
+  }
+
   async install(): Promise<void> {
     await runYarnInstall();
   }
@@ -58,9 +58,17 @@ export class Yarn implements PackageManager {
     return fetchPackageInfo(name, this.yarnVersion);
   }
 
-  async loadLockfile(): Promise<Lockfile> {
+  async loadLockfile(gitRef?: string): Promise<Lockfile> {
     const lockfilePath = paths.resolveTargetRoot('yarn.lock');
-    return YarnLockfile.load(lockfilePath);
+
+    let lockfileContents: string;
+    if (gitRef) {
+      lockfileContents = await GitUtils.readFileAtRef('yarn.lock', gitRef);
+    } else {
+      lockfileContents = await fs.readFile(lockfilePath, 'utf8');
+    }
+
+    return YarnLockfile.parse(lockfileContents);
   }
 
   async supportsBackstageVersionProtocol(): Promise<boolean> {

@@ -20,10 +20,11 @@ import { Lockfile } from './lockfile';
 export interface PackageManager {
   name(): string;
   version(): string;
+  lockfilePath(): string;
   install(): Promise<void>;
   runScript(scriptName: string): Promise<void>;
   fetchPackageInfo(name: string): Promise<PackageInfo>;
-  loadLockfile(): Promise<Lockfile>;
+  loadLockfile(gitRef?: string): Promise<Lockfile>;
   supportsBackstageVersionProtocol(): Promise<boolean>;
 }
 

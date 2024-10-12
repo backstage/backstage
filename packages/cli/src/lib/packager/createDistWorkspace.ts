@@ -26,7 +26,7 @@ import { tmpdir } from 'os';
 import tar, { CreateOptions, FileOptions } from 'tar';
 import partition from 'lodash/partition';
 import { paths } from '../paths';
-import { run } from '../run';
+import { run } from '@backstage/cli-node';
 import {
   dependencies as cliDependencies,
   devDependencies as cliDevDependencies,
@@ -242,7 +242,7 @@ export async function createDistWorkspace(
   await moveToDistWorkspace(
     targetDir,
     targets,
-    Boolean(options.alwaysYarnPack),
+    Boolean(options.alwaysPack),
     Boolean(options.enableFeatureDetection),
   );
 

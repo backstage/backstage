@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { NotFoundError } from '../errors';
+import { NotFoundError } from '@backstage/errors';
 import { YarnVersion } from './types';
-import { execFile } from '../run';
-import { PackageInfo } from '../../../../cli-node/src/pacman/pacman';
+import { execFile } from './yarn';
+import { PackageInfo } from '../pacman';
 
 // Possible `yarn info` output
 type YarnInfo = {

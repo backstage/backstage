@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { paths } from '../paths';
+import { paths } from '../../paths';
 import fs from 'fs-extra';
 import yaml from 'yaml';
 import z from 'zod';
