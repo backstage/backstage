@@ -21,6 +21,8 @@ import { NotAllowedError } from '@backstage/errors';
 import {
   AuthorizeResult,
   BasicPermission,
+  PolicyDecision,
+  ResourcePermission,
 } from '@backstage/plugin-permission-common';
 
 export type checkPermissionOptions = {
@@ -29,8 +31,20 @@ export type checkPermissionOptions = {
   permissionService?: PermissionsService;
 };
 
+export type checkTaskPermissionOptions = {
+  credentials: BackstageCredentials;
+  permission: ResourcePermission;
+  permissionService?: PermissionsService;
+  createdBy?: string;
+  isTaskAuthorized: (
+    decision: PolicyDecision,
+    resource: string | undefined,
+  ) => boolean;
+};
+
 /**
- * Does a basic check on permissions. Throws 403 error if any permission responds with AuthorizeResult.DENY
+ * Does a check on basic permissions.
+ * Throws 403 error if any permission responds with AuthorizeResult.DENY
  * @public
  */
 export async function checkPermission(options: checkPermissionOptions) {
@@ -48,6 +62,33 @@ export async function checkPermission(options: checkPermissionOptions) {
       if (response.result === AuthorizeResult.DENY) {
         throw new NotAllowedError();
       }
+    }
+  }
+}
+
+/**
+ * Does a conditional permission check for scaffolder task reading and cancellation.
+ * Throws 403 error if permission responds with AuthorizeResult.DENY, or does not resolve to true during the conditional rule check
+ * @public
+ */
+export async function checkTaskPermission(options: checkTaskPermissionOptions) {
+  const {
+    permission,
+    permissionService,
+    credentials,
+    createdBy,
+    isTaskAuthorized,
+  } = options;
+  if (permissionService) {
+    const [taskDecision] = await permissionService.authorizeConditional(
+      [{ permission: permission }],
+      { credentials },
+    );
+    if (
+      taskDecision.result === AuthorizeResult.DENY ||
+      !isTaskAuthorized(taskDecision, createdBy)
+    ) {
+      throw new NotAllowedError();
     }
   }
 }

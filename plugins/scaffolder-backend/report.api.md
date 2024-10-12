@@ -39,6 +39,7 @@ import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
+import { RESOURCE_TYPE_SCAFFOLDER_TASK } from '@backstage/plugin-scaffolder-common/alpha';
 import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE } from '@backstage/plugin-scaffolder-common/alpha';
 import { ScaffolderEntitiesProcessor as ScaffolderEntitiesProcessor_2 } from '@backstage/plugin-catalog-backend-module-scaffolder-entity-model';
 import { SchedulerService } from '@backstage/backend-plugin-api';
@@ -539,9 +540,7 @@ export interface RouterOptions {
   // (undocumented)
   logger: Logger;
   // (undocumented)
-  permissionRules?: Array<
-    TemplatePermissionRuleInput | ActionPermissionRuleInput
-  >;
+  permissionRules?: Array<ScaffolderPermissionRuleInput>;
   // (undocumented)
   permissions?: PermissionsService;
   // (undocumented)
@@ -559,6 +558,12 @@ export type RunCommandOptions = ExecuteShellCommandOptions;
 
 // @public @deprecated
 export const ScaffolderEntitiesProcessor: typeof ScaffolderEntitiesProcessor_2;
+
+// @public (undocumented)
+export type ScaffolderPermissionRuleInput =
+  | TemplatePermissionRuleInput
+  | ActionPermissionRuleInput
+  | TaskPermissionRuleInput;
 
 // @public @deprecated
 export type SerializedTask = SerializedTask_2;
@@ -645,6 +650,11 @@ export class TaskManager implements TaskContext_2 {
         },
   ): Promise<void>;
 }
+
+// @public (undocumented)
+export type TaskPermissionRuleInput<
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> = PermissionRule<string, {}, typeof RESOURCE_TYPE_SCAFFOLDER_TASK, TParams>;
 
 // @public @deprecated (undocumented)
 export type TaskSecrets = TaskSecrets_2;
@@ -930,26 +940,28 @@ export type TemplatePermissionRuleInput<
 // src/scaffolder/tasks/types.d.ts:200:5 - (ae-undocumented) Missing documentation for "rehydrateWorkspace".
 // src/scaffolder/tasks/types.d.ts:204:5 - (ae-undocumented) Missing documentation for "cleanWorkspace".
 // src/scaffolder/tasks/types.d.ts:207:5 - (ae-undocumented) Missing documentation for "serializeWorkspace".
-// src/service/router.d.ts:17:1 - (ae-undocumented) Missing documentation for "TemplatePermissionRuleInput".
-// src/service/router.d.ts:22:1 - (ae-undocumented) Missing documentation for "ActionPermissionRuleInput".
-// src/service/router.d.ts:30:5 - (ae-undocumented) Missing documentation for "logger".
-// src/service/router.d.ts:31:5 - (ae-undocumented) Missing documentation for "config".
-// src/service/router.d.ts:32:5 - (ae-undocumented) Missing documentation for "reader".
-// src/service/router.d.ts:33:5 - (ae-undocumented) Missing documentation for "lifecycle".
-// src/service/router.d.ts:34:5 - (ae-undocumented) Missing documentation for "database".
-// src/service/router.d.ts:35:5 - (ae-undocumented) Missing documentation for "catalogClient".
-// src/service/router.d.ts:36:5 - (ae-undocumented) Missing documentation for "scheduler".
-// src/service/router.d.ts:37:5 - (ae-undocumented) Missing documentation for "actions".
-// src/service/router.d.ts:42:5 - (ae-undocumented) Missing documentation for "taskWorkers".
-// src/service/router.d.ts:48:5 - (ae-undocumented) Missing documentation for "taskBroker".
-// src/service/router.d.ts:49:5 - (ae-undocumented) Missing documentation for "additionalTemplateFilters".
-// src/service/router.d.ts:50:5 - (ae-undocumented) Missing documentation for "additionalTemplateGlobals".
-// src/service/router.d.ts:51:5 - (ae-undocumented) Missing documentation for "additionalWorkspaceProviders".
-// src/service/router.d.ts:52:5 - (ae-undocumented) Missing documentation for "permissions".
-// src/service/router.d.ts:53:5 - (ae-undocumented) Missing documentation for "permissionRules".
-// src/service/router.d.ts:54:5 - (ae-undocumented) Missing documentation for "auth".
-// src/service/router.d.ts:55:5 - (ae-undocumented) Missing documentation for "httpAuth".
-// src/service/router.d.ts:56:5 - (ae-undocumented) Missing documentation for "identity".
-// src/service/router.d.ts:57:5 - (ae-undocumented) Missing documentation for "discovery".
-// src/service/router.d.ts:58:5 - (ae-undocumented) Missing documentation for "autocompleteHandlers".
+// src/service/router.d.ts:17:1 - (ae-undocumented) Missing documentation for "ScaffolderPermissionRuleInput".
+// src/service/router.d.ts:22:1 - (ae-undocumented) Missing documentation for "TemplatePermissionRuleInput".
+// src/service/router.d.ts:27:1 - (ae-undocumented) Missing documentation for "ActionPermissionRuleInput".
+// src/service/router.d.ts:32:1 - (ae-undocumented) Missing documentation for "TaskPermissionRuleInput".
+// src/service/router.d.ts:40:5 - (ae-undocumented) Missing documentation for "logger".
+// src/service/router.d.ts:41:5 - (ae-undocumented) Missing documentation for "config".
+// src/service/router.d.ts:42:5 - (ae-undocumented) Missing documentation for "reader".
+// src/service/router.d.ts:43:5 - (ae-undocumented) Missing documentation for "lifecycle".
+// src/service/router.d.ts:44:5 - (ae-undocumented) Missing documentation for "database".
+// src/service/router.d.ts:45:5 - (ae-undocumented) Missing documentation for "catalogClient".
+// src/service/router.d.ts:46:5 - (ae-undocumented) Missing documentation for "scheduler".
+// src/service/router.d.ts:47:5 - (ae-undocumented) Missing documentation for "actions".
+// src/service/router.d.ts:52:5 - (ae-undocumented) Missing documentation for "taskWorkers".
+// src/service/router.d.ts:58:5 - (ae-undocumented) Missing documentation for "taskBroker".
+// src/service/router.d.ts:59:5 - (ae-undocumented) Missing documentation for "additionalTemplateFilters".
+// src/service/router.d.ts:60:5 - (ae-undocumented) Missing documentation for "additionalTemplateGlobals".
+// src/service/router.d.ts:61:5 - (ae-undocumented) Missing documentation for "additionalWorkspaceProviders".
+// src/service/router.d.ts:62:5 - (ae-undocumented) Missing documentation for "permissions".
+// src/service/router.d.ts:63:5 - (ae-undocumented) Missing documentation for "permissionRules".
+// src/service/router.d.ts:64:5 - (ae-undocumented) Missing documentation for "auth".
+// src/service/router.d.ts:65:5 - (ae-undocumented) Missing documentation for "httpAuth".
+// src/service/router.d.ts:66:5 - (ae-undocumented) Missing documentation for "identity".
+// src/service/router.d.ts:67:5 - (ae-undocumented) Missing documentation for "discovery".
+// src/service/router.d.ts:68:5 - (ae-undocumented) Missing documentation for "autocompleteHandlers".
 ```

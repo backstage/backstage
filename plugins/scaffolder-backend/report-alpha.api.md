@@ -20,6 +20,12 @@ export const createScaffolderActionConditionalDecision: (
   conditions: PermissionCriteria<PermissionCondition<'scaffolder-action'>>,
 ) => ConditionalPolicyDecision;
 
+// @alpha (undocumented)
+export const createScaffolderTaskConditionalDecision: (
+  permission: ResourcePermission<'scaffolder-task'>,
+  conditions: PermissionCriteria<PermissionCondition<'scaffolder-task'>>,
+) => ConditionalPolicyDecision;
+
 // @alpha
 export const createScaffolderTemplateConditionalDecision: (
   permission: ResourcePermission<'scaffolder-template'>,
@@ -82,6 +88,18 @@ const scaffolderPlugin: BackendFeature;
 export default scaffolderPlugin;
 
 // @alpha
+export const scaffolderTaskConditions: Conditions<{
+  isTaskOwner: PermissionRule<
+    string,
+    {},
+    'scaffolder-task',
+    {
+      createdBy: string;
+    }
+  >;
+}>;
+
+// @alpha
 export const scaffolderTemplateConditions: Conditions<{
   hasTag: PermissionRule<
     TemplateParametersV1beta3 | TemplateEntityStepV1beta3,
@@ -96,6 +114,7 @@ export const scaffolderTemplateConditions: Conditions<{
 // Warnings were encountered during analysis:
 //
 // src/service/conditionExports.d.ts:48:22 - (ae-undocumented) Missing documentation for "createScaffolderActionConditionalDecision".
+// src/service/conditionExports.d.ts:88:22 - (ae-undocumented) Missing documentation for "createScaffolderTaskConditionalDecision".
 
 // (No @packageDocumentation comment for this package)
 ```
