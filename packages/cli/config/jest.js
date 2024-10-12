@@ -278,11 +278,16 @@ async function getRootConfig() {
     collectCoverageFrom: ['**/*.{js,jsx,ts,tsx,mjs,cjs}', '!**/*.d.ts'],
   };
 
+  // TODO since this is package manager specific, maybe it should be under @backstage/cli-node/pacman
   const workspacePatterns =
     rootPkgJson.workspaces && rootPkgJson.workspaces.packages;
+  const rootRole = rootPkgJson.backstage?.role === 'root';
 
   // Check if we're running within a specific monorepo package. In that case just get the single project config.
-  if (!workspacePatterns || paths.targetRoot !== paths.targetDir) {
+  if (
+    !(workspacePatterns || rootRole) ||
+    paths.targetRoot !== paths.targetDir
+  ) {
     return getProjectConfig(paths.targetDir, {
       ...baseCoverageConfig,
       ...(rootPkgJson.jest ?? {}),
