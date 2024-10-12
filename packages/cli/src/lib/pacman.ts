@@ -13,10 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { Yarn } from './yarn';
+
 export interface PackageManager {
   install(): Promise<void>;
   runScript(scriptName: string): Promise<void>;
   fetchPackageInfo(name: string): Promise<PackageInfo>;
+  loadLockfile(): Promise<Lockfile>;
+  supportsBackstageVersionProtocol(): Promise<boolean>;
+}
+
+export interface Lockfile {
+  get(name: string): LockfileQueryEntry[] | undefined;
+  keys(): IterableIterator<string>;
+  toString(): string;
 }
 
 export type PackageInfo = {
@@ -25,3 +36,13 @@ export type PackageInfo = {
   versions: string[];
   time: { [version: string]: string };
 };
+
+export type LockfileQueryEntry = {
+  range: string;
+  version: string;
+  dataKey: string;
+};
+
+export async function detectPackageManager(): Promise<PackageManager> {
+  return await Yarn.create();
+}

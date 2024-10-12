@@ -17,6 +17,7 @@
 import fs from 'fs-extra';
 import { parseSyml, stringifySyml } from '@yarnpkg/parsers';
 import { stringify as legacyStringifyLockfile } from '@yarnpkg/lockfile';
+import { Lockfile, LockfileQueryEntry } from '../pacman';
 
 const ENTRY_PATTERN = /^((?:@[^/]+\/)?[^@/]+)@(.+)$/;
 
@@ -29,12 +30,6 @@ type LockfileData = {
     dependencies?: { [name: string]: string };
     peerDependencies?: { [name: string]: string };
   };
-};
-
-type LockfileQueryEntry = {
-  range: string;
-  version: string;
-  dataKey: string;
 };
 
 // the new yarn header is handled out of band of the parsing
@@ -61,10 +56,10 @@ const SPECIAL_OBJECT_KEYS = [
   `binaries`,
 ];
 
-export class Lockfile {
+export class YarnLockfile implements Lockfile {
   static async load(path: string) {
     const lockfileContents = await fs.readFile(path, 'utf8');
-    return Lockfile.parse(lockfileContents);
+    return YarnLockfile.parse(lockfileContents);
   }
 
   static parse(content: string) {
@@ -103,7 +98,7 @@ export class Lockfile {
       }
     }
 
-    return new Lockfile(packages, data, legacy);
+    return new YarnLockfile(packages, data, legacy);
   }
 
   private constructor(

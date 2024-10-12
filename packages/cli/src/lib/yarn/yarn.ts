@@ -17,9 +17,13 @@
 import { assertError, ForwardedError } from '@backstage/errors';
 import { execFile as execFileCb } from 'child_process';
 import { promisify } from 'util';
-import { PackageInfo, PackageManager } from '../pacman';
+import { Lockfile, PackageInfo, PackageManager } from '../pacman';
 import { fetchPackageInfo } from './packageInfo';
 import { YarnVersion } from './types';
+import { YarnLockfile } from './Lockfile';
+import { paths } from '../paths';
+import { getHasYarnPlugin } from './plugin';
+import { runYarnInstall } from './install';
 
 const execFile = promisify(execFileCb);
 
@@ -33,15 +37,24 @@ export class Yarn implements PackageManager {
     return new Yarn(yarnVersion);
   }
 
-  install(): Promise<void> {
-    throw new Error('Method not implemented.');
+  async install(): Promise<void> {
+    await runYarnInstall();
   }
-  runScript(_scriptName: string): Promise<void> {
+  async runScript(_scriptName: string): Promise<void> {
     throw new Error('Method not implemented.');
   }
 
-  fetchPackageInfo(name: string): Promise<PackageInfo> {
+  async fetchPackageInfo(name: string): Promise<PackageInfo> {
     return fetchPackageInfo(name, this.yarnVersion);
+  }
+
+  async loadLockfile(): Promise<Lockfile> {
+    const lockfilePath = paths.resolveTargetRoot('yarn.lock');
+    return YarnLockfile.load(lockfilePath);
+  }
+
+  async supportsBackstageVersionProtocol(): Promise<boolean> {
+    return (await getHasYarnPlugin()) || false;
   }
 }
 

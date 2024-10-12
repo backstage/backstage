@@ -18,7 +18,7 @@ import { version as cliVersion } from '../../package.json';
 import os from 'os';
 import { runPlain } from '../lib/run';
 import { paths } from '../lib/paths';
-import { Lockfile } from '../lib/versioning';
+import { detectPackageManager } from '../lib/pacman';
 import fs from 'fs-extra';
 
 export default async () => {
@@ -45,8 +45,8 @@ export default async () => {
     console.log(`backstage:  ${backstageVersion}`);
     console.log();
     console.log('Dependencies:');
-    const lockfilePath = paths.resolveTargetRoot('yarn.lock');
-    const lockfile = await Lockfile.load(lockfilePath);
+    const pacman = await detectPackageManager();
+    const lockfile = await pacman.loadLockfile();
 
     const deps = [...lockfile.keys()].filter(n => n.startsWith('@backstage/'));
     const maxLength = Math.max(...deps.map(d => d.length));

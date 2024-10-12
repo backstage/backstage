@@ -72,14 +72,14 @@ jest.mock('../../lib/run', () => {
   };
 });
 
-const mockFetchPackageInfo = jest.fn();
-jest.mock('../../lib/versioning/packages', () => {
-  const actual = jest.requireActual('../../lib/versioning/packages');
-  return {
-    ...actual,
-    fetchPackageInfo: (name: string) => mockFetchPackageInfo(name),
-  };
-});
+// const mockFetchPackageInfo = jest.fn();
+// jest.mock('../../lib/versioning/packages', () => {
+//   const actual = jest.requireActual('../../lib/versioning/packages');
+//   return {
+//     ...actual,
+//     fetchPackageInfo: (name: string) => mockFetchPackageInfo(name),
+//   };
+// });
 
 const REGISTRY_VERSIONS: { [name: string]: string } = {
   '@backstage/core': '1.0.6',
