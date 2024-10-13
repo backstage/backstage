@@ -19,6 +19,7 @@ import { resolve as resolvePath, join as joinPath } from 'path';
 import { OptionValues } from 'commander';
 import { readJson, writeJson } from 'fs-extra';
 import { minimatch } from 'minimatch';
+import { runInstall } from './bump';
 import replace from 'replace-in-file';
 import { detectPackageManager } from '@backstage/cli-node';
 
@@ -46,7 +47,7 @@ export default async (options: OptionValues) => {
 
   if (changed) {
     const pacman = await detectPackageManager();
-    await pacman.install();
+    await runInstall(pacman);
   }
 };
 

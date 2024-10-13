@@ -22,10 +22,9 @@ import { YarnVersion } from './types';
 import { YarnLockfile } from './Lockfile';
 import { paths } from '../../paths';
 import { getHasYarnPlugin } from './plugin';
-import { runYarnInstall } from './install';
 import fs from 'fs-extra';
 import { GitUtils } from '../../git';
-import { execFile } from '../../run';
+import { run, execFile, SpawnOptionsPartialEnv } from '../../run';
 
 export class Yarn implements PackageManager {
   private constructor(private readonly yarnVersion: YarnVersion) {}
@@ -47,11 +46,8 @@ export class Yarn implements PackageManager {
     return 'yarn.lock';
   }
 
-  async install(): Promise<void> {
-    await runYarnInstall();
-  }
-  async runScript(_scriptName: string): Promise<void> {
-    throw new Error('Method not implemented.');
+  async run(args: string[], options: SpawnOptionsPartialEnv): Promise<void> {
+    await run('yarn', args, options);
   }
 
   async fetchPackageInfo(name: string): Promise<PackageInfo> {

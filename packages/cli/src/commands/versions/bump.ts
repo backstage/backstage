@@ -15,6 +15,11 @@
  */
 
 import { bootstrap } from 'global-agent';
+
+if (shouldUseGlobalAgent()) {
+  bootstrap();
+}
+
 import fs from 'fs-extra';
 import chalk from 'chalk';
 import semver from 'semver';
@@ -31,11 +36,12 @@ import {
   ReleaseManifest,
 } from '@backstage/release-manifests';
 import { migrateMovedPackages } from './migrate';
-import { detectPackageManager } from '@backstage/cli-node';
-
-if (shouldUseGlobalAgent()) {
-  bootstrap();
-}
+import {
+  detectPackageManager,
+  PackageManager,
+  PackageInfo,
+} from '@backstage/cli-node';
+import ora from 'ora';
 
 function shouldUseGlobalAgent(): boolean {
   // see https://www.npmjs.com/package/global-agent
@@ -231,7 +237,7 @@ export default async (opts: OptionValues) => {
     }
 
     if (!opts.skipInstall) {
-      await pacman.install();
+      await runInstall(pacman);
     } else {
       console.log();
 
@@ -246,7 +252,7 @@ export default async (opts: OptionValues) => {
       });
 
       if (changed && !opts.skipInstall) {
-        await pacman.install();
+        await runInstall(pacman);
       }
     }
 
@@ -451,4 +457,36 @@ async function asLockfileVersion(version: string) {
   }
 
   return version;
+}
+
+export async function runInstall(pacman: PackageManager) {
+  const spinner = ora({
+    prefixText: `Running ${chalk.blue('yarn install')} to install new versions`,
+    spinner: 'arc',
+    color: 'green',
+  }).start();
+
+  const installOutput = new Array<Buffer>();
+  try {
+    await pacman.run(['install'], {
+      env: {
+        FORCE_COLOR: 'true',
+        // We filter out all of the npm_* environment variables that are added when
+        // executing through yarn. This works around an issue where these variables
+        // incorrectly override local yarn or npm config in the project directory.
+        ...Object.fromEntries(
+          Object.entries(process.env).map(([name, value]) =>
+            name.startsWith('npm_') ? [name, undefined] : [name, value],
+          ),
+        ),
+      },
+      stdoutLogFunc: data => installOutput.push(data),
+      stderrLogFunc: data => installOutput.push(data),
+    });
+    spinner.succeed();
+  } catch (error) {
+    spinner.fail();
+    process.stdout.write(Buffer.concat(installOutput));
+    throw error;
+  }
 }

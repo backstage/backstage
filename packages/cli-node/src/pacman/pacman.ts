@@ -16,13 +16,13 @@
 
 import { Yarn } from './yarn';
 import { Lockfile } from './lockfile';
+import { SpawnOptionsPartialEnv } from '../run';
 
 export interface PackageManager {
   name(): string;
   version(): string;
   lockfilePath(): string;
-  install(): Promise<void>;
-  runScript(scriptName: string): Promise<void>;
+  run(args: string[], options: SpawnOptionsPartialEnv): Promise<void>;
   fetchPackageInfo(name: string): Promise<PackageInfo>;
   loadLockfile(gitRef?: string): Promise<Lockfile>;
   supportsBackstageVersionProtocol(): Promise<boolean>;

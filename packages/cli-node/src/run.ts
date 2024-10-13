@@ -25,9 +25,9 @@ import { ExitCodeError } from './errors';
 
 export const execFile = promisify(execFileCb);
 
-type LogFunc = (data: Buffer) => void;
+export type LogFunc = (data: Buffer) => void;
 
-type SpawnOptionsPartialEnv = Omit<SpawnOptions, 'env'> & {
+export type SpawnOptionsPartialEnv = Omit<SpawnOptions, 'env'> & {
   env?: Partial<NodeJS.ProcessEnv>;
   // Pipe stdout to this log function
   stdoutLogFunc?: LogFunc;

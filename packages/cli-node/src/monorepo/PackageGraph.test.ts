@@ -17,8 +17,9 @@
 import { resolve as resolvePath } from 'path';
 import { getPackages } from '@manypkg/get-packages';
 import { PackageGraph } from './PackageGraph';
-import { Lockfile } from './Lockfile';
 import { GitUtils } from '../git';
+import { MockPackageManager } from '../pacman/mock.test';
+import * as pacman from '../pacman';
 
 const mockListChangedFiles = jest.spyOn(GitUtils, 'listChangedFiles');
 const mockReadFileAtRef = jest.spyOn(GitUtils, 'readFileAtRef');
@@ -181,8 +182,17 @@ describe('PackageGraph', () => {
   it('lists changed packages with lockfile analysis', async () => {
     const graph = PackageGraph.fromPackages(testPackages);
 
+    const mockPackageManager = new MockPackageManager();
+    jest
+      .spyOn(pacman, 'detectPackageManager')
+      .mockResolvedValueOnce(mockPackageManager);
+
     mockListChangedFiles.mockResolvedValueOnce(
-      ['README.md', 'packages/a/src/foo.ts', 'yarn.lock'].sort(),
+      [
+        'README.md',
+        'packages/a/src/foo.ts',
+        mockPackageManager.lockfilePath(),
+      ].sort(),
     );
     mockReadFileAtRef.mockResolvedValueOnce(`
 a@^1:
