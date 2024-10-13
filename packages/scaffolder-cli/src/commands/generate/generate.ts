@@ -37,12 +37,10 @@ export default async function generate(
     options.templatePath,
     options,
   );
-
   const response: ScaffolderDryRunResponse = await scaffolderApi.dryRun(
     options.url,
     dryRunOptions,
   );
-
   const outputDir: string = 'dry-run-output';
   fs.rmSync(outputDir, { recursive: true, force: true });
 

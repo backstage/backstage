@@ -23,16 +23,18 @@ const scaffolderApi = {
     baseUrl: string,
     options: ScaffolderDryRunOptions,
   ): Promise<ScaffolderDryRunResponse> => {
+    const authToken = process.env.BACKSTAGE_TOKEN;
     const response = await fetch(`${baseUrl}/api/scaffolder/v2/dry-run`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        ...(process.env.TOKEN
-          ? { Authorization: `Bearer ${process.env.TOKEN}` }
-          : {}),
+        ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
       },
       body: JSON.stringify(options),
     });
+    if (!response.ok) {
+      throw new Error(`Request failed with status code ${response.status}`);
+    }
     return await response.json();
   },
 };
