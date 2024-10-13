@@ -16,10 +16,16 @@
 
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
-import searchModuleCatalogCollator from './alpha';
+import searchModuleTechDocsCollator from './module';
 
-describe('searchModuleCatalogCollator', () => {
-  it('should register the catalog collator to the search index registry extension point with factory and schedule', async () => {
+describe('searchModuleTechDocsCollator', () => {
+  const schedule = {
+    frequency: { minutes: 10 },
+    timeout: { minutes: 15 },
+    initialDelay: { seconds: 3 },
+  };
+
+  it('should register the techdocs collator to the search index registry extension point with factory and schedule', async () => {
     const extensionPointMock = {
       addCollator: jest.fn(),
     };
@@ -28,46 +34,24 @@ describe('searchModuleCatalogCollator', () => {
       extensionPoints: [
         [searchIndexRegistryExtensionPoint, extensionPointMock],
       ],
-      features: [searchModuleCatalogCollator],
+      features: [
+        searchModuleTechDocsCollator,
+        mockServices.rootConfig.factory({
+          data: {
+            search: {
+              techdocs: {
+                schedule,
+              },
+            },
+          },
+        }),
+      ],
     });
 
     expect(extensionPointMock.addCollator).toHaveBeenCalledTimes(1);
     expect(extensionPointMock.addCollator).toHaveBeenCalledWith({
-      factory: expect.objectContaining({ type: 'software-catalog' }),
+      factory: expect.objectContaining({ type: 'techdocs' }),
       schedule: expect.objectContaining({ run: expect.any(Function) }),
     });
-  });
-
-  it('refuses to start up with a broken schedule', async () => {
-    await expect(
-      startTestBackend({
-        extensionPoints: [
-          [
-            searchIndexRegistryExtensionPoint,
-            {
-              addCollator: jest.fn(),
-            },
-          ],
-        ],
-        features: [
-          searchModuleCatalogCollator,
-          mockServices.rootConfig.factory({
-            data: {
-              search: {
-                collators: {
-                  catalog: {
-                    schedule: {
-                      frequency: { minutes: 10 },
-                      timeout: { minutes: 'boo' },
-                      initialDelay: { seconds: 3 },
-                    },
-                  },
-                },
-              },
-            },
-          }),
-        ],
-      }),
-    ).rejects.toThrow(/Invalid schedule/);
   });
 });

@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
-import { default as feature } from './alpha';
-
 /**
  * @packageDocumentation
  * A module for the search backend that exports Explore modules.
  */
 
 export * from './collators';
-
-/** @public */
-const _feature = feature;
-export default _feature;
+export { default } from './module';

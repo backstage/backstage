@@ -8,11 +8,13 @@
 import { AuthService } from '@backstage/backend-plugin-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
+import { CatalogCollatorEntityTransformer as CatalogCollatorEntityTransformer_2 } from '@backstage/plugin-search-backend-module-catalog';
 import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
 import { Config } from '@backstage/config';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { Entity } from '@backstage/catalog-model';
+import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { GetEntitiesRequest } from '@backstage/catalog-client';
 import { Permission } from '@backstage/plugin-permission-common';
 import { Readable } from 'stream';
@@ -22,6 +24,18 @@ import { TokenManager } from '@backstage/backend-common';
 export type CatalogCollatorEntityTransformer = (
   entity: Entity,
 ) => Omit<CatalogEntityDocument, 'location' | 'authorization'>;
+
+// @public
+export type CatalogCollatorExtensionPoint = {
+  setEntityTransformer(transformer: CatalogCollatorEntityTransformer_2): void;
+};
+
+// @public
+export const catalogCollatorExtensionPoint: ExtensionPoint<CatalogCollatorExtensionPoint>;
+
+// @public
+const _default: BackendFeature;
+export default _default;
 
 // @public (undocumented)
 export const defaultCatalogCollatorEntityTransformer: CatalogCollatorEntityTransformer;
@@ -53,10 +67,6 @@ export type DefaultCatalogCollatorFactoryOptions = {
   entityTransformer?: CatalogCollatorEntityTransformer;
 };
 
-// @public (undocumented)
-const _feature: BackendFeature;
-export default _feature;
-
 // Warnings were encountered during analysis:
 //
 // src/collators/CatalogCollatorEntityTransformer.d.ts:4:1 - (ae-undocumented) Missing documentation for "CatalogCollatorEntityTransformer".
@@ -66,5 +76,4 @@ export default _feature;
 // src/collators/DefaultCatalogCollatorFactory.d.ts:51:5 - (ae-undocumented) Missing documentation for "fromConfig".
 // src/collators/DefaultCatalogCollatorFactory.d.ts:53:5 - (ae-undocumented) Missing documentation for "getCollator".
 // src/collators/defaultCatalogCollatorEntityTransformer.d.ts:3:22 - (ae-undocumented) Missing documentation for "defaultCatalogCollatorEntityTransformer".
-// src/index.d.ts:7:15 - (ae-undocumented) Missing documentation for "_feature".
 ```

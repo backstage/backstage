@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
-import { default as feature } from './alpha';
-
 /**
  * @packageDocumentation
  * A module for the search backend that exports TechDocs modules.
  */
 
+export { default } from './module';
+export * from './module';
 export * from './collators';
-
-/** @public */
-const _feature = feature;
-export default _feature;

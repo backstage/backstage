@@ -13,6 +13,8 @@ import { BulkHelper } from '@elastic/elasticsearch/lib/Helpers';
 import { BulkStats } from '@elastic/elasticsearch/lib/Helpers';
 import { Config } from '@backstage/config';
 import type { ConnectionOptions } from 'tls';
+import { ElasticSearchQueryTranslator as ElasticSearchQueryTranslator_2 } from '@backstage/plugin-search-backend-module-elasticsearch';
+import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { IndexableResultSet } from '@backstage/plugin-search-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
@@ -72,6 +74,10 @@ export interface BaseElasticSearchClientOptions {
 export function decodeElasticSearchPageCursor(pageCursor?: string): {
   page: number;
 };
+
+// @public
+const _default: BackendFeature;
+export default _default;
 
 // @public (undocumented)
 export interface ElasticSearchAgentOptions {
@@ -319,6 +325,12 @@ export type ElasticSearchQueryTranslator = (
   options?: ElasticSearchQueryTranslatorOptions,
 ) => ElasticSearchConcreteQuery;
 
+// @public (undocumented)
+export interface ElasticSearchQueryTranslatorExtensionPoint {
+  // (undocumented)
+  setTranslator(translator: ElasticSearchQueryTranslator_2): void;
+}
+
 // @public
 export type ElasticSearchQueryTranslatorOptions = {
   highlightOptions?: ElasticSearchHighlightConfig;
@@ -379,6 +391,9 @@ export type ElasticSearchSearchEngineIndexerOptions = {
   skipRefresh?: boolean;
 };
 
+// @public
+export const elasticsearchTranslatorExtensionPoint: ExtensionPoint<ElasticSearchQueryTranslatorExtensionPoint>;
+
 // @public (undocumented)
 export interface ElasticSearchTransportConstructor {
   // (undocumented)
@@ -391,10 +406,6 @@ export interface ElasticSearchTransportConstructor {
     DEFAULT: string;
   };
 }
-
-// @public (undocumented)
-const _feature: BackendFeature;
-export default _feature;
 
 // @public
 export const isOpenSearchCompatible: (
@@ -557,8 +568,6 @@ export interface OpenSearchNodeOptions {
 // src/engines/ElasticSearchSearchEngineIndexer.d.ts:39:5 - (ae-undocumented) Missing documentation for "initialize".
 // src/engines/ElasticSearchSearchEngineIndexer.d.ts:40:5 - (ae-undocumented) Missing documentation for "index".
 // src/engines/ElasticSearchSearchEngineIndexer.d.ts:41:5 - (ae-undocumented) Missing documentation for "finalize".
-// src/index.d.ts:2:15 - (ae-undocumented) Missing documentation for "_feature".
-// src/index.d.ts:4:1 - (ae-misplaced-package-tag) The @packageDocumentation comment must appear at the top of entry point *.d.ts file
-
-// (No @packageDocumentation comment for this package)
+// src/module.d.ts:3:1 - (ae-undocumented) Missing documentation for "ElasticSearchQueryTranslatorExtensionPoint".
+// src/module.d.ts:4:5 - (ae-undocumented) Missing documentation for "setTranslator".
 ```

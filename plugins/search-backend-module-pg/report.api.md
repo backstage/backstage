@@ -71,6 +71,10 @@ export interface DatabaseStore {
   transaction<T>(fn: (tx: Knex.Transaction) => Promise<T>): Promise<T>;
 }
 
+// @public
+const _default: BackendFeature;
+export default _default;
+
 // @public (undocumented)
 export interface DocumentResultRow {
   // (undocumented)
@@ -80,10 +84,6 @@ export interface DocumentResultRow {
   // (undocumented)
   type: string;
 }
-
-// @public (undocumented)
-const _feature: BackendFeature;
-export default _feature;
 
 // @public (undocumented)
 export class PgSearchEngine implements SearchEngine {
@@ -240,8 +240,4 @@ export interface RawDocumentRow {
 // src/database/types.d.ts:30:5 - (ae-undocumented) Missing documentation for "document".
 // src/database/types.d.ts:31:5 - (ae-undocumented) Missing documentation for "type".
 // src/database/types.d.ts:32:5 - (ae-undocumented) Missing documentation for "highlight".
-// src/index.d.ts:2:15 - (ae-undocumented) Missing documentation for "_feature".
-// src/index.d.ts:4:1 - (ae-misplaced-package-tag) The @packageDocumentation comment must appear at the top of entry point *.d.ts file
-
-// (No @packageDocumentation comment for this package)
 ```

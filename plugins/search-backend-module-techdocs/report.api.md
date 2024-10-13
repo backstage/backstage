@@ -12,12 +12,19 @@ import { Config } from '@backstage/config';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { Entity } from '@backstage/catalog-model';
+import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { Permission } from '@backstage/plugin-permission-common';
 import { Readable } from 'stream';
+import { TechDocsCollatorDocumentTransformer as TechDocsCollatorDocumentTransformer_2 } from '@backstage/plugin-search-backend-module-techdocs';
+import { TechDocsCollatorEntityTransformer as TechDocsCollatorEntityTransformer_2 } from '@backstage/plugin-search-backend-module-techdocs';
 import { TechDocsDocument } from '@backstage/plugin-techdocs-node';
 import { TokenManager } from '@backstage/backend-common';
+
+// @public
+const _default: BackendFeature;
+export default _default;
 
 // @public (undocumented)
 export const defaultTechDocsCollatorEntityTransformer: TechDocsCollatorEntityTransformer;
@@ -36,10 +43,6 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
   // (undocumented)
   readonly visibilityPermission: Permission;
 }
-
-// @public (undocumented)
-const _feature: BackendFeature;
-export default _feature;
 
 // @public (undocumented)
 export interface MkSearchIndexDoc {
@@ -74,6 +77,19 @@ export type TechDocsCollatorEntityTransformer = (
   entity: Entity,
 ) => Partial<Omit<TechDocsDocument, 'location' | 'authorization'>>;
 
+// @public (undocumented)
+export interface TechDocsCollatorEntityTransformerExtensionPoint {
+  // (undocumented)
+  setDocumentTransformer(
+    transformer: TechDocsCollatorDocumentTransformer_2,
+  ): void;
+  // (undocumented)
+  setTransformer(transformer: TechDocsCollatorEntityTransformer_2): void;
+}
+
+// @public
+export const techdocsCollatorEntityTransformerExtensionPoint: ExtensionPoint<TechDocsCollatorEntityTransformerExtensionPoint>;
+
 // @public @deprecated
 export type TechDocsCollatorFactoryOptions = {
   discovery: DiscoveryService;
@@ -103,5 +119,7 @@ export type TechDocsCollatorFactoryOptions = {
 // src/collators/TechDocsCollatorDocumentTransformer.d.ts:10:1 - (ae-undocumented) Missing documentation for "TechDocsCollatorDocumentTransformer".
 // src/collators/TechDocsCollatorEntityTransformer.d.ts:4:1 - (ae-undocumented) Missing documentation for "TechDocsCollatorEntityTransformer".
 // src/collators/defaultTechDocsCollatorEntityTransformer.d.ts:3:22 - (ae-undocumented) Missing documentation for "defaultTechDocsCollatorEntityTransformer".
-// src/index.d.ts:7:15 - (ae-undocumented) Missing documentation for "_feature".
+// src/module.d.ts:3:1 - (ae-undocumented) Missing documentation for "TechDocsCollatorEntityTransformerExtensionPoint".
+// src/module.d.ts:4:5 - (ae-undocumented) Missing documentation for "setTransformer".
+// src/module.d.ts:5:5 - (ae-undocumented) Missing documentation for "setDocumentTransformer".
 ```
