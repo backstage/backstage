@@ -29,6 +29,7 @@ import {
   createGithubRepoWithCollaboratorsAndTopics,
   getOctokitOptions,
   initRepoPushAndProtect,
+  RuleSet,
 } from './helpers';
 import * as inputProps from './inputProperties';
 import * as outputProps from './outputProperties';
@@ -116,6 +117,7 @@ export function createPublishGithubAction(options: {
     };
     requiredCommitSigning?: boolean;
     customProperties?: { [key: string]: string };
+    rulesets?: RuleSet[];
   }>({
     id: 'publish:github',
     description:
@@ -217,8 +219,10 @@ export function createPublishGithubAction(options: {
         token: providedToken,
         customProperties,
         requiredCommitSigning = false,
+        rulesets,
       } = ctx.input;
 
+      console.log('ctx.input', ctx.input);
       const octokitOptions = await getOctokitOptions({
         integrations,
         credentialsProvider: githubCredentialsProvider,
@@ -258,6 +262,7 @@ export function createPublishGithubAction(options: {
         oidcCustomization,
         customProperties,
         ctx.logger,
+        rulesets,
       );
 
       const remoteUrl = newRepo.clone_url;

@@ -27,6 +27,7 @@ import {
 import {
   createGithubRepoWithCollaboratorsAndTopics,
   getOctokitOptions,
+  RuleSet,
 } from './helpers';
 import * as inputProps from './inputProperties';
 import * as outputProps from './outputProperties';
@@ -101,6 +102,7 @@ export function createGithubRepoCreateAction(options: {
     };
     requireCommitSigning?: boolean;
     customProperties?: { [key: string]: string };
+    rulesets?: RuleSet[];
   }>({
     id: 'github:repo:create',
     description: 'Creates a GitHub repository.',
@@ -141,6 +143,7 @@ export function createGithubRepoCreateAction(options: {
           oidcCustomization: inputProps.oidcCustomization,
           requiredCommitSigning: inputProps.requiredCommitSigning,
           customProperties: inputProps.customProperties,
+          rulesets: inputProps.rulesets,
         },
       },
       output: {
@@ -175,6 +178,7 @@ export function createGithubRepoCreateAction(options: {
         oidcCustomization,
         customProperties,
         token: providedToken,
+        rulesets,
       } = ctx.input;
 
       const octokitOptions = await getOctokitOptions({
@@ -216,6 +220,7 @@ export function createGithubRepoCreateAction(options: {
         oidcCustomization,
         customProperties,
         ctx.logger,
+        rulesets,
       );
 
       ctx.output('remoteUrl', newRepo.clone_url);

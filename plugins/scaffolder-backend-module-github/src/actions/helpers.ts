@@ -23,6 +23,7 @@ import {
 } from '@backstage/integration';
 import { OctokitOptions } from '@octokit/core/dist-types/types';
 import { Octokit } from 'octokit';
+import { RestEndpointMethodTypes } from '@octokit/plugin-rest-endpoint-methods';
 
 import {
   getRepoSourceDirectory,
@@ -36,6 +37,17 @@ import {
   entityRefToName,
 } from './gitHelpers';
 import { LoggerService } from '@backstage/backend-plugin-api';
+
+type Prettify<T> = {
+  [K in keyof T]: Prettify<T[K]>;
+} & {};
+
+export type RuleSet = Prettify<
+  Pick<
+    RestEndpointMethodTypes['repos']['createRepoRuleset']['parameters'],
+    'name' | 'enforcement' | 'rules' | 'bypass_actors' | 'conditions' | 'target'
+  >
+>;
 
 const DEFAULT_TIMEOUT_MS = 60_000;
 
@@ -150,6 +162,7 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
     | undefined,
   customProperties: { [key: string]: string } | undefined,
   logger: LoggerService,
+  rulesets: RuleSet[] | undefined,
 ) {
   // eslint-disable-next-line testing-library/no-await-sync-queries
   const user = await client.rest.users.getByUsername({
@@ -328,6 +341,16 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
         include_claim_keys: oidcCustomization.includeClaimKeys,
       },
     );
+  }
+
+  if (rulesets && rulesets.length > 0) {
+    for (const ruleset of rulesets) {
+      await client.rest.repos.createRepoRuleset({
+        ...ruleset,
+        repo,
+        owner,
+      });
+    }
   }
 
   return newRepo;
