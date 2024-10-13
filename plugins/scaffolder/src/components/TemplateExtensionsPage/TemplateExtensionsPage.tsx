@@ -43,7 +43,6 @@ import {
 } from '@backstage/plugin-scaffolder-react/alpha';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
-import { every, isEmpty } from 'lodash';
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
@@ -53,6 +52,7 @@ import {
   TemplateGlobalFunctions,
   TemplateGlobalValues,
 } from './TemplateGlobals';
+import { trimStart } from 'lodash';
 
 const useStyles = makeStyles(theme => ({
   code: {
@@ -114,7 +114,7 @@ export const TemplateExtensionsPageContent = ({
   useEffect(() => {
     if (value && window.location.hash) {
       try {
-        selectTab(parseLink(window.location.hash).tab);
+        selectTab(parseLink(trimStart(window.location.hash, '#')).tab);
         document.querySelector(window.location.hash)?.scrollIntoView();
       } catch (e) {
         // ignore bad link
@@ -127,14 +127,7 @@ export const TemplateExtensionsPageContent = ({
   if (loading) {
     return <Progress />;
   }
-  if (
-    error ||
-    !value ||
-    every(
-      [value.filters, value.globals.functions, value.globals.values],
-      isEmpty,
-    )
-  ) {
+  if (error || !value) {
     return (
       <div data-testid="empty">
         {error && <ErrorPanel error={error} />}

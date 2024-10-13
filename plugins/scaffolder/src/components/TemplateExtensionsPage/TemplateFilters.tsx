@@ -140,7 +140,9 @@ export const TemplateFilters = ({
   linkPage: string;
 }) => {
   return isEmpty(filters) ? (
-    <Box data-testid="no-filters" sx={{ display: 'none' }} />
+    <div data-testid="no-filters">
+      {t('templateExtensions.filters.notAvailable')}
+    </div>
   ) : (
     <div data-testid="filters">
       {Object.entries(filters).map(([filterName, filter]) => {

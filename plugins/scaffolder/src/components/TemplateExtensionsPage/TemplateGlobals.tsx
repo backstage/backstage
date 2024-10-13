@@ -33,6 +33,7 @@ import { Expanded, SchemaRenderContext } from '../RenderSchema';
 import { RenderSchema } from '../RenderSchema/RenderSchema';
 import { renderLink } from './navigation';
 import { Xlate } from './types';
+import { isEmpty } from 'lodash';
 
 const FunctionDetailContent = ({
   classes,
@@ -125,8 +126,12 @@ export const TemplateGlobalFunctions = ({
   t: Xlate<typeof scaffolderTranslationRef>;
   linkPage: string;
 }) => {
-  return (
-    <>
+  return isEmpty(functions) ? (
+    <div data-testid="no-functions">
+      {t('templateExtensions.globals.functions.notAvailable')}
+    </div>
+  ) : (
+    <div data-testid="functions">
       {Object.entries(functions).map(([fnName, fn]) => {
         const link = renderLink('function', fnName);
         return (
@@ -152,21 +157,27 @@ export const TemplateGlobalFunctions = ({
           </Box>
         );
       })}
-    </>
+    </div>
   );
 };
 
 export const TemplateGlobalValues = ({
   classes,
+  t,
   values,
   linkPage,
 }: {
   classes: ClassNameMap;
+  t: Xlate<typeof scaffolderTranslationRef>;
   values: ListTemplateExtensionsResponse['globals']['values'];
   linkPage: string;
 }) => {
-  return (
-    <>
+  return isEmpty(values) ? (
+    <div data-testid="no-values">
+      {t('templateExtensions.globals.values.notAvailable')}
+    </div>
+  ) : (
+    <div data-testid="values">
       {Object.entries(values).map(([key, gv]) => {
         const link = renderLink('value', key);
         return (
@@ -199,6 +210,6 @@ export const TemplateGlobalValues = ({
           </Box>
         );
       })}
-    </>
+    </div>
   );
 };

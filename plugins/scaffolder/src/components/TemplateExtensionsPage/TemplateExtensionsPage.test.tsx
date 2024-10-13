@@ -20,10 +20,12 @@ import {
   scaffolderApiRef,
 } from '@backstage/plugin-scaffolder-react';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
-import { within } from '@testing-library/react';
+import { fireEvent, within } from '@testing-library/react';
+import { capitalize, difference, forIn } from 'lodash';
 import React from 'react';
 import { rootRouteRef } from '../../routes';
 import { TemplateExtensionsPage } from './TemplateExtensionsPage';
+import { TabKey } from './navigation';
 
 const listTemplateExtensions = jest.fn();
 
@@ -72,11 +74,56 @@ describe('TemplateExtensionsPage', () => {
 
     expect(within(empty).getByText('contrived')).toBeInTheDocument();
   });
+  it('renders tabs', async () => {
+    listTemplateExtensions.mockResolvedValue(emptyExtensions);
+    const { getByRole, findByTestId, queryByTestId } = await r();
+
+    const tabList = getByRole('tablist');
+    expect(tabList).toBeInTheDocument();
+
+    const tabKeys: TabKey[] = ['filter', 'function', 'value'];
+
+    const tabs = Object.fromEntries(
+      tabKeys.map(
+        t =>
+          [t, within(tabList).getByText(`${capitalize(t)}s`)] as [
+            TabKey,
+            HTMLElement,
+          ],
+      ),
+    );
+
+    forIn(tabs, tab => expect(tab).toBeInTheDocument());
+
+    const verifyActiveTab = async (k: TabKey) => {
+      expect(await findByTestId(`no-${k}s`)).toBeInTheDocument();
+      difference(tabKeys, [k]).forEach(nk =>
+        expect(queryByTestId(`no-${nk}s`)).not.toBeInTheDocument(),
+      );
+    };
+
+    await verifyActiveTab('filter');
+
+    for (let i = tabKeys.length - 1; i >= 0; i--) {
+      fireEvent.click(tabs[tabKeys[i]]);
+      await verifyActiveTab(tabKeys[i]);
+    }
+  });
   it('renders with no extensions', async () => {
     listTemplateExtensions.mockResolvedValue(emptyExtensions);
-    const { getByTestId } = await r();
+    const { findByTestId, getByRole, getByTestId, queryByTestId } = await r();
 
-    expect(getByTestId('empty')).toBeInTheDocument();
+    expect(queryByTestId('empty')).not.toBeInTheDocument();
+
+    expect(getByTestId('no-filters')).toBeInTheDocument();
+
+    fireEvent.click(within(getByRole('tablist')).getByText('Functions'));
+
+    await expect(findByTestId('no-functions')).resolves.toBeInTheDocument();
+
+    fireEvent.click(within(getByRole('tablist')).getByText('Values'));
+
+    await expect(findByTestId('no-values')).resolves.toBeInTheDocument();
   });
   describe('renders filters', () => {
     it('renders filter without metadata', async () => {
@@ -87,10 +134,6 @@ describe('TemplateExtensionsPage', () => {
         },
       });
       const { getByTestId, queryByTestId } = await r();
-
-      const globals = getByTestId('globals');
-      expect(within(globals).getByTestId('no-fun')).toBeInTheDocument();
-      expect(within(globals).getByTestId('no-values')).toBeInTheDocument();
 
       const filters = getByTestId('filters');
       expect(filters).toBeInTheDocument();
@@ -123,10 +166,6 @@ describe('TemplateExtensionsPage', () => {
         },
       });
       const { getByTestId, queryByTestId } = await r();
-
-      const globals = getByTestId('globals');
-      expect(within(globals).getByTestId('no-fun')).toBeInTheDocument();
-      expect(within(globals).getByTestId('no-values')).toBeInTheDocument();
 
       const filters = getByTestId('filters');
       expect(filters).toBeInTheDocument();
@@ -173,10 +212,6 @@ describe('TemplateExtensionsPage', () => {
       });
       const { getByTestId } = await r();
 
-      const globals = getByTestId('globals');
-      expect(within(globals).getByTestId('no-fun')).toBeInTheDocument();
-      expect(within(globals).getByTestId('no-values')).toBeInTheDocument();
-
       const filters = getByTestId('filters');
       expect(filters).toBeInTheDocument();
 
@@ -222,10 +257,6 @@ describe('TemplateExtensionsPage', () => {
       });
       const { getByTestId } = await r();
 
-      const globals = getByTestId('globals');
-      expect(within(globals).getByTestId('no-fun')).toBeInTheDocument();
-      expect(within(globals).getByTestId('no-values')).toBeInTheDocument();
-
       const filters = getByTestId('filters');
       expect(filters).toBeInTheDocument();
 
@@ -268,10 +299,6 @@ describe('TemplateExtensionsPage', () => {
       });
       const { getByTestId } = await r();
 
-      const globals = getByTestId('globals');
-      expect(within(globals).getByTestId('no-fun')).toBeInTheDocument();
-      expect(within(globals).getByTestId('no-values')).toBeInTheDocument();
-
       const filters = getByTestId('filters');
       expect(filters).toBeInTheDocument();
 
@@ -310,19 +337,16 @@ describe('TemplateExtensionsPage', () => {
           },
         },
       });
-      const { getByTestId } = await r();
+      const { findByTestId, getByRole } = await r();
 
-      expect(getByTestId('no-filters')).toBeInTheDocument();
+      fireEvent.click(within(getByRole('tablist')).getByText('Functions'));
 
-      const globals = getByTestId('globals');
-      expect(within(globals).getByTestId('no-values')).toBeInTheDocument();
+      const functions = await findByTestId('functions');
 
-      const truthy = within(within(globals).getByTestId('fun')).getByTestId(
-        'truthy',
-      );
+      const truthy = within(functions).getByTestId('truthy');
       const title = within(truthy).getByText('truthy');
       expect(title).toBeInTheDocument();
-      expect(title.id).toBe('global_truthy');
+      expect(title.id).toBe('function_truthy');
 
       const link = within(truthy).getByRole('link');
       expect(link).toBeInTheDocument();
@@ -369,21 +393,17 @@ describe('TemplateExtensionsPage', () => {
           },
         },
       });
-      const { getByTestId } = await r();
+      const { findByTestId, getByRole } = await r();
 
-      expect(getByTestId('no-filters')).toBeInTheDocument();
+      fireEvent.click(within(getByRole('tablist')).getByText('Values'));
 
-      const globals = getByTestId('globals');
-      expect(within(globals).getByTestId('no-fun')).toBeInTheDocument();
-
-      const msv = within(within(globals).getByTestId('values')).getByTestId(
-        'msv',
-      );
+      const values = await findByTestId('values');
+      const msv = within(values).getByTestId('msv');
       expect(msv).toBeInTheDocument();
 
       const title = within(msv).getByText('msv');
       expect(title).toBeInTheDocument();
-      expect(title.id).toBe('global_msv');
+      expect(title.id).toBe('value_msv');
 
       const link = within(msv).getByRole('link');
       expect(link).toBeInTheDocument();
