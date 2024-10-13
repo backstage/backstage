@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-import { default as feature } from './alpha';
-
-/** @public */
-const _feature = feature;
-export default _feature;
-
 /**
  * A Backstage catalog backend module that helps integrate towards Github
  *
  * @packageDocumentation
  */
 
+export { default } from './module';
 export { GithubLocationAnalyzer } from './analyzers/GithubLocationAnalyzer';
 export type { GithubLocationAnalyzerOptions } from './analyzers/GithubLocationAnalyzer';
 export { GithubDiscoveryProcessor } from './processors/GithubDiscoveryProcessor';

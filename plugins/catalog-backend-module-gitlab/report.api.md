@@ -19,9 +19,9 @@ import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
 import { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugin-api';
 import { UserEntity } from '@backstage/catalog-model';
 
-// @public (undocumented)
-const _feature: BackendFeature;
-export default _feature;
+// @public
+const catalogModuleGitlabDiscoveryEntityProvider: BackendFeature;
+export default catalogModuleGitlabDiscoveryEntityProvider;
 
 // @public
 export class GitlabDiscoveryEntityProvider implements EntityProvider {
@@ -182,8 +182,6 @@ export interface UserTransformerOptions {
 // src/GitLabDiscoveryProcessor.d.ts:14:5 - (ae-undocumented) Missing documentation for "fromConfig".
 // src/GitLabDiscoveryProcessor.d.ts:20:5 - (ae-undocumented) Missing documentation for "getProcessorName".
 // src/GitLabDiscoveryProcessor.d.ts:21:5 - (ae-undocumented) Missing documentation for "readLocation".
-// src/index.d.ts:2:15 - (ae-undocumented) Missing documentation for "_feature".
-// src/index.d.ts:4:1 - (ae-misplaced-package-tag) The @packageDocumentation comment must appear at the top of entry point *.d.ts file
 // src/lib/types.d.ts:48:1 - (ae-undocumented) Missing documentation for "GitLabGroupSamlIdentity".
 // src/lib/types.d.ts:234:5 - (ae-undocumented) Missing documentation for "group".
 // src/lib/types.d.ts:235:5 - (ae-undocumented) Missing documentation for "providerConfig".
@@ -203,6 +201,4 @@ export interface UserTransformerOptions {
 // src/providers/GitlabOrgDiscoveryEntityProvider.d.ts:21:5 - (ae-undocumented) Missing documentation for "fromConfig".
 // src/providers/GitlabOrgDiscoveryEntityProvider.d.ts:31:5 - (ae-undocumented) Missing documentation for "getProviderName".
 // src/providers/GitlabOrgDiscoveryEntityProvider.d.ts:32:5 - (ae-undocumented) Missing documentation for "connect".
-
-// (No @packageDocumentation comment for this package)
 ```

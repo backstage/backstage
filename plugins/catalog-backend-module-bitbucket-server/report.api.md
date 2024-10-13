@@ -112,13 +112,11 @@ export type BitbucketServerRepository = {
 };
 
 // @public (undocumented)
-const _feature: BackendFeature;
-export default _feature;
+const catalogModuleBitbucketServerEntityProvider: BackendFeature;
+export default catalogModuleBitbucketServerEntityProvider;
 
 // Warnings were encountered during analysis:
 //
-// src/index.d.ts:2:15 - (ae-undocumented) Missing documentation for "_feature".
-// src/index.d.ts:4:1 - (ae-misplaced-package-tag) The @packageDocumentation comment must appear at the top of entry point *.d.ts file
 // src/lib/BitbucketServerClient.d.ts:11:5 - (ae-undocumented) Missing documentation for "fromConfig".
 // src/lib/BitbucketServerClient.d.ts:17:5 - (ae-undocumented) Missing documentation for "listProjects".
 // src/lib/BitbucketServerClient.d.ts:20:5 - (ae-undocumented) Missing documentation for "listRepositories".
@@ -129,8 +127,7 @@ export default _feature;
 // src/lib/BitbucketServerClient.d.ts:56:1 - (ae-undocumented) Missing documentation for "BitbucketServerPagedResponse".
 // src/lib/types.d.ts:2:1 - (ae-undocumented) Missing documentation for "BitbucketServerRepository".
 // src/lib/types.d.ts:14:1 - (ae-undocumented) Missing documentation for "BitbucketServerProject".
+// src/module/catalogModuleBitbucketServerEntityProvider.d.ts:4:22 - (ae-undocumented) Missing documentation for "catalogModuleBitbucketServerEntityProvider".
 // src/providers/BitbucketServerEntityProvider.d.ts:20:5 - (ae-undocumented) Missing documentation for "fromConfig".
 // src/providers/BitbucketServerEntityProvider.d.ts:32:5 - (ae-undocumented) Missing documentation for "refresh".
-
-// (No @packageDocumentation comment for this package)
 ```

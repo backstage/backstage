@@ -9,16 +9,25 @@ import { CatalogProcessorEmit } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
+import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { GroupEntity } from '@backstage/catalog-model';
+import { GroupTransformer as GroupTransformer_2 } from '@backstage/plugin-catalog-backend-module-msgraph';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
+import { OrganizationTransformer as OrganizationTransformer_2 } from '@backstage/plugin-catalog-backend-module-msgraph';
+import { ProviderConfigTransformer as ProviderConfigTransformer_2 } from '@backstage/plugin-catalog-backend-module-msgraph';
 import { Response as Response_2 } from 'node-fetch';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
 import { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugin-api';
 import { TokenCredential } from '@azure/identity';
 import { UserEntity } from '@backstage/catalog-model';
+import { UserTransformer as UserTransformer_2 } from '@backstage/plugin-catalog-backend-module-msgraph';
+
+// @public
+const catalogModuleMicrosoftGraphOrgEntityProvider: BackendFeature;
+export default catalogModuleMicrosoftGraphOrgEntityProvider;
 
 // @public
 export function defaultGroupTransformer(
@@ -36,10 +45,6 @@ export function defaultUserTransformer(
   user: MicrosoftGraph.User,
   userPhoto?: string,
 ): Promise<UserEntity | undefined>;
-
-// @public (undocumented)
-const _feature: BackendFeature;
-export default _feature;
 
 // @public
 export type GroupMember =
@@ -172,6 +177,29 @@ export type MicrosoftGraphOrgEntityProviderOptions =
         | Record<string, ProviderConfigTransformer>;
     };
 
+// @public
+export const microsoftGraphOrgEntityProviderTransformExtensionPoint: ExtensionPoint<MicrosoftGraphOrgEntityProviderTransformsExtensionPoint>;
+
+// @public
+export interface MicrosoftGraphOrgEntityProviderTransformsExtensionPoint {
+  setGroupTransformer(
+    transformer: GroupTransformer_2 | Record<string, GroupTransformer_2>,
+  ): void;
+  setOrganizationTransformer(
+    transformer:
+      | OrganizationTransformer_2
+      | Record<string, OrganizationTransformer_2>,
+  ): void;
+  setProviderConfigTransformer(
+    transformer:
+      | ProviderConfigTransformer_2
+      | Record<string, ProviderConfigTransformer_2>,
+  ): void;
+  setUserTransformer(
+    transformer: UserTransformer_2 | Record<string, UserTransformer_2>,
+  ): void;
+}
+
 // @public @deprecated
 export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
   constructor(options: {
@@ -298,8 +326,6 @@ export type UserTransformer = (
 
 // Warnings were encountered during analysis:
 //
-// src/index.d.ts:2:15 - (ae-undocumented) Missing documentation for "_feature".
-// src/index.d.ts:4:1 - (ae-misplaced-package-tag) The @packageDocumentation comment must appear at the top of entry point *.d.ts file
 // src/microsoftGraph/client.d.ts:109:5 - (ae-undocumented) Missing documentation for "getUserPhoto".
 // src/microsoftGraph/client.d.ts:129:5 - (ae-undocumented) Missing documentation for "getGroupPhoto".
 // src/microsoftGraph/client.d.ts:176:5 - (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/plugin-catalog-backend-module-msgraph" does not have an export "entityName"
@@ -307,6 +333,4 @@ export type UserTransformer = (
 // src/processors/MicrosoftGraphOrgReaderProcessor.d.ts:18:5 - (ae-undocumented) Missing documentation for "fromConfig".
 // src/processors/MicrosoftGraphOrgReaderProcessor.d.ts:31:5 - (ae-undocumented) Missing documentation for "getProcessorName".
 // src/processors/MicrosoftGraphOrgReaderProcessor.d.ts:32:5 - (ae-undocumented) Missing documentation for "readLocation".
-
-// (No @packageDocumentation comment for this package)
 ```

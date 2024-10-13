@@ -12,8 +12,8 @@ import { SchedulerService } from '@backstage/backend-plugin-api';
 import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
-const _feature: BackendFeature;
-export default _feature;
+const catalogModuleGerritEntityProvider: BackendFeature;
+export default catalogModuleGerritEntityProvider;
 
 // @public (undocumented)
 export class GerritEntityProvider implements EntityProvider {
@@ -36,7 +36,7 @@ export class GerritEntityProvider implements EntityProvider {
 
 // Warnings were encountered during analysis:
 //
-// src/index.d.ts:2:15 - (ae-undocumented) Missing documentation for "_feature".
+// src/module/catalogModuleGerritEntityProvider.d.ts:4:22 - (ae-undocumented) Missing documentation for "catalogModuleGerritEntityProvider".
 // src/providers/GerritEntityProvider.d.ts:5:1 - (ae-undocumented) Missing documentation for "GerritEntityProvider".
 // src/providers/GerritEntityProvider.d.ts:11:5 - (ae-undocumented) Missing documentation for "fromConfig".
 // src/providers/GerritEntityProvider.d.ts:17:5 - (ae-undocumented) Missing documentation for "getProviderName".

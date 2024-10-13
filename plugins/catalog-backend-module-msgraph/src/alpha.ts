@@ -14,5 +14,19 @@
  * limitations under the License.
  */
 
-export * from './module';
-export { default } from './module';
+import { default as feature } from './module';
+import {
+  MicrosoftGraphOrgEntityProviderTransformsExtensionPoint as ExtensionPoint,
+  microsoftGraphOrgEntityProviderTransformExtensionPoint as extensionPoint,
+} from './module';
+
+/** @alpha */
+const _feature = feature;
+export default _feature;
+
+/** @alpha */
+export type MicrosoftGraphOrgEntityProviderTransformsExtensionPoint =
+  ExtensionPoint;
+/** @alpha */
+export const microsoftGraphOrgEntityProviderTransformExtensionPoint =
+  extensionPoint;

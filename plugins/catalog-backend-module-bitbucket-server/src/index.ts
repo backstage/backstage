@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-import { default as feature } from './alpha';
-
-/** @public */
-const _feature = feature;
-export default _feature;
-
 /**
  * A Backstage catalog backend module that helps integrate towards Bitbucket Server
  *
  * @packageDocumentation
  */
 
+export { default } from './module';
 export { BitbucketServerClient } from './lib';
 export type {
   BitbucketServerProject,

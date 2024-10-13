@@ -55,19 +55,15 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
   refresh(logger: LoggerService): Promise<void>;
 }
 
-// @public (undocumented)
-const _feature: BackendFeature;
-export default _feature;
+// @public
+const catalogModuleAzureDevOpsEntityProvider: BackendFeature;
+export default catalogModuleAzureDevOpsEntityProvider;
 
 // Warnings were encountered during analysis:
 //
-// src/index.d.ts:2:15 - (ae-undocumented) Missing documentation for "_feature".
-// src/index.d.ts:4:1 - (ae-misplaced-package-tag) The @packageDocumentation comment must appear at the top of entry point *.d.ts file
 // src/processors/AzureDevOpsDiscoveryProcessor.d.ts:26:5 - (ae-undocumented) Missing documentation for "fromConfig".
 // src/processors/AzureDevOpsDiscoveryProcessor.d.ts:33:5 - (ae-undocumented) Missing documentation for "getProcessorName".
 // src/processors/AzureDevOpsDiscoveryProcessor.d.ts:34:5 - (ae-undocumented) Missing documentation for "readLocation".
 // src/providers/AzureDevOpsEntityProvider.d.ts:18:5 - (ae-undocumented) Missing documentation for "fromConfig".
 // src/providers/AzureDevOpsEntityProvider.d.ts:29:5 - (ae-undocumented) Missing documentation for "refresh".
-
-// (No @packageDocumentation comment for this package)
 ```

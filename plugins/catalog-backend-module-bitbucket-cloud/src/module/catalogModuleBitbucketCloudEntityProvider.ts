@@ -26,7 +26,7 @@ import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { BitbucketCloudEntityProvider } from '../providers/BitbucketCloudEntityProvider';
 
 /**
- * @alpha
+ * @public
  */
 export const catalogModuleBitbucketCloudEntityProvider = createBackendModule({
   pluginId: 'catalog',

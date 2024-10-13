@@ -12,12 +12,19 @@ import type { DeferredEntity } from '@backstage/plugin-catalog-node';
 import type { DurationObjectUnits } from 'luxon';
 import { EventParams } from '@backstage/plugin-events-node';
 import { EventSubscriber } from '@backstage/plugin-events-node';
+import { ExtensionPoint } from '@backstage/backend-plugin-api';
+import { IncrementalEntityProvider as IncrementalEntityProvider_2 } from '@backstage/plugin-catalog-backend-module-incremental-ingestion';
+import { IncrementalEntityProviderOptions as IncrementalEntityProviderOptions_2 } from '@backstage/plugin-catalog-backend-module-incremental-ingestion';
 import type { Logger } from 'winston';
 import type { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import type { PluginDatabaseManager } from '@backstage/backend-common';
 import { Router } from 'express';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
+
+// @public
+const catalogModuleIncrementalIngestionEntityProvider: BackendFeature;
+export default catalogModuleIncrementalIngestionEntityProvider;
 
 // @public
 export type EntityIteratorResult<T> =
@@ -31,10 +38,6 @@ export type EntityIteratorResult<T> =
       entities?: DeferredEntity[];
       cursor?: T;
     };
-
-// @public (undocumented)
-const _feature: BackendFeature;
-export default _feature;
 
 // @public (undocumented)
 export class IncrementalCatalogBuilder {
@@ -90,6 +93,17 @@ export interface IncrementalEntityProviderOptions {
   restLength: DurationObjectUnits;
 }
 
+// @public
+export interface IncrementalIngestionProviderExtensionPoint {
+  addProvider<TCursor, TContext>(config: {
+    options: IncrementalEntityProviderOptions_2;
+    provider: IncrementalEntityProvider_2<TCursor, TContext>;
+  }): void;
+}
+
+// @public
+export const incrementalIngestionProvidersExtensionPoint: ExtensionPoint<IncrementalIngestionProviderExtensionPoint>;
+
 // @public (undocumented)
 export type PluginEnvironment = {
   logger: Logger;
@@ -102,13 +116,9 @@ export type PluginEnvironment = {
 
 // Warnings were encountered during analysis:
 //
-// src/index.d.ts:2:15 - (ae-undocumented) Missing documentation for "_feature".
-// src/index.d.ts:4:1 - (ae-misplaced-package-tag) The @packageDocumentation comment must appear at the top of entry point *.d.ts file
 // src/service/IncrementalCatalogBuilder.d.ts:6:1 - (ae-undocumented) Missing documentation for "IncrementalCatalogBuilder".
 // src/service/IncrementalCatalogBuilder.d.ts:20:5 - (ae-undocumented) Missing documentation for "build".
 // src/service/IncrementalCatalogBuilder.d.ts:23:5 - (ae-undocumented) Missing documentation for "addIncrementalEntityProvider".
 // src/types.d.ts:106:1 - (ae-undocumented) Missing documentation for "IncrementalEntityProviderOptions".
 // src/types.d.ts:145:1 - (ae-undocumented) Missing documentation for "PluginEnvironment".
-
-// (No @packageDocumentation comment for this package)
 ```
