@@ -22,9 +22,10 @@ export interface PackageManager {
   name(): string;
   version(): string;
   lockfilePath(): string;
-  run(args: string[], options: SpawnOptionsPartialEnv): Promise<void>;
+  run(args: string[], options?: SpawnOptionsPartialEnv): Promise<void>;
   fetchPackageInfo(name: string): Promise<PackageInfo>;
-  loadLockfile(gitRef?: string): Promise<Lockfile>;
+  loadLockfile(): Promise<Lockfile>;
+  parseLockfile(contents: string): Promise<Lockfile>;
   supportsBackstageVersionProtocol(): Promise<boolean>;
 }
 

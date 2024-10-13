@@ -43,13 +43,10 @@ export async function command(): Promise<void> {
           await fs.remove(resolvePath(pkg.dir, 'dist-types'));
           await fs.remove(resolvePath(pkg.dir, 'coverage'));
         } else if (cleanScript) {
-          await pacman.runScript('clean');
-          // const result = await execFile('yarn', ['run', 'clean'], {
-          //   cwd: pkg.dir,
-          //   shell: true,
-          // });
-          // process.stdout.write(result.stdout);
-          // process.stderr.write(result.stderr);
+          await pacman.run(['run', 'clean'], {
+            cwd: pkg.dir,
+            shell: true,
+          });
         }
       }
     }),

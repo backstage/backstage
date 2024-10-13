@@ -23,7 +23,6 @@ import { YarnLockfile } from './Lockfile';
 import { paths } from '../../paths';
 import { getHasYarnPlugin } from './plugin';
 import fs from 'fs-extra';
-import { GitUtils } from '../../git';
 import { run, execFile, SpawnOptionsPartialEnv } from '../../run';
 
 export class Yarn implements PackageManager {
@@ -46,7 +45,7 @@ export class Yarn implements PackageManager {
     return 'yarn.lock';
   }
 
-  async run(args: string[], options: SpawnOptionsPartialEnv): Promise<void> {
+  async run(args: string[], options?: SpawnOptionsPartialEnv): Promise<void> {
     await run('yarn', args, options);
   }
 
@@ -54,16 +53,12 @@ export class Yarn implements PackageManager {
     return fetchPackageInfo(name, this.yarnVersion);
   }
 
-  async loadLockfile(gitRef?: string): Promise<Lockfile> {
-    const lockfilePath = paths.resolveTargetRoot('yarn.lock');
+  async loadLockfile(): Promise<Lockfile> {
+    const lockfilePath = paths.resolveTargetRoot(this.lockfilePath());
+    return this.parseLockfile(await fs.readFile(lockfilePath, 'utf8'));
+  }
 
-    let lockfileContents: string;
-    if (gitRef) {
-      lockfileContents = await GitUtils.readFileAtRef('yarn.lock', gitRef);
-    } else {
-      lockfileContents = await fs.readFile(lockfilePath, 'utf8');
-    }
-
+  async parseLockfile(lockfileContents: string): Promise<Lockfile> {
     return YarnLockfile.parse(lockfileContents);
   }
 

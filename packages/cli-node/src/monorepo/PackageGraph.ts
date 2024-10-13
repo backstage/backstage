@@ -348,7 +348,9 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
       let otherLockfile: Lockfile;
       try {
         thisLockfile = await pacman.loadLockfile();
-        otherLockfile = await pacman.loadLockfile(options.ref);
+        otherLockfile = await pacman.parseLockfile(
+          await GitUtils.readFileAtRef(pacman.lockfilePath(), options.ref),
+        );
       } catch (error) {
         console.warn(
           `Failed to read lockfiles, assuming all packages have changed, ${error}`,

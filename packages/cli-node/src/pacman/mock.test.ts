@@ -38,7 +38,11 @@ export class MockPackageManager implements PackageManager {
     throw new Error('Method not implemented.');
   }
 
-  loadLockfile(_gitRef?: string | undefined): Promise<Lockfile> {
+  loadLockfile(): Promise<Lockfile> {
+    throw new Error('Method not implemented.');
+  }
+
+  parseLockfile(_contents: string): Promise<Lockfile> {
     throw new Error('Method not implemented.');
   }
 

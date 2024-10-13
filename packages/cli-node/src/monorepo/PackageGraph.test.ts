@@ -183,9 +183,23 @@ describe('PackageGraph', () => {
     const graph = PackageGraph.fromPackages(testPackages);
 
     const mockPackageManager = new MockPackageManager();
-    jest
+    jestw
       .spyOn(pacman, 'detectPackageManager')
       .mockResolvedValueOnce(mockPackageManager);
+
+    mockPackageManager.setLockFile(`
+a@^1:
+  version: "1.0.0"
+
+c@^1:
+  version: "1.0.0"
+  dependencies:
+      c-dep: ^1
+
+c-dep@^2:
+  version: "2.0.0"
+  integrity: sha512-xyz-other
+`);
 
     mockListChangedFiles.mockResolvedValueOnce(
       [
@@ -194,6 +208,7 @@ describe('PackageGraph', () => {
         mockPackageManager.lockfilePath(),
       ].sort(),
     );
+
     mockReadFileAtRef.mockResolvedValueOnce(`
 a@^1:
   version: "1.0.0"
@@ -207,21 +222,6 @@ c-dep@^2:
   version: "2.0.0"
   integrity: sha512-xyz
 `);
-    jest.spyOn(Lockfile, 'load').mockResolvedValueOnce(
-      Lockfile.parse(`
-a@^1:
-  version: "1.0.0"
-
-c@^1:
-  version: "1.0.0"
-  dependencies:
-      c-dep: ^1
-
-c-dep@^2:
-  version: "2.0.0"
-  integrity: sha512-xyz-other
-`),
-    );
 
     await expect(
       graph
