@@ -54,10 +54,6 @@ export const DefaultTechDocsCollatorFactory: typeof DefaultTechDocsCollatorFacto
 // @public @deprecated (undocumented)
 export type DocsBuildStrategy = DocsBuildStrategy_2;
 
-// @public (undocumented)
-const _feature: BackendFeature;
-export default _feature;
-
 // @public
 export type OutOfTheBoxDeploymentOptions = {
   preparers: PreparerBuilder;
@@ -116,14 +112,17 @@ export type TechDocsCollatorOptions = {
 // @public @deprecated (undocumented)
 export type TechDocsDocument = TechDocsDocument_2;
 
+// @public
+const techdocsPlugin: BackendFeature;
+export default techdocsPlugin;
+
 export * from '@backstage/plugin-techdocs-node';
 
 // Warnings were encountered during analysis:
 //
-// src/index.d.ts:13:15 - (ae-undocumented) Missing documentation for "_feature".
-// src/index.d.ts:19:1 - (ae-undocumented) Missing documentation for "DocsBuildStrategy".
-// src/index.d.ts:24:1 - (ae-undocumented) Missing documentation for "ShouldBuildParameters".
-// src/index.d.ts:31:1 - (ae-undocumented) Missing documentation for "TechDocsDocument".
+// src/index.d.ts:17:1 - (ae-undocumented) Missing documentation for "DocsBuildStrategy".
+// src/index.d.ts:22:1 - (ae-undocumented) Missing documentation for "ShouldBuildParameters".
+// src/index.d.ts:29:1 - (ae-undocumented) Missing documentation for "TechDocsDocument".
 // src/search/DefaultTechDocsCollator.d.ts:32:5 - (ae-undocumented) Missing documentation for "type".
 // src/search/DefaultTechDocsCollator.d.ts:33:5 - (ae-undocumented) Missing documentation for "visibilityPermission".
 // src/search/DefaultTechDocsCollator.d.ts:35:5 - (ae-undocumented) Missing documentation for "fromConfig".

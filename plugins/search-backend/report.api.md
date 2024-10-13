@@ -18,9 +18,9 @@ import { SearchEngine } from '@backstage/plugin-search-backend-node';
 // @public @deprecated (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
-// @public (undocumented)
-const _feature: BackendFeature;
-export default _feature;
+// @public
+const _default: BackendFeature;
+export default _default;
 
 // @public @deprecated (undocumented)
 export type RouterOptions = {
@@ -36,7 +36,6 @@ export type RouterOptions = {
 
 // Warnings were encountered during analysis:
 //
-// src/index.d.ts:8:15 - (ae-undocumented) Missing documentation for "_feature".
 // src/service/router.d.ts:11:1 - (ae-undocumented) Missing documentation for "RouterOptions".
 // src/service/router.d.ts:25:1 - (ae-undocumented) Missing documentation for "createRouter".
 ```

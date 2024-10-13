@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-import { default as feature } from './alpha';
-
-/** @public */
-const _feature = feature;
-export default _feature;
-
+export { default } from './plugin';
 export * from './deprecated';
 export * from './database';

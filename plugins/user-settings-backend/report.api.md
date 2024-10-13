@@ -12,9 +12,9 @@ import { SignalsService } from '@backstage/plugin-signals-node';
 // @public @deprecated
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
-// @public (undocumented)
-const _feature: BackendFeature;
-export default _feature;
+// @public
+const _default: BackendFeature;
+export default _default;
 
 // @public @deprecated
 export type RouterOptions = {
@@ -22,10 +22,6 @@ export type RouterOptions = {
   identity: IdentityApi;
   signals?: SignalsService;
 };
-
-// Warnings were encountered during analysis:
-//
-// src/index.d.ts:2:15 - (ae-undocumented) Missing documentation for "_feature".
 
 // (No @packageDocumentation comment for this package)
 ```

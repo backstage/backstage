@@ -43,9 +43,9 @@ export class EventsBackend {
   start(): Promise<void>;
 }
 
-// @public (undocumented)
-const _feature: BackendFeature;
-export default _feature;
+// @public
+const eventsPlugin: BackendFeature;
+export default eventsPlugin;
 
 // @public
 export class HttpPostIngressEventPublisher {
@@ -64,7 +64,6 @@ export class HttpPostIngressEventPublisher {
 
 // Warnings were encountered during analysis:
 //
-// src/index.d.ts:9:15 - (ae-undocumented) Missing documentation for "_feature".
 // src/service/DefaultEventBroker.d.ts:21:5 - (ae-undocumented) Missing documentation for "publish".
 // src/service/DefaultEventBroker.d.ts:22:5 - (ae-undocumented) Missing documentation for "subscribe".
 // src/service/EventsBackend.d.ts:14:5 - (ae-undocumented) Missing documentation for "setEventBroker".

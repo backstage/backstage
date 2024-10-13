@@ -12,12 +12,12 @@ import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 
+// @public
+const appPlugin: BackendFeature;
+export default appPlugin;
+
 // @public @deprecated (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
-
-// @public (undocumented)
-const _feature: BackendFeature;
-export default _feature;
 
 // @public @deprecated (undocumented)
 export interface RouterOptions {
@@ -38,7 +38,6 @@ export interface RouterOptions {
 
 // Warnings were encountered during analysis:
 //
-// src/index.d.ts:8:15 - (ae-undocumented) Missing documentation for "_feature".
 // src/service/router.d.ts:9:1 - (ae-undocumented) Missing documentation for "RouterOptions".
 // src/service/router.d.ts:10:5 - (ae-undocumented) Missing documentation for "config".
 // src/service/router.d.ts:11:5 - (ae-undocumented) Missing documentation for "logger".

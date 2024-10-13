@@ -44,7 +44,7 @@ import * as winston from 'winston';
 
 /**
  * The TechDocs plugin is responsible for serving and building documentation for any entity.
- * @alpha
+ * @public
  */
 export const techdocsPlugin = createBackendPlugin({
   pluginId: 'techdocs',

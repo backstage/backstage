@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-import { kubernetesPlugin as feature } from './plugin';
-
 /**
  * A Backstage backend plugin that integrates towards Kubernetes
  *
  * @packageDocumentation
  */
 
+export { kubernetesPlugin as default } from './plugin';
 export * from './auth';
 export * from './service';
 export * from './types';
-
-/** @public */
-const _feature = feature;
-export default _feature;

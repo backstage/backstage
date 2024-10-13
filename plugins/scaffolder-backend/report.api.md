@@ -505,10 +505,6 @@ export type DatabaseTaskStoreOptions = {
 // @public @deprecated
 export const executeShellCommand: typeof executeShellCommand_2;
 
-// @public (undocumented)
-const _feature: BackendFeature;
-export default _feature;
-
 // @public @deprecated
 export const fetchContents: typeof fetchContents_2;
 
@@ -564,6 +560,10 @@ export type RunCommandOptions = ExecuteShellCommandOptions;
 
 // @public @deprecated
 export const ScaffolderEntitiesProcessor: typeof ScaffolderEntitiesProcessor_2;
+
+// @public
+const scaffolderPlugin: BackendFeature;
+export default scaffolderPlugin;
 
 // @public @deprecated
 export type SerializedTask = SerializedTask_2;
@@ -851,7 +851,6 @@ export type TemplatePermissionRuleInput<
 // src/deprecated.d.ts:13:22 - (ae-undocumented) Missing documentation for "createTemplateAction".
 // src/deprecated.d.ts:18:1 - (ae-undocumented) Missing documentation for "TaskSecrets".
 // src/deprecated.d.ts:23:1 - (ae-undocumented) Missing documentation for "TemplateAction".
-// src/index.d.ts:10:15 - (ae-undocumented) Missing documentation for "_feature".
 // src/lib/templating/SecureTemplater.d.ts:6:1 - (ae-undocumented) Missing documentation for "TemplateFilter".
 // src/lib/templating/SecureTemplater.d.ts:11:1 - (ae-undocumented) Missing documentation for "TemplateGlobal".
 // src/scaffolder/actions/TemplateActionRegistry.d.ts:8:5 - (ae-undocumented) Missing documentation for "register".

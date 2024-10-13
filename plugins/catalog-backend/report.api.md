@@ -213,6 +213,10 @@ export type CatalogPermissionRuleInput<
 > = PermissionRule<Entity, EntitiesSearchFilter_2, 'catalog-entity', TParams>;
 
 // @public
+const catalogPlugin: BackendFeature;
+export default catalogPlugin;
+
+// @public
 export interface CatalogProcessingEngine {
   // (undocumented)
   start(): Promise<void>;
@@ -349,10 +353,6 @@ export type EntityProviderMutation = EntityProviderMutation_2;
 
 // @public @deprecated (undocumented)
 export type EntityRelationSpec = EntityRelationSpec_2;
-
-// @public (undocumented)
-const _feature: BackendFeature;
-export default _feature;
 
 // @public (undocumented)
 export class FileReaderProcessor implements CatalogProcessor_2 {
@@ -521,7 +521,6 @@ export class UrlReaderProcessor implements CatalogProcessor_2 {
 // src/deprecated.d.ts:207:22 - (ae-undocumented) Missing documentation for "defaultCatalogCollatorEntityTransformer".
 // src/deprecated.d.ts:212:1 - (ae-undocumented) Missing documentation for "DefaultCatalogCollatorFactoryOptions".
 // src/deprecated.d.ts:217:1 - (ae-undocumented) Missing documentation for "CatalogCollatorEntityTransformer".
-// src/index.d.ts:14:15 - (ae-undocumented) Missing documentation for "_feature".
 // src/processing/types.d.ts:31:5 - (ae-undocumented) Missing documentation for "start".
 // src/processing/types.d.ts:32:5 - (ae-undocumented) Missing documentation for "stop".
 // src/processors/AnnotateLocationEntityProcessor.d.ts:6:1 - (ae-undocumented) Missing documentation for "AnnotateLocationEntityProcessor".

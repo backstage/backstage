@@ -14,5 +14,10 @@
  * limitations under the License.
  */
 
+import { catalogPlugin } from './service/CatalogPlugin';
+
+/** @alpha */
+const _feature = catalogPlugin;
+export default _feature;
+
 export * from './permissions';
-export { catalogPlugin as default } from './service/CatalogPlugin';

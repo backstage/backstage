@@ -39,7 +39,7 @@ class PolicyExtensionPointImpl implements PolicyExtensionPoint {
 /**
  * Permission plugin
  *
- * @alpha
+ * @public
  */
 export const permissionPlugin = createBackendPlugin({
   pluginId: 'permission',

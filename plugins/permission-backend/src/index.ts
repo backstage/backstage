@@ -14,14 +14,9 @@
  * limitations under the License.
  */
 
-import { permissionPlugin as feature } from './plugin';
-
 /**
  * Backend for Backstage authorization and permissions.
  * @packageDocumentation
  */
+export { permissionPlugin as default } from './plugin';
 export * from './service';
-
-/** @public */
-const _feature = feature;
-export default _feature;

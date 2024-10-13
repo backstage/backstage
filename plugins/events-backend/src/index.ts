@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-import { eventsPlugin as feature } from './service/EventsPlugin';
-
 /**
  * The Backstage backend plugin "events" that provides the event management.
  *
  * @packageDocumentation
  */
 
+export { eventsPlugin as default } from './service/EventsPlugin';
 export * from './deprecated';
 export { HttpPostIngressEventPublisher } from './service/http';
-
-/** @public */
-const _feature = feature;
-export default _feature;

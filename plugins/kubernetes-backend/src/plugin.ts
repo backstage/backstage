@@ -139,9 +139,8 @@ class AuthStrategy implements KubernetesAuthStrategyExtensionPoint {
 
 /**
  * This is the backend plugin that provides the Kubernetes integration.
- * @alpha
+ * @public
  */
-
 export const kubernetesPlugin = createBackendPlugin({
   pluginId: 'kubernetes',
   register(env) {

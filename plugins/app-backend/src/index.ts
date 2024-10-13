@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
-import { appPlugin as feature } from './service/appPlugin';
-
 /**
  * A Backstage backend plugin that serves the Backstage frontend app
  *
  * @packageDocumentation
  */
 
+export { appPlugin as default } from './service/appPlugin';
 export * from './service/router';
-
-/** @public */
-const _feature = feature;
-export default _feature;

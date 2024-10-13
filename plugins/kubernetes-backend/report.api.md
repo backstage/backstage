@@ -122,10 +122,6 @@ export type DispatchStrategyOptions = {
   };
 };
 
-// @public (undocumented)
-const _feature: BackendFeature;
-export default _feature;
-
 // @public @deprecated (undocumented)
 export type FetchResponseWrapper = k8sAuthTypes.FetchResponseWrapper;
 
@@ -338,6 +334,10 @@ export interface KubernetesObjectsProviderOptions {
 export type KubernetesObjectTypes = k8sAuthTypes.KubernetesObjectTypes;
 
 // @public
+const kubernetesPlugin: BackendFeature;
+export default kubernetesPlugin;
+
+// @public
 export class KubernetesProxy {
   constructor(options: KubernetesProxyOptions);
   // (undocumented)
@@ -472,7 +472,6 @@ export type SigningCreds = {
 // src/auth/ServiceAccountStrategy.d.ts:9:5 - (ae-undocumented) Missing documentation for "presentAuthMetadata".
 // src/auth/types.d.ts:5:1 - (ae-undocumented) Missing documentation for "AuthenticationStrategy".
 // src/auth/types.d.ts:9:1 - (ae-undocumented) Missing documentation for "KubernetesCredential".
-// src/index.d.ts:10:15 - (ae-undocumented) Missing documentation for "_feature".
 // src/service/KubernetesBuilder.d.ts:14:1 - (ae-undocumented) Missing documentation for "KubernetesEnvironment".
 // src/service/KubernetesBuilder.d.ts:15:5 - (ae-undocumented) Missing documentation for "logger".
 // src/service/KubernetesBuilder.d.ts:16:5 - (ae-undocumented) Missing documentation for "config".
