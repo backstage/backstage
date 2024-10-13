@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-import { default as feature } from './alpha';
-
-/** @public */
-const _feature = feature;
-export default _feature;
-
 /**
  * The module `gerrit` for the Backstage backend plugin "events-backend"
  * adding an event router for Gerrit.
@@ -27,4 +21,5 @@ export default _feature;
  * @packageDocumentation
  */
 
+export { eventsModuleGerritEventRouter as default } from './service/eventsModuleGerritEventRouter';
 export { GerritEventRouter } from './router/GerritEventRouter';

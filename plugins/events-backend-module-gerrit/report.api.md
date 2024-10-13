@@ -8,9 +8,9 @@ import { EventParams } from '@backstage/plugin-events-node';
 import { EventsService } from '@backstage/plugin-events-node';
 import { SubTopicEventRouter } from '@backstage/plugin-events-node';
 
-// @public (undocumented)
-const _feature: BackendFeature;
-export default _feature;
+// @public
+const eventsModuleGerritEventRouter: BackendFeature;
+export default eventsModuleGerritEventRouter;
 
 // @public
 export class GerritEventRouter extends SubTopicEventRouter {
@@ -23,10 +23,6 @@ export class GerritEventRouter extends SubTopicEventRouter {
 
 // Warnings were encountered during analysis:
 //
-// src/index.d.ts:2:15 - (ae-undocumented) Missing documentation for "_feature".
-// src/index.d.ts:4:1 - (ae-misplaced-package-tag) The @packageDocumentation comment must appear at the top of entry point *.d.ts file
 // src/router/GerritEventRouter.d.ts:13:5 - (ae-undocumented) Missing documentation for "getSubscriberId".
 // src/router/GerritEventRouter.d.ts:14:5 - (ae-undocumented) Missing documentation for "determineSubTopic".
-
-// (No @packageDocumentation comment for this package)
 ```

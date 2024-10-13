@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-import { default as feature } from './alpha';
-
-/** @public */
-const _feature = feature;
-export default _feature;
-
 /**
  * The module "bitbucket-cloud" for the Backstage backend plugin "events-backend"
  * adding an event router for Bitbucket Cloud.
@@ -27,4 +21,5 @@ export default _feature;
  * @packageDocumentation
  */
 
+export { eventsModuleBitbucketCloudEventRouter as default } from './service/eventsModuleBitbucketCloudEventRouter';
 export { BitbucketCloudEventRouter } from './router/BitbucketCloudEventRouter';

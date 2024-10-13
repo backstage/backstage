@@ -22,16 +22,12 @@ export class AwsSqsConsumingEventPublisher {
   start(): Promise<void>;
 }
 
-// @public (undocumented)
-const _feature: BackendFeature;
-export default _feature;
+// @public
+const eventsModuleAwsSqsConsumingEventPublisher: BackendFeature;
+export default eventsModuleAwsSqsConsumingEventPublisher;
 
 // Warnings were encountered during analysis:
 //
-// src/index.d.ts:2:15 - (ae-undocumented) Missing documentation for "_feature".
-// src/index.d.ts:4:1 - (ae-misplaced-package-tag) The @packageDocumentation comment must appear at the top of entry point *.d.ts file
 // src/publisher/AwsSqsConsumingEventPublisher.d.ts:21:5 - (ae-undocumented) Missing documentation for "fromConfig".
 // src/publisher/AwsSqsConsumingEventPublisher.d.ts:28:5 - (ae-undocumented) Missing documentation for "start".
-
-// (No @packageDocumentation comment for this package)
 ```

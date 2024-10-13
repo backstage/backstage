@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-import { default as feature } from './alpha';
-
-/** @public */
-const _feature = feature;
-export default _feature;
-
 /**
  * The module "sqs" for the Backstage backend plugin "events"
  * adding an AWS SQS-based publisher,
@@ -29,4 +23,5 @@ export default _feature;
  * @packageDocumentation
  */
 
+export { eventsModuleAwsSqsConsumingEventPublisher as default } from './service/eventsModuleAwsSqsConsumingEventPublisher';
 export { AwsSqsConsumingEventPublisher } from './publisher/AwsSqsConsumingEventPublisher';
