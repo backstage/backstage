@@ -212,6 +212,7 @@ export const scaffolderTranslationRef = createTranslationRef({
       },
       filters: {
         title: 'Filters',
+        notAvailable: 'There are no template filters defined.',
         metadataAbsent: 'Filter metadata unavailable',
         schema: {
           input: 'Input',
@@ -223,6 +224,7 @@ export const scaffolderTranslationRef = createTranslationRef({
       globals: {
         functions: {
           title: 'Functions',
+          notAvailable: 'There are no global template functions defined.',
           schema: {
             arguments: 'Arguments',
             output: 'Output',
@@ -231,6 +233,7 @@ export const scaffolderTranslationRef = createTranslationRef({
         },
         values: {
           title: 'Values',
+          notAvailable: 'There are no global template values defined.',
         },
       },
     },
