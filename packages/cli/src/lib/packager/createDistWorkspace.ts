@@ -41,10 +41,10 @@ import {
   PackageRoles,
   PackageGraph,
   PackageGraphNode,
+  detectPackageManager,
 } from '@backstage/cli-node';
 import { runParallelWorkers } from '../parallel';
 import { createTypeDistProject } from '../typeDistProject';
-import { runPlain } from '../run';
 
 // These packages aren't safe to pack in parallel since the CLI depends on them
 const UNSAFE_PACKAGES = [
@@ -226,10 +226,11 @@ export async function createDistWorkspace(
     await buildPackages(standardBuilds);
 
     if (customBuild.length > 0) {
+      const pacman = await detectPackageManager();
       await runParallelWorkers({
         items: customBuild,
         worker: async ({ name, dir, args }) => {
-          await runPlain('yarn', ['run', 'build', ...(args || [])], {
+          await pacman.run(['run', 'build', ...(args || [])], {
             cwd: dir,
             stdoutLogFunc: prefixLogFunc(`${name}: `, 'stdout'),
             stderrLogFunc: prefixLogFunc(`${name}: `, 'stderr'),
@@ -322,7 +323,10 @@ async function moveToDistWorkspace(
     console.log(`Repacking ${target.name} into dist workspace`);
     const archivePath = resolvePath(workspaceDir, archive);
 
-    await run('yarn', ['pack', '--filename', archivePath], {
+    const pacman = await detectPackageManager();
+    // TODO this is package manager specific, we should abstract this
+    // pnpm doesn't support --filename: https://pnpm.io/cli/pack
+    await pacman.run(['pack', '--filename', archivePath], {
       cwd: target.dir,
     });
 
