@@ -67,7 +67,7 @@ export async function productionPack(options: ProductionPackOptions) {
   delete pkg.typesVersions;
 
   // We remove the dependencies from package.json of packages that are marked
-  // as bundled, so that yarn doesn't try to install them.
+  // as bundled, so that the package manager doesn't try to install them.
   if (pkg.bundled) {
     delete pkg.dependencies;
     delete pkg.devDependencies;

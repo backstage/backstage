@@ -104,8 +104,11 @@ export const scaffolderModule = createFactory<Options>({
       await addCodeownersEntry(`/plugins/${slug}`, options.owner);
     }
 
-    await Task.forCommand('yarn install', { cwd: targetDir, optional: true });
-    await Task.forCommand('yarn lint --fix', {
+    await Task.forCommand(`${ctx.pacman.name()} install`, {
+      cwd: targetDir,
+      optional: true,
+    });
+    await Task.forCommand(`${ctx.pacman.name()} lint --fix`, {
       cwd: targetDir,
       optional: true,
     });

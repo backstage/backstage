@@ -15,7 +15,7 @@
  */
 
 import { execFile as execFileCb } from 'child_process';
-import { ExitCodeError } from './errors';
+import { ExitCodeError } from '@backstage/cli-node';
 import { promisify } from 'util';
 import { assertError, ForwardedError } from '@backstage/errors';
 

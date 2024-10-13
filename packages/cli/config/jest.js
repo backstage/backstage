@@ -283,6 +283,9 @@ async function getRootConfig() {
     rootPkgJson.workspaces && rootPkgJson.workspaces.packages;
   const rootRole = rootPkgJson.backstage?.role === 'root';
 
+  console.log('workspacePatterns', workspacePatterns);
+  console.log('rootRole', rootRole);
+
   // Check if we're running within a specific monorepo package. In that case just get the single project config.
   if (
     !(workspacePatterns || rootRole) ||

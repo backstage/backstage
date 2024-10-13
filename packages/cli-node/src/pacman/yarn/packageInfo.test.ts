@@ -13,9 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as runObj from '../run';
-import { NotFoundError } from '../errors';
+import * as runObj from '../../run';
+import { NotFoundError } from '../../errors';
 import { fetchPackageInfo } from './packageInfo';
+import { YarnVersion } from './types';
+
+const berry: YarnVersion = { codename: 'berry', version: '3.0.0' };
+const classic: YarnVersion = { codename: 'classic', version: '1.22.0' };
 
 describe('fetchPackageInfo', () => {
   afterEach(() => {
@@ -28,7 +32,7 @@ describe('fetchPackageInfo', () => {
       stderr: '',
     });
 
-    await expect(fetchPackageInfo('my-package', 'classic')).resolves.toEqual({
+    await expect(fetchPackageInfo('my-package', classic)).resolves.toEqual({
       the: 'data',
     });
     expect(runObj.execFile).toHaveBeenCalledWith(
@@ -43,7 +47,7 @@ describe('fetchPackageInfo', () => {
       .spyOn(runObj, 'execFile')
       .mockResolvedValue({ stdout: `{"the":"data"}`, stderr: '' });
 
-    await expect(fetchPackageInfo('my-package', 'berry')).resolves.toEqual({
+    await expect(fetchPackageInfo('my-package', berry)).resolves.toEqual({
       the: 'data',
     });
     expect(runObj.execFile).toHaveBeenCalledWith(
@@ -58,7 +62,7 @@ describe('fetchPackageInfo', () => {
       .spyOn(runObj, 'execFile')
       .mockResolvedValue({ stdout: '', stderr: '' });
 
-    await expect(fetchPackageInfo('my-package', 'classic')).rejects.toThrow(
+    await expect(fetchPackageInfo('my-package', classic)).rejects.toThrow(
       new NotFoundError(`No package information found for package my-package`),
     );
   });
@@ -68,7 +72,7 @@ describe('fetchPackageInfo', () => {
       .spyOn(runObj, 'execFile')
       .mockRejectedValue({ stdout: 'bla bla bla Response Code: 404 bla bla' });
 
-    await expect(fetchPackageInfo('my-package', 'berry')).rejects.toThrow(
+    await expect(fetchPackageInfo('my-package', berry)).rejects.toThrow(
       new NotFoundError(`No package information found for package my-package`),
     );
   });

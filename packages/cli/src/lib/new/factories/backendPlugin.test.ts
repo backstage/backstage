@@ -79,6 +79,7 @@ describe('backendPlugin factory', () => {
       },
       createTemporaryDirectory: () => fs.mkdtemp('test'),
       license: 'Apache-2.0',
+      pacman: Yarn.create(),
     });
 
     expect(modified).toBe(true);

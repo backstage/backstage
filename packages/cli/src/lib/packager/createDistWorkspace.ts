@@ -26,7 +26,6 @@ import { tmpdir } from 'os';
 import tar, { CreateOptions, FileOptions } from 'tar';
 import partition from 'lodash/partition';
 import { paths } from '../paths';
-import { run } from '@backstage/cli-node';
 import {
   dependencies as cliDependencies,
   devDependencies as cliDevDependencies,
@@ -45,6 +44,7 @@ import {
 } from '@backstage/cli-node';
 import { runParallelWorkers } from '../parallel';
 import { createTypeDistProject } from '../typeDistProject';
+import { runPlain } from '../run';
 
 // These packages aren't safe to pack in parallel since the CLI depends on them
 const UNSAFE_PACKAGES = [
@@ -229,7 +229,7 @@ export async function createDistWorkspace(
       await runParallelWorkers({
         items: customBuild,
         worker: async ({ name, dir, args }) => {
-          await run('yarn', ['run', 'build', ...(args || [])], {
+          await runPlain('yarn', ['run', 'build', ...(args || [])], {
             cwd: dir,
             stdoutLogFunc: prefixLogFunc(`${name}: `, 'stdout'),
             stderrLogFunc: prefixLogFunc(`${name}: `, 'stderr'),

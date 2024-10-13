@@ -22,7 +22,7 @@
 
 import { program } from 'commander';
 import chalk from 'chalk';
-import { exitWithError } from './lib/errors';
+import { exitWithError } from '@backstage/cli-node';
 import { version } from './lib/version';
 import { registerCommands } from './commands';
 

@@ -15,6 +15,7 @@
  */
 
 import { Answers, DistinctQuestion } from 'inquirer';
+import { PackageManager } from '@backstage/cli-node';
 
 export interface CreateContext {
   /** The package scope to use for new packages */
@@ -29,6 +30,8 @@ export interface CreateContext {
   defaultVersion: string;
   /** License to use for new packages */
   license: string;
+  /** The package manager currently in use */
+  pacman: PackageManager;
 
   /** Creates a temporary directory. This will always be deleted after creation is done. */
   createTemporaryDirectory(name: string): Promise<string>;

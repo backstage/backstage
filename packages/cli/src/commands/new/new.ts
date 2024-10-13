@@ -19,7 +19,7 @@ import fs from 'fs-extra';
 import { join as joinPath } from 'path';
 import { OptionValues } from 'commander';
 import { FactoryRegistry } from '../../lib/new/FactoryRegistry';
-import { isMonoRepo } from '@backstage/cli-node';
+import { detectPackageManager, isMonoRepo } from '@backstage/cli-node';
 import { paths } from '../../lib/paths';
 import { assertError } from '@backstage/errors';
 import { Task } from '../../lib/tasks';
@@ -81,6 +81,7 @@ export default async (opts: OptionValues) => {
       scope: opts.scope?.replace(/^@/, ''),
       npmRegistry: opts.npmRegistry,
       private: Boolean(opts.private),
+      pacman: await detectPackageManager(),
       createTemporaryDirectory,
       markAsModified() {
         modified = true;
