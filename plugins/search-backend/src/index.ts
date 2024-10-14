@@ -20,4 +20,5 @@
  * @packageDocumentation
  */
 
+export { default } from './plugin';
 export * from './service/router';

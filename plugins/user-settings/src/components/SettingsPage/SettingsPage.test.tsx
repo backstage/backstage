@@ -22,20 +22,15 @@ import { useOutlet } from 'react-router-dom';
 import { SettingsLayout } from '../SettingsLayout';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {
-  CatalogApi,
-  catalogApiRef,
-  entityRouteRef,
-} from '@backstage/plugin-catalog-react';
+import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useOutlet: jest.fn().mockReturnValue(undefined),
 }));
 
-const catalogApiMock: jest.Mocked<CatalogApi> = {
-  getEntityByRef: jest.fn(),
-} as any;
+const catalogApi = catalogApiMock();
 
 describe('<SettingsPage />', () => {
   beforeEach(() => {
@@ -44,7 +39,7 @@ describe('<SettingsPage />', () => {
 
   it('should render the default settings page with 3 tabs', async () => {
     const { container } = await renderInTestApp(
-      <TestApiProvider apis={[[catalogApiRef, catalogApiMock]]}>
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <SettingsPage />
       </TestApiProvider>,
       {
@@ -64,7 +59,7 @@ describe('<SettingsPage />', () => {
     );
     (useOutlet as jest.Mock).mockReturnValue(advancedTabRoute);
     const { container } = await renderInTestApp(
-      <TestApiProvider apis={[[catalogApiRef, catalogApiMock]]}>
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <SettingsPage />
       </TestApiProvider>,
       {
@@ -85,7 +80,7 @@ describe('<SettingsPage />', () => {
     );
     (useOutlet as jest.Mock).mockReturnValue(advancedTabRoute);
     const { container } = await renderInTestApp(
-      <TestApiProvider apis={[[catalogApiRef, catalogApiMock]]}>
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <SettingsPage />
       </TestApiProvider>,
       {
@@ -115,7 +110,7 @@ describe('<SettingsPage />', () => {
     );
     (useOutlet as jest.Mock).mockReturnValue(customLayout);
     const { container } = await renderInTestApp(
-      <TestApiProvider apis={[[catalogApiRef, catalogApiMock]]}>
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <SettingsPage />
       </TestApiProvider>,
       {

@@ -27,15 +27,11 @@ yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-bitbuck
 
 ```ts
 // optional if you want HTTP endpoints to receive external events
-// backend.add(import('@backstage/plugin-events-backend/alpha'));
+// backend.add(import('@backstage/plugin-events-backend'));
 // optional if you want to use AWS SQS instead of HTTP endpoints to receive external events
-// backend.add(import('@backstage/plugin-events-backend-module-aws-sqs/alpha'));
-backend.add(
-  import('@backstage/plugin-events-backend-module-bitbucket-cloud/alpha'),
-);
-backend.add(
-  import('@backstage/plugin-catalog-backend-module-bitbucket-cloud/alpha'),
-);
+// backend.add(import('@backstage/plugin-events-backend-module-aws-sqs'));
+backend.add(import('@backstage/plugin-events-backend-module-bitbucket-cloud'));
+backend.add(import('@backstage/plugin-catalog-backend-module-bitbucket-cloud'));
 ```
 
 You need to decide how you want to receive events from external sources like

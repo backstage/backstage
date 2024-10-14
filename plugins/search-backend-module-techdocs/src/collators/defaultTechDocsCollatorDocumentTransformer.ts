@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import unescape from 'lodash/unescape';
+import {
+  TechDocsCollatorDocumentTransformer,
+  MkSearchIndexDoc,
+} from './TechDocsCollatorDocumentTransformer';
 
-import { startTestBackend } from '@backstage/backend-test-utils';
-import request from 'supertest';
-import searchPlugin from './alpha';
-
-describe('searchPlugin', () => {
-  it('should serve search results on query endpoint', async () => {
-    const { server } = await startTestBackend({
-      features: [searchPlugin],
-    });
-
-    const response = await request(server).get('/api/search/query');
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({ numberOfResults: 0, results: [] });
-  });
-});
+/** @public */
+export const defaultTechDocsCollatorDocumentTransformer: TechDocsCollatorDocumentTransformer =
+  (doc: MkSearchIndexDoc) => {
+    return {
+      title: unescape(doc.title),
+      text: unescape(doc.text || ''),
+      path: doc.location,
+    };
+  };

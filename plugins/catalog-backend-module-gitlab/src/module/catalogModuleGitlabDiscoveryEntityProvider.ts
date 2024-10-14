@@ -25,7 +25,7 @@ import { GitlabDiscoveryEntityProvider } from '../providers';
 /**
  * Registers the GitlabDiscoveryEntityProvider with the catalog processing extension point.
  *
- * @alpha
+ * @public
  */
 
 export const catalogModuleGitlabDiscoveryEntityProvider = createBackendModule({

@@ -67,13 +67,13 @@ export class IncrementalIngestionEngine
             await this.manager.clearFinishedIngestions(
               this.options.provider.getProviderName(),
             );
-            this.options.logger.info(
+            this.options.logger.debug(
               `incremental-engine: Ingestion ${ingestionId} rest period complete. Ingestion will start again`,
             );
 
             await this.manager.setProviderComplete(ingestionId);
           } else {
-            this.options.logger.info(
+            this.options.logger.debug(
               `incremental-engine: Ingestion '${ingestionId}' rest period continuing`,
             );
           }
@@ -92,7 +92,7 @@ export class IncrementalIngestionEngine
               );
             } else {
               await this.manager.setProviderInterstitial(ingestionId);
-              this.options.logger.info(
+              this.options.logger.debug(
                 `incremental-engine: Ingestion '${ingestionId}' continuing`,
               );
             }
@@ -140,7 +140,7 @@ export class IncrementalIngestionEngine
             );
             await this.manager.setProviderIngesting(ingestionId);
           } else {
-            this.options.logger.info(
+            this.options.logger.debug(
               `incremental-engine: Ingestion '${ingestionId}' backoff continuing`,
             );
           }
@@ -167,7 +167,7 @@ export class IncrementalIngestionEngine
     const providerName = this.options.provider.getProviderName();
     const record = await this.manager.getCurrentIngestionRecord(providerName);
     if (record) {
-      this.options.logger.info(
+      this.options.logger.debug(
         `incremental-engine: Ingestion record found: '${record.id}'`,
       );
       return {

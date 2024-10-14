@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { BackstageUserIdentity, IdentityApi } from '@backstage/core-plugin-api';
 import { VisitsStorageApi } from './VisitsStorageApi';
-import { MockStorageApi } from '@backstage/test-utils';
+import { mockApis } from '@backstage/test-utils';
 import { Visit, VisitsApi } from './VisitsApi';
 
 describe('VisitsStorageApi.create', () => {
@@ -26,13 +25,9 @@ describe('VisitsStorageApi.create', () => {
       () => Math.floor(Math.random() * 16).toString(16), // 0x0 to 0xf
     ) as `${string}-${string}-${string}-${string}-${string}`;
 
-  const mockIdentityApi: IdentityApi = {
-    signOut: jest.fn(),
-    getProfileInfo: jest.fn(),
-    getBackstageIdentity: async () =>
-      ({ userEntityRef: 'user:default/guest' } as BackstageUserIdentity),
-    getCredentials: jest.fn(),
-  };
+  const mockIdentityApi = mockApis.identity({
+    userEntityRef: 'user:default/guest',
+  });
 
   beforeEach(() => {
     window.crypto.randomUUID = mockRandomUUID;
@@ -40,14 +35,14 @@ describe('VisitsStorageApi.create', () => {
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
     jest.useRealTimers();
     window.localStorage.clear();
   });
 
   it('instantiates', () => {
     const api = VisitsStorageApi.create({
-      storageApi: MockStorageApi.create(),
+      storageApi: mockApis.storage(),
       identityApi: mockIdentityApi,
     });
     expect(api).toBeTruthy();
@@ -56,7 +51,7 @@ describe('VisitsStorageApi.create', () => {
   describe('.save()', () => {
     it('saves a visit', async () => {
       const api = VisitsStorageApi.create({
-        storageApi: MockStorageApi.create(),
+        storageApi: mockApis.storage(),
         identityApi: mockIdentityApi,
       });
       const visit = {
@@ -73,7 +68,7 @@ describe('VisitsStorageApi.create', () => {
 
     it('can control the number of stored entities', async () => {
       const api = VisitsStorageApi.create({
-        storageApi: MockStorageApi.create(),
+        storageApi: mockApis.storage(),
         identityApi: mockIdentityApi,
         limit: 2,
       });
@@ -107,7 +102,7 @@ describe('VisitsStorageApi.create', () => {
 
     it('correctly bumps the hits from a previous visit', async () => {
       const api = VisitsStorageApi.create({
-        storageApi: MockStorageApi.create(),
+        storageApi: mockApis.storage(),
         identityApi: mockIdentityApi,
       });
       const visit = {
@@ -149,7 +144,7 @@ describe('VisitsStorageApi.create', () => {
 
     beforeEach(() => {
       api = VisitsStorageApi.create({
-        storageApi: MockStorageApi.create(),
+        storageApi: mockApis.storage(),
         identityApi: mockIdentityApi,
       });
 

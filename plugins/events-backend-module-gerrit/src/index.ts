@@ -21,4 +21,5 @@
  * @packageDocumentation
  */
 
+export { eventsModuleGerritEventRouter as default } from './service/eventsModuleGerritEventRouter';
 export { GerritEventRouter } from './router/GerritEventRouter';

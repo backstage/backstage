@@ -170,7 +170,7 @@ class CatalogModelExtensionPointImpl implements CatalogModelExtensionPoint {
 
 /**
  * Catalog plugin
- * @alpha
+ * @public
  */
 export const catalogPlugin = createBackendPlugin({
   pluginId: 'catalog',

@@ -4,6 +4,7 @@
 
 ```ts
 import { AuthService } from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { DefaultTechDocsCollatorFactory as DefaultTechDocsCollatorFactory_2 } from '@backstage/plugin-search-backend-module-techdocs';
@@ -111,13 +112,17 @@ export type TechDocsCollatorOptions = {
 // @public @deprecated (undocumented)
 export type TechDocsDocument = TechDocsDocument_2;
 
+// @public
+const techdocsPlugin: BackendFeature;
+export default techdocsPlugin;
+
 export * from '@backstage/plugin-techdocs-node';
 
 // Warnings were encountered during analysis:
 //
-// src/index.d.ts:16:1 - (ae-undocumented) Missing documentation for "DocsBuildStrategy".
-// src/index.d.ts:21:1 - (ae-undocumented) Missing documentation for "ShouldBuildParameters".
-// src/index.d.ts:28:1 - (ae-undocumented) Missing documentation for "TechDocsDocument".
+// src/index.d.ts:17:1 - (ae-undocumented) Missing documentation for "DocsBuildStrategy".
+// src/index.d.ts:22:1 - (ae-undocumented) Missing documentation for "ShouldBuildParameters".
+// src/index.d.ts:29:1 - (ae-undocumented) Missing documentation for "TechDocsDocument".
 // src/search/DefaultTechDocsCollator.d.ts:32:5 - (ae-undocumented) Missing documentation for "type".
 // src/search/DefaultTechDocsCollator.d.ts:33:5 - (ae-undocumented) Missing documentation for "visibilityPermission".
 // src/search/DefaultTechDocsCollator.d.ts:35:5 - (ae-undocumented) Missing documentation for "fromConfig".

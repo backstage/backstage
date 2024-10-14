@@ -200,6 +200,7 @@ export type ScaffolderPageContextMenuProps = {
 // @alpha (undocumented)
 export type ScaffolderReactComponentsNameToClassKey = {
   ScaffolderReactTemplateCategoryPicker: ScaffolderReactTemplateCategoryPickerClassKey;
+  BackstageTemplateStepper: BackstageTemplateStepperClassKey;
 };
 
 // @alpha (undocumented)
@@ -416,8 +417,9 @@ export type WorkflowProps = {
 // src/next/hooks/useTemplateSchema.d.ts:12:5 - (ae-undocumented) Missing documentation for "schema".
 // src/next/hooks/useTemplateSchema.d.ts:13:5 - (ae-undocumented) Missing documentation for "title".
 // src/next/hooks/useTemplateSchema.d.ts:14:5 - (ae-undocumented) Missing documentation for "description".
-// src/next/overridableComponents.d.ts:5:1 - (ae-undocumented) Missing documentation for "ScaffolderReactComponentsNameToClassKey".
-// src/next/overridableComponents.d.ts:9:1 - (ae-undocumented) Missing documentation for "BackstageOverrides".
+// src/next/overridableComponents.d.ts:6:1 - (ae-undocumented) Missing documentation for "ScaffolderReactComponentsNameToClassKey".
+// src/next/overridableComponents.d.ts:8:5 - (ae-forgotten-export) The symbol "BackstageTemplateStepperClassKey" needs to be exported by the entry point alpha.d.ts
+// src/next/overridableComponents.d.ts:11:1 - (ae-undocumented) Missing documentation for "BackstageOverrides".
 
 // (No @packageDocumentation comment for this package)
 ```

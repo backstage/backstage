@@ -15,8 +15,8 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { IdentityApi } from '@backstage/core-plugin-api';
 import { IdentityAuthInjectorFetchMiddleware } from './IdentityAuthInjectorFetchMiddleware';
+import { mockApis } from '@backstage/test-utils';
 
 describe('IdentityAuthInjectorFetchMiddleware', () => {
   it('creates using defaults', async () => {
@@ -58,10 +58,7 @@ describe('IdentityAuthInjectorFetchMiddleware', () => {
   });
 
   it('injects the header only when a token is available', async () => {
-    const tokenFunction = jest.fn();
-    const identityApi = {
-      getCredentials: tokenFunction,
-    } as unknown as IdentityApi;
+    const identityApi = mockApis.identity.mock();
 
     const middleware = new IdentityAuthInjectorFetchMiddleware(
       identityApi,
@@ -73,27 +70,25 @@ describe('IdentityAuthInjectorFetchMiddleware', () => {
     const outer = middleware.apply(inner);
 
     // No token available
-    tokenFunction.mockResolvedValueOnce({ token: undefined });
+    identityApi.getCredentials.mockResolvedValueOnce({ token: undefined });
     await outer(new Request('https://example.com'));
     expect([...inner.mock.calls[0][0].headers.entries()]).toEqual([]);
 
     // Supply a token, header gets added
-    tokenFunction.mockResolvedValueOnce({ token: 'token' });
+    identityApi.getCredentials.mockResolvedValueOnce({ token: 'token' });
     await outer(new Request('https://example.com'));
     expect([...inner.mock.calls[1][0].headers.entries()]).toEqual([
       ['authorization', 'Bearer token'],
     ]);
 
     // Token no longer available
-    tokenFunction.mockResolvedValueOnce({ token: undefined });
+    identityApi.getCredentials.mockResolvedValueOnce({ token: undefined });
     await outer(new Request('https://example.com'));
     expect([...inner.mock.calls[2][0].headers.entries()]).toEqual([]);
   });
 
   it('does not overwrite an existing header with the same name', async () => {
-    const identityApi = {
-      getCredentials: () => ({ token: 'token' }),
-    } as unknown as IdentityApi;
+    const identityApi = mockApis.identity({ token: 'token' });
 
     const middleware = new IdentityAuthInjectorFetchMiddleware(
       identityApi,

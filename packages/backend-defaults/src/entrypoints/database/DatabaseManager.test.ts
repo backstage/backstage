@@ -182,7 +182,9 @@ describe('DatabaseManagerImpl', () => {
     const rootLifecycle = { addShutdownHook: jest.fn() } as unknown as any;
     const destroy = jest.fn();
     const connector1 = {
-      getClient: jest.fn().mockResolvedValue({ destroy }),
+      getClient: jest
+        .fn()
+        .mockResolvedValue({ destroy, client: { config: 'pg' } }),
     } satisfies Connector;
     const impl = new DatabaseManagerImpl(
       new ConfigReader({
@@ -206,5 +208,45 @@ describe('DatabaseManagerImpl', () => {
 
     // Then the destroy method should have been called on the resolved client
     expect(destroy).toHaveBeenCalled();
+  });
+
+  it('does not attempt to destroy connection when using SQLite', async () => {
+    // Same us the previous test, but with SQLite
+    const rootLifecycle = { addShutdownHook: jest.fn() } as unknown as any;
+
+    // Make sure we're actually checking the client, since we're ignoring errors
+    const getConfig = jest.fn().mockReturnValue('sqlite3');
+
+    const destroy = jest.fn();
+    const connector1 = {
+      getClient: jest.fn().mockResolvedValue({
+        destroy,
+        client: {
+          get config() {
+            return getConfig();
+          },
+        },
+      }),
+    } satisfies Connector;
+    const impl = new DatabaseManagerImpl(
+      new ConfigReader({
+        client: 'pg',
+      }),
+      {
+        pg: connector1,
+      },
+      { rootLifecycle },
+    );
+
+    expect(rootLifecycle.addShutdownHook).toHaveBeenCalled();
+    const shutdownHook = rootLifecycle.addShutdownHook.mock.calls[0][0];
+
+    await impl.forPlugin('plugin1', deps).getClient();
+
+    await shutdownHook();
+
+    // Destroy should not have been called, but we should have read the config
+    expect(destroy).not.toHaveBeenCalled();
+    expect(getConfig).toHaveBeenCalled();
   });
 });

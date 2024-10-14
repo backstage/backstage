@@ -145,14 +145,14 @@ const backend = createBackend();
 
 /* highlight-add-start */
 // search plugin
-backend.add(import('@backstage/plugin-search-backend/alpha'));
+backend.add(import('@backstage/plugin-search-backend'));
 
 // search engines
-backend.add(import('@backstage/plugin-search-backend-module-pg/alpha'));
+backend.add(import('@backstage/plugin-search-backend-module-pg'));
 
 // search collators
-backend.add(import('@backstage/plugin-search-backend-module-catalog/alpha'));
-backend.add(import('@backstage/plugin-search-backend-module-techdocs/alpha'));
+backend.add(import('@backstage/plugin-search-backend-module-catalog'));
+backend.add(import('@backstage/plugin-search-backend-module-techdocs'));
 /* highlight-add-end */
 
 backend.start();

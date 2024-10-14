@@ -13,20 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from 'react';
+import { SignInPageBlueprint } from '@backstage/frontend-plugin-api';
+import { SignInPage } from '@backstage/core-components';
 
-import { ApiFactory } from '@backstage/frontend-plugin-api';
-
-/**
- * Represents a mocked version of an API, where you automatically have access to
- * the mocked versions of all of its methods along with a factory that returns
- * that same mock.
- *
- * @public
- */
-export type ApiMock<TApi> = {
-  factory: ApiFactory<TApi, TApi, {}>;
-} & {
-  [Key in keyof TApi]: TApi[Key] extends (...args: infer Args) => infer Return
-    ? TApi[Key] & jest.MockInstance<Return, Args>
-    : TApi[Key];
-};
+export const DefaultSignInPage = SignInPageBlueprint.make({
+  params: {
+    loader: async () => props =>
+      <SignInPage {...props} providers={['guest']} />,
+  },
+});

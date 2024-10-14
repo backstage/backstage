@@ -32,7 +32,7 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
 
       - name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4.0.4
@@ -68,7 +68,7 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
 
       - name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4.0.4
@@ -209,7 +209,7 @@ jobs:
       INTEGRATION_TEST_AZURE_TOKEN: ${{ secrets.INTEGRATION_TEST_AZURE_TOKEN }}
 
     steps:
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
       - name: fetch master branch
         run: git fetch origin master
 
@@ -238,7 +238,9 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: .cache/backstage-cli
-          key: ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli
+          key: ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli-
 
       - name: lint changed packages
         run: yarn backstage-cli repo lint --since origin/master --successCache --successCacheDir .cache/backstage-cli
@@ -258,7 +260,7 @@ jobs:
         if: always()
         with:
           path: .cache/backstage-cli
-          key: ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli
+          key: ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli-${{ github.run_id }}
 
       # We run the test cases before verifying the specs to prevent any failing tests from causing errors.
       - name: verify openapi specs against test cases

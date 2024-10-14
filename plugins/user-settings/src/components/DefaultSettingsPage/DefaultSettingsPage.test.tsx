@@ -20,16 +20,15 @@ import { DefaultSettingsPage } from './DefaultSettingsPage';
 import { UserSettingsTab } from '../UserSettingsTab';
 import { useOutlet } from 'react-router-dom';
 import { SettingsLayout } from '../SettingsLayout';
-import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useOutlet: jest.fn().mockReturnValue(undefined),
 }));
 
-const catalogApiMock: jest.Mocked<CatalogApi> = {
-  getEntityByRef: jest.fn(),
-} as any;
+const catalogApi = catalogApiMock();
 
 describe('<DefaultSettingsPage />', () => {
   beforeEach(() => {
@@ -38,7 +37,7 @@ describe('<DefaultSettingsPage />', () => {
 
   it('should render the settings page with 3 tabs', async () => {
     const { container } = await renderInTestApp(
-      <TestApiProvider apis={[[catalogApiRef, catalogApiMock]]}>
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <DefaultSettingsPage />
       </TestApiProvider>,
     );
@@ -54,7 +53,7 @@ describe('<DefaultSettingsPage />', () => {
       </UserSettingsTab>
     );
     const { container } = await renderInTestApp(
-      <TestApiProvider apis={[[catalogApiRef, catalogApiMock]]}>
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <DefaultSettingsPage tabs={[advancedTabRoute]} />
       </TestApiProvider>,
     );
@@ -71,7 +70,7 @@ describe('<DefaultSettingsPage />', () => {
       </SettingsLayout.Route>
     );
     const { container } = await renderInTestApp(
-      <TestApiProvider apis={[[catalogApiRef, catalogApiMock]]}>
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <DefaultSettingsPage tabs={[advancedTabRoute]} />
       </TestApiProvider>,
     );

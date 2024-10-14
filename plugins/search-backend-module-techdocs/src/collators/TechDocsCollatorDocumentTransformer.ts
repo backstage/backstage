@@ -13,23 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { TechDocsDocument } from '@backstage/plugin-techdocs-node';
 
-import React from 'react';
-import { SignInPage } from '@backstage/core-components';
-import {
-  SignInPageBlueprint,
-  createFrontendModule,
-} from '@backstage/frontend-plugin-api';
+/** @public */
+export interface MkSearchIndexDoc {
+  title: string;
+  text: string;
+  location: string;
+  tags?: string[];
+}
 
-const signInPage = SignInPageBlueprint.make({
-  name: 'guest',
-  params: {
-    loader: async () => props =>
-      <SignInPage {...props} providers={['guest']} />,
-  },
-});
-
-export const signInPageModule = createFrontendModule({
-  pluginId: 'app',
-  extensions: [signInPage],
-});
+/** @public */
+export type TechDocsCollatorDocumentTransformer = (
+  doc: MkSearchIndexDoc,
+) => Partial<
+  Omit<
+    TechDocsDocument,
+    | 'location'
+    | 'authorization'
+    | 'kind'
+    | 'namespace'
+    | 'name'
+    | 'lifecycle'
+    | 'owner'
+  >
+>;

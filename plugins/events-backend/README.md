@@ -23,7 +23,7 @@ yarn --cwd packages/backend add @backstage/plugin-events-backend
 
 ```ts
 // packages/backend/src/index.ts
-backend.add(import('@backstage/plugin-events-backend/alpha'));
+backend.add(import('@backstage/plugin-events-backend'));
 ```
 
 ### Legacy Backend System

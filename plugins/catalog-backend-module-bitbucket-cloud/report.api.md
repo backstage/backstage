@@ -4,6 +4,7 @@
 
 ```ts
 import { AuthService } from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
@@ -37,8 +38,13 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
   refresh(logger: LoggerService): Promise<void>;
 }
 
+// @public (undocumented)
+const catalogModuleBitbucketCloudEntityProvider: BackendFeature;
+export default catalogModuleBitbucketCloudEntityProvider;
+
 // Warnings were encountered during analysis:
 //
+// src/module/catalogModuleBitbucketCloudEntityProvider.d.ts:4:22 - (ae-undocumented) Missing documentation for "catalogModuleBitbucketCloudEntityProvider".
 // src/providers/BitbucketCloudEntityProvider.d.ts:26:5 - (ae-undocumented) Missing documentation for "fromConfig".
 // src/providers/BitbucketCloudEntityProvider.d.ts:42:5 - (ae-undocumented) Missing documentation for "refresh".
 // src/providers/BitbucketCloudEntityProvider.d.ts:44:5 - (ae-undocumented) Missing documentation for "onRepoPush".

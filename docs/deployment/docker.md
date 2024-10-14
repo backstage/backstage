@@ -349,7 +349,7 @@ package, which is done as follows:
 2. Remove the following line from `packages/backend/src/index.ts`:
 
    ```ts
-   backend.add(import('@backstage/plugin-app-backend/alpha'));
+   backend.add(import('@backstage/plugin-app-backend'));
    ```
 
 3. Remove the `@backstage/plugin-app-backend` and the app package dependency
