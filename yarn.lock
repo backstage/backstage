@@ -3930,6 +3930,7 @@ __metadata:
     "@backstage/plugin-auth-backend-module-guest-provider": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     "@backstage/release-manifests": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"

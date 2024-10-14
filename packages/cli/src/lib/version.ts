@@ -44,6 +44,7 @@ import { version as devUtils } from '../../../../packages/dev-utils/package.json
 import { version as errors } from '../../../../packages/errors/package.json';
 import { version as testUtils } from '../../../../packages/test-utils/package.json';
 import { version as scaffolderNode } from '../../../../plugins/scaffolder-node/package.json';
+import { version as scaffolderNodeTestUtils } from '../../../../plugins/scaffolder-node-test-utils/package.json';
 import { version as authBackend } from '../../../../plugins/auth-backend/package.json';
 import { version as authBackendModuleGuestProvider } from '../../../../plugins/auth-backend-module-guest-provider/package.json';
 import { version as catalogNode } from '../../../../plugins/catalog-node/package.json';
@@ -65,6 +66,7 @@ export const packageVersions: Record<string, string> = {
   '@backstage/test-utils': testUtils,
   '@backstage/theme': theme,
   '@backstage/plugin-scaffolder-node': scaffolderNode,
+  '@backstage/plugin-scaffolder-node-test-utils': scaffolderNodeTestUtils,
   '@backstage/plugin-auth-backend': authBackend,
   '@backstage/plugin-auth-backend-module-guest-provider':
     authBackendModuleGuestProvider,
