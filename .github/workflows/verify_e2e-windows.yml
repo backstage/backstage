@@ -75,7 +75,7 @@ jobs:
           npm prefix -g | % {npm config set node_gyp "$_\node_modules\node-gyp\bin\node-gyp.js"}
 
       - name: setup chrome
-        uses: browser-actions/setup-chrome@803ef6dfb4fdf22089c9563225d95e4a515820a0 # latest
+        uses: browser-actions/setup-chrome@1208fbfeb50c2d4be7a87c2fa47d4cd7db1270e3 # latest
 
       - name: yarn install
         uses: backstage/actions/yarn-install@25145dd4117d50e1da9330e9ed2893bc6b75373e # v0.6.15
