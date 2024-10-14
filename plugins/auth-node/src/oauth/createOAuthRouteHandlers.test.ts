@@ -742,5 +742,33 @@ describe('createOAuthRouteHandlers', () => {
         },
       });
     });
+
+    it('should set error search param and redirect on caught error', async () => {
+      const app = wrapInApp(createOAuthRouteHandlers(baseConfig));
+      const res = await request(app)
+        .get('/my-provider/handler/frame')
+        .query({
+          state: encodeOAuthState({
+            env: 'development',
+            nonce: '123',
+            flow: 'redirect',
+            redirectUrl: 'http://localhost:3000',
+          }),
+        });
+
+      // Check if it redirects on error
+      expect(res.status).toBe(302);
+
+      // Extract the redirect URL from the location header
+      const redirectLocation = res.header.location;
+      expect(redirectLocation).toBeDefined();
+
+      // Create a URL object from the redirect location
+      const redirectUrl = new URL(redirectLocation);
+
+      // Verify that the 'error' search param is set with the encoded error message
+      const errorMessage = redirectUrl.searchParams.get('error');
+      expect(errorMessage).toBe('Auth response is missing cookie nonce');
+    });
   });
 });
