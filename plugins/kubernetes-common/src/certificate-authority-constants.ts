@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +15,9 @@
  */
 
 /**
- * Common functionalities for Kubernetes, to be shared between the `kubernetes` and `kubernetes-backend` plugins
+ * A constant that specifies the location of the certificate for the service account.
  *
- * @packageDocumentation
+ * @internal
  */
-
-export * from './types';
-export * from './catalog-entity-constants';
-export * from './certificate-authority-constants';
-export {
-  kubernetesProxyPermission,
-  kubernetesPermissions,
-} from './permissions';
-export * from './error-detection';
-export * from './util';
+export const SERVICEACCOUNT_CA_PATH =
+  '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt';
