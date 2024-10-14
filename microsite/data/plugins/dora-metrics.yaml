@@ -1,0 +1,10 @@
+---
+title: DORA Metrics
+author: Liatrio
+authorUrl: https://github.com/liatrio
+category: Observability
+description: Provide a seamless way to display DORA Metrics in your developer portals.
+documentation: https://github.com/liatrio/backstage-dora-plugin/tree/main
+iconUrl: /img/static/liatrio-icon.png
+npmPackageName: '@liatrio/backstage-dora-plugin'
+addedDate: '2024-10-14'
