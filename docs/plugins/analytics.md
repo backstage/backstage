@@ -41,6 +41,8 @@ choice below.
 | [New Relic Browser][newrelic-browser] | Community ✅   |
 | [Matomo][matomo]                      | Community ✅   |
 | [Quantum Metric][qm]                  | Community ✅   |
+| [Generic HTTP][generic-http]          | Community ✅   |
+
 
 To suggest an integration, please [open an issue][add-tool] for the analytics
 tool your organization uses. Or jump to [Writing Integrations][int-howto] to
