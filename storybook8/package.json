@@ -1,6 +1,7 @@
 {
-  "name": "storybook8",
-  "version": "0.0.0",
+  "name": "storybook",
+  "version": "0.2.2",
+  "description": "Storybook build for components package",
   "private": true,
   "type": "module",
   "scripts": {
@@ -40,6 +41,7 @@
     "eslint-plugin-storybook": "^0.9.0",
     "globals": "^15.9.0",
     "storybook": "^8.3.5",
+    "storybook-dark-mode": "^4.0.2",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.7.0",
     "vite": "^5.4.8"
