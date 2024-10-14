@@ -71,6 +71,8 @@ describe('useFormDecorators', () => {
     expect(testDecorator).toBeDefined();
 
     await testDecorator.fn({
+      formState: {},
+      setFormState: () => {},
       setSecrets: () => {},
       input: { test: 'input value' },
     });

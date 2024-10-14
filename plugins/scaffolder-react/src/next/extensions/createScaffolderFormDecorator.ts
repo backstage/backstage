@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 import { AnyApiRef } from '@backstage/core-plugin-api';
+import { JsonValue } from '@backstage/types';
+import { Dispatch, SetStateAction } from 'react';
 import { z } from 'zod';
 
 export type ScaffolderFormDecoratorContext<TInput> = {
   input: TInput;
-  setSecrets: (input: Record<string, string>) => void;
+  formState: Record<string, JsonValue>;
+
+  setFormState: Dispatch<SetStateAction<Record<string, JsonValue>>>;
+  setSecrets: Dispatch<SetStateAction<Record<string, string>>>;
 };
 
 export type ScaffolderFormDecorator<

@@ -20,14 +20,16 @@ import { ScaffolderFormDecorator } from '@backstage/plugin-scaffolder-react/alph
 export class DefaultScaffolderFormDecoratorsApi
   implements ScaffolderFormDecoratorsApi
 {
-  constructor(
+  private constructor(
     private readonly options: {
       decorators: Array<ScaffolderFormDecorator>;
     },
   ) {}
 
-  static create(options: { decorators: ScaffolderFormDecorator[] }) {
-    return new DefaultScaffolderFormDecoratorsApi(options);
+  static create(options?: { decorators: ScaffolderFormDecorator[] }) {
+    return new DefaultScaffolderFormDecoratorsApi(
+      options ?? { decorators: [] },
+    );
   }
 
   async getFormDecorators(): Promise<ScaffolderFormDecorator[]> {

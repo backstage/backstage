@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Content,
   InfoCard,
@@ -28,7 +28,7 @@ import { useTemplateParameterSchema } from '../../hooks/useTemplateParameterSche
 import { Stepper, type StepperProps } from '../Stepper/Stepper';
 import {
   SecretsContextProvider,
-  useTemplateSecrets,
+  useInternalTemplateSecrets,
 } from '../../../secrets/SecretsContext';
 import { useFilteredSchemaProperties } from '../../hooks/useFilteredSchemaProperties';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
@@ -88,11 +88,14 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
   const { loading, manifest, error } = useTemplateParameterSchema(templateRef);
   const sortedManifest = useFilteredSchemaProperties(manifest);
   const minutesSaved = useTemplateTimeSavedMinutes(templateRef);
-  const { setSecrets } = useTemplateSecrets();
+  const { setSecrets } = useInternalTemplateSecrets();
   const formDecorators = useFormDecorators();
+  const [formState, setFormState] = useState<Record<string, JsonValue>>({});
 
   const workflowOnCreate = useCallback(
-    async (formState: Record<string, JsonValue>) => {
+    async (originalFormState: Record<string, JsonValue>) => {
+      setFormState(originalFormState);
+
       if (manifest?.EXPERIMENTAL_formDecorators && formDecorators?.size) {
         // for each of the form decorators, go and call the decorator with the context
         await Promise.all(
@@ -106,6 +109,8 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
 
             await formDecorator.fn({
               setSecrets,
+              setFormState,
+              formState,
               input: decorator.input,
             });
           }),
@@ -124,6 +129,7 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
       manifest?.EXPERIMENTAL_formDecorators,
       formDecorators,
       onCreate,
+      formState,
       analytics,
       templateName,
       minutesSaved,
