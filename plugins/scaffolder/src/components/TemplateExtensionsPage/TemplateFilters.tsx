@@ -26,31 +26,31 @@ import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import LinkIcon from '@material-ui/icons/Link';
-import { isEmpty } from 'lodash';
+import { isEmpty, pick } from 'lodash';
 import React, { useState } from 'react';
 import { scaffolderTranslationRef } from '../../translation';
 import { ExamplesTable } from '../ExamplesTable/ExamplesTable';
 import { Expanded, SchemaRenderContext } from '../RenderSchema';
 import { RenderSchema } from '../RenderSchema/RenderSchema';
 import { StyleClasses, Xlate } from './types';
-import { renderLink } from './navigation';
+import { Extension, renderLink } from './navigation';
 
 const FilterDetailContent = ({
   t,
   classes,
-  filterName,
+  name,
   filter,
 }: {
   t: Xlate<typeof scaffolderTranslationRef>;
   classes: ClassNameMap;
-  filterName: string;
+  name: string;
   filter: TemplateFilter;
 }) => {
   const expanded = useState<Expanded>({});
   if (Object.keys(filter).length === 0) {
     return (
       <Typography style={{ fontStyle: 'italic' }}>
-        {t('templateExtensions.filters.metadataAbsent')}
+        {t('templateExtensions.content.filters.metadataAbsent')}
       </Typography>
     );
   }
@@ -61,25 +61,25 @@ const FilterDetailContent = ({
     headings: [<Typography variant="h6" component="h4" />],
   };
   return (
-    <React.Fragment key={`${filterName}.detail`}>
+    <React.Fragment key={`${name}.detail`}>
       {filter.description && <MarkdownContent content={filter.description} />}
       <Box pb={2}>
         <Typography variant="h5" component="h3">
-          {t('templateExtensions.filters.schema.input')}
+          {t('templateExtensions.content.filters.schema.input')}
         </Typography>
         <RenderSchema
           strategy="root"
           context={{
-            parentId: `${filterName}.input`,
+            parentId: `${name}.input`,
             ...partialSchemaRenderContext,
           }}
           schema={schema?.input ?? {}}
         />
       </Box>
       {schema?.arguments?.length && (
-        <Box key={`${filterName}.args`} pb={2}>
+        <Box key={`${name}.args`} pb={2}>
           <Typography variant="h5" component="h3">
-            {t('templateExtensions.filters.schema.arguments')}
+            {t('templateExtensions.content.filters.schema.arguments')}
           </Typography>
           {schema.arguments.map((arg, i) => (
             <React.Fragment key={i}>
@@ -87,7 +87,7 @@ const FilterDetailContent = ({
               <RenderSchema
                 strategy="root"
                 context={{
-                  parentId: `${filterName}.arg${i}`,
+                  parentId: `${name}.arg${i}`,
                   ...partialSchemaRenderContext,
                   headings: [<Typography variant="h6" component="h5" />],
                 }}
@@ -99,12 +99,12 @@ const FilterDetailContent = ({
       )}
       <Box pb={2}>
         <Typography variant="h5" component="h3">
-          {t('templateExtensions.filters.schema.output')}
+          {t('templateExtensions.content.filters.schema.output')}
         </Typography>
         <RenderSchema
           strategy="root"
           context={{
-            parentId: `${filterName}.output`,
+            parentId: `${name}.output`,
             ...partialSchemaRenderContext,
           }}
           schema={schema?.output ?? {}}
@@ -114,7 +114,7 @@ const FilterDetailContent = ({
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography variant="h5" component="h3">
-              {t('templateExtensions.filters.examples')}
+              {t('templateExtensions.content.filters.examples')}
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
@@ -133,29 +133,39 @@ export const TemplateFilters = ({
   classes,
   filters,
   linkPage,
+  selectedItem,
 }: {
   t: Xlate<typeof scaffolderTranslationRef>;
   classes: StyleClasses;
   filters: ListTemplateExtensionsResponse['filters'];
   linkPage: string;
+  selectedItem: Extension | null;
 }) => {
-  return isEmpty(filters) ? (
-    <div data-testid="no-filters">
-      {t('templateExtensions.filters.notAvailable')}
-    </div>
-  ) : (
+  if (selectedItem && selectedItem.kind !== 'filter') {
+    return <></>;
+  }
+  if (isEmpty(filters)) {
+    return (
+      <div data-testid="no-filters">
+        {t('templateExtensions.content.filters.notAvailable')}
+      </div>
+    );
+  }
+  return (
     <div data-testid="filters">
-      {Object.entries(filters).map(([filterName, filter]) => {
-        const link = renderLink('filter', filterName);
+      {Object.entries(
+        selectedItem ? pick(filters, selectedItem.name) : filters,
+      ).map(([name, filter]) => {
+        const link = renderLink({ kind: 'filter', name });
         return (
-          <Box pb={4} key={filterName} data-testid={filterName}>
+          <Box pb={4} key={name} data-testid={name}>
             <Typography
               id={link}
               variant="h4"
               component="h2"
               className={classes.code}
             >
-              {filterName}
+              {name}
             </Typography>
             <Link
               className={classes.link}
@@ -166,7 +176,7 @@ export const TemplateFilters = ({
             >
               <LinkIcon />
             </Link>
-            <FilterDetailContent {...{ t, classes, filterName, filter }} />
+            <FilterDetailContent {...{ t, classes, name, filter }} />
           </Box>
         );
       })}
