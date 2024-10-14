@@ -78,21 +78,19 @@ describe('RouteRef', () => {
     validateType<ParamKeys<{ x: string; y: string }>>(['x', 'y']);
 
     // @ts-expect-error
-    validateType<ParamKeys<{}>>(['asd']);
+    validateType<ParamKeys<{}>>(['foo']);
     validateType<ParamKeys<{}>>([]);
 
     // @ts-expect-error
     validateType<ParamKeys<{ [key in string]: string }>>([1]);
-    validateType<ParamKeys<{ [key in string]: string }>>(['migrationId']);
+    validateType<ParamKeys<{ [key in string]: string }>>(['foo']);
 
     // @ts-expect-error
     validateType<ParamKeys<{ [key in string]: string } | undefined>>([1]);
-    validateType<ParamKeys<{ [key in string]: string } | undefined>>([
-      'migrationId',
-    ]);
+    validateType<ParamKeys<{ [key in string]: string } | undefined>>(['foo']);
 
     // @ts-expect-error
-    validateType<ParamKeys<undefined>>(['asd']);
+    validateType<ParamKeys<undefined>>(['foo']);
     validateType<ParamKeys<undefined>>([]);
 
     expect(true).toBeDefined();
