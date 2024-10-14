@@ -238,7 +238,7 @@ describe('dynamicPluginsFeatureLoader', () => {
         dynamicPluginsFeatureLoader({
           moduleLoader: jestFreeTypescriptAwareModuleLoader,
         }),
-        import('@backstage/plugin-app-backend/alpha'),
+        import('@backstage/plugin-app-backend'),
       ],
     });
 
