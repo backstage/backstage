@@ -31,6 +31,7 @@ import { TechDocsPageWrapper } from './TechDocsPageWrapper';
 import { TechDocsPicker } from './TechDocsPicker';
 import { EntityListDocsTable } from './Tables';
 import { TechDocsIndexPageProps } from './TechDocsIndexPage';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
 /**
  * Props for {@link DefaultTechDocsHome}
@@ -47,13 +48,16 @@ export type DefaultTechDocsHomeProps = TechDocsIndexPageProps;
  */
 export const DefaultTechDocsHome = (props: TechDocsIndexPageProps) => {
   const { initialFilter = 'owned', columns, actions, ownerPickerMode } = props;
+  const supportConfig = useApi(configApiRef).getOptionalConfig('app.support');
   return (
     <TechDocsPageWrapper>
       <Content>
         <ContentHeader title="">
-          <SupportButton>
-            Discover documentation in your ecosystem.
-          </SupportButton>
+          {supportConfig && (
+            <SupportButton>
+              Discover documentation in your ecosystem.
+            </SupportButton>
+          )}
         </ContentHeader>
         <EntityListProvider>
           <CatalogFilterLayout>

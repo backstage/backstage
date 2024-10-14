@@ -17,7 +17,12 @@
 import React, { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { useApp, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  configApiRef,
+  useApi,
+  useApp,
+  useRouteRef,
+} from '@backstage/core-plugin-api';
 
 import {
   Content,
@@ -110,6 +115,7 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
   const templateRoute = useRouteRef(selectedTemplateRouteRef);
   const app = useApp();
   const { t } = useTranslationRef(scaffolderTranslationRef);
+  const supportConfig = useApi(configApiRef).getOptionalConfig('app.support');
 
   const groups = givenGroups.length
     ? createGroupsWithOther(givenGroups, t)
@@ -184,9 +190,11 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
               )}
               to={registerComponentLink && registerComponentLink()}
             />
-            <SupportButton>
-              {t('templateListPage.contentHeader.supportButtonTitle')}
-            </SupportButton>
+            {supportConfig && (
+              <SupportButton>
+                {t('templateListPage.contentHeader.supportButtonTitle')}
+              </SupportButton>
+            )}
           </ContentHeader>
 
           <CatalogFilterLayout>
