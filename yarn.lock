@@ -4103,7 +4103,7 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/cli-common": "workspace:^"
-    "@types/jscodeshift": ^0.11.0
+    "@types/jscodeshift": ^0.12.0
     "@types/node": ^18.17.8
     chalk: ^4.0.0
     commander: ^12.0.0
@@ -18251,13 +18251,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jscodeshift@npm:^0.11.0":
-  version: 0.11.11
-  resolution: "@types/jscodeshift@npm:0.11.11"
+"@types/jscodeshift@npm:^0.12.0":
+  version: 0.12.0
+  resolution: "@types/jscodeshift@npm:0.12.0"
   dependencies:
     ast-types: ^0.14.1
     recast: ^0.20.3
-  checksum: 6224b781cbbc8e095cae3cb8f9dd1ca102d6c42d9c882b76ea84dfd0cd43870ce317369480ed6b593352efe9fe7199bd6c40ec2cb37646c474ba15f5b43d2109
+  checksum: 66c2025ee500b30c29af4674033711bd5d7c5fcdc37d62c2d5633d39fc5dbdc571abd497aed96bd2313080a3d131ef4d8da5c593f220ec2ff1302e5ce27ebf46
   languageName: node
   linkType: hard
 
