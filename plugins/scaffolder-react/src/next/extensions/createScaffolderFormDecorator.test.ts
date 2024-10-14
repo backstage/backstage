@@ -23,7 +23,14 @@ describe('createScaffolderFormDecorator', () => {
       fn: async () => {},
     });
 
-    expect(decorator).toMatchInlineSnapshot();
+    expect(decorator).toMatchInlineSnapshot(`
+      {
+        "deps": {},
+        "fn": [Function],
+        "id": "test",
+        "version": "v1",
+      }
+    `);
   });
 
   it('should allow passing schema and be typesafe', () => {
@@ -46,6 +53,19 @@ describe('createScaffolderFormDecorator', () => {
       },
     });
 
-    expect(decorator).toMatchInlineSnapshot();
+    expect(decorator).toMatchInlineSnapshot(`
+      {
+        "deps": {},
+        "fn": [Function],
+        "id": "test",
+        "schema": {
+          "input": {
+            "age": [Function],
+            "name": [Function],
+          },
+        },
+        "version": "v1",
+      }
+    `);
   });
 });

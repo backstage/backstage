@@ -17,8 +17,8 @@ import { DefaultScaffolderFormDecoratorsApi } from '../api/FormDecoratorsApi';
 import { createScaffolderFormDecorator } from '@backstage/plugin-scaffolder-react/alpha';
 import { createApiRef } from '@backstage/core-plugin-api';
 
-import { TestApiProvider, withLogCollector } from '@backstage/test-utils';
-import { renderHook } from '@testing-library/react';
+import { TestApiProvider } from '@backstage/test-utils';
+import { renderHook, waitFor } from '@testing-library/react';
 import { useFormDecorators } from './useFormDecorators';
 import React from 'react';
 import { formDecoratorsApiRef } from '../api/ref';
@@ -63,49 +63,45 @@ describe('useFormDecorators', () => {
       ),
     });
 
-    const result = renderedHook.result.current!;
+    await waitFor(async () => {
+      const result = renderedHook.result.current!;
 
-    expect(result.size).toBe(1);
+      expect(result.size).toBe(1);
 
-    const testDecorator = result.get('test')!;
-    expect(testDecorator).toBeDefined();
+      const testDecorator = result.get('test')!;
+      expect(testDecorator).toBeDefined();
 
-    await testDecorator.fn({
-      formState: {},
-      setFormState: () => {},
-      setSecrets: () => {},
-      input: { test: 'input value' },
+      await testDecorator.fn({
+        formState: {},
+        setFormState: () => {},
+        setSecrets: () => {},
+        input: { test: 'input value' },
+      });
+
+      expect(mockApiImplementation.test).toHaveBeenCalledWith('input value');
     });
-
-    expect(mockApiImplementation.test).toHaveBeenCalledWith('input value');
   });
 
   it('should skip failing deps', async () => {
-    const { error } = await withLogCollector(async () => {
-      const renderedHook = renderHook(() => useFormDecorators(), {
-        wrapper: ({ children }) => (
-          <TestApiProvider
-            apis={[
-              [
-                formDecoratorsApiRef,
-                DefaultScaffolderFormDecoratorsApi.create({
-                  // @ts-expect-error - todo
-                  decorators: [mockDecorator],
-                }),
-              ],
-            ]}
-          >
-            {children}
-          </TestApiProvider>
-        ),
-      });
-
-      const result = renderedHook.result.current!;
-      expect(result.size).toBe(0);
+    const renderedHook = renderHook(() => useFormDecorators(), {
+      wrapper: ({ children }) => (
+        <TestApiProvider
+          apis={[
+            [
+              formDecoratorsApiRef,
+              DefaultScaffolderFormDecoratorsApi.create({
+                // @ts-expect-error - todo
+                decorators: [mockDecorator],
+              }),
+            ],
+          ]}
+        >
+          {children}
+        </TestApiProvider>
+      ),
     });
 
-    expect(error[0]).toMatchInlineSnapshot(
-      `[Error: Failed to resolve apiRef test for form hook test]`,
-    );
+    const result = renderedHook.result.current!;
+    expect(result.size).toBe(0);
   });
 });

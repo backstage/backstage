@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import {
   Content,
   InfoCard,
@@ -90,11 +90,10 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
   const minutesSaved = useTemplateTimeSavedMinutes(templateRef);
   const { setSecrets } = useInternalTemplateSecrets();
   const formDecorators = useFormDecorators();
-  const [formState, setFormState] = useState<Record<string, JsonValue>>({});
 
   const workflowOnCreate = useCallback(
     async (originalFormState: Record<string, JsonValue>) => {
-      setFormState(originalFormState);
+      let formState: Record<string, JsonValue> = { ...originalFormState };
 
       if (manifest?.EXPERIMENTAL_formDecorators && formDecorators?.size) {
         // for each of the form decorators, go and call the decorator with the context
@@ -109,7 +108,13 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
 
             await formDecorator.fn({
               setSecrets,
-              setFormState,
+              setFormState: (
+                handler: (
+                  oldState: Record<string, JsonValue>,
+                ) => Record<string, JsonValue>,
+              ) => {
+                formState = { ...handler(formState) };
+              },
               formState,
               input: decorator.input,
             });
@@ -129,7 +134,6 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
       manifest?.EXPERIMENTAL_formDecorators,
       formDecorators,
       onCreate,
-      formState,
       analytics,
       templateName,
       minutesSaved,

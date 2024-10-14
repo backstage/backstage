@@ -27,6 +27,12 @@ import { analyticsApiRef } from '@backstage/core-plugin-api';
 import { ScaffolderApi, scaffolderApiRef } from '../../../api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
+import { SecretsContextProvider } from '../../../secrets';
+
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { ScaffolderFormDecoratorsApi } from '../../../../../scaffolder/src/alpha/api/types';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { formDecoratorsApiRef } from '../../../../../scaffolder/src/alpha/api/ref';
 
 const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
   cancelTask: jest.fn(),
@@ -39,14 +45,19 @@ const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
   listTasks: jest.fn(),
   autocomplete: jest.fn(),
 };
+const scaffolderDecoratorsMock: jest.Mocked<ScaffolderFormDecoratorsApi> = {
+  getFormDecorators: jest.fn().mockResolvedValue([]),
+};
 
 const catalogApi = catalogApiMock.mock();
 
 const analyticsMock = mockApis.analytics();
 const apis = TestApiRegistry.from(
   [scaffolderApiRef, scaffolderApiMock],
+  [formDecoratorsApiRef, scaffolderDecoratorsMock],
   [catalogApiRef, catalogApi],
   [analyticsApiRef, analyticsMock],
+  [catalogApiRef, catalogApi],
 );
 
 describe('<Workflow />', () => {
@@ -82,31 +93,33 @@ describe('<Workflow />', () => {
     });
 
     const { getByRole, getAllByRole, getByText } = await renderInTestApp(
-      <ApiProvider apis={apis}>
-        <Workflow
-          title="Different title than template"
-          description={`
+      <SecretsContextProvider initialSecrets={{}}>
+        <ApiProvider apis={apis}>
+          <Workflow
+            title="Different title than template"
+            description={`
       ## This is markdown
       - overriding the template description
             `}
-          onCreate={onCreate}
-          onError={onError}
-          namespace="default"
-          templateName="docs-template"
-          initialState={{
-            name: 'prefilled-name',
-            age: '53',
-          }}
-          components={{
-            ReviewStateComponent: () => (
-              <h1>This is a different wrapper for the review page</h1>
-            ),
-            reviewButtonText: <i>Onwards</i>,
-            createButtonText: <b>Make</b>,
-          }}
-          extensions={[]}
-        />
-      </ApiProvider>,
+            onCreate={onCreate}
+            onError={onError}
+            namespace="default"
+            templateName="docs-template"
+            initialState={{
+              name: 'prefilled-name',
+              age: '53',
+            }}
+            components={{
+              ReviewStateComponent: () => (
+                <h1>This is a different wrapper for the review page</h1>
+              ),
+              reviewButtonText: <i>Onwards</i>,
+              createButtonText: <b>Make</b>,
+            }}
+            extensions={[]}
+          />
+        </ApiProvider>
+      </SecretsContextProvider>,
     );
 
     // Test template title is overriden
