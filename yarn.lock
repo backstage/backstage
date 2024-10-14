@@ -3913,6 +3913,7 @@ __metadata:
     "@backstage/backend-common": ^0.25.0
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/catalog-client": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli-common": "workspace:^"
     "@backstage/cli-node": "workspace:^"
@@ -3925,6 +3926,10 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/eslint-plugin": "workspace:^"
     "@backstage/integration": "workspace:^"
+    "@backstage/plugin-auth-backend": "workspace:^"
+    "@backstage/plugin-auth-backend-module-guest-provider": "workspace:^"
+    "@backstage/plugin-catalog-node": "workspace:^"
+    "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/release-manifests": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
