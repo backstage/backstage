@@ -301,7 +301,7 @@ export const catalogPlugin = createBackendPlugin({
 
         const { processingEngine, router } = await builder.build();
 
-        if (config.get('catalog.processingInterval') ?? true) {
+        if (config.getOptional('catalog.processingInterval') ?? true) {
           lifecycle.addStartupHook(async () => {
             await processingEngine.start();
           });
