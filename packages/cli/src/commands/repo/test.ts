@@ -241,7 +241,6 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       return;
     }
 
-    selectedProjects = selectedProjects.filter(pkg => pkg.includes('app'));
     args.push('--selectProjects', ...selectedProjects);
   }
 
