@@ -34,14 +34,5 @@ export class GerritEntityProvider implements EntityProvider {
   refresh(logger: LoggerService): Promise<void>;
 }
 
-// Warnings were encountered during analysis:
-//
-// src/module/catalogModuleGerritEntityProvider.d.ts:4:22 - (ae-undocumented) Missing documentation for "catalogModuleGerritEntityProvider".
-// src/providers/GerritEntityProvider.d.ts:5:1 - (ae-undocumented) Missing documentation for "GerritEntityProvider".
-// src/providers/GerritEntityProvider.d.ts:11:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/providers/GerritEntityProvider.d.ts:17:5 - (ae-undocumented) Missing documentation for "getProviderName".
-// src/providers/GerritEntityProvider.d.ts:18:5 - (ae-undocumented) Missing documentation for "connect".
-// src/providers/GerritEntityProvider.d.ts:20:5 - (ae-undocumented) Missing documentation for "refresh".
-
 // (No @packageDocumentation comment for this package)
 ```

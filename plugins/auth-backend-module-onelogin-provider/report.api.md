@@ -27,9 +27,4 @@ export namespace oneLoginSignInResolvers {
     unknown
   >;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/authenticator.d.ts:3:22 - (ae-undocumented) Missing documentation for "oneLoginAuthenticator".
-// src/module.d.ts:2:22 - (ae-undocumented) Missing documentation for "authModuleOneLoginProvider".
 ```

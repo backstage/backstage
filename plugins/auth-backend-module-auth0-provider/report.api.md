@@ -22,9 +22,4 @@ export const auth0Authenticator: OAuthAuthenticator<
 // @public (undocumented)
 const authModuleAuth0Provider: BackendFeature;
 export default authModuleAuth0Provider;
-
-// Warnings were encountered during analysis:
-//
-// src/authenticator.d.ts:3:22 - (ae-undocumented) Missing documentation for "auth0Authenticator".
-// src/module.d.ts:2:22 - (ae-undocumented) Missing documentation for "authModuleAuth0Provider".
 ```

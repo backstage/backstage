@@ -22,9 +22,4 @@ export class GithubEventRouter extends SubTopicEventRouter {
   // (undocumented)
   protected getSubscriberId(): string;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/router/GithubEventRouter.d.ts:13:5 - (ae-undocumented) Missing documentation for "getSubscriberId".
-// src/router/GithubEventRouter.d.ts:14:5 - (ae-undocumented) Missing documentation for "determineSubTopic".
 ```

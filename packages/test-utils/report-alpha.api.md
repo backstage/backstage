@@ -28,12 +28,5 @@ export class MockTranslationApi implements TranslationApi {
   >(): Observable<TranslationSnapshot<TMessages>>;
 }
 
-// Warnings were encountered during analysis:
-//
-// src/testUtils/apis/TranslationApi/MockTranslationApi.d.ts:7:1 - (ae-undocumented) Missing documentation for "MockTranslationApi".
-// src/testUtils/apis/TranslationApi/MockTranslationApi.d.ts:9:5 - (ae-undocumented) Missing documentation for "create".
-// src/testUtils/apis/TranslationApi/MockTranslationApi.d.ts:11:5 - (ae-undocumented) Missing documentation for "getTranslation".
-// src/testUtils/apis/TranslationApi/MockTranslationApi.d.ts:14:5 - (ae-undocumented) Missing documentation for "translation$".
-
 // (No @packageDocumentation comment for this package)
 ```

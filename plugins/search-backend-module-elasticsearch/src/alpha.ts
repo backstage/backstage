@@ -14,17 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  default as feature,
-  ElasticSearchQueryTranslatorExtensionPoint as ExtensionPoint,
-  elasticsearchTranslatorExtensionPoint as extensionPoint,
-} from './module';
+import { default as feature } from './module';
 
 /** @alpha */
 const _feature = feature;
 export default _feature;
-
-/** @alpha */
-export type ElasticSearchQueryTranslatorExtensionPoint = ExtensionPoint;
-/** @alpha */
-export const elasticsearchTranslatorExtensionPoint = extensionPoint;

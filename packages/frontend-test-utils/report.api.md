@@ -146,20 +146,4 @@ export type TestAppOptions = {
 };
 
 export { withLogCollector };
-
-// Warnings were encountered during analysis:
-//
-// src/apis/AnalyticsApi/MockAnalyticsApi.d.ts:10:5 - (ae-undocumented) Missing documentation for "captureEvent".
-// src/apis/AnalyticsApi/MockAnalyticsApi.d.ts:11:5 - (ae-undocumented) Missing documentation for "getEvents".
-// src/app/createExtensionTester.d.ts:4:1 - (ae-undocumented) Missing documentation for "ExtensionQuery".
-// src/app/createExtensionTester.d.ts:7:5 - (ae-undocumented) Missing documentation for "node".
-// src/app/createExtensionTester.d.ts:8:5 - (ae-undocumented) Missing documentation for "instance".
-// src/app/createExtensionTester.d.ts:9:5 - (ae-undocumented) Missing documentation for "get".
-// src/app/createExtensionTester.d.ts:12:1 - (ae-undocumented) Missing documentation for "ExtensionTester".
-// src/app/createExtensionTester.d.ts:14:5 - (ae-undocumented) Missing documentation for "add".
-// src/app/createExtensionTester.d.ts:17:5 - (ae-undocumented) Missing documentation for "get".
-// src/app/createExtensionTester.d.ts:18:5 - (ae-undocumented) Missing documentation for "query".
-// src/app/createExtensionTester.d.ts:19:5 - (ae-undocumented) Missing documentation for "reactElement".
-// src/app/createExtensionTester.d.ts:22:1 - (ae-undocumented) Missing documentation for "createExtensionTester".
-// src/deprecated.d.ts:5:1 - (ae-undocumented) Missing documentation for "setupRequestMockHandlers".
 ```

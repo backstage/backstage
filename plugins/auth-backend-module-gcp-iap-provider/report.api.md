@@ -50,10 +50,5 @@ export type GcpIapTokenInfo = {
   [key: string]: JsonPrimitive;
 };
 
-// Warnings were encountered during analysis:
-//
-// src/authenticator.d.ts:2:22 - (ae-undocumented) Missing documentation for "gcpIapAuthenticator".
-// src/module.d.ts:2:22 - (ae-undocumented) Missing documentation for "authModuleGcpIapProvider".
-
 // (No @packageDocumentation comment for this package)
 ```

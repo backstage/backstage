@@ -61,14 +61,4 @@ export class HttpPostIngressEventPublisher {
     logger: LoggerService;
   }): HttpPostIngressEventPublisher;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/service/DefaultEventBroker.d.ts:21:5 - (ae-undocumented) Missing documentation for "publish".
-// src/service/DefaultEventBroker.d.ts:22:5 - (ae-undocumented) Missing documentation for "subscribe".
-// src/service/EventsBackend.d.ts:14:5 - (ae-undocumented) Missing documentation for "setEventBroker".
-// src/service/EventsBackend.d.ts:15:5 - (ae-undocumented) Missing documentation for "addPublishers".
-// src/service/EventsBackend.d.ts:16:5 - (ae-undocumented) Missing documentation for "addSubscribers".
-// src/service/http/HttpPostIngressEventPublisher.d.ts:15:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/service/http/HttpPostIngressEventPublisher.d.ts:24:5 - (ae-undocumented) Missing documentation for "bind".
 ```

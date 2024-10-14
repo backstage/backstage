@@ -792,8 +792,4 @@ export function withApis<T extends {}>(
   ): React_2.JSX.Element;
   displayName: string;
 };
-
-// Warnings were encountered during analysis:
-//
-// src/routing/types.d.ts:13:1 - (ae-undocumented) Missing documentation for "AnyParams".
 ```

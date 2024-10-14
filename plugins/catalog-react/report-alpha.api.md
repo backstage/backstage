@@ -221,11 +221,5 @@ export function useEntityPermission(
   error?: Error;
 };
 
-// Warnings were encountered during analysis:
-//
-// src/alpha/converters/convertLegacyEntityCardExtension.d.ts:5:1 - (ae-undocumented) Missing documentation for "convertLegacyEntityCardExtension".
-// src/alpha/converters/convertLegacyEntityContentExtension.d.ts:5:1 - (ae-undocumented) Missing documentation for "convertLegacyEntityContentExtension".
-// src/translation.d.ts:2:22 - (ae-undocumented) Missing documentation for "catalogReactTranslationRef".
-
 // (No @packageDocumentation comment for this package)
 ```

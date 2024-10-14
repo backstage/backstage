@@ -93,10 +93,5 @@ export const scaffolderTemplateConditions: Conditions<{
   >;
 }>;
 
-// Warnings were encountered during analysis:
-//
-// src/alpha.d.ts:2:15 - (ae-undocumented) Missing documentation for "_feature".
-// src/service/conditionExports.d.ts:48:22 - (ae-undocumented) Missing documentation for "createScaffolderActionConditionalDecision".
-
 // (No @packageDocumentation comment for this package)
 ```

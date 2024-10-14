@@ -113,12 +113,4 @@ export type PluginEnvironment = {
   reader: UrlReaderService;
   permissions: PermissionEvaluator;
 };
-
-// Warnings were encountered during analysis:
-//
-// src/service/IncrementalCatalogBuilder.d.ts:6:1 - (ae-undocumented) Missing documentation for "IncrementalCatalogBuilder".
-// src/service/IncrementalCatalogBuilder.d.ts:20:5 - (ae-undocumented) Missing documentation for "build".
-// src/service/IncrementalCatalogBuilder.d.ts:23:5 - (ae-undocumented) Missing documentation for "addIncrementalEntityProvider".
-// src/types.d.ts:106:1 - (ae-undocumented) Missing documentation for "IncrementalEntityProviderOptions".
-// src/types.d.ts:145:1 - (ae-undocumented) Missing documentation for "PluginEnvironment".
 ```

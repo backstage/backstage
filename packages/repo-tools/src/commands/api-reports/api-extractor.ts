@@ -240,8 +240,6 @@ export async function createTemporaryTsConfig(includedPackageDirs: string[]) {
 }
 
 export async function countApiReportWarnings(reportPath: string) {
-  console.log(reportPath);
-
   try {
     const content = await fs.readFile(reportPath, 'utf8');
     const lines = content.split('\n');
@@ -378,6 +376,7 @@ export async function runApiExtraction({
       logLevel: 'none',
     };
   }
+
   const warnings = new Array<string>();
 
   for (const [packageDir, packageEntryPoints] of Object.entries(
@@ -604,8 +603,6 @@ export async function runApiExtraction({
       }
 
       const warningCountAfter = await countApiReportWarnings(reportPath);
-
-      console.log({ warningCountAfter, warningCountBefore, warnings });
 
       if (noBail) {
         console.log(`Skipping warnings check for ${packageDir}`);

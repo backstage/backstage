@@ -49,9 +49,4 @@ export namespace oidcSignInResolvers {
     unknown
   >;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/authenticator.d.ts:13:22 - (ae-undocumented) Missing documentation for "oidcAuthenticator".
-// src/module.d.ts:2:22 - (ae-undocumented) Missing documentation for "authModuleOidcProvider".
 ```
