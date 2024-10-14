@@ -173,6 +173,13 @@ export interface Config {
      *   processingInterval: { minutes: 30 }
      * ```
      *
+     * or to disabled processing:
+     *
+     * ```yaml
+     * catalog:
+     *  processingInterval: false
+     * ```
+     *
      * Note that this is only a suggested minimum, and the actual interval may
      * be longer. Internally, the catalog will scale up this number by a small
      * factor and choose random numbers in that range to spread out the load. If
@@ -184,7 +191,7 @@ export interface Config {
      * systems that are queried by processors, such as version control systems
      * housing catalog-info files.
      */
-    processingInterval?: HumanDuration;
+    processingInterval?: HumanDuration | false;
     /**
      * If the processing engine should be started or not, defaults to true.
      * @remarks
@@ -199,6 +206,5 @@ export interface Config {
      * This will enable or disable the processing of entities in the Catalog. This can be useful
      * to use with Read Replica deployments of the catalog.
      */
-    processingEnabled?: boolean;
   };
 }
