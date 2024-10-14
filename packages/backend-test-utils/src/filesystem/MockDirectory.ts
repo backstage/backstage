@@ -362,6 +362,34 @@ export interface CreateMockDirectoryOptions {
   content?: MockDirectoryContent;
 }
 
+const cleanupCallbacks = new Array<() => void>();
+
+let registered = false;
+function registerTestHooks() {
+  if (typeof afterAll !== 'function') {
+    return;
+  }
+  if (registered) {
+    return;
+  }
+  registered = true;
+
+  afterAll(async () => {
+    for (const callback of cleanupCallbacks) {
+      try {
+        callback();
+      } catch (error) {
+        console.error(
+          `Failed to clean up mock directory after tests, ${error}`,
+        );
+      }
+    }
+    cleanupCallbacks.length = 0;
+  });
+}
+
+registerTestHooks();
+
 /**
  * Creates a new temporary mock directory that will be removed after the tests have completed.
  *
@@ -410,18 +438,14 @@ export function createMockDirectory(
     process.on('beforeExit', mocker.remove);
   }
 
-  try {
-    afterAll(() => {
-      if (origTmpdir) {
-        os.tmpdir = origTmpdir;
-      }
-      if (needsCleanup) {
-        mocker.remove();
-      }
-    });
-  } catch {
-    /* ignore */
-  }
+  cleanupCallbacks.push(() => {
+    if (origTmpdir) {
+      os.tmpdir = origTmpdir;
+    }
+    if (needsCleanup) {
+      mocker.remove();
+    }
+  });
 
   if (options?.content) {
     mocker.setContent(options.content);
