@@ -13,23 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import React from 'react';
+import { SignInPageBlueprint } from '@backstage/frontend-plugin-api';
 import { SignInPage } from '@backstage/core-components';
-import {
-  SignInPageBlueprint,
-  createFrontendModule,
-} from '@backstage/frontend-plugin-api';
 
-const signInPage = SignInPageBlueprint.make({
-  name: 'guest',
+export const DefaultSignInPage = SignInPageBlueprint.make({
   params: {
     loader: async () => props =>
       <SignInPage {...props} providers={['guest']} />,
   },
-});
-
-export const signInPageModule = createFrontendModule({
-  pluginId: 'app',
-  extensions: [signInPage],
 });
