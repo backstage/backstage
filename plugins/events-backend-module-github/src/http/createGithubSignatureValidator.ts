@@ -48,7 +48,11 @@ export function createGithubSignatureValidator(
 
     if (
       !signature ||
-      !(await verify(secret, JSON.stringify(request.body), signature))
+      !(await verify(
+        secret,
+        request.raw.body.toString(request.raw.encoding),
+        signature,
+      ))
     ) {
       context.reject({
         status: 403,

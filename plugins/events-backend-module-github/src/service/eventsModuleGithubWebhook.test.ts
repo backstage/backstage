@@ -25,14 +25,19 @@ import { eventsModuleGithubWebhook } from './eventsModuleGithubWebhook';
 
 describe('eventsModuleGithubWebhook', () => {
   const secret = 'valid-secret';
-  const payload = { test: 'payload' };
-  const payloadString = JSON.stringify(payload);
+  const payloadString = '{"test": "payload", "score": 5.0}';
+  const payload = JSON.parse(payloadString);
+  const payloadBuffer = Buffer.from(payloadString);
   const validSignature = sign({ secret, algorithm: 'sha256' }, payloadString);
   const requestWithSignature = async (signature?: string) => {
     return {
       body: payload,
       headers: {
         'x-hub-signature-256': signature,
+      },
+      raw: {
+        body: payloadBuffer,
+        encoding: 'utf-8',
       },
     } as RequestDetails;
   };
