@@ -5,12 +5,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "tsc -b && vite build",
     "build-storybook": "storybook build",
-    "dev": "vite",
-    "lint": "eslint .",
-    "preview": "vite preview",
-    "storybook": "storybook dev -p 6006"
+    "start": "storybook dev -p 6006"
   },
   "eslintConfig": {
     "extends": [
