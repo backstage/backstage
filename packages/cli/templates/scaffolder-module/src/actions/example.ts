@@ -9,14 +9,14 @@ import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
  *
  * @public
  */
-export function createAcmeExampleAction() {
+export function createExampleAction() {
   // For more information on how to define custom actions, see
   //   https://backstage.io/docs/features/software-templates/writing-custom-actions
   return createTemplateAction<{
     myParameter: string;
   }>({
     id: 'acme:example',
-    description: 'Runs Yeoman on an installed Yeoman generator',
+    description: 'Runs an example action',
     schema: {
       input: {
         type: 'object',
@@ -24,7 +24,7 @@ export function createAcmeExampleAction() {
         properties: {
           myParameter: {
             title: 'An example parameter',
-            description: 'This is the schema for our example parameter',
+            description: "This is an example parameter, don't set it to foo",
             type: 'string',
           },
         },
@@ -34,6 +34,10 @@ export function createAcmeExampleAction() {
       ctx.logger.info(
         `Running example template with parameters: ${ctx.input.myParameter}`,
       );
+
+      if (ctx.input.myParameter === 'foo') {
+        throw new Error(`myParameter cannot be 'foo'`);
+      }
 
       await new Promise(resolve => setTimeout(resolve, 1000));
     },
