@@ -349,8 +349,11 @@ class MockDirectoryImpl {
  */
 export interface CreateMockDirectoryOptions {
   /**
-   * In addition to creating a temporary directory, also mock `os.tmpdir()` to return the
-   * mock directory path until the end of the test suite.
+   * In addition to creating a temporary directory, also mock `os.tmpdir()` to
+   * return the mock directory path until the end of the test suite.
+   *
+   * When this option is provided the `createMockDirectory` call must happen in
+   * a scope where calling `afterAll` from Jest is allowed
    *
    * @returns
    */
@@ -438,14 +441,15 @@ export function createMockDirectory(
     process.on('beforeExit', mocker.remove);
   }
 
-  cleanupCallbacks.push(() => {
-    if (origTmpdir) {
+  if (needsCleanup) {
+    cleanupCallbacks.push(() => mocker.remove());
+  }
+
+  if (origTmpdir) {
+    afterAll(() => {
       os.tmpdir = origTmpdir;
-    }
-    if (needsCleanup) {
-      mocker.remove();
-    }
-  });
+    });
+  }
 
   if (options?.content) {
     mocker.setContent(options.content);
