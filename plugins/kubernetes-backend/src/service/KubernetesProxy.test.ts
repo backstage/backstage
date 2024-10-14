@@ -18,7 +18,6 @@ import 'buffer';
 import { resolve as resolvePath } from 'path';
 import { errorHandler } from '@backstage/backend-common';
 import {
-  createMockDirectory,
   mockServices,
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
@@ -39,7 +38,6 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import request from 'supertest';
 import { AddressInfo, WebSocket, WebSocketServer } from 'ws';
-import { Config } from '@kubernetes/client-node';
 
 import { LocalKubectlProxyClusterLocator } from '../cluster-locator/LocalKubectlProxyLocator';
 import {
@@ -61,11 +59,7 @@ import {
   DiscoveryService,
 } from '@backstage/backend-plugin-api';
 
-const mockCertDir = createMockDirectory({
-  content: {
-    'ca.crt': 'MOCKCA',
-  },
-});
+const mock = require('mock-fs');
 
 describe('KubernetesProxy', () => {
   let proxy: KubernetesProxy;
@@ -1014,18 +1008,23 @@ describe('KubernetesProxy', () => {
   describe('Backstage running on k8s', () => {
     const initialHost = process.env.KUBERNETES_SERVICE_HOST;
     const initialPort = process.env.KUBERNETES_SERVICE_PORT;
-    const initialCaPath = Config.SERVICEACCOUNT_CA_PATH;
+    beforeEach(() => {
+      mock({
+        '/var/run/secrets/kubernetes.io/serviceaccount': {
+          'ca.crt': 'MOCKCA',
+        },
+      });
+    });
 
     afterEach(() => {
       process.env.KUBERNETES_SERVICE_HOST = initialHost;
       process.env.KUBERNETES_SERVICE_PORT = initialPort;
-      Config.SERVICEACCOUNT_CA_PATH = initialCaPath;
+      mock.restore();
     });
 
     it('makes in-cluster requests when cluster details has no token', async () => {
       process.env.KUBERNETES_SERVICE_HOST = '10.10.10.10';
       process.env.KUBERNETES_SERVICE_PORT = '443';
-      Config.SERVICEACCOUNT_CA_PATH = mockCertDir.resolve('ca.crt');
 
       clusterSupplier.getClusters.mockResolvedValue([
         {
