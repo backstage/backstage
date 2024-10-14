@@ -32,6 +32,9 @@ import * as winston from 'winston';
 import { MESSAGE } from 'triple-beam';
 import { overridePackagePathResolution } from '@backstage/backend-plugin-api/testUtils';
 
+// these can get a bit slow in CI
+jest.setTimeout(60_000);
+
 async function jestFreeTypescriptAwareModuleLoader(
   logger: LoggerService,
   dontBootstrap: boolean = false,
