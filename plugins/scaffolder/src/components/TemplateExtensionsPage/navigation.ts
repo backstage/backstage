@@ -13,19 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const tabKeys = ['filter', 'function', 'value'] as const;
+import { ListTemplateExtensionsResponse } from '@backstage/plugin-scaffolder-react';
+import { keys } from 'lodash';
 
-export type TabKey = (typeof tabKeys)[number];
+const kinds = ['filter', 'function', 'value'] as const;
 
-export const renderLink = (tab: TabKey, key: string) => `${tab}_${key}`;
+export type ExtensionKind = (typeof kinds)[number];
 
-export const parseLink = (link: string): { tab: TabKey; key: string } => {
-  const [t, key] = link.split('_', 2);
-  const tab = t as TabKey;
-  if (tabKeys.includes(tab)) {
+export type Extension = {
+  kind: ExtensionKind;
+  name: string;
+};
+
+export const listExtensions = (
+  data: Partial<Pick<ListTemplateExtensionsResponse, 'filters'>> &
+    Partial<{ globals: Partial<ListTemplateExtensionsResponse['globals']> }>,
+): Extension[] => {
+  const exts = (
+    kind: ExtensionKind,
+    record: Record<string, any> | undefined,
+  ): Extension[] =>
+    record ? keys(record).map((name: string) => ({ kind, name })) : [];
+
+  return [
+    ...exts('filter', data.filters),
+    ...exts('function', data.globals?.functions),
+    ...exts('value', data.globals?.values),
+  ];
+};
+
+export const renderLink = (e: Extension) => `${e.kind}_${e.name}`;
+
+export const parseLink = (link: string): Extension => {
+  const [k, name] = link.split('_', 2);
+  const kind = k as ExtensionKind;
+  if (kinds.includes(kind)) {
     return {
-      tab,
-      key,
+      kind,
+      name,
     };
   }
   throw Error(link);

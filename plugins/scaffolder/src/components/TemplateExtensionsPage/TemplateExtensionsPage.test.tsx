@@ -25,7 +25,7 @@ import { capitalize, difference, forIn } from 'lodash';
 import React from 'react';
 import { rootRouteRef } from '../../routes';
 import { TemplateExtensionsPage } from './TemplateExtensionsPage';
-import { TabKey } from './navigation';
+import { ExtensionKind } from './navigation';
 
 const listTemplateExtensions = jest.fn();
 
@@ -81,13 +81,13 @@ describe('TemplateExtensionsPage', () => {
     const tabList = getByRole('tablist');
     expect(tabList).toBeInTheDocument();
 
-    const tabKeys: TabKey[] = ['filter', 'function', 'value'];
+    const extensionKinds: ExtensionKind[] = ['filter', 'function', 'value'];
 
     const tabs = Object.fromEntries(
-      tabKeys.map(
+      extensionKinds.map(
         t =>
           [t, within(tabList).getByText(`${capitalize(t)}s`)] as [
-            TabKey,
+            ExtensionKind,
             HTMLElement,
           ],
       ),
@@ -95,18 +95,18 @@ describe('TemplateExtensionsPage', () => {
 
     forIn(tabs, tab => expect(tab).toBeInTheDocument());
 
-    const verifyActiveTab = async (k: TabKey) => {
+    const verifyActiveTab = async (k: ExtensionKind) => {
       expect(await findByTestId(`no-${k}s`)).toBeInTheDocument();
-      difference(tabKeys, [k]).forEach(nk =>
+      difference(extensionKinds, [k]).forEach(nk =>
         expect(queryByTestId(`no-${nk}s`)).not.toBeInTheDocument(),
       );
     };
 
     await verifyActiveTab('filter');
 
-    for (let i = tabKeys.length - 1; i >= 0; i--) {
-      fireEvent.click(tabs[tabKeys[i]]);
-      await verifyActiveTab(tabKeys[i]);
+    for (let i = extensionKinds.length - 1; i >= 0; i--) {
+      fireEvent.click(tabs[extensionKinds[i]]);
+      await verifyActiveTab(extensionKinds[i]);
     }
   });
   it('renders with no extensions', async () => {
