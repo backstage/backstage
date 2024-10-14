@@ -5,6 +5,7 @@
 ```ts
 import { AwsCredentialIdentity } from '@aws-sdk/types';
 import { AwsCredentialsManager } from '@backstage/integration-aws-node';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogProcessor } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorParser } from '@backstage/plugin-catalog-node';
@@ -103,6 +104,10 @@ export class AwsS3EntityProvider implements EntityProvider {
   // (undocumented)
   refresh(logger: LoggerService): Promise<void>;
 }
+
+// @public
+const catalogModuleAwsS3EntityProvider: BackendFeature;
+export default catalogModuleAwsS3EntityProvider;
 
 // @public
 export const defaultEksClusterEntityTransformer: EksClusterEntityTransformer;

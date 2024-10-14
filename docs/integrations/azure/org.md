@@ -49,9 +49,9 @@ For large organizations, this plugin can take a long time, so be careful setting
 Finally, updated your backend by adding the following line:
 
 ```ts title="packages/backend/src/index.ts"
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 /* highlight-add-start */
-backend.add(import('@backstage/plugin-catalog-backend-module-msgraph/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend-module-msgraph'));
 /* highlight-add-end */
 ```
 

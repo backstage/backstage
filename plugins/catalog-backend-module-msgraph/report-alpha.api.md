@@ -10,32 +10,24 @@ import { OrganizationTransformer } from '@backstage/plugin-catalog-backend-modul
 import { ProviderConfigTransformer } from '@backstage/plugin-catalog-backend-module-msgraph';
 import { UserTransformer } from '@backstage/plugin-catalog-backend-module-msgraph';
 
-// @alpha
-const catalogModuleMicrosoftGraphOrgEntityProvider: BackendFeature;
-export default catalogModuleMicrosoftGraphOrgEntityProvider;
+// @alpha (undocumented)
+const _feature: BackendFeature;
+export default _feature;
 
-// @alpha
-export const microsoftGraphOrgEntityProviderTransformExtensionPoint: ExtensionPoint<MicrosoftGraphOrgEntityProviderTransformsExtensionPoint>;
+// Warning: (ae-forgotten-export) The symbol "MicrosoftGraphOrgEntityProviderTransformsExtensionPoint_2" needs to be exported by the entry point alpha.d.ts
+//
+// @alpha (undocumented)
+export const microsoftGraphOrgEntityProviderTransformExtensionPoint: ExtensionPoint<MicrosoftGraphOrgEntityProviderTransformsExtensionPoint_2>;
 
-// @alpha
-export interface MicrosoftGraphOrgEntityProviderTransformsExtensionPoint {
-  setGroupTransformer(
-    transformer: GroupTransformer | Record<string, GroupTransformer>,
-  ): void;
-  setOrganizationTransformer(
-    transformer:
-      | OrganizationTransformer
-      | Record<string, OrganizationTransformer>,
-  ): void;
-  setProviderConfigTransformer(
-    transformer:
-      | ProviderConfigTransformer
-      | Record<string, ProviderConfigTransformer>,
-  ): void;
-  setUserTransformer(
-    transformer: UserTransformer | Record<string, UserTransformer>,
-  ): void;
-}
+// @alpha (undocumented)
+export type MicrosoftGraphOrgEntityProviderTransformsExtensionPoint =
+  MicrosoftGraphOrgEntityProviderTransformsExtensionPoint_2;
+
+// Warnings were encountered during analysis:
+//
+// src/alpha.d.ts:3:15 - (ae-undocumented) Missing documentation for "_feature".
+// src/alpha.d.ts:6:1 - (ae-undocumented) Missing documentation for "MicrosoftGraphOrgEntityProviderTransformsExtensionPoint".
+// src/alpha.d.ts:8:22 - (ae-undocumented) Missing documentation for "microsoftGraphOrgEntityProviderTransformExtensionPoint".
 
 // (No @packageDocumentation comment for this package)
 ```

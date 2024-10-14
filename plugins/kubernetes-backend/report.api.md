@@ -6,6 +6,7 @@
 import { AuthenticationStrategy as AuthenticationStrategy_2 } from '@backstage/plugin-kubernetes-node';
 import { AuthMetadata as AuthMetadata_2 } from '@backstage/plugin-kubernetes-node';
 import { AuthService } from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ClusterDetails as ClusterDetails_2 } from '@backstage/plugin-kubernetes-node';
@@ -331,6 +332,10 @@ export interface KubernetesObjectsProviderOptions {
 
 // @public @deprecated (undocumented)
 export type KubernetesObjectTypes = k8sAuthTypes.KubernetesObjectTypes;
+
+// @public
+const kubernetesPlugin: BackendFeature;
+export default kubernetesPlugin;
 
 // @public
 export class KubernetesProxy {

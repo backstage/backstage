@@ -7,11 +7,14 @@
 
 import { ApiResponse } from '@opensearch-project/opensearch';
 import { ApiResponse as ApiResponse_2 } from '@elastic/elasticsearch';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node';
 import { BulkHelper } from '@elastic/elasticsearch/lib/Helpers';
 import { BulkStats } from '@elastic/elasticsearch/lib/Helpers';
 import { Config } from '@backstage/config';
 import type { ConnectionOptions } from 'tls';
+import { ElasticSearchQueryTranslator as ElasticSearchQueryTranslator_2 } from '@backstage/plugin-search-backend-module-elasticsearch';
+import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { IndexableResultSet } from '@backstage/plugin-search-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
@@ -71,6 +74,10 @@ export interface BaseElasticSearchClientOptions {
 export function decodeElasticSearchPageCursor(pageCursor?: string): {
   page: number;
 };
+
+// @public
+const _default: BackendFeature;
+export default _default;
 
 // @public (undocumented)
 export interface ElasticSearchAgentOptions {
@@ -318,6 +325,12 @@ export type ElasticSearchQueryTranslator = (
   options?: ElasticSearchQueryTranslatorOptions,
 ) => ElasticSearchConcreteQuery;
 
+// @public (undocumented)
+export interface ElasticSearchQueryTranslatorExtensionPoint {
+  // (undocumented)
+  setTranslator(translator: ElasticSearchQueryTranslator_2): void;
+}
+
 // @public
 export type ElasticSearchQueryTranslatorOptions = {
   highlightOptions?: ElasticSearchHighlightConfig;
@@ -377,6 +390,9 @@ export type ElasticSearchSearchEngineIndexerOptions = {
   batchSize: number;
   skipRefresh?: boolean;
 };
+
+// @public
+export const elasticsearchTranslatorExtensionPoint: ExtensionPoint<ElasticSearchQueryTranslatorExtensionPoint>;
 
 // @public (undocumented)
 export interface ElasticSearchTransportConstructor {
@@ -552,4 +568,6 @@ export interface OpenSearchNodeOptions {
 // src/engines/ElasticSearchSearchEngineIndexer.d.ts:39:5 - (ae-undocumented) Missing documentation for "initialize".
 // src/engines/ElasticSearchSearchEngineIndexer.d.ts:40:5 - (ae-undocumented) Missing documentation for "index".
 // src/engines/ElasticSearchSearchEngineIndexer.d.ts:41:5 - (ae-undocumented) Missing documentation for "finalize".
+// src/module.d.ts:3:1 - (ae-undocumented) Missing documentation for "ElasticSearchQueryTranslatorExtensionPoint".
+// src/module.d.ts:4:5 - (ae-undocumented) Missing documentation for "setTranslator".
 ```

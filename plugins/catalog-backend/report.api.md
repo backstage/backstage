@@ -12,6 +12,7 @@ import { AnalyzeLocationRequest as AnalyzeLocationRequest_2 } from '@backstage/p
 import { AnalyzeLocationResponse as AnalyzeLocationResponse_2 } from '@backstage/plugin-catalog-common';
 import { AnalyzeOptions as AnalyzeOptions_2 } from '@backstage/plugin-catalog-node';
 import { AuthService } from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogCollatorEntityTransformer as CatalogCollatorEntityTransformer_2 } from '@backstage/plugin-search-backend-module-catalog';
 import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
@@ -210,6 +211,10 @@ export type CatalogEnvironment = {
 export type CatalogPermissionRuleInput<
   TParams extends PermissionRuleParams = PermissionRuleParams,
 > = PermissionRule<Entity, EntitiesSearchFilter_2, 'catalog-entity', TParams>;
+
+// @public
+const catalogPlugin: BackendFeature;
+export default catalogPlugin;
 
 // @public
 export interface CatalogProcessingEngine {

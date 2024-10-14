@@ -889,7 +889,7 @@ const scaffolderModuleCustomFilters = createBackendModule({
 /* highlight-add-end */
 
 const backend = createBackend();
-backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
+backend.add(import('@backstage/plugin-scaffolder-backend'));
 /* highlight-add-next-line */
 backend.add(scaffolderModuleCustomFilters);
 ```

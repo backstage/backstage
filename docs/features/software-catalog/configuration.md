@@ -205,7 +205,7 @@ yarn --cwd packages/backend add @backstage/plugin-events-backend
 Now you can install the events backend plugin in your backend.
 
 ```ts title="packages/backend/src/index.ts"
-backend.add(import('@backstage/plugin-events-backend/alpha'));
+backend.add(import('@backstage/plugin-events-backend'));
 ```
 
 ### Logging Errors
