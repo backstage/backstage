@@ -57,7 +57,7 @@ learn how to contribute the integration yourself!
 [int-howto]: #writing-integrations
 [analytics-api-type]: https://backstage.io/docs/reference/core-plugin-api.analyticsapi
 
-## Key Events
+## Key Events 
 
 The following table summarizes events that, depending on the plugins you have
 installed, may be captured.
