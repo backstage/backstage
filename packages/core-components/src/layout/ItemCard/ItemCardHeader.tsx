@@ -15,20 +15,15 @@
  */
 
 import Box from '@material-ui/core/Box';
-import {
-  createStyles,
-  makeStyles,
-  Theme,
-  WithStyles,
-} from '@material-ui/core/styles';
+import { makeStyles, WithStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
 
 /** @public */
 export type ItemCardHeaderClassKey = 'root';
 
-const styles = (theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles(
+  theme => ({
     root: {
       color: theme.palette.common.white,
       padding: theme.spacing(2, 2, 3),
@@ -36,12 +31,12 @@ const styles = (theme: Theme) =>
       backgroundPosition: 0,
       backgroundSize: 'inherit',
     },
-  });
-
-const useStyles = makeStyles(styles, { name: 'BackstageItemCardHeader' });
+  }),
+  { name: 'BackstageItemCardHeader' },
+);
 
 /** @public */
-export type ItemCardHeaderProps = Partial<WithStyles<typeof styles>> & {
+export type ItemCardHeaderProps = Partial<WithStyles> & {
   /**
    * A large title to show in the header, providing the main heading.
    *
@@ -80,7 +75,7 @@ export type ItemCardHeaderProps = Partial<WithStyles<typeof styles>> & {
  */
 export function ItemCardHeader(props: ItemCardHeaderProps) {
   const { title, subtitle, children } = props;
-  const classes = useStyles(props);
+  const classes = useStyles();
   return (
     <Box className={classes.root}>
       {subtitle && (
