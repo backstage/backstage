@@ -240,6 +240,8 @@ export async function createTemporaryTsConfig(includedPackageDirs: string[]) {
 }
 
 export async function countApiReportWarnings(reportPath: string) {
+  console.log(reportPath);
+
   try {
     const content = await fs.readFile(reportPath, 'utf8');
     const lines = content.split('\n');
@@ -406,7 +408,7 @@ export async function runApiExtraction({
       const suffix =
         packageEntryPoint.name === 'index' ? '' : `-${packageEntryPoint.name}`;
       const reportFileName = `report${suffix}`;
-      const reportPath = resolvePath(projectFolder, reportFileName);
+      const reportPath = resolvePath(projectFolder, `${reportFileName}.api.md`);
 
       const warningCountBefore = await countApiReportWarnings(reportPath);
 
@@ -602,6 +604,9 @@ export async function runApiExtraction({
       }
 
       const warningCountAfter = await countApiReportWarnings(reportPath);
+
+      console.log({ warningCountAfter, warningCountBefore, warnings });
+
       if (noBail) {
         console.log(`Skipping warnings check for ${packageDir}`);
       }
