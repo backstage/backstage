@@ -27404,8 +27404,8 @@ __metadata:
   linkType: hard
 
 "express-prom-bundle@npm:^7.0.0":
-  version: 7.0.0
-  resolution: "express-prom-bundle@npm:7.0.0"
+  version: 7.0.2
+  resolution: "express-prom-bundle@npm:7.0.2"
   dependencies:
     "@types/express": ^4.17.21
     express: ^4.18.2
@@ -27413,7 +27413,7 @@ __metadata:
     url-value-parser: ^2.0.0
   peerDependencies:
     prom-client: ">=15.0.0"
-  checksum: 5490573610c17b5022ddaebd61ca9eb3f1bc7e48d2b37f51dc358ffdfcb8c75ce5817a93ae2cc112ac7cc00ed7792fecff810ac6d6328f8ac623d6039e82d0c9
+  checksum: c9c26f1cd494e5733d56b719d59e1091b61fb08a2664d4474ad6540829f12d6f7a73d46b37a4806e4610460861829e23b4c586f48cdd857111800fafc9818cc6
   languageName: node
   linkType: hard
 
