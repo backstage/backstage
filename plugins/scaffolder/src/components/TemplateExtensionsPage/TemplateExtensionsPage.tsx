@@ -41,18 +41,32 @@ import {
   ScaffolderPageContextMenu,
   ScaffolderPageContextMenuProps,
 } from '@backstage/plugin-scaffolder-react/alpha';
+import Box from '@material-ui/core/Box';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import ListItemText from '@material-ui/core/ListItemText';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
-import React, { useEffect } from 'react';
+import TextField from '@material-ui/core/TextField';
+import AllInclusiveIcon from '@material-ui/icons/AllInclusive';
+import FilterListIcon from '@material-ui/icons/FilterList';
+import FunctionsIcon from '@material-ui/icons/Functions';
+import SearchIcon from '@material-ui/icons/Search';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import { isEqual, mapValues, trimStart, values } from 'lodash';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
-import { parseLink, TabKey } from './navigation';
+import {
+  Extension,
+  ExtensionKind,
+  listExtensions,
+  parseLink,
+} from './navigation';
 import { TemplateFilters } from './TemplateFilters';
 import {
   TemplateGlobalFunctions,
   TemplateGlobalValues,
 } from './TemplateGlobals';
-import { trimStart } from 'lodash';
 
 const useStyles = makeStyles(theme => ({
   code: {
@@ -83,6 +97,12 @@ const useStyles = makeStyles(theme => ({
     paddingLeft: theme.spacing(1),
     cursor: 'pointer',
   },
+
+  tabs: {
+    display: 'block',
+    minHeight: 'initial',
+    overflow: 'initial',
+  },
 }));
 
 export const TemplateExtensionsPageContent = ({
@@ -108,19 +128,53 @@ export const TemplateExtensionsPageContent = ({
     });
   }, [api]);
 
-  const [tab, selectTab] = React.useState<TabKey>('filter');
-  const handleTab = (_event: any, tabKey: TabKey) => selectTab(tabKey);
+  const [tab, selectTab] = useState<ExtensionKind>('filter');
+  const [selectedItem, setSelectedItem] = useState<Extension | null>(null);
+  const [input, setInput] = useState<string>('');
+
+  const handleTab = (_event: any, kind: ExtensionKind) => {
+    if (selectedItem?.kind !== kind) {
+      setSelectedItem(null);
+      setInput('');
+    }
+    selectTab(kind);
+  };
+
+  const selectItem = (item: Extension | null) => {
+    setSelectedItem(item);
+    if (item) {
+      selectTab(item.kind);
+    }
+  };
 
   useEffect(() => {
     if (value && window.location.hash) {
       try {
-        selectTab(parseLink(trimStart(window.location.hash, '#')).tab);
+        selectTab(parseLink(trimStart(window.location.hash, '#')).kind);
         document.querySelector(window.location.hash)?.scrollIntoView();
       } catch (e) {
         // ignore bad link
       }
     }
   }, [value]);
+
+  const extensionKinds = useMemo(
+    () => ({
+      filter: {
+        icon: <FilterListIcon />,
+        label: t('templateExtensions.content.filters.title'),
+      },
+      function: {
+        icon: <FunctionsIcon />,
+        label: t('templateExtensions.content.functions.title'),
+      },
+      value: {
+        icon: <AllInclusiveIcon />,
+        label: t('templateExtensions.content.values.title'),
+      },
+    }),
+    [t],
+  );
 
   const extensionsLink = useRouteRef(templateExtensionsRouteRef);
 
@@ -133,8 +187,8 @@ export const TemplateExtensionsPageContent = ({
         {error && <ErrorPanel error={error} />}
         <EmptyState
           missing="info"
-          title={t('templateExtensions.emptyState.title')}
-          description={t('templateExtensions.emptyState.description')}
+          title={t('templateExtensions.content.emptyState.title')}
+          description={t('templateExtensions.content.emptyState.description')}
         />
       </div>
     );
@@ -145,35 +199,73 @@ export const TemplateExtensionsPageContent = ({
 
   return (
     <>
-      <Tabs value={tab} onChange={handleTab} centered>
-        <Tab value="filter" label={t('templateExtensions.filters.title')} />
-        <Tab
-          value="function"
-          label={t('templateExtensions.globals.functions.title')}
-        />
-        <Tab
-          value="value"
-          label={t('templateExtensions.globals.values.title')}
-        />
+      <Autocomplete
+        renderInput={params => (
+          <TextField
+            {...params}
+            aria-label={t('templateExtensions.content.searchFieldPlaceholder')}
+            placeholder={t('templateExtensions.content.searchFieldPlaceholder')}
+            variant="outlined"
+            InputProps={{
+              ...params.InputProps,
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
+        )}
+        getOptionLabel={option => option.name}
+        getOptionSelected={isEqual}
+        options={listExtensions(value)}
+        groupBy={option => option.kind}
+        renderGroup={params => (
+          <>
+            <Box display="flex" alignItems="center">
+              {extensionKinds[params.group as ExtensionKind].icon}
+              <Box sx={{ ml: 1 }}>
+                {extensionKinds[params.group as ExtensionKind].label}
+              </Box>
+            </Box>
+            <ul>{params.children}</ul>
+          </>
+        )}
+        renderOption={(option: Extension) => (
+          <ListItemText primary={option.name} />
+        )}
+        onChange={(_event: any, option: Extension | null) => {
+          selectItem(option);
+        }}
+        inputValue={input}
+        onInputChange={(_event: any, s: string) => setInput(s)}
+        loading={loading}
+        fullWidth
+        clearOnEscape
+      />
+      <Tabs value={tab} onChange={handleTab} centered className={classes.tabs}>
+        {values(
+          mapValues(extensionKinds, (v, k) => <Tab key={k} value={k} {...v} />),
+        )}
       </Tabs>
       {tab === 'filter' && (
         <TemplateFilters
           linkPage={effectiveLinkPage}
-          {...{ t, classes, filters }}
+          {...{ t, classes, filters, selectedItem }}
         />
       )}
       {tab === 'function' && (
         <TemplateGlobalFunctions
           functions={globals.functions}
           linkPage={effectiveLinkPage}
-          {...{ t, classes }}
+          {...{ t, classes, selectedItem }}
         />
       )}
       {tab === 'value' && (
         <TemplateGlobalValues
           values={globals.values}
           linkPage={effectiveLinkPage}
-          {...{ t, classes }}
+          {...{ t, classes, selectedItem }}
         />
       )}
     </>

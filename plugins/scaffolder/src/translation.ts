@@ -205,23 +205,24 @@ export const scaffolderTranslationRef = createTranslationRef({
       title: 'Template extensions',
       pageTitle: 'Template extensions',
       subtitle: 'This is the collection of available template extensions',
-      emptyState: {
-        title: 'No information to display',
-        description:
-          'There are no template extensions available or there was an issue communicating with the backend.',
-      },
-      filters: {
-        title: 'Filters',
-        notAvailable: 'There are no template filters defined.',
-        metadataAbsent: 'Filter metadata unavailable',
-        schema: {
-          input: 'Input',
-          arguments: 'Arguments',
-          output: 'Output',
+      content: {
+        emptyState: {
+          title: 'No information to display',
+          description:
+            'There are no template extensions available or there was an issue communicating with the backend.',
         },
-        examples: 'Examples',
-      },
-      globals: {
+        searchFieldPlaceholder: 'Search for an extension',
+        filters: {
+          title: 'Filters',
+          notAvailable: 'There are no template filters defined.',
+          metadataAbsent: 'Filter metadata unavailable',
+          schema: {
+            input: 'Input',
+            arguments: 'Arguments',
+            output: 'Output',
+          },
+          examples: 'Examples',
+        },
         functions: {
           title: 'Functions',
           notAvailable: 'There are no global template functions defined.',
