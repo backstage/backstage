@@ -31,6 +31,7 @@ import {
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import {
+  CustomResourceFetchResponse,
   FetchResponse,
   KubernetesRequestAuth,
   ObjectsByEntityResponse,
@@ -1427,6 +1428,79 @@ describe('KubernetesFanOutHandler', () => {
           ],
         }),
       );
+    });
+    it('fetch pod metrics when pods used', async () => {
+      getClustersByEntity.mockImplementation(() =>
+        Promise.resolve({
+          clusters: [
+            {
+              name: 'test-cluster',
+              title: 'cluster-title',
+              url: '',
+              authMetadata: {},
+            },
+          ],
+        }),
+      );
+
+      sut = getKubernetesFanOutHandler([]);
+
+      const resources: CustomResourceFetchResponse[] = [
+        {
+          type: 'customresources',
+          resources: [
+            {
+              apiVersion: 'v1',
+              kind: 'Pod',
+              metadata: {
+                namespace: `ns-test-component-test-cluster`,
+              },
+            },
+          ],
+        },
+      ];
+
+      fetchObjectsForService.mockImplementation(async () => ({
+        responses: resources,
+        errors: [],
+      }));
+
+      const result = await sut.getCustomResourcesByEntity(
+        {
+          entity,
+          auth: {},
+          customResources: [
+            {
+              group: '',
+              apiVersion: 'v1',
+              plural: 'pods',
+            },
+          ],
+        },
+        { credentials: mockCredentials },
+      );
+
+      expect(fetchObjectsForService).toHaveBeenCalledTimes(1);
+      expect(fetchPodMetricsByNamespaces).toHaveBeenCalledTimes(1);
+      expect(fetchPodMetricsByNamespaces).toHaveBeenCalledWith(
+        expect.anything(),
+        { type: 'anonymous' },
+        new Set(['ns-test-component-test-cluster']),
+        expect.anything(),
+      );
+      expect(result).toStrictEqual<ObjectsByEntityResponse>({
+        items: [
+          {
+            cluster: {
+              name: 'test-cluster',
+              title: 'cluster-title',
+            },
+            errors: [],
+            podMetrics: [POD_METRICS_FIXTURE],
+            resources,
+          },
+        ],
+      });
     });
   });
 });
