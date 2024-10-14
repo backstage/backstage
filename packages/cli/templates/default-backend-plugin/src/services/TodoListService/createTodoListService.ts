@@ -77,7 +77,9 @@ export async function createTodoListService({
       storedTodos.push(newTodo);
 
       // TEMPLATE NOTE:
-      // The second argument of the logger methods can be used to pass structured metadata
+      // The second argument of the logger methods can be used to pass
+      // structured metadata. You can read more about the logger service here:
+      // https://backstage.io/docs/backend-system/core-services/logger
       logger.info('Created new todo item', { id, title, createdBy });
 
       return newTodo;
