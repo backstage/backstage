@@ -20,7 +20,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 
-import { KubernetesBuilder } from '@backstage/plugin-kubernetes-backend';
+import { KubernetesBuilder } from './service';
 
 import {
   type AuthenticationStrategy,
