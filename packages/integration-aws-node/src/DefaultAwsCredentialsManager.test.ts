@@ -143,13 +143,8 @@ describe('DefaultAwsCredentialsManager', () => {
     process.env.AWS_CREDENTIAL_EXPIRATION = testDate.toISOString();
 
     // Return creds from env
-    (fromNodeProviderChain as jest.Mock).mockReturnValue(() =>
-      Promise.resolve({
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-        sessionToken: process.env.AWS_SESSION_TOKEN,
-        expiration: testDate,
-      }),
+    (fromNodeProviderChain as jest.Mock).mockImplementation(
+      jest.requireActual('@aws-sdk/credential-providers').fromNodeProviderChain,
     );
 
     const mockProfile = `[my-profile]
