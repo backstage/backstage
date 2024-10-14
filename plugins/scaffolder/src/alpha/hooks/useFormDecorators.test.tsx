@@ -13,24 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DefaultScaffolderFormHooksApi } from '../api/FormHooksApi';
-import { createScaffolderFormHook } from '@backstage/plugin-scaffolder-react/alpha';
+import { DefaultScaffolderFormDecoratorsApi } from '../api/FormDecoratorsApi';
+import { createScaffolderFormDecorator } from '@backstage/plugin-scaffolder-react/alpha';
 import { createApiRef } from '@backstage/core-plugin-api';
 
 import { TestApiProvider, withLogCollector } from '@backstage/test-utils';
 import { renderHook } from '@testing-library/react';
-import { useFormHooks } from './useFormHooks';
+import { useFormDecorators } from './useFormDecorators';
 import React from 'react';
-import { formHooksApiRef } from '../api/ref';
+import { formDecoratorsApiRef } from '../api/ref';
 
-describe('useFormHooks', () => {
+describe('useFormDecorators', () => {
   const mockApiRef = createApiRef<{
     test: (input: string) => void;
   }>({ id: 'test' });
 
   const mockApiImplementation = { test: jest.fn() };
 
-  const mockHook = createScaffolderFormHook({
+  const mockDecorator = createScaffolderFormDecorator({
     id: 'test',
     deps: { mockApiRef },
     schema: {
@@ -43,16 +43,18 @@ describe('useFormHooks', () => {
     },
   });
 
-  it('should wrap up the form hooks', async () => {
-    const renderedHook = renderHook(() => useFormHooks(), {
+  it('should wrap up the form decorators', async () => {
+    const renderedHook = renderHook(() => useFormDecorators(), {
       wrapper: ({ children }) => (
         <TestApiProvider
           apis={[
             [mockApiRef, mockApiImplementation],
             [
-              formHooksApiRef,
-              // @ts-expect-error - todo
-              DefaultScaffolderFormHooksApi.create({ hooks: [mockHook] }),
+              formDecoratorsApiRef,
+              DefaultScaffolderFormDecoratorsApi.create({
+                // @ts-expect-error - todo
+                decorators: [mockDecorator],
+              }),
             ],
           ]}
         >
@@ -65,10 +67,10 @@ describe('useFormHooks', () => {
 
     expect(result.size).toBe(1);
 
-    const testHook = result.get('test')!;
-    expect(testHook).toBeDefined();
+    const testDecorator = result.get('test')!;
+    expect(testDecorator).toBeDefined();
 
-    await testHook.fn({
+    await testDecorator.fn({
       setSecrets: () => {},
       input: { test: 'input value' },
     });
@@ -78,14 +80,16 @@ describe('useFormHooks', () => {
 
   it('should skip failing deps', async () => {
     const { error } = await withLogCollector(async () => {
-      const renderedHook = renderHook(() => useFormHooks(), {
+      const renderedHook = renderHook(() => useFormDecorators(), {
         wrapper: ({ children }) => (
           <TestApiProvider
             apis={[
               [
-                formHooksApiRef,
-                // @ts-expect-error - todo
-                DefaultScaffolderFormHooksApi.create({ hooks: [mockHook] }),
+                formDecoratorsApiRef,
+                DefaultScaffolderFormDecoratorsApi.create({
+                  // @ts-expect-error - todo
+                  decorators: [mockDecorator],
+                }),
               ],
             ]}
           >

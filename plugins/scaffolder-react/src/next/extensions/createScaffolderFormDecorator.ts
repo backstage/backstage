@@ -16,12 +16,12 @@
 import { AnyApiRef } from '@backstage/core-plugin-api';
 import { z } from 'zod';
 
-export type ScaffolderFormHookContext<TInput> = {
+export type ScaffolderFormDecoratorContext<TInput> = {
   input: TInput;
   setSecrets: (input: Record<string, string>) => void;
 };
 
-export type ScaffolderFormHook<
+export type ScaffolderFormDecorator<
   TInputSchema extends { [key in string]: (zImpl: typeof z) => z.ZodType } = {},
   TDeps extends { [key in string]: AnyApiRef } = { [key in string]: AnyApiRef },
   TInput extends {} = {
@@ -35,7 +35,7 @@ export type ScaffolderFormHook<
   };
   deps?: TDeps;
   fn: (
-    ctx: ScaffolderFormHookContext<TInput>,
+    ctx: ScaffolderFormDecoratorContext<TInput>,
     deps: TDeps extends { [key in string]: AnyApiRef }
       ? { [key in keyof TDeps]: TDeps[key]['T'] }
       : never,
@@ -43,11 +43,11 @@ export type ScaffolderFormHook<
 };
 
 /**
- * Method for creating hooks which can be used to collect
+ * Method for creating decorators which can be used to collect
  * secrets from the user before submitting to the backend.
  * @public
  */
-export function createScaffolderFormHook<
+export function createScaffolderFormDecorator<
   TDeps extends { [key in string]: AnyApiRef },
   TInputSchema extends { [key in string]: (zImpl: typeof z) => z.ZodType },
   TInput extends {} = {
@@ -60,12 +60,12 @@ export function createScaffolderFormHook<
   };
   deps?: TDeps;
   fn: (
-    ctx: ScaffolderFormHookContext<TInput>,
+    ctx: ScaffolderFormDecoratorContext<TInput>,
     deps: TDeps extends { [key in string]: AnyApiRef }
       ? { [key in keyof TDeps]: TDeps[key]['T'] }
       : never,
   ) => Promise<void>;
-}): ScaffolderFormHook<TInputSchema, TDeps, TInput> {
+}): ScaffolderFormDecorator<TInputSchema, TDeps, TInput> {
   return {
     ...options,
     version: 'v1',

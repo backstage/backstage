@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
-import { ScaffolderFormHooksApi } from './types';
-import { ScaffolderFormHook } from '@backstage/plugin-scaffolder-react/alpha';
+import { ScaffolderFormDecoratorsApi } from './types';
+import { ScaffolderFormDecorator } from '@backstage/plugin-scaffolder-react/alpha';
 
-export class DefaultScaffolderFormHooksApi implements ScaffolderFormHooksApi {
+export class DefaultScaffolderFormDecoratorsApi
+  implements ScaffolderFormDecoratorsApi
+{
   constructor(
     private readonly options: {
-      hooks: Array<ScaffolderFormHook>;
+      decorators: Array<ScaffolderFormDecorator>;
     },
   ) {}
 
-  static create(options: { hooks: ScaffolderFormHook[] }) {
-    return new DefaultScaffolderFormHooksApi(options);
+  static create(options: { decorators: ScaffolderFormDecorator[] }) {
+    return new DefaultScaffolderFormDecoratorsApi(options);
   }
 
-  async getFormHooks(): Promise<ScaffolderFormHook[]> {
-    return this.options.hooks;
+  async getFormDecorators(): Promise<ScaffolderFormDecorator[]> {
+    return this.options.decorators;
   }
 }

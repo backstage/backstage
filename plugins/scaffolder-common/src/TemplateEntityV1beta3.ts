@@ -59,7 +59,7 @@ export interface TemplateEntityV1beta3 extends Entity {
     /**
      * Form hooks to be run
      */
-    EXPERIMENTAL_formHooks?: { id: string; input?: JsonObject }[];
+    EXPERIMENTAL_formDecorators?: { id: string; input?: JsonObject }[];
 
     /**
      * This is a JSONSchema or an array of JSONSchema's which is used to render a form in the frontend

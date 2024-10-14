@@ -15,12 +15,12 @@
  */
 
 import { createApiRef } from '@backstage/frontend-plugin-api';
-import { ScaffolderFormFieldsApi, ScaffolderFormHooksApi } from './types';
+import { ScaffolderFormFieldsApi, ScaffolderFormDecoratorsApi } from './types';
 
 export const formFieldsApiRef = createApiRef<ScaffolderFormFieldsApi>({
   id: 'plugin.scaffolder.form-fields',
 });
 
-export const formHooksApiRef = createApiRef<ScaffolderFormHooksApi>({
-  id: 'plugin.scaffolder.form-hooks',
+export const formDecoratorsApiRef = createApiRef<ScaffolderFormDecoratorsApi>({
+  id: 'plugin.scaffolder.form-decorators',
 });

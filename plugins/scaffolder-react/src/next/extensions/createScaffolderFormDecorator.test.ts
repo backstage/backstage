@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createScaffolderFormHook } from './createScaffolderFormHook';
+import { createScaffolderFormDecorator } from './createScaffolderFormDecorator';
 
-describe('createScaffolderFormHook', () => {
-  it('should return a hook', () => {
-    const hook = createScaffolderFormHook({
+describe('createScaffolderFormDecorator', () => {
+  it('should return a decorator', () => {
+    const decorator = createScaffolderFormDecorator({
       id: 'test',
       deps: {},
       fn: async () => {},
     });
 
-    expect(hook).toMatchInlineSnapshot();
+    expect(decorator).toMatchInlineSnapshot();
   });
 
   it('should allow passing schema and be typesafe', () => {
-    const hook = createScaffolderFormHook({
+    const decorator = createScaffolderFormDecorator({
       id: 'test',
       deps: {},
       schema: {
@@ -46,6 +46,6 @@ describe('createScaffolderFormHook', () => {
       },
     });
 
-    expect(hook).toMatchInlineSnapshot();
+    expect(decorator).toMatchInlineSnapshot();
   });
 });

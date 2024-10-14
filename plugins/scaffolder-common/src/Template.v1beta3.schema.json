@@ -173,9 +173,9 @@
                 }
               }
             },
-            "EXPERIMENTAL_formHooks": {
+            "EXPERIMENTAL_formDecorators": {
               "type": "object",
-              "description": "A list of hooks and their inputs that the form should trigger before submitting the job",
+              "description": "A list of decorators and their inputs that the form should trigger before submitting the job",
               "properties": {
                 "id": {
                   "type": "string",

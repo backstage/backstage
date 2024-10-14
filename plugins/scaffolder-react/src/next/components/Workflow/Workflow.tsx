@@ -35,7 +35,7 @@ import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 import { useTemplateTimeSavedMinutes } from '../../hooks/useTemplateTimeSaved';
 import { JsonValue } from '@backstage/types';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { useFormHooks } from '../../../../../scaffolder/src/alpha/hooks/useFormHooks';
+import { useFormDecorators } from '../../../../../scaffolder/src/alpha/hooks/useFormDecorators';
 
 const useStyles = makeStyles({
   markdown: {
@@ -89,24 +89,24 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
   const sortedManifest = useFilteredSchemaProperties(manifest);
   const minutesSaved = useTemplateTimeSavedMinutes(templateRef);
   const { setSecrets } = useTemplateSecrets();
-  const formHooks = useFormHooks();
+  const formDecorators = useFormDecorators();
 
   const workflowOnCreate = useCallback(
     async (formState: Record<string, JsonValue>) => {
-      if (manifest?.EXPERIMENTAL_formHooks && formHooks?.size) {
-        // for each of the form hooks, go and call the hook with the context
+      if (manifest?.EXPERIMENTAL_formDecorators && formDecorators?.size) {
+        // for each of the form decorators, go and call the decorator with the context
         await Promise.all(
-          manifest.EXPERIMENTAL_formHooks.map(async hook => {
-            const formHook = formHooks.get(hook.id);
-            if (!formHook) {
+          manifest.EXPERIMENTAL_formDecorators.map(async decorator => {
+            const formDecorator = formDecorators.get(decorator.id);
+            if (!formDecorator) {
               // eslint-disable-next-line no-console
-              console.error('Failed to find form hook', hook.id);
+              console.error('Failed to find form decorator', decorator.id);
               return;
             }
 
-            await formHook.fn({
+            await formDecorator.fn({
               setSecrets,
-              input: hook.input,
+              input: decorator.input,
             });
           }),
         );
@@ -121,8 +121,8 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
       });
     },
     [
-      manifest?.EXPERIMENTAL_formHooks,
-      formHooks,
+      manifest?.EXPERIMENTAL_formDecorators,
+      formDecorators,
       onCreate,
       analytics,
       templateName,

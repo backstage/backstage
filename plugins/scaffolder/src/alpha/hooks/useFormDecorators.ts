@@ -14,40 +14,43 @@
  * limitations under the License.
  */
 import { useApi, useApiHolder } from '@backstage/core-plugin-api';
-import { formHooksApiRef } from '../api/ref';
+import { formDecoratorsApiRef } from '../api/ref';
 import useAsync from 'react-use/esm/useAsync';
 import { useMemo } from 'react';
-import { ScaffolderFormHookContext } from '@backstage/plugin-scaffolder-react/alpha';
+import { ScaffolderFormDecoratorContext } from '@backstage/plugin-scaffolder-react/alpha';
 
 /** @internal */
-type BoundFieldHook = {
-  fn: (ctx: ScaffolderFormHookContext<any>) => Promise<void>;
+type BoundFieldDecorator = {
+  fn: (ctx: ScaffolderFormDecoratorContext<any>) => Promise<void>;
 };
 
-export const useFormHooks = () => {
-  const formHooksApi = useApi(formHooksApiRef);
-  const { value: hooks } = useAsync(() => formHooksApi.getFormHooks(), []);
+export const useFormDecorators = () => {
+  const formDecoratorsApi = useApi(formDecoratorsApiRef);
+  const { value: decorators } = useAsync(
+    () => formDecoratorsApi.getFormDecorators(),
+    [],
+  );
   const apiHolder = useApiHolder();
 
   return useMemo(() => {
-    const hooksMap = new Map<string, BoundFieldHook>();
+    const decoratorsMap = new Map<string, BoundFieldDecorator>();
 
-    for (const hook of hooks ?? []) {
+    for (const decorator of decorators ?? []) {
       try {
-        const resolvedDeps = Object.entries(hook.deps ?? {}).map(
+        const resolvedDeps = Object.entries(decorator.deps ?? {}).map(
           ([key, value]) => {
             const api = apiHolder.get(value);
             if (!api) {
               throw new Error(
-                `Failed to resolve apiRef ${value.id} for form hook ${hook.id} it will be disabled`,
+                `Failed to resolve apiRef ${value.id} for form decorator ${decorator.id} it will be disabled`,
               );
             }
             return [key, api];
           },
         );
 
-        hooksMap.set(hook.id, {
-          fn: ctx => hook.fn(ctx, Object.fromEntries(resolvedDeps)),
+        decoratorsMap.set(decorator.id, {
+          fn: ctx => decorator.fn(ctx, Object.fromEntries(resolvedDeps)),
         });
       } catch (ex) {
         // eslint-disable-next-line no-console
@@ -55,6 +58,6 @@ export const useFormHooks = () => {
         return undefined;
       }
     }
-    return hooksMap;
-  }, [apiHolder, hooks]);
+    return decoratorsMap;
+  }, [apiHolder, decorators]);
 };
