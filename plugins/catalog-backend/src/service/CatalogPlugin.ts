@@ -42,7 +42,6 @@ import {
 import { merge } from 'lodash';
 import { Permission } from '@backstage/plugin-permission-common';
 import { ForwardedError } from '@backstage/errors';
-import { constrainedMemory } from 'node:process';
 
 class CatalogLocationsExtensionPointImpl
   implements CatalogLocationsExtensionPoint

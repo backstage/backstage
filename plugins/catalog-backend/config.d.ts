@@ -192,19 +192,5 @@ export interface Config {
      * housing catalog-info files.
      */
     processingInterval?: HumanDuration | false;
-    /**
-     * If the processing engine should be started or not, defaults to true.
-     * @remarks
-     *
-     * Example:
-     *
-     * ```yaml
-     * catalog:
-     *   processingInterval: false
-     * ```
-     *
-     * This will enable or disable the processing of entities in the Catalog. This can be useful
-     * to use with Read Replica deployments of the catalog.
-     */
   };
 }
