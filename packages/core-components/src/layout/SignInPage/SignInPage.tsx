@@ -37,6 +37,7 @@ import { GridItem, useStyles } from './styles';
 import { IdentityProviders, SignInProviderConfig } from './types';
 import { coreComponentsTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { useSearchParams } from 'react-router-dom';
 
 type MultiSignInPageProps = SignInPageProps & {
   providers: IdentityProviders;
@@ -106,6 +107,7 @@ export const SingleSignInPage = ({
   const authApi = useApi(provider.apiRef);
   const configApi = useApi(configApiRef);
   const { t } = useTranslationRef(coreComponentsTranslationRef);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [error, setError] = useState<Error>();
 
@@ -114,7 +116,10 @@ export const SingleSignInPage = ({
   // displayed for a split second when the user is already logged-in.
   const [showLoginPage, setShowLoginPage] = useState<boolean>(false);
 
-  type LoginOpts = { checkExisting?: boolean; showPopup?: boolean };
+  type LoginOpts = {
+    checkExisting?: boolean;
+    showPopup?: boolean;
+  };
   const login = async ({ checkExisting, showPopup }: LoginOpts) => {
     try {
       let identityResponse: BackstageIdentityResponse | undefined;
@@ -125,10 +130,8 @@ export const SingleSignInPage = ({
         });
       }
 
-      // If no session exists, show the sign-in page
-      if (!identityResponse && (showPopup || auto)) {
-        // Unless auto is set to true, this step should not happen.
-        // When user intentionally clicks the Sign In button, autoShowPopup is set to true
+      // If no session exists, and showPopup is enabled, we show the sign-in modal
+      if (!identityResponse && showPopup) {
         setShowLoginPage(true);
         identityResponse = await authApi.getBackstageIdentity({
           instantPopup: true,
@@ -160,7 +163,15 @@ export const SingleSignInPage = ({
     }
   };
 
-  useMountEffect(() => login({ checkExisting: true }));
+  useMountEffect(() => {
+    // Automatically triggers the login function when the 'auto' flag is enabled on the SignInPage.
+    // If the user has just signed out (indicated by the 'signedOut' URL parameter), we bypass the auto-login
+    // to avoid immediately logging them back in after sign-out. The search parameters are then cleared to
+    // prevent repeated triggers on subsequent visits.
+    const signedOut = searchParams.get('signedOut') === 'true';
+    login({ checkExisting: true, showPopup: auto && !signedOut });
+    setSearchParams({}, { replace: true });
+  });
 
   return showLoginPage ? (
     <Page themeId="home">
