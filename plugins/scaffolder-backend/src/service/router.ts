@@ -46,6 +46,7 @@ import {
   taskCancelPermission,
   taskCreatePermission,
   taskReadPermission,
+  templateManagementPermission,
   templateParameterReadPermission,
   templateStepReadPermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
@@ -761,7 +762,7 @@ export async function createRouter(
       const credentials = await httpAuth.credentials(req);
       await checkPermission({
         credentials,
-        permissions: [taskCreatePermission],
+        permissions: [taskCreatePermission, templateManagementPermission],
         permissionService: permissions,
       });
 
