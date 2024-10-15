@@ -16,8 +16,8 @@ import * as bitbucketCloud from '@backstage/plugin-scaffolder-backend-module-bit
 import * as bitbucketServer from '@backstage/plugin-scaffolder-backend-module-bitbucket-server';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
-import { CreatedTemplateFilter } from '@backstage/plugin-scaffolder-node';
-import { CreatedTemplateGlobal } from '@backstage/plugin-scaffolder-node';
+import { CreatedTemplateFilter } from '@backstage/plugin-scaffolder-node/alpha';
+import { CreatedTemplateGlobal } from '@backstage/plugin-scaffolder-node/alpha';
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { Duration } from 'luxon';
