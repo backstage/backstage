@@ -1,5 +1,58 @@
 # @backstage/cli
 
+## 0.28.0
+
+### Minor Changes
+
+- 264058c: The `repo test` command will no longer default to watch mode if the `--since` flag is provided.
+- 55b8b84: **BREAKING**: The Jest configuration defined at `@backstage/cli/config/jest` no longer collects configuration defined in the `"jest"` field from all parent `package.json` files. Instead, it will only read and merge configuration from the `package.json` in the monorepo root if it exists, as well as the target package. In addition, configuration defined in the root `package.json` will now only be merged into each package configuration if it is a valid project-level configuration key.
+- 6129076: **BREAKING**: Removed the following deprecated commands:
+
+  - `create`: Use `backstage-cli new` instead
+  - `create-plugin`: Use `backstage-cli new` instead
+  - `plugin:diff`: Use `backstage-cli fix` instead
+  - `test`: Use `backstage-cli repo test` or `backstage-cli package test` instead
+  - `versions:check`: Use `yarn dedupe` or `yarn-deduplicate` instead
+  - `clean`: Use `backstage-cli package clean` instead
+
+  In addition, the experimental `install` and `onboard` commands have been removed since they have not received any updates since their introduction and we're expecting usage to be low. If you where relying on these commands, please let us know by opening an issue towards the main Backstage repository.
+
+### Patch Changes
+
+- ea16633: Preserve directory structure for CommonJS build output, just like ESM. This makes the build output more stable and easier to browse, and allows for more effective tree shaking and lazy imports.
+- 520a383: Added functionality to the prepack script that will append the default export type for entry points to the `exports` object before publishing. This is to help with identifying the declarative integration points for plugins without needing to fetch or run the plugins first.
+- 9625a97: The `scaffolder-module` template has been updated to use a more modern layout and new testing utilities for scaffolder actions.
+- 03810d2: Remove unknown dependency `diff`
+- cebee4f: Added support for a new experimental `EXPERIMENTAL_TRIM_NEXT_ENTRY` flag which removes any `./next` entry points present in packages when building and publishing.
+- 54c8aa3: The check for `react-dom/client` will now properly always run from the target directory.
+- b676cc9: feat: experimentally support using rspack instead under `EXPERIMENTAL_RSPACK` env flag
+- 094eaa3: Remove references to in-repo backend-common
+- 95999c5: The backend plugin template for the `new` command has been updated to provide more guidance and use a more modern structure.
+- 7955f9b: Tweaked the new package feature detection to not be active when building backend packages.
+- 4bfc2ce: Updated the Vite implementation behind the `EXPERIMENTAL_VITE` flag to work with more recent versions of Backstage.
+- 720a2f9: Updated dependency `git-url-parse` to `^15.0.0`.
+- 8f0898b: Updated dependency `esbuild` to `^0.24.0`.
+- 2c5ecf5: Support `--max-warnings` flag for package linting
+- 88407c3: Running `repo lint` with the `--successCache` flag now respects `.gitinore`, and it ignores projects without a `lint` script.
+- 8fe740d: Added a new `--successCache` option to the `backstage-cli repo test` and `backstage-cli repo lint` commands. The cache keeps track of successful runs and avoids re-running for individual packages if they haven't changed. This option is intended only to be used in CI.
+
+  In addition a `--successCacheDir <path>` option has also been added to be able to override the default cache directory.
+
+- 55b8b84: The Jest configuration will now search for a `src/setupTests.*` file with any valid script extension, not only `.ts`.
+- 79ba5a8: The `LEGACY_BACKEND_START` flag is now deprecated.
+- f0514c7: Disabled parsing of input source maps in the SWC transform for Jest.
+- Updated dependencies
+  - @backstage/cli-node@0.2.9
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/integration@1.15.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.9.1
+  - @backstage/errors@1.2.4
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
 ## 0.28.0-next.2
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @backstage/plugin-org-react
 
+## 0.1.30
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- Updated dependencies
+  - @backstage/core-components@0.15.1
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/plugin-catalog-react@1.14.0
+  - @backstage/catalog-client@1.7.1
+  - @backstage/catalog-model@1.7.0
+
 ## 0.1.30-next.2
 
 ### Patch Changes

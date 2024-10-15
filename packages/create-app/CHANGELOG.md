@@ -1,5 +1,17 @@
 # @backstage/create-app
 
+## 0.5.21
+
+### Patch Changes
+
+- c42c710: Bumped create-app version.
+- 56a8118: Bumped create-app version.
+- a7674d6: Fixed lack of `.yarnrc.yml` in the template.
+- ab89e45: Remove some dependencies that aren't required anymore
+- b452088: Tweak `Dockerfile` to fix deprecated syntax.
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+
 ## 0.5.21-next.2
 
 ### Patch Changes

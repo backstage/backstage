@@ -1,5 +1,24 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.6.0
+
+### Minor Changes
+
+- 73f2ccf: declare correct type (number) for publish:gitlab output.projectId
+
+### Patch Changes
+
+- 9adfe46: GitLab MR: introduce 'skip' commit action.
+- bc71718: Updated installation instructions in README to not include `/alpha`.
+- 094eaa3: Remove references to in-repo backend-common
+- f2f68cf: Updated `gitlab:group:ensureExists` action to instead use oauth client.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.5.0
+  - @backstage/integration@1.15.1
+  - @backstage/backend-plugin-api@1.0.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 0.6.0-next.2
 
 ### Minor Changes

@@ -1,5 +1,32 @@
 # @backstage/frontend-test-utils
 
+## 0.2.1
+
+### Patch Changes
+
+- 666d5b1: Disable the built-in `SignInPage` in `createExtensionTester` in order to not mess with existing tests
+- e969dc7: Move `@types/react` to a peer dependency.
+- 873e424: Internal refactor of usage of opaque types.
+- 0801db6: Added an `ApiMock`, analogous to `ServiceMock` from the backend test utils.
+- 9cc7dd6: Added a `mockApis` export, which will replace the `MockX` API implementation classes and their related types. This is analogous with the backend's `mockServices`.
+
+  **DEPRECATED** several old helpers:
+
+  - Deprecated `MockAnalyticsApi`, please use `mockApis.analytics` instead.
+  - Deprecated `MockConfigApi`, please use `mockApis.config` instead.
+  - Deprecated `MockPermissionApi`, please use `mockApis.permission` instead.
+  - Deprecated `MockStorageApi`, please use `mockApis.storage` instead.
+  - Deprecated `MockTranslationApi`, please use `mockApis.translation` instead.
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.0
+  - @backstage/frontend-app-api@0.10.0
+  - @backstage/version-bridge@1.0.10
+  - @backstage/test-utils@1.7.0
+  - @backstage/plugin-app@0.1.1
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
 ## 0.2.1-next.2
 
 ### Patch Changes
