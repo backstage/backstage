@@ -1,5 +1,30 @@
 # @backstage/repo-tools
 
+## 0.10.0
+
+### Minor Changes
+
+- 30c2be9: Update @microsoft/api-extractor and use their api report resolution.
+  Change api report format from `api-report.md` to `report.api.md`
+- 8eb3033: Adds a new command `backstage-repo-tools peer-deps` for validating your usage of peer dependencies in your plugins. It currently supports react related peer dependencies. It also has a `--fix` mode for quickly fixing any issues that it finds.
+
+### Patch Changes
+
+- 1f6706f: Properly log instructions when APIs do not match
+- 35e735b: Fix issues with warnings in API reports not being checked or reported.
+
+  Due to the recent version bump of API Extractor you may now see a lot of `ae-undocumented` warnings,
+  these can be ignored using the `-o` option, for example, `backstage-repo-tools api-reports -o ae-undocumented,ae-wrong-input-file-type`.
+
+- 248793e: Updated dependency `@useoptic/optic` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/cli-node@0.2.9
+  - @backstage/backend-plugin-api@1.0.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/config-loader@1.9.1
+  - @backstage/errors@1.2.4
+
 ## 0.10.0-next.2
 
 ### Patch Changes

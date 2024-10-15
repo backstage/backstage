@@ -1,5 +1,22 @@
 # @backstage/plugin-techdocs-node
 
+## 1.12.12
+
+### Patch Changes
+
+- 7774828: Updated dependency `@smithy/node-http-handler` to `^3.0.0`.
+- 720a2f9: Updated dependency `git-url-parse` to `^15.0.0`.
+- fbdc631: Allow to pass StorageOptions to GCS Publisher
+- Updated dependencies
+  - @backstage/integration@1.15.1
+  - @backstage/backend-plugin-api@1.0.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/plugin-search-common@1.2.14
+  - @backstage/plugin-techdocs-common@0.1.0
+
 ## 1.12.12-next.2
 
 ### Patch Changes

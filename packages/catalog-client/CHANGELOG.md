@@ -1,5 +1,14 @@
 # @backstage/catalog-client
 
+## 1.7.1
+
+### Patch Changes
+
+- 0040632: Add missing doc string to API
+- Updated dependencies
+  - @backstage/catalog-model@1.7.0
+  - @backstage/errors@1.2.4
+
 ## 1.7.1-next.0
 
 ### Patch Changes

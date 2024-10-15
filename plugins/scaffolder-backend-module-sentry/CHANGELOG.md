@@ -1,5 +1,16 @@
 # @backstage/plugin-scaffolder-backend-module-sentry
 
+## 0.2.1
+
+### Patch Changes
+
+- bc71718: Updated installation instructions in README to not include `/alpha`.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.5.0
+  - @backstage/backend-plugin-api@1.0.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 0.2.1-next.2
 
 ### Patch Changes

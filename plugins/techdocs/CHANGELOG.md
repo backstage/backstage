@@ -1,5 +1,37 @@
 # @backstage/plugin-techdocs
 
+## 1.11.0
+
+### Minor Changes
+
+- e77ff3d: Adds support for custom background colors in code blocks and inline code within TechDocs.
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- a77cb40: Make `emptyState` input optional on `entity-content:techdocs` extension so that
+  the default empty state extension works correctly.
+- e918061: Add support for mkdocs material palette conditional hashes.
+- 720a2f9: Updated dependency `git-url-parse` to `^15.0.0`.
+- e8b4966: Use more of the available space for the navigation sidebar.
+- Updated dependencies
+  - @backstage/core-components@0.15.1
+  - @backstage/frontend-plugin-api@0.9.0
+  - @backstage/integration-react@1.2.0
+  - @backstage/core-compat-api@0.3.1
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/plugin-techdocs-react@1.2.9
+  - @backstage/plugin-catalog-react@1.14.0
+  - @backstage/plugin-search-react@1.8.1
+  - @backstage/plugin-auth-react@0.1.7
+  - @backstage/theme@0.6.0
+  - @backstage/integration@1.15.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-search-common@1.2.14
+  - @backstage/plugin-techdocs-common@0.1.0
+
 ## 1.11.0-next.2
 
 ### Minor Changes

@@ -1,5 +1,16 @@
 # @backstage/plugin-auth-backend-module-guest-provider
 
+## 0.2.1
+
+### Patch Changes
+
+- 094eaa3: Remove references to in-repo backend-common
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.3
+  - @backstage/backend-plugin-api@1.0.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/errors@1.2.4
+
 ## 0.2.1-next.1
 
 ### Patch Changes
