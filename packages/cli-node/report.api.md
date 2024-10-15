@@ -176,28 +176,4 @@ export class PackageRoles {
   static getRoleFromPackage(pkgJson: unknown): PackageRole | undefined;
   static getRoleInfo(role: string): PackageRoleInfo;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/monorepo/PackageGraph.d.ts:10:5 - (ae-undocumented) Missing documentation for "name".
-// src/monorepo/PackageGraph.d.ts:11:5 - (ae-undocumented) Missing documentation for "version".
-// src/monorepo/PackageGraph.d.ts:12:5 - (ae-undocumented) Missing documentation for "private".
-// src/monorepo/PackageGraph.d.ts:13:5 - (ae-undocumented) Missing documentation for "main".
-// src/monorepo/PackageGraph.d.ts:14:5 - (ae-undocumented) Missing documentation for "module".
-// src/monorepo/PackageGraph.d.ts:15:5 - (ae-undocumented) Missing documentation for "types".
-// src/monorepo/PackageGraph.d.ts:16:5 - (ae-undocumented) Missing documentation for "scripts".
-// src/monorepo/PackageGraph.d.ts:19:5 - (ae-undocumented) Missing documentation for "bundled".
-// src/monorepo/PackageGraph.d.ts:20:5 - (ae-undocumented) Missing documentation for "backstage".
-// src/monorepo/PackageGraph.d.ts:44:5 - (ae-undocumented) Missing documentation for "exports".
-// src/monorepo/PackageGraph.d.ts:45:5 - (ae-undocumented) Missing documentation for "typesVersions".
-// src/monorepo/PackageGraph.d.ts:46:5 - (ae-undocumented) Missing documentation for "files".
-// src/monorepo/PackageGraph.d.ts:47:5 - (ae-undocumented) Missing documentation for "publishConfig".
-// src/monorepo/PackageGraph.d.ts:52:5 - (ae-undocumented) Missing documentation for "repository".
-// src/monorepo/PackageGraph.d.ts:57:5 - (ae-undocumented) Missing documentation for "dependencies".
-// src/monorepo/PackageGraph.d.ts:60:5 - (ae-undocumented) Missing documentation for "peerDependencies".
-// src/monorepo/PackageGraph.d.ts:63:5 - (ae-undocumented) Missing documentation for "devDependencies".
-// src/monorepo/PackageGraph.d.ts:66:5 - (ae-undocumented) Missing documentation for "optionalDependencies".
-// src/roles/types.d.ts:25:5 - (ae-undocumented) Missing documentation for "role".
-// src/roles/types.d.ts:26:5 - (ae-undocumented) Missing documentation for "platform".
-// src/roles/types.d.ts:27:5 - (ae-undocumented) Missing documentation for "output".
 ```

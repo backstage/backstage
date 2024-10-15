@@ -20,6 +20,7 @@
  * @packageDocumentation
  */
 
+export { default } from './module';
 export { BitbucketServerClient } from './lib';
 export type {
   BitbucketServerProject,

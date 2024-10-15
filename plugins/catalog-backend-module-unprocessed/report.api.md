@@ -27,9 +27,4 @@ export class UnprocessedEntitiesModule {
   // (undocumented)
   registerRoutes(): void;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/UnprocessedEntitiesModule.d.ts:15:5 - (ae-undocumented) Missing documentation for "create".
-// src/UnprocessedEntitiesModule.d.ts:26:5 - (ae-undocumented) Missing documentation for "registerRoutes".
 ```

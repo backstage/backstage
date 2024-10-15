@@ -12,6 +12,7 @@ import { AnalyzeLocationRequest as AnalyzeLocationRequest_2 } from '@backstage/p
 import { AnalyzeLocationResponse as AnalyzeLocationResponse_2 } from '@backstage/plugin-catalog-common';
 import { AnalyzeOptions as AnalyzeOptions_2 } from '@backstage/plugin-catalog-node';
 import { AuthService } from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogCollatorEntityTransformer as CatalogCollatorEntityTransformer_2 } from '@backstage/plugin-search-backend-module-catalog';
 import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
@@ -210,6 +211,10 @@ export type CatalogEnvironment = {
 export type CatalogPermissionRuleInput<
   TParams extends PermissionRuleParams = PermissionRuleParams,
 > = PermissionRule<Entity, EntitiesSearchFilter_2, 'catalog-entity', TParams>;
+
+// @public
+const catalogPlugin: BackendFeature;
+export default catalogPlugin;
 
 // @public
 export interface CatalogProcessingEngine {
@@ -478,85 +483,4 @@ export class UrlReaderProcessor implements CatalogProcessor_2 {
     cache: CatalogProcessorCache_2,
   ): Promise<boolean>;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/constants.d.ts:2:22 - (ae-undocumented) Missing documentation for "CATALOG_CONFLICTS_TOPIC".
-// src/constants.d.ts:4:22 - (ae-undocumented) Missing documentation for "CATALOG_ERRORS_TOPIC".
-// src/deprecated.d.ts:8:22 - (ae-undocumented) Missing documentation for "locationSpecToMetadataName".
-// src/deprecated.d.ts:13:22 - (ae-undocumented) Missing documentation for "locationSpecToLocationEntity".
-// src/deprecated.d.ts:18:22 - (ae-undocumented) Missing documentation for "processingResult".
-// src/deprecated.d.ts:31:1 - (ae-undocumented) Missing documentation for "EntitiesSearchFilter".
-// src/deprecated.d.ts:36:1 - (ae-undocumented) Missing documentation for "EntityFilter".
-// src/deprecated.d.ts:41:1 - (ae-undocumented) Missing documentation for "DeferredEntity".
-// src/deprecated.d.ts:46:1 - (ae-undocumented) Missing documentation for "EntityRelationSpec".
-// src/deprecated.d.ts:51:1 - (ae-undocumented) Missing documentation for "CatalogProcessor".
-// src/deprecated.d.ts:56:1 - (ae-undocumented) Missing documentation for "CatalogProcessorParser".
-// src/deprecated.d.ts:61:1 - (ae-undocumented) Missing documentation for "CatalogProcessorCache".
-// src/deprecated.d.ts:66:1 - (ae-undocumented) Missing documentation for "CatalogProcessorEmit".
-// src/deprecated.d.ts:71:1 - (ae-undocumented) Missing documentation for "CatalogProcessorLocationResult".
-// src/deprecated.d.ts:76:1 - (ae-undocumented) Missing documentation for "CatalogProcessorEntityResult".
-// src/deprecated.d.ts:81:1 - (ae-undocumented) Missing documentation for "CatalogProcessorRelationResult".
-// src/deprecated.d.ts:86:1 - (ae-undocumented) Missing documentation for "CatalogProcessorErrorResult".
-// src/deprecated.d.ts:91:1 - (ae-undocumented) Missing documentation for "CatalogProcessorRefreshKeysResult".
-// src/deprecated.d.ts:96:1 - (ae-undocumented) Missing documentation for "CatalogProcessorResult".
-// src/deprecated.d.ts:101:1 - (ae-undocumented) Missing documentation for "EntityProvider".
-// src/deprecated.d.ts:106:1 - (ae-undocumented) Missing documentation for "EntityProviderConnection".
-// src/deprecated.d.ts:111:1 - (ae-undocumented) Missing documentation for "EntityProviderMutation".
-// src/deprecated.d.ts:129:1 - (ae-undocumented) Missing documentation for "AnalyzeOptions".
-// src/deprecated.d.ts:134:1 - (ae-undocumented) Missing documentation for "LocationAnalyzer".
-// src/deprecated.d.ts:139:1 - (ae-undocumented) Missing documentation for "ScmLocationAnalyzer".
-// src/deprecated.d.ts:144:1 - (ae-undocumented) Missing documentation for "PlaceholderResolver".
-// src/deprecated.d.ts:149:1 - (ae-undocumented) Missing documentation for "PlaceholderResolverParams".
-// src/deprecated.d.ts:154:1 - (ae-undocumented) Missing documentation for "PlaceholderResolverRead".
-// src/deprecated.d.ts:159:1 - (ae-undocumented) Missing documentation for "PlaceholderResolverResolveUrl".
-// src/deprecated.d.ts:164:1 - (ae-undocumented) Missing documentation for "AnalyzeLocationRequest".
-// src/deprecated.d.ts:169:1 - (ae-undocumented) Missing documentation for "AnalyzeLocationResponse".
-// src/deprecated.d.ts:202:22 - (ae-undocumented) Missing documentation for "DefaultCatalogCollatorFactory".
-// src/deprecated.d.ts:207:22 - (ae-undocumented) Missing documentation for "defaultCatalogCollatorEntityTransformer".
-// src/deprecated.d.ts:212:1 - (ae-undocumented) Missing documentation for "DefaultCatalogCollatorFactoryOptions".
-// src/deprecated.d.ts:217:1 - (ae-undocumented) Missing documentation for "CatalogCollatorEntityTransformer".
-// src/processing/types.d.ts:31:5 - (ae-undocumented) Missing documentation for "start".
-// src/processing/types.d.ts:32:5 - (ae-undocumented) Missing documentation for "stop".
-// src/processors/AnnotateLocationEntityProcessor.d.ts:6:1 - (ae-undocumented) Missing documentation for "AnnotateLocationEntityProcessor".
-// src/processors/AnnotateLocationEntityProcessor.d.ts:11:5 - (ae-undocumented) Missing documentation for "getProcessorName".
-// src/processors/AnnotateLocationEntityProcessor.d.ts:12:5 - (ae-undocumented) Missing documentation for "preProcessEntity".
-// src/processors/AnnotateScmSlugEntityProcessor.d.ts:7:1 - (ae-undocumented) Missing documentation for "AnnotateScmSlugEntityProcessor".
-// src/processors/AnnotateScmSlugEntityProcessor.d.ts:13:5 - (ae-undocumented) Missing documentation for "getProcessorName".
-// src/processors/AnnotateScmSlugEntityProcessor.d.ts:14:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/processors/AnnotateScmSlugEntityProcessor.d.ts:17:5 - (ae-undocumented) Missing documentation for "preProcessEntity".
-// src/processors/BuiltinKindsEntityProcessor.d.ts:5:1 - (ae-undocumented) Missing documentation for "BuiltinKindsEntityProcessor".
-// src/processors/BuiltinKindsEntityProcessor.d.ts:7:5 - (ae-undocumented) Missing documentation for "getProcessorName".
-// src/processors/BuiltinKindsEntityProcessor.d.ts:8:5 - (ae-undocumented) Missing documentation for "validateEntityKind".
-// src/processors/BuiltinKindsEntityProcessor.d.ts:9:5 - (ae-undocumented) Missing documentation for "postProcessEntity".
-// src/processors/CodeOwnersProcessor.d.ts:8:1 - (ae-undocumented) Missing documentation for "CodeOwnersProcessor".
-// src/processors/CodeOwnersProcessor.d.ts:12:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/processors/CodeOwnersProcessor.d.ts:21:5 - (ae-undocumented) Missing documentation for "getProcessorName".
-// src/processors/CodeOwnersProcessor.d.ts:22:5 - (ae-undocumented) Missing documentation for "preProcessEntity".
-// src/processors/FileReaderProcessor.d.ts:4:1 - (ae-undocumented) Missing documentation for "FileReaderProcessor".
-// src/processors/FileReaderProcessor.d.ts:5:5 - (ae-undocumented) Missing documentation for "getProcessorName".
-// src/processors/FileReaderProcessor.d.ts:6:5 - (ae-undocumented) Missing documentation for "readLocation".
-// src/processors/LocationEntityProcessor.d.ts:10:1 - (ae-undocumented) Missing documentation for "LocationEntityProcessorOptions".
-// src/processors/LocationEntityProcessor.d.ts:28:5 - (ae-undocumented) Missing documentation for "getProcessorName".
-// src/processors/LocationEntityProcessor.d.ts:29:5 - (ae-undocumented) Missing documentation for "postProcessEntity".
-// src/processors/PlaceholderProcessor.d.ts:8:1 - (ae-undocumented) Missing documentation for "PlaceholderProcessorOptions".
-// src/processors/PlaceholderProcessor.d.ts:21:5 - (ae-undocumented) Missing documentation for "getProcessorName".
-// src/processors/PlaceholderProcessor.d.ts:22:5 - (ae-undocumented) Missing documentation for "preProcessEntity".
-// src/processors/UrlReaderProcessor.d.ts:5:1 - (ae-undocumented) Missing documentation for "UrlReaderProcessor".
-// src/processors/UrlReaderProcessor.d.ts:12:5 - (ae-undocumented) Missing documentation for "getProcessorName".
-// src/processors/UrlReaderProcessor.d.ts:13:5 - (ae-undocumented) Missing documentation for "readLocation".
-// src/search/DefaultCatalogCollator.d.ts:11:1 - (ae-undocumented) Missing documentation for "DefaultCatalogCollator".
-// src/search/DefaultCatalogCollator.d.ts:12:5 - (ae-undocumented) Missing documentation for "discovery".
-// src/search/DefaultCatalogCollator.d.ts:13:5 - (ae-undocumented) Missing documentation for "locationTemplate".
-// src/search/DefaultCatalogCollator.d.ts:14:5 - (ae-undocumented) Missing documentation for "filter".
-// src/search/DefaultCatalogCollator.d.ts:15:5 - (ae-undocumented) Missing documentation for "catalogClient".
-// src/search/DefaultCatalogCollator.d.ts:16:5 - (ae-undocumented) Missing documentation for "type".
-// src/search/DefaultCatalogCollator.d.ts:17:5 - (ae-undocumented) Missing documentation for "visibilityPermission".
-// src/search/DefaultCatalogCollator.d.ts:18:5 - (ae-undocumented) Missing documentation for "tokenManager".
-// src/search/DefaultCatalogCollator.d.ts:19:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/search/DefaultCatalogCollator.d.ts:31:5 - (ae-undocumented) Missing documentation for "applyArgsToFormat".
-// src/search/DefaultCatalogCollator.d.ts:33:5 - (ae-undocumented) Missing documentation for "execute".
-// src/service/CatalogBuilder.d.ts:19:1 - (ae-undocumented) Missing documentation for "CatalogEnvironment".
-// src/service/CatalogBuilder.d.ts:233:5 - (ae-undocumented) Missing documentation for "subscribe".
-// src/util/parse.d.ts:6:1 - (ae-undocumented) Missing documentation for "parseEntityYaml".
 ```

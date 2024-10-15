@@ -56,7 +56,7 @@ jest.mock('./AzureRepoApiClient', () => {
 import { ConfigReader, UrlPatternDiscovery } from '@backstage/core-app-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { ScmAuthApi } from '@backstage/integration-react';
-import { CatalogApi } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { MockFetchApi, registerMswTestHooks } from '@backstage/test-utils';
 import { Octokit } from '@octokit/rest';
 import { rest } from 'msw';
@@ -94,19 +94,7 @@ describe('CatalogImportClient', () => {
     }),
   );
 
-  const catalogApi = {
-    getEntities: jest.fn(),
-    addLocation: jest.fn(),
-    removeLocationById: jest.fn(),
-    getEntityByRef: jest.fn(),
-    getLocationByRef: jest.fn(),
-    getLocationById: jest.fn(),
-    removeEntityByUid: jest.fn(),
-    refreshEntity: jest.fn(),
-    getEntityAncestors: jest.fn(),
-    getEntityFacets: jest.fn(),
-    validateEntity: jest.fn(),
-  };
+  const catalogApi = catalogApiMock.mock();
 
   let catalogImportClient: CatalogImportClient;
 
@@ -116,7 +104,7 @@ describe('CatalogImportClient', () => {
       scmAuthApi,
       scmIntegrationsApi,
       fetchApi,
-      catalogApi: catalogApi as Partial<CatalogApi> as CatalogApi,
+      catalogApi: catalogApi,
       configApi: new ConfigReader({
         app: {
           baseUrl: 'https://demo.backstage.io/',
@@ -462,7 +450,7 @@ describe('CatalogImportClient', () => {
         scmAuthApi,
         scmIntegrationsApi,
         fetchApi,
-        catalogApi: catalogApi as Partial<CatalogApi> as CatalogApi,
+        catalogApi: catalogApi,
         configApi: new ConfigReader({
           catalog: {
             import: {
@@ -720,7 +708,7 @@ describe('CatalogImportClient', () => {
         scmAuthApi,
         scmIntegrationsApi,
         fetchApi,
-        catalogApi: catalogApi as Partial<CatalogApi> as CatalogApi,
+        catalogApi: catalogApi,
         configApi: new ConfigReader({
           catalog: {
             import: {
@@ -806,7 +794,7 @@ describe('CatalogImportClient', () => {
         scmAuthApi,
         scmIntegrationsApi,
         fetchApi,
-        catalogApi: catalogApi as Partial<CatalogApi> as CatalogApi,
+        catalogApi: catalogApi,
         configApi: new ConfigReader({
           catalog: {
             import: {

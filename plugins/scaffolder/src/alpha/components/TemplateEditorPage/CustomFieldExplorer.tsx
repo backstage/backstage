@@ -88,27 +88,28 @@ export const CustomFieldExplorer = ({
   const classes = useStyles();
   const { t } = useTranslationRef(scaffolderTranslationRef);
   const fieldOptions = customFieldExtensions.filter(field => !!field.schema);
-  const [selectedField, setSelectedField] = useState(fieldOptions[0]);
+  const [selectedField, setSelectedField] = useState(fieldOptions?.[0]);
   const [fieldFormState, setFieldFormState] = useState({});
   const [refreshKey, setRefreshKey] = useState(Date.now());
-  const sampleFieldTemplate = useMemo(
-    () =>
-      yaml.stringify({
-        parameters: [
-          {
-            title: `${selectedField.name} Example`,
-            properties: {
-              [selectedField.name]: {
-                type: selectedField.schema?.returnValue?.type,
-                'ui:field': selectedField.name,
-                'ui:options': fieldFormState,
-              },
+  const sampleFieldTemplate = useMemo(() => {
+    if (!selectedField) {
+      return '';
+    }
+    return yaml.stringify({
+      parameters: [
+        {
+          title: `${selectedField.name} Example`,
+          properties: {
+            [selectedField.name]: {
+              type: selectedField.schema?.returnValue?.type,
+              'ui:field': selectedField.name,
+              'ui:options': fieldFormState,
             },
           },
-        ],
-      }),
-    [fieldFormState, selectedField],
-  );
+        },
+      ],
+    });
+  }, [fieldFormState, selectedField]);
 
   const fieldComponents = useMemo(() => {
     return Object.fromEntries(
@@ -185,7 +186,7 @@ export const CustomFieldExplorer = ({
               formContext={{ fieldFormState }}
               onSubmit={e => handleFieldConfigChange(e.formData)}
               validator={validator}
-              schema={selectedField.schema?.uiOptions || {}}
+              schema={selectedField?.schema?.uiOptions || {}}
               experimental_defaultFormStateBehavior={{
                 allOf: 'populateDefaults',
               }}
@@ -194,7 +195,7 @@ export const CustomFieldExplorer = ({
                 variant="contained"
                 color="primary"
                 type="submit"
-                disabled={!selectedField.schema?.uiOptions}
+                disabled={!selectedField?.schema?.uiOptions}
               >
                 {t(
                   'templateEditorPage.customFieldExplorer.fieldForm.applyButtonTitle',

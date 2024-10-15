@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-backend-module-unprocessed
 
+## 0.5.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.3-next.1
+  - @backstage/plugin-catalog-node@1.13.1-next.1
+  - @backstage/backend-plugin-api@1.0.1-next.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.4
+  - @backstage/plugin-permission-common@0.8.1
+
 ## 0.5.1-next.0
 
 ### Patch Changes

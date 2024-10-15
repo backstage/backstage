@@ -46,12 +46,4 @@ export class GkeEntityProvider implements EntityProvider {
   // (undocumented)
   refresh(): Promise<void>;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/providers/GkeEntityProvider.d.ts:17:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/providers/GkeEntityProvider.d.ts:22:5 - (ae-undocumented) Missing documentation for "fromConfigWithClient".
-// src/providers/GkeEntityProvider.d.ts:28:5 - (ae-undocumented) Missing documentation for "getProviderName".
-// src/providers/GkeEntityProvider.d.ts:29:5 - (ae-undocumented) Missing documentation for "connect".
-// src/providers/GkeEntityProvider.d.ts:35:5 - (ae-undocumented) Missing documentation for "refresh".
 ```

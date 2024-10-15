@@ -6,12 +6,8 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 
 // @alpha (undocumented)
-const catalogModuleGerritEntityProvider: BackendFeature;
-export default catalogModuleGerritEntityProvider;
-
-// Warnings were encountered during analysis:
-//
-// src/module/catalogModuleGerritEntityProvider.d.ts:4:22 - (ae-undocumented) Missing documentation for "catalogModuleGerritEntityProvider".
+const _feature: BackendFeature;
+export default _feature;
 
 // (No @packageDocumentation comment for this package)
 ```

@@ -62,6 +62,11 @@ import {
 } from '@backstage/core-plugin-api';
 import { ApiBlueprint } from '@backstage/frontend-plugin-api';
 import {
+  ScmAuth,
+  ScmIntegrationsApi,
+  scmIntegrationsApiRef,
+} from '@backstage/integration-react';
+import {
   permissionApiRef,
   IdentityPermissionApi,
 } from '@backstage/plugin-permission-react';
@@ -377,6 +382,22 @@ export const apis = [
         },
         factory: ({ config, discovery, identity }) =>
           IdentityPermissionApi.create({ config, discovery, identity }),
+      }),
+    },
+  }),
+  ApiBlueprint.make({
+    name: 'scm-auth',
+    params: {
+      factory: ScmAuth.createDefaultApiFactory(),
+    },
+  }),
+  ApiBlueprint.make({
+    name: 'scm-integrations',
+    params: {
+      factory: createApiFactory({
+        api: scmIntegrationsApiRef,
+        deps: { configApi: configApiRef },
+        factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
       }),
     },
   }),

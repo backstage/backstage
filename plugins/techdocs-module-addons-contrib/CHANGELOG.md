@@ -1,5 +1,18 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
+## 1.1.16-next.2
+
+### Patch Changes
+
+- 720a2f9: Updated dependency `git-url-parse` to `^15.0.0`.
+- e8b4966: Use more of the available space for the navigation sidebar.
+- Updated dependencies
+  - @backstage/integration@1.15.1-next.1
+  - @backstage/core-components@0.15.1-next.2
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/integration-react@1.2.0-next.2
+  - @backstage/plugin-techdocs-react@1.2.9-next.2
+
 ## 1.1.16-next.1
 
 ### Patch Changes

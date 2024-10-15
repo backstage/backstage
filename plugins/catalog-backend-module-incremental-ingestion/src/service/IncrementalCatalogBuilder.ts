@@ -89,8 +89,6 @@ export class IncrementalCatalogBuilder {
           entityProvider: provider.getProviderName(),
         });
 
-        logger.info(`Connecting`);
-
         engine = new IncrementalIngestionEngine({
           ...options,
           ready,

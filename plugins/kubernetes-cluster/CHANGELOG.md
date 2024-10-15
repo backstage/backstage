@@ -1,5 +1,18 @@
 # @backstage/plugin-kubernetes-cluster
 
+## 0.0.17-next.2
+
+### Patch Changes
+
+- 276cd3d: Updated dependency `@kubernetes-models/apimachinery` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.14.0-next.2
+  - @backstage/plugin-kubernetes-react@0.4.4-next.2
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-components@0.15.1-next.2
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/plugin-kubernetes-common@0.8.3
+
 ## 0.0.17-next.1
 
 ### Patch Changes

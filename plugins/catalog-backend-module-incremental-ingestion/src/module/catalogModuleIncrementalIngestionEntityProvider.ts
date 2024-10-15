@@ -27,7 +27,7 @@ import {
 import { WrapperProviders } from './WrapperProviders';
 
 /**
- * @alpha
+ * @public
  * Interface for {@link incrementalIngestionProvidersExtensionPoint}.
  */
 export interface IncrementalIngestionProviderExtensionPoint {
@@ -39,7 +39,7 @@ export interface IncrementalIngestionProviderExtensionPoint {
 }
 
 /**
- * @alpha
+ * @public
  *
  * Extension point for registering incremental ingestion providers.
  * The `catalogModuleIncrementalIngestionEntityProvider` must be installed for these providers to work.
@@ -80,7 +80,7 @@ export const incrementalIngestionProvidersExtensionPoint =
 /**
  * Registers the incremental entity provider with the catalog processing extension point.
  *
- * @alpha
+ * @public
  */
 export const catalogModuleIncrementalIngestionEntityProvider =
   createBackendModule({

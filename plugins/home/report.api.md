@@ -327,34 +327,4 @@ export const WelcomeTitle: ({
 export type WelcomeTitleLanguageProps = {
   language?: string[];
 };
-
-// Warnings were encountered during analysis:
-//
-// src/api/VisitsApi.d.ts:106:22 - (ae-undocumented) Missing documentation for "visitsApiRef".
-// src/api/VisitsStorageApi.d.ts:4:1 - (ae-undocumented) Missing documentation for "VisitsStorageApiOptions".
-// src/api/VisitsStorageApi.d.ts:20:5 - (ae-undocumented) Missing documentation for "create".
-// src/api/VisitsWebStorageApi.d.ts:4:1 - (ae-undocumented) Missing documentation for "VisitsWebStorageApiOptions".
-// src/api/VisitsWebStorageApi.d.ts:14:5 - (ae-undocumented) Missing documentation for "create".
-// src/assets/TemplateBackstageLogo.d.ts:3:22 - (ae-undocumented) Missing documentation for "TemplateBackstageLogo".
-// src/assets/TemplateBackstageLogoIcon.d.ts:3:22 - (ae-undocumented) Missing documentation for "TemplateBackstageLogoIcon".
-// src/deprecated.d.ts:7:22 - (ae-undocumented) Missing documentation for "createCardExtension".
-// src/deprecated.d.ts:12:1 - (ae-undocumented) Missing documentation for "CardExtensionProps".
-// src/deprecated.d.ts:17:1 - (ae-undocumented) Missing documentation for "CardLayout".
-// src/deprecated.d.ts:22:1 - (ae-undocumented) Missing documentation for "CardSettings".
-// src/deprecated.d.ts:27:1 - (ae-undocumented) Missing documentation for "CardConfig".
-// src/deprecated.d.ts:32:1 - (ae-undocumented) Missing documentation for "ComponentParts".
-// src/deprecated.d.ts:37:1 - (ae-undocumented) Missing documentation for "ComponentRenderer".
-// src/deprecated.d.ts:42:1 - (ae-undocumented) Missing documentation for "RendererProps".
-// src/deprecated.d.ts:47:22 - (ae-undocumented) Missing documentation for "SettingsModal".
-// src/homePageComponents/HeaderWorldClock/HeaderWorldClock.d.ts:3:1 - (ae-undocumented) Missing documentation for "ClockConfig".
-// src/homePageComponents/Toolkit/Context.d.ts:3:1 - (ae-undocumented) Missing documentation for "Tool".
-// src/homePageComponents/VisitedByType/Content.d.ts:4:1 - (ae-undocumented) Missing documentation for "VisitedByTypeKind".
-// src/homePageComponents/VisitedByType/Content.d.ts:6:1 - (ae-undocumented) Missing documentation for "VisitedByTypeProps".
-// src/homePageComponents/WelcomeTitle/WelcomeTitle.d.ts:3:1 - (ae-undocumented) Missing documentation for "WelcomeTitleLanguageProps".
-// src/plugin.d.ts:5:22 - (ae-undocumented) Missing documentation for "homePlugin".
-// src/plugin.d.ts:9:22 - (ae-undocumented) Missing documentation for "HomepageCompositionRoot".
-// src/plugin.d.ts:14:22 - (ae-undocumented) Missing documentation for "ComponentAccordion".
-// src/plugin.d.ts:24:22 - (ae-undocumented) Missing documentation for "ComponentTabs".
-// src/plugin.d.ts:32:22 - (ae-undocumented) Missing documentation for "ComponentTab".
-// src/plugin.d.ts:53:22 - (ae-undocumented) Missing documentation for "HomePageRandomJoke".
 ```

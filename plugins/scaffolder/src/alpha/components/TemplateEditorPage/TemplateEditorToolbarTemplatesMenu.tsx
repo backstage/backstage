@@ -48,6 +48,13 @@ export function TemplateEditorToolbarTemplatesMenu(props: {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
+  const isSelectedOption = useCallback(
+    (option: TemplateOption) => {
+      return !!selectedOption && selectedOption.value === option.value;
+    },
+    [selectedOption],
+  );
+
   const handleOpenMenu = useCallback(
     (event: MouseEvent<HTMLElement>) => {
       setAnchorEl(event.currentTarget);
@@ -93,12 +100,12 @@ export function TemplateEditorToolbarTemplatesMenu(props: {
         PaperProps={{
           className: classes.menu,
         }}
-        keepMounted
       >
         {options.map((option, index) => (
           <MenuItem
             key={index}
-            selected={!!selectedOption && selectedOption === option}
+            selected={isSelectedOption(option)}
+            aria-selected={isSelectedOption(option)}
             onClick={() => handleSelectOption(option)}
           >
             {option.label}

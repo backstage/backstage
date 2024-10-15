@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { MockStorageApi } from '@backstage/test-utils';
+import { mockApis } from '@backstage/test-utils';
 import { DefaultStarredEntitiesApi } from './DefaultStarredEntitiesApi';
 import { performMigrationToTheNewBucket } from './migration';
 
@@ -44,7 +44,7 @@ describe('DefaultStarredEntitiesApi', () => {
   describe('constructor', () => {
     it('should call migration', () => {
       const api = new DefaultStarredEntitiesApi({
-        storageApi: MockStorageApi.create(),
+        storageApi: mockApis.storage(),
       });
       expect(performMigrationToTheNewBucket).toHaveBeenCalledTimes(1);
       expect(api).toBeDefined();
@@ -54,7 +54,7 @@ describe('DefaultStarredEntitiesApi', () => {
   it('should notify and toggle starred entities', async () => {
     const entityRef = 'component:default/mock';
 
-    const storageApi = MockStorageApi.create();
+    const storageApi = mockApis.storage();
     const storageBucket = storageApi.forBucket('starredEntities');
     const api = new DefaultStarredEntitiesApi({ storageApi });
 
@@ -85,7 +85,7 @@ describe('DefaultStarredEntitiesApi', () => {
   it('should read starred entities from storage', async () => {
     const entityRef = 'component:default/mock';
 
-    const storageApi = MockStorageApi.create();
+    const storageApi = mockApis.storage();
     const storageBucket = storageApi.forBucket('starredEntities');
     storageBucket.set('entityRefs', [entityRef]);
     const api = new DefaultStarredEntitiesApi({ storageApi });

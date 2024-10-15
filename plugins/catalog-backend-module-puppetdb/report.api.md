@@ -75,12 +75,4 @@ export type ResourceTransformer = (
   node: PuppetNode,
   config: PuppetDbEntityProviderConfig,
 ) => Promise<ResourceEntity | undefined>;
-
-// Warnings were encountered during analysis:
-//
-// src/providers/PuppetDbEntityProvider.d.ts:39:8 - (tsdoc-undefined-tag) The TSDoc tag "@private" is not defined in this configuration
-// src/providers/PuppetDbEntityProvider.d.ts:41:5 - (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/plugin-catalog-backend-module-puppetdb" does not have an export "LoggerService"
-// src/providers/PuppetDbEntityProvider.d.ts:41:5 - (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/plugin-catalog-backend-module-puppetdb" does not have an export "SchedulerServiceTaskRunner"
-// src/providers/PuppetDbEntityProvider.d.ts:51:8 - (tsdoc-undefined-tag) The TSDoc tag "@private" is not defined in this configuration
-// src/providers/PuppetDbEntityProvider.d.ts:53:5 - (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/plugin-catalog-backend-module-puppetdb" does not have an export "SchedulerServiceTaskRunner"
 ```

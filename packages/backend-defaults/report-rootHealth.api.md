@@ -13,9 +13,5 @@ export const rootHealthServiceFactory: ServiceFactory<
   'singleton'
 >;
 
-// Warnings were encountered during analysis:
-//
-// src/entrypoints/rootHealth/rootHealthServiceFactory.d.ts:5:22 - (ae-undocumented) Missing documentation for "rootHealthServiceFactory".
-
 // (No @packageDocumentation comment for this package)
 ```

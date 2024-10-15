@@ -41,8 +41,8 @@ auth:
       # This picks what sign in resolver(s) you want to use.
       signIn:
         resolvers:
+          # See https://backstage.io/docs/auth/cloudflare/provider#resolvers for more resolvers
           - resolver: emailMatchingUserEntityProfileEmail
-          - resolver: emailLocalPartMatchingUserEntityName
 ```
 
 This config section must be in place for the provider to load at all.

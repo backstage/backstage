@@ -21,6 +21,7 @@ import {
 import { paths } from '../lib/paths';
 import fs from 'fs-extra';
 import { publishPreflightCheck } from '../lib/publishing';
+import { createTypeDistProject } from '../lib/typeDistProject';
 
 export const pre = async () => {
   publishPreflightCheck({
@@ -28,7 +29,10 @@ export const pre = async () => {
     packageJson: await fs.readJson(paths.resolveTarget('package.json')),
   });
 
-  await productionPack({ packageDir: paths.targetDir });
+  await productionPack({
+    packageDir: paths.targetDir,
+    featureDetectionProject: await createTypeDistProject(),
+  });
 };
 
 export const post = async () => {

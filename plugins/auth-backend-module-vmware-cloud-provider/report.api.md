@@ -5,10 +5,8 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { OAuthAuthenticator } from '@backstage/plugin-auth-node';
-import { OAuthAuthenticatorResult } from '@backstage/plugin-auth-node';
 import { PassportOAuthAuthenticatorHelper } from '@backstage/plugin-auth-node';
 import { PassportProfile } from '@backstage/plugin-auth-node';
-import { SignInResolverFactory } from '@backstage/plugin-auth-node';
 import { Strategy } from 'passport-oauth2';
 
 // @public
@@ -31,24 +29,8 @@ export interface VMwareCloudAuthenticatorContext {
   providerStrategy: Strategy;
 }
 
-// @public
-export namespace vmwareCloudSignInResolvers {
-  const profileEmailMatchingUserEntityEmail: SignInResolverFactory<
-    OAuthAuthenticatorResult<PassportProfile>,
-    unknown
-  >;
-}
-
 // @public (undocumented)
 export type VMwarePassportProfile = PassportProfile & {
   organizationId?: string;
 };
-
-// Warnings were encountered during analysis:
-//
-// src/authenticator.d.ts:4:1 - (ae-undocumented) Missing documentation for "VMwareCloudAuthenticatorContext".
-// src/authenticator.d.ts:5:5 - (ae-undocumented) Missing documentation for "organizationId".
-// src/authenticator.d.ts:6:5 - (ae-undocumented) Missing documentation for "providerStrategy".
-// src/authenticator.d.ts:7:5 - (ae-undocumented) Missing documentation for "helper".
-// src/authenticator.d.ts:10:1 - (ae-undocumented) Missing documentation for "VMwarePassportProfile".
 ```

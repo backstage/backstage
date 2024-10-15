@@ -18,7 +18,10 @@ import React from 'react';
 import { fireEvent, waitFor, screen } from '@testing-library/react';
 import { UserEntity } from '@backstage/catalog-model';
 import { UserListPicker, UserListPickerProps } from './UserListPicker';
-import { MockEntityListContextProvider } from '@backstage/plugin-catalog-react/testUtils';
+import {
+  MockEntityListContextProvider,
+  catalogApiMock,
+} from '@backstage/plugin-catalog-react/testUtils';
 import {
   EntityKindFilter,
   EntityNamespaceFilter,
@@ -31,15 +34,13 @@ import {
 } from '@backstage/catalog-client';
 import { catalogApiRef } from '../../api';
 import {
-  MockStorageApi,
   TestApiRegistry,
+  mockApis,
   renderInTestApp,
 } from '@backstage/test-utils';
 import { ApiProvider } from '@backstage/core-app-api';
 import {
-  ConfigApi,
   configApiRef,
-  IdentityApi,
   identityApiRef,
   storageApiRef,
 } from '@backstage/core-plugin-api';
@@ -58,18 +59,20 @@ const mockUser: UserEntity = {
   },
 };
 
-const mockConfigApi = {
-  getOptionalString: () => 'Test Company',
-} as Partial<ConfigApi>;
+const ownershipEntityRefs = ['user:default/testuser'];
 
-const mockCatalogApi = {
-  getEntityByRef: jest.fn(),
-  queryEntities: jest.fn(),
-} as Partial<jest.Mocked<CatalogApi>>;
+const mockConfigApi = mockApis.config({
+  data: { organization: { name: 'Test Company' } },
+});
 
-const mockIdentityApi = {
-  getBackstageIdentity: jest.fn(),
-} as Partial<jest.Mocked<IdentityApi>>;
+const mockCatalogApi = catalogApiMock.mock();
+jest.spyOn(mockCatalogApi, 'queryEntities');
+
+const mockIdentityApi = mockApis.identity({
+  userEntityRef: ownershipEntityRefs[0],
+  ownershipEntityRefs,
+});
+jest.spyOn(mockIdentityApi, 'getBackstageIdentity');
 
 const mockStarredEntitiesApi = new MockStarredEntitiesApi();
 
@@ -77,11 +80,10 @@ const apis = TestApiRegistry.from(
   [configApiRef, mockConfigApi],
   [catalogApiRef, mockCatalogApi],
   [identityApiRef, mockIdentityApi],
-  [storageApiRef, MockStorageApi.create()],
+  [storageApiRef, mockApis.storage()],
   [starredEntitiesApiRef, mockStarredEntitiesApi],
 );
 
-const ownershipEntityRefs = ['user:default/testuser'];
 describe('<UserListPicker />', () => {
   const mockQueryEntitiesImplementation: CatalogApi['queryEntities'] =
     async request => {
@@ -133,19 +135,13 @@ describe('<UserListPicker />', () => {
 
   beforeEach(() => {
     mockCatalogApi.getEntityByRef?.mockResolvedValue(mockUser);
-    mockIdentityApi.getBackstageIdentity?.mockResolvedValue({
-      ownershipEntityRefs,
-      type: 'user',
-      userEntityRef: 'user:default/testuser',
-    });
-
     mockCatalogApi.queryEntities?.mockImplementation(
       mockQueryEntitiesImplementation,
     );
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   it('renders filter groups', async () => {

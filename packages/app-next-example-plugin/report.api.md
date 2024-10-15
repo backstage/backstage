@@ -52,10 +52,5 @@ export default examplePlugin;
 // @public (undocumented)
 export const ExampleSidebarItem: () => React_2.JSX.Element;
 
-// Warnings were encountered during analysis:
-//
-// src/ExampleSidebarItem.d.ts:3:22 - (ae-undocumented) Missing documentation for "ExampleSidebarItem".
-// src/plugin.d.ts:22:22 - (ae-undocumented) Missing documentation for "examplePlugin".
-
 // (No @packageDocumentation comment for this package)
 ```

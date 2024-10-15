@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import {
-  MockConfigApi,
+  mockApis,
   renderInTestApp,
   TestApiProvider,
 } from '@backstage/test-utils';
@@ -80,12 +81,6 @@ const techdocsStorageApiMock: jest.Mocked<typeof techdocsStorageApiRef.T> = {
   syncEntityDocs: jest.fn(),
 };
 
-const discoveryApiMock = {
-  getBaseUrl: jest
-    .fn()
-    .mockResolvedValue('https://localhost:7000/api/techdocs'),
-};
-
 const fetchApiMock = {
   fetch: jest.fn().mockResolvedValue({
     ok: true,
@@ -106,10 +101,8 @@ jest.mock('@backstage/core-components', () => ({
   Page: jest.fn(),
 }));
 
-const configApi = new MockConfigApi({
-  app: {
-    baseUrl: 'http://localhost:3000',
-  },
+const configApi = mockApis.config({
+  data: { app: { baseUrl: 'http://localhost:3000' } },
 });
 
 const Wrapper = ({ children }: { children: React.ReactNode }) => {
@@ -117,7 +110,7 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => {
     <TestApiProvider
       apis={[
         [fetchApiRef, fetchApiMock],
-        [discoveryApiRef, discoveryApiMock],
+        [discoveryApiRef, mockApis.discovery()],
         [scmIntegrationsApiRef, {}],
         [configApiRef, configApi],
         [techdocsApiRef, techdocsApiMock],

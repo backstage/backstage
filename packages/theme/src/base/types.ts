@@ -82,6 +82,9 @@ export type BackstagePaletteAdditions = {
     closeButtonColor?: string;
     warning?: string;
   };
+  code?: {
+    background?: string;
+  };
 };
 
 /**

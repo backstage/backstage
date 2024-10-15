@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Content, Header, Page } from '@backstage/core-components';
-
-import { WebFileSystemAccess } from '../../../lib/filesystem';
 
 import { TemplateEditorIntro } from './TemplateEditorIntro';
 import { useNavigate } from 'react-router-dom';
@@ -29,8 +27,7 @@ import {
 } from '../../../routes';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
-import { WebFileSystemStore } from '../../../lib/filesystem/WebFileSystemStore';
-import { createExampleTemplate } from '../../../lib/filesystem/createExampleTemplate';
+import { useTemplateDirectory } from './useTemplateDirectory';
 
 export function TemplateIntroPage() {
   const navigate = useNavigate();
@@ -39,6 +36,33 @@ export function TemplateIntroPage() {
   const templateFormLink = useRouteRef(templateFormRouteRef);
   const customFieldsLink = useRouteRef(customFieldsRouteRef);
   const { t } = useTranslationRef(scaffolderTranslationRef);
+  const { openDirectory, createDirectory } = useTemplateDirectory();
+
+  const handleSelect = useCallback(
+    (option: 'create-template' | 'local' | 'form' | 'field-explorer') => {
+      if (option === 'local') {
+        openDirectory()
+          .then(() => navigate(editorLink()))
+          .catch(() => {});
+      } else if (option === 'create-template') {
+        createDirectory()
+          .then(() => navigate(editorLink()))
+          .catch(() => {});
+      } else if (option === 'form') {
+        navigate(templateFormLink());
+      } else if (option === 'field-explorer') {
+        navigate(customFieldsLink());
+      }
+    },
+    [
+      openDirectory,
+      createDirectory,
+      navigate,
+      editorLink,
+      templateFormLink,
+      customFieldsLink,
+    ],
+  );
 
   return (
     <Page themeId="home">
@@ -49,29 +73,7 @@ export function TemplateIntroPage() {
         subtitle={t('templateIntroPage.subtitle')}
       />
       <Content>
-        <TemplateEditorIntro
-          onSelect={option => {
-            if (option === 'local') {
-              WebFileSystemAccess.requestDirectoryAccess()
-                .then(directory => WebFileSystemStore.setDirectory(directory))
-                .then(() => navigate(editorLink()))
-                .catch(() => {});
-            } else if (option === 'create-template') {
-              WebFileSystemAccess.requestDirectoryAccess()
-                .then(directory => {
-                  createExampleTemplate(directory).then(() => {
-                    WebFileSystemStore.setDirectory(directory);
-                    navigate(editorLink());
-                  });
-                })
-                .catch(() => {});
-            } else if (option === 'form') {
-              navigate(templateFormLink());
-            } else if (option === 'field-explorer') {
-              navigate(customFieldsLink());
-            }
-          }}
-        />
+        <TemplateEditorIntro onSelect={handleSelect} />
       </Content>
     </Page>
   );

@@ -8,8 +8,4 @@ import { Plugin as Plugin_2 } from '@yarnpkg/core';
 // @public (undocumented)
 const plugin: Plugin_2;
 export default plugin;
-
-// Warnings were encountered during analysis:
-//
-// src/index.d.ts:11:15 - (ae-undocumented) Missing documentation for "plugin".
 ```

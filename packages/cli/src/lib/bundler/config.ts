@@ -21,7 +21,7 @@ import {
 } from './types';
 import { posix as posixPath, resolve as resolvePath, dirname } from 'path';
 import chalk from 'chalk';
-import webpack, { ProvidePlugin } from 'webpack';
+import webpack from 'webpack';
 
 import { BackstagePackage } from '@backstage/cli-node';
 import { BundlingPaths } from './paths';
@@ -132,6 +132,7 @@ export async function createConfig(
     frontendConfig,
     moduleFederation,
     publicSubPath = '',
+    rspack,
   } = options;
 
   const { plugins, loaders } = transforms(options);
@@ -152,15 +153,20 @@ export async function createConfig(
       options.moduleFederation,
     );
 
-    plugins.push(
-      new ReactRefreshPlugin({
-        overlay: {
-          sockProtocol: 'ws',
-          sockHost: host,
-          sockPort: port,
-        },
-      }),
-    );
+    if (rspack) {
+      const RspackReactRefreshPlugin = require('@rspack/plugin-react-refresh');
+      plugins.push(new RspackReactRefreshPlugin());
+    } else {
+      plugins.push(
+        new ReactRefreshPlugin({
+          overlay: {
+            sockProtocol: 'ws',
+            sockHost: host,
+            sockPort: port,
+          },
+        }),
+      );
+    }
   }
 
   if (checksEnabled) {
@@ -175,11 +181,13 @@ export async function createConfig(
     );
   }
 
+  const bundler = rspack ? (rspack as unknown as typeof webpack) : webpack;
+
   // TODO(blam): process is no longer auto polyfilled by webpack in v5.
   // we use the provide plugin to provide this polyfill, but lets look
   // to remove this eventually!
   plugins.push(
-    new ProvidePlugin({
+    new bundler.ProvidePlugin({
       process: require.resolve('process/browser'),
       Buffer: ['buffer', 'Buffer'],
     }),
@@ -187,6 +195,7 @@ export async function createConfig(
 
   if (options.moduleFederation?.mode !== 'remote') {
     plugins.push(
+      // `rspack.HtmlRspackPlugin` does not support object type `templateParameters` value, `frontendConfig` in this case
       new HtmlWebpackPlugin({
         meta: {
           'backstage-app-mode': options?.appMode ?? 'public',
@@ -216,8 +225,13 @@ export async function createConfig(
   if (options.moduleFederation) {
     const isRemote = options.moduleFederation?.mode === 'remote';
 
+    const AdaptedModuleFederationPlugin = rspack
+      ? (rspack.container
+          .ModuleFederationPlugin as unknown as typeof ModuleFederationPlugin)
+      : ModuleFederationPlugin;
+
     plugins.push(
-      new ModuleFederationPlugin({
+      new AdaptedModuleFederationPlugin({
         ...(isRemote && {
           filename: 'remoteEntry.js',
           exposes: {
@@ -277,13 +291,17 @@ export async function createConfig(
   }
 
   const buildInfo = await readBuildInfo();
+
   plugins.push(
-    new webpack.DefinePlugin({
+    new bundler.DefinePlugin({
       'process.env.BUILD_INFO': JSON.stringify(buildInfo),
-      'process.env.APP_CONFIG': webpack.DefinePlugin.runtimeValue(
-        () => JSON.stringify(options.getFrontendAppConfigs()),
-        true,
-      ),
+      'process.env.APP_CONFIG': rspack
+        ? // FIXME: see also https://github.com/web-infra-dev/rspack/issues/5606
+          JSON.stringify(options.getFrontendAppConfigs())
+        : bundler.DefinePlugin.runtimeValue(
+            () => JSON.stringify(options.getFrontendAppConfigs()),
+            true,
+          ),
       // This allows for conditional imports of react-dom/client, since there's no way
       // to check for presence of it in source code without module resolution errors.
       'process.env.HAS_REACT_DOM_CLIENT': JSON.stringify(hasReactDomClient()),
@@ -293,13 +311,17 @@ export async function createConfig(
   // These files are required by the transpiled code when using React Refresh.
   // They need to be excluded to the module scope plugin which ensures that files
   // that exist in the package are required.
-  const reactRefreshFiles = [
-    require.resolve(
-      '@pmmmwh/react-refresh-webpack-plugin/lib/runtime/RefreshUtils.js',
-    ),
-    require.resolve('@pmmmwh/react-refresh-webpack-plugin/overlay/index.js'),
-    require.resolve('react-refresh'),
-  ];
+  const reactRefreshFiles = rspack
+    ? []
+    : [
+        require.resolve(
+          '@pmmmwh/react-refresh-webpack-plugin/lib/runtime/RefreshUtils.js',
+        ),
+        require.resolve(
+          '@pmmmwh/react-refresh-webpack-plugin/overlay/index.js',
+        ),
+        require.resolve('react-refresh'),
+      ];
 
   const mode = isDev ? 'development' : 'production';
   const optimization = optimizationConfig(options);
@@ -328,16 +350,19 @@ export async function createConfig(
     // Instead, provide a custom definition which always uses "development" if
     // the module is part of `react` or `react-dom`, and `config.mode` otherwise.
     plugins.push(
-      new webpack.DefinePlugin({
-        'process.env.NODE_ENV': webpack.DefinePlugin.runtimeValue(
-          ({ module }) => {
-            if (reactPackageDirs.some(val => module.resource.startsWith(val))) {
-              return '"development"';
-            }
+      new bundler.DefinePlugin({
+        'process.env.NODE_ENV': rspack
+          ? // FIXME: see also https://github.com/web-infra-dev/rspack/issues/5606
+            JSON.stringify(mode)
+          : webpack.DefinePlugin.runtimeValue(({ module }) => {
+              if (
+                reactPackageDirs.some(val => module.resource.startsWith(val))
+              ) {
+                return '"development"';
+              }
 
-            return `"${mode}"`;
-          },
-        ),
+              return `"${mode}"`;
+            }),
       }),
     );
   }
@@ -386,13 +411,16 @@ export async function createConfig(
         http: false,
         util: require.resolve('util/'),
       },
-      plugins: [
-        new LinkedPackageResolvePlugin(paths.rootNodeModules, externalPkgs),
-        new ModuleScopePlugin(
-          [paths.targetSrc, paths.targetDev],
-          [paths.targetPackageJson, ...reactRefreshFiles],
-        ),
-      ],
+      // FIXME: see also https://github.com/web-infra-dev/rspack/issues/3408
+      ...(!rspack && {
+        plugins: [
+          new LinkedPackageResolvePlugin(paths.rootNodeModules, externalPkgs),
+          new ModuleScopePlugin(
+            [paths.targetSrc, paths.targetDev],
+            [paths.targetPackageJson, ...reactRefreshFiles],
+          ),
+        ],
+      }),
     },
     module: {
       rules: loaders,
@@ -417,19 +445,21 @@ export async function createConfig(
         : {}),
     },
     experiments: {
-      lazyCompilation: yn(process.env.EXPERIMENTAL_LAZY_COMPILATION),
+      lazyCompilation: !rspack && yn(process.env.EXPERIMENTAL_LAZY_COMPILATION),
+      ...(rspack && {
+        // We're still using `style-loader` for custom `insert` option
+        css: false,
+      }),
     },
     plugins,
-    ...(withCache
-      ? {
-          cache: {
-            type: 'filesystem',
-            buildDependencies: {
-              config: [__filename],
-            },
-          },
-        }
-      : {}),
+    ...(withCache && {
+      cache: {
+        type: 'filesystem',
+        buildDependencies: {
+          config: [__filename],
+        },
+      },
+    }),
   };
 }
 

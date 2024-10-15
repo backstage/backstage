@@ -39,16 +39,14 @@ export type OidcAuthResult = {
 export namespace oidcSignInResolvers {
   const emailLocalPartMatchingUserEntityName: SignInResolverFactory<
     unknown,
-    unknown
+    | {
+        allowedDomains?: string[] | undefined;
+      }
+    | undefined
   >;
   const emailMatchingUserEntityProfileEmail: SignInResolverFactory<
     unknown,
     unknown
   >;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/authenticator.d.ts:13:22 - (ae-undocumented) Missing documentation for "oidcAuthenticator".
-// src/module.d.ts:2:22 - (ae-undocumented) Missing documentation for "authModuleOidcProvider".
 ```

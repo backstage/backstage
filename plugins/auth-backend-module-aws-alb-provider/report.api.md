@@ -46,10 +46,4 @@ export namespace awsAlbSignInResolvers {
       unknown
     >;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/authenticator.d.ts:6:22 - (ae-undocumented) Missing documentation for "awsAlbAuthenticator".
-// src/module.d.ts:2:22 - (ae-undocumented) Missing documentation for "authModuleAwsAlbProvider".
-// src/resolvers.d.ts:8:11 - (ae-undocumented) Missing documentation for "emailMatchingUserEntityProfileEmail".
 ```

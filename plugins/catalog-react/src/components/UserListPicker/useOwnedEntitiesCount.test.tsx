@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React, { PropsWithChildren } from 'react';
-import { CatalogApi } from '@backstage/catalog-client';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { renderHook, waitFor } from '@testing-library/react';
 import {
   DefaultEntityFilters,
@@ -22,11 +23,7 @@ import {
   useEntityList,
 } from '../../hooks';
 import { catalogApiRef } from '../../api';
-import {
-  ApiRef,
-  IdentityApi,
-  identityApiRef,
-} from '@backstage/core-plugin-api';
+import { ApiRef, identityApiRef } from '@backstage/core-plugin-api';
 import { MemoryRouter } from 'react-router-dom';
 import { useOwnedEntitiesCount } from './useOwnedEntitiesCount';
 import {
@@ -35,15 +32,14 @@ import {
   EntityUserFilter,
 } from '../../filters';
 import { useMountEffect } from '@react-hookz/web';
+import { mockApis } from '@backstage/test-utils';
 
-const mockQueryEntities: jest.MockedFn<CatalogApi['queryEntities']> = jest.fn();
-const mockCatalogApi: jest.Mocked<Partial<CatalogApi>> = {
-  queryEntities: mockQueryEntities,
-};
-
-const mockGetBackstageIdentity: jest.MockedFn<
-  IdentityApi['getBackstageIdentity']
-> = jest.fn();
+const mockCatalogApi = catalogApiMock.mock();
+const mockIdentityApi = mockApis.identity({
+  ownershipEntityRefs: ['user:default/spiderman', 'user:group/a-group'],
+  userEntityRef: 'user:default/spiderman',
+});
+jest.spyOn(mockIdentityApi, 'getBackstageIdentity');
 
 jest.mock('@backstage/core-plugin-api', () => {
   const actual = jest.requireActual('@backstage/core-plugin-api');
@@ -52,13 +48,9 @@ jest.mock('@backstage/core-plugin-api', () => {
     useApi: (ref: ApiRef<any>) => {
       if (ref === catalogApiRef) {
         return mockCatalogApi;
+      } else if (ref === identityApiRef) {
+        return mockIdentityApi;
       }
-      if (ref === identityApiRef) {
-        return {
-          getBackstageIdentity: mockGetBackstageIdentity,
-        };
-      }
-
       return actual.useApi(ref);
     },
   };
@@ -67,16 +59,10 @@ jest.mock('@backstage/core-plugin-api', () => {
 describe('useOwnedEntitiesCount', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-
-    mockGetBackstageIdentity.mockResolvedValue({
-      ownershipEntityRefs: ['user:default/spiderman', 'user:group/a-group'],
-      userEntityRef: 'user:default/spiderman',
-      type: 'user',
-    });
   });
 
   it(`shouldn't invoke queryEntities when filters are loading`, async () => {
-    mockQueryEntities.mockResolvedValue({
+    mockCatalogApi.queryEntities.mockResolvedValue({
       items: [],
       totalItems: 10,
       pageInfo: {},
@@ -86,10 +72,12 @@ describe('useOwnedEntitiesCount', () => {
       wrapper: createWrapperWithInitialFilters({}),
     });
 
-    await waitFor(() => expect(mockGetBackstageIdentity).toHaveBeenCalled());
+    await waitFor(() =>
+      expect(mockIdentityApi.getBackstageIdentity).toHaveBeenCalled(),
+    );
 
     await expect(
-      waitFor(() => expect(mockQueryEntities).toHaveBeenCalled()),
+      waitFor(() => expect(mockCatalogApi.queryEntities).toHaveBeenCalled()),
     ).rejects.toThrow();
 
     expect(result.current).toEqual({
@@ -104,7 +92,7 @@ describe('useOwnedEntitiesCount', () => {
   });
 
   it(`should properly apply the filters`, async () => {
-    mockQueryEntities.mockResolvedValue({
+    mockCatalogApi.queryEntities.mockResolvedValue({
       items: [],
       totalItems: 10,
       pageInfo: {},
@@ -116,10 +104,12 @@ describe('useOwnedEntitiesCount', () => {
       }),
     });
 
-    await waitFor(() => expect(mockGetBackstageIdentity).toHaveBeenCalled());
+    await waitFor(() =>
+      expect(mockIdentityApi.getBackstageIdentity).toHaveBeenCalled(),
+    );
 
     await waitFor(() =>
-      expect(mockQueryEntities).toHaveBeenCalledWith({
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
         filter: {
           'metadata.namespace': ['a-namespace'],
           'relations.ownedBy': ['user:default/spiderman', 'user:group/a-group'],
@@ -140,7 +130,7 @@ describe('useOwnedEntitiesCount', () => {
   });
 
   it(`should return count 0 without invoking queryEntities if owners filter doesn't have claims in common with logged in user`, async () => {
-    mockQueryEntities.mockResolvedValue({
+    mockCatalogApi.queryEntities.mockResolvedValue({
       items: [],
       totalItems: 10,
       pageInfo: {},
@@ -153,10 +143,12 @@ describe('useOwnedEntitiesCount', () => {
       }),
     });
 
-    await waitFor(() => expect(mockGetBackstageIdentity).toHaveBeenCalled());
+    await waitFor(() =>
+      expect(mockIdentityApi.getBackstageIdentity).toHaveBeenCalled(),
+    );
 
     await expect(
-      waitFor(() => expect(mockQueryEntities).toHaveBeenCalled()),
+      waitFor(() => expect(mockCatalogApi.queryEntities).toHaveBeenCalled()),
     ).rejects.toThrow();
 
     expect(result.current).toEqual({
@@ -171,7 +163,7 @@ describe('useOwnedEntitiesCount', () => {
   });
 
   it(`should send claims in common between owners filter and logged in user`, async () => {
-    mockQueryEntities.mockResolvedValue({
+    mockCatalogApi.queryEntities.mockResolvedValue({
       items: [],
       totalItems: 10,
       pageInfo: {},
@@ -187,10 +179,12 @@ describe('useOwnedEntitiesCount', () => {
       }),
     });
 
-    await waitFor(() => expect(mockGetBackstageIdentity).toHaveBeenCalled());
+    await waitFor(() =>
+      expect(mockIdentityApi.getBackstageIdentity).toHaveBeenCalled(),
+    );
 
     await waitFor(() =>
-      expect(mockQueryEntities).toHaveBeenCalledWith({
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
         filter: {
           'metadata.namespace': ['a-namespace'],
           'relations.ownedBy': ['user:group/a-group'],

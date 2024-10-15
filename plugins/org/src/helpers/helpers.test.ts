@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { CatalogApi } from '@backstage/catalog-client';
 import {
   getAllDesendantMembersForGroupEntity,
   getMembersFromGroups,
@@ -42,7 +41,7 @@ import {
 
 describe('Helper functions', () => {
   it('getAllDesendantMembersForGroupEntity correctly recursively returns all descendant members', async () => {
-    const catalogApi = mockedCatalogApiSupportingGroups as CatalogApi;
+    const catalogApi = mockedCatalogApiSupportingGroups;
 
     const actualGroupADescendantMembers =
       await getAllDesendantMembersForGroupEntity(groupA, catalogApi);
@@ -60,7 +59,7 @@ describe('Helper functions', () => {
   });
 
   it('getMembersFromGroups correctly returns all members of provided groups', async () => {
-    const catalogApi = mockedCatalogApiSupportingGroups as CatalogApi;
+    const catalogApi = mockedCatalogApiSupportingGroups;
 
     const actualNoGroupsMembers = await getMembersFromGroups([], catalogApi);
     const actualGroupAMembers = await getMembersFromGroups(
@@ -123,7 +122,7 @@ describe('Helper functions', () => {
   it('getDescendantGroupsFromGroup correctly recursively returns descendant groups, ignoring duplicates', async () => {
     const actualDescendantGroups = await getDescendantGroupsFromGroup(
       groupA,
-      mockedCatalogApiSupportingGroups as CatalogApi,
+      mockedCatalogApiSupportingGroups,
     );
     expect(actualDescendantGroups).toStrictEqual([
       groupBRef,

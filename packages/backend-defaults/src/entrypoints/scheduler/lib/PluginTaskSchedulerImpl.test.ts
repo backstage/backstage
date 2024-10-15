@@ -38,6 +38,7 @@ function defer() {
 jest.setTimeout(60_000);
 
 describe('PluginTaskManagerImpl', () => {
+  const addShutdownHook = jest.fn();
   const databases = TestDatabases.create({
     ids: ['POSTGRES_16', 'POSTGRES_12', 'SQLITE_3'],
   });
@@ -51,12 +52,17 @@ describe('PluginTaskManagerImpl', () => {
     jest.useFakeTimers();
   }, 60_000);
 
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   async function init(databaseId: TestDatabaseId) {
     const knex = await databases.init(databaseId);
     await migrateBackendTasks(knex);
     const manager = new PluginTaskSchedulerImpl(
       async () => knex,
       mockServices.logger.mock(),
+      { addShutdownHook, addStartupHook: jest.fn() },
     );
     return { knex, manager };
   }
@@ -101,6 +107,33 @@ describe('PluginTaskManagerImpl', () => {
 
         await promise;
         expect(fn).toHaveBeenCalledWith(expect.any(AbortSignal));
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'aborts the task if shutdown hook is invoked, %p',
+      async databaseId => {
+        const { manager } = await init(databaseId);
+
+        const fn = jest.fn();
+        const promise = new Promise<AbortSignal>(resolve =>
+          fn.mockImplementation(resolve),
+        );
+        await manager.scheduleTask({
+          id: 'task3',
+          timeout: Duration.fromMillis(5000),
+          frequency: { cron: '* * * * * *' },
+          fn,
+          scope: 'global',
+        });
+
+        const shutdownHook = addShutdownHook.mock.calls[0][0];
+        const abortSignal = await promise;
+        expect(abortSignal.aborted).toBe(false);
+
+        // Should be aborted after the shutdown hook is invoked
+        await shutdownHook();
+        expect(abortSignal.aborted).toBe(true);
       },
     );
   });
@@ -211,6 +244,30 @@ describe('PluginTaskManagerImpl', () => {
 
       await promise;
       expect(fn).toHaveBeenCalledWith(expect.any(AbortSignal));
+    }, 60_000);
+
+    it('aborts the task if shutdown hook is invoked', async () => {
+      const { manager } = await init('SQLITE_3');
+
+      const fn = jest.fn();
+      const promise = new Promise<AbortSignal>(resolve =>
+        fn.mockImplementation(resolve),
+      );
+      await manager.scheduleTask({
+        id: 'task3',
+        timeout: Duration.fromMillis(5000),
+        frequency: { cron: '* * * * * *' },
+        fn,
+        scope: 'local',
+      });
+
+      const shutdownHook = addShutdownHook.mock.calls[0][0];
+      const abortSignal = await promise;
+      expect(abortSignal.aborted).toBe(false);
+
+      // Should be aborted after the shutdown hook is invoked
+      await shutdownHook();
+      expect(abortSignal.aborted).toBe(true);
     }, 60_000);
   });
 

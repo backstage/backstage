@@ -870,10 +870,5 @@ const _default: FrontendPlugin<
 >;
 export default _default;
 
-// Warnings were encountered during analysis:
-//
-// src/alpha/plugin.d.ts:3:15 - (ae-undocumented) Missing documentation for "_default".
-// src/alpha/translation.d.ts:2:22 - (ae-undocumented) Missing documentation for "catalogTranslationRef".
-
 // (No @packageDocumentation comment for this package)
 ```

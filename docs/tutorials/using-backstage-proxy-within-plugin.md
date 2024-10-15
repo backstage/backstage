@@ -36,10 +36,11 @@ and you want to be able to access it within backstage at
 
 ```yaml
 proxy:
-  '/<your-proxy-uri>':
-    target: https://api.myawesomeservice.com/v1
-    headers:
-      X-Custom-Source: backstage
+  endpoints:
+    '/<your-proxy-uri>':
+      target: https://api.myawesomeservice.com/v1
+      headers:
+        X-Custom-Source: backstage
 ```
 
 You can find more details about the proxy config options in the
@@ -114,20 +115,22 @@ look something like this:
 
 /* ... */
 
-import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
 
 export class MyAwesomeApiClient implements MyAwesomeApi {
   discoveryApi: DiscoveryApi;
+  fetchApi: FetchApi;
 
-  constructor({discoveryApi}: {discoveryApi: DiscoveryApi}) {
+  constructor({discoveryApi, fetchApi}: {discoveryApi: DiscoveryApi, fetchApi: FetchApi}) {
     this.discoveryApi = discoveryApi;
+    this.fetchApi = FetchApi;
   }
 
   private async fetch<T = any>(input: string, init?: RequestInit): Promise<T> {
     // As configured previously for the backend proxy
     const proxyUri = `${await this.discoveryApi.getBaseUrl('proxy')}/<your-proxy-uri>`;
 
-    const resp = await fetch(`${proxyUri}${input}`, init);
+    const resp = await this.fetchApi.fetch(`${proxyUri}${input}`, init);
     if (!resp.ok) throw new Error(resp);
     return await resp.json();
   }

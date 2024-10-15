@@ -87,20 +87,4 @@ export interface NotificationsProcessingExtensionPoint {
 
 // @public (undocumented)
 export const notificationsProcessingExtensionPoint: ExtensionPoint<NotificationsProcessingExtensionPoint>;
-
-// Warnings were encountered during analysis:
-//
-// src/extensions.d.ts:73:1 - (ae-undocumented) Missing documentation for "NotificationsProcessingExtensionPoint".
-// src/extensions.d.ts:74:5 - (ae-undocumented) Missing documentation for "addProcessor".
-// src/extensions.d.ts:79:22 - (ae-undocumented) Missing documentation for "notificationsProcessingExtensionPoint".
-// src/extensions.d.ts:84:1 - (ae-undocumented) Missing documentation for "NotificationProcessorFilters".
-// src/lib.d.ts:3:22 - (ae-undocumented) Missing documentation for "notificationService".
-// src/service/DefaultNotificationService.d.ts:5:1 - (ae-undocumented) Missing documentation for "NotificationServiceOptions".
-// src/service/DefaultNotificationService.d.ts:10:1 - (ae-undocumented) Missing documentation for "NotificationRecipients".
-// src/service/DefaultNotificationService.d.ts:26:1 - (ae-undocumented) Missing documentation for "NotificationSendOptions".
-// src/service/DefaultNotificationService.d.ts:31:1 - (ae-undocumented) Missing documentation for "DefaultNotificationService".
-// src/service/DefaultNotificationService.d.ts:35:5 - (ae-undocumented) Missing documentation for "create".
-// src/service/DefaultNotificationService.d.ts:36:5 - (ae-undocumented) Missing documentation for "send".
-// src/service/NotificationService.d.ts:3:1 - (ae-undocumented) Missing documentation for "NotificationService".
-// src/service/NotificationService.d.ts:4:5 - (ae-undocumented) Missing documentation for "send".
 ```

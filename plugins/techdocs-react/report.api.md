@@ -192,17 +192,4 @@ export const useTechDocsAddons: () => {
 
 // @public
 export const useTechDocsReaderPage: () => TechDocsReaderPageValue;
-
-// Warnings were encountered during analysis:
-//
-// src/api.d.ts:9:5 - (ae-undocumented) Missing documentation for "getCookie".
-// src/api.d.ts:12:5 - (ae-undocumented) Missing documentation for "getApiOrigin".
-// src/api.d.ts:13:5 - (ae-undocumented) Missing documentation for "getTechDocsMetadata".
-// src/api.d.ts:14:5 - (ae-undocumented) Missing documentation for "getEntityMetadata".
-// src/api.d.ts:34:5 - (ae-undocumented) Missing documentation for "getApiOrigin".
-// src/api.d.ts:35:5 - (ae-undocumented) Missing documentation for "getStorageUrl".
-// src/api.d.ts:36:5 - (ae-undocumented) Missing documentation for "getBuilder".
-// src/api.d.ts:37:5 - (ae-undocumented) Missing documentation for "getEntityDocs".
-// src/api.d.ts:38:5 - (ae-undocumented) Missing documentation for "syncEntityDocs".
-// src/api.d.ts:39:5 - (ae-undocumented) Missing documentation for "getBaseUrl".
 ```

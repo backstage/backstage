@@ -480,7 +480,7 @@ describe('DefaultProcessingDatabase', () => {
     );
 
     it.each(databases.eachSupportedId())(
-      'stores the refresh keys for the entity',
+      'stores the refresh keys for the entity where key length is 255 chars or less',
       async databaseId => {
         const mockLogger = {
           debug: jest.fn(),
@@ -532,6 +532,67 @@ describe('DefaultProcessingDatabase', () => {
         expect(refreshKeys[0]).toEqual({
           entity_id: id,
           key: 'protocol:foo-bar.com',
+        });
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'stores the refresh keys for the entity where key length is greater than 255 chars',
+      async databaseId => {
+        const mockLogger = {
+          debug: jest.fn(),
+          error: jest.fn(),
+          warn: jest.fn(),
+        };
+        const { knex, db } = await createDatabase(
+          databaseId,
+          mockLogger as unknown as Logger,
+        );
+        await insertRefreshStateRow(knex, {
+          entity_id: id,
+          entity_ref: 'location:default/fakelocation',
+          unprocessed_entity: '{}',
+          processed_entity: '{}',
+          errors: '[]',
+          next_update_at: '2021-04-01 13:37:00',
+          last_discovery_at: '2021-04-01 13:37:00',
+        });
+
+        const deferredEntities = [
+          {
+            entity: {
+              apiVersion: '1',
+              kind: 'Location',
+              metadata: {
+                name: 'next',
+              },
+            },
+            locationKey: 'mock',
+          },
+        ];
+
+        await db.transaction(tx =>
+          db.updateProcessedEntity(tx, {
+            id,
+            processedEntity,
+            resultHash: '',
+            relations: [],
+            deferredEntities,
+            refreshKeys: [
+              {
+                key: `url:https://example.com/foo-bar-test-group/very-long-group-name-that-exceeds-255-characters-just-to-test-the-limits-of-url-length-in-the-catalog-info-yaml-file-and-see-how-the-backstage-system-handles-it-making/test-this-alright-1/-/blob/main/catalog-info.yaml`,
+              },
+            ],
+          }),
+        );
+
+        const refreshKeys = await knex<DbRefreshKeysRow>('refresh_keys')
+          .where({ entity_id: id })
+          .select();
+
+        expect(refreshKeys[0]).toEqual({
+          entity_id: id,
+          key: `url:https://example.com/foo-bar-test-group/very-long-group-name-that-exceeds-255-characters-just-to-test-the-limits-of-url-length-in-the-catalog-info-yaml-file-and-see-how-the-back#sha256:edfb606500d184900e63891e5279d35bf0069ea251e90d15c0a430de6023d905`,
         });
       },
     );
