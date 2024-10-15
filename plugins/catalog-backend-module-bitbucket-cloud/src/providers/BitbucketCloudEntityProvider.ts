@@ -352,12 +352,12 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
         .listProjectsByWorkspace(workspace)
         .iterateResults();
 
-      const results: IngestionTarget[] = [];
+      let results: IngestionTarget[] = [];
 
       for await (const project of projects) {
         const projectQuery = `${query} project:${project.key}`;
         const result = await this.processQuery(workspace, projectQuery);
-        results.push(...result);
+        results = results.concat(result);
       }
 
       return results;
