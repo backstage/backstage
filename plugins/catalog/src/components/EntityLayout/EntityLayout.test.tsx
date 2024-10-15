@@ -181,7 +181,7 @@ describe('EntityLayout', () => {
     } as Entity;
 
     await renderInTestApp(
-      <ApiProvider apis={mockApis}>
+      <ApiProvider apis={apis}>
         <EntityProvider entity={mockEntityWithRelation}>
           <EntityLayout parentEntityRelations={['partOf']}>
             <EntityLayout.Route path="/" title="tabbed-test-title">
