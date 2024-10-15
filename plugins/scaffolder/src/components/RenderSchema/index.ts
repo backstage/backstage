@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export * from './types';
+export { RenderSchema } from './RenderSchema';
