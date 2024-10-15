@@ -20,9 +20,4 @@ export class BitbucketCloudEventRouter extends SubTopicEventRouter {
 // @public
 const eventsModuleBitbucketCloudEventRouter: BackendFeature;
 export default eventsModuleBitbucketCloudEventRouter;
-
-// Warnings were encountered during analysis:
-//
-// src/router/BitbucketCloudEventRouter.d.ts:13:5 - (ae-undocumented) Missing documentation for "getSubscriberId".
-// src/router/BitbucketCloudEventRouter.d.ts:14:5 - (ae-undocumented) Missing documentation for "determineSubTopic".
 ```

@@ -66,14 +66,4 @@ export type DefaultCatalogCollatorFactoryOptions = {
   catalogClient?: CatalogApi;
   entityTransformer?: CatalogCollatorEntityTransformer;
 };
-
-// Warnings were encountered during analysis:
-//
-// src/collators/CatalogCollatorEntityTransformer.d.ts:4:1 - (ae-undocumented) Missing documentation for "CatalogCollatorEntityTransformer".
-// src/collators/DefaultCatalogCollatorFactory.d.ts:14:1 - (ae-undocumented) Missing documentation for "DefaultCatalogCollatorFactoryOptions".
-// src/collators/DefaultCatalogCollatorFactory.d.ts:43:5 - (ae-undocumented) Missing documentation for "type".
-// src/collators/DefaultCatalogCollatorFactory.d.ts:44:5 - (ae-undocumented) Missing documentation for "visibilityPermission".
-// src/collators/DefaultCatalogCollatorFactory.d.ts:51:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/collators/DefaultCatalogCollatorFactory.d.ts:53:5 - (ae-undocumented) Missing documentation for "getCollator".
-// src/collators/defaultCatalogCollatorEntityTransformer.d.ts:3:22 - (ae-undocumented) Missing documentation for "defaultCatalogCollatorEntityTransformer".
 ```

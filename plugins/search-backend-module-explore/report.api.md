@@ -45,12 +45,4 @@ export type ToolDocumentCollatorFactoryOptions = {
   tokenManager?: TokenManager;
   auth?: AuthService;
 };
-
-// Warnings were encountered during analysis:
-//
-// src/collators/ToolDocumentCollatorFactory.d.ts:19:1 - (ae-undocumented) Missing documentation for "ToolDocumentCollatorFactoryOptions".
-// src/collators/ToolDocumentCollatorFactory.d.ts:32:5 - (ae-undocumented) Missing documentation for "type".
-// src/collators/ToolDocumentCollatorFactory.d.ts:37:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/collators/ToolDocumentCollatorFactory.d.ts:38:5 - (ae-undocumented) Missing documentation for "getCollator".
-// src/collators/ToolDocumentCollatorFactory.d.ts:39:5 - (ae-undocumented) Missing documentation for "execute".
 ```

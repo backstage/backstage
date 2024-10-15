@@ -239,36 +239,5 @@ export const useTranslationRef: <
   t: TranslationFunction<TMessages>;
 };
 
-// Warnings were encountered during analysis:
-//
-// src/apis/definitions/AppLanguageApi.d.ts:4:1 - (ae-undocumented) Missing documentation for "AppLanguageApi".
-// src/apis/definitions/AppLanguageApi.d.ts:19:22 - (ae-undocumented) Missing documentation for "appLanguageApiRef".
-// src/apis/definitions/TranslationApi.d.ts:228:1 - (ae-undocumented) Missing documentation for "TranslationFunction".
-// src/apis/definitions/TranslationApi.d.ts:231:5 - (ae-undocumented) Missing documentation for "__call".
-// src/apis/definitions/TranslationApi.d.ts:234:1 - (ae-undocumented) Missing documentation for "TranslationSnapshot".
-// src/apis/definitions/TranslationApi.d.ts:243:1 - (ae-undocumented) Missing documentation for "TranslationApi".
-// src/apis/definitions/TranslationApi.d.ts:254:22 - (ae-undocumented) Missing documentation for "translationApiRef".
-// src/translation/TranslationMessages.d.ts:17:5 - (ae-undocumented) Missing documentation for "$$type".
-// src/translation/TranslationMessages.d.ts:33:5 - (ae-undocumented) Missing documentation for "ref".
-// src/translation/TranslationMessages.d.ts:34:5 - (ae-undocumented) Missing documentation for "full".
-// src/translation/TranslationMessages.d.ts:35:5 - (ae-undocumented) Missing documentation for "messages".
-// src/translation/TranslationRef.d.ts:2:1 - (ae-undocumented) Missing documentation for "TranslationRef".
-// src/translation/TranslationRef.d.ts:7:5 - (ae-undocumented) Missing documentation for "$$type".
-// src/translation/TranslationRef.d.ts:8:5 - (ae-undocumented) Missing documentation for "id".
-// src/translation/TranslationRef.d.ts:9:5 - (ae-undocumented) Missing documentation for "T".
-// src/translation/TranslationRef.d.ts:30:1 - (ae-undocumented) Missing documentation for "TranslationRefOptions".
-// src/translation/TranslationRef.d.ts:37:5 - (ae-undocumented) Missing documentation for "id".
-// src/translation/TranslationRef.d.ts:38:5 - (ae-undocumented) Missing documentation for "messages".
-// src/translation/TranslationRef.d.ts:39:5 - (ae-undocumented) Missing documentation for "translations".
-// src/translation/TranslationRef.d.ts:42:1 - (ae-undocumented) Missing documentation for "createTranslationRef".
-// src/translation/TranslationResource.d.ts:3:1 - (ae-undocumented) Missing documentation for "TranslationResource".
-// src/translation/TranslationResource.d.ts:4:5 - (ae-undocumented) Missing documentation for "$$type".
-// src/translation/TranslationResource.d.ts:5:5 - (ae-undocumented) Missing documentation for "id".
-// src/translation/TranslationResource.d.ts:8:1 - (ae-undocumented) Missing documentation for "TranslationResourceOptions".
-// src/translation/TranslationResource.d.ts:17:5 - (ae-undocumented) Missing documentation for "ref".
-// src/translation/TranslationResource.d.ts:18:5 - (ae-undocumented) Missing documentation for "translations".
-// src/translation/TranslationResource.d.ts:21:1 - (ae-undocumented) Missing documentation for "createTranslationResource".
-// src/translation/useTranslationRef.d.ts:4:22 - (ae-undocumented) Missing documentation for "useTranslationRef".
-
 // (No @packageDocumentation comment for this package)
 ```

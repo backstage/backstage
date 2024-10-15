@@ -14,17 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  default as feature,
-  TechDocsCollatorEntityTransformerExtensionPoint as ExtensionPoint,
-  techdocsCollatorEntityTransformerExtensionPoint as extensionPoint,
-} from './module';
+import { default as feature } from './module';
 
 /** @alpha */
 const _feature = feature;
 export default _feature;
-
-/** @alpha */
-export type TechDocsCollatorEntityTransformerExtensionPoint = ExtensionPoint;
-/** @alpha */
-export const techdocsCollatorEntityTransformerExtensionPoint = extensionPoint;

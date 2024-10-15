@@ -12,10 +12,5 @@ export const eventsModuleGerritEventRouter: BackendFeature;
 const _feature: BackendFeature;
 export default _feature;
 
-// Warnings were encountered during analysis:
-//
-// src/alpha.d.ts:2:15 - (ae-undocumented) Missing documentation for "_feature".
-// src/alpha.d.ts:5:22 - (ae-undocumented) Missing documentation for "eventsModuleGerritEventRouter".
-
 // (No @packageDocumentation comment for this package)
 ```

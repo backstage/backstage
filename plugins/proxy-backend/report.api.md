@@ -29,13 +29,4 @@ export interface RouterOptions {
   // (undocumented)
   skipInvalidProxies?: boolean;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/service/router.d.ts:9:1 - (ae-undocumented) Missing documentation for "RouterOptions".
-// src/service/router.d.ts:10:5 - (ae-undocumented) Missing documentation for "logger".
-// src/service/router.d.ts:11:5 - (ae-undocumented) Missing documentation for "config".
-// src/service/router.d.ts:12:5 - (ae-undocumented) Missing documentation for "discovery".
-// src/service/router.d.ts:13:5 - (ae-undocumented) Missing documentation for "skipInvalidProxies".
-// src/service/router.d.ts:14:5 - (ae-undocumented) Missing documentation for "reviveConsumedRequestBodies".
 ```

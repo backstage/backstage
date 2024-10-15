@@ -117,17 +117,4 @@ const techdocsPlugin: BackendFeature;
 export default techdocsPlugin;
 
 export * from '@backstage/plugin-techdocs-node';
-
-// Warnings were encountered during analysis:
-//
-// src/index.d.ts:17:1 - (ae-undocumented) Missing documentation for "DocsBuildStrategy".
-// src/index.d.ts:22:1 - (ae-undocumented) Missing documentation for "ShouldBuildParameters".
-// src/index.d.ts:29:1 - (ae-undocumented) Missing documentation for "TechDocsDocument".
-// src/search/DefaultTechDocsCollator.d.ts:32:5 - (ae-undocumented) Missing documentation for "type".
-// src/search/DefaultTechDocsCollator.d.ts:33:5 - (ae-undocumented) Missing documentation for "visibilityPermission".
-// src/search/DefaultTechDocsCollator.d.ts:35:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/search/DefaultTechDocsCollator.d.ts:36:5 - (ae-undocumented) Missing documentation for "execute".
-// src/search/DefaultTechDocsCollator.d.ts:37:5 - (ae-undocumented) Missing documentation for "applyArgsToFormat".
-// src/search/index.d.ts:12:1 - (ae-undocumented) Missing documentation for "TechDocsCollatorFactoryOptions".
-// src/search/index.d.ts:17:22 - (ae-undocumented) Missing documentation for "DefaultTechDocsCollatorFactory".
 ```

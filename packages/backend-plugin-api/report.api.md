@@ -735,48 +735,4 @@ export type UrlReaderServiceSearchResponseFile = {
 export interface UserInfoService {
   getUserInfo(credentials: BackstageCredentials): Promise<BackstageUserInfo>;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/services/definitions/HttpRouterService.d.ts:8:5 - (ae-undocumented) Missing documentation for "path".
-// src/services/definitions/HttpRouterService.d.ts:9:5 - (ae-undocumented) Missing documentation for "allow".
-// src/services/definitions/LifecycleService.d.ts:5:1 - (ae-undocumented) Missing documentation for "LifecycleServiceStartupHook".
-// src/services/definitions/LifecycleService.d.ts:9:1 - (ae-undocumented) Missing documentation for "LifecycleServiceStartupOptions".
-// src/services/definitions/LifecycleService.d.ts:18:1 - (ae-undocumented) Missing documentation for "LifecycleServiceShutdownHook".
-// src/services/definitions/LifecycleService.d.ts:22:1 - (ae-undocumented) Missing documentation for "LifecycleServiceShutdownOptions".
-// src/services/definitions/LoggerService.d.ts:10:5 - (ae-undocumented) Missing documentation for "error".
-// src/services/definitions/LoggerService.d.ts:11:5 - (ae-undocumented) Missing documentation for "warn".
-// src/services/definitions/LoggerService.d.ts:12:5 - (ae-undocumented) Missing documentation for "info".
-// src/services/definitions/LoggerService.d.ts:13:5 - (ae-undocumented) Missing documentation for "debug".
-// src/services/definitions/LoggerService.d.ts:14:5 - (ae-undocumented) Missing documentation for "child".
-// src/services/definitions/PermissionsService.d.ts:9:5 - (ae-undocumented) Missing documentation for "credentials".
-// src/services/definitions/RootHealthService.d.ts:5:1 - (ae-undocumented) Missing documentation for "RootHealthService".
-// src/services/definitions/UserInfoService.d.ts:9:5 - (ae-undocumented) Missing documentation for "userEntityRef".
-// src/services/definitions/UserInfoService.d.ts:10:5 - (ae-undocumented) Missing documentation for "ownershipEntityRefs".
-// src/services/system/types.d.ts:35:1 - (ae-undocumented) Missing documentation for "ServiceFactory".
-// src/services/system/types.d.ts:36:5 - (ae-undocumented) Missing documentation for "service".
-// src/services/system/types.d.ts:39:1 - (ae-undocumented) Missing documentation for "ServiceRefOptions".
-// src/services/system/types.d.ts:40:5 - (ae-undocumented) Missing documentation for "id".
-// src/services/system/types.d.ts:41:5 - (ae-undocumented) Missing documentation for "scope".
-// src/services/system/types.d.ts:42:5 - (ae-undocumented) Missing documentation for "multiton".
-// src/services/system/types.d.ts:43:5 - (ae-undocumented) Missing documentation for "defaultFactory".
-// src/services/system/types.d.ts:76:1 - (ae-undocumented) Missing documentation for "RootServiceFactoryOptions".
-// src/services/system/types.d.ts:90:5 - (ae-undocumented) Missing documentation for "service".
-// src/services/system/types.d.ts:91:5 - (ae-undocumented) Missing documentation for "deps".
-// src/services/system/types.d.ts:92:5 - (ae-undocumented) Missing documentation for "factory".
-// src/services/system/types.d.ts:95:1 - (ae-undocumented) Missing documentation for "PluginServiceFactoryOptions".
-// src/services/system/types.d.ts:109:5 - (ae-undocumented) Missing documentation for "service".
-// src/services/system/types.d.ts:110:5 - (ae-undocumented) Missing documentation for "deps".
-// src/services/system/types.d.ts:111:5 - (ae-undocumented) Missing documentation for "createRootContext".
-// src/services/system/types.d.ts:112:5 - (ae-undocumented) Missing documentation for "factory".
-// src/types.d.ts:2:1 - (ae-undocumented) Missing documentation for "BackendFeature".
-// src/types.d.ts:3:5 - (ae-undocumented) Missing documentation for "$$type".
-// src/wiring/createBackendFeatureLoader.d.ts:10:5 - (ae-undocumented) Missing documentation for "deps".
-// src/wiring/createBackendFeatureLoader.d.ts:13:5 - (ae-undocumented) Missing documentation for "loader".
-// src/wiring/createBackendModule.d.ts:21:5 - (ae-undocumented) Missing documentation for "register".
-// src/wiring/createBackendPlugin.d.ts:17:5 - (ae-undocumented) Missing documentation for "register".
-// src/wiring/types.d.ts:30:5 - (ae-undocumented) Missing documentation for "registerExtensionPoint".
-// src/wiring/types.d.ts:31:5 - (ae-undocumented) Missing documentation for "registerInit".
-// src/wiring/types.d.ts:44:5 - (ae-undocumented) Missing documentation for "registerExtensionPoint".
-// src/wiring/types.d.ts:45:5 - (ae-undocumented) Missing documentation for "registerInit".
 ```

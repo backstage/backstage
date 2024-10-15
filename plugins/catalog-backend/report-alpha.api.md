@@ -146,9 +146,5 @@ export const permissionRules: {
   >;
 };
 
-// Warnings were encountered during analysis:
-//
-// src/alpha.d.ts:2:15 - (ae-undocumented) Missing documentation for "_feature".
-
 // (No @packageDocumentation comment for this package)
 ```

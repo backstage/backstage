@@ -316,10 +316,5 @@ export const techDocsSearchResultListItemExtension: ExtensionDefinition<{
   params: SearchResultListItemBlueprintParams;
 }>;
 
-// Warnings were encountered during analysis:
-//
-// src/alpha.d.ts:3:22 - (ae-undocumented) Missing documentation for "techDocsSearchResultListItemExtension".
-// src/alpha.d.ts:35:15 - (ae-undocumented) Missing documentation for "_default".
-
 // (No @packageDocumentation comment for this package)
 ```
