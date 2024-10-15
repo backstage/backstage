@@ -1086,9 +1086,25 @@ describe('backend-dynamic-feature-service', () => {
       expect(fromConfigSpier).toHaveBeenCalled();
       expect(applyConfigSpier).toHaveBeenCalled();
       expect(scanRootSpier).toHaveBeenCalled();
+      const realPath = fs.realpathSync(
+        otherMockDir.resolve('a-dynamic-plugin'),
+      );
       expect(mockedModuleLoader.bootstrap).toHaveBeenCalledWith(
         findPaths(__dirname).targetRoot,
-        [fs.realpathSync(otherMockDir.resolve('a-dynamic-plugin'))],
+        [realPath],
+        new Map<string, ScannedPluginManifest>([
+          [
+            realPath,
+            {
+              name: 'test',
+              main: 'dist/index.cjs.js',
+              version: '0.0.0',
+              backstage: {
+                role: 'backend-plugin',
+              },
+            },
+          ],
+        ]),
       );
       expect(mockedModuleLoader.load).toHaveBeenCalledWith(
         mockDir.resolve(

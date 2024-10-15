@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
+import { ScannedPluginManifest } from '../scanner';
+
 /**
  * @public
  */
 export interface ModuleLoader {
-  bootstrap(backstageRoot: string, dynamicPluginPaths: string[]): Promise<void>;
+  bootstrap(
+    backstageRoot: string,
+    dynamicPluginPaths: string[],
+    scannedPluginManifests?: Map<string, ScannedPluginManifest>,
+  ): Promise<void>;
 
   load(id: string): Promise<any>;
 }

@@ -263,7 +263,11 @@ export type LegacyPluginEnvironment = {
 // @public (undocumented)
 export interface ModuleLoader {
   // (undocumented)
-  bootstrap(backstageRoot: string, dynamicPluginPaths: string[]): Promise<void>;
+  bootstrap(
+    backstageRoot: string,
+    dynamicPluginPaths: string[],
+    scannedPluginManifests?: Map<string, ScannedPluginManifest>,
+  ): Promise<void>;
   // (undocumented)
   load(id: string): Promise<any>;
 }
