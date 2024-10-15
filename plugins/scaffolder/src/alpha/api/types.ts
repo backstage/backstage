@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
-import { FormFieldExtensionData } from '@backstage/plugin-scaffolder-react/alpha';
+import {
+  FormFieldExtensionData,
+  ScaffolderFormDecorator,
+} from '@backstage/plugin-scaffolder-react/alpha';
 
 export interface ScaffolderFormFieldsApi {
   getFormFields(): Promise<FormFieldExtensionData[]>;
+}
+
+export interface ScaffolderFormDecoratorsApi {
+  getFormDecorators(): Promise<ScaffolderFormDecorator[]>;
 }

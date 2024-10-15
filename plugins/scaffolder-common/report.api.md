@@ -77,6 +77,10 @@ export interface TemplateEntityV1beta3 extends Entity {
     type: string;
     presentation?: TemplatePresentationV1beta3;
     EXPERIMENTAL_recovery?: TemplateRecoveryV1beta3;
+    EXPERIMENTAL_formDecorators?: {
+      id: string;
+      input?: JsonObject;
+    }[];
     parameters?: TemplateParametersV1beta3 | TemplateParametersV1beta3[];
     steps: Array<TemplateEntityStepV1beta3>;
     output?: {
@@ -126,12 +130,12 @@ export interface TemplateRecoveryV1beta3 extends JsonObject {
 
 // Warnings were encountered during analysis:
 //
-// src/TemplateEntityV1beta3.d.ts:102:5 - (ae-undocumented) Missing documentation for "id".
-// src/TemplateEntityV1beta3.d.ts:103:5 - (ae-undocumented) Missing documentation for "name".
-// src/TemplateEntityV1beta3.d.ts:104:5 - (ae-undocumented) Missing documentation for "action".
-// src/TemplateEntityV1beta3.d.ts:105:5 - (ae-undocumented) Missing documentation for "input".
-// src/TemplateEntityV1beta3.d.ts:106:5 - (ae-undocumented) Missing documentation for "if".
-// src/TemplateEntityV1beta3.d.ts:107:5 - (ae-undocumented) Missing documentation for ""backstage:permissions"".
-// src/TemplateEntityV1beta3.d.ts:115:5 - (ae-undocumented) Missing documentation for ""backstage:permissions"".
-// src/TemplateEntityV1beta3.d.ts:123:5 - (ae-undocumented) Missing documentation for "tags".
+// src/TemplateEntityV1beta3.d.ts:109:5 - (ae-undocumented) Missing documentation for "id".
+// src/TemplateEntityV1beta3.d.ts:110:5 - (ae-undocumented) Missing documentation for "name".
+// src/TemplateEntityV1beta3.d.ts:111:5 - (ae-undocumented) Missing documentation for "action".
+// src/TemplateEntityV1beta3.d.ts:112:5 - (ae-undocumented) Missing documentation for "input".
+// src/TemplateEntityV1beta3.d.ts:113:5 - (ae-undocumented) Missing documentation for "if".
+// src/TemplateEntityV1beta3.d.ts:114:5 - (ae-undocumented) Missing documentation for ""backstage:permissions"".
+// src/TemplateEntityV1beta3.d.ts:122:5 - (ae-undocumented) Missing documentation for ""backstage:permissions"".
+// src/TemplateEntityV1beta3.d.ts:130:5 - (ae-undocumented) Missing documentation for "tags".
 ```

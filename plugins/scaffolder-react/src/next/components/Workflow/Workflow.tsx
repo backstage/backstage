@@ -26,11 +26,16 @@ import { makeStyles } from '@material-ui/core/styles';
 import { errorApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { useTemplateParameterSchema } from '../../hooks/useTemplateParameterSchema';
 import { Stepper, type StepperProps } from '../Stepper/Stepper';
-import { SecretsContextProvider } from '../../../secrets/SecretsContext';
+import {
+  SecretsContextProvider,
+  useInternalTemplateSecrets,
+} from '../../../secrets/SecretsContext';
 import { useFilteredSchemaProperties } from '../../hooks/useFilteredSchemaProperties';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 import { useTemplateTimeSavedMinutes } from '../../hooks/useTemplateTimeSaved';
 import { JsonValue } from '@backstage/types';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { useFormDecorators } from '../../../../../scaffolder/src/alpha/hooks/useFormDecorators';
 
 const useStyles = makeStyles({
   markdown: {
@@ -72,7 +77,6 @@ export type WorkflowProps = {
 export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
   const { title, description, namespace, templateName, onCreate, ...props } =
     workflowProps;
-
   const analytics = useAnalytics();
   const styles = useStyles();
   const templateRef = stringifyEntityRef({
@@ -80,17 +84,44 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
     namespace: namespace,
     name: templateName,
   });
-
   const errorApi = useApi(errorApiRef);
-
   const { loading, manifest, error } = useTemplateParameterSchema(templateRef);
-
   const sortedManifest = useFilteredSchemaProperties(manifest);
-
   const minutesSaved = useTemplateTimeSavedMinutes(templateRef);
+  const { setSecrets } = useInternalTemplateSecrets();
+  const formDecorators = useFormDecorators();
 
   const workflowOnCreate = useCallback(
-    async (formState: Record<string, JsonValue>) => {
+    async (originalFormState: Record<string, JsonValue>) => {
+      let formState: Record<string, JsonValue> = { ...originalFormState };
+
+      if (manifest?.EXPERIMENTAL_formDecorators && formDecorators?.size) {
+        // for each of the form decorators, go and call the decorator with the context
+        await Promise.all(
+          manifest.EXPERIMENTAL_formDecorators.map(async decorator => {
+            const formDecorator = formDecorators.get(decorator.id);
+            if (!formDecorator) {
+              // eslint-disable-next-line no-console
+              console.error('Failed to find form decorator', decorator.id);
+              return;
+            }
+
+            await formDecorator.fn({
+              setSecrets,
+              setFormState: (
+                handler: (
+                  oldState: Record<string, JsonValue>,
+                ) => Record<string, JsonValue>,
+              ) => {
+                formState = { ...handler(formState) };
+              },
+              formState,
+              input: decorator.input,
+            });
+          }),
+        );
+      }
+
       onCreate(formState);
 
       const name =
@@ -99,7 +130,15 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
         value: minutesSaved,
       });
     },
-    [onCreate, analytics, templateName, minutesSaved],
+    [
+      manifest?.EXPERIMENTAL_formDecorators,
+      formDecorators,
+      onCreate,
+      analytics,
+      templateName,
+      minutesSaved,
+      setSecrets,
+    ],
   );
 
   useEffect(() => {

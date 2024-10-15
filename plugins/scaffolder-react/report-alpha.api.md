@@ -5,6 +5,7 @@
 ```ts
 /// <reference types="react" />
 
+import { AnyApiRef } from '@backstage/core-plugin-api';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
@@ -68,6 +69,35 @@ export function createFormField<
   TReturnValue extends z.ZodType,
   TUiOptions extends z.ZodType,
 >(opts: FormFieldExtensionData<TReturnValue, TUiOptions>): FormField;
+
+// @public
+export function createScaffolderFormDecorator<
+  TDeps extends {
+    [key in string]: AnyApiRef;
+  },
+  TInputSchema extends {
+    [key in string]: (zImpl: typeof z) => z.ZodType;
+  },
+  TInput extends {} = {
+    [key in keyof TInputSchema]: z.infer<ReturnType<TInputSchema[key]>>;
+  },
+>(options: {
+  id: string;
+  schema?: {
+    input?: TInputSchema;
+  };
+  deps?: TDeps;
+  fn: (
+    ctx: ScaffolderFormDecoratorContext<TInput>,
+    deps: TDeps extends {
+      [key in string]: AnyApiRef;
+    }
+      ? {
+          [key in keyof TDeps]: TDeps[key]['T'];
+        }
+      : never,
+  ) => Promise<void>;
+}): ScaffolderFormDecorator<TInputSchema, TDeps, TInput>;
 
 // @alpha
 export const DefaultTemplateOutputs: (props: {
@@ -183,6 +213,54 @@ export interface ScaffolderFieldProps {
   // (undocumented)
   required?: boolean;
 }
+
+// Warning: (ae-missing-release-tag) "ScaffolderFormDecorator" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type ScaffolderFormDecorator<
+  TInputSchema extends {
+    [key in string]: (zImpl: typeof z) => z.ZodType;
+  } = {},
+  TDeps extends {
+    [key in string]: AnyApiRef;
+  } = {
+    [key in string]: AnyApiRef;
+  },
+  TInput extends {} = {
+    [key in keyof TInputSchema]: z.infer<ReturnType<TInputSchema[key]>>;
+  },
+> = {
+  version: 'v1';
+  id: string;
+  schema?: {
+    input?: TInputSchema;
+  };
+  deps?: TDeps;
+  fn: (
+    ctx: ScaffolderFormDecoratorContext<TInput>,
+    deps: TDeps extends {
+      [key in string]: AnyApiRef;
+    }
+      ? {
+          [key in keyof TDeps]: TDeps[key]['T'];
+        }
+      : never,
+  ) => Promise<void>;
+};
+
+// Warning: (ae-missing-release-tag) "ScaffolderFormDecoratorContext" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type ScaffolderFormDecoratorContext<TInput> = {
+  input: TInput;
+  formState: Record<string, JsonValue>;
+  setFormState: (
+    fn: (currentState: Record<string, JsonValue>) => Record<string, JsonValue>,
+  ) => void;
+  setSecrets: (
+    fn: (currentState: Record<string, string>) => Record<string, string>,
+  ) => void;
+};
 
 // @alpha (undocumented)
 export function ScaffolderPageContextMenu(
@@ -340,7 +418,7 @@ export const useFormDataFromQuery: (
 
 // @alpha (undocumented)
 export const useTemplateParameterSchema: (templateRef: string) => {
-  manifest: TemplateParameterSchema | undefined;
+  manifest: TemplateParameterSchema_2 | undefined;
   loading: boolean;
   error: Error | undefined;
 };
@@ -411,7 +489,10 @@ export type WorkflowProps = {
 // src/next/components/Workflow/Workflow.d.ts:7:1 - (ae-undocumented) Missing documentation for "WorkflowProps".
 // src/next/components/Workflow/Workflow.d.ts:20:22 - (ae-undocumented) Missing documentation for "Workflow".
 // src/next/components/Workflow/Workflow.d.ts:24:22 - (ae-undocumented) Missing documentation for "EmbeddableWorkflow".
-// src/next/hooks/useTemplateParameterSchema.d.ts:5:22 - (ae-undocumented) Missing documentation for "useTemplateParameterSchema".
+// src/next/extensions/createScaffolderFormDecorator.d.ts:4:1 - (ae-undocumented) Missing documentation for "ScaffolderFormDecoratorContext".
+// src/next/extensions/createScaffolderFormDecorator.d.ts:10:1 - (ae-undocumented) Missing documentation for "ScaffolderFormDecorator".
+// src/next/hooks/useTemplateParameterSchema.d.ts:4:22 - (ae-undocumented) Missing documentation for "useTemplateParameterSchema".
+// src/next/hooks/useTemplateParameterSchema.d.ts:5:5 - (ae-forgotten-export) The symbol "TemplateParameterSchema_2" needs to be exported by the entry point alpha.d.ts
 // src/next/hooks/useTemplateSchema.d.ts:10:5 - (ae-undocumented) Missing documentation for "uiSchema".
 // src/next/hooks/useTemplateSchema.d.ts:11:5 - (ae-undocumented) Missing documentation for "mergedSchema".
 // src/next/hooks/useTemplateSchema.d.ts:12:5 - (ae-undocumented) Missing documentation for "schema".

@@ -538,6 +538,10 @@ export type TemplateParameterSchema = {
     description?: string;
     schema: JsonObject;
   }>;
+  EXPERIMENTAL_formDecorators?: {
+    id: string;
+    input?: JsonObject;
+  }[];
 };
 
 // @public
@@ -595,8 +599,8 @@ export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets;
 // src/extensions/types.d.ts:30:5 - (ae-undocumented) Missing documentation for ""ui:options"".
 // src/layouts/createScaffolderLayout.d.ts:16:5 - (ae-undocumented) Missing documentation for "name".
 // src/layouts/createScaffolderLayout.d.ts:17:5 - (ae-undocumented) Missing documentation for "component".
-// src/secrets/SecretsContext.d.ts:14:5 - (ae-undocumented) Missing documentation for "setSecrets".
-// src/secrets/SecretsContext.d.ts:15:5 - (ae-undocumented) Missing documentation for "secrets".
+// src/secrets/SecretsContext.d.ts:21:5 - (ae-undocumented) Missing documentation for "setSecrets".
+// src/secrets/SecretsContext.d.ts:22:5 - (ae-undocumented) Missing documentation for "secrets".
 // src/utils.d.ts:4:1 - (ae-undocumented) Missing documentation for "makeFieldSchema".
 // src/utils.d.ts:15:5 - (ae-undocumented) Missing documentation for "type".
 // src/utils.d.ts:17:5 - (ae-undocumented) Missing documentation for "uiOptionsType".

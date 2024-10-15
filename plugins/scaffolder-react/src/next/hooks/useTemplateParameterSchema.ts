@@ -17,20 +17,23 @@
 import useAsync from 'react-use/esm/useAsync';
 import { scaffolderApiRef } from '../../api/ref';
 import { useApi } from '@backstage/core-plugin-api';
-import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
 
 /**
  * @alpha
  */
 export const useTemplateParameterSchema = (templateRef: string) => {
   const scaffolderApi = useApi(scaffolderApiRef);
-  const { value, loading, error } = useAsync(
+  const {
+    value: manifest,
+    loading,
+    error,
+  } = useAsync(
     () => scaffolderApi.getTemplateParameterSchema(templateRef),
     [scaffolderApi, templateRef],
   );
 
   return {
-    manifest: value as TemplateParameterSchema | undefined,
+    manifest,
     loading,
     error,
   };
