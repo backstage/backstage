@@ -22,7 +22,6 @@ import {
   CreatedTemplateGlobal,
   CreatedTemplateGlobalFunction,
   CreatedTemplateGlobalValue,
-  TemplateFilterSchema,
   TemplateGlobalFunctionSchema,
 } from '@backstage/plugin-scaffolder-node/alpha';
 import { JsonValue } from '@backstage/types';
@@ -30,18 +29,20 @@ import { Schema } from 'jsonschema';
 import {
   filter,
   fromPairs,
+  isEmpty,
   keyBy,
   mapValues,
   negate,
   pick,
   pickBy,
   toPairs,
+  wrap,
 } from 'lodash';
-import { z, ZodTuple, ZodType } from 'zod';
+import { z, ZodType } from 'zod';
 import zodToJsonSchema from 'zod-to-json-schema';
 
 export function templateFilterImpls(
-  filters?: Record<string, TemplateFilter> | CreatedTemplateFilter[],
+  filters?: Record<string, TemplateFilter> | CreatedTemplateFilter<any, any>[],
 ): Record<string, TemplateFilter> {
   if (!filters) {
     return {};
@@ -52,52 +53,51 @@ export function templateFilterImpls(
   return filters;
 }
 
-type Z2JS<S extends TemplateFilterSchema | TemplateGlobalFunctionSchema> = {
+type ExportFunctionSchema = {
   arguments?: Schema[];
   output?: Schema;
-} & (S extends TemplateFilterSchema
-  ? {
-      input?: Schema;
-    }
-  : {});
+};
 
-function z2js<S extends TemplateFilterSchema | TemplateGlobalFunctionSchema>(
-  schema: S,
-): Z2JS<S> {
-  let withArgs: Partial<Z2JS<S>>;
-  if (schema.arguments) {
-    const args = schema.arguments(z);
-    if (args instanceof ZodTuple) {
-      const items = args.items as ZodType[];
-      withArgs = {
-        arguments: items.map(zt => zodToJsonSchema(zt as ZodType) as Schema),
-      };
-    } else {
-      withArgs = { arguments: [zodToJsonSchema(args) as Schema] };
-    }
-  } else {
-    withArgs = {};
-  }
-  const input = Object.hasOwn(schema, 'input')
-    ? zodToJsonSchema((schema as TemplateFilterSchema).input!(z))
-    : undefined;
-  const output = Object.hasOwn(schema, 'output')
-    ? zodToJsonSchema(schema.output!(z))
-    : undefined;
+type ExportFilterSchema = {
+  input?: Schema;
+} & ExportFunctionSchema;
 
-  return pickBy({
-    input,
-    output,
-    ...withArgs,
-  }) as Z2JS<S>;
+function zodFunctionToJsonSchema(
+  t: ReturnType<TemplateGlobalFunctionSchema<any, any>>,
+): ExportFunctionSchema {
+  const args = (t.parameters().items as ZodType[]).map(
+    zt => zodToJsonSchema(zt) as Schema,
+  );
+  const output = wrap(t.returnType(), rt =>
+    rt._unknown ? undefined : (zodToJsonSchema(rt) as Schema),
+  )();
+  return pickBy({ output, arguments: args }, negate(isEmpty));
 }
 
-type ExportFilter = Pick<CreatedTemplateFilter, 'description' | 'examples'> & {
-  schema?: Z2JS<TemplateFilterSchema>;
+function toExportFilterSchema(
+  fnSchema: ExportFunctionSchema,
+): ExportFilterSchema {
+  if (fnSchema.arguments?.length) {
+    const [input, ...rest] = fnSchema.arguments;
+    const { output } = fnSchema;
+    return {
+      input,
+      ...(rest.length ? { arguments: rest } : {}),
+      ...(output ? { output } : {}),
+    };
+  }
+  return fnSchema;
+}
+
+type ExportFilter = Pick<
+  CreatedTemplateFilter<any, any>,
+  'description' | 'examples'
+> & {
+  schema?: ExportFilterSchema;
 };
 
 export function templateFilterMetadata(
-  filters?: Record<string, TemplateFilter> | CreatedTemplateFilter[],
+  filters?: Record<string, TemplateFilter> | CreatedTemplateFilter<any, any>[],
 ): Record<string, ExportFilter> {
   if (!filters) {
     return {};
@@ -106,7 +106,9 @@ export function templateFilterMetadata(
     return mapValues(
       keyBy(filters, 'id'),
       <F extends CreatedTemplateFilter<any, any>>(f: F): ExportFilter => {
-        const schema = f.schema ? z2js(f.schema) : undefined;
+        const schema = f.schema
+          ? toExportFilterSchema(zodFunctionToJsonSchema(f.schema(z)))
+          : undefined;
         return {
           ...pick(f, 'description', 'examples'),
           ...pickBy({ schema }),
@@ -119,7 +121,10 @@ export function templateFilterMetadata(
 
 function isGlobalFunctionInfo(
   global: CreatedTemplateGlobal,
-): global is CreatedTemplateGlobalFunction {
+): global is CreatedTemplateGlobalFunction<
+  TemplateGlobalFunctionSchema<any, any> | undefined,
+  any
+> {
   return Object.hasOwn(global, 'fn');
 }
 
@@ -127,13 +132,21 @@ type GlobalRecordRow = [string, TemplateGlobal];
 
 export function templateGlobalFunctionMetadata(
   globals?: Record<string, TemplateGlobal> | CreatedTemplateGlobal[],
-): Record<string, Omit<CreatedTemplateGlobalFunction, 'id' | 'fn'>> {
+): Record<
+  string,
+  Omit<CreatedTemplateGlobalFunction<any, any>, 'id' | 'fn' | 'schema'> & {
+    schema?: ExportFunctionSchema;
+  }
+> {
   if (!globals) {
     return {};
   }
   if (Array.isArray(globals)) {
     return mapValues(keyBy(filter(globals, isGlobalFunctionInfo), 'id'), v => {
-      const schema = v.schema ? z2js(v.schema) : undefined;
+      const schema = v.schema
+        ? zodFunctionToJsonSchema(v.schema(z))
+        : undefined;
+
       return {
         ...pick(v, 'description', 'examples'),
         ...pickBy({ schema }),
@@ -185,7 +198,7 @@ export function templateGlobals(
   }
   return mapValues(keyBy(globals, 'id'), v =>
     isGlobalFunctionInfo(v)
-      ? (v.fn as Exclude<TemplateGlobal, JsonValue>)
-      : v.value,
+      ? (v.fn as TemplateGlobal)
+      : (v as CreatedTemplateGlobalValue).value,
   );
 }

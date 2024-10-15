@@ -28,7 +28,8 @@ import {
   CreatedTemplateFilter,
   CreatedTemplateGlobal,
   createTemplateFilter,
-  createTemplateGlobal,
+  createTemplateGlobalFunction,
+  createTemplateGlobalValue,
   scaffolderActionsExtensionPoint,
   scaffolderAutocompleteExtensionPoint,
   scaffolderTaskBrokerExtensionPoint,
@@ -99,12 +100,9 @@ export const scaffolderPlugin = createBackendPlugin({
           ...(Array.isArray(newGlobals)
             ? newGlobals
             : Object.entries(newGlobals).map(([id, global]) =>
-                createTemplateGlobal({
-                  id,
-                  ...(typeof global === 'function'
-                    ? { fn: global }
-                    : { value: global }),
-                }),
+                typeof global === 'function'
+                  ? createTemplateGlobalFunction({ id, fn: global })
+                  : createTemplateGlobalValue({ id, value: global }),
               )),
         );
       },
