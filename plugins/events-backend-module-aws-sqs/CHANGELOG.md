@@ -1,5 +1,61 @@
 # @backstage/plugin-events-backend-module-aws-sqs
 
+## 0.4.3
+
+### Patch Changes
+
+- 094eaa3: Remove references to in-repo backend-common
+- 3109c24: The export for the new backend system at the `/alpha` export is now also available via the main entry point, which means that you can remove the `/alpha` suffix from the import.
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.1
+  - @backstage/backend-plugin-api@1.0.1
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
+## 0.4.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.1-next.1
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-events-node@0.4.1-next.1
+
+## 0.4.3-next.0
+
+### Patch Changes
+
+- 094eaa3: Remove references to in-repo backend-common
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.1-next.0
+  - @backstage/backend-plugin-api@1.0.1-next.0
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
+## 0.4.2
+
+### Patch Changes
+
+- d425fc4: Modules, plugins, and services are now `BackendFeature`, not a function that returns a feature.
+- Updated dependencies
+  - @backstage/backend-common@0.25.0
+  - @backstage/backend-plugin-api@1.0.0
+  - @backstage/plugin-events-node@0.4.0
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
+## 0.4.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.25.0-next.2
+  - @backstage/backend-plugin-api@1.0.0-next.2
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-events-node@0.4.0-next.2
+
 ## 0.4.2-next.1
 
 ### Patch Changes

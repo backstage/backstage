@@ -25,13 +25,6 @@ const configOption = [
   Array<string>(),
 ] as const;
 
-export function registerOnboardCommand(program: Command) {
-  program
-    .command('onboard', { hidden: true })
-    .description('Get help setting up your Backstage App.')
-    .action(lazy(() => import('./onboard').then(m => m.command)));
-}
-
 export function registerRepoCommand(program: Command) {
   const command = program
     .command('repo [command]')
@@ -50,6 +43,10 @@ export function registerRepoCommand(program: Command) {
       '--since <ref>',
       'Only build packages and their dev dependents that changed since the specified ref',
     )
+    .option(
+      '--minify',
+      'Minify the generated code. Does not apply to app package (app is minified by default).',
+    )
     .action(lazy(() => import('./repo/build').then(m => m.command)));
 
   command
@@ -63,6 +60,14 @@ export function registerRepoCommand(program: Command) {
     .option(
       '--since <ref>',
       'Only lint packages that changed since the specified ref',
+    )
+    .option(
+      '--successCache',
+      'Enable success caching, which skips running tests for unchanged packages that were successful in the previous run',
+    )
+    .option(
+      '--successCacheDir <path>',
+      'Set the success cache location, (default: node_modules/.cache/backstage-cli)',
     )
     .option('--fix', 'Attempt to automatically fix violations')
     .action(lazy(() => import('./repo/lint').then(m => m.command)));
@@ -99,6 +104,14 @@ export function registerRepoCommand(program: Command) {
     .option(
       '--since <ref>',
       'Only test packages that changed since the specified ref',
+    )
+    .option(
+      '--successCache',
+      'Enable success caching, which skips running tests for unchanged packages that were successful in the previous run',
+    )
+    .option(
+      '--successCacheDir <path>',
+      'Set the success cache location, (default: node_modules/.cache/backstage-cli)',
     )
     .option(
       '--jest-help',
@@ -159,6 +172,10 @@ export function registerScriptCommand(program: Command) {
       'eslint-formatter-friendly',
     )
     .option('--fix', 'Attempt to automatically fix violations')
+    .option(
+      '--max-warnings <number>',
+      'Fail if more than this number of warnings (default: 0)',
+    )
     .description('Lint a package')
     .action(lazy(() => import('./lint').then(m => m.default)));
 
@@ -262,63 +279,6 @@ export function registerCommands(program: Command) {
     .action(lazy(() => import('./new/new').then(m => m.default)));
 
   program
-    .command('create', { hidden: true })
-    .storeOptionsAsProperties(false)
-    .description(
-      'Open up an interactive guide to creating new things in your app [DEPRECATED]',
-    )
-    .option(
-      '--select <name>',
-      'Select the thing you want to be creating upfront',
-    )
-    .option(
-      '--option <name>=<value>',
-      'Pre-fill options for the creation process',
-      (opt, arr: string[]) => [...arr, opt],
-      [],
-    )
-    .option('--scope <scope>', 'The scope to use for new packages')
-    .option(
-      '--npm-registry <URL>',
-      'The package registry to use for new packages',
-    )
-    .option('--no-private', 'Do not mark new packages as private')
-    .action(lazy(() => import('./new/new').then(m => m.default)));
-
-  program
-    .command('create-plugin', { hidden: true })
-    .option(
-      '--backend',
-      'Create plugin with the backend dependencies as default',
-    )
-    .description('Creates a new plugin in the current repository [DEPRECATED]')
-    .option('--scope <scope>', 'npm scope')
-    .option('--npm-registry <URL>', 'npm registry URL')
-    .option('--no-private', 'Public npm package')
-    .action(
-      lazy(() => import('./create-plugin/createPlugin').then(m => m.default)),
-    );
-
-  program
-    .command('plugin:diff', { hidden: true })
-    .option('--check', 'Fail if changes are required')
-    .option('--yes', 'Apply all changes')
-    .description(
-      'Diff an existing plugin with the creation template [DEPRECATED]',
-    )
-    .action(lazy(() => import('./plugin/diff').then(m => m.default)));
-
-  // TODO(Rugvip): Deprecate in favor of package variant
-  program
-    .command('test')
-    .allowUnknownOption(true) // Allows the command to run, but we still need to parse raw args
-    .helpOption(', --backstage-cli-help') // Let Jest handle help
-    .description(
-      'Run tests, forwarding args to Jest, defaulting to watch mode [DEPRECATED]',
-    )
-    .action(lazy(() => import('./test').then(m => m.default)));
-
-  program
     .command('config:docs')
     .option(
       '--package <name>',
@@ -381,7 +341,6 @@ export function registerCommands(program: Command) {
   registerRepoCommand(program);
   registerScriptCommand(program);
   registerMigrateCommand(program);
-  registerOnboardCommand(program);
 
   program
     .command('versions:bump')
@@ -400,12 +359,6 @@ export function registerCommands(program: Command) {
     .action(lazy(() => import('./versions/bump').then(m => m.default)));
 
   program
-    .command('versions:check', { hidden: true })
-    .option('--fix', 'Fix any auto-fixable versioning problems')
-    .description('Check Backstage package versioning')
-    .action(lazy(() => import('./versions/lint').then(m => m.default)));
-
-  program
     .command('versions:migrate')
     .option(
       '--pattern <glob>',
@@ -419,12 +372,6 @@ export function registerCommands(program: Command) {
       'Migrate any plugins that have been moved to the @backstage-community namespace automatically',
     )
     .action(lazy(() => import('./versions/migrate').then(m => m.default)));
-
-  // TODO(Rugvip): Deprecate in favor of package variant
-  program
-    .command('clean')
-    .description('Delete cache directories [DEPRECATED]')
-    .action(lazy(() => import('./clean/clean').then(m => m.default)));
 
   program
     .command('build-workspace <workspace-dir> [packages...]')
@@ -445,14 +392,48 @@ export function registerCommands(program: Command) {
     .description('Show helpful information for debugging and reporting bugs')
     .action(lazy(() => import('./info').then(m => m.default)));
 
+  // Notifications for removed commands
   program
-    .command('install [plugin-id]', { hidden: true })
-    .option(
-      '--from <packageJsonFilePath>',
-      'Install from a local package.json containing the installation recipe',
-    )
-    .description('Install a Backstage plugin [EXPERIMENTAL]')
-    .action(lazy(() => import('./install/install').then(m => m.default)));
+    .command('create')
+    .allowUnknownOption(true)
+    .action(removed("use 'backstage-cli new' instead"));
+  program
+    .command('create-plugin')
+    .allowUnknownOption(true)
+    .action(removed("use 'backstage-cli new' instead"));
+  program
+    .command('plugin:diff')
+    .allowUnknownOption(true)
+    .action(removed("use 'backstage-cli fix' instead"));
+  program
+    .command('test')
+    .allowUnknownOption(true)
+    .action(
+      removed(
+        "use 'backstage-cli repo test' or 'backstage-cli package test' instead",
+      ),
+    );
+  program
+    .command('clean')
+    .allowUnknownOption(true)
+    .action(removed("use 'backstage-cli package clean' instead"));
+  program
+    .command('versions:check')
+    .allowUnknownOption(true)
+    .action(removed("use 'yarn dedupe' or 'yarn-deduplicate' instead"));
+  program.command('install').allowUnknownOption(true).action(removed());
+  program.command('onboard').allowUnknownOption(true).action(removed());
+}
+
+function removed(message?: string) {
+  return () => {
+    console.error(
+      message
+        ? `This command has been removed, ${message}`
+        : 'This command has been removed',
+    );
+    process.exit(1);
+  };
 }
 
 // Wraps an action function so that it always exits and handles errors

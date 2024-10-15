@@ -1,5 +1,79 @@
 # @backstage/plugin-catalog-backend-module-bitbucket-server
 
+## 0.2.3
+
+### Patch Changes
+
+- 3109c24: The export for the new backend system at the `/alpha` export is now also available via the main entry point, which means that you can remove the `/alpha` suffix from the import.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.13.1
+  - @backstage/integration@1.15.1
+  - @backstage/backend-plugin-api@1.0.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 0.2.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.13.1-next.1
+  - @backstage/integration@1.15.1-next.1
+  - @backstage/backend-plugin-api@1.0.1-next.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 0.2.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.15.1-next.0
+  - @backstage/backend-plugin-api@1.0.1-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-catalog-node@1.13.1-next.0
+
+## 0.2.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.1-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.15.0
+  - @backstage/plugin-catalog-node@1.13.1-next.0
+
+## 0.2.2
+
+### Patch Changes
+
+- d425fc4: Modules, plugins, and services are now `BackendFeature`, not a function that returns a feature.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/plugin-catalog-node@1.13.0
+  - @backstage/integration@1.15.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 0.2.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.0-next.2
+  - @backstage/integration@1.15.0-next.0
+  - @backstage/catalog-model@1.6.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-catalog-node@1.12.7-next.2
+
 ## 0.2.2-next.1
 
 ### Patch Changes

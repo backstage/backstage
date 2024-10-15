@@ -1,5 +1,118 @@
 # @backstage/plugin-user-settings
 
+## 0.8.14
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- 0040632: `useUserProfile` will now use the user's picture stored in the catalog as a fallback if the identity provider doesn't return a picture.
+- Updated dependencies
+  - @backstage/core-components@0.15.1
+  - @backstage/frontend-plugin-api@0.9.0
+  - @backstage/plugin-signals-react@0.0.6
+  - @backstage/core-compat-api@0.3.1
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/core-app-api@1.15.1
+  - @backstage/plugin-catalog-react@1.14.0
+  - @backstage/theme@0.6.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.14-next.2
+
+### Patch Changes
+
+- 0040632: `useUserProfile` will now use the user's picture stored in the catalog as a fallback if the identity provider doesn't return a picture.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.14.0-next.2
+  - @backstage/theme@0.6.0-next.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-app-api@1.15.1-next.1
+  - @backstage/core-compat-api@0.3.1-next.2
+  - @backstage/core-components@0.15.1-next.2
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-plugin-api@0.9.0-next.2
+  - @backstage/types@1.1.1
+  - @backstage/plugin-signals-react@0.0.6-next.1
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.14-next.1
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- Updated dependencies
+  - @backstage/core-components@0.15.1-next.1
+  - @backstage/plugin-signals-react@0.0.6-next.1
+  - @backstage/frontend-plugin-api@0.9.0-next.1
+  - @backstage/core-compat-api@0.3.1-next.1
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/core-app-api@1.15.1-next.1
+  - @backstage/plugin-catalog-react@1.14.0-next.1
+  - @backstage/theme@0.5.8-next.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.0-next.0
+  - @backstage/core-compat-api@0.3.1-next.0
+  - @backstage/core-components@0.15.1-next.0
+  - @backstage/core-plugin-api@1.10.0-next.0
+  - @backstage/plugin-catalog-react@1.13.1-next.0
+  - @backstage/core-app-api@1.15.1-next.0
+  - @backstage/errors@1.2.4
+  - @backstage/theme@0.5.7
+  - @backstage/types@1.1.1
+  - @backstage/plugin-signals-react@0.0.6-next.0
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.12
+
+### Patch Changes
+
+- fec8b57: Updated exports to use the new type parameters for extensions and extension blueprints.
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- da86ac2: Update README to clarify location of additional tabs example
+- Updated dependencies
+  - @backstage/core-components@0.15.0
+  - @backstage/plugin-catalog-react@1.13.0
+  - @backstage/frontend-plugin-api@0.8.0
+  - @backstage/core-app-api@1.15.0
+  - @backstage/core-compat-api@0.3.0
+  - @backstage/core-plugin-api@1.9.4
+  - @backstage/theme@0.5.7
+  - @backstage/plugin-signals-react@0.0.5
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.12-next.2
+
+### Patch Changes
+
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- da86ac2: Update README to clarify location of additional tabs example
+- Updated dependencies
+  - @backstage/core-components@0.14.11-next.1
+  - @backstage/plugin-catalog-react@1.13.0-next.2
+  - @backstage/core-app-api@1.14.3-next.0
+  - @backstage/core-compat-api@0.3.0-next.2
+  - @backstage/core-plugin-api@1.9.4-next.0
+  - @backstage/frontend-plugin-api@0.8.0-next.2
+  - @backstage/theme@0.5.7-next.0
+  - @backstage/plugin-signals-react@0.0.5-next.1
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-user-settings-common@0.0.1
+
 ## 0.8.12-next.1
 
 ### Patch Changes

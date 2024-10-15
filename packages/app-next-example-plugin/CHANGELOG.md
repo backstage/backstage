@@ -1,5 +1,53 @@
 # app-next-example-plugin
 
+## 0.0.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.15.1
+  - @backstage/frontend-plugin-api@0.9.0
+
+## 0.0.16-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.15.1-next.2
+  - @backstage/frontend-plugin-api@0.9.0-next.2
+
+## 0.0.16-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.15.1-next.1
+  - @backstage/frontend-plugin-api@0.9.0-next.1
+
+## 0.0.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.0-next.0
+  - @backstage/core-components@0.15.1-next.0
+
+## 0.0.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.15.0
+  - @backstage/frontend-plugin-api@0.8.0
+
+## 0.0.15-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.11-next.1
+  - @backstage/frontend-plugin-api@0.8.0-next.2
+
 ## 0.0.15-next.1
 
 ### Patch Changes

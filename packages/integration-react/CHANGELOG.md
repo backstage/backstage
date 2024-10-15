@@ -1,5 +1,79 @@
 # @backstage/integration-react
 
+## 1.2.0
+
+### Minor Changes
+
+- a11495a: Added new ScmAuth method `forBitbucketServer` that uses correct OAuth scopes by default. Also updated `forBitbucket` method to allow overriding the default OAuth scopes.
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- 3dbac17: Revert of change #26430
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/integration@1.15.1
+  - @backstage/config@1.2.0
+
+## 1.2.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.15.1-next.1
+  - @backstage/config@1.2.0
+  - @backstage/core-plugin-api@1.10.0-next.1
+
+## 1.2.0-next.1
+
+### Minor Changes
+
+- a11495a: Added new ScmAuth method `forBitbucketServer` that uses correct OAuth scopes by default. Also updated `forBitbucket` method to allow overriding the default OAuth scopes.
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- 3dbac17: Revert of change #26430
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/integration@1.15.1-next.0
+  - @backstage/config@1.2.0
+
+## 1.1.32-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.0-next.0
+  - @backstage/config@1.2.0
+  - @backstage/integration@1.15.0
+
+## 1.1.31
+
+### Patch Changes
+
+- 8a9d797: Remove unnecessary broad permissions from Gitlab `SCMAuth`
+
+  Newer versions of Gitlab (after 2019) do not require the broad api permissions to write to repos.
+
+- Updated dependencies
+  - @backstage/integration@1.15.0
+  - @backstage/core-plugin-api@1.9.4
+  - @backstage/config@1.2.0
+
+## 1.1.31-next.0
+
+### Patch Changes
+
+- 8a9d797: Remove unnecessary broad permissions from Gitlab `SCMAuth`
+
+  Newer versions of Gitlab (after 2019) do not require the broad api permissions to write to repos.
+
+- Updated dependencies
+  - @backstage/integration@1.15.0-next.0
+  - @backstage/core-plugin-api@1.9.4-next.0
+  - @backstage/config@1.2.0
+
 ## 1.1.30
 
 ### Patch Changes

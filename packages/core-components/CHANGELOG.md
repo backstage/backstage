@@ -1,5 +1,103 @@
 # @backstage/core-components
 
+## 0.15.1
+
+### Patch Changes
+
+- 3f76d0e: Correct size of FavoriteToggle and inherit non-starred color from parent
+- e969dc7: Move `@types/react` to a peer dependency.
+- 1ff1dbd: It is possible to define a custom error element to be shown when sign in fails
+- 83e2887: Fixed a bug in the `SidebarSubmenu` core component that caused the nested menu to overlap with the sidebar when the user hovers over the pinned sidebar.
+- 46b5a20: `Link` component now accepts `externalLinkIcon` prop
+- e4ad29a: Fix authentication error handling using redirect flow via `enableExperimentalRedirectFlow` config. If an error is caught during authentication, the user is redirected back to app origin with `error` query parameter containing the error message.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/version-bridge@1.0.10
+  - @backstage/theme@0.6.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 0.15.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.0-next.1
+  - @backstage/config@1.2.0
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/errors@1.2.4
+  - @backstage/version-bridge@1.0.10-next.0
+
+## 0.15.1-next.1
+
+### Patch Changes
+
+- 3f76d0e: Correct size of FavoriteToggle and inherit non-starred color from parent
+- e969dc7: Move `@types/react` to a peer dependency.
+- 83e2887: Fixed a bug in the `SidebarSubmenu` core component that caused the nested menu to overlap with the sidebar when the user hovers over the pinned sidebar.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/version-bridge@1.0.10-next.0
+  - @backstage/theme@0.5.8-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 0.15.1-next.0
+
+### Patch Changes
+
+- 46b5a20: `Link` component now accepts `externalLinkIcon` prop
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.0-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/theme@0.5.7
+  - @backstage/version-bridge@1.0.9
+
+## 0.15.0
+
+### Minor Changes
+
+- 9adc552: Added missing items to `overridableComponents`
+
+  **BREAKING** Overridable component name for styling `OAuthRequestDialog` changed to `BackstageOAuthRequestDialog`. Overridable component name `BackstageMissingAnnotationEmptyState` that was previously deprecated has been removed.
+
+### Patch Changes
+
+- c891b69: Add `FavoriteToggle` in `core-components` to standardise favorite marking
+- 0944334: Removed default title set to Unknown page on `ContentHeaderTitle` component to support usage of component without title prop.
+- f325258: Use getOptionalString for optional app.support.items[].links[].title
+- af4c146: Support menu items should not be buttons in favour of links
+- 107a147: Fixed `Table` width being overridden by custom `style` prop.
+- b537bd7: Allow custom star icons to be provided via the `star` and `unstarred` icon overrides. See how to override existing icons in the [Backstage documentation](https://backstage.io/docs/getting-started/app-custom-theme/#custom-icons).
+- 06b8206: Added `titleComponent` prop to `SignInPage` component to allow further customization of the title using `ReactNode`
+- dbbd93e: Internal update to match recent React types
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.4
+  - @backstage/theme@0.5.7
+  - @backstage/version-bridge@1.0.9
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 0.14.11-next.1
+
+### Patch Changes
+
+- c891b69: Add `FavoriteToggle` in `core-components` to standardise favorite marking
+- 0944334: Removed default title set to Unknown page on `ContentHeaderTitle` component to support usage of component without title prop.
+- f325258: Use getOptionalString for optional app.support.items[].links[].title
+- af4c146: Support menu items should not be buttons in favour of links
+- b537bd7: Allow custom star icons to be provided via the `star` and `unstarred` icon overrides. See how to override existing icons in the [Backstage documentation](https://backstage.io/docs/getting-started/app-custom-theme/#custom-icons).
+- dbbd93e: Internal update to match recent React types
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.4-next.0
+  - @backstage/theme@0.5.7-next.0
+  - @backstage/version-bridge@1.0.9-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 0.14.11-next.0
 
 ### Patch Changes

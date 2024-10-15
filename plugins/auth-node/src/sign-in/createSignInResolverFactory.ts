@@ -18,10 +18,11 @@ import { ZodSchema, ZodTypeDef } from 'zod';
 import { SignInResolver } from '../types';
 import zodToJsonSchema from 'zod-to-json-schema';
 import { JsonObject } from '@backstage/types';
+import { fromError } from 'zod-validation-error';
 import { InputError } from '@backstage/errors';
 
 /** @public */
-export interface SignInResolverFactory<TAuthResult, TOptions> {
+export interface SignInResolverFactory<TAuthResult = any, TOptions = any> {
   (
     ...options: undefined extends TOptions
       ? [options?: TOptions]
@@ -66,7 +67,14 @@ export function createSignInResolverFactory<
       ? [options?: TOptionsInput]
       : [options: TOptionsInput]
   ) => {
-    const parsedOptions = optionsSchema.parse(resolverOptions);
+    let parsedOptions;
+    try {
+      parsedOptions = optionsSchema.parse(resolverOptions);
+    } catch (error) {
+      throw new InputError(
+        `Invalid sign-in resolver options, ${fromError(error)}`,
+      );
+    }
     return options.create(parsedOptions);
   };
 

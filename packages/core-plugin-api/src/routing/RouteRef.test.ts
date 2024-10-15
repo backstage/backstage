@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AnyParams, RouteRef } from './types';
+import { AnyParams, RouteRef, ParamKeys } from './types';
 import { createRouteRef } from './RouteRef';
 
 describe('RouteRef', () => {
@@ -54,7 +54,7 @@ describe('RouteRef', () => {
     validateType<undefined>(_2);
     // @ts-expect-error
     validateType<{ x: string; z: string }>(_2);
-    // extra z, we validate this at runtime instead
+    // @ts-expect-error
     validateType<{ x: string; y: string; z: string }>(_2);
     validateType<{ x: string; y: string }>(_2);
 
@@ -70,5 +70,29 @@ describe('RouteRef', () => {
 
     // To avoid complains about missing expectations and unused vars
     expect([_1, _2, _3, _4].join('')).toEqual(expect.any(String));
+  });
+
+  it('should properly infer param keys', () => {
+    function validateType<T>(_test: T) {}
+
+    validateType<ParamKeys<{ x: string; y: string }>>(['x', 'y']);
+
+    // @ts-expect-error
+    validateType<ParamKeys<{}>>(['foo']);
+    validateType<ParamKeys<{}>>([]);
+
+    // @ts-expect-error
+    validateType<ParamKeys<{ [key in string]: string }>>([1]);
+    validateType<ParamKeys<{ [key in string]: string }>>(['foo']);
+
+    // @ts-expect-error
+    validateType<ParamKeys<{ [key in string]: string } | undefined>>([1]);
+    validateType<ParamKeys<{ [key in string]: string } | undefined>>(['foo']);
+
+    // @ts-expect-error
+    validateType<ParamKeys<undefined>>(['foo']);
+    validateType<ParamKeys<undefined>>([]);
+
+    expect(true).toBeDefined();
   });
 });

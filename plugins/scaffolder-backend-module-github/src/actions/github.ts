@@ -115,6 +115,7 @@ export function createPublishGithubAction(options: {
       includeClaimKeys?: string[];
     };
     requiredCommitSigning?: boolean;
+    customProperties?: { [key: string]: string };
   }>({
     id: 'publish:github',
     description:
@@ -164,6 +165,7 @@ export function createPublishGithubAction(options: {
           secrets: inputProps.secrets,
           oidcCustomization: inputProps.oidcCustomization,
           requiredCommitSigning: inputProps.requiredCommitSigning,
+          customProperties: inputProps.customProperties,
         },
       },
       output: {
@@ -213,6 +215,7 @@ export function createPublishGithubAction(options: {
         secrets,
         oidcCustomization,
         token: providedToken,
+        customProperties,
         requiredCommitSigning = false,
       } = ctx.input;
 
@@ -253,6 +256,7 @@ export function createPublishGithubAction(options: {
         repoVariables,
         secrets,
         oidcCustomization,
+        customProperties,
         ctx.logger,
       );
 

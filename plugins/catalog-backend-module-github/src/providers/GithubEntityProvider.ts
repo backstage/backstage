@@ -472,7 +472,6 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
    * Removes all entities associated with the repository.
    *
    * @param event - The repository archived event.
-   * @private
    */
   private async onRepoArchived(event: RepositoryArchivedEvent) {
     const repository = this.createRepoFromEvent(event);
@@ -488,7 +487,6 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
    * Removes all entities associated with the repository.
    *
    * @param event - The repository deleted event.
-   * @private
    */
   private async onRepoDeleted(event: RepositoryDeletedEvent) {
     const repository = this.createRepoFromEvent(event);
@@ -506,7 +504,6 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
    * Removes all entities associated with the repository if the repository no longer matches the filters.
    *
    * @param event - The repository edited event.
-   * @private
    */
   private async onRepoEdited(event: RepositoryEditedEvent) {
     const repository = this.createRepoFromEvent(event);
@@ -525,7 +522,6 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
    * Creates new entities for the repository's new name if it still matches the filters.
    *
    * @param event - The repository renamed event.
-   * @private
    */
   private async onRepoRenamed(event: RepositoryRenamedEvent) {
     const repository = this.createRepoFromEvent(event);
@@ -560,7 +556,6 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
    * Creates new entities for the repository if it matches the filters.
    *
    * @param event - The repository unarchived event.
-   * @private
    */
   private async onRepoTransferred(event: RepositoryTransferredEvent) {
     const repository = this.createRepoFromEvent(event);
@@ -582,7 +577,6 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
    * Creates new entities for the repository if it matches the filters.
    *
    * @param event - The repository unarchived event.
-   * @private
    */
   private async onRepoUnarchived(event: RepositoryUnarchivedEvent) {
     const repository = this.createRepoFromEvent(event);

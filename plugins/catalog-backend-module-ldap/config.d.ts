@@ -409,6 +409,20 @@ export interface Config {
               members?: string;
             };
           }>;
+      /**
+       *  Configuration for overriding the vendor-specific default attribute names.
+       */
+      vendor?: {
+        /**
+         * Attribute name for the distinguished name (DN) of an entry,
+         */
+        dnAttributeName?: string;
+
+        /**
+         * Attribute name for the unique identifier (UUID) of an entry,
+         */
+        uuidAttributeName?: string;
+      };
     }>;
   };
 
@@ -638,6 +652,20 @@ export interface Config {
               members?: string;
             };
           };
+          /**
+           *  Configuration for overriding the vendor-specific default attribute names.
+           */
+          vendor?: {
+            /**
+             * Attribute name for the distinguished name (DN) of an entry,
+             */
+            dnAttributeName?: string;
+
+            /**
+             * Attribute name for the unique identifier (UUID) of an entry,
+             */
+            uuidAttributeName?: string;
+          };
         };
       };
     };
@@ -864,6 +892,20 @@ export interface Config {
                */
               members?: string;
             };
+          };
+          /**
+           *  Configuration for overriding the vendor-specific default attribute names.
+           */
+          vendor?: {
+            /**
+             * Attribute name for the distinguished name (DN) of an entry,
+             */
+            dnAttributeName?: string;
+
+            /**
+             * Attribute name for the unique identifier (UUID) of an entry,
+             */
+            uuidAttributeName?: string;
           };
         }>;
       };

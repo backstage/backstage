@@ -1,5 +1,87 @@
 # @backstage/plugin-devtools
 
+## 0.1.19
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- Updated dependencies
+  - @backstage/core-components@0.15.1
+  - @backstage/frontend-plugin-api@0.9.0
+  - @backstage/core-compat-api@0.3.1
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/plugin-permission-react@0.4.27
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-devtools-common@0.1.12
+
+## 0.1.19-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.3.1-next.2
+  - @backstage/core-components@0.15.1-next.2
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-plugin-api@0.9.0-next.2
+  - @backstage/plugin-devtools-common@0.1.12
+  - @backstage/plugin-permission-react@0.4.27-next.1
+
+## 0.1.19-next.1
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- Updated dependencies
+  - @backstage/core-components@0.15.1-next.1
+  - @backstage/frontend-plugin-api@0.9.0-next.1
+  - @backstage/core-compat-api@0.3.1-next.1
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/plugin-permission-react@0.4.27-next.1
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-devtools-common@0.1.12
+
+## 0.1.19-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.0-next.0
+  - @backstage/core-compat-api@0.3.1-next.0
+  - @backstage/core-components@0.15.1-next.0
+  - @backstage/core-plugin-api@1.10.0-next.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-devtools-common@0.1.12
+  - @backstage/plugin-permission-react@0.4.27-next.0
+
+## 0.1.18
+
+### Patch Changes
+
+- fec8b57: Updated exports to use the new type parameters for extensions and extension blueprints.
+- 019d9ad: Minor dockerfile syntax update
+- Updated dependencies
+  - @backstage/core-components@0.15.0
+  - @backstage/frontend-plugin-api@0.8.0
+  - @backstage/core-compat-api@0.3.0
+  - @backstage/core-plugin-api@1.9.4
+  - @backstage/plugin-permission-react@0.4.26
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-devtools-common@0.1.12
+
+## 0.1.18-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.11-next.1
+  - @backstage/core-compat-api@0.3.0-next.2
+  - @backstage/core-plugin-api@1.9.4-next.0
+  - @backstage/frontend-plugin-api@0.8.0-next.2
+  - @backstage/plugin-permission-react@0.4.26-next.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-devtools-common@0.1.12
+
 ## 0.1.18-next.1
 
 ### Patch Changes

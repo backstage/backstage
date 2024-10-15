@@ -24,6 +24,7 @@ import {
 import {
   createBitbucketPipelinesRunAction,
   createPublishBitbucketCloudAction,
+  createPublishBitbucketCloudPullRequestAction,
 } from './actions';
 import { ScmIntegrations } from '@backstage/integration';
 import { handleAutocompleteRequest } from './autocomplete/autocomplete';
@@ -48,6 +49,10 @@ export const bitbucketCloudModule = createBackendModule({
         scaffolder.addActions(
           createPublishBitbucketCloudAction({ integrations, config }),
           createBitbucketPipelinesRunAction({ integrations }),
+          createPublishBitbucketCloudPullRequestAction({
+            integrations,
+            config,
+          }),
         );
 
         autocomplete.addAutocompleteProvider({

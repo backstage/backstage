@@ -148,6 +148,7 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
         includeClaimKeys?: string[];
       }
     | undefined,
+  customProperties: { [key: string]: string } | undefined,
   logger: LoggerService,
 ) {
   // eslint-disable-next-line testing-library/no-await-sync-queries
@@ -179,6 +180,8 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
           has_projects: hasProjects,
           has_wiki: hasWiki,
           has_issues: hasIssues,
+          // Custom properties only available on org repos
+          custom_properties: customProperties,
         })
       : client.rest.repos.createForAuthenticatedUser({
           name: repo,

@@ -80,11 +80,14 @@ const KNOWN_STYLES = [
 
 /**
  * filter function to keep only ImportSpecifier nodes
- * @param {import('estree').ImportSpecifier | import('estree').ImportDefaultSpecifier| import('estree').ImportNamespaceSpecifier} specifier
+ * @param {import('estree').ImportSpecifier | import('estree').ImportDefaultSpecifier | import('estree').ImportNamespaceSpecifier} specifier
  * @returns {specifier is import('estree').ImportSpecifier}
  */
 function importSpecifiersFilter(specifier) {
-  return specifier.type === 'ImportSpecifier';
+  return (
+    specifier.type === 'ImportSpecifier' &&
+    specifier.imported.type !== 'Literal'
+  );
 }
 
 /**
@@ -132,6 +135,8 @@ module.exports = {
       if (!node.source.value.startsWith('@material-ui/')) return;
       // Return if import is from '@material-ui/core/styles', as it's valid already
       if (node.source.value === '@material-ui/core/styles') return;
+      // Ignore the @material-ui/data-grid library which shares this namespace
+      if (node.source.value === '@material-ui/data-grid') return;
       // Return if proper import eg. `import Box from '@material-ui/core/Box'`
       // Or if third level or deeper imports
       if (node.source.value?.split('/').length >= 3) return;
@@ -146,12 +151,16 @@ module.exports = {
 
           const specifiers = node.specifiers.filter(importSpecifiersFilter);
 
-          const specifiersMap = specifiers.map(
+          const specifiersMap = specifiers.flatMap(
             /**
              * transform ImportSpecifier to FixerValues to have a simpler object to work with
-             * @returns {FixerValues}
+             * @returns {FixerValues[]}
              */
             s => {
+              if (s.imported.type === 'Literal') {
+                return [];
+              }
+
               const value = s.imported.name;
               const alias = s.local.name === value ? undefined : s.local.name;
 
@@ -165,19 +174,24 @@ module.exports = {
               const emitComponent = !emitProp;
               const emitComponentAndProp =
                 emitProp &&
-                specifiers.find(s => s.imported.name === propsMatch[1])?.local
-                  .name;
+                specifiers.find(
+                  s =>
+                    s.imported.type !== 'Literal' &&
+                    s.imported.name === propsMatch[1],
+                )?.local.name;
 
-              return {
-                emitComponent: emitComponent || Boolean(emitComponentAndProp),
-                emitProp,
-                value,
-                componentValue: propsMatch ? propsMatch[1] : undefined,
-                componentAlias: emitComponentAndProp
-                  ? emitComponentAndProp
-                  : undefined,
-                alias,
-              };
+              return [
+                {
+                  emitComponent: emitComponent || Boolean(emitComponentAndProp),
+                  emitProp,
+                  value,
+                  componentValue: propsMatch ? propsMatch[1] : undefined,
+                  componentAlias: emitComponentAndProp
+                    ? emitComponentAndProp
+                    : undefined,
+                  alias,
+                },
+              ];
             },
           );
 

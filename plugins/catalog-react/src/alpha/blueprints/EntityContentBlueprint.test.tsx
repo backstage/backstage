@@ -71,7 +71,6 @@ describe('EntityContentBlueprint', () => {
         "inputs": {},
         "kind": "entity-content",
         "name": "test",
-        "namespace": undefined,
         "output": [
           [Function],
           [Function],

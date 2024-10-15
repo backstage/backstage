@@ -1,5 +1,36 @@
 # @backstage/eslint-plugin
 
+## 0.1.10
+
+### Patch Changes
+
+- b1c2a2d: Exclude `@material-ui/data-grid`
+- 63963f6: Internal refactor to deal with `estree` upgrade
+
+## 0.1.10-next.1
+
+### Patch Changes
+
+- b1c2a2d: Exclude `@material-ui/data-grid`
+
+## 0.1.10-next.0
+
+### Patch Changes
+
+- 63963f6: Internal refactor to deal with `estree` upgrade
+
+## 0.1.9
+
+### Patch Changes
+
+- 08895e3: Added support for linting dependencies on workspace packages with the `backstage.inline` flag.
+
+## 0.1.9-next.0
+
+### Patch Changes
+
+- 08895e3: Added support for linting dependencies on workspace packages with the `backstage.inline` flag.
+
 ## 0.1.8
 
 ### Patch Changes

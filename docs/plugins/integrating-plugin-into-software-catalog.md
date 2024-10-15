@@ -54,7 +54,7 @@ To begin, you will need to import your plugin in the entities page. Located at
 your backstage app.
 
 ```tsx
-import { MyPluginEntityContent } from '@backstage/plugin-my-plugin;
+import { MyPluginEntityContent } from '@backstage/plugin-my-plugin';
 ```
 
 To add your component to the Entity view, you will need to modify the

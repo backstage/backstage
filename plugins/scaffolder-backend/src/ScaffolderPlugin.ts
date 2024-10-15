@@ -44,6 +44,7 @@ import {
   createFetchPlainAction,
   createFetchPlainFileAction,
   createFetchTemplateAction,
+  createFetchTemplateFileAction,
   createFilesystemDeleteAction,
   createFilesystemRenameAction,
   createWaitAction,
@@ -53,7 +54,7 @@ import { createRouter } from './service/router';
 /**
  * Scaffolder plugin
  *
- * @alpha
+ * @public
  */
 export const scaffolderPlugin = createBackendPlugin({
   pluginId: 'scaffolder',
@@ -144,6 +145,12 @@ export const scaffolderPlugin = createBackendPlugin({
             integrations,
           }),
           createFetchTemplateAction({
+            integrations,
+            reader,
+            additionalTemplateFilters,
+            additionalTemplateGlobals,
+          }),
+          createFetchTemplateFileAction({
             integrations,
             reader,
             additionalTemplateFilters,

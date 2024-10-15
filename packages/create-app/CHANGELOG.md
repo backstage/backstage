@@ -1,5 +1,66 @@
 # @backstage/create-app
 
+## 0.5.21
+
+### Patch Changes
+
+- c42c710: Bumped create-app version.
+- 56a8118: Bumped create-app version.
+- a7674d6: Fixed lack of `.yarnrc.yml` in the template.
+- ab89e45: Remove some dependencies that aren't required anymore
+- b452088: Tweak `Dockerfile` to fix deprecated syntax.
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+
+## 0.5.21-next.2
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+
+## 0.5.21-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+
+## 0.5.21-next.0
+
+### Patch Changes
+
+- a7674d6: Fixed lack of `.yarnrc.yml` in the template.
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+
+## 0.5.19
+
+### Patch Changes
+
+- d2d2313: Add `config.d.ts` files to the list of included file in `tsconfig.json`.
+
+  This allows ESLint to detect issues or deprecations in those files.
+
+- 4975e63: Yarn 4 is now the default for `create-app`. Also updated `yarn dev` script to use `yarn workspaces foreach` and removed unused Lerna and Concurrently dependencies.
+- 4735881: Bumped create-app version.
+- 97422b0: Update templates to not refer to backend-common
+- 019d9ad: Minor dockerfile syntax update
+- e03acd8: Updated Dockerfile base image to `node:20-bookworm-slim` from `node:18-bookworm-slim`
+- bf370c2: Remove references to the `@backstage/backend-tasks` in versions of the `create-app` package, as it has been deprecated.
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+
+## 0.5.19-next.2
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+
 ## 0.5.19-next.1
 
 ### Patch Changes

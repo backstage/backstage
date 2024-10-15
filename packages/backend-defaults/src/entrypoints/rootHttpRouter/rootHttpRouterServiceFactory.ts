@@ -106,6 +106,9 @@ const rootHttpRouterServiceFactoryWithOptions = (
         lifecycle,
         healthRouter,
         applyDefaults() {
+          if (process.env.NODE_ENV === 'development') {
+            app.set('json spaces', 2);
+          }
           app.use(middleware.helmet());
           app.use(middleware.cors());
           app.use(middleware.compression());

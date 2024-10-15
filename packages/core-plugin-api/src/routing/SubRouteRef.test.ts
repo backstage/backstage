@@ -102,7 +102,7 @@ describe('SubRouteRef', () => {
     validateType<{ x: string; z: string }>(_2);
     // @ts-expect-error
     validateType<{ y: string }>(_2);
-    // extra z, we validate this at runtime instead
+    // @ts-expect-error
     validateType<{ x: string; y: string; z: string }>(_2);
     validateType<{ x: string; y: string }>(_2);
 

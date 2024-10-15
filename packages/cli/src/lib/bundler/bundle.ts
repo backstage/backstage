@@ -38,7 +38,7 @@ function applyContextToError(error: string, moduleName: string): string {
 }
 
 export async function buildBundle(options: BuildOptions) {
-  const { statsJsonEnabled, schema: configSchema } = options;
+  const { statsJsonEnabled, schema: configSchema, rspack } = options;
 
   const paths = resolveBundlingPaths(options);
   const publicPaths = await resolveOptionalBundlingPaths({
@@ -54,7 +54,7 @@ export async function buildBundle(options: BuildOptions) {
     getFrontendAppConfigs: () => options.frontendAppConfigs,
   };
 
-  const configs = [];
+  const configs: webpack.Configuration[] = [];
 
   if (options.moduleFederation?.mode === 'remote') {
     // Package detection is disabled for remote bundles
@@ -119,7 +119,7 @@ export async function buildBundle(options: BuildOptions) {
     );
   }
 
-  const { stats } = await build(configs, isCi);
+  const { stats } = await build(configs, isCi, rspack);
 
   if (!stats) {
     throw new Error('No stats returned');
@@ -152,10 +152,16 @@ export async function buildBundle(options: BuildOptions) {
   }
 }
 
-async function build(configs: webpack.Configuration[], isCi: boolean) {
+async function build(
+  configs: webpack.Configuration[],
+  isCi: boolean,
+  rspack?: typeof import('@rspack/core').rspack,
+) {
+  const bundler = (rspack ?? webpack) as typeof webpack;
+
   const stats = await new Promise<webpack.MultiStats | undefined>(
     (resolve, reject) => {
-      webpack(configs, (err, buildStats) => {
+      bundler(configs, (err, buildStats) => {
         if (err) {
           if (err.message) {
             const { errors } = formatWebpackMessages({

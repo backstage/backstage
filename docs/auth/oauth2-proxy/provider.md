@@ -13,6 +13,12 @@ a cluster. In general the `oauth2-proxy` supports all OpenID Connect providers,
 for more details check this
 [list of supported providers](https://oauth2-proxy.github.io/oauth2-proxy/docs/configuration/oauth_provider).
 
+:::note Note
+
+OAuth2 Proxy does not provide a way to authenticate requests, you must instead ensure that your Backstage instance is only accessible through the OAuth2 Proxy. If you need more strict validation, consider using a different provider.
+
+:::
+
 ## Configuration
 
 The provider configuration can be added to your `app-config.yaml` under the root
@@ -25,9 +31,7 @@ auth:
     oauth2Proxy:
       signIn:
         resolvers:
-          # typically you would pick one of these
-          - resolver: emailMatchingUserEntityProfileEmail
-          - resolver: emailLocalPartMatchingUserEntityName
+          # See https://backstage.io/docs/auth/oauth2-proxy/provider#resolvers for more resolvers
           - resolver: forwardedUserMatchingUserEntityName
 ```
 

@@ -191,6 +191,7 @@ export class CatalogClient implements CatalogApi {
         fields = [],
         filter,
         limit,
+        offset,
         orderFields,
         fullTextFilter,
       } = request;
@@ -198,6 +199,9 @@ export class CatalogClient implements CatalogApi {
 
       if (limit !== undefined) {
         params.limit = limit;
+      }
+      if (offset !== undefined) {
+        params.offset = offset;
       }
       if (orderFields !== undefined) {
         params.orderField = (

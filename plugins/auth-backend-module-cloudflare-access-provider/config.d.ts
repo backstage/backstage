@@ -31,7 +31,10 @@ export interface Config {
         authorizationCookieName?: string;
         signIn?: {
           resolvers: Array<
-            | { resolver: 'emailLocalPartMatchingUserEntityName' }
+            | {
+                resolver: 'emailLocalPartMatchingUserEntityName';
+                allowedDomains?: string[];
+              }
             | { resolver: 'emailMatchingUserEntityProfileEmail' }
           >;
         };

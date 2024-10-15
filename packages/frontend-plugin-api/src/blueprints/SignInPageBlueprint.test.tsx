@@ -42,7 +42,6 @@ describe('SignInPageBlueprint', () => {
         "inputs": {},
         "kind": "sign-in-page",
         "name": undefined,
-        "namespace": undefined,
         "output": [
           [Function],
         ],

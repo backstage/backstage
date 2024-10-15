@@ -1,5 +1,164 @@
 # @backstage/plugin-catalog-backend
 
+## 1.27.0
+
+### Minor Changes
+
+- 3109c24: The export for the new backend system at the `/alpha` export is now also available via the main entry point, which means that you can remove the `/alpha` suffix from the import.
+
+### Patch Changes
+
+- 094eaa3: Remove references to in-repo backend-common
+- 83a8830: Added migration `20241003170511_alter_target_in_locations.js` to change the target column in the `locations` table to TEXT type.
+  Added a hash for the key column in the `refresh_keys` table.
+- 62747f8: Fixed a bug where the concurrency limiter for URL reading was not honored
+- c1f9764: Add configuration parameters for deferred stitcher
+- 720a2f9: Updated dependency `git-url-parse` to `^15.0.0`.
+- d1cf90a: Adds the ability to disable catalog processing `catalog.processingInterval: false` in `app-config`
+- f1cab41: Update catalog search table in transaction
+- 8206f49: Fix a bug where etags were expiring too soon in the URL reader
+- Updated dependencies
+  - @backstage/plugin-search-backend-module-catalog@0.2.3
+  - @backstage/plugin-permission-node@0.8.4
+  - @backstage/plugin-events-node@0.4.1
+  - @backstage/plugin-catalog-node@1.13.1
+  - @backstage/integration@1.15.1
+  - @backstage/backend-openapi-utils@0.2.0
+  - @backstage/catalog-client@1.7.1
+  - @backstage/backend-plugin-api@1.0.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-permission-common@0.8.1
+
+## 1.26.2-next.2
+
+### Patch Changes
+
+- 720a2f9: Updated dependency `git-url-parse` to `^15.0.0`.
+- f1cab41: Update catalog search table in transaction
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.13.1-next.1
+  - @backstage/integration@1.15.1-next.1
+  - @backstage/backend-openapi-utils@0.2.0-next.1
+  - @backstage/catalog-client@1.7.1-next.0
+  - @backstage/backend-plugin-api@1.0.1-next.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-events-node@0.4.1-next.1
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-node@0.8.4-next.1
+  - @backstage/plugin-search-backend-module-catalog@0.2.3-next.2
+
+## 1.26.2-next.1
+
+### Patch Changes
+
+- 62747f8: Fixed a bug where the concurrency limiter for URL reading was not honored
+- 8206f49: Fix a bug where etags were expiring too soon in the URL reader
+- Updated dependencies
+  - @backstage/integration@1.15.1-next.0
+  - @backstage/backend-openapi-utils@0.1.19-next.0
+  - @backstage/backend-plugin-api@1.0.1-next.0
+  - @backstage/catalog-client@1.7.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-catalog-node@1.13.1-next.0
+  - @backstage/plugin-events-node@0.4.1-next.0
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-node@0.8.4-next.0
+  - @backstage/plugin-search-backend-module-catalog@0.2.3-next.1
+
+## 1.26.1-next.0
+
+### Patch Changes
+
+- 094eaa3: Remove references to in-repo backend-common
+- Updated dependencies
+  - @backstage/plugin-search-backend-module-catalog@0.2.3-next.0
+  - @backstage/plugin-permission-node@0.8.4-next.0
+  - @backstage/plugin-events-node@0.4.1-next.0
+  - @backstage/backend-openapi-utils@0.1.19-next.0
+  - @backstage/backend-plugin-api@1.0.1-next.0
+  - @backstage/catalog-client@1.7.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.15.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-catalog-node@1.13.1-next.0
+  - @backstage/plugin-permission-common@0.8.1
+
+## 1.26.0
+
+### Minor Changes
+
+- 74acf06: Add `dependencyOf` prop to catalog model for Component kind to enable building relationship graphs with both directions using `dependsOn` and `dependencyOf`.
+- 78475c3: Allow offset mode paging in entity list provider
+- bd35cdb: The `analyze-location` endpoint is now protected by the `catalog.location.analyze` permission.
+  The `validate-entity` endpoint is now protected by the `catalog.entity.validate` permission.
+
+### Patch Changes
+
+- 1882cfe: Moved `getEntities` ordering to utilize database instead of having it inside catalog client
+
+  Please note that the latest version of `@backstage/catalog-client` will not order the entities in the same way as before. This is because the ordering is now done in the database query instead of in the client. If you rely on the ordering of the entities, you may need to update your backend plugin or code to handle this change.
+
+- d425fc4: Modules, plugins, and services are now `BackendFeature`, not a function that returns a feature.
+- c2b63ab: Updated dependency `supertest` to `^7.0.0`.
+- 53cce86: Fixed an issue with the by-query call, where ordering by a field that does not exist on all entities led to not all results being returned
+- Updated dependencies
+  - @backstage/backend-common@0.25.0
+  - @backstage/backend-plugin-api@1.0.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/catalog-client@1.7.0
+  - @backstage/plugin-search-backend-module-catalog@0.2.2
+  - @backstage/plugin-permission-node@0.8.3
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-catalog-node@1.13.0
+  - @backstage/integration@1.15.0
+  - @backstage/backend-openapi-utils@0.1.18
+  - @backstage/plugin-events-node@0.4.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.8.1
+
+## 1.26.0-next.2
+
+### Minor Changes
+
+- 78475c3: Allow offset mode paging in entity list provider
+
+### Patch Changes
+
+- c2b63ab: Updated dependency `supertest` to `^7.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.25.0-next.2
+  - @backstage/backend-plugin-api@1.0.0-next.2
+  - @backstage/catalog-client@1.7.0-next.1
+  - @backstage/integration@1.15.0-next.0
+  - @backstage/backend-openapi-utils@0.1.18-next.2
+  - @backstage/plugin-permission-node@0.8.3-next.2
+  - @backstage/catalog-model@1.6.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.26
+  - @backstage/plugin-catalog-node@1.12.7-next.2
+  - @backstage/plugin-events-node@0.4.0-next.2
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-search-backend-module-catalog@0.2.2-next.2
+
 ## 1.25.3-next.1
 
 ### Patch Changes

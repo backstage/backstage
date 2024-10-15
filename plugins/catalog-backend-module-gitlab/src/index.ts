@@ -20,6 +20,7 @@
  * @packageDocumentation
  */
 
+export { catalogModuleGitlabDiscoveryEntityProvider as default } from './module/catalogModuleGitlabDiscoveryEntityProvider';
 export { GitLabDiscoveryProcessor } from './GitLabDiscoveryProcessor';
 export {
   GitlabDiscoveryEntityProvider,

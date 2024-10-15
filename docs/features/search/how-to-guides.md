@@ -86,8 +86,16 @@ const techDocsEntityTransformer: TechDocsCollatorEntityTransformer = (
 ) => {
   return {
     // add more fields to the index
-    ...defaultTechDocsCollatorEntityTransformer(entity),
     tags: entity.metadata.tags,
+  };
+};
+
+const techDocsDocumentTransformer: TechDocsCollatorDocumentTransformer = (
+  doc: MkSearchIndexDoc,
+) => {
+  return {
+    // add more fields to the index
+    bost: doc.boost,
   };
 };
 
@@ -97,6 +105,8 @@ indexBuilder.addCollator({
     tokenManager: env.tokenManager,
     /* highlight-add-next-line */
     entityTransformer: techDocsEntityTransformer,
+    /* highlight-add-next-line */
+    documentTransformer: techDocsDocumentTransformer,
   }),
 });
 ```
@@ -143,28 +153,64 @@ how highlighted terms look you can follow Backstage's guide on how to
 [Customize the look-and-feel of your App](https://backstage.io/docs/getting-started/app-custom-theme)
 to create an override with your preferred styling.
 
-For example, the following will result in highlighted terms to be bold & underlined:
+For example, using the new MUI V4+V5 unified theming method, the following will result
+in highlighted words to be bold & underlined:
 
-```tsx
-const highlightOverride = {
-  BackstageHighlightedSearchResultText: {
-    highlight: {
-      color: 'inherit',
-      backgroundColor: 'inherit',
-      fontWeight: 'bold',
-      textDecoration: 'underline',
+```typescript jsx title=packages/app/src/theme/theme.ts
+import {
+  createBaseThemeOptions,
+  createUnifiedTheme,
+  palettes,
+  UnifiedTheme,
+} from '@backstage/theme';
+
+export const myLightTheme: UnifiedTheme = createUnifiedTheme({
+  ...createBaseThemeOptions({
+    palette: palettes.light,
+  }),
+  defaultPageTheme: 'home',
+  components: {
+    /** @ts-ignore This is temporarily necessary until MUI V5 transition is completed. */
+    BackstageHighlightedSearchResultText: {
+      styleOverrides: {
+        highlight: {
+          color: 'inherit',
+          backgroundColor: 'inherit',
+          fontWeight: 'bold',
+          textDecoration: 'underline',
+        },
+      },
     },
   },
-};
+});
 ```
+
+```typescript jsx title= packages/app/src/App.tsx
+
+const app : BackstageApp = createApp({
+  ...
+  themes: [{
+    id: 'my-light-theme',
+    title: 'Light Theme',
+    variant: 'light',
+    icon: <LightIcon />,
+    Provider: ({ children }) => (<UnifiedThemeProvider theme={myLightTheme} children={children } />)
+  }]
+});
+```
+
+Obviously if you wanted a dark theme, you would need to provide that as well.
 
 ## How to render search results using extensions
 
-Extensions for search results let you customize components used to render search result items, It is possible to provide your own search result item extensions or use the ones provided by plugin packages:
+Extensions for search results let you customize components used to render search result items, It is possible to provide your own search result item extensions or use the ones provided by plugin packages.
 
 ### 1. Providing an extension in your plugin package
 
-Using the example below, you can provide an extension to be used as a default result item:
+> Note: You must use the `plugin.provide()` function to make a search item renderer available. Unlike rendering a list in a standard MUI Table or similar, you cannot simply provide
+> a rendering function to the `<SearchResult />` component.
+
+Using the example below, you can provide an extension to be used as a search result item:
 
 ```tsx title="plugins/your-plugin/src/plugin.ts"
 import { createPlugin } from '@backstage/core-plugin-api';
@@ -214,7 +260,7 @@ export const YourSearchResultListItemExtension = plugin.provide(
 );
 ```
 
-Remember to export your new extension:
+Remember to export your new extension via your plugin's `index.ts` so that it is available from within your app:
 
 ```tsx title="plugins/your-plugin/src/index.ts"
 export { YourSearchResultListItem } from './plugin.ts';
@@ -222,9 +268,12 @@ export { YourSearchResultListItem } from './plugin.ts';
 
 For more details, see the [createSearchResultListItemExtension](https://backstage.io/docs/reference/plugin-search-react.createsearchresultlistitemextension) API reference.
 
-### 2. Using an extension in your Backstage app
+### 2. Custom search result extension in the SearchPage
 
-Now that you know how a search result item is provided, let's finally see how they can be used, for example, to compose a page in your application:
+Once you have exposed your item renderer via the `plugin.provide()` function, you can now override the default search item renderers and tell the `<SearchResult>` component
+which renderers to use. Note that the order of the renderers matters! The first one that matches via its predicate function will be used.
+
+Here is an example of customizing your `SearchPage`:
 
 ```tsx title="packages/app/src/components/searchPage.tsx"
 import React from 'react';
@@ -276,9 +325,38 @@ const SearchPage = () => (
 export const searchPage = <SearchPage />;
 ```
 
-> **Important**: A default result item extension should be placed as the last child, so it can be used only when no other extensions match the result being rendered. If a non-default extension is specified, the `DefaultResultListItem` component will be used.
+> **Important**: A default result item extension (one that does not have a predicate) should be placed as the last child, so it can be used only when no other extensions match the result being rendered.
+> If a non-default extension is specified, the `DefaultResultListItem` component will be used.
 
-As another example, here's a search modal that renders results with extensions:
+### 2. Custom search result extension in the SidebarSearchModal
+
+You may be using the SidebarSearchModal component. In this case, you can customize the search items in this component as follows:
+
+```tsx title="packages/app/src/components/Root/Root.tsx"
+import { SidebarSearchModal } from '@backstage/plugin-search';
+...
+export const Root = ({ children }: PropsWithChildren<{}>) => {
+  const styles = useStyles();
+
+  return <SidebarPage>
+    <Sidebar>
+      ...
+      <SidebarSearchModal resultItemComponents={[
+        /* Provide a custom Extension search item renderer */
+        <CustomSearchResultListItem icon={<CatalogIcon />} />,
+        /* Provide an existing search item renderer */
+        <TechDocsSearchResultListItem icon={<DocsIcon />} />
+      ]} />
+      ...
+    </Sidebar>
+    {children}
+  </SidebarPage>;
+};
+```
+
+### 3. Custom search result extension in a custom SearchModal
+
+Assuming you have completely customized your SearchModal, here's an example that renders results with extensions:
 
 ```tsx title="packages/app/src/components/searchModal.tsx"
 import React from 'react';

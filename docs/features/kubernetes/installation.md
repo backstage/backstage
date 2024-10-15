@@ -96,6 +96,7 @@ async function main() {
   // ...
   /* highlight-add-next-line */
   apiRouter.use('/kubernetes', await kubernetes(kubernetesEnv));
+}
 ```
 
 That's it! The Kubernetes frontend and backend have now been added to your
@@ -119,7 +120,7 @@ const backend = createBackend();
 // Other plugins...
 
 /* highlight-add-start */
-backend.add(import('@backstage/plugin-kubernetes-backend/alpha'));
+backend.add(import('@backstage/plugin-kubernetes-backend'));
 /* highlight-add-end */
 
 backend.start();
@@ -227,7 +228,7 @@ export const kubernetesModuleCustomClusterDiscovery = createBackendModule({
 });
 
 // Other plugins...
-backend.add(import('@backstage/plugin-kubernetes-backend/alpha'));
+backend.add(import('@backstage/plugin-kubernetes-backend'));
 backend.add(kubernetesModuleCustomClusterDiscovery);
 
 backend.start();

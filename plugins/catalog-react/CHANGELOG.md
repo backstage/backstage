@@ -1,5 +1,159 @@
 # @backstage/plugin-catalog-react
 
+## 1.14.0
+
+### Minor Changes
+
+- 0801db6: Add catalog service mocks under the `/testUtils` subpath export.
+
+  You can now use e.g. `const catalog = catalogApiMock.mock()` in your test and then do assertions on `catalog.getEntities` without awkward type casting.
+
+- 6812980: Added a new prop, `disableTooltip` to the `EntityRefLink` component
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- Updated dependencies
+  - @backstage/core-components@0.15.1
+  - @backstage/frontend-plugin-api@0.9.0
+  - @backstage/frontend-test-utils@0.2.1
+  - @backstage/integration-react@1.2.0
+  - @backstage/core-compat-api@0.3.1
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/plugin-permission-react@0.4.27
+  - @backstage/version-bridge@1.0.10
+  - @backstage/catalog-client@1.7.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-permission-common@0.8.1
+
+## 1.14.0-next.2
+
+### Minor Changes
+
+- 0801db6: Add catalog service mocks under the `/testUtils` subpath export.
+
+  You can now use e.g. `const catalog = catalogApiMock.mock()` in your test and then do assertions on `catalog.getEntities` without awkward type casting.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-test-utils@0.2.1-next.2
+  - @backstage/catalog-client@1.7.1-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-compat-api@0.3.1-next.2
+  - @backstage/core-components@0.15.1-next.2
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-plugin-api@0.9.0-next.2
+  - @backstage/integration-react@1.2.0-next.2
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.10-next.0
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-react@0.4.27-next.1
+
+## 1.14.0-next.1
+
+### Minor Changes
+
+- 6812980: Added a new prop, `disableTooltip` to the `EntityRefLink` component
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- Updated dependencies
+  - @backstage/core-components@0.15.1-next.1
+  - @backstage/frontend-plugin-api@0.9.0-next.1
+  - @backstage/integration-react@1.2.0-next.1
+  - @backstage/core-compat-api@0.3.1-next.1
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/plugin-permission-react@0.4.27-next.1
+  - @backstage/version-bridge@1.0.10-next.0
+  - @backstage/catalog-client@1.7.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-permission-common@0.8.1
+
+## 1.13.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.0-next.0
+  - @backstage/core-compat-api@0.3.1-next.0
+  - @backstage/core-components@0.15.1-next.0
+  - @backstage/core-plugin-api@1.10.0-next.0
+  - @backstage/catalog-client@1.7.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-react@1.1.32-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.9
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-permission-common@0.8.1
+  - @backstage/plugin-permission-react@0.4.27-next.0
+
+## 1.13.0
+
+### Minor Changes
+
+- 78475c3: Allow offset mode paging in entity list provider
+
+### Patch Changes
+
+- c891b69: Add `FavoriteToggle` in `core-components` to standardise favorite marking
+- fec8b57: Updated exports to use the new type parameters for extensions and extension blueprints.
+- b537bd7: Allow custom star icons to be provided via the `star` and `unstarred` icon overrides. See how to override existing icons in the [Backstage documentation](https://backstage.io/docs/getting-started/app-custom-theme/#custom-icons).
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- 5446061: The `/alpha` export no longer export extension creators for the new frontend system, existing usage should be switched to use the equivalent extension blueprint instead. For more information see the [new frontend system 1.30 migration documentation](https://backstage.io/docs/frontend-system/architecture/migrations#130).
+- a159180: Added missing items to `overridableComponents`
+- ae9b6cb: Small internal fix to better work with recent `lodash` versions
+- Updated dependencies
+  - @backstage/core-components@0.15.0
+  - @backstage/frontend-plugin-api@0.8.0
+  - @backstage/core-compat-api@0.3.0
+  - @backstage/integration-react@1.1.31
+  - @backstage/catalog-model@1.7.0
+  - @backstage/catalog-client@1.7.0
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/core-plugin-api@1.9.4
+  - @backstage/version-bridge@1.0.9
+  - @backstage/plugin-permission-react@0.4.26
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.8.1
+
+## 1.13.0-next.2
+
+### Minor Changes
+
+- 78475c3: Allow offset mode paging in entity list provider
+
+### Patch Changes
+
+- c891b69: Add `FavoriteToggle` in `core-components` to standardise favorite marking
+- b537bd7: Allow custom star icons to be provided via the `star` and `unstarred` icon overrides. See how to override existing icons in the [Backstage documentation](https://backstage.io/docs/getting-started/app-custom-theme/#custom-icons).
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.14.11-next.1
+  - @backstage/integration-react@1.1.31-next.0
+  - @backstage/catalog-client@1.7.0-next.1
+  - @backstage/core-compat-api@0.3.0-next.2
+  - @backstage/core-plugin-api@1.9.4-next.0
+  - @backstage/frontend-plugin-api@0.8.0-next.2
+  - @backstage/version-bridge@1.0.9-next.0
+  - @backstage/plugin-permission-react@0.4.26-next.0
+  - @backstage/catalog-model@1.6.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.26
+  - @backstage/plugin-permission-common@0.8.1
+
 ## 1.12.4-next.1
 
 ### Patch Changes

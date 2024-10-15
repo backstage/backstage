@@ -23,11 +23,11 @@ import { ApiProvider } from '@backstage/core-app-api';
 import {
   EntityKindFilter,
   entityRouteRef,
-  MockEntityListContextProvider,
   MockStarredEntitiesApi,
   starredEntitiesApiRef,
   UserListFilter,
 } from '@backstage/plugin-catalog-react';
+import { MockEntityListContextProvider } from '@backstage/plugin-catalog-react/testUtils';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { act, fireEvent, screen } from '@testing-library/react';
 import * as React from 'react';
@@ -222,14 +222,7 @@ describe('CatalogTable component', () => {
     },
     {
       kind: 'location',
-      expectedColumns: [
-        'Name',
-        'Type',
-        'Targets',
-        'Description',
-        'Tags',
-        'Actions',
-      ],
+      expectedColumns: ['Name', 'Type', 'Targets', 'Actions'],
     },
     {
       kind: 'resource',

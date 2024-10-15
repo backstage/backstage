@@ -227,7 +227,7 @@ import { createBackend } from '@backstage/backend-defaults';
 //...
 const backend = createBackend();
 // Installing the search backend plugin
-backend.add(import('@backstage/plugin-search-backend/alpha'));
+backend.add(import('@backstage/plugin-search-backend'));
 // Installing the newly created faq snippets collator module
 backend.add(
   import(

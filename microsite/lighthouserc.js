@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-var sidebars = require('./sidebars.json');
+const sidebars = require('./sidebars');
 
 module.exports = {
   ci: {

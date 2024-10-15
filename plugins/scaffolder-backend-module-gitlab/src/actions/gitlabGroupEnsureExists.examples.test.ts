@@ -27,7 +27,8 @@ const mockGitlabClient = {
     create: jest.fn(),
   },
 };
-jest.mock('@gitbeaker/node', () => ({
+
+jest.mock('@gitbeaker/rest', () => ({
   Gitlab: class {
     constructor() {
       return mockGitlabClient;
@@ -38,8 +39,8 @@ jest.mock('@gitbeaker/node', () => ({
 describe('gitlab:group:ensureExists', () => {
   const mockContext = createMockActionContext();
 
-  afterEach(() => {
-    jest.resetAllMocks();
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
   it(`Should ${examples[0].description}`, async () => {
@@ -55,7 +56,7 @@ describe('gitlab:group:ensureExists', () => {
           {
             host: 'gitlab.com',
             token: 'tokenlols',
-            apiBaseUrl: 'https://api.gitlab.com',
+            apiBaseUrl: 'https://gitlab.com/api/v4',
           },
         ],
       },
@@ -114,7 +115,7 @@ describe('gitlab:group:ensureExists', () => {
       'group2',
       'group2',
       {
-        parent_id: 1,
+        parentId: 1,
       },
     );
 
@@ -161,7 +162,7 @@ describe('gitlab:group:ensureExists', () => {
       'group3',
       'group3',
       {
-        parent_id: 2,
+        parentId: 2,
       },
     );
 

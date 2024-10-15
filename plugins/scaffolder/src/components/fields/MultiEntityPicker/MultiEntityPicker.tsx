@@ -34,7 +34,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Autocomplete, {
   AutocompleteChangeReason,
 } from '@material-ui/lab/Autocomplete';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import { FieldValidation } from '@rjsf/utils';
 import {
@@ -65,6 +65,7 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
   const defaultKind = uiSchema['ui:options']?.defaultKind;
   const defaultNamespace =
     uiSchema['ui:options']?.defaultNamespace || undefined;
+  const [noOfItemsSelected, setNoOfItemsSelected] = useState(0);
 
   const catalogApi = useApi(catalogApiRef);
   const entityPresentationApi = useApi(entityPresentationApiRef);
@@ -91,6 +92,9 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
   });
   const allowArbitraryValues =
     uiSchema['ui:options']?.allowArbitraryValues ?? true;
+
+  // if not specified, maxItems defaults to undefined
+  const maxItems = props.schema.maxItems;
 
   const onSelect = useCallback(
     (_: any, refs: (string | Entity)[], reason: AutocompleteChangeReason) => {
@@ -125,16 +129,17 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
         })
         .filter(ref => ref !== undefined) as string[];
 
+      setNoOfItemsSelected(values.length);
       onChange(values);
     },
     [onChange, formData, defaultKind, defaultNamespace, allowArbitraryValues],
   );
 
   useEffect(() => {
-    if (entities?.entities?.length === 1) {
+    if (required && !allowArbitraryValues && entities?.entities?.length === 1) {
       onChange([stringifyEntityRef(entities?.entities[0])]);
     }
-  }, [entities, onChange]);
+  }, [entities, onChange, required, allowArbitraryValues]);
 
   return (
     <FormControl
@@ -145,8 +150,11 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
       <Autocomplete
         multiple
         filterSelectedOptions
-        disabled={entities?.entities?.length === 1}
+        disabled={
+          required && !allowArbitraryValues && entities?.entities?.length === 1
+        }
         id={idSchema?.$id}
+        defaultValue={formData}
         loading={loading}
         onChange={onSelect}
         options={entities?.entities || []}
@@ -157,6 +165,9 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
             ? option
             : entities?.entityRefToPresentation.get(stringifyEntityRef(option))
                 ?.entityRef!
+        }
+        getOptionDisabled={_options =>
+          maxItems ? noOfItemsSelected >= maxItems : false
         }
         autoSelect
         freeSolo={allowArbitraryValues}

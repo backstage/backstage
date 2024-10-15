@@ -27,15 +27,11 @@ yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-bitbuck
 
 ```ts
 // optional if you want HTTP endpoints to receive external events
-// backend.add(import('@backstage/plugin-events-backend/alpha'));
+// backend.add(import('@backstage/plugin-events-backend'));
 // optional if you want to use AWS SQS instead of HTTP endpoints to receive external events
-// backend.add(import('@backstage/plugin-events-backend-module-aws-sqs/alpha'));
-backend.add(
-  import('@backstage/plugin-events-backend-module-bitbucket-cloud/alpha'),
-);
-backend.add(
-  import('@backstage/plugin-catalog-backend-module-bitbucket-cloud/alpha'),
-);
+// backend.add(import('@backstage/plugin-events-backend-module-aws-sqs'));
+backend.add(import('@backstage/plugin-events-backend-module-bitbucket-cloud'));
+backend.add(import('@backstage/plugin-catalog-backend-module-bitbucket-cloud'));
 ```
 
 You need to decide how you want to receive events from external sources like
@@ -50,33 +46,6 @@ Further documentation:
 - <https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-bitbucket-cloud/README.md>
 
 ### Installation with Legacy Backend System
-
-#### Installation without Events Support
-
-And then add the entity provider to your catalog builder:
-
-```ts title="packages/backend/src/plugins/catalog.ts"
-/* highlight-add-next-line */
-import { BitbucketCloudEntityProvider } from '@backstage/plugin-catalog-backend-module-bitbucket-cloud';
-
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  const builder = await CatalogBuilder.create(env);
-  /* highlight-add-start */
-  builder.addEntityProvider(
-    BitbucketCloudEntityProvider.fromConfig(env.config, {
-      logger: env.logger,
-      scheduler: env.scheduler,
-    }),
-  );
-  /* highlight-add-end */
-
-  // ..
-}
-```
-
-#### Installation with Events Support
 
 Please follow the installation instructions at
 
@@ -104,19 +73,17 @@ export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
   const builder = await CatalogBuilder.create(env);
-  builder.addProcessor(new ScaffolderEntitiesProcessor());
   /* highlight-add-start */
   const bitbucketCloudProvider = BitbucketCloudEntityProvider.fromConfig(
     env.config,
     {
+      auth: env.auth,
       catalogApi: new CatalogClient({ discoveryApi: env.discovery }),
       events: env.events,
       logger: env.logger,
       scheduler: env.scheduler,
-      tokenManager: env.tokenManager,
     },
   );
-  env.eventBroker.subscribe(bitbucketCloudProvider);
   builder.addEntityProvider(bitbucketCloudProvider);
   /* highlight-add-end */
   const { processingEngine, router } = await builder.build();

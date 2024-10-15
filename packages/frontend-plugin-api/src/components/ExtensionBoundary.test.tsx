@@ -17,7 +17,7 @@
 import React, { useEffect } from 'react';
 import { act, screen, waitFor } from '@testing-library/react';
 import {
-  MockAnalyticsApi,
+  mockApis,
   TestApiProvider,
   withLogCollector,
 } from '@backstage/test-utils';
@@ -93,7 +93,7 @@ describe('ExtensionBoundary', () => {
   it('should wrap children with analytics context', async () => {
     const action = 'render';
     const subject = 'analytics';
-    const analyticsApiMock = new MockAnalyticsApi();
+    const analyticsApiMock = mockApis.analytics();
 
     const AnalyticsComponent = () => {
       const analytics = useAnalytics();
@@ -112,17 +112,15 @@ describe('ExtensionBoundary', () => {
     );
 
     await waitFor(() => {
-      const event = analyticsApiMock
-        .getEvents()
-        .find(e => e.subject === subject);
-
-      expect(event).toMatchObject({
-        action,
-        subject,
-        context: {
-          extensionId: 'test',
-        },
-      });
+      expect(analyticsApiMock.captureEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action,
+          subject,
+          context: expect.objectContaining({
+            extensionId: 'test',
+          }),
+        }),
+      );
     });
   });
 
@@ -136,7 +134,7 @@ describe('ExtensionBoundary', () => {
       });
       return null;
     };
-    const analyticsApiMock = new MockAnalyticsApi();
+    const analyticsApiMock = mockApis.analytics();
 
     await act(async () => {
       renderInTestApp(
@@ -147,7 +145,7 @@ describe('ExtensionBoundary', () => {
       );
     });
 
-    expect(analyticsApiMock.getEvents()).toEqual([
+    expect(analyticsApiMock.captureEvent).toHaveBeenCalledWith(
       expect.objectContaining({
         action: 'navigate',
         subject: '/',
@@ -156,7 +154,9 @@ describe('ExtensionBoundary', () => {
           extensionId: 'test',
         }),
       }),
+    );
+    expect(analyticsApiMock.captureEvent).toHaveBeenCalledWith(
       expect.objectContaining({ action: 'dummy' }),
-    ]);
+    );
   });
 });

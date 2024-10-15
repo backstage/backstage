@@ -28,7 +28,7 @@ import { GerritRepoPicker } from './GerritRepoPicker';
 import { RepoUrlPickerHost } from './RepoUrlPickerHost';
 import { RepoUrlPickerRepoName } from './RepoUrlPickerRepoName';
 import { parseRepoPickerUrl, serializeRepoPickerUrl } from './utils';
-import { RepoUrlPickerProps } from './schema';
+import { RepoUrlPickerFieldSchema } from './schema';
 import { RepoUrlPickerState } from './types';
 import useDebounce from 'react-use/esm/useDebounce';
 import { useTemplateSecrets } from '@backstage/plugin-scaffolder-react';
@@ -44,7 +44,9 @@ export { RepoUrlPickerSchema } from './schema';
  *
  * @public
  */
-export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
+export const RepoUrlPicker = (
+  props: typeof RepoUrlPickerFieldSchema.TProps,
+) => {
   const { uiSchema, onChange, rawErrors, formData, schema } = props;
   const [state, setState] = useState<RepoUrlPickerState>(
     parseRepoPickerUrl(formData),

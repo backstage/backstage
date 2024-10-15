@@ -1,5 +1,71 @@
 # @backstage/integration
 
+## 1.15.1
+
+### Patch Changes
+
+- 720a2f9: Updated dependency `git-url-parse` to `^15.0.0`.
+- 920004b: Updating error message for getProjectId when fetching Gitlab project from its url to be more accurate
+- 090e49a: Updated functions parseHarnessUrl, getHarnessLatestCommitUrl, getHarnessFileContentsUrl and getHarnessArchiveUrl to fix parsing of urls
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 1.15.1-next.1
+
+### Patch Changes
+
+- 720a2f9: Updated dependency `git-url-parse` to `^15.0.0`.
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 1.15.1-next.0
+
+### Patch Changes
+
+- 920004b: Updating error message for getProjectId when fetching Gitlab project from its url to be more accurate
+- 090e49a: Updated functions parseHarnessUrl, getHarnessLatestCommitUrl, getHarnessFileContentsUrl and getHarnessArchiveUrl to fix parsing of urls
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 1.15.0
+
+### Minor Changes
+
+- 1573014: The Gerrit integration can now resolve Gitiles urls that point to the following
+  refs:
+
+  - HEAD
+  - A SHA
+  - Tag
+  - Branch
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 1.15.0-next.0
+
+### Minor Changes
+
+- 1573014: The Gerrit integration can now resolve Gitiles urls that point to the following
+  refs:
+
+  - HEAD
+  - A SHA
+  - Tag
+  - Branch
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 1.14.0
 
 ### Minor Changes

@@ -1,5 +1,164 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.13.0
+
+### Minor Changes
+
+- bf6eaf3: Added support for `FormFieldBlueprint` to create field extensions in the Scaffolder plugin
+- d851b5b: Renamed Template Editor to Manage Templates.
+
+### Patch Changes
+
+- 341e5db: Add `overridableComponent` `BackstageTemplateStepperClassKey` to template stepper to enable custom styling
+- 4b60e0c: Small tweaks to API reports to make them valid
+- e969dc7: Move `@types/react` to a peer dependency.
+- 785d68f: Add support for pagination in scaffolder tasks list
+- b1de959: Scaffolder task routes require read permission to access. The tasks list option in the scaffolder page context menu only shows with permission.
+- e698470: Updated dependency `@rjsf/utils` to `5.21.2`.
+  Updated dependency `@rjsf/core` to `5.21.2`.
+  Updated dependency `@rjsf/material-ui` to `5.21.2`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.21.2`.
+- 11e0752: Make it possible to manually retry the scaffolder template from the step it failed
+- Updated dependencies
+  - @backstage/core-components@0.15.1
+  - @backstage/frontend-plugin-api@0.9.0
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/plugin-permission-react@0.4.27
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-catalog-react@1.14.0
+  - @backstage/theme@0.6.0
+  - @backstage/catalog-client@1.7.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-common@1.5.6
+
+## 1.13.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.14.0-next.2
+  - @backstage/theme@0.6.0-next.1
+  - @backstage/catalog-client@1.7.1-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/core-components@0.15.1-next.2
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/frontend-plugin-api@0.9.0-next.2
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.10-next.0
+  - @backstage/plugin-permission-react@0.4.27-next.1
+  - @backstage/plugin-scaffolder-common@1.5.6
+
+## 1.13.0-next.1
+
+### Minor Changes
+
+- d851b5b: Renamed Template Editor to Manage Templates.
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- 785d68f: Add support for pagination in scaffolder tasks list
+- Updated dependencies
+  - @backstage/core-components@0.15.1-next.1
+  - @backstage/frontend-plugin-api@0.9.0-next.1
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/plugin-permission-react@0.4.27-next.1
+  - @backstage/version-bridge@1.0.10-next.0
+  - @backstage/plugin-catalog-react@1.14.0-next.1
+  - @backstage/theme@0.5.8-next.0
+  - @backstage/catalog-client@1.7.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-common@1.5.6
+
+## 1.13.0-next.0
+
+### Minor Changes
+
+- bf6eaf3: Added support for `FormFieldBlueprint` to create field extensions in the Scaffolder plugin
+
+### Patch Changes
+
+- 11e0752: Make it possible to manually retry the scaffolder template from the step it failed
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.0-next.0
+  - @backstage/core-components@0.15.1-next.0
+  - @backstage/core-plugin-api@1.10.0-next.0
+  - @backstage/plugin-catalog-react@1.13.1-next.0
+  - @backstage/catalog-client@1.7.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/theme@0.5.7
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.9
+  - @backstage/plugin-permission-react@0.4.27-next.0
+  - @backstage/plugin-scaffolder-common@1.5.6
+
+## 1.12.0
+
+### Minor Changes
+
+- 4512f71: Add `ui:backstage.review.name` option for custom item names on scaffolder review page, and also add support for rendering the `title` property instead of the key name.
+- 4baad34: Added support for `omitExtraData` and `liveOmit` for rjsf in the scaffolder
+
+### Patch Changes
+
+- 1f3c5aa: Fix scaffolder review step issue where schema options are not handled for fields on multi-step templates.
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- 0a50d44: Updated dependency `@rjsf/utils` to `5.21.1`.
+  Updated dependency `@rjsf/core` to `5.21.1`.
+  Updated dependency `@rjsf/material-ui` to `5.21.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.21.1`.
+- fa9d8da: Updated dependency `@rjsf/utils` to `5.20.1`.
+  Updated dependency `@rjsf/core` to `5.20.1`.
+  Updated dependency `@rjsf/material-ui` to `5.20.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.20.1`.
+- c2cbe1e: Updated dependency `use-immer` to `^0.10.0`.
+- b0f0118: Remove unnecessary singleton wrapping of `scaffolderApiRef`.
+- 3ebb64f: - Fix secret widget field not displaying as required.
+  - Fix secret widget not able to be required inside nested objects.
+  - Fix secret widget not able to be disabled.
+  - Support `minLength` and `maxLength` properties for secret widget.
+- 8dd6ef6: Fix an issue where keys with duplicate final key parts are not all displayed in the `ReviewState`. Change the way the keys are formatted to include the full schema path, separated by `>`.
+- 9a0672a: Scaffolder review page shows static amount of asterisks for secret fields.
+- Updated dependencies
+  - @backstage/core-components@0.15.0
+  - @backstage/plugin-catalog-react@1.13.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/catalog-client@1.7.0
+  - @backstage/core-plugin-api@1.9.4
+  - @backstage/theme@0.5.7
+  - @backstage/version-bridge@1.0.9
+  - @backstage/plugin-permission-react@0.4.26
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-common@1.5.6
+
+## 1.12.0-next.2
+
+### Minor Changes
+
+- 4baad34: Added support for `omitExtraData` and `liveOmit` for rjsf in the scaffolder
+
+### Patch Changes
+
+- 1f3c5aa: Fix scaffolder review step issue where schema options are not handled for fields on multi-step templates.
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- fa9d8da: Updated dependency `@rjsf/utils` to `5.20.1`.
+  Updated dependency `@rjsf/core` to `5.20.1`.
+  Updated dependency `@rjsf/material-ui` to `5.20.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.20.1`.
+- Updated dependencies
+  - @backstage/core-components@0.14.11-next.1
+  - @backstage/plugin-catalog-react@1.13.0-next.2
+  - @backstage/catalog-client@1.7.0-next.1
+  - @backstage/core-plugin-api@1.9.4-next.0
+  - @backstage/theme@0.5.7-next.0
+  - @backstage/version-bridge@1.0.9-next.0
+  - @backstage/plugin-permission-react@0.4.26-next.0
+  - @backstage/catalog-model@1.6.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-common@1.5.5
+
 ## 1.12.0-next.1
 
 ### Patch Changes

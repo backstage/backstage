@@ -34,10 +34,13 @@ import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../extensions/default';
 
 import {
   actionsRouteRef,
+  editorRouteRef,
+  customFieldsRouteRef,
   editRouteRef,
   scaffolderListTaskRouteRef,
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
+  templateFormRouteRef,
 } from '../../routes';
 import { ErrorPage } from '@backstage/core-components';
 
@@ -48,9 +51,16 @@ import {
   TemplateListPageProps,
   TemplateWizardPageProps,
 } from '@backstage/plugin-scaffolder/alpha';
-import { TemplateListPage, TemplateWizardPage } from '../../next';
+import { TemplateListPage, TemplateWizardPage } from '../../alpha/components';
 import { OngoingTask } from '../OngoingTask';
-import { TemplateEditorPage } from '../../next/TemplateEditorPage';
+import {
+  TemplateFormPage,
+  TemplateIntroPage,
+  TemplateEditorPage,
+  CustomFieldsPage,
+} from '../../alpha/components/TemplateEditorPage';
+import { RequirePermission } from '@backstage/plugin-permission-react';
+import { taskReadPermission } from '@backstage/plugin-scaffolder-common/alpha';
 
 /**
  * The Props for the Scaffolder Router
@@ -154,19 +164,37 @@ export const Router = (props: PropsWithChildren<RouterProps>) => {
       <Route
         path={scaffolderTaskRouteRef.path}
         element={
-          <TaskPageComponent
-            TemplateOutputsComponent={TemplateOutputsComponent}
-          />
+          <RequirePermission permission={taskReadPermission}>
+            <TaskPageComponent
+              TemplateOutputsComponent={TemplateOutputsComponent}
+            />
+          </RequirePermission>
         }
       />
       <Route
         path={editRouteRef.path}
         element={
           <SecretsContextProvider>
-            <TemplateEditorPage
-              customFieldExtensions={fieldExtensions}
+            <TemplateIntroPage />
+          </SecretsContextProvider>
+        }
+      />
+      <Route
+        path={customFieldsRouteRef.path}
+        element={
+          <SecretsContextProvider>
+            <CustomFieldsPage fieldExtensions={fieldExtensions} />
+          </SecretsContextProvider>
+        }
+      />
+      <Route
+        path={templateFormRouteRef.path}
+        element={
+          <SecretsContextProvider>
+            <TemplateFormPage
               layouts={customLayouts}
               formProps={props.formProps}
+              fieldExtensions={fieldExtensions}
             />
           </SecretsContextProvider>
         }
@@ -175,7 +203,23 @@ export const Router = (props: PropsWithChildren<RouterProps>) => {
       <Route path={actionsRouteRef.path} element={<ActionsPage />} />
       <Route
         path={scaffolderListTaskRouteRef.path}
-        element={<ListTasksPage />}
+        element={
+          <RequirePermission permission={taskReadPermission}>
+            <ListTasksPage />
+          </RequirePermission>
+        }
+      />
+      <Route
+        path={editorRouteRef.path}
+        element={
+          <SecretsContextProvider>
+            <TemplateEditorPage
+              layouts={customLayouts}
+              formProps={props.formProps}
+              fieldExtensions={fieldExtensions}
+            />
+          </SecretsContextProvider>
+        }
       />
       <Route
         path="*"

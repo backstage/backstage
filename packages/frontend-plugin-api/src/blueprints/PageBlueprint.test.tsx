@@ -66,7 +66,6 @@ describe('PageBlueprint', () => {
         "inputs": {},
         "kind": "page",
         "name": "test-page",
-        "namespace": undefined,
         "output": [
           [Function],
           [Function],

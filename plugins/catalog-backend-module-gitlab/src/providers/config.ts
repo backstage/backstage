@@ -45,6 +45,8 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
   const orgEnabled: boolean = config.getOptionalBoolean('orgEnabled') ?? false;
   const allowInherited: boolean =
     config.getOptionalBoolean('allowInherited') ?? false;
+  const relations: string[] = config.getOptionalStringArray('relations') ?? [];
+
   const skipForkedRepos: boolean =
     config.getOptionalBoolean('skipForkedRepos') ?? false;
   const excludeRepos: string[] =
@@ -57,6 +59,9 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
     : undefined;
   const restrictUsersToGroup =
     config.getOptionalBoolean('restrictUsersToGroup') ?? false;
+
+  const includeUsersWithoutSeat =
+    config.getOptionalBoolean('includeUsersWithoutSeat') ?? false;
 
   return {
     id,
@@ -71,9 +76,11 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
     schedule,
     orgEnabled,
     allowInherited,
+    relations,
     skipForkedRepos,
     excludeRepos,
     restrictUsersToGroup,
+    includeUsersWithoutSeat,
   };
 }
 

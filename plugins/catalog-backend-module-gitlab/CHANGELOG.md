@@ -1,5 +1,120 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.4.3
+
+### Patch Changes
+
+- 3109c24: The export for the new backend system at the `/alpha` export is now also available via the main entry point, which means that you can remove the `/alpha` suffix from the import.
+- Updated dependencies
+  - @backstage/backend-defaults@0.5.1
+  - @backstage/plugin-events-node@0.4.1
+  - @backstage/plugin-catalog-node@1.13.1
+  - @backstage/integration@1.15.1
+  - @backstage/backend-plugin-api@1.0.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/plugin-catalog-common@1.1.0
+
+## 0.4.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.5.1-next.2
+  - @backstage/plugin-catalog-node@1.13.1-next.1
+  - @backstage/integration@1.15.1-next.1
+  - @backstage/backend-plugin-api@1.0.1-next.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-events-node@0.4.1-next.1
+
+## 0.4.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.5.1-next.1
+  - @backstage/integration@1.15.1-next.0
+  - @backstage/backend-plugin-api@1.0.1-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-catalog-node@1.13.1-next.0
+  - @backstage/plugin-events-node@0.4.1-next.0
+
+## 0.4.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.5.1-next.0
+  - @backstage/plugin-events-node@0.4.1-next.0
+  - @backstage/backend-plugin-api@1.0.1-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/integration@1.15.0
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-catalog-node@1.13.1-next.0
+
+## 0.4.2
+
+### Patch Changes
+
+- 53b24d9: Internal update to use the new cache manager
+- 0476be3: Add the `relations` array to allow Backstage to mirror GitLab's membership behavior, including descendant, inherited, and shared-from-group memberships.
+
+  The previous `allowInherited` config option will be deprecated in future versions. Use the `relations` array with the `INHERITED` option instead.
+
+  ```yaml
+  catalog:
+    providers:
+      gitlab:
+        development:
+          relations:
+            - INHERITED
+  ```
+
+- d425fc4: Modules, plugins, and services are now `BackendFeature`, not a function that returns a feature.
+- b446954: Remove dependency on backend-common
+- 06cc084: Added a `includeUsersWithoutSeat` config option that allow import of users without a paid seat, e.g. for Gitlab Free on SaaS. Defaults to false
+- Updated dependencies
+  - @backstage/backend-defaults@0.5.0
+  - @backstage/backend-plugin-api@1.0.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/plugin-catalog-common@1.1.0
+  - @backstage/plugin-catalog-node@1.13.0
+  - @backstage/integration@1.15.0
+  - @backstage/plugin-events-node@0.4.0
+  - @backstage/config@1.2.0
+
+## 0.4.2-next.2
+
+### Patch Changes
+
+- 0476be3: Add the `relations` array to allow Backstage to mirror GitLab's membership behavior, including descendant, inherited, and shared-from-group memberships.
+
+  The previous `allowInherited` config option will be deprecated in future versions. Use the `relations` array with the `INHERITED` option instead.
+
+  ```yaml
+  catalog:
+    providers:
+      gitlab:
+        development:
+          relations:
+            - INHERITED
+  ```
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.5.0-next.2
+  - @backstage/backend-plugin-api@1.0.0-next.2
+  - @backstage/integration@1.15.0-next.0
+  - @backstage/catalog-model@1.6.0
+  - @backstage/config@1.2.0
+  - @backstage/plugin-catalog-common@1.0.26
+  - @backstage/plugin-catalog-node@1.12.7-next.2
+  - @backstage/plugin-events-node@0.4.0-next.2
+
 ## 0.4.2-next.1
 
 ### Patch Changes

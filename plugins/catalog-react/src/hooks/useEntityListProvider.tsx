@@ -34,16 +34,16 @@ import {
   EntityErrorFilter,
   EntityKindFilter,
   EntityLifecycleFilter,
+  EntityNamespaceFilter,
   EntityOrphanFilter,
   EntityOwnerFilter,
   EntityTagFilter,
   EntityTextFilter,
   EntityTypeFilter,
-  UserListFilter,
-  EntityNamespaceFilter,
   EntityUserFilter,
+  UserListFilter,
 } from '../filters';
-import { EntityFilter } from '../types';
+import { EntityFilter, EntityListPagination } from '../types';
 import {
   reduceBackendCatalogFilters,
   reduceCatalogFilters,
@@ -65,6 +65,9 @@ export type DefaultEntityFilters = {
   error?: EntityErrorFilter;
   namespace?: EntityNamespaceFilter;
 };
+
+/** @public */
+export type PaginationMode = 'cursor' | 'offset' | 'none';
 
 /** @public */
 export type EntityListContextProps<
@@ -108,8 +111,12 @@ export type EntityListContextProps<
     next?: () => void;
     prev?: () => void;
   };
-
   totalItems?: number;
+  limit: number;
+  offset?: number;
+  setLimit: (limit: number) => void;
+  setOffset?: (offset: number) => void;
+  paginationMode: PaginationMode;
 };
 
 /**
@@ -127,13 +134,15 @@ type OutputState<EntityFilters extends DefaultEntityFilters> = {
   backendEntities: Entity[];
   pageInfo?: QueryEntitiesResponse['pageInfo'];
   totalItems?: number;
+  offset?: number;
+  limit?: number;
 };
 
 /**
  * @public
  */
 export type EntityListProviderProps = PropsWithChildren<{
-  pagination?: boolean | { limit?: number };
+  pagination?: EntityListPagination;
 }>;
 
 /**
@@ -155,31 +164,62 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
   // update of the URL or two catalog sidebar links with different catalog filters.
   const location = useLocation();
 
-  const enablePagination =
-    props.pagination === true || typeof props.pagination === 'object';
+  const getPaginationMode = (): PaginationMode => {
+    if (props.pagination === true) {
+      return 'cursor';
+    }
+    return typeof props.pagination === 'object'
+      ? props.pagination.mode ?? 'cursor'
+      : 'none';
+  };
 
-  const limit =
-    props.pagination &&
-    typeof props.pagination === 'object' &&
-    typeof props.pagination.limit === 'number'
-      ? props.pagination.limit
-      : 20;
+  const paginationMode: PaginationMode = getPaginationMode();
+  const paginationLimit =
+    typeof props.pagination === 'object' ? props.pagination.limit ?? 20 : 20;
 
-  const { queryParameters, cursor: initialCursor } = useMemo(() => {
+  const {
+    queryParameters,
+    cursor: initialCursor,
+    offset: initialOffset,
+    limit: initialLimit,
+  } = useMemo(() => {
     const parsed = qs.parse(location.search, {
       ignoreQueryPrefix: true,
     });
+
+    let limit = paginationLimit;
+    if (typeof parsed.limit === 'string') {
+      const queryLimit = Number.parseInt(parsed.limit, 10);
+      if (!isNaN(queryLimit)) {
+        limit = queryLimit;
+      }
+    }
+
+    const offset =
+      typeof parsed.offset === 'string' && paginationMode === 'offset'
+        ? Number.parseInt(parsed.offset, 10)
+        : undefined;
 
     return {
       queryParameters: (parsed.filters ?? {}) as Record<
         string,
         string | string[]
       >,
-      cursor: typeof parsed.cursor === 'string' ? parsed.cursor : undefined,
+      cursor:
+        typeof parsed.cursor === 'string' && paginationMode === 'cursor'
+          ? parsed.cursor
+          : undefined,
+      offset:
+        paginationMode === 'offset' && offset && !isNaN(offset)
+          ? offset
+          : undefined,
+      limit,
     };
-  }, [location]);
+  }, [paginationMode, location.search, paginationLimit]);
 
   const [cursor, setCursor] = useState(initialCursor);
+  const [offset, setOffset] = useState<number | undefined>(initialOffset);
+  const [limit, setLimit] = useState(initialLimit);
 
   const [outputState, setOutputState] = useState<OutputState<EntityFilters>>(
     () => {
@@ -187,7 +227,9 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
         appliedFilters: {} as EntityFilters,
         entities: [],
         backendEntities: [],
-        pageInfo: enablePagination ? {} : undefined,
+        pageInfo: paginationMode === 'cursor' ? {} : undefined,
+        offset,
+        limit,
       };
     },
   );
@@ -212,7 +254,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
         {} as Record<string, string | string[]>,
       );
 
-      if (enablePagination) {
+      if (paginationMode !== 'none') {
         if (cursor) {
           if (cursor !== outputState.appliedCursor) {
             const entityFilter = reduceEntityFilters(compacted);
@@ -236,10 +278,14 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
             compact(Object.values(outputState.appliedFilters)),
           );
 
-          if (!isEqual(previousBackendFilter, backendFilter)) {
+          if (
+            paginationMode === 'offset' ||
+            !isEqual(previousBackendFilter, backendFilter)
+          ) {
             const response = await catalogApi.queryEntities({
               ...backendFilter,
               limit,
+              offset,
               orderFields: [{ field: 'metadata.name', order: 'asc' }],
             });
             setOutputState({
@@ -248,6 +294,8 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
               entities: response.items.filter(entityFilter),
               pageInfo: response.pageInfo,
               totalItems: response.totalItems,
+              limit,
+              offset,
             });
           }
         }
@@ -290,7 +338,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
           ignoreQueryPrefix: true,
         });
         const newParams = qs.stringify(
-          { ...oldParams, filters: queryParams, cursor },
+          { ...oldParams, filters: queryParams, cursor, offset, limit },
           { addQueryPrefix: true, arrayFormat: 'repeat' },
         );
         const newUrl = `${window.location.pathname}${newParams}`;
@@ -308,14 +356,16 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       requestedFilters,
       outputState,
       cursor,
-      enablePagination,
+      paginationMode,
+      limit,
+      offset,
     ],
     { loading: true },
   );
 
   // Slight debounce on the refresh, since (especially on page load) several
   // filters will be calling this in rapid succession.
-  useDebounce(refresh, 10, [requestedFilters, cursor]);
+  useDebounce(refresh, 10, [requestedFilters, cursor, limit, offset]);
 
   const updateFilters = useCallback(
     (
@@ -339,7 +389,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
   );
 
   const pageInfo = useMemo(() => {
-    if (!enablePagination) {
+    if (paginationMode !== 'cursor') {
       return undefined;
     }
 
@@ -349,7 +399,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       prev: prevCursor ? () => setCursor(prevCursor) : undefined,
       next: nextCursor ? () => setCursor(nextCursor) : undefined,
     };
-  }, [enablePagination, outputState.pageInfo]);
+  }, [paginationMode, outputState.pageInfo]);
 
   const value = useMemo(
     () => ({
@@ -362,8 +412,25 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       error,
       pageInfo,
       totalItems: outputState.totalItems,
+      limit,
+      offset,
+      setLimit,
+      setOffset,
+      paginationMode,
     }),
-    [outputState, updateFilters, queryParameters, loading, error, pageInfo],
+    [
+      outputState,
+      updateFilters,
+      queryParameters,
+      loading,
+      error,
+      pageInfo,
+      limit,
+      offset,
+      paginationMode,
+      setLimit,
+      setOffset,
+    ],
   );
 
   return (

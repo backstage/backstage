@@ -42,7 +42,6 @@ describe('ThemeBlueprint', () => {
         "inputs": {},
         "kind": "theme",
         "name": "light",
-        "namespace": undefined,
         "output": [
           [Function],
         ],

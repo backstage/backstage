@@ -49,9 +49,7 @@ auth:
         scope: ${AUTH_ATLASSIAN_SCOPES}
         signIn:
           resolvers:
-            # typically you would pick one of these
-            - resolver: emailMatchingUserEntityProfileEmail
-            - resolver: emailLocalPartMatchingUserEntityName
+            # See https://backstage.io/docs/auth/atlassian/provider#resolvers for more resolvers
             - resolver: usernameMatchingUserEntityName
 ```
 

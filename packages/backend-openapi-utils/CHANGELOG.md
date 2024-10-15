@@ -1,5 +1,57 @@
 # @backstage/backend-openapi-utils
 
+## 0.2.0
+
+### Minor Changes
+
+- 66af016: Improved support for OpenAPI validation during Jest tests. Now, OpenAPI validation can happen as you are writing your Jest tests - you no longer have to run `repo schema openapi test`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.1
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.2.0-next.1
+
+### Minor Changes
+
+- 66af016: Improved support for OpenAPI validation during Jest tests. Now, OpenAPI validation can happen as you are writing your Jest tests - you no longer have to run `repo schema openapi test`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.1-next.1
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.1.19-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.1-next.0
+  - @backstage/errors@1.2.4
+
+## 0.1.18
+
+### Patch Changes
+
+- c2b63ab: Updated dependency `supertest` to `^7.0.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.0
+  - @backstage/errors@1.2.4
+
+## 0.1.18-next.2
+
+### Patch Changes
+
+- c2b63ab: Updated dependency `supertest` to `^7.0.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.0-next.2
+  - @backstage/errors@1.2.4
+
 ## 0.1.18-next.1
 
 ### Patch Changes

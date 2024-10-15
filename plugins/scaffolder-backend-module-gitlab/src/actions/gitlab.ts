@@ -294,7 +294,7 @@ export function createPublishGitlabAction(options: {
           },
           projectId: {
             title: 'The ID of the project',
-            type: 'string',
+            type: 'number',
           },
           commitHash: {
             title: 'The git commit hash of the initial commit',

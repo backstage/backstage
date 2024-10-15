@@ -20,5 +20,7 @@
  * @packageDocumentation
  */
 
+export { default } from './module';
+export * from './module';
 export * from './microsoftGraph';
 export * from './processors';

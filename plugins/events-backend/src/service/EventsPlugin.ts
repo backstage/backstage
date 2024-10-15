@@ -28,6 +28,7 @@ import {
 } from '@backstage/plugin-events-node';
 import Router from 'express-promise-router';
 import { HttpPostIngressEventPublisher } from './http';
+import { createEventBusRouter } from './hub';
 
 class EventsExtensionPointImpl implements EventsExtensionPoint {
   #httpPostIngresses: HttpPostIngressOptions[] = [];
@@ -62,7 +63,7 @@ class EventsExtensionPointImpl implements EventsExtensionPoint {
 /**
  * Events plugin
  *
- * @alpha
+ * @public
  */
 export const eventsPlugin = createBackendPlugin({
   pluginId: 'events',
@@ -74,10 +75,23 @@ export const eventsPlugin = createBackendPlugin({
       deps: {
         config: coreServices.rootConfig,
         events: eventsServiceRef,
+        database: coreServices.database,
         logger: coreServices.logger,
+        scheduler: coreServices.scheduler,
+        lifecycle: coreServices.lifecycle,
+        httpAuth: coreServices.httpAuth,
         router: coreServices.httpRouter,
       },
-      async init({ config, events, logger, router }) {
+      async init({
+        config,
+        events,
+        database,
+        logger,
+        scheduler,
+        lifecycle,
+        httpAuth,
+        router,
+      }) {
         const ingresses = Object.fromEntries(
           extensionPoint.httpPostIngresses.map(ingress => [
             ingress.topic,
@@ -93,6 +107,17 @@ export const eventsPlugin = createBackendPlugin({
         });
         const eventsRouter = Router();
         http.bind(eventsRouter);
+
+        router.use(
+          await createEventBusRouter({
+            database,
+            logger,
+            httpAuth,
+            scheduler,
+            lifecycle,
+          }),
+        );
+
         router.use(eventsRouter);
         router.addAuthPolicy({
           allow: 'unauthenticated',

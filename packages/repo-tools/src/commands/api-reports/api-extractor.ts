@@ -376,6 +376,7 @@ export async function runApiExtraction({
       logLevel: 'none',
     };
   }
+
   const warnings = new Array<string>();
 
   for (const [packageDir, packageEntryPoints] of Object.entries(
@@ -393,21 +394,20 @@ export async function runApiExtraction({
     );
 
     const remainingReportFiles = new Set(
-      fs
-        .readdirSync(projectFolder)
-        .filter(
-          filename =>
-            filename.match(/^(.+)-api-report\.md$/) ||
-            filename.match(/^api-report(-.+)?\.md$/),
-        ),
+      fs.readdirSync(projectFolder).filter(
+        filename =>
+          // https://regex101.com/r/QDZIV0/2
+          filename !== 'knip-report.md' &&
+          // this has to temporarily match all old api report formats
+          filename.match(/^.*?(api-)?report(-[^.-]+)?(.*?)\.md$/),
+      ),
     );
 
     for (const packageEntryPoint of packageEntryPoints) {
       const suffix =
         packageEntryPoint.name === 'index' ? '' : `-${packageEntryPoint.name}`;
-      const reportFileName = `api-report${suffix}.md`;
-      const reportPath = resolvePath(projectFolder, reportFileName);
-      remainingReportFiles.delete(reportFileName);
+      const reportFileName = `report${suffix}`;
+      const reportPath = resolvePath(projectFolder, `${reportFileName}.api.md`);
 
       const warningCountBefore = await countApiReportWarnings(reportPath);
 
@@ -485,6 +485,11 @@ export async function runApiExtraction({
         ignoreMissingEntryPoint: true,
       });
 
+      // remove extracted reports from current list
+      for (const reportConfig of extractorConfig.reportConfigs) {
+        remainingReportFiles.delete(reportConfig.fileName);
+      }
+
       // The `packageFolder` needs to point to the location within `dist-types` in order for relative
       // paths to be logged. Unfortunately the `prepare` method above derives it from the `packageJsonFullPath`,
       // which needs to point to the actual file, so we override `packageFolder` afterwards.
@@ -515,14 +520,17 @@ export async function runApiExtraction({
           if (message.text.includes('The API report file is missing')) {
             shouldLogInstructions = true;
           }
+
+          // Detect messages like the following being output by the generator:
+          // Warning: You have changed the API signature for this project. Please copy the file "/home/runner/work/backstage/backstage/node_modules/.cache/api-extractor/backend-test-utils/report.api.md" to "report.api.md", or perform a local build (which does this automatically). See the Git repo documentation for more info.
           if (
             message.text.includes(
-              'You have changed the public API signature for this project.',
+              'You have changed the API signature for this project.',
             )
           ) {
             shouldLogInstructions = true;
             const match = message.text.match(
-              /Please copy the file "(.*)" to "api-report\.md"/,
+              /Please copy the file "(.*)" to "report\.api\.md"/,
             );
             if (match) {
               conflictingFile = match[1];
@@ -595,6 +603,7 @@ export async function runApiExtraction({
       }
 
       const warningCountAfter = await countApiReportWarnings(reportPath);
+
       if (noBail) {
         console.log(`Skipping warnings check for ${packageDir}`);
       }
@@ -1231,6 +1240,12 @@ export async function categorizePackageDirs(packageDirs: string[]) {
           const role = pkgJson?.backstage?.role;
           if (!role) {
             return; // Ignore packages without roles
+          }
+          // TODO(Rugvip): Inlined packages are ignored because we can't handle @internal exports
+          //               gracefully, and we don't want to have to mark all exports @public etc.
+          //               It would be good if we could include these packages though.
+          if (pkgJson?.backstage?.inline) {
+            return;
           }
           if (role === 'cli') {
             cliPackageDirs.push(dir);

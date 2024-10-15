@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Writable } from 'stream';
 import express from 'express';
 import { Config } from '@backstage/config';
 import { DiscoveryService, LoggerService } from '@backstage/backend-plugin-api';
 import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
+import { StorageOptions } from '@google-cloud/storage';
 
 /**
  * Options for building publishers
@@ -27,7 +27,16 @@ export type PublisherFactory = {
   logger: LoggerService;
   discovery: DiscoveryService;
   customPublisher?: PublisherBase | undefined;
+  publisherSettings?: PublisherSettings;
 };
+
+/**
+ * Additional configurations for publishers.
+ * @public
+ */
+export interface PublisherSettings {
+  googleGcs?: StorageOptions;
+}
 
 /**
  * Key for all the different types of TechDocs publishers that are supported.
@@ -168,36 +177,3 @@ export type PublisherBuilder = {
   register(type: PublisherType, publisher: PublisherBase): void;
   get(config: Config): PublisherBase;
 };
-
-/**
- * Handles the running of containers, on behalf of others.
- *
- * @public
- */
-export interface TechDocsContainerRunner {
-  /**
-   * Runs a container image to completion.
-   */
-  runContainer(opts: {
-    imageName: string;
-    command?: string | string[];
-    args: string[];
-    logStream?: Writable;
-    mountDirs?: Record<string, string>;
-    workingDir?: string;
-    envVars?: Record<string, string>;
-    pullImage?: boolean;
-    defaultUser?: boolean;
-    pullOptions?: {
-      authconfig?: {
-        username?: string;
-        password?: string;
-        auth?: string;
-        email?: string;
-        serveraddress?: string;
-        [key: string]: unknown;
-      };
-      [key: string]: unknown;
-    };
-  }): Promise<void>;
-}

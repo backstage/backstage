@@ -111,7 +111,7 @@ describe('GithubUrlReader', () => {
 
       worker.use(
         rest.get(
-          'https://ghe.github.com/api/v3/repos/backstage/mock/tree/contents/',
+          'https://ghe.github.com/api/v3/repos/backstage/mock/contents/main',
           (req, res, ctx) => {
             expect(req.headers.get('authorization')).toBe(
               mockHeaders.Authorization,
@@ -152,7 +152,7 @@ describe('GithubUrlReader', () => {
 
       worker.use(
         rest.get(
-          'https://ghe.github.com/api/v3/repos/backstage/mock/tree/contents/',
+          'https://ghe.github.com/api/v3/repos/backstage/mock/contents/main',
           (req, res, ctx) => {
             expect(req.headers.get('authorization')).toBe(
               mockHeaders.Authorization,
@@ -188,7 +188,7 @@ describe('GithubUrlReader', () => {
 
       worker.use(
         rest.get(
-          'https://ghe.github.com/api/v3/repos/backstage/mock/tree/contents/',
+          'https://ghe.github.com/api/v3/repos/backstage/mock/contents/main',
           (req, res, ctx) => {
             expect(req.headers.get('authorization')).toBe(
               mockHeaders.Authorization,
@@ -219,7 +219,7 @@ describe('GithubUrlReader', () => {
 
       worker.use(
         rest.get(
-          'https://ghe.github.com/api/v3/repos/backstage/mock/tree/contents/',
+          'https://ghe.github.com/api/v3/repos/backstage/mock/contents/main',
           (_req, res, ctx) => {
             return res(
               ctx.status(403),
@@ -249,7 +249,7 @@ describe('GithubUrlReader', () => {
 
       worker.use(
         rest.get(
-          'https://ghe.github.com/api/v3/repos/backstage/mock/tree/contents/',
+          'https://ghe.github.com/api/v3/repos/backstage/mock/contents/main',
           (_req, res, ctx) => {
             return res(
               ctx.status(200),
@@ -283,7 +283,7 @@ describe('GithubUrlReader', () => {
 
       worker.use(
         rest.get(
-          'https://ghe.github.com/api/v3/repos/backstage/mock/tree/contents/',
+          'https://ghe.github.com/api/v3/repos/backstage/mock/contents/main',
           (req, res, ctx) => {
             expect(req.headers.get('authorization')).toBe(
               'Bearer overridentoken',
