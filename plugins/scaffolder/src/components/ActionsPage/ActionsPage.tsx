@@ -50,8 +50,7 @@ import {
 } from '../../routes';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../translation';
-import { Expanded, SchemaRenderContext } from '../RenderSchema';
-import { RenderSchema } from '../RenderSchema/RenderSchema';
+import { Expanded, RenderSchema, SchemaRenderContext } from '../RenderSchema';
 import { ExamplesTable } from '../ExamplesTable/ExamplesTable';
 
 const useStyles = makeStyles(theme => ({
