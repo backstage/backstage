@@ -207,7 +207,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
 
     logger.info('Discovering catalog files in Bitbucket Cloud repositories');
 
-    const targets = await this.findCatalogFiles(this.config.level);
+    const targets = await this.findCatalogFiles();
     const entities = this.toDeferredEntities(targets);
 
     await this.connection.applyMutation({
@@ -271,7 +271,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     // Hence, we will just trigger a refresh for catalog file(s) within the repository
     // if we get notified about changes there.
 
-    const targets = await this.findCatalogFiles('workspace', repoSlug);
+    const targets = await this.findCatalogFiles(repoSlug);
 
     const { token } = await this.tokenManager!.getToken();
     const existing = await this.findExistingLocations(repoUrl, token);
@@ -334,7 +334,6 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
   }
 
   private async findCatalogFiles(
-    level: 'workspace' | 'project',
     repoSlug?: string,
   ): Promise<IngestionTarget[]> {
     const workspace = this.config.workspace;
@@ -347,23 +346,19 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     const optRepoFilter = repoSlug ? ` repo:${repoSlug}` : '';
     const query = `"${catalogFilename}" path:${catalogPath}${optRepoFilter}`;
 
-    if (level === 'project') {
-      const projects = this.client
-        .listProjectsByWorkspace(workspace)
-        .iterateResults();
+    const projects = this.client
+      .listProjectsByWorkspace(workspace)
+      .iterateResults();
 
-      let results: IngestionTarget[] = [];
+    let results: IngestionTarget[] = [];
 
-      for await (const project of projects) {
-        const projectQuery = `${query} project:${project.key}`;
-        const result = await this.processQuery(workspace, projectQuery);
-        results = results.concat(result);
-      }
-
-      return results;
+    for await (const project of projects) {
+      const projectQuery = `${query} project:${project.key}`;
+      const result = await this.processQuery(workspace, projectQuery);
+      results = results.concat(result);
     }
 
-    return this.processQuery(workspace, query);
+    return results;
   }
 
   private async processQuery(

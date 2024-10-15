@@ -77,17 +77,13 @@ describe('readProviderConfigs', () => {
                 },
               },
             },
-            providerWithProjectLevel: {
-              workspace: 'test-ws6',
-              level: 'project',
-            },
           },
         },
       },
     });
     const providerConfigs = readProviderConfigs(config);
 
-    expect(providerConfigs).toHaveLength(6);
+    expect(providerConfigs).toHaveLength(5);
     expect(providerConfigs[0]).toEqual({
       id: 'providerWorkspaceOnly',
       workspace: 'test-ws1',
@@ -96,7 +92,6 @@ describe('readProviderConfigs', () => {
         projectKey: undefined,
         repoSlug: undefined,
       },
-      level: 'workspace',
     });
     expect(providerConfigs[1]).toEqual({
       id: 'providerCustomCatalogPath',
@@ -106,7 +101,6 @@ describe('readProviderConfigs', () => {
         projectKey: undefined,
         repoSlug: undefined,
       },
-      level: 'workspace',
     });
     expect(providerConfigs[2]).toEqual({
       id: 'providerWithProjectKeyFilter',
@@ -116,7 +110,6 @@ describe('readProviderConfigs', () => {
         projectKey: /^projectKey.*filter$/,
         repoSlug: undefined,
       },
-      level: 'workspace',
     });
     expect(providerConfigs[3]).toEqual({
       id: 'providerWithRepoSlugFilter',
@@ -126,7 +119,6 @@ describe('readProviderConfigs', () => {
         projectKey: undefined,
         repoSlug: /^repoSlug.*filter$/,
       },
-      level: 'workspace',
     });
     expect(providerConfigs[4]).toEqual({
       id: 'providerWithSchedule',
@@ -142,17 +134,6 @@ describe('readProviderConfigs', () => {
           minutes: 3,
         },
       },
-      level: 'workspace',
-    });
-    expect(providerConfigs[5]).toEqual({
-      id: 'providerWithProjectLevel',
-      workspace: 'test-ws6',
-      catalogPath: '/catalog-info.yaml',
-      filters: {
-        projectKey: undefined,
-        repoSlug: undefined,
-      },
-      level: 'project',
     });
   });
 });

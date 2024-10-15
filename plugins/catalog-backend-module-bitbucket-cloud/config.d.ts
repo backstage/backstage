@@ -56,14 +56,6 @@ export interface Config {
               projectKey?: string;
             };
             /**
-             * (Optional) At what level discovery should take place, affecting Bitbucket Cloud API limits.
-             *
-             * Possible values:
-             * - `workspace` (default): 1 API call per workspace, limited to 900 repositories per workspace.
-             * - `project`: 1 API call per project, limited to 900 repositories per project.
-             */
-            level?: 'workspace' | 'project';
-            /**
              * (Optional) TaskScheduleDefinition for the discovery.
              */
             schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
@@ -96,14 +88,6 @@ export interface Config {
                  */
                 projectKey?: string;
               };
-              /**
-               * (Optional) At what level discovery should take place, affecting Bitbucket Cloud API limits.
-               *
-               * Possible values:
-               * - `workspace` (default): 1 API call per workspace, limited to 900 repositories per workspace.
-               * - `project`: 1 API call per project, limited to 900 repositories per project.
-               */
-              level?: 'workspace' | 'project';
               /**
                * (Optional) TaskScheduleDefinition for the discovery.
                */
