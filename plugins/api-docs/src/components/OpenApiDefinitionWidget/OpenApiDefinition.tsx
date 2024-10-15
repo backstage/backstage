@@ -94,7 +94,8 @@ const useStyles = makeStyles(theme => ({
           .errors small`]: {
         color: theme.palette.text.secondary,
       },
-      [`& .parameter__name.required:after`]: {
+      [`& .parameter__name.required:after,
+        .parameter__name.required span`]: {
         color: theme.palette.warning.dark,
       },
       [`& table.model,
@@ -165,11 +166,9 @@ const useStyles = makeStyles(theme => ({
       [`.json-schema-2020-12__constraint--string`]: {
         backgroundColor: theme.palette.primary.main,
       },
-      [`& .json-schema-2020-12__attribute--primary,
-          .json-schema-2020-12-property--required>.json-schema-2020-12:first-of-type>.json-schema-2020-12-head .json-schema-2020-12__title:after`]:
-        {
-          color: theme.palette.primary.main,
-        },
+      [`& .json-schema-2020-12__attribute--primary`]: {
+        color: theme.palette.primary.main,
+      },
       [`& .json-schema-2020-12-property--required>.json-schema-2020-12:first-of-type>.json-schema-2020-12-head .json-schema-2020-12__title:after`]:
         {
           color: theme.palette.warning.dark,
