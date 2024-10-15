@@ -31815,16 +31815,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jiti@npm:^1.21.6":
-  version: 1.21.6
-  resolution: "jiti@npm:1.21.6"
-  bin:
-    jiti: bin/jiti.js
-  checksum: 9ea4a70a7bb950794824683ed1c632e2ede26949fbd348e2ba5ec8dc5efa54dc42022d85ae229cadaa60d4b95012e80ea07d625797199b688cc22ab0e8891d32
-  languageName: node
-  linkType: hard
-
-"jiti@npm:^2.0.0":
+"jiti@npm:^2.0.0, jiti@npm:^2.3.3":
   version: 2.3.3
   resolution: "jiti@npm:2.3.3"
   bin:
@@ -32663,15 +32654,15 @@ __metadata:
   linkType: hard
 
 "knip@npm:^5.0.0":
-  version: 5.30.6
-  resolution: "knip@npm:5.30.6"
+  version: 5.33.3
+  resolution: "knip@npm:5.33.3"
   dependencies:
     "@nodelib/fs.walk": 1.2.8
     "@snyk/github-codeowners": 1.1.0
     easy-table: 1.2.0
     enhanced-resolve: ^5.17.1
     fast-glob: ^3.3.2
-    jiti: ^1.21.6
+    jiti: ^2.3.3
     js-yaml: ^4.1.0
     minimist: ^1.2.8
     picocolors: ^1.0.0
@@ -32688,7 +32679,7 @@ __metadata:
   bin:
     knip: bin/knip.js
     knip-bun: bin/knip-bun.js
-  checksum: 9820761248882926789bdf3cf8014a32e695d94bdabc335b4b637bceaeec7922358b67027b46aa5f7f2af10460027d0d33be407d48db76e50c8d1dd8dfca95ce
+  checksum: 636e26fde892c590a65326d370fc19f1d73575ac014fb84d55d67a71dc05ea0ba2114ae587ba0192232b4ac1094710ee7d9582cf3bbe0773f6c667c0bba9b3e4
   languageName: node
   linkType: hard
 
