@@ -116,7 +116,6 @@ export class CookiecutterRunner {
         // Set the home directory inside the container as something that applications can
         // write to, otherwise they will just fail trying to write to /
         envVars: { HOME: '/tmp' },
-        logger,
       });
     }
 

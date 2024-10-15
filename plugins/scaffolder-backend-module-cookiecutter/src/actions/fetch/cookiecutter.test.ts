@@ -189,7 +189,6 @@ describe('fetch:cookiecutter', () => {
         },
         workingDir: '/input',
         envVars: { HOME: '/tmp' },
-        logger: expect.any(Logger),
       }),
     );
   });

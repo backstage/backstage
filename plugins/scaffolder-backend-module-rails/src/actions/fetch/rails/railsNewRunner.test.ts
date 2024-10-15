@@ -78,7 +78,6 @@ describe('Rails Templater', () => {
           [path.join(mockDir.path, 'intermediate')]: '/output',
         },
         workingDir: '/input',
-        logger: logger,
       });
     });
 
@@ -144,7 +143,6 @@ describe('Rails Templater', () => {
           [path.join(mockDir.path, 'intermediate')]: '/output',
         },
         workingDir: '/input',
-        logger,
       });
     });
 
@@ -186,7 +184,6 @@ describe('Rails Templater', () => {
           [path.join(mockDir.path, 'intermediate')]: '/output',
         },
         workingDir: '/input',
-        logger,
       });
     });
   });
