@@ -56,10 +56,6 @@ export interface Config {
               projectKey?: string;
             };
             /**
-             * (Optional) TaskScheduleDefinition for the discovery.
-             */
-            schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
-            /**
              * (Optional) At what level discovery should take place, affecting Bitbucket Cloud API limits.
              *
              * Possible values:
@@ -67,6 +63,10 @@ export interface Config {
              * - `project`: 1 API call per project, limited to 900 repositories per project.
              */
             level?: 'workspace' | 'project';
+            /**
+             * (Optional) TaskScheduleDefinition for the discovery.
+             */
+            schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
           }
         | {
             [name: string]: {
@@ -97,10 +97,6 @@ export interface Config {
                 projectKey?: string;
               };
               /**
-               * (Optional) TaskScheduleDefinition for the discovery.
-               */
-              schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
-              /**
                * (Optional) At what level discovery should take place, affecting Bitbucket Cloud API limits.
                *
                * Possible values:
@@ -108,6 +104,10 @@ export interface Config {
                * - `project`: 1 API call per project, limited to 900 repositories per project.
                */
               level?: 'workspace' | 'project';
+              /**
+               * (Optional) TaskScheduleDefinition for the discovery.
+               */
+              schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
             };
           };
     };

@@ -146,13 +146,13 @@ catalog:
         filters: # optional
           projectKey: '^apis-.*$' # optional; RegExp
           repoSlug: '^service-.*$' # optional; RegExp
+        level: workspace # default value
         schedule: # same options as in SchedulerServiceTaskScheduleDefinition
           # supports cron, ISO duration, "human duration" as used in code
           frequency: { minutes: 30 }
           # supports ISO duration, "human duration" as used in code
           timeout: { minutes: 3 }
         workspace: workspace-name
-        level: workspace # default value
 ```
 
 > **Note:** It is possible but certainly not recommended to skip the provider ID level.
@@ -169,6 +169,8 @@ catalog:
     Regular expression used to filter results based on the project key.
   - **`repoSlug`** _(optional)_:
     Regular expression used to filter results based on the repo slug.
+- **`level`** _(optional)_:
+  `'workspace'` (default) or `'project'`. At what level discovery should take place, affecting Bitbucket Cloud API limits.
 - **`schedule`**:
   - **`frequency`**:
     How often you want the task to run. The system does its best to avoid overlapping invocations.
@@ -181,7 +183,5 @@ catalog:
 - **`workspace`**:
   Name of your organization account/workspace.
   If you want to add multiple workspaces, you need to add one provider config each.
-- **`level`** _(optional)_:
-  `'workspace'` (default) or `'project'`. At what level discovery should take place, affecting Bitbucket Cloud API limits.
 
 > **Note:** By default, discovery will take place at the `workspace` level. While being the most efficient in terms of API calls to Bitbucket Cloud, discovery at the workspace level is limited to 900 repositories per workspace. If your workspace consists of more than 900 repositories, you should switch to discovery at the `project` level, shifting the limit to 900 repositories per project.
