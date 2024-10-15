@@ -58,7 +58,7 @@ export type Action = {
 };
 
 // @public @deprecated
-export type ActionExample = TemplatingExample;
+export type ActionExample = ScaffolderUsageExample;
 
 // @public
 export function createScaffolderFieldExtension<
@@ -502,6 +502,13 @@ export type ScaffolderTaskStatus =
   | 'skipped';
 
 // @public
+export type ScaffolderUsageExample = {
+  description?: string;
+  example: string;
+  notes?: string;
+};
+
+// @public
 export interface ScaffolderUseTemplateSecrets {
   // (undocumented)
   secrets: Record<string, string>;
@@ -540,7 +547,7 @@ export type TemplateFilter = {
     arguments?: JSONSchema7[];
     output?: JSONSchema7;
   };
-  examples?: TemplatingExample[];
+  examples?: ScaffolderUsageExample[];
 };
 
 // @public
@@ -550,7 +557,7 @@ export type TemplateGlobalFunction = {
     arguments?: JSONSchema7[];
     output?: JSONSchema7;
   };
-  examples?: TemplatingExample[];
+  examples?: ScaffolderUsageExample[];
 };
 
 // @public
@@ -579,13 +586,6 @@ export type TemplateParameterSchema = {
     id: string;
     input?: JsonObject;
   }[];
-};
-
-// @public
-export type TemplatingExample = {
-  description?: string;
-  example: string;
-  notes?: string;
 };
 
 // @public
