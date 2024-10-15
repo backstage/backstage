@@ -35,7 +35,7 @@ import { ScmIntegrations } from '@backstage/integration';
 import { fetchContents } from '@backstage/plugin-scaffolder-node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { resolve as resolvePath } from 'path';
-import { Logger } from 'winston';
+import { Writable } from 'stream';
 import { createFetchRailsAction } from './index';
 
 describe('fetch:rails', () => {
@@ -106,7 +106,7 @@ describe('fetch:rails', () => {
 
     expect(mockRailsTemplater.run).toHaveBeenCalledWith({
       workspacePath: mockContext.workspacePath,
-      logger: expect.any(Logger),
+      logStream: expect.any(Writable),
       values: mockContext.input.values,
     });
   });
@@ -122,7 +122,7 @@ describe('fetch:rails', () => {
 
     expect(mockRailsTemplater.run).toHaveBeenCalledWith({
       workspacePath: mockContext.workspacePath,
-      logger: expect.any(Logger),
+      logStream: expect.any(Writable),
       values: {
         ...mockContext.input.values,
         imageName: 'foo/rails-custom-image',

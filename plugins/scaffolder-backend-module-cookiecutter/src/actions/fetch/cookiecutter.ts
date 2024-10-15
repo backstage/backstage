@@ -30,7 +30,7 @@ import { JsonObject, JsonValue } from '@backstage/types';
 import commandExists from 'command-exists';
 import fs from 'fs-extra';
 import path, { resolve as resolvePath } from 'path';
-import { Logger } from 'winston';
+import { PassThrough, Writable } from 'stream';
 import { examples } from './cookiecutter.examples';
 
 export class CookiecutterRunner {
@@ -57,14 +57,14 @@ export class CookiecutterRunner {
   public async run({
     workspacePath,
     values,
-    logger,
+    logStream,
     imageName,
     templateDir,
     templateContentsDir,
   }: {
     workspacePath: string;
     values: JsonObject;
-    logger: Logger;
+    logStream: Writable;
     imageName?: string;
     templateDir: string;
     templateContentsDir: string;
@@ -99,7 +99,7 @@ export class CookiecutterRunner {
       await executeShellCommand({
         command: 'cookiecutter',
         args: ['--no-input', '-o', intermediateDir, templateDir, '--verbose'],
-        logger,
+        logStream,
       });
     } else {
       if (this.containerRunner === undefined) {
@@ -116,6 +116,7 @@ export class CookiecutterRunner {
         // Set the home directory inside the container as something that applications can
         // write to, otherwise they will just fail trying to write to /
         envVars: { HOME: '/tmp' },
+        logStream,
       });
     }
 
@@ -246,10 +247,15 @@ export function createFetchCookiecutterAction(options: {
         _extensions: ctx.input.extensions,
       };
 
+      const logStream = new PassThrough();
+      logStream.on('data', chunk => {
+        ctx.logger.info(chunk.toString());
+      });
+
       // Will execute the template in ./template and put the result in ./result
       await cookiecutter.run({
         workspacePath: workDir,
-        logger: ctx.logger,
+        logStream,
         values: values,
         imageName: ctx.input.imageName,
         templateDir: templateDir,

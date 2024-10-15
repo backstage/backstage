@@ -20,7 +20,7 @@ import { JsonObject } from '@backstage/types';
 import commandExists from 'command-exists';
 import fs from 'fs-extra';
 import path from 'path';
-import { Logger } from 'winston';
+import { Writable } from 'stream';
 import {
   railsArgumentResolver,
   RailsRunOptions,
@@ -36,11 +36,11 @@ export class RailsNewRunner {
   public async run({
     workspacePath,
     values,
-    logger,
+    logStream,
   }: {
     workspacePath: string;
     values: JsonObject;
-    logger: Logger;
+    logStream: Writable;
   }): Promise<void> {
     const intermediateDir = path.join(workspacePath, 'intermediate');
     await fs.ensureDir(intermediateDir);
@@ -71,7 +71,7 @@ export class RailsNewRunner {
           `${intermediateDir}${path.sep}${name}`,
           ...arrayExtraArguments,
         ],
-        logger,
+        logStream,
       });
     } else {
       if (!imageName) {
@@ -96,6 +96,7 @@ export class RailsNewRunner {
         // Set the home directory inside the container as something that applications can
         // write to, otherwise they will just fail trying to write to /
         envVars: { HOME: '/tmp' },
+        logStream,
       });
     }
 

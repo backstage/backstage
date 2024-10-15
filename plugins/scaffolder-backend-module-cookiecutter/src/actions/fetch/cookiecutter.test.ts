@@ -23,7 +23,7 @@ import type { ActionContext } from '@backstage/plugin-scaffolder-node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { JsonObject } from '@backstage/types';
 import { join } from 'path';
-import { Logger } from 'winston';
+import { Writable } from 'stream';
 import { createFetchCookiecutterAction } from './cookiecutter';
 
 const executeShellCommand = jest.fn();
@@ -168,7 +168,7 @@ describe('fetch:cookiecutter', () => {
           join(mockTmpDir, 'template'),
           '--verbose',
         ],
-        logger: expect.any(Logger),
+        logStream: expect.any(Writable),
       }),
     );
   });
@@ -189,6 +189,7 @@ describe('fetch:cookiecutter', () => {
         },
         workingDir: '/input',
         envVars: { HOME: '/tmp' },
+        logStream: expect.any(Writable),
       }),
     );
   });

@@ -26,6 +26,7 @@ import fs from 'fs-extra';
 
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { resolve as resolvePath } from 'path';
+import { PassThrough } from 'stream';
 import { examples } from './index.examples';
 import { RailsNewRunner } from './railsNewRunner';
 
@@ -218,10 +219,15 @@ export function createFetchRailsAction(options: {
         throw new Error(`Image ${imageName} is not allowed`);
       }
 
+      const logStream = new PassThrough();
+      logStream.on('data', chunk => {
+        ctx.logger.info(chunk.toString());
+      });
+
       // Will execute the template in ./template and put the result in ./result
       await templateRunner.run({
         workspacePath: workDir,
-        logger: ctx.logger,
+        logStream,
         values: { ...ctx.input.values, imageName },
       });
 
