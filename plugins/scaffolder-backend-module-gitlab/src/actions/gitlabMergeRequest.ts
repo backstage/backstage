@@ -24,11 +24,13 @@ import { Gitlab, Types } from '@gitbeaker/core';
 import path from 'path';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { InputError } from '@backstage/errors';
-import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
+import {
+  LoggerService,
+  resolveSafeChildPath,
+} from '@backstage/backend-plugin-api';
 import { createGitlabApi } from './helpers';
 import { examples } from './gitlabMergeRequest.examples';
 import { createHash } from 'crypto';
-import { Logger } from 'winston';
 
 function computeSha256(file: SerializedFile): string {
   const hash = createHash('sha256');
@@ -40,7 +42,7 @@ async function getFileAction(
   fileInfo: { file: SerializedFile; targetPath?: string },
   target: { repoID: string; branch: string },
   api: Gitlab,
-  logger: Logger,
+  logger: LoggerService,
   remoteFiles: Types.RepositoryTreeSchema[],
   defaultCommitAction:
     | 'create'
