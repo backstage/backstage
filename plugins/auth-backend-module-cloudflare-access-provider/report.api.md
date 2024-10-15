@@ -60,10 +60,4 @@ export namespace cloudflareAccessSignInResolvers {
 export function createCloudflareAccessAuthenticator(options?: {
   cache?: CacheService;
 }): ProxyAuthenticator<unknown, CloudflareAccessResult, CloudflareAccessResult>;
-
-// Warnings were encountered during analysis:
-//
-// src/types.d.ts:55:1 - (ae-undocumented) Missing documentation for "CloudflareAccessGroup".
-// src/types.d.ts:72:1 - (ae-undocumented) Missing documentation for "CloudflareAccessIdentityProfile".
-// src/types.d.ts:81:1 - (ae-undocumented) Missing documentation for "CloudflareAccessResult".
 ```

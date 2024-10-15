@@ -28,14 +28,5 @@ export interface EventsExtensionPoint {
 // @alpha (undocumented)
 export const eventsExtensionPoint: ExtensionPoint<EventsExtensionPoint>;
 
-// Warnings were encountered during analysis:
-//
-// src/extensions.d.ts:5:1 - (ae-undocumented) Missing documentation for "EventsExtensionPoint".
-// src/extensions.d.ts:9:5 - (ae-undocumented) Missing documentation for "setEventBroker".
-// src/extensions.d.ts:13:5 - (ae-undocumented) Missing documentation for "addPublishers".
-// src/extensions.d.ts:17:5 - (ae-undocumented) Missing documentation for "addSubscribers".
-// src/extensions.d.ts:18:5 - (ae-undocumented) Missing documentation for "addHttpPostIngress".
-// src/extensions.d.ts:23:22 - (ae-undocumented) Missing documentation for "eventsExtensionPoint".
-
 // (No @packageDocumentation comment for this package)
 ```

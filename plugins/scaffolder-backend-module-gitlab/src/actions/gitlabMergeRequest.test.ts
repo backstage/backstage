@@ -30,6 +30,22 @@ const mockGitlabClient = {
   },
   Branches: {
     create: jest.fn(),
+    show: jest.fn(async (_repoID: string | number, name: string) => {
+      if (['main', 'existing-branch'].includes(name)) {
+        return {
+          name,
+          merged: name === 'main',
+          protected: name === 'main',
+          default: name === 'main',
+          developers_can_push: name !== 'main',
+          developers_can_merge: name !== 'main',
+          can_push: name !== 'main',
+          web_url: `https://foo.bar.baz/owner/repo/-/tree/${name}`,
+          commit: { message: 'last change' },
+        };
+      }
+      throw new Error(`Unknown branch ${name}`);
+    }),
   },
   Commits: {
     create: jest.fn(),
@@ -80,6 +96,28 @@ const mockGitlabClient = {
             },
           ];
         }
+      },
+    ),
+  },
+  RepositoryFiles: {
+    show: jest.fn(
+      async (repoID: string | number, filePath: string, ref: string) => {
+        if (repoID !== 'owner/repo') throw new Error('repo does not exist');
+        if (filePath !== 'source/auto.txt')
+          throw new Error('filePath does not exist');
+        return {
+          file_name: 'auto.txt',
+          file_path: 'source/auto.txt',
+          size: 11,
+          encoding: 'base64',
+          content: 'Zm9vLWJhci1iYXo=',
+          content_sha256:
+            '269dce1a5bb90188b2d9cf542a7c30e410c7d8251e34a97bfea56062df51ae23',
+          ref,
+          blob_id: 'a1e8f8d745cc87e3a9248358d9352bb7f9a0aeba',
+          commit_id: 'd5a3ff139356ce33e37e73add446f16869741b50',
+          last_commit_id: '570e7b2abdd848b95f2f578043fc23bd6f6fd24d',
+        };
       },
     ),
   },
@@ -149,6 +187,7 @@ describe('createGitLabMergeRequest', () => {
         'new-mr',
         'test',
       );
+      expect(mockGitlabClient.Commits.create).not.toHaveBeenCalled();
       expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
         'owner/repo',
         'new-mr',
@@ -184,6 +223,7 @@ describe('createGitLabMergeRequest', () => {
         'new-mr',
         'main',
       );
+      expect(mockGitlabClient.Commits.create).not.toHaveBeenCalled();
       expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
         'owner/repo',
         'new-mr',
@@ -191,7 +231,6 @@ describe('createGitLabMergeRequest', () => {
         'Create my new MR',
         { description: 'This MR is really good', removeSourceBranch: false },
       );
-
       expect(ctx.output).toHaveBeenCalledWith('targetBranchName', 'main');
     });
   });
@@ -216,6 +255,12 @@ describe('createGitLabMergeRequest', () => {
       const ctx = createMockActionContext({ input, workspacePath });
       await instance.handler(ctx);
 
+      expect(mockGitlabClient.Branches.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+      );
+      expect(mockGitlabClient.Commits.create).not.toHaveBeenCalled();
       expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
         'owner/repo',
         'new-mr',
@@ -244,6 +289,12 @@ describe('createGitLabMergeRequest', () => {
       const ctx = createMockActionContext({ input, workspacePath });
       await instance.handler(ctx);
 
+      expect(mockGitlabClient.Branches.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+      );
+      expect(mockGitlabClient.Commits.create).not.toHaveBeenCalled();
       expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
         'owner/repo',
         'new-mr',
@@ -278,6 +329,12 @@ describe('createGitLabMergeRequest', () => {
       const ctx = createMockActionContext({ input, workspacePath });
       await instance.handler(ctx);
 
+      expect(mockGitlabClient.Branches.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+      );
+      expect(mockGitlabClient.Commits.create).not.toHaveBeenCalled();
       expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
         'owner/repo',
         'new-mr',
@@ -311,6 +368,12 @@ describe('createGitLabMergeRequest', () => {
       const ctx = createMockActionContext({ input, workspacePath });
       await instance.handler(ctx);
 
+      expect(mockGitlabClient.Branches.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+      );
+      expect(mockGitlabClient.Commits.create).not.toHaveBeenCalled();
       expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
         'owner/repo',
         'new-mr',
@@ -344,6 +407,12 @@ describe('createGitLabMergeRequest', () => {
       const ctx = createMockActionContext({ input, workspacePath });
       await instance.handler(ctx);
 
+      expect(mockGitlabClient.Branches.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+      );
+      expect(mockGitlabClient.Commits.create).not.toHaveBeenCalled();
       expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
         'owner/repo',
         'new-mr',
@@ -376,6 +445,12 @@ describe('createGitLabMergeRequest', () => {
       const ctx = createMockActionContext({ input, workspacePath });
       await instance.handler(ctx);
 
+      expect(mockGitlabClient.Branches.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+      );
+      expect(mockGitlabClient.Commits.create).not.toHaveBeenCalled();
       expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
         'owner/repo',
         'new-mr',
@@ -404,6 +479,11 @@ describe('createGitLabMergeRequest', () => {
       const ctx = createMockActionContext({ input, workspacePath });
       await instance.handler(ctx);
 
+      expect(mockGitlabClient.Branches.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+      );
       expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
         'owner/repo',
         'new-mr',
@@ -424,6 +504,16 @@ describe('createGitLabMergeRequest', () => {
             execute_filemode: false,
           },
         ]),
+      );
+      expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+        'Create my new MR',
+        {
+          description: 'This MR is really good',
+          removeSourceBranch: false,
+        },
       );
     });
   });
@@ -446,6 +536,11 @@ describe('createGitLabMergeRequest', () => {
       const ctx = createMockActionContext({ input, workspacePath });
       await instance.handler(ctx);
 
+      expect(mockGitlabClient.Branches.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+      );
       expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
         'owner/repo',
         'new-mr',
@@ -466,6 +561,16 @@ describe('createGitLabMergeRequest', () => {
             execute_filemode: false,
           },
         ]),
+      );
+      expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+        'Create my new MR',
+        {
+          description: 'This MR is really good',
+          removeSourceBranch: false,
+        },
       );
     });
   });
@@ -490,6 +595,11 @@ describe('createGitLabMergeRequest', () => {
       const ctx = createMockActionContext({ input, workspacePath });
       await instance.handler(ctx);
 
+      expect(mockGitlabClient.Branches.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+      );
       expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
         'owner/repo',
         'new-mr',
@@ -503,6 +613,16 @@ describe('createGitLabMergeRequest', () => {
             execute_filemode: false,
           },
         ],
+      );
+      expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+        'Create my new MR',
+        {
+          description: 'MR description',
+          removeSourceBranch: false,
+        },
       );
     });
 
@@ -525,6 +645,11 @@ describe('createGitLabMergeRequest', () => {
       const ctx = createMockActionContext({ input, workspacePath });
       await instance.handler(ctx);
 
+      expect(mockGitlabClient.Branches.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+      );
       expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
         'owner/repo',
         'new-mr',
@@ -538,6 +663,16 @@ describe('createGitLabMergeRequest', () => {
             execute_filemode: false,
           },
         ],
+      );
+      expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+        'Create my new MR',
+        {
+          description: 'MR description',
+          removeSourceBranch: false,
+        },
       );
     });
 
@@ -558,6 +693,11 @@ describe('createGitLabMergeRequest', () => {
       const ctx = createMockActionContext({ input, workspacePath });
       await instance.handler(ctx);
 
+      expect(mockGitlabClient.Branches.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+      );
       expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
         'owner/repo',
         'new-mr',
@@ -578,6 +718,16 @@ describe('createGitLabMergeRequest', () => {
             execute_filemode: false,
           },
         ]),
+      );
+      expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+        'Create my new MR',
+        {
+          description: 'MR description',
+          removeSourceBranch: false,
+        },
       );
     });
 
@@ -600,6 +750,11 @@ describe('createGitLabMergeRequest', () => {
       const ctx = createMockActionContext({ input, workspacePath });
       await instance.handler(ctx);
 
+      expect(mockGitlabClient.Branches.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+      );
       expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
         'owner/repo',
         'new-mr',
@@ -620,6 +775,16 @@ describe('createGitLabMergeRequest', () => {
             execute_filemode: false,
           },
         ]),
+      );
+      expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+        'Create my new MR',
+        {
+          description: 'MR description',
+          removeSourceBranch: false,
+        },
       );
     });
 
@@ -642,6 +807,11 @@ describe('createGitLabMergeRequest', () => {
       const ctx = createMockActionContext({ input, workspacePath });
       await instance.handler(ctx);
 
+      expect(mockGitlabClient.Branches.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+      );
       expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
         'owner/repo',
         'new-mr',
@@ -655,6 +825,119 @@ describe('createGitLabMergeRequest', () => {
             execute_filemode: false,
           },
         ],
+      );
+      expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+        'Create my new MR',
+        {
+          description: 'other MR description',
+          removeSourceBranch: false,
+        },
+      );
+    });
+    it('commitAction skip skips commit', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        title: 'Create my new MR',
+        branchName: 'new-mr',
+        description: 'MR description',
+        commitAction: 'skip',
+      };
+      const ctx = createMockActionContext({ input, workspacePath });
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.Branches.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+      );
+      expect(mockGitlabClient.Commits.create).not.toHaveBeenCalled();
+      expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+        'Create my new MR',
+        {
+          description: 'MR description',
+          removeSourceBranch: false,
+        },
+      );
+    });
+    it('commitAction skip reuses existing branch', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        title: 'Create my new MR',
+        branchName: 'existing-branch',
+        description: 'MR description',
+        commitAction: 'skip',
+      };
+      const ctx = createMockActionContext({ input, workspacePath });
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.Branches.show).toHaveBeenCalledWith(
+        'owner/repo',
+        'existing-branch',
+      );
+      expect(mockGitlabClient.Branches.create).not.toHaveBeenCalled();
+      expect(mockGitlabClient.Commits.create).not.toHaveBeenCalled();
+      expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'existing-branch',
+        'main',
+        'Create my new MR',
+        {
+          description: 'MR description',
+          removeSourceBranch: false,
+        },
+      );
+    });
+    it('commitAction auto skips unmodified files', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        title: 'Create my new MR',
+        branchName: 'new-mr',
+        description: 'MR description',
+        commitAction: 'auto',
+      };
+      mockDir.setContent({
+        [workspacePath]: {
+          source: { 'foo.txt': 'Hello there!', 'auto.txt': 'foo-bar-baz' },
+        },
+      });
+
+      const ctx = createMockActionContext({ input, workspacePath });
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.Branches.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+      );
+      expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'Create my new MR',
+        expect.arrayContaining([
+          {
+            action: 'create',
+            filePath: 'source/foo.txt',
+            content: 'SGVsbG8gdGhlcmUh',
+            encoding: 'base64',
+            execute_filemode: false,
+          },
+        ]),
+      );
+      expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+        'Create my new MR',
+        {
+          description: 'MR description',
+          removeSourceBranch: false,
+        },
       );
     });
   });
@@ -681,6 +964,11 @@ describe('createGitLabMergeRequest', () => {
 
       await instance.handler(ctx);
 
+      expect(mockGitlabClient.Branches.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+      );
       expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
         'owner/repo',
         'new-mr',
@@ -719,6 +1007,11 @@ describe('createGitLabMergeRequest', () => {
 
       await instance.handler(ctx);
 
+      expect(mockGitlabClient.Branches.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+      );
       expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
         'owner/repo',
         'new-mr',

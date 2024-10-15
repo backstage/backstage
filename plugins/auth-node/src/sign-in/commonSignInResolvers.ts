@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+import { z } from 'zod';
 import { createSignInResolverFactory } from './createSignInResolverFactory';
+import { NotAllowedError } from '@backstage/errors';
 
 // This splits an email "joe+work@acme.com" into ["joe", "+work", "@acme.com"]
 // so that we can remove the plus addressing. May output a shorter array:
@@ -77,7 +79,13 @@ export namespace commonSignInResolvers {
    */
   export const emailLocalPartMatchingUserEntityName =
     createSignInResolverFactory({
-      create() {
+      optionsSchema: z
+        .object({
+          allowedDomains: z.array(z.string()).optional(),
+        })
+        .optional(),
+      create(options = {}) {
+        const { allowedDomains } = options;
         return async (info, ctx) => {
           const { profile } = info;
 
@@ -87,6 +95,13 @@ export namespace commonSignInResolvers {
             );
           }
           const [localPart] = profile.email.split('@');
+          const domain = profile.email.slice(localPart.length + 1);
+
+          if (allowedDomains && !allowedDomains.includes(domain)) {
+            throw new NotAllowedError(
+              'Sign-in user email is not from an allowed domain',
+            );
+          }
 
           return ctx.signInWithCatalogUser({
             entityRef: { name: localPart },

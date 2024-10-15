@@ -58,17 +58,5 @@ export const signalsServiceRef: ServiceRef<
   'singleton'
 >;
 
-// Warnings were encountered during analysis:
-//
-// src/DefaultSignalsService.d.ts:5:1 - (ae-undocumented) Missing documentation for "DefaultSignalsService".
-// src/DefaultSignalsService.d.ts:7:5 - (ae-undocumented) Missing documentation for "create".
-// src/DefaultSignalsService.d.ts:19:22 - (ae-undocumented) Missing documentation for "DefaultSignalService".
-// src/SignalsService.d.ts:4:1 - (ae-undocumented) Missing documentation for "SignalsService".
-// src/SignalsService.d.ts:15:1 - (ae-undocumented) Missing documentation for "SignalService".
-// src/lib.d.ts:3:22 - (ae-undocumented) Missing documentation for "signalsServiceRef".
-// src/lib.d.ts:8:22 - (ae-undocumented) Missing documentation for "signalService".
-// src/types.d.ts:6:1 - (ae-undocumented) Missing documentation for "SignalsServiceOptions".
-// src/types.d.ts:10:1 - (ae-undocumented) Missing documentation for "SignalPayload".
-
 // (No @packageDocumentation comment for this package)
 ```

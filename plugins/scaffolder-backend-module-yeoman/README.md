@@ -19,7 +19,7 @@ Then ensure that both the scaffolder and this module are added to your backend:
 // In packages/backend/src/index.ts
 const backend = createBackend();
 // ...
-backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
+backend.add(import('@backstage/plugin-scaffolder-backend'));
 backend.add(import('@backstage/plugin-scaffolder-backend-module-yeoman'));
 ```
 

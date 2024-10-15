@@ -86,8 +86,16 @@ const techDocsEntityTransformer: TechDocsCollatorEntityTransformer = (
 ) => {
   return {
     // add more fields to the index
-    ...defaultTechDocsCollatorEntityTransformer(entity),
     tags: entity.metadata.tags,
+  };
+};
+
+const techDocsDocumentTransformer: TechDocsCollatorDocumentTransformer = (
+  doc: MkSearchIndexDoc,
+) => {
+  return {
+    // add more fields to the index
+    bost: doc.boost,
   };
 };
 
@@ -97,6 +105,8 @@ indexBuilder.addCollator({
     tokenManager: env.tokenManager,
     /* highlight-add-next-line */
     entityTransformer: techDocsEntityTransformer,
+    /* highlight-add-next-line */
+    documentTransformer: techDocsDocumentTransformer,
   }),
 });
 ```
@@ -143,20 +153,53 @@ how highlighted terms look you can follow Backstage's guide on how to
 [Customize the look-and-feel of your App](https://backstage.io/docs/getting-started/app-custom-theme)
 to create an override with your preferred styling.
 
-For example, the following will result in highlighted terms to be bold & underlined:
+For example, using the new MUI V4+V5 unified theming method, the following will result
+in highlighted words to be bold & underlined:
 
-```tsx
-const highlightOverride = {
-  BackstageHighlightedSearchResultText: {
-    highlight: {
-      color: 'inherit',
-      backgroundColor: 'inherit',
-      fontWeight: 'bold',
-      textDecoration: 'underline',
+```typescript jsx title=packages/app/src/theme/theme.ts
+import {
+  createBaseThemeOptions,
+  createUnifiedTheme,
+  palettes,
+  UnifiedTheme,
+} from '@backstage/theme';
+
+export const myLightTheme: UnifiedTheme = createUnifiedTheme({
+  ...createBaseThemeOptions({
+    palette: palettes.light,
+  }),
+  defaultPageTheme: 'home',
+  components: {
+    /** @ts-ignore This is temporarily necessary until MUI V5 transition is completed. */
+    BackstageHighlightedSearchResultText: {
+      styleOverrides: {
+        highlight: {
+          color: 'inherit',
+          backgroundColor: 'inherit',
+          fontWeight: 'bold',
+          textDecoration: 'underline',
+        },
+      },
     },
   },
-};
+});
 ```
+
+```typescript jsx title= packages/app/src/App.tsx
+
+const app : BackstageApp = createApp({
+  ...
+  themes: [{
+    id: 'my-light-theme',
+    title: 'Light Theme',
+    variant: 'light',
+    icon: <LightIcon />,
+    Provider: ({ children }) => (<UnifiedThemeProvider theme={myLightTheme} children={children } />)
+  }]
+});
+```
+
+Obviously if you wanted a dark theme, you would need to provide that as well.
 
 ## How to render search results using extensions
 

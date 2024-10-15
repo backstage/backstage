@@ -229,38 +229,4 @@ export const TrpcApiDefinitionWidget: (
 export type TrpcApiDefinitionWidgetProps = {
   definition: string;
 };
-
-// Warnings were encountered during analysis:
-//
-// src/components/ApiDefinitionCard/ApiDefinitionCard.d.ts:3:22 - (ae-undocumented) Missing documentation for "ApiDefinitionCard".
-// src/components/ApiDefinitionCard/ApiDefinitionWidget.d.ts:3:1 - (ae-undocumented) Missing documentation for "ApiDefinitionWidget".
-// src/components/ApiDefinitionCard/ApiDefinitionWidget.d.ts:10:1 - (ae-undocumented) Missing documentation for "defaultDefinitionWidgets".
-// src/components/ApiDefinitionCard/ApiTypeTitle.d.ts:6:22 - (ae-undocumented) Missing documentation for "ApiTypeTitle".
-// src/components/ApisCards/ConsumedApisCard.d.ts:7:22 - (ae-undocumented) Missing documentation for "ConsumedApisCard".
-// src/components/ApisCards/HasApisCard.d.ts:7:22 - (ae-undocumented) Missing documentation for "HasApisCard".
-// src/components/ApisCards/ProvidedApisCard.d.ts:7:22 - (ae-undocumented) Missing documentation for "ProvidedApisCard".
-// src/components/AsyncApiDefinitionWidget/AsyncApiDefinition.d.ts:4:1 - (ae-undocumented) Missing documentation for "AsyncApiResolver".
-// src/components/AsyncApiDefinitionWidget/AsyncApiDefinitionWidget.d.ts:4:1 - (ae-undocumented) Missing documentation for "AsyncApiDefinitionWidgetProps".
-// src/components/AsyncApiDefinitionWidget/AsyncApiDefinitionWidget.d.ts:9:22 - (ae-undocumented) Missing documentation for "AsyncApiDefinitionWidget".
-// src/components/ComponentsCards/ConsumingComponentsCard.d.ts:7:22 - (ae-undocumented) Missing documentation for "ConsumingComponentsCard".
-// src/components/ComponentsCards/ProvidingComponentsCard.d.ts:5:22 - (ae-undocumented) Missing documentation for "ProvidingComponentsCard".
-// src/components/GraphQlDefinitionWidget/GraphQlDefinitionWidget.d.ts:3:1 - (ae-undocumented) Missing documentation for "GraphQlDefinitionWidgetProps".
-// src/components/GraphQlDefinitionWidget/GraphQlDefinitionWidget.d.ts:7:22 - (ae-undocumented) Missing documentation for "GraphQlDefinitionWidget".
-// src/components/OpenApiDefinitionWidget/OpenApiDefinitionWidget.d.ts:3:1 - (ae-undocumented) Missing documentation for "OpenApiDefinitionWidgetProps".
-// src/components/OpenApiDefinitionWidget/OpenApiDefinitionWidget.d.ts:9:22 - (ae-undocumented) Missing documentation for "OpenApiDefinitionWidget".
-// src/components/PlainApiDefinitionWidget/PlainApiDefinitionWidget.d.ts:3:1 - (ae-undocumented) Missing documentation for "PlainApiDefinitionWidgetProps".
-// src/components/PlainApiDefinitionWidget/PlainApiDefinitionWidget.d.ts:8:22 - (ae-undocumented) Missing documentation for "PlainApiDefinitionWidget".
-// src/components/TrpcDefinitionWidget/TrpcApiDefinitionWidget.d.ts:3:1 - (ae-undocumented) Missing documentation for "TrpcApiDefinitionWidgetProps".
-// src/components/TrpcDefinitionWidget/TrpcApiDefinitionWidget.d.ts:7:22 - (ae-undocumented) Missing documentation for "TrpcApiDefinitionWidget".
-// src/config.d.ts:4:22 - (ae-undocumented) Missing documentation for "apiDocsConfigRef".
-// src/config.d.ts:6:1 - (ae-undocumented) Missing documentation for "ApiDocsConfig".
-// src/config.d.ts:7:5 - (ae-undocumented) Missing documentation for "getApiDefinitionWidget".
-// src/plugin.d.ts:4:22 - (ae-undocumented) Missing documentation for "apiDocsPlugin".
-// src/plugin.d.ts:10:22 - (ae-undocumented) Missing documentation for "ApiExplorerPage".
-// src/plugin.d.ts:12:22 - (ae-undocumented) Missing documentation for "EntityApiDefinitionCard".
-// src/plugin.d.ts:14:22 - (ae-undocumented) Missing documentation for "EntityConsumedApisCard".
-// src/plugin.d.ts:21:22 - (ae-undocumented) Missing documentation for "EntityConsumingComponentsCard".
-// src/plugin.d.ts:26:22 - (ae-undocumented) Missing documentation for "EntityProvidedApisCard".
-// src/plugin.d.ts:33:22 - (ae-undocumented) Missing documentation for "EntityProvidingComponentsCard".
-// src/plugin.d.ts:38:22 - (ae-undocumented) Missing documentation for "EntityHasApisCard".
 ```

@@ -113,12 +113,5 @@ export type ToNewRouteRef<T extends RouteRef | SubRouteRef | ExternalRouteRef> =
     ? ExternalRouteRef_2<IParams>
     : never;
 
-// Warnings were encountered during analysis:
-//
-// src/apis/implementations/AnalyticsApi/NoOpAnalyticsApi.d.ts:9:5 - (ae-undocumented) Missing documentation for "captureEvent".
-// src/convertLegacyApp.d.ts:4:1 - (ae-undocumented) Missing documentation for "convertLegacyApp".
-// src/convertLegacyPageExtension.d.ts:4:1 - (ae-undocumented) Missing documentation for "convertLegacyPageExtension".
-// src/convertLegacyPlugin.d.ts:4:1 - (ae-undocumented) Missing documentation for "convertLegacyPlugin".
-
 // (No @packageDocumentation comment for this package)
 ```

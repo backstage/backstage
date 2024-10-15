@@ -52,17 +52,17 @@ import {
   FileReaderProcessor,
   PlaceholderProcessor,
   UrlReaderProcessor,
-} from '../modules';
-import { ConfigLocationEntityProvider } from '../modules/core/ConfigLocationEntityProvider';
-import { DefaultLocationStore } from '../modules/core/DefaultLocationStore';
+} from '../processors';
+import { ConfigLocationEntityProvider } from '../providers/ConfigLocationEntityProvider';
+import { DefaultLocationStore } from '../providers/DefaultLocationStore';
 import { RepoLocationAnalyzer } from '../ingestion/LocationAnalyzer';
 import { AuthorizedLocationAnalyzer } from './AuthorizedLocationAnalyzer';
 import {
   jsonPlaceholderResolver,
   textPlaceholderResolver,
   yamlPlaceholderResolver,
-} from '../modules/core/PlaceholderProcessor';
-import { defaultEntityDataParser } from '../modules/util/parse';
+} from '../processors/PlaceholderProcessor';
+import { defaultEntityDataParser } from '../util/parse';
 import {
   CatalogProcessingEngine,
   createRandomProcessingInterval,
@@ -843,9 +843,18 @@ export class CatalogBuilder {
       });
     }
 
+    if (!Boolean(config.get('catalog.processingInterval'))) {
+      return () => {
+        throw new Error(
+          'catalog.processingInterval is set to false, processing is disabled.',
+        );
+      };
+    }
+
     const duration = readDurationFromConfig(config, {
       key: processingIntervalKey,
     });
+
     const seconds = Math.max(
       1,
       Math.round(durationToMilliseconds(duration) / 1000),

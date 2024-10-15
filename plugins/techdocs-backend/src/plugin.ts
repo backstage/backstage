@@ -29,6 +29,7 @@ import {
   Preparers,
   Publisher,
   PublisherBase,
+  PublisherSettings,
   PublisherType,
   RemoteProtocol,
   techdocsBuildsExtensionPoint,
@@ -37,13 +38,13 @@ import {
   techdocsPreparerExtensionPoint,
   techdocsPublisherExtensionPoint,
 } from '@backstage/plugin-techdocs-node';
-import { createRouter } from '@backstage/plugin-techdocs-backend';
+import { createRouter } from './service';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import * as winston from 'winston';
 
 /**
  * The TechDocs plugin is responsible for serving and building documentation for any entity.
- * @alpha
+ * @public
  */
 export const techdocsPlugin = createBackendPlugin({
   pluginId: 'techdocs',
@@ -89,12 +90,19 @@ export const techdocsPlugin = createBackendPlugin({
     });
 
     let customTechdocsPublisher: PublisherBase | undefined;
+    const publisherSettings: PublisherSettings = {};
     env.registerExtensionPoint(techdocsPublisherExtensionPoint, {
       registerPublisher(type: PublisherType, publisher: PublisherBase) {
         if (customTechdocsPublisher) {
           throw new Error(`Publisher for type ${type} is already registered`);
         }
         customTechdocsPublisher = publisher;
+      },
+      registerPublisherSettings<T extends keyof PublisherSettings>(
+        publisher: T,
+        settings: PublisherSettings[T],
+      ) {
+        publisherSettings[publisher] = settings;
       },
     });
 
@@ -144,6 +152,7 @@ export const techdocsPlugin = createBackendPlugin({
           logger: winstonLogger,
           discovery: discovery,
           customPublisher: customTechdocsPublisher,
+          publisherSettings,
         });
 
         // checks if the publisher is working and logs the result

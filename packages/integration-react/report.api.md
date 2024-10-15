@@ -55,6 +55,20 @@ export class ScmAuth implements ScmAuthApi {
     bitbucketAuthApi: OAuthApi,
     options?: {
       host?: string;
+      scopeMapping?: {
+        default?: string[];
+        repoWrite?: string[];
+      };
+    },
+  ): ScmAuth;
+  static forBitbucketServer(
+    bitbucketAuthApi: OAuthApi,
+    options: {
+      host: string;
+      scopeMapping?: {
+        default?: string[];
+        repoWrite?: string[];
+      };
     },
   ): ScmAuth;
   static forGithub(

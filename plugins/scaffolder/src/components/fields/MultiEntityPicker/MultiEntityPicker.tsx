@@ -136,10 +136,10 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
   );
 
   useEffect(() => {
-    if (entities?.entities?.length === 1) {
+    if (required && !allowArbitraryValues && entities?.entities?.length === 1) {
       onChange([stringifyEntityRef(entities?.entities[0])]);
     }
-  }, [entities, onChange]);
+  }, [entities, onChange, required, allowArbitraryValues]);
 
   return (
     <FormControl
@@ -150,7 +150,9 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
       <Autocomplete
         multiple
         filterSelectedOptions
-        disabled={entities?.entities?.length === 1}
+        disabled={
+          required && !allowArbitraryValues && entities?.entities?.length === 1
+        }
         id={idSchema?.$id}
         defaultValue={formData}
         loading={loading}

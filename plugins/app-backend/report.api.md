@@ -4,12 +4,17 @@
 
 ```ts
 import { AuthService } from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { ConfigSchema } from '@backstage/config-loader';
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import express from 'express';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
+
+// @public
+const appPlugin: BackendFeature;
+export default appPlugin;
 
 // @public @deprecated (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
@@ -30,13 +35,4 @@ export interface RouterOptions {
   schema?: ConfigSchema;
   staticFallbackHandler?: express.Handler;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/service/router.d.ts:9:1 - (ae-undocumented) Missing documentation for "RouterOptions".
-// src/service/router.d.ts:10:5 - (ae-undocumented) Missing documentation for "config".
-// src/service/router.d.ts:11:5 - (ae-undocumented) Missing documentation for "logger".
-// src/service/router.d.ts:12:5 - (ae-undocumented) Missing documentation for "auth".
-// src/service/router.d.ts:13:5 - (ae-undocumented) Missing documentation for "httpAuth".
-// src/service/router.d.ts:61:1 - (ae-undocumented) Missing documentation for "createRouter".
 ```

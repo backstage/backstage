@@ -23,10 +23,5 @@ export class HostDiscovery implements DiscoveryService {
   getExternalBaseUrl(pluginId: string): Promise<string>;
 }
 
-// Warnings were encountered during analysis:
-//
-// src/entrypoints/discovery/HostDiscovery.d.ts:44:5 - (ae-undocumented) Missing documentation for "getBaseUrl".
-// src/entrypoints/discovery/HostDiscovery.d.ts:45:5 - (ae-undocumented) Missing documentation for "getExternalBaseUrl".
-
 // (No @packageDocumentation comment for this package)
 ```

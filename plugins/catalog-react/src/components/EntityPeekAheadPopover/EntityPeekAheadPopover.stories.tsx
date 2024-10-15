@@ -24,15 +24,16 @@ import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { catalogApiRef } from '../../api';
 import {
   CompoundEntityRef,
+  Entity,
   parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { entityRouteRef } from '../../routes';
-import { CatalogApi } from '@backstage/catalog-client';
 import { Table, TableColumn } from '@backstage/core-components';
 import { EntityRefLink } from '../EntityRefLink';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
-const mockCatalogApi = {
+const mockCatalogApi = catalogApiMock.mock({
   getEntityByRef: async (entityRef: string) => {
     if (entityRef === 'component:default/playback') {
       return {
@@ -42,7 +43,7 @@ const mockCatalogApi = {
           namespace: 'default',
           description: 'Details about the playback service',
         },
-      };
+      } as unknown as Entity;
     }
     if (entityRef === 'user:default/fname.lname') {
       return {
@@ -56,7 +57,7 @@ const mockCatalogApi = {
             email: 'fname.lname@example.com',
           },
         },
-      };
+      } as unknown as Entity;
     }
     if (entityRef === 'component:default/slow.catalog.item') {
       await new Promise(resolve => setTimeout(resolve, 3000));
@@ -67,11 +68,11 @@ const mockCatalogApi = {
           namespace: 'default',
           description: 'Details about the slow.catalog.item service',
         },
-      };
+      } as unknown as Entity;
     }
     return undefined;
   },
-};
+});
 
 const defaultArgs = {
   entityRef: 'component:default/playback',
@@ -83,9 +84,7 @@ export default {
     (Story: ComponentType<PropsWithChildren<{}>>) =>
       wrapInTestApp(
         <>
-          <TestApiProvider
-            apis={[[catalogApiRef, mockCatalogApi as any as CatalogApi]]}
-          >
+          <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
             <Story />
           </TestApiProvider>
         </>,

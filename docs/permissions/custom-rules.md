@@ -173,7 +173,7 @@ The api for providing custom rules may differ between plugins, but there should 
 
    ```ts title="packages/backend/src/index.ts"
    // catalog plugin
-   backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+   backend.add(import('@backstage/plugin-catalog-backend'));
    backend.add(
      import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
    );

@@ -15,6 +15,7 @@ import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Logger } from 'winston';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { StorageOptions } from '@google-cloud/storage';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import * as winston from 'winston';
 import { Writable } from 'stream';
@@ -217,7 +218,14 @@ export type PublisherFactory = {
   logger: LoggerService;
   discovery: DiscoveryService;
   customPublisher?: PublisherBase | undefined;
+  publisherSettings?: PublisherSettings;
 };
+
+// @public
+export interface PublisherSettings {
+  // (undocumented)
+  googleGcs?: StorageOptions;
+}
 
 // @public
 export type PublisherType =
@@ -344,6 +352,11 @@ export const techdocsPreparerExtensionPoint: ExtensionPoint<TechdocsPreparerExte
 export interface TechdocsPublisherExtensionPoint {
   // (undocumented)
   registerPublisher(type: PublisherType, publisher: PublisherBase): void;
+  // (undocumented)
+  registerPublisherSettings<T extends keyof PublisherSettings>(
+    publisher: T,
+    settings: PublisherSettings[T],
+  ): void;
 }
 
 // @public
@@ -365,16 +378,4 @@ export class UrlPreparer implements PreparerBase {
   prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
   shouldCleanPreparedDirectory(): boolean;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/extensions.d.ts:10:5 - (ae-undocumented) Missing documentation for "setBuildStrategy".
-// src/extensions.d.ts:11:5 - (ae-undocumented) Missing documentation for "setBuildLogTransport".
-// src/extensions.d.ts:25:5 - (ae-undocumented) Missing documentation for "setTechdocsGenerator".
-// src/extensions.d.ts:39:5 - (ae-undocumented) Missing documentation for "registerPreparer".
-// src/extensions.d.ts:53:5 - (ae-undocumented) Missing documentation for "registerPublisher".
-// src/stages/generate/index.d.ts:10:22 - (ae-undocumented) Missing documentation for "getMkDocsYml".
-// src/stages/publish/publish.d.ts:10:5 - (ae-undocumented) Missing documentation for "register".
-// src/stages/publish/publish.d.ts:11:5 - (ae-undocumented) Missing documentation for "get".
-// src/techdocsTypes.d.ts:39:5 - (ae-undocumented) Missing documentation for "shouldBuild".
 ```

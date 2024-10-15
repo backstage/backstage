@@ -17,7 +17,7 @@
 import React, { ComponentType } from 'react';
 import { fireEvent, waitFor, screen, renderHook } from '@testing-library/react';
 import {
-  MockAnalyticsApi,
+  mockApis,
   TestApiProvider,
   renderInTestApp,
 } from '@backstage/test-utils';
@@ -71,7 +71,7 @@ describe('<Link />', () => {
 
   it('captures click using analytics api', async () => {
     const linkText = 'Navigate!';
-    const analyticsApi = new MockAnalyticsApi();
+    const analyticsApi = mockApis.analytics();
     const customOnClick = jest.fn();
 
     await renderInTestApp(
@@ -86,13 +86,15 @@ describe('<Link />', () => {
 
     // Analytics event should have been fired.
     await waitFor(() => {
-      expect(analyticsApi.getEvents()[0]).toMatchObject({
-        action: 'click',
-        subject: linkText,
-        attributes: {
-          to: '/test',
-        },
-      });
+      expect(analyticsApi.captureEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'click',
+          subject: linkText,
+          attributes: {
+            to: '/test',
+          },
+        }),
+      );
 
       // Custom onClick handler should have still been fired too.
       expect(customOnClick).toHaveBeenCalled();
@@ -101,7 +103,7 @@ describe('<Link />', () => {
 
   it('does not capture click when noTrack is set', async () => {
     const linkText = 'Navigate!';
-    const analyticsApi = new MockAnalyticsApi();
+    const analyticsApi = mockApis.analytics();
     const customOnClick = jest.fn();
 
     await renderInTestApp(
@@ -120,7 +122,7 @@ describe('<Link />', () => {
       expect(customOnClick).toHaveBeenCalled();
 
       // But there should be no analytics event.
-      expect(analyticsApi.getEvents()).toHaveLength(0);
+      expect(analyticsApi.captureEvent).not.toHaveBeenCalled();
     });
   });
 

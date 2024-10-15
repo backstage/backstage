@@ -24,10 +24,10 @@ A feature loader can simply return a list of features to be installed:
 export default createBackendFeatureLoader({
   loader() {
     return [
-      import('@backstage/plugin-search-backend/alpha'),
-      import('@backstage/plugin-search-backend-module-catalog/alpha'),
-      import('@backstage/plugin-search-backend-module-explore/alpha'),
-      import('@backstage/plugin-search-backend-module-techdocs/alpha'),
+      import('@backstage/plugin-search-backend'),
+      import('@backstage/plugin-search-backend-module-catalog'),
+      import('@backstage/plugin-search-backend-module-explore'),
+      import('@backstage/plugin-search-backend-module-techdocs'),
     ];
   },
 });
@@ -64,10 +64,10 @@ export default createBackendFeatureLoader({
   *loader({ config }) {
     // Example of a custom config flag to enable search
     if (config.getOptionalString('customFeatureToggle.search')) {
-      yield import('@backstage/plugin-search-backend/alpha');
-      yield import('@backstage/plugin-search-backend-module-catalog/alpha');
-      yield import('@backstage/plugin-search-backend-module-explore/alpha');
-      yield import('@backstage/plugin-search-backend-module-techdocs/alpha');
+      yield import('@backstage/plugin-search-backend');
+      yield import('@backstage/plugin-search-backend-module-catalog');
+      yield import('@backstage/plugin-search-backend-module-explore');
+      yield import('@backstage/plugin-search-backend-module-techdocs');
     }
   },
 });
@@ -84,16 +84,16 @@ export default createBackendFeatureLoader({
     const localMetadata = await readMetadataFromDisk();
 
     if (localMetadata.enableSearch) {
-      yield import('@backstage/plugin-search-backend/alpha');
-      yield import('@backstage/plugin-search-backend-module-catalog/alpha');
+      yield import('@backstage/plugin-search-backend');
+      yield import('@backstage/plugin-search-backend-module-catalog');
 
       const remoteMetadata = await fetchMetadata();
 
       if (remoteMetadata.enableExplore) {
-        yield import('@backstage/plugin-search-backend-module-explore/alpha');
+        yield import('@backstage/plugin-search-backend-module-explore');
       }
       if (remoteMetadata.enableTechDocs) {
-        yield import('@backstage/plugin-search-backend-module-techdocs/alpha');
+        yield import('@backstage/plugin-search-backend-module-techdocs');
       }
     }
   },

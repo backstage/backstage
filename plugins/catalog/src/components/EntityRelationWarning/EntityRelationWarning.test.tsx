@@ -16,11 +16,8 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { ApiProvider } from '@backstage/core-app-api';
-import {
-  CatalogApi,
-  catalogApiRef,
-  EntityProvider,
-} from '@backstage/plugin-catalog-react';
+import { catalogApiRef, EntityProvider } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import React from 'react';
@@ -30,10 +27,8 @@ import {
 } from './EntityRelationWarning';
 
 describe('<EntityRelationWarning />', () => {
-  const getEntitiesByRefs: jest.MockedFunction<
-    CatalogApi['getEntitiesByRefs']
-  > = jest.fn();
-  const apis = TestApiRegistry.from([catalogApiRef, { getEntitiesByRefs }]);
+  const catalogApi = catalogApiMock.mock();
+  const apis = TestApiRegistry.from([catalogApiRef, catalogApi]);
 
   const entityExisting: Entity = {
     apiVersion: 'v1',
@@ -62,7 +57,7 @@ describe('<EntityRelationWarning />', () => {
       ],
     };
 
-    getEntitiesByRefs.mockResolvedValue({
+    catalogApi.getEntitiesByRefs.mockResolvedValue({
       items: [undefined, entityExisting],
     });
     await renderInTestApp(
@@ -102,7 +97,7 @@ describe('<EntityRelationWarning />', () => {
       ],
     };
 
-    getEntitiesByRefs.mockResolvedValue({
+    catalogApi.getEntitiesByRefs.mockResolvedValue({
       items: [entityExisting],
     });
     await renderInTestApp(
@@ -141,7 +136,7 @@ describe('<EntityRelationWarning />', () => {
       ],
     };
 
-    getEntitiesByRefs.mockResolvedValue({
+    catalogApi.getEntitiesByRefs.mockResolvedValue({
       items: [undefined, entityExisting],
     });
 
@@ -165,7 +160,7 @@ describe('<EntityRelationWarning />', () => {
       ],
     };
 
-    getEntitiesByRefs.mockResolvedValue({
+    catalogApi.getEntitiesByRefs.mockResolvedValue({
       items: [entityExisting],
     });
 

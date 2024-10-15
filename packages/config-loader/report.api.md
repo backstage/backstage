@@ -284,32 +284,4 @@ export type TransformFunc<T extends number | string | boolean> = (
     path: string;
   },
 ) => T | undefined;
-
-// Warnings were encountered during analysis:
-//
-// src/loader.d.ts:6:1 - (ae-undocumented) Missing documentation for "ConfigTarget".
-// src/loader.d.ts:15:1 - (ae-undocumented) Missing documentation for "LoadConfigOptionsWatch".
-// src/loader.d.ts:29:1 - (ae-undocumented) Missing documentation for "LoadConfigOptionsRemote".
-// src/sources/ConfigSources.d.ts:42:5 - (ae-undocumented) Missing documentation for "watch".
-// src/sources/ConfigSources.d.ts:43:5 - (ae-undocumented) Missing documentation for "rootDir".
-// src/sources/ConfigSources.d.ts:44:5 - (ae-undocumented) Missing documentation for "remote".
-// src/sources/ConfigSources.d.ts:65:5 - (ae-undocumented) Missing documentation for "targets".
-// src/sources/ConfigSources.d.ts:73:5 - (ae-undocumented) Missing documentation for "argv".
-// src/sources/ConfigSources.d.ts:74:5 - (ae-undocumented) Missing documentation for "env".
-// src/sources/EnvConfigSource.d.ts:46:5 - (ae-undocumented) Missing documentation for "readConfigData".
-// src/sources/EnvConfigSource.d.ts:47:5 - (ae-undocumented) Missing documentation for "toString".
-// src/sources/FileConfigSource.d.ts:44:5 - (ae-undocumented) Missing documentation for "readConfigData".
-// src/sources/FileConfigSource.d.ts:45:5 - (ae-undocumented) Missing documentation for "toString".
-// src/sources/MutableConfigSource.d.ts:9:5 - (ae-undocumented) Missing documentation for "data".
-// src/sources/MutableConfigSource.d.ts:10:5 - (ae-undocumented) Missing documentation for "context".
-// src/sources/MutableConfigSource.d.ts:27:5 - (ae-undocumented) Missing documentation for "readConfigData".
-// src/sources/MutableConfigSource.d.ts:38:5 - (ae-undocumented) Missing documentation for "toString".
-// src/sources/RemoteConfigSource.d.ts:43:5 - (ae-undocumented) Missing documentation for "readConfigData".
-// src/sources/RemoteConfigSource.d.ts:44:5 - (ae-undocumented) Missing documentation for "toString".
-// src/sources/StaticConfigSource.d.ts:9:5 - (ae-undocumented) Missing documentation for "data".
-// src/sources/StaticConfigSource.d.ts:10:5 - (ae-undocumented) Missing documentation for "context".
-// src/sources/StaticConfigSource.d.ts:28:5 - (ae-undocumented) Missing documentation for "readConfigData".
-// src/sources/StaticConfigSource.d.ts:29:5 - (ae-undocumented) Missing documentation for "toString".
-// src/sources/types.d.ts:20:5 - (ae-undocumented) Missing documentation for "signal".
-// src/sources/types.d.ts:55:5 - (ae-undocumented) Missing documentation for "readConfigData".
 ```

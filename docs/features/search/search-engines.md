@@ -25,7 +25,7 @@ const backend = createBackend();
 // Other plugins...
 
 /* highlight-add-start */
-backend.add(import('@backstage/plugin-search-backend/alpha'));
+backend.add(import('@backstage/plugin-search-backend'));
 /* highlight-add-end */
 
 backend.start();
@@ -65,10 +65,10 @@ const backend = createBackend();
 // Other plugins...
 
 // search plugin
-backend.add(import('@backstage/plugin-search-backend/alpha'));
+backend.add(import('@backstage/plugin-search-backend'));
 
 /* highlight-add-start */
-backend.add(import('@backstage/plugin-search-backend-module-pg/alpha'));
+backend.add(import('@backstage/plugin-search-backend-module-pg'));
 /* highlight-add-end */
 
 backend.start();
@@ -124,12 +124,10 @@ const backend = createBackend();
 // Other plugins...
 
 // search plugin
-backend.add(import('@backstage/plugin-search-backend/alpha'));
+backend.add(import('@backstage/plugin-search-backend'));
 
 /* highlight-add-start */
-backend.add(
-  import('@backstage/plugin-search-backend-module-elasticsearch/alpha'),
-);
+backend.add(import('@backstage/plugin-search-backend-module-elasticsearch'));
 /* highlight-add-end */
 
 backend.start();

@@ -73,20 +73,4 @@ export type PackageDependency = {
   name: string;
   versions: string;
 };
-
-// Warnings were encountered during analysis:
-//
-// src/permissions.d.ts:4:22 - (ae-undocumented) Missing documentation for "devToolsAdministerPermission".
-// src/permissions.d.ts:8:22 - (ae-undocumented) Missing documentation for "devToolsInfoReadPermission".
-// src/permissions.d.ts:12:22 - (ae-undocumented) Missing documentation for "devToolsConfigReadPermission".
-// src/permissions.d.ts:16:22 - (ae-undocumented) Missing documentation for "devToolsExternalDependenciesReadPermission".
-// src/types.d.ts:3:1 - (ae-undocumented) Missing documentation for "Endpoint".
-// src/types.d.ts:9:1 - (ae-undocumented) Missing documentation for "ExternalDependency".
-// src/types.d.ts:17:1 - (ae-undocumented) Missing documentation for "DevToolsInfo".
-// src/types.d.ts:25:1 - (ae-undocumented) Missing documentation for "PackageDependency".
-// src/types.d.ts:30:1 - (ae-undocumented) Missing documentation for "ExternalDependencyStatus".
-// src/types.d.ts:31:5 - (ae-undocumented) Missing documentation for "healthy".
-// src/types.d.ts:32:5 - (ae-undocumented) Missing documentation for "unhealthy".
-// src/types.d.ts:35:1 - (ae-undocumented) Missing documentation for "ConfigInfo".
-// src/types.d.ts:40:1 - (ae-undocumented) Missing documentation for "ConfigError".
 ```

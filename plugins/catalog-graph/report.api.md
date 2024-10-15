@@ -16,6 +16,7 @@ import { JSX as JSX_2 } from 'react';
 import { MouseEvent as MouseEvent_2 } from 'react';
 import { MouseEventHandler } from 'react';
 import { default as React_2 } from 'react';
+import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public
@@ -80,6 +81,7 @@ export const EntityCatalogGraphCard: (
     variant?: InfoCardVariants | undefined;
     height?: number | undefined;
     title?: string | undefined;
+    action?: ReactNode;
   },
 ) => JSX_2.Element;
 
@@ -138,11 +140,4 @@ export type EntityRelationsGraphProps = {
 
 // @public
 export type RelationPairs = [string, string][];
-
-// Warnings were encountered during analysis:
-//
-// src/components/EntityRelationsGraph/DefaultRenderLabel.d.ts:5:1 - (ae-undocumented) Missing documentation for "CustomLabelClassKey".
-// src/components/EntityRelationsGraph/DefaultRenderNode.d.ts:5:1 - (ae-undocumented) Missing documentation for "CustomNodeClassKey".
-// src/components/EntityRelationsGraph/EntityRelationsGraph.d.ts:7:1 - (ae-undocumented) Missing documentation for "EntityRelationsGraphClassKey".
-// src/components/EntityRelationsGraph/EntityRelationsGraph.d.ts:11:1 - (ae-undocumented) Missing documentation for "EntityRelationsGraphProps".
 ```

@@ -5,9 +5,9 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 
-// @alpha
-const eventsModuleAwsSqsConsumingEventPublisher: BackendFeature;
-export default eventsModuleAwsSqsConsumingEventPublisher;
+// @alpha (undocumented)
+const _feature: BackendFeature;
+export default _feature;
 
 // (No @packageDocumentation comment for this package)
 ```

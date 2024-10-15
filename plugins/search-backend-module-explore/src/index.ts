@@ -20,3 +20,4 @@
  */
 
 export * from './collators';
+export { default } from './module';

@@ -232,8 +232,13 @@ export interface ScaffolderApi {
   ): Promise<TemplateParameterSchema>;
   listActions(): Promise<ListActionsResponse>;
   // (undocumented)
-  listTasks?(options: { filterByOwnership: 'owned' | 'all' }): Promise<{
+  listTasks?(options: {
+    filterByOwnership: 'owned' | 'all';
+    limit?: number;
+    offset?: number;
+  }): Promise<{
     tasks: ScaffolderTask[];
+    totalTasks?: number;
   }>;
   retry?(taskId: string): Promise<void>;
   scaffold(
@@ -552,51 +557,6 @@ export const useTaskEventStream: (taskId: string) => TaskStream;
 
 // @public
 export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets;
-
-// Warnings were encountered during analysis:
-//
-// src/api/ref.d.ts:3:22 - (ae-undocumented) Missing documentation for "scaffolderApiRef".
-// src/api/types.d.ts:53:1 - (ae-undocumented) Missing documentation for "ScaffolderOutputLink".
-// src/api/types.d.ts:60:1 - (ae-undocumented) Missing documentation for "ScaffolderOutputText".
-// src/api/types.d.ts:67:1 - (ae-undocumented) Missing documentation for "ScaffolderTaskOutput".
-// src/api/types.d.ts:95:5 - (ae-undocumented) Missing documentation for "templateRef".
-// src/api/types.d.ts:96:5 - (ae-undocumented) Missing documentation for "values".
-// src/api/types.d.ts:97:5 - (ae-undocumented) Missing documentation for "secrets".
-// src/api/types.d.ts:105:5 - (ae-undocumented) Missing documentation for "taskId".
-// src/api/types.d.ts:113:5 - (ae-undocumented) Missing documentation for "allowedHosts".
-// src/api/types.d.ts:121:5 - (ae-undocumented) Missing documentation for "integrations".
-// src/api/types.d.ts:133:5 - (ae-undocumented) Missing documentation for "isTaskRecoverable".
-// src/api/types.d.ts:134:5 - (ae-undocumented) Missing documentation for "taskId".
-// src/api/types.d.ts:135:5 - (ae-undocumented) Missing documentation for "after".
-// src/api/types.d.ts:138:1 - (ae-undocumented) Missing documentation for "ScaffolderDryRunOptions".
-// src/api/types.d.ts:139:5 - (ae-undocumented) Missing documentation for "template".
-// src/api/types.d.ts:140:5 - (ae-undocumented) Missing documentation for "values".
-// src/api/types.d.ts:141:5 - (ae-undocumented) Missing documentation for "secrets".
-// src/api/types.d.ts:142:5 - (ae-undocumented) Missing documentation for "directoryContents".
-// src/api/types.d.ts:148:1 - (ae-undocumented) Missing documentation for "ScaffolderDryRunResponse".
-// src/api/types.d.ts:149:5 - (ae-undocumented) Missing documentation for "directoryContents".
-// src/api/types.d.ts:154:5 - (ae-undocumented) Missing documentation for "log".
-// src/api/types.d.ts:155:5 - (ae-undocumented) Missing documentation for "steps".
-// src/api/types.d.ts:156:5 - (ae-undocumented) Missing documentation for "output".
-// src/api/types.d.ts:164:5 - (ae-undocumented) Missing documentation for "getTemplateParameterSchema".
-// src/api/types.d.ts:172:5 - (ae-undocumented) Missing documentation for "getTask".
-// src/api/types.d.ts:185:5 - (ae-undocumented) Missing documentation for "listTasks".
-// src/api/types.d.ts:190:5 - (ae-undocumented) Missing documentation for "getIntegrationsList".
-// src/api/types.d.ts:195:5 - (ae-undocumented) Missing documentation for "streamLogs".
-// src/api/types.d.ts:196:5 - (ae-undocumented) Missing documentation for "dryRun".
-// src/api/types.d.ts:197:5 - (ae-undocumented) Missing documentation for "autocomplete".
-// src/components/types.d.ts:7:1 - (ae-undocumented) Missing documentation for "TemplateGroupFilter".
-// src/extensions/types.d.ts:13:5 - (ae-undocumented) Missing documentation for "uiSchema".
-// src/extensions/types.d.ts:30:5 - (ae-undocumented) Missing documentation for ""ui:options"".
-// src/layouts/createScaffolderLayout.d.ts:16:5 - (ae-undocumented) Missing documentation for "name".
-// src/layouts/createScaffolderLayout.d.ts:17:5 - (ae-undocumented) Missing documentation for "component".
-// src/secrets/SecretsContext.d.ts:14:5 - (ae-undocumented) Missing documentation for "setSecrets".
-// src/secrets/SecretsContext.d.ts:15:5 - (ae-undocumented) Missing documentation for "secrets".
-// src/utils.d.ts:4:1 - (ae-undocumented) Missing documentation for "makeFieldSchema".
-// src/utils.d.ts:15:5 - (ae-undocumented) Missing documentation for "type".
-// src/utils.d.ts:17:5 - (ae-undocumented) Missing documentation for "uiOptionsType".
-// src/utils.d.ts:18:5 - (ae-undocumented) Missing documentation for "schema".
-// src/utils.d.ts:19:5 - (ae-undocumented) Missing documentation for "TProps".
 
 // (No @packageDocumentation comment for this package)
 ```

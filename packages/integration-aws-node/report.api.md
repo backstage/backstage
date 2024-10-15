@@ -35,9 +35,5 @@ export class DefaultAwsCredentialsManager implements AwsCredentialsManager {
   ): Promise<AwsCredentialProvider>;
 }
 
-// Warnings were encountered during analysis:
-//
-// src/DefaultAwsCredentialsManager.d.ts:12:5 - (ae-undocumented) Missing documentation for "fromConfig".
-
 // (No @packageDocumentation comment for this package)
 ```

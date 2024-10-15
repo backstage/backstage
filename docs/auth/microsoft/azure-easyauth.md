@@ -66,9 +66,7 @@ auth:
     azureEasyAuth:
       signIn:
         resolvers:
-          # typically you would pick one of these
-          - resolver: emailMatchingUserEntityProfileEmail
-          - resolver: emailLocalPartMatchingUserEntityName
+          # See https://backstage.io/docs/auth/microsoft/easy-auth#resolvers for more resolvers
           - resolver: idMatchingUserEntityAnnotation
 ```
 

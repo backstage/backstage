@@ -18,6 +18,7 @@ import { FeaturedDocsCard } from '../../plugin';
 import React, { ComponentType, PropsWithChildren } from 'react';
 import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import Grid from '@material-ui/core/Grid';
 
 const docsEntities = [
@@ -36,16 +37,14 @@ const docsEntities = [
   },
 ];
 
-const mockCatalogApi = {
-  getEntities: async () => ({ items: docsEntities }),
-};
-
 export default {
   title: 'Plugins/Home/Components/FeaturedDocsCard',
   decorators: [
     (Story: ComponentType<PropsWithChildren<{}>>) =>
       wrapInTestApp(
-        <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
+        <TestApiProvider
+          apis={[[catalogApiRef, catalogApiMock({ entities: docsEntities })]]}
+        >
           <Story />
         </TestApiProvider>,
         {

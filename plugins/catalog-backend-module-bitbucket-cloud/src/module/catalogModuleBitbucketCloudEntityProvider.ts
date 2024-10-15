@@ -26,7 +26,7 @@ import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { BitbucketCloudEntityProvider } from '../providers/BitbucketCloudEntityProvider';
 
 /**
- * @alpha
+ * @public
  */
 export const catalogModuleBitbucketCloudEntityProvider = createBackendModule({
   pluginId: 'catalog',
@@ -34,6 +34,7 @@ export const catalogModuleBitbucketCloudEntityProvider = createBackendModule({
   register(env) {
     env.registerInit({
       deps: {
+        auth: coreServices.auth,
         catalog: catalogProcessingExtensionPoint,
         catalogApi: catalogServiceRef,
         config: coreServices.rootConfig,
@@ -41,8 +42,17 @@ export const catalogModuleBitbucketCloudEntityProvider = createBackendModule({
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
       },
-      async init({ catalog, catalogApi, config, events, logger, scheduler }) {
+      async init({
+        auth,
+        catalog,
+        catalogApi,
+        config,
+        events,
+        logger,
+        scheduler,
+      }) {
         const providers = BitbucketCloudEntityProvider.fromConfig(config, {
+          auth,
           catalogApi,
           events,
           logger,

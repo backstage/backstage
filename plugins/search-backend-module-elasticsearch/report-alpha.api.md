@@ -4,26 +4,10 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { ElasticSearchQueryTranslator } from '@backstage/plugin-search-backend-module-elasticsearch';
-import { ExtensionPoint } from '@backstage/backend-plugin-api';
-
-// @alpha
-const _default: BackendFeature;
-export default _default;
 
 // @alpha (undocumented)
-export interface ElasticSearchQueryTranslatorExtensionPoint {
-  // (undocumented)
-  setTranslator(translator: ElasticSearchQueryTranslator): void;
-}
-
-// @alpha
-export const elasticsearchTranslatorExtensionPoint: ExtensionPoint<ElasticSearchQueryTranslatorExtensionPoint>;
-
-// Warnings were encountered during analysis:
-//
-// src/alpha.d.ts:3:1 - (ae-undocumented) Missing documentation for "ElasticSearchQueryTranslatorExtensionPoint".
-// src/alpha.d.ts:4:5 - (ae-undocumented) Missing documentation for "setTranslator".
+const _feature: BackendFeature;
+export default _feature;
 
 // (No @packageDocumentation comment for this package)
 ```

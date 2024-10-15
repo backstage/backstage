@@ -209,7 +209,11 @@ export function DirectoryEditorProvider(props: DirectoryEditorProviderProps) {
   const { directory } = props;
 
   const [{ result, error }, { execute }] = useAsync(
-    async (dir: TemplateDirectoryAccess) => {
+    async (dir?: TemplateDirectoryAccess) => {
+      if (!dir) {
+        return undefined;
+      }
+
       const manager = new DirectoryEditorManager(dir);
       await manager.reload();
 
@@ -223,9 +227,7 @@ export function DirectoryEditorProvider(props: DirectoryEditorProviderProps) {
   );
 
   useEffect(() => {
-    if (directory) {
-      execute(directory);
-    }
+    execute(directory);
   }, [execute, directory]);
 
   if (error) {

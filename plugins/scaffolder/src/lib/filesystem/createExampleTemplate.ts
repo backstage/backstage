@@ -91,4 +91,5 @@ export async function createExampleTemplate(
   for (const [name, data] of Object.entries(files)) {
     await directory.createFile({ name, data });
   }
+  return directory;
 }

@@ -376,6 +376,7 @@ export async function runApiExtraction({
       logLevel: 'none',
     };
   }
+
   const warnings = new Array<string>();
 
   for (const [packageDir, packageEntryPoints] of Object.entries(
@@ -406,7 +407,7 @@ export async function runApiExtraction({
       const suffix =
         packageEntryPoint.name === 'index' ? '' : `-${packageEntryPoint.name}`;
       const reportFileName = `report${suffix}`;
-      const reportPath = resolvePath(projectFolder, reportFileName);
+      const reportPath = resolvePath(projectFolder, `${reportFileName}.api.md`);
 
       const warningCountBefore = await countApiReportWarnings(reportPath);
 
@@ -519,14 +520,17 @@ export async function runApiExtraction({
           if (message.text.includes('The API report file is missing')) {
             shouldLogInstructions = true;
           }
+
+          // Detect messages like the following being output by the generator:
+          // Warning: You have changed the API signature for this project. Please copy the file "/home/runner/work/backstage/backstage/node_modules/.cache/api-extractor/backend-test-utils/report.api.md" to "report.api.md", or perform a local build (which does this automatically). See the Git repo documentation for more info.
           if (
             message.text.includes(
-              'You have changed the public API signature for this project.',
+              'You have changed the API signature for this project.',
             )
           ) {
             shouldLogInstructions = true;
             const match = message.text.match(
-              /Please copy the file "(.*)" to "api-report\.api\.md"/,
+              /Please copy the file "(.*)" to "report\.api\.md"/,
             );
             if (match) {
               conflictingFile = match[1];
@@ -599,6 +603,7 @@ export async function runApiExtraction({
       }
 
       const warningCountAfter = await countApiReportWarnings(reportPath);
+
       if (noBail) {
         console.log(`Skipping warnings check for ${packageDir}`);
       }

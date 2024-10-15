@@ -697,7 +697,9 @@ describe('GitlabUrlReader', () => {
         (gitlabProcessor as any).getGitlabFetchUrl(
           'https://gitlab.com/some/random/endpoint',
         ),
-      ).rejects.toThrow('Please provide full path to yaml file from GitLab');
+      ).rejects.toThrow(
+        'Failed converting /some/random/endpoint to a project id. Url path must include /blob/.',
+      );
     });
   });
 

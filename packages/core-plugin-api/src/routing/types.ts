@@ -35,9 +35,13 @@ export type AnyParams = AnyRouteRefParams;
  * @public
  * @deprecated this type is deprecated and will be removed in the future
  */
-export type ParamKeys<Params extends AnyParams> = keyof Params extends never
+export type ParamKeys<Params extends AnyParams> = [AnyRouteRefParams] extends [
+  Params,
+]
+  ? string[]
+  : keyof Params extends never
   ? []
-  : (keyof Params)[];
+  : Array<keyof Params>;
 
 /**
  * Optional route params.

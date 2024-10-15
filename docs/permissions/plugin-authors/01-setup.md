@@ -14,7 +14,9 @@ The rest of this page is focused on adding the `todo-list` and `todo-list-backen
 
 ## Setup for the Tutorial
 
-We will use a "Todo list" feature, composed of the `todo-list` and `todo-list-backend` plugins, as well as their dependency, `todo-list-common`.
+**Note**: We will be updating files created as part of the [Getting Started](../getting-started.md) documentation, this tutorial assumes you have already viewed and gone through those steps!
+
+We are going to make a "Todo list" feature, composed of the `todo-list` and `todo-list-backend` plugins, as well as their dependency, `todo-list-common`.
 
 The source code is available here:
 
@@ -59,7 +61,7 @@ The source code is available here:
    //...
    /* highlight-add-start */
    // Installing the permission plugin
-   backend.add(import('@backstage/plugin-permission-backend/alpha'));
+   backend.add(import('@backstage/plugin-permission-backend'));
    // Installing the allow all permission policy module
    backend.add(
      import('@backstage/plugin-permission-backend-module-allow-all-policy'),

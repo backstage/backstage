@@ -17,7 +17,7 @@
 import { fireEvent, screen } from '@testing-library/react';
 import React from 'react';
 import { EntityErrorFilter, EntityOrphanFilter } from '../../filters';
-import { MockEntityListContextProvider } from '../../testUtils/providers';
+import { MockEntityListContextProvider } from '@backstage/plugin-catalog-react/testUtils';
 import { EntityProcessingStatusPicker } from './EntityProcessingStatusPicker';
 import { renderInTestApp } from '@backstage/test-utils';
 

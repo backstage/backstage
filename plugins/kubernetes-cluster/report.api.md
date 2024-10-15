@@ -21,9 +21,4 @@ export const isKubernetesClusterAvailable: (entity: Entity) => boolean;
 
 // @public (undocumented)
 export const Router: () => React_2.JSX.Element;
-
-// Warnings were encountered during analysis:
-//
-// src/Router.d.ts:8:22 - (ae-undocumented) Missing documentation for "isKubernetesClusterAvailable".
-// src/Router.d.ts:14:22 - (ae-undocumented) Missing documentation for "Router".
 ```

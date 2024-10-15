@@ -13,16 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { renderHook, waitFor } from '@testing-library/react';
-import { CatalogApi } from '@backstage/catalog-client';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { useQueryEntities } from './useQueryEntities';
 
-const mockedQueryEntities: jest.MockedFn<CatalogApi['queryEntities']> =
-  jest.fn();
-
-const mockCatalogApi: Partial<CatalogApi> = {
-  queryEntities: mockedQueryEntities,
-};
+const mockCatalogApi = catalogApiMock.mock();
 
 jest.mock('@backstage/core-plugin-api', () => ({
   ...jest.requireActual('@backstage/core-plugin-api'),
@@ -35,18 +31,18 @@ describe('useQueryEntities', () => {
   });
 
   it(`should not invoke queryEntities on mount`, () => {
-    mockedQueryEntities.mockResolvedValue({
+    mockCatalogApi.queryEntities.mockResolvedValue({
       items: [],
       pageInfo: {},
       totalItems: 0,
     });
 
     renderHook(() => useQueryEntities());
-    expect(mockedQueryEntities).not.toHaveBeenCalled();
+    expect(mockCatalogApi.queryEntities).not.toHaveBeenCalled();
   });
 
   it(`should fetch the data accordingly`, async () => {
-    mockedQueryEntities
+    mockCatalogApi.queryEntities
       .mockResolvedValueOnce({
         items: [
           { apiVersion: '1', kind: 'kind', metadata: { name: 'name-1' } },
@@ -74,7 +70,7 @@ describe('useQueryEntities', () => {
         cursor: 'next',
       }),
     );
-    expect(mockedQueryEntities).toHaveBeenCalledWith({
+    expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
       filter: { kind: ['User', 'Group'] },
       fullTextFilter: {
         fields: [
@@ -98,7 +94,7 @@ describe('useQueryEntities', () => {
         ],
       }),
     );
-    expect(mockedQueryEntities).toHaveBeenCalledWith({
+    expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
       cursor: 'next',
       limit: 20,
     });

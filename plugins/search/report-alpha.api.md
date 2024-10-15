@@ -194,12 +194,5 @@ export const searchPage: ExtensionDefinition<{
   };
 }>;
 
-// Warnings were encountered during analysis:
-//
-// src/alpha.d.ts:3:22 - (ae-undocumented) Missing documentation for "searchApi".
-// src/alpha.d.ts:15:22 - (ae-undocumented) Missing documentation for "searchPage".
-// src/alpha.d.ts:47:22 - (ae-undocumented) Missing documentation for "searchNavItem".
-// src/alpha.d.ts:65:15 - (ae-undocumented) Missing documentation for "_default".
-
 // (No @packageDocumentation comment for this package)
 ```
