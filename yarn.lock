@@ -7498,7 +7498,6 @@ __metadata:
     command-exists: ^1.2.9
     fs-extra: ^11.0.0
     jest-when: ^3.1.0
-    winston: ^3.2.1
     yaml: ^2.0.0
   languageName: unknown
   linkType: soft
