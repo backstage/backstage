@@ -26,6 +26,7 @@ import React from 'react';
 import { rootRouteRef } from '../../routes';
 import { TemplateExtensionsPage } from './TemplateExtensionsPage';
 import { ExtensionKind } from './navigation';
+import { permissionApiRef } from '@backstage/plugin-permission-react';
 
 const listTemplateExtensions = jest.fn();
 
@@ -42,7 +43,11 @@ const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
   autocomplete: jest.fn(),
 };
 
-const apis = TestApiRegistry.from([scaffolderApiRef, scaffolderApiMock]);
+const mockPermissionApi = { authorize: jest.fn() };
+const apis = TestApiRegistry.from(
+  [scaffolderApiRef, scaffolderApiMock],
+  [permissionApiRef, mockPermissionApi],
+);
 
 const r = async () =>
   renderInTestApp(
