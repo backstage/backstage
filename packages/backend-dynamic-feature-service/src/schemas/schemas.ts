@@ -161,10 +161,7 @@ async function gatherDynamicPluginsSchemas(
     let schemaLocation = schemaLocator(pluginPackage);
 
     if (!path.isAbsolute(schemaLocation)) {
-      let pluginLocation = url.fileURLToPath(pluginPackage.location);
-      if (path.basename(pluginLocation) === 'alpha') {
-        pluginLocation = path.dirname(pluginLocation);
-      }
+      const pluginLocation = url.fileURLToPath(pluginPackage.location);
       schemaLocation = path.resolve(pluginLocation, schemaLocation);
     }
 
