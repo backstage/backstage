@@ -31064,9 +31064,9 @@ __metadata:
   linkType: hard
 
 "isbinaryfile@npm:^5.0.0":
-  version: 5.0.2
-  resolution: "isbinaryfile@npm:5.0.2"
-  checksum: 5e3e9d31b016eefb7e93bd0ab7d088489882eeb9018bf71303f2ce5d9ad02dbb127663d065ce2519913c3c9135a99002e989d6b1786a0fcc0b3c3d2defb1f7d0
+  version: 5.0.3
+  resolution: "isbinaryfile@npm:5.0.3"
+  checksum: 950820d813a664a5c17dcb52e9a10454da4f51918369388be428de47a33f51de38637df2cff91a95f212551170c8045c2156c99bab23a042ab3ef1a775bee1b9
   languageName: node
   linkType: hard
 
