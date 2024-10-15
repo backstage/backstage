@@ -23,6 +23,7 @@ export interface PackageManager {
   version(): string;
   lockfilePath(): string;
   run(args: string[], options?: SpawnOptionsPartialEnv): Promise<void>;
+  pack(output: string, packageDir: string): Promise<void>;
   fetchPackageInfo(name: string): Promise<PackageInfo>;
   loadLockfile(): Promise<Lockfile>;
   parseLockfile(contents: string): Promise<Lockfile>;

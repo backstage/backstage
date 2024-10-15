@@ -45,7 +45,15 @@ export class Yarn implements PackageManager {
     return 'yarn.lock';
   }
 
-  async run(args: string[], options?: SpawnOptionsPartialEnv): Promise<void> {
+  async pack(out: string, packageDir: string) {
+    const outArg =
+      this.yarnVersion.codename === 'classic' ? '--filename' : '--out';
+    await this.run(['pack', outArg, out], {
+      cwd: packageDir,
+    });
+  }
+
+  async run(args: string[], options?: SpawnOptionsPartialEnv) {
     await run('yarn', args, options);
   }
 

@@ -30,23 +30,27 @@ export class MockPackageManager implements PackageManager {
     return 'mock.lock';
   }
 
-  run(_args: string[], _options: SpawnOptionsPartialEnv): Promise<void> {
+  async pack(_output: string, _packageDir: string) {
     throw new Error('Method not implemented.');
   }
 
-  fetchPackageInfo(_name: string): Promise<PackageInfo> {
+  async run(_args: string[], _options: SpawnOptionsPartialEnv) {
     throw new Error('Method not implemented.');
   }
 
-  loadLockfile(): Promise<Lockfile> {
+  async fetchPackageInfo(_name: string): Promise<PackageInfo> {
     throw new Error('Method not implemented.');
   }
 
-  parseLockfile(_contents: string): Promise<Lockfile> {
+  async loadLockfile(): Promise<Lockfile> {
     throw new Error('Method not implemented.');
   }
 
-  supportsBackstageVersionProtocol(): Promise<boolean> {
+  async parseLockfile(_contents: string): Promise<Lockfile> {
+    throw new Error('Method not implemented.');
+  }
+
+  async supportsBackstageVersionProtocol(): Promise<boolean> {
     throw new Error('Method not implemented.');
   }
 }
