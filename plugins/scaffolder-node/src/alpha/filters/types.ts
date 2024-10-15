@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import { z } from 'zod';
-import { TemplateFilter } from '../types';
+import { TemplateFilter } from '../../types';
 
-export type { TemplateFilter } from '../types';
+export type { TemplateFilter } from '../../types';
 
 /** @alpha */
 export type TemplateFilterSchema = {

@@ -26,7 +26,7 @@
   "license": "Apache-2.0",
   "exports": {
     ".": "./src/index.ts",
-    "./alpha": "./src/alpha.ts",
+    "./alpha": "./src/alpha/index.ts",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
@@ -34,7 +34,7 @@
   "typesVersions": {
     "*": {
       "alpha": [
-        "src/alpha.ts"
+        "src/alpha/index.ts"
       ],
       "package.json": [
         "package.json"

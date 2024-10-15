@@ -15,9 +15,9 @@
  */
 import { JsonValue } from '@backstage/types';
 import { z } from 'zod';
-import { TemplateGlobal } from '../types';
+import { TemplateGlobal } from '../../types';
 
-export type { TemplateGlobal } from '../types';
+export type { TemplateGlobal } from '../../types';
 
 /** @alpha */
 export type CreatedTemplateGlobalValue<T extends JsonValue = JsonValue> = {

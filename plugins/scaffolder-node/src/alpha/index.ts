@@ -18,14 +18,13 @@ import { createExtensionPoint } from '@backstage/backend-plugin-api';
 import {
   TaskBroker,
   TemplateAction,
-  TaskBroker,
   TemplateFilter,
   TemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
 import { CreatedTemplateFilter } from './filters';
 import { CreatedTemplateGlobal } from './globals';
 
-export * from './tasks/alpha';
+export * from '../tasks/alpha';
 export * from './filters';
 export * from './globals';
 
