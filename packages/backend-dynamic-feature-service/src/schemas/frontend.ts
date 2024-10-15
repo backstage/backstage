@@ -25,7 +25,10 @@ import {
   loadCompiledConfigSchema,
 } from '@backstage/plugin-app-node';
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use {@link dynamicPluginsFeatureLoader} instead, which gathers all services and features required for dynamic plugins.
+ */
 export const dynamicPluginsFrontendSchemas = createBackendModule({
   pluginId: 'app',
   moduleId: 'core.dynamicplugins.frontendSchemas',
@@ -41,6 +44,7 @@ export const dynamicPluginsFrontendSchemas = createBackendModule({
           config.getOptionalString('app.packageName') ?? 'app';
         const appDistDir = resolvePackagePath(appPackageName, 'dist');
         const compiledConfigSchema = await loadCompiledConfigSchema(appDistDir);
+        // TODO(davidfestal): Add dynamic pliugin config schemas even if the compiled schemas are empty.
         if (compiledConfigSchema) {
           configSchemaExtension.setConfigSchema(
             (await schemas.addDynamicPluginsSchemas(compiledConfigSchema))

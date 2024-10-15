@@ -164,7 +164,6 @@ export interface Config {
 
     /**
      * The interval at which the catalog should process its entities.
-     *
      * @remarks
      *
      * Example:
@@ -172,6 +171,13 @@ export interface Config {
      * ```yaml
      * catalog:
      *   processingInterval: { minutes: 30 }
+     * ```
+     *
+     * or to disabled processing:
+     *
+     * ```yaml
+     * catalog:
+     *  processingInterval: false
      * ```
      *
      * Note that this is only a suggested minimum, and the actual interval may
@@ -185,7 +191,7 @@ export interface Config {
      * systems that are queried by processors, such as version control systems
      * housing catalog-info files.
      */
-    processingInterval?: HumanDuration;
+    processingInterval?: HumanDuration | false;
     /**
      * Parameters affecting setting up the pipeline for processing entities.
      */

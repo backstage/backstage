@@ -2,7 +2,9 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { createRouter } from './service/router';
+import { createRouter } from './router';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
+import { createTodoListService } from './services/TodoListService';
 
 /**
  * {{pluginVar}} backend plugin
@@ -14,25 +16,25 @@ export const {{pluginVar}} = createBackendPlugin({
   register(env) {
     env.registerInit({
       deps: {
-        httpRouter: coreServices.httpRouter,
         logger: coreServices.logger,
-        config: coreServices.rootConfig,
+        auth: coreServices.auth,
+        httpAuth: coreServices.httpAuth,
+        httpRouter: coreServices.httpRouter,
+        catalog: catalogServiceRef,
       },
-      async init({
-        httpRouter,
-        logger,
-        config,
-      }) {
+      async init({ logger, auth, httpAuth, httpRouter, catalog }) {
+        const todoListService = await createTodoListService({
+          logger,
+          auth,
+          catalog,
+        });
+
         httpRouter.use(
           await createRouter({
-            logger,
-            config,
+            httpAuth,
+            todoListService,
           }),
         );
-        httpRouter.addAuthPolicy({
-          path: '/health',
-          allow: 'unauthenticated',
-        });
       },
     });
   },

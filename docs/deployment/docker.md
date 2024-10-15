@@ -90,7 +90,7 @@ COPY --chown=node:node .yarnrc.yml ./
 ENV NODE_ENV=production
 
 # This disables node snapshot for Node 20 to work with the Scaffolder
-ENV NODE_OPTIONS "--no-node-snapshot"
+ENV NODE_OPTIONS="--no-node-snapshot"
 
 # Copy repo skeleton first, to avoid unnecessary docker cache invalidation.
 # The skeleton contains the package.json of each package in the monorepo,
@@ -287,7 +287,7 @@ COPY --chown=node:node examples ./examples
 ENV NODE_ENV=production
 
 # This disables node snapshot for Node 20 to work with the Scaffolder
-ENV NODE_OPTIONS "--no-node-snapshot"
+ENV NODE_OPTIONS="--no-node-snapshot"
 
 CMD ["node", "packages/backend", "--config", "app-config.yaml", "--config", "app-config.production.yaml"]
 ```
