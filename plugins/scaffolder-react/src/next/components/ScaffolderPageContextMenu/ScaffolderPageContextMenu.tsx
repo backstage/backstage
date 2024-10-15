@@ -27,6 +27,8 @@ import Edit from '@material-ui/icons/Edit';
 import List from '@material-ui/icons/List';
 import MoreVert from '@material-ui/icons/MoreVert';
 import React, { useState } from 'react';
+import { usePermission } from '@backstage/plugin-permission-react';
+import { taskReadPermission } from '@backstage/plugin-scaffolder-common/alpha';
 
 const useStyles = makeStyles(theme => ({
   button: {
@@ -54,6 +56,10 @@ export function ScaffolderPageContextMenu(
     props;
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
+
+  const { allowed: canReadTasks } = usePermission({
+    permission: taskReadPermission,
+  });
 
   if (!onEditorClicked && !onActionsClicked) {
     return null;
@@ -116,7 +122,7 @@ export function ScaffolderPageContextMenu(
               <ListItemText primary="Installed Actions" />
             </MenuItem>
           )}
-          {onTasksClicked && (
+          {onTasksClicked && canReadTasks && (
             <MenuItem onClick={onTasksClicked}>
               <ListItemIcon>
                 <List fontSize="small" />
