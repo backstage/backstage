@@ -25,9 +25,11 @@ import path, { resolve as resolvePath } from 'path';
 import {
   BackendFeature,
   createBackendPlugin,
-  LoggerService,
 } from '@backstage/backend-plugin-api';
-import { CommonJSModuleLoader } from '../loader/CommonJSModuleLoader';
+import {
+  CommonJSModuleLoader,
+  CommonJSModuleLoaderOptions,
+} from '../loader/CommonJSModuleLoader';
 import * as winston from 'winston';
 import * as url from 'url';
 import { MESSAGE } from 'triple-beam';
@@ -38,13 +40,14 @@ import { ScannedPluginPackage } from '../scanner';
 jest.setTimeout(60_000);
 
 async function jestFreeTypescriptAwareModuleLoader(
-  logger: LoggerService,
-  dontBootstrap: boolean = false,
+  options: CommonJSModuleLoaderOptions & {
+    dontBootstrap?: boolean;
+  },
 ) {
-  const loader = new CommonJSModuleLoader(logger);
+  const loader = new CommonJSModuleLoader(options);
   (loader as any).module = await loader.load('node:module');
   loader.load(path.resolve(__dirname, '../../../cli/config/nodeTransform.cjs'));
-  if (dontBootstrap) {
+  if (options.dontBootstrap) {
     loader.bootstrap = async () => {};
   }
   return loader;
@@ -118,7 +121,10 @@ describe('dynamicPluginsFeatureLoader', () => {
         }),
         dynamicPluginsFeatureLoader({
           moduleLoader: logger =>
-            jestFreeTypescriptAwareModuleLoader(logger, true),
+            jestFreeTypescriptAwareModuleLoader({
+              logger,
+              dontBootstrap: true,
+            }),
           logger: () => ({
             transports: [mockedTransport],
             format: winston.format.simple(),
@@ -145,6 +151,57 @@ describe('dynamicPluginsFeatureLoader', () => {
     ]);
   });
 
+  it('should fail on resolvePackagePath because -dynamic suffix is not allowed for dynamic plugin packages.', async () => {
+    const dynamicPLuginsLister = new DynamicPluginLister();
+    const mockedTransport = new MockedTransport();
+    await startTestBackend({
+      features: [
+        mockServices.rootConfig.factory({
+          data: {
+            dynamicPlugins: {
+              rootDirectory: dynamicPluginsRootDirectory,
+            },
+          },
+        }),
+        dynamicPluginsFeatureLoader({
+          moduleLoader: logger =>
+            jestFreeTypescriptAwareModuleLoader({
+              logger,
+              dynamicPluginPackageNameSuffixes: [],
+            }),
+          logger: () => ({
+            transports: [mockedTransport],
+            format: winston.format.simple(),
+          }),
+        }),
+        dynamicPLuginsLister.feature(),
+      ],
+    });
+    expect(mockedTransport.logs).toContainEqual(
+      expect.stringMatching(
+        "error: an error occurred while loading dynamic backend plugin 'plugin-test-backend-dynamic' from '.*/packages/backend-dynamic-feature-service/src/features/__fixtures__/dynamic-plugins-root/test-backend-dynamic",
+      ),
+    );
+    expect(dynamicPLuginsLister.loadedPlugins).toMatchObject([
+      {
+        name: 'plugin-test-backend-dynamic',
+        platform: 'node',
+        role: 'backend-plugin',
+        version: '0.0.0',
+        failure:
+          expect.stringMatching(`Error: Cannot find module 'plugin-test-backend/package.json'
+Require stack:
+- .*/packages/backend-plugin-api/src/paths.ts
+- .*/packages/backend-plugin-api/src/index.ts
+- .*/packages/backend-dynamic-feature-service/src/manager/plugin-manager.ts
+- .*/packages/backend-dynamic-feature-service/src/manager/index.ts
+- .*/packages/backend-dynamic-feature-service/src/features/__fixtures__/dynamic-plugins-root/test-backend-dynamic/dist/index.cjs.js
+`),
+      },
+      expect.anything(),
+    ]);
+  });
+
   it('should load and show the 2 dynamic plugins in a list of dynamic plugins returned by a static backend plugin', async () => {
     const dynamicPLuginsLister = new DynamicPluginLister();
     await startTestBackend({
@@ -157,7 +214,8 @@ describe('dynamicPluginsFeatureLoader', () => {
           },
         }),
         dynamicPluginsFeatureLoader({
-          moduleLoader: jestFreeTypescriptAwareModuleLoader,
+          moduleLoader: logger =>
+            jestFreeTypescriptAwareModuleLoader({ logger }),
         }),
         dynamicPLuginsLister.feature(),
       ],
@@ -195,7 +253,8 @@ describe('dynamicPluginsFeatureLoader', () => {
           },
         }),
         dynamicPluginsFeatureLoader({
-          moduleLoader: logger => jestFreeTypescriptAwareModuleLoader(logger),
+          moduleLoader: logger =>
+            jestFreeTypescriptAwareModuleLoader({ logger }),
           logger: config => {
             const label = config?.getString('customLogLabel') ?? 'no-label';
             return {
@@ -233,7 +292,8 @@ describe('dynamicPluginsFeatureLoader', () => {
           },
         }),
         dynamicPluginsFeatureLoader({
-          moduleLoader: jestFreeTypescriptAwareModuleLoader,
+          moduleLoader: logger =>
+            jestFreeTypescriptAwareModuleLoader({ logger }),
           logger: () => ({
             transports: [mockedTransport],
             format: winston.format.simple(),
@@ -285,7 +345,8 @@ describe('dynamicPluginsFeatureLoader', () => {
           },
         }),
         dynamicPluginsFeatureLoader({
-          moduleLoader: jestFreeTypescriptAwareModuleLoader,
+          moduleLoader: logger =>
+            jestFreeTypescriptAwareModuleLoader({ logger }),
         }),
         import('@backstage/plugin-app-backend'),
       ],
@@ -321,7 +382,8 @@ describe('dynamicPluginsFeatureLoader', () => {
           },
         }),
         dynamicPluginsFeatureLoader({
-          moduleLoader: jestFreeTypescriptAwareModuleLoader,
+          moduleLoader: logger =>
+            jestFreeTypescriptAwareModuleLoader({ logger }),
         }),
       ],
     });
@@ -372,7 +434,8 @@ describe('dynamicPluginsFeatureLoader', () => {
           },
         }),
         dynamicPluginsFeatureLoader({
-          moduleLoader: jestFreeTypescriptAwareModuleLoader,
+          moduleLoader: logger =>
+            jestFreeTypescriptAwareModuleLoader({ logger }),
           logger: () => ({
             transports: [mockedTransport],
             format: winston.format.simple(),
