@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TemplateFilterSchema } from '@backstage/plugin-scaffolder-node/alpha';
+import { z as zod } from 'zod';
 
-export default {
-  input: z =>
-    z.string().describe('repo URL as collected from repository picker'),
-  output: z => z.string(),
-} as TemplateFilterSchema;
+export default (z: typeof zod) =>
+  z
+    .function()
+    .args(z.string().describe('repo URL as collected from repository picker'))
+    .returns(z.string());

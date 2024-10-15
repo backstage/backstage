@@ -14,21 +14,35 @@
  * limitations under the License.
  */
 
+import { z } from 'zod';
 import {
   CreatedTemplateGlobalFunction,
   CreatedTemplateGlobalValue,
+  TemplateGlobalFunctionSchema,
 } from './types';
+import { JsonValue } from '@backstage/types';
 
 /**
- * This function is used to created new template globals in type-safe manner.
+ * This function is used to create new template global values in type-safe manner.
  * @param t - CreatedTemplateGlobalValue | CreatedTemplateGlobalFunction
  * @returns t
  * @alpha
  */
-export const createTemplateGlobal = <
-  T extends
-    | CreatedTemplateGlobalValue
-    | CreatedTemplateGlobalFunction<unknown, unknown>,
+export const createTemplateGlobalValue = (
+  v: CreatedTemplateGlobalValue,
+): CreatedTemplateGlobalValue => v;
+
+/**
+ * This function is used to create new template global functions in type-safe manner.
+ * @param fn - CreatedTemplateGlobalFunction
+ * @returns fn
+ * @alpha
+ */
+export const createTemplateGlobalFunction = <
+  TSchema extends TemplateGlobalFunctionSchema<any, any> | undefined,
+  TFilterSchema extends TSchema extends TemplateGlobalFunctionSchema<any, any>
+    ? z.infer<ReturnType<TSchema>>
+    : (...args: JsonValue[]) => JsonValue | undefined,
 >(
-  t: T,
-): T => t;
+  fn: CreatedTemplateGlobalFunction<TSchema, TFilterSchema>,
+): CreatedTemplateGlobalFunction<any, any> => fn;

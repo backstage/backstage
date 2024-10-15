@@ -13,27 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TemplateFilterSchema } from '@backstage/plugin-scaffolder-node/alpha';
+import { z as zod } from 'zod';
 
-export default {
-  input: z => z.string().describe('compact entity reference'),
-  arguments: z => {
-    const optionsType = z
-      .object({
-        defaultKind: z
-          .string()
-          .describe('The default kind, if none is given in the reference'),
-        defaultNamespace: z
-          .string()
-          .describe('The default namespace, if none is given in the reference'),
-      })
-      .partial();
-    return z.union([
-      optionsType.required({ defaultKind: true }),
-      optionsType.required({ defaultNamespace: true }),
-    ]);
-  },
-  output: z =>
+export default (z: typeof zod) => {
+  const optionsType = zod
+    .object({
+      defaultKind: zod
+        .string()
+        .describe('The default kind, if none is given in the reference'),
+      defaultNamespace: zod
+        .string()
+        .describe('The default namespace, if none is given in the reference'),
+    })
+    .partial();
+  return z.function(
+    z.tuple([
+      z.string().describe('compact entity reference'),
+      z.union([
+        optionsType.required({ defaultKind: true }),
+        optionsType.required({ defaultNamespace: true }),
+      ]),
+    ]),
     z
       .object({
         kind: z.string(),
@@ -41,4 +41,5 @@ export default {
         name: z.string(),
       })
       .describe('`CompoundEntityRef`'),
-} as TemplateFilterSchema;
+  );
+};

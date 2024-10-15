@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TemplateFilterSchema } from '@backstage/plugin-scaffolder-node/alpha';
+import { z as zod } from 'zod';
 
-export default {
-  input: z => z.any(),
-  arguments: z => z.string().describe('Property'),
-  output: z => z.any().describe('Selected property'),
-} as TemplateFilterSchema;
+export default (z: typeof zod) =>
+  z
+    .function()
+    .args(z.any(), z.string().describe('Property'))
+    .returns(z.any().describe('Selected property'));

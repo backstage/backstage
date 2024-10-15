@@ -31,13 +31,16 @@ export type AutocompleteHandler = ({
 
 // @alpha (undocumented)
 export type CreatedTemplateFilter<
-  TSchema extends TemplateFilterSchema | undefined | unknown = unknown,
-  TFilterSchema extends TSchema extends TemplateFilterSchema
-    ? TemplateFilterFunction<TSchema>
+  TSchema extends
+    | TemplateFilterSchema<any, any>
+    | undefined
+    | unknown = unknown,
+  TFilterSchema extends TSchema extends TemplateFilterSchema<any, any>
+    ? z.infer<ReturnType<TSchema>>
     : TSchema extends unknown
     ? unknown
-    : TemplateFilter = TSchema extends TemplateFilterSchema
-    ? TemplateFilterFunction<TSchema>
+    : TemplateFilter = TSchema extends TemplateFilterSchema<any, any>
+    ? z.infer<ReturnType<TSchema>>
     : TSchema extends unknown
     ? unknown
     : TemplateFilter,
@@ -56,16 +59,19 @@ export type CreatedTemplateGlobal =
 
 // @alpha (undocumented)
 export type CreatedTemplateGlobalFunction<
-  TSchema extends TemplateGlobalFunctionSchema | undefined | unknown = unknown,
-  TFilterSchema extends TSchema extends TemplateGlobalFunctionSchema
-    ? SchemaCompliantTemplateGlobalFunction<TSchema>
+  TSchema extends
+    | TemplateGlobalFunctionSchema<any, any>
+    | undefined
+    | unknown = unknown,
+  TFilterSchema extends TSchema extends TemplateGlobalFunctionSchema<any, any>
+    ? z.infer<ReturnType<TSchema>>
     : TSchema extends unknown
     ? unknown
     : Exclude<
         TemplateGlobal,
         JsonValue
-      > = TSchema extends TemplateGlobalFunctionSchema
-    ? SchemaCompliantTemplateGlobalFunction<TSchema>
+      > = TSchema extends TemplateGlobalFunctionSchema<any, any>
+    ? z.infer<ReturnType<TSchema>>
     : TSchema extends unknown
     ? unknown
     : Exclude<TemplateGlobal, JsonValue>,
@@ -86,19 +92,28 @@ export type CreatedTemplateGlobalValue<T extends JsonValue = JsonValue> = {
 
 // @alpha
 export const createTemplateFilter: <
-  TF extends CreatedTemplateFilter<unknown, unknown>,
+  TSchema extends TemplateFilterSchema<any, any> | undefined,
+  TFunctionSchema extends TSchema extends TemplateFilterSchema<any, any>
+    ? z.TypeOf<ReturnType<TSchema>>
+    : (arg: JsonValue, ...rest: JsonValue[]) => JsonValue | undefined,
 >(
-  filter: TF,
+  filter: CreatedTemplateFilter<TSchema, TFunctionSchema>,
 ) => CreatedTemplateFilter<unknown, unknown>;
 
 // @alpha
-export const createTemplateGlobal: <
-  T extends
-    | CreatedTemplateGlobalFunction<unknown, unknown>
-    | CreatedTemplateGlobalValue,
+export const createTemplateGlobalFunction: <
+  TSchema extends TemplateGlobalFunctionSchema<any, any> | undefined,
+  TFilterSchema extends TSchema extends TemplateGlobalFunctionSchema<any, any>
+    ? z.TypeOf<ReturnType<TSchema>>
+    : (...args: JsonValue[]) => JsonValue | undefined,
 >(
-  t: T,
-) => T;
+  fn: CreatedTemplateGlobalFunction<TSchema, TFilterSchema>,
+) => CreatedTemplateGlobalFunction<any, any>;
+
+// @alpha
+export const createTemplateGlobalValue: (
+  v: CreatedTemplateGlobalValue,
+) => CreatedTemplateGlobalValue;
 
 // @alpha
 export const restoreWorkspace: (opts: {
@@ -163,22 +178,6 @@ export interface ScaffolderWorkspaceProviderExtensionPoint {
 // @alpha
 export const scaffolderWorkspaceProviderExtensionPoint: ExtensionPoint<ScaffolderWorkspaceProviderExtensionPoint>;
 
-// @alpha (undocumented)
-export type SchemaCompliantTemplateGlobalFunction<
-  T extends TemplateGlobalFunctionSchema,
-> = z.ZodFunction<
-  z.ZodTuple<
-    [
-      ...(T['arguments'] extends (zImpl: typeof z) => z.ZodTuple<infer Items>
-        ? Items
-        : [ReturnType<NonNullable<T['arguments']>>]),
-    ]
-  >,
-  T['output'] extends (zImpl: typeof z) => z.ZodType
-    ? ReturnType<T['output']>
-    : z.ZodUnknown
->;
-
 // @alpha
 export const serializeWorkspace: (opts: { path: string }) => Promise<{
   contents: Buffer;
@@ -198,27 +197,14 @@ export type TemplateFilterExample = {
 };
 
 // @alpha (undocumented)
-export type TemplateFilterFunction<T extends TemplateFilterSchema> =
-  z.ZodFunction<
-    z.ZodTuple<
-      [
-        T['input'] extends (zImpl: typeof z) => z.ZodType
-          ? ReturnType<T['input']>
-          : z.ZodAny,
-        ...(T['arguments'] extends (zImpl: typeof z) => z.ZodTuple<infer Items>
-          ? Items
-          : [ReturnType<NonNullable<T['arguments']>>]),
-      ]
-    >,
-    T['output'] extends (zImpl: typeof z) => z.ZodType
-      ? ReturnType<T['output']>
-      : z.ZodUnknown
-  >;
-
-// @alpha (undocumented)
-export type TemplateFilterSchema = {
-  [K in 'input' | 'arguments' | 'output']?: (zImpl: typeof z) => z.ZodType;
-};
+export type TemplateFilterSchema<
+  Args extends z.ZodTuple<
+    | [z.ZodType<JsonValue>]
+    | [z.ZodType<JsonValue>, ...(z.ZodType<JsonValue> | z.ZodUnknown)[]],
+    z.ZodType<JsonValue> | z.ZodUnknown | null
+  >,
+  Result extends z.ZodType<JsonValue> | z.ZodUndefined,
+> = (zod: typeof z) => z.ZodFunction<Args, Result>;
 
 // @public (undocumented)
 export type TemplateGlobal =
@@ -233,9 +219,13 @@ export type TemplateGlobalFunctionExample = {
 };
 
 // @alpha (undocumented)
-export type TemplateGlobalFunctionSchema = {
-  [K in 'arguments' | 'output']?: (zImpl: typeof z) => z.ZodType;
-};
+export type TemplateGlobalFunctionSchema<
+  Args extends z.ZodTuple<
+    [] | [z.ZodType<JsonValue>, ...(z.ZodType<JsonValue> | z.ZodUnknown)[]],
+    z.ZodType<JsonValue> | z.ZodUnknown | null
+  >,
+  Result extends z.ZodType<JsonValue> | z.ZodUndefined,
+> = (zod: typeof z) => z.ZodFunction<Args, Result>;
 
 // @alpha
 export interface WorkspaceProvider {

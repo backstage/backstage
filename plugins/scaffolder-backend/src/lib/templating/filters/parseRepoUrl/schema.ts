@@ -13,26 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TemplateFilterSchema } from '@backstage/plugin-scaffolder-node/alpha';
+import { z as zod } from 'zod';
 
-export default {
-  input: z =>
-    z.string().describe('repo URL as collected from repository picker'),
-  output: z =>
-    z
-      .object({
-        repo: z.string(),
-        host: z.string(),
-      })
-      .merge(
-        z
-          .object({
-            owner: z.string(),
-            organization: z.string(),
-            workspace: z.string(),
-            project: z.string(),
-          })
-          .partial(),
-      )
-      .describe('`RepoSpec`'),
-} as TemplateFilterSchema;
+export default (z: typeof zod) =>
+  z
+    .function()
+    .args(z.string().describe('repo URL as collected from repository picker'))
+    .returns(
+      z
+        .object({
+          repo: z.string(),
+          host: z.string(),
+        })
+        .merge(
+          z
+            .object({
+              owner: z.string(),
+              organization: z.string(),
+              workspace: z.string(),
+              project: z.string(),
+            })
+            .partial(),
+        )
+        .describe('`RepoSpec`'),
+    );
