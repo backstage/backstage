@@ -200,9 +200,9 @@ export default async (opts: OptionValues) => {
                 // support npm and workspace: versions.
                 depType !== 'peerDependencies';
 
-              pkgJson[depType][dep.name] = useBackstageRange
-                ? 'backstage:^'
-                : dep.range;
+              const newRange = useBackstageRange ? 'backstage:^' : dep.range;
+
+              pkgJson[depType][dep.name] = newRange;
 
               // Check if the update was at least a pre-v1 minor or post-v1 major release
               const lockfileEntry = lockfile
@@ -292,16 +292,16 @@ export default async (opts: OptionValues) => {
     }
 
     if (supportsBackstageVersionProtocol) {
-      // TODO not sure how to best make this message generic
       console.log();
       console.log(
         chalk.blue(
           `${chalk.bold(
             'NOTE',
-          )}: this bump used backstage:^ versions in package.json files, since the Backstage ` +
-            `yarn plugin was detected in the repository. To migrate back to explicit npm versions, ` +
-            `remove the plugin by running "yarn plugin remove @yarnpkg/plugin-backstage", then ` +
-            `repeat this command.`,
+          )}: this bump used backstage:^ versions in package.json files, since appropriate support ` +
+            `was detected for the package manager in the repository. To migrate back to explicit npm ` +
+            `versions, remove or disable that support in your package manager. For example in Yarn, you ` +
+            `can remove the Backstage plugin by running "yarn plugin remove @yarnpkg/plugin-backstage", ` +
+            `then repeat this command.`,
         ),
       );
       console.log();
