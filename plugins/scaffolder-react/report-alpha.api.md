@@ -54,6 +54,12 @@ export type BackstageOverrides = Overrides & {
 };
 
 // @alpha (undocumented)
+export type BackstageTemplateStepperClassKey =
+  | 'backButton'
+  | 'footer'
+  | 'formWrapper';
+
+// @alpha (undocumented)
 export const createAsyncValidators: (
   rootSchema: JsonObject,
   validators: Record<
@@ -318,6 +324,7 @@ export type ScaffolderPageContextMenuProps = {
 // @alpha (undocumented)
 export type ScaffolderReactComponentsNameToClassKey = {
   ScaffolderReactTemplateCategoryPicker: ScaffolderReactTemplateCategoryPickerClassKey;
+  BackstageTemplateStepper: BackstageTemplateStepperClassKey;
 };
 
 // @alpha (undocumented)
@@ -490,52 +497,6 @@ export type WorkflowProps = {
   | 'initialState'
   | 'layouts'
 >;
-
-// Warnings were encountered during analysis:
-//
-// src/next/blueprints/types.d.ts:5:1 - (ae-undocumented) Missing documentation for "FormFieldExtensionData".
-// src/next/components/ScaffolderField/ScaffolderField.d.ts:7:5 - (ae-undocumented) Missing documentation for "rawDescription".
-// src/next/components/ScaffolderField/ScaffolderField.d.ts:8:5 - (ae-undocumented) Missing documentation for "errors".
-// src/next/components/ScaffolderField/ScaffolderField.d.ts:9:5 - (ae-undocumented) Missing documentation for "rawErrors".
-// src/next/components/ScaffolderField/ScaffolderField.d.ts:10:5 - (ae-undocumented) Missing documentation for "help".
-// src/next/components/ScaffolderField/ScaffolderField.d.ts:11:5 - (ae-undocumented) Missing documentation for "rawHelp".
-// src/next/components/ScaffolderField/ScaffolderField.d.ts:12:5 - (ae-undocumented) Missing documentation for "required".
-// src/next/components/ScaffolderField/ScaffolderField.d.ts:13:5 - (ae-undocumented) Missing documentation for "disabled".
-// src/next/components/ScaffolderField/ScaffolderField.d.ts:14:5 - (ae-undocumented) Missing documentation for "displayLabel".
-// src/next/components/ScaffolderPageContextMenu/ScaffolderPageContextMenu.d.ts:5:1 - (ae-undocumented) Missing documentation for "ScaffolderPageContextMenuProps".
-// src/next/components/ScaffolderPageContextMenu/ScaffolderPageContextMenu.d.ts:15:1 - (ae-undocumented) Missing documentation for "ScaffolderPageContextMenu".
-// src/next/components/Stepper/createAsyncValidators.d.ts:6:1 - (ae-undocumented) Missing documentation for "FormValidation".
-// src/next/components/Stepper/createAsyncValidators.d.ts:10:22 - (ae-undocumented) Missing documentation for "createAsyncValidators".
-// src/next/components/TaskSteps/TaskSteps.d.ts:10:5 - (ae-undocumented) Missing documentation for "steps".
-// src/next/components/TaskSteps/TaskSteps.d.ts:11:5 - (ae-undocumented) Missing documentation for "activeStep".
-// src/next/components/TaskSteps/TaskSteps.d.ts:12:5 - (ae-undocumented) Missing documentation for "isComplete".
-// src/next/components/TaskSteps/TaskSteps.d.ts:13:5 - (ae-undocumented) Missing documentation for "isError".
-// src/next/components/TemplateCard/TemplateCard.d.ts:9:5 - (ae-undocumented) Missing documentation for "template".
-// src/next/components/TemplateCard/TemplateCard.d.ts:10:5 - (ae-undocumented) Missing documentation for "additionalLinks".
-// src/next/components/TemplateCard/TemplateCard.d.ts:15:5 - (ae-undocumented) Missing documentation for "onSelected".
-// src/next/components/TemplateCategoryPicker/TemplateCategoryPicker.d.ts:3:1 - (ae-undocumented) Missing documentation for "ScaffolderReactTemplateCategoryPickerClassKey".
-// src/next/components/TemplateGroup/TemplateGroup.d.ts:10:5 - (ae-undocumented) Missing documentation for "templates".
-// src/next/components/TemplateGroup/TemplateGroup.d.ts:18:5 - (ae-undocumented) Missing documentation for "onSelected".
-// src/next/components/TemplateGroup/TemplateGroup.d.ts:19:5 - (ae-undocumented) Missing documentation for "title".
-// src/next/components/TemplateGroup/TemplateGroup.d.ts:20:5 - (ae-undocumented) Missing documentation for "components".
-// src/next/components/TemplateGroups/TemplateGroups.d.ts:8:1 - (ae-undocumented) Missing documentation for "TemplateGroupsProps".
-// src/next/components/TemplateGroups/TemplateGroups.d.ts:9:5 - (ae-undocumented) Missing documentation for "groups".
-// src/next/components/TemplateGroups/TemplateGroups.d.ts:10:5 - (ae-undocumented) Missing documentation for "templateFilter".
-// src/next/components/TemplateGroups/TemplateGroups.d.ts:11:5 - (ae-undocumented) Missing documentation for "TemplateCardComponent".
-// src/next/components/TemplateGroups/TemplateGroups.d.ts:14:5 - (ae-undocumented) Missing documentation for "onTemplateSelected".
-// src/next/components/TemplateGroups/TemplateGroups.d.ts:15:5 - (ae-undocumented) Missing documentation for "additionalLinksForEntity".
-// src/next/components/TemplateGroups/TemplateGroups.d.ts:24:22 - (ae-undocumented) Missing documentation for "TemplateGroups".
-// src/next/components/Workflow/Workflow.d.ts:7:1 - (ae-undocumented) Missing documentation for "WorkflowProps".
-// src/next/components/Workflow/Workflow.d.ts:20:22 - (ae-undocumented) Missing documentation for "Workflow".
-// src/next/components/Workflow/Workflow.d.ts:24:22 - (ae-undocumented) Missing documentation for "EmbeddableWorkflow".
-// src/next/hooks/useTemplateParameterSchema.d.ts:5:22 - (ae-undocumented) Missing documentation for "useTemplateParameterSchema".
-// src/next/hooks/useTemplateSchema.d.ts:10:5 - (ae-undocumented) Missing documentation for "uiSchema".
-// src/next/hooks/useTemplateSchema.d.ts:11:5 - (ae-undocumented) Missing documentation for "mergedSchema".
-// src/next/hooks/useTemplateSchema.d.ts:12:5 - (ae-undocumented) Missing documentation for "schema".
-// src/next/hooks/useTemplateSchema.d.ts:13:5 - (ae-undocumented) Missing documentation for "title".
-// src/next/hooks/useTemplateSchema.d.ts:14:5 - (ae-undocumented) Missing documentation for "description".
-// src/next/overridableComponents.d.ts:5:1 - (ae-undocumented) Missing documentation for "ScaffolderReactComponentsNameToClassKey".
-// src/next/overridableComponents.d.ts:9:1 - (ae-undocumented) Missing documentation for "BackstageOverrides".
 
 // (No @packageDocumentation comment for this package)
 ```
