@@ -24,7 +24,7 @@ import {
 import { CreatedTemplateFilter } from './filters';
 import { CreatedTemplateGlobal } from './globals';
 
-export * from './tasks/alpha';
+export * from '../tasks/alpha';
 export * from './filters';
 export * from './globals';
 
