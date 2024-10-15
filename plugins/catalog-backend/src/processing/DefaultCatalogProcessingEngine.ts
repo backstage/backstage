@@ -129,10 +129,12 @@ export class DefaultCatalogProcessingEngine {
   }
 
   private startPipeline(): () => void {
-    const lowWatermark =
-      this.config.getOptionalNumber('catalog.pipeline.lowWatermark') ?? 5;
-    const highWatermark =
-      this.config.getOptionalNumber('catalog.pipeline.highWatermark') ?? 10;
+    const lowWatermark = this.config.has('catalog.processing.concurrency')
+      ? this.config.getNumber('catalog.processing.concurrency.min')
+      : 5;
+    const highWatermark = this.config.has('catalog.processing.concurrency')
+      ? this.config.getNumber('catalog.processing.concurrency.max')
+      : 10;
     return startTaskPipeline<RefreshStateItem>({
       lowWatermark: lowWatermark,
       highWatermark: highWatermark,

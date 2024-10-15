@@ -194,20 +194,21 @@ files.
 
 ## Pipeline configuration
 
-You can configure the number of entities that are processed in a parallel during the processing loop.
+You can configure the number of entities that are processed in parallel during the processing loop.
 Both the minimum and maximum amount of entities process can be configured.
 
-- `lowWatermark` defines the target minimum number of items to process in parallel.
+- `min` defines the target minimum number of items to process in parallel.
   Once the number of in-flight tasks reaches this count, more tasks will be loaded in.
-- `highWatermark` defines the maximum number of items to process in parallel.
+- `max` defines the maximum number of items to process in parallel.
 
-Keep in mind that the `lowWatermark` has to be less than `highWatermark`.
+Keep in mind that the `min` has to be less than `max` or an error will be thrown.
 
 ```yaml title="app-config.yaml"
 catalog:
-  pipeline:
-    lowWatermark: 5
-    highWatermark: 10
+  processing:
+    concurrency:
+      min: 5
+      max: 10
 ```
 
 ## Stitching strategy
