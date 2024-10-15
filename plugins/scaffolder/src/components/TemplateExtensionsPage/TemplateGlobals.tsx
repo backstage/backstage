@@ -29,8 +29,8 @@ import LinkIcon from '@material-ui/icons/Link';
 import { isEmpty, pick } from 'lodash';
 import React, { useState } from 'react';
 import { scaffolderTranslationRef } from '../../translation';
-import { ExamplesTable } from '../ExamplesTable/ExamplesTable';
 import { Expanded, RenderSchema, SchemaRenderContext } from '../RenderSchema';
+import { ScaffolderUsageExamplesTable } from '../ScaffolderUsageExamplesTable';
 import { Extension, renderLink } from './navigation';
 import { Xlate } from './types';
 
@@ -105,7 +105,7 @@ const FunctionDetailContent = ({
           </AccordionSummary>
           <AccordionDetails>
             <Box pb={2}>
-              <ExamplesTable examples={fn.examples} />
+              <ScaffolderUsageExamplesTable examples={fn.examples} />
             </Box>
           </AccordionDetails>
         </Accordion>

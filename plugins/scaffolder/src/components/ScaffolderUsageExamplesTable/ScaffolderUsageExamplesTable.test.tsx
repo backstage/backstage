@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TemplatingExample } from '@backstage/plugin-scaffolder-react';
+import { ScaffolderUsageExample } from '@backstage/plugin-scaffolder-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { within } from '@testing-library/react';
 import React from 'react';
-import { ExamplesTable } from './ExamplesTable';
+import { ScaffolderUsageExamplesTable } from './ScaffolderUsageExamplesTable';
 
 describe('examples', () => {
   it('renders component', async () => {
-    const examples: TemplatingExample[] = [
+    const examples: ScaffolderUsageExample[] = [
       {
         description: 'foo',
         example: 'bar',
@@ -32,7 +32,7 @@ describe('examples', () => {
       },
     ];
     const { getByTestId } = await renderInTestApp(
-      <ExamplesTable {...{ examples }} />,
+      <ScaffolderUsageExamplesTable {...{ examples }} />,
     );
     const x = getByTestId('examples');
     expect(x).toBeInTheDocument();

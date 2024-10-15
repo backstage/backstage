@@ -51,7 +51,7 @@ import {
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../translation';
 import { Expanded, RenderSchema, SchemaRenderContext } from '../RenderSchema';
-import { ExamplesTable } from '../ExamplesTable/ExamplesTable';
+import { ScaffolderUsageExamplesTable } from '../ScaffolderUsageExamplesTable';
 
 const useStyles = makeStyles(theme => ({
   code: {
@@ -223,7 +223,7 @@ export const ActionPageContent = () => {
                 </AccordionSummary>
                 <AccordionDetails>
                   <Box pb={2}>
-                    <ExamplesTable examples={action.examples} />
+                    <ScaffolderUsageExamplesTable examples={action.examples} />
                   </Box>
                 </AccordionDetails>
               </Accordion>
