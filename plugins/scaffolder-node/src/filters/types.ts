@@ -16,6 +16,8 @@
 import { z } from 'zod';
 import { TemplateFilter } from '../types';
 
+export type { TemplateFilter } from '../types';
+
 /** @alpha */
 export type TemplateFilterSchema = {
   [K in 'input' | 'arguments' | 'output']?: (zImpl: typeof z) => z.ZodType;
