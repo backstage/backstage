@@ -348,6 +348,20 @@ export interface DependsOnResourcesCardProps {
 export const EntityAboutCard: (props: AboutCardProps) => JSX.Element;
 
 // @public (undocumented)
+export function EntityContextMenu(props: {
+  UNSTABLE_extraContextMenuItems?: Array<{
+    title: string;
+    Icon: IconComponent;
+    onClick: () => void;
+  }>;
+  UNSTABLE_contextMenuOptions?: {
+    disableUnregister: boolean | 'visible' | 'hidden' | 'disable';
+  };
+  onUnregisterEntity: () => void;
+  onInspectEntity: () => void;
+}): React_2.JSX.Element;
+
+// @public (undocumented)
 export type EntityContextMenuClassKey = 'button';
 
 // @public (undocumented)
@@ -722,7 +736,8 @@ export type SystemDiagramCardClassKey =
 // src/components/DependsOnResourcesCard/DependsOnResourcesCard.d.ts:7:5 - (ae-undocumented) Missing documentation for "title".
 // src/components/DependsOnResourcesCard/DependsOnResourcesCard.d.ts:8:5 - (ae-undocumented) Missing documentation for "columns".
 // src/components/DependsOnResourcesCard/DependsOnResourcesCard.d.ts:9:5 - (ae-undocumented) Missing documentation for "tableOptions".
-// src/components/EntityContextMenu/EntityContextMenu.d.ts:5:1 - (ae-undocumented) Missing documentation for "EntityContextMenuClassKey".
+// src/components/EntityContextMenu/EntityContextMenu.d.ts:4:1 - (ae-undocumented) Missing documentation for "EntityContextMenuClassKey".
+// src/components/EntityContextMenu/EntityContextMenu.d.ts:6:1 - (ae-undocumented) Missing documentation for "EntityContextMenu".
 // src/components/EntityLabelsCard/EntityLabelsCard.d.ts:4:1 - (ae-undocumented) Missing documentation for "EntityLabelsCardProps".
 // src/components/EntityLabelsCard/EntityLabelsCard.d.ts:5:5 - (ae-undocumented) Missing documentation for "variant".
 // src/components/EntityLabelsCard/EntityLabelsCard.d.ts:6:5 - (ae-undocumented) Missing documentation for "title".
