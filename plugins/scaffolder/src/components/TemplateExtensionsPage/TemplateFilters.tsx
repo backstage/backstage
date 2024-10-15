@@ -29,8 +29,8 @@ import LinkIcon from '@material-ui/icons/Link';
 import { isEmpty, pick } from 'lodash';
 import React, { useState } from 'react';
 import { scaffolderTranslationRef } from '../../translation';
-import { ExamplesTable } from '../ExamplesTable/ExamplesTable';
 import { Expanded, RenderSchema, SchemaRenderContext } from '../RenderSchema';
+import { ScaffolderUsageExamplesTable } from '../ScaffolderUsageExamplesTable';
 import { Extension, renderLink } from './navigation';
 import { StyleClasses, Xlate } from './types';
 
@@ -118,7 +118,7 @@ const FilterDetailContent = ({
           </AccordionSummary>
           <AccordionDetails>
             <Box pb={2}>
-              <ExamplesTable examples={filter.examples} />
+              <ScaffolderUsageExamplesTable examples={filter.examples} />
             </Box>
           </AccordionDetails>
         </Accordion>

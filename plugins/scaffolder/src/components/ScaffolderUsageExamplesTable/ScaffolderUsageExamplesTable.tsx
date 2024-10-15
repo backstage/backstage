@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 import { CodeSnippet, MarkdownContent } from '@backstage/core-components';
-import { TemplatingExample } from '@backstage/plugin-scaffolder-react';
+import { ScaffolderUsageExample } from '@backstage/plugin-scaffolder-react';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import React, { Fragment } from 'react';
 
-export const ExamplesTable = (props: { examples: TemplatingExample[] }) => {
+export const ScaffolderUsageExamplesTable = (props: {
+  examples: ScaffolderUsageExample[];
+}) => {
   return (
     <Grid data-testid="examples" container>
       {props.examples.map((example, index) => {

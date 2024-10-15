@@ -45,11 +45,11 @@ export type ScaffolderTask = {
 };
 
 /**
- * A single templating example
+ * A single scaffolder usage example
  *
  * @public
  */
-export type TemplatingExample = {
+export type ScaffolderUsageExample = {
   description?: string;
   example: string;
   notes?: string;
@@ -59,9 +59,9 @@ export type TemplatingExample = {
  * A single action example
  *
  * @public
- * @deprecated in favor of TemplatingExample
+ * @deprecated in favor of ScaffolderUsageExample
  */
-export type ActionExample = TemplatingExample;
+export type ActionExample = ScaffolderUsageExample;
 
 /**
  * The response shape for a single action in the `listActions` call to the `scaffolder-backend`
@@ -97,7 +97,7 @@ export type TemplateFilter = {
     arguments?: JSONSchema7[];
     output?: JSONSchema7;
   };
-  examples?: TemplatingExample[];
+  examples?: ScaffolderUsageExample[];
 };
 
 /**
@@ -111,7 +111,7 @@ export type TemplateGlobalFunction = {
     arguments?: JSONSchema7[];
     output?: JSONSchema7;
   };
-  examples?: TemplatingExample[];
+  examples?: ScaffolderUsageExample[];
 };
 
 /**
