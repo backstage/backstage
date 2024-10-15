@@ -14,5 +14,10 @@
  * limitations under the License.
  */
 
-export { eventsModuleBitbucketCloudEventRouter } from './service/eventsModuleBitbucketCloudEventRouter';
-export { eventsModuleBitbucketCloudEventRouter as default } from './service/eventsModuleBitbucketCloudEventRouter';
+import { eventsModuleBitbucketCloudEventRouter as feature } from './service/eventsModuleBitbucketCloudEventRouter';
+
+/** @alpha */
+const _feature = feature;
+export default _feature;
+/** @alpha */
+export const eventsModuleBitbucketCloudEventRouter = _feature;

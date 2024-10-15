@@ -120,7 +120,7 @@ const backend = createBackend();
 // Other plugins...
 
 /* highlight-add-start */
-backend.add(import('@backstage/plugin-kubernetes-backend/alpha'));
+backend.add(import('@backstage/plugin-kubernetes-backend'));
 /* highlight-add-end */
 
 backend.start();
@@ -228,7 +228,7 @@ export const kubernetesModuleCustomClusterDiscovery = createBackendModule({
 });
 
 // Other plugins...
-backend.add(import('@backstage/plugin-kubernetes-backend/alpha'));
+backend.add(import('@backstage/plugin-kubernetes-backend'));
 backend.add(kubernetesModuleCustomClusterDiscovery);
 
 backend.start();

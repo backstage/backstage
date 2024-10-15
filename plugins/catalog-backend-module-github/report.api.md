@@ -5,6 +5,7 @@
 ```ts
 import { AnalyzeOptions } from '@backstage/plugin-catalog-node';
 import { AuthService } from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogProcessor } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-node';
@@ -36,6 +37,10 @@ export const defaultUserTransformer: (
   item: GithubUser,
   _ctx: TransformerContext,
 ) => Promise<UserEntity | undefined>;
+
+// @public
+const githubCatalogModule: BackendFeature;
+export default githubCatalogModule;
 
 // @public
 export class GithubDiscoveryProcessor implements CatalogProcessor {

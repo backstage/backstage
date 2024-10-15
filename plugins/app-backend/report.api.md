@@ -4,12 +4,17 @@
 
 ```ts
 import { AuthService } from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { ConfigSchema } from '@backstage/config-loader';
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import express from 'express';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
+
+// @public
+const appPlugin: BackendFeature;
+export default appPlugin;
 
 // @public @deprecated (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;

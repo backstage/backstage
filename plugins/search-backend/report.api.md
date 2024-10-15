@@ -4,6 +4,7 @@
 
 ```ts
 import { AuthService } from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { DocumentTypeInfo } from '@backstage/plugin-search-common';
@@ -16,6 +17,10 @@ import { SearchEngine } from '@backstage/plugin-search-backend-node';
 
 // @public @deprecated (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
+
+// @public
+const _default: BackendFeature;
+export default _default;
 
 // @public @deprecated (undocumented)
 export type RouterOptions = {

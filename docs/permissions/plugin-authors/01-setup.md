@@ -59,7 +59,7 @@ The source code is available here:
    //...
    /* highlight-add-start */
    // Installing the permission plugin
-   backend.add(import('@backstage/plugin-permission-backend/alpha'));
+   backend.add(import('@backstage/plugin-permission-backend'));
    // Installing the allow all permission policy module
    backend.add(
      import('@backstage/plugin-permission-backend-module-allow-all-policy'),

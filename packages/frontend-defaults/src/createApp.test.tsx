@@ -29,9 +29,17 @@ import { CreateAppFeatureLoader, createApp } from './createApp';
 import { mockApis, renderWithEffects } from '@backstage/test-utils';
 import React from 'react';
 import { featureFlagsApiRef, useApi } from '@backstage/core-plugin-api';
-import appPlugin from '@backstage/plugin-app';
+import { default as appPluginOriginal } from '@backstage/plugin-app';
 
 describe('createApp', () => {
+  const appPlugin = appPluginOriginal.withOverrides({
+    extensions: [
+      appPluginOriginal
+        .getExtension('sign-in-page:app')
+        .override({ disabled: true }),
+    ],
+  });
+
   it('should allow themes to be installed', async () => {
     const app = createApp({
       configLoader: async () => ({
@@ -98,6 +106,7 @@ describe('createApp', () => {
             }),
           ],
         }),
+        appPlugin,
       ],
     });
 
@@ -231,6 +240,7 @@ describe('createApp', () => {
     const app = createApp({
       configLoader: async () => ({ config: mockApis.config() }),
       features: [
+        appPlugin,
         createFrontendPlugin({
           id: 'my-plugin',
           extensions: [
@@ -277,6 +287,8 @@ describe('createApp', () => {
           <api:app/atlassian-auth out=[core.api.factory] />
           <api:app/vmware-cloud-auth out=[core.api.factory] />
           <api:app/permission out=[core.api.factory] />
+          <api:app/scm-auth out=[core.api.factory] />
+          <api:app/scm-integrations out=[core.api.factory] />
           <api:app/app-language out=[core.api.factory] />
           <api:app/app-theme out=[core.api.factory]>
             themes [
@@ -316,6 +328,9 @@ describe('createApp', () => {
                 elements [
                   <app-root-element:app/oauth-request-dialog out=[core.reactElement] />
                   <app-root-element:app/alert-display out=[core.reactElement] />
+                ]
+                signInPage [
+                  <sign-in-page:app />
                 ]
               </app/root>
             ]

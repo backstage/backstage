@@ -75,10 +75,6 @@ export type CatalogPermissionRule<
 > = PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
 
 // @alpha
-const catalogPlugin: BackendFeature;
-export default catalogPlugin;
-
-// @alpha
 export const createCatalogConditionalDecision: (
   permission: ResourcePermission<'catalog-entity'>,
   conditions: PermissionCriteria<PermissionCondition<'catalog-entity'>>,
@@ -90,6 +86,10 @@ export const createCatalogPermissionRule: <
 >(
   rule: PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>,
 ) => PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
+
+// @alpha (undocumented)
+const _feature: BackendFeature;
+export default _feature;
 
 // @alpha
 export const permissionRules: {
@@ -145,6 +145,10 @@ export const permissionRules: {
     }
   >;
 };
+
+// Warnings were encountered during analysis:
+//
+// src/alpha.d.ts:2:15 - (ae-undocumented) Missing documentation for "_feature".
 
 // (No @packageDocumentation comment for this package)
 ```

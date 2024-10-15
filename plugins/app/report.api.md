@@ -383,6 +383,21 @@ const appPlugin: FrontendPlugin<
         factory: AnyApiFactory;
       };
     }>;
+    'sign-in-page:app': ExtensionDefinition<{
+      kind: 'sign-in-page';
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        ComponentType<SignInPageProps>,
+        'core.sign-in-page.component',
+        {}
+      >;
+      inputs: {};
+      params: {
+        loader: () => Promise<ComponentType<SignInPageProps>>;
+      };
+    }>;
     'app-root-element:app/oauth-request-dialog': ExtensionDefinition<{
       kind: 'app-root-element';
       name: 'oauth-request-dialog';
@@ -693,6 +708,36 @@ const appPlugin: FrontendPlugin<
     'api:app/permission': ExtensionDefinition<{
       kind: 'api';
       name: 'permission';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+      params: {
+        factory: AnyApiFactory;
+      };
+    }>;
+    'api:app/scm-auth': ExtensionDefinition<{
+      kind: 'api';
+      name: 'scm-auth';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+      params: {
+        factory: AnyApiFactory;
+      };
+    }>;
+    'api:app/scm-integrations': ExtensionDefinition<{
+      kind: 'api';
+      name: 'scm-integrations';
       config: {};
       configInput: {};
       output: ConfigurableExtensionDataRef<

@@ -14,36 +14,8 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
-import {
-  createBackendPlugin,
-  coreServices,
-} from '@backstage/backend-plugin-api';
-import { createRouterInternal } from './service/router';
+import { proxyPlugin } from './plugin';
 
-/**
- * The proxy backend plugin.
- *
- * @alpha
- */
-export default createBackendPlugin({
-  pluginId: 'proxy',
-  register(env) {
-    env.registerInit({
-      deps: {
-        config: coreServices.rootConfig,
-        discovery: coreServices.discovery,
-        logger: coreServices.logger,
-        httpRouter: coreServices.httpRouter,
-      },
-      async init({ config, discovery, logger, httpRouter }) {
-        await createRouterInternal({
-          config,
-          discovery,
-          logger: loggerToWinstonLogger(logger),
-          httpRouterService: httpRouter,
-        });
-      },
-    });
-  },
-});
+/** @alpha */
+const _feature = proxyPlugin;
+export default _feature;

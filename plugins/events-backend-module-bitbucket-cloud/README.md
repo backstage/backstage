@@ -29,9 +29,7 @@ yarn --cwd packages/backend add @backstage/plugin-events-backend-module-bitbucke
 
 ```ts
 // packages/backend/src/index.ts
-backend.add(
-  import('@backstage/plugin-events-backend-module-bitbucket-cloud/alpha'),
-);
+backend.add(import('@backstage/plugin-events-backend-module-bitbucket-cloud'));
 ```
 
 ### Legacy Backend System
