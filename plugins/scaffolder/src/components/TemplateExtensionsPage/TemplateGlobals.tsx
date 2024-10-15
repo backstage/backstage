@@ -30,8 +30,7 @@ import { isEmpty, pick } from 'lodash';
 import React, { useState } from 'react';
 import { scaffolderTranslationRef } from '../../translation';
 import { ExamplesTable } from '../ExamplesTable/ExamplesTable';
-import { Expanded, SchemaRenderContext } from '../RenderSchema';
-import { RenderSchema } from '../RenderSchema/RenderSchema';
+import { Expanded, RenderSchema, SchemaRenderContext } from '../RenderSchema';
 import { Extension, renderLink } from './navigation';
 import { Xlate } from './types';
 
