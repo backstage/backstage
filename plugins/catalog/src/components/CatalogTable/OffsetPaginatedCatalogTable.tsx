@@ -18,10 +18,8 @@ import React, { useEffect } from 'react';
 
 import { Table, TableProps } from '@backstage/core-components';
 import { CatalogTableRow } from './types';
-import {
-  EntityTextFilter,
-  useEntityList,
-} from '@backstage/plugin-catalog-react';
+import { useEntityList } from '@backstage/plugin-catalog-react';
+import { CatalogTableToolbar } from './CatalogTableToolbar';
 
 /**
  * @internal
@@ -30,8 +28,8 @@ export function OffsetPaginatedCatalogTable(
   props: TableProps<CatalogTableRow>,
 ) {
   const { columns, data, isLoading, options } = props;
-  const { updateFilters, setLimit, setOffset, limit, totalItems, offset } =
-    useEntityList();
+  const { setLimit, setOffset, limit, totalItems, offset } = useEntityList();
+
   const [page, setPage] = React.useState(
     offset && limit ? Math.floor(offset / limit) : 0,
   );
@@ -55,11 +53,9 @@ export function OffsetPaginatedCatalogTable(
         emptyRowsWhenPaging: false,
         ...options,
       }}
-      onSearchChange={(searchText: string) =>
-        updateFilters({
-          text: searchText ? new EntityTextFilter(searchText) : undefined,
-        })
-      }
+      components={{
+        Toolbar: CatalogTableToolbar,
+      }}
       page={page}
       onPageChange={newPage => {
         setPage(newPage);
