@@ -7602,7 +7602,7 @@ __metadata:
     "@elastic/elasticsearch": ^7.13.0
     "@elastic/elasticsearch-mock": ^1.0.0
     "@opensearch-project/opensearch": ^2.2.1
-    "@short.io/opensearch-mock": ^0.3.1
+    "@short.io/opensearch-mock": ^0.4.0
     aws4: ^1.12.0
     elastic-builder: ^2.16.0
     lodash: ^4.17.21
@@ -15227,14 +15227,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@short.io/opensearch-mock@npm:^0.3.1":
-  version: 0.3.1
-  resolution: "@short.io/opensearch-mock@npm:0.3.1"
+"@short.io/opensearch-mock@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "@short.io/opensearch-mock@npm:0.4.0"
   dependencies:
     fast-deep-equal: ^3.1.3
-    find-my-way: ^4.3.3
+    find-my-way: ^9.0.1
     into-stream: ^6.0.0
-  checksum: 5d703e0311954d82ce9dc0367ad257f88d728d93f8de70d2ae53f4ceaa98ff0c31f453cef85e75ec716218fed2bfcf9207a1c3dd71fa5db6874391658e02abdb
+  checksum: aceb256b9129c2d73eb0fb39d36db29f2e5051cfeeab2626f6579ca951ca394b93cd2301237ece5e544e36e333ca0483518a49ad7a832b61fded79a68a304d37
   languageName: node
   linkType: hard
 
@@ -27458,7 +27458,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-querystring@npm:^1.1.1":
+"fast-querystring@npm:^1.0.0, fast-querystring@npm:^1.1.1":
   version: 1.1.2
   resolution: "fast-querystring@npm:1.1.2"
   dependencies:
@@ -27737,6 +27737,17 @@ __metadata:
     safe-regex2: ^2.0.0
     semver-store: ^0.3.0
   checksum: 85b8c07d34a36f0203438e0c0f0cdbfaf5e1c521ed2e56f9250bed846ceb0eea074127fad7f70137d61bed56387047f212969cc0ba5d818ed5e37b3e3606c43f
+  languageName: node
+  linkType: hard
+
+"find-my-way@npm:^9.0.1":
+  version: 9.1.0
+  resolution: "find-my-way@npm:9.1.0"
+  dependencies:
+    fast-deep-equal: ^3.1.3
+    fast-querystring: ^1.0.0
+    safe-regex2: ^4.0.0
+  checksum: 1d4554fcc5681e995feab84f4f7c8d28e09463a5cd64ffbf26f7d1635ce6885101648cc510befb9ff529a92370ccb216e1e4fe96b9cc163da61985cd90542294
   languageName: node
   linkType: hard
 
@@ -39951,6 +39962,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ret@npm:~0.5.0":
+  version: 0.5.0
+  resolution: "ret@npm:0.5.0"
+  checksum: 3763aff074a56baa072afcfb5c19b09fb7c05045a27715bf4f28395cd11ab98cc2d0698bf4a3cd3f1c5e650ed167362d354c0e545ab134a6b7ec83df5e9d7d42
+  languageName: node
+  linkType: hard
+
 "retry-request@npm:^7.0.0":
   version: 7.0.1
   resolution: "retry-request@npm:7.0.1"
@@ -40400,6 +40418,15 @@ __metadata:
   dependencies:
     ret: ~0.2.0
   checksum: f5e182fca040dedd50ae052ea0eb035d9903b2db71243d5d8b43299735857288ef2ab52546a368d9c6fd1333b2a0d039297925e78ffc14845354f3f6158af7c2
+  languageName: node
+  linkType: hard
+
+"safe-regex2@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "safe-regex2@npm:4.0.0"
+  dependencies:
+    ret: ~0.5.0
+  checksum: 5607d4c20a92d66905d33556807da759ef0615d3b508ae7d6e7558e763bd59042bd30afb32d5f2456eb3f69a9d86fadbdf5e3e292494dae89fdae3087532602e
   languageName: node
   linkType: hard
 
