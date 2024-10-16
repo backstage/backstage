@@ -52,7 +52,7 @@
     "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
-    "@types/supertest": "^2.0.8",
+    "@types/supertest": "^6.0.0",
     "@types/uuid": "^9.0.0",
     "supertest": "^7.0.0"
   }
