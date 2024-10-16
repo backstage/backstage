@@ -6390,7 +6390,7 @@ __metadata:
     luxon: ^3.4.3
     react: ^18.0.2
     react-dom: ^18.0.2
-    react-grid-layout: 1.3.4
+    react-grid-layout: 1.5.0
     react-resizable: ^3.0.4
     react-router-dom: ^6.3.0
     react-use: ^17.2.4
@@ -23189,7 +23189,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clsx@npm:^2.1.0, clsx@npm:^2.1.1":
+"clsx@npm:^2.0.0, clsx@npm:^2.1.0, clsx@npm:^2.1.1":
   version: 2.1.1
   resolution: "clsx@npm:2.1.1"
   checksum: acd3e1ab9d8a433ecb3cc2f6a05ab95fe50b4a3cfc5ba47abb6cbf3754585fcb87b84e90c822a1f256c4198e3b41c7f6c391577ffc8678ad587fc0976b24fd57
@@ -27391,6 +27391,13 @@ __metadata:
   version: 3.1.3
   resolution: "fast-deep-equal@npm:3.1.3"
   checksum: e21a9d8d84f53493b6aa15efc9cfd53dd5b714a1f23f67fb5dc8f574af80df889b3bce25dc081887c6d25457cce704e636395333abad896ccdec03abaf1f3f9d
+  languageName: node
+  linkType: hard
+
+"fast-equals@npm:^4.0.3":
+  version: 4.0.3
+  resolution: "fast-equals@npm:4.0.3"
+  checksum: 3d5935b757f9f2993e59b5164a7a9eeda0de149760495375cde14a4ed725186a7e6c1c0d58f7d42d2f91deb97f3fce1e0aad5591916ef0984278199a85c87c87
   languageName: node
   linkType: hard
 
@@ -33019,7 +33026,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.isequal@npm:^4.0.0, lodash.isequal@npm:^4.5.0":
+"lodash.isequal@npm:^4.5.0":
   version: 4.5.0
   resolution: "lodash.isequal@npm:4.5.0"
   checksum: da27515dc5230eb1140ba65ff8de3613649620e8656b19a6270afe4866b7bd461d9ba2ac8a48dcc57f7adac4ee80e1de9f965d89d4d81a0ad52bb3eec2609644
@@ -38680,7 +38687,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-draggable@npm:^4.0.0, react-draggable@npm:^4.0.3":
+"react-draggable@npm:^4.0.3, react-draggable@npm:^4.4.5":
   version: 4.4.6
   resolution: "react-draggable@npm:4.4.6"
   dependencies:
@@ -38718,19 +38725,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-grid-layout@npm:1.3.4":
-  version: 1.3.4
-  resolution: "react-grid-layout@npm:1.3.4"
+"react-grid-layout@npm:1.5.0":
+  version: 1.5.0
+  resolution: "react-grid-layout@npm:1.5.0"
   dependencies:
-    clsx: ^1.1.1
-    lodash.isequal: ^4.0.0
+    clsx: ^2.0.0
+    fast-equals: ^4.0.3
     prop-types: ^15.8.1
-    react-draggable: ^4.0.0
-    react-resizable: ^3.0.4
+    react-draggable: ^4.4.5
+    react-resizable: ^3.0.5
+    resize-observer-polyfill: ^1.5.1
   peerDependencies:
     react: ">= 16.3.0"
     react-dom: ">= 16.3.0"
-  checksum: f56c8c452acd9588edf1dc6996a4ea14d9f669d77f6b2ebd50146eaeeb9325c83f5ca44b66bac2b8c24f9cb2ec7ed49396350435991255c3b31e21b8a2e3d243
+  checksum: 74aac7226efdfbe932f9672f6cc6f24bdfe8d385875fa9279374ec87610df5363f63a558cc7d6e9eba5f2a68293054e717a91f0d04cbf835ffc099f74306c409
   languageName: node
   linkType: hard
 
