@@ -70,10 +70,3 @@ export type BackendBundlingOptions = {
   require?: string;
   rspack?: typeof import('@rspack/core').rspack;
 };
-
-export type BackendServeOptions = BundlingPathsOptions & {
-  checksEnabled: boolean;
-  inspectEnabled: boolean;
-  inspectBrkEnabled: boolean;
-  require?: string;
-};

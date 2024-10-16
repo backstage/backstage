@@ -15,12 +15,9 @@
  */
 
 import { FSWatcher, watch } from 'chokidar';
-
-import { BackendServeOptions } from '../bundler/types';
 import type { ChildProcess } from 'child_process';
 import { ctrlc } from 'ctrlc-windows';
-import { IpcServer } from './IpcServer';
-import { ServerDataStore } from './ServerDataStore';
+import { IpcServer, ServerDataStore } from '../ipc';
 import debounce from 'lodash/debounce';
 import { fileURLToPath } from 'url';
 import { isAbsolute as isAbsolutePath } from 'path';
@@ -34,7 +31,18 @@ const loaderArgs = [
   // TODO: Support modules, although there's currently no way to load them since import() is transpiled tp require()
 ];
 
-export async function startBackendExperimental(options: BackendServeOptions) {
+export type RunBackendOptions = {
+  /** relative entry point path without extension, e.g. 'src/index' */
+  entry: string;
+  /** Whether to forward the --inspect flag to the node process */
+  inspectEnabled: boolean;
+  /** Whether to forward the --inspect-brk flag to the node process */
+  inspectBrkEnabled: boolean;
+  /** Additional module to require via the --require flag to the node process */
+  require?: string;
+};
+
+export async function runBackend(options: RunBackendOptions) {
   const envEnv = process.env as { NODE_ENV: string };
   if (!envEnv.NODE_ENV) {
     envEnv.NODE_ENV = 'development';

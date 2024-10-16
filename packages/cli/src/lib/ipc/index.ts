@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,5 @@
  * limitations under the License.
  */
 
-export { buildBundle } from './bundle';
-export { getModuleFederationOptions } from './moduleFederation';
-export { serveBundle } from './server';
+export { IpcServer } from './IpcServer';
+export { ServerDataStore } from './ServerDataStore';

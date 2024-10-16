@@ -4018,7 +4018,6 @@ __metadata:
     rollup-plugin-esbuild: ^6.1.1
     rollup-plugin-postcss: ^4.0.0
     rollup-pluginutils: ^2.8.2
-    run-script-webpack-plugin: ^0.2.0
     semver: ^7.5.3
     style-loader: ^3.3.1
     sucrase: ^3.20.2
@@ -4032,7 +4031,6 @@ __metadata:
     vite-plugin-node-polyfills: ^0.22.0
     webpack: ^5.70.0
     webpack-dev-server: ^5.0.0
-    webpack-node-externals: ^3.0.0
     yaml: ^2.0.0
     yargs: ^16.2.0
     yml-loader: ^2.1.0
@@ -40318,13 +40316,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"run-script-webpack-plugin@npm:^0.2.0":
-  version: 0.2.0
-  resolution: "run-script-webpack-plugin@npm:0.2.0"
-  checksum: 1f5df65b726e098d602b4cc27472d9e2cd88841862f7ca2112f702b01f3c4fc1cd89b54fa63780691d988c9ab36cc9adc08a6fa056cdb9c7b85b027b21ba6cdd
-  languageName: node
-  linkType: hard
-
 "rxjs@npm:7.8.1, rxjs@npm:^7.2.0, rxjs@npm:^7.5.5":
   version: 7.8.1
   resolution: "rxjs@npm:7.8.1"
@@ -44693,13 +44684,6 @@ __metadata:
   bin:
     webpack-dev-server: bin/webpack-dev-server.js
   checksum: 3128fffeb76b97cc4c506607f81bb644437f6961cf310915e22ecaf79a45c185893d7fc8e1844183fb44827061ec2f3d321e937840f02d4989959a09551a8e35
-  languageName: node
-  linkType: hard
-
-"webpack-node-externals@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "webpack-node-externals@npm:3.0.0"
-  checksum: 355080c35c821115b97dda8c93d9d0565a90a6012a532324eb0d6a64f8f0d609431fd29504fc7ce414755841ac14f601f3eef99472c2c5dc00233b504ebe73f2
   languageName: node
   linkType: hard
 
