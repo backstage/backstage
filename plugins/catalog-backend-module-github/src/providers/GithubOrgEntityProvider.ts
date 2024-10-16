@@ -511,7 +511,9 @@ export class GithubOrgEntityProvider implements EntityProvider {
         editTeamUrl: `${url}/edit`,
         combinedSlug: `${org}/${slug}`,
         description: description || undefined,
-        parentTeam: { slug: event.team?.parent?.slug || '' } as GithubTeam,
+        parentTeam: event.team?.parent?.slug
+          ? ({ slug: event.team.parent.slug } as GithubTeam)
+          : undefined,
         // entity will be removed
         members: [],
       },
