@@ -52,6 +52,7 @@ describe('generateOpenApiSchema', () => {
       getPathToCurrentOpenApiSpec: jest.fn(() =>
         Promise.resolve(path.join(inputDir.path, 'openapi.yaml')),
       ),
+      loadAndValidateOpenApiYaml: jest.fn(),
     }));
   });
   it('should handle watch mode', async () => {
@@ -89,9 +90,11 @@ describe('generateOpenApiSchema', () => {
         await new Promise(r => setTimeout(r, 100));
       }
 
-      expect(generateClientMock).toHaveBeenCalledTimes(0);
-      mockOn.change();
       expect(generateClientMock).toHaveBeenCalledTimes(1);
+      mockOn.change();
+      // Wait for the debounce to finish with the initial load.
+      await new Promise(r => setTimeout(r, 500));
+      expect(generateClientMock).toHaveBeenCalledTimes(2);
       resolve();
     };
 
