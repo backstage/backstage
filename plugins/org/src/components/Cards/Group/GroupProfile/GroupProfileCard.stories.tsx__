@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+
+// TODO: Fix this story
+// There's a bug in Storybook that causes the build to fail
+// when using the `useEntityPermission` hook
+// https://github.com/storybookjs/storybook/issues/29378
+// This has been reported and it should hopefully be fixed after 8.4
+
 import { GroupEntity } from '@backstage/catalog-model';
 import {
   CatalogApi,
@@ -59,7 +66,7 @@ const defaultEntity: GroupEntity = {
 };
 
 const catalogApi: Partial<CatalogApi> = {
-  async refreshEntity() {},
+  async refreshEntity() { },
 };
 
 const permissionApi: typeof permissionApiRef.T = {
