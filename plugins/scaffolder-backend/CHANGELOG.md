@@ -1,5 +1,12 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.26.1
+
+### Patch Changes
+
+- d90f47f: Fix tasks listing with postgres
+- 9bbfd90: Fix issue with token not being available because it's now non-enumerable
+
 ## 1.26.0
 
 ### Minor Changes
