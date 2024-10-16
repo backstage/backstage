@@ -61,7 +61,13 @@ export const createOpenApiRouter = async (
   }
 }
 
-export async function command(abortSignal?: AbortController): Promise<void> {
+export async function command({
+  abortSignal,
+  isWatch = false,
+}: {
+  abortSignal?: AbortController;
+  isWatch?: boolean;
+}): Promise<void> {
   try {
     await generate(abortSignal);
     console.log(chalk.green('Generated server files.'));
@@ -70,7 +76,14 @@ export async function command(abortSignal?: AbortController): Promise<void> {
       console.debug('Server generation aborted.');
       return;
     }
-    console.log(chalk.red(`OpenAPI server stub generation failed.`));
-    console.log(err.message);
+    if (isWatch) {
+      console.log(chalk.red(`Server generation failed:`));
+      console.group();
+      console.log(chalk.red(err.message));
+      console.groupEnd();
+    } else {
+      console.log(chalk.red(err.message));
+      console.log(chalk.red(`OpenAPI server stub generation failed.`));
+    }
   }
 }

@@ -18,7 +18,10 @@ import { OptionValues } from 'commander';
 import { command as generateClient } from './client';
 import { command as generateServer } from './server';
 import chokidar from 'chokidar';
-import { getPathToCurrentOpenApiSpec } from '../../../../../lib/openapi/helpers';
+import {
+  getPathToCurrentOpenApiSpec,
+  loadAndValidateOpenApiYaml,
+} from '../../../../../lib/openapi/helpers';
 import { debounce } from 'lodash';
 import { block } from '../../../../../lib/runner';
 
@@ -31,18 +34,24 @@ export async function command(opts: OptionValues) {
   }
 
   const sharedCommand = async (abortSignal?: AbortController) => {
+    const resolvedOpenapiPath = await getPathToCurrentOpenApiSpec();
+    await loadAndValidateOpenApiYaml(resolvedOpenapiPath);
     const promises = [];
+    const options = {
+      isWatch: opts.watch,
+      abortSignal,
+    };
     if (opts.clientPackage) {
       promises.push(
         generateClient(
           opts.clientPackage,
           opts.clientAdditionalProperties,
-          abortSignal,
+          options,
         ),
       );
     }
     if (opts.server) {
-      promises.push(generateServer(abortSignal));
+      promises.push(generateServer(options));
     }
     await Promise.all(promises);
   };
@@ -75,6 +84,8 @@ export async function command(opts: OptionValues) {
           'Watching for changes in OpenAPI spec. Press Ctrl+C to stop.',
         );
       });
+
+      debouncedCommand();
       await block();
     } catch (err) {
       console.error(chalk.red('Error: ', err));

@@ -103,7 +103,10 @@ async function generate(
 export async function command(
   outputPackage: string,
   clientAdditionalProperties?: string,
-  abortSignal?: AbortController,
+  {
+    abortSignal,
+    isWatch = false,
+  }: { abortSignal?: AbortController; isWatch?: boolean } = {},
 ): Promise<void> {
   try {
     await generate(outputPackage, clientAdditionalProperties, abortSignal);
@@ -115,7 +118,14 @@ export async function command(
       console.debug('Server generation aborted.');
       return;
     }
-    console.log(chalk.red(`Client generation failed:`));
-    console.log(err);
+    if (isWatch) {
+      console.log(chalk.red(`Client generation failed:`));
+      console.group();
+      console.log(chalk.red(err.message));
+      console.groupEnd();
+    } else {
+      console.log(chalk.red(`Client generation failed.`));
+      console.log(chalk.red(err.message));
+    }
   }
 }
