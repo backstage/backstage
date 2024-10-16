@@ -34,12 +34,14 @@ import {
 } from '@backstage/plugin-auth-node';
 
 const HTTP_OPTION_TIMEOUT = 10000;
-const httpOptionsProvider: CustomHttpOptionsProvider = (_url, options) => {
-  return {
-    ...options,
-    timeout: HTTP_OPTION_TIMEOUT,
+const createHttpOptionsProvider =
+  ({ timeout }: { timeout?: number }): CustomHttpOptionsProvider =>
+  (_url, options) => {
+    return {
+      ...options,
+      timeout: timeout ?? HTTP_OPTION_TIMEOUT,
+    };
   };
-};
 
 /**
  * authentication result for the OIDC which includes the token set and user
@@ -84,6 +86,9 @@ export const oidcAuthenticator = createOAuthAuthenticator({
         'The oidc provider no longer supports the "scope" configuration option. Please use the "additionalScopes" option instead.',
       );
     }
+    const httpOptionsProvider = createHttpOptionsProvider({
+      timeout: config.getOptionalNumber('timeout'),
+    });
 
     Issuer[custom.http_options] = httpOptionsProvider;
     const promise = Issuer.discover(metadataUrl).then(issuer => {
