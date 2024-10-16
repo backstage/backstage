@@ -47,7 +47,9 @@ You should create a new folder, `src/schema` in your backend plugin to store you
 
 ## Generating a typed express router from a spec
 
-Run `yarn backstage-repo-tools package schema openapi generate --server` from the directory with your plugin. This will create a `router.ts` file in the `src/generated` directory that contains the OpenAPI schema as well as a generated express router with types. You should add this command to your `package.json` for future use and you can combine both the server generation and the client generation below like so, `yarn backstage-repo-tools package schema openapi generate --server --client-package <clientPackageDirectory>`
+Run `yarn backstage-repo-tools package schema openapi generate --server` from the directory with your plugin. This will create a `router.ts` file in the `src/schema/openapi/generated` directory that contains the OpenAPI schema as well as a factory function for a generated express router with types that match your schema.
+
+You should add this command to your `package.json` for future use and you can combine both the server generation and the client generation below like so, `yarn backstage-repo-tools package schema openapi generate --server --client-package <clientPackageDirectory>`
 
 Use it like so, update your `router.ts` or `createRouter.ts` file with the following content,
 
