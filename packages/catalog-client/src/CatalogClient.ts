@@ -42,7 +42,7 @@ import {
   ValidateEntityResponse,
 } from './types/api';
 import { isQueryEntitiesInitialRequest, splitRefsIntoChunks } from './utils';
-import { DefaultApiClient, TypedResponse } from './schema/openapi/generated';
+import { DefaultApiClient, TypedResponse } from './schema/openapi';
 
 /**
  * A frontend and backend compatible client for communicating with the Backstage
