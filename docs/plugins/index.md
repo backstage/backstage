@@ -26,6 +26,10 @@ Should your plugin complement the Software Catalog rather than exist as a standa
 
 ## Guides for Plugin Development
 
+:::note Note
+This section is still a work in progress, many of the guides described below do not exist yet.
+:::
+
 ### For Beginners: Introduction to Plugin Development
 
 This section is designed for those new to plugin development. It covers the basics and provides a foundation for more advanced topics.
