@@ -9639,11 +9639,11 @@ __metadata:
   linkType: hard
 
 "@google-cloud/container@npm:^5.0.0":
-  version: 5.17.0
-  resolution: "@google-cloud/container@npm:5.17.0"
+  version: 5.18.0
+  resolution: "@google-cloud/container@npm:5.18.0"
   dependencies:
     google-gax: ^4.0.3
-  checksum: 8e583f9cd1f12cf860dd9d483f4e0e8c1e4edf7191d0152c8b821c2debbe80b77eb663b45fa3526faf1d3182e5000df532628360bbae53420e090b92043c3880
+  checksum: 2394886535bb7b15bd23db1a7341f240841895ef23499866d0a7f5da65cac6fe73c5ef6e21c02740292f944898c4145dbab4cc9fb02852b0619d1671935f02ad
   languageName: node
   linkType: hard
 
