@@ -58,7 +58,6 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
   const { allowed } = usePermission({
     permission: catalogEntityCreatePermission,
   });
-  const supportConfig = useApi(configApiRef).getOptionalConfig('app.support');
 
   return (
     <PageWithHeader title={t('indexPage.title', { orgName })} themeId="home">
@@ -70,9 +69,7 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
               to={createComponentLink && createComponentLink()}
             />
           )}
-          {supportConfig && (
-            <SupportButton>{t('indexPage.supportButtonContent')}</SupportButton>
-          )}
+          <SupportButton>{t('indexPage.supportButtonContent')}</SupportButton>
         </ContentHeader>
         <EntityListProvider pagination={pagination}>
           <CatalogFilterLayout>

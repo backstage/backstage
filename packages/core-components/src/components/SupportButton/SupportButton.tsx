@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useApp } from '@backstage/core-plugin-api';
+import { configApiRef, useApi, useApp } from '@backstage/core-plugin-api';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -94,6 +94,7 @@ export function SupportButton(props: SupportButtonProps) {
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
   const classes = useStyles();
+  const supportConfig = useApi(configApiRef).getOptionalConfig('app.support');
   const isSmallScreen = useMediaQuery<Theme>(theme =>
     theme.breakpoints.down('sm'),
   );
@@ -106,6 +107,10 @@ export function SupportButton(props: SupportButtonProps) {
   const popoverCloseHandler = () => {
     setPopoverOpen(false);
   };
+
+  if (!supportConfig) {
+    return null;
+  }
 
   return (
     <>
