@@ -59,7 +59,7 @@ export interface ImportStepperProps {
  * @public
  */
 export const ImportStepper = (props: ImportStepperProps) => {
-  const { t } = useTranslationRef(catalogImportTranslationRef);
+  const { t, Translation } = useTranslationRef(catalogImportTranslationRef);
   const {
     initialUrl,
     generateStepper = defaultGenerateStepper,
@@ -71,8 +71,8 @@ export const ImportStepper = (props: ImportStepperProps) => {
   const state = useImportState({ initialUrl });
 
   const states = useMemo<StepperProvider>(
-    () => generateStepper(state.activeFlow, defaultStepper, t),
-    [generateStepper, state.activeFlow, t],
+    () => generateStepper(state.activeFlow, defaultStepper, t, Translation),
+    [generateStepper, state.activeFlow, t, Translation],
   );
 
   const render = (step: StepConfiguration) => {

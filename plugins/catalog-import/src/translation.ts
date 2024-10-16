@@ -34,19 +34,16 @@ export const catalogImportTranslationRef = createTranslationRef({
       linkDescription:
         'Enter the URL to your source code repository to add it to {{appTitle}}.',
       fileLinkTitle: 'Link to an existing entity file',
-      examplePrefix: 'Example: ',
+      example: 'Example: <1>{{exampleUrl}}</1>',
       fileLinkDescription:
         'The wizard analyzes the file, previews the entities, and adds them to the {{appTitle}} catalog.',
       githubIntegration: {
         title: 'Link to a repository',
         label: 'GitHub only',
-        descriptionPrefix: 'The wizard discovers all ',
-        descriptionSuffix:
-          ' files in the repository, previews the entities, and adds them to the {{appTitle}} catalog.',
-        prDescriptionPrefix:
-          'If no entities are found, the wizard will prepare a Pull Request that adds an example ',
-        prDescriptionSuffix:
-          ' and prepares the {{appTitle}} catalog to load all entities as soon as the Pull Request is merged.',
+        description:
+          'The wizard discovers all <1>{{catalogFilename}}</1> files in the repository, previews the entities, and adds them to the {{appTitle}} catalog.',
+        prDescription:
+          'If no entities are found, the wizard will prepare a Pull Request that adds an example <1>{{catalogFilename}}</1> and prepares the {{appTitle}} catalog to load all entities as soon as the Pull Request is merged.',
       },
     },
     importStepper: {
@@ -75,8 +72,7 @@ export const catalogImportTranslationRef = createTranslationRef({
           ownerErrorHelperText: 'required value',
           ownerLabel: 'Entity Owner',
           ownerPlaceholder: 'my-group',
-          codeownersLabelPrefix: 'Use ',
-          codeownersLabelSuffix: ' file as Entity Owner',
+          codeownersLabel: 'Use <1>CODEOWNERS</1> file as Entity Owner',
           codeownersHelperText:
             'WARNING: This may fail if no CODEOWNERS file is found at the target location.',
         },
@@ -122,10 +118,8 @@ export const catalogImportTranslationRef = createTranslationRef({
       nextButtonText: 'Analyze',
     },
     stepPrepareCreatePullRequest: {
-      descriptionPrefix:
-        'You entered a link to a {{integrationType}} repository but a ',
-      descriptionSuffix:
-        ' could not be found. Use this form to open a Pull Request that creates one.',
+      description:
+        'You entered a link to a {{integrationType}} repository but a <3>{{catalogFilename}}</3> could not be found. Use this form to open a Pull Request that creates one.',
       previewPr: {
         title: 'Preview Pull Request',
         subheader: 'Create a new Pull Request',

@@ -16,6 +16,7 @@
 
 import { ApiRef, createApiRef } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
+import { ReactNode } from 'react';
 import { TranslationRef } from '../../translation';
 
 /**
@@ -316,6 +317,23 @@ type TranslationFunctionOptions<
 >;
 
 /** @alpha */
+export interface TranslationComponent<
+  TMessages extends { [key in string]: string },
+> {
+  <TKey extends keyof CollapsedMessages<TMessages>>(
+    props: {
+      i18nKey: TKey;
+      children: ReactNode;
+    } & BaseOptions &
+      TranslationFunctionOptions<
+        NestedMessageKeys<TKey, CollapsedMessages<TMessages>>,
+        PluralKeys<TMessages>,
+        CollapsedMessages<TMessages>
+      >[0],
+  ): ReactNode;
+}
+
+/** @alpha */
 export interface TranslationFunction<
   TMessages extends { [key in string]: string },
 > {
@@ -342,6 +360,10 @@ export type TranslationApi = {
   translation$<TMessages extends { [key in string]: string }>(
     translationRef: TranslationRef<string, TMessages>,
   ): Observable<TranslationSnapshot<TMessages>>;
+
+  getTranslationComponent<TMessages extends { [key in string]: string }>(
+    t: TranslationFunction<TMessages>,
+  ): TranslationComponent<TMessages>;
 };
 
 /**

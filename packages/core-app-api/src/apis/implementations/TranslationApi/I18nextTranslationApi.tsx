@@ -23,7 +23,10 @@ import {
   TranslationResource,
   TranslationSnapshot,
 } from '@backstage/core-plugin-api/alpha';
+import { Observable } from '@backstage/types';
 import { createInstance as createI18n, type i18n as I18n } from 'i18next';
+import React, { useMemo } from 'react';
+import { Trans } from 'react-i18next';
 import ObservableImpl from 'zen-observable';
 
 // Internal import to avoid code duplication, this will lead to duplication in build output
@@ -37,7 +40,8 @@ import {
   toInternalTranslationRef,
   InternalTranslationRef,
 } from '../../../../../core-plugin-api/src/translation/TranslationRef';
-import { Observable } from '@backstage/types';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { TranslationComponent } from '../../../../../core-plugin-api/src/apis/definitions/alpha';
 import { DEFAULT_LANGUAGE } from '../AppLanguageApi/AppLanguageSelector';
 
 /** @alpha */
@@ -280,6 +284,27 @@ export class I18nextTranslationApi implements TranslationApi {
         this.#languageChangeListeners.delete(onChange);
       };
     });
+  }
+
+  getTranslationComponent<TMessages extends { [key in string]: string }>(
+    t: TranslationFunction<TMessages>,
+  ): TranslationComponent<TMessages> {
+    return ({ i18nKey, children, interpolation, ...values }) => {
+      const tOptions = useMemo(
+        () => interpolation && { interpolation },
+        [interpolation],
+      );
+      return (
+        <Trans
+          i18n={this.#i18n}
+          t={t as any}
+          i18nKey={i18nKey as any}
+          tOptions={tOptions}
+          children={children}
+          values={values}
+        />
+      );
+    };
   }
 
   #changeLanguage(language: string): void {

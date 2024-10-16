@@ -114,7 +114,7 @@ export const StepPrepareCreatePullRequest = (
 ) => {
   const { analyzeResult, onPrepare, onGoBack, renderFormFields } = props;
 
-  const { t } = useTranslationRef(catalogImportTranslationRef);
+  const { t, Translation } = useTranslationRef(catalogImportTranslationRef);
   const classes = useStyles();
   const catalogApi = useApi(catalogApiRef);
   const catalogImportApi = useApi(catalogImportApiRef);
@@ -211,11 +211,15 @@ export const StepPrepareCreatePullRequest = (
   return (
     <>
       <Typography>
-        {t('stepPrepareCreatePullRequest.descriptionPrefix', {
-          integrationType: analyzeResult.integrationType,
-        })}
-        <code>{catalogFilename}</code>
-        {t('stepPrepareCreatePullRequest.descriptionSuffix')}
+        <Translation
+          i18nKey="stepPrepareCreatePullRequest.description"
+          catalogFilename={catalogFilename}
+          integrationType={analyzeResult.integrationType}
+        >
+          You entered a link to a {analyzeResult.integrationType} repository but
+          a <code>{catalogFilename}</code> could not be found. Use this form to
+          open a Pull Request that creates one.
+        </Translation>
       </Typography>
 
       {!prDefaultsLoading && (

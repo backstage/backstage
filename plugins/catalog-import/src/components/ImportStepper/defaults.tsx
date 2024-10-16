@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { TranslationFunction } from '@backstage/core-plugin-api/alpha';
+import {
+  TranslationComponent,
+  TranslationFunction,
+} from '@backstage/core-plugin-api/alpha';
 import Box from '@material-ui/core/Box';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -92,6 +95,7 @@ export function defaultGenerateStepper(
   flow: ImportFlows,
   defaults: StepperProvider,
   t: TranslationFunction<typeof catalogImportTranslationRef.T>,
+  Translation: TranslationComponent<typeof catalogImportTranslationRef.T>,
 ): StepperProvider {
   switch (flow) {
     // the prepare step is skipped but the label of the step is updated
@@ -281,15 +285,9 @@ export function defaultGenerateStepper(
                         />
                       }
                       label={
-                        <>
-                          {t(
-                            'importStepper.noLocation.createPr.codeownersLabelPrefix',
-                          )}
-                          <em>CODEOWNERS</em>
-                          {t(
-                            'importStepper.noLocation.createPr.codeownersLabelSuffix',
-                          )}
-                        </>
+                        <Translation i18nKey="importStepper.noLocation.createPr.codeownersLabel">
+                          Use <em>CODEOWNERS</em> file as Entity Owner
+                        </Translation>
                       }
                     />
                     <FormHelperText>

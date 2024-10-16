@@ -87,7 +87,7 @@ export const DefaultTemplateOutputs = (props: {
       {textOutput ? (
         <Box paddingBottom={2} data-testid="text-output-box">
           <InfoCard
-            title={textOutput.title ?? t('templateOutputs.defaultTitle')}
+            title={textOutput.title ?? t('templateOutputs.title')}
             noPadding
             titleTypographyProps={{ component: 'h2' }}
           >

@@ -41,7 +41,7 @@ export interface ImportInfoCardProps {
  * @public
  */
 export const ImportInfoCard = (props: ImportInfoCardProps) => {
-  const { t } = useTranslationRef(catalogImportTranslationRef);
+  const { t, Translation } = useTranslationRef(catalogImportTranslationRef);
   const {
     exampleLocationUrl = 'https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
     exampleRepositoryUrl = 'https://github.com/backstage/backstage',
@@ -71,8 +71,13 @@ export const ImportInfoCard = (props: ImportInfoCardProps) => {
         {t('importInfoCard.fileLinkTitle')}
       </Typography>
       <Typography variant="subtitle2" color="textSecondary" paragraph>
-        {t('importInfoCard.examplePrefix')}
-        <code>{exampleLocationUrl}</code>
+        <Translation
+          i18nKey="importInfoCard.example"
+          exampleUrl={exampleLocationUrl}
+        >
+          Example:
+          <code>{exampleLocationUrl}</code>
+        </Translation>
       </Typography>
       <Typography variant="body2" paragraph>
         {t('importInfoCard.fileLinkDescription', { appTitle })}
@@ -89,23 +94,38 @@ export const ImportInfoCard = (props: ImportInfoCardProps) => {
             />
           </Typography>
           <Typography variant="subtitle2" color="textSecondary" paragraph>
-            {t('importInfoCard.examplePrefix')}
-            <code>{exampleRepositoryUrl}</code>
+            <Translation
+              i18nKey="importInfoCard.example"
+              exampleUrl={exampleRepositoryUrl}
+            >
+              Example:
+              <code>{exampleRepositoryUrl}</code>
+            </Translation>
           </Typography>
           <Typography variant="body2" paragraph>
-            {t('importInfoCard.githubIntegration.descriptionPrefix')}
-            <code>{catalogFilename}</code>
-            {t('importInfoCard.githubIntegration.descriptionSuffix', {
-              appTitle,
-            })}
+            <Translation
+              i18nKey="importInfoCard.githubIntegration.description"
+              appTitle={appTitle}
+              catalogFilename={catalogFilename}
+            >
+              The wizard discovers all
+              <code>{catalogFilename}</code>
+              files in the repository, previews the entities, and adds them to
+              the {appTitle} catalog.
+            </Translation>
           </Typography>
           {catalogImportApi.preparePullRequest && (
             <Typography variant="body2" paragraph>
-              {t('importInfoCard.githubIntegration.prDescriptionPrefix')}
-              <code>{catalogFilename}</code>
-              {t('importInfoCard.githubIntegration.prDescriptionSuffix', {
-                appTitle,
-              })}
+              <Translation
+                i18nKey="importInfoCard.githubIntegration.prDescription"
+                appTitle={appTitle}
+                catalogFilename={catalogFilename}
+              >
+                If no entities are found, the wizard will prepare a Pull Request
+                that adds an example <code>{catalogFilename}</code> and prepares
+                the {appTitle} catalog to load all entities as soon as the Pull
+                Request is merged.
+              </Translation>
             </Typography>
           )}
         </>

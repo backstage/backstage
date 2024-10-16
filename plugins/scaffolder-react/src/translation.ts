@@ -43,13 +43,11 @@ export const scaffolderReactTranslationRef = createTranslationRef({
     templateCard: {
       noDescription: 'No description',
       chooseButtonText: 'Choose',
-      noTemplatesFoundPrefix:
-        'No templates found that match your filter. Learn more about ',
-      noTemplatesFoundLinkText: 'adding templates',
-      noTemplatesFoundSuffix: '.',
+      noTemplatesFound:
+        'No templates found that match your filter. Learn more about <2>adding templates</2>.',
     },
     templateOutputs: {
-      defaultTitle: 'Text Output',
+      title: 'Text Output',
     },
     workflow: {
       noDescription: 'No description',

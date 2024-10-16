@@ -49,7 +49,7 @@ export interface TemplateGroupsProps {
  * @alpha
  */
 export const TemplateGroups = (props: TemplateGroupsProps) => {
-  const { t } = useTranslationRef(scaffolderReactTranslationRef);
+  const { Translation } = useTranslationRef(scaffolderReactTranslationRef);
   const { loading, error, entities } = useEntityList();
   const { groups, templateFilter, TemplateCardComponent, onTemplateSelected } =
     props;
@@ -73,11 +73,13 @@ export const TemplateGroups = (props: TemplateGroupsProps) => {
   if (!entities || !entities.length) {
     return (
       <Typography variant="body2">
-        {t('templateCard.noTemplatesFoundPrefix')}
-        <Link to="https://backstage.io/docs/features/software-templates/adding-templates">
-          {t('templateCard.noTemplatesFoundLinkText')}
-        </Link>
-        {t('templateCard.noTemplatesFoundSuffix')}
+        <Translation i18nKey="templateCard.noTemplatesFound">
+          No templates found that match your filter. Learn more about{' '}
+          <Link to="https://backstage.io/docs/features/software-templates/adding-templates">
+            adding templates
+          </Link>
+          .
+        </Translation>
       </Typography>
     );
   }
