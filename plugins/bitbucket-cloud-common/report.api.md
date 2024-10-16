@@ -487,11 +487,11 @@ export class WithPagination<
 //
 // src/BitbucketCloudClient.d.ts:6:1 - (ae-undocumented) Missing documentation for "BitbucketCloudClient".
 // src/BitbucketCloudClient.d.ts:8:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/BitbucketCloudClient.d.ts:10:5 - (ae-undocumented) Missing documentation for "searchCode".
-// src/BitbucketCloudClient.d.ts:11:5 - (ae-undocumented) Missing documentation for "listRepositoriesByWorkspace".
-// src/BitbucketCloudClient.d.ts:12:5 - (ae-undocumented) Missing documentation for "listProjectsByWorkspace".
-// src/BitbucketCloudClient.d.ts:13:5 - (ae-undocumented) Missing documentation for "listWorkspaces".
-// src/BitbucketCloudClient.d.ts:14:5 - (ae-undocumented) Missing documentation for "listBranchesByRepository".
+// src/BitbucketCloudClient.d.ts:11:5 - (ae-undocumented) Missing documentation for "searchCode".
+// src/BitbucketCloudClient.d.ts:12:5 - (ae-undocumented) Missing documentation for "listRepositoriesByWorkspace".
+// src/BitbucketCloudClient.d.ts:13:5 - (ae-undocumented) Missing documentation for "listProjectsByWorkspace".
+// src/BitbucketCloudClient.d.ts:14:5 - (ae-undocumented) Missing documentation for "listWorkspaces".
+// src/BitbucketCloudClient.d.ts:15:5 - (ae-undocumented) Missing documentation for "listBranchesByRepository".
 // src/events/index.d.ts:3:1 - (ae-undocumented) Missing documentation for "Events".
 // src/events/index.d.ts:5:5 - (ae-undocumented) Missing documentation for "RepoEvent".
 // src/events/index.d.ts:6:9 - (ae-undocumented) Missing documentation for "repository".

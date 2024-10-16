@@ -5,6 +5,7 @@
 ```ts
 import { Config } from '@backstage/config';
 import { ConsumedResponse } from '@backstage/errors';
+import { HumanDuration } from '@backstage/types';
 import { RestEndpointMethodTypes } from '@octokit/rest';
 
 // @public
@@ -187,6 +188,7 @@ export type BitbucketCloudIntegrationConfig = {
   username?: string;
   appPassword?: string;
   token?: string;
+  throttling?: ThrottlingConfig;
 };
 
 // @public @deprecated
@@ -247,6 +249,7 @@ export type BitbucketServerIntegrationConfig = {
   token?: string;
   username?: string;
   password?: string;
+  throttling?: ThrottlingConfig;
 };
 
 // @public
@@ -908,6 +911,9 @@ export function readGoogleGcsIntegrationConfig(
 export function readHarnessConfig(config: Config): HarnessIntegrationConfig;
 
 // @public
+export function readThrottlingConfig(config: Config): ThrottlingConfig;
+
+// @public
 export function replaceGithubUrlType(
   url: string,
   type: 'blob' | 'tree' | 'edit',
@@ -1027,6 +1033,12 @@ export class SingleInstanceGithubCredentialsProvider
   static create: (config: GithubIntegrationConfig) => GithubCredentialsProvider;
   getCredentials(opts: { url: string }): Promise<GithubCredentials>;
 }
+
+// @public
+export type ThrottlingConfig = {
+  count: number;
+  interval: HumanDuration;
+};
 
 // Warnings were encountered during analysis:
 //

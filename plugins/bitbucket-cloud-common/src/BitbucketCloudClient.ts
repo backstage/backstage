@@ -15,7 +15,7 @@
  */
 
 import { BitbucketCloudIntegrationConfig } from '@backstage/integration';
-import fetch, { Request } from 'cross-fetch';
+import { Request, Response } from 'node-fetch';
 import { Models } from './models';
 import { WithPagination } from './pagination';
 import {
@@ -23,6 +23,10 @@ import {
   PartialResponseOptions,
   RequestOptions,
 } from './types';
+import {
+  FetchService,
+  FetchFunction,
+} from '@backstage/integration-bitbucket-node';
 
 /** @public */
 export class BitbucketCloudClient {
@@ -32,9 +36,13 @@ export class BitbucketCloudClient {
     return new BitbucketCloudClient(config);
   }
 
+  private readonly fetch: FetchFunction;
+
   private constructor(
     private readonly config: BitbucketCloudIntegrationConfig,
-  ) {}
+  ) {
+    this.fetch = FetchService.get(config);
+  }
 
   searchCode(
     workspace: string,
@@ -137,7 +145,7 @@ export class BitbucketCloudClient {
   }
 
   private async request(req: Request): Promise<Response> {
-    return fetch(req, { headers: this.getAuthHeaders() }).then(
+    return await this.fetch(req, { headers: this.getAuthHeaders() }).then(
       (response: Response) => {
         if (!response.ok) {
           throw new Error(

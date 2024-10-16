@@ -20,6 +20,10 @@ integrations:
   bitbucketCloud:
     - username: ${BITBUCKET_CLOUD_USERNAME}
       appPassword: ${BITBUCKET_CLOUD_PASSWORD}
+      throttling: # optional
+        count: 1 # number of requests per interval
+        # suppports ISO duration, "human duration" as used in code
+        interval: { seconds: 1 }
 ```
 
 :::note Note
@@ -44,3 +48,6 @@ This one entry will have the following elements:
 - `username`: The Bitbucket Cloud username to use in API requests. If
   neither a username nor token are supplied, anonymous access will be used.
 - `appPassword`: The app password for the Bitbucket Cloud user.
+- `throttling` (optional): The throttling configuration for the Bitbucket Cloud client.
+  - `count`: The number of requests per interval.
+  - `interval`: The interval for the throttling. Supports ISO duration, "human duration".

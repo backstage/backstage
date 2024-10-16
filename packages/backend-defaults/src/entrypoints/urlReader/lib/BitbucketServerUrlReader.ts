@@ -31,7 +31,7 @@ import {
   getBitbucketServerRequestOptions,
   ScmIntegrations,
 } from '@backstage/integration';
-import fetch, { Response } from 'node-fetch';
+import { Response } from 'node-fetch';
 import parseGitUrl from 'git-url-parse';
 import { trimEnd } from 'lodash';
 import { Minimatch } from 'minimatch';
@@ -39,6 +39,10 @@ import { Readable } from 'stream';
 import { ReaderFactory, ReadTreeResponseFactory } from './types';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import { parseLastModified } from './util';
+import {
+  FetchFunction,
+  FetchService,
+} from '@backstage/integration-bitbucket-node';
 
 /**
  * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for files from Bitbucket Server APIs.
@@ -57,10 +61,14 @@ export class BitbucketServerUrlReader implements UrlReaderService {
     });
   };
 
+  private fetch: FetchFunction;
+
   constructor(
     private readonly integration: BitbucketServerIntegration,
     private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
-  ) {}
+  ) {
+    this.fetch = FetchService.get(integration.config);
+  }
 
   async read(url: string): Promise<Buffer> {
     const response = await this.readUrl(url);
@@ -82,7 +90,7 @@ export class BitbucketServerUrlReader implements UrlReaderService {
 
     let response: Response;
     try {
-      response = await fetch(bitbucketUrl.toString(), {
+      response = await this.fetch(bitbucketUrl.toString(), {
         headers: {
           ...requestOptions.headers,
           ...(etag && { 'If-None-Match': etag }),
@@ -137,7 +145,7 @@ export class BitbucketServerUrlReader implements UrlReaderService {
       url,
       this.integration.config,
     );
-    const archiveResponse = await fetch(
+    const archiveResponse = await this.fetch(
       downloadUrl,
       getBitbucketServerRequestOptions(this.integration.config),
     );
@@ -206,7 +214,7 @@ export class BitbucketServerUrlReader implements UrlReaderService {
     // https://docs.atlassian.com/bitbucket-server/rest/7.9.0/bitbucket-rest.html#idp211 (branches docs)
     const branchListUrl = `${this.integration.config.apiBaseUrl}/projects/${project}/repos/${repoName}/branches${branchParameter}`;
 
-    const branchListResponse = await fetch(
+    const branchListResponse = await this.fetch(
       branchListUrl,
       getBitbucketServerRequestOptions(this.integration.config),
     );

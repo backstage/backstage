@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-integration-bitbucket-node
+  title: '@backstage/integration-bitbucket-node'
+  description: Provides a rate limited fetch api for Bitbucket clients.
+spec:
+  lifecycle: experimental
+  type: backstage-node-library
+  owner: maintainers

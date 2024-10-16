@@ -112,14 +112,14 @@ export type BitbucketServerRepository = {
 
 // Warnings were encountered during analysis:
 //
-// src/lib/BitbucketServerClient.d.ts:11:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/lib/BitbucketServerClient.d.ts:17:5 - (ae-undocumented) Missing documentation for "listProjects".
-// src/lib/BitbucketServerClient.d.ts:20:5 - (ae-undocumented) Missing documentation for "listRepositories".
-// src/lib/BitbucketServerClient.d.ts:24:5 - (ae-undocumented) Missing documentation for "getFile".
-// src/lib/BitbucketServerClient.d.ts:29:5 - (ae-undocumented) Missing documentation for "getRepository".
-// src/lib/BitbucketServerClient.d.ts:33:5 - (ae-undocumented) Missing documentation for "resolvePath".
-// src/lib/BitbucketServerClient.d.ts:48:1 - (ae-undocumented) Missing documentation for "BitbucketServerListOptions".
-// src/lib/BitbucketServerClient.d.ts:56:1 - (ae-undocumented) Missing documentation for "BitbucketServerPagedResponse".
+// src/lib/BitbucketServerClient.d.ts:12:5 - (ae-undocumented) Missing documentation for "fromConfig".
+// src/lib/BitbucketServerClient.d.ts:18:5 - (ae-undocumented) Missing documentation for "listProjects".
+// src/lib/BitbucketServerClient.d.ts:21:5 - (ae-undocumented) Missing documentation for "listRepositories".
+// src/lib/BitbucketServerClient.d.ts:25:5 - (ae-undocumented) Missing documentation for "getFile".
+// src/lib/BitbucketServerClient.d.ts:30:5 - (ae-undocumented) Missing documentation for "getRepository".
+// src/lib/BitbucketServerClient.d.ts:34:5 - (ae-undocumented) Missing documentation for "resolvePath".
+// src/lib/BitbucketServerClient.d.ts:49:1 - (ae-undocumented) Missing documentation for "BitbucketServerListOptions".
+// src/lib/BitbucketServerClient.d.ts:57:1 - (ae-undocumented) Missing documentation for "BitbucketServerPagedResponse".
 // src/lib/types.d.ts:2:1 - (ae-undocumented) Missing documentation for "BitbucketServerRepository".
 // src/lib/types.d.ts:14:1 - (ae-undocumented) Missing documentation for "BitbucketServerProject".
 // src/providers/BitbucketServerEntityProvider.d.ts:20:5 - (ae-undocumented) Missing documentation for "fromConfig".
