@@ -30,12 +30,6 @@ import useAsync from 'react-use/esm/useAsync';
 import { StarredEntityListItem } from '../../components/StarredEntityListItem/StarredEntityListItem';
 import { makeStyles } from '@material-ui/core/styles';
 
-/**
- * A component to display a list of starred entities for the user.
- *
- * @public
- */
-
 const useStyles = makeStyles(theme => ({
   tabs: {
     marginBottom: theme.spacing(1),
@@ -46,11 +40,21 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+/**
+ * Props for the StarredEntities component
+ *
+ * @public
+ */
 export type StarredEntitiesProps = {
   noStarredEntitiesMessage?: React.ReactNode | undefined;
   groupByKind?: boolean;
 };
 
+/**
+ * A component to display a list of starred entities for the user.
+ *
+ * @public
+ */
 export const Content = ({
   noStarredEntitiesMessage,
   groupByKind,
