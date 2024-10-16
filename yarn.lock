@@ -1667,7 +1667,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/abort-controller@npm:^2.0.0":
+"@azure/abort-controller@npm:^2.0.0, @azure/abort-controller@npm:^2.1.2":
   version: 2.1.2
   resolution: "@azure/abort-controller@npm:2.1.2"
   dependencies:
@@ -1769,13 +1769,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/core-xml@npm:^1.3.2":
-  version: 1.4.2
-  resolution: "@azure/core-xml@npm:1.4.2"
+"@azure/core-xml@npm:^1.4.3":
+  version: 1.4.4
+  resolution: "@azure/core-xml@npm:1.4.4"
   dependencies:
-    fast-xml-parser: ^4.3.2
+    fast-xml-parser: ^4.4.1
     tslib: ^2.6.2
-  checksum: f3815db55f0280db6080a3fc5b6187ad45cacf5c3842ea806a5565886edf2ebf2fa9fc1175407cf58d462341962a8396513943543b332b37b313ac3a79dc28fa
+  checksum: 05537e7e3bf9dcf0b5b18726ae59977f867aa4f9ed368f010c57a0a24d0a9a1608aab9dd9db9762cd1176d6dfabf69e1ae671327275c575310c0e029153e8179
   languageName: node
   linkType: hard
 
@@ -1845,10 +1845,10 @@ __metadata:
   linkType: hard
 
 "@azure/storage-blob@npm:^12.5.0":
-  version: 12.24.0
-  resolution: "@azure/storage-blob@npm:12.24.0"
+  version: 12.25.0
+  resolution: "@azure/storage-blob@npm:12.25.0"
   dependencies:
-    "@azure/abort-controller": ^1.0.0
+    "@azure/abort-controller": ^2.1.2
     "@azure/core-auth": ^1.4.0
     "@azure/core-client": ^1.6.2
     "@azure/core-http-compat": ^2.0.0
@@ -1857,11 +1857,11 @@ __metadata:
     "@azure/core-rest-pipeline": ^1.10.1
     "@azure/core-tracing": ^1.1.2
     "@azure/core-util": ^1.6.1
-    "@azure/core-xml": ^1.3.2
+    "@azure/core-xml": ^1.4.3
     "@azure/logger": ^1.0.0
     events: ^3.0.0
     tslib: ^2.2.0
-  checksum: 2ffe51b991f8ed6dd0003b22b9507956c215b06284645fda161d2c2147f368a6ba899e4e2f74e49033dc92f719275301b64e836386ba878b31a7183b1208ea5d
+  checksum: e592a27d9b8c76654c255544c4b53faea1468bf58f6acb9839115785de46fb6cbd3dce61bb11335af13b932bc651a53eb99140427c7cfcb3f8bd36ecedf38c17
   languageName: node
   linkType: hard
 
@@ -27406,7 +27406,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-xml-parser@npm:4.4.1, fast-xml-parser@npm:^4.3.2, fast-xml-parser@npm:^4.4.1":
+"fast-xml-parser@npm:4.4.1, fast-xml-parser@npm:^4.4.1":
   version: 4.4.1
   resolution: "fast-xml-parser@npm:4.4.1"
   dependencies:
