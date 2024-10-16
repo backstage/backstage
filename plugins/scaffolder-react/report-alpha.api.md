@@ -232,10 +232,8 @@ export const scaffolderReactTranslationRef: TranslationRef<
     readonly 'templateCategoryPicker.title': 'Categories';
     readonly 'templateCard.noDescription': 'No description';
     readonly 'templateCard.chooseButtonText': 'Choose';
-    readonly 'templateCard.noTemplatesFoundPrefix': 'No templates found that match your filter. Learn more about ';
-    readonly 'templateCard.noTemplatesFoundLinkText': 'adding templates';
-    readonly 'templateCard.noTemplatesFoundSuffix': '.';
-    readonly 'templateOutputs.defaultTitle': 'Text Output';
+    readonly 'templateCard.noTemplatesFound': 'No templates found that match your filter. Learn more about <2>adding templates</2>.';
+    readonly 'templateOutputs.title': 'Text Output';
   }
 >;
 

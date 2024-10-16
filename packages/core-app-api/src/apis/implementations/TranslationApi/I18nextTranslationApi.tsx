@@ -297,8 +297,8 @@ export class I18nextTranslationApi implements TranslationApi {
       return (
         <Trans
           i18n={this.#i18n}
-          t={t as any}
           i18nKey={i18nKey as any}
+          t={t as any}
           tOptions={tOptions}
           children={children}
           values={values}
@@ -325,7 +325,7 @@ export class I18nextTranslationApi implements TranslationApi {
     const t = this.#i18n.getFixedT(
       null,
       internalRef.id,
-    ) as TranslationFunction<TMessages>;
+    ) as unknown as TranslationFunction<TMessages>;
 
     return {
       ready: true,

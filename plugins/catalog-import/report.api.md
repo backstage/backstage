@@ -23,6 +23,7 @@ import { ScmAuthApi } from '@backstage/integration-react';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { SubmitHandler } from 'react-hook-form';
 import { TextFieldProps } from '@material-ui/core/TextField/TextField';
+import { TranslationComponent } from '@backstage/core-plugin-api/alpha';
 import { TranslationFunction } from '@backstage/core-plugin-api/alpha';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 import { UnpackNestedValue } from 'react-hook-form';
@@ -149,6 +150,7 @@ export function defaultGenerateStepper(
   flow: ImportFlows,
   defaults: StepperProvider,
   t: TranslationFunction<typeof catalogImportTranslationRef.T>,
+  Translation: TranslationComponent<typeof catalogImportTranslationRef.T>,
 ): StepperProvider;
 
 // @public
