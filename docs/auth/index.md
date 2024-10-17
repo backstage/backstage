@@ -379,7 +379,7 @@ export const apis: AnyApiFactory[] = [
 ];
 ```
 
-Then replace it with something like this, which will create an `ApiFactory` with only a github provider.
+Then replace it with something like this, which will create an `ApiFactory` with only a GitHub provider.
 
 ```ts title="packages/app/src/apis.ts"
 export const apis: AnyApiFactory[] = [
