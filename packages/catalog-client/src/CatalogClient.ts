@@ -41,7 +41,7 @@ import {
   QueryEntitiesResponse,
   ValidateEntityResponse,
 } from './types/api';
-import { isQueryEntitiesInitialRequest } from './utils';
+import { isQueryEntitiesInitialRequest, splitRefsIntoChunks } from './utils';
 import { DefaultApiClient, TypedResponse } from './generated';
 
 /**
@@ -151,28 +151,34 @@ export class CatalogClient implements CatalogApi {
     request: GetEntitiesByRefsRequest,
     options?: CatalogRequestOptions,
   ): Promise<GetEntitiesByRefsResponse> {
-    const response = await this.apiClient.getEntitiesByRefs(
-      {
-        body: {
-          entityRefs: request.entityRefs,
-          fields: request.fields,
+    const getOneChunk = async (refs: string[]) => {
+      const response = await this.apiClient.getEntitiesByRefs(
+        {
+          body: { entityRefs: refs, fields: request.fields },
+          query: { filter: this.getFilterValue(request.filter) },
         },
-        query: {
-          filter: this.getFilterValue(request.filter),
-        },
-      },
-      options,
-    );
-
-    if (!response.ok) {
-      throw await ResponseError.fromResponse(response);
-    }
-
-    const { items } = (await response.json()) as {
-      items: Array<Entity | null>;
+        options,
+      );
+      if (!response.ok) {
+        throw await ResponseError.fromResponse(response);
+      }
+      const body = (await response.json()) as {
+        items: Array<Entity | null>;
+      };
+      return body.items.map(i => i ?? undefined);
     };
 
-    return { items: items.map(i => i ?? undefined) };
+    let result: Array<Entity | undefined> | undefined;
+    for (const refs of splitRefsIntoChunks(request.entityRefs)) {
+      const entities = await getOneChunk(refs);
+      if (!result) {
+        result = entities;
+      } else {
+        result.push(...entities);
+      }
+    }
+
+    return { items: result ?? [] };
   }
 
   /**
