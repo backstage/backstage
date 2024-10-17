@@ -7,13 +7,18 @@ import { AuthService } from '@backstage/backend-plugin-api';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { RootConfigService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 
 // @public
 export class DefaultEventsService implements EventsService {
   // (undocumented)
-  static create(options: { logger: LoggerService }): DefaultEventsService;
+  static create(options: {
+    logger: LoggerService;
+    config?: RootConfigService;
+    useEventBus?: EventBusMode;
+  }): DefaultEventsService;
   forPlugin(
     pluginId: string,
     options?: {
@@ -36,6 +41,9 @@ export interface EventBroker {
     ...subscribers: Array<EventSubscriber | Array<EventSubscriber>>
   ): void;
 }
+
+// @public (undocumented)
+export type EventBusMode = 'never' | 'always' | 'auto';
 
 // @public (undocumented)
 export interface EventParams<TPayload = unknown> {
