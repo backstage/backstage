@@ -113,6 +113,7 @@ describe('<EntityPicker />', () => {
 
       const input = getByRole('textbox');
 
+      fireEvent.keyDown(input, {}); // trigger freeSolo mode
       fireEvent.change(input, { target: { value: 'squ' } });
       fireEvent.blur(input);
 
@@ -135,7 +136,7 @@ describe('<EntityPicker />', () => {
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
 
-    it('searches for users and groups', async () => {
+    it('searches for users', async () => {
       await renderInTestApp(
         <Wrapper>
           <EntityPicker {...props} />
@@ -180,7 +181,7 @@ describe('<EntityPicker />', () => {
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
 
-    it('searches for a specific group entity', async () => {
+    it('searches for a specific group and user entity', async () => {
       await renderInTestApp(
         <Wrapper>
           <EntityPicker {...props} />
@@ -202,6 +203,7 @@ describe('<EntityPicker />', () => {
         }),
       );
     });
+
     it('allow single top level filter', async () => {
       uiSchema = {
         'ui:options': {
@@ -306,6 +308,42 @@ describe('<EntityPicker />', () => {
     });
   });
 
+  describe('only one entity in catalog response', () => {
+    beforeEach(() => {
+      uiSchema = {
+        'ui:options': {
+          defaultKind: 'Group',
+          allowArbitraryValues: false,
+        },
+      };
+      props = {
+        onChange,
+        schema,
+        required: true,
+        uiSchema,
+        rawErrors,
+        formData: 'group:default/team-a',
+      } as unknown as FieldProps<any>;
+
+      catalogApi.getEntities.mockResolvedValue({
+        items: [makeEntity('Group', 'default', 'team-a')],
+      });
+    });
+
+    it('should disable Autocomplete component', async () => {
+      const { getByRole } = await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = getByRole('textbox');
+      expect(input).toHaveValue('team-a');
+      expect(onChange).not.toHaveBeenCalled();
+      expect(input).toHaveAttribute('disabled', '');
+    });
+  });
+
   describe('uses full entity ref', () => {
     beforeEach(() => {
       uiSchema = {
@@ -334,7 +372,15 @@ describe('<EntityPicker />', () => {
 
       const input = getByRole('textbox');
 
-      fireEvent.change(input, { target: { value: 'team-a' } });
+      // Open the Autocomplete dropdown
+      fireEvent.keyDown(input, { key: 'ArrowDown' });
+
+      // Select an option from the dropdown
+      fireEvent.keyDown(input, { key: 'ArrowDown' });
+      fireEvent.keyDown(input, { key: 'Enter' });
+
+      // Following events should be ignored by the component
+      fireEvent.change(input, { target: { value: 'Team A' } });
       fireEvent.blur(input);
 
       expect(onChange).toHaveBeenCalledWith('group:default/team-a');
@@ -349,10 +395,157 @@ describe('<EntityPicker />', () => {
 
       const input = getByRole('textbox');
 
+      fireEvent.keyDown(input, { key: 't' }); // trigger freeSoloMode
       fireEvent.change(input, { target: { value: 'team-b' } });
       fireEvent.blur(input);
 
       expect(onChange).toHaveBeenCalledWith('group:default/team-b');
+    });
+
+    it('return full entityRef when Autocomplete calls onSelect with create-option reason', async () => {
+      const { getByRole } = await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = getByRole('textbox');
+
+      fireEvent.keyDown(input, { key: 't' }); // trigger freeSoloMode
+      fireEvent.change(input, { target: { value: 'team-b' } });
+      fireEvent.keyDown(input, { key: 'Enter' });
+
+      expect(onChange).toHaveBeenCalledWith('group:default/team-b');
+    });
+  });
+
+  describe('defaultKind affects on how freesolo text is handled', () => {
+    beforeEach(() => {
+      uiSchema = {
+        'ui:options': {
+          catalogFilter: [],
+          allowArbitraryValues: true,
+        },
+      };
+      props = {
+        onChange,
+        schema,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+
+      catalogApi.getEntities.mockResolvedValue({ items: entities });
+    });
+
+    it('expand to full entity ref when defaultKind defined', async () => {
+      uiSchema['ui:options']!.defaultKind = 'group';
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = screen.getByRole('textbox');
+
+      fireEvent.keyDown(input, { key: 'a' });
+      fireEvent.change(input, { target: { value: 'team-a' } });
+      fireEvent.blur(input);
+
+      expect(input).toHaveValue('team-a');
+      expect(onChange).toHaveBeenCalledWith('group:default/team-a');
+    });
+
+    it('without defaultKind user input is handled as is', async () => {
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = screen.getByRole('textbox');
+
+      fireEvent.keyDown(input, { key: 'a' });
+      fireEvent.change(input, { target: { value: 'team-a' } });
+      fireEvent.blur(input);
+
+      expect(input).toHaveValue('team-a');
+      expect(onChange).toHaveBeenCalledWith('team-a');
+    });
+  });
+
+  describe('EntityPicker when allowArbitraryValues is set to false', () => {
+    beforeEach(() => {
+      uiSchema = {
+        'ui:options': {
+          catalogFilter: [],
+          allowArbitraryValues: false,
+        },
+      };
+      props = {
+        onChange,
+        schema,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+
+      catalogApi.getEntities.mockResolvedValue({ items: entities });
+    });
+
+    it('User enters clear input', async () => {
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+          <div data-testid="outside">Outside</div>
+        </Wrapper>,
+      );
+
+      const input = screen.getByRole('textbox');
+
+      fireEvent.change(input, { target: { value: '' } });
+      fireEvent.blur(input);
+
+      expect(input).toHaveValue('');
+    });
+
+    it('User type text to the text field', async () => {
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = screen.getByRole('textbox');
+
+      fireEvent.keyDown(input, { key: 'a' });
+      fireEvent.change(input, { target: { value: 'team-a' } });
+      fireEvent.blur(input);
+
+      expect(input).toHaveValue('');
+
+      // arbitrary values are not allowed, so no onChange call either.
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it('User selects item', async () => {
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = screen.getByRole('textbox');
+
+      // Open the Autocomplete dropdown
+      fireEvent.keyDown(input, { key: 'ArrowDown' });
+
+      // Select an option from the dropdown
+      fireEvent.keyDown(input, { key: 'ArrowDown' });
+      fireEvent.keyDown(input, { key: 'Enter' });
+
+      expect(input).toHaveValue('team-a');
+      expect(onChange).toHaveBeenCalledWith('group:default/team-a');
     });
   });
 
@@ -409,6 +602,28 @@ describe('<EntityPicker />', () => {
 
       const input = screen.getByRole('textbox');
 
+      // Open the Autocomplete dropdown
+      fireEvent.keyDown(input, { key: 'ArrowDown' });
+
+      // Select an option from the dropdown
+      fireEvent.keyDown(input, { key: 'ArrowDown' });
+      fireEvent.keyDown(input, { key: 'Enter' });
+
+      expect(input).toHaveValue('team-a');
+      expect(onChange).toHaveBeenCalledWith('group:default/team-a');
+    });
+
+    it('User type text to the text field', async () => {
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = screen.getByRole('textbox');
+
+      // trigger freeSolo mode
+      fireEvent.keyDown(input, { key: 'a' });
       fireEvent.change(input, { target: { value: 'team-a' } });
       fireEvent.blur(input);
 
@@ -427,9 +642,11 @@ describe('<EntityPicker />', () => {
       // Open the Autocomplete dropdown
       const input = screen.getByRole('textbox');
       fireEvent.click(input);
+      fireEvent.keyDown(input, { key: 'ArrowDown' });
 
       // Select an option from the dropdown
-      fireEvent.change(input, { target: { value: 'team-a' } });
+      fireEvent.keyDown(input, { key: 'ArrowDown' });
+      fireEvent.keyDown(input, { key: 'Enter' });
 
       // Close the dropdown by clicking outside the Autocomplete component
       const outside = screen.getByTestId('outside');
@@ -505,12 +722,14 @@ describe('<EntityPicker />', () => {
       );
 
       const input = screen.getByRole('textbox');
+      fireEvent.keyDown(input, { key: 'ArrowDown' });
 
-      fireEvent.change(input, { target: { value: 'team-a' } });
-      fireEvent.blur(input);
+      // Select an option from the dropdown
+      fireEvent.keyDown(input, { key: 'ArrowDown' });
+      fireEvent.keyDown(input, { key: 'Enter' });
 
       expect(input).toHaveValue('team-a');
-      expect(onChange).toHaveBeenCalledWith('team-a');
+      expect(onChange).toHaveBeenCalledWith('group:default/team-a');
     });
 
     it('User selects item and enters clear input', async () => {
@@ -603,12 +822,16 @@ describe('<EntityPicker />', () => {
       );
 
       const input = screen.getByRole('textbox');
+      fireEvent.keyDown(input, { key: 'ArrowDown' });
 
-      fireEvent.change(input, { target: { value: 'team-a' } });
+      // Select an option from the dropdown
+      fireEvent.keyDown(input, { key: 'ArrowDown' });
+      fireEvent.keyDown(input, { key: 'Enter' });
+
       fireEvent.blur(input);
 
       expect(input).toHaveValue('team-a');
-      expect(onChange).toHaveBeenCalledWith('team-a');
+      expect(onChange).toHaveBeenCalledWith('group:default/team-a');
     });
 
     it('User selects item and enters clear input', async () => {
@@ -702,11 +925,17 @@ describe('<EntityPicker />', () => {
 
       const input = screen.getByRole('textbox');
 
+      fireEvent.keyDown(input, { key: 'ArrowDown' });
+
+      // Select an option from the dropdown
+      fireEvent.keyDown(input, { key: 'ArrowDown' });
+      fireEvent.keyDown(input, { key: 'Enter' });
+
       fireEvent.change(input, { target: { value: 'team-a' } });
       fireEvent.blur(input);
 
       expect(input).toHaveValue('team-a');
-      expect(onChange).toHaveBeenCalledWith('team-a');
+      expect(onChange).toHaveBeenCalledWith('group:default/team-a');
     });
 
     it('User selects item and enters clear input', async () => {

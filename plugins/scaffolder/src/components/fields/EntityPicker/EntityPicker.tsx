@@ -35,7 +35,7 @@ import Autocomplete, {
   AutocompleteChangeReason,
   createFilterOptions,
 } from '@material-ui/lab/Autocomplete';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import {
   EntityPickerFilterQueryValue,
@@ -112,6 +112,8 @@ export const EntityPicker = (props: EntityPickerProps) => {
   const allowArbitraryValues =
     uiSchema['ui:options']?.allowArbitraryValues ?? true;
 
+  const [freeSoloMode, setFreeSoloMode] = useState<boolean>(false);
+
   const getLabel = useCallback(
     (freeSoloValue: string) => {
       try {
@@ -134,9 +136,10 @@ export const EntityPicker = (props: EntityPickerProps) => {
       // ref can either be a string from free solo entry or
       if (typeof ref !== 'string') {
         // if ref does not exist: pass 'undefined' to trigger validation for required value
+        setFreeSoloMode(false);
         onChange(ref ? stringifyEntityRef(ref as Entity) : undefined);
       } else {
-        if (reason === 'blur' || reason === 'create-option') {
+        if ((reason === 'blur' || reason === 'create-option') && freeSoloMode) {
           // Add in default namespace, etc.
           let entityRef = ref;
           try {
@@ -157,7 +160,14 @@ export const EntityPicker = (props: EntityPickerProps) => {
         }
       }
     },
-    [onChange, formData, defaultKind, defaultNamespace, allowArbitraryValues],
+    [
+      onChange,
+      formData,
+      defaultKind,
+      defaultNamespace,
+      allowArbitraryValues,
+      freeSoloMode,
+    ],
   );
 
   // Since free solo can be enabled, attempt to parse as a full entity ref first, then fall
@@ -213,6 +223,12 @@ export const EntityPicker = (props: EntityPickerProps) => {
             variant="outlined"
             required={required}
             InputProps={params.InputProps}
+            onKeyDown={event => {
+              // ignore dropdown navigation
+              if (!['Enter', 'ArrowDown', 'ArrowUp'].includes(event.key)) {
+                setFreeSoloMode(true);
+              }
+            }}
           />
         )}
         renderOption={option => <EntityDisplayName entityRef={option} />}
