@@ -51,7 +51,7 @@ export interface CatalogServiceRequestOptions extends CatalogRequestOptions {
 }
 
 /**
- * A version of the {@link CatalogApi | CatalogApi} that
+ * A version of the {@link @backstage/catalog-client#CatalogApi | CatalogApi} that
  * accepts backend credentials in addition to a token.
  *
  * @public
