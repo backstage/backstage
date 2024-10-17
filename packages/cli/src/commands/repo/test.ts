@@ -16,14 +16,14 @@
 
 import os from 'os';
 import crypto from 'node:crypto';
-import fs from 'fs-extra';
 import yargs from 'yargs';
-import { resolve as resolvePath, relative as relativePath } from 'path';
+import { relative as relativePath } from 'path';
 import { Command, OptionValues } from 'commander';
 import { Lockfile, PackageGraph } from '@backstage/cli-node';
 import { paths } from '../../lib/paths';
 import { runCheck, runPlain } from '../../lib/run';
 import { isChildPath } from '@backstage/cli-common';
+import { SuccessCache } from '../../lib/cache/SuccessCache';
 
 type JestProject = {
   displayName: string;
@@ -48,30 +48,6 @@ interface GlobalWithCache extends Global {
       }>;
     }): Promise<void>;
   };
-}
-
-const CACHE_FILE_NAME = 'test-cache.json';
-
-type Cache = string[];
-
-async function readCache(dir: string): Promise<Cache | undefined> {
-  try {
-    const data = await fs.readJson(resolvePath(dir, CACHE_FILE_NAME));
-    if (!Array.isArray(data)) {
-      return undefined;
-    }
-    if (data.some(x => typeof x !== 'string')) {
-      return undefined;
-    }
-    return data as Cache;
-  } catch {
-    return undefined;
-  }
-}
-
-function writeCache(dir: string, cache: Cache) {
-  fs.mkdirpSync(dir);
-  fs.writeJsonSync(resolvePath(dir, CACHE_FILE_NAME), cache, { spaces: 2 });
 }
 
 /**
@@ -272,10 +248,6 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     removeOptionArg(args, '--successCache', 1);
     removeOptionArg(args, '--successCacheDir');
 
-    const cacheDir = resolvePath(
-      opts.successCacheDir ?? 'node_modules/.cache/backstage-cli',
-    );
-
     // Parse the args to ensure that no file filters are provided, in which case we refuse to run
     const { _: parsedArgs } = await yargs(args).options(jestCli.yargsOptions)
       .argv;
@@ -293,6 +265,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       );
     }
 
+    const cache = new SuccessCache('test', opts.successCacheDir);
     const graph = await getPackageGraph();
 
     // Shared state for the bridge
@@ -305,7 +278,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     globalWithCache.__backstageCli_jestSuccessCache = {
       // This is called by `config/jest.js` after the project configs have been gathered
       async filterConfigs(projectConfigs, globalRootConfig) {
-        const cache = await readCache(cacheDir);
+        const cacheEntries = await cache.read();
         const lockfile = await Lockfile.load(
           paths.resolveTargetRoot('yarn.lock'),
         );
@@ -350,7 +323,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
 
           projectHashes.set(packageName, sha);
 
-          if (cache?.includes(sha)) {
+          if (cacheEntries.has(sha)) {
             if (!selectedProjects || selectedProjects.includes(packageName)) {
               console.log(`Skipped ${packageName} due to cache hit`);
             }
@@ -391,7 +364,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
           }
         }
 
-        await writeCache(cacheDir, outputSuccessCache);
+        await cache.write(outputSuccessCache);
       },
     };
   }
