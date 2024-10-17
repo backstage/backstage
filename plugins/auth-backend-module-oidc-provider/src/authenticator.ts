@@ -32,6 +32,7 @@ import {
   PassportOAuthAuthenticatorHelper,
   PassportOAuthPrivateInfo,
 } from '@backstage/plugin-auth-node';
+import { durationToMilliseconds, HumanDuration } from '@backstage/types';
 
 const HTTP_OPTION_TIMEOUT = 10000;
 const createHttpOptionsProvider =
@@ -86,8 +87,15 @@ export const oidcAuthenticator = createOAuthAuthenticator({
         'The oidc provider no longer supports the "scope" configuration option. Please use the "additionalScopes" option instead.',
       );
     }
+
+    const timeoutHumanDuration = config.getOptional<HumanDuration>('timeout');
+    const timeoutMilliseconds =
+      typeof timeoutHumanDuration === 'object'
+        ? durationToMilliseconds(timeoutHumanDuration)
+        : undefined;
+
     const httpOptionsProvider = createHttpOptionsProvider({
-      timeout: config.getOptionalNumber('timeout'),
+      timeout: timeoutMilliseconds,
     });
 
     Issuer[custom.http_options] = httpOptionsProvider;
