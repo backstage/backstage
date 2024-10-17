@@ -1331,7 +1331,9 @@ export type SubvalueCellClassKey = 'value' | 'subvalue';
 // Warning: (ae-missing-release-tag) "SupportButton" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function SupportButton(props: SupportButtonProps): React_2.JSX.Element;
+export function SupportButton(
+  props: SupportButtonProps,
+): React_2.JSX.Element | null;
 
 // Warning: (ae-missing-release-tag) "SupportButtonClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
