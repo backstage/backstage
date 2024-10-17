@@ -78,7 +78,7 @@ function getProfileCredentials(
 }
 
 /**
- * Include the region if present, otherwise use the default region
+ * Include the region if present, otherwise use the default region.
  *
  * @see https://www.npmjs.com/package/@aws-sdk/credential-provider-node
  */
