@@ -29,15 +29,19 @@ export class SuccessCache {
   }
 
   async read(): Promise<Set<string>> {
-    const state = await fs.stat(this.#path).catch(error => {
+    try {
+      const stat = await fs.stat(this.#path);
+      if (!stat.isDirectory()) {
+        await fs.rm(this.#path);
+        return new Set();
+      }
+    } catch (error) {
       if (error.code === 'ENOENT') {
-        return undefined;
+        return new Set();
       }
       throw error;
-    });
-    if (!state || !state.isDirectory()) {
-      return new Set();
     }
+
     const items = await fs.readdir(this.#path);
 
     const returned = new Set<string>();
