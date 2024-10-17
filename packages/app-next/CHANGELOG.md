@@ -1,5 +1,14 @@
 # example-app-next
 
+## 0.0.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.13.1
+  - @backstage/plugin-scaffolder@1.26.1
+  - @backstage/cli@0.28.0
+
 ## 0.0.16
 
 ### Patch Changes
