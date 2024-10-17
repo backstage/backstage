@@ -34,6 +34,7 @@ describe('ComponentV1alpha1Validator', () => {
         lifecycle: 'production',
         owner: 'me',
         subcomponentOf: 'monolith',
+        tier: '0',
         providesApis: ['api-0'],
         consumesApis: ['api-0'],
         dependsOn: ['resource:resource-0', 'component:component-0'],
@@ -119,6 +120,21 @@ describe('ComponentV1alpha1Validator', () => {
   it('rejects empty subcomponentOf', async () => {
     (entity as any).spec.subcomponentOf = '';
     await expect(validator.check(entity)).rejects.toThrow(/subcomponentOf/);
+  });
+
+  it('accepts missing tier', async () => {
+    delete (entity as any).spec.tier;
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects wrong tier', async () => {
+    (entity as any).spec.tier = 7;
+    await expect(validator.check(entity)).rejects.toThrow(/tier/);
+  });
+
+  it('rejects empty tier', async () => {
+    (entity as any).spec.tier = '';
+    await expect(validator.check(entity)).rejects.toThrow(/tier/);
   });
 
   it('accepts missing providesApis', async () => {

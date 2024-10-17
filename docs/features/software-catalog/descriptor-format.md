@@ -609,6 +609,13 @@ which the component is a part, e.g. `spotify-ios-app`. This field is optional.
 | ---------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------- |
 | [`Component`](#kind-component) (default) | Same as this entity, typically `default`   | [`partOf`, and reverse `hasPart`](well-known-relations.md#partof-and-haspart) |
 
+### `spec.tier` [optional]
+
+The tier of the component, e.g. `0` or `critical`. This field is optional.
+
+The software catalog accepts any tier value, but an organization should
+take great care to establish a proper taxonomy for these.
+
 ### `spec.providesApis` [optional]
 
 An array of [entity references](references.md#string-references) to the APIs

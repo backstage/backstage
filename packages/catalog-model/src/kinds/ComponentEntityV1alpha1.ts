@@ -35,6 +35,7 @@ export interface ComponentEntityV1alpha1 extends Entity {
     lifecycle: string;
     owner: string;
     subcomponentOf?: string;
+    tier?: string;
     providesApis?: string[];
     consumesApis?: string[];
     dependsOn?: string[];
