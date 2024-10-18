@@ -44,13 +44,6 @@ const useStyles = makeStyles(
         verticalAlign: 'middle',
       },
     },
-    truncate: {
-      whiteSpace: 'nowrap',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-      maxWidth: '100%',
-      display: 'block',
-    },
   }),
   { name: 'CatalogReactEntityDisplayName' },
 );
@@ -87,7 +80,9 @@ export const EntityDisplayName = (
 
   // The innermost "body" content
   let content = (
-    <Typography className={classes.truncate}>{primaryTitle}</Typography>
+    <Tooltip title={primaryTitle} placement="top" arrow>
+      <Typography noWrap>{primaryTitle}</Typography>
+    </Tooltip>
   );
 
   // Optionally an icon, and wrapper around them both
