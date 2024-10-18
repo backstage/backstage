@@ -55,6 +55,7 @@ learn how to contribute the integration yourself!
 [add-tool]: https://github.com/backstage/backstage/issues/new?assignees=&labels=plugin&template=plugin_template.md&title=%5BAnalytics+Module%5D+THE+ANALYTICS+TOOL+TO+INTEGRATE
 [int-howto]: #writing-integrations
 [analytics-api-type]: https://backstage.io/docs/reference/core-plugin-api.analyticsapi
+[generic-http]: https://github.com/pfeifferj/backstage-plugin-analytics-generic/blob/main/README.md
 
 ## Key Events
 
