@@ -19,6 +19,7 @@ import {
   DiscoveryService,
   LifecycleService,
   LoggerService,
+  RootConfigService,
 } from '@backstage/backend-plugin-api';
 import { EventParams } from './EventParams';
 import { EventsService, EventsServiceSubscribeOptions } from './EventsService';
@@ -28,6 +29,13 @@ import { ResponseError } from '@backstage/errors';
 const POLL_BACKOFF_START_MS = 1_000;
 const POLL_BACKOFF_MAX_MS = 60_000;
 const POLL_BACKOFF_FACTOR = 2;
+
+const EVENT_BUS_MODES = ['never', 'always', 'auto'] as const;
+
+/**
+ * @public
+ */
+export type EventBusMode = 'never' | 'always' | 'auto';
 
 /**
  * Local event bus for subscribers within the same process.
@@ -107,23 +115,28 @@ class PluginEventsService implements EventsService {
     private readonly pluginId: string,
     private readonly localBus: LocalEventBus,
     private readonly logger: LoggerService,
+    private readonly mode: EventBusMode,
     private client?: DefaultApiClient,
     private readonly auth?: AuthService,
   ) {}
 
   async publish(params: EventParams): Promise<void> {
     const lock = this.#getShutdownLock();
+    if (!lock) {
+      throw new Error('Service is shutting down');
+    }
     try {
       const { notifiedSubscribers } = await this.localBus.publish(params);
 
-      if (!this.client) {
+      const client = this.client;
+      if (!client) {
         return;
       }
       const token = await this.#getToken();
       if (!token) {
         return;
       }
-      const res = await this.client.postEvent(
+      const res = await client.postEvent(
         {
           body: {
             event: { payload: params.eventPayload, topic: params.topic },
@@ -134,7 +147,7 @@ class PluginEventsService implements EventsService {
       );
 
       if (!res.ok) {
-        if (res.status === 404) {
+        if (res.status === 404 && this.mode !== 'always') {
           this.logger.warn(
             `Event publish request failed with status 404, events backend not found. Future events will not be persisted.`,
           );
@@ -160,27 +173,6 @@ class PluginEventsService implements EventsService {
     if (!this.client) {
       return;
     }
-    const token = await this.#getToken();
-    if (!token) {
-      return;
-    }
-    const res = await this.client.putSubscription(
-      {
-        path: { subscriptionId },
-        body: { topics: options.topics },
-      },
-      { token },
-    );
-    if (!res.ok) {
-      if (res.status === 404) {
-        this.logger.warn(
-          `Event subscribe request failed with status 404, events backend not found. Will only receive events that were sent locally on this process.`,
-        );
-        delete this.client;
-        return;
-      }
-      throw await ResponseError.fromResponse(res);
-    }
 
     this.#startPolling(subscriptionId, options.topics, options.onEvent);
   }
@@ -190,75 +182,101 @@ class PluginEventsService implements EventsService {
     topics: string[],
     onEvent: EventsServiceSubscribeOptions['onEvent'],
   ) {
+    let hasSubscription = false;
     let backoffMs = POLL_BACKOFF_START_MS;
     const poll = async () => {
-      if (!this.client) {
+      const client = this.client;
+      if (!client) {
         return;
       }
       const lock = this.#getShutdownLock();
+      if (!lock) {
+        return; // shutting down
+      }
       try {
         const token = await this.#getToken();
         if (!token) {
           return;
         }
-        const res = await this.client.getSubscriptionEvents(
-          {
-            path: { subscriptionId },
-          },
-          { token },
-        );
 
-        if (!res.ok) {
-          if (res.status === 404) {
-            this.logger.info(
-              `Polling event subscription resulted in a 404, recreating subscription`,
-            );
-            const putRes = await this.client.putSubscription(
-              {
-                path: { subscriptionId },
-                body: { topics },
-              },
-              { token },
-            );
-            if (!putRes.ok) {
+        if (hasSubscription) {
+          const res = await client.getSubscriptionEvents(
+            {
+              path: { subscriptionId },
+            },
+            { token },
+          );
+
+          if (!res.ok) {
+            if (res.status === 404) {
+              this.logger.info(
+                `Polling event subscription resulted in a 404, recreating subscription`,
+              );
+              hasSubscription = false;
+            } else {
               throw await ResponseError.fromResponse(res);
             }
           }
-          throw await ResponseError.fromResponse(res);
-        }
-        backoffMs = POLL_BACKOFF_START_MS;
 
-        // 202 means there were no immediately available events, but the
-        // response will block until either new events are available or the
-        // request times out. In both cases we should should try to read events
-        // immediately again
-        if (res.status === 202) {
-          lock.release();
-          await res.body?.getReader()?.closed;
-          process.nextTick(poll);
-        } else if (res.status === 200) {
-          const data = await res.json();
-          if (data) {
-            for (const event of data.events ?? []) {
-              try {
-                await onEvent({
-                  topic: event.topic,
-                  eventPayload: event.payload,
-                });
-              } catch (error) {
-                this.logger.warn(
-                  `Subscriber "${subscriptionId}" failed to process event for topic "${event.topic}"`,
-                  error,
-                );
+          // Successful response, reset backoff
+          backoffMs = POLL_BACKOFF_START_MS;
+
+          // 202 means there were no immediately available events, but the
+          // response will block until either new events are available or the
+          // request times out. In both cases we should should try to read events
+          // immediately again
+          if (res.status === 202) {
+            lock.release();
+            await res.body?.getReader()?.closed;
+            process.nextTick(poll);
+          } else if (res.status === 200) {
+            const data = await res.json();
+            if (data) {
+              for (const event of data.events ?? []) {
+                try {
+                  await onEvent({
+                    topic: event.topic,
+                    eventPayload: event.payload,
+                  });
+                } catch (error) {
+                  this.logger.warn(
+                    `Subscriber "${subscriptionId}" failed to process event for topic "${event.topic}"`,
+                    error,
+                  );
+                }
               }
+            } else {
+              this.logger.warn(
+                `Unexpected response status ${res.status} from events backend for subscription "${subscriptionId}"`,
+              );
             }
           }
-          process.nextTick(poll);
-        } else {
-          this.logger.warn(
-            `Unexpected response status ${res.status} from events backend for subscription "${subscriptionId}"`,
-          );
         }
+
+        // If we haven't yet created the subscription, or if it was removed, create a new one
+        if (!hasSubscription) {
+          const res = await client.putSubscription(
+            {
+              path: { subscriptionId },
+              body: { topics },
+            },
+            { token },
+          );
+          hasSubscription = true;
+          if (!res.ok) {
+            if (res.status === 404 && this.mode !== 'always') {
+              this.logger.warn(
+                `Event subscribe request failed with status 404, events backend not found. Will only receive events that were sent locally on this process.`,
+              );
+              // Events backend is not present and not configured to always be used, bail out and stop polling
+              delete this.client;
+              return;
+            }
+            throw await ResponseError.fromResponse(res);
+          }
+        }
+
+        process.nextTick(poll);
       } catch (error) {
         this.logger.warn(
           `Poll failed for subscription "${subscriptionId}", retrying in ${backoffMs.toFixed(
@@ -292,7 +310,10 @@ class PluginEventsService implements EventsService {
     } catch (error) {
       // This is a bit hacky, but handles the case where new auth is used
       // without legacy auth fallback, and the events backend is not installed
-      if (String(error).includes('Unable to generate legacy token')) {
+      if (
+        String(error).includes('Unable to generate legacy token') &&
+        this.mode !== 'always'
+      ) {
         this.logger.warn(
           `The events backend is not available and neither is legacy auth. Future events will not be persisted.`,
         );
@@ -309,22 +330,25 @@ class PluginEventsService implements EventsService {
   }
 
   #isShuttingDown = false;
-  #shutdownLocks: Promise<void>[] = [];
+  #shutdownLocks = new Set<Promise<void>>();
 
   // This locking mechanism helps ensure that we are either idle or waiting for
   // a blocked events call before shutting down. It increases out changes of
   // never dropping any events on shutdown.
-  #getShutdownLock(): { release(): void } {
+  #getShutdownLock(): { release(): void } | undefined {
     if (this.#isShuttingDown) {
-      throw new Error('Service is shutting down');
+      return undefined;
     }
 
     let release: () => void;
-    this.#shutdownLocks.push(
-      new Promise<void>(resolve => {
-        release = resolve;
-      }),
-    );
+
+    const lock = new Promise<void>(resolve => {
+      release = () => {
+        resolve();
+        this.#shutdownLocks.delete(lock);
+      };
+    });
+    this.#shutdownLocks.add(lock);
     return { release: release! };
   }
 }
@@ -342,12 +366,30 @@ export class DefaultEventsService implements EventsService {
   private constructor(
     private readonly logger: LoggerService,
     private readonly localBus: LocalEventBus,
+    private readonly mode: EventBusMode,
   ) {}
 
-  static create(options: { logger: LoggerService }): DefaultEventsService {
+  static create(options: {
+    logger: LoggerService;
+    config?: RootConfigService;
+    useEventBus?: EventBusMode;
+  }): DefaultEventsService {
+    const eventBusMode =
+      options.useEventBus ??
+      ((options.config?.getOptionalString('events.useEventBus') ??
+        'auto') as EventBusMode);
+    if (!EVENT_BUS_MODES.includes(eventBusMode)) {
+      throw new Error(
+        `Invalid events.useEventBus config, must be one of ${EVENT_BUS_MODES.join(
+          ', ',
+        )}, got '${eventBusMode}'`,
+      );
+    }
+
     return new DefaultEventsService(
       options.logger,
       new LocalEventBus(options.logger),
+      eventBusMode,
     );
   }
 
@@ -367,16 +409,18 @@ export class DefaultEventsService implements EventsService {
     },
   ): EventsService {
     const client =
-      options &&
-      new DefaultApiClient({
-        discoveryApi: options.discovery,
-        fetchApi: { fetch }, // use native node fetch
-      });
+      options && this.mode !== 'never'
+        ? new DefaultApiClient({
+            discoveryApi: options.discovery,
+            fetchApi: { fetch }, // use native node fetch
+          })
+        : undefined;
     const logger = options?.logger ?? this.logger;
     const service = new PluginEventsService(
       pluginId,
       this.localBus,
       logger,
+      this.mode,
       client,
       options?.auth,
     );
