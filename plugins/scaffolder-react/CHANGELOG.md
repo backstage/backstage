@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.13.1
+
+### Patch Changes
+
+- 42ef107: Fix issue with form state not refreshing when updating
+
 ## 1.13.0
 
 ### Minor Changes

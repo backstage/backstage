@@ -1,5 +1,13 @@
 # @backstage/plugin-scaffolder
 
+## 1.26.1
+
+### Patch Changes
+
+- 316b1dd: Revert the change of the option label for `EntityPicker`
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.13.1
+
 ## 1.26.0
 
 ### Minor Changes

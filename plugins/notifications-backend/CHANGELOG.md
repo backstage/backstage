@@ -1,5 +1,17 @@
 # @backstage/plugin-notifications-backend
 
+## 0.4.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.2
+  - @backstage/plugin-signals-node@0.1.13
+  - @backstage/backend-plugin-api@1.0.1
+  - @backstage/plugin-auth-node@0.5.3
+  - @backstage/plugin-catalog-node@1.13.1
+  - @backstage/plugin-notifications-node@0.2.8
+
 ## 0.4.1
 
 ### Patch Changes
