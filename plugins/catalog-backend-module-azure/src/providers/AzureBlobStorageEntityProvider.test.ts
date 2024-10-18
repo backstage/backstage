@@ -48,6 +48,7 @@ jest.mock('@azure/storage-blob', () => {
     BlobServiceClient: jest.fn().mockImplementation(() => ({
       url: 'https://myaccount.blob.core.windows.net/',
       getContainerClient: jest.fn().mockImplementation(() => ({
+        // eslint-disable-next-line func-names
         listBlobsFlat: jest.fn(async function* () {
           yield* createBlobList(blobs);
         }),
@@ -65,7 +66,6 @@ describe('AzureBlobStorageEntityProvider', () => {
     providerId: string,
     providerConfig: object,
     expectedBaseUrl: string,
-    names: Record<string, string>,
     integrationConfig?: object,
     scheduleInConfig?: boolean,
   ) => {
@@ -151,6 +151,7 @@ describe('AzureBlobStorageEntityProvider', () => {
     });
   };
 
+  // eslint-disable-next-line jest/expect-expect
   it('apply full update on scheduled execution', async () => {
     return expectMutation(
       'staticContainer',
@@ -159,17 +160,12 @@ describe('AzureBlobStorageEntityProvider', () => {
       },
       'https://myaccount.blob.core.windows.net/container-1/',
       {
-        'key1.yaml': 'generated-8ece85ad90200c6577b99f553dcbedde05fa34bb',
-        'key2.yaml': 'generated-6b54c6aaa44696f5e91ce0f54fb27bf837549d11',
-        'key3.yaml': 'generated-88c703cf1aa66913db4033b029adc0b174574646',
-        'key4.yaml': 'generated-2b7e068bb4ec818c14f179a1e721843fc2dbc5f9',
-      },
-      {
         accountName: 'myaccount',
       },
     );
   });
 
+  // eslint-disable-next-line jest/expect-expect
   it('apply full update no prefix', async () => {
     return expectMutation(
       'staticContainerNoPrefix',
@@ -181,12 +177,6 @@ describe('AzureBlobStorageEntityProvider', () => {
         },
       },
       'https://myaccount.blob.core.windows.net/container-1/',
-      {
-        'key1.yaml': 'generated-8ece85ad90200c6577b99f553dcbedde05fa34bb',
-        'key2.yaml': 'generated-6b54c6aaa44696f5e91ce0f54fb27bf837549d11',
-        'key3.yaml': 'generated-88c703cf1aa66913db4033b029adc0b174574646',
-        'key4.yaml': 'generated-2b7e068bb4ec818c14f179a1e721843fc2dbc5f9',
-      },
       {
         host: 'blob.core.windows.net',
         accountName: 'myaccount',

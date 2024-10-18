@@ -18,9 +18,7 @@ import {
   AccessToken,
   ClientSecretCredential,
   DefaultAzureCredential,
-  TokenCredential,
 } from '@azure/identity';
-import { AzureBlobStorageIntegrationConfig } from './config';
 import { ScmIntegrationRegistry } from '../registry';
 import { ConfigReader } from '@backstage/config';
 import { DefaultAzureCredentialsManager } from './DefaultAzureCredentialsProvider';

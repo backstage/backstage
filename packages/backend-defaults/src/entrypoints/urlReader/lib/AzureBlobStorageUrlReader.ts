@@ -39,10 +39,7 @@ import {
   UrlReaderServiceSearchResponse,
 } from '@backstage/backend-plugin-api';
 
-export function parseUrl(
-  url: string,
-  config: AzureBlobStorageIntergation,
-): { path: string; container: string } {
+export function parseUrl(url: string): { path: string; container: string } {
   const parsedUrl = new URL(url);
   const pathSegments = parsedUrl.pathname.split('/').filter(Boolean);
 
@@ -138,7 +135,7 @@ export class AzureBlobStorageUrlReader implements UrlReaderService {
     const { etag, lastModifiedAfter } = options ?? {};
 
     try {
-      const { path, container } = parseUrl(url, this.integration);
+      const { path, container } = parseUrl(url);
 
       const containerClient = await this.createContainerClient(container);
       const blobClient = containerClient.getBlobClient(path);
@@ -184,7 +181,7 @@ export class AzureBlobStorageUrlReader implements UrlReaderService {
     options?: UrlReaderServiceReadTreeOptions,
   ): Promise<UrlReaderServiceReadTreeResponse> {
     try {
-      const { path, container } = parseUrl(url, this.integration);
+      const { path, container } = parseUrl(url);
 
       const containerClient = await this.createContainerClient(container);
 
@@ -228,15 +225,6 @@ export class AzureBlobStorageUrlReader implements UrlReaderService {
     return `azureBlobStorage{accountName=${accountName},authed=${Boolean(
       accountKey,
     )}}`;
-  }
-
-  private parseUrl(url: string): { path: string } {
-    const parsedUrl = new URL(url);
-    const path = parsedUrl.pathname.substring(
-      parsedUrl.pathname.lastIndexOf('/') + 1,
-    );
-
-    return { path };
   }
 
   private async retrieveAzureBlobData(stream: Readable): Promise<Readable> {
