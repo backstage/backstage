@@ -6,6 +6,7 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import express from 'express';
+import { JsonObject } from '@backstage/types';
 import { Logger } from 'winston';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 
@@ -18,6 +19,8 @@ export default proxyPlugin;
 
 // @public @deprecated (undocumented)
 export interface RouterOptions {
+  // (undocumented)
+  additionalEndpoints?: JsonObject;
   // (undocumented)
   config: RootConfigService;
   // (undocumented)
