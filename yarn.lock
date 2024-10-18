@@ -17165,8 +17165,8 @@ __metadata:
   linkType: hard
 
 "@testing-library/jest-dom@npm:^6.0.0":
-  version: 6.6.1
-  resolution: "@testing-library/jest-dom@npm:6.6.1"
+  version: 6.6.2
+  resolution: "@testing-library/jest-dom@npm:6.6.2"
   dependencies:
     "@adobe/css-tools": ^4.4.0
     aria-query: ^5.0.0
@@ -17175,7 +17175,7 @@ __metadata:
     dom-accessibility-api: ^0.6.3
     lodash: ^4.17.21
     redent: ^3.0.0
-  checksum: cad9d8924857438ae9c3da9b42271330f58e86dcb4d6b9ac2573ec668f4418f9b52678ca9af97c3c1c15a14e601d1ec2dee31be3dea8d9c38c36d0f2b3529ef5
+  checksum: 23fc4de90035b7acaa13839adb8e31e5f5ad0306623f59be4907fe48050a5d148cd927ff6b6c13c49e392cc06bdd9f16e7d4766263dd7b42d5a342897e32bb6f
   languageName: node
   linkType: hard
 
