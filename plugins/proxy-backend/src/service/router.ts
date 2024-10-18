@@ -63,6 +63,7 @@ export interface RouterOptions {
   discovery: DiscoveryService;
   skipInvalidProxies?: boolean;
   reviveConsumedRequestBodies?: boolean;
+  additionalEndpoints?: JsonObject;
 }
 
 export interface ProxyConfig extends Options {
@@ -315,7 +316,10 @@ export async function createRouterInternal(
   const externalUrl = await options.discovery.getExternalBaseUrl('proxy');
   const { pathname: pathPrefix } = new URL(externalUrl);
 
-  const proxyConfig = readProxyConfig(options.config, options.logger);
+  const proxyConfig = {
+    ...(options.additionalEndpoints ?? {}),
+    ...readProxyConfig(options.config, options.logger),
+  };
   configureMiddlewares(
     proxyOptions,
     currentRouter,
