@@ -18,7 +18,7 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 // @public @deprecated
 export class DefaultEventBroker implements EventBroker {
   // @deprecated
-  constructor(logger: LoggerService, events?: EventsService);
+  constructor(logger: LoggerService, config?: Config, events?: EventsService);
   // (undocumented)
   publish(params: EventParams): Promise<void>;
   // (undocumented)
@@ -29,7 +29,7 @@ export class DefaultEventBroker implements EventBroker {
 
 // @public @deprecated
 export class EventsBackend {
-  constructor(logger: Logger);
+  constructor(logger: Logger, config?: Config);
   // (undocumented)
   addPublishers(
     ...publishers: Array<EventPublisher | Array<EventPublisher>>

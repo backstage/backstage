@@ -15,6 +15,7 @@
  */
 
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { Config } from '@backstage/config';
 import {
   DefaultEventsService,
   EventBroker,
@@ -41,8 +42,8 @@ export class DefaultEventBroker implements EventBroker {
    * An instance can be passed (required for a mixed mode), otherwise a new instance gets created internally.
    * @deprecated use `DefaultEventsService` directly instead
    */
-  constructor(logger: LoggerService, events?: EventsService) {
-    this.events = events ?? DefaultEventsService.create({ logger });
+  constructor(logger: LoggerService, config?: Config, events?: EventsService) {
+    this.events = events ?? DefaultEventsService.create({ logger, config });
   }
 
   async publish(params: EventParams): Promise<void> {

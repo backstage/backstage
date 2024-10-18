@@ -42,9 +42,10 @@ export const eventsServiceFactory = createServiceFactory({
     logger: coreServices.logger,
     lifecycle: coreServices.lifecycle,
     auth: coreServices.auth,
+    config: coreServices.rootConfig,
   },
-  async createRootContext({ rootLogger }) {
-    return DefaultEventsService.create({ logger: rootLogger });
+  async createRootContext({ rootLogger, config }) {
+    return DefaultEventsService.create({ logger: rootLogger, config });
   },
   async factory(
     { pluginMetadata, discovery, logger, lifecycle, auth },

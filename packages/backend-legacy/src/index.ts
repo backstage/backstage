@@ -73,9 +73,10 @@ function makeCreateEnv(config: Config) {
     discovery,
   });
 
-  const eventsService = DefaultEventsService.create({ logger: root });
+  const eventsService = DefaultEventsService.create({ logger: root, config });
   const eventBroker = new DefaultEventBroker(
     root.child({ type: 'plugin' }),
+    config,
     eventsService,
   );
   const signalsService = DefaultSignalsService.create({
