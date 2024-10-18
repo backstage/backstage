@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { CATALOG_FILTER_EXISTS } from '../types';
 import { InMemoryCatalogClient } from './InMemoryCatalogClient';
 import { Entity } from '@backstage/catalog-model';
 
@@ -25,6 +26,7 @@ const entity1: Entity = {
     name: 'e1',
     uid: 'u1',
   },
+  relations: [{ type: 'relatedTo', targetRef: 'customkind:default/e2' }],
 };
 
 const entity2: Entity = {
@@ -42,10 +44,32 @@ const entities = [entity1, entity2];
 describe('InMemoryCatalogClient', () => {
   it('getEntities', async () => {
     const client = new InMemoryCatalogClient({ entities });
+
     await expect(client.getEntities()).resolves.toEqual({ items: entities });
+
+    await expect(
+      client.getEntities({ filter: { 'metadata.name': 'E1' } }),
+    ).resolves.toEqual({ items: [entity1] });
+
     await expect(
       client.getEntities({ filter: { 'metadata.uid': 'u2' } }),
     ).resolves.toEqual({ items: [entity2] });
+
+    await expect(
+      client.getEntities({ filter: { 'metadata.uid': 'U2' } }),
+    ).resolves.toEqual({ items: [entity2] });
+
+    await expect(
+      client.getEntities({
+        filter: { 'relations.relatedto': CATALOG_FILTER_EXISTS },
+      }),
+    ).resolves.toEqual({ items: [entity1] });
+
+    await expect(
+      client.getEntities({
+        filter: { 'relations.relatedTo': 'customkind:default/e2' },
+      }),
+    ).resolves.toEqual({ items: [entity1] });
   });
 
   it('getEntitiesByRefs', async () => {
