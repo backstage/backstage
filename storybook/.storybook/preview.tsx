@@ -8,8 +8,6 @@ import { apis } from './apis';
 
 import type { Preview } from '@storybook/react';
 
-import * as jest from 'jest-mock';
-
 const preview: Preview = {
   parameters: {
     controls: {
@@ -24,23 +22,19 @@ const preview: Preview = {
     layout: 'fullscreen',
   },
   decorators: [
-    Story => {
-      // @ts-ignore
-      window.jest = jest;
-
-      return (
-        <TestApiProvider apis={apis}>
-          <ThemeProvider theme={useDarkMode() ? darkTheme : lightTheme}>
-            <CssBaseline>
-              <AlertDisplay />
-              <Content>
-                <Story />
-              </Content>
-            </CssBaseline>
-          </ThemeProvider>
-        </TestApiProvider>
-      );
-    },
+    Story => (
+      // @ts-ignore - TODO: Fix this
+      <TestApiProvider apis={apis}>
+        <ThemeProvider theme={useDarkMode() ? darkTheme : lightTheme}>
+          <CssBaseline>
+            <AlertDisplay />
+            <Content>
+              <Story />
+            </Content>
+          </CssBaseline>
+        </ThemeProvider>
+      </TestApiProvider>
+    ),
   ],
 };
 
