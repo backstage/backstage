@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-backend-module-github': patch
 ---
 
-Fix bug when receive a `team.creted` github event without parent
+Fixed an issue in `GithubOrgEntityProvider` that caused an error when processing teams without a parent.
