@@ -64,6 +64,10 @@ export interface Config {
            */
           skipForkedRepos?: boolean;
           /**
+           * (Optional) Include archived repository
+           */
+          includeArchivedRepos?: boolean;
+          /**
            * (Optional) A list of strings containing the paths of the repositories to skip
            * Should be in the format group/subgroup/repo, with no leading or trailing slashes.
            */
