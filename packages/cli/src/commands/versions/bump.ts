@@ -228,7 +228,10 @@ export default async (opts: OptionValues) => {
 
     // Do not update backstage.json when upgrade patterns are used.
     if (pattern === DEFAULT_PATTERN_GLOB) {
-      await bumpBackstageJsonVersion(releaseManifest.releaseVersion);
+      await bumpBackstageJsonVersion(
+        releaseManifest.releaseVersion,
+        hasYarnPlugin,
+      );
     } else {
       console.log(
         chalk.yellow(
@@ -410,7 +413,10 @@ async function getBackstageJson() {
   });
 }
 
-export async function bumpBackstageJsonVersion(version: string) {
+export async function bumpBackstageJsonVersion(
+  version: string,
+  useYarnPlugin?: boolean,
+) {
   const backstageJson = await getBackstageJson();
   const prevVersion = backstageJson?.version;
 
@@ -422,7 +428,12 @@ export async function bumpBackstageJsonVersion(version: string) {
   if (prevVersion) {
     const from = encodeURIComponent(prevVersion);
     const to = encodeURIComponent(version);
-    const link = `https://backstage.github.io/upgrade-helper/?from=${from}&to=${to}`;
+    let link = `https://backstage.github.io/upgrade-helper/?from=${from}&to=${to}`;
+
+    if (useYarnPlugin) {
+      link += '&yarnPlugin=1';
+    }
+
     console.log(
       yellow(
         `Upgraded from release ${green(prevVersion)} to ${green(
