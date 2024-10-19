@@ -13,27 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import yargs from 'yargs';
-import { ZodObject, ZodRawShape } from 'zod';
-
-interface BackstageCommand<T extends ZodRawShape = ZodRawShape> {
-  path: string[];
-  description: string;
-  schema: ZodObject<T>;
-  execute: (options: T) => Promise<void>;
-}
+import { ZodRawShape } from 'zod';
+import { BackstageCommand } from './types';
 
 type Node<T extends ZodRawShape = ZodRawShape> = TreeNode | LeafNode<T>;
 
 interface TreeNode {
-  type: '$$treeNode';
+  $$type: '@tree/root';
   name: string;
   children: TreeNode[];
 }
 
 interface LeafNode<T extends ZodRawShape> {
-  type: '$$leafNode';
+  $$type: '@tree/leaf';
   name: string;
   command: BackstageCommand<T>;
 }
@@ -55,9 +47,9 @@ export class CommandGraph {
       const name = path[i];
       let next = current.find(n => n.name === name);
       if (!next) {
-        next = { type: '$$treeNode', name, children: [] };
+        next = { $$type: '@tree/root', name, children: [] };
         current.push(next);
-      } else if (next.type === '$$leafNode') {
+      } else if (next.$$type === '@tree/leaf') {
         throw new Error(
           `Command already exists at path: "${path.slice(0, i).join(' ')}"`,
         );
@@ -65,13 +57,13 @@ export class CommandGraph {
       current = next.children;
     }
     const last = current.find(n => n.name === path[path.length - 1]) as Node<T>;
-    if (last && last.type === '$$leafNode') {
+    if (last && last.$$type === '@tree/leaf') {
       throw new Error(
         `Command already exists at path: "${path.slice(0, -1).join(' ')}"`,
       );
     } else {
       current.push({
-        type: '$$leafNode',
+        $$type: '@tree/leaf',
         name: path[path.length - 1],
         command,
       } as Node<any>);
@@ -88,45 +80,25 @@ export class CommandGraph {
       const next = current.find(n => n.name === name);
       if (!next) {
         return undefined;
-      } else if (next.type === '$$leafNode') {
+      } else if (next.$$type === '@tree/leaf') {
         return undefined;
       }
       current = next.children;
     }
     const last = current.find(n => n.name === path[path.length - 1]) as Node<T>;
-    if (!last || last.type === '$$treeNode') {
+    if (!last || last.$$type === '@tree/root') {
       return undefined;
     }
     return last?.command;
   }
-}
 
-export class CliInitializer {
-  private graph = new CommandGraph();
-
-  /**
-   * Add a command to the CLI. This will be mostly used to prevent command overlaps
-   *    and to create `help` commands.
-   */
-  addCommand<T extends ZodRawShape>(command: BackstageCommand<T>) {
-    this.graph.add(command);
-  }
-
-  /**
-   * Actually parse argv and pass it to the command.
-   */
-  async run() {
-    const {
-      _: commandName,
-      $0: binaryName,
-      ...options
-    } = await yargs(process.argv.slice(2)).parse();
-    const command = this.graph.find(commandName.map(String));
-    if (!command) {
-      console.error(`Command not found: "${commandName.join(' ')}"`);
-      process.exit(1);
+  atDepth<T extends ZodRawShape>(depth: number): Node<T>[] {
+    let current = this.graph;
+    for (let i = 0; i < depth; i++) {
+      current = current.flatMap(n =>
+        n.$$type === '@tree/root' ? n.children : [],
+      );
     }
-    const parsedOptions = command.schema.parse(options);
-    await command?.execute(parsedOptions);
+    return current as Node<T>[];
   }
 }

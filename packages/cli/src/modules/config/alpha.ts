@@ -13,54 +13,56 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CliInitializer } from '../../wiring/Command';
-import { z } from 'zod';
 
-(async () => {
-  const initializer = new CliInitializer();
-  initializer.addCommand({
-    path: ['config:docs'],
-    description: 'Browse the configuration reference documentation',
-    schema: z.object({
-      package: z.string().optional(),
-    }),
-    execute: async options => {
-      const m = await import('./commands/docs');
-      await m.default(options);
-    },
-  });
-  initializer.addCommand({
-    path: ['config:print'],
-    description: 'Print the app configuration for the current package',
-    schema: z.object({
-      package: z.string().optional(),
-      lax: z.boolean().optional(),
-      frontend: z.boolean().optional(),
-      'with-secrets': z.boolean().optional(),
-      format: z.enum(['json', 'yaml']).optional(),
-      config: z.array(z.string()).optional(),
-    }),
-    execute: async options => {
-      const m = await import('./commands/print');
-      await m.default(options);
-    },
-  });
-  initializer.addCommand({
-    path: ['config:check'],
-    description:
-      'Validate that the given configuration loads and matches schema',
-    schema: z.object({
-      package: z.string().optional(),
-      lax: z.boolean().optional(),
-      frontend: z.boolean().optional(),
-      deprecated: z.boolean().optional(),
-      strict: z.boolean().optional(),
-      config: z.array(z.string()).optional(),
-    }),
-    execute: async options => {
-      const m = await import('./commands/validate');
-      await m.default(options);
-    },
-  });
-  await initializer.run();
-})();
+import { z } from 'zod';
+import { createCliPlugin } from '../../wiring/factory';
+
+export default createCliPlugin({
+  pluginId: 'config',
+  init: async reg => {
+    reg.addCommand({
+      path: ['config:docs'],
+      description: 'Browse the configuration reference documentation',
+      schema: z.object({
+        package: z.string().optional(),
+      }),
+      execute: async options => {
+        const m = await import('./commands/docs');
+        await m.default(options);
+      },
+    });
+    reg.addCommand({
+      path: ['config:print'],
+      description: 'Print the app configuration for the current package',
+      schema: z.object({
+        package: z.string().optional(),
+        lax: z.boolean().optional(),
+        frontend: z.boolean().optional(),
+        'with-secrets': z.boolean().optional(),
+        format: z.enum(['json', 'yaml']).optional(),
+        config: z.array(z.string()).optional(),
+      }),
+      execute: async options => {
+        const m = await import('./commands/print');
+        await m.default(options);
+      },
+    });
+    reg.addCommand({
+      path: ['config:check'],
+      description:
+        'Validate that the given configuration loads and matches schema',
+      schema: z.object({
+        package: z.string().optional(),
+        lax: z.boolean().optional(),
+        frontend: z.boolean().optional(),
+        deprecated: z.boolean().optional(),
+        strict: z.boolean().optional(),
+        config: z.array(z.string()).optional(),
+      }),
+      execute: async options => {
+        const m = await import('./commands/validate');
+        await m.default(options);
+      },
+    });
+  },
+});
