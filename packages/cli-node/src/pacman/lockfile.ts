@@ -42,7 +42,6 @@ export type LockfileQueryEntry = {
   dataKey: string;
 };
 
-/** @internal */
 export type LockfileData = {
   [entry: string]: {
     version: string;
