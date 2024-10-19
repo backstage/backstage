@@ -28,7 +28,9 @@ const envOptions = {
 };
 
 try {
-  require.resolve('react-dom/client');
+  require.resolve('react-dom/client', {
+    paths: [paths.targetRoot],
+  });
   process.env.HAS_REACT_DOM_CLIENT = true;
 } catch {
   /* ignored */
