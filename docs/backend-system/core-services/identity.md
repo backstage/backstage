@@ -5,6 +5,12 @@ sidebar_label: Identity
 description: Documentation for the Identity service
 ---
 
+:::note Note
+
+This service is deprecated, you are likely looking for the [Auth Service](./auth.md) instead. If you're wondering how to get the user's entity ref and ownership claims in your backend plugin, you should see the [User Info Service](./user-info.md) documentation.
+
+:::
+
 When working with backend plugins, you might find that you will need to interact with the `auth-backend` plugin to both authenticate backstage tokens, and to deconstruct them to get the user's entity ref and/or ownership claims out of them.
 
 ## Using the service
