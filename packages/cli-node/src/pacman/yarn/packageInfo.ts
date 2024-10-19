@@ -16,7 +16,7 @@
 import { NotFoundError } from '@backstage/errors';
 import { YarnVersion } from './types';
 import { execFile } from '../../run';
-import { PackageInfo } from '../pacman';
+import { PackageInfo } from '../PackageManager';
 
 // Possible `yarn info` output
 type YarnInfo = {

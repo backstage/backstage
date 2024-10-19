@@ -19,7 +19,7 @@ import { getPackages } from '@manypkg/get-packages';
 import { PackageGraph } from './PackageGraph';
 import { GitUtils } from '../git';
 import { Lockfile } from '../pacman';
-import { LockfileDiff } from '../pacman/lockfile';
+import { LockfileDiff } from '../pacman/Lockfile';
 
 const mockListChangedFiles = jest.spyOn(GitUtils, 'listChangedFiles');
 const mockReadFileAtRef = jest.spyOn(GitUtils, 'readFileAtRef');

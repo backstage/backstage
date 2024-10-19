@@ -89,7 +89,6 @@ export async function migrateMovedPackages(options?: {
               paths: [pkg.dir],
             }),
           );
-          // console.log(packageInfo);
         } catch (ex) {
           console.warn(
             chalk.yellow(

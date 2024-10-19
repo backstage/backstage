@@ -111,7 +111,7 @@ export abstract class Lockfile {
       remainingOldNames.delete(name);
 
       const thisQueries = this.packages.get(name);
-      // If the packages doesn't exist in this lockfile, add all entries
+      // If the packages don't exist in this lockfile, add all entries
       if (!thisQueries) {
         diff.removed.push(...otherQueries.map(q => ({ name, range: q.range })));
         continue;

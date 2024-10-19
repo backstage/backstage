@@ -15,11 +15,11 @@
  */
 
 import { assertError, ForwardedError } from '@backstage/errors';
-import { PackageInfo, PackageManager } from '../pacman';
-import { Lockfile } from '../lockfile';
+import { PackageInfo, PackageManager } from '../PackageManager';
+import { Lockfile } from '../Lockfile';
 import { fetchPackageInfo } from './packageInfo';
 import { YarnVersion } from './types';
-import { YarnLockfile } from './Lockfile';
+import { YarnLockfile } from './YarnLockfile';
 import { paths } from '../../paths';
 import { getHasYarnPlugin } from './plugin';
 import fs from 'fs-extra';

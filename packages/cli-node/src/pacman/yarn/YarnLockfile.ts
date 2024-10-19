@@ -16,7 +16,7 @@
 
 import { parseSyml, stringifySyml } from '@yarnpkg/parsers';
 import { stringify as legacyStringifyLockfile } from '@yarnpkg/lockfile';
-import { Lockfile, LockfileData, LockfileQueryEntry } from '../lockfile';
+import { Lockfile, LockfileData, LockfileQueryEntry } from '../Lockfile';
 
 const ENTRY_PATTERN = /^((?:@[^/]+\/)?[^@/]+)@(.+)$/;
 

@@ -40283,7 +40283,6 @@ __metadata:
     shx: ^0.3.2
     sloc: ^0.3.1
     sort-package-json: ^2.8.0
-    ts-node: ^10.9.2
     typescript: ~5.2.0
   languageName: unknown
   linkType: soft
@@ -43076,7 +43075,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-node@npm:^10.9.1, ts-node@npm:^10.9.2":
+"ts-node@npm:^10.9.1":
   version: 10.9.2
   resolution: "ts-node@npm:10.9.2"
   dependencies:

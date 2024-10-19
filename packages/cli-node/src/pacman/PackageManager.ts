@@ -15,7 +15,7 @@
  */
 
 import { Yarn } from './yarn';
-import { Lockfile } from './lockfile';
+import { Lockfile } from './Lockfile';
 import { SpawnOptionsPartialEnv } from '../run';
 
 export interface PackageManager {

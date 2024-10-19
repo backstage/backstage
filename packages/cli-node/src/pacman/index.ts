@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export type { PackageManager, PackageInfo } from './pacman';
-export type { LockfileQueryEntry } from './lockfile';
+export type { PackageManager, PackageInfo } from './PackageManager';
+export type { LockfileQueryEntry } from './Lockfile';
 
-export { detectPackageManager } from './pacman';
-export { Lockfile } from './lockfile';
+export { detectPackageManager } from './PackageManager';
+export { Lockfile } from './Lockfile';
