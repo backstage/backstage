@@ -16,5 +16,5 @@
 export type { PackageManager, PackageInfo } from './pacman';
 export type { LockfileQueryEntry } from './lockfile';
 
-export { detectPackageManager, allPackageManagers } from './pacman';
+export { detectPackageManager } from './pacman';
 export { Lockfile } from './lockfile';
