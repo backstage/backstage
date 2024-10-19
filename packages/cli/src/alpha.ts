@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-import { OptionValues } from 'commander';
-import { loadCliConfig } from '../../lib/config';
+import { CliInitializer } from './wiring/CliInitializer';
 
-export default async (opts: OptionValues) => {
-  await loadCliConfig({
-    args: opts.config,
-    fromPackage: opts.package,
-    mockEnv: opts.lax,
-    fullVisibility: !opts.frontend,
-    withDeprecatedKeys: opts.deprecated,
-    strict: opts.strict,
-  });
-};
+(async () => {
+  const initializer = new CliInitializer();
+  initializer.add(import('./modules/config/alpha').then(m => m.default));
+  await initializer.run();
+})();

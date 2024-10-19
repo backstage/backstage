@@ -17,7 +17,7 @@
 import { OptionValues } from 'commander';
 import { JSONSchema7 as JSONSchema } from 'json-schema';
 import { stringify as stringifyYaml } from 'yaml';
-import { loadCliConfig } from '../../lib/config';
+import { loadCliConfig } from '../lib/config';
 import { JsonObject } from '@backstage/types';
 import { mergeConfigSchemas } from '@backstage/config-loader';
 
