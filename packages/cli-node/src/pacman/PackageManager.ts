@@ -19,7 +19,6 @@ import { Lockfile } from './Lockfile';
 import { SpawnOptionsPartialEnv } from '../run';
 import { paths } from '../paths';
 import fs from 'fs-extra';
-import chalk from 'chalk';
 
 /**
  * Package info retrieved from the package manager, usually from NPM.
@@ -114,21 +113,17 @@ export async function detectPackageManager(): Promise<PackageManager> {
         case 'yarn':
           return await Yarn.create();
         default:
-          console.log(
-            chalk.yellow(`Detected unsupported package manager: ${name}.`),
-          );
+          console.log(`Detected unsupported package manager: ${name}.`);
           return await Yarn.create();
       }
     }
   } catch (error) {
-    console.log(chalk.red(`Error during package manager detection: ${error}`));
+    console.log(`Error during package manager detection: ${error}`);
   }
 
   // currently yarn is the only package manager supported so just log an error and use it anyway
   console.log(
-    chalk.yellow(
-      'Yarn was not detected, but is the only supported package manager.',
-    ),
+    'Yarn was not detected, but is the only supported package manager.',
   );
   return await Yarn.create();
 }

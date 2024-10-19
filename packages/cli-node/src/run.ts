@@ -25,8 +25,18 @@ import { ExitCodeError } from './errors';
 
 export const execFile = promisify(execFileCb);
 
+/**
+ * A function that can be used to log data from a child process
+ *
+ * @public
+ */
 export type LogFunc = (data: Buffer) => void;
 
+/**
+ * Options for running a child process
+ *
+ * @public
+ */
 export type SpawnOptionsPartialEnv = Omit<SpawnOptions, 'env'> & {
   env?: Partial<NodeJS.ProcessEnv>;
   // Pipe stdout to this log function

@@ -24,4 +24,4 @@ export * from './git';
 export * from './monorepo';
 export * from './roles';
 export * from './pacman';
-export * from './errors';
+export type { SpawnOptionsPartialEnv, LogFunc } from './run';

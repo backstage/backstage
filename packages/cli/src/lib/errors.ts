@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import chalk from 'chalk';
 import { CustomErrorBase } from '@backstage/errors';
 
 export class ExitCodeError extends CustomErrorBase {
@@ -26,6 +27,16 @@ export class ExitCodeError extends CustomErrorBase {
         : `Child exited with code ${code}`,
     );
     this.code = code;
+  }
+}
+
+export function exitWithError(error: Error): never {
+  if (error instanceof ExitCodeError) {
+    process.stderr.write(`\n${chalk.red(error.message)}\n\n`);
+    process.exit(error.code);
+  } else {
+    process.stderr.write(`\n${chalk.red(`${error}`)}\n\n`);
+    process.exit(1);
   }
 }
 
