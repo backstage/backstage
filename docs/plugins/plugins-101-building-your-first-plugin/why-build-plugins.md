@@ -1,8 +1,11 @@
 ---
 id: why-build-plugins
 title: Why build plugins?
-status: in-progress
 ---
+
+:::note Note
+This docs is still a work in progress, many of the guides described below do not exist yet.
+:::
 
 # Why Build Plugins? Introduction to the Value and Impact of Plugins within Backstage
 

@@ -23,5 +23,3 @@ This approach is equally beneficial if you conceive an idea for a potentially im
 ## Integration with the Software Catalog
 
 Should your plugin complement the Software Catalog rather than exist as a standalone feature (for instance, as an additional tab or a card within an "Overview" tab), you'll find comprehensive guidance on achieving this integration in the [Integrating Plugin into Software Catalog guide](integrating-plugin-into-software-catalog.md).
-
----

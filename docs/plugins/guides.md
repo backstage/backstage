@@ -1,14 +1,13 @@
 ---
 id: guides
 title: Guides for Plugins
-status: in-progress
 ---
 
-## Guides for Plugin Development
-
 :::note Note
-This section is still a work in progress, many of the guides described below do not exist yet.
+This docs is still a work in progress, many of the guides described below do not exist yet.
 :::
+
+## Guides for Plugin Development
 
 ### For Beginners: Introduction to Plugin Development
 
