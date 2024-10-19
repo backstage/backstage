@@ -18,8 +18,7 @@ import { resolve as resolvePath } from 'path';
 import { getPackages } from '@manypkg/get-packages';
 import { PackageGraph } from './PackageGraph';
 import { GitUtils } from '../git';
-import { MockPackageManager } from '../pacman/mock.test';
-import * as pacman from '../pacman';
+import { allPackageManagers, PackageManager } from '../pacman';
 
 const mockListChangedFiles = jest.spyOn(GitUtils, 'listChangedFiles');
 const mockReadFileAtRef = jest.spyOn(GitUtils, 'readFileAtRef');
@@ -179,37 +178,21 @@ describe('PackageGraph', () => {
     ).resolves.toEqual([graph.get('a'), graph.get('b')]);
   });
 
-  it('lists changed packages with lockfile analysis', async () => {
-    const graph = PackageGraph.fromPackages(testPackages);
+  describe.each(allPackageManagers())(
+    'with %s',
+    (packageManager: PackageManager) => {
+      it('lists changed packages with lockfile analysis', async () => {
+        const graph = PackageGraph.fromPackages(testPackages);
 
-    const mockPackageManager = new MockPackageManager();
-    jest
-      .spyOn(pacman, 'detectPackageManager')
-      .mockResolvedValueOnce(mockPackageManager);
+        jest.mock('../pacman', () => ({
+          ...jest.requireActual('../pacman'),
+          detectPackageManager: jest.fn().mockResolvedValue(packageManager),
+        }));
 
-    mockReadFileAtRef.mockResolvedValueOnce(`
-a@^1:
-  version: "1.0.0"
-
-c@^1:
-  version: "1.0.0"
-  dependencies:
-      c-dep: ^1
-
-c-dep@^2:
-  version: "2.0.0"
-  integrity: sha512-xyz-other
-`);
-
-    mockListChangedFiles.mockResolvedValueOnce(
-      [
-        'README.md',
-        'packages/a/src/foo.ts',
-        mockPackageManager.lockfilePath(),
-      ].sort(),
-    );
-
-    const x = `
+        mockListChangedFiles.mockResolvedValueOnce(
+          ['README.md', 'packages/a/src/foo.ts', 'yarn.lock'].sort(),
+        );
+        mockReadFileAtRef.mockResolvedValueOnce(`
 a@^1:
   version: "1.0.0"
 
@@ -221,20 +204,37 @@ c@^1:
 c-dep@^2:
   version: "2.0.0"
   integrity: sha512-xyz
-`;
+`);
+        expect(packageManager.loadLockfile()).mockResolvedValueOnce(
+          packageManager.parseLockfile(`
+a@^1:
+  version: "1.0.0"
 
-    await expect(
-      graph
-        .listChangedPackages({
-          ref: 'origin/master',
-          analyzeLockfile: true,
-        })
-        .then(pkgs => pkgs.map(pkg => pkg.name)),
-    ).resolves.toEqual(['a', 'c']);
+c@^1:
+  version: "1.0.0"
+  dependencies:
+      c-dep: ^1
 
-    expect(mockReadFileAtRef).toHaveBeenCalledWith(
-      mockPackageManager.lockfilePath(),
-      'origin/master',
-    );
-  });
+c-dep@^2:
+  version: "2.0.0"
+  integrity: sha512-xyz-other
+`),
+        );
+
+        await expect(
+          graph
+            .listChangedPackages({
+              ref: 'origin/master',
+              analyzeLockfile: true,
+            })
+            .then(pkgs => pkgs.map(pkg => pkg.name)),
+        ).resolves.toEqual(['a', 'c']);
+
+        expect(mockReadFileAtRef).toHaveBeenCalledWith(
+          packageManager.lockfilePath(),
+          'origin/master',
+        );
+      });
+    },
+  );
 });

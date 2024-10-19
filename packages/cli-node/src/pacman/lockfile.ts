@@ -61,9 +61,15 @@ export abstract class Lockfile {
     protected readonly data: LockfileData,
   ) {}
 
-  abstract get(name: string): LockfileQueryEntry[] | undefined;
-  abstract keys(): IterableIterator<string>;
-  abstract toString(): string;
+  /** Get the entries for a single package in the lockfile */
+  get(name: string): LockfileQueryEntry[] | undefined {
+    return this.packages.get(name);
+  }
+
+  /** Returns the name of all packages available in the lockfile */
+  keys(): IterableIterator<string> {
+    return this.packages.keys();
+  }
 
   /**
    * Creates a simplified dependency graph from the lockfile data, where each
@@ -206,4 +212,6 @@ export abstract class Lockfile {
 
     return hash.digest('hex');
   }
+
+  abstract toString(): string;
 }

@@ -92,16 +92,6 @@ export class YarnLockfile extends Lockfile {
     super(packages, data);
   }
 
-  /** Get the entries for a single package in the lockfile */
-  get(name: string): LockfileQueryEntry[] | undefined {
-    return this.packages.get(name);
-  }
-
-  /** Returns the name of all packages available in the lockfile */
-  keys(): IterableIterator<string> {
-    return this.packages.keys();
-  }
-
   toString() {
     return this.legacy
       ? legacyStringifyLockfile(this.data)

@@ -17,6 +17,7 @@
 import { Yarn } from './yarn';
 import { Lockfile } from './lockfile';
 import { SpawnOptionsPartialEnv } from '../run';
+import { YarnVersion } from './yarn/types';
 
 export interface PackageManager {
   name(): string;
@@ -28,6 +29,7 @@ export interface PackageManager {
   loadLockfile(): Promise<Lockfile>;
   parseLockfile(contents: string): Promise<Lockfile>;
   supportsBackstageVersionProtocol(): Promise<boolean>;
+  toString(): string;
 }
 
 export type PackageInfo = {
@@ -39,4 +41,11 @@ export type PackageInfo = {
 
 export async function detectPackageManager(): Promise<PackageManager> {
   return await Yarn.create();
+}
+
+// for testing against multiple package managers
+export function allPackageManagers(): PackageManager[] {
+  const yarnClassic: YarnVersion = { version: '1.0.0', codename: 'classic' };
+  const yarnBerry: YarnVersion = { version: '3.0.0', codename: 'berry' };
+  return [new Yarn(yarnClassic), new Yarn(yarnBerry)];
 }

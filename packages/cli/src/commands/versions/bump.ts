@@ -183,9 +183,10 @@ export default async (opts: OptionValues) => {
 
               // backstage:^ are written to the lockfile as
               // backstage:<backstage-version>, so that updates to
-              // backstage.json can be detected during yarn install. In order to
-              // locate the corresponding lockfile entry for "backstage:^"
-              // versions, we need to perform the same transformation.
+              // backstage.json can be detected during package manager
+              // install. In order to locate the corresponding lockfile
+              // entry for "backstage:^" versions, we need to perform
+              // the same transformation.
               const oldLockfileRange = await asLockfileVersion(oldRange);
 
               const useBackstageRange =
@@ -459,18 +460,21 @@ async function asLockfileVersion(version: string) {
   return version;
 }
 
-export async function runInstall(pacman: PackageManager) {
+export async function runInstall(packageManager: PackageManager) {
   const spinner = ora({
-    prefixText: `Running ${chalk.blue('yarn install')} to install new versions`,
+    prefixText: `Running ${chalk.blue(
+      `${packageManager.name()} install`,
+    )} to install new versions`,
     spinner: 'arc',
     color: 'green',
   }).start();
 
   const installOutput = new Array<Buffer>();
   try {
-    await pacman.run(['install'], {
+    await packageManager.run(['install'], {
       env: {
         FORCE_COLOR: 'true',
+        // TODO: do we need to do this for all package managers?
         // We filter out all of the npm_* environment variables that are added when
         // executing through yarn. This works around an issue where these variables
         // incorrectly override local yarn or npm config in the project directory.

@@ -162,6 +162,7 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
    */
   static async listTargetPackages(): Promise<BackstagePackage[]> {
     const { packages } = await getPackages(paths.targetDir);
+    console.log('THIS SHOULD BE MOCKED!!!');
 
     return packages as BackstagePackage[];
   }
