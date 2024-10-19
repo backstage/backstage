@@ -18,6 +18,12 @@ import { NotFoundError } from '../../errors';
 import { fetchPackageInfo } from './packageInfo';
 import { YarnVersion } from './types';
 
+jest.mock('../../run', () => {
+  return {
+    execFile: jest.fn(),
+  };
+});
+
 const berry: YarnVersion = { codename: 'berry', version: '3.0.0' };
 const classic: YarnVersion = { codename: 'classic', version: '1.22.0' };
 

@@ -162,7 +162,6 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
    */
   static async listTargetPackages(): Promise<BackstagePackage[]> {
     const { packages } = await getPackages(paths.targetDir);
-    console.log('THIS SHOULD BE MOCKED!!!');
 
     return packages as BackstagePackage[];
   }
@@ -341,8 +340,8 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
     const pacman = await detectPackageManager();
 
     if (
-      changedFiles.includes(pacman.lockfilePath()) &&
-      options.analyzeLockfile
+      options.analyzeLockfile &&
+      changedFiles.includes(pacman.lockfilePath())
     ) {
       // Load the lockfile in the working tree and the one at the ref and diff them
       let thisLockfile: Lockfile;
@@ -366,7 +365,8 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
       // Merge the dependency graph from the other lockfile into this one in
       // order to be able to detect removals accurately.
       {
-        const otherGraph = thisLockfile.createSimplifiedDependencyGraph();
+        // TODO was this a bug in the original implementation?
+        const otherGraph = otherLockfile.createSimplifiedDependencyGraph();
         for (const [name, dependencies] of otherGraph) {
           const node = graph.get(name);
           if (node) {
