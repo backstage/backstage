@@ -1,5 +1,52 @@
 # @backstage/plugin-home
 
+## 0.8.0
+
+### Minor Changes
+
+- 9893bb5: **BREAKING** Implement usage of unused `limit` query parameter in visits API `.list()` function
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- e698470: Updated dependency `@rjsf/utils` to `5.21.2`.
+  Updated dependency `@rjsf/core` to `5.21.2`.
+  Updated dependency `@rjsf/material-ui` to `5.21.2`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.21.2`.
+- Updated dependencies
+  - @backstage/core-components@0.15.1
+  - @backstage/frontend-plugin-api@0.9.0
+  - @backstage/core-compat-api@0.3.1
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/core-app-api@1.15.1
+  - @backstage/plugin-catalog-react@1.14.0
+  - @backstage/plugin-home-react@0.1.18
+  - @backstage/theme@0.6.0
+  - @backstage/catalog-client@1.7.1
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+
+## 0.8.0-next.2
+
+### Minor Changes
+
+- 9893bb5: **BREAKING** Implement usage of unused `limit` query parameter in visits API `.list()` function
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.14.0-next.2
+  - @backstage/theme@0.6.0-next.1
+  - @backstage/catalog-client@1.7.1-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/core-app-api@1.15.1-next.1
+  - @backstage/core-compat-api@0.3.1-next.2
+  - @backstage/core-components@0.15.1-next.2
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/frontend-plugin-api@0.9.0-next.2
+  - @backstage/plugin-home-react@0.1.18-next.2
+
 ## 0.7.12-next.1
 
 ### Patch Changes

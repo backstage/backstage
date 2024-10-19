@@ -1,6 +1,6 @@
 {
   "name": "@backstage/integration",
-  "version": "1.15.1-next.0",
+  "version": "1.15.1",
   "description": "Helpers for managing integrations towards external systems",
   "backstage": {
     "role": "common-library"
@@ -43,7 +43,7 @@
     "@octokit/auth-app": "^4.0.0",
     "@octokit/rest": "^19.0.3",
     "cross-fetch": "^4.0.0",
-    "git-url-parse": "^14.0.0",
+    "git-url-parse": "^15.0.0",
     "lodash": "^4.17.21",
     "luxon": "^3.0.0"
   },

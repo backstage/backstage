@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { GetEntityFacetsResponse } from '@backstage/catalog-client';
 import { ApiProvider } from '@backstage/core-app-api';
 import { AlertApi, alertApiRef } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
@@ -23,8 +22,9 @@ import { waitFor, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { SelectedKindsFilter } from './SelectedKindsFilter';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
-const catalogApi = {
+const catalogApi = catalogApiMock.mock({
   getEntityFacets: jest.fn().mockResolvedValue({
     facets: {
       kind: [
@@ -34,8 +34,8 @@ const catalogApi = {
         { value: 'Resource', count: 1 },
       ],
     },
-  } as GetEntityFacetsResponse),
-};
+  }),
+});
 const apis = TestApiRegistry.from(
   [catalogApiRef, catalogApi],
   [alertApiRef, {} as AlertApi],

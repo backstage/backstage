@@ -20,4 +20,4 @@ import { TechDocsDocument } from '@backstage/plugin-techdocs-node';
 /** @public */
 export type TechDocsCollatorEntityTransformer = (
   entity: Entity,
-) => Omit<TechDocsDocument, 'location' | 'authorization'>;
+) => Partial<Omit<TechDocsDocument, 'location' | 'authorization'>>;

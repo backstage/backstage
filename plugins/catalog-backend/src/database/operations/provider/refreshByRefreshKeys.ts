@@ -16,6 +16,7 @@
 
 import { Knex } from 'knex';
 import { DbRefreshStateRow } from '../../tables';
+import { generateTargetKey } from '../../util';
 
 /**
  * Schedules a future refresh of entities, by so called "refresh keys" that may
@@ -30,10 +31,12 @@ export async function refreshByRefreshKeys(options: {
 }): Promise<void> {
   const { tx, keys } = options;
 
+  const hashedKeys = keys.map(k => generateTargetKey(k));
+
   await tx<DbRefreshStateRow>('refresh_state')
     .whereIn('entity_id', function selectEntityRefs(inner) {
       inner
-        .whereIn('key', keys)
+        .whereIn('key', hashedKeys)
         .select({
           entity_id: 'refresh_keys.entity_id',
         })

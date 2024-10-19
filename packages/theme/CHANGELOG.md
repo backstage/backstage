@@ -1,5 +1,21 @@
 # @backstage/theme
 
+## 0.6.0
+
+### Minor Changes
+
+- e77ff3d: Adds support for custom background colors in code blocks and inline code within TechDocs.
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+
+## 0.6.0-next.1
+
+### Minor Changes
+
+- e77ff3d: Adds support for custom background colors in code blocks and inline code within TechDocs.
+
 ## 0.5.8-next.0
 
 ### Patch Changes

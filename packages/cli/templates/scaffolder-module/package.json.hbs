@@ -29,10 +29,12 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
+    "@backstage/backend-plugin-api": "{{versionQuery '@backstage/backend-plugin-api'}}",
     "@backstage/plugin-scaffolder-node": "{{versionQuery '@backstage/plugin-scaffolder-node'}}"
   },
   "devDependencies": {
-    "@backstage/cli": "{{versionQuery '@backstage/cli'}}"
+    "@backstage/cli": "{{versionQuery '@backstage/cli'}}",
+    "@backstage/plugin-scaffolder-node-test-utils": "{{versionQuery '@backstage/plugin-scaffolder-node-test-utils'}}"
   },
   "files": [
     "dist"

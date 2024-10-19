@@ -167,10 +167,15 @@ export const EntityPicker = (props: EntityPickerProps) => {
     (allowArbitraryValues && formData ? getLabel(formData) : '');
 
   useEffect(() => {
-    if (entities?.catalogEntities.length === 1 && selectedEntity === '') {
+    if (
+      required &&
+      !allowArbitraryValues &&
+      entities?.catalogEntities.length === 1 &&
+      selectedEntity === ''
+    ) {
       onChange(stringifyEntityRef(entities.catalogEntities[0]));
     }
-  }, [entities, onChange, selectedEntity]);
+  }, [entities, onChange, selectedEntity, required, allowArbitraryValues]);
 
   return (
     <FormControl
@@ -179,7 +184,11 @@ export const EntityPicker = (props: EntityPickerProps) => {
       error={rawErrors?.length > 0 && !formData}
     >
       <Autocomplete
-        disabled={entities?.catalogEntities.length === 1}
+        disabled={
+          required &&
+          !allowArbitraryValues &&
+          entities?.catalogEntities.length === 1
+        }
         id={idSchema?.$id}
         value={selectedEntity}
         loading={loading}
@@ -190,7 +199,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
           typeof option === 'string'
             ? option
             : entities?.entityRefToPresentation.get(stringifyEntityRef(option))
-                ?.primaryTitle!
+                ?.entityRef!
         }
         autoSelect
         freeSolo={allowArbitraryValues}

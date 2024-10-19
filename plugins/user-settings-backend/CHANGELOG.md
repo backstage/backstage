@@ -1,5 +1,34 @@
 # @backstage/plugin-user-settings-backend
 
+## 0.2.25
+
+### Patch Changes
+
+- 3109c24: The export for the new backend system at the `/alpha` export is now also available via the main entry point, which means that you can remove the `/alpha` suffix from the import.
+- Updated dependencies
+  - @backstage/backend-defaults@0.5.1
+  - @backstage/plugin-auth-node@0.5.3
+  - @backstage/plugin-signals-node@0.1.12
+  - @backstage/backend-plugin-api@1.0.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.2.25-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.5.1-next.2
+  - @backstage/plugin-auth-node@0.5.3-next.1
+  - @backstage/backend-plugin-api@1.0.1-next.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-signals-node@0.1.12-next.1
+  - @backstage/plugin-user-settings-common@0.0.1
+
 ## 0.2.25-next.1
 
 ### Patch Changes

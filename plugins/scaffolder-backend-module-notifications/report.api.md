@@ -29,8 +29,4 @@ export function createSendNotificationAction(options: {
 // @public
 const scaffolderModuleNotifications: BackendFeature;
 export default scaffolderModuleNotifications;
-
-// Warnings were encountered during analysis:
-//
-// src/actions/sendNotification.d.ts:6:1 - (ae-undocumented) Missing documentation for "createSendNotificationAction".
 ```

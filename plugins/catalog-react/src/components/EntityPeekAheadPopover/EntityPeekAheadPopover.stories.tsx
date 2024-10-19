@@ -28,50 +28,45 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { entityRouteRef } from '../../routes';
-import { CatalogApi } from '@backstage/catalog-client';
 import { Table, TableColumn } from '@backstage/core-components';
 import { EntityRefLink } from '../EntityRefLink';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
-const mockCatalogApi = {
-  getEntityByRef: async (entityRef: string) => {
-    if (entityRef === 'component:default/playback') {
-      return {
-        kind: 'Component',
-        metadata: {
-          name: 'playback',
-          namespace: 'default',
-          description: 'Details about the playback service',
+const mockCatalogApi = catalogApiMock({
+  entities: [
+    {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        name: 'playback',
+        namespace: 'default',
+        description: 'Details about the playback service',
+      },
+    },
+    {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'User',
+      metadata: {
+        name: 'fname.lname',
+        namespace: 'default',
+      },
+      spec: {
+        profile: {
+          email: 'fname.lname@example.com',
         },
-      };
-    }
-    if (entityRef === 'user:default/fname.lname') {
-      return {
-        kind: 'User',
-        metadata: {
-          name: 'fname.lname',
-          namespace: 'default',
-        },
-        spec: {
-          profile: {
-            email: 'fname.lname@example.com',
-          },
-        },
-      };
-    }
-    if (entityRef === 'component:default/slow.catalog.item') {
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      return {
-        kind: 'Component',
-        metadata: {
-          name: 'slow.catalog.item',
-          namespace: 'default',
-          description: 'Details about the slow.catalog.item service',
-        },
-      };
-    }
-    return undefined;
-  },
-};
+      },
+    },
+    {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        name: 'slow.catalog.item',
+        namespace: 'default',
+        description: 'Details about the slow.catalog.item service',
+      },
+    },
+  ],
+});
 
 const defaultArgs = {
   entityRef: 'component:default/playback',
@@ -83,9 +78,7 @@ export default {
     (Story: ComponentType<PropsWithChildren<{}>>) =>
       wrapInTestApp(
         <>
-          <TestApiProvider
-            apis={[[catalogApiRef, mockCatalogApi as any as CatalogApi]]}
-          >
+          <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
             <Story />
           </TestApiProvider>
         </>,

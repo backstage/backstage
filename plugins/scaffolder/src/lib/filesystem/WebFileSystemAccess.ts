@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { get, set } from 'idb-keyval';
 import { TemplateDirectoryAccess, TemplateFileAccess } from './types';
 
 type WritableFileHandle = FileSystemFileHandle & {
@@ -25,7 +24,7 @@ type WritableFileHandle = FileSystemFileHandle & {
 };
 
 // A nicer type than the one from the TS lib
-interface IterableDirectoryHandle extends FileSystemDirectoryHandle {
+export interface IterableDirectoryHandle extends FileSystemDirectoryHandle {
   values(): AsyncIterable<
     | ({ kind: 'file' } & WritableFileHandle)
     | ({ kind: 'directory' } & IterableDirectoryHandle)
@@ -123,17 +122,4 @@ export class WebFileSystemAccess {
   }
 
   private constructor() {}
-}
-
-export class WebFileSystemStore {
-  private static readonly key = 'scalfolder-template-editor-directory';
-
-  static async getDirectory(): Promise<IterableDirectoryHandle | undefined> {
-    const directory = await get(WebFileSystemStore.key);
-    return directory.handle;
-  }
-
-  static async setDirectory(directory: TemplateDirectoryAccess | undefined) {
-    return set(WebFileSystemStore.key, directory);
-  }
 }

@@ -47,14 +47,5 @@ export class OpenApiRefProcessor implements CatalogProcessor {
   preProcessEntity(entity: Entity, location: LocationSpec): Promise<Entity>;
 }
 
-// Warnings were encountered during analysis:
-//
-// src/OpenApiRefProcessor.d.ts:12:1 - (ae-undocumented) Missing documentation for "OpenApiRefProcessor".
-// src/OpenApiRefProcessor.d.ts:16:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/OpenApiRefProcessor.d.ts:25:5 - (ae-undocumented) Missing documentation for "getProcessorName".
-// src/OpenApiRefProcessor.d.ts:26:5 - (ae-undocumented) Missing documentation for "preProcessEntity".
-// src/index.d.ts:8:22 - (ae-undocumented) Missing documentation for "openApiPlaceholderResolver".
-// src/jsonSchemaRefPlaceholderResolver.d.ts:4:1 - (ae-undocumented) Missing documentation for "jsonSchemaRefPlaceholderResolver".
-
 // (No @packageDocumentation comment for this package)
 ```

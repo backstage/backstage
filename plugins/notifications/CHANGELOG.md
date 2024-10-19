@@ -1,5 +1,32 @@
 # @backstage/plugin-notifications
 
+## 0.3.2
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- Updated dependencies
+  - @backstage/core-components@0.15.1
+  - @backstage/plugin-signals-react@0.0.6
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/theme@0.6.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-notifications-common@0.0.5
+
+## 0.3.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.0-next.1
+  - @backstage/core-components@0.15.1-next.2
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-notifications-common@0.0.5
+  - @backstage/plugin-signals-react@0.0.6-next.1
+
 ## 0.3.2-next.1
 
 ### Patch Changes

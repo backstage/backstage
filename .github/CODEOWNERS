@@ -9,6 +9,7 @@ yarn.lock                                         @backstage/maintainers @backst
 */yarn.lock                                       @backstage/maintainers @backstage-service
 /.changeset/*.md
 /beps/0001-notifications-system                   @backstage/maintainers @backstage/notifications-maintainers
+/docs/*.md                                        @backstage/documentation-maintainers
 /docs/assets/search                               @backstage/search-maintainers
 /docs/features/search                             @backstage/search-maintainers
 /docs/features/techdocs                           @backstage/techdocs-maintainers

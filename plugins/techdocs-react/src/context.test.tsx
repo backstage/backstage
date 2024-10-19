@@ -13,17 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { renderHook, act, waitFor } from '@testing-library/react';
 
 import { ThemeProvider } from '@material-ui/core/styles';
 
 import { lightTheme } from '@backstage/theme';
-import {
-  MockAnalyticsApi,
-  MockConfigApi,
-  TestApiProvider,
-} from '@backstage/test-utils';
+import { mockApis, TestApiProvider } from '@backstage/test-utils';
 import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import {
   analyticsApiRef,
@@ -65,7 +62,7 @@ const techdocsApiMock = {
   getTechDocsMetadata: jest.fn().mockResolvedValue(mockTechDocsMetadata),
 };
 
-const analyticsApiMock = new MockAnalyticsApi();
+const analyticsApiMock = mockApis.analytics();
 
 const wrapper = ({
   entityRef = {
@@ -84,7 +81,7 @@ const wrapper = ({
     <TestApiProvider
       apis={[
         [analyticsApiRef, analyticsApiMock],
-        [configApiRef, new MockConfigApi(config ?? {})],
+        [configApiRef, mockApis.config({ data: config ?? {} })],
         [techdocsApiRef, techdocsApiMock],
       ]}
     >
@@ -169,12 +166,12 @@ describe('useTechDocsReaderPage', () => {
       wrapper,
     });
     await waitFor(() => {
-      expect(analyticsApiMock.getEvents()[0]).toMatchObject({
+      expect(analyticsApiMock.captureEvent).toHaveBeenCalledWith({
         action: 'action',
         subject: 'subject',
-        context: {
+        context: expect.objectContaining({
           entityRef: 'component:default/test',
-        },
+        }),
       });
     });
   });

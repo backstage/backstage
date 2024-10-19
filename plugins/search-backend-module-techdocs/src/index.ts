@@ -19,4 +19,6 @@
  * A module for the search backend that exports TechDocs modules.
  */
 
+export { default } from './module';
+export * from './module';
 export * from './collators';

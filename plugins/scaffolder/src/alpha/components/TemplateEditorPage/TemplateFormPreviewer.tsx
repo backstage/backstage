@@ -14,20 +14,26 @@
  * limitations under the License.
  */
 
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import yaml from 'yaml';
+import React, { useCallback, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import useAsync from 'react-use/esm/useAsync';
+
+import { makeStyles } from '@material-ui/core/styles';
+
+import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
   humanizeEntityRef,
 } from '@backstage/plugin-catalog-react';
-import { makeStyles } from '@material-ui/core/styles';
-import React, { useCallback, useState } from 'react';
-import useAsync from 'react-use/esm/useAsync';
-import yaml from 'yaml';
 import {
   LayoutOptions,
   FieldExtensionOptions,
   FormProps,
 } from '@backstage/plugin-scaffolder-react';
+
+import { editRouteRef } from '../../../routes';
+
 import {
   TemplateEditorLayout,
   TemplateEditorLayoutToolbar,
@@ -132,10 +138,17 @@ export const TemplateFormPreviewer = ({
   const classes = useStyles();
   const alertApi = useApi(alertApiRef);
   const catalogApi = useApi(catalogApiRef);
+  const navigate = useNavigate();
+  const editLink = useRouteRef(editRouteRef);
+
   const [errorText, setErrorText] = useState<string>();
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateOption>();
   const [templateOptions, setTemplateOptions] = useState<TemplateOption[]>([]);
   const [templateYaml, setTemplateYaml] = useState(defaultPreviewTemplate);
+
+  const handleCloseDirectory = useCallback(() => {
+    navigate(editLink());
+  }, [navigate, editLink]);
 
   useAsync(
     () =>
@@ -184,7 +197,9 @@ export const TemplateFormPreviewer = ({
     <TemplateEditorLayout classes={{ root: classes.root }}>
       <TemplateEditorLayoutToolbar>
         <TemplateEditorToolbar fieldExtensions={customFieldExtensions}>
-          <TemplateEditorToolbarFileMenu />
+          <TemplateEditorToolbarFileMenu
+            onCloseDirectory={handleCloseDirectory}
+          />
           <TemplateEditorToolbarTemplatesMenu
             options={templateOptions}
             selectedOption={selectedTemplate}

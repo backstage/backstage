@@ -21,10 +21,5 @@ export const featureDiscoveryServiceRef: ServiceRef<
   'singleton'
 >;
 
-// Warnings were encountered during analysis:
-//
-// src/alpha.d.ts:3:1 - (ae-undocumented) Missing documentation for "FeatureDiscoveryService".
-// src/alpha.d.ts:4:5 - (ae-undocumented) Missing documentation for "getBackendFeatures".
-
 // (No @packageDocumentation comment for this package)
 ```

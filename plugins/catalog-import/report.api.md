@@ -366,46 +366,4 @@ export interface StepPrepareCreatePullRequestProps {
 // Warnings were encountered during analysis:
 //
 // src/api/CatalogImportApi.d.ts:25:5 - (ae-forgotten-export) The symbol "PartialEntity" needs to be exported by the entry point index.d.ts
-// src/api/CatalogImportApi.d.ts:33:5 - (ae-undocumented) Missing documentation for "analyzeUrl".
-// src/api/CatalogImportApi.d.ts:34:5 - (ae-undocumented) Missing documentation for "preparePullRequest".
-// src/api/CatalogImportApi.d.ts:38:5 - (ae-undocumented) Missing documentation for "submitPullRequest".
-// src/api/CatalogImportClient.d.ts:26:5 - (ae-undocumented) Missing documentation for "analyzeUrl".
-// src/api/CatalogImportClient.d.ts:27:5 - (ae-undocumented) Missing documentation for "preparePullRequest".
-// src/api/CatalogImportClient.d.ts:31:5 - (ae-undocumented) Missing documentation for "submitPullRequest".
-// src/components/EntityListComponent/EntityListComponent.d.ts:9:5 - (ae-undocumented) Missing documentation for "locations".
-// src/components/EntityListComponent/EntityListComponent.d.ts:13:5 - (ae-undocumented) Missing documentation for "locationListItemIcon".
-// src/components/EntityListComponent/EntityListComponent.d.ts:14:5 - (ae-undocumented) Missing documentation for "collapsed".
-// src/components/EntityListComponent/EntityListComponent.d.ts:15:5 - (ae-undocumented) Missing documentation for "firstListItem".
-// src/components/EntityListComponent/EntityListComponent.d.ts:16:5 - (ae-undocumented) Missing documentation for "onItemClick".
-// src/components/EntityListComponent/EntityListComponent.d.ts:17:5 - (ae-undocumented) Missing documentation for "withLinks".
-// src/components/ImportInfoCard/ImportInfoCard.d.ts:8:5 - (ae-undocumented) Missing documentation for "exampleLocationUrl".
-// src/components/ImportInfoCard/ImportInfoCard.d.ts:9:5 - (ae-undocumented) Missing documentation for "exampleRepositoryUrl".
-// src/components/ImportStepper/ImportStepper.d.ts:11:5 - (ae-undocumented) Missing documentation for "initialUrl".
-// src/components/ImportStepper/ImportStepper.d.ts:12:5 - (ae-undocumented) Missing documentation for "generateStepper".
-// src/components/ImportStepper/ImportStepper.d.ts:13:5 - (ae-undocumented) Missing documentation for "variant".
-// src/components/StepInitAnalyzeUrl/StepInitAnalyzeUrl.d.ts:10:5 - (ae-undocumented) Missing documentation for "onAnalysis".
-// src/components/StepInitAnalyzeUrl/StepInitAnalyzeUrl.d.ts:13:5 - (ae-undocumented) Missing documentation for "disablePullRequest".
-// src/components/StepInitAnalyzeUrl/StepInitAnalyzeUrl.d.ts:14:5 - (ae-undocumented) Missing documentation for "analysisUrl".
-// src/components/StepInitAnalyzeUrl/StepInitAnalyzeUrl.d.ts:15:5 - (ae-undocumented) Missing documentation for "exampleLocationUrl".
-// src/components/StepPrepareCreatePullRequest/AutocompleteTextField.d.ts:10:5 - (ae-undocumented) Missing documentation for "name".
-// src/components/StepPrepareCreatePullRequest/AutocompleteTextField.d.ts:11:5 - (ae-undocumented) Missing documentation for "options".
-// src/components/StepPrepareCreatePullRequest/AutocompleteTextField.d.ts:12:5 - (ae-undocumented) Missing documentation for "required".
-// src/components/StepPrepareCreatePullRequest/AutocompleteTextField.d.ts:13:5 - (ae-undocumented) Missing documentation for "errors".
-// src/components/StepPrepareCreatePullRequest/AutocompleteTextField.d.ts:14:5 - (ae-undocumented) Missing documentation for "rules".
-// src/components/StepPrepareCreatePullRequest/AutocompleteTextField.d.ts:15:5 - (ae-undocumented) Missing documentation for "loading".
-// src/components/StepPrepareCreatePullRequest/AutocompleteTextField.d.ts:16:5 - (ae-undocumented) Missing documentation for "loadingText".
-// src/components/StepPrepareCreatePullRequest/AutocompleteTextField.d.ts:17:5 - (ae-undocumented) Missing documentation for "helperText".
-// src/components/StepPrepareCreatePullRequest/AutocompleteTextField.d.ts:18:5 - (ae-undocumented) Missing documentation for "errorHelperText".
-// src/components/StepPrepareCreatePullRequest/AutocompleteTextField.d.ts:19:5 - (ae-undocumented) Missing documentation for "textFieldProps".
-// src/components/StepPrepareCreatePullRequest/PreviewCatalogInfoComponent.d.ts:9:5 - (ae-undocumented) Missing documentation for "repositoryUrl".
-// src/components/StepPrepareCreatePullRequest/PreviewCatalogInfoComponent.d.ts:10:5 - (ae-undocumented) Missing documentation for "entities".
-// src/components/StepPrepareCreatePullRequest/PreviewCatalogInfoComponent.d.ts:11:5 - (ae-undocumented) Missing documentation for "classes".
-// src/components/StepPrepareCreatePullRequest/PreviewPullRequestComponent.d.ts:8:5 - (ae-undocumented) Missing documentation for "title".
-// src/components/StepPrepareCreatePullRequest/PreviewPullRequestComponent.d.ts:9:5 - (ae-undocumented) Missing documentation for "description".
-// src/components/StepPrepareCreatePullRequest/PreviewPullRequestComponent.d.ts:10:5 - (ae-undocumented) Missing documentation for "classes".
-// src/components/StepPrepareCreatePullRequest/StepPrepareCreatePullRequest.d.ts:20:5 - (ae-undocumented) Missing documentation for "analyzeResult".
-// src/components/StepPrepareCreatePullRequest/StepPrepareCreatePullRequest.d.ts:23:5 - (ae-undocumented) Missing documentation for "onPrepare".
-// src/components/StepPrepareCreatePullRequest/StepPrepareCreatePullRequest.d.ts:26:5 - (ae-undocumented) Missing documentation for "onGoBack".
-// src/components/StepPrepareCreatePullRequest/StepPrepareCreatePullRequest.d.ts:27:5 - (ae-undocumented) Missing documentation for "renderFormFields".
-// src/components/useImportState.d.ts:80:1 - (ae-undocumented) Missing documentation for "ImportState".
 ```

@@ -48,19 +48,4 @@ export interface RouterOptions {
   // (undocumented)
   permissions: PermissionsService;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/api/DevToolsBackendApi.d.ts:5:1 - (ae-undocumented) Missing documentation for "DevToolsBackendApi".
-// src/api/DevToolsBackendApi.d.ts:9:5 - (ae-undocumented) Missing documentation for "listExternalDependencyDetails".
-// src/api/DevToolsBackendApi.d.ts:12:5 - (ae-undocumented) Missing documentation for "listConfig".
-// src/api/DevToolsBackendApi.d.ts:13:5 - (ae-undocumented) Missing documentation for "listInfo".
-// src/service/router.d.ts:8:1 - (ae-undocumented) Missing documentation for "RouterOptions".
-// src/service/router.d.ts:9:5 - (ae-undocumented) Missing documentation for "devToolsBackendApi".
-// src/service/router.d.ts:10:5 - (ae-undocumented) Missing documentation for "logger".
-// src/service/router.d.ts:11:5 - (ae-undocumented) Missing documentation for "config".
-// src/service/router.d.ts:12:5 - (ae-undocumented) Missing documentation for "permissions".
-// src/service/router.d.ts:13:5 - (ae-undocumented) Missing documentation for "discovery".
-// src/service/router.d.ts:14:5 - (ae-undocumented) Missing documentation for "httpAuth".
-// src/service/router.d.ts:20:1 - (ae-undocumented) Missing documentation for "createRouter".
 ```

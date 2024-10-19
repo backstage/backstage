@@ -28,10 +28,5 @@ export namespace googleSignInResolvers {
   >;
 }
 
-// Warnings were encountered during analysis:
-//
-// src/authenticator.d.ts:3:22 - (ae-undocumented) Missing documentation for "googleAuthenticator".
-// src/module.d.ts:2:22 - (ae-undocumented) Missing documentation for "authModuleGoogleProvider".
-
 // (No @packageDocumentation comment for this package)
 ```

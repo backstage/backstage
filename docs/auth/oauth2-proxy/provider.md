@@ -31,9 +31,7 @@ auth:
     oauth2Proxy:
       signIn:
         resolvers:
-          # typically you would pick one of these
-          - resolver: emailMatchingUserEntityProfileEmail
-          - resolver: emailLocalPartMatchingUserEntityName
+          # See https://backstage.io/docs/auth/oauth2-proxy/provider#resolvers for more resolvers
           - resolver: forwardedUserMatchingUserEntityName
 ```
 

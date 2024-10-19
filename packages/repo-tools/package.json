@@ -1,6 +1,6 @@
 {
   "name": "@backstage/repo-tools",
-  "version": "0.10.0-next.1",
+  "version": "0.10.0",
   "description": "CLI for Backstage repo tooling ",
   "backstage": {
     "role": "cli"
@@ -62,6 +62,7 @@
     "@stoplight/types": "^14.0.0",
     "@useoptic/openapi-utilities": "^0.55.0",
     "chalk": "^4.0.0",
+    "chokidar": "^3.5.3",
     "codeowners-utils": "^1.0.2",
     "command-exists": "^1.2.9",
     "commander": "^12.0.0",
@@ -88,7 +89,7 @@
     "@microsoft/api-extractor-model": "*",
     "@microsoft/tsdoc": "*",
     "@microsoft/tsdoc-config": "*",
-    "@useoptic/optic": "^0.50.7",
+    "@useoptic/optic": "^1.0.0",
     "prettier": "^2.8.1",
     "typescript": "> 3.0.0"
   },

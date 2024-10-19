@@ -41,6 +41,7 @@ choice below.
 | [New Relic Browser][newrelic-browser] | Community ✅   |
 | [Matomo][matomo]                      | Community ✅   |
 | [Quantum Metric][qm]                  | Community ✅   |
+| [Generic HTTP][generic-http]          | Community ✅   |
 
 To suggest an integration, please [open an issue][add-tool] for the analytics
 tool your organization uses. Or jump to [Writing Integrations][int-howto] to
@@ -54,6 +55,7 @@ learn how to contribute the integration yourself!
 [add-tool]: https://github.com/backstage/backstage/issues/new?assignees=&labels=plugin&template=plugin_template.md&title=%5BAnalytics+Module%5D+THE+ANALYTICS+TOOL+TO+INTEGRATE
 [int-howto]: #writing-integrations
 [analytics-api-type]: https://backstage.io/docs/reference/core-plugin-api.analyticsapi
+[generic-http]: https://github.com/pfeifferj/backstage-plugin-analytics-generic/blob/main/README.md
 
 ## Key Events
 

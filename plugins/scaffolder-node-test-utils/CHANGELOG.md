@@ -1,5 +1,25 @@
 # @backstage/plugin-scaffolder-node-test-utils
 
+## 0.1.13
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- 094eaa3: Remove references to in-repo backend-common
+- Updated dependencies
+  - @backstage/backend-test-utils@1.0.1
+  - @backstage/plugin-scaffolder-node@0.5.0
+  - @backstage/types@1.1.1
+
+## 0.1.13-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-test-utils@1.0.1-next.2
+  - @backstage/plugin-scaffolder-node@0.5.0-next.2
+  - @backstage/types@1.1.1
+
 ## 0.1.13-next.1
 
 ### Patch Changes

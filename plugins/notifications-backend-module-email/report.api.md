@@ -29,15 +29,4 @@ export interface NotificationTemplateRenderer {
   // (undocumented)
   getText?(notification: Notification_2): Promise<string>;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/extensions.d.ts:5:1 - (ae-undocumented) Missing documentation for "NotificationTemplateRenderer".
-// src/extensions.d.ts:6:5 - (ae-undocumented) Missing documentation for "getSubject".
-// src/extensions.d.ts:7:5 - (ae-undocumented) Missing documentation for "getText".
-// src/extensions.d.ts:8:5 - (ae-undocumented) Missing documentation for "getHtml".
-// src/extensions.d.ts:13:1 - (ae-undocumented) Missing documentation for "NotificationsEmailTemplateExtensionPoint".
-// src/extensions.d.ts:14:5 - (ae-undocumented) Missing documentation for "setTemplateRenderer".
-// src/extensions.d.ts:19:22 - (ae-undocumented) Missing documentation for "notificationsEmailTemplateExtensionPoint".
-// src/module.d.ts:4:22 - (ae-undocumented) Missing documentation for "notificationsModuleEmail".
 ```

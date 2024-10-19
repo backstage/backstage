@@ -483,25 +483,4 @@ export const useSearchContextCheck: () => boolean;
 export const useSearchResultListItemExtensions: (
   children: ReactNode,
 ) => (result: SearchResult_2, key?: number) => React_2.JSX.Element;
-
-// Warnings were encountered during analysis:
-//
-// src/api.d.ts:5:22 - (ae-undocumented) Missing documentation for "searchApiRef".
-// src/api.d.ts:9:1 - (ae-undocumented) Missing documentation for "SearchApi".
-// src/api.d.ts:10:5 - (ae-undocumented) Missing documentation for "query".
-// src/api.d.ts:18:5 - (ae-undocumented) Missing documentation for "mockedResults".
-// src/api.d.ts:20:5 - (ae-undocumented) Missing documentation for "query".
-// src/components/DefaultResultListItem/DefaultResultListItem.d.ts:26:15 - (ae-undocumented) Missing documentation for "HigherOrderDefaultResultListItem".
-// src/components/HighlightedSearchResultText/HighlightedSearchResultText.d.ts:3:1 - (ae-undocumented) Missing documentation for "HighlightedSearchResultTextClassKey".
-// src/components/HighlightedSearchResultText/HighlightedSearchResultText.d.ts:17:22 - (ae-undocumented) Missing documentation for "HighlightedSearchResultText".
-// src/components/SearchFilter/SearchFilter.Autocomplete.d.ts:6:1 - (ae-undocumented) Missing documentation for "SearchAutocompleteFilterProps".
-// src/components/SearchFilter/SearchFilter.Autocomplete.d.ts:14:22 - (ae-undocumented) Missing documentation for "AutocompleteFilter".
-// src/components/SearchFilter/SearchFilter.d.ts:6:1 - (ae-undocumented) Missing documentation for "SearchFilterComponentProps".
-// src/components/SearchFilter/SearchFilter.d.ts:27:1 - (ae-undocumented) Missing documentation for "SearchFilterWrapperProps".
-// src/components/SearchFilter/SearchFilter.d.ts:34:22 - (ae-undocumented) Missing documentation for "CheckboxFilter".
-// src/components/SearchFilter/SearchFilter.d.ts:38:22 - (ae-undocumented) Missing documentation for "SelectFilter".
-// src/components/SearchFilter/SearchFilter.d.ts:42:15 - (ae-undocumented) Missing documentation for "SearchFilter".
-// src/components/SearchResultPager/SearchResultPager.d.ts:5:22 - (ae-undocumented) Missing documentation for "SearchResultPager".
-// src/context/SearchContext.d.ts:9:1 - (ae-undocumented) Missing documentation for "SearchContextValue".
-// src/context/SearchContext.d.ts:23:1 - (ae-undocumented) Missing documentation for "SearchContextState".
 ```

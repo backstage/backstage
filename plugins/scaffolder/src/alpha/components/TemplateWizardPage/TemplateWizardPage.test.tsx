@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { ApiProvider } from '@backstage/core-app-api';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
 import {
-  MockAnalyticsApi,
+  mockApis,
   renderInTestApp,
   TestApiRegistry,
 } from '@backstage/test-utils';
@@ -30,8 +31,8 @@ import {
 import { TemplateWizardPage } from './TemplateWizardPage';
 import { rootRouteRef } from '../../../routes';
 import { ANNOTATION_EDIT_URL } from '@backstage/catalog-model';
-import { CatalogApi } from '@backstage/catalog-client';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 jest.mock('react-router-dom', () => {
   return {
@@ -54,16 +55,14 @@ const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
   autocomplete: jest.fn(),
 };
 
-const catalogApiMock: jest.Mocked<CatalogApi> = {
-  getEntityByRef: jest.fn(),
-} as any;
+const catalogApi = catalogApiMock.mock();
+const analyticsApi = mockApis.analytics();
 
-const analyticsMock = new MockAnalyticsApi();
 const apis = TestApiRegistry.from(
   [scaffolderApiRef, scaffolderApiMock],
-  [catalogApiRef, catalogApiMock],
-  [analyticsApiRef, analyticsMock],
-  [catalogApiRef, catalogApiMock],
+  [catalogApiRef, catalogApi],
+  [analyticsApiRef, analyticsApi],
+  [catalogApiRef, catalogApi],
 );
 
 const entityRefResponse = {
@@ -82,6 +81,7 @@ const entityRefResponse = {
     },
   },
 };
+
 describe('TemplateWizardPage', () => {
   it('captures expected analytics events', async () => {
     scaffolderApiMock.scaffold.mockResolvedValue({ taskId: 'xyz' });
@@ -100,7 +100,7 @@ describe('TemplateWizardPage', () => {
       ],
       title: 'React JSON Schema Form Test',
     });
-    catalogApiMock.getEntityByRef.mockResolvedValue(entityRefResponse);
+    catalogApi.getEntityByRef.mockResolvedValue(entityRefResponse);
 
     const { findByRole, getByRole } = await renderInTestApp(
       <ApiProvider apis={apis}>
@@ -131,23 +131,32 @@ describe('TemplateWizardPage', () => {
     });
 
     // The "Next Step" button should have fired an event
-    expect(analyticsMock.getEvents()[0]).toMatchObject({
-      action: 'click',
-      subject: 'Next Step (1)',
-      context: { entityRef: 'template:default/test' },
-    });
+    expect(analyticsApi.captureEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: 'click',
+        subject: 'Next Step (1)',
+        context: expect.objectContaining({
+          entityRef: 'template:default/test',
+        }),
+      }),
+    );
 
     // And the "Create" button should have fired an event
-    expect(analyticsMock.getEvents()[1]).toMatchObject({
-      action: 'create',
-      subject: 'expected-name',
-      context: { entityRef: 'template:default/test' },
-      value: 120,
-    });
+    expect(analyticsApi.captureEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: 'create',
+        subject: 'expected-name',
+        context: expect.objectContaining({
+          entityRef: 'template:default/test',
+        }),
+        value: 120,
+      }),
+    );
   });
+
   describe('scaffolder page context menu', () => {
     it('should render if editUrl is set to url', async () => {
-      catalogApiMock.getEntityByRef.mockResolvedValue({
+      catalogApi.getEntityByRef.mockResolvedValue({
         apiVersion: 'v1',
         kind: 'service',
         metadata: {
@@ -176,8 +185,9 @@ describe('TemplateWizardPage', () => {
       );
       expect(queryByTestId('menu-button')).toBeInTheDocument();
     });
+
     it('should not render if editUrl is undefined', async () => {
-      catalogApiMock.getEntityByRef.mockResolvedValue({
+      catalogApi.getEntityByRef.mockResolvedValue({
         apiVersion: 'v1',
         kind: 'service',
         metadata: {

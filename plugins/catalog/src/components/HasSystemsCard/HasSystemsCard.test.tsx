@@ -16,25 +16,23 @@
 
 import { Entity, RELATION_HAS_PART } from '@backstage/catalog-model';
 import {
-  CatalogApi,
   catalogApiRef,
   EntityProvider,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { waitFor, screen } from '@testing-library/react';
 import React from 'react';
 import { HasSystemsCard } from './HasSystemsCard';
 
 describe('<HasSystemsCard />', () => {
-  const getEntitiesByRefs: jest.MockedFunction<
-    CatalogApi['getEntitiesByRefs']
-  > = jest.fn();
+  const catalogApi = catalogApiMock.mock();
   let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
 
   beforeEach(() => {
     Wrapper = ({ children }: { children?: React.ReactNode }) => (
-      <TestApiProvider apis={[[catalogApiRef, { getEntitiesByRefs }]]}>
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         {children}
       </TestApiProvider>
     );
@@ -87,7 +85,7 @@ describe('<HasSystemsCard />', () => {
         },
       ],
     };
-    getEntitiesByRefs.mockResolvedValue({
+    catalogApi.getEntitiesByRefs.mockResolvedValue({
       items: [
         {
           apiVersion: 'v1',

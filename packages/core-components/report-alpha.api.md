@@ -54,9 +54,5 @@ export const coreComponentsTranslationRef: TranslationRef<
   }
 >;
 
-// Warnings were encountered during analysis:
-//
-// src/translation.d.ts:2:22 - (ae-undocumented) Missing documentation for "coreComponentsTranslationRef".
-
 // (No @packageDocumentation comment for this package)
 ```

@@ -14,25 +14,29 @@
  * limitations under the License.
  */
 
-import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
+import {
+  renderInTestApp,
+  TestApiRegistry,
+  mockApis,
+} from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import React from 'react';
 import { UserSettingsIdentityCard } from './UserSettingsIdentityCard';
 import { ApiProvider } from '@backstage/core-app-api';
 import { identityApiRef } from '@backstage/core-plugin-api';
-import { entityRouteRef } from '@backstage/plugin-catalog-react';
+import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
-const apiRegistry = TestApiRegistry.from([
-  identityApiRef,
-  {
-    getProfileInfo: jest.fn(async () => ({})),
-    getBackstageIdentity: jest.fn(async () => ({
-      type: 'user' as const,
+const apiRegistry = TestApiRegistry.from(
+  [
+    identityApiRef,
+    mockApis.identity({
       userEntityRef: 'foo:bar/foobar',
       ownershipEntityRefs: ['user:default/test-ownership'],
-    })),
-  },
-]);
+    }),
+  ],
+  [catalogApiRef, catalogApiMock.mock()],
+);
 
 describe('<UserSettingsIdentityCard />', () => {
   it('displays an identity card', async () => {

@@ -1,5 +1,32 @@
 # @backstage/plugin-search-react
 
+## 1.8.1
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- Updated dependencies
+  - @backstage/core-components@0.15.1
+  - @backstage/frontend-plugin-api@0.9.0
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/version-bridge@1.0.10
+  - @backstage/theme@0.6.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-search-common@1.2.14
+
+## 1.8.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.0-next.1
+  - @backstage/core-components@0.15.1-next.2
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/frontend-plugin-api@0.9.0-next.2
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.10-next.0
+  - @backstage/plugin-search-common@1.2.14
+
 ## 1.8.1-next.1
 
 ### Patch Changes

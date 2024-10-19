@@ -7,11 +7,14 @@
 
 import { ApiResponse } from '@opensearch-project/opensearch';
 import { ApiResponse as ApiResponse_2 } from '@elastic/elasticsearch';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node';
 import { BulkHelper } from '@elastic/elasticsearch/lib/Helpers';
 import { BulkStats } from '@elastic/elasticsearch/lib/Helpers';
 import { Config } from '@backstage/config';
 import type { ConnectionOptions } from 'tls';
+import { ElasticSearchQueryTranslator as ElasticSearchQueryTranslator_2 } from '@backstage/plugin-search-backend-module-elasticsearch';
+import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { IndexableResultSet } from '@backstage/plugin-search-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
@@ -71,6 +74,10 @@ export interface BaseElasticSearchClientOptions {
 export function decodeElasticSearchPageCursor(pageCursor?: string): {
   page: number;
 };
+
+// @public
+const _default: BackendFeature;
+export default _default;
 
 // @public (undocumented)
 export interface ElasticSearchAgentOptions {
@@ -318,6 +325,12 @@ export type ElasticSearchQueryTranslator = (
   options?: ElasticSearchQueryTranslatorOptions,
 ) => ElasticSearchConcreteQuery;
 
+// @public (undocumented)
+export interface ElasticSearchQueryTranslatorExtensionPoint {
+  // (undocumented)
+  setTranslator(translator: ElasticSearchQueryTranslator_2): void;
+}
+
 // @public
 export type ElasticSearchQueryTranslatorOptions = {
   highlightOptions?: ElasticSearchHighlightConfig;
@@ -377,6 +390,9 @@ export type ElasticSearchSearchEngineIndexerOptions = {
   batchSize: number;
   skipRefresh?: boolean;
 };
+
+// @public
+export const elasticsearchTranslatorExtensionPoint: ExtensionPoint<ElasticSearchQueryTranslatorExtensionPoint>;
 
 // @public (undocumented)
 export interface ElasticSearchTransportConstructor {
@@ -457,99 +473,4 @@ export interface OpenSearchNodeOptions {
   // (undocumented)
   url: URL;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/engines/ElasticSearchClientOptions.d.ts:29:5 - (ae-undocumented) Missing documentation for "provider".
-// src/engines/ElasticSearchClientOptions.d.ts:30:5 - (ae-undocumented) Missing documentation for "region".
-// src/engines/ElasticSearchClientOptions.d.ts:31:5 - (ae-undocumented) Missing documentation for "service".
-// src/engines/ElasticSearchClientOptions.d.ts:32:5 - (ae-undocumented) Missing documentation for "auth".
-// src/engines/ElasticSearchClientOptions.d.ts:33:5 - (ae-undocumented) Missing documentation for "connection".
-// src/engines/ElasticSearchClientOptions.d.ts:34:5 - (ae-undocumented) Missing documentation for "node".
-// src/engines/ElasticSearchClientOptions.d.ts:35:5 - (ae-undocumented) Missing documentation for "nodes".
-// src/engines/ElasticSearchClientOptions.d.ts:46:5 - (ae-undocumented) Missing documentation for "provider".
-// src/engines/ElasticSearchClientOptions.d.ts:47:5 - (ae-undocumented) Missing documentation for "auth".
-// src/engines/ElasticSearchClientOptions.d.ts:48:5 - (ae-undocumented) Missing documentation for "Connection".
-// src/engines/ElasticSearchClientOptions.d.ts:49:5 - (ae-undocumented) Missing documentation for "node".
-// src/engines/ElasticSearchClientOptions.d.ts:50:5 - (ae-undocumented) Missing documentation for "nodes".
-// src/engines/ElasticSearchClientOptions.d.ts:51:5 - (ae-undocumented) Missing documentation for "cloud".
-// src/engines/ElasticSearchClientOptions.d.ts:64:5 - (ae-undocumented) Missing documentation for "Transport".
-// src/engines/ElasticSearchClientOptions.d.ts:65:5 - (ae-undocumented) Missing documentation for "maxRetries".
-// src/engines/ElasticSearchClientOptions.d.ts:66:5 - (ae-undocumented) Missing documentation for "requestTimeout".
-// src/engines/ElasticSearchClientOptions.d.ts:67:5 - (ae-undocumented) Missing documentation for "pingTimeout".
-// src/engines/ElasticSearchClientOptions.d.ts:68:5 - (ae-undocumented) Missing documentation for "sniffInterval".
-// src/engines/ElasticSearchClientOptions.d.ts:69:5 - (ae-undocumented) Missing documentation for "sniffOnStart".
-// src/engines/ElasticSearchClientOptions.d.ts:70:5 - (ae-undocumented) Missing documentation for "sniffEndpoint".
-// src/engines/ElasticSearchClientOptions.d.ts:71:5 - (ae-undocumented) Missing documentation for "sniffOnConnectionFault".
-// src/engines/ElasticSearchClientOptions.d.ts:72:5 - (ae-undocumented) Missing documentation for "resurrectStrategy".
-// src/engines/ElasticSearchClientOptions.d.ts:73:5 - (ae-undocumented) Missing documentation for "suggestCompression".
-// src/engines/ElasticSearchClientOptions.d.ts:74:5 - (ae-undocumented) Missing documentation for "compression".
-// src/engines/ElasticSearchClientOptions.d.ts:75:5 - (ae-undocumented) Missing documentation for "ssl".
-// src/engines/ElasticSearchClientOptions.d.ts:76:5 - (ae-undocumented) Missing documentation for "agent".
-// src/engines/ElasticSearchClientOptions.d.ts:77:5 - (ae-undocumented) Missing documentation for "nodeFilter".
-// src/engines/ElasticSearchClientOptions.d.ts:78:5 - (ae-undocumented) Missing documentation for "nodeSelector".
-// src/engines/ElasticSearchClientOptions.d.ts:79:5 - (ae-undocumented) Missing documentation for "headers".
-// src/engines/ElasticSearchClientOptions.d.ts:80:5 - (ae-undocumented) Missing documentation for "opaqueIdPrefix".
-// src/engines/ElasticSearchClientOptions.d.ts:81:5 - (ae-undocumented) Missing documentation for "name".
-// src/engines/ElasticSearchClientOptions.d.ts:82:5 - (ae-undocumented) Missing documentation for "proxy".
-// src/engines/ElasticSearchClientOptions.d.ts:83:5 - (ae-undocumented) Missing documentation for "enableMetaHeader".
-// src/engines/ElasticSearchClientOptions.d.ts:84:5 - (ae-undocumented) Missing documentation for "disablePrototypePoisoningProtection".
-// src/engines/ElasticSearchClientOptions.d.ts:89:1 - (ae-undocumented) Missing documentation for "OpenSearchAuth".
-// src/engines/ElasticSearchClientOptions.d.ts:96:1 - (ae-undocumented) Missing documentation for "ElasticSearchAuth".
-// src/engines/ElasticSearchClientOptions.d.ts:105:1 - (ae-undocumented) Missing documentation for "ElasticSearchNodeOptions".
-// src/engines/ElasticSearchClientOptions.d.ts:106:5 - (ae-undocumented) Missing documentation for "url".
-// src/engines/ElasticSearchClientOptions.d.ts:107:5 - (ae-undocumented) Missing documentation for "id".
-// src/engines/ElasticSearchClientOptions.d.ts:108:5 - (ae-undocumented) Missing documentation for "agent".
-// src/engines/ElasticSearchClientOptions.d.ts:109:5 - (ae-undocumented) Missing documentation for "ssl".
-// src/engines/ElasticSearchClientOptions.d.ts:110:5 - (ae-undocumented) Missing documentation for "headers".
-// src/engines/ElasticSearchClientOptions.d.ts:111:5 - (ae-undocumented) Missing documentation for "roles".
-// src/engines/ElasticSearchClientOptions.d.ts:121:1 - (ae-undocumented) Missing documentation for "OpenSearchNodeOptions".
-// src/engines/ElasticSearchClientOptions.d.ts:122:5 - (ae-undocumented) Missing documentation for "url".
-// src/engines/ElasticSearchClientOptions.d.ts:123:5 - (ae-undocumented) Missing documentation for "id".
-// src/engines/ElasticSearchClientOptions.d.ts:124:5 - (ae-undocumented) Missing documentation for "agent".
-// src/engines/ElasticSearchClientOptions.d.ts:125:5 - (ae-undocumented) Missing documentation for "ssl".
-// src/engines/ElasticSearchClientOptions.d.ts:126:5 - (ae-undocumented) Missing documentation for "headers".
-// src/engines/ElasticSearchClientOptions.d.ts:127:5 - (ae-undocumented) Missing documentation for "roles".
-// src/engines/ElasticSearchClientOptions.d.ts:136:1 - (ae-undocumented) Missing documentation for "ElasticSearchAgentOptions".
-// src/engines/ElasticSearchClientOptions.d.ts:137:5 - (ae-undocumented) Missing documentation for "keepAlive".
-// src/engines/ElasticSearchClientOptions.d.ts:138:5 - (ae-undocumented) Missing documentation for "keepAliveMsecs".
-// src/engines/ElasticSearchClientOptions.d.ts:139:5 - (ae-undocumented) Missing documentation for "maxSockets".
-// src/engines/ElasticSearchClientOptions.d.ts:140:5 - (ae-undocumented) Missing documentation for "maxFreeSockets".
-// src/engines/ElasticSearchClientOptions.d.ts:145:1 - (ae-undocumented) Missing documentation for "ElasticSearchConnectionConstructor".
-// src/engines/ElasticSearchClientOptions.d.ts:146:5 - (ae-undocumented) Missing documentation for "__new".
-// src/engines/ElasticSearchClientOptions.d.ts:147:5 - (ae-undocumented) Missing documentation for "statuses".
-// src/engines/ElasticSearchClientOptions.d.ts:151:5 - (ae-undocumented) Missing documentation for "roles".
-// src/engines/ElasticSearchClientOptions.d.ts:161:1 - (ae-undocumented) Missing documentation for "OpenSearchConnectionConstructor".
-// src/engines/ElasticSearchClientOptions.d.ts:162:5 - (ae-undocumented) Missing documentation for "__new".
-// src/engines/ElasticSearchClientOptions.d.ts:163:5 - (ae-undocumented) Missing documentation for "statuses".
-// src/engines/ElasticSearchClientOptions.d.ts:167:5 - (ae-undocumented) Missing documentation for "roles".
-// src/engines/ElasticSearchClientOptions.d.ts:176:1 - (ae-undocumented) Missing documentation for "ElasticSearchTransportConstructor".
-// src/engines/ElasticSearchClientOptions.d.ts:177:5 - (ae-undocumented) Missing documentation for "__new".
-// src/engines/ElasticSearchClientOptions.d.ts:178:5 - (ae-undocumented) Missing documentation for "sniffReasons".
-// src/engines/ElasticSearchClientWrapper.d.ts:8:1 - (ae-undocumented) Missing documentation for "ElasticSearchAliasAction".
-// src/engines/ElasticSearchClientWrapper.d.ts:32:1 - (ae-undocumented) Missing documentation for "ElasticSearchIndexAction".
-// src/engines/ElasticSearchClientWrapper.d.ts:57:5 - (ae-undocumented) Missing documentation for "fromClientOptions".
-// src/engines/ElasticSearchClientWrapper.d.ts:58:5 - (ae-undocumented) Missing documentation for "search".
-// src/engines/ElasticSearchClientWrapper.d.ts:62:5 - (ae-undocumented) Missing documentation for "bulk".
-// src/engines/ElasticSearchClientWrapper.d.ts:67:5 - (ae-undocumented) Missing documentation for "putIndexTemplate".
-// src/engines/ElasticSearchClientWrapper.d.ts:68:5 - (ae-undocumented) Missing documentation for "listIndices".
-// src/engines/ElasticSearchClientWrapper.d.ts:71:5 - (ae-undocumented) Missing documentation for "indexExists".
-// src/engines/ElasticSearchClientWrapper.d.ts:74:5 - (ae-undocumented) Missing documentation for "deleteIndex".
-// src/engines/ElasticSearchClientWrapper.d.ts:80:5 - (ae-undocumented) Missing documentation for "getAliases".
-// src/engines/ElasticSearchClientWrapper.d.ts:83:5 - (ae-undocumented) Missing documentation for "createIndex".
-// src/engines/ElasticSearchClientWrapper.d.ts:86:5 - (ae-undocumented) Missing documentation for "updateAliases".
-// src/engines/ElasticSearchSearchEngine.d.ts:44:1 - (ae-undocumented) Missing documentation for "ElasticSearchHighlightOptions".
-// src/engines/ElasticSearchSearchEngine.d.ts:52:1 - (ae-undocumented) Missing documentation for "ElasticSearchHighlightConfig".
-// src/engines/ElasticSearchSearchEngine.d.ts:62:1 - (ae-undocumented) Missing documentation for "ElasticSearchSearchEngine".
-// src/engines/ElasticSearchSearchEngine.d.ts:71:5 - (ae-undocumented) Missing documentation for "fromConfig".
-// src/engines/ElasticSearchSearchEngine.d.ts:93:5 - (ae-undocumented) Missing documentation for "translator".
-// src/engines/ElasticSearchSearchEngine.d.ts:94:5 - (ae-undocumented) Missing documentation for "setTranslator".
-// src/engines/ElasticSearchSearchEngine.d.ts:95:5 - (ae-undocumented) Missing documentation for "setIndexTemplate".
-// src/engines/ElasticSearchSearchEngine.d.ts:96:5 - (ae-undocumented) Missing documentation for "getIndexer".
-// src/engines/ElasticSearchSearchEngine.d.ts:97:5 - (ae-undocumented) Missing documentation for "query".
-// src/engines/ElasticSearchSearchEngine.d.ts:107:1 - (ae-undocumented) Missing documentation for "decodePageCursor".
-// src/engines/ElasticSearchSearchEngineIndexer.d.ts:28:5 - (ae-undocumented) Missing documentation for "indexName".
-// src/engines/ElasticSearchSearchEngineIndexer.d.ts:39:5 - (ae-undocumented) Missing documentation for "initialize".
-// src/engines/ElasticSearchSearchEngineIndexer.d.ts:40:5 - (ae-undocumented) Missing documentation for "index".
-// src/engines/ElasticSearchSearchEngineIndexer.d.ts:41:5 - (ae-undocumented) Missing documentation for "finalize".
 ```

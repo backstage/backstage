@@ -5,9 +5,9 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 
-// @alpha
-const appPlugin: BackendFeature;
-export default appPlugin;
+// @alpha (undocumented)
+const _appPlugin: BackendFeature;
+export default _appPlugin;
 
 // (No @packageDocumentation comment for this package)
 ```

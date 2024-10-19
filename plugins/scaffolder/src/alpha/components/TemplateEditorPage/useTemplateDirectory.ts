@@ -18,19 +18,19 @@ import { useCallback } from 'react';
 import useAsyncRetry from 'react-use/esm/useAsyncRetry';
 
 import {
-  WebFileSystemAccess,
   WebFileSystemStore,
+  WebFileSystemAccess,
   WebDirectoryAccess,
+  createExampleTemplate,
 } from '../../../lib/filesystem';
-import { createExampleTemplate } from '../../../lib/filesystem/createExampleTemplate';
 
 export function useTemplateDirectory(): {
   directory?: WebDirectoryAccess;
   loading: boolean;
   error?: Error;
-  handleOpenDirectory: () => void;
-  handleCreateDirectory: () => void;
-  handleCloseDirectory: () => void;
+  openDirectory: () => Promise<void>;
+  createDirectory: () => Promise<void>;
+  closeDirectory: () => Promise<void>;
 } {
   const { value, loading, error, retry } = useAsyncRetry(async () => {
     const directory = await WebFileSystemStore.getDirectory();
@@ -38,29 +38,29 @@ export function useTemplateDirectory(): {
     return WebFileSystemAccess.fromHandle(directory);
   }, []);
 
-  const handleOpenDirectory = useCallback(() => {
-    WebFileSystemAccess.requestDirectoryAccess()
+  const openDirectory = useCallback(() => {
+    return WebFileSystemAccess.requestDirectoryAccess()
       .then(WebFileSystemStore.setDirectory)
       .then(retry);
   }, [retry]);
 
-  const handleCreateDirectory = useCallback(() => {
-    WebFileSystemAccess.requestDirectoryAccess()
+  const createDirectory = useCallback(() => {
+    return WebFileSystemAccess.requestDirectoryAccess()
       .then(createExampleTemplate)
       .then(WebFileSystemStore.setDirectory)
       .then(retry);
   }, [retry]);
 
-  const handleCloseDirectory = useCallback(() => {
-    WebFileSystemStore.setDirectory(undefined).then(retry);
+  const closeDirectory = useCallback(() => {
+    return WebFileSystemStore.setDirectory(undefined).then(retry);
   }, [retry]);
 
   return {
     directory: value,
     loading,
     error,
-    handleOpenDirectory,
-    handleCreateDirectory,
-    handleCloseDirectory,
+    openDirectory,
+    createDirectory,
+    closeDirectory,
   };
 }

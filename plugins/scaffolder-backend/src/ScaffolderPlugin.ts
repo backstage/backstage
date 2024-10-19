@@ -54,7 +54,7 @@ import { createRouter } from './service/router';
 /**
  * Scaffolder plugin
  *
- * @alpha
+ * @public
  */
 export const scaffolderPlugin = createBackendPlugin({
   pluginId: 'scaffolder',

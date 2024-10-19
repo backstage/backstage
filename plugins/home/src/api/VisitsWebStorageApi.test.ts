@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { BackstageUserIdentity, IdentityApi } from '@backstage/core-plugin-api';
+import { mockApis } from '@backstage/test-utils';
 import { VisitsWebStorageApi } from './VisitsWebStorageApi';
 
 describe('VisitsWebStorageApi.create()', () => {
@@ -24,13 +24,9 @@ describe('VisitsWebStorageApi.create()', () => {
       () => Math.floor(Math.random() * 16).toString(16), // 0x0 to 0xf
     ) as `${string}-${string}-${string}-${string}-${string}`;
 
-  const mockIdentityApi: IdentityApi = {
-    signOut: jest.fn(),
-    getProfileInfo: jest.fn(),
-    getBackstageIdentity: async () =>
-      ({ userEntityRef: 'user:default/guest' } as BackstageUserIdentity),
-    getCredentials: jest.fn(),
-  };
+  const mockIdentityApi = mockApis.identity({
+    userEntityRef: 'user:default/guest',
+  });
 
   const mockErrorApi = { post: jest.fn(), error$: jest.fn() };
 
@@ -40,7 +36,7 @@ describe('VisitsWebStorageApi.create()', () => {
 
   afterEach(() => {
     window.localStorage.clear();
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   it('instantiates with only identitiyApi', () => {

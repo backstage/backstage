@@ -33,7 +33,7 @@ Then add the plugin to your backend, typically in `packages/backend/src/index.ts
 ```ts
 const backend = createBackend();
 // ...
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 ```
 
 #### Old backend system

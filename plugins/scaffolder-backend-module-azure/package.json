@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-backend-module-azure",
-  "version": "0.2.1-next.1",
+  "version": "0.2.1",
   "description": "The azure module for @backstage/plugin-scaffolder-backend",
   "backstage": {
     "role": "backend-plugin-module",
@@ -47,7 +47,7 @@
     "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
-    "azure-devops-node-api": "^12.0.0",
+    "azure-devops-node-api": "^14.0.0",
     "yaml": "^2.0.0"
   },
   "devDependencies": {

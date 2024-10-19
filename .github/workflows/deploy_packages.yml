@@ -68,7 +68,7 @@ jobs:
       INTEGRATION_TEST_AZURE_TOKEN: ${{ secrets.INTEGRATION_TEST_AZURE_TOKEN }}
 
     steps:
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
 
       - name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4.0.4
@@ -93,8 +93,16 @@ jobs:
       - name: validate config
         run: yarn backstage-cli config:check --lax
 
+      - name: backstage-cli cache
+        uses: actions/cache@3624ceb22c1c5a301c8db4169662070a689d9ea8 # v4
+        with:
+          path: .cache/backstage-cli
+          key: ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli-
+
       - name: lint
-        run: yarn backstage-cli repo lint
+        run: yarn backstage-cli repo lint --successCache --successCacheDir .cache/backstage-cli
 
       - name: type checking and declarations
         run: yarn tsc:full
@@ -107,12 +115,7 @@ jobs:
 
       - name: test (and upload coverage)
         run: |
-          yarn backstage-cli repo test --maxWorkers=3 --workerIdleMemoryLimit=1300M --coverage
-          # bash <(curl -s https://codecov.io/bash)
-          # Upload code coverage for some specific flags. Also see .codecov.yml
-          # bash <(curl -s https://codecov.io/bash) -f packages/core-app-api/coverage/* -F core-app-api
-          # bash <(curl -s https://codecov.io/bash) -f packages/core-components/coverage/* -F core-components
-          # bash <(curl -s https://codecov.io/bash) -f packages/core-plugin-api/coverage/* -F core-plugin-api
+          yarn backstage-cli repo test --maxWorkers=3 --workerIdleMemoryLimit=1300M --coverage --successCache --successCacheDir .cache/backstage-cli
         env:
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
           BACKSTAGE_TEST_DATABASE_POSTGRES16_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres16.ports[5432] }}
