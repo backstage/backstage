@@ -21,20 +21,11 @@ import { paths } from '../paths';
 import fs from 'fs-extra';
 import chalk from 'chalk';
 
-export interface PackageManager {
-  name(): string;
-  version(): string;
-  lockfileName(): string;
-  getMonorepoPackages(): Promise<string[]>;
-  run(args: string[], options?: SpawnOptionsPartialEnv): Promise<void>;
-  pack(output: string, packageDir: string): Promise<void>;
-  fetchPackageInfo(name: string): Promise<PackageInfo>;
-  loadLockfile(): Promise<Lockfile>;
-  parseLockfile(contents: string): Promise<Lockfile>;
-  supportsBackstageVersionProtocol(): Promise<boolean>;
-  toString(): string;
-}
-
+/**
+ * Package info retrieved from the package manager, usually from NPM.
+ *
+ * @public
+ */
 export type PackageInfo = {
   name: string;
   'dist-tags': Record<string, string>;
@@ -42,6 +33,63 @@ export type PackageInfo = {
   time: { [version: string]: string };
 };
 
+/**
+ * Represents the package manager in use by this instance of Backstage. This
+ * interface allows Backstage adopters to change the package manager used by
+ * their repo and still use the Backstage CLI, and it's helpful tooling.
+ *
+ * @public
+ */
+export interface PackageManager {
+  /** The name of the package manager. */
+  name(): string;
+
+  /** The self-reported version of the package manager. */
+  version(): string;
+
+  /** The file name of the lockfile used by the package manager. */
+  lockfileName(): string;
+
+  /**
+   * If this repo is a monorepo, returns the patterns specified by the package
+   * manager's monorepo configuration. Does not attempt to resolve any globs.
+   */
+  getMonorepoPackages(): Promise<string[]>;
+
+  /** Uses the package manager to run a command in the repo. */
+  run(args: string[], options?: SpawnOptionsPartialEnv): Promise<void>;
+
+  /**
+   * Executes the package manager's pack command to bundle the repo into an
+   * archive.
+   */
+  pack(output: string, packageDir: string): Promise<void>;
+
+  /** Fetches information about the given package, usually from NPM. */
+  fetchPackageInfo(name: string): Promise<PackageInfo>;
+
+  /** Reads the lockfile from the repo. See {@link Lockfile} */
+  loadLockfile(): Promise<Lockfile>;
+
+  /** Parses the given string as a {@link Lockfile}. */
+  parseLockfile(contents: string): Promise<Lockfile>;
+
+  /**
+   * Whether the package manager supports the 'backstage:^' version protocol.
+   */
+  supportsBackstageVersionProtocol(): Promise<boolean>;
+
+  /** A string representation of the package manager. */
+  toString(): string;
+}
+
+/**
+ * Uses several mechanisms to detect the currently used package manager. The
+ * detection methods are intended to be ordered roughly from fastest to slowest
+ * in order to make this method as fast as possible.
+ *
+ * @public
+ */
 export async function detectPackageManager(): Promise<PackageManager> {
   const hasYarnLockfile = await fileExists(
     paths.resolveTargetRoot('yarn.lock'),

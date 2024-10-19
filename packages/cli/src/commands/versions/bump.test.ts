@@ -25,7 +25,7 @@ import {
   MockDirectory,
   createMockDirectory,
 } from '@backstage/backend-test-utils';
-import { LockfileQueryEntry, PackageInfo } from '@backstage/cli-node';
+import { LockfileEntry, PackageInfo } from '@backstage/cli-node';
 
 // Avoid mutating the global http(s) agent used in other tests
 jest.mock('global-agent/bootstrap', () => {});
@@ -66,19 +66,17 @@ jest.mock('@backstage/cli-common', () => ({
   }),
 }));
 
-const LOCKFILE_PACKAGES: Map<string, LockfileQueryEntry[]> = new Map([
+const LOCKFILE_PACKAGES: Map<string, LockfileEntry[]> = new Map([
   [
     '@backstage/core',
     [
       {
         range: '^1.0.5',
         version: '1.0.6',
-        dataKey: '@backstage/core@^1.0.5',
       },
       {
         range: '^1.0.3',
         version: '1.0.3',
-        dataKey: '@backstage/core@^1.0.3',
       },
     ],
   ],
@@ -88,7 +86,6 @@ const LOCKFILE_PACKAGES: Map<string, LockfileQueryEntry[]> = new Map([
       {
         range: '^1.0.0',
         version: '1.0.0',
-        dataKey: '@backstage/theme@^1.0.0',
       },
     ],
   ],
@@ -98,12 +95,10 @@ const LOCKFILE_PACKAGES: Map<string, LockfileQueryEntry[]> = new Map([
       {
         range: '^1.0.6',
         version: '1.0.6',
-        dataKey: '@backstage/core-api@^1.0.6',
       },
       {
         range: '^1.0.3',
         version: '1.0.3',
-        dataKey: '@backstage/core-api@^1.0.3',
       },
     ],
   ],
@@ -615,12 +610,10 @@ describe('bump', () => {
           {
             range: '^1.1.0',
             version: '1.1.0',
-            dataKey: '@backstage-extra/custom@^1.1.0',
           },
           {
             range: '^1.0.1',
             version: '1.0.1',
-            dataKey: '@backstage-extra/custom@^1.0.1',
           },
         ],
       ],
@@ -630,7 +623,6 @@ describe('bump', () => {
           {
             range: '^1.0.0',
             version: '1.0.0',
-            dataKey: '@backstage-extra/custom-two@^1.0.0',
           },
         ],
       ],

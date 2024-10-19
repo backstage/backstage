@@ -24,16 +24,15 @@ import {
 import { CreateContext } from '../../types';
 import { executePluginPackageTemplate } from './tasks';
 import { createMockDirectory } from '@backstage/backend-test-utils';
-import { Lockfile, LockfileQueryEntry } from '@backstage/cli-node';
+import { Lockfile, LockfileEntry } from '@backstage/cli-node';
 
-const LOCKFILE_PACKAGES: Map<string, LockfileQueryEntry[]> = new Map([
+const LOCKFILE_PACKAGES: Map<string, LockfileEntry[]> = new Map([
   [
     'some-package',
     [
       {
         range: '^1.1.0',
         version: '1.5.0',
-        dataKey: 'some-package@^1.1.0',
       },
     ],
   ],

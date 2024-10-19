@@ -15,17 +15,16 @@
  */
 
 import { packageVersions, createPackageVersionProvider } from './version';
-import { Lockfile, LockfileQueryEntry } from '@backstage/cli-node';
+import { Lockfile, LockfileEntry } from '@backstage/cli-node';
 import corePluginApiPkg from '@backstage/core-plugin-api/package.json';
 
-const LOCKFILE_PACKAGES: Map<string, LockfileQueryEntry[]> = new Map([
+const LOCKFILE_PACKAGES: Map<string, LockfileEntry[]> = new Map([
   [
     'a',
     [
       {
         range: '^0.1.0',
         version: '0.1.5',
-        dataKey: 'a@^0.1.0',
       },
     ],
   ],
@@ -35,17 +34,14 @@ const LOCKFILE_PACKAGES: Map<string, LockfileQueryEntry[]> = new Map([
       {
         range: '^0.2.0',
         version: '0.2.5',
-        dataKey: 'b@^0.2.0',
       },
       {
         range: '*',
         version: '0.2.5',
-        dataKey: 'b@*',
       },
       {
         range: '^0.2.1',
         version: '0.2.5',
-        dataKey: 'b@^0.2.1',
       },
     ],
   ],
@@ -55,17 +51,14 @@ const LOCKFILE_PACKAGES: Map<string, LockfileQueryEntry[]> = new Map([
       {
         range: '^0.1.4',
         version: '0.1.8',
-        dataKey: 'c@^0.1.4',
       },
       {
         range: '^0.2.4',
         version: '0.2.8',
-        dataKey: 'c@^0.2.4',
       },
       {
         range: '^0.3.4',
         version: '0.3.8',
-        dataKey: 'c@^0.3.4',
       },
     ],
   ],
@@ -75,17 +68,14 @@ const LOCKFILE_PACKAGES: Map<string, LockfileQueryEntry[]> = new Map([
       {
         range: '^1.1.0',
         version: '1.4.5',
-        dataKey: '@types/t@^1.1.0',
       },
       {
         range: '*',
         version: '1.4.5',
-        dataKey: '@types/t@*',
       },
       {
         range: '^1.2.3',
         version: '1.4.5',
-        dataKey: '@types/t@^1.2.3',
       },
     ],
   ],
@@ -95,7 +85,6 @@ const LOCKFILE_PACKAGES: Map<string, LockfileQueryEntry[]> = new Map([
       {
         range: '*',
         version: '1.1.5',
-        dataKey: '@backstage/cli@*',
       },
     ],
   ],

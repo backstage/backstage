@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 export type { PackageManager, PackageInfo } from './PackageManager';
-export type { LockfileQueryEntry } from './Lockfile';
+export type { Lockfile, LockfileEntry } from './Lockfile';
 
 export { detectPackageManager } from './PackageManager';
-export { Lockfile } from './Lockfile';
