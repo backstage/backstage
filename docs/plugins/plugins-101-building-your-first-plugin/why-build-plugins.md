@@ -1,8 +1,7 @@
 ---
 id: why-build-plugins
 title: Why build plugins?
-meta:
-  status: in-progress
+status: in-progress
 ---
 
 # Why Build Plugins? Introduction to the Value and Impact of Plugins within Backstage

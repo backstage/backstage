@@ -1,8 +1,7 @@
 ---
 id: guides
 title: Guides for Plugins
-meta:
-  status: in-progress
+status: in-progress
 ---
 
 ## Guides for Plugin Development
