@@ -22,7 +22,7 @@ import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 
 import { paths as libPaths } from '../../lib/paths';
-import { loadCliConfig } from '../config';
+import { loadCliConfig } from '../../modules/config/lib/config';
 import { createConfig, resolveBaseUrl, resolveEndpoint } from './config';
 import { createDetectedModulesEntryPoint } from './packageDetection';
 import { resolveBundlingPaths, resolveOptionalBundlingPaths } from './paths';

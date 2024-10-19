@@ -16,7 +16,7 @@
 
 import { ConfigSources, loadConfigSchema } from '@backstage/config-loader';
 import { AppConfig, ConfigReader } from '@backstage/config';
-import { paths } from './paths';
+import { paths } from '../../../lib/paths';
 import { getPackages } from '@manypkg/get-packages';
 import { PackageGraph } from '@backstage/cli-node';
 
