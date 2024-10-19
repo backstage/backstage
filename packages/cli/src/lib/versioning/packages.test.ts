@@ -17,25 +17,8 @@
 import { mapDependencies } from './packages';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
-jest.mock('../run', () => {
-  return {
-    run: jest.fn(),
-    execFile: jest.fn(),
-  };
-});
-
-jest.mock('../yarn/yarn', () => {
-  return {
-    detectYarnVersion: jest.fn(),
-  };
-});
-
 describe('mapDependencies', () => {
   const mockDir = createMockDirectory();
-
-  afterEach(() => {
-    jest.resetAllMocks();
-  });
 
   it('should read dependencies', async () => {
     mockDir.setContent({

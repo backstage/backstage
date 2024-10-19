@@ -33,10 +33,19 @@ const LOCKFILE_PACKAGES: Map<string, LockfileQueryEntry[]> = new Map([
     'b',
     [
       {
-        // "b@^0.2.0","b@*","b@^0.2.1":
         range: '^0.2.0',
         version: '0.2.5',
         dataKey: 'b@^0.2.0',
+      },
+      {
+        range: '*',
+        version: '0.2.5',
+        dataKey: 'b@*',
+      },
+      {
+        range: '^0.2.1',
+        version: '0.2.5',
+        dataKey: 'b@^0.2.1',
       },
     ],
   ],
@@ -66,8 +75,17 @@ const LOCKFILE_PACKAGES: Map<string, LockfileQueryEntry[]> = new Map([
       {
         range: '^1.1.0',
         version: '1.4.5',
-        // "@types/t@^1.1.0","@types/t@*","@types/t@^1.2.3":
         dataKey: '@types/t@^1.1.0',
+      },
+      {
+        range: '*',
+        version: '1.4.5',
+        dataKey: '@types/t@*',
+      },
+      {
+        range: '^1.2.3',
+        version: '1.4.5',
+        dataKey: '@types/t@^1.2.3',
       },
     ],
   ],

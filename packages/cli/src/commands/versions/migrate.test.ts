@@ -13,10 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  MockDirectory,
-  createMockDirectory,
-} from '@backstage/backend-test-utils';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 import migrate from './migrate';
 import { withLogCollector } from '@backstage/test-utils';
 import fs from 'fs-extra';
