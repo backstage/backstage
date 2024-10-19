@@ -36,7 +36,6 @@ export type LockfileDiff = {
   removed: LockfileDiffEntry[];
 };
 
-/** @internal */
 export type LockfileQueryEntry = {
   range: string;
   version: string;

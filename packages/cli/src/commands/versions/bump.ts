@@ -36,12 +36,8 @@ import {
   ReleaseManifest,
 } from '@backstage/release-manifests';
 import { migrateMovedPackages } from './migrate';
-import {
-  detectPackageManager,
-  PackageManager,
-  PackageInfo,
-} from '@backstage/cli-node';
-import ora from 'ora';
+import { runInstall } from './install';
+import { detectPackageManager, PackageInfo } from '@backstage/cli-node';
 
 function shouldUseGlobalAgent(): boolean {
   // see https://www.npmjs.com/package/global-agent
@@ -458,39 +454,4 @@ async function asLockfileVersion(version: string) {
   }
 
   return version;
-}
-
-export async function runInstall(packageManager: PackageManager) {
-  const spinner = ora({
-    prefixText: `Running ${chalk.blue(
-      `${packageManager.name()} install`,
-    )} to install new versions`,
-    spinner: 'arc',
-    color: 'green',
-  }).start();
-
-  const installOutput = new Array<Buffer>();
-  try {
-    await packageManager.run(['install'], {
-      env: {
-        FORCE_COLOR: 'true',
-        // TODO: do we need to do this for all package managers?
-        // We filter out all of the npm_* environment variables that are added when
-        // executing through yarn. This works around an issue where these variables
-        // incorrectly override local yarn or npm config in the project directory.
-        ...Object.fromEntries(
-          Object.entries(process.env).map(([name, value]) =>
-            name.startsWith('npm_') ? [name, undefined] : [name, value],
-          ),
-        ),
-      },
-      stdoutLogFunc: data => installOutput.push(data),
-      stderrLogFunc: data => installOutput.push(data),
-    });
-    spinner.succeed();
-  } catch (error) {
-    spinner.fail();
-    process.stdout.write(Buffer.concat(installOutput));
-    throw error;
-  }
 }

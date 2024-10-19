@@ -42,7 +42,7 @@ export class Yarn implements PackageManager {
   }
 
   lockfilePath(): string {
-    return 'wtf.lock';
+    return 'yarn.lock';
   }
 
   async pack(out: string, packageDir: string) {
