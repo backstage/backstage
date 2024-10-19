@@ -159,38 +159,21 @@ paths:
 This will be a new core plugin that will be provided through a new package. The idea is that it will show all information across your entire deployment. One can imagine this hosting aggregate information around instances in the deployment, like their internal and external URLs.
 
 ```ts
+interface BackstageInstance {
+  url: {
+    internal: string;
+    external: string;
+  };
+}
+
 interface DeploymentMetadataPluginExtensionPoint {
-  setInstalledFeatures: (features: BackendFeatureMeta[]) -> Promise<void>;
+  setInstances: (instances: BackstageInstance[]) => Promise<void>;
 }
 ```
 
 By default, this will either
 a. be the exact same as `InstanceMetadataService` if we are not using `HostDiscovery` static config, or
-b. this will be pulled from the `HostDiscovery` static config.
-
-That would look something like,
-
-```yaml
-discovery:
-  endpoints:
-    - target: https://internal.example.com/internal-catalog
-      plugins: [catalog]
-    - target: https://internal.example.com/secure/api/{{pluginId}}
-      plugins: [auth, permission]
-    - target:
-        internal: https://internal.example.com/search
-        external: https://example.com/search
-      plugins: [search]
-```
-
-So, the above interface would return for the above config,
-
-```ts
-const installedFeatures = deploymentMetadataService.getInstalledFeatures();
-// installedFeatures = [{type: 'plugin', pluginId: 'catalog'}, {type: 'plugin', pluginId: 'auth'}, {type: 'plugin', pluginId: 'permission'}, {type: 'plugin', pluginId: 'search'}]
-```
-
-Of note, modules will **NOT** be returned by default with the static configuration. The default `HostDiscovery` implementation only deals with plugins, not modules.
+b. TODO: How will users define their endpoints statically such that we can access other instance's `InstanceMetadataService` HTTP APIs?
 
 This new plugin would be designed as follows:
 
