@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { paths } from '../paths';
-import fs from 'fs-extra';
+import { detectPackageManager } from '../pacman';
 
 /**
  * Returns try if the current project is a monorepo.
@@ -23,11 +21,6 @@ import fs from 'fs-extra';
  * @public
  */
 export async function isMonoRepo(): Promise<boolean> {
-  const rootPackageJsonPath = paths.resolveTargetRoot('package.json');
-  try {
-    const pkg = await fs.readJson(rootPackageJsonPath);
-    return Boolean(pkg?.workspaces?.packages);
-  } catch (error) {
-    return false;
-  }
+  const pacman = await detectPackageManager();
+  return Boolean(await pacman.getMonorepoPackages());
 }

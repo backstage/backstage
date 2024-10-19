@@ -41,8 +41,18 @@ export class Yarn implements PackageManager {
     return this.yarnVersion.version;
   }
 
-  lockfilePath(): string {
+  lockfileName(): string {
     return 'yarn.lock';
+  }
+
+  async getMonorepoPackages() {
+    const rootPackageJsonPath = paths.resolveTargetRoot('package.json');
+    try {
+      const pkg = await fs.readJson(rootPackageJsonPath);
+      return pkg?.workspaces?.packages || [];
+    } catch (error) {
+      return [];
+    }
   }
 
   async pack(out: string, packageDir: string) {
@@ -62,7 +72,7 @@ export class Yarn implements PackageManager {
   }
 
   async loadLockfile(): Promise<Lockfile> {
-    const lockfilePath = paths.resolveTargetRoot(this.lockfilePath());
+    const lockfilePath = paths.resolveTargetRoot(this.lockfileName());
     return this.parseLockfile(await fs.readFile(lockfilePath, 'utf8'));
   }
 

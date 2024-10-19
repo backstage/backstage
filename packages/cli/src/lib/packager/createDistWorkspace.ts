@@ -250,7 +250,7 @@ export async function createDistWorkspace(
   );
 
   const files: FileEntry[] = options.files ?? [
-    pacman.lockfilePath(),
+    pacman.lockfileName(),
     'package.json',
   ];
 

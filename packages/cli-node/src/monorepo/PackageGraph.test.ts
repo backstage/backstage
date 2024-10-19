@@ -38,7 +38,7 @@ jest.mock('../pacman', () => ({
   detectPackageManager: () => {
     return {
       name: () => 'mock',
-      lockfilePath: () => 'mock.lock',
+      lockfileName: () => 'mock.lock',
       loadLockfile: mockLoadLockfile,
       parseLockfile: mockParseLockfile,
     };

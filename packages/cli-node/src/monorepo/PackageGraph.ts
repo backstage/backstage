@@ -341,7 +341,7 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
 
     if (
       options.analyzeLockfile &&
-      changedFiles.includes(pacman.lockfilePath())
+      changedFiles.includes(pacman.lockfileName())
     ) {
       // Load the lockfile in the working tree and the one at the ref and diff them
       let thisLockfile: Lockfile;
@@ -349,7 +349,7 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
       try {
         thisLockfile = await pacman.loadLockfile();
         otherLockfile = await pacman.parseLockfile(
-          await GitUtils.readFileAtRef(pacman.lockfilePath(), options.ref),
+          await GitUtils.readFileAtRef(pacman.lockfileName(), options.ref),
         );
       } catch (error) {
         console.warn(
