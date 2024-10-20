@@ -3871,6 +3871,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@manypkg/get-packages": ^1.1.3
+    "@yarnpkg/lockfile": ^1.1.0
     "@yarnpkg/parsers": ^3.0.0
     fs-extra: ^11.2.0
     semver: ^7.5.3
@@ -6141,6 +6142,7 @@ __metadata:
     "@types/ping": ^0.4.1
     "@types/supertest": ^2.0.8
     "@types/yarnpkg__lockfile": ^1.1.4
+    "@yarnpkg/lockfile": ^1.1.0
     "@yarnpkg/parsers": ^3.0.0
     express: ^4.18.1
     express-promise-router: ^4.1.0
@@ -20096,6 +20098,13 @@ __metadata:
   peerDependencies:
     "@yarnpkg/fslib": ^3.1.0
   checksum: 2bb7c10b41184a079906ec4ebdadda69e4cd3b101d11aae965c08934254dbd303e51e9869fd8d799c5f58d59214cd13d67d454ad96e1c76ce9384816d58da08c
+  languageName: node
+  linkType: hard
+
+"@yarnpkg/lockfile@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@yarnpkg/lockfile@npm:1.1.0"
+  checksum: 05b881b4866a3546861fee756e6d3812776ea47fa6eb7098f983d6d0eefa02e12b66c3fff931574120f196286a7ad4879ce02743c8bb2be36c6a576c7852083a
   languageName: node
   linkType: hard
 
