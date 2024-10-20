@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,22 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import fs from 'fs-extra';
-import { createDistWorkspace } from '../lib/packager';
-
-type Options = {
-  alwaysPack?: boolean;
-};
-
-export default async (dir: string, packages: string[], options: Options) => {
-  if (!(await fs.pathExists(dir))) {
-    throw new Error(`Target workspace directory doesn't exist, '${dir}'`);
-  }
-
-  await createDistWorkspace(packages, {
-    targetDir: dir,
-    alwaysPack: options.alwaysPack,
-    enableFeatureDetection: true,
-  });
-};
+export { Yarn } from './Yarn';

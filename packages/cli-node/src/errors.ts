@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import { createDistWorkspace } from '../lib/packager';
+import { CustomErrorBase } from '@backstage/errors';
 
-type Options = {
-  alwaysPack?: boolean;
-};
+export class ExitCodeError extends CustomErrorBase {
+  readonly code: number;
 
-export default async (dir: string, packages: string[], options: Options) => {
-  if (!(await fs.pathExists(dir))) {
-    throw new Error(`Target workspace directory doesn't exist, '${dir}'`);
+  constructor(code: number, command?: string) {
+    super(
+      command
+        ? `Command '${command}' exited with code ${code}`
+        : `Child exited with code ${code}`,
+    );
+    this.code = code;
   }
+}
 
-  await createDistWorkspace(packages, {
-    targetDir: dir,
-    alwaysPack: options.alwaysPack,
-    enableFeatureDetection: true,
-  });
-};
+export class NotFoundError extends CustomErrorBase {}

@@ -15,14 +15,9 @@
  */
 
 import chalk from 'chalk';
+import { CustomErrorBase } from '@backstage/errors';
 
-export class CustomError extends Error {
-  get name(): string {
-    return this.constructor.name;
-  }
-}
-
-export class ExitCodeError extends CustomError {
+export class ExitCodeError extends CustomErrorBase {
   readonly code: number;
 
   constructor(code: number, command?: string) {
@@ -45,4 +40,4 @@ export function exitWithError(error: Error): never {
   }
 }
 
-export class NotFoundError extends CustomError {}
+export class NotFoundError extends CustomErrorBase {}

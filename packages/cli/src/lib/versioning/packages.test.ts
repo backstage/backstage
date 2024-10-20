@@ -14,92 +14,11 @@
  * limitations under the License.
  */
 
-import * as runObj from '../run';
-import * as yarn from '../yarn';
-import { fetchPackageInfo, mapDependencies } from './packages';
-import { NotFoundError } from '../errors';
+import { mapDependencies } from './packages';
 import { createMockDirectory } from '@backstage/backend-test-utils';
-
-jest.mock('../run', () => {
-  return {
-    run: jest.fn(),
-    execFile: jest.fn(),
-  };
-});
-
-jest.mock('../yarn', () => {
-  return {
-    detectYarnVersion: jest.fn(),
-  };
-});
-
-describe('fetchPackageInfo', () => {
-  afterEach(() => {
-    jest.resetAllMocks();
-  });
-
-  it('should forward info for yarn classic', async () => {
-    jest.spyOn(runObj, 'execFile').mockResolvedValue({
-      stdout: `{"type":"inspect","data":{"the":"data"}}`,
-      stderr: '',
-    });
-    jest.spyOn(yarn, 'detectYarnVersion').mockResolvedValue('classic');
-
-    await expect(fetchPackageInfo('my-package')).resolves.toEqual({
-      the: 'data',
-    });
-    expect(runObj.execFile).toHaveBeenCalledWith(
-      'yarn',
-      ['info', '--json', 'my-package'],
-      { shell: true },
-    );
-  });
-
-  it('should forward info for yarn berry', async () => {
-    jest
-      .spyOn(runObj, 'execFile')
-      .mockResolvedValue({ stdout: `{"the":"data"}`, stderr: '' });
-    jest.spyOn(yarn, 'detectYarnVersion').mockResolvedValue('berry');
-
-    await expect(fetchPackageInfo('my-package')).resolves.toEqual({
-      the: 'data',
-    });
-    expect(runObj.execFile).toHaveBeenCalledWith(
-      'yarn',
-      ['npm', 'info', '--json', 'my-package'],
-      { shell: true },
-    );
-  });
-
-  it('should throw if no info with yarn classic', async () => {
-    jest
-      .spyOn(runObj, 'execFile')
-      .mockResolvedValue({ stdout: '', stderr: '' });
-    jest.spyOn(yarn, 'detectYarnVersion').mockResolvedValue('classic');
-
-    await expect(fetchPackageInfo('my-package')).rejects.toThrow(
-      new NotFoundError(`No package information found for package my-package`),
-    );
-  });
-
-  it('should throw if no info with yarn berry', async () => {
-    jest
-      .spyOn(runObj, 'execFile')
-      .mockRejectedValue({ stdout: 'bla bla bla Response Code: 404 bla bla' });
-    jest.spyOn(yarn, 'detectYarnVersion').mockResolvedValue('berry');
-
-    await expect(fetchPackageInfo('my-package')).rejects.toThrow(
-      new NotFoundError(`No package information found for package my-package`),
-    );
-  });
-});
 
 describe('mapDependencies', () => {
   const mockDir = createMockDirectory();
-
-  afterEach(() => {
-    jest.resetAllMocks();
-  });
 
   it('should read dependencies', async () => {
     mockDir.setContent({
