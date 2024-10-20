@@ -19,7 +19,7 @@ import { mergeConfigSchemas } from '@backstage/config-loader';
 import { OptionValues } from 'commander';
 import { JSONSchema7 as JSONSchema } from 'json-schema';
 import openBrowser from 'react-dev-utils/openBrowser';
-import { loadCliConfig } from '../../lib/config';
+import { loadCliConfig } from '../lib/config';
 
 const DOCS_URL = 'https://config.backstage.io';
 
