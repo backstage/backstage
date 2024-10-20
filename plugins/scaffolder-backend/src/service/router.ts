@@ -822,7 +822,7 @@ export async function createRouter(
         workingDirectory,
         `dry-run-content-${dryRunId}`,
       );
-      
+
       const templateInfo = {
         entityRef: stringifyEntityRef(template),
         entity: {
