@@ -3,10 +3,10 @@ import { TestApiProvider } from '@backstage/test-utils';
 import { Content, AlertDisplay } from '@backstage/core-components';
 import { lightTheme, darkTheme } from '@backstage/theme';
 import { CssBaseline, ThemeProvider } from '@material-ui/core';
-import { useDarkMode } from 'storybook-dark-mode';
 import { apis } from './apis';
+import { withThemeFromJSXProvider } from '@storybook/addon-themes';
 
-import type { Preview } from '@storybook/react';
+import type { Preview, ReactRenderer } from '@storybook/react';
 
 const preview: Preview = {
   parameters: {
@@ -22,17 +22,22 @@ const preview: Preview = {
     layout: 'fullscreen',
   },
   decorators: [
+    withThemeFromJSXProvider<ReactRenderer>({
+      themes: {
+        Light: lightTheme,
+        Dark: darkTheme,
+      },
+      defaultTheme: 'Light',
+      Provider: ThemeProvider,
+      GlobalStyles: CssBaseline,
+    }),
     Story => (
       // @ts-ignore - TODO: Fix this
       <TestApiProvider apis={apis}>
-        <ThemeProvider theme={useDarkMode() ? darkTheme : lightTheme}>
-          <CssBaseline>
-            <AlertDisplay />
-            <Content>
-              <Story />
-            </Content>
-          </CssBaseline>
-        </ThemeProvider>
+        <AlertDisplay />
+        <Content>
+          <Story />
+        </Content>
       </TestApiProvider>
     ),
   ],
