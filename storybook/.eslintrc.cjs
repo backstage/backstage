@@ -9,4 +9,12 @@ module.exports = {
     es6: true,
     node: true,
   },
+  overrides: [
+    {
+      files: ['*.d.ts'],
+      parser: '@typescript-eslint/parser',
+      plugins: ['@typescript-eslint'],
+      extends: ['plugin:@typescript-eslint/recommended'],
+    },
+  ],
 };

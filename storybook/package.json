@@ -5,6 +5,7 @@
   "private": true,
   "type": "module",
   "main": "index.mjs",
+  "types": "index.d.ts",
   "scripts": {
     "build-storybook": "storybook build --output-dir dist",
     "storybook": "storybook dev -p 6006"
@@ -24,7 +25,11 @@
     "@storybook/react": "^8.3.5",
     "@storybook/react-vite": "^8.3.5",
     "@storybook/test": "^8.3.5",
+    "@storybook/types": "^8.3.5",
     "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.0.0",
     "eslint": "^9.11.1",
     "eslint-plugin-storybook": "^0.9.0",
     "globals": "^15.9.0",
