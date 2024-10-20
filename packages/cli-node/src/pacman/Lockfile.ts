@@ -73,10 +73,5 @@ export interface Lockfile {
   /**
    * Generates a sha1 hex hash of the dependency graph for a package.
    */
-  getDependencyTreeHash(rootPackageName: string): string;
-
-  /**
-   * Serializes the lockfile to a string.
-   */
-  toString(): string;
+  getDependencyTreeHash(startName: string): string;
 }

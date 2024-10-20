@@ -99,9 +99,8 @@ export interface Lockfile {
   createSimplifiedDependencyGraph(): Map<string, Set<string>>;
   diff(otherLockfile: Lockfile): LockfileDiff;
   get(name: string): LockfileEntry[] | undefined;
-  getDependencyTreeHash(rootPackageName: string): string;
+  getDependencyTreeHash(startName: string): string;
   keys(): IterableIterator<string>;
-  toString(): string;
 }
 
 // @public
