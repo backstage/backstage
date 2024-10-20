@@ -4,6 +4,7 @@
   "description": "Storybook build for components package",
   "private": true,
   "type": "module",
+  "main": "index.mjs",
   "scripts": {
     "build-storybook": "storybook build --output-dir dist",
     "storybook": "storybook dev -p 6006"
@@ -12,10 +13,6 @@
     "extends": [
       "plugin:storybook/recommended"
     ]
-  },
-  "dependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^1.9.0",
@@ -27,12 +24,27 @@
     "@storybook/react": "^8.3.5",
     "@storybook/react-vite": "^8.3.5",
     "@storybook/test": "^8.3.5",
+    "@types/react": "^18.0.0",
     "eslint": "^9.11.1",
     "eslint-plugin-storybook": "^0.9.0",
     "globals": "^15.9.0",
+    "react": "^18.0.2",
+    "react-dom": "^18.0.2",
+    "react-router-dom": "^6.3.0",
     "storybook": "^8.3.5",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.7.0",
     "vite": "^5.4.8"
+  },
+  "peerDependencies": {
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
   }
 }

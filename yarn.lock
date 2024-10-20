@@ -4240,6 +4240,7 @@ __metadata:
     "@types/react-window": ^1.8.5
     "@types/zen-observable": ^0.8.0
     ansi-regex: ^6.0.1
+    backstage-storybook: "workspace:^"
     classnames: ^2.2.6
     cross-fetch: ^4.0.0
     d3-selection: ^3.0.0
@@ -22792,7 +22793,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"backstage-storybook@workspace:storybook":
+"backstage-storybook@workspace:^, backstage-storybook@workspace:storybook":
   version: 0.0.0-use.local
   resolution: "backstage-storybook@workspace:storybook"
   dependencies:
@@ -22805,15 +22806,25 @@ __metadata:
     "@storybook/react": ^8.3.5
     "@storybook/react-vite": ^8.3.5
     "@storybook/test": ^8.3.5
+    "@types/react": ^18.0.0
     eslint: ^9.11.1
     eslint-plugin-storybook: ^0.9.0
     globals: ^15.9.0
-    react: ^18.3.1
-    react-dom: ^18.3.1
+    react: ^18.0.2
+    react-dom: ^18.0.2
+    react-router-dom: ^6.3.0
     storybook: ^8.3.5
     typescript: ^5.5.3
     typescript-eslint: ^8.7.0
     vite: ^5.4.8
+  peerDependencies:
+    "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
+    react: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-router-dom: 6.0.0-beta.0 || ^6.3.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -40068,7 +40079,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^16.8.0 || ^17.0.0 || ^18.0.0, react-dom@npm:^18.0.2, react-dom@npm:^18.3.1":
+"react-dom@npm:^16.8.0 || ^17.0.0 || ^18.0.0, react-dom@npm:^18.0.2":
   version: 18.3.1
   resolution: "react-dom@npm:18.3.1"
   dependencies:
@@ -40674,7 +40685,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^16.8.0 || ^17.0.0 || ^18.0.0, react@npm:^18.0.2, react@npm:^18.3.1":
+"react@npm:^16.8.0 || ^17.0.0 || ^18.0.0, react@npm:^18.0.2":
   version: 18.3.1
   resolution: "react@npm:18.3.1"
   dependencies:

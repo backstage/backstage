@@ -113,6 +113,7 @@
     "@types/react-virtualized-auto-sizer": "^1.0.1",
     "@types/react-window": "^1.8.5",
     "@types/zen-observable": "^0.8.0",
+    "backstage-storybook": "workspace:^",
     "cross-fetch": "^4.0.0",
     "history": "^5.0.0",
     "msw": "^1.0.0",

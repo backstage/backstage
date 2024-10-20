@@ -25,7 +25,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from 'backstage-storybook';
 
 const meta = {
   title: 'Layout/Dialog',
