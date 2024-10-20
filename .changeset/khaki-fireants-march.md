@@ -2,4 +2,4 @@
 '@backstage/cli': patch
 ---
 
-add --alwaysPack as a replacement for the now-hidden --alwaysYarnPack
+Added `--alwaysPack` as a replacement for the now hidden `--alwaysYarnPack` option for the `build-workspace` command.
