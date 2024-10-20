@@ -2151,31 +2151,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"backstage-storybook@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "backstage-storybook@workspace:."
-  dependencies:
-    "@chromatic-com/storybook": ^1.9.0
-    "@storybook/addon-essentials": ^8.3.5
-    "@storybook/addon-interactions": ^8.3.5
-    "@storybook/addon-links": ^8.3.5
-    "@storybook/addon-themes": ^8.3.6
-    "@storybook/blocks": ^8.3.5
-    "@storybook/react": ^8.3.5
-    "@storybook/react-vite": ^8.3.5
-    "@storybook/test": ^8.3.5
-    eslint: ^9.11.1
-    eslint-plugin-storybook: ^0.9.0
-    globals: ^15.9.0
-    react: ^18.3.1
-    react-dom: ^18.3.1
-    storybook: ^8.3.5
-    typescript: ^5.5.3
-    typescript-eslint: ^8.7.0
-    vite: ^5.4.8
-  languageName: unknown
-  linkType: soft
-
 "balanced-match@npm:^1.0.0":
   version: 1.0.2
   resolution: "balanced-match@npm:1.0.2"
@@ -5251,6 +5226,31 @@ __metadata:
   checksum: 826eaaa84f295aa900a35bed9403e1a1853364f90d50b69270b105d00c945cca9fdbba260b18712f6e43faa07f3dd7ed64e2d9d7257c5f1653820039aeabf4ff
   languageName: node
   linkType: hard
+
+"storybook@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "storybook@workspace:."
+  dependencies:
+    "@chromatic-com/storybook": ^1.9.0
+    "@storybook/addon-essentials": ^8.3.5
+    "@storybook/addon-interactions": ^8.3.5
+    "@storybook/addon-links": ^8.3.5
+    "@storybook/addon-themes": ^8.3.6
+    "@storybook/blocks": ^8.3.5
+    "@storybook/react": ^8.3.5
+    "@storybook/react-vite": ^8.3.5
+    "@storybook/test": ^8.3.5
+    eslint: ^9.11.1
+    eslint-plugin-storybook: ^0.9.0
+    globals: ^15.9.0
+    react: ^18.3.1
+    react-dom: ^18.3.1
+    storybook: ^8.3.5
+    typescript: ^5.5.3
+    typescript-eslint: ^8.7.0
+    vite: ^5.4.8
+  languageName: unknown
+  linkType: soft
 
 "string-width-cjs@npm:string-width@^4.2.0, string-width@npm:^4.1.0":
   version: 4.2.3

@@ -1,5 +1,5 @@
 {
-  "name": "backstage-storybook",
+  "name": "storybook",
   "version": "0.2.2",
   "description": "Storybook build for components package",
   "private": true,
