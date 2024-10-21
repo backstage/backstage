@@ -150,6 +150,7 @@ catalog:
         branch: main # Optional. Used to discover on a specific branch
         fallbackBranch: master # Optional. Fallback to be used if there is no default branch configured at the Gitlab repository. It is only used, if `branch` is undefined. Uses `master` as default
         skipForkedRepos: false # Optional. If the project is a fork, skip repository
+        includeArchivedRepos: false # Optional. If project is archived, include repository
         group: example-group # Optional. Group and subgroup (if needed) to look for repositories. If not present the whole instance will be scanned
         entityFilename: catalog-info.yaml # Optional. Defaults to `catalog-info.yaml`
         projectPattern: '[\s\S]*' # Optional. Filters found projects based on provided patter. Defaults to `[\s\S]*`, which means to not filter anything
@@ -212,3 +213,5 @@ catalog:
 If you don't want create location object if file with component definition do not exists in project, you can set the `skipReposWithoutExactFileMatch` option. That can reduce count of request to gitlab with 404 status code.
 
 If you don't want to create location object if the project is a fork, you can set the `skipForkedRepos` option.
+
+If you want to create location object if the project is archived, you can set the `includeArchivedRepos` option.
