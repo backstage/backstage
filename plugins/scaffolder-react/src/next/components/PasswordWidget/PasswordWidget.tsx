@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-import { WidgetProps } from '@rjsf/utils';
-import TextField from '@material-ui/core/TextField';
-import React from 'react';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import { MarkdownContent } from '@backstage/core-components';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import TextField from '@material-ui/core/TextField';
+import { WidgetProps } from '@rjsf/utils';
+import React from 'react';
+
+import { scaffolderReactTranslationRef } from '../../../translation';
 
 export const PasswordWidget = (
   props: Pick<WidgetProps, 'onChange' | 'schema' | 'value'>,
 ) => {
+  const { t } = useTranslationRef(scaffolderReactTranslationRef);
+
   const {
     value,
     onChange,
@@ -42,10 +47,7 @@ export const PasswordWidget = (
         autoComplete="off"
       />
       <FormHelperText error>
-        <MarkdownContent
-          content="This widget is insecure. Please use [`ui:field: Secret`](https://backstage.io/docs/features/software-templates/writing-templates/#using-secrets) instead of
-          `ui:widget: password`"
-        />
+        <MarkdownContent content={t('passwordWidget.content')} />
       </FormHelperText>
     </>
   );
