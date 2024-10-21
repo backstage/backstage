@@ -389,6 +389,27 @@ export class GitLabClient {
     endpoint: string,
     options?: CommonListOptions,
   ): Promise<PagedResponse<T>> {
+    return this.apiRequest(endpoint, options).then(async response => {
+      const items = await response.json();
+      const nextPage = response.headers.get('x-next-page');
+      return {
+        items,
+        nextPage: nextPage ? Number(nextPage) : null,
+      } as PagedResponse<any>;
+    });
+  }
+
+  async nonPagedRequest<T = any>(
+    endpoint: string,
+    options?: CommonListOptions,
+  ): Promise<T> {
+    return (await this.apiRequest(endpoint, options)).json();
+  }
+
+  private async apiRequest(
+    endpoint: string,
+    options?: CommonListOptions,
+  ): Promise<fetch.Response> {
     const request = new URL(`${this.config.apiBaseUrl}${endpoint}`);
 
     for (const key in options) {
@@ -414,45 +435,7 @@ export class GitLabClient {
       );
     }
 
-    return response.json().then(items => {
-      const nextPage = response.headers.get('x-next-page');
-
-      return {
-        items,
-        nextPage: nextPage ? Number(nextPage) : null,
-      } as PagedResponse<any>;
-    });
-  }
-
-  async nonPagedRequest<T = any>(
-    endpoint: string,
-    options?: CommonListOptions,
-  ): Promise<T> {
-    const request = new URL(`${this.config.apiBaseUrl}${endpoint}`);
-
-    for (const key in options) {
-      if (options.hasOwnProperty(key)) {
-        const value = options[key];
-        if (value !== undefined && value !== '') {
-          request.searchParams.append(key, value.toString());
-        }
-      }
-    }
-
-    const response = await fetch(
-      request.toString(),
-      getGitLabRequestOptions(this.config),
-    );
-
-    if (!response.ok) {
-      throw new Error(
-        `Unexpected response when fetching ${request.toString()}. Expected 200 but got ${
-          response.status
-        } - ${response.statusText}`,
-      );
-    }
-
-    return response.json();
+    return Promise.resolve(response);
   }
 }
 
