@@ -169,6 +169,38 @@ describe('EntityLayout', () => {
     expect(screen.queryByText('tabbed-test-content')).not.toBeInTheDocument();
   });
 
+  it('renders the breadcrumbs if defined', async () => {
+    const mockEntityWithRelation = {
+      kind: 'MyKind',
+      metadata: {
+        name: 'my-entity',
+        namespace: 'default',
+        title: 'My Entity',
+      },
+      relations: [{ type: 'partOf', targetRef: 'system:default/my-system' }],
+    } as Entity;
+
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EntityProvider entity={mockEntityWithRelation}>
+          <EntityLayout parentEntityRelations={['partOf']}>
+            <EntityLayout.Route path="/" title="tabbed-test-title">
+              <div>tabbed-test-content</div>
+            </EntityLayout.Route>
+          </EntityLayout>
+        </EntityProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
+        },
+      },
+    );
+
+    expect(screen.getByText('my-system')).toBeInTheDocument();
+  });
+
   it('navigates when user clicks different tab', async () => {
     await renderInTestApp(
       <ApiProvider apis={apis}>
