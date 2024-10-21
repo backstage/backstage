@@ -37,7 +37,11 @@ import fetch, { RequestInit, Response } from 'node-fetch';
 import parseGitUrl from 'git-url-parse';
 import { Minimatch } from 'minimatch';
 import { Readable } from 'stream';
-import { NotFoundError, NotModifiedError } from '@backstage/errors';
+import {
+  assertError,
+  NotFoundError,
+  NotModifiedError,
+} from '@backstage/errors';
 import { ReadTreeResponseFactory, ReaderFactory } from './types';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import { parseLastModified } from './util';
@@ -187,6 +191,34 @@ export class GithubUrlReader implements UrlReaderService {
     }
 
     const { filepath } = parseGitUrl(url);
+
+    // If it's a direct URL we use readUrl instead
+    if (!filepath?.match(/[*?]/)) {
+      try {
+        const data = await this.readUrl(url, options);
+
+        return {
+          files: [
+            {
+              url: url,
+              content: data.buffer,
+              lastModifiedAt: data.lastModifiedAt,
+            },
+          ],
+          etag: commitSha,
+        };
+      } catch (error) {
+        assertError(error);
+        if (error.name === 'NotFoundError') {
+          return {
+            files: [],
+            etag: commitSha,
+          };
+        }
+        throw error;
+      }
+    }
+
     const { headers } = await this.getCredentials(url, options);
 
     const files = await this.doSearch(
