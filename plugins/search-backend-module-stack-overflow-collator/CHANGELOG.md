@@ -1,5 +1,13 @@
 # @backstage/plugin-search-backend-module-stack-overflow-collator
 
+## 0.3.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.3.5
+  - @backstage/backend-plugin-api@1.0.1
+
 ## 0.3.2
 
 ### Patch Changes
