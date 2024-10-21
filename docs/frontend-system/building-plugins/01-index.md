@@ -120,7 +120,7 @@ the plugin package in a Backstage app without having to reference the plugin ins
 
 ## Registering a Plugin with your Backstage App
 
-The new frontend plugin system is designed to use the optional [feature discovery](../architecture/10-app/#feature-discovery) for registration. Please see the
+The new frontend plugin system is designed to use the optional [feature discovery](../architecture/10-app#feature-discovery) for registration. Please see the
 documentation on Feature Discovery for more information and how to turn it on.
 
 However, if you wish to manually register a plugin rather than using automated Feature Discovery, plugins are now designed
