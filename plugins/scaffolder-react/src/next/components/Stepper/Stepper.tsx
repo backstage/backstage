@@ -163,54 +163,63 @@ export const Stepper = (stepperProps: StepperProps) => {
     });
   }, [steps, activeStep, validators, apiHolder]);
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     setActiveStep(prevActiveStep => prevActiveStep - 1);
-  };
+  }, [setActiveStep]);
 
-  const handleChange = (e: IChangeEvent) => {
-    setStepsState(current => {
-      const newState = [...current];
-      newState[activeStep] = {
-        ...e.formData,
-      };
-      return newState;
-    });
-  };
-
-  const currentStep = useTransformSchemaToProps(steps[activeStep], { layouts });
-
-  const handleNext = async ({
-    formData = {},
-  }: {
-    formData?: Record<string, JsonValue>;
-  }) => {
-    // The validation should never throw, as the validators are wrapped in a try/catch.
-    // This makes it fine to set and unset state without try/catch.
-    setErrors(undefined);
-    setIsValidating(true);
-
-    const returnedValidation = await validation(formData);
-
-    setIsValidating(false);
-
-    if (hasErrors(returnedValidation)) {
-      setErrors(returnedValidation);
-    } else {
+  const handleChange = useCallback(
+    (e: IChangeEvent) => {
       setStepsState(current => {
         const newState = [...current];
         newState[activeStep] = {
-          ...formData,
+          ...e.formData,
         };
         return newState;
       });
+    },
+    [activeStep, setStepsState],
+  );
+
+  const currentStep = useTransformSchemaToProps(steps[activeStep], { layouts });
+
+  const handleNext = useCallback(
+    async ({ formData = {} }: { formData?: Record<string, JsonValue> }) => {
+      // The validation should never throw, as the validators are wrapped in a try/catch.
+      // This makes it fine to set and unset state without try/catch.
       setErrors(undefined);
-      setActiveStep(prevActiveStep => {
-        const stepNum = prevActiveStep + 1;
-        analytics.captureEvent('click', `Next Step (${stepNum})`);
-        return stepNum;
-      });
-    }
-  };
+      setIsValidating(true);
+
+      const returnedValidation = await validation(formData);
+
+      setIsValidating(false);
+
+      if (hasErrors(returnedValidation)) {
+        setErrors(returnedValidation);
+      } else {
+        setStepsState(current => {
+          const newState = [...current];
+          newState[activeStep] = {
+            ...formData,
+          };
+          return newState;
+        });
+        setErrors(undefined);
+        setActiveStep(prevActiveStep => {
+          const stepNum = prevActiveStep + 1;
+          analytics.captureEvent('click', `Next Step (${stepNum})`);
+          return stepNum;
+        });
+      }
+    },
+    [
+      activeStep,
+      validation,
+      analytics,
+      setActiveStep,
+      setErrors,
+      setStepsState,
+    ],
+  );
 
   const {
     formContext: propFormContext,
@@ -223,6 +232,14 @@ export const Stepper = (stepperProps: StepperProps) => {
   const formState = stepsState.reduce((acc, step) => {
     return { ...acc, ...step };
   }, {});
+
+  const formData = useMemo(
+    () => stepsState[activeStep],
+    // stepsState is recreated on every render, so we cache formData
+    // using the stringified version instead.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [JSON.stringify(stepsState[activeStep])],
+  );
 
   const handleCreate = useCallback(() => {
     props.onCreate(formState);
@@ -265,7 +282,7 @@ export const Stepper = (stepperProps: StepperProps) => {
             key={activeStep}
             validator={validator}
             extraErrors={errors as unknown as ErrorSchema}
-            formData={{ ...stepsState[activeStep] }}
+            formData={formData}
             formContext={{ ...propFormContext, formData: formState }}
             schema={currentStep.schema}
             uiSchema={mergedUiSchema}
