@@ -29,7 +29,6 @@ import {
 import { Config, readDurationFromConfig } from '@backstage/config';
 import { InputError, NotFoundError, stringifyError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
-import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
 import {
   TaskSpec,
   TemplateEntityStepV1beta3,
@@ -49,6 +48,13 @@ import {
   templateParameterReadPermission,
   templateStepReadPermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
+import {
+  AutocompleteHandler,
+  CreatedTemplateFilter,
+  CreatedTemplateGlobal,
+  WorkspaceProvider,
+} from '@backstage/plugin-scaffolder-node/alpha';
+import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
 import express from 'express';
 import Router from 'express-promise-router';
 import { validate } from 'jsonschema';
@@ -82,7 +88,6 @@ import {
   createPermissionIntegrationRouter,
   PermissionRule,
 } from '@backstage/plugin-permission-node';
-import { scaffolderActionRules, scaffolderTemplateRules } from './rules';
 import { Duration } from 'luxon';
 import {
   AuthService,
@@ -102,9 +107,14 @@ import {
 import { InternalTaskSecrets } from '../scaffolder/tasks/types';
 import { checkPermission } from '../util/checkPermissions';
 import {
-  AutocompleteHandler,
-  WorkspaceProvider,
-} from '@backstage/plugin-scaffolder-node/alpha';
+  templateFilterImpls,
+  templateFilterMetadata,
+  templateGlobalFunctionMetadata,
+  templateGlobalValueMetadata,
+  templateGlobals,
+} from '../util/templating';
+import { scaffolderActionRules, scaffolderTemplateRules } from './rules';
+import filters from '../lib/templating/filters';
 
 /**
  *
@@ -168,8 +178,12 @@ export interface RouterOptions {
    */
   concurrentTasksLimit?: number;
   taskBroker?: TaskBroker;
-  additionalTemplateFilters?: Record<string, TemplateFilter>;
-  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+  additionalTemplateFilters?:
+    | Record<string, TemplateFilter>
+    | CreatedTemplateFilter[];
+  additionalTemplateGlobals?:
+    | Record<string, TemplateGlobal>
+    | CreatedTemplateGlobal[];
   additionalWorkspaceProviders?: Record<string, WorkspaceProvider>;
   permissions?: PermissionsService;
   permissionRules?: Array<
@@ -352,6 +366,11 @@ export async function createRouter(
 
   const actionRegistry = new TemplateActionRegistry();
 
+  const templateExtensions = {
+    additionalTemplateFilters: templateFilterImpls(additionalTemplateFilters),
+    additionalTemplateGlobals: templateGlobals(additionalTemplateGlobals),
+  };
+
   const workers: TaskWorker[] = [];
   if (concurrentTasksLimit !== 0) {
     for (let i = 0; i < (taskWorkers || 1); i++) {
@@ -361,10 +380,9 @@ export async function createRouter(
         integrations,
         logger,
         workingDirectory,
-        additionalTemplateFilters,
-        additionalTemplateGlobals,
         concurrentTasksLimit,
         permissions,
+        ...templateExtensions,
       });
       workers.push(worker);
     }
@@ -377,9 +395,8 @@ export async function createRouter(
         catalogClient,
         reader,
         config,
-        additionalTemplateFilters,
-        additionalTemplateGlobals,
         auth,
+        ...templateExtensions,
       });
 
   actionsToRegister.forEach(action => actionRegistry.register(action));
@@ -402,9 +419,8 @@ export async function createRouter(
     integrations,
     logger,
     workingDirectory,
-    additionalTemplateFilters,
-    additionalTemplateGlobals,
     permissions,
+    ...templateExtensions,
   });
 
   const templateRules: TemplatePermissionRuleInput[] = Object.values(
@@ -863,6 +879,18 @@ export async function createRouter(
       });
 
       res.status(200).json({ results });
+    })
+    .get('/v2/template-extensions', async (_req, res) => {
+      res.status(200).json({
+        filters: {
+          ...templateFilterMetadata(filters({ integrations })),
+          ...templateFilterMetadata(additionalTemplateFilters),
+        },
+        globals: {
+          functions: templateGlobalFunctionMetadata(additionalTemplateGlobals),
+          values: templateGlobalValueMetadata(additionalTemplateGlobals),
+        },
+      });
     });
 
   const app = express();

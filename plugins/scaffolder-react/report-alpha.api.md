@@ -201,6 +201,7 @@ export type ScaffolderPageContextMenuProps = {
   onActionsClicked?: () => void;
   onTasksClicked?: () => void;
   onCreateClicked?: () => void;
+  onTemplateExtensionsClicked?: () => void;
 };
 
 // @alpha (undocumented)

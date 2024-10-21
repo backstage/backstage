@@ -54,17 +54,19 @@ export function createGithubDeployKeyAction(options: {
         properties: {
           repoUrl: {
             title: 'Repository Location',
-            description: `Accepts the format 'github.com?repo=reponame&owner=owner' where 'reponame' is the new repository name and 'owner' is an organization or username`,
+            description:
+              'Accepts the format `github.com?repo=reponame&owner=owner` where `reponame` is the new repository name and `owner` is an organization or username',
             type: 'string',
           },
           publicKey: {
             title: 'SSH Public Key',
-            description: `Generated from ssh-keygen.  Begins with 'ssh-rsa', 'ecdsa-sha2-nistp256', 'ecdsa-sha2-nistp384', 'ecdsa-sha2-nistp521', 'ssh-ed25519', 'sk-ecdsa-sha2-nistp256@openssh.com', or 'sk-ssh-ed25519@openssh.com'.`,
+            description:
+              'Generated from `ssh-keygen`.  Begins with `ssh-rsa`, `ecdsa-sha2-nistp256`, `ecdsa-sha2-nistp384`, `ecdsa-sha2-nistp521`, `ssh-ed25519`, `sk-ecdsa-sha2-nistp256@openssh.com`, or `sk-ssh-ed25519@openssh.com`.',
             type: 'string',
           },
           privateKey: {
             title: 'SSH Private Key',
-            description: `SSH Private Key generated from ssh-keygen`,
+            description: 'SSH Private Key generated from `ssh-keygen`',
             type: 'string',
           },
           deployKeyName: {
@@ -74,7 +76,8 @@ export function createGithubDeployKeyAction(options: {
           },
           privateKeySecretName: {
             title: 'Private Key GitHub Secret Name',
-            description: `Name of the GitHub Secret to store the private key related to the Deploy Key.  Defaults to: 'KEY_NAME_PRIVATE_KEY' where 'KEY_NAME' is the name of the Deploy Key`,
+            description:
+              'Name of the GitHub Secret to store the private key related to the Deploy Key.  Defaults to: `KEY_NAME_PRIVATE_KEY` where `KEY_NAME` is the name of the Deploy Key',
             type: 'string',
           },
           token: {

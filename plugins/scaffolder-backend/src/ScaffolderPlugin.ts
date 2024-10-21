@@ -21,14 +21,13 @@ import {
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
-import {
-  TaskBroker,
-  TemplateAction,
-  TemplateFilter,
-  TemplateGlobal,
-} from '@backstage/plugin-scaffolder-node';
+import { TaskBroker, TemplateAction } from '@backstage/plugin-scaffolder-node';
 import {
   AutocompleteHandler,
+  CreatedTemplateFilter,
+  CreatedTemplateGlobal,
+  createTemplateFilter,
+  createTemplateGlobal,
   scaffolderActionsExtensionPoint,
   scaffolderAutocompleteExtensionPoint,
   scaffolderTaskBrokerExtensionPoint,
@@ -50,6 +49,7 @@ import {
   createWaitAction,
 } from './scaffolder';
 import { createRouter } from './service/router';
+import { templateFilterImpls, templateGlobals } from './util/templating';
 
 /**
  * Scaffolder plugin
@@ -76,14 +76,35 @@ export const scaffolderPlugin = createBackendPlugin({
       },
     });
 
-    const additionalTemplateFilters: Record<string, TemplateFilter> = {};
-    const additionalTemplateGlobals: Record<string, TemplateGlobal> = {};
+    const additionalTemplateFilters: CreatedTemplateFilter[] = [];
+    const additionalTemplateGlobals: CreatedTemplateGlobal[] = [];
+
     env.registerExtensionPoint(scaffolderTemplatingExtensionPoint, {
       addTemplateFilters(newFilters) {
-        Object.assign(additionalTemplateFilters, newFilters);
+        additionalTemplateFilters.push(
+          ...(Array.isArray(newFilters)
+            ? newFilters
+            : Object.entries(newFilters).map(([id, filter]) =>
+                createTemplateFilter({
+                  id,
+                  filter,
+                }),
+              )),
+        );
       },
       addTemplateGlobals(newGlobals) {
-        Object.assign(additionalTemplateGlobals, newGlobals);
+        additionalTemplateGlobals.push(
+          ...(Array.isArray(newGlobals)
+            ? newGlobals
+            : Object.entries(newGlobals).map(([id, global]) =>
+                createTemplateGlobal({
+                  id,
+                  ...(typeof global === 'function'
+                    ? { fn: global }
+                    : { value: global }),
+                }),
+              )),
+        );
       },
     });
 
@@ -147,14 +168,22 @@ export const scaffolderPlugin = createBackendPlugin({
           createFetchTemplateAction({
             integrations,
             reader,
-            additionalTemplateFilters,
-            additionalTemplateGlobals,
+            additionalTemplateFilters: templateFilterImpls(
+              additionalTemplateFilters,
+            ),
+            additionalTemplateGlobals: templateGlobals(
+              additionalTemplateGlobals,
+            ),
           }),
           createFetchTemplateFileAction({
             integrations,
             reader,
-            additionalTemplateFilters,
-            additionalTemplateGlobals,
+            additionalTemplateFilters: templateFilterImpls(
+              additionalTemplateFilters,
+            ),
+            additionalTemplateGlobals: templateGlobals(
+              additionalTemplateGlobals,
+            ),
           }),
           createDebugLogAction(),
           createWaitAction(),
