@@ -63,7 +63,7 @@ async function generate(
       '-c',
       resolvePackagePath(
         '@backstage/repo-tools',
-        'templates/typescript-backstage.yaml',
+        'templates/typescript-backstage-client.yaml',
       ),
       '--generator-key',
       'v3.0',
@@ -79,15 +79,21 @@ async function generate(
     },
   );
 
-  await exec(
-    `yarn backstage-cli package lint --fix ${resolvedOutputDirectory}`,
-    [],
-    { signal: abortSignal?.signal },
+  const parentDirectory = resolve(resolvedOutputDirectory, '..');
+
+  await fs.writeFile(
+    resolve(parentDirectory, 'index.ts'),
+    `// 
+    export * from './generated';`,
   );
+
+  await exec(`yarn backstage-cli package lint --fix ${parentDirectory}`, [], {
+    signal: abortSignal?.signal,
+  });
 
   const prettier = cliPaths.resolveTargetRoot('node_modules/.bin/prettier');
   if (prettier) {
-    await exec(`${prettier} --write ${resolvedOutputDirectory}`, [], {
+    await exec(`${prettier} --write ${parentDirectory}`, [], {
       signal: abortSignal?.signal,
     });
   }

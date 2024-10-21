@@ -167,7 +167,11 @@ function createConfig(dir, extraConfig = {}) {
         },
       },
       {
-        files: ['**/src/generated/**/*.ts'],
+        files: [
+          // old location
+          '**/src/generated/**/*.ts',
+          '**/src/schema/openapi/generated/**/*.ts',
+        ],
         rules: {
           ...tsRules,
           'no-unused-vars': 'off',
