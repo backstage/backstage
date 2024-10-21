@@ -105,6 +105,7 @@ import {
   AutocompleteHandler,
   WorkspaceProvider,
 } from '@backstage/plugin-scaffolder-node/alpha';
+import { EventsService } from '@backstage/plugin-events-node';
 
 /**
  *
@@ -179,6 +180,7 @@ export interface RouterOptions {
   httpAuth?: HttpAuthService;
   identity?: IdentityApi;
   discovery?: DiscoveryService;
+  events?: EventsService;
 
   autocompleteHandlers?: Record<string, AutocompleteHandler>;
 }
@@ -291,6 +293,7 @@ export async function createRouter(
     discovery = HostDiscovery.fromConfig(config),
     identity = buildDefaultIdentityClient(options),
     autocompleteHandlers = {},
+    events: eventsService,
   } = options;
 
   const { auth, httpAuth } = createLegacyAuthAdapters({
@@ -310,7 +313,10 @@ export async function createRouter(
 
   let taskBroker: TaskBroker;
   if (!options.taskBroker) {
-    const databaseTaskStore = await DatabaseTaskStore.create({ database });
+    const databaseTaskStore = await DatabaseTaskStore.create({
+      database,
+      events: eventsService,
+    });
     taskBroker = new StorageTaskBroker(
       databaseTaskStore,
       logger,
