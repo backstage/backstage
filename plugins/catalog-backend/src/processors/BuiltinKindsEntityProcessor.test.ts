@@ -307,13 +307,15 @@ describe('BuiltinKindsEntityProcessor', () => {
           owner: 'o',
           dependsOn: ['Component:c', 'Resource:r'],
           dependencyOf: ['Component:d'],
+          partOf: ['Resource:r1'],
+          hasPart: ['Resource:r2'],
           system: 's',
         },
       };
 
       await processor.postProcessEntity(entity, location, emit);
 
-      expect(emit).toHaveBeenCalledTimes(10);
+      expect(emit).toHaveBeenCalledTimes(14);
       expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
@@ -362,6 +364,40 @@ describe('BuiltinKindsEntityProcessor', () => {
           source: { kind: 'Resource', namespace: 'default', name: 'r' },
           type: 'dependencyOf',
           target: { kind: 'Resource', namespace: 'default', name: 'n' },
+        },
+      });
+
+      expect(emit).toHaveBeenCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Resource', namespace: 'default', name: 'n' },
+          type: 'partOf',
+          target: { kind: 'Resource', namespace: 'default', name: 'r1' },
+        },
+      });
+      expect(emit).toHaveBeenCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Resource', namespace: 'default', name: 'r1' },
+          type: 'hasPart',
+          target: { kind: 'Resource', namespace: 'default', name: 'n' },
+        },
+      });
+
+      expect(emit).toHaveBeenCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Resource', namespace: 'default', name: 'r2' },
+          type: 'partOf',
+          target: { kind: 'Resource', namespace: 'default', name: 'n' },
+        },
+      });
+      expect(emit).toHaveBeenCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Resource', namespace: 'default', name: 'n' },
+          type: 'hasPart',
+          target: { kind: 'Resource', namespace: 'default', name: 'r2' },
         },
       });
 

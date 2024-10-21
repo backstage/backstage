@@ -95,9 +95,11 @@ This relation is commonly based on `spec.memberOf`.
 
 ### `partOf` and `hasPart`
 
-A relation with a [Domain](descriptor-format.md#kind-domain),
+A relation with a [Resource](descriptor-format.md#kind-resource),
+[Domain](descriptor-format.md#kind-domain),
 [System](descriptor-format.md#kind-system) or
-[Component](descriptor-format.md#kind-component) entity, typically from a
+[Component](descriptor-format.md#kind-component) entity, typically from another
+[Resource](descriptor-format.md#kind-resource),
 [Component](descriptor-format.md#kind-component),
 [API](descriptor-format.md#kind-api),
 [System](descriptor-format.md#kind-system), or
