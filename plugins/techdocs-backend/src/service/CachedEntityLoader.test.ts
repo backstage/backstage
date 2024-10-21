@@ -59,7 +59,8 @@ describe('CachedEntityLoader', () => {
   });
 
   it('returns entities from cache', async () => {
-    const catalog = catalogServiceMock.mock();
+    const catalog = catalogServiceMock();
+    jest.spyOn(catalog, 'getEntityByRef');
     cache.get.mockResolvedValue(entity);
 
     const loader = new CachedEntityLoader({ catalog, cache });
