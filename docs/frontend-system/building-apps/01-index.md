@@ -6,9 +6,11 @@ sidebar_label: Overview
 description: Building frontend apps using the new frontend system
 ---
 
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins. If you want to use the
-> new plugin system, you must migrate your entire Backstage application or start a new application from scratch. We do not
-> yet recommend migrating any apps to the new system.**
+:::info
+The new frontend system is in alpha and is only supported by a small number of plugins. If you want to use the new
+plugin system, you must migrate your entire Backstage application or start a new application from scratch. We do not yet
+recommend migrating any apps to the new system.
+:::
 
 To get set up quickly with your own Backstage project you can create a Backstage App.
 

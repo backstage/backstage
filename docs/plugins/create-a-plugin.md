@@ -31,14 +31,15 @@ The `App.tsx` file will also be updated to include a route to the new generated 
 ```
 
 :::info
-Important Advanced Note!
+Note on plugin registration!
 
-Placing `<MyPluginPage />` into the application is what registers everything in your plugin with the Backstage
-application. Do not remove this unless you know what you are doing.
+By default, placing `<MyPluginPage />` into the application is what registers everything in your plugin with the Backstage
+application. This is because plugins are discovered when the Backstage `AppManager` traverses the React node tree when
+React starts up. When it finds a plugin extension in the visible React tree, it then "registers" the associated plugin
+and makes its apis available to `useApi()`.
 
-By default, plugins are discovered when the Backstage `AppManager` traverses the React node tree when React starts up.
-When it finds a plugin extension in the visible React tree, it then "registers" the associated plugin and makes its apis
-available to `useApi()`.
+If you have no need for a root page, you can add your plugin via the `createApp({ plugins: [...] })` field. You can see
+an example in the demo [Badges plugin here](https://github.com/backstage/demo/blob/5c31c970ce7e3aae4756b54eb7ad0bb5ebf10c03/packages/app/src/App.tsx#L63).
 :::
 
 > If the Backstage App is already running (with `yarn start` or `yarn dev`) you

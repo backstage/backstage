@@ -6,7 +6,11 @@ sidebar_label: Configuring
 description: Configuring, extending, and overriding utility APIs
 ---
 
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
+:::info
+The new frontend system is in alpha and is only supported by a small number of plugins. If you want to use the new
+plugin system, you must migrate your entire Backstage application or start a new application from scratch. We do not yet
+recommend migrating any apps to the new system.
+:::
 
 Utility APIs are extensions and can therefore optionally be amended with configurability, as well as inputs that other extensions attach themselves to. This section describes how to make use of that as a consumer of such utility APIs.
 

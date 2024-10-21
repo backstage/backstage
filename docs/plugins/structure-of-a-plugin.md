@@ -64,7 +64,7 @@ import { createRoutableExtension } from '@backstage/core-plugin-api';
 
 import { rootRouteRef } from './routes';
 
-export const examplePlugin = createFrontendPlugin({
+export const examplePlugin = createPlugin({
   id: 'example',
   routes: {
     root: rootRouteRef,
