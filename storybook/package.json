@@ -1,42 +1,46 @@
 {
-  "name": "storybook",
+  "name": "backstage-storybook",
   "version": "0.2.2",
   "description": "Storybook build for components package",
   "private": true,
+  "type": "module",
   "scripts": {
-    "build-storybook": "build-storybook --output-dir dist",
-    "start": "start-storybook -p 6006"
+    "build-storybook": "storybook build --output-dir dist",
+    "storybook": "storybook dev -p 6006"
   },
-  "resolutions": {
-    "webpack": "^5.73.0"
+  "eslintConfig": {
+    "extends": [
+      "plugin:storybook/recommended"
+    ]
   },
   "dependencies": {
-    "@swc/core": "^1.3.46",
-    "react": "^18.0.2",
-    "react-dom": "^18.0.2",
-    "react-hot-loader": "^4.13.0",
-    "react-router-dom": "^6.25.1",
-    "swc-loader": "^0.2.3"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@storybook/addon-a11y": "^6.5.9",
-    "@storybook/addon-actions": "^6.5.9",
-    "@storybook/addon-controls": "^6.5.9",
-    "@storybook/addon-links": "^6.5.9",
-    "@storybook/addon-storysource": "^6.5.9",
-    "@storybook/addons": "^6.5.9",
-    "@storybook/builder-webpack5": "^6.5.9",
-    "@storybook/manager-webpack5": "^6.5.9",
-    "@storybook/node-logger": "^6.5.9",
-    "@storybook/react": "^6.5.9",
-    "@storybook/testing-library": "^0.2.0",
-    "storybook-dark-mode": "^1.1.0",
-    "typescript": "~4.9.0"
-  },
-  "peerDependencies": {
-    "@backstage/core-app-api": "*",
-    "@backstage/core-plugin-api": "*",
-    "@backstage/test-utils": "*",
-    "@backstage/theme": "*"
+    "@chromatic-com/storybook": "^1.9.0",
+    "@storybook/addon-essentials": "^8.3.5",
+    "@storybook/addon-interactions": "^8.3.5",
+    "@storybook/addon-links": "^8.3.5",
+    "@storybook/addon-themes": "^8.3.6",
+    "@storybook/blocks": "^8.3.5",
+    "@storybook/react": "^8.3.5",
+    "@storybook/react-vite": "^8.3.5",
+    "@storybook/test": "^8.3.5",
+    "@storybook/types": "^8.3.5",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "eslint": "^9.11.1",
+    "eslint-plugin-storybook": "^0.9.0",
+    "globals": "^15.9.0",
+    "react": "^18.0.2",
+    "react-dom": "^18.0.2",
+    "react-router-dom": "^6.3.0",
+    "storybook": "^8.3.5",
+    "typescript": "^5.5.3",
+    "typescript-eslint": "^8.7.0",
+    "vite": "^5.4.8"
   }
 }

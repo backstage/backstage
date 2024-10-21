@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import React from 'react';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -23,9 +24,15 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
-import React, { useState } from 'react';
 
-const useStyles = makeStyles((theme: Theme) =>
+const meta = {
+  title: 'Layout/Dialog',
+  component: Dialog,
+};
+
+export default meta;
+
+const styles = makeStyles((theme: Theme) =>
   createStyles({
     closeButton: {
       position: 'absolute',
@@ -36,90 +43,57 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export default {
-  title: 'Layout/Dialog',
-  component: Dialog,
-};
+export const Default = {
+  args: {
+    open: true,
+  },
+  render: ({ open }: { open: boolean }) => {
+    const classes = styles();
 
-export const Default = () => {
-  const [open, setOpen] = useState(false);
-  const classes = useStyles();
-
-  const openDialog = () => {
-    setOpen(true);
-  };
-
-  const closeDialog = () => {
-    setOpen(false);
-  };
-
-  const dialogContent = () => {
     return (
-      <>
-        <Typography>
-          This is an example of how to use the Dialog component.
-        </Typography>
-        <Typography>
-          This component is used whenever confirmation of some sort is needed,
-          such as:
-        </Typography>
-        <ul>
-          <li>
-            <Typography>
-              Consent to sensitive matters like GDPR, access, etc;
-            </Typography>
-          </li>
-          <li>
-            <Typography>
-              Save, submit, cancel after a form is completed;
-            </Typography>
-          </li>
-          <li>
-            <Typography>Alert message;</Typography>
-          </li>
-          <li>
-            <Typography>Buttons are optional.</Typography>
-          </li>
-        </ul>
-        <Typography>
-          The color for the secondary button is the same as the primary.
-        </Typography>
-        <pre>color="primary"</pre>
-      </>
-    );
-  };
-
-  return (
-    <>
-      <Button color="primary" variant="contained" onClick={openDialog}>
-        Open Dialog
-      </Button>
       <Dialog
-        open={open}
-        onClose={closeDialog}
         aria-labelledby="dialog-title"
         aria-describedby="dialog-description"
+        open={open}
       >
         <DialogTitle id="dialog-title">
           Dialog Box Title
-          <IconButton
-            aria-label="close"
-            className={classes.closeButton}
-            onClick={closeDialog}
-          >
+          <IconButton aria-label="close" className={classes.closeButton}>
             <CloseIcon />
           </IconButton>
         </DialogTitle>
-        <DialogContent>{dialogContent()}</DialogContent>
+        <DialogContent>
+          <Typography>
+            This component is used whenever confirmation of some sort is needed,
+            such as:
+          </Typography>
+          <ul>
+            <li>
+              <Typography>
+                Consent to sensitive matters like GDPR, access, etc;
+              </Typography>
+            </li>
+            <li>
+              <Typography>
+                Save, submit, cancel after a form is completed;
+              </Typography>
+            </li>
+            <li>
+              <Typography>Alert message;</Typography>
+            </li>
+            <li>
+              <Typography>Buttons are optional.</Typography>
+            </li>
+          </ul>
+          <Typography>
+            The color for the secondary button is the same as the primary.
+          </Typography>
+        </DialogContent>
         <DialogActions>
-          <Button color="primary" onClick={closeDialog}>
-            Secondary action
-          </Button>
-          <Button color="primary" onClick={closeDialog}>
-            Primary action
-          </Button>
+          <Button color="primary">Secondary action</Button>
+          <Button color="primary">Primary action</Button>
         </DialogActions>
       </Dialog>
-    </>
-  );
+    );
+  },
 };
