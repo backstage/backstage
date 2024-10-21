@@ -225,8 +225,8 @@ integrations:
   azureBlobStorage:
     - accountName: ${ACCOUNT_NAME} # required
       endpoint: ${CUSTOM_ENDPOINT} # custom endpoint will require either aadCredentials or sasToken
-      sasToken: ${SAS_TOKEN} 
-      aadCredential: 
+      sasToken: ${SAS_TOKEN}
+      aadCredential:
         clientId: ${CLIENT_ID}
         tenantId: ${TENANT_ID}
         clientSecret: ${CLIENT_SECRET}
@@ -259,10 +259,10 @@ catalog:
     azureBlob:
       containerName: ${CONTAINER_NAME}
       schedule: # same options as in TaskScheduleDefinition
-          # supports cron, ISO duration, "human duration" as used in code
-          frequency: { minutes: 30 }
-          # supports ISO duration, "human duration" as used in code
-          timeout: { minutes: 3 }
+        # supports cron, ISO duration, "human duration" as used in code
+        frequency: { minutes: 30 }
+        # supports ISO duration, "human duration" as used in code
+        timeout: { minutes: 3 }
     backstageOpenapi:
       plugins:
         - catalog
