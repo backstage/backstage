@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { PluginDatabaseManager } from '@backstage/backend-common';
-import { resolvePackagePath } from '@backstage/backend-plugin-api';
+import {
+  DatabaseService,
+  resolvePackagePath,
+} from '@backstage/backend-plugin-api';
 import {
   NotificationGetOptions,
   NotificationModifyOptions,
@@ -22,8 +24,9 @@ import {
 } from './NotificationsStore';
 import {
   Notification,
-  NotificationSeverity,
+  NotificationSettings,
   notificationSeverities,
+  NotificationSeverity,
 } from '@backstage/plugin-notifications-common';
 import { Knex } from 'knex';
 
@@ -49,6 +52,50 @@ const NOTIFICATION_COLUMNS = [
   'saved',
 ];
 
+type NotificationRowType = {
+  id: string;
+  user: string;
+  title: string;
+  description?: string | null;
+  severity: string;
+  link: string | null;
+  origin: string;
+  scope: string | null;
+  topic: string | null;
+  created: Date;
+  updated: Date | null;
+  read: Date | null;
+  saved: Date | null;
+  icon: string | null;
+};
+
+type BroadcastRowType = {
+  id: string;
+  title: string;
+  description: string | null;
+  link: string | null;
+  origin: string;
+  scope: string | null;
+  topic: string | null;
+  created: Date;
+  updated: Date | null;
+  icon: string | null;
+};
+
+type BroadcastUserStatusRowType = {
+  broadcast_id: string;
+  user: string;
+  read: Date | null;
+  saved: Date | null;
+};
+
+type UserSettingsRowType = {
+  user: string;
+  channel: string;
+  origin: string;
+  enabled: boolean;
+};
+
 export const normalizeSeverity = (input?: string): NotificationSeverity => {
   let lower = (input ?? 'normal').toLowerCase() as NotificationSeverity;
   if (notificationSeverities.indexOf(lower) < 0) {
@@ -69,7 +116,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     database,
     skipMigrations,
   }: {
-    database: PluginDatabaseManager;
+    database: DatabaseService;
     skipMigrations?: boolean;
   }): Promise<DatabaseNotificationsStore> {
     const client = await database.getClient();
@@ -108,6 +155,29 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     }));
   };
 
+  private mapToNotificationSettings = (rows: any[]): NotificationSettings => {
+    return rows.reduce(
+      (acc, row) => {
+        let chan = acc.channels.find(
+          (channel: { id: string }) => channel.id === row.channel,
+        );
+        if (!chan) {
+          acc.channels.push({
+            id: row.channel,
+            origins: [],
+          });
+          chan = acc.channels[acc.channels.length - 1];
+        }
+        chan.origins.push({
+          id: row.origin,
+          enabled: Boolean(row.enabled),
+        });
+        return acc;
+      },
+      { channels: [] },
+    );
+  };
+
   private mapNotificationToDbRow = (notification: Notification) => {
     return {
       id: notification.id,
@@ -142,7 +212,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
   };
 
   private getBroadcastUnion = (user?: string | null) => {
-    return this.db('broadcast')
+    return this.db<BroadcastRowType>('broadcast')
       .leftJoin('broadcast_user_status', function clause() {
         const join = this.on('id', '=', 'broadcast_user_status.broadcast_id');
         if (user !== null && user !== undefined) {
@@ -157,7 +227,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
   ) => {
     const { user, orderField } = options;
 
-    const subQuery = this.db('notification')
+    const subQuery = this.db<NotificationRowType>('notification')
       .select(NOTIFICATION_COLUMNS)
       .unionAll([this.getBroadcastUnion(user)])
       .as('notifications');
@@ -295,7 +365,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     scope: string;
     origin: string;
   }) {
-    const query = this.db('notification')
+    const query = this.db<NotificationRowType>('notification')
       .where('user', options.user)
       .where('scope', options.scope)
       .where('origin', options.origin)
@@ -305,11 +375,11 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     if (!rows || rows.length === 0) {
       return null;
     }
-    return rows[0] as Notification;
+    return this.mapToNotifications(rows)[0];
   }
 
   async getExistingScopeBroadcast(options: { scope: string; origin: string }) {
-    const query = this.db('broadcast')
+    const query = this.db<BroadcastRowType>('broadcast')
       .where('scope', options.scope)
       .where('origin', options.origin)
       .limit(1);
@@ -318,7 +388,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     if (!rows || rows.length === 0) {
       return null;
     }
-    return rows[0] as Notification;
+    return this.mapToNotifications(rows)[0];
   }
 
   async restoreExistingNotification({
@@ -358,7 +428,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     const rows = await this.db
       .select('*')
       .from(
-        this.db('notification')
+        this.db<NotificationRowType>('notification')
           .select(NOTIFICATION_COLUMNS)
           .unionAll([this.getBroadcastUnion(options.user)])
           .as('notifications'),
@@ -377,7 +447,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     read?: Date | null,
     saved?: Date | null,
   ) => {
-    await this.db('notification')
+    await this.db<NotificationRowType>('notification')
       .whereIn('id', ids)
       .where('user', user)
       .update({ read, saved });
@@ -388,7 +458,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
 
     if (broadcasts.length > 0)
       if (!this.isSQLite) {
-        await this.db('broadcast_user_status')
+        await this.db<BroadcastUserStatusRowType>('broadcast_user_status')
           .insert(
             broadcasts.map(b => ({
               broadcast_id: b.id,
@@ -402,7 +472,9 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       } else {
         // SQLite does not support upsert so fall back to this (mostly for tests and local dev)
         for (const b of broadcasts) {
-          const baseQuery = this.db('broadcast_user_status')
+          const baseQuery = this.db<BroadcastUserStatusRowType>(
+            'broadcast_user_status',
+          )
             .where('broadcast_id', b.id)
             .where('user', user);
           const exists = await baseQuery.clone().limit(1).select().first();
@@ -431,5 +503,64 @@ export class DatabaseNotificationsStore implements NotificationsStore {
 
   async markUnsaved(options: NotificationModifyOptions): Promise<void> {
     await this.markReadSaved(options.ids, options.user, undefined, null);
+  }
+
+  async getUserNotificationOrigins(options: {
+    user: string;
+  }): Promise<{ origins: string[] }> {
+    const rows: { origin: string }[] = await this.db<NotificationRowType>(
+      'notification',
+    )
+      .where('user', options.user)
+      .select('origin')
+      .distinct();
+    return { origins: rows.map(row => row.origin) };
+  }
+
+  async getNotificationSettings(options: {
+    user: string;
+    origin?: string;
+    channel?: string;
+  }): Promise<NotificationSettings> {
+    const settingsQuery = this.db<UserSettingsRowType>('user_settings').where(
+      'user',
+      options.user,
+    );
+    if (options.origin) {
+      settingsQuery.where('origin', options.origin);
+    }
+
+    if (options.channel) {
+      settingsQuery.where('channel', options.channel);
+    }
+    const settings = await settingsQuery.select();
+    return this.mapToNotificationSettings(settings);
+  }
+
+  async saveNotificationSettings(options: {
+    user: string;
+    settings: NotificationSettings;
+  }): Promise<void> {
+    const rows: {
+      user: string;
+      channel: string;
+      origin: string;
+      enabled: boolean;
+    }[] = [];
+    options.settings.channels.map(channel => {
+      channel.origins.map(origin => {
+        rows.push({
+          user: options.user,
+          channel: channel.id,
+          origin: origin.id,
+          enabled: origin.enabled,
+        });
+      });
+    });
+
+    await this.db<UserSettingsRowType>('user_settings')
+      .where('user', options.user)
+      .delete();
+    await this.db<UserSettingsRowType>('user_settings').insert(rows);
   }
 }

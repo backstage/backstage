@@ -7212,7 +7212,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-scaffolder-backend-module-notifications@workspace:plugins/scaffolder-backend-module-notifications":
+"@backstage/plugin-scaffolder-backend-module-notifications@workspace:^, @backstage/plugin-scaffolder-backend-module-notifications@workspace:plugins/scaffolder-backend-module-notifications":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-notifications@workspace:plugins/scaffolder-backend-module-notifications"
   dependencies:
@@ -27083,6 +27083,7 @@ __metadata:
     "@backstage/plugin-proxy-backend": "workspace:^"
     "@backstage/plugin-scaffolder-backend": "workspace:^"
     "@backstage/plugin-scaffolder-backend-module-github": "workspace:^"
+    "@backstage/plugin-scaffolder-backend-module-notifications": "workspace:^"
     "@backstage/plugin-search-backend": "workspace:^"
     "@backstage/plugin-search-backend-module-catalog": "workspace:^"
     "@backstage/plugin-search-backend-module-explore": "workspace:^"

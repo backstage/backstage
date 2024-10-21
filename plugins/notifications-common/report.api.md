@@ -11,6 +11,13 @@ export const getProcessorFiltersFromConfig: (
 ) => NotificationProcessorFilters;
 
 // @public (undocumented)
+export const isNotificationsEnabledFor: (
+  settings: NotificationSettings,
+  channelId: string,
+  originId: string,
+) => boolean;
+
+// @public (undocumented)
 export type NewNotificationSignal = {
   action: 'new_notification';
   notification_id: string;
@@ -51,6 +58,17 @@ export type NotificationProcessorFilters = {
 export type NotificationReadSignal = {
   action: 'notification_read' | 'notification_unread';
   notification_ids: string[];
+};
+
+// @public (undocumented)
+export type NotificationSettings = {
+  channels: {
+    id: string;
+    origins: {
+      id: string;
+      enabled: boolean;
+    }[];
+  }[];
 };
 
 // @public
