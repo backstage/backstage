@@ -43,31 +43,7 @@ const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
 });
 
-const cloneMock = jest.fn(() => Promise.resolve());
-jest.mock('./git', () => ({
-  Git: {
-    fromAuth: () => ({
-      clone: cloneMock,
-    }),
-  },
-}));
-
-// Gerrit processor without a gitilesBaseUrl configured
 const gerritProcessor = new GerritUrlReader(
-  new GerritIntegration(
-    readGerritIntegrationConfig(
-      new ConfigReader({
-        host: 'gerrit.com',
-        gitilesBaseUrl: 'https://gerrit.com/gitiles',
-      }),
-    ),
-  ),
-  { treeResponseFactory },
-);
-
-// Gerrit processor with a gitilesBaseUrl configured.
-// Use to test readTree with Gitiles archive download.
-const gerritProcessorWithGitiles = new GerritUrlReader(
   new GerritIntegration(
     readGerritIntegrationConfig(
       new ConfigReader({
@@ -87,10 +63,7 @@ const createReader = (config: JsonObject): UrlReaderPredicateTuple[] => {
   });
 };
 
-// TODO(Rugvip): These tests seem to be a direct or indirect cause of the TaskWorker test flakiness
-//               We're not sure why at this point, but while investigating these tests are disabled
-// eslint-disable-next-line jest/no-disabled-tests
-describe.skip('GerritUrlReader', () => {
+describe('GerritUrlReader', () => {
   const worker = setupServer();
   registerMswTestHooks(worker);
 
@@ -127,26 +100,7 @@ describe.skip('GerritUrlReader', () => {
     });
   });
 
-  describe('predicates without Gitiles', () => {
-    const readers = createReader({
-      integrations: {
-        gerrit: [
-          { host: 'gerrit.com', gitilesBaseUrl: 'https://gerrit.com/gitiles' },
-        ],
-      },
-    });
-    const predicate = readers[0].predicate;
-
-    it('returns true for the configured host', () => {
-      expect(predicate(new URL('https://gerrit.com/path'))).toBe(true);
-    });
-
-    it('returns false for a different host.', () => {
-      expect(predicate(new URL('https://github.com/path'))).toBe(false);
-    });
-  });
-
-  describe('predicates with gitilesBaseUrl set.', () => {
+  describe('predicates', () => {
     const readers = createReader({
       integrations: {
         gerrit: [
@@ -316,9 +270,7 @@ describe.skip('GerritUrlReader', () => {
         }),
       );
 
-      const response = await gerritProcessorWithGitiles.readTree(
-        treeUrlGitiles,
-      );
+      const response = await gerritProcessor.readTree(treeUrlGitiles);
 
       expect(response.etag).toBe(etag);
 
@@ -330,8 +282,6 @@ describe.skip('GerritUrlReader', () => {
 
       const mdFile = await files[1].content();
       expect(mdFile.toString()).toBe('site_name: Test\n');
-
-      expect(cloneMock).not.toHaveBeenCalled();
     });
 
     it('throws NotModifiedError for matching etags.', async () => {
@@ -375,9 +325,7 @@ describe.skip('GerritUrlReader', () => {
         }),
       );
 
-      const response = await gerritProcessorWithGitiles.readTree(
-        `${treeUrlGitiles}/docs`,
-      );
+      const response = await gerritProcessor.readTree(`${treeUrlGitiles}/docs`);
 
       expect(response.etag).toBe(etag);
 
@@ -386,8 +334,122 @@ describe.skip('GerritUrlReader', () => {
 
       const mdFile = await files[0].content();
       expect(mdFile.toString()).toBe('# Test\n');
+    });
+  });
 
-      expect(cloneMock).not.toHaveBeenCalled();
+  describe('search', () => {
+    const branchAPIUrl =
+      'https://gerrit.com/projects/app%2Fweb/branches/master';
+    const branchAPIresponse = fs.readFileSync(
+      path.resolve(__dirname, '__fixtures__/gerrit/branch-info-response.txt'),
+    );
+    const searchUrl =
+      'https://gerrit.com/app/web/+/refs/heads/master/**/catalog-info.yaml';
+    const etag = '52432507a70b677b5674b019c9a46b2e9f29d0a1';
+    const treeRecursiveResponse = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        '__fixtures__/gerrit/tree-recursive-response.txt',
+      ),
+    );
+
+    beforeEach(async () => {
+      worker.use(
+        rest.get(
+          'https://gerrit.com/projects/app%2Fweb/branches/master/files/catalog-info.yaml/content',
+          (_, res, ctx) => {
+            return res(
+              ctx.status(200),
+              ctx.body(Buffer.from('Backstage manifest').toString('base64')),
+            );
+          },
+        ),
+      );
+      worker.use(
+        rest.get(
+          'https://gerrit.com/gitiles/app/web/\\+/refs/heads/master/',
+          (req, res, ctx) => {
+            if (
+              req.url.searchParams.has('format', 'JSON') &&
+              req.url.searchParams.has('recursive')
+            ) {
+              return res(
+                ctx.status(200),
+                ctx.set('Content-Type', 'application/json'),
+                ctx.set('content-disposition', 'attachment'),
+                ctx.body(treeRecursiveResponse),
+              );
+            }
+
+            return res(ctx.status(404));
+          },
+        ),
+      );
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('reads the wanted files correctly using gitiles.', async () => {
+      worker.use(
+        rest.get(branchAPIUrl, (_, res, ctx) => {
+          return res(ctx.status(200), ctx.body(branchAPIresponse));
+        }),
+      );
+
+      const response = await gerritProcessor.search(searchUrl);
+
+      expect(response.etag).toBe(etag);
+
+      expect(response.files.length).toBe(3);
+
+      expect(response.files[0].url).toEqual(
+        'https://gerrit.com/gitiles/app/web/+/refs/heads/master/catalog-info.yaml',
+      );
+      expect(response.files[1].url).toEqual(
+        'https://gerrit.com/gitiles/app/web/+/refs/heads/master/microservices/petstore-api/catalog-info.yaml',
+      );
+      expect(response.files[2].url).toEqual(
+        'https://gerrit.com/gitiles/app/web/+/refs/heads/master/microservices/petstore-consumer/catalog-info.yaml',
+      );
+
+      const docsYaml = await response.files[0].content();
+      expect(docsYaml.toString()).toBe('Backstage manifest');
+    });
+
+    it('throws NotModifiedError for matching etags.', async () => {
+      worker.use(
+        rest.get(branchAPIUrl, (_, res, ctx) => {
+          return res(ctx.status(200), ctx.body(branchAPIresponse));
+        }),
+      );
+
+      await expect(gerritProcessor.search(searchUrl, { etag })).rejects.toThrow(
+        NotModifiedError,
+      );
+    });
+
+    it('throws NotFoundError if branch info not found.', async () => {
+      worker.use(
+        rest.get(branchAPIUrl, (_, res, ctx) => {
+          return res(ctx.status(404, 'Not found.'));
+        }),
+      );
+
+      await expect(gerritProcessor.search(searchUrl)).rejects.toThrow(
+        NotFoundError,
+      );
+    });
+
+    it('should throw on failures while getting branch info.', async () => {
+      worker.use(
+        rest.get(branchAPIUrl, (_, res, ctx) => {
+          return res(ctx.status(500, 'Error'));
+        }),
+      );
+
+      await expect(gerritProcessor.search(searchUrl)).rejects.toThrow(Error);
     });
   });
 });
