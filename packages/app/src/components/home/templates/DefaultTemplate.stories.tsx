@@ -37,7 +37,8 @@ import {
   searchApiRef,
   SearchContextProvider,
 } from '@backstage/plugin-search-react';
-import { Grid, makeStyles } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
 import React, { ComponentType, PropsWithChildren } from 'react';
 
 const entities = [
@@ -126,8 +127,8 @@ const useStyles = makeStyles(theme => ({
     boxShadow: theme.shadows[1],
   },
   searchBarOutline: {
-    borderStyle: 'none'
-  }
+    borderStyle: 'none',
+  },
 }));
 
 const useLogoStyles = makeStyles(theme => ({
@@ -156,9 +157,14 @@ export const DefaultTemplate = () => {
               className={container}
               logo={<TemplateBackstageLogo classes={{ svg, path }} />}
             />
-            <Grid container item xs={12} justifyContent='center'>
+            <Grid container item xs={12} justifyContent="center">
               <HomePageSearchBar
-                InputProps={{ classes: { root: classes.searchBarInput, notchedOutline: classes.searchBarOutline }}}
+                InputProps={{
+                  classes: {
+                    root: classes.searchBarInput,
+                    notchedOutline: classes.searchBarOutline,
+                  },
+                }}
                 placeholder="Search"
               />
             </Grid>
