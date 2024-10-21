@@ -5,25 +5,25 @@ sidebar_label: Cloud Foundry
 description: How to deploy Backstage to Cloud Foundry
 ---
 
-Cloud Foundry is an open source cloud application platform that makes it faster and easier to build, test, deploy, and scale apps in your choice of cloud, framework, and language.
+Cloud Foundry (CF) is an open-source cloud application platform that makes it fast and easy to build, test, deploy, and scale apps in your choice language, framework, and cloud.
 
 ## Prerequisites & the Cloud Foundry CLI
 
-This guide assumes a basic understanding of working on a cloud foundry environment specifically using the cloud foundry CLI or CF CLI for short. See the [getting started guide](https://docs.cloudfoundry.org/cf-cli/getting-started.html) for more information.
+This guide assumes a basic understanding of working on a Cloud Foundry environment, specifically using the CF CLI. See the [CF CLI Getting Started Guide](https://docs.cloudfoundry.org/cf-cli/getting-started.html) for more information.
 
 ## Getting Started
 
-Build your own developer portal. Follow the getting started guide on backstage to get started. https://backstage.io/docs/getting-started/
+First, generate your own developer portal with Backstage by following the [Backstage getting started guide](https://backstage.io/docs/getting-started/).
 
-Next, install the Cloud Foundry CLI and follow the instructions in the quickstart guide to login.
+Next, install the Cloud Foundry CLI and follow the instructions in the getting started guide to login to a Cloud Foundry environment.
 
-Once we are situated with an instance of backstage and our cloud foundry CLI we can get started in configuring the backstage instance to work with Cloud Foundry.
+Now you can get started configuring your Backstage instance to be deployable on Cloud Foundry.
 
-From the top level of your backstage project change directory into your backend packages folder. Here we will create our manifest.yml file as well as modify our package.json to accommodate our buildpack
+From the top-level of your Backstage project, change directory into the `packages/backend` directory. Here you will create the CF `manifest.yml` app configuration file and modify the `package.json` file to be compatible with the CF Node.js [buildpack](https://docs.cloudfoundry.org/buildpacks/).
 
-This is important because the nodejs buildpack see [buildpacks](https://docs.cloudfoundry.org/buildpacks/) does not support newer versions of yarn. We need to modify our package.json to swap any references of `link:..` With `file:..`
-Example to update:
+This is important because the [Node.js buildpack](https://github.com/cloudfoundry/nodejs-buildpack) [does not currently support newer versions of Yarn](https://github.com/cloudfoundry/nodejs-buildpack/pull/679); you need to modify the `package.json` to swap any references of `link:..` With `file:..`.
 
+For example, update:
 ```
 "dependencies": {
   ...
@@ -31,9 +31,9 @@ Example to update:
   "app": "link:../app",
   ...
 },
-
-Example of updated packages/backend/package.json:
-
+```
+to be:
+```
 "dependencies": {
   ...
   "@backstage/plugin-techdocs-backend": "^1.10.9",
@@ -44,11 +44,11 @@ Example of updated packages/backend/package.json:
 
 ### Building Backstage
 
-Build your backstage instance following the instructions below taken from https://backstage.io/docs/deployment/docker. Run the following command in the root directory of your backstage instance
+Build your Backstage instance by following the instructions below, based on the [Backastage Docker Build docs](https://backstage.io/docs/deployment/docker). Run the following command in the root directory of your backstage instance:
 
-yarn build:backend --config ../../app-config.yaml
+`yarn build:backend --config ../../app-config.yaml`
 
-Following this we want to take the built backstage and place it in a new build directory
+Following this, move the built Backstage to a new build directory:
 
 ```
 cp -v \
@@ -60,15 +60,13 @@ cp -v \
   $BUILD_DIR
 ```
 
-Since backstage uses yarn berry (> v1.x.x) and the buildpack for Cloud Foundry only supports v1.x.x and below we need to create a new .yarnrc file in the build directory
-
+To use Yarn v1, create a new `.yarnrc` file in the build directory with the following content:
 ```
-.yarnrc
 yarn-offline-mirror "./npm-packages-offline-cache"
 yarn-offline-mirror-pruning true
 ```
 
-Now we can change into the build directory and perform a yarn install to populate the yarn offline mirror directory to hydrate the npm dependencies necessary to run backstage. We also need to untar the backstage packages.
+In the build directory, untar the backstage packages and run `yarn install` to install npm dependencies into the yarn offline mirror directory:
 
 ```
 cd $BUILD_DIR
@@ -77,24 +75,24 @@ tar xzf bundle.tar.gz && rm bundle.tar.gz
 yarn install
 ```
 
-Now we can try out the built backstage instance for testing. Run the following command and then open your browser to view backstage!
+You can now run the built backstage instance locally, to verify it is working. Run the following command:
 
 ```
 node packages/backend --config app-config.yaml
 ```
 
-Open the following url: http://localhost:7007 to test your freshly built Backstage instance!
+Open the `http://localhost:7007` in a browser to test your freshly built Backstage instance!
 
 ### Configuring for Cloud Foundry
 
-Now that we have tested a freshly built instance of Backstage lets configure to run in the Cloud Foundry ecosystem.
+Now that you have a working instance of Backstage, configure it to run on Cloud Foundry.
 
-Create a manifest.yml that will define the features of your backstage app within Cloud Foundry in the BUILD_DIR directory:
+In the build directory, create a `manifest.yml` file to configure the app on Cloud Foundry, with the following content:
 
 ```
 ---
 applications:
-- name: backstage
+- name: APP_NAME
   memory: 1024M
   instances: 1
   buildpacks:
@@ -102,61 +100,52 @@ applications:
   command: node packages/backend --config app-config.yaml --config app-config.production.yaml
 ```
 
-Setup some environment variables locally to then configure your Cloud Foundry instance with
+Where `APP_NAME` is your desired name for the app on Cloud Foundry.
 
-```
-export BACKSTAGE_APP_NAME=appname
-export APPS_DOMAIN=shared-domain.example.com
-```
-
-Create an env.vars file to pass up along with the application so these variables are set within cloud foundry as well.
-
-vars.yml
-
-```
-BACKSTAGE_APP_NAME: appname
-```
-
-Then, create an app-config.production.yaml with the newly configured app name and cloud foundry domain. This will allow us to both run the application locally without cloud foundry and in production on cloud foundry with the configured base url for both the Backend and the App packages.
+Next, create an `app-config.production.yaml` file with the app's name and the default Cloud Foundry domain (`APPS_DOMAIN`). This enables running the application locally and on Cloud Foundry.
 
 ```
 app:
-  baseUrl: https://${BACKSTAGE_APP_NAME}.${APPS_DOMAIN}
+  baseUrl: https://APP_NAME.APPS_DOMAIN
 
 backend:
-  baseUrl: https://${BACKSTAGE_APP_NAME}.${APPS_DOMAIN}
+  baseUrl: https://APP_NAME.APPS_DOMAIN
   listen:
 	port: ${PORT}
 ```
 
 ### Deploying to Cloud Foundry
 
-We don’t want to include the node_modules directory since we created an offline cache to push up along with our application. We’ll want to remove it anyway to reduce network traffic before we cf-push
+Delete the `node_modules` directory, since you already created an offline npm package cache to push up along with the application:
 
-`rm -rf ./node_modules`
+```
+rm -rf ./node_modules
+```
 
-Next we will push the application up to our cloud foundry instance. We will use the no start flag because we have some environmental configuration we need to perform before we can start the app.
+Next push the application to the Cloud Foundry environment:
 
-`cf push --vars-file ./vars.yml`
+`cf push`
 
-Once this finishes enjoy your new backstage instance living on the Cloud Foundry ecosystem! Navigate to the newly configured application and continue to login as a guest user.
+Once the push finishes, your Backstage instance is now running on Cloud Foundry! Navigate to the newly configured application's route at `https://APP_NAME.APPS_DOMAIN` in your browser.
 
 ## Advanced
 
 ### Authentication
 
-UAA (User Account and Authentication) is an OAuth2 provider for user authentication in Cloud Foundry. https://docs.cloudfoundry.org/concepts/architecture/uaa.html In order to utilize users created in UAA for Cloud Foundry we are going to create a custom OIDC Provider to allow user authentication with the UAA OAuth2 login flow.
+[UAA (User Account and Authentication)](https://docs.cloudfoundry.org/concepts/architecture/uaa.html) is the OAuth2 provider for Cloud Foundry. To use Cloud Foundry's UAA as the Backstage authentication provider, create a custom OIDC Provider.
 
-We are going to follow the instructions created for the custom OIDC provider documentation provided by backstage here. https://backstage.io/docs/auth/oidc/
+The following instructions are based on the [Backstage documentation for creating a custom OIDC provider](https://backstage.io/docs/auth/oidc/).
 
-### Prerequisite
+#### Prerequisite
 
-This section of the document utilizes the UAA CLI (UAAC). Installation and getting started can be found here https://docs.cloudfoundry.org/uaa/uaa-user-management.html
+The following steps utilize the UAA CLI (`uaac`). Installation and getting started can be found [here](https://docs.cloudfoundry.org/uaa/uaa-user-management.html). You will need to use `uaac` to login to your Cloud Foundry's UAA with a user capable of creating clients before continuing.
 
-First we will create an API reference. This allows for dependency injection of our OIDC Auth API and gives a reference to our new provider API.
+#### Steps
 
+First create an API reference. This allows for dependency injection of our OIDC Auth API and gives a reference to our new provider API.
+
+In `packages/app/src/apis.ts`:
 ```
-packages/app/src/apis.ts
 export const uaaOIDCAuthApiRef: ApiRef<
   OpenIdConnectApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 > = createApiRef({
@@ -164,10 +153,10 @@ export const uaaOIDCAuthApiRef: ApiRef<
 });
 ```
 
-Next, we will create the API factory that references our custom UAA Auth Provider to create an instance of our OIDC API Provider.
+Next, create an API factory to create an instance of our custom OIDC API Provider.
 
+In `packages/app/src/apis.ts`:
 ```
-packages/app/src/apis.ts
 export const apis: AnyApiFactory[] = [
   ... // previous apis
   createApiFactory({
@@ -195,9 +184,9 @@ export const apis: AnyApiFactory[] = [
 ];
 ```
 
-The provider logic itself lives in the backend package. This allows us to create custom resolvers to check for existing users and issue tokens. As an administrator of your backstage instance you have multiple opportunities here. You can load users into backstage and connect catalog users to UAA users via an email for example. You can also allow users who have no backstage access yet to login as well. We will show how to do both below.
+The provider logic is in the `backend` package. This allows you to create custom resolvers to check for existing users and issue tokens. As an administrator of your Backstage instance, you have multiple opportunities here. You can load users into Backstage and connect catalog users to UAA users via an email, for example. You can also allow users who have no Backstage access yet to login. Both will be covered below.
 
-Create a packages/backend/src/oidcProvider.ts with the following:
+Create a `packages/backend/src/oidcProvider.ts` with the following:
 
 ```
 import { createBackendModule } from '@backstage/backend-plugin-api';
@@ -267,8 +256,7 @@ const uaaAuthProviderModule = createBackendModule({
 export default uaaAuthProviderModule;
 ```
 
-Reference your newly created custom provider with custom email resolver in
-packages/backend/src/index.ts
+Reference your newly created custom provider with custom email resolver in `packages/backend/src/index.ts`:
 
 ```
 ...
@@ -276,9 +264,18 @@ backend.add(import('./oidcProvider'));
 ...
 ```
 
-### Configuration
+#### Configuration
 
-Lastly we need to configure the newly created authentication provider within our app-config.production.yaml:
+In UAA, create a new OAuth client with scopes that give Backstage the following permissions:
+- Ability for the UAA client to issue refresh tokens
+- Obtain a user's openid, profile, and email
+- Redirect back to the Backstage instance, after login
+
+```
+uaac client add UAA_CLIENT_ID --name backstage --scope "openid profile email" --authorized_grant_types "client_credentials refresh_token" --redirect_uri "https://APP_NAME.APPS_DOMAIN/**" -s UAA_CLIENT_SECRET
+```
+
+Next, add the newly-created authentication provider in `app-config.production.yaml`, with the UAA_CLIENT_ID and UAA_CLIENT_SECRET from above:
 
 ```
 ...
@@ -287,56 +284,22 @@ auth:
   environment: development
   allowGuestAccess: true
   session:
-	secret: ${SESSION_SECRET}
+    secret: SESSION_SECRET // See https://backstage.io/docs/auth/auth0/provider for configuring this
   providers:
-	guest: {} // Comment this out to remove guest access
+    guest: {} // Comment this out to remove guest access
 	uaa-auth-provider:
   	development:
-    	metadataUrl: https://${UAA_URL}/.well-known/openid-configuration
-    	clientId: ${UAA_CLIENT_ID}
-    	clientSecret: ${UAA_CLIENT_SECRET}
+    	metadataUrl: https://UAA_URL/.well-known/openid-configuration
+    	clientId: UAA_CLIENT_ID
+    	clientSecret: UAA_CLIENT_SECRET
     	prompt: auto
 ...
 ```
 
-In UAA we need to create a new client that utilizes the scopes that give us the following:
-Ability for the OIDC Client to issue refresh tokens
-Obtain the user’s openid, profile and email
-Redirect back to the backstage instance upon login
+Push the newly-configured Backstage instance with UAA authentication:
 
 ```
-uaac client add backstage --name backstage --scope "openid profile email" --authorized_grant_types "client_credentials refresh_token" --redirect_uri "https://${BACKSTAGE_APP_NAME}.${APPS_DOMAIN}/**" -s SECRET
+cf push
 ```
 
-Update the manifest.yml file to pass the uaa client id and secret to the UAA_CLIENT_ID and UAA_CLIENT_SECRET environment variables used in the app-config.production.yml file
-
-manifest.yml
-
-```
----
-applications:
-- name: backstage
-  memory: 1024M
-  instances: 1
-  buildpacks:
-	- nodejs_buildpack
-  command: node packages/backend --config app-config.yaml
-  env:
-	uaa_url: https://login.(( .cloud_controller.system_domain.value ))
-```
-
-Update vars.yml
-
-```
-BACKSTAGE_APP_NAME: backstage
-UAA_CLIENT_ID: CLIENTID
-UAA_CLIENT_SECRET: SECRET
-```
-
-Perform another cf push to push up the newly configured backstage instance with UAA authentication.
-
-```
-cf push --vars-file ./vars.yml
-```
-
-Congratulations! Now you should have Backstage up and running! 🎉
+Congratulations! Once the push completes, you will have Backstage up and running with UAA authentication! 🎉
