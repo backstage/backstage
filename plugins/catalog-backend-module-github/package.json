@@ -74,7 +74,7 @@
     "@backstage/cli": "workspace:^",
     "@types/lodash": "^4.14.151",
     "luxon": "^3.0.0",
-    "msw": "^1.0.0"
+    "msw": "^2.0.0"
   },
   "configSchema": "config.d.ts"
 }

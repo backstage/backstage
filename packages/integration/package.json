@@ -51,7 +51,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/config-loader": "workspace:^",
     "@types/luxon": "^3.0.0",
-    "msw": "^1.0.0"
+    "msw": "^2.0.0"
   },
   "configSchema": "config.d.ts"
 }

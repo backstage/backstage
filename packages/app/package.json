@@ -100,7 +100,7 @@
     "@types/zen-observable": "^0.8.0",
     "axios": "^1.7.7",
     "cross-env": "^7.0.0",
-    "msw": "^1.0.0"
+    "msw": "^2.0.0"
   },
   "bundled": true
 }

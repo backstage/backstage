@@ -85,7 +85,7 @@
     "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
-    "msw": "^1.0.0",
+    "msw": "^2.0.0",
     "supertest": "^7.0.0"
   },
   "configSchema": "config.d.ts"

@@ -71,7 +71,7 @@
     "@testing-library/react": "^16.0.0",
     "@types/react": "^18.0.0",
     "jest-websocket-mock": "^2.5.0",
-    "msw": "^1.3.1",
+    "msw": "^2.0.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
     "react-router-dom": "^6.3.0"

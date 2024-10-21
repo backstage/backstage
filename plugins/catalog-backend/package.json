@@ -111,7 +111,7 @@
     "@types/uuid": "^9.0.0",
     "better-sqlite3": "^11.0.0",
     "luxon": "^3.0.0",
-    "msw": "^1.0.0",
+    "msw": "^2.0.0",
     "supertest": "^7.0.0",
     "wait-for-expect": "^3.0.2",
     "winston": "^3.13.0"
