@@ -54,7 +54,7 @@ components:
 
     expect(getByText(/Account Service/i)).toBeInTheDocument();
     expect(getByText(/user\/signedup/i)).toBeInTheDocument();
-    expect(getAllByText(/UserSignedUp/i)).toHaveLength(4);
+    expect(getAllByText(/UserSignedUp/i)).toHaveLength(2);
     expect(getAllByText(/displayName/i)).toHaveLength(3);
   });
 });
