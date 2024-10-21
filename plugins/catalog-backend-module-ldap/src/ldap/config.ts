@@ -181,6 +181,13 @@ export type VendorConfig = {
    * Attribute name for the unique identifier (UUID) of an entry,
    */
   uuidAttributeName?: string;
+
+  /**
+   * Attribute to determine if we need to force the DN and members/memberOf values to be forced to same case.
+   * Some providers may provide lowercase members but multicase DN names which causes the group filtering to break.
+   * The default is off, but turning this on forces the inbound DN values and all member values to lowercase.
+   */
+  dnCaseSensitive?: boolean;
 };
 
 const defaultUserConfig = {
@@ -256,6 +263,7 @@ function readVendorConfig(
   return {
     dnAttributeName: c.getOptionalString('dnAttributeName'),
     uuidAttributeName: c.getOptionalString('uuidAttributeName'),
+    dnCaseSensitive: c.getOptionalBoolean('dnCaseSensitive'),
   };
 }
 
