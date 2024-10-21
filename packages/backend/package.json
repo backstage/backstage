@@ -1,6 +1,6 @@
 {
   "name": "example-backend",
-  "version": "0.0.31",
+  "version": "0.0.32-next.0",
   "backstage": {
     "role": "backend"
   },

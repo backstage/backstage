@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-techdocs-module-addons-contrib",
-  "version": "1.1.16",
+  "version": "1.1.17-next.0",
   "description": "Plugin module for contributed TechDocs Addons",
   "backstage": {
     "role": "frontend-plugin-module",

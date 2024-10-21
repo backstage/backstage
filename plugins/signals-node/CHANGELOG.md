@@ -1,5 +1,16 @@
 # @backstage/plugin-signals-node
 
+## 0.1.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.3-next.0
+  - @backstage/backend-plugin-api@1.0.2-next.0
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.5.4-next.0
+
 ## 0.1.12
 
 ### Patch Changes

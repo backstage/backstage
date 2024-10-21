@@ -194,5 +194,34 @@
     "@backstage/plugin-user-settings-backend": "0.2.25",
     "@backstage/plugin-user-settings-common": "0.0.1"
   },
-  "changesets": []
+  "changesets": [
+    "chilled-taxis-dance",
+    "create-app-1729526655",
+    "cyan-trees-bow",
+    "forty-pets-wave",
+    "forty-spoons-burn",
+    "green-tools-arrive",
+    "healthy-lions-judge",
+    "itchy-elephants-trade",
+    "khaki-fireants-march",
+    "late-kings-wave",
+    "loud-trainers-yawn",
+    "mean-years-deliver",
+    "mighty-jobs-unite",
+    "mighty-spoons-suffer",
+    "ninety-shirts-float",
+    "perfect-goats-mate",
+    "quick-cougars-fry",
+    "red-fishes-press",
+    "renovate-3d822ce",
+    "shy-pots-speak",
+    "silent-wasps-whisper",
+    "slimy-jobs-scream",
+    "slow-mayflies-sleep",
+    "spotty-snails-worry",
+    "two-donuts-float",
+    "violet-ears-dance",
+    "wild-experts-unite",
+    "young-penguins-act"
+  ]
 }

@@ -1,5 +1,20 @@
 # @backstage/core-components
 
+## 0.16.0-next.0
+
+### Minor Changes
+
+- dc409c5: The SupportButton component will now be hidden if no support config is specified in app-config
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/errors@1.2.4
+  - @backstage/theme@0.6.0
+  - @backstage/version-bridge@1.0.10
+
 ## 0.15.1
 
 ### Patch Changes

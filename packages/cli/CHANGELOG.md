@@ -1,5 +1,41 @@
 # @backstage/cli
 
+## 0.29.0-next.0
+
+### Minor Changes
+
+- bc71665: **BREAKING**: The `LEGACY_BACKEND_START` flag has been removed, along with support for `src/run.ts` as the development entry point.
+
+### Patch Changes
+
+- 28b60ad: The check for `react-dom/client` in the Jest configuration will now properly always run from the target directory.
+- e30b65d: Added `--alwaysPack` as a replacement for the now hidden `--alwaysYarnPack` flag for the `build-workspace` command.
+- a7f97e4: Added a new `"rejectFrontendNetworkRequests"` configuration flag that can be set in the `"jest"` field in the root `package.json`:
+
+  ```json
+  {
+    "jest": {
+      "rejectFrontendNetworkRequests": true
+    }
+  }
+  ```
+
+  This flag causes rejection of any form of network requests that are attempted to be made in frontend or common package tests. This flag can only be set in the root `package.json` and can not be overridden in individual package configurations.
+
+- 04297a0: The `--successCache` option for the `repo test` and `repo lint` commands now use an additive store that keeps old entries around for a week before they are cleaned up automatically.
+- b084f5a: Bump the Webpack dependency range to `^5.94.0`, as our current configuration is not compatible with some older versions.
+- Updated dependencies
+  - @backstage/catalog-model@1.7.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.9
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.9.1
+  - @backstage/errors@1.2.4
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/integration@1.15.1
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
 ## 0.28.0
 
 ### Minor Changes
