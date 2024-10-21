@@ -22,7 +22,7 @@ import { SecretInput } from './SecretInput';
 import { renderInTestApp } from '@backstage/test-utils';
 import { Form } from '@backstage/plugin-scaffolder-react/alpha';
 import validator from '@rjsf/validator-ajv8';
-import { fireEvent, act } from '@testing-library/react';
+import { fireEvent, act, waitFor } from '@testing-library/react';
 
 describe('<SecretInput />', () => {
   const SecretsComponent = () => {
@@ -63,8 +63,15 @@ describe('<SecretInput />', () => {
       fireEvent.change(secretInput, { target: { value: mockSecret } });
     });
 
-    const { secrets } = JSON.parse(getByTestId('current-secrets').textContent!);
-
-    expect(secrets.myKey).toBe(mockSecret);
+    // Wait for the debounced update to occur
+    await waitFor(
+      () => {
+        const { secrets } = JSON.parse(
+          getByTestId('current-secrets').textContent!,
+        );
+        expect(secrets.myKey).toBe(mockSecret);
+      },
+      { timeout: 500 },
+    );
   });
 });
