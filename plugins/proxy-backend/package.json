@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-proxy-backend",
-  "version": "0.5.7",
+  "version": "0.5.8-next.0",
   "description": "A Backstage backend plugin that helps you set up proxy endpoints in the backend",
   "backstage": {
     "role": "backend-plugin",

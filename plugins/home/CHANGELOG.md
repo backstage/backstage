@@ -1,5 +1,28 @@
 # @backstage/plugin-home
 
+## 0.8.1-next.0
+
+### Patch Changes
+
+- 8b1b2cf: Improve Starred Entities UI to reduce whitespace and provide more context on the entities:
+
+  - Use the Entity Presentation API (via `<EntityDisplayName>`) to display the entity's name
+  - Component's `kind` and `spec.type` are displayed as a secondary text
+  - List items are condensed to reduce unnecessary spacing
+
+- Updated dependencies
+  - @backstage/core-components@0.16.0-next.0
+  - @backstage/catalog-client@1.8.0-next.0
+  - @backstage/catalog-model@1.7.0
+  - @backstage/config@1.2.0
+  - @backstage/core-app-api@1.15.1
+  - @backstage/core-compat-api@0.3.2-next.0
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/frontend-plugin-api@0.9.1-next.0
+  - @backstage/theme@0.6.0
+  - @backstage/plugin-catalog-react@1.14.1-next.0
+  - @backstage/plugin-home-react@0.1.19-next.0
+
 ## 0.8.0
 
 ### Minor Changes

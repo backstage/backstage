@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-notifications-node",
-  "version": "0.2.7",
+  "version": "0.2.9-next.0",
   "description": "Node.js library for the notifications plugin",
   "backstage": {
     "role": "node-library",

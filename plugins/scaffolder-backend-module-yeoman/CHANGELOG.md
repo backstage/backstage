@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder-backend-module-yeoman
 
+## 0.4.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.2-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-node@0.5.1-next.0
+  - @backstage/plugin-scaffolder-node-test-utils@0.1.15-next.0
+
 ## 0.4.1
 
 ### Patch Changes

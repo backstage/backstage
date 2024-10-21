@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-import",
-  "version": "0.12.5",
+  "version": "0.12.6-next.0",
   "description": "A Backstage plugin the helps you import entities into your catalog",
   "backstage": {
     "role": "frontend-plugin",
