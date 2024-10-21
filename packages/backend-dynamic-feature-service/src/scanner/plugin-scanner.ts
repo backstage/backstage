@@ -22,6 +22,7 @@ import * as path from 'path';
 import * as url from 'url';
 import debounce from 'lodash/debounce';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { ForwardedError } from '@backstage/errors';
 
 export interface DynamicPluginScannerOptions {
   config: Config;
@@ -35,15 +36,6 @@ export interface ScanRootResponse {
 }
 
 export const configKey = 'dynamicPlugins';
-
-class WrappedError extends Error {
-  wrapped: Error;
-
-  constructor(message: string, wrapped: Error) {
-    super(message);
-    this.wrapped = wrapped;
-  }
-}
 
 export class PluginScanner {
   private _rootDirectory?: string;
@@ -178,8 +170,8 @@ export class PluginScanner {
           throw new Error("field 'backstage.role' not found in 'package.json'");
         }
       } catch (e) {
-        if (e instanceof WrappedError) {
-          this.logger.error(e.message, e.wrapped);
+        if (e instanceof ForwardedError) {
+          this.logger.error(e.message, e.cause);
         } else {
           this.logger.error(
             `failed to load dynamic plugin manifest from '${pluginHome}'`,
@@ -214,7 +206,7 @@ export class PluginScanner {
               alphaContent.toString(),
             );
           } catch (e) {
-            throw new WrappedError(
+            throw new ForwardedError(
               `failed to load dynamic plugin manifest from '${pluginHome}/alpha'`,
               e,
             );
