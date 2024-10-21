@@ -102,13 +102,13 @@ Team: @backstage/techdocs-maintainers
 
 Scope: The TechDocs plugin and related tooling
 
-| Name                     | Organization | Team    | GitHub                                            | Discord             |
-| ------------------------ | ------------ | ------- | ------------------------------------------------- | ------------------- |
-| Alex Lorenzi             | Spotify      | ProTean | [AlexLorenzi](https://github.com/AlexLorenzi)     | `alexlorenzi`       |
-| Bond Yan                 | Spotify      | ProTean | [byan1197](https://github.com/byan1197)           | `bondify`           |
-| Jackson Chen             | Spotify      | ProTean | [PeaWarrior](https://github.com/PeaWarrior)       | `jacksonc#3322`     |
-| John Philip              | Spotify      | ProTean | [johnphilip283](https://github.com/johnphilip283) | `john_philip#2399`  |
-| Sydney Achinger          | Spotify      | ProTean | [squid-ney](https://github.com/squid-ney)         | -                   |
+| Name            | Organization | Team    | GitHub                                            | Discord            |
+| --------------- | ------------ | ------- | ------------------------------------------------- | ------------------ |
+| Alex Lorenzi    | Spotify      | ProTean | [AlexLorenzi](https://github.com/AlexLorenzi)     | `alexlorenzi`      |
+| Bond Yan        | Spotify      | ProTean | [byan1197](https://github.com/byan1197)           | `bondify`          |
+| Jackson Chen    | Spotify      | ProTean | [PeaWarrior](https://github.com/PeaWarrior)       | `jacksonc#3322`    |
+| John Philip     | Spotify      | ProTean | [johnphilip283](https://github.com/johnphilip283) | `john_philip#2399` |
+| Sydney Achinger | Spotify      | ProTean | [squid-ney](https://github.com/squid-ney)         | -                  |
 
 ## Incubating Project Areas
 
