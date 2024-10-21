@@ -49,7 +49,7 @@
     "mockttp": "^3.13.0",
     "msw": "^1.0.0",
     "openapi-merge": "^1.3.2",
-    "openapi3-ts": "^3.1.2"
+    "openapi3-ts": "^4.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
